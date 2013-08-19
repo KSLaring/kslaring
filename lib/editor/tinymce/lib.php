@@ -52,6 +52,9 @@ class tinymce_texteditor extends texteditor {
         if (check_browser_version('Safari iOS', 534)) {
             return true;
         }
+        if (check_browser_version('WebKit', 534)) {
+            return true;
+        }
 
         return false;
     }
@@ -106,12 +109,10 @@ class tinymce_texteditor extends texteditor {
         if ($fpoptions) {
             $PAGE->requires->js_init_call('M.editor_tinymce.init_filepicker', array($elementid, $fpoptions), true);
         }
-        $this->initialise_collapse_js();
     }
 
     protected function get_init_params($elementid, array $options=null) {
         global $CFG, $PAGE, $OUTPUT;
-        require_once($CFG->dirroot . '/lib/editor/tinymce/classes/plugin.php');
 
         //TODO: we need to implement user preferences that affect the editor setup too
 
@@ -173,8 +174,7 @@ class tinymce_texteditor extends texteditor {
         );
 
         // Should we override the default toolbar layout unconditionally?
-        $customtoolbar = self::parse_toolbar_setting($config->customtoolbar);
-        if ($customtoolbar) {
+        if (!empty($config->customtoolbar) and $customtoolbar = self::parse_toolbar_setting($config->customtoolbar)) {
             $i = 1;
             foreach ($customtoolbar as $line) {
                 $params['theme_advanced_buttons'.$i] = $line;
@@ -261,7 +261,6 @@ class tinymce_texteditor extends texteditor {
      */
     public function get_plugin($plugin) {
         global $CFG;
-        require_once($CFG->dirroot . '/lib/editor/tinymce/classes/plugin.php');
         return editor_tinymce_plugin::get($plugin);
     }
 
@@ -276,22 +275,4 @@ class tinymce_texteditor extends texteditor {
         return new moodle_url("$CFG->httpswwwroot/lib/editor/tinymce/tiny_mce/$this->version/");
     }
 
-    /**
-     * Initialise javascript form elements
-     * @return void
-     */
-    public function initialise_collapse_js() {
-        global $PAGE;
-        // This method is called for every editor instance. Ensure it's only run once.
-        // Static is a clunky solution but the best we could find to keep everything simple and encapsulated.
-        static $isinitialised;
-        if ($isinitialised) {
-            return;
-        }
-
-        // Initialise language strings.
-        $PAGE->requires->strings_for_js(array('hideeditortoolbar', 'showeditortoolbar'), 'form');
-        $PAGE->requires->yui_module('moodle-editor_tinymce-collapse', 'M.editor_collapse.init');
-        $isinitialised = true;
-    }
 }

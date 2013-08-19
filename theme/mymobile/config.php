@@ -17,8 +17,7 @@
 /**
  * Config file for mymobile theme
  *
- * @package    theme
- * @subpackage mymobile
+ * @package    theme_mymobile
  * @copyright  John Stabinger
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -34,8 +33,8 @@ $THEME->parents = array(
 
 // Set the stylesheets that we want to include for this theme
 $THEME->sheets = array(
-    'jmobile11',
-    'jmobile11_rtl',
+    'jmobile131',
+    'jmobile131_rtl',
     'core',
     'media'
 );

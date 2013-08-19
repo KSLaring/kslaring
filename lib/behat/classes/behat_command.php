@@ -175,9 +175,9 @@ class behat_command {
             return BEHAT_EXITCODE_COMPOSER;
         }
 
-        // Checking behat dataroot existence otherwise echo about admin/tool/behat/cli/util.php.
+        // Checking behat dataroot existence otherwise echo about admin/tool/behat/cli/init.php.
         if (empty($CFG->behat_dataroot) || !is_dir($CFG->behat_dataroot) || !is_writable($CFG->behat_dataroot)) {
-            self::output_msg(get_string('runclitool', 'tool_behat', 'php admin/tool/behat/cli/util.php'));
+            self::output_msg(get_string('runclitool', 'tool_behat', 'php admin/tool/behat/cli/init.php'));
             return BEHAT_EXITCODE_CONFIG;
         }
 
@@ -207,6 +207,8 @@ class behat_command {
     protected static function output_msg($msg) {
 
         if (!CLI_SCRIPT) {
+            // General info about the tool purpose.
+            $msg = get_string('aim', 'tool_behat') . '<br /><br />' . $msg;
             notice($msg);
         } else {
             echo $msg;

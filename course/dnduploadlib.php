@@ -107,7 +107,7 @@ class dndupload_handler {
      * @param object $course The course this is being added to (to check course_allowed_module() )
      */
     public function __construct($course, $modnames = null) {
-        global $CFG;
+        global $CFG, $PAGE;
 
         // Add some default types to handle.
         // Note: 'Files' type is hard-coded into the Javascript as this needs to be ...
@@ -122,7 +122,7 @@ class dndupload_handler {
         // Loop through all modules to find handlers.
         $mods = get_plugin_list_with_function('mod', 'dndupload_register');
         foreach ($mods as $component => $funcname) {
-            list($modtype, $modname) = normalize_component($component);
+            list($modtype, $modname) = core_component::normalize_component($component);
             if ($modnames && !array_key_exists($modname, $modnames)) {
                 continue; // Module is deactivated (hidden) at the site level.
             }
@@ -158,6 +158,7 @@ class dndupload_handler {
                     $this->register_type_handler($type['identifier'], $modname, $type['message'], $noname);
                 }
             }
+            $PAGE->requires->string_for_js('pluginname', $modname);
         }
     }
 
@@ -587,9 +588,9 @@ class dndupload_ajax_processor {
      * @return string the display name to use
      */
     protected function display_name_from_file($filename) {
-        $pos = textlib::strrpos($filename, '.');
+        $pos = core_text::strrpos($filename, '.');
         if ($pos) { // Want to skip if $pos === 0 OR $pos === false.
-            $filename = textlib::substr($filename, 0, $pos);
+            $filename = core_text::substr($filename, 0, $pos);
         }
         return str_replace('_', ' ', $filename);
     }
@@ -743,11 +744,11 @@ class dndupload_ajax_processor {
         $resp->content = $mod->get_content();
         $resp->elementid = 'module-'.$mod->id;
         $actions = course_get_cm_edit_actions($mod, 0, $mod->sectionnum);
-        $resp->commands = ' '. $courserenderer->course_section_cm_edit_actions($actions);
+        $resp->commands = ' '. $courserenderer->course_section_cm_edit_actions($actions, $mod);
         $resp->onclick = $mod->get_on_click();
         $resp->visible = $mod->visible;
 
-        // if using groupings, then display grouping name
+        // If using groupings, then display grouping name.
         if (!empty($mod->groupingid) && has_capability('moodle/course:managegroups', $this->context)) {
             $groupings = groups_get_all_groupings($this->course->id);
             $resp->groupingname = format_string($groupings[$mod->groupingid]->name);

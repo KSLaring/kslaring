@@ -25,7 +25,7 @@
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-// NOTE: do not verify MOODLE_INTERNAL here, this is used from themes too
+defined('MOODLE_INTERNAL') || die();
 
 /**
  * Stores CSS in a file at the given path.
@@ -35,9 +35,18 @@
  * @param theme_config $theme The theme that the CSS belongs to.
  * @param string $csspath The path to store the CSS at.
  * @param array $cssfiles The CSS files to store.
+ * @param bool $chunk If set to true these files will be chunked to ensure
+ *      that no one file contains more than 4095 selectors.
+ * @param string $chunkurl If the CSS is be chunked then we need to know the URL
+ *      to use for the chunked files.
  */
-function css_store_css(theme_config $theme, $csspath, array $cssfiles) {
+function css_store_css(theme_config $theme, $csspath, array $cssfiles, $chunk = false, $chunkurl = null) {
     global $CFG;
+
+    $css = '';
+    foreach ($cssfiles as $file) {
+        $css .= file_get_contents($file)."\n";
+    }
 
     // Check if both the CSS optimiser is enabled and the theme supports it.
     if (!empty($CFG->enablecssoptimiser) && $theme->supportscssoptimisation) {
@@ -47,10 +56,6 @@ function css_store_css(theme_config $theme, $csspath, array $cssfiles) {
         // the CSS before it is cached removing excess styles and rules and stripping
         // out any extraneous content such as comments and empty rules.
         $optimiser = new css_optimiser;
-        $css = '';
-        foreach ($cssfiles as $file) {
-            $css .= file_get_contents($file)."\n";
-        }
         $css = $theme->post_process($css);
         $css = $optimiser->process($css);
 
@@ -69,7 +74,8 @@ function css_store_css(theme_config $theme, $csspath, array $cssfiles) {
         // However it has the distinct disadvantage of having to minify the CSS
         // before running the post process functions. Potentially things may break
         // here if theme designers try to push things with CSS post processing.
-        $css = $theme->post_process(css_minify_css($cssfiles));
+        $css = $theme->post_process($css);
+        $css = core_minify::css($css);
     }
 
     clearstatcache();
@@ -80,13 +86,28 @@ function css_store_css(theme_config $theme, $csspath, array $cssfiles) {
     // Prevent serving of incomplete file from concurrent request,
     // the rename() should be more atomic than fwrite().
     ignore_user_abort(true);
-    if ($fp = fopen($csspath.'.tmp', 'xb')) {
-        fwrite($fp, $css);
-        fclose($fp);
-        rename($csspath.'.tmp', $csspath);
-        @chmod($csspath, $CFG->filepermissions);
-        @unlink($csspath.'.tmp'); // just in case anything fails
+
+    // First up write out the single file for all those using decent browsers.
+    css_write_file($csspath, $css);
+
+    if ($chunk) {
+        // If we need to chunk the CSS for browsers that are sub-par.
+        $css = css_chunk_by_selector_count($css, $chunkurl);
+        $files = count($css);
+        $count = 1;
+        foreach ($css as $content) {
+            if ($count === $files) {
+                // If there is more than one file and this IS the last file.
+                $filename = preg_replace('#\.css$#', '.0.css', $csspath);
+            } else {
+                // If there is more than one file and this is not the last file.
+                $filename = preg_replace('#\.css$#', '.'.$count.'.css', $csspath);
+            }
+            $count++;
+            css_write_file($filename, $content);
+        }
     }
+
     ignore_user_abort(false);
     if (connection_aborted()) {
         die;
@@ -94,48 +115,100 @@ function css_store_css(theme_config $theme, $csspath, array $cssfiles) {
 }
 
 /**
- * Sends IE specific CSS
+ * Writes a CSS file.
  *
- * In writing the CSS parser I have a theory that we could optimise the CSS
- * then split it based upon the number of selectors to ensure we dont' break IE
- * and that we include only as many sub-stylesheets as we require.
- * Of course just a theory but may be fun to code.
- *
- * @param string $themename The name of the theme we are sending CSS for.
- * @param string $rev The revision to ensure we utilise the cache.
- * @param string $etag The revision to ensure we utilise the cache.
- * @param bool $slasharguments
+ * @param string $filename
+ * @param string $content
  */
-function css_send_ie_css($themename, $rev, $etag, $slasharguments) {
+function css_write_file($filename, $content) {
     global $CFG;
+    if ($fp = fopen($filename.'.tmp', 'xb')) {
+        fwrite($fp, $content);
+        fclose($fp);
+        rename($filename.'.tmp', $filename);
+        @chmod($filename, $CFG->filepermissions);
+        @unlink($filename.'.tmp'); // just in case anything fails
+    }
+}
 
-    $lifetime = 60*60*24*60; // 60 days only - the revision may get incremented quite often
-
-    $relroot = preg_replace('|^http.?://[^/]+|', '', $CFG->wwwroot);
-
-    $css  = "/** Unfortunately IE6-9 does not support more than 4096 selectors in one CSS file, which means we have to use some ugly hacks :-( **/";
-    if ($slasharguments) {
-        $css .= "\n@import url($relroot/styles.php/$themename/$rev/plugins);";
-        $css .= "\n@import url($relroot/styles.php/$themename/$rev/parents);";
-        $css .= "\n@import url($relroot/styles.php/$themename/$rev/theme);";
-    } else {
-        $css .= "\n@import url($relroot/styles.php?theme=$themename&rev=$rev&type=plugins);";
-        $css .= "\n@import url($relroot/styles.php?theme=$themename&rev=$rev&type=parents);";
-        $css .= "\n@import url($relroot/styles.php?theme=$themename&rev=$rev&type=theme);";
+/**
+ * Takes CSS and chunks it if the number of selectors within it exceeds $maxselectors.
+ *
+ * @param string $css The CSS to chunk.
+ * @param string $importurl The URL to use for import statements.
+ * @param int $maxselectors The number of selectors to limit a chunk to.
+ * @param int $buffer The buffer size to use when chunking. You shouldn't need to reduce this
+ *      unless you are lowering the maximum selectors.
+ * @return array An array of CSS chunks.
+ */
+function css_chunk_by_selector_count($css, $importurl, $maxselectors = 4095, $buffer = 50) {
+    // Check if we need to chunk this CSS file.
+    $count = substr_count($css, ',') + substr_count($css, '{');
+    if ($count < $maxselectors) {
+        // The number of selectors is less then the max - we're fine.
+        return array($css);
     }
 
-    header('Etag: '.$etag);
-    header('Content-Disposition: inline; filename="styles.php"');
-    header('Last-Modified: '. gmdate('D, d M Y H:i:s', time()) .' GMT');
-    header('Expires: '. gmdate('D, d M Y H:i:s', time() + $lifetime) .' GMT');
-    header('Pragma: ');
-    header('Cache-Control: public, max-age='.$lifetime);
-    header('Accept-Ranges: none');
-    header('Content-Type: text/css; charset=utf-8');
-    header('Content-Length: '.strlen($css));
+    // Chunk time ?!
+    // Split the CSS by array, making sure to save the delimiter in the process.
+    $parts = preg_split('#([,\}])#', $css, null, PREG_SPLIT_DELIM_CAPTURE + PREG_SPLIT_NO_EMPTY);
+    // We need to chunk the array. Each delimiter is stored separately so we multiple by 2.
+    // We also subtract 100 to give us a small buffer just in case.
+    $parts = array_chunk($parts, $maxselectors * 2 - $buffer * 2);
+    $css = array();
+    $partcount = count($parts);
+    foreach ($parts as $key => $chunk) {
+        if (end($chunk) === ',') {
+            // Damn last element was a comma.
+            // Pretty much the only way to deal with this is to take the styles from the end of the
+            // comma separated chain of selectors and apply it to the last selector we have here in place
+            // of the comma.
+            // Unit tests are essential for making sure this works.
+            $styles = false;
+            $i = $key;
+            while ($styles === false && $i < ($partcount - 1)) {
+                $i++;
+                $nextpart = $parts[$i];
+                foreach ($nextpart as $style) {
+                    if (strpos($style, '{') !== false) {
+                        $styles = preg_replace('#^[^\{]+#', '', $style);
+                        break;
+                    }
+                }
+            }
+            if ($styles === false) {
+                $styles = '/** Error chunking CSS **/';
+            } else {
+                $styles .= '}';
+            }
+            array_pop($chunk);
+            array_push($chunk, $styles);
+        }
+        $css[] = join('', $chunk);
+    }
+    // The array $css now contains CSS split into perfect sized chunks.
+    // Import statements can only appear at the very top of a CSS file.
+    // Imported sheets are applied in the the order they are imported and
+    // are followed by the contents of the CSS.
+    // This is terrible for performance.
+    // It means we must put the import statements at the top of the last chunk
+    // to ensure that things are always applied in the correct order.
+    // This way the chunked files are included in the order they were chunked
+    // followed by the contents of the final chunk in the actual sheet.
+    $importcss = '';
+    $slashargs = strpos($importurl, '.php?') === false;
+    $parts = count($css);
+    for ($i = 1; $i < $parts; $i++) {
+        if ($slashargs) {
+            $importcss .= "@import url({$importurl}/chunk{$i});\n";
+        } else {
+            $importcss .= "@import url({$importurl}&chunk={$i});\n";
+        }
+    }
+    $importcss .= end($css);
+    $css[key($css)] = $importcss;
 
-    echo $css;
-    die;
+    return $css;
 }
 
 /**
@@ -150,7 +223,7 @@ function css_send_ie_css($themename, $rev, $etag, $slasharguments) {
 function css_send_cached_css($csspath, $etag) {
     $lifetime = 60*60*24*60; // 60 days only - the revision may get incremented quite often
 
-    header('Etag: '.$etag);
+    header('Etag: "'.$etag.'"');
     header('Content-Disposition: inline; filename="styles.php"');
     header('Last-Modified: '. gmdate('D, d M Y H:i:s', filemtime($csspath)) .' GMT');
     header('Expires: '. gmdate('D, d M Y H:i:s', time() + $lifetime) .' GMT');
@@ -208,7 +281,7 @@ function css_send_unmodified($lastmodified, $etag) {
     header('Expires: '. gmdate('D, d M Y H:i:s', time() + $lifetime) .' GMT');
     header('Cache-Control: public, max-age='.$lifetime);
     header('Content-Type: text/css; charset=utf-8');
-    header('Etag: '.$etag);
+    header('Etag: "'.$etag.'"');
     if ($lastmodified) {
         header('Last-Modified: '. gmdate('D, d M Y H:i:s', $lastmodified) .' GMT');
     }
@@ -221,75 +294,6 @@ function css_send_unmodified($lastmodified, $etag) {
 function css_send_css_not_found() {
     header('HTTP/1.0 404 not found');
     die('CSS was not found, sorry.');
-}
-
-/**
- * Uses the minify library to compress CSS.
- *
- * This is used if $CFG->enablecssoptimiser has been turned off. This was
- * the original CSS optimisation library.
- * It removes whitespace and shrinks things but does no apparent optimisation.
- * Note the minify library is still being used for JavaScript.
- *
- * @param array $files An array of files to minify
- * @return string The minified CSS
- */
-function css_minify_css($files) {
-    global $CFG;
-
-    if (empty($files)) {
-        return '';
-    }
-
-    set_include_path($CFG->libdir . '/minify/lib' . PATH_SEPARATOR . get_include_path());
-    require_once('Minify.php');
-
-    if (0 === stripos(PHP_OS, 'win')) {
-        Minify::setDocRoot(); // IIS may need help
-    }
-    // disable all caching, we do it in moodle
-    Minify::setCache(null, false);
-
-    $options = array(
-        // JSMin is not GNU GPL compatible, use the plus version instead.
-        'minifiers' => array(Minify::TYPE_JS => array('JSMinPlus', 'minify')),
-        'bubbleCssImports' => false,
-        // Don't gzip content we just want text for storage
-        'encodeOutput' => false,
-        // Maximum age to cache, not used but required
-        'maxAge' => (60*60*24*20),
-        // The files to minify
-        'files' => $files,
-        // Turn orr URI rewriting
-        'rewriteCssUris' => false,
-        // This returns the CSS rather than echoing it for display
-        'quiet' => true
-    );
-
-    $error = 'unknown';
-    try {
-        $result = Minify::serve('Files', $options);
-        if ($result['success']) {
-            return $result['content'];
-        }
-    } catch (Exception $e) {
-        $error = $e->getMessage();
-        $error = str_replace("\r", ' ', $error);
-        $error = str_replace("\n", ' ', $error);
-    }
-
-    // minification failed - try to inform the theme developer and include the non-minified version
-    $css = <<<EOD
-/* Error: $error */
-/* Problem detected during theme CSS minimisation, please review the following code */
-/* ================================================================================ */
-
-
-EOD;
-    foreach ($files as $cssfile) {
-        $css .= file_get_contents($cssfile)."\n";
-    }
-    return $css;
 }
 
 /**

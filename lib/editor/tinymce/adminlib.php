@@ -35,8 +35,9 @@ require_once("$CFG->libdir/pluginlib.php");
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class plugininfo_tinymce extends plugininfo_base {
-    public function get_uninstall_url() {
-        return new moodle_url('/lib/editor/tinymce/subplugins.php', array('delete' => $this->name, 'sesskey' => sesskey()));
+
+    public function is_uninstall_allowed() {
+        return true;
     }
 
     public function get_settings_section_name() {
@@ -134,14 +135,14 @@ class tiynce_subplugins_settings extends admin_setting {
             return true;
         }
 
-        $subplugins = get_plugin_list('tinymce');
+        $subplugins = core_component::get_plugin_list('tinymce');
         foreach ($subplugins as $name=>$dir) {
             if (stripos($name, $query) !== false) {
                 return true;
             }
 
             $namestr = get_string('pluginname', 'tinymce_'.$name);
-            if (strpos(textlib::strtolower($namestr), textlib::strtolower($query)) !== false) {
+            if (strpos(core_text::strtolower($namestr), core_text::strtolower($query)) !== false) {
                 return true;
             }
         }
@@ -169,10 +170,10 @@ class tiynce_subplugins_settings extends admin_setting {
         $strenable = get_string('enable');
         $strname = get_string('name');
         $strsettings = get_string('settings');
-        $struninstall = get_string('uninstallplugin', 'admin');
+        $struninstall = get_string('uninstallplugin', 'core_admin');
         $strversion = get_string('version');
 
-        $subplugins = get_plugin_list('tinymce');
+        $subplugins = core_component::get_plugin_list('tinymce');
 
         $return = $OUTPUT->heading(get_string('subplugintype_tinymce_plural', 'editor_tinymce'), 3, 'main', true);
         $return .= $OUTPUT->box_start('generalbox tinymcesubplugins');
@@ -230,11 +231,9 @@ class tiynce_subplugins_settings extends admin_setting {
             }
 
             // Add uninstall info.
-            if ($version) {
-                $url = new moodle_url($plugininfo->get_uninstall_url(), array('return'=>'settings'));
-                $uninstall = html_writer::link($url, $struninstall);
-            } else {
-                $uninstall = '';
+            $uninstall = '';
+            if ($uninstallurl = plugin_manager::instance()->get_uninstall_url('tinymce_' . $name)) {
+                $uninstall = html_writer::link($uninstallurl, $struninstall);
             }
 
             // Add a row to the table.

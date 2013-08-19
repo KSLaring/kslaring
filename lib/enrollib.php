@@ -86,7 +86,7 @@ function enrol_get_plugins($enabled) {
         }
     } else {
         // sorted alphabetically
-        $plugins = get_plugin_list('enrol');
+        $plugins = core_component::get_plugin_list('enrol');
         ksort($plugins);
     }
 
@@ -276,7 +276,9 @@ function enrol_get_shared_courses($user1, $user2, $preloadcontexts = false, $che
     $ctxselect = '';
     $ctxjoin = '';
     if ($preloadcontexts) {
-        list($ctxselect, $ctxjoin) = context_instance_preload_sql('c.id', CONTEXT_COURSE, 'ctx');
+        $ctxselect = ', ' . context_helper::get_preload_record_columns_sql('ctx');
+        $ctxjoin = "LEFT JOIN {context} ctx ON (ctx.instanceid = c.id AND ctx.contextlevel = :contextlevel)";
+        $params['contextlevel'] = CONTEXT_COURSE;
     }
 
     $sql = "SELECT c.* $ctxselect
@@ -572,7 +574,9 @@ function enrol_get_my_courses($fields = NULL, $sort = 'visible DESC,sortorder AS
     }
 
     $coursefields = 'c.' .join(',c.', $fields);
-    list($ccselect, $ccjoin) = context_instance_preload_sql('c.id', CONTEXT_COURSE, 'ctx');
+    $ccselect = ', ' . context_helper::get_preload_record_columns_sql('ctx');
+    $ccjoin = "LEFT JOIN {context} ctx ON (ctx.instanceid = c.id AND ctx.contextlevel = :contextlevel)";
+    $params['contextlevel'] = CONTEXT_COURSE;
     $wheres = implode(" AND ", $wheres);
 
     //note: we can not use DISTINCT + text fields due to Oracle and MS limitations, that is why we have the subselect there
@@ -596,7 +600,7 @@ function enrol_get_my_courses($fields = NULL, $sort = 'visible DESC,sortorder AS
 
     // preload contexts and check visibility
     foreach ($courses as $id=>$course) {
-        context_instance_preload($course);
+        context_helper::preload_from_record($course);
         if (!$course->visible) {
             if (!$context = context_course::instance($id, IGNORE_MISSING)) {
                 unset($courses[$id]);
@@ -692,7 +696,7 @@ function enrol_get_users_courses($userid, $onlyactive = false, $fields = NULL, $
     // preload contexts and check visibility
     if ($onlyactive) {
         foreach ($courses as $id=>$course) {
-            context_instance_preload($course);
+            context_helper::preload_from_record($course);
             if (!$course->visible) {
                 if (!$context = context_course::instance($id)) {
                     unset($courses[$id]);
@@ -830,7 +834,9 @@ function enrol_get_all_users_courses($userid, $onlyactive = false, $fields = NUL
     }
 
     $coursefields = 'c.' .join(',c.', $fields);
-    list($ccselect, $ccjoin) = context_instance_preload_sql('c.id', CONTEXT_COURSE, 'ctx');
+    $ccselect = ', ' . context_helper::get_preload_record_columns_sql('ctx');
+    $ccjoin = "LEFT JOIN {context} ctx ON (ctx.instanceid = c.id AND ctx.contextlevel = :contextlevel)";
+    $params['contextlevel'] = CONTEXT_COURSE;
 
     //note: we can not use DISTINCT + text fields due to Oracle and MS limitations, that is why we have the subselect there
     $sql = "SELECT $coursefields $ccselect
@@ -1244,9 +1250,10 @@ abstract class enrol_plugin {
      * @param int $timestart 0 means unknown
      * @param int $timeend 0 means forever
      * @param int $status default to ENROL_USER_ACTIVE for new enrolments, no change by default in updates
+     * @param bool $recovergrades restore grade history
      * @return void
      */
-    public function enrol_user(stdClass $instance, $userid, $roleid = NULL, $timestart = 0, $timeend = 0, $status = NULL) {
+    public function enrol_user(stdClass $instance, $userid, $roleid = null, $timestart = 0, $timeend = 0, $status = null, $recovergrades = null) {
         global $DB, $USER, $CFG; // CFG necessary!!!
 
         if ($instance->courseid == SITEID) {
@@ -1260,6 +1267,9 @@ abstract class enrol_plugin {
             throw new coding_exception('invalid enrol instance!');
         }
         $context = context_course::instance($instance->courseid, MUST_EXIST);
+        if (!isset($recovergrades)) {
+            $recovergrades = $CFG->recovergradesdefault;
+        }
 
         $inserted = false;
         $updated  = false;
@@ -1312,6 +1322,12 @@ abstract class enrol_plugin {
             } else {
                 role_assign($roleid, $userid, $context->id);
             }
+        }
+
+        // Recover old grades if present.
+        if ($recovergrades) {
+            require_once("$CFG->libdir/gradelib.php");
+            grade_recover_history_grades($userid, $courseid);
         }
 
         // reset current user enrolment caching
@@ -1697,6 +1713,29 @@ abstract class enrol_plugin {
      * @return string html text, usually a form in a text box
      */
     public function enrol_page_hook(stdClass $instance) {
+        return null;
+    }
+
+    /**
+     * Checks if user can self enrol.
+     *
+     * @param stdClass $instance enrolment instance
+     * @param bool $checkuserenrolment if true will check if user enrolment is inactive.
+     *             used by navigation to improve performance.
+     * @return bool|string true if successful, else error message or false
+     */
+    public function can_self_enrol(stdClass $instance, $checkuserenrolment = true) {
+        return false;
+    }
+
+    /**
+     * Return information for enrolment instance containing list of parameters required
+     * for enrolment, name of enrolment plugin etc.
+     *
+     * @param stdClass $instance enrolment instance
+     * @return array instance info.
+     */
+    public function get_enrol_info(stdClass $instance) {
         return null;
     }
 

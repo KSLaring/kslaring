@@ -30,8 +30,9 @@ global $CFG;
 
 require_once($CFG->dirroot . '/webservice/tests/helpers.php');
 require_once($CFG->dirroot . '/user/externallib.php');
+require_once($CFG->dirroot . '/files/externallib.php');
 
-class core_user_external_testcase extends externallib_advanced_testcase {
+class core_user_externallib_testcase extends externallib_advanced_testcase {
 
     /**
      * Test get_users
@@ -242,18 +243,9 @@ class core_user_external_testcase extends externallib_advanced_testcase {
         $roleid = $this->assignUserCapability('moodle/user:viewdetails', $context->id);
 
         // Enrol the users in the course.
-        // We use the manual plugin.
-        $enrol = enrol_get_plugin('manual');
-        $enrolinstances = enrol_get_instances($course->id, true);
-        foreach ($enrolinstances as $courseenrolinstance) {
-            if ($courseenrolinstance->enrol == "manual") {
-                $instance = $courseenrolinstance;
-                break;
-            }
-        }
-        $enrol->enrol_user($instance, $user1->id, $roleid);
-        $enrol->enrol_user($instance, $user2->id, $roleid);
-        $enrol->enrol_user($instance, $USER->id, $roleid);
+        $this->getDataGenerator()->enrol_user($user1->id, $course->id, $roleid, 'manual');
+        $this->getDataGenerator()->enrol_user($user2->id, $course->id, $roleid, 'manual');
+        $this->getDataGenerator()->enrol_user($USER->id, $course->id, $roleid, 'manual');
 
         // call as admin and receive all possible fields.
         $this->setAdminUser();
@@ -322,8 +314,8 @@ class core_user_external_testcase extends externallib_advanced_testcase {
                 if (!empty($generateduser->description)) {
                     $this->assertEquals($generateduser->description, $returneduser['description']);
                 }
-                if (!empty($generateduser->descriptionformat)) {
-                    $this->assertEquals(FORMAT_HTML, $returneduser['descriptionformat']);
+                if (!empty($generateduser->descriptionformat) and isset($returneduser['descriptionformat'])) {
+                    $this->assertEquals($generateduser->descriptionformat, $returneduser['descriptionformat']);
                 }
                 if (!empty($generateduser->city)) {
                     $this->assertEquals($generateduser->city, $returneduser['city']);
@@ -395,18 +387,9 @@ class core_user_external_testcase extends externallib_advanced_testcase {
         $roleid = $this->assignUserCapability('moodle/user:viewdetails', $context->id);
 
         // Enrol the users in the course.
-        // We use the manual plugin.
-        $enrol = enrol_get_plugin('manual');
-        $enrolinstances = enrol_get_instances($course->id, true);
-        foreach ($enrolinstances as $courseenrolinstance) {
-            if ($courseenrolinstance->enrol == "manual") {
-                $instance = $courseenrolinstance;
-                break;
-            }
-        }
-        $enrol->enrol_user($instance, $user1->id, $roleid);
-        $enrol->enrol_user($instance, $user2->id, $roleid);
-        $enrol->enrol_user($instance, $USER->id, $roleid);
+        $this->getDataGenerator()->enrol_user($user1->id, $course->id, $roleid, 'manual');
+        $this->getDataGenerator()->enrol_user($user2->id, $course->id, $roleid, 'manual');
+        $this->getDataGenerator()->enrol_user($USER->id, $course->id, $roleid, 'manual');
 
         // Call the external function.
         $enrolledusers = core_user_external::get_course_user_profiles(array(
@@ -475,6 +458,10 @@ class core_user_external_testcase extends externallib_advanced_testcase {
             'idnumber' => 'idnumbertest1',
             'firstname' => 'First Name User Test 1',
             'lastname' => 'Last Name User Test 1',
+            'middlename' => 'Middle Name User Test 1',
+            'lastnamephonetic' => '最後のお名前のテスト一号',
+            'firstnamephonetic' => 'お名前のテスト一号',
+            'alternatename' => 'Alternate Name User Test 1',
             'email' => 'usertest1@email.com',
             'description' => 'This is a description for user 1',
             'city' => 'Perth',
@@ -650,6 +637,10 @@ class core_user_external_testcase extends externallib_advanced_testcase {
             'idnumber' => 'idnumbertest1',
             'firstname' => 'First Name User Test 1',
             'lastname' => 'Last Name User Test 1',
+            'middlename' => 'Middle Name User Test 1',
+            'lastnamephonetic' => '最後のお名前のテスト一号',
+            'firstnamephonetic' => 'お名前のテスト一号',
+            'alternatename' => 'Alternate Name User Test 1',
             'email' => 'usertest1@email.com',
             'description' => 'This is a description for user 1',
             'city' => 'Perth',
@@ -676,5 +667,49 @@ class core_user_external_testcase extends externallib_advanced_testcase {
         $this->unassignUserCapability('moodle/user:update', $context->id, $roleid);
         $this->setExpectedException('required_capability_exception');
         core_user_external::update_users(array($user1));
+    }
+
+    /**
+     * Test add_user_private_files
+     */
+    public function test_add_user_private_files() {
+        global $USER, $CFG, $DB;
+
+        $this->resetAfterTest(true);
+
+        $context = context_system::instance();
+        $roleid = $this->assignUserCapability('moodle/user:manageownfiles', $context->id);
+
+        $context = context_user::instance($USER->id);
+        $contextid = $context->id;
+        $component = "user";
+        $filearea = "draft";
+        $itemid = 0;
+        $filepath = "/";
+        $filename = "Simple.txt";
+        $filecontent = base64_encode("Let us create a nice simple file");
+        $contextlevel = null;
+        $instanceid = null;
+        $browser = get_file_browser();
+
+        // Call the files api to create a file.
+        $draftfile = core_files_external::upload($contextid, $component, $filearea, $itemid, $filepath,
+                                                 $filename, $filecontent, $contextlevel, $instanceid);
+
+        $draftid = $draftfile['itemid'];
+        // Make sure the file was created.
+        $file = $browser->get_file_info($context, $component, $filearea, $draftid, $filepath, $filename);
+        $this->assertNotEmpty($file);
+
+        // Make sure the file does not exist in the user private files.
+        $file = $browser->get_file_info($context, $component, 'private', 0, $filepath, $filename);
+        $this->assertEmpty($file);
+
+        // Call the external function.
+        core_user_external::add_user_private_files($draftid);
+
+        // Make sure the file was added to the user private files.
+        $file = $browser->get_file_info($context, $component, 'private', 0, $filepath, $filename);
+        $this->assertNotEmpty($file);
     }
 }

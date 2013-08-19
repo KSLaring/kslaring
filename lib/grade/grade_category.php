@@ -1154,13 +1154,17 @@ class grade_category extends grade_object {
 
             } else {
                 $categoryid = $item->categoryid;
+                if (empty($categoryid)) {
+                    debugging('Found a grade item that isnt in a category');
+                }
             }
 
             // prevent problems with duplicate sortorders in db
             $sortorder = $item->sortorder;
 
-            while (array_key_exists($sortorder, $cats[$categoryid]->children)) {
-                //debugging("$sortorder exists in item loop");
+            while (array_key_exists($categoryid, $cats)
+                && array_key_exists($sortorder, $cats[$categoryid]->children)) {
+
                 $sortorder++;
             }
 
@@ -1612,7 +1616,9 @@ class grade_category extends grade_object {
             if ($children = grade_item::fetch_all(array('categoryid'=>$this->id))) {
 
                 foreach ($children as $child) {
-                    $child->set_hidden($hidden, $cascade);
+                    if ($child->can_control_visibility()) {
+                        $child->set_hidden($hidden, $cascade);
+                    }
                 }
             }
 

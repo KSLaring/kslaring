@@ -51,7 +51,7 @@
     $PAGE->set_url('/error/');
     $PAGE->set_title($site->fullname .':Error');
     $PAGE->set_heading($site->fullname .': Error 404');
-    $PAGE->set_context(get_system_context());
+    $PAGE->set_context(context_system::instance());
     $PAGE->navbar->add('Error 404 - File not Found');
     echo $OUTPUT->header();
     echo $OUTPUT->box(get_string('pagenotexist', 'error'). '<br />'.s($requesturi), 'generalbox boxaligncenter');
@@ -60,7 +60,7 @@
 ?>
         <p><?php echo get_string('pleasereport', 'error'); ?>
         <p><form action="<?php echo $CFG->wwwroot ?>/error/index.php" method="post">
-           <textarea rows="3" cols="50" name="text" id="text"></textarea><br />
+           <textarea rows="3" cols="50" name="text" id="text" spellcheck="true"></textarea><br />
            <input type="hidden" name="referer" value="<?php p($httpreferer) ?>">
            <input type="hidden" name="requested" value="<?php p($requesturi) ?>">
            <input type="submit" value="<?php echo get_string('sendmessage', 'error'); ?>">

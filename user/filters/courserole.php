@@ -46,6 +46,7 @@ class user_filter_courserole extends user_filter_type {
         $objs[] =& $mform->createElement('select', $this->_name .'_ct', null, $this->get_course_categories());
         $objs[] =& $mform->createElement('text', $this->_name, null);
         $grp =& $mform->addElement('group', $this->_name.'_grp', $this->_label, $objs, '', false);
+        $mform->setType($this->_name, PARAM_ALPHANUMEXT);
         if ($this->_advanced) {
             $mform->setAdvanced($this->_name.'_grp');
         }
@@ -129,8 +130,8 @@ class user_filter_courserole extends user_filter_type {
         $a->label = $this->_label;
 
         if ($roleid) {
-            $rolename = $DB->get_field('role', 'name', array('id'=>$roleid));
-            $a->rolename = '"'.format_string($rolename).'"';
+            $role = $DB->get_record('role', array('id'=>$roleid));
+            $a->rolename = '"'.role_get_name($role).'"';
         } else {
             $a->rolename = get_string('anyrole', 'filters');
         }

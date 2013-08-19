@@ -43,6 +43,9 @@ class phpunit_util extends testing_util {
     /** @var phpunit_message_sink alternative target for moodle messaging */
     protected static $messagesink = null;
 
+    /** @var phpunit_message_sink alternative target for moodle messaging */
+    protected static $eventsink = null;
+
     /**
      * @var array Files to skip when resetting dataroot folder
      */
@@ -69,7 +72,7 @@ class phpunit_util extends testing_util {
             initialise_cfg();
             return;
         }
-        if ($dbhash !== self::get_version_hash()) {
+        if ($dbhash !== core_component::get_all_versions_hash()) {
             // do not set CFG - the only way forward is to drop and reinstall
             return;
         }
@@ -83,14 +86,20 @@ class phpunit_util extends testing_util {
      * Note: this is relatively slow (cca 2 seconds for pg and 7 for mysql) - please use with care!
      *
      * @static
-     * @param bool $logchanges log changes in global state and database in error log
+     * @param bool $detectchanges
+     *      true  - changes in global state and database are reported as errors
+     *      false - no errors reported
+     *      null  - only critical problems are reported as errors
      * @return void
      */
-    public static function reset_all_data($logchanges = false) {
+    public static function reset_all_data($detectchanges = false) {
         global $DB, $CFG, $USER, $SITE, $COURSE, $PAGE, $OUTPUT, $SESSION;
 
         // Stop any message redirection.
         phpunit_util::stop_message_redirection();
+
+        // Stop any message redirection.
+        phpunit_util::stop_event_redirection();
 
         // Release memory and indirectly call destroy() methods to release resource handles, etc.
         gc_collect_cycles();
@@ -110,7 +119,7 @@ class phpunit_util extends testing_util {
         $resetdb = self::reset_database();
         $warnings = array();
 
-        if ($logchanges) {
+        if ($detectchanges === true) {
             if ($resetdb) {
                 $warnings[] = 'Warning: unexpected database modification, resetting DB state';
             }
@@ -139,12 +148,28 @@ class phpunit_util extends testing_util {
             if ($COURSE->id != $oldsite->id) {
                 $warnings[] = 'Warning: unexpected change of $COURSE';
             }
+
+        }
+
+        if (ini_get('max_execution_time') != 0) {
+            // This is special warning for all resets because we do not want any
+            // libraries to mess with timeouts unintentionally.
+            // Our PHPUnit integration is not supposed to change it either.
+
+            if ($detectchanges !== false) {
+                $warnings[] = 'Warning: max_execution_time was changed to '.ini_get('max_execution_time');
+            }
+            set_time_limit(0);
         }
 
         // restore original globals
         $_SERVER = self::get_global_backup('_SERVER');
         $CFG = self::get_global_backup('CFG');
         $SITE = self::get_global_backup('SITE');
+        $_GET = array();
+        $_POST = array();
+        $_FILES = array();
+        $_REQUEST = array();
         $COURSE = $SITE;
 
         // reinitialise following globals
@@ -163,11 +188,12 @@ class phpunit_util extends testing_util {
         session_set_user($user);
 
         // reset all static caches
+        \core\event\manager::phpunit_reset();
         accesslib_clear_all_caches(true);
         get_string_manager()->reset_caches(true);
         reset_text_filters_cache(true);
         events_get_handlers('reset');
-        textlib::reset_caches();
+        core_text::reset_caches();
         if (class_exists('repository')) {
             repository::reset_caches();
         }
@@ -437,10 +463,10 @@ class phpunit_util extends testing_util {
 
         $suites = '';
 
-        $plugintypes = get_plugin_types();
+        $plugintypes = core_component::get_plugin_types();
         ksort($plugintypes);
         foreach ($plugintypes as $type=>$unused) {
-            $plugs = get_plugin_list($type);
+            $plugs = core_component::get_plugin_list($type);
             ksort($plugs);
             foreach ($plugs as $plug=>$fullplug) {
                 if (!file_exists("$fullplug/tests/")) {
@@ -639,6 +665,59 @@ class phpunit_util extends testing_util {
     public static function message_sent($message) {
         if (self::$messagesink) {
             self::$messagesink->add_message($message);
+        }
+    }
+
+    /**
+     * Start event redirection.
+     *
+     * @private
+     * Note: Do not call directly from tests,
+     *       use $sink = $this->redirectEvents() instead.
+     *
+     * @return phpunit_event_sink
+     */
+    public static function start_event_redirection() {
+        if (self::$eventsink) {
+            self::stop_event_redirection();
+        }
+        self::$eventsink = new phpunit_event_sink();
+        return self::$eventsink;
+    }
+
+    /**
+     * End event redirection.
+     *
+     * @private
+     * Note: Do not call directly from tests,
+     *       use $sink->close() instead.
+     */
+    public static function stop_event_redirection() {
+        self::$eventsink = null;
+    }
+
+    /**
+     * Are events redirected to some sink?
+     *
+     * Note: to be called from \core\event\base only!
+     *
+     * @private
+     * @return bool
+     */
+    public static function is_redirecting_events() {
+        return !empty(self::$eventsink);
+    }
+
+    /**
+     * To be called from \core\event\base only!
+     *
+     * @private
+     * @param \core\event\base $event record from event_read table
+     * @return bool true means send event, false means event "sent" to sink.
+     */
+    public static function event_triggered(\core\event\base $event) {
+        if (self::$eventsink) {
+            self::$eventsink->add_event($event);
         }
     }
 }

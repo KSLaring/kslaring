@@ -172,7 +172,7 @@ class course_modinfo extends stdClass {
                 $modnamesused[$mod->modname] = $modnames[$mod->modname];
             }
         }
-        collatorlib::asort($modnamesused);
+        core_collator::asort($modnamesused);
         return $modnamesused;
     }
 
@@ -275,7 +275,7 @@ class course_modinfo extends stdClass {
 
         // Load sectioncache field into memory as PHP object and check it's valid
         $sectioncache = unserialize($course->sectioncache);
-        if (!is_array($sectioncache) || empty($sectioncache)) {
+        if (!is_array($sectioncache)) {
             // hmm, something is wrong - let's fix it
             rebuild_course_cache($course->id);
             $course->sectioncache = $DB->get_field('course', 'sectioncache', array('id'=>$course->id));
@@ -288,7 +288,7 @@ class course_modinfo extends stdClass {
         }
 
         // If we haven't already preloaded contexts for the course, do it now
-        preload_course_contexts($course->id);
+        context_helper::preload_course($course->id);
 
         // Loop through each piece of module data, constructing it
         $modexists = array();
@@ -1203,7 +1203,8 @@ class cm_info extends stdClass {
         }
 
         // Check group membership.
-        if ($this->is_user_access_restricted_by_group()) {
+        if ($this->is_user_access_restricted_by_group() ||
+                $this->is_user_access_restricted_by_capability()) {
 
              $this->uservisible = false;
             // Ensure activity is completely hidden from the user.
@@ -1232,6 +1233,23 @@ class cm_info extends stdClass {
             }
         }
         return false;
+    }
+
+    /**
+     * Checks whether mod/...:view capability restricts the current user's access.
+     *
+     * @return bool True if the user access is restricted.
+     */
+    public function is_user_access_restricted_by_capability() {
+        $capability = 'mod/' . $this->modname . ':view';
+        $capabilityinfo = get_capability_info($capability);
+        if (!$capabilityinfo) {
+            // Capability does not exist, no one is prevented from seeing the activity.
+            return false;
+        }
+
+        // You are blocked if you don't have the capability.
+        return !has_capability($capability, context_module::instance($this->id));
     }
 
     /**
@@ -1331,11 +1349,6 @@ class cm_info extends stdClass {
  */
 function get_fast_modinfo($courseorid, $userid = 0, $resetonly = false) {
     global $CFG, $USER;
-    require_once($CFG->dirroot.'/course/lib.php');
-
-    if (!empty($CFG->enableavailability)) {
-        require_once($CFG->libdir.'/conditionlib.php');
-    }
 
     static $cache = array();
 
@@ -1344,6 +1357,11 @@ function get_fast_modinfo($courseorid, $userid = 0, $resetonly = false) {
         debugging("Using the string 'reset' as the first argument of get_fast_modinfo() is deprecated. Use get_fast_modinfo(0,0,true) instead.", DEBUG_DEVELOPER);
         $courseorid = 0;
         $resetonly = true;
+    }
+
+    // Function get_fast_modinfo() can never be called during upgrade unless it is used for clearing cache only.
+    if (!$resetonly) {
+        upgrade_ensure_not_running();
     }
 
     if (is_object($courseorid)) {
@@ -1396,8 +1414,10 @@ function get_fast_modinfo($courseorid, $userid = 0, $resetonly = false) {
     if (count($cache) > MAX_MODINFO_CACHE_SIZE) {
         reset($cache);
         $key = key($cache);
-        unset($cache[$key]->instances);
-        unset($cache[$key]->cms);
+        // Unsetting static variable in PHP is percular, it removes the reference,
+        // but data remain in memory. Prior to unsetting, the varable needs to be
+        // set to empty to remove its remains from memory.
+        $cache[$key] = '';
         unset($cache[$key]);
     }
 
@@ -1412,6 +1432,11 @@ function get_fast_modinfo($courseorid, $userid = 0, $resetonly = false) {
 function rebuild_course_cache($courseid=0, $clearonly=false) {
     global $COURSE, $SITE, $DB, $CFG;
 
+    // Function rebuild_course_cache() can not be called during upgrade unless it's clear only.
+    if (!$clearonly && !upgrade_ensure_not_running(true)) {
+        $clearonly = true;
+    }
+
     // Destroy navigation caches
     navigation_cache::destroy_volatile_caches();
 
@@ -1422,8 +1447,7 @@ function rebuild_course_cache($courseid=0, $clearonly=false) {
 
     if ($clearonly) {
         if (empty($courseid)) {
-            $DB->set_field('course', 'modinfo', null);
-            $DB->set_field('course', 'sectioncache', null);
+            $DB->execute('UPDATE {course} set modinfo = ?, sectioncache = ?', array(null, null));
         } else {
             // Clear both fields in one update
             $resetobj = (object)array('id' => $courseid, 'modinfo' => null, 'sectioncache' => null);
@@ -1701,6 +1725,7 @@ class section_info implements IteratorAggregate {
      */
     public function __construct($data, $number, $courseid, $sequence, $modinfo, $userid) {
         global $CFG;
+        require_once($CFG->dirroot.'/course/lib.php');
 
         // Data that is always present
         $this->_id = $data->id;
@@ -1738,6 +1763,7 @@ class section_info implements IteratorAggregate {
 
         // Availability data
         if (!empty($CFG->enableavailability)) {
+            require_once($CFG->libdir. '/conditionlib.php');
             // Get availability information
             $ci = new condition_info_section($this);
             $this->_available = $ci->is_available($this->_availableinfo, true,

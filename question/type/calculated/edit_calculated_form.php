@@ -78,6 +78,7 @@ class qtype_calculated_edit_form extends qtype_numerical_edit_form {
         $tolerance = $answeroptions[1];
 
         // Update Answer options group to contain only answer and grade fields.
+        $answeroptions[0]->setSize(55);
         $answeroptions = array($answeroptions[0], $answeroptions[2]);
         $repeated[0]->setElements($answeroptions);
 
@@ -130,6 +131,7 @@ class qtype_calculated_edit_form extends qtype_numerical_edit_form {
         $mform->addElement('hidden', 'initialcategory', 1);
         $mform->addElement('hidden', 'reload', 1);
         $mform->setType('initialcategory', PARAM_INT);
+        $mform->setType('reload', PARAM_BOOL);
         $html2 = $this->qtypeobj->print_dataset_definitions_category($this->question);
         $mform->insertElementBefore(
                 $mform->createElement('static', 'listcategory', $label, $html2), 'name');
@@ -146,7 +148,7 @@ class qtype_calculated_edit_form extends qtype_numerical_edit_form {
                 $mform->createElement('submit', $addfieldsname, $addstring), 'listcategory');
         $mform->registerNoSubmitButton('createoptionbutton');
 
-        // Editing as regular.
+        // Editing as regular question.
         $mform->setType('single', PARAM_INT);
 
         $mform->addElement('hidden', 'shuffleanswers', '1');

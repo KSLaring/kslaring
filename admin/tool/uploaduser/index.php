@@ -497,6 +497,7 @@ if ($formdata = $mform2->is_cancelled()) {
 
             $upt->track('username', html_writer::link(new moodle_url('/user/profile.php', array('id'=>$existinguser->id)), s($existinguser->username)), 'normal', false);
             $upt->track('suspended', $stryesnooptions[$existinguser->suspended] , 'normal', false);
+            $upt->track('auth', $existinguser->auth, 'normal', false);
 
             if (is_siteadmin($user->id)) {
                 $upt->track('status', $strusernotupdatedadmin, 'error');
@@ -509,8 +510,6 @@ if ($formdata = $mform2->is_cancelled()) {
 
             //load existing profile data
             profile_load_data($existinguser);
-
-            $upt->track('auth', $existinguser->auth, 'normal', false);
 
             $doupdate = false;
             $dologout = false;
@@ -900,7 +899,28 @@ if ($formdata = $mform2->is_cancelled()) {
                 }
             }
 
-            if ($manual and $manualcache[$courseid]) {
+            if ($courseid == SITEID) {
+                // Technically frontpage does not have enrolments, but only role assignments,
+                // let's not invent new lang strings here for this rarely used feature.
+
+                if (!empty($user->{'role'.$i})) {
+                    $addrole = $user->{'role'.$i};
+                    if (array_key_exists($addrole, $rolecache)) {
+                        $rid = $rolecache[$addrole]->id;
+                    } else {
+                        $upt->track('enrolments', get_string('unknownrole', 'error', s($addrole)), 'error');
+                        continue;
+                    }
+
+                    role_assign($rid, $user->id, context_course::instance($courseid));
+
+                    $a = new stdClass();
+                    $a->course = $shortname;
+                    $a->role   = $rolecache[$rid]->name;
+                    $upt->track('enrolments', get_string('enrolledincourserole', 'enrol_manual', $a));
+                }
+
+            } else if ($manual and $manualcache[$courseid]) {
 
                 // find role
                 $rid = false;
@@ -1090,9 +1110,6 @@ while ($linenum <= $previewrows and $fields = $cir->next()) {
 
     if (isset($rowcols['city'])) {
         $rowcols['city'] = trim($rowcols['city']);
-        if (empty($rowcols['city'])) {
-            $rowcols['status'][] = get_string('fieldrequired', 'error', 'city');
-        }
     }
     // Check if rowcols have custom profile field with correct data and update error state.
     $noerror = uu_check_custom_profile_data($rowcols) && $noerror;

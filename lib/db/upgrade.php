@@ -1460,7 +1460,7 @@ function xmldb_main_upgrade($oldversion) {
 
     if ($oldversion < 2012111200.01) {
         // Force the rebuild of the cache of every courses, some cached information could contain wrong icon references.
-        rebuild_course_cache();
+        $DB->execute('UPDATE {course} set modinfo = ?, sectioncache = ?', array(null, null));
 
         // Main savepoint reached.
         upgrade_main_savepoint(true, 2012111200.01);
@@ -1524,7 +1524,7 @@ function xmldb_main_upgrade($oldversion) {
         upgrade_main_savepoint(true, 2012120300.04);
     }
 
-    if ($oldversion < 2012120300.07) {
+    if ($oldversion < 2012123000.00) {
         // Purge removed module filters and all their settings.
 
         $tables = array('filter_active', 'filter_config');
@@ -1561,7 +1561,7 @@ function xmldb_main_upgrade($oldversion) {
         unset($filter);
 
         // Main savepoint reached.
-        upgrade_main_savepoint(true, 2012120300.07);
+        upgrade_main_savepoint(true, 2012123000.00);
     }
 
     if ($oldversion < 2013021100.01) {
@@ -1665,7 +1665,7 @@ function xmldb_main_upgrade($oldversion) {
         $DB->delete_records('course_sections_avail_fields', array('userfield' => 'interests'));
         $DB->delete_records('course_modules_avail_fields', array('userfield' => 'interests'));
         // Clear course cache (will be rebuilt on first visit) in case of changes to these.
-        rebuild_course_cache(0, true);
+        $DB->execute('UPDATE {course} set modinfo = ?, sectioncache = ?', array(null, null));
 
         upgrade_main_savepoint(true, 2013022600.00);
     }
@@ -1988,6 +1988,343 @@ function xmldb_main_upgrade($oldversion) {
 
         // Main savepoint reached.
         upgrade_main_savepoint(true, 2013040300.01);
+    }
+
+    if ($oldversion < 2013041200.00) {
+        // MDL-29877 Some bad restores created grade items with no category information.
+        $sql = "UPDATE {grade_items}
+                   SET categoryid = courseid
+                 WHERE itemtype <> 'course' and itemtype <> 'category'
+                       AND categoryid IS NULL";
+        $DB->execute($sql);
+        upgrade_main_savepoint(true, 2013041200.00);
+    }
+
+    if ($oldversion < 2013041600.00) {
+        // Copy constants from /course/lib.php instead of including the whole library:
+        $c = array( 'FRONTPAGENEWS'                 => 0,
+                    'FRONTPAGECOURSELIST'           => 1,
+                    'FRONTPAGECATEGORYNAMES'        => 2,
+                    'FRONTPAGETOPICONLY'            => 3,
+                    'FRONTPAGECATEGORYCOMBO'        => 4,
+                    'FRONTPAGEENROLLEDCOURSELIST'   => 5,
+                    'FRONTPAGEALLCOURSELIST'        => 6,
+                    'FRONTPAGECOURSESEARCH'         => 7);
+        // Update frontpage settings $CFG->frontpage and $CFG->frontpageloggedin. In 2.4 there was too much of hidden logic about them.
+        // This script tries to make sure that with the new (more user-friendly) frontpage settings the frontpage looks as similar as possible to what it was before upgrade.
+        $ncourses = $DB->count_records('course');
+        foreach (array('frontpage', 'frontpageloggedin') as $configkey) {
+            if ($frontpage = explode(',', $CFG->{$configkey})) {
+                $newfrontpage = array();
+                foreach ($frontpage as $v) {
+                    switch ($v) {
+                        case $c['FRONTPAGENEWS']:
+                            // Not related to course listings, leave as it is.
+                            $newfrontpage[] = $c['FRONTPAGENEWS'];
+                            break;
+                        case $c['FRONTPAGECOURSELIST']:
+                            if ($configkey === 'frontpageloggedin' && empty($CFG->disablemycourses)) {
+                                // In 2.4 unless prohibited in config, the "list of courses" was considered "list of enrolled courses" plus course search box.
+                                $newfrontpage[] = $c['FRONTPAGEENROLLEDCOURSELIST'];
+                            } else if ($ncourses <= 200) {
+                                // Still list of courses was only displayed in there were less than 200 courses in system. Otherwise - search box only.
+                                $newfrontpage[] = $c['FRONTPAGEALLCOURSELIST'];
+                                break; // skip adding search box
+                            }
+                            if (!in_array($c['FRONTPAGECOURSESEARCH'], $newfrontpage)) {
+                                $newfrontpage[] = $c['FRONTPAGECOURSESEARCH'];
+                            }
+                            break;
+                        case $c['FRONTPAGECATEGORYNAMES']:
+                            // In 2.4 search box was displayed automatically after categories list. In 2.5 it is displayed as a separate setting.
+                            $newfrontpage[] = $c['FRONTPAGECATEGORYNAMES'];
+                            if (!in_array($c['FRONTPAGECOURSESEARCH'], $newfrontpage)) {
+                                $newfrontpage[] = $c['FRONTPAGECOURSESEARCH'];
+                            }
+                            break;
+                        case $c['FRONTPAGECATEGORYCOMBO']:
+                            $maxcourses = empty($CFG->numcoursesincombo) ? 500 : $CFG->numcoursesincombo;
+                            // In 2.4 combo list was not displayed if there are more than $CFG->numcoursesincombo courses in the system.
+                            if ($ncourses < $maxcourses) {
+                                $newfrontpage[] = $c['FRONTPAGECATEGORYCOMBO'];
+                            }
+                            if (!in_array($c['FRONTPAGECOURSESEARCH'], $newfrontpage)) {
+                                $newfrontpage[] = $c['FRONTPAGECOURSESEARCH'];
+                            }
+                            break;
+                    }
+                }
+                set_config($configkey, join(',', $newfrontpage));
+            }
+        }
+        // $CFG->numcoursesincombo no longer affects whether the combo list is displayed. Setting is deprecated.
+        unset_config('numcoursesincombo');
+
+        upgrade_main_savepoint(true, 2013041600.00);
+    }
+
+    if ($oldversion < 2013041601.00) {
+        // Create a new 'badge_external' table first.
+        // Define table 'badge_external' to be created.
+        $table = new xmldb_table('badge_external');
+
+        // Adding fields to table 'badge_external'.
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null, null);
+        $table->add_field('backpackid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null, 'id');
+        $table->add_field('collectionid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null, 'backpackid');
+
+        // Adding keys to table 'badge_external'.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+        $table->add_key('fk_backpackid', XMLDB_KEY_FOREIGN, array('backpackid'), 'badge_backpack', array('id'));
+
+        // Conditionally launch create table for 'badge_external'.
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        // Perform user data migration.
+        $usercollections = $DB->get_records('badge_backpack');
+        foreach ($usercollections as $usercollection) {
+            $collection = new stdClass();
+            $collection->backpackid = $usercollection->id;
+            $collection->collectionid = $usercollection->backpackgid;
+            $DB->insert_record('badge_external', $collection);
+        }
+
+        // Finally, drop the column.
+        // Define field backpackgid to be dropped from 'badge_backpack'.
+        $table = new xmldb_table('badge_backpack');
+        $field = new xmldb_field('backpackgid');
+
+        // Conditionally launch drop field backpackgid.
+        if ($dbman->field_exists($table, $field)) {
+            $dbman->drop_field($table, $field);
+        }
+
+        // Main savepoint reached.
+        upgrade_main_savepoint(true, 2013041601.00);
+    }
+
+    if ($oldversion < 2013041601.01) {
+        // Changing the default of field descriptionformat on table user to 1.
+        $table = new xmldb_table('user');
+        $field = new xmldb_field('descriptionformat', XMLDB_TYPE_INTEGER, '2', null, XMLDB_NOTNULL, null, '1', 'description');
+
+        // Launch change of default for field descriptionformat.
+        $dbman->change_field_default($table, $field);
+
+        // Main savepoint reached.
+        upgrade_main_savepoint(true, 2013041601.01);
+    }
+
+    if ($oldversion < 2013041900.00) {
+        require_once($CFG->dirroot . '/cache/locallib.php');
+        // The features bin needs updating.
+        cache_config_writer::update_default_config_stores();
+        // Main savepoint reached.
+        upgrade_main_savepoint(true, 2013041900.00);
+    }
+
+    if ($oldversion < 2013042300.00) {
+        // Adding index to unreadmessageid field of message_working table (MDL-34933)
+        $table = new xmldb_table('message_working');
+        $index = new xmldb_index('unreadmessageid_idx', XMLDB_INDEX_NOTUNIQUE, array('unreadmessageid'));
+
+        // Conditionally launch add index unreadmessageid
+        if (!$dbman->index_exists($table, $index)) {
+            $dbman->add_index($table, $index);
+        }
+
+        // Main savepoint reached.
+        upgrade_main_savepoint(true, 2013042300.00);
+    }
+
+    // Moodle v2.5.0 release upgrade line.
+    // Put any upgrade step following this.
+
+    if ($oldversion < 2013051400.01) {
+        // Fix incorrect cc-nc url. Unfortunately the license 'plugins' do
+        // not give a mechanism to do this.
+
+        $sql = "UPDATE {license}
+                   SET source = :url, version = :newversion
+                 WHERE shortname = :shortname AND version = :oldversion";
+
+        $params = array(
+            'url' => 'http://creativecommons.org/licenses/by-nc/3.0/',
+            'shortname' => 'cc-nc',
+            'newversion' => '2013051500',
+            'oldversion' => '2010033100'
+        );
+
+        $DB->execute($sql, $params);
+
+        // Main savepoint reached.
+        upgrade_main_savepoint(true, 2013051400.01);
+    }
+
+    if ($oldversion < 2013061400.01) {
+        // Clean up old tokens which haven't been deleted.
+        $DB->execute("DELETE FROM {user_private_key} WHERE NOT EXISTS
+                         (SELECT 'x' FROM {user} WHERE deleted = 0 AND id = userid)");
+
+        // Main savepoint reached.
+        upgrade_main_savepoint(true, 2013061400.01);
+    }
+
+    if ($oldversion < 2013061700.00) {
+        // MDL-40103: Remove unused template tables from the database.
+        // These are now created inline with xmldb_table.
+
+        $tablestocleanup = array('temp_enroled_template','temp_log_template','backup_files_template','backup_ids_template');
+        $dbman = $DB->get_manager();
+
+        foreach ($tablestocleanup as $table) {
+            $xmltable = new xmldb_table($table);
+            if ($dbman->table_exists($xmltable)) {
+                $dbman->drop_table($xmltable);
+            }
+        }
+
+        // Main savepoint reached.
+        upgrade_main_savepoint(true, 2013061700.00);
+    }
+
+    if ($oldversion < 2013070800.00) {
+
+        // Remove orphan repository instances.
+        if ($DB->get_dbfamily() === 'mysql') {
+            $sql = "DELETE {repository_instances} FROM {repository_instances}
+                    LEFT JOIN {context} ON {context}.id = {repository_instances}.contextid
+                    WHERE {context}.id IS NULL";
+        } else {
+            $sql = "DELETE FROM {repository_instances}
+                    WHERE NOT EXISTS (
+                        SELECT 'x' FROM {context}
+                        WHERE {context}.id = {repository_instances}.contextid)";
+        }
+        $DB->execute($sql);
+
+        // Main savepoint reached.
+        upgrade_main_savepoint(true, 2013070800.00);
+    }
+
+    if ($oldversion < 2013070800.01) {
+
+        // Define field lastnamephonetic to be added to user.
+        $table = new xmldb_table('user');
+        $field = new xmldb_field('lastnamephonetic', XMLDB_TYPE_CHAR, '255', null, null, null, null, 'imagealt');
+        $index = new xmldb_index('lastnamephonetic', XMLDB_INDEX_NOTUNIQUE, array('lastnamephonetic'));
+
+        // Conditionally launch add field lastnamephonetic.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+            $dbman->add_index($table, $index);
+        }
+
+        // Define field firstnamephonetic to be added to user.
+        $table = new xmldb_table('user');
+        $field = new xmldb_field('firstnamephonetic', XMLDB_TYPE_CHAR, '255', null, null, null, null, 'lastnamephonetic');
+        $index = new xmldb_index('firstnamephonetic', XMLDB_INDEX_NOTUNIQUE, array('firstnamephonetic'));
+
+        // Conditionally launch add field firstnamephonetic.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+            $dbman->add_index($table, $index);
+        }
+
+        // Define field alternatename to be added to user.
+        $table = new xmldb_table('user');
+        $field = new xmldb_field('middlename', XMLDB_TYPE_CHAR, '255', null, null, null, null, 'firstnamephonetic');
+        $index = new xmldb_index('middlename', XMLDB_INDEX_NOTUNIQUE, array('middlename'));
+
+        // Conditionally launch add field firstnamephonetic.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+            $dbman->add_index($table, $index);
+        }
+
+        // Define field alternatename to be added to user.
+        $table = new xmldb_table('user');
+        $field = new xmldb_field('alternatename', XMLDB_TYPE_CHAR, '255', null, null, null, null, 'middlename');
+        $index = new xmldb_index('alternatename', XMLDB_INDEX_NOTUNIQUE, array('alternatename'));
+
+        // Conditionally launch add field alternatename.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+            $dbman->add_index($table, $index);
+        }
+
+        // Main savepoint reached.
+        upgrade_main_savepoint(true, 2013070800.01);
+    }
+
+    if ($oldversion < 2013071500.01) {
+        // The enrol_authorize plugin has been removed, if there are no records
+        // and no plugin files then remove the plugin data.
+        $enrolauthorize = new xmldb_table('enrol_authorize');
+        $enrolauthorizerefunds = new xmldb_table('enrol_authorize_refunds');
+
+        if (!file_exists($CFG->dirroot.'/enrol/authorize/version.php') &&
+            $dbman->table_exists($enrolauthorize) &&
+            $dbman->table_exists($enrolauthorizerefunds)) {
+
+            $enrolauthorizecount = $DB->count_records('enrol_authorize');
+            $enrolauthorizerefundcount = $DB->count_records('enrol_authorize_refunds');
+
+            if (empty($enrolauthorizecount) && empty($enrolauthorizerefundcount)) {
+
+                // Drop the database tables.
+                $dbman->drop_table($enrolauthorize);
+                $dbman->drop_table($enrolauthorizerefunds);
+
+                // Drop the message provider and associated data manually.
+                $DB->delete_records('message_providers', array('component' => 'enrol_authorize'));
+                $DB->delete_records_select('config_plugins', "plugin = 'message' AND ".$DB->sql_like('name', '?', false), array("%_provider_enrol_authorize_%"));
+                $DB->delete_records_select('user_preferences', $DB->sql_like('name', '?', false), array("message_provider_enrol_authorize_%"));
+
+                // Remove capabilities.
+                capabilities_cleanup('enrol_authorize');
+
+                // Remove all other associated config.
+                unset_all_config_for_plugin('enrol_authorize');
+            }
+        }
+        upgrade_main_savepoint(true, 2013071500.01);
+    }
+
+    if ($oldversion < 2013071500.02) {
+        // Define field attachment to be dropped from badge.
+        $table = new xmldb_table('badge');
+        $field = new xmldb_field('image');
+
+        // Conditionally launch drop field eventtype.
+        if ($dbman->field_exists($table, $field)) {
+            $dbman->drop_field($table, $field);
+        }
+
+        upgrade_main_savepoint(true, 2013071500.02);
+    }
+
+    if ($oldversion < 2013072600.01) {
+        upgrade_mssql_nvarcharmax();
+        upgrade_mssql_varbinarymax();
+
+        upgrade_main_savepoint(true, 2013072600.01);
+    }
+
+    if ($oldversion < 2013081200.00) {
+        // Define field uploadfiles to be added to external_services.
+        $table = new xmldb_table('external_services');
+        $field = new xmldb_field('uploadfiles', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, '0', 'downloadfiles');
+
+        // Conditionally launch add field uploadfiles.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Main savepoint reached.
+        upgrade_main_savepoint(true, 2013081200.00);
     }
 
     return true;

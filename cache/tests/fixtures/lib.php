@@ -35,6 +35,7 @@ defined('MOODLE_INTERNAL') || die();
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class cache_config_phpunittest extends cache_config_writer {
+
     /**
      * Adds a definition to the stack
      * @param string $area
@@ -55,6 +56,14 @@ class cache_config_phpunittest extends cache_config_writer {
             }
         }
         $this->configdefinitions[$area] = $properties;
+    }
+
+    /**
+     * Removes a definition.
+     * @param string $name
+     */
+    public function phpunit_remove_definition($name) {
+        unset($this->configdefinitions[$name]);
     }
 
     /**
@@ -217,6 +226,13 @@ class cache_phpunit_application extends cache_application {
         return get_class($this->get_store());
     }
 
+    /**
+     * Returns all the interfaces the cache store implements.
+     * @return array
+     */
+    public function phpunit_get_store_implements() {
+        return class_implements($this->get_store());
+    }
 }
 
 /**
@@ -236,6 +252,14 @@ class cache_phpunit_session extends cache_session {
     public function phpunit_get_store_class() {
         return get_class($this->get_store());
     }
+
+    /**
+     * Returns all the interfaces the cache store implements.
+     * @return array
+     */
+    public function phpunit_get_store_implements() {
+        return class_implements($this->get_store());
+    }
 }
 
 /**
@@ -254,6 +278,14 @@ class cache_phpunit_request extends cache_request {
      */
     public function phpunit_get_store_class() {
         return get_class($this->get_store());
+    }
+
+    /**
+     * Returns all the interfaces the cache store implements.
+     * @return array
+     */
+    public function phpunit_get_store_implements() {
+        return class_implements($this->get_store());
     }
 }
 

@@ -37,7 +37,8 @@
  *  - $CFG->dirroot  - Path to moodle's library folder on server's filesystem.
  *  - $CFG->libdir   - Path to moodle's library folder on server's filesystem.
  *  - $CFG->tempdir  - Path to moodle's temp file directory on server's filesystem.
- *  - $CFG->cachedir - Path to moodle's cache directory on server's filesystem.
+ *  - $CFG->cachedir - Path to moodle's cache directory on server's filesystem (shared by cluster nodes).
+ *  - $CFG->localcachedir - Path to moodle's local cache directory (not shared by cluster nodes).
  *
  * @global object $CFG
  * @name $CFG
@@ -107,22 +108,36 @@ if (!empty($CFG->behat_switchcompletely)) {
 // Test environment is enabled if:
 // * User has previously enabled through admin/tool/behat/cli/util.php --enable.
 // Both are required to switch to test mode
-if (!empty($CFG->behat_dataroot) && !empty($CFG->behat_prefix) && file_exists($CFG->behat_dataroot)) {
+if (!defined('BEHAT_SITE_RUNNING') && !empty($CFG->behat_dataroot) &&
+        !empty($CFG->behat_prefix) && file_exists($CFG->behat_dataroot)) {
 
     $CFG->behat_dataroot = realpath($CFG->behat_dataroot);
 
     $switchcompletely = !empty($CFG->behat_switchcompletely) && php_sapi_name() !== 'cli';
     $builtinserver = php_sapi_name() === 'cli-server';
-    $behatrunning = defined('BEHAT_RUNNING');
+    $behatrunning = defined('BEHAT_TEST');
     $testenvironmentrequested = $switchcompletely || $builtinserver || $behatrunning;
 
     // Only switch to test environment if it has been enabled.
     $testenvironmentenabled = file_exists($CFG->behat_dataroot . '/behat/test_environment_enabled.txt');
 
     if ($testenvironmentenabled && $testenvironmentrequested) {
+
+        // Constant used to inform that the behat test site is being used,
+        // this includes all the processes executed by the behat CLI command like
+        // the site reset, the steps executed by the browser drivers when simulating
+        // a user session and a real session when browsing manually to $CFG->behat_wwwroot
+        // like the browser driver does automatically.
+        // Different from BEHAT_TEST as only this last one can perform CLI
+        // actions like reset the site or use data generators.
+        define('BEHAT_SITE_RUNNING', true);
+
+        // Clean extra config.php settings.
+        require_once(__DIR__ . '/../lib/behat/lib.php');
+        behat_clean_init_config();
+
         $CFG->wwwroot = $CFG->behat_wwwroot;
         $CFG->passwordsaltmain = 'moodle';
-        $CFG->originaldataroot = $CFG->dataroot;
         $CFG->prefix = $CFG->behat_prefix;
         $CFG->dataroot = $CFG->behat_dataroot;
     }
@@ -146,6 +161,11 @@ if (!isset($CFG->cachedir)) {
     $CFG->cachedir = "$CFG->dataroot/cache";
 }
 
+// Allow overriding of localcachedir.
+if (!isset($CFG->localcachedir)) {
+    $CFG->localcachedir = "$CFG->dataroot/localcache";
+}
+
 // The current directory in PHP version 4.3.0 and above isn't necessarily the
 // directory of the script when run from the command line. The require_once()
 // would fail, so we'll have to chdir()
@@ -163,7 +183,13 @@ ini_set('precision', 14); // needed for upgrades and gradebook
 // please note it must be defined before including the config.php script
 // and in some cases you also need to set custom default exception handler
 if (!defined('NO_DEBUG_DISPLAY')) {
-    define('NO_DEBUG_DISPLAY', false);
+    if (defined('AJAX_SCRIPT') and AJAX_SCRIPT) {
+        // Moodle AJAX scripts are expected to return json data, any PHP notices or errors break it badly,
+        // developers simply must learn to watch error log.
+        define('NO_DEBUG_DISPLAY', true);
+    } else {
+        define('NO_DEBUG_DISPLAY', false);
+    }
 }
 
 // Some scripts such as upgrade may want to prevent output buffering
@@ -251,10 +277,10 @@ if (file_exists("$CFG->dataroot/climaintenance.html")) {
 
 if (CLI_SCRIPT) {
     // sometimes people use different PHP binary for web and CLI, make 100% sure they have the supported PHP version
-    if (version_compare(phpversion(), '5.3.2') < 0) {
+    if (version_compare(phpversion(), '5.3.3') < 0) {
         $phpversion = phpversion();
         // do NOT localise - lang strings would not work here and we CAN NOT move it to later place
-        echo "Moodle 2.1 or later requires at least PHP 5.3.2 (currently using version $phpversion).\n";
+        echo "Moodle 2.5 or later requires at least PHP 5.3.3 (currently using version $phpversion).\n";
         echo "Some servers may have multiple PHP versions installed, are you using the correct executable?\n";
         exit(1);
     }
@@ -266,19 +292,30 @@ if (!defined('AJAX_SCRIPT')) {
 }
 
 // File permissions on created directories in the $CFG->dataroot
-if (empty($CFG->directorypermissions)) {
+if (!isset($CFG->directorypermissions)) {
     $CFG->directorypermissions = 02777;      // Must be octal (that's why it's here)
 }
-if (empty($CFG->filepermissions)) {
+if (!isset($CFG->filepermissions)) {
     $CFG->filepermissions = ($CFG->directorypermissions & 0666); // strip execute flags
 }
-// better also set default umask because recursive mkdir() does not apply permissions recursively otherwise
-umask(0000);
+// Better also set default umask because developers often forget to include directory
+// permissions in mkdir() and chmod() after creating new files.
+if (!isset($CFG->umaskpermissions)) {
+    $CFG->umaskpermissions = (($CFG->directorypermissions & 0777) ^ 0777);
+}
+umask($CFG->umaskpermissions);
 
 // exact version of currently used yui2 and 3 library
 $CFG->yui2version = '2.9.0';
-$CFG->yui3version = '3.9.0';
+$CFG->yui3version = '3.9.1';
 
+if (!defined('MOODLE_INTERNAL')) { // Necessary because cli installer has to define it earlier.
+    /** Used by library scripts to check they are being called by Moodle. */
+    define('MOODLE_INTERNAL', true);
+}
+
+// core_component can be used in any scripts, it does not need anything else.
+require_once($CFG->libdir .'/classes/component.php');
 
 // special support for highly optimised scripts that do not need libraries and DB connection
 if (defined('ABORT_AFTER_CONFIG')) {
@@ -302,11 +339,6 @@ if (defined('ABORT_AFTER_CONFIG')) {
         require_once("$CFG->dirroot/lib/configonlylib.php");
         return;
     }
-}
-
-/** Used by library scripts to check they are being called by Moodle */
-if (!defined('MOODLE_INTERNAL')) { // necessary because cli installer has to define it earlier
-    define('MOODLE_INTERNAL', true);
 }
 
 // Early profiling start, based exclusively on config.php $CFG settings
@@ -455,6 +487,13 @@ if (!PHPUNIT_TEST or PHPUNIT_UTIL) {
     set_error_handler('default_error_handler', E_ALL | E_STRICT);
 }
 
+// Acceptance tests needs special output to capture the errors,
+// but not necessary for behat CLI command.
+if (defined('BEHAT_SITE_RUNNING') && !defined('BEHAT_TEST')) {
+    require_once(__DIR__ . '/behat/lib.php');
+    set_error_handler('behat_error_handler', E_ALL | E_STRICT);
+}
+
 // If there are any errors in the standard libraries we want to know!
 error_reporting(E_ALL | E_STRICT);
 
@@ -487,8 +526,14 @@ ini_set('include_path', $CFG->libdir.'/pear' . PATH_SEPARATOR . ini_get('include
 //please note zend library is supposed to be used only from web service protocol classes, it may be removed in future
 ini_set('include_path', $CFG->libdir.'/zend' . PATH_SEPARATOR . ini_get('include_path'));
 
+// Register our classloader, in theory somebody might want to replace it to load other hacked core classes.
+if (defined('COMPONENT_CLASSLOADER')) {
+    spl_autoload_register(COMPONENT_CLASSLOADER);
+} else {
+    spl_autoload_register('core_component::classloader');
+}
+
 // Load up standard libraries
-require_once($CFG->libdir .'/textlib.class.php');   // Functions to handle multibyte strings
 require_once($CFG->libdir .'/filterlib.php');       // Functions for filtering test as it is output
 require_once($CFG->libdir .'/ajax/ajaxlib.php');    // Functions for managing our use of JavaScript and YUI
 require_once($CFG->libdir .'/weblib.php');          // Functions relating to HTTP and content
@@ -692,7 +737,7 @@ initialise_fullme();
 // define SYSCONTEXTID in config.php if you want to save some queries,
 // after install it must match the system context record id.
 if (!defined('SYSCONTEXTID')) {
-    get_system_context();
+    context_system::instance();
 }
 
 // Defining the site - aka frontpage course
@@ -703,6 +748,7 @@ try {
     if (empty($CFG->version)) {
         $SITE = new stdClass();
         $SITE->id = 1;
+        $SITE->shortname = null;
     } else {
         throw $e;
     }

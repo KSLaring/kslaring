@@ -37,6 +37,8 @@ class coursecat implements renderable, cacheable_object, IteratorAggregate {
     /** @var coursecat stores pseudo category with id=0. Use coursecat::get(0) to retrieve */
     protected static $coursecat0;
 
+    const CACHE_COURSE_CONTACTS_TTL = 3600; // do not fetch course contacts more often than once per hour
+
     /** @var array list of all fields and their short name and default value for caching */
     protected static $coursecatfields = array(
         'id' => array('id', 0),
@@ -46,7 +48,7 @@ class coursecat implements renderable, cacheable_object, IteratorAggregate {
         'descriptionformat' => null, // not cached
         'parent' => array('pa', 0),
         'sortorder' => array('so', 0),
-        'coursecount' => null, // not cached
+        'coursecount' => array('cc', 0),
         'visible' => array('vi', 1),
         'visibleold' => null, // not cached
         'timemodified' => null, // not cached
@@ -308,14 +310,14 @@ class coursecat implements renderable, cacheable_object, IteratorAggregate {
         if (empty($data->name)) {
             throw new moodle_exception('categorynamerequired');
         }
-        if (textlib::strlen($data->name) > 255) {
+        if (core_text::strlen($data->name) > 255) {
             throw new moodle_exception('categorytoolong');
         }
         $newcategory->name = $data->name;
 
         // validate and set idnumber
         if (!empty($data->idnumber)) {
-            if (textlib::strlen($data->idnumber) > 100) {
+            if (core_text::strlen($data->idnumber) > 100) {
                 throw new moodle_exception('idnumbertoolong');
             }
             if ($DB->record_exists('course_categories', array('idnumber' => $data->idnumber))) {
@@ -425,14 +427,14 @@ class coursecat implements renderable, cacheable_object, IteratorAggregate {
         }
 
         if (!empty($data->name) && $data->name !== $this->name) {
-            if (textlib::strlen($data->name) > 255) {
+            if (core_text::strlen($data->name) > 255) {
                 throw new moodle_exception('categorytoolong');
             }
             $newcategory->name = $data->name;
         }
 
         if (isset($data->idnumber) && $data->idnumber != $this->idnumber) {
-            if (textlib::strlen($data->idnumber) > 100) {
+            if (core_text::strlen($data->idnumber) > 100) {
                 throw new moodle_exception('idnumbertoolong');
             }
             if ($DB->record_exists('course_categories', array('idnumber' => $data->idnumber))) {
@@ -668,13 +670,33 @@ class coursecat implements renderable, cacheable_object, IteratorAggregate {
             return;
         }
         $managerroles = explode(',', $CFG->coursecontact);
-        /*
-        // TODO MDL-38596, this commented code is similar to get_courses_wmanagers()
-        // It bulk-preloads course contacts for all courses BUT it does not check enrolments
+        $cache = cache::make('core', 'coursecontacts');
+        $cacheddata = $cache->get_many(array_merge(array('basic'), array_keys($courses)));
+        // check if cache was set for the current course contacts and it is not yet expired
+        if (empty($cacheddata['basic']) || $cacheddata['basic']['roles'] !== $CFG->coursecontact ||
+                $cacheddata['basic']['lastreset'] < time() - self::CACHE_COURSE_CONTACTS_TTL) {
+            // reset cache
+            $cache->purge();
+            $cache->set('basic', array('roles' => $CFG->coursecontact, 'lastreset' => time()));
+            $cacheddata = $cache->get_many(array_merge(array('basic'), array_keys($courses)));
+        }
+        $courseids = array();
+        foreach (array_keys($courses) as $id) {
+            if ($cacheddata[$id] !== false) {
+                $courses[$id]->managers = $cacheddata[$id];
+            } else {
+                $courseids[] = $id;
+            }
+        }
+
+        // $courseids now stores list of ids of courses for which we still need to retrieve contacts
+        if (empty($courseids)) {
+            return;
+        }
 
         // first build the array of all context ids of the courses and their categories
         $allcontexts = array();
-        foreach (array_keys($courses) as $id) {
+        foreach ($courseids as $id) {
             $context = context_course::instance($id);
             $courses[$id]->managers = array();
             foreach (preg_split('|/|', $context->path, 0, PREG_SPLIT_NO_EMPTY) as $ctxid) {
@@ -685,34 +707,109 @@ class coursecat implements renderable, cacheable_object, IteratorAggregate {
             }
         }
 
+        // fetch list of all users with course contact roles in any of the courses contexts or parent contexts
         list($sql1, $params1) = $DB->get_in_or_equal(array_keys($allcontexts), SQL_PARAMS_NAMED, 'ctxid');
         list($sql2, $params2) = $DB->get_in_or_equal($managerroles, SQL_PARAMS_NAMED, 'rid');
         list($sort, $sortparams) = users_order_by_sql('u');
+        $notdeleted = array('notdeleted'=>0);
+        $allnames = get_all_user_name_fields(true, 'u');
         $sql = "SELECT ra.contextid, ra.id AS raid,
                        r.id AS roleid, r.name AS rolename, r.shortname AS roleshortname,
-                       rn.name AS rolecoursealias, u.id, u.username, u.firstname, u.lastname
+                       rn.name AS rolecoursealias, u.id, u.username, $allnames
                   FROM {role_assignments} ra
                   JOIN {user} u ON ra.userid = u.id
                   JOIN {role} r ON ra.roleid = r.id
              LEFT JOIN {role_names} rn ON (rn.contextid = ra.contextid AND rn.roleid = r.id)
-                WHERE  ra.contextid ". $sql1." AND ra.roleid ". $sql2."
+                WHERE  ra.contextid ". $sql1." AND ra.roleid ". $sql2." AND u.deleted = :notdeleted
              ORDER BY r.sortorder, $sort";
-        $rs = $DB->get_recordset_sql($sql, $params1 + $params2 + $sortparams);
+        $rs = $DB->get_recordset_sql($sql, $params1 + $params2 + $notdeleted + $sortparams);
+        $checkenrolments = array();
         foreach($rs as $ra) {
             foreach ($allcontexts[$ra->contextid] as $id) {
                 $courses[$id]->managers[$ra->raid] = $ra;
+                if (!isset($checkenrolments[$id])) {
+                    $checkenrolments[$id] = array();
+                }
+                $checkenrolments[$id][] = $ra->id;
             }
         }
         $rs->close();
-        */
-        list($sort, $sortparams) = users_order_by_sql('u');
-        foreach (array_keys($courses) as $id) {
-            $context = context_course::instance($id);
-            $courses[$id]->managers = get_role_users($managerroles, $context, true,
-                'ra.id AS raid, u.id, u.username, u.firstname, u.lastname, rn.name AS rolecoursealias,
-                 r.name AS rolename, r.sortorder, r.id AS roleid, r.shortname AS roleshortname',
-                'r.sortorder ASC, ' . $sort, false, '', '', '', '', $sortparams);
+
+        // remove from course contacts users who are not enrolled in the course
+        $enrolleduserids = self::ensure_users_enrolled($checkenrolments);
+        foreach ($checkenrolments as $id => $userids) {
+            if (empty($enrolleduserids[$id])) {
+                $courses[$id]->managers = array();
+            } else if ($notenrolled = array_diff($userids, $enrolleduserids[$id])) {
+                foreach ($courses[$id]->managers as $raid => $ra) {
+                    if (in_array($ra->id, $notenrolled)) {
+                        unset($courses[$id]->managers[$raid]);
+                    }
+                }
+            }
         }
+
+        // set the cache
+        $values = array();
+        foreach ($courseids as $id) {
+            $values[$id] = $courses[$id]->managers;
+        }
+        $cache->set_many($values);
+    }
+
+    /**
+     * Verify user enrollments for multiple course-user combinations
+     *
+     * @param array $courseusers array where keys are course ids and values are array
+     *     of users in this course whose enrolment we wish to verify
+     * @return array same structure as input array but values list only users from input
+     *     who are enrolled in the course
+     */
+    protected static function ensure_users_enrolled($courseusers) {
+        global $DB;
+        // If the input array is too big, split it into chunks
+        $maxcoursesinquery = 20;
+        if (count($courseusers) > $maxcoursesinquery) {
+            $rv = array();
+            for ($offset = 0; $offset < count($courseusers); $offset += $maxcoursesinquery) {
+                $chunk = array_slice($courseusers, $offset, $maxcoursesinquery, true);
+                $rv = $rv + self::ensure_users_enrolled($chunk);
+            }
+            return $rv;
+        }
+
+        // create a query verifying valid user enrolments for the number of courses
+        $sql = "SELECT DISTINCT e.courseid, ue.userid
+          FROM {user_enrolments} ue
+          JOIN {enrol} e ON e.id = ue.enrolid
+          WHERE ue.status = :active
+            AND e.status = :enabled
+            AND ue.timestart < :now1 AND (ue.timeend = 0 OR ue.timeend > :now2)";
+        $now = round(time(), -2); // rounding helps caching in DB
+        $params = array('enabled' => ENROL_INSTANCE_ENABLED,
+            'active' => ENROL_USER_ACTIVE,
+            'now1' => $now, 'now2' => $now);
+        $cnt = 0;
+        $subsqls = array();
+        $enrolled = array();
+        foreach ($courseusers as $id => $userids) {
+            $enrolled[$id] = array();
+            if (count($userids)) {
+                list($sql2, $params2) = $DB->get_in_or_equal($userids, SQL_PARAMS_NAMED, 'userid'.$cnt.'_');
+                $subsqls[] = "(e.courseid = :courseid$cnt AND ue.userid ".$sql2.")";
+                $params = $params + array('courseid'.$cnt => $id) + $params2;
+                $cnt++;
+            }
+        }
+        if (count($subsqls)) {
+            $sql .= "AND (". join(' OR ', $subsqls).")";
+            $rs = $DB->get_recordset_sql($sql, $params);
+            foreach ($rs as $record) {
+                $enrolled[$record->courseid][] = $record->userid;
+            }
+            $rs->close();
+        }
+        return $enrolled;
     }
 
     /**
@@ -737,7 +834,7 @@ class coursecat implements renderable, cacheable_object, IteratorAggregate {
             $fields[] = 'c.summary';
             $fields[] = 'c.summaryformat';
         } else {
-            $fields[] = $DB->sql_substr('c.summary', 1, 1). ' hassummary';
+            $fields[] = $DB->sql_substr('c.summary', 1, 1). ' as hassummary';
         }
         $sql = "SELECT ". join(',', $fields). ", $ctxselect
                 FROM {course} c
@@ -824,50 +921,23 @@ class coursecat implements renderable, cacheable_object, IteratorAggregate {
                 }
             }
         }
-        // sorting by one field - use collatorlib
+        // sorting by one field - use core_collator
         if (count($sortfields) == 1) {
             $property = key($sortfields);
             if (in_array($property, array('sortorder', 'id', 'visible', 'parent', 'depth'))) {
-                $sortflag = collatorlib::SORT_NUMERIC;
+                $sortflag = core_collator::SORT_NUMERIC;
             } else if (in_array($property, array('idnumber', 'displayname', 'name', 'shortname', 'fullname'))) {
-                $sortflag = collatorlib::SORT_STRING;
+                $sortflag = core_collator::SORT_STRING;
             } else {
-                $sortflag = collatorlib::SORT_REGULAR;
+                $sortflag = core_collator::SORT_REGULAR;
             }
-            collatorlib::asort_objects_by_property($records, $property, $sortflag);
+            core_collator::asort_objects_by_property($records, $property, $sortflag);
             if ($sortfields[$property] < 0) {
                 $records = array_reverse($records, true);
             }
             return;
         }
-        // sorting by multiple fields
-        uasort($records, function ($a, $b) use ($sortfields) {
-            foreach ($sortfields as $field => $mult) {
-                // nulls first
-                if (is_null($a->$field) && !is_null($b->$field)) {
-                    return -$mult;
-                }
-                if (is_null($b->$field) && !is_null($a->$field)) {
-                    return $mult;
-                }
-
-                if (is_string($a->$field) || is_string($b->$field)) {
-                    // string fields
-                    if ($cmp = strcoll($a->$field, $b->$field)) {
-                        return $mult * $cmp;
-                    }
-                } else {
-                    // int fields
-                    if ($a->$field > $b->$field) {
-                        return $mult;
-                    }
-                    if ($a->$field < $b->$field) {
-                        return -$mult;
-                    }
-                }
-            }
-            return 0;
-        });
+        $records = coursecat_sortable_records::sort($records, $sortfields);
     }
 
     /**
@@ -1038,7 +1108,7 @@ class coursecat implements renderable, cacheable_object, IteratorAggregate {
         if (!empty($search['search'])) {
             // search courses that have specified words in their names/summaries
             $searchterms = preg_split('|\s+|', trim($search['search']), 0, PREG_SPLIT_NO_EMPTY);
-            $searchterms = array_filter($searchterms, function ($v) { return strlen($v) > 1; } );
+            $searchterms = array_filter($searchterms, create_function('$v', 'return strlen($v) > 1;'));
             $courselist = get_courses_search($searchterms, 'c.sortorder ASC', 0, 9999999, $totalcount);
             self::sort_records($courselist, $sortfields);
             $coursecatcache->set($cachekey, array_keys($courselist));
@@ -1179,7 +1249,7 @@ class coursecat implements renderable, cacheable_object, IteratorAggregate {
         $params = array('siteid' => SITEID);
         if ($recursive) {
             if ($this->id) {
-                $context = get_category_or_system_context($this->id);
+                $context = context_coursecat::instance($this->id);
                 $where .= ' AND ctx.path like :path';
                 $params['path'] = $context->path. '/%';
             }
@@ -1330,7 +1400,7 @@ class coursecat implements renderable, cacheable_object, IteratorAggregate {
 
         // finally delete the category and it's context
         $DB->delete_records('course_categories', array('id' => $this->id));
-        delete_context(CONTEXT_COURSECAT, $this->id);
+        context_helper::delete_instance(CONTEXT_COURSECAT, $this->id);
         add_to_log(SITEID, "category", "delete", "index.php", "$this->name (ID $this->id)");
 
         cache_helper::purge_by_event('changesincoursecat');
@@ -1515,7 +1585,11 @@ class coursecat implements renderable, cacheable_object, IteratorAggregate {
             // can not move to itself or it's own child
             return false;
         }
-        return has_capability('moodle/category:manage', get_category_or_system_context($newparentcat->id));
+        if ($newparentcat->id) {
+            return has_capability('moodle/category:manage', context_coursecat::instance($newparentcat->id));
+        } else {
+            return has_capability('moodle/category:manage', context_system::instance());
+        }
     }
 
     /**
@@ -1798,9 +1872,6 @@ class coursecat implements renderable, cacheable_object, IteratorAggregate {
         // Check if we cached the complete list of user-accessible category names ($baselist) or list of ids with requried cap ($thislist).
         $basecachekey = 'catlist';
         $baselist = $coursecatcache->get($basecachekey);
-        if ($baselist !== false) {
-            $baselist = false;
-        }
         $thislist = false;
         if (!empty($requiredcapability)) {
             $requiredcapability = (array)$requiredcapability;
@@ -1825,6 +1896,7 @@ class coursecat implements renderable, cacheable_object, IteratorAggregate {
             foreach ($rs as $record) {
                 // If the category's parent is not visible to the user, it is not visible as well.
                 if (!$record->parent || isset($baselist[$record->parent])) {
+                    context_helper::preload_from_record($record);
                     $context = context_coursecat::instance($record->id);
                     if (!$record->visible && !has_capability('moodle/category:viewhiddencategories', $context)) {
                         // No cap to view category, added to neither $baselist nor $thislist
@@ -1849,7 +1921,7 @@ class coursecat implements renderable, cacheable_object, IteratorAggregate {
         } else if ($thislist === false) {
             // We have $baselist cached but not $thislist. Simplier query is used to retrieve.
             $ctxselect = context_helper::get_preload_record_columns_sql('ctx');
-            $sql = "SELECT ctx.instanceid id, $ctxselect
+            $sql = "SELECT ctx.instanceid AS id, $ctxselect
                     FROM {context} ctx WHERE ctx.contextlevel = :contextcoursecat";
             $contexts = $DB->get_records_sql($sql, array('contextcoursecat' => CONTEXT_COURSECAT));
             $thislist = array();
@@ -1963,7 +2035,7 @@ class course_in_list implements IteratorAggregate {
      *     context preloading
      */
     public function __construct(stdClass $record) {
-        context_instance_preload($record);
+        context_helper::preload_from_record($record);
         $this->record = new stdClass();
         foreach ($record as $key => $value) {
             $this->record->$key = $value;
@@ -2039,8 +2111,9 @@ class course_in_list implements IteratorAggregate {
                 $user = new stdClass();
                 $user->id = $ruser->id;
                 $user->username = $ruser->username;
-                $user->firstname = $ruser->firstname;
-                $user->lastname = $ruser->lastname;
+                foreach (get_all_user_name_fields() as $addname) {
+                    $user->$addname = $ruser->$addname;
+                }
                 $role = new stdClass();
                 $role->id = $ruser->roleid;
                 $role->name = $ruser->rolename;
@@ -2085,6 +2158,7 @@ class course_in_list implements IteratorAggregate {
             return array();
         }
         require_once($CFG->libdir. '/filestorage/file_storage.php');
+        require_once($CFG->dirroot. '/course/lib.php');
         $fs = get_file_storage();
         $context = context_course::instance($this->id);
         $files = $fs->get_area_files($context->id, 'course', 'overviewfiles', false, 'filename', false);
@@ -2094,8 +2168,11 @@ class course_in_list implements IteratorAggregate {
             if ($acceptedtypes !== '*') {
                 // filter only files with allowed extensions
                 require_once($CFG->libdir. '/filelib.php');
-                $files = array_filter($files, function ($file) use ($acceptedtypes) {
-                    return file_extension_in_typegroup($file->get_filename(), $acceptedtypes);} );
+                foreach ($files as $key => $file) {
+                    if (!file_extension_in_typegroup($file->get_filename(), $acceptedtypes)) {
+                        unset($files[$key]);
+                    }
+                }
             }
             if (count($files) > $CFG->courseoverviewfileslimit) {
                 // return no more than $CFG->courseoverviewfileslimit files
@@ -2167,5 +2244,78 @@ class course_in_list implements IteratorAggregate {
             $ret[$property] = $value;
         }
         return new ArrayIterator($ret);
+    }
+}
+
+/**
+ * An array of records that is sortable by many fields.
+ *
+ * For more info on the ArrayObject class have a look at php.net.
+ *
+ * @package    core
+ * @subpackage course
+ * @copyright  2013 Sam Hemelryk
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+class coursecat_sortable_records extends ArrayObject {
+
+    /**
+     * An array of sortable fields.
+     * Gets set temporarily when sort is called.
+     * @var array
+     */
+    protected $sortfields = array();
+
+    /**
+     * Sorts this array using the given fields.
+     *
+     * @param array $records
+     * @param array $fields
+     * @return array
+     */
+    public static function sort(array $records, array $fields) {
+        $records = new coursecat_sortable_records($records);
+        $records->sortfields = $fields;
+        $records->uasort(array($records, 'sort_by_many_fields'));
+        return $records->getArrayCopy();
+    }
+
+    /**
+     * Sorts the two records based upon many fields.
+     *
+     * This method should not be called itself, please call $sort instead.
+     * It has been marked as access private as such.
+     *
+     * @access private
+     * @param stdClass $a
+     * @param stdClass $b
+     * @return int
+     */
+    public function sort_by_many_fields($a, $b) {
+        foreach ($this->sortfields as $field => $mult) {
+            // nulls first
+            if (is_null($a->$field) && !is_null($b->$field)) {
+                return -$mult;
+            }
+            if (is_null($b->$field) && !is_null($a->$field)) {
+                return $mult;
+            }
+
+            if (is_string($a->$field) || is_string($b->$field)) {
+                // string fields
+                if ($cmp = strcoll($a->$field, $b->$field)) {
+                    return $mult * $cmp;
+                }
+            } else {
+                // int fields
+                if ($a->$field > $b->$field) {
+                    return $mult;
+                }
+                if ($a->$field < $b->$field) {
+                    return -$mult;
+                }
+            }
+        }
+        return 0;
     }
 }

@@ -56,12 +56,10 @@ $PAGE->set_url($url);
 // Make sure that the user has permissions to manage groups.
 require_login($course);
 
-$PAGE->requires->js('/group/clientlib.js');
-
 $context = context_course::instance($course->id);
-if (!has_capability('moodle/course:managegroups', $context)) {
-    redirect('/course/view.php', array('id'=>$course->id)); // Not allowed to manage all groups
-}
+require_capability('moodle/course:managegroups', $context);
+
+$PAGE->requires->js('/group/clientlib.js');
 
 // Check for multiple/no group errors
 if (!$singlegroup) {
@@ -80,7 +78,7 @@ switch ($action) {
 
     case 'ajax_getmembersingroup':
         $roles = array();
-        if ($groupmemberroles = groups_get_members_by_role($groupids[0], $courseid, 'u.id, u.firstname, u.lastname')) {
+        if ($groupmemberroles = groups_get_members_by_role($groupids[0], $courseid, 'u.id, ' . get_all_user_name_fields(true, 'u'))) {
             foreach($groupmemberroles as $roleid=>$roledata) {
                 $shortroledata = new stdClass();
                 $shortroledata->name = $roledata->name;
@@ -248,7 +246,7 @@ $member_names = array();
 
 $atleastonemember = false;
 if ($singlegroup) {
-    if ($groupmemberroles = groups_get_members_by_role($groupids[0], $courseid, 'u.id, u.firstname, u.lastname')) {
+    if ($groupmemberroles = groups_get_members_by_role($groupids[0], $courseid, 'u.id, ' . get_all_user_name_fields(true, 'u'))) {
         foreach($groupmemberroles as $roleid=>$roledata) {
             echo '<optgroup label="'.s($roledata->name).'">';
             foreach($roledata->users as $member) {

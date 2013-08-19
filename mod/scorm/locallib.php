@@ -270,15 +270,6 @@ function scorm_parse($scorm, $full) {
         }
         $newhash = sha1($scorm->reference);
 
-    } else if ($scorm->scormtype === SCORM_TYPE_IMSREPOSITORY and !empty($CFG->repositoryactivate) and $cfg_scorm->allowtypeimsrepository) {
-        if (!$full and $scorm->sha1hash === sha1($scorm->reference)) {
-            return;
-        }
-        require_once("$CFG->dirroot/mod/scorm/datamodels/scormlib.php");
-        if (!scorm_parse_scorm($scorm, $CFG->repository.substr($scorm->reference, 1).'/imsmanifest.xml')) {
-            $scorm->version = 'ERROR';
-        }
-        $newhash = sha1($scorm->reference);
     } else if ($scorm->scormtype === SCORM_TYPE_AICCURL  and $cfg_scorm->allowtypeexternalaicc) {
         require_once("$CFG->dirroot/mod/scorm/datamodels/aicclib.php");
         // AICC
@@ -1578,6 +1569,7 @@ function scorm_format_toc_for_treeview($user, $scorm, $scoes, $usertracks, $cmid
     $result = new stdClass();
     $result->prerequisites = true;
     $result->incomplete = true;
+    $result->toc = '';
 
     if (!$children) {
         $attemptsmade = scorm_get_attempt_count($user->id, $scorm);

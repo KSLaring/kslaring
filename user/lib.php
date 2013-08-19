@@ -40,7 +40,7 @@ function user_create_user($user) {
     }
 
     //check username
-    if ($user->username !== textlib::strtolower($user->username)) {
+    if ($user->username !== core_text::strtolower($user->username)) {
         throw new moodle_exception('usernamelowercase');
     } else {
         if ($user->username !== clean_param($user->username, PARAM_USERNAME)) {
@@ -102,7 +102,7 @@ function user_update_user($user) {
 
     //check username
     if (isset($user->username)) {
-        if ($user->username !== textlib::strtolower($user->username)) {
+        if ($user->username !== core_text::strtolower($user->username)) {
             throw new moodle_exception('usernamelowercase');
         } else {
             if ($user->username !== clean_param($user->username, PARAM_USERNAME)) {
@@ -326,11 +326,11 @@ function user_get_user_details($user, $course = null, array $userfields = array(
     }
 
     if ($user->phone1 && in_array('phone1', $userfields) &&
-            (isset($showuseridentityfields['phone1']) or $canviewhiddenuserfields)) {
+            (in_array('phone1', $showuseridentityfields) or $canviewhiddenuserfields)) {
         $userdetails['phone1'] = $user->phone1;
     }
     if ($user->phone2 && in_array('phone2', $userfields) &&
-            (isset($showuseridentityfields['phone2']) or $canviewhiddenuserfields)) {
+            (in_array('phone2', $showuseridentityfields) or $canviewhiddenuserfields)) {
         $userdetails['phone2'] = $user->phone2;
     }
 
@@ -396,7 +396,7 @@ function user_get_user_details($user, $course = null, array $userfields = array(
     if (in_array('email', $userfields) && ($isadmin // The admin is allowed the users email
       or $currentuser // Of course the current user is as well
       or $canviewuseremail  // this is a capability in course context, it will be false in usercontext
-      or isset($showuseridentityfields['email'])
+      or in_array('email', $showuseridentityfields)
       or $user->maildisplay == 1
       or ($user->maildisplay == 2 and enrol_sharing_course($user, $USER)))) {
         $userdetails['email'] = $user->email;
@@ -410,17 +410,17 @@ function user_get_user_details($user, $course = null, array $userfields = array(
     }
 
     //Departement/Institution/Idnumber are not displayed on any profile, however you can get them from editing profile.
-    if ($isadmin or $currentuser or isset($showuseridentityfields['idnumber'])) {
+    if ($isadmin or $currentuser or in_array('idnumber', $showuseridentityfields)) {
         if (in_array('idnumber', $userfields) && $user->idnumber) {
             $userdetails['idnumber'] = $user->idnumber;
         }
     }
-    if ($isadmin or $currentuser or isset($showuseridentityfields['institution'])) {
+    if ($isadmin or $currentuser or in_array('institution', $showuseridentityfields)) {
         if (in_array('institution', $userfields) && $user->institution) {
             $userdetails['institution'] = $user->institution;
         }
     }
-    if ($isadmin or $currentuser or isset($showuseridentityfields['department'])) {
+    if ($isadmin or $currentuser or in_array('department', $showuseridentityfields)) {
         if (in_array('department', $userfields) && isset($user->department)) { //isset because it's ok to have department 0
             $userdetails['department'] = $user->department;
         }
@@ -527,11 +527,11 @@ function user_get_user_details_courses($user) {
  */
 function can_view_user_details_cap($user, $course = null) {
     // Check $USER has the capability to view the user details at user context.
-    $usercontext = get_context_instance(CONTEXT_USER, $user->id);
+    $usercontext = context_user::instance($user->id);
     $result = has_capability('moodle/user:viewdetails', $usercontext);
     // Otherwise can $USER see them at course context.
     if (!$result && !empty($course)) {
-        $context = get_context_instance(CONTEXT_COURSE, $course->id);
+        $context = context_course::instance($course->id);
         $result = has_capability('moodle/user:viewdetails', $context);
     }
     return $result;

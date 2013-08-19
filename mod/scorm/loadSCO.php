@@ -150,9 +150,6 @@ if (scorm_external_link($sco->launch)) {
 } else if ($scorm->scormtype === SCORM_TYPE_EXTERNAL) {
     // Remote learning activity
     $result = dirname($scorm->reference).'/'.$launcher;
-} else if ($scorm->scormtype === SCORM_TYPE_IMSREPOSITORY) {
-    // Repository
-    $result = $CFG->repositorywebroot.substr($scorm->reference, 1).'/'.$sco->launch;
 } else if ($scorm->scormtype === SCORM_TYPE_LOCAL or $scorm->scormtype === SCORM_TYPE_LOCALSYNC) {
     //note: do not convert this to use get_file_url() or moodle_url()
     //SCORM does not work without slasharguments and moodle_url() encodes querystring vars
@@ -161,10 +158,18 @@ if (scorm_external_link($sco->launch)) {
 
 add_to_log($course->id, 'scorm', 'launch', 'view.php?id='.$cm->id, $result, $cm->id);
 
-// which API are we looking for
-$LMS_api = (scorm_version_check($scorm->version, SCORM_12) || empty($scorm->version)) ? 'API' : 'API_1484_11';
-
 header('Content-Type: text/html; charset=UTF-8');
+
+if ($sco->scormtype == 'asset') {
+    // HTTP 302 Found => Moved Temporarily.
+    header('Location: ' . $result);
+    // Provide a short feedback in case of slow network connection.
+    echo '<html><body><p>' . get_string('activitypleasewait', 'scorm'). '</p></body></html>';
+    exit;
+}
+
+// We expect a SCO: select which API are we looking for.
+$LMS_api = (scorm_version_check($scorm->version, SCORM_12) || empty($scorm->version)) ? 'API' : 'API_1484_11';
 
 ?>
 <html>

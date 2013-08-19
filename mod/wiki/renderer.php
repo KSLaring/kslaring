@@ -53,9 +53,9 @@ class mod_wiki_renderer extends plugin_renderer_base {
     }
 
     public function search_result($records, $subwiki) {
-        global $CFG, $PAGE;
+        global $CFG;
         $table = new html_table();
-        $context = context_module::instance($PAGE->cm->id);
+        $context = context_module::instance($this->page->cm->id);
         $strsearchresults = get_string('searchresult', 'wiki');
         $totalcount = count($records);
         $html = $this->output->heading("$strsearchresults $totalcount");
@@ -240,9 +240,7 @@ class mod_wiki_renderer extends plugin_renderer_base {
     }
 
     public function tabs($page, $tabitems, $options) {
-        global $CFG;
         $tabs = array();
-        $baseurl = $CFG->wwwroot . '/mod/wiki/';
         $context = context_module::instance($this->page->cm->id);
 
         $pageid = null;
@@ -281,7 +279,7 @@ class mod_wiki_renderer extends plugin_renderer_base {
             if ($tab == 'admin' && !has_capability('mod/wiki:managewiki', $context)) {
                 continue;
             }
-            $link = $baseurl . $tab . '.php?pageid=' . $pageid;
+            $link = new moodle_url('/mod/wiki/'. $tab. '.php', array('pageid' => $pageid));
             if ($linked == $tab) {
                 $tabs[] = new tabobject($tab, $link, get_string($tab, 'wiki'), '', true);
             } else {
@@ -289,14 +287,14 @@ class mod_wiki_renderer extends plugin_renderer_base {
             }
         }
 
-        return print_tabs(array($tabs), $selected, $inactive, null, true);
+        return $this->tabtree($tabs, $selected, $inactive);
     }
 
     public function prettyview_link($page) {
         $html = '';
         $link = new moodle_url('/mod/wiki/prettyview.php', array('pageid' => $page->id));
         $html .= $this->output->container_start('wiki_right');
-        $html .= $this->output->action_link($link, get_string('prettyprint', 'wiki'), new popup_action('click', $link));
+        $html .= $this->output->action_link($link, get_string('prettyprint', 'wiki'), new popup_action('click', $link), array('class' => 'printicon'));
         $html .= $this->output->container_end();
         return $html;
     }

@@ -36,37 +36,36 @@ class OpenBadgesBackpackHandler {
     private $backpack;
     private $email;
     private $backpackuid = 0;
-    private $backpackgid = 0;
 
     public function __construct($record) {
         $this->backpack = $record->backpackurl;
         $this->email = $record->email;
         $this->backpackuid = isset($record->backpackuid) ? $record->backpackuid : 0;
-        $this->backpackgid = isset($record->backpackgid) ? $record->backpackgid : 0;
     }
 
-    public function curl_request($action) {
+    public function curl_request($action, $collection = null) {
         $curl = new curl();
 
         switch($action) {
             case 'user':
-                $url = $this->backpack."/displayer/convert/email";
+                $url = $this->backpack . "/displayer/convert/email";
                 $param = array('email' => $this->email);
                 break;
             case 'groups':
                 $url = $this->backpack . '/displayer/' . $this->backpackuid . '/groups.json';
                 break;
             case 'badges':
-                $url = $this->backpack . '/displayer/' . $this->backpackuid . '/group/'. $this->backpackgid . '.json';
+                $url = $this->backpack . '/displayer/' . $this->backpackuid . '/group/' . $collection . '.json';
                 break;
         }
 
         $options = array(
-            'FRESH_CONNECT' => true,
+            'FRESH_CONNECT'  => true,
             'RETURNTRANSFER' => true,
-            'FORBID_REUSE' => true,
-            'HEADER' => 0,
-            'CONNECTTIMEOUT_MS' => 3000,
+            'FORBID_REUSE'   => true,
+            'HEADER'         => 0,
+            'HTTPHEADER'     => array('Expect:'),
+            'CONNECTTIMEOUT' => 3,
         );
 
         if ($action == 'user') {
@@ -86,11 +85,10 @@ class OpenBadgesBackpackHandler {
                     'message' => get_string('error:nosuchuser', 'badges')
                 );
                 return $response;
-                break;
         }
     }
 
-    public function get_groups() {
+    public function get_collections() {
         $json = $this->curl_request('user', $this->email);
         if (isset($json->status)) {
             if ($json->status != 'okay') {
@@ -102,13 +100,13 @@ class OpenBadgesBackpackHandler {
         }
     }
 
-    public function get_badges() {
+    public function get_badges($collection) {
         $json = $this->curl_request('user', $this->email);
         if (isset($json->status)) {
             if ($json->status != 'okay') {
                 return $this->check_status($json->status);
             } else {
-                return $this->curl_request('badges');
+                return $this->curl_request('badges', $collection);
             }
         }
     }

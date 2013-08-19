@@ -25,7 +25,6 @@
 
 require_once('../../config.php');
 require_once($CFG->libdir.'/adminlib.php');
-require_once($CFG->dirroot.'/backup/lib.php');
 
 // Required for constants in backup_cron_automated_helper
 require_once($CFG->dirroot.'/backup/util/helper/backup_cron_helper.class.php');
@@ -50,16 +49,17 @@ $strunfinished = get_string("unfinished");
 $strskipped = get_string("skipped");
 $strwarning = get_string("warning");
 
-list($select, $join) = context_instance_preload_sql('c.id', CONTEXT_COURSE, 'ctx');
+$select = ', ' . context_helper::get_preload_record_columns_sql('ctx');
+$join = "LEFT JOIN {context} ctx ON (ctx.instanceid = c.id AND ctx.contextlevel = :contextlevel)";
 $sql = "SELECT bc.*, c.fullname $select
           FROM {backup_courses} bc
           JOIN {course} c ON c.id = bc.courseid
                $join";
-$rs = $DB->get_recordset_sql($sql);
+$rs = $DB->get_recordset_sql($sql, array('contextlevel' => CONTEXT_COURSE));
 foreach ($rs as $backuprow) {
 
     // Cache the course context
-    context_instance_preload($backuprow);
+    context_helper::preload_from_record($backuprow);
 
     // Prepare a cell to display the status of the entry
     if ($backuprow->laststatus == backup_cron_automated_helper::BACKUP_STATUS_OK) {

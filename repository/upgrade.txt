@@ -3,6 +3,11 @@ information provided here is intended especially for developers. Full
 details of the repository API are available on Moodle docs:
 http://docs.moodle.org/dev/Repository_API
 
+=== 2.6 ===
+
+* get_option() now always return null when the first parameter ($config) is not empty, and
+  no value was found for this $config. Previously this could sometimes return an empty array().
+
 === 2.5 ===
 
 * repository::append_suffix() has been deprecated, use repository::get_unused_filename() if you need
@@ -15,6 +20,16 @@ http://docs.moodle.org/dev/Repository_API
 
 * can_be_edited_by_user() encapsulates all the tests to make sure that the current user
   has the rights to edit the instance of this repository.
+
+* repository::get_instances() (used by filepicker and texteditor to populate the
+  list of available repositories) now calls repository constructor specifying the
+  context where repository will be used.
+  When checking permissions inside repository class use:
+  $this->instance->contextid - to find the context where repository was created;
+  $this->context - to find the current context where repository is used.
+  This also means that the same repository instance may now have different names when
+  called from different contexts.
+  Avoid calling repository::get_instance(), use repository::get_repository_by_id() instead.
 
 === 2.4 ===
 
