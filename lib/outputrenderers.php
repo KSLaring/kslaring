@@ -2532,7 +2532,7 @@ EOD;
         }
         $output .= $this->box($message, 'errorbox', null, array('data-rel' => 'fatalerror'));
 
-        if (debugging('', DEBUG_DEVELOPER)) {
+        if ($CFG->debugdeveloper) {
             if (!empty($debuginfo)) {
                 $debuginfo = s($debuginfo); // removes all nasty JS
                 $debuginfo = str_replace("\n", '<br />', $debuginfo); // keep newlines
@@ -3037,7 +3037,7 @@ EOD;
      */
     protected function theme_switch_links() {
 
-        $actualdevice = get_device_type();
+        $actualdevice = core_useragent::get_device_type();
         $currentdevice = $this->page->devicetypeinuse;
         $switched = ($actualdevice != $currentdevice);
 
@@ -3364,7 +3364,7 @@ class core_renderer_cli extends core_renderer {
     public function fatal_error($message, $moreinfourl, $link, $backtrace, $debuginfo = null) {
         $output = "!!! $message !!!\n";
 
-        if (debugging('', DEBUG_DEVELOPER)) {
+        if ($CFG->debugdeveloper) {
             if (!empty($debuginfo)) {
                 $output .= $this->notification($debuginfo, 'notifytiny');
             }

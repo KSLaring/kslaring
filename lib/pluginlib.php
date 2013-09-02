@@ -666,6 +666,12 @@ class plugin_manager {
                 'comments', 'file', 'offline'
             ),
 
+            'atto' => array(
+                'bold', 'clear', 'html', 'image', 'indent', 'italic', 'link',
+                'media', 'orderedlist', 'outdent', 'strike', 'title',
+                'underline', 'unlink', 'unorderedlist'
+            ),
+
             'auth' => array(
                 'cas', 'db', 'email', 'fc', 'imap', 'ldap', 'manual', 'mnet',
                 'nntp', 'nologin', 'none', 'pam', 'pop3', 'radius',
@@ -712,7 +718,7 @@ class plugin_manager {
             ),
 
             'editor' => array(
-                'textarea', 'tinymce'
+                'textarea', 'tinymce', 'atto'
             ),
 
             'enrol' => array(
@@ -728,7 +734,7 @@ class plugin_manager {
             ),
 
             'format' => array(
-                'scorm', 'singleactivity', 'social', 'topics', 'weeks'
+                'singleactivity', 'social', 'topics', 'weeks'
             ),
 
             'gradeexport' => array(
@@ -3341,7 +3347,7 @@ class plugininfo_mod extends plugininfo_base {
      */
     protected function load_version_php($disablecache=false) {
 
-        $cache = cache::make('core', 'plugininfo_base');
+        $cache = cache::make('core', 'plugininfo_mod');
 
         $versionsphp = $cache->get('versions_php');
 

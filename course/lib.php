@@ -28,7 +28,6 @@ defined('MOODLE_INTERNAL') || die;
 
 require_once($CFG->libdir.'/completionlib.php');
 require_once($CFG->libdir.'/filelib.php');
-require_once($CFG->dirroot.'/course/dnduploadlib.php');
 require_once($CFG->dirroot.'/course/format/lib.php');
 
 define('COURSE_MAX_LOGS_PER_PAGE', 1000);       // records
@@ -959,7 +958,9 @@ function get_array_of_activities($courseid) {
                                    $mod[$seq]->extraclasses = $info->extraclasses;
                                }
                                if (!empty($info->iconurl)) {
-                                   $mod[$seq]->iconurl = $info->iconurl;
+                                   // Convert URL to string as it's easier to store. Also serialized object contains \0 byte and can not be written to Postgres DB.
+                                   $url = new moodle_url($info->iconurl);
+                                   $mod[$seq]->iconurl = $url->out(false);
                                }
                                if (!empty($info->onclick)) {
                                    $mod[$seq]->onclick = $info->onclick;
@@ -1735,35 +1736,44 @@ function reorder_sections($sections, $origin_position, $target_position) {
  * Move the module object $mod to the specified $section
  * If $beforemod exists then that is the module
  * before which $modid should be inserted
- * All parameters are objects
+ *
+ * @param stdClass|cm_info $mod
+ * @param stdClass|section_info $section
+ * @param int|stdClass $beforemod id or object with field id corresponding to the module
+ *     before which the module needs to be included. Null for inserting in the
+ *     end of the section
+ * @return int new value for module visibility (0 or 1)
  */
 function moveto_module($mod, $section, $beforemod=NULL) {
     global $OUTPUT, $DB;
 
-/// Remove original module from original section
+    // Current module visibility state - return value of this function.
+    $modvisible = $mod->visible;
+
+    // Remove original module from original section.
     if (! delete_mod_from_section($mod->id, $mod->section)) {
         echo $OUTPUT->notification("Could not delete module from existing section");
     }
 
-    // if moving to a hidden section then hide module
+    // If moving to a hidden section then hide module.
     if ($mod->section != $section->id) {
         if (!$section->visible && $mod->visible) {
-            // Set this in the object because it is sent as a response to ajax calls.
-            $mod->visible = 0;
+            // Module was visible but must become hidden after moving to hidden section.
+            $modvisible = 0;
             set_coursemodule_visible($mod->id, 0);
             // Set visibleold to 1 so module will be visible when section is made visible.
             $DB->set_field('course_modules', 'visibleold', 1, array('id' => $mod->id));
         }
         if ($section->visible && !$mod->visible) {
+            // Hidden module was moved to the visible section, restore the module visibility from visibleold.
             set_coursemodule_visible($mod->id, $mod->visibleold);
-            // Set this in the object because it is sent as a response to ajax calls.
-            $mod->visible = $mod->visibleold;
+            $modvisible = $mod->visibleold;
         }
     }
 
-/// Add the module into the new section
+    // Add the module into the new section.
     course_add_cm_to_section($section->course, $mod->id, $section->section, $beforemod);
-    return true;
+    return $modvisible;
 }
 
 /**
@@ -1951,7 +1961,7 @@ function course_get_cm_edit_actions(cm_info $mod, $indent = -1, $sr = null) {
                 array('class' => 'editing_'. $actionname, 'data-action' => $actionname, 'data-nextgroupmode' => $nextgroupmode)
             );
         } else {
-            $actions[$actionname] = new pix_icon($groupimage, $forcedgrouptitle, 'moodle', array('title' => '', 'class' => 'iconsmall'));
+            $actions[$actionname] = new pix_icon($groupimage, $forcedgrouptitle, 'moodle', array('class' => 'iconsmall'));
         }
     }
 
@@ -2026,14 +2036,14 @@ function course_allowed_module($course, $modname) {
  * @return bool success
  */
 function move_courses($courseids, $categoryid) {
-    global $CFG, $DB, $OUTPUT;
+    global $DB;
 
     if (empty($courseids)) {
-        // nothing to do
+        // Nothing to do.
         return;
     }
 
-    if (!$category = $DB->get_record('course_categories', array('id'=>$categoryid))) {
+    if (!$category = $DB->get_record('course_categories', array('id' => $categoryid))) {
         return false;
     }
 
@@ -2042,21 +2052,37 @@ function move_courses($courseids, $categoryid) {
     $i = 1;
 
     foreach ($courseids as $courseid) {
-        if ($course = $DB->get_record('course', array('id'=>$courseid), 'id, category')) {
+        if ($dbcourse = $DB->get_record('course', array('id' => $courseid))) {
             $course = new stdClass();
             $course->id = $courseid;
             $course->category  = $category->id;
             $course->sortorder = $category->sortorder + MAX_COURSES_IN_CATEGORY - $i++;
             if ($category->visible == 0) {
-                // hide the course when moving into hidden category,
-                // do not update the visibleold flag - we want to get to previous state if somebody unhides the category
+                // Hide the course when moving into hidden category, do not update the visibleold flag - we want to get
+                // to previous state if somebody unhides the category.
                 $course->visible = 0;
             }
 
             $DB->update_record('course', $course);
-            add_to_log($course->id, "course", "move", "edit.php?id=$course->id", $course->id);
 
-            $context   = context_course::instance($course->id);
+            // Store the context.
+            $context = context_course::instance($course->id);
+
+            // Update the course object we are passing to the event.
+            $dbcourse->category = $course->category;
+            $dbcourse->sortorder = $course->sortorder;
+
+            // Trigger a course updated event.
+            $event = \core\event\course_updated::create(array(
+                'objectid' => $course->id,
+                'context' => $context,
+                'other' => array('shortname' => $dbcourse->shortname,
+                                 'fullname' => $dbcourse->fullname)
+            ));
+            $event->add_record_snapshot('course', $dbcourse);
+            $event->set_legacy_logdata(array($course->id, 'course', 'move', 'edit.php?id=' . $course->id, $course->id));
+            $event->trigger();
+
             $context->update_moved($newparent);
         }
     }
@@ -2229,7 +2255,7 @@ function course_overviewfiles_options($course) {
  * @return object new course instance
  */
 function create_course($data, $editoroptions = NULL) {
-    global $CFG, $DB;
+    global $DB;
 
     //check the categoryid - must be given for all new courses
     $category = $DB->get_record('course_categories', array('id'=>$data->category), '*', MUST_EXIST);
@@ -2304,10 +2330,15 @@ function create_course($data, $editoroptions = NULL) {
     // set up enrolments
     enrol_course_updated(true, $course, $data);
 
-    add_to_log(SITEID, 'course', 'new', 'view.php?id='.$course->id, $data->fullname.' (ID '.$course->id.')');
-
-    // Trigger events
-    events_trigger('course_created', $course);
+    // Trigger a course created event.
+    $event = \core\event\course_created::create(array(
+        'objectid' => $course->id,
+        'context' => context_course::instance($course->id),
+        'other' => array('shortname' => $course->shortname,
+                         'fullname' => $course->fullname)
+    ));
+    $event->add_record_snapshot('course', $course);
+    $event->trigger();
 
     return $course;
 }
@@ -2323,7 +2354,7 @@ function create_course($data, $editoroptions = NULL) {
  * @return void
  */
 function update_course($data, $editoroptions = NULL) {
-    global $CFG, $DB;
+    global $DB;
 
     $data->timemodified = time();
 
@@ -2393,10 +2424,16 @@ function update_course($data, $editoroptions = NULL) {
     // update enrol settings
     enrol_course_updated(false, $course, $data);
 
-    add_to_log($course->id, "course", "update", "edit.php?id=$course->id", $course->id);
-
-    // Trigger events
-    events_trigger('course_updated', $course);
+    // Trigger a course updated event.
+    $event = \core\event\course_updated::create(array(
+        'objectid' => $course->id,
+        'context' => $context,
+        'other' => array('shortname' => $course->shortname,
+                         'fullname' => $course->fullname)
+    ));
+    $event->add_record_snapshot('course', $course);
+    $event->set_legacy_logdata(array($course->id, 'course', 'update', 'edit.php?id=' . $course->id, $course->id));
+    $event->trigger();
 
     if ($oldcourse->format !== $course->format) {
         // Remove all options stored for the previous format
@@ -2898,7 +2935,7 @@ function course_ajax_enabled($course) {
  * @return bool
  */
 function include_course_ajax($course, $usedmodules = array(), $enabledmodules = null, $config = null) {
-    global $PAGE, $SITE;
+    global $CFG, $PAGE, $SITE;
 
     // Ensure that ajax should be included
     if (!course_ajax_enabled($course)) {
@@ -2977,6 +3014,9 @@ function include_course_ajax($course, $usedmodules = array(), $enabledmodules = 
             'markedthistopic',
             'move',
             'movesection',
+            'movecontent',
+            'tocontent',
+            'emptydragdropregion'
         ), 'moodle');
 
     // Include format-specific strings
@@ -2993,6 +3033,7 @@ function include_course_ajax($course, $usedmodules = array(), $enabledmodules = 
     }
 
     // Load drag and drop upload AJAX.
+    require_once($CFG->dirroot.'/course/dnduploadlib.php');
     dndupload_add_to_course($course, $enabledmodules);
 
     return true;

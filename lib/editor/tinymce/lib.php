@@ -34,25 +34,25 @@ class tinymce_texteditor extends texteditor {
      * @return bool
      */
     public function supported_by_browser() {
-        if (check_browser_version('MSIE', 6)) {
+        if (core_useragent::check_ie_version(6)) {
             return true;
         }
-        if (check_browser_version('Gecko', 20030516)) {
+        if (core_useragent::check_gecko_version(20030516)) {
             return true;
         }
-        if (check_browser_version('Safari', 412)) {
+        if (core_useragent::check_safari_version(412)) {
             return true;
         }
-        if (check_browser_version('Chrome', 6)) {
+        if (core_useragent::check_chrome_version(6)) {
             return true;
         }
-        if (check_browser_version('Opera', 9)) {
+        if (core_useragent::check_opera_version(9)) {
             return true;
         }
-        if (check_browser_version('Safari iOS', 534)) {
+        if (core_useragent::check_safari_ios_version(534)) {
             return true;
         }
-        if (check_browser_version('WebKit', 534)) {
+        if (core_useragent::check_webkit_version(534)) {
             return true;
         }
 
@@ -100,7 +100,7 @@ class tinymce_texteditor extends texteditor {
     public function use_editor($elementid, array $options=null, $fpoptions=null) {
         global $PAGE, $CFG;
         // Note: use full moodle_url instance to prevent standard JS loader, make sure we are using https on profile page if required.
-        if (debugging('', DEBUG_DEVELOPER)) {
+        if ($CFG->debugdeveloper) {
             $PAGE->requires->js(new moodle_url($CFG->httpswwwroot.'/lib/editor/tinymce/tiny_mce/'.$this->version.'/tiny_mce_src.js'));
         } else {
             $PAGE->requires->js(new moodle_url($CFG->httpswwwroot.'/lib/editor/tinymce/tiny_mce/'.$this->version.'/tiny_mce.js'));
