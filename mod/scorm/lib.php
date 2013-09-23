@@ -388,7 +388,7 @@ function scorm_user_complete($course, $user, $mod, $scorm) {
     if ($orgs = $DB->get_records_select('scorm_scoes', 'scorm = ? AND '.
                                          $DB->sql_isempty('scorm_scoes', 'launch', false, true).' AND '.
                                          $DB->sql_isempty('scorm_scoes', 'organization', false, false),
-                                         array($scorm->id), 'id', 'id,identifier,title')) {
+                                         array($scorm->id), 'sortorder, id', 'id, identifier, title')) {
         if (count($orgs) <= 1) {
             unset($orgs);
             $orgs = array();
@@ -407,7 +407,7 @@ function scorm_user_complete($course, $user, $mod, $scorm) {
             }
             $report .= "<ul id='0' class='$liststyle'>";
                 $conditions['scorm'] = $scorm->id;
-            if ($scoes = $DB->get_records('scorm_scoes', $conditions, "id ASC")) {
+            if ($scoes = $DB->get_records('scorm_scoes', $conditions, "sortorder, id")) {
                 // drop keys so that we can access array sequentially
                 $scoes = array_values($scoes);
                 $level=0;
@@ -1369,4 +1369,38 @@ function scorm_validate_package($file) {
         }
     }
     return $errors;
+}
+
+/**
+ * Check and set the correct mode and attempt when entering a SCORM package.
+ *
+ * @param object $scorm object
+ * @param string $newattempt should a new attempt be generated here.
+ * @param int $attempt the attempt number this is for.
+ * @param int $userid the userid of the user.
+ * @param string $mode the current mode that has been selected.
+ */
+function scorm_check_mode($scorm, $newattempt, &$attempt, $userid, &$mode) {
+    global $DB;
+    if (($newattempt == 'on') && (($attempt < $scorm->maxattempt) || ($scorm->maxattempt == 0))) {
+        $attempt++;
+        $mode = 'normal';
+    } else if ($mode != 'browse') { // Check if review mode should be set.
+        $mode = 'normal'; // Set to normal mode by default.
+
+        // If all tracks == passed, failed or completed then use review mode.
+        $tracks = $DB->get_recordset('scorm_scoes_track', array('scormid' => $scorm->id, 'userid' => $userid,
+            'attempt' => $attempt, 'element' => 'cmi.core.lesson_status'));
+        foreach ($tracks as $track) {
+            if (($track->value == 'completed') || ($track->value == 'passed') || ($track->value == 'failed')) {
+                $mode = 'review';
+            } else { // Found an incomplete sco so exit and use normal mode.
+                $mode = 'normal';
+                break;
+            }
+        }
+        $tracks->close();
+    } else if (($mode == 'browse') && ($scorm->hidebrowse == 1)) { // Prevent Browse mode if hidebrowse is set.
+        $mode = 'normal';
+    }
 }

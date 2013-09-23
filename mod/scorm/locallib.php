@@ -71,16 +71,14 @@ class scorm_package_file_info extends file_info_stored {
  * @return array an array of popup options as the key and their defaults as the value
  */
 function scorm_get_popup_options_array() {
-    global $CFG;
-    $cfg_scorm = get_config('scorm');
+    $cfgscorm = get_config('scorm');
 
-    return array('resizable'=> isset($cfg_scorm->resizable) ? $cfg_scorm->resizable : 0,
-                 'scrollbars'=> isset($cfg_scorm->scrollbars) ? $cfg_scorm->scrollbars : 0,
-                 'directories'=> isset($cfg_scorm->directories) ? $cfg_scorm->directories : 0,
-                 'location'=> isset($cfg_scorm->location) ? $cfg_scorm->location : 0,
-                 'menubar'=> isset($cfg_scorm->menubar) ? $cfg_scorm->menubar : 0,
-                 'toolbar'=> isset($cfg_scorm->toolbar) ? $cfg_scorm->toolbar : 0,
-                 'status'=> isset($cfg_scorm->status) ? $cfg_scorm->status : 0);
+    return array('scrollbars'=> isset($cfgscorm->scrollbars) ? $cfgscorm->scrollbars : 0,
+                 'directories'=> isset($cfgscorm->directories) ? $cfgscorm->directories : 0,
+                 'location'=> isset($cfgscorm->location) ? $cfgscorm->location : 0,
+                 'menubar'=> isset($cfgscorm->menubar) ? $cfgscorm->menubar : 0,
+                 'toolbar'=> isset($cfgscorm->toolbar) ? $cfgscorm->toolbar : 0,
+                 'status'=> isset($cfgscorm->status) ? $cfgscorm->status : 0);
 }
 
 /**
@@ -367,13 +365,12 @@ function scorm_get_sco($id, $what=SCO_ALL) {
 function scorm_get_scoes($id, $organisation=false) {
     global $DB;
 
-    $organizationsql = '';
     $queryarray = array('scorm'=>$id);
     if (!empty($organisation)) {
         $queryarray['organization'] = $organisation;
     }
-    if ($scoes = $DB->get_records('scorm_scoes', $queryarray, 'id ASC')) {
-        // drop keys so that it is a simple array as expected
+    if ($scoes = $DB->get_records('scorm_scoes', $queryarray, 'sortorder, id')) {
+        // Drop keys so that it is a simple array as expected.
         $scoes = array_values($scoes);
         foreach ($scoes as $sco) {
             if ($scodatas = $DB->get_records('scorm_scoes_data', array('scoid'=>$sco->id))) {
@@ -627,7 +624,7 @@ function scorm_grade_user_attempt($scorm, $userid, $attempt=1) {
     $attemptscore->sum = 0;
     $attemptscore->lastmodify = 0;
 
-    if (!$scoes = $DB->get_records('scorm_scoes', array('scorm'=>$scorm->id))) {
+    if (!$scoes = $DB->get_records('scorm_scoes', array('scorm' => $scorm->id), 'sortorder, id')) {
         return null;
     }
 
@@ -814,7 +811,7 @@ function scorm_view_display ($user, $scorm, $action, $cm) {
     if ($orgs = $DB->get_records_select_menu('scorm_scoes', 'scorm = ? AND '.
                                          $DB->sql_isempty('scorm_scoes', 'launch', false, true).' AND '.
                                          $DB->sql_isempty('scorm_scoes', 'organization', false, false),
-                                         array($scorm->id), 'id', 'id,title')) {
+                                         array($scorm->id), 'sortorder, id', 'id,title')) {
         if (count($orgs) > 1) {
             $select = new single_select(new moodle_url($action), 'organization', $orgs, $organization, null);
             $select->label = get_string('organizations', 'scorm');
@@ -900,7 +897,8 @@ function scorm_simple_play($scorm, $user, $context, $cmid) {
     if ($scorm->scormtype != SCORM_TYPE_LOCAL && $scorm->updatefreq == SCORM_UPDATE_EVERYTIME) {
         scorm_parse($scorm, false);
     }
-    $scoes = $DB->get_records_select('scorm_scoes', 'scorm = ? AND '.$DB->sql_isnotempty('scorm_scoes', 'launch', false, true), array($scorm->id), 'id', 'id');
+    $scoes = $DB->get_records_select('scorm_scoes', 'scorm = ? AND '.
+        $DB->sql_isnotempty('scorm_scoes', 'launch', false, true), array($scorm->id), 'sortorder, id', 'id');
 
     if ($scoes) {
         $orgidentifier = '';
@@ -1338,8 +1336,8 @@ function scorm_get_toc_object($user, $scorm, $currentorg='', $scoid='', $mode='n
     global $CFG, $DB, $PAGE, $OUTPUT;
 
     $modestr = '';
-    if ($mode == 'browse') {
-        $modestr = '&amp;mode='.$mode;
+    if ($mode != 'normal') {
+        $modestr = '&mode='.$mode;
     }
 
     $result = array();
@@ -1461,7 +1459,6 @@ function scorm_get_toc_get_parent_child(&$result) {
     $final = array();
     $level = 0;
     $prevparent = '/';
-    ksort($result);
 
     foreach ($result as $sco) {
         if ($sco->parent == '/') {
@@ -1751,8 +1748,8 @@ function scorm_get_toc($user, $scorm, $cmid, $toclink=TOCJSLINK, $currentorg='',
         $tocmenu = scorm_format_toc_for_droplist($scorm, $scoes['scoes'][0]->children, $scoes['usertracks'], $currentorg, $organizationsco);
 
         $modestr = '';
-        if ($mode == 'browse') {
-            $modestr = '&amp;mode='.$mode;
+        if ($mode != 'normal') {
+            $modestr = '&mode='.$mode;
         }
 
         $url = new moodle_url('/mod/scorm/player.php?a='.$scorm->id.'&currentorg='.$currentorg.$modestr);
