@@ -188,8 +188,7 @@ a.autolink.glossary:hover {
 .warning,
 .errorbox .title,
 .pagingbar .title,
-.pagingbar .thispage,
-.headingblock {
+.pagingbar .thispage {
     font-weight: bold;
 }
 img.resize {
@@ -1881,6 +1880,12 @@ table.badgeissuedinfo .bfield {
     text-align: left;
     font-style: italic;
 }
+.dir-rtl {
+    table.badgeissuedinfo .bvalue,
+    table.badgeissuedinfo .bfield {
+        text-align: right;
+    }
+}
 ul.badges {
     margin: 0;
     list-style: none;
@@ -1937,6 +1942,9 @@ div.badge .expireimage {
 .notconnected {
     color: @errorText;
 }
+.connecting {
+    color: @warningText;
+}
 #page-badges-award .recipienttable tr td {
     vertical-align: top;
 }
@@ -1963,6 +1971,12 @@ div.badge .expireimage {
     margin: 0px;
     text-align: left;
     vertical-align: middle;
+}
+.dir-rtl .activatebadge {
+    text-align: right;
+}
+img#persona_signin {
+    cursor: pointer;
 }
 .addcourse {
     float: right;
