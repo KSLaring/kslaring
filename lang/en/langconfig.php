@@ -39,16 +39,55 @@ $string['parentlanguage'] = '';
 $string['strftimedate'] = '%d %B %Y';
 $string['strftimedatefullshort'] = '%d/%m/%y';
 $string['strftimedateshort'] = '%d %B';
-$string['strftimedatetime'] = '%d %B %Y, %I:%M %p';
+
+/**
+ * @updateDate  13/11/2013
+ * @author      eFaktor (fbv)
+ *
+ * Description
+ * 24 Hours Format
+ */
+//$string['strftimedatetime'] = '%d %B %Y, %I:%M %p';
+$string['strftimedatetime'] = '%d %B %Y, %H:%M';
+
 $string['strftimedatetimeshort'] = '%d/%m/%y, %H:%M';
 $string['strftimedaydate'] = '%A, %d %B %Y';
-$string['strftimedaydatetime'] = '%A, %d %B %Y, %I:%M %p';
+
+/**
+ * @updateDate  13/11/2013
+ * @author      eFaktor (fbv)
+ *
+ * Description
+ * 24 Hours Format
+ */
+//$string['strftimedaydatetime'] = '%A, %d %B %Y, %I:%M %p';
+$string['strftimedaydatetime'] = '%A, %d %B %Y, %H:%M';
+
 $string['strftimedayshort'] = '%A, %d %B';
 $string['strftimedaytime'] = '%a, %H:%M';
 $string['strftimemonthyear'] = '%B %Y';
 $string['strftimerecent'] = '%d %b, %H:%M';
-$string['strftimerecentfull'] = '%a, %d %b %Y, %I:%M %p';
-$string['strftimetime'] = '%I:%M %p';
+
+/**
+ * @updateDate  13/11/2013
+ * @author      eFaktor (fbv)
+ *
+ * Description
+ * 24 Hours Format
+ */
+//$string['strftimerecentfull'] = '%a, %d %b %Y, %I:%M %p';
+$string['strftimerecentfull'] = '%a, %d %b %Y, %H:%M';
+
+/**
+ * @updateDate  13/11/2013
+ * @author      eFaktor (fbv)
+ *
+ * Description
+ * 24 Hours Format
+ */
+//$string['strftimetime'] = '%I:%M %p';
+$string['strftimetime'] = '%H:%M';
+
 $string['thisdirection'] = 'ltr';
 $string['thisdirectionvertical'] = 'btt';
 $string['thislanguage'] = 'English';
