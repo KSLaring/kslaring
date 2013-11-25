@@ -2847,5 +2847,20 @@ function xmldb_main_upgrade($oldversion) {
         upgrade_main_savepoint(true, 2013110600.02);
     }
 
+    // Moodle v2.6.0 release upgrade line.
+    // Put any upgrade step following this.
+    if ($oldversion < 2013111800.01) {
+
+        // Delete notes of deleted courses.
+        $sql = "DELETE FROM {post}
+                 WHERE NOT EXISTS (SELECT {course}.id FROM {course}
+                                    WHERE {course}.id = {post}.courseid)
+                       AND {post}.module = ?";
+        $DB->execute($sql, array('notes'));
+
+        // Main savepoint reached.
+        upgrade_main_savepoint(true, 2013111800.01);
+    }
+
     return true;
 }
