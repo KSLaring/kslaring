@@ -37,7 +37,9 @@ define('CERT_IMAGE_SIGNATURE', 'signatures');
 /** The seal image folder */
 define('CERT_IMAGE_SEAL', 'seals');
 
+/** Set CERT_PER_PAGE to 0 if you wish to display all certificates on the report page */
 define('CERT_PER_PAGE', 30);
+
 define('CERT_MAX_PER_PAGE', 200);
 
 /**
@@ -100,7 +102,7 @@ function certificate_delete_instance($id) {
     }
 
     // Delete any files associated with the certificate
-    $context = get_context_instance(CONTEXT_MODULE, $cm->id);
+    $context = context_module::instance($cm->id);
     $fs = get_file_storage();
     $fs->delete_area_files($context->id);
 
@@ -276,7 +278,7 @@ function certificate_cron () {
 function certificate_get_teachers($certificate, $user, $course, $cm) {
     global $USER, $DB;
 
-    $context = get_context_instance(CONTEXT_MODULE, $cm->id);
+    $context = context_module::instance($cm->id);
     $potteachers = get_users_by_capability($context, 'mod/certificate:manage',
         '', '', '', '', '', '', false, false);
     if (empty($potteachers)) {
@@ -673,7 +675,7 @@ function certificate_get_issues($certificateid, $sort="ci.timecreated ASC", $gro
     global $CFG, $DB;
 
     // get all users that can manage this certificate to exclude them from the report.
-    $context = get_context_instance(CONTEXT_MODULE, $cm->id);
+    $context = context_module::instance($cm->id);
 
     $conditionssql = '';
     $conditionsparams = array();
@@ -725,20 +727,6 @@ function certificate_get_issues($certificateid, $sort="ci.timecreated ASC", $gro
 
     $page = (int) $page;
     $perpage = (int) $perpage;
-
-    // Setup pagination - when both $page and $perpage = 0, get all results
-    if ($page || $perpage) {
-        if ($page < 0) {
-            $page = 0;
-        }
-
-        if ($perpage > CERT_MAX_PER_PAGE) {
-            $perpage = CERT_MAX_PER_PAGE;
-        } else if ($perpage < 1) {
-            $perpage = CERT_PER_PAGE;
-        }
-    }
-
 
     // Get all the users that have certificates issued, should only be one issue per user for a certificate
     $allparams = $conditionsparams + array('certificateid' => $certificateid);
@@ -868,7 +856,7 @@ function certificate_get_course_time($courseid) {
  * @return array
  */
 function certificate_get_mods() {
-    global $COURSE, $CFG, $DB;
+    global $COURSE, $DB;
 
     $strtopic = get_string("topic");
     $strweek = get_string("week");
@@ -879,15 +867,7 @@ function certificate_get_mods() {
     $mods = $modinfo->get_cms();
 
     $modules = array();
-    // Check what version we are running - really we should have separate branch for 2.4, but
-    // having a branch called master and one called MOODLE_24_STABLE may be confusing. This
-    // module will also be replaced in the future so hack will do. Here we get the course
-    // sections and sort the modules as they appear in the course.
-    if ($CFG->version >= '2012112900') {
         $sections = $modinfo->get_section_info_all();
-    } else {
-        $sections = get_all_sections($COURSE->id);
-    }
     for ($i = 0; $i <= count($sections) - 1; $i++) {
         // should always be true
         if (isset($sections[$i])) {
@@ -910,7 +890,6 @@ function certificate_get_mods() {
                         continue;
                     }
                     $mod = $mods[$sectionmod];
-                    $mod->courseid = $COURSE->id;
                     $instance = $DB->get_record($mod->modname, array('id' => $mod->instance));
                     if ($grade_items = grade_get_grade_items_for_activity($mod)) {
                         $mod_item = grade_get_grades($COURSE->id, 'mod', $mod->modname, $mod->instance);
@@ -950,6 +929,26 @@ function certificate_get_date_options() {
     $dateoptions['2'] = get_string('completiondate', 'certificate');
 
     return $dateoptions;
+}
+
+/**
+ * Fetch all grade categories from the specified course.
+ *
+ * @param int $courseid the course id
+ * @return array
+ */
+function certificate_get_grade_categories($courseid) {
+    $grade_category_options = array();
+
+    if ($grade_categories = grade_category::fetch_all(array('courseid' => $courseid))) {
+        foreach ($grade_categories as $grade_category) {
+            if (!$grade_category->is_course_category()) {
+                $grade_category_options[-$grade_category->id] = get_string('category') . ' : ' . $grade_category->get_name();
+            }
+        }
+    }
+
+    return $grade_category_options;
 }
 
 /**
@@ -1235,6 +1234,27 @@ function certificate_get_grade($certificate, $course, $userid = null) {
                 return $grade;
             }
         }
+    } else if ($certificate->printgrade < 0) { // Must be a category id.
+        if ($category_item = grade_item::fetch(array('itemtype' => 'category', 'iteminstance' => -$certificate->printgrade))) {
+            $category_item->gradetype = GRADE_TYPE_VALUE;
+
+            $grade = new grade_grade(array('itemid' => $category_item->id, 'userid' => $userid));
+
+            $category_grade = new stdClass;
+            $category_grade->points = grade_format_gradevalue($grade->finalgrade, $category_item, true, GRADE_DISPLAY_TYPE_REAL, $decimals = 2);
+            $category_grade->percentage = grade_format_gradevalue($grade->finalgrade, $category_item, true, GRADE_DISPLAY_TYPE_PERCENTAGE, $decimals = 2);
+            $category_grade->letter = grade_format_gradevalue($grade->finalgrade, $category_item, true, GRADE_DISPLAY_TYPE_LETTER, $decimals = 0);
+
+            if ($certificate->gradefmt == 1) {
+                $formattedgrade = $category_grade->percentage;
+            } else if ($certificate->gradefmt == 2) {
+                $formattedgrade = $category_grade->points;
+            } else if ($certificate->gradefmt == 3) {
+                $formattedgrade = $category_grade->letter;
+            }
+
+            return $formattedgrade;
+        }
     }
 
     return '';
@@ -1290,11 +1310,12 @@ function certificate_get_code($certificate, $certrecord) {
  * @param char $style ''=normal, B=bold, I=italic, U=underline
  * @param int $size font size in points
  * @param string $text the text to print
+ * @param int $width horizontal dimension of text block
  */
-function certificate_print_text($pdf, $x, $y, $align, $font='freeserif', $style, $size=10, $text) {
+function certificate_print_text($pdf, $x, $y, $align, $font='freeserif', $style, $size = 10, $text, $width = 0) {
     $pdf->setFont($font, $style, $size);
     $pdf->SetXY($x, $y);
-    $pdf->writeHTMLCell(0, 0, '', '', $text, 0, 0, 0, true, $align);
+    $pdf->writeHTMLCell($width, 0, '', '', $text, 0, 0, 0, true, $align);
 }
 
 /**
