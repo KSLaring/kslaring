@@ -14,19 +14,22 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-/**
- * Theme version info
- *
- * @package    theme_standardold
- * @copyright  2011 Petr Skoda  {@link http://skodak.org}
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
+echo $OUTPUT->doctype() ?>
+<html <?php echo $OUTPUT->htmlattributes(); ?>>
+<head>
+    <title><?php echo $OUTPUT->page_title(); ?></title>
+    <link rel="shortcut icon" href="<?php echo $OUTPUT->favicon(); ?>" />
+    <?php echo $OUTPUT->standard_head_html() ?>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
 
-defined('MOODLE_INTERNAL') || die;
-
-$plugin->version   = 2013110500; // The current module version (Date: YYYYMMDDXX)
-$plugin->requires  = 2013110500; // Requires this Moodle version
-$plugin->component = 'theme_standardold'; // Full name of the plugin (used for diagnostics)
-$plugin->dependencies = array(
-    'theme_standard'  => 2013110500,
-);
+<body <?php echo $OUTPUT->body_attributes(); ?>>
+<?php echo $OUTPUT->standard_top_of_body_html() ?>
+<div id="page">
+    <div id="page-content" class="clearfix">
+        <?php echo $OUTPUT->main_content(); ?>
+    </div>
+</div>
+<?php echo $OUTPUT->standard_end_of_body_html() ?>
+</body>
+</html>

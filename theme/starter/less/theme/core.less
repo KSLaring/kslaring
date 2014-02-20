@@ -1,0 +1,92 @@
+@import "inc/variables.less";
+
+h1 {
+    font-size: @fontSizeH1;
+}
+
+h2 {
+    font-size: @fontSizeH2;
+}
+
+h3 {
+    font-size: @fontSizeH3;
+}
+
+h4 {
+    font-size: @fontSizeH4;
+}
+
+h5 {
+    font-size: @fontSizeH5;
+}
+
+h6 {
+    font-size: @fontSizeH6;
+}
+
+.unlist,
+.unlist li,
+.inline-list,
+.inline-list li,
+.block .list,
+.block .list li,
+.section li.activity,
+.section li.movehere,
+.tabtree li {
+    margin: 0.2em 0;
+}
+
+.editing {
+    section[data-droptarget="1"] {
+        min-height: 1em;
+    }
+}
+
+// Login
+.loginpanel {
+    border: 1px solid @grayLight;
+    .border-radius(@baseBorderRadius);
+    background: @grayLightest;
+    padding: 10px 10px;
+    position: relative;
+    min-width: 210px;
+    max-width: 35%;
+    margin: 0 auto;
+}
+
+div.loginpanel h2 {
+    color: @headingsColor;
+    font-size: @fontSizeH1;
+    font-weight: normal;
+    line-height: @baseLineHeight;
+    margin: 0;
+}
+
+.loginbox {
+    .loginform {
+        .form-input {
+            vertical-align: middle;
+            text-align: center;
+            float: none;
+            clear: both;
+            width: 100%;
+            padding-bottom: 1em;
+
+            #username,
+            #password {
+                position: relative;
+                width: 60%;
+            }
+            #loginbtn {
+                vertical-align: middle;
+                text-align: center;
+                width: 60%;
+                padding: 5px;
+            }
+        }
+        .form-label {
+            padding: 0em 0em 0.3em 2em;
+            text-align: center;
+        }
+    }
+}
