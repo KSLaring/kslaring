@@ -2982,7 +2982,13 @@ function xmldb_main_upgrade($oldversion) {
         upgrade_main_savepoint(true, 2014012400.00);
     }
 
-    if ($oldversion < 2014020500.00) {
+    if ($oldversion < 2014021300.01) {
+        // Delete any cached stats to force recalculation later, then we can be sure that cached records will have the correct
+        // field.
+        $DB->delete_records('question_response_analysis');
+        $DB->delete_records('question_statistics');
+        $DB->delete_records('quiz_statistics');
+
         // Define field variant to be added to question_statistics.
         $table = new xmldb_table('question_statistics');
         $field = new xmldb_field('variant', XMLDB_TYPE_INTEGER, '10', null, null, null, null, 'subquestion');
@@ -2993,7 +2999,74 @@ function xmldb_main_upgrade($oldversion) {
         }
 
         // Main savepoint reached.
-        upgrade_main_savepoint(true, 2014020500.00);
+        upgrade_main_savepoint(true, 2014021300.01);
+    }
+
+    if ($oldversion < 2014021300.02) {
+
+        // Define field variant to be added to question_response_analysis.
+        $table = new xmldb_table('question_response_analysis');
+        $field = new xmldb_field('variant', XMLDB_TYPE_INTEGER, '10', null, null, null, null, 'questionid');
+
+        // Conditionally launch add field variant.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Main savepoint reached.
+        upgrade_main_savepoint(true, 2014021300.02);
+    }
+
+    if ($oldversion < 2014021800.00) {
+
+        // Define field queued to be added to portfolio_tempdata.
+        $table = new xmldb_table('portfolio_tempdata');
+        $field = new xmldb_field('queued', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, '0', 'instance');
+
+        // Conditionally launch add field queued.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Main savepoint reached.
+        upgrade_main_savepoint(true, 2014021800.00);
+    }
+
+    if ($oldversion < 2014021900.01) {
+        // Force uninstall of deleted tool.
+        if (!file_exists("$CFG->dirroot/$CFG->admin/tool/qeupgradehelper")) {
+            // Remove all other associated config.
+            unset_all_config_for_plugin('tool_qeupgradehelper');
+        }
+        upgrade_main_savepoint(true, 2014021900.01);
+    }
+
+    if ($oldversion < 2014021900.02) {
+
+        // Define table question_states to be dropped.
+        $table = new xmldb_table('question_states');
+
+        // Conditionally launch drop table for question_states.
+        if ($dbman->table_exists($table)) {
+            $dbman->drop_table($table);
+        }
+
+        // Main savepoint reached.
+        upgrade_main_savepoint(true, 2014021900.02);
+    }
+
+    if ($oldversion < 2014021900.03) {
+
+        // Define table question_sessions to be dropped.
+        $table = new xmldb_table('question_sessions');
+
+        // Conditionally launch drop table for question_sessions.
+        if ($dbman->table_exists($table)) {
+            $dbman->drop_table($table);
+        }
+
+        // Main savepoint reached.
+        upgrade_main_savepoint(true, 2014021900.03);
     }
 
     return true;
