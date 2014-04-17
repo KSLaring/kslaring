@@ -1,0 +1,64 @@
+// these are conten based minor break point adjustments, to override bootstraps where they lok bad
+// Jon Jack
+// efaktor, 26/03/2013
+
+// footer blocks
+@media (max-width: 740px) {
+  #page-footer #page-footer-inner .column {
+    float: none;
+    display: block;
+    width: 100%;
+    margin-left: 0;
+  }
+}
+
+// repsonsive overides for bootstraps automatic padding
+
+@media (max-width: 767px) {
+  .top-border {
+    margin-left: -20px;
+    margin-right: -20px;
+  }
+
+  .hero-unit {
+    margin-left: -20px;
+    margin-right: -20px;
+  }
+
+  .header-right  {
+    display: none;
+  }
+}
+
+@media (max-width: 979px) {
+  .nav-collapse.active {
+    float: left;
+  }
+
+  .navbar .nav > li > a {
+    text-align: left;
+  }
+
+  .navbar-fixed-top {
+    margin-bottom: 0px;
+  }
+  .header-right  {
+    width: 60%;
+  }
+}
+
+
+// force the user menu to teh left when switch to drop down occurs
+@media (min-width: 979px) {
+  .navbar-right {
+    float: right !important;
+  }
+}
+
+@media (min-width: 1200px) {
+  .container-fluid {
+    width: 1160px;
+    margin: 0 auto;
+  }
+}
+

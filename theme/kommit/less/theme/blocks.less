@@ -1,0 +1,180 @@
+@import "inc/variables.less";
+@import "inc/mixins.less";
+
+.block {
+  margin: 5px 0 5px 0;
+  padding: 0;
+  //border: 1px solid @grayLight;
+  //.border-radius(@baseBorderRadius);
+  .header {
+    //background: @grayLighter;
+    border-bottom: 5px solid @kommitGrayWarm;
+
+    padding: 10px 15px;
+
+    .block_action {
+      padding: 4px;
+      float: right;
+    }
+    .title {
+      h2 {
+        color: @kommitGreyDark;
+        font-size: @fontSizeH3;
+        font-weight: normal;
+        line-height: @baseLineHeight;
+        margin: 0;
+      }
+    }
+    .toggle-display {
+      .iconsmall {
+        width: auto;
+      }
+    }
+  }
+  .block-hider-show,
+  .block-hider-hide {
+    cursor: pointer;
+    padding-bottom: 10px;
+    padding-right: -5px;
+    padding-left: 5px;
+  }
+  .block-hider-show {
+    display: none;
+  }
+  &.hidden {
+    .block-hider-hide {
+      display: none;
+    }
+    .block-hider-show {
+      display: inline;
+    }
+    .content {
+      display: none;
+    }
+  }
+  .content {
+    padding: 10px 15px;
+    background: @white;
+
+    h3 {
+      &.eventskey {
+        font-size: 1em;
+      }
+    }
+  }
+}
+
+.toppos {
+  top: .2em;
+}
+
+.block_navigation,
+.block_settings {
+  .block_tree {
+    .tree_item {
+      &.branch {
+        background-position: 0 .3em;
+      }
+    }
+    li {
+      &.item_with_icon {
+        > p {
+          img {
+            .toppos;
+          }
+        }
+      }
+      & > p {
+        &.hasicon {
+          img {
+            .toppos;
+          }
+        }
+      }
+      hr {
+        margin: 0;
+      }
+    }
+    .type_activity {
+      & > p {
+        &.tree_item {
+          &.active_tree_node {
+            img {
+              .toppos;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+.calendar-event-panel {
+  .yui3-overlay-content {
+    h2 {
+      &.eventtitle {
+        font-size: 1em;
+      }
+    }
+  }
+}
+
+// Fixes for block fields popping out of the block edges
+// -----------------------------------------------------
+
+#adminsearchquery,
+#blogsearchquery,
+#searchform_search,
+.block_adminblock select,
+.block_login input#login_username,
+.block_login input#login_password {
+  max-width: 92%;
+}
+
+.block .minicalendar,
+.block_login .content {
+  max-width: 280px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.block {
+  .minicalendar {
+    width: 92%;
+
+    th, td {
+      padding: 2px 1px;
+    }
+  }
+}
+
+.calendartable {
+  th, td {
+    max-width: 14%;
+  }
+}
+
+// hide styling on html block on homepage
+// ---------------------------------------------------
+
+#page-site-index {
+.block_html.block {
+  margin:  0;
+  padding: 0;
+  border: none;
+  background: none;
+  -webkit-border-radius: 0px;
+  -moz-border-radius: 0px;
+  border-radius: 0px;
+
+  .header {
+    background: none;
+  }
+
+  .title h2 {
+    color: @headingsColor;
+    font-size: @fontSizeH2;
+    line-height: @fontSizeH2 * 1.618;
+  }
+}
+}

@@ -1,0 +1,102 @@
+@import "inc/variables.less";
+@import "inc/mixins.less";
+
+/* hide inherited block styles
+// Jon Jack 26/03/2014
+// -------------------------------------
+*/
+
+.block_course_nav.block {
+  margin:  0;
+  padding: 0;
+  border: none;
+  background: pink;
+  -webkit-border-radius: 0px;
+  -moz-border-radius: 0px;
+  border-radius: 0px;
+
+  .title h2 {
+    padding: 0 0 0 15px;
+    color: @headingsColor;
+    font-size: @fontSizeH2;
+    line-height: @fontSizeH2 * 1.618;
+  }
+}
+
+
+
+.block_course_nav {
+  clear: both !important;
+
+}
+
+.block_course_nav .header {
+  font-size: @fontSizeH2;
+  padding:10px 10px 10px 0 !important;
+  background: #fff !important;
+}
+
+
+.block_course_nav .header .block_action{
+  display: none;
+}
+
+.block_course_nav .content {
+  border: none;
+  padding: 0px;
+  margin: 0px;
+}
+
+.block_course_nav img {
+  //background: #ccc !important;
+  //border: 5px solid green !important;
+}
+
+.block_course_nav .content .list li.listentry {clear:both;}
+.block_course_nav .content .list li.listentry .user {float:left;position:relative;}
+.block_course_nav .content .list li.listentry .message {float:right;}
+.block_course_nav .content .info {text-align:left;}
+.block_course_nav .content .footer {clear:both;}
+
+
+#navarea {
+}
+
+.block_course_nav {
+  .coursebox {
+    border: none;
+    margin-bottom: 15px;
+  }
+  .linkarea {
+    width: 350px;
+  }
+  .header {
+    border-bottom: none;
+  }
+  .content {
+    .col1,
+    .col2 {
+      vertical-align: top;
+      //background: pink;
+      display:inline-block;
+      width: 350px;
+      margin: 10px 15px 30px 15px;
+    }
+    h4 {
+    }
+    p {
+    }
+  }
+}
+
+
+
+
+.dir-rtl .block_course_nav .content .list li.listentry .user {float:right;}
+.dir-rtl .block_course_nav .content .list li.listentry .message {float:left;}
+
+
+
+
+
+

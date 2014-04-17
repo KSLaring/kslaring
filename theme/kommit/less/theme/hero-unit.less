@@ -1,0 +1,49 @@
+//
+// Hero unit
+// --------------------------------------------------
+
+
+.hero-unit {
+  margin-left: 0 auto;
+  margin-right: 0 auto;
+  background-color: white;
+  background-image: url([[pix:theme|banner_image]]);
+  max-height: 420px;
+  min-height: 420px;
+  padding: 0px;
+  margin-bottom: 0px;
+  line-height: @baseLineHeight * 1.5;
+  color: @heroUnitLeadColor;
+  background-repeat: no-repeat;
+  background-position: center bottom;
+  text-align: center;
+  .border-radius(0px);
+  h1 {
+    margin-bottom: 0;
+    font-family: calibri;
+    font-weight: 300;
+    color: @heroUnitHeadingColor;
+    letter-spacing: -1px;
+  }
+  li {
+    line-height: @baseLineHeight * 1.5; // Reset since we specify in type.less
+  }
+  img {
+  }
+
+  .texts {
+    width: 45%;
+    padding: 15px;
+    margin-top: 10%;
+    //background-color: rgba(189, 189, 189, 0.75);
+    display: block;
+    color: white !important;
+    text-align: left;
+    line-height: normal;
+    vertical-align: middle;
+
+  }
+
+
+}
+

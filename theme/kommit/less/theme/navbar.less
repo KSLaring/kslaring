@@ -1,0 +1,110 @@
+@import "inc/variables.less";
+@import "inc/mixins.less";
+
+.navbar {
+  //border-top: 3px solid @kommitBlueLight;
+
+}
+
+.navbar-inner {
+  min-height: 38px;
+  background-color: @kommitGreyDark;
+  border-bottom: 1px solid @kommitGray;
+  background-image: none;
+  border: none;
+  filter: none;
+  -webkit-box-shadow: none;
+  -moz-box-shadow: none;
+  box-shadow: none;
+  padding: 0;
+  margin: 0;
+
+}
+
+.navbar .nav .navbar-right {
+  margin: 0 -20px 0 -15px
+}
+
+.navbar .nav {
+  margin: 0 10px 0 -15px
+}
+
+.navbar .nav > ul {
+  margin-left: -20px;
+  padding: 0;
+
+}
+
+.navbar .nav > li {
+  text-align: left;
+  //border-left: 1px solid @grayLight;
+  //float: left;
+
+  padding-top: 7px;
+
+}
+
+.navbar .nav > li > a {
+  color: white;
+  text-align: center;
+  //float: none;
+  text-shadow: none;
+  padding: 0 20px 0 20px;
+
+}
+
+.navbar .nav > li > a:hover {
+  color: @kommitGrayLight;
+}
+
+//select the first li element using nth-child psuedo class
+.navbar .nav > li:nth-child(1) {
+  border-left: none !important;
+  //background-color: blue;
+}
+
+.navbar .nav > li:nth-last-child(1) {
+  //border-right: 1px solid #fff;
+
+}
+
+.navbar-fixed-top .navbar-inner, .navbar-static-top .navbar-inner {
+  -webkit-box-shadow: none;
+  -moz-box-shadow: none;
+  box-shadow: none;
+}
+
+.usermenu {
+  float: right;
+}
+
+.navbar {
+
+  .btn-navbar {
+    background-color: @kommitBlueDark;
+    background-image: none;
+
+  }
+}
+
+.navbar-fixed-top, .navbar-fixed-bottom {
+  position: relative;
+
+}
+
+.layout-option-nonavbar #page-navbar {
+  display: block;
+}
+
+.dropdown-menu {
+
+  padding: 5px 5px;
+
+}
+
+.dropdown-menu>li>a:hover, .dropdown-menu>li>a:focus, .dropdown-submenu:hover>a, .dropdown-submenu:focus>a {
+  text-decoration: none;
+  color: #000;
+  background-color: @grayLighter;
+  background-image: none;
+}
