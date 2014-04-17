@@ -1,0 +1,10 @@
+{
+  "name": "moodle-block_course_navigation-course_navigation",
+  "builds": {
+    "moodle-block_course_navigation-course_navigation": {
+      "jsfiles": [
+        "course_navigation.js"
+      ]
+    }
+  }
+}

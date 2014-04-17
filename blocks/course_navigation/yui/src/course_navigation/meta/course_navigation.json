@@ -1,0 +1,12 @@
+{
+  "moodle-block_course_navigation-course_navigation": {
+    "requires": [
+        "base",
+        "io-base",
+        "node",
+        "event-synthetic",
+        "event-delegate",
+        "json-parse"
+    ]
+  }
+}
