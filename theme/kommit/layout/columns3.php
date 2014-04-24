@@ -37,11 +37,17 @@ if (right_to_left()) {
     $regionbsid = 'region-bs-main-and-pre';
 }
 
+$url = new moodle_url('/', array('redirect' => 0));
+/**
+ * docu
+ */
+$hascap = has_capability('moodle/course:update', context_course::instance($PAGE->course->id));
+
 echo $OUTPUT->doctype() ?>
 <html <?php echo $OUTPUT->htmlattributes(); ?> xmlns="http://www.w3.org/1999/html">
 <head>
     <title><?php echo $OUTPUT->page_title(); ?></title>
-    <link rel="shortcut icon" href="<?php echo $OUTPUT->favicon(); ?>" />
+    <link rel="shortcut icon" href="<?php echo $OUTPUT->favicon(); ?>"/>
     <?php echo $OUTPUT->standard_head_html() ?>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
@@ -81,9 +87,10 @@ echo $OUTPUT->doctype() ?>
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </a>
+
                 <div id="moodle-navbar" class="nav-collapse collapse">
                     <?php echo $OUTPUT->custom_menu(); ?>
-                    <?php echo $OUTPUT->user_menu();?>
+                    <?php echo $OUTPUT->user_menu(); ?>
 
                 </div>
             </div>
@@ -92,7 +99,6 @@ echo $OUTPUT->doctype() ?>
 
 
     <div id="page" class="container-fluid">
-
 
         <header id="page-header" class="clearfix">
             <div id="page-navbar" class="clearfix">
@@ -132,6 +138,7 @@ echo $OUTPUT->doctype() ?>
 
             <div class="column">
                 <h4>Kontakt:</h4>
+
                 <p>Telefon: +47 09088</br>
                     Epost: info@kommit.no
                 </p>
@@ -139,6 +146,7 @@ echo $OUTPUT->doctype() ?>
             </div>
             <div class="column">
                 <h4>Siste nytt</h4>
+
                 <p>Informasjonssikkerhet</br>
                     KOLS-kurs</br>
                     Saksbehandlers arkivrutiner</br>
@@ -158,6 +166,7 @@ echo $OUTPUT->doctype() ?>
             </div>
             <div class="column">
                 <h4>Populære nedlastinger</h4>
+
                 <p>Informasjonssikkerhet</br>
                     KOLS-kurs</br>
                     Saksbehandlers arkivrutiner</br>
@@ -168,6 +177,7 @@ echo $OUTPUT->doctype() ?>
             </div>
             <div class="column">
                 <h4>Siste fra brukerfora</h4>
+
                 <p>Informasjonssikkerhet</br>
                     KOLS-kurs</br>
                     Saksbehandlers arkivrutiner</br>
@@ -177,6 +187,7 @@ echo $OUTPUT->doctype() ?>
             </div>
             <div class="column">
                 <h4>Hyppige søk</h4>
+
                 <p>Informasjonssikkerhet</br>
                     KOLS</br>
                     Saksbehandlers</br>

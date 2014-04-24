@@ -44,7 +44,7 @@ $THEME->yuicssmodules = array();
 
 // add custom javascripts here
 //---------------------------------
-$THEME->javascripts_footer = array( 'sticky_header');
+$THEME->javascripts_footer = array('sticky_header');
 
 
 // this will allow for moodle to be used on sites like responsinator
@@ -83,13 +83,20 @@ $THEME->layouts = array(
         'file' => 'columns3.php',
         'regions' => array('side-pre', 'side-post', 'top', 'bottom', 'content-top'),
         'defaultregion' => 'side-pre',
-        'options' => array('langmenu'=>true),
+        'options' => array('langmenu' => true),
     ),
     // The site home page.
     'frontpage' => array(
         'file' => 'columns3_front.php',
         'regions' => array('side-pre', 'side-post', 'top', 'bottom', 'content-top'),
         'defaultregion' => 'side-pre',
-        'options' => array('nonavbar'=>true),
+        'options' => array('nonavbar' => true),
+    ),
+    // part of course, typical for modules - default page layout if $cm specified in require_login().
+    'incourse' => array(
+        'file' => 'columns3.php',
+        'regions' => array('side-pre', 'side-post', 'top', 'bottom', 'content-top'),
+        'defaultregion' => 'side-pre',
+        'options' => array('langmenu' => true),
     )
 );

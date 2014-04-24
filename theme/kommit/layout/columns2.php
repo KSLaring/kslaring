@@ -17,12 +17,15 @@
 // Get the HTML for the settings bits.
 $html = theme_kommit_get_html_for_settings($OUTPUT, $PAGE);
 
-$left = (!right_to_left());  // To know if to add 'pull-right' and 'desktop-first-column' classes in the layout for LTR.
+$left = (!right_to_left()); // To know if to add 'pull-right' and 'desktop-first-column' classes in the layout for LTR.
+
+$url = new moodle_url('/', array('redirect' => 0));
+
 echo $OUTPUT->doctype() ?>
 <html <?php echo $OUTPUT->htmlattributes(); ?>>
 <head>
     <title><?php echo $OUTPUT->page_title(); ?></title>
-    <link rel="shortcut icon" href="<?php echo $OUTPUT->favicon(); ?>" />
+    <link rel="shortcut icon" href="<?php echo $OUTPUT->favicon(); ?>"/>
     <?php echo $OUTPUT->standard_head_html() ?>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
@@ -35,9 +38,9 @@ echo $OUTPUT->doctype() ?>
 
     <div class="logo-area">
         <?php
-        $url = new moodle_url('/',array('redirect' => 0));
+        $url = new moodle_url('/', array('redirect' => 0));
         ?>
-        <a class="logo" href="<?php echo $url;?>">
+        <a class="logo" href="<?php echo $url; ?>">
             <img class="logo" alt="kommit logo" src="<?php echo $OUTPUT->pix_url('logo', 'theme'); ?>"
         </a>
     </div>
@@ -54,14 +57,14 @@ echo $OUTPUT->doctype() ?>
                 $my_page = get_user_preferences('user_home_page_preference');
                 if ($my_page == $PAGE->url) {
                     echo $OUTPUT->single_button(new moodle_url('/local/mypage/rebuild.php'), get_string('resethome', 'theme_kommit'));
-                }else {
+                } else {
                     $page_type = $PAGE->pagetype;
-                    $found = ((strpos($page_type,'course-index-category') === false) ? false : true) ||
-                        ((strpos($page_type,'course-view') === false) ? false : true) ||
-                        ((strpos($page_type,'profile') === false) ? false : true);
+                    $found = ((strpos($page_type, 'course-index-category') === false) ? false : true) ||
+                            ((strpos($page_type, 'course-view') === false) ? false : true) ||
+                            ((strpos($page_type, 'profile') === false) ? false : true);
 
                     if ($found) {
-                        echo $OUTPUT->single_button(new moodle_url('/local/mypage/rebuild.php',array('url' => $PAGE->url)), get_string('sethome', 'theme_kommit'));
+                        echo $OUTPUT->single_button(new moodle_url('/local/mypage/rebuild.php', array('url' => $PAGE->url)), get_string('sethome', 'theme_kommit'));
                     }
                 }
                 ?>
@@ -83,6 +86,7 @@ echo $OUTPUT->doctype() ?>
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </a>
+
             <div id="moodle-navbar" class="nav-collapse collapse">
                 <?php echo $OUTPUT->custom_menu(); ?>
                 <?php echo $OUTPUT->user_menu(); ?>
@@ -103,11 +107,13 @@ echo $OUTPUT->doctype() ?>
         </div>
 
 
-    <?php echo $OUTPUT->blocks('top', 'top-blocks', 'section'); ?>
+        <?php echo $OUTPUT->blocks('top', 'top-blocks', 'section'); ?>
     </header>
 
     <div id="page-content" class="row-fluid">
-        <section id="region-main" class="span9<?php if ($left) { echo ' pull-right'; } ?>">
+        <section id="region-main" class="span9<?php if ($left) {
+            echo ' pull-right';
+        } ?>">
             <?php
             echo $OUTPUT->course_content_header();
             echo $OUTPUT->blocks('content-top', 'content-top-blocks', 'section');
@@ -120,7 +126,7 @@ echo $OUTPUT->doctype() ?>
         if ($left) {
             $classextra = ' desktop-first-column';
         }
-        echo $OUTPUT->blocks('side-pre', 'span3'.$classextra);
+        echo $OUTPUT->blocks('side-pre', 'span3' . $classextra);
         ?>
     </div>
 </div>
@@ -130,6 +136,7 @@ echo $OUTPUT->doctype() ?>
     <div id="page-footer-inner" class="wrapper clearfix">
         <div class="column">
             <h4>Besøksadresse:</h4>
+
             <p>Oslo universitetssykehus - Ullevål<br>
                 Bygning 31, inngang B, 3. etasje<br>
                 Kirkeveien 166<br>
@@ -139,6 +146,7 @@ echo $OUTPUT->doctype() ?>
         </div>
         <div class="column">
             <h4>Postadresse</h4>
+
             <p>Nasjonal kompetansetjeneste for prehospital akuttmedisin (kommit)<br>
                 Oslo universitetssykehus HF<br>
                 Ullevål sykehus<br>
@@ -149,6 +157,7 @@ echo $OUTPUT->doctype() ?>
         </div>
         <div class="column">
             <h4>Kontakt oss:</h4>
+
             <p>E-post<br>
                 <a href="mailto:postmottak@kommit.no">postmottak@kommit.no</a><br>
                 Faks<br>
@@ -159,7 +168,9 @@ echo $OUTPUT->doctype() ?>
         </div>
         <div class="column">
             <h4>Informasjon</h4>
+
             <p>Om kommit<br>
+
             <p>Ansatte</p>
 
             <img class="social"
