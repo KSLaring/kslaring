@@ -10,9 +10,10 @@ E-post: post@efaktor.no
 ## Introduction
 The block is based on the Moodle “navigation” block. The menu works the same way. The menu items show only the sections and the modules of the current course.
 
-The block can be used once in a course. 
+The block can be used once in a course.
 Block settings are automatically changed to show the block as the first block in the column and to show it on the course page and on all module pages.
 The following settings are changed
+
 * “weight” and “defaultweight” = “-10”
 * “pagetypepattern” = “*”
 * “showinsubcontexts” = “1”
