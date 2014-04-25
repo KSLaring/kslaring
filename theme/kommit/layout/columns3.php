@@ -50,8 +50,6 @@ echo $OUTPUT->doctype() ?>
 
 <?php echo $OUTPUT->standard_top_of_body_html() ?>
 
-
-
 <div class="top-border">
 </div>
 
@@ -72,23 +70,26 @@ echo $OUTPUT->doctype() ?>
         </div>
     </div>
 
-    <header role="banner" class="navbar navbar-fixed-top<?php echo $html->navbarclass ?> moodle-has-zindex">
-        <nav role="navigation" class="navbar-inner">
-            <div class="container-fluid">
+    <div id="header" class="header">
+        <header role="banner" class="navbar navbar-fixed-top<?php echo $html->navbarclass ?> moodle-has-zindex">
+            <nav role="navigation" class="navbar-inner">
+                <div class="container-fluid">
 
-                <a class="btn btn-navbar" data-toggle="workaround-collapse" data-target=".nav-collapse">
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </a>
-                <div id="moodle-navbar" class="nav-collapse collapse">
-                    <?php echo $OUTPUT->custom_menu(); ?>
-                    <?php echo $OUTPUT->user_menu();?>
+                    <a class="btn btn-navbar" data-toggle="workaround-collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
 
+                    <div id="moodle-navbar" class="nav-collapse collapse">
+                        <?php echo $OUTPUT->custom_menu(); ?>
+                        <?php echo $OUTPUT->user_menu(); ?>
+
+                    </div>
                 </div>
-            </div>
-        </nav>
-    </header>
+            </nav>
+        </header>
+    </div>
 
 
     <div id="page" class="container-fluid">
@@ -187,9 +188,9 @@ echo $OUTPUT->doctype() ?>
             <p>© 2014 KOMMUNESEKTORENS ORGANISASJON</p>
 
         </div>
-</div>
-</footer>
 
+</footer>
+</div>
 <?php echo $OUTPUT->standard_end_of_body_html() ?>
 
 

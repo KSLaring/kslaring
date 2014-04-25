@@ -104,3 +104,41 @@ Courses and categories lists, from Mary Evans
 #page-course-view-topics #region-main h1 {
   //display: none;
 }
+
+// course list styles for renderer
+
+.coursebox {
+  border: none;
+  position: relative;
+  .panel-heading {
+    font-size: @fontSizeH2;
+    line-height: @fontSizeH2 *1.618 ;
+  }
+  .courseimage img {
+    float: left;
+    height: auto;
+    margin-right: 10px;
+    max-width: 240px;
+  }
+  .teachers {
+    margin-left: 0;
+    li {
+      list-style-type:none;
+      padding:0;
+      margin:0;
+    }
+  }
+  .coursebtn {
+    position: relative;
+    //float: left;
+    //left: 10px;
+    bottom: 10px;
+  }
+  .boxfooter {
+    clear: both;
+    margin-bottom: 30px;
+  }
+  .enrolmenticons {
+    float: right;
+  }
+}

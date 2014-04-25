@@ -30,69 +30,46 @@ echo $OUTPUT->doctype() ?>
 <body <?php echo $OUTPUT->body_attributes('two-column'); ?>>
 
 <?php echo $OUTPUT->standard_top_of_body_html() ?>
-
-<div class="container-fluid">
-
-    <div class="logo-area">
-        <?php
-        $url = new moodle_url('/',array('redirect' => 0));
-        ?>
-        <a class="logo" href="<?php echo $url;?>">
-            <img class="logo" alt="kommit logo" src="<?php echo $OUTPUT->pix_url('logo', 'theme'); ?>"
-        </a>
-    </div>
-    <div id="set-homepage">
-        <ul class="nav pull-right">
-            <li><?php
-                /**
-                 * @updateDate  23/01/2014
-                 * @author      eFaktor     (fbv)
-                 *
-                 * Description
-                 * Add a button to set your My home
-                 */
-                $my_page = get_user_preferences('user_home_page_preference');
-                if ($my_page == $PAGE->url) {
-                    echo $OUTPUT->single_button(new moodle_url('/local/mypage/rebuild.php'), get_string('resethome', 'theme_kommit'));
-                }else {
-                    $page_type = $PAGE->pagetype;
-                    $found = ((strpos($page_type,'course-index-category') === false) ? false : true) ||
-                        ((strpos($page_type,'course-view') === false) ? false : true) ||
-                        ((strpos($page_type,'profile') === false) ? false : true);
-
-                    if ($found) {
-                        echo $OUTPUT->single_button(new moodle_url('/local/mypage/rebuild.php',array('url' => $PAGE->url)), get_string('sethome', 'theme_kommit'));
-                    }
-                }
-                ?>
-            </li>
-            <li>&nbsp;</li>
-            <li><?php echo $OUTPUT->page_heading_menu(); ?></li>
-        </ul>
-
-    </div>
-
+<div class="top-border">
 </div>
 
-<header role="banner" class="navbar navbar-fixed-top<?php echo $html->navbarclass ?> moodle-has-zindex">
-    <nav role="navigation" class="navbar-inner">
-        <div class="container-fluid">
+<div class="header-background">
+    <div class="container-fluid">
+        <div class="logo-area">
+            <a class="logo" href="<?php echo $url; ?>"><img class="logo" alt="kommit logo" src="<?php echo
+                $OUTPUT->pix_url('logo', 'theme'); ?>"></a>
+        </div>
 
-            <a class="btn btn-navbar" data-toggle="workaround-collapse" data-target=".nav-collapse">
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-            </a>
-            <div id="moodle-navbar" class="nav-collapse collapse">
-                <?php echo $OUTPUT->custom_menu(); ?>
-                <?php echo $OUTPUT->user_menu(); ?>
-                <ul class="nav pull-right">
-                    <li><?php echo $OUTPUT->page_heading_menu(); ?></li>
-                </ul>
+        <div class="header-right">
+
+            <div class="social">
+                <div class="col1"><a href="#"><i class="fa fa-facebook fa-2x" id="icon"></i></a></div>
+                <div class="col2"><a href="#"><i class="fa fa-twitter fa-2x" id="icon"></i></a></div>
+                <div class="col1"><a href="#"><i class="fa fa-linkedin fa-2x" id="icon"></i></a></div>
             </div>
         </div>
-    </nav>
-</header>
+    </div>
+
+    <div id="header" class="header">
+        <header role="banner" class="navbar navbar-fixed-top<?php echo $html->navbarclass ?> moodle-has-zindex">
+            <nav role="navigation" class="navbar-inner">
+                <div class="container-fluid">
+
+                    <a class="btn btn-navbar" data-toggle="workaround-collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+
+                    <div id="moodle-navbar" class="nav-collapse collapse">
+                        <?php echo $OUTPUT->custom_menu(); ?>
+                        <?php echo $OUTPUT->user_menu(); ?>
+
+                    </div>
+                </div>
+            </nav>
+        </header>
+    </div>
 
 <div id="page" class="container-fluid">
 
@@ -128,58 +105,71 @@ echo $OUTPUT->doctype() ?>
 
 <footer id="page-footer">
     <div id="page-footer-inner" class="wrapper clearfix">
-        <div class="column">
-            <h4>Besøksadresse:</h4>
-            <p>Oslo universitetssykehus - Ullevål<br>
-                Bygning 31, inngang B, 3. etasje<br>
-                Kirkeveien 166<br>
-                0407 OSLO<br>
-            </p>
 
+        <div class="column">
+            <h4>Kontakt:</h4>
+
+            <p>Telefon: +47 09088</br>
+                Epost: info@kommit.no
+            </p>
+            <img src="<?php echo $OUTPUT->pix_url('ks_footer_logo', 'theme'); ?>" width="71" height="35"/>
         </div>
         <div class="column">
-            <h4>Postadresse</h4>
-            <p>Nasjonal kompetansetjeneste for prehospital akuttmedisin (kommit)<br>
-                Oslo universitetssykehus HF<br>
-                Ullevål sykehus<br>
-                Postboks 4956 Nydalen<br>
-                0424 OSLO
+            <h4>Siste nytt</h4>
 
-            </p>
-        </div>
-        <div class="column">
-            <h4>Kontakt oss:</h4>
-            <p>E-post<br>
-                <a href="mailto:postmottak@kommit.no">postmottak@kommit.no</a><br>
-                Faks<br>
-                23 02 62 11<br>
-                Telefon<br>
-                23 02 62 10
+            <p>Informasjonssikkerhet</br>
+                KOLS-kurs</br>
+                Saksbehandlers arkivrutiner</br>
+                Er du god i norsk og nynorsk?</br>
+                Introduksjonsprogrammet</br>
             </p>
         </div>
         <div class="column">
-            <h4>Informasjon</h4>
-            <p>Om kommit<br>
-            <p>Ansatte</p>
+            <h4>Populære kurs</h4>
 
-            <img class="social"
-                 src="<?php echo $OUTPUT->pix_url('vimeo', 'theme'); ?>"
-                 width="40" height="42"/>
-            <img class="social"
-                 src="<?php echo $OUTPUT->pix_url('facebook', 'theme'); ?>"
-                 width="40" height="42"/>
-            <img class="social"
-                 src="<?php echo $OUTPUT->pix_url('twitter', 'theme'); ?>"
-                 width="40" height="42"/>
-            <img class="social"
-                 src="<?php echo $OUTPUT->pix_url('rss', 'theme'); ?>"
-                 width="40" height="42"/>
-
+            <p>Informasjonssikkerhet</br>
+                KOLS-kurs</br>
+                Saksbehandlers arkivrutiner</br>
+                Er du god i norsk og nynorsk?</br>
+                Introduksjonsprogrammet</br>
+            </p>
         </div>
-    </div>
+        <div class="column">
+            <h4>Populære nedlastinger</h4>
+
+            <p>Informasjonssikkerhet</br>
+                KOLS-kurs</br>
+                Saksbehandlers arkivrutiner</br>
+                Er du god i norsk og nynorsk?</br>
+                Introduksjonsprogrammet</br>
+
+            </p>
+        </div>
+        <div class="column">
+            <h4>Siste fra brukerfora</h4>
+
+            <p>Informasjonssikkerhet</br>
+                KOLS-kurs</br>
+                Saksbehandlers arkivrutiner</br>
+                Er du god i norsk og nynorsk?</br>
+                Introduksjonsprogrammet</br>
+            </p>
+        </div>
+        <div class="column">
+            <h4>Hyppige søk</h4>
+
+            <p>Informasjonssikkerhet</br>
+                KOLS</br>
+                Saksbehandlers</br>
+                nynorsk?</br>
+                Introduksjonsprogram</br>
+            </p>
+        </div>
+        <p>© 2014 KOMMUNESEKTORENS ORGANISASJON</p>
 
     </div>
 </footer>
+</div>
 
 <?php echo $OUTPUT->standard_end_of_body_html() ?>
 

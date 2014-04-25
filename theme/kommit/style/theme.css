@@ -97,76 +97,110 @@ h5,
 h6 {
   color: #7e7e7e;
 }
-.navbar-inner {
-  min-height: 38px;
-  background-color: #1a1a1a;
-  border-bottom: 1px solid #7e7e7e;
-  background-image: none;
-  border: none;
-  filter: none;
-  -webkit-box-shadow: none;
-  -moz-box-shadow: none;
-  box-shadow: none;
-  padding: 0;
-  margin: 0;
-}
-.navbar .nav .navbar-right {
-  margin: 0 -20px 0 -15px;
-}
-.navbar .nav {
-  margin: 0 10px 0 -15px;
-}
-.navbar .nav > ul {
-  margin-left: -20px;
-  padding: 0;
-}
-.navbar .nav > li {
-  text-align: left;
-  padding-top: 7px;
-}
-.navbar .nav > li > a {
-  color: white;
-  text-align: center;
-  text-shadow: none;
-  padding: 0 20px 0 20px;
-}
-.navbar .nav > li > a:hover {
-  color: #f2f2f3;
-}
-.navbar .nav > li:nth-child(1) {
-  border-left: none !important;
-}
-.navbar-fixed-top .navbar-inner,
-.navbar-static-top .navbar-inner {
-  -webkit-box-shadow: none;
-  -moz-box-shadow: none;
-  box-shadow: none;
-}
-.usermenu {
-  float: right;
-}
-.navbar .btn-navbar {
-  background-color: #003876;
-  background-image: none;
-}
 .navbar-fixed-top,
 .navbar-fixed-bottom {
   position: relative;
 }
-.layout-option-nonavbar #page-navbar {
-  display: block;
+/* @group Navbar
+ */
+.navbar-inner {
+  border-top: 1px solid #000000 !important;
+  border-bottom: 1px solid #000000 !important;
+  background-color: #1a1a1a !important;
+  filter: none;
 }
-.dropdown-menu {
-  padding: 5px 5px;
+.navbar .nav > li > a:hover {
+  background: #7e7e7e !important;
 }
-.dropdown-menu > li > a:hover,
-.dropdown-menu > li > a:focus,
-.dropdown-submenu:hover > a,
-.dropdown-submenu:focus > a {
-  text-decoration: none;
-  color: #000;
-  background-color: #eeeeee;
+.navbar .nav .active > a,
+.navbar .nav .active > a:hover,
+.navbar .nav .active > a:focus,
+.navbar .nav li.dropdown.open > .dropdown-toggle,
+.navbar .nav li.dropdown.active > .dropdown-toggle,
+.navbar .nav li.dropdown.open.active > .dropdown-toggle {
+  background: #7e7e7e !important;
+}
+/* @end */
+/* @group Navbar
+ */
+.navbar {
+  margin-bottom: 0px;
+  background-image: none !important;
+}
+.navbar-inner {
+  border-radius: 0px;
+  line-height: 0px;
   background-image: none;
+}
+.navbar .brand {
+  color: #fff !important;
+  text-shadow: none;
+  line-height: 20px;
+}
+.navbar .nav .active > a,
+.navbar .nav .active > a:hover,
+.navbar .nav .active > a:focus,
+.navbar .nav li.dropdown.open > .dropdown-toggle,
+.navbar .nav li.dropdown.active > .dropdown-toggle,
+.navbar .nav li.dropdown.open.active > .dropdown-toggle {
+  color: #fff;
+}
+.navbar .caret {
+  border-top-color: white !important;
+  border-bottom-color: white !important;
+  margin-left: 5px;
+}
+.navbar .nav > li > a {
+  color: #fff;
+  text-shadow: none;
+}
+.navbar .nav > li > a:hover {
+  color: #fff;
+}
+/* @end */
+.navbar .btn-navbar {
+  position: relative;
+  float: right;
+  padding: 10px 10px;
+  margin-top: 8px;
+  margin-bottom: 8px;
+  background-color: #00aef0;
+  background-image: none;
+  border: 1px solid transparent;
+  border-radius: 4px;
+}
+.navbar .btn-navbar:hover {
+  background: #0e7b9e !important;
+}
+.navbar .btn-navbar:active,
+.navbar .btn-navbar.active,
+.navbar .btn-navbar.disabled,
+.navbar .btn-navbar[disabled] {
+  color: #003876;
+  background-color: white !important;
+  transform: rotate(90deg);
+  -ms-transform: rotate(90deg);
+  /* IE 9 */
+  -webkit-transform: rotate(90deg);
+  /* Opera, Chrome, and Safari */
+}
+.navbar .btn-navbar:active .icon-bar,
+.navbar .btn-navbar.active .icon-bar,
+.navbar .btn-navbar.disabled .icon-bar,
+.navbar .btn-navbar[disabled] .icon-bar {
+  background: #003876;
+  width: 15px;
+  height: 3px;
+}
+.navbar .btn-navbar .icon-bar {
+  background-color: #f5f5f5;
+  -webkit-border-radius: 1px;
+  -moz-border-radius: 1px;
+  border-radius: 1px;
+  box-shadow: none;
+}
+.btn-navbar .icon-bar + .icon-bar {
+  margin-top: 3px;
 }
 .sectionname {
   font-size: 1.3em;
@@ -227,6 +261,39 @@ Courses and categories lists, from Mary Evans
 ----------------------------*/
 /* Remove course heading on course topic view
 ----------------------------*/
+.coursebox {
+  border: none;
+  position: relative;
+}
+.coursebox .panel-heading {
+  font-size: 36px;
+  line-height: 58.248000000000005px;
+}
+.coursebox .courseimage img {
+  float: left;
+  height: auto;
+  margin-right: 10px;
+  max-width: 240px;
+}
+.coursebox .teachers {
+  margin-left: 0;
+}
+.coursebox .teachers li {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+.coursebox .coursebtn {
+  position: relative;
+  bottom: 10px;
+}
+.coursebox .boxfooter {
+  clear: both;
+  margin-bottom: 30px;
+}
+.coursebox .enrolmenticons {
+  float: right;
+}
 .toggle_switch {
   position: relative;
   float: left;
@@ -384,7 +451,7 @@ body {
   margin: 0 auto;
 }
 div.loginpanel h2 {
-  color: white;
+  color: #7e7e7e;
   font-size: 41.888px;
   font-weight: normal;
   line-height: 25.888px;
@@ -571,13 +638,155 @@ div.loginpanel h2 {
 .dir-rtl .block_course_nav .content .list li.listentry .message {
   float: left;
 }
-.sticky {
-  width: 100%;
-  position: fixed;
-  top: 0;
+.block_course_navigation .block_tree {
+  padding-left: 0;
+  padding-top: 0;
+  overflow: visible;
+  margin: 0px;
+  background: #f3f3f3;
+  border: 1px solid #ccc;
 }
-.sticky .navbar-fixed-top .navbar-inner {
-  background: rgba(0, 0, 0, 0.5);
+.block_course_navigation .block_tree li {
+  list-style: none;
+  margin: 0px;
+  padding: 10px 0 10px 0;
+  border-bottom: 1px solid #ccc;
+}
+.block_course_navigation .block_tree li.item_with_icon > p {
+  position: relative;
+  padding-left: 21px;
+}
+.block_course_navigation .block_tree li.item_with_icon > p img,
+.block_course_navigation .block_tree .type_activity > p.tree_item.active_tree_node img,
+.block_course_navigation .block_tree li > p.hasicon img {
+  vertical-align: middle;
+  position: absolute;
+  left: 0;
+  top: -1px;
+  width: 16px;
+  height: 16px;
+}
+.block_course_navigation .block_tree .type_activity > p.branch.hasicon,
+.block_course_navigation .block_tree .type_activity > p.emptybranch.hasicon,
+.block_course_navigation .block_tree li.item_with_icon.contains_branch > .tree_item {
+  padding-left: 37px;
+}
+.block_course_navigation .block_tree li ul {
+  padding-left: 0;
+  margin: 0;
+}
+.block_course_navigation .block_tree li.depth_2 ul {
+  padding-left: 16px;
+  margin: 0;
+}
+.block_course_navigation .block_tree .type_activity > p.tree_item.branch.hasicon.active_tree_node,
+.block_course_navigation .block_tree .tree_item {
+  padding-left: 21px;
+  text-align: left;
+  margin: 3px 0;
+}
+.block_course_navigation .block_tree .tree_item.branch {
+  background-image: url([[pix:t/expanded]]);
+  background-position: 2px 2px;
+  background-repeat: no-repeat;
+}
+.block_course_navigation .block_tree .tree_item.branch.course_navigation_node {
+  background-image: none;
+  padding-left: 0;
+}
+.block_course_navigation .block_tree .type_activity > .tree_item.emptybranch,
+.block_course_navigation .block_tree .type_activity > .tree_item.branch {
+  background-image: none;
+  position: relative;
+}
+.block_course_navigation .block_tree .root_node.leaf {
+  padding-left: 0;
+}
+.block_course_navigation .block_tree .active_tree_node {
+  font-weight: 700;
+}
+.block_course_navigation .block_tree .depth_1.current_branch ul {
+  font-weight: 400;
+}
+.dock .block_course_navigation .tree_item {
+  white-space: nowrap;
+}
+.jsenabled .block_course_navigation .block_tree .tree_item.branch {
+  cursor: pointer;
+}
+.jsenabled .block_course_navigation .block_tree .tree_item.emptybranch {
+  background-image: url([[pix:t/collapsed_empty]]);
+  background-position: 0 0;
+  background-repeat: no-repeat;
+}
+.jsenabled .block_course_navigation .block_tree .type_activity > .tree_item.branch {
+  background-image: url([[pix:t/expanded]]);
+}
+.jsenabled .block_course_navigation .block_tree .collapsed .tree_item.branch {
+  background-image: url([[pix:t/collapsed]]);
+}
+.jsenabled .block_course_navigation .block_tree .tree_item.branch.loadingbranch {
+  background-image: url([[pix:i/loading_small]]);
+}
+.jsenabled .block_course_navigation .block_tree_box .requiresjs {
+  display: inline;
+}
+.ie6 .block_course_navigation .block_tree .tree_item {
+  width: 100%;
+}
+.dir-rtl .block_course_navigation .block_tree li.depth_2 ul {
+  padding-right: 16px;
+  padding-left: 0;
+}
+.dir-rtl .block_course_navigation .block_tree .type_activity > p.tree_item.branch.hasicon.active_tree_node,
+.dir-rtl .block_course_navigation .block_tree .tree_item {
+  padding-right: 21px;
+  text-align: right;
+}
+.dir-rtl .block_course_navigation .block_tree .tree_item.branch {
+  background-position: center right;
+}
+.dir-rtl .block_course_navigation .block_tree,
+.dir-rtl .block_course_navigation .block_tree li ul,
+.dir-rtl .block_course_navigation .block_tree .course_navigation_node.tree_item.branch,
+.dir-rtl .block_course_navigation .block_tree .root_node.leaf {
+  padding-right: 0;
+}
+.dir-rtl .block_course_navigation .block_tree li.item_with_icon > p img,
+.dir-rtl .block_course_navigation .block_tree .type_activity > p.tree_item.active_tree_node img,
+.dir-rtl .block_course_navigation .block_tree li > p.hasicon img {
+  left: auto;
+  right: 0;
+}
+.dir-rtl .block_course_navigation .block_tree li.item_with_icon.contains_branch > p img {
+  left: auto;
+  right: 16px;
+}
+.dir-rtl .block_course_navigation .block_tree .type_activity > p.branch.hasicon,
+.dir-rtl .block_course_navigation .block_tree li.item_with_icon.contains_branch > .tree_item {
+  padding-right: 37px;
+  padding-left: 0;
+}
+.dir-rtl .block_course_navigation .block_tree .type_activity > .tree_item.branch img {
+  right: 16px;
+  left: auto;
+}
+.jsenabled.dir-rtl .block_course_navigation .block_tree .tree_item.emptybranch {
+  background-image: url([[pix:t/collapsed_empty_rtl]]);
+  background-position: center right;
+}
+.jsenabled.dir-rtl .block_course_navigation .block_tree .collapsed .tree_item.branch {
+  background-image: url([[pix:t/collapsed_rtl]]);
+}
+.block_course_navigation .block_tree li.item_with_icon.contains_branch > p img,
+.block_course_navigation .block_tree .type_activity > .tree_item.hasicon.emptybranch img,
+.block_course_navigation .block_tree .type_activity > .tree_item.branch img {
+  left: 16px;
+}
+.jsenabled .block_course_navigation .block_tree .collapsed ul,
+.jsenabled .block_course_navigation.dock_on_load,
+.block_course_navigation .block_tree_box .requiresjs {
+  display: none;
 }
 @media (max-width: 740px) {
   #page-footer #page-footer-inner .column {
@@ -612,6 +821,10 @@ div.loginpanel h2 {
   }
   .header-right {
     width: 60%;
+  }
+  .nav-collapse .nav > li > a,
+  .nav-collapse .dropdown-menu a {
+    color: #fff;
   }
 }
 @media (min-width: 979px) {

@@ -44,7 +44,7 @@ $THEME->yuicssmodules = array();
 
 // add custom javascripts here
 //---------------------------------
-$THEME->javascripts_footer = array( 'sticky_header');
+//$THEME->javascripts_footer = array( 'sticky_header');
 
 
 // this will allow for moodle to be used on sites like responsinator

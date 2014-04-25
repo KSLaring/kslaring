@@ -1,110 +1,155 @@
 @import "inc/variables.less";
 @import "inc/mixins.less";
 
-.navbar {
-  //border-top: 3px solid @kommitBlueLight;
 
-}
-
-.navbar-inner {
-  min-height: 38px;
-  background-color: @kommitGreyDark;
-  border-bottom: 1px solid @kommitGray;
-  background-image: none;
-  border: none;
-  filter: none;
-  -webkit-box-shadow: none;
-  -moz-box-shadow: none;
-  box-shadow: none;
-  padding: 0;
-  margin: 0;
-
-}
-
-.navbar .nav .navbar-right {
-  margin: 0 -20px 0 -15px
-}
-
-.navbar .nav {
-  margin: 0 10px 0 -15px
-}
-
-.navbar .nav > ul {
-  margin-left: -20px;
-  padding: 0;
-
-}
-
-.navbar .nav > li {
-  text-align: left;
-  //border-left: 1px solid @grayLight;
-  //float: left;
-
-  padding-top: 7px;
-
-}
-
-.navbar .nav > li > a {
-  color: white;
-  text-align: center;
-  //float: none;
-  text-shadow: none;
-  padding: 0 20px 0 20px;
-
-}
-
-.navbar .nav > li > a:hover {
-  color: @kommitGrayLight;
-}
-
-//select the first li element using nth-child psuedo class
-.navbar .nav > li:nth-child(1) {
-  border-left: none !important;
-  //background-color: blue;
-}
-
-.navbar .nav > li:nth-last-child(1) {
-  //border-right: 1px solid #fff;
-
-}
-
-.navbar-fixed-top .navbar-inner, .navbar-static-top .navbar-inner {
-  -webkit-box-shadow: none;
-  -moz-box-shadow: none;
-  box-shadow: none;
-}
-
-.usermenu {
-  float: right;
-}
-
-.navbar {
-
-  .btn-navbar {
-    background-color: @kommitBlueDark;
-    background-image: none;
-
-  }
-}
 
 .navbar-fixed-top, .navbar-fixed-bottom {
   position: relative;
 
 }
 
-.layout-option-nonavbar #page-navbar {
-  display: block;
+/* @group Navbar
+ */
+
+
+.navbar-inner{
+  border-top:1px solid @black !important;
+  border-bottom:1px solid @black !important;
+  background-color: @kommitGreyDark !important;
+  filter: none;
 }
 
-.dropdown-menu {
-
-  padding: 5px 5px;
-
+.navbar .nav{
+  //border-right:1px solid @kommitGray;
 }
 
-.dropdown-menu>li>a:hover, .dropdown-menu>li>a:focus, .dropdown-submenu:hover>a, .dropdown-submenu:focus>a {
-  text-decoration: none;
-  color: #000;
-  background-color: @grayLighter;
+.navbar .nav > li > a{
+  //border-left:1px solid @kommitGray;
+}
+
+.navbar .nav > li > a:hover{
+  background: @kommitGray !important;
+  //border-bottom: 3px solid @kommitBlueLight !important;
+}
+
+.navbar .nav .active > a,
+.navbar .nav .active > a:hover,
+.navbar .nav .active > a:focus,
+.navbar .nav li.dropdown.open > .dropdown-toggle,
+.navbar .nav li.dropdown.active > .dropdown-toggle,
+.navbar .nav li.dropdown.open.active > .dropdown-toggle {
+  background: @kommitGray !important;
+}
+
+.navbar .nav > li > a {
+  //border-left: 1px solid @kommitGray;
+}
+
+/* @end */
+
+/* @group Navbar
+ */
+
+
+.navbar {
+  margin-bottom: 0px;
+  background-image: none !important;
+}
+
+.navbar-inner{
+  border-radius: 0px;
+  line-height: 0px;
   background-image: none;
 }
+
+.navbar .brand {
+  color: #fff !important;
+  text-shadow: none;
+  line-height: 20px;
+}
+
+.navbar .nav .active > a,
+.navbar .nav .active > a:hover,
+.navbar .nav .active > a:focus,
+.navbar .nav li.dropdown.open > .dropdown-toggle,
+.navbar .nav li.dropdown.active > .dropdown-toggle,
+.navbar .nav li.dropdown.open.active > .dropdown-toggle {
+  color: #fff;
+}
+
+.navbar .caret {
+  border-top-color: white !important;
+  border-bottom-color: white !important;
+  margin-left: 5px;
+}
+
+.navbar .nav > li > a {
+  color: #fff;
+  text-shadow: none;
+}
+
+.navbar .nav > li > a:hover {
+  color: #fff;
+}
+
+/* @end */
+
+.nav-collapse .nav > li > a, .nav-collapse .dropdown-menu a {
+  //color: #fff;
+}
+
+
+
+
+.navbar .btn-navbar {
+
+  position: relative;
+  float: right;
+  //margin-right: 15px;
+  padding: 10px 10px;
+  margin-top: 8px;
+  margin-bottom: 8px;
+  background-color: @kommitBlueLight;
+  background-image: none;
+  border: 1px solid transparent;
+  border-radius: 4px;
+
+
+}
+.navbar .btn-navbar:hover {
+  background: @kommitBlue !important;
+}
+
+.navbar .btn-navbar:active, .navbar .btn-navbar.active, .navbar .btn-navbar.disabled, .navbar .btn-navbar[disabled] {
+  color: @kommitBlueDark;
+  background-color: white !important;
+
+
+
+
+  transform:rotate(90deg);
+  -ms-transform:rotate(90deg); /* IE 9 */
+  -webkit-transform:rotate(90deg); /* Opera, Chrome, and Safari */
+
+  .icon-bar {
+    background: @kommitBlueDark;
+    width: 15px;
+    height: 3px;
+    //transform:rotate(90deg);
+    //-ms-transform:rotate(90deg); /* IE 9 */
+    //-webkit-transform:rotate(90deg); /* Opera, Chrome, and Safari */
+  }
+}
+
+.navbar .btn-navbar .icon-bar {
+
+  background-color: #f5f5f5;
+  .border-radius(1px);
+  box-shadow: none;
+}
+.btn-navbar .icon-bar + .icon-bar {
+  margin-top: 3px;
+}
+
+
+
