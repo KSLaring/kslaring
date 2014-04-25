@@ -59,9 +59,7 @@ echo $OUTPUT->doctype() ?>
             <a class="logo" href="<?php echo $url; ?>"><img class="logo" alt="kommit logo" src="<?php echo
                 $OUTPUT->pix_url('logo', 'theme'); ?>"></a>
         </div>
-
         <div class="header-right">
-
             <div class="social">
                 <div class="col1"><a href="#"><i class="fa fa-facebook fa-2x" id="icon"></i></a></div>
                 <div class="col2"><a href="#"><i class="fa fa-twitter fa-2x" id="icon"></i></a></div>
@@ -69,6 +67,7 @@ echo $OUTPUT->doctype() ?>
             </div>
         </div>
     </div>
+</div>
 
     <div id="header" class="header">
         <header role="banner" class="navbar navbar-fixed-top<?php echo $html->navbarclass ?> moodle-has-zindex">

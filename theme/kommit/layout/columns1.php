@@ -49,7 +49,7 @@ echo $OUTPUT->doctype() ?>
             </div>
         </div>
     </div>
-
+</div>
     <div id="header" class="header">
         <header role="banner" class="navbar navbar-fixed-top<?php echo $html->navbarclass ?> moodle-has-zindex">
             <nav role="navigation" class="navbar-inner">

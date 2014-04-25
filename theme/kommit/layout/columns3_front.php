@@ -70,6 +70,7 @@ echo $OUTPUT->doctype() ?>
             </div>
         </div>
     </div>
+</div>
 
     <div id="header" class="header">
 

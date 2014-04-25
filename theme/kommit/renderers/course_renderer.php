@@ -33,9 +33,10 @@ class theme_kommit_core_course_renderer extends core_course_renderer {
     protected function coursecat_coursebox(coursecat_helper $chelper, $course, $additionalclasses = '') {
         global $CFG, $OUTPUT;
 
+        $content = '';
+        $arrow = '';
 
         $content .= html_writer::start_tag('div', array('class' => 'panel panel-default coursebox'));
-
         $content .= html_writer::start_tag('div', array('class' => 'panel-heading'));
 
         // Course name.
@@ -45,7 +46,6 @@ class theme_kommit_core_course_renderer extends core_course_renderer {
 
 
         $content .= html_writer::end_tag('div'); // End .panel-heading.
-
         $content .= html_writer::start_tag('div', array('class' => 'panel-body'));
 
         // This gets the course image or files
