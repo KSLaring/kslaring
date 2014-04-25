@@ -328,9 +328,9 @@ class theme_kommit_core_renderer extends core_renderer {
             $url->param('edit', 'off');
             $contain = 'toggle_container_active';
             $switch = 'toggle_switch_active';
-            $title = get_string('editon', 'theme_nakos');
+            $title = get_string('editon', 'theme_kommit');
             $edit = 'edit_text_active';
-            $label = get_string('edit_label', 'theme_nakos');
+            $label = get_string('edit_label', 'theme_kommit');
 
 
 
@@ -338,9 +338,9 @@ class theme_kommit_core_renderer extends core_renderer {
             $url->param('edit', 'on');
             $contain = 'toggle_container';
             $switch = 'toggle_switch';
-            $title = get_string('editoff', 'theme_nakos');
+            $title = get_string('editoff', 'theme_kommit');
             $edit = 'edit_text';
-            $label = get_string('edit_label', 'theme_nakos');
+            $label = get_string('edit_label', 'theme_kommit');
 
         }
 
