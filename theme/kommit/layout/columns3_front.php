@@ -46,16 +46,12 @@ echo $OUTPUT->doctype() ?>
     <link rel="shortcut icon" href="<?php echo $OUTPUT->favicon(); ?>"/>
     <?php echo $OUTPUT->standard_head_html() ?>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-
 </head>
 
 
 <body <?php echo $OUTPUT->body_attributes(); ?>>
 
 <?php echo $OUTPUT->standard_top_of_body_html() ?>
-
-
 
 <div class="top-border">
 </div>
@@ -216,8 +212,8 @@ echo $OUTPUT->doctype() ?>
             <p>© 2014 KOMMUNESEKTORENS ORGANISASJON</p>
 
         </div>
+    </footer>
 </div>
-</footer>
 
 <?php echo $OUTPUT->standard_end_of_body_html() ?>
 

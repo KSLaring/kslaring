@@ -37,17 +37,11 @@ if (right_to_left()) {
     $regionbsid = 'region-bs-main-and-pre';
 }
 
-$url = new moodle_url('/', array('redirect' => 0));
-/**
- * docu
- */
-$hascap = has_capability('moodle/course:update', context_course::instance($PAGE->course->id));
-
 echo $OUTPUT->doctype() ?>
 <html <?php echo $OUTPUT->htmlattributes(); ?> xmlns="http://www.w3.org/1999/html">
 <head>
     <title><?php echo $OUTPUT->page_title(); ?></title>
-    <link rel="shortcut icon" href="<?php echo $OUTPUT->favicon(); ?>"/>
+    <link rel="shortcut icon" href="<?php echo $OUTPUT->favicon(); ?>" />
     <?php echo $OUTPUT->standard_head_html() ?>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
@@ -55,8 +49,6 @@ echo $OUTPUT->doctype() ?>
 <body <?php echo $OUTPUT->body_attributes(); ?>>
 
 <?php echo $OUTPUT->standard_top_of_body_html() ?>
-
-
 
 <div class="top-border">
 </div>
@@ -67,9 +59,7 @@ echo $OUTPUT->doctype() ?>
             <a class="logo" href="<?php echo $url; ?>"><img class="logo" alt="kommit logo" src="<?php echo
                 $OUTPUT->pix_url('logo', 'theme'); ?>"></a>
         </div>
-
         <div class="header-right">
-
             <div class="social">
                 <div class="col1"><a href="#"><i class="fa fa-facebook fa-2x" id="icon"></i></a></div>
                 <div class="col2"><a href="#"><i class="fa fa-twitter fa-2x" id="icon"></i></a></div>
@@ -77,28 +67,32 @@ echo $OUTPUT->doctype() ?>
             </div>
         </div>
     </div>
+</div>
 
-    <header role="banner" class="navbar navbar-fixed-top<?php echo $html->navbarclass ?> moodle-has-zindex">
-        <nav role="navigation" class="navbar-inner">
-            <div class="container-fluid">
+    <div id="header" class="header">
+        <header role="banner" class="navbar navbar-fixed-top<?php echo $html->navbarclass ?> moodle-has-zindex">
+            <nav role="navigation" class="navbar-inner">
+                <div class="container-fluid">
 
-                <a class="btn btn-navbar" data-toggle="workaround-collapse" data-target=".nav-collapse">
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </a>
+                    <a class="btn btn-navbar" data-toggle="workaround-collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
 
-                <div id="moodle-navbar" class="nav-collapse collapse">
-                    <?php echo $OUTPUT->custom_menu(); ?>
-                    <?php echo $OUTPUT->user_menu(); ?>
+                    <div id="moodle-navbar" class="nav-collapse collapse">
+                        <?php echo $OUTPUT->custom_menu(); ?>
+                        <?php echo $OUTPUT->user_menu(); ?>
 
+                    </div>
                 </div>
-            </div>
-        </nav>
-    </header>
+            </nav>
+        </header>
+    </div>
 
 
     <div id="page" class="container-fluid">
+
 
         <header id="page-header" class="clearfix">
             <div id="page-navbar" class="clearfix">
@@ -138,7 +132,6 @@ echo $OUTPUT->doctype() ?>
 
             <div class="column">
                 <h4>Kontakt:</h4>
-
                 <p>Telefon: +47 09088</br>
                     Epost: info@kommit.no
                 </p>
@@ -146,7 +139,6 @@ echo $OUTPUT->doctype() ?>
             </div>
             <div class="column">
                 <h4>Siste nytt</h4>
-
                 <p>Informasjonssikkerhet</br>
                     KOLS-kurs</br>
                     Saksbehandlers arkivrutiner</br>
@@ -166,7 +158,6 @@ echo $OUTPUT->doctype() ?>
             </div>
             <div class="column">
                 <h4>Populære nedlastinger</h4>
-
                 <p>Informasjonssikkerhet</br>
                     KOLS-kurs</br>
                     Saksbehandlers arkivrutiner</br>
@@ -177,7 +168,6 @@ echo $OUTPUT->doctype() ?>
             </div>
             <div class="column">
                 <h4>Siste fra brukerfora</h4>
-
                 <p>Informasjonssikkerhet</br>
                     KOLS-kurs</br>
                     Saksbehandlers arkivrutiner</br>
@@ -187,7 +177,6 @@ echo $OUTPUT->doctype() ?>
             </div>
             <div class="column">
                 <h4>Hyppige søk</h4>
-
                 <p>Informasjonssikkerhet</br>
                     KOLS</br>
                     Saksbehandlers</br>
@@ -198,9 +187,9 @@ echo $OUTPUT->doctype() ?>
             <p>© 2014 KOMMUNESEKTORENS ORGANISASJON</p>
 
         </div>
-</div>
-</footer>
 
+</footer>
+</div>
 <?php echo $OUTPUT->standard_end_of_body_html() ?>
 
 
