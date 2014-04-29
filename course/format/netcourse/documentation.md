@@ -12,11 +12,13 @@ The KommIT online course format influenced by the https://www.edx.org online cou
 
 The course offers a main “navigation bar” with some main navigation buttons at the top, a navigation menu to the left and the section description or activity content to the right.
 
+When a user clicks on the course link on her “my” page she is redirected to the last visited course section or activity.
+
 ## Requirements
 ### Course settings
 The “Course layout” setting must be set to “Show one section per page”, else the “course_navigation” block will not show the menu.
 
-### Blocks “Navigation” and “Administration”
+### Hide the blocks “Navigation” and “Administration” for students
 To hide the “Navigation” and “Administration” block for students it is necessary to change the block rights. The steps to change the rights are:
 
 1. Turn course editing on.

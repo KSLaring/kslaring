@@ -108,15 +108,15 @@ class format_netcourse_renderer extends format_section_renderer_base {
             if ($course->marker == $section->section) { // Show the "light globe" on/off.
                 $url->param('marker', 0);
                 $controls[] = html_writer::link($url,
-                        html_writer::empty_tag('img', array('src' => $this->output->pix_url('i/marked'),
-                                'class' => 'icon ', 'alt' => get_string('markedthistopic'))),
-                        array('title' => get_string('markedthistopic'), 'class' => 'editing_highlight'));
+                    html_writer::empty_tag('img', array('src' => $this->output->pix_url('i/marked'),
+                        'class' => 'icon ', 'alt' => get_string('markedthistopic'))),
+                    array('title' => get_string('markedthistopic'), 'class' => 'editing_highlight'));
             } else {
                 $url->param('marker', $section->section);
                 $controls[] = html_writer::link($url,
-                        html_writer::empty_tag('img', array('src' => $this->output->pix_url('i/marker'),
-                                'class' => 'icon', 'alt' => get_string('markthistopic'))),
-                        array('title' => get_string('markthistopic'), 'class' => 'editing_highlight'));
+                    html_writer::empty_tag('img', array('src' => $this->output->pix_url('i/marker'),
+                        'class' => 'icon', 'alt' => get_string('markthistopic'))),
+                    array('title' => get_string('markthistopic'), 'class' => 'editing_highlight'));
             }
         }
 
@@ -224,7 +224,7 @@ class format_netcourse_renderer extends format_section_renderer_base {
             $sectionbottomnav .= html_writer::tag('span', $sectionnavlinks['previous'], array('class' => 'mdl-left'));
             $sectionbottomnav .= html_writer::tag('span', $sectionnavlinks['next'], array('class' => 'mdl-right'));
             $sectionbottomnav .= html_writer::tag('div', $this->section_nav_selection($course, $sections, $displaysection),
-                    array('class' => 'mdl-align'));
+                array('class' => 'mdl-align'));
             $sectionbottomnav .= html_writer::end_tag('div');
             echo $sectionbottomnav;
         }
@@ -242,7 +242,184 @@ class format_netcourse_renderer extends format_section_renderer_base {
      */
     public function render_format_netcourse_specialnav($specialnav) {
         return html_writer::tag('div', $specialnav->text, array(
-                'class' => 'netcourse-header',
-                'style' => 'background: #f1f1f1; border: 1px solid #ccc; padding: 5px;'));
+            'class' => 'netcourse-header'
+        ));
+    }
+}
+
+/**
+ * The course navigation tree render methods.
+ * Copied from the navigation block.
+ */
+class format_netcourse_fakeblock_renderer extends plugin_renderer_base {
+    /**
+     * Returns the content of the course_navigation tree.
+     *
+     * @param navigation_node $course_navigation
+     * @param int             $expansionlimit
+     * @param array           $options
+     *
+     * @return string $content
+     */
+//    public function course_navigation_tree(global_navigation $course_navigation,
+//            $expansionlimit, array $options = array()) {
+    public function course_navigation_tree(navigation_node $course_navigation,
+        $expansionlimit, array $options = array()) {
+        $course_navigation->add_class('course_navigation_node');
+        $content = $this->course_navigation_node(array($course_navigation),
+            array('class' => 'block_tree list'), $expansionlimit, $options);
+        if (isset($course_navigation->id) && !is_numeric($course_navigation->id) &&
+            !empty($content)
+        ) {
+            $content = $this->output->box($content, 'block_tree_box', $course_navigation->id);
+        }
+
+        return $content;
+    }
+
+    /**
+     * Produces a course_navigation node for the course_navigation tree
+     *
+     * @param array $items
+     * @param array $attrs
+     * @param int   $expansionlimit
+     * @param array $options
+     * @param int   $depth
+     *
+     * @return string
+     */
+    protected function course_navigation_node($items, $attrs = array(),
+        $expansionlimit = null, array $options = array(), $depth = 1) {
+
+        // exit if empty, we don't want an empty ul element
+        if (count($items) == 0) {
+            return '';
+        }
+
+        // array of nested li elements
+        $lis = array();
+        foreach ($items as $item) {
+            if (!$item->display && !$item->contains_active_node()) {
+                continue;
+            }
+            $content = $item->get_content();
+            $title = $item->get_title();
+
+            $isexpandable = (empty($expansionlimit) ||
+                ($item->type > navigation_node::TYPE_ACTIVITY ||
+                    $item->type < $expansionlimit) ||
+                ($item->contains_active_node() && $item->children->count() > 0));
+            $isbranch = $isexpandable && ($item->children->count() > 0 ||
+                    ($item->has_children() && (isloggedin() ||
+                            $item->type <= navigation_node::TYPE_CATEGORY)));
+
+            // Skip elements which have no content and no action - no point in showing them
+            if (!$isexpandable && empty($item->action)) {
+                continue;
+            }
+
+            $hasicon = ((!$isbranch || $item->type == navigation_node::TYPE_ACTIVITY ||
+                    $item->type == navigation_node::TYPE_RESOURCE) &&
+                $item->icon instanceof renderable);
+
+            if ($hasicon) {
+                $icon = $this->output->render($item->icon);
+            } else {
+                $icon = '';
+            }
+            $content = $icon . $content; // use CSS for spacing of icons
+            if ($item->helpbutton !== null) {
+                $content = trim($item->helpbutton) . html_writer::tag('span',
+                        $content, array('class' => 'clearhelpbutton'));
+            }
+
+            if ($content === '') {
+                continue;
+            }
+
+            $attributes = array();
+            if ($title !== '') {
+                $attributes['title'] = $title;
+            }
+            if ($item->hidden) {
+                $attributes['class'] = 'dimmed_text';
+            }
+            if (is_string($item->action) || empty($item->action) ||
+                (($item->type === navigation_node::TYPE_CATEGORY ||
+                        $item->type === navigation_node::TYPE_MY_CATEGORY) &&
+                    empty($options['linkcategories']))
+            ) {
+                //add tab support to span but still maintain character stream sequence.
+                $attributes['tabindex'] = '0';
+                $content = html_writer::tag('span', $content, $attributes);
+            } else if ($item->action instanceof action_link) {
+                //TODO: to be replaced with something else
+                $link = $item->action;
+                $link->text = $icon . $link->text;
+                $link->attributes = array_merge($link->attributes, $attributes);
+                $content = $this->output->render($link);
+                $linkrendered = true;
+            } else if ($item->action instanceof moodle_url) {
+                $content = html_writer::link($item->action, $content, $attributes);
+            }
+
+            // this applies to the li item which contains all child lists too
+            $liclasses = array($item->get_css_type(), 'depth_' . $depth);
+            $liexpandable = array();
+            if ($item->has_children() && (!$item->forceopen || $item->collapse)) {
+                $liclasses[] = 'collapsed';
+            }
+            if ($isbranch) {
+                $liclasses[] = 'contains_branch';
+                $liexpandable = array('aria-expanded' =>
+                    in_array('collapsed', $liclasses) ? "false" : "true");
+            } else if ($hasicon) {
+                $liclasses[] = 'item_with_icon';
+            }
+            if ($item->isactive === true) {
+                $liclasses[] = 'current_branch';
+            }
+            $liattr = array('class' => join(' ', $liclasses)) + $liexpandable;
+            // class attribute on the div item which only contains the item content
+            $divclasses = array('tree_item');
+            if ($isbranch) {
+                $divclasses[] = 'branch';
+            } else {
+                $divclasses[] = 'leaf';
+            }
+            if ($hasicon) {
+                $divclasses[] = 'hasicon';
+            }
+            if (!empty($item->classes) && count($item->classes) > 0) {
+                $divclasses[] = join(' ', $item->classes);
+            }
+            $divattr = array('class' => join(' ', $divclasses));
+            if (!empty($item->id)) {
+                $divattr['id'] = $item->id;
+            }
+
+            // Don't render the course name in the navigation (node depth 1)
+            if ($depth === 1) {
+                $content = '';
+            } else {
+                $content = html_writer::tag('p', $content, $divattr);
+            }
+
+            if ($isexpandable) {
+                $content .= $this->course_navigation_node($item->children,
+                    array(), $expansionlimit, $options, $depth + 1);
+            }
+            if (!empty($item->preceedwithhr) && $item->preceedwithhr === true) {
+                $content = html_writer::empty_tag('hr') . $content;
+            }
+            $content = html_writer::tag('li', $content, $liattr);
+            $lis[] = $content;
+        }
+
+        if (count($lis)) {
+            return html_writer::tag('ul', implode("\n", $lis), $attrs);
+        } else {
+            return '';
+        }
     }
 }

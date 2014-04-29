@@ -1,0 +1,10 @@
+{
+  "name": "moodle-format_netcourse-netcourse_navigation",
+  "builds": {
+    "moodle-format_netcourse-netcourse_navigation": {
+      "jsfiles": [
+        "netcourse_navigation.js"
+      ]
+    }
+  }
+}

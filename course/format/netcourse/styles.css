@@ -1,9 +1,85 @@
-.course-content ul.netcourse {margin:0;}
-.course-content ul.netcourse li.section {list-style: none;margin:0 0 5px 0;padding:0;}
-.course-content ul.netcourse li.section .content {margin:0 40px;}
-.course-content ul.netcourse li.section .left {float:left;}
-.course-content ul.netcourse li.section .right {float:right;}
+.course-content ul.netcourse {
+    margin: 0;
+}
+
+.course-content ul.netcourse li.section {
+    list-style: none;
+    margin: 0 0 5px 0;
+    padding: 0;
+}
+
+.course-content ul.netcourse li.section .content {
+    margin: 0 40px;
+}
+
+.course-content ul.netcourse li.section .left {
+    float: left;
+}
+
+.course-content ul.netcourse li.section .right {
+    float: right;
+}
+
 .course-content ul.netcourse li.section .left,
-.course-content ul.netcourse li.section .right {width:40px;text-align:center;padding: 6px 0;}
-.course-content ul.netcourse li.section .right img.icon { padding: 0 0 4px 0;}
-.course-content ul.netcourse li.section .left .section-handle img.icon { padding:0; vertical-align: baseline; }
+.course-content ul.netcourse li.section .right {
+    width: 40px;
+    text-align: center;
+    padding: 6px 0;
+}
+
+.course-content ul.netcourse li.section .right img.icon {
+    padding: 0 0 4px 0;
+}
+
+.course-content ul.netcourse li.section .left .section-handle img.icon {
+    padding: 0;
+    vertical-align: baseline;
+}
+
+.netcourse-header {
+    margin: 0 0 1em 0;
+}
+
+#instcnav {
+    padding: 0;
+}
+
+#instcnav .block_tree .tree_item.branch {
+    background-position: 3px .7em;
+    margin: 0;
+    padding-top: .5em;
+    padding-bottom: .5em;
+}
+
+#instcnav .block_tree .tree_item.leaf {
+    margin: .3em 0 .2em 0;
+}
+
+#instcnav .content {
+    padding: 0;
+}
+
+#instcnav li.contains_branch > p.branch {
+    background-color: #ddd;
+}
+
+#instcnav li.contains_branch.collapsed > p.branch {
+    background-color: #f2f2f2;
+}
+
+.jsenabled #instcnav .block_tree .tree_item.branch span:focus {
+    outline: 0;
+}
+
+.jsenabled #instcnav .block_tree li.contains_branch .branch span {
+    font-weight: normal;
+}
+
+.jsenabled #instcnav .block_tree li.contains_branch.collapsed .branch span {
+    font-weight: normal;
+}
+
+#instcnav .block_tree li.depth_2 ul {
+    padding-left: 22px;
+    overflow: hidden;
+}

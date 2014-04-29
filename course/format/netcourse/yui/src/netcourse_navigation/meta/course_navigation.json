@@ -1,0 +1,13 @@
+{
+  "moodle-format_netcourse-netcourse_navigation": {
+    "requires": [
+        "base",
+        "io-base",
+        "node",
+        "event-synthetic",
+        "event-delegate",
+        "json-parse",
+        "transition"
+    ]
+  }
+}

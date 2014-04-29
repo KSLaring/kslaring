@@ -37,26 +37,6 @@ if ($topic = optional_param('topic', 0, PARAM_INT)) {
 }
 // End backwards-compatible aliasing..
 
-// If the $displaysection is not set or 0 - then force display section 1.
-// We need to redirect to get the course_navigation block to open section 0.
-if (!$PAGE->user_is_editing() && empty($displaysection)) {
-    list($text, $module, $url) = course_get_format($course->id)->get_last_opened($course->id, $USER->id, 2);
-
-    if ($module === 'course') {
-        if (is_null($url->get_param('section')) && is_null($url->get_param('sectionid'))) {
-            $url->param('section', 1);
-        }
-    }
-
-//    echo html_writer::link($url, 'url');
-    if (is_null($url)) {
-        $url = $PAGE->url;
-        $url->param('section', 1);
-    }
-
-    redirect($url);
-}
-
 $context = context_course::instance($course->id);
 
 if (($marker >= 0) && has_capability('moodle/course:setcurrentsection', $context) && confirm_sesskey()) {
