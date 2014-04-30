@@ -18,6 +18,10 @@
 $html = theme_kommit_get_html_for_settings($OUTPUT, $PAGE);
 
 $left = (!right_to_left());  // To know if to add 'pull-right' and 'desktop-first-column' classes in the layout for LTR.
+
+// Get the URL for the logo link
+$url = new moodle_url('/', array('redirect' => 0));
+
 echo $OUTPUT->doctype() ?>
 <html <?php echo $OUTPUT->htmlattributes(); ?>>
 <head>

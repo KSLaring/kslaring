@@ -17,6 +17,9 @@
 // Get the HTML for the settings bits.
 $html = theme_kommit_get_html_for_settings($OUTPUT, $PAGE);
 
+// Get the URL for the logo link
+$url = new moodle_url('/', array('redirect' => 0));
+
 echo $OUTPUT->doctype() ?>
 <html <?php echo $OUTPUT->htmlattributes(); ?>>
 <head>

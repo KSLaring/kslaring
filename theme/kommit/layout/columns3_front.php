@@ -37,6 +37,7 @@ if (right_to_left()) {
     $regionbsid = 'region-bs-main-and-pre';
 }
 
+// Get the URL for the logo link
 $url = new moodle_url('/', array('redirect' => 0));
 
 echo $OUTPUT->doctype() ?>
