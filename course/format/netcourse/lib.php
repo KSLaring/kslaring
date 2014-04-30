@@ -285,7 +285,6 @@ class format_netcourse extends format_base {
         $sectionname = get_section_name($this->get_course(), $section);
 //        $url = course_get_url($this->get_course(), $section->section, array('navigation' => true));
 
-//        $sectionnode = $node->add($sectionname, $url, navigation_node::TYPE_SECTION, null, $section->id);
         $sectionnode = $node->add($sectionname, null, navigation_node::TYPE_SECTION, null,
             $section->id);
         $sectionnode->nodetype = navigation_node::NODETYPE_BRANCH;
@@ -299,11 +298,6 @@ class format_netcourse extends format_base {
                     $this->navigation_add_activity($sectionnode, $modinfo->get_cm($cmid));
                 }
             }
-//            foreach ($modinfo->get_section_info_all() as $subsection) {
-//                if ($subsection->parent == $section->section && $subsection->section != 0) {
-//                    $this->navigation_add_section($navigation, $sectionnode, $subsection);
-//                }
-//            }
         }
 
         return $sectionnode;
@@ -632,12 +626,33 @@ class format_netcourse extends format_base {
         $thiscourse_navigation = $thiscourse_navigation->children->last();
 
         // Remove all nodes which are not section nodes
-        // and the nodes without an action (section 0 has no action)
         foreach ($thiscourse_navigation->children as $node) {
             if ($node->type !== navigation_node::TYPE_SECTION) {
                 $node->remove();
-//            } else if (empty($node->action)) {
-//                $node->remove();
+            }
+        }
+
+        // Check if there is an active node
+        // If not make the current activity node active (pages within lessons for example)
+        global $FULLME;
+
+        $fullmeurl = new moodle_url($FULLME);
+        $activenode = $thiscourse_navigation->find_active_node();
+        $activeaction = $activenode->action;
+
+        // Walk all nodes and find the node with the same action url as fullme
+        // if the action and the fullme URL don't match.
+        // Deactivate the wrong node and activate the right one.
+        if (!$activeaction->compare($fullmeurl, URL_MATCH_PARAMS)) {
+            $activitynodes = $thiscourse_navigation->
+                find_all_of_type(navigation_node::TYPE_ACTIVITY);
+            foreach ($activitynodes as $activitynode) {
+                if ($activitynode->action->compare($fullmeurl, URL_MATCH_PARAMS)) {
+                    $activenode->make_inactive();
+                    $activenode->parent->forceopen = false;
+                    $activitynode->make_active();
+                    break;
+                }
             }
         }
 
