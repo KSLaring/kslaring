@@ -225,7 +225,8 @@ class format_netcourse extends format_base {
         foreach ($modinfo->get_section_info_all() as $section) {
             // Exclude section 0
             // Section 0 is used for the course description and potential
-            if ($section->section > 0) {
+            // Sections with no activities/resources are excluded
+            if ($section->section > 0 && isset($modinfo->sections[$section->section])) {
                 $sectionNode = $this->navigation_add_section($navigation, $node, $section);
                 foreach ($modinfo->sections[$section->section] as $cmid) {
                     $this->navigation_add_activity($sectionNode, $modinfo->get_cm($cmid));
@@ -560,7 +561,7 @@ class format_netcourse extends format_base {
      * @return format_netcourse_specialnav | null
      */
     public function course_content_header() {
-        return new format_netcourse_specialnav('---> Acitivity navigation goes here. <---');
+        return new format_netcourse_specialnav('---> Activity navigation goes here. <---');
     }
 
     /**
