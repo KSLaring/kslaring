@@ -597,12 +597,16 @@ class format_netcourse extends format_base {
         $courseurl = $courseurl->out();
 
         // Add the nonav parameter to hide the course navigation
-        $discussionurl->param('nonav', 1);
+        if ($discussionurl->get_host() !== "") {
+            $discussionurl->param('nonav', 1);
+        }
         $discussionurl = $discussionurl->out();
 
         // Add the nonav parameter to hide the course navigation
-        $descriptionurl->param('nonav', 1);
-        $descriptionurl->param('description', 1);
+        if ($descriptionurl->get_host() !== "") {
+            $descriptionurl->param('nonav', 1);
+            $descriptionurl->param('description', 1);
+        }
         $descriptionurl = $descriptionurl->out();
 
         return new format_netcourse_specialnav('
