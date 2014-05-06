@@ -44,6 +44,8 @@ class format_netcourse extends format_base {
     /** @var int Trim characters from the center */
     const TRIM_CENTER = 3;
 
+    protected $openlast = null;
+
     /**
      * Returns true if this course format uses sections
      *
@@ -146,7 +148,7 @@ class format_netcourse extends format_base {
      * Allows course format to execute code on moodle_page::set_course()
      * Check the REQUEST_URI and redirext to the last visited
      * activity/resource if the REQUEST_URI is the course page. Redirect
-     * to the first activit/resource in section 1 if the user never
+     * to the first activity/resource in section 0 (description) if the user never
      * has entered the course before.
      *
      * Add the course navigation as a Moodle "fake" block.
@@ -154,29 +156,23 @@ class format_netcourse extends format_base {
      * @param moodle_page $page instance of page calling set_course
      */
     public function page_set_course(moodle_page $page) {
-        global $USER;
+        global $USER, $FULLME;
+
+        if (is_null($this->openlast)) {
+            $this->openlast = new format_netcourse_openlast($page,
+                $page->course, $USER, $FULLME);
+        }
+
+        $redirecturl = $this->openlast->redirect($_SERVER['REQUEST_URI']);
+
+        if ($redirecturl === -1) {
+            return;
+        } else if ($redirecturl) {
+            redirect($redirecturl);
+        }
 
         // Check if the navigation trigger parameter "nonav" is set
         $nonav = optional_param('nonav', 0, PARAM_INT);
-
-        // If the user never visited the course the last opened page URL is null.
-        // In this case show the first activity/resource in the section 1
-        if (!$page->user_is_editing()) {
-            if (strpos($_SERVER['REQUEST_URI'], 'course') !== false) {
-                list($text, $module, $url) = course_get_format($page->course->id)->
-                    get_last_opened($page->course->id, $USER->id, 1);
-
-                if (is_null($url)) {
-                    $modinfo = get_fast_modinfo($page->course->id);
-                    $cmid = $modinfo->sections[0][0];
-
-                    $url = $modinfo->cms[$cmid]->url;
-                    $url->param('nonav', 1);
-                }
-
-                redirect($url);
-            }
-        }
 
         // If the "nonav" parameter is not set show the course navigation
         if (!$nonav) {
@@ -533,17 +529,83 @@ class format_netcourse extends format_base {
      * @return format_netcourse_specialnav | null
      */
     public function course_header() {
-        global $USER, $CFG;
+        global $USER, $CFG, $PAGE, $FULLME;
 
-        list($text, $module, $url) = $this->get_last_opened($this->course->id, $USER->id);
+        $strcourse = get_string('course');
+        $strdescription = get_string('description');
+        $strforums = get_string('forums', 'format_netcourse');
+        $strprogress = get_string('progress', 'format_netcourse');
+        $mymoodle = get_string('mymoodle', 'my');
+
+        if (is_null($this->openlast)) {
+            $this->openlast = new format_netcourse_openlast($PAGE,
+                $PAGE->course, $USER, $FULLME);
+        }
+
+        $editing = $this->openlast->is_editing();
+        $description = optional_param('description', 0, PARAM_BOOL);
+
+        list($text, $module, $openedcmid, $courseurl) =
+            $this->openlast->get_last_opened($this->courseid, $USER->id);
+        $modinfo = $this->openlast->get_modinfo();
+
+        // If the user never visited the course the last opened page URL is null.
+        // In this case show the first activity/resource in the section 1
+        if ($editing) {
+            $courseurl = new moodle_url('/course/view.php?id=' . $PAGE->course->id);
+        } else if (is_null($courseurl)) {
+            $cmid = $modinfo->sections[1][0];
+
+            $courseurl = $modinfo->cms[$cmid]->url;
+        }
+
+        // Create the url for the course overview which is the first
+        // resource in section 0
+        $cmid = $modinfo->sections[0][0];
+        $descriptionurl = $modinfo->cms[$cmid]->url;
+
+        // Set the "Discussion" link to the first forum in section 0
+        $discussionurl = '#';
+        foreach($this->openlast->get_section0modids() as $cmid) {
+            if ($modinfo->cms[$cmid]->modname === 'forum') {
+                $discussionurl = $modinfo->cms[$cmid]->url;
+                break;
+            }
+        }
+
+        $courseactive = '';
+        $discussactive = '';
+        $descactive = '';
+        if ($PAGE->url->compare($descriptionurl, URL_MATCH_EXACT)) {
+            $descactive = ' btn-primary active';
+        } else if ($PAGE->url->compare($discussionurl, URL_MATCH_EXACT)) {
+            $discussactive = ' btn-primary active';
+        } else {
+            $courseactive = ' btn-primary active';
+        }
+
+        $courseurl = $courseurl->out();
+
+        // Add the nonav parameter to hide the course navigation
+        $discussionurl->param('nonav', 1);
+        $discussionurl = $discussionurl->out();
+
+        // Add the nonav parameter to hide the course navigation
+        $descriptionurl->param('nonav', 1);
+        $descriptionurl->param('description', 1);
+        $descriptionurl = $descriptionurl->out();
 
         return new format_netcourse_specialnav('
         <div class="btn-group">
-          <a class="btn disabled" href="#">top</a>
-          <a class="btn disabled" href="#">course</a>
-          <a class="btn disabled" href="#">navigation</a>
-          <a class="btn" href="javascript:void(0)" onclick="document.location.href=\'' .
-                $CFG->wwwroot . '/my\'">my</a>
+            <a class="btn' . $courseactive . '" href="' . $courseurl . '">' .
+            $strcourse . '</a>
+            <a class="btn' . $descactive . '" href="' . $descriptionurl . '">' .
+            $strdescription . '</a>
+            <a class="btn' . $discussactive . '" href="' . $discussionurl . '">' .
+            $strforums . '</a>
+            <a class="btn disabled" href="#">' . $strprogress . '</a>
+            <a class="btn" href="javascript:void(0)" onclick="document.location.href=\'' .
+            $CFG->wwwroot . '/my\'">' . $mymoodle . '</a>
         </div>'
         );
     }
@@ -552,10 +614,23 @@ class format_netcourse extends format_base {
      * Display the special module navigation above the content
      * between the blocks.
      *
+     * Create the module navigation for each module.
+     *
      * @return format_netcourse_specialnav | null
      */
     public function course_content_header() {
-        return new format_netcourse_specialnav('---> Activity navigation goes here. <---');
+        global $cm;
+
+        $retval = null;
+
+        if (!is_null($cm)) {
+            if ($cm->modname === 'lesson') {
+                $retval = new format_netcourse_specialnav(
+                    '---> Lesson navigation goes here. <---');
+            }
+        }
+
+        return $retval;
     }
 
     /**
@@ -634,7 +709,7 @@ class format_netcourse extends format_base {
 
         // Check if there is an active node
         // If not make the current activity node active (pages within lessons for example)
-        global $FULLME;
+        global $FULLME, $cm;
 
         $fullmeurl = new moodle_url($FULLME);
         $activenode = $thiscourse_navigation->find_active_node();
@@ -644,17 +719,27 @@ class format_netcourse extends format_base {
         // if the action and the fullme URL don't match.
         // Deactivate the wrong node and activate the right one.
         if (!$activeaction->compare($fullmeurl, URL_MATCH_PARAMS)) {
-            $activitynodes = $thiscourse_navigation->
-                find_all_of_type(navigation_node::TYPE_ACTIVITY);
-            foreach ($activitynodes as $activitynode) {
-                if ($activitynode->action->compare($fullmeurl, URL_MATCH_PARAMS)) {
+            if (!is_null($cm)) {
+                $cmnode = $thiscourse_navigation->find($cm->id, navigation_node::TYPE_ACTIVITY);
+                if ($cmnode) {
                     $activenode->make_inactive();
                     $activenode->parent->forceopen = false;
-                    $activitynode->make_active();
-                    break;
+                    $cmnode->make_active();
                 }
+            } else {
+//                $activitynodes = $thiscourse_navigation->
+//                    find_all_of_type(navigation_node::TYPE_ACTIVITY);
+//                foreach ($activitynodes as $activitynode) {
+//                    if ($activitynode->action->compare($fullmeurl, URL_MATCH_PARAMS)) {
+//                        $activenode->make_inactive();
+//                        $activenode->parent->forceopen = false;
+//                        $activitynode->make_active();
+//                        break;
+//                    }
+//                }
             }
         }
+
 
         $expansionlimit = null;
         $this->trim($thiscourse_navigation, $trimmode, $trimlength, ceil($trimlength / 2));
@@ -820,84 +905,6 @@ class format_netcourse extends format_base {
         $string = $start . '...' . $end;
 
         return $string;
-    }
-
-    /**
-     * Get the last opened course activity or section
-     * for the current user in the actual course.
-     *
-     * If the log is checked from the course format script the last log entry
-     * is the course view, the log entry before the last holds the information
-     * about the last opened page. $limitno can be set to 2 to retrieve
-     * the last two log entries.
-     *
-     * @param int $courseid The course id
-     * @param int $userid   The user id
-     * @param int $limitno  The number of records to fetch
-     *
-     * @return mixed null | array
-     */
-    public function get_last_opened($courseid, $userid, $limitno = 1) {
-        global $DB;
-        $text = null;
-        $module = null;
-        $url = null;
-
-        // Define the query with the userid and courseid
-        // and module not 'course' to get the last viewed activity/resource
-        $sql = "
-        SELECT *
-        FROM   {log}
-        WHERE  userid = :userid
-           AND course = :courseid
-           AND module != 'course'
-           AND module != 'role'
-        ORDER  BY id DESC
-        ";
-
-        // Set the limit SQL.
-        // Using "LIMIT :limitno" and passing $limitno in params throws an SQL error???
-        $limitsql = "\nLIMIT " . $limitno;
-
-        // Set the SQL parameters
-        $params = array('userid' => $userid, 'courseid' => $courseid);
-
-        // Get the records from the database
-        if ($result = $DB->get_records_sql($sql . $limitsql, $params)) {
-            $text = '';
-            $rowno = $limitno - 1;
-
-            // Get the correct key for the item defined in limit
-            $akeys = array_keys($result);
-            $akey = 0;
-            if (!empty($akeys[$rowno])) {
-                $akey = $akeys[$rowno];
-            }
-
-            // Get the itme if the item with the calculated key is not empty
-            // else get the first item
-            if (!empty($result[$akey])) {
-                $row = $result[$akey];
-            } else {
-                $row = reset($result);
-            }
-
-            // Create a text string from the row for debugging
-            foreach ((array)$row as $key => $value) {
-                if ($key === 'url') {
-                    $value = str_replace('&', '&amp;', $value);
-                }
-                $text .= $key . ': ' . $value . "\n";
-            }
-
-            // Set the module type and create the url for the last opened page
-            $module = $row->module;
-            $mod = $module === 'course' ? '' : 'mod/';
-            $url = new moodle_url('/' . $mod . $module . '/' . $row->url);
-        }
-
-        // return the values as an array
-        return array($text, $module, $url);
     }
 }
 

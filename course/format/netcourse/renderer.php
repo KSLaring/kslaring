@@ -136,9 +136,11 @@ class format_netcourse_renderer extends format_section_renderer_base {
     public function print_single_section_page($course, $sections, $mods, $modnames, $modnamesused, $displaysection) {
         global $PAGE;
 
+        $edit = optional_param('edit', false, PARAM_BOOL);
+
         $modinfo = get_fast_modinfo($course);
         $course = course_get_format($course)->get_course();
-        $editing = $PAGE->user_is_editing();
+        $editing = $PAGE->user_is_editing() || $edit;
 
         // Can we view the section in question?
         if (!($sectioninfo = $modinfo->get_section_info($displaysection))) {
