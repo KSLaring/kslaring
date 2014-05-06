@@ -554,22 +554,32 @@ class format_netcourse extends format_base {
         if ($editing) {
             $courseurl = new moodle_url('/course/view.php?id=' . $PAGE->course->id);
         } else if (is_null($courseurl)) {
-            $cmid = $modinfo->sections[1][0];
+            if (isset($modinfo->sections[1])) {
+                $cmid = $modinfo->sections[1][0];
 
-            $courseurl = $modinfo->cms[$cmid]->url;
+                $courseurl = $modinfo->cms[$cmid]->url;
+            } else {
+                $courseurl = new moodle_url('#');
+            }
         }
 
         // Create the url for the course overview which is the first
         // resource in section 0
-        $cmid = $modinfo->sections[0][0];
-        $descriptionurl = $modinfo->cms[$cmid]->url;
+        if (isset($modinfo->sections[0])) {
+            $cmid = $modinfo->sections[0][0];
+            $descriptionurl = $modinfo->cms[$cmid]->url;
+        } else {
+            $descriptionurl = new moodle_url('#');
+        }
 
         // Set the "Discussion" link to the first forum in section 0
-        $discussionurl = '#';
-        foreach($this->openlast->get_section0modids() as $cmid) {
-            if ($modinfo->cms[$cmid]->modname === 'forum') {
-                $discussionurl = $modinfo->cms[$cmid]->url;
-                break;
+        $discussionurl = new moodle_url('#');
+        if (!is_null($this->openlast->get_section0modids())) {
+            foreach($this->openlast->get_section0modids() as $cmid) {
+                if ($modinfo->cms[$cmid]->modname === 'forum') {
+                    $discussionurl = $modinfo->cms[$cmid]->url;
+                    break;
+                }
             }
         }
 

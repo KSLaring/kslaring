@@ -56,7 +56,7 @@ class format_netcourse_openlast {
     /**
      * @var An array with the module cmids in section 0
      */
-    protected $section0modids;
+    protected $section0modids = null;
 
     public function __construct($page, $course, $user, $fullme) {
         $this->course = $course;
@@ -65,7 +65,10 @@ class format_netcourse_openlast {
         $this->fullme = $fullme;
 
         $this->modinfo = get_fast_modinfo($this->course->id);
-        $this->section0modids = $this->modinfo->sections[0];
+
+        if (isset($this->modinfo->sections[0])) {
+            $this->section0modids = $this->modinfo->sections[0];
+        }
     }
 
     /**
@@ -89,6 +92,11 @@ class format_netcourse_openlast {
 
             // First time, redirect to the course description
             if (is_null($url)) {
+
+                if (!isset($this->modinfo->sections[0])) {
+                    return false;
+                }
+
                 $cmid = $this->modinfo->sections[0][0];
 
                 $url = $this->modinfo->cms[$cmid]->url;
