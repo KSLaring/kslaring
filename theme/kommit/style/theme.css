@@ -355,6 +355,9 @@ Courses and categories lists, from Mary Evans
   padding-top: 3px;
   padding-right: 5px;
 }
+#page-mod-lesson-view .ftoggler {
+  display: none;
+}
 body {
   padding-top: 0px;
 }
@@ -372,6 +375,8 @@ body {
   background-repeat: no-repeat;
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffffff', endColorstr='#fff2f2f3', GradientType=0);
   height: 100px;
+  padding: 0;
+  margin: 0;
 }
 .logo-area {
   float: left;
@@ -659,6 +664,8 @@ div.loginpanel h2 {
     display: none;
   }
   .header-background {
+    margin-left: -20px;
+    padding-right: 40px;
     margin-right: -20px;
   }
   .navbar .navbar-fixed-top {

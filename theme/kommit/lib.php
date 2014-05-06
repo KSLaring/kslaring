@@ -29,19 +29,6 @@
  */
 
 /**
- * The theme initialises the page object to include for example YUI plugins
-
-function theme_kommit_page_init(moodle_page $page) {
-    $gototop = get_string('gototop', 'local_themes');
-    $page->requires->yui_module(array(
-            'moodle-local_themes-scrollyanchorsplugin'
-        ),
-        'Y.Moodle.local_themes.Scrollyanchorsplugin.init',
-        array(array("gototop" => $gototop)) // optional parameters
-    );
-} */
-
-/**
  * Parses CSS before it is cached.
  *
  * This function can make alterations and replace patterns within the CSS.
