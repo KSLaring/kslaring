@@ -39,7 +39,7 @@ if (right_to_left()) {
 
 // Get the URL for the logo link
 $url = new moodle_url('/', array('redirect' => 0));
-
+$url_course_lst = new moodle_url('/course/index.php');
 echo $OUTPUT->doctype() ?>
 <html <?php echo $OUTPUT->htmlattributes(); ?> xmlns="http://www.w3.org/1999/html">
 <head>
@@ -108,7 +108,7 @@ echo $OUTPUT->doctype() ?>
 
                 <div class="lead">Kurs når det passer deg. Ressurser alltid tilgjengelig</div>
                 <div class="buttons">
-                    <button href="#">Finn kurs og dokumentasjon</button>
+                    <a href="<?php echo $url_course_lst;?>"><button>Finn kurs og dokumentasjon</button></a>
                 </div>
             </div>
         </div>
