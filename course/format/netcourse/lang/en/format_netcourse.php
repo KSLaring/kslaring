@@ -32,5 +32,5 @@ $string['page-course-view-netcourse'] = 'Any course main page in netcourse forma
 $string['page-course-view-netcourse-x'] = 'Any course page in netcourse format';
 $string['hidefromothers'] = 'Hide topic';
 $string['showfromothers'] = 'Show topic';
-$string['forums'] = 'Discussion';
+$string['forums'] = 'Forum';
 $string['progress'] = 'Progress';
