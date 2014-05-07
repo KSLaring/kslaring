@@ -40,8 +40,16 @@
     margin: 1em 0 1em 0;
 }
 
+.netcourse-header .btn {
+    margin-top: 0.3em;
+}
+
 #instcnav {
     padding: 0;
+}
+
+#instcnav .block_tree {
+    font-size: 22px;
 }
 
 #instcnav .block_tree .tree_item.branch {
@@ -60,11 +68,12 @@
 }
 
 #instcnav li.contains_branch > p.branch {
-    background-color: #ddd;
+    background-color: #003876;
+    color: #fff;
 }
 
 #instcnav li.contains_branch.collapsed > p.branch {
-    background-color: #f2f2f2;
+    background-color: #00aef0;
 }
 
 .jsenabled #instcnav .block_tree .tree_item.branch span:focus {
@@ -82,4 +91,9 @@
 #instcnav .block_tree li.depth_2 ul {
     padding-left: 22px;
     overflow: hidden;
+}
+
+.format-netcourse.path-mod-lesson .progress_bar_completed {
+    background-color: #46a546;
+    padding-right: .5em;
 }

@@ -80,7 +80,8 @@ class format_netcourse_openlast {
      */
     public function redirect($request = '') {
         // Check if the request is an AJAX call, don't redirect if true
-        if ($this->is_ajax_call()) {
+        if ($this->is_ajax_call() ||
+            strpos($request, 'course/completion.php') !== false) {
             return -1;
         }
 

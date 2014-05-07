@@ -583,13 +583,27 @@ class format_netcourse extends format_base {
             }
         }
 
+        // Set the link to the progress page
+        $progressurl = new moodle_url('#');
+        if (!is_null($this->openlast->get_section0modids())) {
+            foreach($this->openlast->get_section0modids() as $cmid) {
+                if ($modinfo->cms[$cmid]->modname === 'completionreport') {
+                    $progressurl = $modinfo->cms[$cmid]->url;
+                    break;
+                }
+            }
+        }
+
         $courseactive = '';
         $discussactive = '';
         $descactive = '';
+        $progressactive = '';
         if ($PAGE->url->compare($descriptionurl, URL_MATCH_EXACT)) {
             $descactive = ' btn-primary active';
         } else if ($PAGE->url->compare($discussionurl, URL_MATCH_EXACT)) {
             $discussactive = ' btn-primary active';
+        } else if ($PAGE->url->compare($progressurl, URL_MATCH_EXACT)) {
+            $progressactive = ' btn-primary active';
         } else {
             $courseactive = ' btn-primary active';
         }
@@ -609,17 +623,25 @@ class format_netcourse extends format_base {
         }
         $descriptionurl = $descriptionurl->out();
 
+        // Add the nonav parameter to hide the course navigation
+        if ($progressurl->get_host() !== "") {
+            $progressurl->param('nonav', 1);
+        }
+        $progressurl = $progressurl->out();
+
         return new format_netcourse_specialnav('
-        <div class="btn-group">
-            <a class="btn' . $courseactive . '" href="' . $courseurl . '">' .
-            $strcourse . '</a>
-            <a class="btn' . $descactive . '" href="' . $descriptionurl . '">' .
-            $strdescription . '</a>
-            <a class="btn' . $discussactive . '" href="' . $discussionurl . '">' .
-            $strforums . '</a>
-            <a class="btn disabled" href="#">' . $strprogress . '</a>
-            <a class="btn" href="javascript:void(0)" onclick="document.location.href=\'' .
-            $CFG->wwwroot . '/my\'">' . $mymoodle . '</a>
+        <div class="btn-toolbar">
+            <a class="btn' . $courseactive . '" type="button" href="' .
+            $courseurl . '">' . $strcourse . '</a>
+            <a class="btn' . $descactive . '" type="button" href="' .
+            $descriptionurl . '">' . $strdescription . '</a>
+            <a class="btn' . $discussactive . '" type="button" href="' .
+            $discussionurl . '">' . $strforums . '</a>
+            <a class="btn' . $progressactive . '" type="button" href="' .
+            $progressurl . '">' . $strprogress . '</a>
+            <a class="btn" type="button" href="javascript:void(0)"
+            onclick="document.location.href=\'' . $CFG->wwwroot . '/my\'">' .
+            $mymoodle . '</a>
         </div>'
         );
     }
@@ -633,14 +655,29 @@ class format_netcourse extends format_base {
      * @return format_netcourse_specialnav | null
      */
     public function course_content_header() {
-        global $cm;
+        global $CFG, $DB, $cm, $PAGE;
 
         $retval = null;
 
         if (!is_null($cm)) {
             if ($cm->modname === 'lesson') {
-                $retval = new format_netcourse_specialnav(
-                    '---> Lesson navigation goes here. <---');
+                // Get the lesson library with the lesson class and create a new instance
+                // and get the lesson renderer
+                require_once($CFG->dirroot.'/mod/lesson/locallib.php');
+                $lesson = new lesson($DB->get_record('lesson',
+                    array('id' => $cm->instance), '*', MUST_EXIST));
+                $lessonoutput = $PAGE->get_renderer('mod_lesson');
+
+                // Force the progressbar on, render the progressbar
+                // and force the progressbar off to avoid the lesson's own progressbar
+                // at the bottom of the lesson page. The progressbar will be rendered
+                // independent of the lesson settings.
+                $lesson->progressbar = 1;
+                $progressbar = $lessonoutput->progress_bar($lesson);
+                $lesson->progressbar = 0;
+
+                // Create the object for the course content header renderer
+                $retval = new format_netcourse_specialnav($progressbar);
             }
         }
 
