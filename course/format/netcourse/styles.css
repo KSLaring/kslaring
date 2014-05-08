@@ -53,10 +53,10 @@
 }
 
 #instcnav .block_tree .tree_item.branch {
-    background-position: 3px .7em;
+    background-position: 3px .6em;
     margin: 0;
-    padding-top: .5em;
-    padding-bottom: .5em;
+    padding-top: .3em;
+    padding-bottom: .3em;
 }
 
 #instcnav .block_tree .tree_item.leaf {

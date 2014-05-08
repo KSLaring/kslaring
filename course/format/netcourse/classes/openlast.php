@@ -108,14 +108,6 @@ class format_netcourse_openlast {
             return $url;
         }
 
-        // If editing is on and the request uri is not the course/view.php page
-        // redirect to the course page.
-//        if ($this->is_editing() && strpos($request, 'course/view.php') === false) {
-//            $url = new moodle_url('/course/view.php?id=' . $this->course->id);
-//
-//            return $url;
-//        }
-
         return false;
     }
 
@@ -244,7 +236,11 @@ class format_netcourse_openlast {
             $module = $row->module;
             $mod = $module === 'course' ? '' : 'mod/';
             $cmid = $row->cmid;
-            $url = new moodle_url('/' . $mod . $module . '/' . $row->url);
+
+            // Check if the course module exists
+            if ($DB->record_exists('course_modules', array('id' => $cmid))) {
+                $url = new moodle_url('/' . $mod . $module . '/' . $row->url);
+            }
         }
 
         // return the values as an array

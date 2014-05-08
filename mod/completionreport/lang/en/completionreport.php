@@ -25,24 +25,10 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-$string['configdndmedia'] = 'Offer to create a completionreport when media files are dragged & dropped onto a course';
-$string['configdndresizeheight'] = 'When a completionreport is created from a dragged & dropped image, resize it if it is higher than this many pixels (0 for no resize)';
-$string['configdndresizewidth'] = 'When a completionreport is created from a dragged & dropped image, resize it if it is wider than this many pixels (0 for no resize)';
-$string['dndmedia'] = 'Media drag and drop';
-$string['dndresizeheight'] = 'Resize drag and drop height';
-$string['dndresizewidth'] = 'Resize drag and drop width';
-$string['dnduploadcompletionreport'] = 'Add image to course page';
-$string['dnduploadcompletionreporttext'] = 'Add a completionreport to the course page';
 $string['completionreport:addinstance'] = 'Add a new completionreport';
 $string['completionreporttext'] = 'Completionreport text';
 $string['modulename'] = 'Completionreport';
-$string['modulename_help'] = 'The completionreport module enables text and multimedia to be inserted into the course page in between links to other resources and activities. Completionreports are very versatile and can help to improve the appearance of a course if used thoughtfully.
-
-Completionreports may be used
-
-* To split up a long list of activities with a subheading or an image
-* To display an embedded sound file or video directly on the course page
-* To add a short description to a course section';
+$string['modulename_help'] = 'The completionreport module shows the course completion for enroled users.';
 $string['modulename_link'] = 'mod/completionreport/view';
 $string['modulenameplural'] = 'Completionreports';
 $string['pluginadministration'] = 'Completionreport administration';
@@ -57,3 +43,5 @@ $string['requirement'] = 'Requirement';
 $string['returntocourse'] = 'Return to course';
 
 $string['err_nocriteria'] = 'No criteria';
+$string['notenrolled'] = 'Nothing to show because you are not enrolled in this course.';
+$string['notcompletionenabled'] = 'Nothing to show because completion is not enabled in this course.';

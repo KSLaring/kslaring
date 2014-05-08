@@ -27,27 +27,6 @@
 
 defined('MOODLE_INTERNAL') || die;
 
-/** COMPLETIONREPORT_MAX_NAME_LENGTH = 50 */
-define("COMPLETIONREPORT_MAX_NAME_LENGTH", 50);
-
-/**
- * @uses COMPLETIONREPORT_MAX_NAME_LENGTH
- * @param object $completionreport
- * @return string
- */
-function get_completionreport_name($completionreport) {
-    $name = strip_tags(format_string($completionreport->intro,true));
-    if (core_text::strlen($name) > COMPLETIONREPORT_MAX_NAME_LENGTH) {
-        $name = core_text::substr($name, 0, COMPLETIONREPORT_MAX_NAME_LENGTH)."...";
-    }
-
-    if (empty($name)) {
-        // arbitrary name
-        $name = get_string('modulename','completionreport');
-    }
-
-    return $name;
-}
 /**
  * Given an object containing all the necessary data,
  * (defined by the form in mod_form.php) this function
@@ -61,7 +40,6 @@ function get_completionreport_name($completionreport) {
 function completionreport_add_instance($completionreport) {
     global $DB;
 
-    $completionreport->name = get_completionreport_name($completionreport);
     $completionreport->timemodified = time();
 
     return $DB->insert_record("completionreport", $completionreport);
@@ -79,7 +57,6 @@ function completionreport_add_instance($completionreport) {
 function completionreport_update_instance($completionreport) {
     global $DB;
 
-    $completionreport->name = get_completionreport_name($completionreport);
     $completionreport->timemodified = time();
     $completionreport->id = $completionreport->instance;
 
@@ -109,35 +86,6 @@ function completionreport_delete_instance($id) {
     }
 
     return $result;
-}
-
-/**
- * Given a course_module object, this function returns any
- * "extra" information that may be needed when printing
- * this activity in a course listing.
- * See get_array_of_activities() in course/lib.php
- *
- * @global object
- * @param object $coursemodule
- * @return cached_cm_info|null
- */
-function completionreport_get_coursemodule_info($coursemodule) {
-    global $DB;
-
-    if ($completionreport = $DB->get_record('completionreport', array('id'=>$coursemodule->instance), 'id, name, intro, introformat')) {
-        if (empty($completionreport->name)) {
-            // completionreport name missing, fix it
-            $completionreport->name = "completionreport{$completionreport->id}";
-            $DB->set_field('completionreport', 'name', $completionreport->name, array('id'=>$completionreport->id));
-        }
-        $info = new cached_cm_info();
-        // no filtering hre because this info is cached and filtered later
-        $info->content = format_module_intro('completionreport', $completionreport, $coursemodule->id, false);
-        $info->name  = $completionreport->name;
-        return $info;
-    } else {
-        return null;
-    }
 }
 
 /**
