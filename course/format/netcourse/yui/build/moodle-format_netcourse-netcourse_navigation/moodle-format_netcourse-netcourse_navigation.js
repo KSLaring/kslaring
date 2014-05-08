@@ -375,6 +375,10 @@ TREE.prototype = {
         var list = ele.one("ul"),
             to_height = 0;
 
+        if (list.getStyle('height') !== '0px') {
+            list.setStyle('height', '0px');
+            list.setStyle('opacity', '0.0');
+        }
         ele.removeClass('collapsed');
         ele.set('aria-expanded', !ele.hasClass('collapsed'));
         list.all('> *').each(function (el) {
