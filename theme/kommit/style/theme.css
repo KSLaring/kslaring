@@ -358,6 +358,9 @@ Courses and categories lists, from Mary Evans
 #page-mod-lesson-view .ftoggler {
   display: none;
 }
+#page-mod-lesson-view .contents {
+  min-height: 18em;
+}
 body {
   padding-top: 0px;
 }
