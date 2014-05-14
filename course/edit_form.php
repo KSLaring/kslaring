@@ -23,10 +23,18 @@ class course_edit_form extends moodleform {
         $PAGE->requires->yui_module('moodle-course-formatchooser', 'M.course.init_formatchooser',
                 array(array('formid' => $mform->getAttribute('id'))));
 
-        $course        = $this->_customdata['course']; // this contains the data of this form
-        $category      = $this->_customdata['category'];
-        $editoroptions = $this->_customdata['editoroptions'];
-        $returnto = $this->_customdata['returnto'];
+        $course         = $this->_customdata['course']; // this contains the data of this form
+        $category       = $this->_customdata['category'];
+        $editoroptions  = $this->_customdata['editoroptions'];
+        $returnto       = $this->_customdata['returnto'];
+        /**
+         * @updateDate  08/05/2014
+         * @author      eFaktor     (fbv)
+         *
+         * Description
+         * Class to manage the information of Course Home Page
+         */
+        $course_page    = $this->_customdata['course_page'];
 
         $systemcontext   = context_system::instance();
         $categorycontext = context_coursecat::instance($category->id);
@@ -128,6 +136,18 @@ class course_edit_form extends moodleform {
             $mform->setConstants('idnumber', $course->idnumber);
         }
 
+        /**
+         * @updateDate      28/04/2014
+         * @author          eFaktor     (fbv)
+         *
+         * Description
+         * Add a new section connected with the 'Course Home Page'
+         */
+        $mform->addElement('checkbox','homepage',get_string('checkbox_home','local_course_page'));
+        if ($course->homepage) {
+           $mform->setDefault('homepage',1);
+        }//if_home_page
+
         // Description.
         $mform->addElement('header', 'descriptionhdr', get_string('description'));
         $mform->setExpanded('descriptionhdr');
@@ -148,6 +168,15 @@ class course_edit_form extends moodleform {
             $mform->removeElement('descriptionhdr');
             $mform->hardFreeze($summaryfields);
         }
+
+        /**
+         * @updateDate      28/04/2014
+         * @author          eFaktor     (fbv)
+         *
+         * Description
+         * Add a new section connected with the 'Course Home Page'
+         */
+        $course_page->add_CourseHomePage_Section($mform);
 
         // Course format.
         $mform->addElement('header', 'courseformathdr', get_string('type_format', 'plugin'));
@@ -366,6 +395,19 @@ class course_edit_form extends moodleform {
                 }
             }
         }
+
+        /**
+         * @updateDate  08/05/2014
+         * @author      eFakor      (fbv)
+         *
+         * Description
+         * Validation the new fiedls --> Home PAge
+         */
+        if ($data['homepage']) {
+            if (empty($data['homesummary_editor']['text'])) {
+                $errors['homesummary_editor'] = get_string('required');
+            }//home_summary
+        }//if_course_page
 
         $errors = array_merge($errors, enrol_course_edit_validation($data, $this->context));
 

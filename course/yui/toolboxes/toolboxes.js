@@ -252,7 +252,7 @@ YUI.add('moodle-course-toolboxes', function(Y) {
 
             if (!node.test('a') || !action || !activity) {
                 // It wasn't a valid action node.
-                return;
+                return false;
             }
             Y.log(ev.type);
 

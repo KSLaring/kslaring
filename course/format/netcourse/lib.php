@@ -26,8 +26,6 @@
 
 defined('MOODLE_INTERNAL') || die();
 require_once($CFG->dirroot . '/course/format/lib.php');
-
-
 /**
  * Main class for the Netcourse course format
  *
@@ -35,7 +33,16 @@ require_once($CFG->dirroot . '/course/format/lib.php');
  * @copyright  2014 eFaktor
  * @author     Urs Hunkler {@link urs.hunkler@unodo.de}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ *
+ * @updateDate  14/05/2014
+ * @author      eFaktor     (fbv)
+ *
+ * Description
+ * Add all the reference for the extra fields.
+ * Add extra fields.
  */
+require_once($CFG->dirroot . '/local/course_page/locallib.php');
+
 class format_netcourse extends format_base {
 
     /** @var int Trim characters from the right */
@@ -386,6 +393,14 @@ class format_netcourse extends format_base {
      * @return array of options
      */
     public function course_format_options($foreditform = false) {
+        /**
+         * @updateDate  14/05/2014
+         * @author      eFaktor     (fbv)
+         *
+         * Description
+         * Get the users are candidates to be course manager
+         */
+        $lst_manager = course_page::getCourseManager();
         static $courseformatoptions = false;
         if ($courseformatoptions === false) {
             $courseconfig = get_config('moodlecourse');
@@ -398,10 +413,40 @@ class format_netcourse extends format_base {
                     'default' => $courseconfig->hiddensections,
                     'type' => PARAM_INT,
                 ),
-                'coursedisplay' => array(
-                    'default' => $courseconfig->coursedisplay,
-                    'type' => PARAM_INT,
+                /**
+                 * @updateDate  08/05/2014
+                 * @author      eFaktor (fbv)
+                 *
+                 * Description
+                 * Add an extra fields
+                 */
+                'prerequisities' => array(
+                    'type'      => PARAM_TEXT,
                 ),
+                'producedby'    => array(
+                    'type'      => PARAM_TEXT,
+                ),
+                'length'        => array(
+                    'type'      => PARAM_TEXT,
+                ),
+                'effort'        => array(
+                    'type'      => PARAM_TEXT,
+                ),
+                'manager'       => array(
+                    'default'   => 0,
+                    'type' => PARAM_INT,
+                )
+                /**
+                 * @updateDate  08/05/2014
+                 * @author      eFaktor     (fbv)
+                 *
+                 * Description
+                 * Not available for this format
+                 */
+                //'coursedisplay' => array(
+                //    'default' => $courseconfig->coursedisplay,
+                //    'type' => PARAM_INT,
+                //),
             );
         }
         if ($foreditform && !isset($courseformatoptions['coursedisplay']['label'])) {
@@ -432,18 +477,65 @@ class format_netcourse extends format_base {
                         )
                     ),
                 ),
-                'coursedisplay' => array(
-                    'label' => new lang_string('coursedisplay'),
-                    'element_type' => 'select',
+                /**
+                 * @updateDate  08/05/2014
+                 * @author      eFaktor (fbv)
+                 *
+                 * Description
+                 * Add an extra fields
+                 */
+                'prerequisities' => array(
+                    'label'                 => get_string('home_req','local_course_page'),
+                    'element_type'          => 'textarea',
+                    'element_attributes'    => array(
+                        0 => 'rows="5" style="width:95%;"'
+                    )
+                ),
+                'producedby'    => array(
+                    'label'                 => get_string('home_produced','local_course_page'),
+                    'element_type'          => 'text',
+                    'element_attributes'    => array(
+                        0 => 'style="width:95%;"'
+                    )
+                ),
+                'length'        => array(
+                    'label'                 => get_string('home_length','local_course_page'),
+                    'element_type'          => 'text',
                     'element_attributes' => array(
-                        array(
-                            COURSE_DISPLAY_SINGLEPAGE => new lang_string('coursedisplay_single'),
-                            COURSE_DISPLAY_MULTIPAGE => new lang_string('coursedisplay_multi')
+                        0 => 'style="width:95%;"'
+                    )
+                ),
+                'effort'        => array(
+                    'label'                 => get_string('home_effort','local_course_page'),
+                    'element_type'          => 'text',
+                    'element_attributes' => array(
+                        0 => 'style="width:95%;"'
                         )
                     ),
-                    'help' => 'coursedisplay',
-                    'help_component' => 'moodle',
+                'manager'       => array(
+                    'label'                 => get_string('course_manager','local_course_page'),
+                    'element_type'          => 'select',
+                    'element_attributes'    => array($lst_manager)
                 )
+                /**
+                 * @updateDate  08/05/2014
+                 * @author      eFaktor     (fbv)
+                 *
+                 * Description
+                 * It is not available for this format
+                 */
+                //'coursedisplay' => array(
+                //    'label' => new lang_string('coursedisplay'),
+                //    'element_type' => 'select',
+                //    'element_attributes' => array(
+                //        array(
+                //            COURSE_DISPLAY_SINGLEPAGE => new lang_string('coursedisplay_single'),
+                //            COURSE_DISPLAY_MULTIPAGE => new lang_string('coursedisplay_multi')
+                //        )
+                //    ),
+                //    'help' => 'coursedisplay',
+                //    'help_component' => 'moodle',
+                //),
             );
             $courseformatoptions = array_merge_recursive($courseformatoptions,
                 $courseformatoptionsedit);
