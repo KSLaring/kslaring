@@ -12283,6 +12283,7 @@ body {
   padding: 0;
 }
 .block .header {
+  background: white;
   border-bottom: 5px solid #e8e8e8;
   padding: 10px 15px;
 }

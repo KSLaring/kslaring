@@ -363,6 +363,7 @@ Courses and categories lists, from Mary Evans
 }
 body {
   padding-top: 0px;
+  background: #f2f2f3;
 }
 .top-border {
   border-top: 2px solid #1a1a1a;
@@ -537,7 +538,6 @@ div.loginpanel h2 {
 .hero-unit {
   margin-left: 0 auto;
   margin-right: 0 auto;
-  background-color: white;
   background-image: url([[pix:theme|banner_image]]);
   max-height: 420px;
   min-height: 420px;
@@ -548,6 +548,7 @@ div.loginpanel h2 {
   background-repeat: no-repeat;
   background-position: center bottom;
   text-align: center;
+  background-color: #f2f2f3;
   -webkit-border-radius: 0px;
   -moz-border-radius: 0px;
   border-radius: 0px;
@@ -572,79 +573,133 @@ div.loginpanel h2 {
   line-height: normal;
   vertical-align: middle;
 }
-/* hide inherited block styles
-// Jon Jack 26/03/2014
-// -------------------------------------
-*/
-.block_course_nav.block {
+.course-content ul.netcourse {
+  margin: 0;
+}
+.course-content ul.netcourse li.section {
+  list-style: none;
+  margin: 0 0 5px 0;
+  padding: 0;
+}
+.course-content ul.netcourse li.section .content {
+  margin: 0 40px;
+}
+.course-content ul.netcourse li.section .left {
+  float: left;
+}
+.course-content ul.netcourse li.section .right {
+  float: right;
+}
+.course-content ul.netcourse li.section .left,
+.course-content ul.netcourse li.section .right {
+  width: 40px;
+  text-align: center;
+  padding: 6px 0;
+}
+.course-content ul.netcourse li.section .right img.icon {
+  padding: 0 0 4px 0;
+}
+.course-content ul.netcourse li.section .left .section-handle img.icon {
+  padding: 0;
+  vertical-align: baseline;
+}
+.netcourse-header {
+  margin: 1em 0 1em 0;
+}
+.netcourse-header .btn {
+  margin: 0.2em 0 .2em 0;
+  background: none;
+  box-shadow: none;
+  color: #0e7b9e;
+  font-size: 18px;
+}
+.netcourse-header .btn-primary:active,
+.netcourse-header .btn-primary.active {
+  color: #ffffff;
+  background-color: #0e7b9e;
+}
+#instcnav {
+  padding: 0;
+}
+#instcnav .block_tree .tree_item.branch {
+  background-position: 10px 1.1em;
+  margin: 0;
+  padding-top: 1em;
+  padding-bottom: 1em;
+}
+#instcnav .block_tree .tree_item.leaf {
+  margin: .3em 0 .2em 0;
+  font-size: 1em;
+  font-weight: normal;
+}
+#instcnav .block_tree .tree_item.leaf a {
+  color: #7e7e7e;
+}
+#instcnav .content {
+  padding: 0;
+}
+#instcnav li.contains_branch > p.branch {
+  background-color: #f9f9f9;
+  color: #7e7e7e;
+  line-height: 1.2em;
+  padding-left: 30px;
+}
+#instcnav li.contains_branch.collapsed > p.branch {
+  border-top: 1px solid #fff;
+  border-bottom: 1px solid #e8e8e8;
+  color: #7e7e7e;
+}
+.jsenabled #instcnav .block_tree .tree_item.branch span:focus {
+  outline: 0;
+}
+.jsenabled #instcnav .block_tree li.contains_branch .branch span {
+  font-weight: normal;
+}
+.jsenabled #instcnav .block_tree li.contains_branch.collapsed .branch span {
+  font-weight: normal;
+}
+#instcnav .block_tree li.depth_2 ul {
+  padding-left: 22px;
+  overflow: hidden;
+}
+.format-netcourse.path-mod-lesson .box .progress_bar {
+  border: none;
+  height: 25px;
+  margin-top: -25px;
+  background: none;
+}
+.format-netcourse.path-mod-lesson .progress_bar {
+  background: #f2f2f3;
+  border: 1px solid #e8e8e8;
+  height: 25px;
+  margin-top: 40px;
+  margin-right: 20px;
+}
+.format-netcourse.path-mod-lesson .progress_bar_completed {
+  background-color: #46a546;
+  background-color: #88c453;
+  background-image: -moz-linear-gradient(top, #b4d95b, #46a546);
+  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#b4d95b), to(#46a546));
+  background-image: -webkit-linear-gradient(top, #b4d95b, #46a546);
+  background-image: -o-linear-gradient(top, #b4d95b, #46a546);
+  background-image: linear-gradient(to bottom, #b4d95b, #46a546);
+  background-repeat: repeat-x;
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffb4d95b', endColorstr='#ff46a546', GradientType=0);
+  padding-right: 20px;
+}
+.format-netcourse #page-content {
+  background: #fff;
+  border: 1px solid #e8e8e8;
+}
+.format-netcourse .block .list li {
+  margin: 0;
+}
+.block {
   margin: 0;
   padding: 0;
-  border: none;
-  background: pink;
-  -webkit-border-radius: 0px;
-  -moz-border-radius: 0px;
-  border-radius: 0px;
 }
-.block_course_nav.block .title h2 {
-  padding: 0 0 0 15px;
-  color: #7e7e7e;
-  font-size: 36px;
-  line-height: 58.248000000000005px;
-}
-.block_course_nav {
-  clear: both !important;
-}
-.block_course_nav .header {
-  font-size: 36px;
-  padding: 10px 10px 10px 0 !important;
-  background: #fff !important;
-}
-.block_course_nav .header .block_action {
-  display: none;
-}
-.block_course_nav .content {
-  border: none;
-  padding: 0px;
-  margin: 0px;
-}
-.block_course_nav .content .list li.listentry {
-  clear: both;
-}
-.block_course_nav .content .list li.listentry .user {
-  float: left;
-  position: relative;
-}
-.block_course_nav .content .list li.listentry .message {
-  float: right;
-}
-.block_course_nav .content .info {
-  text-align: left;
-}
-.block_course_nav .content .footer {
-  clear: both;
-}
-.block_course_nav .coursebox {
-  border: none;
-  margin-bottom: 15px;
-}
-.block_course_nav .linkarea {
-  width: 350px;
-}
-.block_course_nav .header {
-  border-bottom: none;
-}
-.block_course_nav .content .col1,
-.block_course_nav .content .col2 {
-  vertical-align: top;
-  display: inline-block;
-  width: 350px;
-  margin: 10px 15px 30px 15px;
-}
-.dir-rtl .block_course_nav .content .list li.listentry .user {
-  float: right;
-}
-.dir-rtl .block_course_nav .content .list li.listentry .message {
-  float: left;
+.block .list {
+  margin: 0;
 }
 @media (max-width: 740px) {
   #page-footer #page-footer-inner .column {
