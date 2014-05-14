@@ -27,6 +27,7 @@
 defined('MOODLE_INTERNAL') || die();
 require_once($CFG->dirroot . '/course/format/lib.php');
 
+
 /**
  * Main class for the Netcourse course format
  *
@@ -44,7 +45,13 @@ class format_netcourse extends format_base {
     /** @var int Trim characters from the center */
     const TRIM_CENTER = 3;
 
+    const LESSON_NOT_LASTPAGE = 0;
+    const LESSON_LASTPAGE_GRADINGON = 1;
+    const LESSON_LASTPAGE_GRADINGOFF = 2;
+
     protected $openlast = null;
+
+    static protected $lastlessonpage = null;
 
     /**
      * Returns true if this course format uses sections
@@ -575,7 +582,7 @@ class format_netcourse extends format_base {
         // Set the "Discussion" link to the first forum in section 0
         $discussionurl = new moodle_url('#');
         if (!is_null($this->openlast->get_section0modids())) {
-            foreach($this->openlast->get_section0modids() as $cmid) {
+            foreach ($this->openlast->get_section0modids() as $cmid) {
                 if ($modinfo->cms[$cmid]->modname === 'forum') {
                     $discussionurl = $modinfo->cms[$cmid]->url;
                     break;
@@ -586,7 +593,7 @@ class format_netcourse extends format_base {
         // Set the link to the progress page
         $progressurl = new moodle_url('#');
         if (!is_null($this->openlast->get_section0modids())) {
-            foreach($this->openlast->get_section0modids() as $cmid) {
+            foreach ($this->openlast->get_section0modids() as $cmid) {
                 if ($modinfo->cms[$cmid]->modname === 'completionreport') {
                     $progressurl = $modinfo->cms[$cmid]->url;
                     break;
@@ -661,20 +668,66 @@ class format_netcourse extends format_base {
 
         if (!is_null($cm)) {
             if ($cm->modname === 'lesson') {
+                global $pageid, $USER, $lesson, $lessonoutput;
+
                 // Get the lesson library with the lesson class and create a new instance
-                // and get the lesson renderer
-                require_once($CFG->dirroot.'/mod/lesson/locallib.php');
-                $lesson = new lesson($DB->get_record('lesson',
-                    array('id' => $cm->instance), '*', MUST_EXIST));
-                $lessonoutput = $PAGE->get_renderer('mod_lesson');
+                // and get the lesson renderer if the global lesson object is not present.
+                if (empty($lesson)) {
+                    require_once($CFG->dirroot . '/mod/lesson/locallib.php');
+                    $lesson = new lesson($DB->get_record('lesson',
+                        array('id' => $cm->instance), '*', MUST_EXIST));
+                    // If the progressbar is activated for this course and the
+                    // global lesson object is not set then turn the progressbar off in
+                    // the lesson setting to avoid duplication. The global lesson object
+                    // should be set.
+                    if ($lesson->properties()->progressbar == 1) {
+                        $DB->set_field('lesson', 'progressbar', 0,
+                            array('id' => $lesson->properties()->id));
+                    }
+                }
+                if (empty($lessonoutput)) {
+                    $lessonoutput = $PAGE->get_renderer('mod_lesson');
+                }
 
                 // Force the progressbar on, render the progressbar
                 // and force the progressbar off to avoid the lesson's own progressbar
                 // at the bottom of the lesson page. The progressbar will be rendered
                 // independent of the lesson settings.
-                $lesson->progressbar = 1;
+                $lesson->properties()->progressbar = 1;
+
+                // The lesson page with the pageid -9 is the last lesson page
+                // On the last page force the progress bar to 100% which happens when
+                // $USER->modattempts for this lesson is true.
+                $showgrades = $PAGE->course->showgrades;
+                $actualpageid = null;
+                $nextpage = $lesson->get_next_page($pageid);
+                // Force the progress bar to 100%
+                if ($pageid === -9) {
+                    if (!isset($USER->modattempts[$lesson->id])) {
+                        $USER->modattempts[$lesson->id] = true;
+                    }
+                }
+                // The last lesson page is shown
+                // Either when the course settings showgrade is on and the
+                // lesson nextpage returns -9 and the global pageid is -9
+                // OR showgrade is off and the lesson nexpage returns -9
+                // and the global pageid is null.
+                $lastpage = self::LESSON_NOT_LASTPAGE;
+                if ($showgrades && $nextpage === -9 && $pageid === -9) {
+                    $lastpage = self::LESSON_LASTPAGE_GRADINGON;
+                } else if (!$showgrades && $nextpage === -9 && empty($pageid)) {
+                    $lastpage = self::LESSON_LASTPAGE_GRADINGOFF;
+                }
+                $this::$lastlessonpage = $lastpage;
+                // Check the values in the browser with ChromePHP
+//                ChromePhp::log('$showgrades: ' . $showgrades);
+//                ChromePhp::log('$pageid: ' . $pageid);
+//                ChromePhp::log('$nextpage: ' . $nextpage);
+//                ChromePhp::log('$lastpage: ' . $lastpage);
+
                 $progressbar = $lessonoutput->progress_bar($lesson);
-                $lesson->progressbar = 0;
+                $lesson->properties()->progressbar = 0;
+//                $lesson->progressbar = 0;
 
                 // Create the object for the course content header renderer
                 $retval = new format_netcourse_specialnav($progressbar);
@@ -690,8 +743,53 @@ class format_netcourse extends format_base {
      *
      * @return format_netcourse_specialnav | null
      */
-    public function _course_content_footer() {
-        return new format_netcourse_specialnav('This is the course content footer');
+    public function course_content_footer() {
+        $retval = null;
+
+        // If the last lesson page is reached add JavaScript to the page
+        // which manipulates the page.
+        if (self::$lastlessonpage === self::LESSON_LASTPAGE_GRADINGON) {
+            $strmessage = get_string('lessonlastpageon', 'format_netcourse');
+            $js = <<< EOT
+            <script>
+            YUI().use("node", function(Y) {
+                var lbtns = Y.all(".lessonbutton.standardbutton");
+                lbtns.remove();
+                var box = Y.one("#region-main").one(".generalbox");
+                if (box) {
+                    box
+                        .set("text", "$strmessage")
+                        .addClass("lastlessonpage-info");
+                }
+            });
+            </script>
+EOT;
+            $retval = new format_netcourse_specialnav($js);
+
+        } else if (self::$lastlessonpage === self::LESSON_LASTPAGE_GRADINGOFF) {
+            $strmessage = get_string('lessonlastpageoff', 'format_netcourse');
+            $js = <<< EOT
+            <script>
+            YUI().use("node", function(Y) {
+                var regionmain = Y.one("#region-main");
+                var singlebtn = regionmain.one(".singlebutton");
+                if (singlebtn) {
+                    var pageid = singlebtn.one("input[name=pageid]");
+                    if (pageid && pageid.get("value") == -9) {
+                        singlebtn.one("form").remove();
+                        singlebtn
+                            .set("text", "$strmessage")
+                            .removeClass("singlebutton")
+                            .addClass("box generalbox lastlessonpage-info");
+                    }
+                }
+            });
+            </script>
+EOT;
+            $retval = new format_netcourse_specialnav($js);
+        }
+
+        return $retval;
     }
 
     /**

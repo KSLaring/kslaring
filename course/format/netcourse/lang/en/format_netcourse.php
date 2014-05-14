@@ -34,3 +34,5 @@ $string['hidefromothers'] = 'Hide topic';
 $string['showfromothers'] = 'Show topic';
 $string['forums'] = 'Forum';
 $string['progress'] = 'Progress';
+$string['lessonlastpageon'] = 'Please select the next activity in the navigation menu.';
+$string['lessonlastpageoff'] = 'You finished this lesson. Please select the next activity in the navigation menu.';

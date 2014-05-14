@@ -1,109 +1,16 @@
-/* Jon Jack
-// styles are duplicated in teh kommit Theme for now, so
-// I have commented these to stop clashes
-// 14/05/2014
-// ----------------------------------------------------- */
+/**
+ * New styles to integrate into the theme
+ *
+ * 2014-05-14
+ *
+ * Please remove the styles which are moved to the theme here.
+ */
 
-/*
-
-.course-content ul.netcourse {
-    margin: 0;
+/* Style the text for the last lesson page which replaces the button/links */
+.format-netcourse.path-mod-lesson .lastlessonpage-info {
+    padding: 1em .5em;
+    margin-top: 1em;
+    margin-bottom: 1em;
+    background-color: #F5F5F5;
+    border-top: 1px solid #E5E5E5;
 }
-
-.course-content ul.netcourse li.section {
-    list-style: none;
-    margin: 0 0 5px 0;
-    padding: 0;
-}
-
-.course-content ul.netcourse li.section .content {
-    margin: 0 40px;
-}
-
-.course-content ul.netcourse li.section .left {
-    float: left;
-}
-
-.course-content ul.netcourse li.section .right {
-    float: right;
-}
-
-.course-content ul.netcourse li.section .left,
-.course-content ul.netcourse li.section .right {
-    width: 40px;
-    text-align: center;
-    padding: 6px 0;
-}
-
-.course-content ul.netcourse li.section .right img.icon {
-    padding: 0 0 4px 0;
-}
-
-.course-content ul.netcourse li.section .left .section-handle img.icon {
-    padding: 0;
-    vertical-align: baseline;
-}
-
-.netcourse-header {
-    margin: 1em 0 1em 0;
-}
-
-.netcourse-header .btn {
-    margin-top: 0.3em;
-}
-
-#instcnav {
-    padding: 0;
-}
-
-#instcnav .block_tree {
-    font-size: 22px;
-}
-
-#instcnav .block_tree .tree_item.branch {
-    background-position: 3px .6em;
-    margin: 0;
-    padding-top: .3em;
-    padding-bottom: .3em;
-}
-
-#instcnav .block_tree .tree_item.leaf {
-    margin: .3em 0 .2em 0;
-}
-
-#instcnav .content {
-    padding: 0;
-}
-
-#instcnav li.contains_branch > p.branch {
-    background-color: #003876;
-    color: #fff;
-}
-
-#instcnav li.contains_branch.collapsed > p.branch {
-    background-color: #00aef0;
-}
-
-.jsenabled #instcnav .block_tree .tree_item.branch span:focus {
-    outline: 0;
-}
-
-.jsenabled #instcnav .block_tree li.contains_branch .branch span {
-    font-weight: normal;
-}
-
-.jsenabled #instcnav .block_tree li.contains_branch.collapsed .branch span {
-    font-weight: normal;
-}
-
-#instcnav .block_tree li.depth_2 ul {
-    padding-left: 22px;
-    overflow: hidden;
-}
-
-.format-netcourse.path-mod-lesson .progress_bar_completed {
-    background-color: #46a546;
-    padding-right: .5em;
-}
-
-*/
