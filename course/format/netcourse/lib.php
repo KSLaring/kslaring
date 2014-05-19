@@ -117,16 +117,8 @@ class format_netcourse extends format_base {
             $sectionno = $section;
         }
         if ($sectionno !== null) {
-            if ($sr !== null) {
-                if ($sr) {
-                    $usercoursedisplay = COURSE_DISPLAY_MULTIPAGE;
-                    $sectionno = $sr;
-                } else {
-                    $usercoursedisplay = COURSE_DISPLAY_SINGLEPAGE;
-                }
-            } else {
-                $usercoursedisplay = $course->coursedisplay;
-            }
+            // Force the course display to single page
+            $usercoursedisplay = COURSE_DISPLAY_SINGLEPAGE;
             if ($sectionno != 0 && $usercoursedisplay == COURSE_DISPLAY_MULTIPAGE) {
                 $url->param('section', $sectionno);
             } else {
