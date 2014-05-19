@@ -738,7 +738,7 @@ class format_netcourse extends format_base {
     }
 
     /**
-     * Display the special module navigation above the content
+     * Display the special module navigation below the content
      * between the blocks.
      *
      * @return format_netcourse_specialnav | null
