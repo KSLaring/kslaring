@@ -202,6 +202,9 @@ h6 {
 .btn-navbar .icon-bar + .icon-bar {
   margin-top: 3px;
 }
+.navbar-right .dropdown-menu > li > a {
+  padding: 3px 35px;
+}
 .sectionname {
   font-size: 1.3em;
 }
@@ -359,7 +362,7 @@ Courses and categories lists, from Mary Evans
   display: none;
 }
 #page-mod-lesson-view .contents {
-  min-height: 18em;
+  min-height: 16em;
 }
 body {
   padding-top: 0px;
@@ -751,6 +754,9 @@ div.loginpanel h2 {
   .navbar-fixed-top .navbar-inner,
   .navbar-fixed-bottom .navbar-inner {
     padding: 0px;
+  }
+  #page-mod-lesson-view .contents {
+    min-height: 12em;
   }
 }
 @media (min-width: 979px) {
