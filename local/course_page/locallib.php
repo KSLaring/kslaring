@@ -117,8 +117,14 @@ class course_page  {
             $data = file_postupdate_standard_editor($data, 'homesummary', $this->edit_options, $this->context, 'course', 'homesummary', 0);
             $DB->set_field('course', 'homesummary', $data->homesummary, array('id'=>$course_id));
 
-            /* Deleted Previous Page Graphics   */
-            if ($data->deletepicture) {
+            /* Deleted Previous Page Graphics   *//**
+             * @updateDate  2014-05-19
+             * @author      eFaktor     (uh)
+             *
+             * Description
+             * The "deletpicture" is not set when the checkbox is unchecked - check isset
+             */
+            if (isset($data->deletepicture) && $data->deletepicture) {
                 $fs = get_file_storage();
                 $file = $fs->get_file_by_id($this->course->homegraphics);
 

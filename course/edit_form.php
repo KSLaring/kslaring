@@ -403,7 +403,14 @@ class course_edit_form extends moodleform {
          * Description
          * Validation the new fiedls --> Home PAge
          */
-        if ($data['homepage']) {
+        /**
+          * @updateDate  2014-05-19
+          * @author      eFaktor     (uh)
+          *
+          * Description
+          * $data['homepage']) may be empty - add the check for empty.
+          */
+        if (!empty($data['homepage'])) {
             if (empty($data['homesummary_editor']['text'])) {
                 $errors['homesummary_editor'] = get_string('required');
             }//home_summary
