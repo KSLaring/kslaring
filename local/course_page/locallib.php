@@ -80,6 +80,15 @@ class course_page  {
 
         /* Page Video       */
         $form->addElement('text', 'pagevideo', get_string('home_video','local_course_page'));
+        /**
+         * @updateDate  2014-05-19
+         * @author      eFaktor     (uh)
+         *
+         * Description
+         * The type needs to be set for the submission check - Moodle had thrown
+         * an error asking for setType.
+         */
+        $form->setType('pagevideo', PARAM_TEXT);
 
         /* Visible  */
         $choices = array();
