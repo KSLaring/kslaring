@@ -29,10 +29,10 @@ require_once($CFG->dirroot . '/course/format/lib.php');
 /**
  * Main class for the Netcourse course format
  *
- * @package    format_netcourse
- * @copyright  2014 eFaktor
- * @author     Urs Hunkler {@link urs.hunkler@unodo.de}
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package     format_netcourse
+ * @copyright   2014 eFaktor
+ * @author      Urs Hunkler {@link urs.hunkler@unodo.de}
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  *
  * @updateDate  14/05/2014
  * @author      eFaktor     (fbv)
@@ -413,19 +413,19 @@ class format_netcourse extends format_base {
                  * Add an extra fields
                  */
                 'prerequisities' => array(
-                    'type'      => PARAM_TEXT,
+                    'type' => PARAM_TEXT,
                 ),
-                'producedby'    => array(
-                    'type'      => PARAM_TEXT,
+                'producedby' => array(
+                    'type' => PARAM_TEXT,
                 ),
-                'length'        => array(
-                    'type'      => PARAM_TEXT,
+                'length' => array(
+                    'type' => PARAM_TEXT,
                 ),
-                'effort'        => array(
-                    'type'      => PARAM_TEXT,
+                'effort' => array(
+                    'type' => PARAM_TEXT,
                 ),
-                'manager'       => array(
-                    'default'   => 0,
+                'manager' => array(
+                    'default' => 0,
                     'type' => PARAM_INT,
                 )
                 /**
@@ -477,37 +477,37 @@ class format_netcourse extends format_base {
                  * Add an extra fields
                  */
                 'prerequisities' => array(
-                    'label'                 => get_string('home_req','local_course_page'),
-                    'element_type'          => 'textarea',
-                    'element_attributes'    => array(
+                    'label' => get_string('home_req', 'local_course_page'),
+                    'element_type' => 'textarea',
+                    'element_attributes' => array(
                         0 => 'rows="5" style="width:95%;"'
                     )
                 ),
-                'producedby'    => array(
-                    'label'                 => get_string('home_produced','local_course_page'),
-                    'element_type'          => 'text',
-                    'element_attributes'    => array(
-                        0 => 'style="width:95%;"'
-                    )
-                ),
-                'length'        => array(
-                    'label'                 => get_string('home_length','local_course_page'),
-                    'element_type'          => 'text',
+                'producedby' => array(
+                    'label' => get_string('home_produced', 'local_course_page'),
+                    'element_type' => 'text',
                     'element_attributes' => array(
                         0 => 'style="width:95%;"'
                     )
                 ),
-                'effort'        => array(
-                    'label'                 => get_string('home_effort','local_course_page'),
-                    'element_type'          => 'text',
+                'length' => array(
+                    'label' => get_string('home_length', 'local_course_page'),
+                    'element_type' => 'text',
                     'element_attributes' => array(
                         0 => 'style="width:95%;"'
-                        )
-                    ),
-                'manager'       => array(
-                    'label'                 => get_string('course_manager','local_course_page'),
-                    'element_type'          => 'select',
-                    'element_attributes'    => array($lst_manager)
+                    )
+                ),
+                'effort' => array(
+                    'label' => get_string('home_effort', 'local_course_page'),
+                    'element_type' => 'text',
+                    'element_attributes' => array(
+                        0 => 'style="width:95%;"'
+                    )
+                ),
+                'manager' => array(
+                    'label' => get_string('course_manager', 'local_course_page'),
+                    'element_type' => 'select',
+                    'element_attributes' => array($lst_manager)
                 )
                 /**
                  * @updateDate  08/05/2014
@@ -576,7 +576,7 @@ class format_netcourse extends format_base {
      * In case if course format was changed to 'netcourse', we try to copy options
      * 'coursedisplay', 'numsections' and 'hiddensections' from the previous format.
      * If previous course format did not have 'numsections' option, we populate it with
-     * thecurrent number of sections
+     * the current number of sections.
      *
      * @param stdClass|array $data      return value from {@link moodleform::get_data()} or array with data
      * @param stdClass       $oldcourse if this function is called from {@link update_course()}
