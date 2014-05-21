@@ -3647,8 +3647,42 @@ class settings_navigation extends navigation_node {
                 $editurl->param('edit', 'on');
                 $editstring = get_string('turneditingon');
             }
+            /**
+             * @updateDate  21/05/2014
+             * @author      eFaktor     (fbv)
+             *
+             * Description
+             * Edit On/Off --> Back to the correct page
+             */
+            if (strpos($this->page->url->out_as_local_url(false),'home_page.php')) {
+                $return = null;
+                $editurl->param('return', '');
+            }
             $coursenode->add($editstring, $editurl, self::TYPE_SETTING, null, 'turneditingonoff', new pix_icon('i/edit', ''));
         }
+
+        /**
+         * @updateDate  15/05/2014
+         * @author      eFaktor     (fbv)
+         *
+         * Description
+         * Add link to edit Course home page
+         */
+        if ($course->homepage) {
+            if (has_capability('moodle/course:update', $coursecontext)) {
+                $home_url = new moodle_url('/local/course_page/home_page.php',array('id' => $course->id));
+                $home_url->param('sesskey', sesskey());
+                if ($this->page->user_is_editing()) {
+                    $home_url->param('edit', 'on');
+                    $home_url->param('show', '1');
+                } else {
+                    $home_url->param('edit', 'off');
+                    $home_url->param('show', '0');
+                }
+                $str_edit = get_string('edit_home_page','local_course_page');
+                $coursenode->add($str_edit, $home_url, self::TYPE_SETTING,null, 'homepage', new pix_icon('i/settings', ''));
+            }//if_capability
+        }//if_homepage
 
         if (has_capability('moodle/course:update', $coursecontext)) {
             // Add the course settings link

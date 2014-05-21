@@ -477,14 +477,14 @@ class format_netcourse extends format_base {
                  * Add an extra fields
                  */
                 'prerequisities' => array(
-                    'label' => get_string('home_req', 'local_course_page'),
+                    'label'                 => get_string('home_prerequisities','local_course_page'),
                     'element_type' => 'textarea',
                     'element_attributes' => array(
                         0 => 'rows="5" style="width:95%;"'
                     )
                 ),
                 'producedby' => array(
-                    'label' => get_string('home_produced', 'local_course_page'),
+                    'label'                 => get_string('home_producedby','local_course_page'),
                     'element_type' => 'text',
                     'element_attributes' => array(
                         0 => 'style="width:95%;"'
@@ -505,7 +505,7 @@ class format_netcourse extends format_base {
                     )
                 ),
                 'manager' => array(
-                    'label' => get_string('course_manager', 'local_course_page'),
+                    'label'                 => get_string('home_manager','local_course_page'),
                     'element_type' => 'select',
                     'element_attributes' => array($lst_manager)
                 )
@@ -576,7 +576,7 @@ class format_netcourse extends format_base {
      * In case if course format was changed to 'netcourse', we try to copy options
      * 'coursedisplay', 'numsections' and 'hiddensections' from the previous format.
      * If previous course format did not have 'numsections' option, we populate it with
-     * the current number of sections.
+     * thecurrent number of sections
      *
      * @param stdClass|array $data      return value from {@link moodleform::get_data()} or array with data
      * @param stdClass       $oldcourse if this function is called from {@link update_course()}

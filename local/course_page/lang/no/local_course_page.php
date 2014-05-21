@@ -11,20 +11,32 @@
  */
 
 $string['pluginname']   = 'Course Home Page';
+$string['course_page:manage']   = 'Manage Course Home Page';
 
 $string['checkbox_home']            = 'Create Course Home Page';
 $string['checkbox_home_help']       = 'If the Course Home Page has to be generated';
 $string['home_page']                = 'Course Home Page';
 $string['home_desc']                = 'Description';
-$string['home_req']                 = 'Prerequisites';
+$string['home_prerequisities']      = 'Prerequisites';
 $string['home_effort']              = 'Estimated Effort';
 $string['home_graphics']            = 'Home page graphics';
 $string['current_graphic']          = 'Current graphics';
 $string['home_video']               = 'Home page video';
-$string['home_produced']            = 'Produced by';
-$string['home_length']              = 'Lenght';
+$string['home_delete_video']        = 'Delete previous video';
+$string['home_producedby']          = 'Produced by';
+$string['home_length']              = 'Length';
 $string['home_author']              = 'Author';
 $string['home_licence']             = 'Licence';
 $string['home_location']            = 'Course location';
-$string['course_manager']           = 'Course Manager';
+$string['home_manager']             = 'Course Manager';
 $string['sel_course_manager']       = 'Select one ....';
+$string['edit_home_page']           = 'Course home page';
+$string['home_about']               = 'About ';
+$string['home_published']           = 'Published';
+$string['home_coordinater']         = 'Coordinator';
+$string['home_teachers']            = 'Teachers';
+$string['home_ratings']             = 'Course Ratings';
+$string['rate_avg']                 = 'Average';
+$string['rate_users']               = 'User Ratings';
+$string['home_register']            = 'Register';
+$string['home_start']               = 'Start';

@@ -20,6 +20,14 @@
     $switchrole  = optional_param('switchrole',-1, PARAM_INT); // Deprecated, use course/switchrole.php instead.
     $modchooser  = optional_param('modchooser', -1, PARAM_BOOL);
     $return      = optional_param('return', 0, PARAM_LOCALURL);
+    /**
+     * @updateDate  21/05/2104
+     * @author      eFaktor     (fbv)
+     *
+     * Description
+     * New Param from Home Page --> To start the course
+     */
+    $start_from_home = optional_param('start',0,PARAM_INT);
 
     $params = array();
     if (!empty($name)) {
@@ -56,6 +64,20 @@
     if ($switchrole == 0 && confirm_sesskey()) {
         role_switch($switchrole, $context);
     }
+
+    /**
+     * @updateDate      21/05/2014
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Check if the course are connected with Course Home Page
+     */
+    if (!has_capability('moodle/course:update', $context)) {
+        if (($course->homepage) && ($course->homevisible) && (!$start_from_home)) {
+            $url_home_page = new moodle_url('/local/course_page/home_page.php',array('id' => $course->id));
+            redirect($url_home_page);
+        }
+    }//if_course_creator...
 
     require_login($course);
 

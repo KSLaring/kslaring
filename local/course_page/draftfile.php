@@ -37,7 +37,7 @@ $component = array_shift($args);
 $filearea  = array_shift($args);
 $draftid   = (int)array_shift($args);
 
-if ($component !== 'course' or $filearea !== 'pagegraphics') {
+if ($component !== 'course' && ($filearea !== 'pagegraphics' or $filearea !== 'pagevideo')) {
     send_file_not_found();
 }
 
@@ -46,7 +46,7 @@ $context = context::instance_by_id($contextid);
 $fs = get_file_storage();
 
 $relativepath = implode('/', $args);
-$fullpath = "/$context->id/course/pagegraphics/$draftid/$relativepath";
+$fullpath = "/$context->id/course/$filearea/$draftid/$relativepath";
 
 if (!$file = $fs->get_file_by_hash(sha1($fullpath)) or $file->get_filename() == '.') {
     send_file_not_found();
@@ -56,4 +56,4 @@ if (!$file = $fs->get_file_by_hash(sha1($fullpath)) or $file->get_filename() == 
 // finally send the file
 // ========================================
 \core\session\manager::write_close(); // Unlock session during file serving.
-send_stored_file($file, 0, false, true, array('preview' => $preview)); // force download - security first!
+send_stored_file($file, 0, false,false, array('preview' => $preview)); // force download - security first!

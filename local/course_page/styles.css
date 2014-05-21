@@ -1,0 +1,145 @@
+/**
+ * New styles to integrate into the theme
+ *
+ * 2014-05-14
+ *
+ * Please remove the styles which are moved to the theme here.
+ */
+
+.home_page_block_one {
+    width: 100%;
+    display: block;
+}
+
+.home_page_block_one .header {
+    height:50px;
+    margin-top:0px;
+    background-color: #0E7B9E;
+    color: #FFF;
+}
+
+.home_page_block_one .header h3{
+    height:30px;
+    font:bold 1em Verdana,Verdana Pro,sans-serif;
+    text-align: left;
+    line-height: 25px;
+    text-transform: uppercase;
+    padding-top: 10px;
+    padding-bottom: 5px;
+    margin-bottom: 0px;
+    margin-top: 0px;
+    color: #FFF;
+}
+
+.home_page_block_two {
+    width: 100%;
+    display: block;
+    padding-top: 10px;
+}
+
+.home_page_block_two  h4 {
+    height:10px;
+    font:bold 1em Verdana,Verdana Pro,sans-serif;
+    text-align: left;
+    line-height: 50px;
+    padding-top: 10px;
+    padding-bottom: 0px;
+    margin-bottom: 0px;
+    margin-top: 0px;
+    color: #0e7b9e;
+}
+
+.block_col_one {
+    float:left;
+    text-align:justify;
+    width: 75%;
+    display:block;
+}
+
+.block_col_two {
+    float:right;
+    width:24%;
+    text-align:justify;
+    display:block;
+}
+
+.block_col_two .extra {
+    padding-top: 10px;
+    display:block;
+}
+.block_col_two .extra .label_home {
+    padding-top: 0px;
+    padding-bottom: 0px;
+    height:20px;
+    font:bold 12px Verdana,Verdana Pro,sans-serif;
+    text-align: left;
+    line-height: 20px;
+    color:#0e7b9e;
+    width:99.8%;
+    background-color:#E7E7E7;
+    display: inline-block;
+}
+
+.block_col_two .manager {
+    display:block;
+    padding-top: 10px;
+}
+
+.block_col_two .manager .label_manager {
+    padding-top: 0px;
+    padding-bottom: 0px;
+    height:20px;
+    font:bold 14px Verdana,Verdana Pro,sans-serif;
+    text-align: left;
+    line-height: 20px;
+    color:#F4F4F4;
+    width:99.8%;
+    background-color:#0e7b9e;
+    display: inline-block;
+}
+
+.block_col_two .manager .label_home {
+    padding-top: 0px;
+    padding-bottom: 0px;
+    height:20px;
+    font:bold 12px Verdana,Verdana Pro,sans-serif;
+    text-align: left;
+    line-height: 20px;
+    color:#0e7b9e;
+    width:99.8%;
+    background-color:#E7E7E7;
+    display: inline-block;
+}
+
+.block_col_two .ratings {
+    display:block;
+    padding-top: 10px;
+}
+
+.block_col_two .ratings .title_ratings {
+    padding-top: 0px;
+    padding-bottom: 0px;
+    height:20px;
+    font:bold 14px Verdana,Verdana Pro,sans-serif;
+    text-align: left;
+    line-height: 20px;
+    color:#F4F4F4;
+    width:99.8%;
+    background-color:#0e7b9e;
+    display: inline-block;
+}
+
+.block_col_two .ratings .label_ratings {
+    padding-top: 0px;
+    padding-bottom: 0px;
+    height:20px;
+    font:bold 12px Verdana,Verdana Pro,sans-serif;
+    text-align: left;
+    line-height: 20px;
+    color:#0e7b9e;
+    width:99.8%;
+    background-color:#E7E7E7;
+    display: inline-block;
+}
+
+

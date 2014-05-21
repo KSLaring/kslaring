@@ -36,7 +36,6 @@ class course_edit_form extends moodleform {
          */
         $course_page    = $this->_customdata['course_page'];
 
-        $systemcontext   = context_system::instance();
         $categorycontext = context_coursecat::instance($category->id);
 
         if (!empty($course->id)) {
