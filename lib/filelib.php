@@ -4317,7 +4317,15 @@ function file_pluginfile($relativepath, $forcedownload, $preview = null) {
             send_file_not_found();
         }
 
-        if ($filearea === 'summary' || $filearea === 'overviewfiles') {
+        /**
+         * @updateDate  22/05/2014
+         * @author      efaktor     (fbv)
+         *
+         * Description
+         * Add homesummary
+         *
+         */
+        if ($filearea === 'summary' || $filearea === 'overviewfiles' || $filearea === 'homesummary') {
             if ($CFG->forcelogin) {
                 require_login();
             }
