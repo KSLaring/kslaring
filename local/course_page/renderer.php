@@ -95,8 +95,10 @@ class local_course_page_renderer extends plugin_renderer_base {
         global $USER;
         $disabled = '';
 
+        $context = CONTEXT_COURSE::instance($course->id);
+        $summary = file_rewrite_pluginfile_urls($course->summary, 'pluginfile.php', $context->id, 'course', 'summary', NULL);
         $out = '';
-        $out .=  '<p>' . $course->summary . '</p>';
+        $out .=  '<p>' . $summary . '</p>';
         /* Graphics */
         if ($course->homegraphics) {
             $url_img = course_page::getUrlPageGraphicsVideo($course->homegraphics);
@@ -141,18 +143,18 @@ class local_course_page_renderer extends plugin_renderer_base {
         $out .=  '<h3>' . get_string('home_about','local_course_page') . '</h3>';
         $out .= '<hr class="line">';
 
-        $out .=  '<p>' . $home_summary;
+        $out .=  '<p>' . $home_summary . '</p>';
         /* Graphics */
         $url_video = course_page::getUrlPageGraphicsVideo($video);
-        $out .= '<object data="' . $url_video. '" class="video">' .
-                    '<param name="src" value="' . $url_video . '">' .
-                    '<param name="controller" value="true">' .
-                    '<param name="loop" value="false">' .
-                    '<param name="autoplay" value="false">' .
-                    '<param name="autostart" value="false">' .
-                    '<param name="scale" value="aspect">' .
-                '</object>';
-        $out .= '</p>';
+        $media_renderer = $this->page->get_renderer('core', 'media');
+        $embed_options = array(
+            core_media::OPTION_TRUSTED => true,
+            core_media::OPTION_BLOCK => true,
+        );
+        // Media (audio/video) file.
+        $code = $media_renderer->embed_url($url_video, '', 0, 0, $embed_options);
+        $out .= $code;
+
         return $out;
     }//addDescription_HomePage
 
