@@ -23,6 +23,7 @@ $string['home_graphics']            = 'Home page graphics';
 $string['current_graphic']          = 'Current graphics';
 $string['home_video']               = 'Home page video';
 $string['home_delete_video']        = 'Delete previous video';
+$string['home_current_video']       = 'Current video';
 $string['home_producedby']          = 'Produced by';
 $string['home_length']              = 'Length';
 $string['home_author']              = 'Author';

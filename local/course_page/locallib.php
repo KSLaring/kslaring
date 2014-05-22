@@ -103,11 +103,17 @@ class course_page  {
         $form->addElement('filemanager', 'pagegraphics_filemanager', get_string('home_graphics','local_course_page'), null, $this->file_options);
 
         /* Page Video       */
+        $form->addElement('static', 'current_video', get_string('home_current_video','local_course_page'));
         $form->addElement('checkbox', 'deletevideo', get_string('home_delete_video','local_course_page'));
         $form->setDefault('deletevideo', 0);
         $form->disabledIf('deletevideo',$this->course->homevideo,0);
         $this->course = file_prepare_standard_filemanager($this->course, 'pagevideo',$this->file_options,$this->context, 'course','pagevideo',0);
         $form->addElement('filemanager', 'pagevideo_filemanager', get_string('home_video','local_course_page'));
+        if ($this->course->homevideo) {
+            $fs = get_file_storage();
+            $file = $fs->get_file_by_id($this->course->homevideo);
+            $form->setDefault('current_video',$file->get_filename());
+        }///if_homevideo
 
         /* Visible  */
         $choices = array();
