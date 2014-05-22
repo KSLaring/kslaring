@@ -23,7 +23,7 @@ class local_course_page_renderer extends plugin_renderer_base {
 
         $context = CONTEXT_COURSE::instance($course->id);
         $course->summary = file_rewrite_pluginfile_urls($course->summary, 'pluginfile.php', $context->id, 'course', 'summary', NULL);
-        $course->homesummary = file_rewrite_pluginfile_urls($course->homesummary, 'pluginfile.php', $context->id, 'course', 'summary', NULL);
+        $course->homesummary = file_rewrite_pluginfile_urls($course->homesummary, 'pluginfile.php', $context->id, 'course', 'homesummary', NULL);
 
         $output .= html_writer::start_tag('div',array('class' => 'home_page'));
             /* Header   */
