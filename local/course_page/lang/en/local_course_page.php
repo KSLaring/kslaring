@@ -41,3 +41,4 @@ $string['rate_avg']                 = 'Average';
 $string['rate_users']               = 'User Ratings';
 $string['home_register']            = 'Register';
 $string['home_start']               = 'Start';
+$string['home_visible']             = 'Home Page Visible';

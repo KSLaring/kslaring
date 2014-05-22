@@ -82,6 +82,13 @@ class course_page  {
     public function add_CourseHomePage_Section(&$form) {
         $form->addElement('header', 'homepagehdr',get_string('home_page','local_course_page'));
 
+        /* Visible  */
+        $choices = array();
+        $choices['0'] = get_string('hide');
+        $choices['1'] = get_string('show');
+        $form->addElement('select', 'homevisible', get_string('home_visible','local_course_page'), $choices);
+        $form->setDefault('homevisible', '1');
+
         /* Short Description */
         $this->course = file_prepare_standard_editor($this->course, 'homesummary', $this->edit_options,$this->context, 'course', 'homesummary', null);
         $form->addElement('editor','homesummary_editor',get_string('home_desc','local_course_page'),null,$this->edit_options);
@@ -114,13 +121,6 @@ class course_page  {
             $file = $fs->get_file_by_id($this->course->homevideo);
             $form->setDefault('current_video',$file->get_filename());
         }///if_homevideo
-
-        /* Visible  */
-        $choices = array();
-        $choices['0'] = get_string('hide');
-        $choices['1'] = get_string('show');
-        $form->addElement('select', 'homevisible', get_string('visible'), $choices);
-        $form->setDefault('homevisible', '1');
     }//add_CourseHomePage_Section
 
     /**
@@ -580,16 +580,22 @@ class home_page_form extends moodleform {
 
         $course = file_prepare_standard_editor($course, 'summary', $editor_options,CONTEXT_COURSE::instance($course->id), 'course', 'summary', null);
 
+        // Description.
+        $form->addElement('header', 'descriptionhdr', get_string('description'));
+        $form->setExpanded('descriptionhdr');
+
         $form->addElement('editor','summary_editor', get_string('coursesummary'), null, $editor_options);
         $form->addHelpButton('summary_editor', 'coursesummary');
         $form->setType('summary_editor', PARAM_RAW);
         $form->addRule('summary_editor', null, 'required');
 
-        $course_page->add_CourseHomePage_Section($form);
         $form->addElement('checkbox','homepage',get_string('checkbox_home','local_course_page'));
         if ($course->homepage) {
             $form->setDefault('homepage',1);
         }//if_home_page
+
+        $course_page->add_CourseHomePage_Section($form);
+
 
         /* Course Format Section    */
         $format_options = $course_page->getFormatFields($course->id);
