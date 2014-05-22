@@ -36,14 +36,14 @@
     width: 99%;
 }
 
-.home_page_block_one .header {
+.home_page .header {
     height:50px;
     margin-top:0px;
     background-color: #0E7B9E;
     color: #FFF;
 }
 
-.home_page_block_one .header h3{
+.home_page .header h3{
     height:30px;
     font:bold 1em Verdana,Verdana Pro,sans-serif;
     text-align: left;
@@ -88,8 +88,8 @@
     line-height: 20px;
     color:#0e7b9e;
     width:99.8%;
-    background-color:#E7E7E7;
-    display: inline-block;
+    display: inline;
+    margin-right: 0.2em;
 }
 
 .home_page_block_two .manager {

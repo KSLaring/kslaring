@@ -22,6 +22,9 @@ class local_course_page_renderer extends plugin_renderer_base {
         $output  = $this->output->header();
 
         $output .= html_writer::start_tag('div',array('class' => 'home_page'));
+            /* Header   */
+            $output .= $this->addHeader_HomePage($course->fullname);
+
             /* Add Block One */
             $output .= $this->addBlockOne_HomePage($course);
             /* Add Block Two */
@@ -47,8 +50,6 @@ class local_course_page_renderer extends plugin_renderer_base {
         $block_one = '';
 
         $block_one .= html_writer::start_tag('div',array('class' => 'home_page_block_one'));
-            /* Header   */
-            $block_one .= $this->addHeader_HomePage($course->fullname);
             /* Add Short Description  */
             $block_one .= $this->addSummary_HomePage($course);
             /* Add Home Description / Video */
@@ -204,11 +205,11 @@ class local_course_page_renderer extends plugin_renderer_base {
 
         $out .= html_writer::start_tag('div',array('class' => 'extra'));
         $out .= '<p>';
-        $out .= '<label class="label_home">' . get_string('idnumbercourse') . '</label>';
+        $out .= '<label class="label_home">' . get_string('home_course_id','local_course_page') . ':</label>';
         $out .= $course->idnumber;
         $out .= '</p>';
         $out .= '<p>';
-        $out .= '<label class="label_home">' . get_string('home_published','local_course_page') . '</label>';
+        $out .= '<label class="label_home">' . get_string('home_published','local_course_page') . ':</label>';
         $out .= userdate($course->startdate,'%d.%m.%Y', 99, false);
         $out .= '</p>';
 
@@ -238,34 +239,34 @@ class local_course_page_renderer extends plugin_renderer_base {
         $out .= '<p>';
         switch ($option->name) {
             case 'prerequisities':
-                $out .= '<label class="label_home">' . get_string('home_prerequisities','local_course_page') . '</label>';
+                $out .= '<label class="label_home">' . get_string('home_prerequisities','local_course_page') . ':</label>';
                 $out .= $option->value;
                 break;
             case 'producedby':
-                $out .= '<label class="label_home">' . get_string('home_producedby','local_course_page') . '</label>';
+                $out .= '<label class="label_home">' . get_string('home_producedby','local_course_page') . ':</label>';
                 $out .= $option->value;
                 break;
             case 'location':
-                $out .= '<label class="label_home">' . get_string('home_location','local_course_page') . '</label>';
+                $out .= '<label class="label_home">' . get_string('home_location','local_course_page') . ':</label>';
                 $out .= $option->value;
                 break;
             case 'length':
-                $out .= '<label class="label_home">' . get_string('home_length','local_course_page') . '</label>';
+                $out .= '<label class="label_home">' . get_string('home_length','local_course_page') . ':</label>';
                 $out .=  $option->value;
                 break;
             case 'effort':
-                $out .= '<label class="label_home">' . get_string('home_effort','local_course_page') . '</label>';
+                $out .= '<label class="label_home">' . get_string('home_effort','local_course_page') . ':</label>';
                 $out .= $option->value;
                 break;
             case 'manager':
                 $manager = $option->value;
                 break;
             case 'author':
-                $out .= '<label class="label_home">' . get_string('home_author','local_course_page') . '</label>';
+                $out .= '<label class="label_home">' . get_string('home_author','local_course_page') . ':</label>';
                 $out .= $option->value;
                 break;
             case 'licence':
-                $out .= '<label class="label_home">' . get_string('home_licence','local_course_page') . '</label>';
+                $out .= '<label class="label_home">' . get_string('home_licence','local_course_page') . ':</label>';
                 $out .= $option->value;
                 break;
             default:
