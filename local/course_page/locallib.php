@@ -90,7 +90,8 @@ class course_page  {
         $form->setDefault('homevisible', '1');
 
         /* Short Description */
-        $this->course = file_prepare_standard_editor($this->course, 'homesummary', $this->edit_options,$this->context, 'course', 'homesummary', null);
+        $this->course->homesummaryformat = FORMAT_HTML;
+        $this->course = file_prepare_standard_editor($this->course, 'homesummary', $this->edit_options,$this->context, 'course', 'homesummary',0);
         $form->addElement('editor','homesummary_editor',get_string('home_desc','local_course_page'),null,$this->edit_options);
         $form->setType('homesummary_editor',PARAM_RAW);
 
