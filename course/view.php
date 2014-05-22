@@ -151,6 +151,19 @@
         $PAGE->set_other_editing_capability('moodle/course:movesections');
     }
 
+    /**
+     * @updateDate  21/05/2014
+     * @author      eFaktor     (fbv)
+     *
+     * Description
+     * Edit On/Off --> Back to the correct page
+     */
+    if (strpos($return,'home_page.php')) {
+        $return = '';
+    }else if (($course->format == 'netcourse') || ($course->format == 'classroom') || ($course->format == 'whitepaper')) {
+        $return = '';
+    }
+
     // Preload course format renderer before output starts.
     // This is a little hacky but necessary since
     // format.php is not included until after output starts

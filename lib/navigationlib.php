@@ -3647,17 +3647,6 @@ class settings_navigation extends navigation_node {
                 $editurl->param('edit', 'on');
                 $editstring = get_string('turneditingon');
             }
-            /**
-             * @updateDate  21/05/2014
-             * @author      eFaktor     (fbv)
-             *
-             * Description
-             * Edit On/Off --> Back to the correct page
-             */
-            if (strpos($this->page->url->out_as_local_url(false),'home_page.php')) {
-                $return = null;
-                $editurl->param('return', '');
-            }
             $coursenode->add($editstring, $editurl, self::TYPE_SETTING, null, 'turneditingonoff', new pix_icon('i/edit', ''));
         }
 
