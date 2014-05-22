@@ -21,6 +21,10 @@ class local_course_page_renderer extends plugin_renderer_base {
         /* Variables    */
         $output  = $this->output->header();
 
+        $context = CONTEXT_COURSE::instance($course->id);
+        $course->summary = file_rewrite_pluginfile_urls($course->summary, 'pluginfile.php', $context->id, 'course', 'summary', NULL);
+        $course->homesummary = file_rewrite_pluginfile_urls($course->homesummary, 'pluginfile.php', $context->id, 'course', 'summary', NULL);
+
         $output .= html_writer::start_tag('div',array('class' => 'home_page'));
             /* Header   */
             $output .= $this->addHeader_HomePage($course->fullname);
@@ -53,6 +57,7 @@ class local_course_page_renderer extends plugin_renderer_base {
             /* Add Short Description  */
             $block_one .= $this->addSummary_HomePage($course);
             /* Add Home Description / Video */
+
             $block_one .= $this->addDescription_HomePage($course->homesummary,$course->homevideo);
         $block_one .= html_writer::end_tag('div');//home_page_block_one
 
@@ -95,10 +100,8 @@ class local_course_page_renderer extends plugin_renderer_base {
         global $USER;
         $disabled = '';
 
-        $context = CONTEXT_COURSE::instance($course->id);
-        $summary = file_rewrite_pluginfile_urls($course->summary, 'pluginfile.php', $context->id, 'course', 'summary', NULL);
         $out = '';
-        $out .=  '<p>' . $summary . '</p>';
+        $out .=  '<p>' . $course->summary . '</p>';
         /* Graphics */
         if ($course->homegraphics) {
             $url_img = course_page::getUrlPageGraphicsVideo($course->homegraphics);

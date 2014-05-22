@@ -579,6 +579,7 @@ class home_page_form extends moodleform {
 
         $context = CONTEXT_COURSE::instance($course->id);
         $course->summary = file_rewrite_pluginfile_urls($course->summary, 'pluginfile.php', $context->id, 'course', 'summary', NULL);
+        $course->homesummary = file_rewrite_pluginfile_urls($course->summary, 'pluginfile.php', $context->id, 'course', 'homesummary', NULL);
         $course = file_prepare_standard_editor($course, 'summary', $editor_options,$context, 'course', 'summary', null);
 
         // Description.
