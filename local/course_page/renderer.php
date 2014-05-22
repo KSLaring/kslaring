@@ -19,7 +19,7 @@ class local_course_page_renderer extends plugin_renderer_base {
 
     public function display_home_page($course) {
         /* Variables    */
-        $manager = null;
+        $manager = 0;
         $output  = $this->output->header();
 
         /**
@@ -165,18 +165,18 @@ class local_course_page_renderer extends plugin_renderer_base {
         $format_options = course_page::getFormatFields($course->id);
 
         $out .= html_writer::start_tag('div',array('class' => 'extra'));
-        $out .= '<p>';
-        $out .= '<label class="label_home">' . get_string('idnumbercourse') . '</label>';
-        $out .= $course->idnumber;
-        $out .= '</p>';
-        $out .= '<p>';
-        $out .= '<label class="label_home">' . get_string('home_published','local_course_page') . '</label>';
-        $out .= userdate($course->startdate,'%d.%m.%Y', 99, false);
-        $out .= '</p>';
+            $out .= '<p>';
+                $out .= '<label class="label_home">' . get_string('idnumbercourse') . '</label>';
+                $out .= $course->idnumber;
+            $out .= '</p>';
+            $out .= '<p>';
+            $out .= '<label class="label_home">' . get_string('home_published','local_course_page') . '</label>';
+                $out .= userdate($course->startdate,'%d.%m.%Y', 99, false);
+            $out .= '</p>';
 
-        foreach ($format_options as $option) {
-            $out .= $this->addExtraOption($option,$manager);
-        }//format_options
+            foreach ($format_options as $option) {
+                $out .= $this->addExtraOption($option,$manager);
+            }//format_options
         $out .=  html_writer::end_tag('div');//extra
 
         return $out;
