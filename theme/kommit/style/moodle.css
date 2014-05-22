@@ -7052,7 +7052,7 @@ textarea {
 }
 body {
   margin: 0;
-  font-family: 'Calibri', Verdana, Arial, sans-serif;
+  font-family: Calibri, Candara, Segoe, "Segoe UI", Optima, Arial, sans-serif;
   font-size: 16px;
   line-height: 25.888px;
   color: #333333;
@@ -7738,7 +7738,7 @@ input,
 button,
 select,
 textarea {
-  font-family: 'Calibri', Verdana, Arial, sans-serif;
+  font-family: Calibri, Candara, Segoe, "Segoe UI", Optima, Arial, sans-serif;
 }
 label {
   display: block;
@@ -10637,7 +10637,7 @@ input[type="submit"].btn.btn-mini {
 .navbar-search .search-query {
   margin-bottom: 0;
   padding: 4px 14px;
-  font-family: 'Calibri', Verdana, Arial, sans-serif;
+  font-family: Calibri, Candara, Segoe, "Segoe UI", Optima, Arial, sans-serif;
   font-size: 13px;
   font-weight: normal;
   line-height: 1;
@@ -12284,7 +12284,7 @@ body {
 }
 .block .header {
   background: white;
-  border-bottom: 5px solid #e8e8e8;
+  border-bottom: 2px solid #d8d8d8;
   padding: 10px 15px;
 }
 .block .header .block_action {

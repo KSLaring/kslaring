@@ -6,72 +6,47 @@
  * Please remove the styles which are moved to the theme here.
  */
 
+
 .home_page {
     width: 100%;
     display:block;
 }
 
-
 .home_page_block_one {
     float:left;
-    text-align:justify;
     width: 68%;
     display:inline-block;
     margin-right: 1px;
 }
 
 .home_page_block_one .graphic {
-    width: 60%;
+    width: 100%;
 }
 
 .home_page_block_one .video {
-    width: 60%;
-    display:inline-block;
-    height: 50%;
+    width: 100%;
 }
 
 .home_page_block_one .line {
     border: 0;
-    border-top: 1px solid #0e7b9e;
-    width: 99%;
 }
 
 .home_page .header {
-    height:50px;
     margin-top:0px;
-    background-color: #0E7B9E;
-    color: #FFF;
+    width: 100%;
 }
 
 .home_page .header h3{
-    height:30px;
-    font:bold 1em Verdana,Verdana Pro,sans-serif;
-    text-align: left;
-    line-height: 25px;
-    text-transform: uppercase;
-    padding-top: 10px;
-    padding-bottom: 5px;
-    margin-bottom: 0px;
-    margin-top: 0px;
-    color: #FFF;
+
 }
 
 .home_page_block_one  h4 {
-    height:10px;
-    font:bold 1em Verdana,Verdana Pro,sans-serif;
-    text-align: left;
-    line-height: 50px;
-    padding-top: 10px;
-    padding-bottom: 0px;
-    margin-bottom: 0px;
-    margin-top: 0px;
-    color: #0e7b9e;
+
 }
 
 .home_page_block_two {
     float:right;
     width:30%;
-    text-align:justify;
     display:inline-block;
 }
 
@@ -81,23 +56,18 @@
 }
 
 .home_page_block_two .extra .icon {
-    height: 40px;
+    height: 80px;
     margin-right: 3px;
     vertical-align: middle;
-    width: 40px;
+    width: 80px;
 }
 
 .home_page_block_two .extra .label_home {
-    padding-top: 0px;
-    padding-bottom: 0px;
-    height:20px;
-    font:bold 12px Verdana,Verdana Pro,sans-serif;
-    text-align: left;
-    line-height: 20px;
-    color:#0e7b9e;
-    width:99.8%;
+
+
     display: inline;
-    margin-right: 0.2em;
+    font-weight: bold;
+    text-transform: uppercase;
 }
 
 .home_page_block_two .manager {
@@ -106,46 +76,27 @@
 }
 
 .home_page_block_two .manager .label_manager {
-    padding-top: 0px;
-    padding-bottom: 0px;
-    height:20px;
-    font:bold 14px Verdana,Verdana Pro,sans-serif;
-    text-align: left;
-    line-height: 20px;
-    color:#F4F4F4;
+    color: @kommitGray;
     width:99.8%;
-    background-color:#0e7b9e;
+    font-size: @fontSizeH3;
     display: inline-block;
 }
 
 .home_page_block_two .manager .label_home {
-    padding-top: 0px;
-    padding-bottom: 0px;
-    height:20px;
-    font:bold 12px Verdana,Verdana Pro,sans-serif;
-    text-align: left;
-    line-height: 20px;
-    color:#0e7b9e;
+    color: @kommitGray;
     width:99.8%;
-    background-color:#E7E7E7;
+    font-size: @fontSizeH3;
     display: inline-block;
 }
-
 .home_page_block_two .ratings {
     display:block;
     padding-top: 10px;
 }
 
 .home_page_block_two .ratings .title_ratings {
-    padding-top: 0px;
-    padding-bottom: 0px;
-    height:20px;
-    font:bold 14px Verdana,Verdana Pro,sans-serif;
-    text-align: left;
-    line-height: 20px;
-    color:#F4F4F4;
+    color: @kommitGray;
     width:99.8%;
-    background-color:#0e7b9e;
+    font-size: @fontSizeH3;
     display: inline-block;
 }
 
@@ -153,12 +104,10 @@
     padding-top: 0px;
     padding-bottom: 0px;
     height:20px;
-    font:bold 12px Verdana,Verdana Pro,sans-serif;
     text-align: left;
     line-height: 20px;
     color:#0e7b9e;
     width:99.8%;
-    background-color:#E7E7E7;
     display: inline-block;
 }
 
