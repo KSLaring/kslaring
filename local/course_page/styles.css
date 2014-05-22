@@ -36,14 +36,6 @@
     width: 100%;
 }
 
-.home_page .header h3{
-
-}
-
-.home_page_block_one  h4 {
-
-}
-
 .home_page_block_two {
     float:right;
     width:30%;
@@ -63,11 +55,14 @@
 }
 
 .home_page_block_two .extra .label_home {
-
-
     display: inline;
     font-weight: bold;
     text-transform: uppercase;
+}
+
+
+.home_page_block_two .extra .extra_home {
+    display: inline;
 }
 
 .home_page_block_two .manager {
@@ -86,6 +81,7 @@
     font-size: @fontSizeH3;
     display: inline-block;
 }
+
 .home_page_block_two .ratings {
     display:block;
     padding-top: 10px;

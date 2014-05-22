@@ -74,7 +74,7 @@ class local_course_page_renderer extends plugin_renderer_base {
         $header = '';
 
         $header .= html_writer::start_tag('div',array('class' => 'header'));
-        $header .=  '<h3>' . $course_name . '</h3>';
+        $header .=  '<h1>' . $course_name . '</h1>';
         $header .=  html_writer::end_tag('div');//header
 
         return $header;
@@ -138,7 +138,7 @@ class local_course_page_renderer extends plugin_renderer_base {
         /* Variables */
         $out = '';
 
-        $out .=  '<h4>' . get_string('home_about','local_course_page') . '</h4>';
+        $out .=  '<h3>' . get_string('home_about','local_course_page') . '</h3>';
         $out .= '<hr class="line">';
 
         $out .=  '<p>' . $home_summary;
@@ -207,11 +207,11 @@ class local_course_page_renderer extends plugin_renderer_base {
         $out .= html_writer::start_tag('div',array('class' => 'extra'));
             $out .= '<p>';
                 $out .= '<label class="label_home">' . get_string('home_course_id','local_course_page') . ':</label>';
-                $out .= $course->idnumber;
+                $out .= '<label class="extra_home">' . $course->idnumber . '</label>';
             $out .= '</p>';
             $out .= '<p>';
                 $out .= '<label class="label_home">' . get_string('home_published','local_course_page') . ':</label>';
-                $out .= userdate($course->startdate,'%d.%m.%Y', 99, false);
+                $out .= '<label class="extra_home">' . userdate($course->startdate,'%d.%m.%Y', 99, false) . '</label>';
             $out .= '</p>';
 
             foreach ($format_options as $option) {
@@ -257,34 +257,34 @@ class local_course_page_renderer extends plugin_renderer_base {
         switch ($option->name) {
             case 'prerequisities':
                 $out .= '<label class="label_home">' . get_string('home_prerequisities','local_course_page') . ':</label>';
-                $out .= $option->value;
+                $out .= '<label class="extra_home">' . $option->value . '</label>';
                 break;
             case 'producedby':
                 $out .= '<label class="label_home">' . get_string('home_producedby','local_course_page') . ':</label>';
-                $out .= $option->value;
+                $out .= '<label class="extra_home">' . $option->value . '</label>';
                 break;
             case 'location':
                 $out .= '<label class="label_home">' . get_string('home_location','local_course_page') . ':</label>';
-                $out .= $option->value;
+                $out .= '<label class="extra_home">' . $option->value . '</label>';
                 break;
             case 'length':
                 $out .= '<label class="label_home">' . get_string('home_length','local_course_page') . ':</label>';
-                $out .=  $option->value;
+                $out .=  '<label class="extra_home">' . $option->value . '</label>';
                 break;
             case 'effort':
                 $out .= '<label class="label_home">' . get_string('home_effort','local_course_page') . ':</label>';
-                $out .= $option->value;
+                $out .= '<label class="extra_home">' . $option->value . '</label>';
                 break;
             case 'manager':
                 $manager = $option->value;
                 break;
             case 'author':
                 $out .= '<label class="label_home">' . get_string('home_author','local_course_page') . ':</label>';
-                $out .= $option->value;
+                $out .= '<label class="extra_home">' . $option->value . '</label>';
                 break;
             case 'licence':
                 $out .= '<label class="label_home">' . get_string('home_licence','local_course_page') . ':</label>';
-                $out .= $option->value;
+                $out .= '<label class="extra_home">' . $option->value . '</label>';
                 break;
             default:
                 break;
@@ -312,21 +312,21 @@ class local_course_page_renderer extends plugin_renderer_base {
 
         $out .= html_writer::start_tag('div',array('class' => 'manager'));
             $out .= '<p>';
-                $out .= '<label class="label_manager">' . get_string('home_manager','local_course_page') . '</label>';
+                $out .= '<label class="label_manager"><h2>' . get_string('home_manager','local_course_page') . '</h2></label>';
                 /* Main Manager */
                 if ($manager) {
                     $user = get_complete_user_data('id',$manager);
                     $url_user = new moodle_url('/user/profile.php',array('id' => $user->id));
 
                     $out .= $OUTPUT->user_picture($user, array('size'=>150));
-                    $out .= '<label class="label_home">' . get_string('home_coordinater','local_course_page') . '</label>';
+                    $out .= '<label class="label_home"><h2>' . get_string('home_coordinater','local_course_page') . '</h2></label>';
                     $out .= '<a href="' . $url_user . '">' . fullname($user) . '</a>';
                 }//if_manager
             $out .= '</p>';
 
             /* Teachers */
             $out .= '<p>';
-                $out .= '<label class="label_home">' . get_string('home_teachers','local_course_page') . '</label>';
+                $out .= '<label class="label_home"><h2>' . get_string('home_teachers','local_course_page') . '</h2></label>';
 
                 $lst_teachers = course_page::getCoursesTeachers($course_id,$manager);
                 if ($lst_teachers) {
