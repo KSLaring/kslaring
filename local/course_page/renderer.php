@@ -198,24 +198,41 @@ class local_course_page_renderer extends plugin_renderer_base {
      */
     protected function addExtraInfo_HomePage($course,&$manager) {
         /* Variables    */
+        global $OUTPUT;
         $out     = '';
 
         /* Get Extra Options    */
         $format_options = course_page::getFormatFields($course->id);
 
         $out .= html_writer::start_tag('div',array('class' => 'extra'));
-        $out .= '<p>';
-        $out .= '<label class="label_home">' . get_string('home_course_id','local_course_page') . ':</label>';
-        $out .= $course->idnumber;
-        $out .= '</p>';
-        $out .= '<p>';
-        $out .= '<label class="label_home">' . get_string('home_published','local_course_page') . ':</label>';
-        $out .= userdate($course->startdate,'%d.%m.%Y', 99, false);
-        $out .= '</p>';
+            $out .= '<p>';
+                $out .= '<label class="label_home">' . get_string('home_course_id','local_course_page') . ':</label>';
+                $out .= $course->idnumber;
+            $out .= '</p>';
+            $out .= '<p>';
+                $out .= '<label class="label_home">' . get_string('home_published','local_course_page') . ':</label>';
+                $out .= userdate($course->startdate,'%d.%m.%Y', 99, false);
+            $out .= '</p>';
 
-        foreach ($format_options as $option) {
-            $out .= $this->addExtraOption($option,$manager);
-        }//format_options
+            foreach ($format_options as $option) {
+                $out .= $this->addExtraOption($option,$manager);
+            }//format_options
+
+            switch ($course->format) {
+                case 'netcourse':
+                    $out .= html_writer::empty_tag('img', array('src'=>$OUTPUT->pix_url('i/nett_kurs'),'alt'=> '','class'=>'icon'));
+                    break;
+                case 'classroom':
+                    $out .= html_writer::empty_tag('img', array('src'=>$OUTPUT->pix_url('i/classroom'),'alt'=> '','class'=>'icon'));
+                    break;
+                case 'whitepaper':
+                    $out .= html_writer::empty_tag('img', array('src'=>$OUTPUT->pix_url('i/whitepaper'),'alt'=> '','class'=>'icon'));
+                    break;
+                default:
+                    break;
+            }//format_ico
+
+
         $out .=  html_writer::end_tag('div');//extra
 
         return $out;
