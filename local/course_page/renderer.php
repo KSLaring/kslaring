@@ -19,36 +19,20 @@ class local_course_page_renderer extends plugin_renderer_base {
 
     public function display_home_page($course) {
         /* Variables    */
-        $manager = 0;
         $output  = $this->output->header();
 
-        /**
-         * BLOCK ONE
-         *
-         * Course Name
-         * Course Short Description
-         * Button Register
-         * Home Page Graphics
-         * Course Code, Published.... Extra info from Format Course
-         */
-        $output .= $this->addBlockOne_HomePage($course,$manager);
-
-        /**
-         * BLOCK TWO
-         *
-         * Course Home Page Summary
-         * Video
-         * Course Coordinator & teachers
-         * Ratings
-         */
-        $output .= $this->addBlockTwo_homePage($course,$manager);
+        $output .= html_writer::start_tag('div',array('class' => 'home_page'));
+            /* Add Block One */
+            $output .= $this->addBlockOne_HomePage($course);
+            /* Add Block Two */
+            $output .= $this->addBlockTwo_HomePage($course);
+        $output .= html_writer::end_tag('div');//home_page_block_one
 
         return $output;
     }//display_summary
 
     /**
      * @param           $course
-     * @param           $manager
      * @return          string
      *
      * @creationDate    20/05/2014
@@ -56,27 +40,19 @@ class local_course_page_renderer extends plugin_renderer_base {
      *
      * Description
      * Add the first block of the Course Home Page
-     * - Course Name, Short Description, Button Register, Home page graphics
-     * - Course code, published....
+     * - Course Name, Short Description, Button Register, Home page graphics...
      */
-    private function addBlockOne_HomePage($course,&$manager) {
+    private function addBlockOne_HomePage($course) {
         /* Variables    */
         $block_one = '';
 
         $block_one .= html_writer::start_tag('div',array('class' => 'home_page_block_one'));
             /* Header   */
             $block_one .= $this->addHeader_HomePage($course->fullname);
-            /* Col One  */
-            $block_one .= html_writer::start_tag('div',array('class' => 'block_col_one'));
-                /* Add Short Description  */
-                $block_one .= $this->addSummary_HomePage($course);
-            $block_one .= html_writer::end_tag('div');//home_page_block_one col_one
-
-            /* Col Two  */
-            $block_one .= html_writer::start_tag('div',array('class' => 'block_col_two'));
-                /* Add Extra Into */
-                $block_one .= $this->addExtraInfo_HomePage($course,$manager);
-            $block_one .= html_writer::end_tag('div');//home_page_block_one_col_two
+            /* Add Short Description  */
+            $block_one .= $this->addSummary_HomePage($course);
+            /* Add Home Description / Video */
+            $block_one .= $this->addDescription_HomePage($course->homesummary,$course->homevideo);
         $block_one .= html_writer::end_tag('div');//home_page_block_one
 
         return $block_one;
@@ -123,7 +99,7 @@ class local_course_page_renderer extends plugin_renderer_base {
         /* Graphics */
         if ($course->homegraphics) {
             $url_img = course_page::getUrlPageGraphicsVideo($course->homegraphics);
-            $img = '<img src="'  . $url_img . '" width="50%"></br>';
+            $img = '<img src="'  . $url_img . '" class="graphic"></br>';
             $out .= $img;
         }//if_graphics
 
@@ -147,6 +123,68 @@ class local_course_page_renderer extends plugin_renderer_base {
     }//addSummary_HomePage
 
     /**
+     * @param           $home_summary
+     * @param           $video
+     * @return          string
+     *
+     * @creationDate    20/05/2014
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Add Home PAge Description and Video
+     */
+    protected function addDescription_HomePage($home_summary,$video) {
+        /* Variables */
+        $out = '';
+
+        $out .=  '<h4>' . get_string('home_about','local_course_page') . '</h4>';
+        $out .= '<hr class="line">';
+
+        $out .=  '<p>' . $home_summary;
+        /* Graphics */
+        $url_video = course_page::getUrlPageGraphicsVideo($video);
+        $out .= '<object data="' . $url_video. '" class="video">' .
+                    '<param name="src" value="' . $url_video . '">' .
+                    '<param name="controller" value="true">' .
+                    '<param name="loop" value="false">' .
+                    '<param name="autoplay" value="false">' .
+                    '<param name="autostart" value="false">' .
+                    '<param name="scale" value="aspect">' .
+                '</object>';
+        $out .= '</p>';
+        return $out;
+    }//addDescription_HomePage
+
+    /**
+     * @param           $course
+     * @return          string
+     *
+     * @creationDate    20/05/2014
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Add the second block of the Course Hom Page
+     * - Home PAge Summary, Video
+     * - Block Coordinator, Ratings...
+     */
+    private function addBlockTwo_homePage($course) {
+        /* Variables    */
+        $block_two = '';
+        $manager = 0;
+
+        $block_two .= html_writer::start_tag('div',array('class' => 'home_page_block_two'));
+            /* Add Extra Into */
+            $block_two .= $this->addExtraInfo_HomePage($course,$manager);
+            /* Coordinator Block    */
+            $block_two .= $this->addCoordinatorBlock($course->id,$manager);
+            /* Ratings Block        */
+            $block_two .= $this->addCourseRatings($course->id);
+        $block_two .= html_writer::end_tag('div');//home_page_block_two
+
+        return $block_two;
+    }//addBlockTwo_homePage
+
+    /**
      * @param           $course
      * @param           $manager
      * @return          string
@@ -165,18 +203,18 @@ class local_course_page_renderer extends plugin_renderer_base {
         $format_options = course_page::getFormatFields($course->id);
 
         $out .= html_writer::start_tag('div',array('class' => 'extra'));
-            $out .= '<p>';
-                $out .= '<label class="label_home">' . get_string('idnumbercourse') . '</label>';
-                $out .= $course->idnumber;
-            $out .= '</p>';
-            $out .= '<p>';
-            $out .= '<label class="label_home">' . get_string('home_published','local_course_page') . '</label>';
-                $out .= userdate($course->startdate,'%d.%m.%Y', 99, false);
-            $out .= '</p>';
+        $out .= '<p>';
+        $out .= '<label class="label_home">' . get_string('idnumbercourse') . '</label>';
+        $out .= $course->idnumber;
+        $out .= '</p>';
+        $out .= '<p>';
+        $out .= '<label class="label_home">' . get_string('home_published','local_course_page') . '</label>';
+        $out .= userdate($course->startdate,'%d.%m.%Y', 99, false);
+        $out .= '</p>';
 
-            foreach ($format_options as $option) {
-                $out .= $this->addExtraOption($option,$manager);
-            }//format_options
+        foreach ($format_options as $option) {
+            $out .= $this->addExtraOption($option,$manager);
+        }//format_options
         $out .=  html_writer::end_tag('div');//extra
 
         return $out;
@@ -237,75 +275,6 @@ class local_course_page_renderer extends plugin_renderer_base {
 
         return $out;
     }//addExtraOption
-
-    /**
-     * @param           $course
-     * @param           $manager
-     * @return          string
-     *
-     * @creationDate    20/05/2014
-     * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Add the second block of the Course Hom Page
-     * - Home PAge Summary, Video
-     * - Block Coordinator, Ratings...
-     */
-    private function addBlockTwo_homePage($course,$manager) {
-        /* Variables    */
-        $block_two = '';
-
-        $block_two .= html_writer::start_tag('div',array('class' => 'home_page_block_two'));
-            /* Col One  */
-            $block_two .= html_writer::start_tag('div',array('class' => 'block_col_one'));
-                /* Add Home Description / Video */
-                $block_two .= $this->addDescription_HomePage($course->homesummary,$course->homevideo);
-            $block_two .= html_writer::end_tag('div');//home_page_block_two col_one
-
-            /* Col Two  */
-            $block_two .= html_writer::start_tag('div',array('class' => 'block_col_two'));
-                /* Coordinator Block    */
-                $block_two .= $this->addCoordinatorBlock($course->id,$manager);
-                /* Ratings Block        */
-                $block_two .= $this->addCourseRatings($course->id);
-            $block_two .= html_writer::end_tag('div');//home_page_block_two col_two
-        $block_two .= html_writer::end_tag('div');//home_page_block_two
-
-        return $block_two;
-    }//addBlockTwo_homePage
-
-    /**
-     * @param           $home_summary
-     * @param           $video
-     * @return          string
-     *
-     * @creationDate    20/05/2014
-     * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Add Home PAge Description and Video
-     */
-    protected function addDescription_HomePage($home_summary,$video) {
-        /* Variables */
-        $out = '';
-
-        $out .=  '<h4>' . get_string('home_about','local_course_page') . '</h4>';
-        $out .= '<hr style="border: 0; border-top: 1px solid #0e7b9e;width: 99%;">';
-
-        $out .=  '<p>' . $home_summary . '</p>';
-        /* Graphics */
-        $url_video = course_page::getUrlPageGraphicsVideo($video);
-        $out .= '<object data="' . $url_video. '" width="700" height="350">' .
-                    '<param name="src" value="' . $url_video . '">' .
-                    '<param name="controller" value="true">' .
-                    '<param name="loop" value="false">' .
-                    '<param name="autoplay" value="false">' .
-                    '<param name="autostart" value="false">' .
-                    '<param name="scale" value="aspect">' .
-                '</object>';
-
-        return $out;
-    }//addDescription_HomePage
 
     /**
      * @param           $course_id

@@ -22,11 +22,11 @@ $context            = CONTEXT_COURSE::instance($course_id);
 $url                = new moodle_url('/local/course_page/home_page.php',array('id' => $course_id));
 $str_edit_settings  = get_string("editcoursesettings");
 
-if (!has_capability('moodle/course:update', $context)) {
-    require_login();
-}else {
-    require_login($course);
-}//if_else_capability
+if (isloggedin()) {
+    if (has_capability('moodle/course:update', $context)) {
+        require_login($course);
+    }//if_permission
+}//if_loggin
 
 
 $PAGE->set_url($url);
