@@ -76,9 +76,7 @@
 }
 
 .home_page_block_two .manager .label_manager {
-    color: @kommitGray;
     width:99.8%;
-    font-size: @fontSizeH3;
     display: inline-block;
 }
 
@@ -94,9 +92,7 @@
 }
 
 .home_page_block_two .ratings .title_ratings {
-    color: @kommitGray;
     width:99.8%;
-    font-size: @fontSizeH3;
     display: inline-block;
 }
 
