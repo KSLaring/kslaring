@@ -14,3 +14,22 @@
     background-color: #F5F5F5;
     border-top: 1px solid #E5E5E5;
 }
+
+/* Add padding around the page content for pages without the left course navigation */
+.format-netcourse.pagelayout-incourse.empty-region-side-pre #page-content > div > .row-fluid {
+    padding: 0 1em .5em;
+}
+
+/* remove the white gap between the gray page frame and the block start */
+#instcnav {
+    margin-top: 0;
+}
+
+#instcnav .list {
+    margin-top: 0;
+}
+
+/* Make the actual opened activity bold */
+#instcnav .list .active_tree_node a {
+    font-weight: bold;
+}
