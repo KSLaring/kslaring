@@ -62,4 +62,4 @@ if (!empty($displaysection)) {
 }
 
 // Include course format js module
-$PAGE->requires->js('/course/format/classrooom/format.js');
+$PAGE->requires->js('/course/format/classroom/format.js');
