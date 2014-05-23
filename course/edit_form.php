@@ -143,7 +143,7 @@ class course_edit_form extends moodleform {
          * Add a new section connected with the 'Course Home Page'
          */
         $mform->addElement('checkbox','homepage',get_string('checkbox_home','local_course_page'));
-        if ($course->homepage) {
+        if (isset($course->homepage) && ($course->homepage)) {
            $mform->setDefault('homepage',1);
         }//if_home_page
 

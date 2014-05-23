@@ -72,7 +72,7 @@ class course_page  {
 
     /**
      * @param           $form
-     *
+     * @return          bool
      * @creationDate    05/05/2014
      * @author          eFaktor     (fbV)
      *
@@ -91,6 +91,9 @@ class course_page  {
 
         /* Short Description */
         $this->course->homesummaryformat = FORMAT_HTML;
+        if (!isset($this->course->homesummary) ) {
+            $this->course->homesummary = null;
+        }
         $this->course = file_prepare_standard_editor($this->course, 'homesummary', $this->edit_options,$this->context, 'course', 'homesummary',0);
         $form->addElement('editor','homesummary_editor',get_string('home_desc','local_course_page'),null,$this->edit_options);
         $form->setType('homesummary_editor',PARAM_RAW);
@@ -100,9 +103,12 @@ class course_page  {
         $form->addElement('static', 'current_graphic', get_string('current_graphic','local_course_page'));
         $form->addElement('checkbox', 'deletepicture', get_string('delete'));
         $form->setDefault('deletepicture', 0);
-        $form->disabledIf('deletepicture',$this->course->homegraphics,0);
+        if (isset($this->course->homegraphics) && ($this->course->homegraphics)) {
+            $form->disabledIf('deletepicture',$this->course->homegraphics,0);
+        }
+
         $this->course = file_prepare_standard_filemanager($this->course, 'pagegraphics',$this->file_options,$this->context, 'course','pagegraphics',0);
-        if ($this->course->homegraphics) {
+        if (isset($this->course->homegraphics) && ($this->course->homegraphics)) {
             /* URL IMAGE */
             $img = '<img src="'  . $this->getUrlPageGraphicsVideo($this->course->homegraphics) . '" width="75" height="75" />';
 
@@ -114,10 +120,12 @@ class course_page  {
         $form->addElement('static', 'current_video', get_string('home_current_video','local_course_page'));
         $form->addElement('checkbox', 'deletevideo', get_string('home_delete_video','local_course_page'));
         $form->setDefault('deletevideo', 0);
-        $form->disabledIf('deletevideo',$this->course->homevideo,0);
+        if (isset($this->course->homevideo) && ($this->course->homevideo)) {
+            $form->disabledIf('deletevideo',$this->course->homevideo,0);
+        }
         $this->course = file_prepare_standard_filemanager($this->course, 'pagevideo',$this->file_options,$this->context, 'course','pagevideo',0);
         $form->addElement('filemanager', 'pagevideo_filemanager', get_string('home_video','local_course_page'));
-        if ($this->course->homevideo) {
+        if (isset($this->course->homevideo) && ($this->course->homevideo)) {
             $fs = get_file_storage();
             try {
                 $file = $fs->get_file_by_id($this->course->homevideo);
