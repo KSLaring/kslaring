@@ -33,3 +33,8 @@
 #instcnav .list .active_tree_node a {
     font-weight: bold;
 }
+
+/* Add a bit space to the percentage number in the progress bar */
+.format-netcourse.path-mod-lesson .progress_bar_completed {
+    padding: 0 20px 0 2px;
+}
