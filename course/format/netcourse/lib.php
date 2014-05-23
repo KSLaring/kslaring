@@ -405,6 +405,12 @@ class format_netcourse extends format_base {
                     'default' => $courseconfig->hiddensections,
                     'type' => PARAM_INT,
                 ),
+                'coursedisplay' => array(
+                    'label' => null,
+                    'default' => COURSE_DISPLAY_MULTIPAGE,
+                    'type' => PARAM_INT,
+                    'element_type' => 'hidden',
+                ),
                 /**
                  * @updateDate  08/05/2014
                  * @author      eFaktor (fbv)
@@ -428,17 +434,6 @@ class format_netcourse extends format_base {
                     'default' => 0,
                     'type' => PARAM_INT,
                 )
-                /**
-                 * @updateDate  08/05/2014
-                 * @author      eFaktor     (fbv)
-                 *
-                 * Description
-                 * Not available for this format
-                 */
-                //'coursedisplay' => array(
-                //    'default' => $courseconfig->coursedisplay,
-                //    'type' => PARAM_INT,
-                //),
             );
         }
         if ($foreditform && !isset($courseformatoptions['coursedisplay']['label'])) {
