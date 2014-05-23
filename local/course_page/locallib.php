@@ -119,8 +119,12 @@ class course_page  {
         $form->addElement('filemanager', 'pagevideo_filemanager', get_string('home_video','local_course_page'));
         if ($this->course->homevideo) {
             $fs = get_file_storage();
-            $file = $fs->get_file_by_id($this->course->homevideo);
-            $form->setDefault('current_video',$file->get_filename());
+            try {
+                $file = $fs->get_file_by_id($this->course->homevideo);
+                $form->setDefault('current_video',$file->get_filename());
+            }catch(Exception $ex) {
+                return true;
+            }
         }///if_homevideo
     }//add_CourseHomePage_Section
 

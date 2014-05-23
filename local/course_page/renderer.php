@@ -148,15 +148,17 @@ class local_course_page_renderer extends plugin_renderer_base {
 
         $out .=  '<p>' . $home_summary . '</p>';
         /* Graphics */
-        $url_video = course_page::getUrlPageGraphicsVideo($video);
-        $media_renderer = $this->page->get_renderer('core', 'media');
-        $embed_options = array(
-            core_media::OPTION_TRUSTED => true,
-            core_media::OPTION_BLOCK => true,
-        );
-        // Media (audio/video) file.
-        $code = $media_renderer->embed_url($url_video, '', 0, 0, $embed_options);
-        $out .= $code;
+        if ($video) {
+            $url_video = course_page::getUrlPageGraphicsVideo($video);
+            $media_renderer = $this->page->get_renderer('core', 'media');
+            $embed_options = array(
+                core_media::OPTION_TRUSTED => true,
+                core_media::OPTION_BLOCK => true,
+            );
+            // Media (audio/video) file.
+            $code = $media_renderer->embed_url($url_video, '', 0, 0, $embed_options);
+            $out .= $code;
+        }
 
         return $out;
     }//addDescription_HomePage
