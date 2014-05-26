@@ -67,11 +67,11 @@ echo $OUTPUT->doctype() ?>
         </div>
 
         <div class="header-right">
-
             <div class="social">
-                <div class="col1"><a href="#"><i class="fa fa-facebook fa-2x" id="icon"></i></a></div>
-                <div class="col2"><a href="#"><i class="fa fa-twitter fa-2x" id="icon"></i></a></div>
-                <div class="col1"><a href="#"><i class="fa fa-linkedin fa-2x" id="icon"></i></a></div>
+                <div class="col1"><a href="http://facebook.com/kskommit" target=_blank"><i class="fa fa-facebook
+                fa-2x" id="icon"></i></a></div>
+                <div class="col2"><a href="https://twitter.com/KSKommIT" target=_blank"><i class="fa fa-twitter
+                fa-2x" id="icon"></i></a></div>
             </div>
         </div>
     </div>

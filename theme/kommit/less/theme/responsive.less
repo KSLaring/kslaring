@@ -1,9 +1,64 @@
-// these are conten based minor break point adjustments, to override bootstraps where they lok bad
+// these are content based minor break point adjustments, to override bootstraps where they lok bad
 // Jon Jack
 // efaktor, 26/03/2013
 
-// footer blocks
-@media (max-width: 740px) {
+
+
+// Smallish screen
+// ---------------------------------------------------
+
+
+@media (max-width: 600px) {
+  .logo-area {
+    padding: 20px 19px;
+    margin: 0;
+  }
+  .header-background {
+    background-color: #fff;
+    background-image: none;
+    margin:0 -20px;
+  }
+
+  .hero-unit {
+    background-image: url([[pix:theme|banner_image]]);
+    max-height: 250px;
+    min-height: 250px;
+    background-repeat: no-repeat;
+    background-position: 70% 40%;
+    h1 {
+      font-size: @fontSizeH3;
+    }
+    .texts {
+      width: 92%;
+      margin-top: 2%;
+    }
+  }
+}
+
+
+// Mid size screen
+// ---------------------------------------------------
+
+@media (max-width: 767px) {
+  .top-border {
+    margin-left: -20px;
+    margin-right: -20px;
+  }
+  .header-right  {
+    display: none;
+  }
+  .navbar .navbar-fixed-top  {
+    margin-left: -20px;
+    margin-right: -20px;
+  }
+  .hero-unit {
+    margin-left: -20px;
+    margin-right: -20px;
+    .texts {
+      margin-top: 5%;
+    }
+  }
+
   #page-footer #page-footer-inner .column {
     float: none;
     display: block;
@@ -12,63 +67,38 @@
   }
 }
 
-// repsonsive overides for bootstraps automatic padding
-
-@media (max-width: 767px) {
-  .top-border {
-    margin-left: -20px;
-    margin-right: -20px;
-  }
-
-  .hero-unit {
-    margin-left: -20px;
-    margin-right: -20px;
-  }
-
-  .header-right  {
-    display: none;
-  }
+@media (min-width:600px) and (max-width: 767px) {
   .header-background {
-    //background: pink !important;
-
-    margin-left: -20px;
-    padding-right: 40px;
     margin-right: -20px;
+    margin-left: -20px;
   }
-
-  .navbar .navbar-fixed-top  {
-      margin-left: -20px;
-      margin-right: -20px;
+  .logo-area {
+    float: left;
+    padding-left: 20px;
   }
-
-
 }
 
 @media (max-width: 979px) {
   .nav-collapse.active {
     float: left;
   }
-
   .navbar .nav > li > a {
     text-align: left;
   }
-
   .navbar-fixed-top {
     margin-bottom: 0px;
   }
   .header-right  {
     width: 60%;
   }
-
   .nav-collapse .nav > li > a, .nav-collapse .dropdown-menu a {
     color: #fff;
   }
   .navbar-fixed-top .navbar-inner, .navbar-fixed-bottom .navbar-inner {
-     padding: 0px;
+    padding: 0px;
   }
 
-  // Lesson Module
-  // Set min-height on lesson pages
+  // Lesson Module - Set min-height on lesson pages
   // -------------------------------------
 
   #page-mod-lesson-view .contents {
@@ -76,8 +106,9 @@
   }
 }
 
+// Large size screen
+// ---------------------------------------------------
 
-// force the user menu to teh left when switch to drop down occurs
 @media (min-width: 979px) {
   .navbar-right {
     float: right !important;
