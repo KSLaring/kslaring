@@ -104,8 +104,12 @@ class format_netcourse_openlast {
                 $cmid = $this->modinfo->sections[0][0];
 
                 $url = $this->modinfo->cms[$cmid]->url;
-                $url->param('description', 1);
-                $url->param('nonav', 1);
+                if (!empty($url)) {
+                    $url->param('description', 1);
+                    $url->param('nonav', 1);
+                } else {
+                    $url = false;
+                }
             }
 
             return $url;
