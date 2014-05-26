@@ -12292,8 +12292,8 @@ body {
   float: right;
 }
 .block .header .title h2 {
-  color: #1a1a1a;
-  font-size: 25.888px;
+  color: #7e7e7e;
+  font-size: 22.256px;
   font-weight: normal;
   line-height: 25.888px;
   margin: 0;
@@ -12374,6 +12374,13 @@ body {
 .block .minicalendar td {
   padding: 2px 1px;
 }
+.block button,
+.block input.form-submit,
+.block input[type="button"],
+.block input[type="submit"],
+.block input[type="reset"] {
+  font-size: 16px;
+}
 .calendartable th,
 .calendartable td {
   max-width: 14%;
@@ -12394,6 +12401,9 @@ body {
   color: #7e7e7e;
   font-size: 36px;
   line-height: 58.248000000000005px;
+}
+.block_course_overview .content {
+  margin: 0 0;
 }
 /**
  * Moodle forms HTML isn't changeable via renderers (yet?) so this
@@ -13505,7 +13515,7 @@ table.flexible .table,
   border-radius: 0;
   color: white;
   text-shadow: none;
-  font-size: 22.256px;
+  font-size: 16px;
 }
 .btn:hover,
 .btn:focus {
@@ -13538,7 +13548,6 @@ input[type="submit"],
 input[type="reset"] {
   /* IE7 inline-block hack */
   padding: 4px 12px;
-  font-size: 16px;
   color: #333333;
   text-shadow: 0 1px 1px rgba(255, 255, 255, 0.75);
   background-color: #64a6bb;
@@ -13581,7 +13590,7 @@ input[type="reset"] {
   border-radius: 0;
   color: white;
   text-shadow: none;
-  font-size: 22.256px;
+  font-size: 16px;
   margin: 10px 10px 10px 10px;
 }
 button:hover,
@@ -15612,7 +15621,6 @@ td.submit input .caret {
 .submit.buttons input[name="cancel"] {
   /* IE7 inline-block hack */
   padding: 4px 12px;
-  font-size: 16px;
   color: #333333;
   text-shadow: 0 1px 1px rgba(255, 255, 255, 0.75);
   background-color: #64a6bb;
@@ -15655,7 +15663,7 @@ td.submit input .caret {
   border-radius: 0;
   color: white;
   text-shadow: none;
-  font-size: 22.256px;
+  font-size: 16px;
 }
 #notice .singlebutton + .singlebutton input:hover,
 .submit.buttons input[name="cancel"]:hover,

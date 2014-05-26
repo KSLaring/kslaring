@@ -18,8 +18,8 @@
     }
     .title {
       h2 {
-        color: @kommitGreyDark;
-        font-size: @fontSizeH3;
+        color: @kommitGray;
+        font-size: @fontSizeH4;
         font-weight: normal;
         line-height: @baseLineHeight;
         margin: 0;
@@ -148,6 +148,15 @@
   }
 }
 
+.block {
+  button,
+  input.form-submit,
+  input[type="button"],
+  input[type="submit"],
+  input[type="reset"],{
+    font-size: @baseFontSize ;
+  }
+}
 .calendartable {
   th, td {
     max-width: 14%;
@@ -177,4 +186,11 @@
     line-height: @fontSizeH2 * 1.618;
   }
 }
+}
+
+// overide padding on my course overview block
+// ---------------------------------------------------
+
+.block_course_overview .content {
+  margin: 0 0;
 }

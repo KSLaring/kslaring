@@ -368,9 +368,6 @@ Courses and categories lists, from Mary Evans
 #page-mod-lesson-view .ftoggler {
   display: none;
 }
-#page-mod-lesson-view .contents {
-  min-height: 16em;
-}
 body {
   padding-top: 0px;
   background: #f2f2f3;
@@ -560,6 +557,12 @@ body {
   border-bottom: 1px solid #e8e8e8;
   color: #7e7e7e;
 }
+#instcnav .block_tree li.depth_2 ul {
+  -webkit-box-shadow: inset 0px 0px 8px 0px rgba(0, 0, 0, 0.1);
+  -moz-box-shadow: inset 0px 0px 8px 0px rgba(0, 0, 0, 0.1);
+  box-shadow: inset 0px 0px 8px 0px rgba(0, 0, 0, 0.1);
+  background: #f7f7f7;
+}
 .format-netcourse.path-mod-lesson .box .progress_bar {
   border: none;
   height: 25px;
@@ -653,11 +656,11 @@ div.loginpanel h2 {
     background-position: 70% 40%;
   }
   .hero-unit h1 {
-    font-size: 25.888px;
+    font-size: 22.256px;
   }
   .hero-unit .texts {
-    width: 92%;
-    margin-top: 2%;
+    width: 95%;
+    margin-top: 1%;
   }
 }
 @media (max-width: 767px) {
