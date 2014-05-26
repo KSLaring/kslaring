@@ -654,6 +654,9 @@ class format_netcourse extends format_base {
         if (isset($modinfo->sections[0])) {
             $cmid = $modinfo->sections[0][0];
             $descriptionurl = $modinfo->cms[$cmid]->url;
+            if (is_null($descriptionurl)) {
+                $descriptionurl = new moodle_url('#');
+            }
         } else {
             $descriptionurl = new moodle_url('#');
         }
