@@ -108,7 +108,7 @@ class format_netcourse_openlast {
                     $url->param('description', 1);
                     $url->param('nonav', 1);
                 } else {
-                    $url = false;
+                    $url = new moodle_url('');
                 }
             }
 
