@@ -276,7 +276,7 @@ if ($enrolled && $completionenabled) {
 }
 
 // Display the "Return to course" button and the footer
-$courseurl = new moodle_url("/course/view.php", array('id' => $course->id));
+$courseurl = new moodle_url("/course/view.php", array('id' => $course->id, 'start' => 1));
 echo html_writer::start_tag('div', array('class' => 'buttons'));
 echo $OUTPUT->single_button($courseurl, get_string('returntocourse', 'mod_completionreport'), 'get');
 echo html_writer::end_tag('div');

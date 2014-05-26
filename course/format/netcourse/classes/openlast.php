@@ -94,7 +94,10 @@ class format_netcourse_openlast {
             // First time, redirect to the course description
             if (is_null($url)) {
 
-                if (!isset($this->modinfo->sections[0])) {
+//                if (!isset($this->modinfo->sections[0])) {
+                if (!isset($this->modinfo->sections[0]) ||
+                    !isset($this->modinfo->sections[0][0])
+                ) {
                     return false;
                 }
 
