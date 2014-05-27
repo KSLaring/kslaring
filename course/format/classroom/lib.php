@@ -230,8 +230,11 @@ class format_classroom extends format_base {
             // Sections with no activities/resources are excluded
             if ($section->section > 0 && isset($modinfo->sections[$section->section])) {
                 $sectionNode = $this->navigation_add_section($navigation, $node, $section);
-                foreach ($modinfo->sections[$section->section] as $cmid) {
-                    $this->navigation_add_activity($sectionNode, $modinfo->get_cm($cmid));
+                // Section may be hidden, so check if null
+                if (!is_null($sectionNode)) {
+                    foreach ($modinfo->sections[$section->section] as $cmid) {
+                        $this->navigation_add_activity($sectionNode, $modinfo->get_cm($cmid));
+                    }
                 }
             }
         }
