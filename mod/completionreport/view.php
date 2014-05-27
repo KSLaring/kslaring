@@ -186,6 +186,12 @@ if ($enrolled && $completionenabled) {
         // Save row data.
         $rows = array();
 
+        $modinfo = get_fast_modinfo($course);
+        $sec0modinstances = $modinfo->sections[0];
+        if (empty($sec0modinstances)) {
+            $sec0modinstances = array();
+        }
+
         // Loop through course criteria.
         foreach ($completions as $completion) {
             $criteria = $completion->get_criteria();
@@ -197,6 +203,15 @@ if ($enrolled && $completionenabled) {
             $row['complete'] = $completion->is_complete();
             $row['timecompleted'] = $completion->timecompleted;
             $row['details'] = $criteria->get_details($completion);
+
+            // If the module is palced in section 0 then add the information
+            // to the link that no menu shall be shown.
+            $modinstance = $criteria->moduleinstance;
+            if (in_array($modinstance, $sec0modinstances)) {
+                $row['details']['criteria'] = str_replace('id=' . $modinstance,
+                    'id=' . $modinstance . '&nonav=1', $row['details']['criteria']);
+            }
+
             $rows[] = $row;
         }
 

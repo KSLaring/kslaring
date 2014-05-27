@@ -144,7 +144,7 @@ function completionreport_supports($feature) {
         case FEATURE_GRADE_HAS_GRADE:         return false;
         case FEATURE_GRADE_OUTCOMES:          return false;
         case FEATURE_MOD_ARCHETYPE:           return MOD_ARCHETYPE_RESOURCE;
-        case FEATURE_BACKUP_MOODLE2:          return false;
+        case FEATURE_BACKUP_MOODLE2:          return true;
         case FEATURE_NO_VIEW_LINK:            return false;
 
         default: return null;
