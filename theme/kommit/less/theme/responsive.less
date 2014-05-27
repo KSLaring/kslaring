@@ -4,9 +4,8 @@
 
 
 
-// Smallish screen
+// Small screen
 // ---------------------------------------------------
-
 
 @media (max-width: 600px) {
   .logo-area {
@@ -26,17 +25,46 @@
     background-repeat: no-repeat;
     background-position: 70% 40%;
     h1 {
-      font-size: @fontSizeH4;
+      //font-size: @fontSizeH4;
     }
     .texts {
       width: 95%;
       margin-top: 1%;
     }
-
     .lead {
-
     }
   }
+  // home page generator responsive fixes
+  .home_page_block_one {
+    width: 100%;
+  }
+  .home_page_block_two {
+    width: 100%;
+  }
+  .home_page .header {
+    word-break: break-all;
+  }
+
+  .home_page {
+    padding: 0 5px;
+  }
+  .home_page_block_one .graphic {
+    width: 96%;
+  }
+
+  // hide edit toggle label
+  .edit-label {
+    display: none;
+  }
+  // truncate breadcrumbs in mobile devices
+  .breadcrumb > li {
+    display: none;
+  }
+  .breadcrumb > li:first-child, li:last-child {
+    display: inline-block;
+  }
+
+
 }
 
 

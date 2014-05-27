@@ -110,9 +110,16 @@ Courses and categories lists, from Mary Evans
 .coursebox {
   border: none;
   position: relative;
+  .summary {
+    min-height: 40px;
+  }
   .panel-heading {
     font-size: @fontSizeH2;
-    line-height: @fontSizeH2 *1.618 ;
+    line-height: @fontSizeH2 * 2 ;
+  }
+  .panel-body {
+    padding-bottom: 0;
+    margin-bottom: 0;
   }
   .courseimage img {
     float: left;
@@ -129,10 +136,9 @@ Courses and categories lists, from Mary Evans
     }
   }
   .coursebtn {
-    position: relative;
-    //float: left;
-    //left: 10px;
-    bottom: 10px;
+    a {
+      margin-bottom: 0;
+    }
   }
   .boxfooter {
     clear: both;

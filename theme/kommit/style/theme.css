@@ -20,7 +20,7 @@
 .input-block-level {
   display: block;
   width: 100%;
-  min-height: 35.888000000000005px;
+  min-height: 31px;
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
   box-sizing: border-box;
@@ -42,16 +42,32 @@
   padding: 9px;
 }
 h1 {
-  font-size: 41.888px;
+  font-size: 32px;
+  line-height: 1.1667em;
+  /* 42px */
+  margin-top: 0.5833em;
+  margin-bottom: 0.0000em;
 }
 h2 {
-  font-size: 36px;
+  font-size: 28.32px;
+  line-height: 1.7500em;
+  /* 42px */
+  margin-top: 0.8750em;
+  margin-bottom: 0.0000em;
 }
 h3 {
-  font-size: 25.888px;
+  font-size: 24px;
+  line-height: 1.0500em;
+  /* 21px */
+  margin-top: 1.0500em;
+  margin-bottom: 0.0000em;
 }
 h4 {
-  font-size: 22.256px;
+  font-size: 21.328px;
+  line-height: 1.1667em;
+  /* 21px */
+  margin-top: 1.1667em;
+  margin-bottom: 0.0000em;
 }
 h5 {
   font-size: 16px;
@@ -95,6 +111,8 @@ h6 {
 }
 p {
   color: #333333;
+  line-height: 21px;
+  margin: 0 0 1.3125em 0;
 }
 h1,
 h2,
@@ -275,9 +293,16 @@ Courses and categories lists, from Mary Evans
   border: none;
   position: relative;
 }
+.coursebox .summary {
+  min-height: 40px;
+}
 .coursebox .panel-heading {
-  font-size: 36px;
-  line-height: 58.248000000000005px;
+  font-size: 28.32px;
+  line-height: 56.64px;
+}
+.coursebox .panel-body {
+  padding-bottom: 0;
+  margin-bottom: 0;
 }
 .coursebox .courseimage img {
   float: left;
@@ -293,9 +318,8 @@ Courses and categories lists, from Mary Evans
   padding: 0;
   margin: 0;
 }
-.coursebox .coursebtn {
-  position: relative;
-  bottom: 10px;
+.coursebox .coursebtn a {
+  margin-bottom: 0;
 }
 .coursebox .boxfooter {
   clear: both;
@@ -327,7 +351,7 @@ Courses and categories lists, from Mary Evans
   float: right;
   color: #999999;
   font-weight: normal;
-  font-size: 13.76px;
+  font-size: 13.504px;
   padding-top: 3px;
   padding-right: 10px;
 }
@@ -354,14 +378,14 @@ Courses and categories lists, from Mary Evans
   float: left;
   color: #555555;
   font-weight: normal;
-  font-size: 13.76px;
+  font-size: 13.504px;
   padding-top: 3px;
   padding-left: 10px;
 }
 .edit-label {
   float: left;
   font-weight: normal;
-  font-size: 13.76px;
+  font-size: 13.504px;
   padding-top: 3px;
   padding-right: 5px;
 }
@@ -459,7 +483,7 @@ body {
   padding: 0 5px;
 }
 #page-footer #page-footer-inner .column p {
-  font-size: 13.76px;
+  font-size: 13.504px;
   color: #7e7e7e;
 }
 .profilepicture {
@@ -515,7 +539,7 @@ body {
   min-height: 420px;
   padding: 0px;
   margin-bottom: 0px;
-  line-height: 38.832px;
+  line-height: 31.5px;
   color: #ffffff;
   background-repeat: no-repeat;
   background-position: center bottom;
@@ -532,7 +556,7 @@ body {
   color: #ffffff;
 }
 .hero-unit li {
-  line-height: 38.832px;
+  line-height: 31.5px;
 }
 .hero-unit .texts {
   font-family: 'clan_otbook', Calibri, Candara, Segoe, "Segoe UI", Optima, Arial, sans-serif;
@@ -547,6 +571,9 @@ body {
 }
 .netcourse-header .btn {
   color: #0e7b9e;
+}
+.netcourse-header .btn:hover {
+  color: #ffffff;
 }
 .netcourse-header .btn-primary:active,
 .netcourse-header .btn-primary.active {
@@ -573,14 +600,14 @@ body {
 }
 .format-netcourse.path-mod-lesson .box .progress_bar {
   border: none;
-  height: 25px;
-  margin-top: -25px;
+  height: 20px;
+  margin-top: -22px;
   background: none;
 }
 .format-netcourse.path-mod-lesson .progress_bar {
   background: #f2f2f3;
   border: 1px solid #e8e8e8;
-  height: 25px;
+  height: 20px;
   margin-top: 40px;
   margin-right: 20px;
 }
@@ -631,9 +658,8 @@ body {
 }
 div.loginpanel h2 {
   color: #7e7e7e;
-  font-size: 41.888px;
   font-weight: normal;
-  line-height: 25.888px;
+  line-height: 21px;
   margin: 0;
 }
 .loginbox .loginform .form-input {
@@ -677,12 +703,34 @@ div.loginpanel h2 {
     background-repeat: no-repeat;
     background-position: 70% 40%;
   }
-  .hero-unit h1 {
-    font-size: 22.256px;
-  }
   .hero-unit .texts {
     width: 95%;
     margin-top: 1%;
+  }
+  .home_page_block_one {
+    width: 100%;
+  }
+  .home_page_block_two {
+    width: 100%;
+  }
+  .home_page .header {
+    word-break: break-all;
+  }
+  .home_page {
+    padding: 0 5px;
+  }
+  .home_page_block_one .graphic {
+    width: 96%;
+  }
+  .edit-label {
+    display: none;
+  }
+  .breadcrumb > li {
+    display: none;
+  }
+  .breadcrumb > li:first-child,
+  li:last-child {
+    display: inline-block;
   }
 }
 @media (max-width: 767px) {

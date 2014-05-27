@@ -95,7 +95,7 @@ a.dimmed_text:visited,
   display: inline;
 }
 .notifytiny {
-  font-size: 9.888px;
+  font-size: 12px;
 }
 .notifytiny li,
 .notifytiny td {
@@ -679,11 +679,11 @@ table.mod_index {
   background: #f2dede;
 }
 .completion-expected {
-  font-size: 9.888px;
+  font-size: 12px;
 }
 .completion-sortchoice,
 .completion-identifyfield {
-  font-size: 9.888px;
+  font-size: 12px;
   vertical-align: bottom;
 }
 .completion-progresscell {
@@ -1131,13 +1131,13 @@ body.tag .managelink {
 }
 #page-enrol-users #filterform .fitem {
   display: inline-block;
-  line-height: 51.776px;
+  line-height: 42px;
   margin-right: .3em;
   white-space: nowrap;
 }
 #page-enrol-users #filterform .fitem label {
   display: inline;
-  line-height: 25.888px;
+  line-height: 21px;
   padding-right: .3em;
 }
 #page-enrol-users #filterform .fitem :before,
@@ -1577,11 +1577,11 @@ body#page-lib-editor-tinymce-plugins-moodlemedia-preview {
 }
 .moodle-dialogue-exception .param-stacktrace .stacktrace-file {
   color: navy;
-  font-size: 13.76px;
+  font-size: 13.504px;
 }
 .moodle-dialogue-exception .param-stacktrace .stacktrace-line {
   color: #b94a48;
-  font-size: 13.76px;
+  font-size: 13.504px;
 }
 .moodle-dialogue-exception .param-stacktrace .stacktrace-call {
   color: #333;
@@ -1882,7 +1882,7 @@ body.jsenabled .formlisting {
 /* Badges styles */
 table.collection {
   width: 100%;
-  margin-bottom: 25.888px;
+  margin-bottom: 21px;
   border: 1px solid #dddddd;
   border-collapse: separate;
   *border-collapse: collapse;
@@ -1894,7 +1894,7 @@ table.collection {
 table.collection th,
 table.collection td {
   padding: 8px;
-  line-height: 25.888px;
+  line-height: 21px;
   text-align: left;
   vertical-align: top;
   border-top: 1px solid #dddddd;
@@ -2713,7 +2713,7 @@ img.iconsmall {
 }
 #page-admin-qbehaviours .cell.c3,
 #page-admin-qtypes .cell.c3 {
-  font-size: 9.888px;
+  font-size: 12px;
 }
 #page-admin-lang .generalbox,
 #page-admin-course-index .singlebutton,
@@ -2783,7 +2783,7 @@ img.iconsmall {
 #page-admin-index .testsitewarning,
 #page-admin-index .maturityinfo {
   padding: 8px 35px 8px 14px;
-  margin-bottom: 25.888px;
+  margin-bottom: 21px;
   text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
   background-color: #fcf8e3;
   border: 1px solid #fbeed5;
@@ -2859,7 +2859,7 @@ img.iconsmall {
   width: 16%;
 }
 .path-admin .roleassigntable #buttonscell #assignoptions {
-  font-size: 9.888px;
+  font-size: 12px;
 }
 .path-admin .roleassigntable #removeselect_wrapper,
 .path-admin .roleassigntable #addselect_wrapper {
@@ -2886,7 +2886,7 @@ img.iconsmall {
 .path-admin .rolecap .cap-name,
 .path-admin .rolecap .note {
   display: block;
-  font-size: 9.888px;
+  font-size: 12px;
   white-space: nowrap;
   font-weight: normal;
 }
@@ -3110,7 +3110,7 @@ img.iconsmall {
   color: #cccccc;
 }
 #plugins-check .requires ul {
-  font-size: 9.888px;
+  font-size: 12px;
   margin: 0;
 }
 #plugins-check .status .pluginupdateinfo {
@@ -3134,7 +3134,7 @@ img.iconsmall {
 }
 #plugins-control-panel .requiredby,
 #plugins-control-panel .pluginname .componentname {
-  font-size: 13.76px;
+  font-size: 13.504px;
   color: #cccccc;
 }
 #plugins-control-panel .pluginname .componentname {
@@ -3199,7 +3199,7 @@ img.iconsmall {
 /** MNet networking */
 #page-admin-mnet-peers .box.deletedhosts {
   margin-bottom: 1em;
-  font-size: 13.76px;
+  font-size: 13.504px;
 }
 #page-admin-mnet-peers .mform .certdetails {
   background-color: white;
@@ -3235,7 +3235,7 @@ img.iconsmall {
 }
 #page-admin-roles-assign div.box.generalbox {
   padding: 8px 35px 8px 14px;
-  margin-bottom: 25.888px;
+  margin-bottom: 21px;
   text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
   background-color: #fcf8e3;
   border: 1px solid #fbeed5;
@@ -3658,7 +3658,7 @@ img.iconsmall {
 }
 .course-content .section-summary .section-summary-activities .activity-count {
   color: #cccccc;
-  font-size: 13.76px;
+  font-size: 13.504px;
   margin: 3px;
   white-space: nowrap;
   display: inline-block;
@@ -3832,7 +3832,7 @@ span.editinstructions {
   margin-top: -22px;
   margin-left: 30px;
   line-height: 16px;
-  font-size: 13.76px;
+  font-size: 13.504px;
   padding: .1em .4em;
   background-color: #d9edf7;
   color: #3a87ad;
@@ -3875,8 +3875,8 @@ span.editinstructions {
 }
 .dndupload-progress-outer {
   overflow: hidden;
-  height: 25.888px;
-  margin-bottom: 25.888px;
+  height: 21px;
+  margin-bottom: 21px;
   background-color: #f7f7f7;
   background-image: -moz-linear-gradient(top, #f5f5f5, #f9f9f9);
   background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#f5f5f5), to(#f9f9f9));
@@ -4084,7 +4084,7 @@ span.editinstructions {
   background-color: #eeeeee;
 }
 .course_category_tree .category .numberofcourse {
-  font-size: 13.76px;
+  font-size: 13.504px;
 }
 .course_category_tree .controls {
   visibility: hidden;
@@ -4167,7 +4167,7 @@ span.editinstructions {
   text-align: left;
 }
 .course_category_tree .paging.paging-morelink a {
-  font-size: 13.76px;
+  font-size: 13.504px;
 }
 .dir-rtl .courses > .paging.paging-morelink,
 .dir-rtl .course_category_tree .paging.paging-morelink {
@@ -5889,7 +5889,7 @@ a.ygtvspacer:hover {
 .message-discussion-noframes #userinfo .commands,
 .message .noframesjslink,
 .message .link {
-  font-size: 13.76px;
+  font-size: 13.504px;
 }
 .message .heading {
   font-size: 1em;
@@ -6296,7 +6296,7 @@ body.path-question-type .fitem_fgroup .accesshide {
 .que .outcome,
 .que .comment {
   padding: 8px 35px 8px 14px;
-  margin-bottom: 25.888px;
+  margin-bottom: 21px;
   text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
   background-color: #fcf8e3;
   border: 1px solid #fbeed5;
@@ -6880,7 +6880,7 @@ a#hidebankcmd {
 .input-block-level {
   display: block;
   width: 100%;
-  min-height: 35.888000000000005px;
+  min-height: 31px;
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
   box-sizing: border-box;
@@ -7054,7 +7054,7 @@ body {
   margin: 0;
   font-family: Calibri, Candara, Segoe, "Segoe UI", Optima, Arial, sans-serif;
   font-size: 16px;
-  line-height: 25.888px;
+  line-height: 21px;
   color: #333333;
   background-color: #ffffff;
 }
@@ -7198,7 +7198,7 @@ a:focus {
 .row-fluid [class*="span"] {
   display: block;
   width: 100%;
-  min-height: 35.888000000000005px;
+  min-height: 31px;
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
   box-sizing: border-box;
@@ -7393,13 +7393,13 @@ a:focus {
   clear: both;
 }
 p {
-  margin: 0 0 12.944px;
+  margin: 0 0 10.5px;
 }
 .lead {
-  margin-bottom: 25.888px;
+  margin-bottom: 21px;
   font-size: 24px;
   font-weight: 200;
-  line-height: 38.832px;
+  line-height: 31.5px;
 }
 small {
   font-size: 85%;
@@ -7463,10 +7463,10 @@ h3,
 h4,
 h5,
 h6 {
-  margin: 12.944px 0;
+  margin: 10.5px 0;
   font-family: inherit;
   font-weight: normal;
-  line-height: 25.888px;
+  line-height: 21px;
   color: #7e7e7e;
   text-rendering: optimizelegibility;
 }
@@ -7483,7 +7483,7 @@ h6 small {
 h1,
 h2,
 h3 {
-  line-height: 51.776px;
+  line-height: 42px;
 }
 h1 {
   font-size: 44px;
@@ -7516,14 +7516,14 @@ h4 small {
   font-size: 16px;
 }
 .page-header {
-  padding-bottom: 11.944px;
-  margin: 25.888px 0 38.832px;
+  padding-bottom: 9.5px;
+  margin: 21px 0 31.5px;
   border-bottom: 1px solid #eeeeee;
 }
 ul,
 ol {
   padding: 0;
-  margin: 0 0 12.944px 25px;
+  margin: 0 0 10.5px 25px;
 }
 ul ul,
 ul ol,
@@ -7532,7 +7532,7 @@ ol ul {
   margin-bottom: 0;
 }
 li {
-  line-height: 25.888px;
+  line-height: 21px;
 }
 ul.unstyled,
 ol.unstyled {
@@ -7554,17 +7554,17 @@ ol.inline > li {
   padding-right: 5px;
 }
 dl {
-  margin-bottom: 25.888px;
+  margin-bottom: 21px;
 }
 dt,
 dd {
-  line-height: 25.888px;
+  line-height: 21px;
 }
 dt {
   font-weight: bold;
 }
 dd {
-  margin-left: 12.944px;
+  margin-left: 10.5px;
 }
 .dl-horizontal {
   *zoom: 1;
@@ -7591,7 +7591,7 @@ dd {
   margin-left: 200px;
 }
 hr {
-  margin: 25.888px 0;
+  margin: 21px 0;
   border: 0;
   border-top: 1px solid #eeeeee;
   border-bottom: 1px solid #ffffff;
@@ -7607,7 +7607,7 @@ abbr.initialism {
 }
 blockquote {
   padding: 0 0 0 15px;
-  margin: 0 0 25.888px;
+  margin: 0 0 21px;
   border-left: 5px solid #eeeeee;
 }
 blockquote p {
@@ -7618,7 +7618,7 @@ blockquote p {
 }
 blockquote small {
   display: block;
-  line-height: 25.888px;
+  line-height: 21px;
   color: #cccccc;
 }
 blockquote small:before {
@@ -7649,9 +7649,9 @@ blockquote:after {
 }
 address {
   display: block;
-  margin-bottom: 25.888px;
+  margin-bottom: 21px;
   font-style: normal;
-  line-height: 25.888px;
+  line-height: 21px;
 }
 code,
 pre {
@@ -7672,10 +7672,10 @@ code {
 }
 pre {
   display: block;
-  padding: 12.444px;
-  margin: 0 0 12.944px;
+  padding: 10px;
+  margin: 0 0 10.5px;
   font-size: 15px;
-  line-height: 25.888px;
+  line-height: 21px;
   word-break: break-all;
   word-wrap: break-word;
   white-space: pre;
@@ -7688,7 +7688,7 @@ pre {
   border-radius: 4px;
 }
 pre.prettyprint {
-  margin-bottom: 25.888px;
+  margin-bottom: 21px;
 }
 pre code {
   padding: 0;
@@ -7703,7 +7703,7 @@ pre code {
   overflow-y: scroll;
 }
 form {
-  margin: 0 0 25.888px;
+  margin: 0 0 21px;
 }
 fieldset {
   padding: 0;
@@ -7714,15 +7714,15 @@ legend {
   display: block;
   width: 100%;
   padding: 0;
-  margin-bottom: 25.888px;
+  margin-bottom: 21px;
   font-size: 24px;
-  line-height: 51.776px;
+  line-height: 42px;
   color: #333333;
   border: 0;
   border-bottom: 1px solid #e5e5e5;
 }
 legend small {
-  font-size: 19.416px;
+  font-size: 15.75px;
   color: #cccccc;
 }
 label,
@@ -7732,7 +7732,7 @@ select,
 textarea {
   font-size: 16px;
   font-weight: normal;
-  line-height: 25.888px;
+  line-height: 21px;
 }
 input,
 button,
@@ -7762,11 +7762,11 @@ input[type="tel"],
 input[type="color"],
 .uneditable-input {
   display: inline-block;
-  height: 25.888px;
+  height: 21px;
   padding: 4px 6px;
-  margin-bottom: 12.944px;
+  margin-bottom: 10.5px;
   font-size: 16px;
-  line-height: 25.888px;
+  line-height: 21px;
   color: #555555;
   -webkit-border-radius: 4px;
   -moz-border-radius: 4px;
@@ -7851,11 +7851,11 @@ input[type="checkbox"] {
 }
 select,
 input[type="file"] {
-  height: 35.888000000000005px;
+  height: 31px;
   /* In IE7, the height of the select element cannot be changed by height, only font-size */
   *margin-top: 4px;
   /* For IE7, add top margin to align select with labels */
-  line-height: 35.888000000000005px;
+  line-height: 31px;
 }
 select {
   width: 220px;
@@ -7906,7 +7906,7 @@ textarea::-webkit-input-placeholder {
 }
 .radio,
 .checkbox {
-  min-height: 25.888px;
+  min-height: 21px;
   padding-left: 20px;
 }
 .radio input[type="radio"],
@@ -8224,9 +8224,9 @@ select:focus:invalid:focus {
   box-shadow: 0 0 6px #f8b9b7;
 }
 .form-actions {
-  padding: 24.888px 20px 25.888px;
-  margin-top: 25.888px;
-  margin-bottom: 25.888px;
+  padding: 20px 20px 21px;
+  margin-top: 21px;
+  margin-bottom: 21px;
   background-color: #f5f5f5;
   border-top: 1px solid #e5e5e5;
   *zoom: 1;
@@ -8246,7 +8246,7 @@ select:focus:invalid:focus {
 }
 .help-block {
   display: block;
-  margin-bottom: 12.944px;
+  margin-bottom: 10.5px;
 }
 .help-inline {
   display: inline-block;
@@ -8259,7 +8259,7 @@ select:focus:invalid:focus {
 .input-append,
 .input-prepend {
   display: inline-block;
-  margin-bottom: 12.944px;
+  margin-bottom: 10.5px;
   vertical-align: middle;
   font-size: 0;
   white-space: nowrap;
@@ -8302,12 +8302,12 @@ select:focus:invalid:focus {
 .input-prepend .add-on {
   display: inline-block;
   width: auto;
-  height: 25.888px;
+  height: 21px;
   min-width: 16px;
   padding: 4px 5px;
   font-size: 16px;
   font-weight: normal;
-  line-height: 25.888px;
+  line-height: 21px;
   text-align: center;
   text-shadow: 0 1px 0 #ffffff;
   background-color: #eeeeee;
@@ -8496,14 +8496,14 @@ input.search-query {
   margin-left: 0;
 }
 .control-group {
-  margin-bottom: 12.944px;
+  margin-bottom: 10.5px;
 }
 legend + .control-group {
-  margin-top: 25.888px;
+  margin-top: 21px;
   -webkit-margin-top-collapse: separate;
 }
 .form-horizontal .control-group {
-  margin-bottom: 25.888px;
+  margin-bottom: 21px;
   *zoom: 1;
 }
 .form-horizontal .control-group:before,
@@ -8539,7 +8539,7 @@ legend + .control-group {
 .form-horizontal .uneditable-input + .help-block,
 .form-horizontal .input-prepend + .help-block,
 .form-horizontal .input-append + .help-block {
-  margin-top: 12.944px;
+  margin-top: 10.5px;
 }
 .form-horizontal .form-actions {
   padding-left: 200px;
@@ -8552,12 +8552,12 @@ table {
 }
 .table {
   width: 100%;
-  margin-bottom: 25.888px;
+  margin-bottom: 21px;
 }
 .table th,
 .table td {
   padding: 8px;
-  line-height: 25.888px;
+  line-height: 21px;
   text-align: left;
   vertical-align: top;
   border-top: 1px solid #dddddd;
@@ -9294,7 +9294,7 @@ table th[class*="span"],
 .dropdown-menu .divider {
   *width: 100%;
   height: 1px;
-  margin: 11.944px 1px;
+  margin: 9.5px 1px;
   *margin: -5px 0 5px;
   overflow: hidden;
   background-color: #e5e5e5;
@@ -9305,7 +9305,7 @@ table th[class*="span"],
   padding: 3px 20px;
   clear: both;
   font-weight: normal;
-  line-height: 25.888px;
+  line-height: 21px;
   color: #333333;
   white-space: nowrap;
 }
@@ -9477,7 +9477,7 @@ table th[class*="span"],
   float: right;
   font-size: 20px;
   font-weight: bold;
-  line-height: 25.888px;
+  line-height: 21px;
   color: #000000;
   text-shadow: 0 1px 0 #ffffff;
   opacity: 0.2;
@@ -9506,7 +9506,7 @@ button.close {
   padding: 4px 12px;
   margin-bottom: 0;
   font-size: 16px;
-  line-height: 25.888px;
+  line-height: 21px;
   text-align: center;
   vertical-align: middle;
   cursor: pointer;
@@ -9588,7 +9588,7 @@ button.close {
 }
 .btn-large {
   padding: 11px 19px;
-  font-size: 22.256px;
+  font-size: 18.016px;
   -webkit-border-radius: 6px;
   -moz-border-radius: 6px;
   border-radius: 6px;
@@ -9599,7 +9599,7 @@ button.close {
 }
 .btn-small {
   padding: 2px 10px;
-  font-size: 13.76px;
+  font-size: 13.504px;
   -webkit-border-radius: 3px;
   -moz-border-radius: 3px;
   border-radius: 3px;
@@ -9614,7 +9614,7 @@ button.close {
 }
 .btn-mini {
   padding: 0 6px;
-  font-size: 9.888px;
+  font-size: 12px;
   -webkit-border-radius: 3px;
   -moz-border-radius: 3px;
   border-radius: 3px;
@@ -9902,8 +9902,8 @@ input[type="submit"].btn.btn-mini {
 }
 .btn-toolbar {
   font-size: 0;
-  margin-top: 12.944px;
-  margin-bottom: 12.944px;
+  margin-top: 10.5px;
+  margin-bottom: 10.5px;
 }
 .btn-toolbar > .btn + .btn,
 .btn-toolbar > .btn-group + .btn,
@@ -9925,13 +9925,13 @@ input[type="submit"].btn.btn-mini {
   font-size: 16px;
 }
 .btn-group > .btn-mini {
-  font-size: 9.888px;
+  font-size: 12px;
 }
 .btn-group > .btn-small {
-  font-size: 13.76px;
+  font-size: 13.504px;
 }
 .btn-group > .btn-large {
-  font-size: 22.256px;
+  font-size: 18.016px;
 }
 .btn-group > .btn:first-child {
   margin-left: 0;
@@ -10099,7 +10099,7 @@ input[type="submit"].btn.btn-mini {
 }
 .alert {
   padding: 8px 35px 8px 14px;
-  margin-bottom: 25.888px;
+  margin-bottom: 21px;
   text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
   background-color: #fcf8e3;
   border: 1px solid #fbeed5;
@@ -10118,7 +10118,7 @@ input[type="submit"].btn.btn-mini {
   position: relative;
   top: -2px;
   right: -21px;
-  line-height: 25.888px;
+  line-height: 21px;
 }
 .alert-success {
   background-color: #dff0d8;
@@ -10159,7 +10159,7 @@ input[type="submit"].btn.btn-mini {
 }
 .nav {
   margin-left: 0;
-  margin-bottom: 25.888px;
+  margin-bottom: 21px;
   list-style: none;
 }
 .nav > li > a {
@@ -10181,7 +10181,7 @@ input[type="submit"].btn.btn-mini {
   padding: 3px 15px;
   font-size: 11px;
   font-weight: bold;
-  line-height: 25.888px;
+  line-height: 21px;
   color: #cccccc;
   text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
   text-transform: uppercase;
@@ -10217,7 +10217,7 @@ input[type="submit"].btn.btn-mini {
 .nav-list .divider {
   *width: 100%;
   height: 1px;
-  margin: 11.944px 1px;
+  margin: 9.5px 1px;
   *margin: -5px 0 5px;
   overflow: hidden;
   background-color: #e5e5e5;
@@ -10259,7 +10259,7 @@ input[type="submit"].btn.btn-mini {
 .nav-tabs > li > a {
   padding-top: 8px;
   padding-bottom: 8px;
-  line-height: 25.888px;
+  line-height: 21px;
   border: 1px solid transparent;
   -webkit-border-radius: 4px 4px 0 0;
   -moz-border-radius: 4px 4px 0 0;
@@ -10505,7 +10505,7 @@ input[type="submit"].btn.btn-mini {
 }
 .navbar {
   overflow: visible;
-  margin-bottom: 25.888px;
+  margin-bottom: 21px;
   *position: relative;
   *z-index: 2;
 }
@@ -10549,7 +10549,7 @@ input[type="submit"].btn.btn-mini {
 .navbar .brand {
   float: left;
   display: block;
-  padding: 7.055999999999999px 20px 7.055999999999999px;
+  padding: 9.5px 20px 9.5px;
   margin-left: -20px;
   font-size: 20px;
   font-weight: 200;
@@ -10715,7 +10715,7 @@ input[type="submit"].btn.btn-mini {
 }
 .navbar .nav > li > a {
   float: none;
-  padding: 7.055999999999999px 15px 7.055999999999999px;
+  padding: 9.5px 15px 9.5px;
   color: #333333;
   text-decoration: none;
   text-shadow: 0 1px 0 #ffffff;
@@ -11024,7 +11024,7 @@ input[type="submit"].btn.btn-mini {
 }
 .breadcrumb {
   padding: 0;
-  margin: 0 0 25.888px;
+  margin: 0 0 21px;
   list-style: none;
 }
 .breadcrumb > li {
@@ -11045,7 +11045,7 @@ input[type="submit"].btn.btn-mini {
   color: #666666;
 }
 .pagination {
-  margin: 25.888px 0;
+  margin: 21px 0;
 }
 .pagination ul {
   display: inline-block;
@@ -11068,7 +11068,7 @@ input[type="submit"].btn.btn-mini {
 .pagination ul > li > span {
   float: left;
   padding: 4px 12px;
-  line-height: 25.888px;
+  line-height: 21px;
   text-decoration: none;
   background-color: #ffffff;
   border: 1px solid #dddddd;
@@ -11121,7 +11121,7 @@ input[type="submit"].btn.btn-mini {
 .pagination-large ul > li > a,
 .pagination-large ul > li > span {
   padding: 11px 19px;
-  font-size: 22.256px;
+  font-size: 18.016px;
 }
 .pagination-large ul > li:first-child > a,
 .pagination-large ul > li:first-child > span {
@@ -11166,15 +11166,15 @@ input[type="submit"].btn.btn-mini {
 .pagination-small ul > li > a,
 .pagination-small ul > li > span {
   padding: 2px 10px;
-  font-size: 13.76px;
+  font-size: 13.504px;
 }
 .pagination-mini ul > li > a,
 .pagination-mini ul > li > span {
   padding: 0 6px;
-  font-size: 9.888px;
+  font-size: 12px;
 }
 .pager {
-  margin: 25.888px 0;
+  margin: 21px 0;
   list-style: none;
   text-align: center;
   *zoom: 1;
@@ -11545,13 +11545,13 @@ input[type="submit"].btn.btn-mini {
 }
 .thumbnails > li {
   float: left;
-  margin-bottom: 25.888px;
+  margin-bottom: 21px;
   margin-left: 20px;
 }
 .thumbnail {
   display: block;
   padding: 4px;
-  line-height: 25.888px;
+  line-height: 21px;
   border: 1px solid #ddd;
   -webkit-border-radius: 4px;
   -moz-border-radius: 4px;
@@ -11738,8 +11738,8 @@ a.badge:focus {
 }
 .progress {
   overflow: hidden;
-  height: 25.888px;
-  margin-bottom: 25.888px;
+  height: 21px;
+  margin-bottom: 21px;
   background-color: #f7f7f7;
   background-image: -moz-linear-gradient(top, #f5f5f5, #f9f9f9);
   background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#f5f5f5), to(#f9f9f9));
@@ -11887,7 +11887,7 @@ a.badge:focus {
   background-image: linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
 }
 .accordion {
-  margin-bottom: 25.888px;
+  margin-bottom: 21px;
 }
 .accordion-group {
   margin-bottom: 2px;
@@ -11912,7 +11912,7 @@ a.badge:focus {
 }
 .carousel {
   position: relative;
-  margin-bottom: 25.888px;
+  margin-bottom: 21px;
   line-height: 1;
 }
 .carousel-inner {
@@ -12028,7 +12028,7 @@ a.badge:focus {
 .carousel-caption h4,
 .carousel-caption p {
   color: #ffffff;
-  line-height: 25.888px;
+  line-height: 21px;
 }
 .carousel-caption h4 {
   margin: 0 0 5px;
@@ -12041,7 +12041,7 @@ a.badge:focus {
   margin-bottom: 30px;
   font-size: 18px;
   font-weight: 200;
-  line-height: 38.832px;
+  line-height: 31.5px;
   color: #ffffff;
   background-color: #00aef0;
   -webkit-border-radius: 6px;
@@ -12056,7 +12056,7 @@ a.badge:focus {
   letter-spacing: -1px;
 }
 .hero-unit li {
-  line-height: 38.832px;
+  line-height: 31.5px;
 }
 .pull-right {
   float: right;
@@ -12293,9 +12293,8 @@ body {
 }
 .block .header .title h2 {
   color: #7e7e7e;
-  font-size: 22.256px;
   font-weight: normal;
-  line-height: 25.888px;
+  line-height: 21px;
   margin: 0;
 }
 .block .header .toggle-display .iconsmall {
@@ -12399,8 +12398,8 @@ body {
 }
 #page-site-index .block_html.block .title h2 {
   color: #7e7e7e;
-  font-size: 36px;
-  line-height: 58.248000000000005px;
+  font-size: 28.32px;
+  line-height: 42.480000000000004px;
 }
 .block_course_overview .content {
   margin: 0 0;
@@ -12538,7 +12537,7 @@ input#id_externalurl {
 }
 .form-item,
 .mform .fitem {
-  margin-bottom: 25.888px;
+  margin-bottom: 21px;
   *zoom: 1;
   margin-bottom: 10px;
 }
@@ -12571,7 +12570,7 @@ input#id_externalurl {
   color: #cccccc;
 }
 .form-label .form-shortname {
-  font-size: 9.888px;
+  font-size: 12px;
   display: block;
 }
 .dir-rtl .form-label .form-shortname {
@@ -12599,7 +12598,7 @@ input#id_externalurl {
 .felement.fstatic {
   color: #595959;
   display: block;
-  margin-bottom: 12.944px;
+  margin-bottom: 10.5px;
   padding-top: 5px;
 }
 .form-item .form-description {
@@ -12612,9 +12611,9 @@ table#form td.submit,
 .fp-content-center form + div,
 div.backup-section + form,
 #fgroup_id_buttonar {
-  padding: 24.888px 20px 25.888px;
-  margin-top: 25.888px;
-  margin-bottom: 25.888px;
+  padding: 20px 20px 21px;
+  margin-top: 21px;
+  margin-bottom: 21px;
   background-color: #f5f5f5;
   border-top: 1px solid #e5e5e5;
   *zoom: 1;
@@ -12658,9 +12657,9 @@ div.backup-section + form:after,
 .dir-rtl .fp-content-center form + div,
 .dir-rtl div.backup-section + form,
 .dir-rtl #fgroup_id_buttonar {
-  padding: 24.888px 20px 25.888px;
-  margin-top: 25.888px;
-  margin-bottom: 25.888px;
+  padding: 20px 20px 21px;
+  margin-top: 21px;
+  margin-bottom: 21px;
   background-color: #f5f5f5;
   border-top: 1px solid #e5e5e5;
   *zoom: 1;
@@ -12705,9 +12704,9 @@ div.backup-section + form:after,
   display: block;
   width: 100%;
   padding: 0;
-  margin-bottom: 25.888px;
+  margin-bottom: 21px;
   font-size: 24px;
-  line-height: 51.776px;
+  line-height: 42px;
   color: #333333;
   border: 0;
   border-bottom: 1px solid #e5e5e5;
@@ -13157,7 +13156,7 @@ div#dock {
 .yui-skin-sam .yui-layout.path-mod-chat-gui_ajax #chat-messages .chat-event.course-theme {
   text-align: center;
   margin: 10px 0;
-  font-size: 13.76px;
+  font-size: 13.504px;
   color: #777;
 }
 .yui-skin-sam .yui-layout.path-mod-chat-gui_ajax #chat-messages .chat-message.course-theme {
@@ -13276,9 +13275,9 @@ div#dock {
   display: block;
   width: 100%;
   padding: 0;
-  margin-bottom: 25.888px;
+  margin-bottom: 21px;
   font-size: 24px;
-  line-height: 51.776px;
+  line-height: 42px;
   color: #333333;
   border: 0;
   border-bottom: 1px solid #e5e5e5;
@@ -13336,7 +13335,7 @@ div#dock {
 }
 .backup-restore .detail-pair-value > .sub-detail {
   display: block;
-  font-size: 13.76px;
+  font-size: 13.504px;
   color: #cccccc;
 }
 .backup-restore > .singlebutton {
@@ -13454,14 +13453,14 @@ div#dock {
 table.flexible,
 .generaltable {
   width: 100%;
-  margin-bottom: 25.888px;
+  margin-bottom: 21px;
 }
 table.flexible th,
 .generaltable th,
 table.flexible td,
 .generaltable td {
   padding: 8px;
-  line-height: 25.888px;
+  line-height: 21px;
   text-align: left;
   vertical-align: top;
   border-top: 1px solid #dddddd;
@@ -13503,7 +13502,7 @@ table.flexible .table,
   *zoom: 1;
   padding: 5px 15px;
   margin-bottom: 0;
-  line-height: 25.888px;
+  line-height: 21px;
   text-align: center;
   vertical-align: middle;
   cursor: pointer;
@@ -13578,7 +13577,7 @@ input[type="reset"] {
   *zoom: 1;
   padding: 5px 15px;
   margin-bottom: 0;
-  line-height: 25.888px;
+  line-height: 21px;
   text-align: center;
   vertical-align: middle;
   cursor: pointer;
@@ -13943,7 +13942,7 @@ input[type="reset"][disabled] {
   .row-fluid [class*="span"] {
     display: block;
     width: 100%;
-    min-height: 35.888000000000005px;
+    min-height: 31px;
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
     box-sizing: border-box;
@@ -14292,7 +14291,7 @@ input[type="reset"][disabled] {
   .row-fluid [class*="span"] {
     display: block;
     width: 100%;
-    min-height: 35.888000000000005px;
+    min-height: 31px;
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
     box-sizing: border-box;
@@ -14586,7 +14585,7 @@ input[type="reset"][disabled] {
   .uneditable-input {
     display: block;
     width: 100%;
-    min-height: 35.888000000000005px;
+    min-height: 31px;
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
     box-sizing: border-box;
@@ -14622,7 +14621,7 @@ input[type="reset"][disabled] {
   }
   .page-header h1 small {
     display: block;
-    line-height: 25.888px;
+    line-height: 21px;
   }
   input[type="checkbox"],
   input[type="radio"] {
@@ -14676,10 +14675,10 @@ input[type="reset"][disabled] {
     position: static;
   }
   .navbar-fixed-top {
-    margin-bottom: 25.888px;
+    margin-bottom: 21px;
   }
   .navbar-fixed-bottom {
-    margin-top: 25.888px;
+    margin-top: 21px;
   }
   .navbar-fixed-top .navbar-inner,
   .navbar-fixed-bottom .navbar-inner {
@@ -14699,7 +14698,7 @@ input[type="reset"][disabled] {
   }
   .nav-collapse .nav {
     float: none;
-    margin: 0 0 12.944px;
+    margin: 0 0 10.5px;
   }
   .nav-collapse .nav > li {
     float: none;
@@ -14788,8 +14787,8 @@ input[type="reset"][disabled] {
   .nav-collapse .navbar-form,
   .nav-collapse .navbar-search {
     float: none;
-    padding: 12.944px 15px;
-    margin: 12.944px 0;
+    padding: 10.5px 15px;
+    margin: 10.5px 0;
     border-top: 1px solid #f2f2f2;
     border-bottom: 1px solid #f2f2f2;
     -webkit-box-shadow: inset 0 1px 0 rgba(255,255,255,.1), 0 1px 0 rgba(255,255,255,.1);
@@ -15496,8 +15495,8 @@ table#permissions tbody tr:hover > th {
 }
 div[id^="bar_pbar_"] {
   overflow: hidden !important;
-  height: 25.888px !important;
-  margin-bottom: 25.888px !important;
+  height: 21px !important;
+  margin-bottom: 21px !important;
   background-color: #f7f7f7 !important;
   background-image: -moz-linear-gradient(top, #f5f5f5, #f9f9f9) !important;
   background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#f5f5f5), to(#f9f9f9)) !important;
@@ -15651,7 +15650,7 @@ td.submit input .caret {
   *zoom: 1;
   padding: 5px 15px;
   margin-bottom: 0;
-  line-height: 25.888px;
+  line-height: 21px;
   text-align: center;
   vertical-align: middle;
   cursor: pointer;
