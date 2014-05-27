@@ -110,6 +110,21 @@ class format_netcourse_openlast {
                 } else {
                     $url = new moodle_url('#');
                 }
+            } else if (!$this->modinfo->cms[$openedcmid]->uservisible) {
+                // if the module is not visible for the user
+                // get the first module in section 1
+                if (!isset($this->modinfo->sections[1]) ||
+                    !isset($this->modinfo->sections[1][0])
+                ) {
+                    return false;
+                }
+
+                $altcmid = $this->modinfo->sections[1][0];
+
+                $url = $this->modinfo->cms[$altcmid]->url;
+                if (empty($url)) {
+                    $url = new moodle_url('#');
+                }
             }
 
             return $url;
