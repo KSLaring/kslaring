@@ -1,0 +1,13 @@
+{
+  "moodle-format_classroom-classroom_navigation": {
+    "requires": [
+        "base",
+        "io-base",
+        "node",
+        "event-synthetic",
+        "event-delegate",
+        "json-parse",
+        "transition"
+    ]
+  }
+}

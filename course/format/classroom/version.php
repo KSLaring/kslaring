@@ -15,21 +15,17 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Classroom format - Version
+ * Version details
  *
- * Description
- *
- * @package         course
- * @subpackage      format/classroom
- * @copyright       2014        eFaktor {@link http://www.efaktor.no}
- *
- * @updateDate      14/05/2014
- * @author          eFaktor
- *
+ * @package    format
+ * @subpackage classroom
+ * @copyright  2014 eFaktor
+ * @author     Urs Hunkler {@link urs.hunkler@unodo.de}
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2014051401;        // The current plugin version (Date: YYYYMMDDXX).
-$plugin->requires  = 2013110500;        // Requires this Moodle version.
-$plugin->component = 'format_classroom';    // Full name of the plugin (used for diagnostics).
+$plugin->version = 2014052700; // The current plugin version (Date: YYYYMMDDXX).
+$plugin->requires = 2013110500; // Requires this Moodle version.
+$plugin->component = 'format_classroom'; // Full name of the plugin (used for diagnostics).
