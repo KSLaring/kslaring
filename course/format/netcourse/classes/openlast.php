@@ -211,8 +211,7 @@ class format_netcourse_openlast {
             array('userid' => $this->user->id, 'courseid' => $this->course->id));
 
         // Get the records from the database
-        if ($result = $DB->get_records_sql($sql,
-            $params)) {
+        if ($result = $DB->get_records_sql($sql, $params)) {
             $text = '';
             $rowno = $limitno - 1;
 

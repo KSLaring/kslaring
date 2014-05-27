@@ -472,14 +472,14 @@ class format_netcourse extends format_base {
                  * Add an extra fields
                  */
                 'prerequisities' => array(
-                    'label'                 => get_string('home_prerequisities','local_course_page'),
+                    'label' => get_string('home_prerequisities', 'local_course_page'),
                     'element_type' => 'textarea',
                     'element_attributes' => array(
                         0 => 'rows="5" style="width:95%;"'
                     )
                 ),
                 'producedby' => array(
-                    'label'                 => get_string('home_producedby','local_course_page'),
+                    'label' => get_string('home_producedby', 'local_course_page'),
                     'element_type' => 'text',
                     'element_attributes' => array(
                         0 => 'style="width:95%;"'
@@ -500,7 +500,7 @@ class format_netcourse extends format_base {
                     )
                 ),
                 'manager' => array(
-                    'label'                 => get_string('home_manager','local_course_page'),
+                    'label' => get_string('home_manager', 'local_course_page'),
                     'element_type' => 'select',
                     'element_attributes' => array($lst_manager)
                 )
