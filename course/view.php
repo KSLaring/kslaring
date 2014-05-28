@@ -70,13 +70,31 @@
      * @author          eFaktor     (fbv)
      *
      * Description
+     * Edit On/Off --> Back to the correct page
+     */
+    if (strpos($return,'home_page.php')) {
+        $return = '';
+    }else if (($course->format == 'netcourse') || ($course->format == 'classroom') || ($course->format == 'whitepaper')) {
+        $return = '';
+    }//if_return
+
+
+    /**
+     * @updateDate      21/05/2014
+     * @author          eFaktor     (fbv)
+     *
+     * Description
      * Check if the course are connected with Course Home Page
      */
     if (!has_capability('moodle/course:update', $context)) {
-        if (($course->homepage) && ($course->homevisible) && (!$start_from_home)) {
+        $format_options = course_get_format($course)->get_format_options();
+
+        if (array_key_exists('homepage',$format_options) && ($format_options['homepage']) &&
+            array_key_exists('homevisible',$format_options) && ($format_options['homevisible']) && (!$start_from_home)) {
             $url_home_page = new moodle_url('/local/course_page/home_page.php',array('id' => $course->id));
             redirect($url_home_page);
-        }
+        }//if_home_page_visible
+
     }//if_course_creator...
 
     require_login($course);
@@ -149,19 +167,6 @@
     if (course_format_uses_sections($course->format)) {
         $PAGE->set_other_editing_capability('moodle/course:sectionvisibility');
         $PAGE->set_other_editing_capability('moodle/course:movesections');
-    }
-
-    /**
-     * @updateDate  21/05/2014
-     * @author      eFaktor     (fbv)
-     *
-     * Description
-     * Edit On/Off --> Back to the correct page
-     */
-    if (strpos($return,'home_page.php')) {
-        $return = '';
-    }else if (($course->format == 'netcourse') || ($course->format == 'classroom') || ($course->format == 'whitepaper')) {
-        $return = '';
     }
 
     // Preload course format renderer before output starts.

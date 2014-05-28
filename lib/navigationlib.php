@@ -3657,7 +3657,8 @@ class settings_navigation extends navigation_node {
          * Description
          * Add link to edit Course home page
          */
-        if ($course->homepage) {
+        $format_options = course_get_format($course)->get_format_options();
+        if (array_key_exists('homepage',$format_options) && ($format_options['homepage'])) {
             if (has_capability('moodle/course:update', $coursecontext)) {
                 $home_url = new moodle_url('/local/course_page/home_page.php',array('id' => $course->id));
                 $home_url->param('sesskey', sesskey());
@@ -3672,6 +3673,7 @@ class settings_navigation extends navigation_node {
                 $coursenode->add($str_edit, $home_url, self::TYPE_SETTING,null, 'homepage', new pix_icon('i/settings', ''));
             }//if_capability
         }//if_homepage
+
 
         if (has_capability('moodle/course:update', $coursecontext)) {
             // Add the course settings link

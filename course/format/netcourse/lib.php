@@ -129,6 +129,7 @@ class format_netcourse extends format_base {
             }
         }
 
+        $url->param('start',1);
         return $url;
     }
 
@@ -421,6 +422,30 @@ class format_netcourse extends format_base {
                  * Description
                  * Add an extra fields
                  */
+                'homepage'          => array(
+                    'label'         => get_string('checkbox_home','local_course_page'),
+                    'element_type'  => 'checkbox',
+                ),
+                'homevisible'       => array(
+                    'label'         => get_string('home_visible','local_course_page'),
+                    'default'       => 1,
+                    'element_type'  =>  'select',
+                ),
+                'homesummary'           => array(
+                    'label'             => 'homesummary',
+                    'element_type'      => 'hidden',
+                    'default'           => '',
+                ),
+                'pagegraphics'          => array(
+                    'label'             => 'pagegraphics',
+                    'element_type'      => 'hidden',
+                    'default'           => 0,
+                ),
+                'pagevideo'             => array(
+                    'label'             => 'pagevideo',
+                    'element_type'      => 'hidden',
+                    'default'           => 0,
+                ),
                 'prerequisities' => array(
                     'type' => PARAM_TEXT,
                 ),
@@ -544,8 +569,64 @@ class format_netcourse extends format_base {
      *
      * @return array array of references to the added form elements.
      */
+    /**
+     * @param           MoodleQuickForm $mform
+     * @param           bool            $forsection
+     * @return          array
+     *
+     * @updateDate      27/05/2014
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Don't call create_edit_form      --> parent
+     * Different functionality          --> Course Home Page
+     */
     public function create_edit_form_elements(&$mform, $forsection = false) {
-        $elements = parent::create_edit_form_elements($mform, $forsection);
+        //$elements = parent::create_edit_form_elements($mform, $forsection);
+
+        $elements = array();
+        if ($forsection) {
+            $options = $this->section_format_options(true);
+        } else {
+            $options = $this->course_format_options(true);
+        }
+        foreach ($options as $optionname => $option) {
+            switch ($optionname) {
+                case 'homepage':
+                case 'homevisible':
+                case 'homesummary':
+                case 'pagegraphics':
+                case 'pagevideo':
+                    course_page::addCourseHomePage_Section($mform,$optionname);
+
+                    break;
+                default:
+                    if (!isset($option['element_type'])) {
+                        $option['element_type'] = 'text';
+                    }
+                    $args = array($option['element_type'], $optionname, $option['label']);
+                    if (!empty($option['element_attributes'])) {
+                        $args = array_merge($args, $option['element_attributes']);
+                    }
+                    $elements[] = call_user_func_array(array($mform, 'addElement'), $args);
+                    if (isset($option['help'])) {
+                        $helpcomponent = 'format_'. $this->get_format();
+                        if (isset($option['help_component'])) {
+                            $helpcomponent = $option['help_component'];
+                        }
+                        $mform->addHelpButton($optionname, $option['help'], $helpcomponent);
+                    }
+                    if (isset($option['type'])) {
+                        $mform->setType($optionname, $option['type']);
+                    }
+
+                    break;
+            }//swicth
+
+            if (is_null($mform->getElementValue($optionname)) && isset($option['default'])) {
+                $mform->setDefault($optionname, $option['default']);
+            }
+        }//for
 
         // Increase the number of sections combo box values if the user has increased
         // the number of sections using the icon on the course page beyond course
@@ -582,31 +663,82 @@ class format_netcourse extends format_base {
      *
      * @return bool whether there were any changes to the options values
      */
+    /**
+     * @param       array|stdClass $data
+     * @param       null $oldcourse
+     * @return      bool
+     *
+     * @updateDate  27/05/2014
+     * @author      eFaktor     (fbv)
+     *
+     * Description
+     * Update the course format options.
+     */
     public function update_course_format_options($data, $oldcourse = null) {
-        global $DB;
-        if ($oldcourse !== null) {
-            $data = (array)$data;
-            $oldcourse = (array)$oldcourse;
-            $options = $this->course_format_options();
-            foreach ($options as $key => $unused) {
-                if (!array_key_exists($key, $data)) {
-                    if (array_key_exists($key, $oldcourse)) {
-                        $data[$key] = $oldcourse[$key];
-                    } else if ($key === 'numsections') {
-                        // If previous format does not have the field 'numsections'
-                        // and $data['numsections'] is not set,
-                        // we fill it with the maximum section number from the DB
-                        $maxsection = $DB->get_field_sql('SELECT max(section) from
+        global $DB,$delete;
+
+        $data = (array)$data;
+        $oldcourse = (array)$oldcourse;
+        $options = $this->course_format_options();
+        foreach ($options as $key => $unused) {
+            switch ($key) {
+                case 'homepage':
+                    if (isset($data['homepage']) && $data['homepage']) {
+                        $data[$key] = 1;
+                    }else {
+                        $data[$key] = 0;
+                    }//if_homepage
+
+                    break;
+                case 'homesummary':
+                    $data[$key] = course_page::getHomeSummaryEditor($data['homesummary_editor']);
+
+                    break;
+                case 'pagegraphics':
+                    if (isset($data['deletepicture']) && ($data['deletepicture'])) {
+                        $delete = true;
+                    }else {
+                        $delete = false;
+                    }//if_delete
+                    $graphic_id = course_page::getHomeGraphicsVideo($data['pagegraphics'],'pagegraphics',$data['pagegraphics_filemanager'],$delete);
+                    if ($graphic_id) {
+                        $data[$key] = $graphic_id;
+                    }//if_graphic_id
+
+                    break;
+                case 'pagevideo':
+                    if (isset($data['deletevideo']) && ($data['deletevideo'])) {
+                        $delete = true;
+                    }else {
+                        $delete = false;
+                    }//if_delete
+                    $video_id = course_page::getHomeGraphicsVideo($data['pagevideo'],'pagevideo',$data['pagevideo_filemanager'],$delete);
+                    if ($video_id) {
+                        $data[$key] = $video_id;
+                    }//if_graphic_id
+
+                    break;
+                default:
+                    break;
+            }//switch_key
+
+            if (!array_key_exists($key, $data)) {
+                if (array_key_exists($key, $oldcourse)) {
+                    $data[$key] = $oldcourse[$key];
+                } else if ($key === 'numsections') {
+                    // If previous format does not have the field 'numsections'
+                    // and $data['numsections'] is not set,
+                    // we fill it with the maximum section number from the DB
+                    $maxsection = $DB->get_field_sql('SELECT max(section) from
                             {course_sections} WHERE course = ?', array($this->courseid));
-                        if ($maxsection) {
-                            // If there are no sections, or just default 0-section,
-                            // 'numsections' will be set to default
-                            $data['numsections'] = $maxsection;
-                        }
-                    }
-                }
-            }
-        }
+                    if ($maxsection) {
+                        // If there are no sections, or just default 0-section,
+                        // 'numsections' will be set to default
+                        $data['numsections'] = $maxsection;
+                    }//if_maxsection
+                }//if_array_key
+            }//if_array_key
+        }//for_options
 
         return $this->update_format_options($data);
     }

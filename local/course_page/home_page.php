@@ -17,7 +17,6 @@ $course_id          = required_param('id',PARAM_INT);
 $edit               = optional_param('edit', -1, PARAM_BOOL);
 $show               = optional_param('show', 0, PARAM_INT);
 $course             = get_course($course_id);
-$category           = $DB->get_record('course_categories',array('id' => $course->category));
 $context            = CONTEXT_COURSE::instance($course_id);
 $url                = new moodle_url('/local/course_page/home_page.php',array('id' => $course_id));
 $str_edit_settings  = get_string("editcoursesettings");
@@ -32,8 +31,6 @@ if (isloggedin()) {
 $PAGE->set_url($url);
 $PAGE->set_context($context);
 $PAGE->set_pagelayout('course');
-
-$course_page = new course_page($course,$category);
 
 if (!isset($USER->editing)) {
     $USER->editing = 0;
@@ -70,7 +67,7 @@ if ($PAGE->user_allowed_editing()) {
 if ($show) {
     require_capability('moodle/course:update', $context);
 
-    $form = new home_page_form(null,array('course_page' => $course_page));
+    $form = new home_page_form(null,array('course' => $COURSE));
     if ($form->is_cancelled()) {
         $return = clone($PAGE->url);
         $return->param('sesskey', sesskey());
@@ -79,8 +76,7 @@ if ($show) {
         redirect($return);
     }else if ($data = $form->get_data()) {
         /* Update Course    */
-        $course_page->updateCourseHomePage($course_id,$data);
-        update_course($data,$course_page->get_edit_options());
+        course_page::UpdateCourseHomePage($data,$COURSE);
 
         $return = clone($PAGE->url);
         $return->param('sesskey', sesskey());
@@ -93,8 +89,9 @@ if ($show) {
     $form->display();
     echo $OUTPUT->footer();
 }else {
+    $format_options = course_page::getFormatFields($course->id);
     $renderer = $PAGE->get_renderer('local_course_page');
-    echo $renderer->display_home_page($course);
+    echo $renderer->display_home_page($course,$format_options);
     echo $renderer->footer();
 }//if_Edit
 

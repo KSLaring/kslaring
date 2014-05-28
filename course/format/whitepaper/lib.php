@@ -53,12 +53,12 @@ class format_whitepaper extends format_base {
             $sectionnum = $section->section;
         }
         if ($sectionnum == 1) {
-            return new moodle_url('/course/view.php', array('id' => $this->courseid, 'section' => 1));
+            return new moodle_url('/course/view.php', array('id' => $this->courseid, 'section' => 1,'start' => 1));
         }
         if (!empty($options['navigation']) && $section !== null) {
             return null;
         }
-        return new moodle_url('/course/view.php', array('id' => $this->courseid));
+        return new moodle_url('/course/view.php', array('id' => $this->courseid,'start' => 1));
     }
 
     /**
@@ -152,6 +152,30 @@ class format_whitepaper extends format_base {
                     'default' => $config->activitytype,
                     'type' => PARAM_TEXT,
                 ),
+                'homepage'          => array(
+                    'label'         => get_string('checkbox_home','local_course_page'),
+                    'element_type'  => 'checkbox',
+                ),
+                'homevisible'       => array(
+                    'label'         => get_string('home_visible','local_course_page'),
+                    'default'       => 1,
+                    'element_type'  =>  'checkbox',
+                ),
+                'homesummary'           => array(
+                    'label'             => 'homesummary',
+                    'element_type'      => 'hidden',
+                    'default'           => '',
+                ),
+                'pagegraphics'          => array(
+                    'label'             => 'pagegraphics',
+                    'element_type'      => 'hidden',
+                    'default'           => 0,
+                ),
+                'pagevideo'             => array(
+                    'label'             => 'pagevideo',
+                    'element_type'      => 'hidden',
+                    'default'           => 0,
+                ),
                 'author'        => array(
                     'type'      => PARAM_TEXT,
                 ),
@@ -202,18 +226,136 @@ class format_whitepaper extends format_base {
      * @param bool $forsection 'true' if this is a section edit form, 'false' if this is course edit form
      * @return array array of references to the added form elements
      */
+    /**
+     * @param           MoodleQuickForm $mform
+     * @param           bool            $forsection
+     * @return          array
+     *
+     * @updateDate      27/05/2014
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Don't call create_edit_form      --> parent
+     * Different functionality          --> Course Home Page
+     */
     public function create_edit_form_elements(&$mform, $forsection = false) {
         global $PAGE;
-        $elements = parent::create_edit_form_elements($mform, $forsection);
+        //$elements = parent::create_edit_form_elements($mform, $forsection);
+        $elements = array();
+        if ($forsection) {
+            $options = $this->section_format_options(true);
+        } else {
+            $options = $this->course_format_options(true);
+        }
+        foreach ($options as $optionname => $option) {
+            switch ($optionname) {
+                case 'homepage':
+                case 'homevisible':
+                case 'homesummary':
+                case 'pagegraphics':
+                case 'pagevideo':
+                    course_page::addCourseHomePage_Section($mform,$optionname);
+
+                    break;
+                default:
+                    if (!isset($option['element_type'])) {
+                        $option['element_type'] = 'text';
+                    }
+                    $args = array($option['element_type'], $optionname, $option['label']);
+                    if (!empty($option['element_attributes'])) {
+                        $args = array_merge($args, $option['element_attributes']);
+                    }
+                    $elements[] = call_user_func_array(array($mform, 'addElement'), $args);
+                    if (isset($option['help'])) {
+                        $helpcomponent = 'format_'. $this->get_format();
+                        if (isset($option['help_component'])) {
+                            $helpcomponent = $option['help_component'];
+                        }
+                        $mform->addHelpButton($optionname, $option['help'], $helpcomponent);
+                    }
+                    if (isset($option['type'])) {
+                        $mform->setType($optionname, $option['type']);
+                    }
+
+                    break;
+            }//swicth
+
+            if (is_null($mform->getElementValue($optionname)) && isset($option['default'])) {
+                $mform->setDefault($optionname, $option['default']);
+            }
+        }//for
+
         if (!$forsection && ($course = $PAGE->course) && !empty($course->format) &&
-                $course->format !== 'site' && $course->format !== 'whitepaper') {
+            $course->format !== 'site' && $course->format !== 'whitepaper') {
             // This is the existing course in other format, display a warning.
             $element = $mform->addElement('static', '', '',
-                    html_writer::tag('span', get_string('warningchangeformat', 'format_whitepaper'),
-                            array('class' => 'error')));
+                html_writer::tag('span', get_string('warningchangeformat', 'format_whitepaper'),
+                    array('class' => 'error')));
             array_unshift($elements, $element);
         }
         return $elements;
+    }
+
+    /**
+     * @param       array|stdClass $data
+     * @param       null $oldcourse
+     * @return      bool
+     *
+     * @updateDate  27/05/2014
+     * @author      eFaktor     (fbv)
+     *
+     * Description
+     * Update the course format options.
+     */
+    public function update_course_format_options($data, $oldcourse = null) {
+        global $delete;
+
+        $data = (array)$data;
+        $options = $this->course_format_options();
+        foreach ($options as $key => $unused) {
+            switch ($key) {
+                case 'homepage':
+                    if (isset($data['homepage']) && $data['homepage']) {
+                        $data[$key] = 1;
+                    }else {
+                        $data[$key] = 0;
+                    }//if_homepage
+
+                    break;
+                case 'homesummary':
+                    $data[$key] = course_page::getHomeSummaryEditor($data['homesummary_editor']);
+
+                    break;
+                case 'pagegraphics':
+                    if (isset($data['deletepicture']) && ($data['deletepicture'])) {
+                        $delete = true;
+                    }else {
+                        $delete = false;
+                    }//if_delete
+                    $graphic_id = course_page::getHomeGraphicsVideo($data['pagegraphics'],'pagegraphics',$data['pagegraphics_filemanager'],$delete);
+                    if ($graphic_id) {
+                        $data[$key] = $graphic_id;
+                    }//if_graphic_id
+
+                    break;
+                case 'pagevideo':
+                    if (isset($data['deletevideo']) && ($data['deletevideo'])) {
+                        $delete = true;
+                    }else {
+                        $delete = false;
+                    }//if_delete
+                    $video_id = course_page::getHomeGraphicsVideo($data['pagevideo'],'pagevideo',$data['pagevideo_filemanager'],$delete);
+                    if ($video_id) {
+                        $data[$key] = $video_id;
+                    }//if_graphic_id
+
+                    break;
+                default:
+                    break;
+            }//switch_key
+        }//for_options
+
+        return $this->update_format_options($data);
     }
 
     /**
