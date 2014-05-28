@@ -386,7 +386,7 @@ TREE.prototype = {
         });
         list.transition({
             duration: 0.3,
-            height: (to_height + 5) + 'px',
+            height: (to_height + to_height * 0.05) + 'px',
             opacity: 1.0
         });
     },
