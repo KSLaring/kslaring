@@ -25,14 +25,6 @@
 require_once('../config.php');
 require_once('lib.php');
 require_once('edit_form.php');
-/**
- * @updateDate  08/05/2014
- * @author      eFaktor     (fbv)
- *
- * Description
- * Add the library for the Course Home Page
- */
-require_once($CFG->dirroot . '/local/course_page/locallib.php');
 
 $id = optional_param('id', 0, PARAM_INT); // Course id.
 $categoryid = optional_param('category', 0, PARAM_INT); // Course category - can be changed in edit form.
@@ -114,15 +106,7 @@ if (!empty($course)) {
 }
 
 // First create the form.
-/**
- * @updateDate  08/05/2014
- * @author      eFaktor     (fbv)
- *
- * Description
- * Create the class to manage the information of Course Home Page
- */
-$course_page = new course_page($course,$category);
-$editform = new course_edit_form(NULL, array('course'=>$course, 'category'=>$category, 'editoroptions'=>$editoroptions, 'returnto'=>$returnto,'course_page' => $course_page));
+$editform = new course_edit_form(NULL, array('course'=>$course, 'category'=>$category, 'editoroptions'=>$editoroptions, 'returnto'=>$returnto));
 if ($editform->is_cancelled()) {
         switch ($returnto) {
             case 'category':
@@ -153,15 +137,6 @@ if ($editform->is_cancelled()) {
         // In creating the course.
         $course = create_course($data, $editoroptions);
 
-        /**
-         * @updateDate  08/05/2014
-         * @author      eFaktor     (fbV)
-         *
-         * Description
-         * Update the Course Home Page.
-         */
-        $course_page->updateCourseHomePage($course->id,$data);
-
         // Get the context of the newly created course.
         $context = context_course::instance($course->id, MUST_EXIST);
 
@@ -184,15 +159,6 @@ if ($editform->is_cancelled()) {
     } else {
         // Save any changes to the files used in the editor.
         update_course($data, $editoroptions);
-
-        /**
-         * @updateDate  08/05/2014
-         * @author      eFaktor     (fbV)
-         *
-         * Description
-         * Update the Course Home Page.
-         */
-        $course_page->updateCourseHomePage($course->id,$data);
     }
 
     // Redirect user to newly created/updated course.

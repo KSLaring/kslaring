@@ -15,31 +15,6 @@
 require_once($CFG->libdir.'/formslib.php');
 
 class course_page  {
-    protected $course_page;
-    protected $context;
-    protected $edit_options;
-    protected $course;
-    protected $file_options;
-    protected $img_draft;
-    /**
-     *
-     * Constructor
-     */
-    public function __construct($course,$category) {
-        global $CFG;
-
-        if (isset($course->id)) {
-            $this->context = CONTEXT_COURSE::instance($course->id);
-        }else {
-            $this->context = CONTEXT_COURSECAT::instance($category->id);
-        }//if_empty_course
-
-        $this->course       = $course;
-        $this->edit_options = array('maxfiles' => EDITOR_UNLIMITED_FILES, 'maxbytes'=>$CFG->maxbytes, 'trusttext'=>false, 'noclean'=>true, 'context' => $this->context);
-        $this->file_options = array('maxfiles' => 1, 'maxbytes'=>$CFG->maxbytes, 'accepted_types' => 'web_image', 'subdirs' => 0, 'context' => $this->context);
-        $this->img_draft    = 0;
-    }//constructor
-
     /* GET FUNCTIONS    */
 
     /**
@@ -55,152 +30,7 @@ class course_page  {
         return $this->course;
     }//get_course
 
-    /**
-     * @return          array
-     *
-     * @creationDate    20/05/2014
-     * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Return the edit_options
-     */
-    public function get_edit_options() {
-        return $this->edit_options;
-    }//get_edit_options
-
     /* PUBLIC FUNCTIONS */
-
-    /**
-     * @param           $form
-     * @return          bool
-     * @creationDate    05/05/2014
-     * @author          eFaktor     (fbV)
-     *
-     * Description
-     * Add the 'Home Page Section' to the form
-     */
-    public function add_CourseHomePage_Section(&$form) {
-        $form->addElement('header', 'homepagehdr',get_string('home_page','local_course_page'));
-
-        /* Visible  */
-        $choices = array();
-        $choices['0'] = get_string('hide');
-        $choices['1'] = get_string('show');
-        $form->addElement('select', 'homevisible', get_string('home_visible','local_course_page'), $choices);
-        $form->setDefault('homevisible', '1');
-
-        /* Short Description */
-        $this->course->homesummaryformat = FORMAT_HTML;
-        if (!isset($this->course->homesummary) ) {
-            $this->course->homesummary = null;
-        }
-        $this->course = file_prepare_standard_editor($this->course, 'homesummary', $this->edit_options,$this->context, 'course', 'homesummary',0);
-        $form->addElement('editor','homesummary_editor',get_string('home_desc','local_course_page'),null,$this->edit_options);
-        $form->setType('homesummary_editor',PARAM_RAW);
-
-
-        /* Page Graphics    */
-        $form->addElement('static', 'current_graphic', get_string('current_graphic','local_course_page'));
-        $form->addElement('checkbox', 'deletepicture', get_string('delete'));
-        $form->setDefault('deletepicture', 0);
-        if (isset($this->course->homegraphics) && ($this->course->homegraphics)) {
-            $form->disabledIf('deletepicture',$this->course->homegraphics,0);
-        }
-
-        $this->course = file_prepare_standard_filemanager($this->course, 'pagegraphics',$this->file_options,$this->context, 'course','pagegraphics',0);
-        if (isset($this->course->homegraphics) && ($this->course->homegraphics)) {
-            /* URL IMAGE */
-            $img = '<img src="'  . $this->getUrlPageGraphicsVideo($this->course->homegraphics) . '" width="75" height="75" />';
-
-            $form->setDefault('current_graphic',$img);
-        }//if_pagegraphics
-        $form->addElement('filemanager', 'pagegraphics_filemanager', get_string('home_graphics','local_course_page'), null, $this->file_options);
-
-        /* Page Video       */
-        $form->addElement('static', 'current_video', get_string('home_current_video','local_course_page'));
-        $form->addElement('checkbox', 'deletevideo', get_string('home_delete_video','local_course_page'));
-        $form->setDefault('deletevideo', 0);
-        if (isset($this->course->homevideo) && ($this->course->homevideo)) {
-            $form->disabledIf('deletevideo',$this->course->homevideo,0);
-        }
-        $this->course = file_prepare_standard_filemanager($this->course, 'pagevideo',$this->file_options,$this->context, 'course','pagevideo',0);
-        $form->addElement('filemanager', 'pagevideo_filemanager', get_string('home_video','local_course_page'));
-        if (isset($this->course->homevideo) && ($this->course->homevideo)) {
-            $fs = get_file_storage();
-            try {
-                $file = $fs->get_file_by_id($this->course->homevideo);
-                $form->setDefault('current_video',$file->get_filename());
-            }catch(Exception $ex) {
-                return true;
-            }
-        }///if_homevideo
-    }//add_CourseHomePage_Section
-
-    /**
-     * @param           $course_id
-     * @param           $data
-     * @throws          Exception
-     *
-     * @creationDate    05/05/2014
-     * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Update Home Page information
-     */
-    public function updateCourseHomePage($course_id,$data) {
-        global $DB;
-
-        try {
-            /* Save Hompage Check           */
-            if (isset($data->homepage) && $data->homepage) {
-                $DB->set_field('course','homepage',1);
-            }else {
-                $DB->set_field('course','homepage',0);
-            }//home_page
-
-            /* Save Home page description   */
-            $data = file_postupdate_standard_editor($data, 'homesummary', $this->edit_options, $this->context, 'course', 'homesummary', 0);
-            $DB->set_field('course', 'homesummary', $data->homesummary, array('id'=>$course_id));
-
-            /* Deleted Previous Page Graphics   *//**
-             * @updateDate  2014-05-19
-             * @author      eFaktor     (uh)
-             *
-             * Description
-             * The "deletpicture" is not set when the checkbox is unchecked - check isset
-             */
-            $fs = get_file_storage();
-            if (isset($data->deletepicture) && $data->deletepicture) {
-                $file = $fs->get_file_by_id($this->course->homegraphics);
-
-                $DB->delete_records('files',array('itemid' => $file->get_itemid()));
-            }///deletepicture
-
-            /* Save Image   */
-            $data = file_postupdate_standard_filemanager($data, 'pagegraphics', $this->file_options, $this->context, 'course', 'pagegraphics', $data->pagegraphics_filemanager);
-            if ($files = $fs->get_area_files($this->context->id, 'course', 'pagegraphics', $data->pagegraphics_filemanager, 'id DESC', false)) {
-                /* Remove Previous  */
-                $file = reset($files);
-                $DB->set_field('course', 'homegraphics', $file->get_id(), array('id'=>$course_id));
-            }//if_file
-
-            /* Delete Previous Video    */
-            if (isset($data->deletevideo) && $data->deletevideo) {
-                $file = $fs->get_file_by_id($this->course->homevideo);
-
-                $DB->delete_records('files',array('itemid' => $file->get_itemid()));
-            }///deletepicture
-            /* Upload New Video */
-            $data = file_postupdate_standard_filemanager($data, 'pagevideo', $this->file_options, $this->context, 'course', 'pagevideo', $data->pagevideo_filemanager);
-            if ($files = $fs->get_area_files($this->context->id, 'course', 'pagevideo', $data->pagevideo_filemanager, 'id DESC', false)) {
-                /* Remove Previous  */
-                $file = reset($files);
-                $DB->set_field('course', 'homevideo', $file->get_id(), array('id'=>$course_id));
-            }//if_file
-        }catch (Exception $ex) {
-            throw $ex;
-        }//try_catch
-    }//updateCourseHomePage
 
     /**
      * @param           $itemid
@@ -497,10 +327,11 @@ class course_page  {
             if ($rdo) {
                 foreach ($rdo as $instance) {
                     $field = new stdClass();
+                    $field->id      = $instance->id;
                     $field->name    = $instance->name;
                     $field->value   = $instance->value;
 
-                    $format_fields[$instance->id] = $field;
+                    $format_fields[$instance->name] = $field;
                 }//for_rdo
 
                 return $format_fields;
@@ -514,8 +345,256 @@ class course_page  {
     }//getFormatFields
 
     /**
-     * @param           $format_options
+     * @return          array
+     *
+     * @creationDate    20/05/2014
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Return the edit_options
+     */
+    public static function get_edit_options() {
+        global $CFG,$COURSE;
+
+        $context        = CONTEXT_COURSE::instance($COURSE->id);
+        $edit_options   = array('maxfiles' => EDITOR_UNLIMITED_FILES, 'maxbytes'=>$CFG->maxbytes, 'trusttext'=>false, 'noclean'=>true, 'context' => $context);
+
+        return array($edit_options,$context);
+    }//get_edit_options
+
+
+    /**
+     * @return          array
+     *
+     * @creationDate    20/05/2014
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Return the file_options
+     */
+    public static function get_file_options() {
+        global $CFG,$COURSE;
+
+        $context        = CONTEXT_COURSE::instance($COURSE->id);
+        $file_options   = array('maxfiles' => 1, 'maxbytes'=>$CFG->maxbytes, 'subdirs' => 0, 'context' => $context);
+
+        return array($file_options,$context);
+    }//get_file_options
+
+    /**
+     * @static
+     * @param           $edit_options
+     * @param           $context
+     * @return          stdClass
+     *
+     * @creationDate    27/05/2014
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Prepare the Standard Video
+     */
+    public static function prepareStandardHomeSummaryEditor($edit_options,$context) {
+        /* Variables  */
+        global $COURSE;
+        $editor         = new stdClass();
+
+        /* Prepare Standard Editor */
+        $editor->homesummary       = '';
+        $editor->homesummaryformat  = FORMAT_HTML;
+
+        $format_options = course_get_format($COURSE->id)->get_format_options();
+        if (array_key_exists('homesummary',$format_options)) {
+            $editor->homesummary = $format_options['homesummary'];
+        }//if_array_exists
+
+
+        $editor = file_prepare_standard_editor($editor, 'homesummary', $edit_options,$context, 'course', 'homesummary',0);
+
+        return $editor;
+    }//prepareStandardHomeSummaryEditor
+
+    /**
+     * @static
+     * @param           $file_options
+     * @param           $context
+     * @param           $field
+     * @return          stdClass
+     *
+     * @creationDate    27/05/2014
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Prepare the File Manager
+     */
+    public static function prepareFileManagerHomeGraphicsVideo($file_options,$context,$field) {
+        /* Variables */
+        global $COURSE;
+        $file_editor = new stdClass();
+
+        /* Prepare Standard Editor */
+        $format_options = course_get_format($COURSE->id)->get_format_options();
+        $file_editor->$field  = 0;
+        if (array_key_exists($field,$format_options)) {
+            $file_editor->$field    = $format_options[$field];
+        }//if_array_Exists
+
+        $file_editor = file_prepare_standard_filemanager($file_editor, $field,$file_options,$context, 'course',$field,0);
+
+        return $file_editor;
+    }//prepareFileManagerHomeGraphics
+
+    /**
+     * @static
+     * @param           $homesummary_editor
+     * @return          mixed
+     *
+     * @creationDate    27/05/2014
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Get the content of 'Home Summary Editor'
+     */
+    public static function getHomeSummaryEditor($homesummary_editor) {
+        /* Get Home Page Description */
+        list($edit_options,$context) = self::get_edit_options();
+        $editor = new stdClass();
+        $editor->homesummary_editor = $homesummary_editor;
+        $editor->homesummary = '';
+
+        $editor = file_postupdate_standard_editor($editor, 'homesummary', $edit_options, $context, 'course', 'homesummary', 0);
+
+        return $editor->homesummary;
+    }//postupdateHomeSummaryEditor
+
+    /**
+     * @static
+     * @param           $file_id
+     * @param           $field
+     * @param           $file_manager
+     * @param           $delete
+     * @return          int
+     *
+     * @creationDate    27/05/2014
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Get the reference (id) of the Video/Graphics File.
+     */
+    public static function getHomeGraphicsVideo($file_id,$field,$file_manager,$delete) {
+        /* Variables    */
+        global $DB,$COURSE;
+        $Id_GraphicVideo = 0;
+        $field_manager = $field . '_filemanager';
+
+        /* First Remove Previous    */
+        $fs = get_file_storage();
+        if ($delete) {
+            $file = $fs->get_file_by_id($file_id);
+
+            $DB->delete_records('files',array('itemid' => $file->get_itemid()));
+        }///deletepicture
+
+        /* Get Home Graphics    */
+        list($file_options,$context) = self::get_file_options();
+        $file_options['accepted_types'] = array('image','web_image','video','web_video');
+
+        $file_graphicVideo = new stdClass();
+        $file_graphicVideo->$field_manager = $file_manager;
+
+        $file_graphicVideo = file_postupdate_standard_filemanager($file_graphicVideo, $field, $file_options, $context, 'course', $field, $file_graphicVideo->$field_manager);
+        if ($files = $fs->get_area_files($context->id, 'course', $field, $file_graphicVideo->$field_manager, 'id DESC', false)) {
+            /* Remove Previous  */
+            $file = reset($files);
+
+            $Id_GraphicVideo = $file->get_id();
+        }//if_file
+
+        return $Id_GraphicVideo;
+    }//getHomeGraphics
+
+    /**
+     * @static
+     * @param           $data
+     * @param           $course
+     * @throws          Exception
+     *
+     * @creationDate    27/05/2014
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Update all the information connected with the Course Home Page
+     */
+    public static function UpdateCourseHomePage($data,$course) {
+        global $DB;
+
+        try {
+            /* Update Course Details    */
+            /* Short Description    */
+            list($editor_options,$context) = self::get_edit_options();
+            $data = file_postupdate_standard_editor($data, 'summary', $editor_options,$context, 'course', 'summary', 0);
+            $DB->set_field('course','summary',$data->summary,array('id' => $course->id));
+            /* ID Number            */
+            $DB->set_field('course','idnumber',$data->idnumber,array('id' => $course->id));
+            /* Publihed Data        */
+            $DB->set_field('course','startdate',$data->startdate,array('id' => $course->id));
+
+            /* Update Format Options   */
+            $format_fields = self::getFormatFields($course->id);
+            foreach ($format_fields as $option) {
+                $field = $option->name;
+                switch ($field) {
+                    case 'homesummary':
+                        $option->value = self::getHomeSummaryEditor($data->homesummary_editor);
+                        $DB->update_record('course_format_options',$option);
+
+                        break;
+                    case 'pagegraphics':
+                        if (isset($data->deletepicture) && ($data->deletepicture)) {
+                            $delete = true;
+                        }else {
+                            $delete = false;
+                        }//if_delete
+                        /* Get Id Graphic file  */
+                        $graphic_id = course_page::getHomeGraphicsVideo($data->$field,$field,$data->pagegraphics_filemanager,$delete);
+                        if ($graphic_id) {
+                            $option->value = $graphic_id;
+                            $DB->update_record('course_format_options',$option);
+                        }//if_graphic_id
+
+                        break;
+                    case 'pagevideo':
+                        if (isset($data->deletevideo) && ($data->deletevideo)) {
+                            $delete = true;
+                        }else {
+                            $delete = false;
+                        }//if_delete
+                        /* Get Id Video File */
+                        $video_id = course_page::getHomeGraphicsVideo($data->$field,$field,$data->pagevideo_filemanager,$delete);
+                        if ($video_id) {
+                            $option->value = $video_id;
+                            $DB->update_record('course_format_options',$option);
+                        }//if_video_id
+
+                        break;
+
+                    default:
+                        if (isset($data->$field)) {
+                            $option->value = $data->$field;
+                            $DB->update_record('course_format_options',$option);
+                        }//if_data_field
+
+                        break;
+                }//switch
+            }//for_option
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//UpdateCourseHomePage
+
+    /**
      * @param           $form
+     * @param           $option
+     * @param           $value
      * @throws          Exception
      *
      * @creationDate    15/05/2014
@@ -524,60 +603,170 @@ class course_page  {
      * Description
      * Print the options/fields connected with the course format. Only for the Course Home Page
      */
-    public function printFormatOptions($format_options,&$form) {
+    public static function printFormatOptions(&$form,$option,$value) {
         try {
-            /* Header   */
-            $form->addElement('header', 'courseformathdr', get_string('type_format', 'plugin'));
-            /* Add the fields   */
-            foreach ($format_options as $option) {
-                switch ($option->name) {
+                switch ($option) {
                     case 'prerequisities':
                         $form->addElement('textarea','prerequisities',get_string('home_prerequisities','local_course_page'),'rows="5" style="width:95%;"');
-                        $form->setDefault('prerequisities',$option->value);
+                        $form->setDefault('prerequisities',$value);
                         break;
                     case 'producedby':
                         $form->addElement('text','producedby',get_string('home_producedby','local_course_page'),'style="width:95%;"');
-                        $form->setDefault('producedby',$option->value);
+                        $form->setDefault('producedby',$value);
                         $form->setType('producedby',PARAM_TEXT);
                         break;
                     case 'location':
                         $form->addElement('text','location',get_string('home_location','local_course_page'),'style="width:95%;"');
-                        $form->setDefault('location',$option->value);
+                        $form->setDefault('location',$value);
                         $form->setType('location',PARAM_TEXT);
                         break;
                     case 'length':
                         $form->addElement('text','length',get_string('home_length','local_course_page'),'style="width:95%;"');
-                        $form->setDefault('length',$option->value);
+                        $form->setDefault('length',$value);
                         $form->setType('length',PARAM_TEXT);
                         break;
                     case 'effort':
                         $form->addElement('text','effort',get_string('home_effort','local_course_page'),'style="width:95%;"');
-                        $form->setDefault('effort',$option->value);
+                        $form->setDefault('effort',$value);
                         $form->setType('effort',PARAM_TEXT);
                         break;
                     case 'manager':
-                        $lst_manager = $this->getCourseManager();
+                        $lst_manager = self::getCourseManager();
                         $form->addElement('select','manager',get_string('home_manager','local_course_page'),$lst_manager);
-                        $form->setDefault('manager',$option->value);
+                        $form->setDefault('manager',$value);
                         break;
                     case 'author':
                         $form->addElement('text','author',get_string('home_author','local_course_page'),'style="width:95%;"');
-                        $form->setDefault('author',$option->value);
+                        $form->setDefault('author',$value);
                         $form->setType('author',PARAM_TEXT);
                         break;
                     case 'licence':
                         $form->addElement('text','licence',get_string('home_licence','local_course_page'),'style="width:95%;"');
-                        $form->setDefault('licence',$option->value);
+                        $form->setDefault('licence',$value);
                         $form->setType('licence',PARAM_TEXT);
                         break;
                     default:
                         break;
                 }//switch
-            }//for_each_option
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
     }//printFormatOptions
+
+    /**
+     * @static
+     * @param           $form
+     * @param           $field
+     *
+     * @creationDate    27/05/2014
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Add the elements to the 'Course Home Page' form
+     */
+    public static function addCourseHomePage_Section(&$form,$field) {
+        /* Variables    */
+        global $COURSE;
+        $visible        = array();
+
+        switch ($field) {
+            case 'homepage':
+                $home_page = $form->createElement('checkbox','homepage',get_string('checkbox_home','local_course_page'));
+                $form->insertElementBefore($home_page,'descriptionhdr');
+                $format_options = course_get_format($COURSE->id)->get_format_options();
+                if (!array_key_exists('homepage',$format_options)) {
+                    $form->setDefault('homepage',1);
+                }//if_exists
+
+                break;
+            case 'homevisible':
+                $visible['0'] = get_string('hide');
+                $visible['1'] = get_string('show');
+                $home_visible = $form->createElement('select', 'homevisible', get_string('home_visible','local_course_page'), $visible);
+                $form->insertElementBefore($home_visible,'descriptionhdr');
+
+                break;
+            case 'homesummary':
+                $home_page_header = $form->createElement('header', 'homepagehdr',get_string('home_page','local_course_page'));
+                $form->insertElementBefore($home_page_header,'courseformathdr');
+
+                $form->addElement('hidden','homesummary');
+                $form->setType('homesummary',PARAM_RAW);
+
+                /* Get Editor   */
+                list($edit_options,$context) = self::get_edit_options();
+                $editor = self::prepareStandardHomeSummaryEditor($edit_options,$context);
+
+                $home_summay = $form->createElement('editor','homesummary_editor',get_string('home_desc','local_course_page'),null,$edit_options);
+                $form->insertElementBefore($home_summay,'courseformathdr');
+                $form->setType('homesummary_editor',PARAM_RAW);
+                $form->setDefault('homesummary_editor',$editor->homesummary_editor);
+
+                break;
+            case 'pagegraphics':
+                $current_graphic = $form->createElement('static', 'current_graphic', get_string('current_graphic','local_course_page'));
+                $form->insertElementBefore($current_graphic,'courseformathdr');
+
+                $delete_picture = $form->createElement('checkbox', 'deletepicture', get_string('delete'));
+                $form->insertElementBefore($delete_picture,'courseformathdr');
+                $form->setDefault('deletepicture',0);
+
+                /* Get FileManager   */
+                list($file_options,$context) = self::get_file_options();
+                $file_editor['accepted_types'] = array('image','web_image');
+                $file_editor = self::prepareFileManagerHomeGraphicsVideo($file_options,$context,'pagegraphics');
+
+                if ($file_editor->pagegraphics) {
+                    /* URL IMAGE */
+                    $img = '<img src="'  . self::getUrlPageGraphicsVideo($file_editor->pagegraphics) . '" width="75" height="75" />';
+
+                    $form->setDefault('current_graphic',$img);
+                }//if_pagegraphics
+
+                $page_graphics = $form->createElement('filemanager', 'pagegraphics_filemanager', get_string('home_graphics','local_course_page'), null, $file_options);
+                $form->insertElementBefore($page_graphics,'courseformathdr');
+
+                $form->addElement('hidden','pagegraphics');
+                $form->setType('pagegraphics',PARAM_RAW);
+                $format_options = course_get_format($COURSE->id)->get_format_options();
+                if (array_key_exists('homegraphics',$format_options)) {
+                    $form->setDefault('homegraphics',$format_options['homegraphics']);
+                }//if_exists
+
+                break;
+            case 'pagevideo':
+                $current_video = $form->createElement('static', 'current_video', get_string('home_current_video','local_course_page'));
+                $form->insertElementBefore($current_video,'courseformathdr');
+
+                $delete_video  = $form->createElement('checkbox', 'deletevideo', get_string('home_delete_video','local_course_page'));
+                $form->insertElementBefore($delete_video,'courseformathdr');
+                $form->setDefault('deletevideo', 0);
+
+                /* Get FileManager   */
+                list($file_options,$context) = self::get_file_options();
+                $file_editor['accepted_types'] = array('video','web_video');
+                $file_editor = self::prepareFileManagerHomeGraphicsVideo($file_options,$context,'pagevideo');
+                if ($file_editor->pagevideo) {
+                    $fs = get_file_storage();
+                    $file = $fs->get_file_by_id($file_editor->pagevideo);
+                    $form->setDefault('current_video',$file->get_filename());
+                }//if_video
+
+                $page_video = $form->createElement('filemanager', 'pagevideo_filemanager', get_string('home_video','local_course_page'), null, $file_options);
+                $form->insertElementBefore($page_video,'courseformathdr');
+
+                $form->addElement('hidden','pagevideo');
+                $form->setType('pagevideo',PARAM_RAW);
+                $format_options = course_get_format($COURSE->id)->get_format_options();
+                if (array_key_exists('pagevideo',$format_options)) {
+                    $form->setDefault('pagevideo',$format_options['pagevideo']);
+                }//if_exists
+
+                break;
+            default:
+                break;
+        }//switch_field
+    }//addCourseHomePage_Section
 
     /* PRIVATE          */
 }//course_page
@@ -586,35 +775,51 @@ class home_page_form extends moodleform {
     function definition() {
         $form    = $this->_form;
 
-        $course_page    = $this->_customdata['course_page'];
-        $course         = $course_page->get_course();
-        $editor_options = $course_page->get_edit_options();
+        $course   = $this->_customdata['course'];
 
-        $context = CONTEXT_COURSE::instance($course->id);
-        $course = file_prepare_standard_editor($course, 'summary', $editor_options,$context, 'course', 'summary', 0);
+        list($editor_options,$context) = course_page::get_edit_options();
+
+        // Form definition with new course defaults.
+        $form->addElement('header','general', get_string('general', 'form'));
+
+        $form->addElement('text','idnumber', get_string('idnumbercourse'),'maxlength="100"  size="10"');
+        $form->addHelpButton('idnumber', 'idnumbercourse');
+        $form->setType('idnumber', PARAM_RAW);
+        if (!empty($course->id) and !has_capability('moodle/course:changeidnumber', $context)) {
+            $form->hardFreeze('idnumber');
+            $form->setConstants('idnumber', $course->idnumber);
+        }//idnumber
+        $form->setDefault('idnumber',$course->idnumber);
+
+        $form->addElement('date_selector', 'startdate', get_string('startdate'));
+        $form->addHelpButton('startdate', 'startdate');
+        if ($course->startdate) {
+            $form->setDefault('startdate', $course->startdate);
+        }else {
+            $form->setDefault('startdate', time() + 3600 * 24);
+        }//if_startdate
+
 
         // Description.
         $form->addElement('header', 'descriptionhdr', get_string('description'));
         $form->setExpanded('descriptionhdr');
-
+        $course = file_prepare_standard_editor($course, 'summary', $editor_options,$context, 'course', 'summary', 0);
         $form->addElement('editor','summary_editor', get_string('coursesummary'), null, $editor_options);
         $form->addHelpButton('summary_editor', 'coursesummary');
         $form->setType('summary_editor', PARAM_RAW);
+        $form->setDefault('summary_editor',$course->summary_editor);
         $form->addRule('summary_editor', null, 'required');
 
-        $form->addElement('checkbox','homepage',get_string('checkbox_home','local_course_page'));
-        if ($course->homepage) {
-            $form->setDefault('homepage',1);
-        }//if_home_page
-
-        $course_page->add_CourseHomePage_Section($form);
-
+        // Course format.
+        $form->addElement('header', 'courseformathdr', get_string('type_format', 'plugin'));
+        $form->setExpanded('courseformathdr');
 
         /* Course Format Section    */
-        $format_options = $course_page->getFormatFields($course->id);
-        if ($format_options) {
-            $course_page->printFormatOptions($format_options,$form);
-        }//if_format_options
+        $format_options = course_get_format($course)->get_format_options();
+        foreach ($format_options as $name=>$option) {
+            course_page::addCourseHomePage_Section($form,$name);
+            course_page::printFormatOptions($form,$name,$option);
+        }
 
         $form->addElement('hidden','id');
         $form->setType('id',PARAM_INT);
@@ -624,17 +829,10 @@ class home_page_form extends moodleform {
         $form->setType('show',PARAM_INT);
         $form->setDefault('show',1);
 
+        $form->setExpanded('homepagehdr');
+
         $this->add_action_buttons(true);
-        $this->set_data($course);
+
+        $this->set_data($format_options);
     }//definition
-
-    function validation($data, $files) {
-        $errors = parent::validation($data, $files);
-
-        if (empty($data['homesummary_editor']['text'])) {
-            $errors['homesummary_editor'] = get_string('required');
-        }//home_summary
-
-        return $errors;
-    }
 }//home_page_form
