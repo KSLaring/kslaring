@@ -388,10 +388,15 @@ class format_whitepaper extends format_base {
      * @param moodle_page $page instance of page calling set_course
      */
     public function page_set_course(moodle_page $page) {
-        global $PAGE;
+        global $PAGE, $USER;
         $page->add_body_class('format-'. $this->get_format());
         if ($PAGE == $page && $page->has_set_url() &&
                 $page->url->compare(new moodle_url('/course/view.php'), URL_MATCH_BASE)) {
+            // If user is editing return to show the course
+            if (!empty($USER->editing) && $USER->editing) {
+                return;
+            }
+
             $edit = optional_param('edit', -1, PARAM_BOOL);
             if (($edit == 0 || $edit == 1) && confirm_sesskey()) {
                 // This is a request to turn editing mode on or off, do not redirect here, /course/view.php will do redirection.

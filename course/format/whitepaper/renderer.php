@@ -39,9 +39,11 @@ class format_whitepaper_renderer extends plugin_renderer_base {
      * Displays the activities list in cases when course view page is not
      * redirected to the activity page.
      *
-     * @param stdClass $course record from table course
-     * @param bool $orphaned if false displays the main activity (if present)
-     *     if true displays all other activities
+     * @param stdClass $course   record from table course
+     * @param bool     $orphaned if false displays the main activity (if present)
+     *                           if true displays all other activities
+     *
+     * @return string
      */
     public function display($course, $orphaned) {
         $courserenderer = $this->page->get_renderer('core', 'course');
@@ -60,6 +62,7 @@ class format_whitepaper_renderer extends plugin_renderer_base {
                 $output .= $courserenderer->course_section_add_cm_control($course, 0, 0);
             }
         }
+
         return $output;
     }
 }
