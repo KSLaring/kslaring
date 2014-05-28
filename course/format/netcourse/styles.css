@@ -29,6 +29,19 @@
     margin-top: 0;
 }
 
+#instcnav .block_tree .tree_item.branch {
+    padding-right: .2em;
+}
+
+#instcnav .block_tree .tree_item.leaf {
+    margin: .3em 0 0 0;
+}
+
+#instcnav .block_tree .tree_item.leaf a {
+    display: block;
+    padding: 0 0 .4em;
+}
+
 /* Make the actual opened activity bold */
 #instcnav .list .active_tree_node a {
     font-weight: bold;
