@@ -41,6 +41,6 @@ $string['rate_avg']                 = 'Snitt';
 $string['rate_users']               = 'Deltakervurderinger';
 $string['home_register']            = 'Meld deg på';
 $string['home_start']               = 'Start';
-$string['home_visible']             = 'Hjemmesiden er publisert';
+$string['home_visible']             = 'Publiseringsstatus';
 $string['home_course_id']           = 'Kurs ID';
 $string['block_staff']              = 'Kurslærere';
