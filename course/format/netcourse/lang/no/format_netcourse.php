@@ -35,4 +35,4 @@ $string['showfromothers'] = 'Vis emnet';
 $string['forums'] = 'Forum';
 $string['progress'] = 'Min progresjon';
 $string['lessonlastpageon'] = 'Vennligs velg neste aktivitet fra navigasjonsmenyen til venstre.';
-$string['lessonlastpageoff'] = 'Du har fullført denne leksjonen. Vennligst velg neste aktivitet i navigasjonsmenyen til venstre.;
+$string['lessonlastpageoff'] = 'Du har fullført denne leksjonen. Vennligst velg neste aktivitet i navigasjonsmenyen til venstre.';
