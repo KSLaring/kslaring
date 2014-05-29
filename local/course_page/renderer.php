@@ -61,7 +61,6 @@ class local_course_page_renderer extends plugin_renderer_base {
             /* Add Short Description  */
             $block_one .= $this->addSummary_HomePage($course,$format_options['pagegraphics']);
             /* Add Home Description / Video */
-
             $block_one .= $this->addDescription_HomePage($format_options['homesummary'],$format_options['pagevideo']);
         $block_one .= html_writer::end_tag('div');//home_page_block_one
 
@@ -106,13 +105,15 @@ class local_course_page_renderer extends plugin_renderer_base {
         $disabled = '';
 
         $out = '';
-        $out .=  '<p>' . $course->summary . '</p>';
+
         /* Graphics */
         if ($home_graphics->value) {
             $url_img = course_page::getUrlPageGraphicsVideo($home_graphics->value);
             $img = '<img src="'  . $url_img . '" class="graphic"></br>';
             $out .= $img;
         }//if_graphics
+
+        $out .=  '<p>' . trim($course->summary) . '</p>';
 
         /* The course Visible   */
         if (!$course->visible) {
@@ -149,7 +150,6 @@ class local_course_page_renderer extends plugin_renderer_base {
         $out = '';
 
         $out .=  '<h3>' . get_string('home_about','local_course_page') . '</h3>';
-        $out .= '<hr class="line">';
 
         $out .=  '<p>' . $home_summary->value . '</p>';
         /* Graphics */
@@ -221,15 +221,13 @@ class local_course_page_renderer extends plugin_renderer_base {
             $out .= '<p>';
                 $out .= '<label class="label_home">' . get_string('home_course_id','local_course_page') . ':</label>';
                 $out .= '<label class="extra_home">' . $course->idnumber . '</label>';
-            $out .= '</p>';
-            $out .= '<p>';
                 $out .= '<label class="label_home">' . get_string('home_published','local_course_page') . ':</label>';
                 $out .= '<label class="extra_home">' . userdate($course->startdate,'%d.%m.%Y', 99, false) . '</label>';
-            $out .= '</p>';
 
-            foreach ($format_options as $option) {
-                $out .= $this->addExtraOption($option,$manager);
-            }//format_options
+                foreach ($format_options as $option) {
+                    $out .= $this->addExtraOption($option,$manager);
+                }//format_options
+            $out .= '</p>';
 
             switch ($course->format) {
                 case 'netcourse':
@@ -266,7 +264,6 @@ class local_course_page_renderer extends plugin_renderer_base {
         /* Variables    */
         $out      = '';
 
-        $out .= '<p>';
         switch ($option->name) {
             case 'prerequisities':
                 $out .= '<label class="label_home">' . get_string('home_prerequisities','local_course_page') . ':</label>';
@@ -302,7 +299,6 @@ class local_course_page_renderer extends plugin_renderer_base {
             default:
                 break;
         }//switch
-        $out .= '</p>';
 
         return $out;
     }//addExtraOption
@@ -325,21 +321,21 @@ class local_course_page_renderer extends plugin_renderer_base {
 
         $out .= html_writer::start_tag('div',array('class' => 'manager'));
             $out .= '<p>';
-                $out .= '<label class="label_manager"><h2>' . get_string('home_manager','local_course_page') . '</h2></label>';
+                $out .= '<label class="label_manager">' . get_string('block_staff','local_course_page') . '</label>';
                 /* Main Manager */
                 if ($manager) {
                     $user = get_complete_user_data('id',$manager);
                     $url_user = new moodle_url('/user/profile.php',array('id' => $user->id));
 
                     $out .= $OUTPUT->user_picture($user, array('size'=>150));
-                    $out .= '<label class="label_home"><h2>' . get_string('home_coordinater','local_course_page') . '</h2></label>';
+                    $out .= '<label class="label_coordinator">' . get_string('home_coordinater','local_course_page') . '</label>';
                     $out .= '<a href="' . $url_user . '">' . fullname($user) . '</a>';
                 }//if_manager
             $out .= '</p>';
 
             /* Teachers */
             $out .= '<p>';
-                $out .= '<label class="label_home"><h2>' . get_string('home_teachers','local_course_page') . '</h2></label>';
+                $out .= '<label class="label_teacher">' . get_string('home_teachers','local_course_page') . '</label>';
 
                 $lst_teachers = course_page::getCoursesTeachers($course_id,$manager);
                 if ($lst_teachers) {
