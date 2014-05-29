@@ -44,3 +44,5 @@ $string['home_start']               = 'Start';
 $string['home_visible']             = 'Home Page Visible';
 $string['home_course_id']           = 'Course Id';
 $string['block_staff']              = 'Course Staff';
+$string['home_type']                = 'Type';
+$string['btn_more']                 = 'More';
