@@ -199,7 +199,6 @@ class block_courses_site extends block_base {
                 /* Course Type  */
                 $this->content->text .= '<div class="course_type">';
                     $this->content->text .= '<div class="col_one">';
-                        //$this->content->text .= get_string('home_type','local_course_page') . ':';
                         /* Button */
                         $url                  = new moodle_url('/local/course_page/home_page.php',array('id' => $course_site->course));
                         $this->content->text .= '<a href="' . $url . '"><button class="button_site">' . get_string('btn_more','local_course_page') . '</button></a>';
@@ -219,8 +218,6 @@ class block_courses_site extends block_base {
                             default:
                                 break;
                         }//format_ico
-                        $this->content->text .= '</br>' . ucfirst($course_site->type);
-
                     $this->content->text .= '</div>'; //col_two
                 $this->content->text .= '</div>';//course_type
 
