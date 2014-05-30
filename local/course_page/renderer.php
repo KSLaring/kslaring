@@ -331,7 +331,6 @@ class local_course_page_renderer extends plugin_renderer_base {
                     $out .= $OUTPUT->user_picture($user, array('size'=>150));
                     $out .= '<label class="label_coordinator">' . get_string('home_coordinater','local_course_page') . '</label>';
                     $out .= '<a href="' . $url_user . '">' . fullname($user) . '</a>';
-                    $options = array('overflowdiv'=>true);
                     $out .= '<label class="extra_coordinator">' . $user->description . '</label>';
                 }//if_manager
             $out .= '</p>';
