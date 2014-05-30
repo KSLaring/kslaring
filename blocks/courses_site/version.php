@@ -11,5 +11,5 @@
  */
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2014052204;            // The current plugin version (Date: YYYYMMDDXX)
+$plugin->version   = 2014052208;            // The current plugin version (Date: YYYYMMDDXX)
 $plugin->component = 'block_courses_site';    // Full name of the plugin (used for diagnostics)

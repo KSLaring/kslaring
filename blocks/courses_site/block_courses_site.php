@@ -24,10 +24,6 @@ class block_courses_site extends block_base {
         return 'navigation';
     }
 
-    function applicable_formats() {
-        return array('all' => true, 'mod' => false, 'tag' => false, 'my' => false);
-    }
-
     function specialization() {
         global $PAGE;
 
@@ -114,6 +110,16 @@ class block_courses_site extends block_base {
         return $this->content;
     }//get_content
 
+    /**
+     * @param           $lst_courses_site
+     * @return          array
+     *
+     * @creationDate    30/05/2014
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Get the information connected with the course that has to be displayed
+     */
     function block_courses_site_GetInfoDisplay($lst_courses_site) {
         /* Varaibles    */
         $lst_info = array();
@@ -124,6 +130,15 @@ class block_courses_site extends block_base {
         return $lst_info;
     }//block_courses_site_GetInfoDisplay
 
+    /**
+     * @param           $lst_info
+     *
+     * @creationDate    29/05/2014
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Add the block with the information
+     */
     function block_courses_site_AddBlock($lst_info) {
         global $OUTPUT;
 
