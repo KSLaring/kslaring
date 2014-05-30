@@ -1,8 +1,6 @@
 .block_courses_site {
     width: 100%;
     display: inline-block;
-    text-align:justify;
-    text-justify:inter-word;
 }
 
 .line {
@@ -26,23 +24,19 @@
     margin-left: 0px;
 }
 .title_site {
-    height:10px;
-    font:bold 14px Verdana,Verdana Pro,sans-serif;
+    font-size: 1.5em;
     text-align: left;
-    line-height: 10px;
-    padding-top: 0px;
+    padding-top: 10px;
     padding-bottom: 5px;
     margin-bottom: 10px;
     margin-top: 0px;
-    color: #0e7b9e;
+    color: #1a1a1a;
 }
 
 .block_courses_site_one {
     float:left;
-    width: 30%;
+    width: 31%;
     display:inline-block;
-    text-align:justify;
-    text-justify:inter-word;
     margin-right: 35px;
     position: relative;
 }
@@ -50,20 +44,16 @@
 
 .block_courses_site_two {
     float:none;
-    width: 30%;
+    width: 31%;
     display:inline-block;
-    text-align:justify;
-    text-justify:inter-word;
     position: relative;
 }
 
 
 .block_courses_site_three {
     float:right;
-    width: 30%;
+    width: 31%;
     display:inline-block;
-    text-align:justify;
-    text-justify:inter-word;
     margin-right: 10px;
     position: relative;
 }
@@ -77,48 +67,32 @@
 
 .course_extra{
     width: 100%;
-    display:inline-block;
-    text-align:justify;
-    text-justify:inter-word;
     margin-bottom:10px;
-    position:relative;
 }
 
 .course_extra .col_one {
     float: left;
-    text-align: left;
-    font:bold 12px Verdana,Verdana Pro,sans-serif;
-    color:#0E7B9E;
-    display: inline-block;
+    color:#1a1a1a;
     width: 20%;
-    margin-bottom: 5px;
 }
 
 .course_extra .col_two {
     float: right;
-    text-align: right;
-    font-weight: normal;
     word-wrap: break-word;
     display: inline-block;
     width: 70%;
-    margin-bottom: 5px;
 }
 
 .course_type {
     width: 100%;
     display:inline-block;
-    text-align:justify;
     text-justify:inter-word;
-    margin-top: -20px;
 }
 
 .course_type .col_one {
     float: left;
-    text-align: left;
-    font:bold 12px Verdana,Verdana Pro,sans-serif;
-    color:#0E7B9E;
+    color:#1a1a1a;
     width: 15%;
-    margin-right: 10px;
     display: inline-block;
 }
 
@@ -131,10 +105,9 @@
 }
 
 .course_type .col_two .icon {
-    height: 30px;
-    width: 30px;
+    height: 50px;
+    width: 50px;
     margin-right: 0px;
-    display: inline-block;
 }
 
 
