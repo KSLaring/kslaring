@@ -160,6 +160,12 @@
     border-bottom: 0.1em solid;
 }
 
+.home_page_block_two .manager .extra_coordinator {
+    display: inline-block;
+    margin-right: 5px;
+    word-wrap: break-word;
+}
+
 .home_page_block_two .manager .label_teacher {
     width:99%;
     padding-top: 0px;

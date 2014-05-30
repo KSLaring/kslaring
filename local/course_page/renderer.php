@@ -316,7 +316,7 @@ class local_course_page_renderer extends plugin_renderer_base {
      */
     protected function addCoordinatorBlock($course_id,$manager) {
         /* Variables    */
-        global $OUTPUT;
+        global $OUTPUT,$DB;
         $out = '';
 
         $out .= html_writer::start_tag('div',array('class' => 'manager'));
@@ -324,12 +324,15 @@ class local_course_page_renderer extends plugin_renderer_base {
                 $out .= '<label class="label_manager">' . get_string('block_staff','local_course_page') . '</label>';
                 /* Main Manager */
                 if ($manager) {
-                    $user = get_complete_user_data('id',$manager);
+                    $user = $DB->get_record('user',array('id' => $manager));
+                    $user->description = file_rewrite_pluginfile_urls($user->description, 'pluginfile.php', CONTEXT_USER::instance($user->id)->id, 'user', 'profile', null);
                     $url_user = new moodle_url('/user/profile.php',array('id' => $user->id));
 
                     $out .= $OUTPUT->user_picture($user, array('size'=>150));
                     $out .= '<label class="label_coordinator">' . get_string('home_coordinater','local_course_page') . '</label>';
                     $out .= '<a href="' . $url_user . '">' . fullname($user) . '</a>';
+                    $options = array('overflowdiv'=>true);
+                    $out .= '<label class="extra_coordinator">' . $user->description . '</label>';
                 }//if_manager
             $out .= '</p>';
 
