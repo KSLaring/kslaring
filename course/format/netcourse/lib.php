@@ -691,7 +691,9 @@ class format_netcourse extends format_base {
 
                     break;
                 case 'homesummary':
-                    $data[$key] = course_page::getHomeSummaryEditor($data['homesummary_editor']);
+                    if (isset($data['homesummary_editor']) && ($data['homesummary_editor'])) {
+                        $data[$key] = course_page::getHomeSummaryEditor($data['homesummary_editor']);
+                    }//homesummary_editor
 
                     break;
                 case 'pagegraphics':
@@ -700,10 +702,12 @@ class format_netcourse extends format_base {
                     }else {
                         $delete = false;
                     }//if_delete
-                    $graphic_id = course_page::getHomeGraphicsVideo($data['pagegraphics'],'pagegraphics',$data['pagegraphics_filemanager'],$delete);
-                    if ($graphic_id) {
-                        $data[$key] = $graphic_id;
-                    }//if_graphic_id
+                    if (isset($data['pagegraphics']) && ($data['pagegraphics']) && isset($data['pagegraphics_filemanager']) && ($data['pagegraphics_filemanager'])) {
+                        $graphic_id = course_page::getHomeGraphicsVideo($data['pagegraphics'],'pagegraphics',$data['pagegraphics_filemanager'],$delete);
+                        if ($graphic_id) {
+                            $data[$key] = $graphic_id;
+                        }//if_graphic_id
+                    }//pagegraphics_filemanager
 
                     break;
                 case 'pagevideo':
@@ -712,10 +716,12 @@ class format_netcourse extends format_base {
                     }else {
                         $delete = false;
                     }//if_delete
-                    $video_id = course_page::getHomeGraphicsVideo($data['pagevideo'],'pagevideo',$data['pagevideo_filemanager'],$delete);
-                    if ($video_id) {
-                        $data[$key] = $video_id;
-                    }//if_graphic_id
+                    if (isset($data['pagevideo']) && ($data['pagevideo']) && isset($data['pagevideo_filemanager']) && ($data['pagevideo_filemanager'])) {
+                        $video_id = course_page::getHomeGraphicsVideo($data['pagevideo'],'pagevideo',$data['pagevideo_filemanager'],$delete);
+                        if ($video_id) {
+                            $data[$key] = $video_id;
+                        }//if_graphic_id
+                    }//if_page_video_pagevideo_filemanager
 
                     break;
                 default:
