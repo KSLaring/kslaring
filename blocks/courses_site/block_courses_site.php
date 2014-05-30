@@ -144,9 +144,15 @@ class block_courses_site extends block_base {
         $this->content->text .= '<div class="block_courses_site">';
             /* Add Header   */
             $this->content->text .= '<div class="block_courses_site_info">';
-                $this->block_courses_site_AddColumnHeader($lst_info[0],'block_courses_site_one');
-                $this->block_courses_site_AddColumnHeader($lst_info[2],'block_courses_site_three');
-                $this->block_courses_site_AddColumnHeader($lst_info[1],'block_courses_site_two');
+                if (array_key_exists(0,$lst_info)) {
+                    $this->block_courses_site_AddColumnHeader($lst_info[0],'block_courses_site_one');
+                }
+                if (array_key_exists(2,$lst_info)) {
+                    $this->block_courses_site_AddColumnHeader($lst_info[2],'block_courses_site_three');
+                }
+                if (array_key_exists(1,$lst_info)) {
+                    $this->block_courses_site_AddColumnHeader($lst_info[1],'block_courses_site_two');
+                }
             $this->content->text .= '</div>';
         $this->content->text .= '</div>';
 
@@ -157,9 +163,15 @@ class block_courses_site extends block_base {
         /* Add Extra   */
         $this->content->text .= '<div class="block_courses_site">';
             $this->content->text .= '<div class="block_courses_site_info">';
-                $this->block_courses_site_AddColumnExtra($lst_info[0],'block_courses_site_one');
-                $this->block_courses_site_AddColumnExtra($lst_info[2],'block_courses_site_three');
-                $this->block_courses_site_AddColumnExtra($lst_info[1],'block_courses_site_two');
+                if (array_key_exists(0,$lst_info)) {
+                    $this->block_courses_site_AddColumnExtra($lst_info[0],'block_courses_site_one');
+                }
+                if (array_key_exists(2,$lst_info)) {
+                    $this->block_courses_site_AddColumnExtra($lst_info[2],'block_courses_site_three');
+                }
+                if (array_key_exists(1,$lst_info)) {
+                   $this->block_courses_site_AddColumnExtra($lst_info[1],'block_courses_site_two');
+                }
             $this->content->text .= '</div>';
         $this->content->text .= '</div>';
 
@@ -170,9 +182,15 @@ class block_courses_site extends block_base {
         /* Add Button/Type  */
         $this->content->text .= '<div class="block_courses_site">';
             $this->content->text .= '<div class="course_type">';
-                $this->block_courses_site_AddColumnButton($lst_info[0],'block_courses_site_one');
-                $this->block_courses_site_AddColumnButton($lst_info[2],'block_courses_site_three');
-                $this->block_courses_site_AddColumnButton($lst_info[1],'block_courses_site_two');
+                if (array_key_exists(0,$lst_info)) {
+                    $this->block_courses_site_AddColumnButton($lst_info[0],'block_courses_site_one');
+                }
+                if (array_key_exists(2,$lst_info)) {
+                    $this->block_courses_site_AddColumnButton($lst_info[2],'block_courses_site_three');
+                }
+                if (array_key_exists(1,$lst_info)) {
+                    $this->block_courses_site_AddColumnButton($lst_info[1],'block_courses_site_two');
+                }
             $this->content->text .= '</div>';
         $this->content->text .= '</div>';
     }//block_courses_site_AddBlock
