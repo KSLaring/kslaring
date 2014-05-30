@@ -9,24 +9,18 @@
 .home_page {
     width: 100%;
     display:block;
-    text-align:justify;
     text-justify:inter-word;
 }
 
 .home_page .header {
     width: 100%;
-    height:30px;
     margin-top:0px;
     margin-bottom: 5px;
 
 }
 
 .home_page .header h1{
-    text-align: left;
-    padding-top: 0px;
-    padding-bottom: 0px;
-    padding-left: 0px;
-    margin-top: 0px;
+    color: #1a1a1a;
 }
 
 .home_page_block_one {
@@ -56,7 +50,6 @@
 }
 
 .home_page_block_one  h3 {
-    text-align: left;
     padding-top: 0px;
     padding-bottom: 5px;
     margin-bottom: 0px;
@@ -86,9 +79,9 @@
     padding-top: 0px;
     padding-bottom: 0px;
     padding-left: 0px;
-    text-align: left;
     line-height: 15px;
-    border-bottom: 0.1em solid;
+    border-bottom: 2px solid #d8d8d8;
+    font-weight: bold;
 }
 
 .home_page_block_two .extra .extra_home{
@@ -128,11 +121,9 @@
     padding-top: 0px;
     padding-bottom: 0px;
     padding-left: 0px;
-    text-align: left;
-    color:#0e7b9e;
     display: inline-block;
     margin-top: 10px;
-    border-bottom: 0.1em solid;
+    border-bottom: 2px solid #d8d8d8;
 }
 
 .home_page_block_two .manager .extra_coordinator {
@@ -147,10 +138,9 @@
     padding-bottom: 0px;
     padding-left: 0px;
     height:15px;
-    text-align: left;
     line-height: 15px;
     display: inline-block;
-    border-bottom: 0.1em solid;
+    border-bottom: 2px solid #d8d8d8;
 }
 
 .home_page_block_two .ratings {
@@ -160,14 +150,11 @@
 
 .home_page_block_two .ratings .title_ratings {
     width:99%;
-    text-align: left;
     padding-top: 5px;
     padding-bottom: 5px;
     padding-left: 2px;
     margin-bottom: 5px;
     margin-top: 0px;
-    color: #FFF;
-    background-color: rgba(14,123,158,.9);
     display: inline-block;
 }
 
@@ -177,10 +164,12 @@
     padding-bottom: 0px;
     padding-left: 0px;
     height:15px;
-    text-align: left;
-    color:#0e7b9e;
     display: inline-block;
-    border-bottom: 0.1em solid;
+    border-bottom: 2px solid #d8d8d8;
 }
 
+
+#page-local-course_page-home_page label{
+    cursor: auto !important;
+}
 
