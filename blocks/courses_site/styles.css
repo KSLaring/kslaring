@@ -25,7 +25,6 @@
 }
 .title_site {
     font-size: 1.5em;
-    text-align: left;
     padding-top: 10px;
     padding-bottom: 5px;
     margin-bottom: 10px;
@@ -86,7 +85,6 @@
 .course_type {
     width: 100%;
     display:inline-block;
-    text-justify:inter-word;
 }
 
 .course_type .col_one {
@@ -98,7 +96,6 @@
 
 .course_type .col_two {
     float: right;
-    text-align: right;
     font-weight: normal;
     width: 70%;
     display: inline-block;
