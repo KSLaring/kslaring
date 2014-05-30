@@ -140,90 +140,131 @@ class block_courses_site extends block_base {
      * Add the block with the information
      */
     function block_courses_site_AddBlock($lst_info) {
-        global $OUTPUT;
-
+        /* Add Block */
         $this->content->text .= '<div class="block_courses_site">';
-        foreach ($lst_info as $key=>$course_site) {
-            if ($key == 0) {
-                $class = 'block_courses_site_one';
-            }else if ($key == 1) {
-                $class = 'block_courses_site_two';
-            }else {
-                $class = 'block_courses_site_three';
-            }//if_key_class
+            /* Add Header   */
+            $this->content->text .= '<div class="block_courses_site_info">';
+                $this->block_courses_site_AddColumnHeader($lst_info[0],'block_courses_site_one');
+                $this->block_courses_site_AddColumnHeader($lst_info[2],'block_courses_site_three');
+                $this->block_courses_site_AddColumnHeader($lst_info[1],'block_courses_site_two');
+            $this->content->text .= '</div>';
+        $this->content->text .= '</div>';
 
-            $this->content->text .= '<div class="' . $class . '">';
-                $this->content->text .= '<div class="header_block_site">';
-                    /*  Image / Title   */
-                    $this->content->text .= '<p>';
-                        $this->content->text .= '<img src="'  . $course_site->picture . '" class="graphic_site"></br>';
-                        $this->content->text .= '<label class="title_site">' . $course_site->title . '</label>';
-                    $this->content->text .= '</p>';
-                    /* Description      */
-                    $this->content->text .=  '<p>' . $course_site->description . '</p>';
-                $this->content->text .= '</div>';
+        $this->content->text .= '<span class="block_courses_site_one"></span>';
+        $this->content->text .= '<span class="block_courses_site_three"></span>';
+        $this->content->text .= '<span class="block_courses_site_two"></span>';
 
-                /* Extra        */
-                $this->content->text .= '<div class="course_extra">';
-                    /* Published */
+        /* Add Extra   */
+        $this->content->text .= '<div class="block_courses_site">';
+            $this->content->text .= '<div class="block_courses_site_info">';
+                $this->block_courses_site_AddColumnExtra($lst_info[0],'block_courses_site_one');
+                $this->block_courses_site_AddColumnExtra($lst_info[2],'block_courses_site_three');
+                $this->block_courses_site_AddColumnExtra($lst_info[1],'block_courses_site_two');
+            $this->content->text .= '</div>';
+        $this->content->text .= '</div>';
+
+        $this->content->text .= '<span class="block_courses_site_one"></span>';
+        $this->content->text .= '<span class="block_courses_site_three"></span>';
+        $this->content->text .= '<span class="block_courses_site_two"></span>';
+
+        /* Add Button/Type  */
+        $this->content->text .= '<div class="block_courses_site">';
+            $this->content->text .= '<div class="course_type">';
+                $this->block_courses_site_AddColumnButton($lst_info[0],'block_courses_site_one');
+                $this->block_courses_site_AddColumnButton($lst_info[2],'block_courses_site_three');
+                $this->block_courses_site_AddColumnButton($lst_info[1],'block_courses_site_two');
+            $this->content->text .= '</div>';
+        $this->content->text .= '</div>';
+    }//block_courses_site_AddBlock
+
+    function block_courses_site_AddColumnHeader($course_site,$class) {
+        /* Get URL For Course   */
+        $url                  = new moodle_url('/local/course_page/home_page.php',array('id' => $course_site->course));
+        $this->content->text .= '<div class="' . $class . '">';
+            /*  Image / Title   */
+            $this->content->text .= '<p>';
+                $this->content->text .= '<img src="'  . $course_site->picture . '" class="graphic_site"></br>';
+                $this->content->text .= '<label class="title_site">' . '<a href="' . $url . '">' . $course_site->title . '</a></label>';
+            $this->content->text .= '</p>';
+            /* Description      */
+            $this->content->text .=  '<p class="label_header">' . $course_site->description . '</p>';
+        $this->content->text .= '</div>';
+    }//block_courses_site_AddColumn
+
+    function block_courses_site_AddColumnExtra($course_site,$class) {
+        $this->content->text .= '<div class="' . $class . '">';
+            $this->content->text .= '<div class="course_extra">';
+                /* Published */
+                $this->content->text .= '<div class="col_one">';
+                    $this->content->text .= get_string('home_published','local_course_page') . ':';
+                $this->content->text .= '</div>'; //col_one
+
+                $this->content->text .= '<div class="col_three">';
+                    $this->content->text .= $course_site->published;
+                $this->content->text .= '</div>'; //col_two
+
+                $this->content->text .= '<div class="col_two">';
+                $this->content->text .= '</div>'; //col_two
+
+                /* Prerequisites / Author   */
+                if (isset($course_site->prerequisities)) {
                     $this->content->text .= '<div class="col_one">';
-                        $this->content->text .= get_string('home_published','local_course_page') . ':';
+                        $this->content->text .= get_string('home_prerequisities','local_course_page') . ':';
                     $this->content->text .= '</div>'; //col_one
 
-                    $this->content->text .= '<div class="col_two">';
-                        $this->content->text .= $course_site->published;
+                    $this->content->text .= '<div class="col_three">';
+                        $this->content->text .= $course_site->prerequisities;
                     $this->content->text .= '</div>'; //col_two
 
-                    /* Prerequisites / Author   */
-                    if (isset($course_site->prerequisities)) {
-                            $this->content->text .= '<div class="col_one">';
-                                $this->content->text .= get_string('home_prerequisities','local_course_page') . ':';
-                            $this->content->text .= '</div>'; //col_one
+                    $this->content->text .= '<div class="col_two">';
+                    $this->content->text .= '</div>'; //col_two
+                }//if_prerequisites
 
-                            $this->content->text .= '<div class="col_two">';
-                                $this->content->text .= '<p>' . $course_site->prerequisities . '</p>';
-                            $this->content->text .= '</div>'; //col_two
-                    }//if_prerequisites
-
-                    if (isset($course_site->author)) {
-                            $this->content->text .= '<div class="col_one">';
-                                $this->content->text .= get_string('home_author','local_course_page') . ':';
-                            $this->content->text .= '</div>'; //col_one
-
-                            $this->content->text .= '<div class="col_two">';
-                                $this->content->text .= $course_site->author;
-                            $this->content->text .= '</div>'; //col_two
-                    }//if_author
-                $this->content->text .= '</div>';//course_extra
-
-                /* Course Type  */
-                $this->content->text .= '<div class="course_type">';
+                if (isset($course_site->author)) {
                     $this->content->text .= '<div class="col_one">';
-                        /* Button */
-                        $url                  = new moodle_url('/local/course_page/home_page.php',array('id' => $course_site->course));
-                        $this->content->text .= '<a href="' . $url . '"><button class="button_site">' . get_string('btn_more','local_course_page') . '</button></a>';
+                        $this->content->text .= get_string('home_author','local_course_page') . ':';
                     $this->content->text .= '</div>'; //col_one
 
-                    $this->content->text .= '<div class="col_two">';
-                        switch ($course_site->type) {
-                            case 'netcourse':
-                                $this->content->text .= html_writer::empty_tag('img', array('src'=>$OUTPUT->pix_url('i/nett_kurs'),'alt'=> '','class'=>'icon'));
-                                break;
-                            case 'classroom':
-                                $this->content->text .= html_writer::empty_tag('img', array('src'=>$OUTPUT->pix_url('i/classroom'),'alt'=> '','class'=>'icon'));
-                                break;
-                            case 'whitepaper':
-                                $this->content->text .= html_writer::empty_tag('img', array('src'=>$OUTPUT->pix_url('i/whitepaper'),'alt'=> '','class'=>'icon'));
-                                break;
-                            default:
-                                break;
-                        }//format_ico
+                    $this->content->text .= '<div class="col_three">';
+                        $this->content->text .= $course_site->author;
                     $this->content->text .= '</div>'; //col_two
-                $this->content->text .= '</div>';//course_type
 
-            $this->content->text .= '</div>'; //class
-        }//for_lst_courses_site
+                    $this->content->text .= '<div class="col_two">';
+                    $this->content->text .= '</div>'; //col_two
+                }//if_author
+            $this->content->text .= '</div>';//course_extra
+        $this->content->text .= '</div>';//class
+    }//block_courses_site_AddColumnExtra
 
-        $this->content->text .= '</div>';//block_course_site
-    }//block_courses_site_AddHeader
+    function block_courses_site_AddColumnButton($course_site,$class) {
+        global $OUTPUT;
+        /* Get URL For Course   */
+        $url                  = new moodle_url('/local/course_page/home_page.php',array('id' => $course_site->course));
+
+        $this->content->text .= '<div class="' . $class . '">';
+            $this->content->text .= '<div class="col_one">';
+                /* Button */
+                $this->content->text .= '<a href="' . $url . '"><button class="button_site">' . get_string('btn_more','local_course_page') . '</button></a>';
+            $this->content->text .= '</div>'; //col_one
+
+            $this->content->text .= '<div class="col_three">';
+                switch ($course_site->type) {
+                    case 'netcourse':
+                        $this->content->text .= html_writer::empty_tag('img', array('src'=>$OUTPUT->pix_url('i/nett_kurs'),'alt'=> '','class'=>'icon'));
+                        break;
+                    case 'classroom':
+                        $this->content->text .= html_writer::empty_tag('img', array('src'=>$OUTPUT->pix_url('i/classroom'),'alt'=> '','class'=>'icon'));
+                        break;
+                    case 'whitepaper':
+                        $this->content->text .= html_writer::empty_tag('img', array('src'=>$OUTPUT->pix_url('i/whitepaper'),'alt'=> '','class'=>'icon'));
+                        break;
+                    default:
+                        break;
+                }//format_ico
+            $this->content->text .= '</div>'; //col_two
+
+            $this->content->text .= '<div class="col_two">';
+            $this->content->text .= '</div>'; //col_two
+        $this->content->text .= '</div>';
+    }//block_courses_site_AddColumnButton
 }//block_courses_site
