@@ -114,7 +114,7 @@ class courses_site  {
      * Description
      * Get the courses connected with category and can be added to Course Site Block
      */
-    public static function courses_site_CoursesByCategory($category_id) {
+    public static function courses_site_CoursesByCategory($category_id = null) {
         global $DB;
 
         try {
@@ -130,11 +130,15 @@ class courses_site  {
             $sql = " SELECT     id,
                                 fullname
                      FROM       {course}
-                     WHERE      category = :category_id
-                        AND     visible  = :visible
+                     WHERE      visible  = :visible
                         AND		id NOT IN (SELECT	course_id
                                            FROM	    {block_courses_site})
-                     ORDER BY   fullname ASC ";
+                      ";
+
+            if ($category_id) {
+                $sql .= " AND category = :category_id ";
+            }//if_category_id
+            $sql .= " ORDER BY   fullname ASC";
 
             /* Execute  */
             $rdo = $DB->get_records_sql($sql,$params);
@@ -254,22 +258,42 @@ class courses_site  {
                 $DB->delete_records('files',array('itemid' => $file->get_itemid()));
             }///deletepicture
 
-            $file_manager = new stdClass();
-            $file_manager->picture_filemanager = $picture_filemanager;
+            $picture_id = self::courses_site_GetPictureId($picture_filemanager,$file_options,$context);
+            //$file_manager = new stdClass();
+            //$file_manager->picture_filemanager = $picture_filemanager;
 
-            $file_manager = file_postupdate_standard_filemanager($file_manager, 'picture', $file_options, $context, 'course', 'picture', $file_manager->picture_filemanager);
-            if ($files = $fs->get_area_files($context->id, 'course', 'picture', $file_manager->picture_filemanager, 'id DESC', false)) {
-                /* Remove Previous  */
-                $file = reset($files);
+            //$file_manager = file_postupdate_standard_filemanager($file_manager, 'picture', $file_options, $context, 'course', 'picture', $file_manager->picture_filemanager);
+            //if ($files = $fs->get_area_files($context->id, 'course', 'picture', $file_manager->picture_filemanager, 'id DESC', false)) {
+            //    /* Remove Previous  */
+            //    $file = reset($files);
 
-                $picture_id = $file->get_id();
-            }//if_file
+            //    $picture_id = $file->get_id();
+            //}//if_file
 
             return $picture_id;
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
     }//courses_site_GetPictureReference
+
+    public static function courses_site_GetPictureId($picture_filemanager,$file_options,$context) {
+        /* Variables    */
+        $picture_id = 0;
+
+        $file_manager = new stdClass();
+        $file_manager->picture_filemanager = $picture_filemanager;
+
+        $file_manager = file_postupdate_standard_filemanager($file_manager, 'picture', $file_options, $context, 'course', 'picture', $file_manager->picture_filemanager);
+        $fs = get_file_storage();
+        if ($files = $fs->get_area_files($context->id, 'course', 'picture', $file_manager->picture_filemanager, 'id DESC', false)) {
+            /* Remove Previous  */
+            $file = reset($files);
+
+            $picture_id = $file->get_id();
+        }//if_file
+
+        return $picture_id;
+    }//courses_site_GetPictureId
 
     /**
      * @param           $itemid
@@ -413,9 +437,11 @@ class courses_site  {
             $DB->delete_records('block_courses_site',array('id' => $course_site->id,'course_id' => $course_site->course_id));
 
             /* First Remove Previous    */
-            $fs = get_file_storage();
-            $file = $fs->get_file_by_id($course_site->picture);
-            $DB->delete_records('files',array('itemid' => $file->get_itemid()));
+            if ($course_site->picture) {
+                $fs = get_file_storage();
+                $file = $fs->get_file_by_id($course_site->picture);
+                $DB->delete_records('files',array('itemid' => $file->get_itemid()));
+            }//course_site
 
             return true;
         }catch (Exception $ex) {
@@ -495,13 +521,13 @@ class add_course_site_form extends moodleform {
         if (isset($_COOKIE['parentCategory']) && (!empty($_COOKIE['parentCategory']))) {
             $lst_courses = courses_site::courses_site_CoursesByCategory($_COOKIE['parentCategory']);
         }else {
-            $lst_courses = courses_site::courses_site_CoursesByCategory(1);
+            $lst_courses = courses_site::courses_site_CoursesByCategory();
         }//if_category_sel
         $lst_courses[0] = get_string('select_course','local_courses_site');
         $form->addElement('select','sel_courses',get_string('course','local_courses_site'),$lst_courses);
         $form->addRule('sel_courses',null, 'required');
         $form->setDefault('sel_courses',0);
-        $form->disabledIf('sel_courses','sel_category',0);
+        $form->disabledIf('sel_courses','sel_category','eq',0);
 
         /* Order        */
         $next_order = courses_site::courses_site_GetNextOrder();
@@ -526,9 +552,12 @@ class add_course_site_form extends moodleform {
 
         $form->addElement('filemanager', 'picture_filemanager', get_string('picture','local_courses_site'), null, $file_options);
         $form->setType('picture_filemanager',PARAM_RAW);
+        $form->addRule('picture_filemanager',null, 'required');
 
         $this->add_action_buttons(true, get_string('save', 'local_courses_site'));
     }//definition
+
+
 }//add_course_site_form
 
 class edit_course_site_form extends moodleform {
@@ -594,4 +623,21 @@ class edit_course_site_form extends moodleform {
 
         $this->add_action_buttons(true, get_string('save', 'local_courses_site'));
     }
+
+    function validation($data, $files) {
+        global $DB, $CFG, $SESSION;
+        $errors = parent::validation($data, $files);
+
+        if (isset($data['deletepicture']) && $data['deletepicture']) {
+            /* Get File Editor Options  */
+            list($file_options,$context) = courses_site::courses_site_GetFileOptions();
+            $picture = courses_site::courses_site_GetPictureId($data['picture_filemanager'],$file_options,$context);
+            if (!$picture) {
+                $errors['picture_filemanager'] = get_string('required');
+                return $errors;
+            }
+        }//delete
+
+        return $errors;
+    }//validation
 }//edit_course_site_form
