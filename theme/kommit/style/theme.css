@@ -692,6 +692,21 @@ div.loginpanel h2 {
   border: 1px solid #e8e8e8;
   position: relative;
 }
+.course_category_tree .category > .info {
+  background: #fff;
+  padding-left: 20px;
+  border: 1px solid #e8e8e8;
+}
+.course_category_tree .category > .content {
+  background: #fff;
+  padding-left: 20px;
+  border: 1px solid #e8e8e8;
+  margin-top: -3px;
+}
+.coursebox .panel-heading {
+  font-size: 21.328px;
+  line-height: 31.991999999999997px;
+}
 @media (max-width: 600px) {
   .logo-area {
     padding: 20px 19px;
