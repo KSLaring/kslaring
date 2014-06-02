@@ -17,7 +17,7 @@
 /**
  * This file contains classes used to manage the navigation structures within Moodle.
  *
- * @since      2.0
+ * @since      Moodle 2.0
  * @package    core
  * @copyright  2009 Sam Hemelryk
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -697,7 +697,7 @@ class navigation_node implements renderable {
     /**
      * Hides the node and any children it has.
      *
-     * @since 2.5
+     * @since Moodle 2.5
      * @param array $typestohide Optional. An array of node types that should be hidden.
      *      If null all nodes will be hidden.
      *      If an array is given then nodes will only be hidden if their type mtatches an element in the array.
@@ -1323,7 +1323,7 @@ class global_navigation extends navigation_node {
      * other user being viewed this function returns false.
      * In order to set the user for whom we are checking against you must call {@link set_userid_for_parent_checks()}
      *
-     * @since 2.4
+     * @since Moodle 2.4
      * @return bool
      */
     protected function current_user_is_parent_role() {
@@ -2769,6 +2769,12 @@ class global_navigation_for_ajax extends global_navigation {
                 break;
             case self::TYPE_COURSE :
                 $course = $DB->get_record('course', array('id' => $this->instanceid), '*', MUST_EXIST);
+                if (!can_access_course($course)) {
+                    // Thats OK all courses are expandable by default. We don't need to actually expand it we can just
+                    // add the course node and break. This leads to an empty node.
+                    $this->add_course($course);
+                    break;
+                }
                 require_course_login($course, true, null, false, true);
                 $this->page->set_context(context_course::instance($course->id));
                 $coursenode = $this->add_course($course);
@@ -4497,6 +4503,7 @@ class settings_navigation_ajax extends settings_navigation {
         if ($this->initialised || during_initial_install()) {
             return false;
         }
+        $this->context = $this->page->context;
         $this->load_administration_settings();
 
         // Check if local plugins is adding node to site admin.

@@ -2174,7 +2174,7 @@ function userdate($date, $format = '', $timezone = 99, $fixday = true, $fixhour 
  * @param string $format strftime format.
  * @param int|float $tz the numerical timezone, typically returned by {@link get_user_timezone_offset()}.
  * @return string the formatted date/time.
- * @since 2.3.3
+ * @since Moodle 2.3.3
  */
 function date_format_string($date, $format, $tz = 99) {
     global $CFG;
@@ -5794,6 +5794,14 @@ function email_to_user($user, $from, $subject, $messagetext, $messagehtml = '', 
         $mail->Sender = generate_email_processing_address(0, $modargs);
     } else {
         $mail->Sender = $supportuser->email;
+    }
+
+    if (!empty($CFG->emailonlyfromnoreplyaddress)) {
+        $usetrueaddress = false;
+        if (empty($replyto) && $from->maildisplay) {
+            $replyto = $from->email;
+            $replytoname = fullname($from);
+        }
     }
 
     if (is_string($from)) { // So we can pass whatever we want if there is need.
