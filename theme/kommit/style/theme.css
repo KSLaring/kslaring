@@ -686,6 +686,12 @@ div.loginpanel h2 {
   padding: 0em 0em 0.2em 1.6em;
   text-align: center;
 }
+#page-course-index-category .coursebox {
+  background: #fff;
+  padding-left: 20px;
+  border: 1px solid #e8e8e8;
+  position: relative;
+}
 @media (max-width: 600px) {
   .logo-area {
     padding: 20px 19px;
