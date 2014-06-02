@@ -802,6 +802,12 @@ div.loginpanel h2 {
   .navbar-fixed-bottom .navbar-inner {
     padding: 0px;
   }
+  .home_page_block_one {
+    width: 100%;
+  }
+  .home_page_block_two {
+    width: 100%;
+  }
 }
 @media (min-width: 979px) {
   .navbar-right {
