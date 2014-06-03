@@ -8,15 +8,15 @@
     width: 100%;
     display: inline-block;
     text-justify:inter-word;
-    min-height: 450px;
-    max-height: 450px;
+    min-height: 325px;
+    max-height: 325px;
     white-space: -moz-pre-wrap !important;  /* Mozilla, since 1999 */
     white-space: -pre-wrap;      /* Opera 4-6 */
     white-space: -o-pre-wrap;    /* Opera 7 */
     white-space: pre-wrap;       /* css-3 */
     word-wrap: break-word;       /* Internet Explorer 5.5+ */
     white-space: normal;
-
+    margin-bottom: 10px;
 }
 
 .label_header {
@@ -31,7 +31,7 @@
     min-height: 200px;
     max-height: 200px;
     text-justify:inter-word;
-    margin-top: 25px;
+    margin-top: 30px;
 }
 
 .line {
@@ -116,15 +116,18 @@
     text-align: right;
     font-weight: normal;
     width: 60%;
-    word-wrap: break-word;
     display: inline-block;
+    white-space: -moz-pre-wrap !important;  /* Mozilla, since 1999 */
+    white-space: -pre-wrap;      /* Opera 4-6 */
+    white-space: -o-pre-wrap;    /* Opera 7 */
+    white-space: pre-wrap;       /* css-3 */
+    word-wrap: break-word;       /* Internet Explorer 5.5+ */
+    white-space: normal;
 }
 
 .course_type {
     width: 100%;
-    display:inline-block;
-    text-justify:inter-word;
-    margin-top: 25px;
+    display:block;
 }
 
 .course_type .col_one {
@@ -138,7 +141,7 @@
 }
 
 .course_extra .col_two {
-    width: 15%;
+    width: 5%;
     display: inline-block;
 }
 
@@ -146,7 +149,7 @@
     float: right;
     text-align: right;
     font-weight: normal;
-    width: 60%;
+    width: 40%;
     display: inline-block;
 }
 

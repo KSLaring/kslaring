@@ -81,7 +81,7 @@ class block_courses_site extends block_base {
                 $index          = 0;
 
                 $this->title = $config->title;
-                //$this->content->text = '<div id="navarea" class="coursebox clearfix">';
+                $this->content->text = '<div id="navarea" class="coursebox clearfix">';
                     $lst_info = $this->block_courses_site_GetInfoDisplay($lst_courses_site);
                     if ($total_records <= 3) {
                         /* Block One    */
@@ -89,9 +89,7 @@ class block_courses_site extends block_base {
                     }else {
                         /* Block One    */
                         $block_one = array($lst_info[0],$lst_info[1],$lst_info[2]);
-                        $this->content->text .= $OUTPUT->box_start('coursebox');
-                            $this->block_courses_site_AddBlock($block_one);
-                        $this->content->text .= $OUTPUT->box_end('coursebox');
+                        $this->block_courses_site_AddBlock($block_one);
 
                         /* Block Two    */
                         $block_two = array();
@@ -103,11 +101,9 @@ class block_courses_site extends block_base {
                             $block_two[2] = $lst_info[5];
                         }//pos_5
                         $this->content->text .= '<hr class="line">';
-                        $this->content->text .= $OUTPUT->box_start('coursebox');
-                            $this->block_courses_site_AddBlock($block_two);
-                        $this->content->text .= $OUTPUT->box_end('coursebox');
+                        $this->block_courses_site_AddBlock($block_two);
                     }//if_total_records
-                //$this->content->text .= '</div>';
+                $this->content->text .= '</div>';
 
             }//if
         }//if_else_editing
@@ -184,7 +180,7 @@ class block_courses_site extends block_base {
             $this->content->text .= '</p>';
 
             /* Description      */
-            $this->content->text .=  '<p class="label_header">' . substr($course_site->description,0,255) . ' ...</p>';
+            $this->content->text .=  '<p class="label_header">' . substr($course_site->description,0,150) . ' ... </br></p>';
         $this->content->text .= '</div>';
     }//block_courses_site_AddColumn
 
@@ -210,7 +206,7 @@ class block_courses_site extends block_base {
                     $this->content->text .= '</div>'; //col_one
 
                     $this->content->text .= '<div class="col_three">';
-                        $this->content->text .= substr($course_site->prerequisities,0,255) . '';
+                        $this->content->text .= substr($course_site->prerequisities,0,150);
                     $this->content->text .= '</div>'; //col_two
 
                     $this->content->text .= '<div class="col_two">';
