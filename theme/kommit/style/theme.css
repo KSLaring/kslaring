@@ -707,6 +707,23 @@ div.loginpanel h2 {
   font-size: 21.328px;
   line-height: 31.991999999999997px;
 }
+#page-course-index-category .categorypicker {
+  text-align: right;
+  margin: -10px 27px 20px;
+}
+#page-course-index-category .categorypicker label {
+  display: inline;
+  margin-bottom: 5px;
+}
+#page-course-index-category .generalbox.info {
+  margin: 1em 0;
+  background: white;
+  padding: 10px 20px;
+  color: #7e7e7e;
+}
+#page-course-index-category .generalbox.info p {
+  margin: 0;
+}
 @media (max-width: 600px) {
   .logo-area {
     padding: 20px 19px;
@@ -724,9 +741,16 @@ div.loginpanel h2 {
     background-repeat: no-repeat;
     background-position: 70% 40%;
   }
+  .hero-unit h1 {
+    font-size: 28.32px;
+  }
   .hero-unit .texts {
     width: 95%;
     margin-top: 1%;
+  }
+  .hero-unit .lead {
+    margin-top: 1%;
+    font-size: 21.328px;
   }
   .home_page_block_one {
     width: 100%;
@@ -778,6 +802,21 @@ div.loginpanel h2 {
   }
   .hero-unit .texts {
     margin-top: 5%;
+  }
+  .block_courses_site_one {
+    float: none;
+    width: 100%;
+    display: block;
+  }
+  .block_courses_site_two {
+    float: none;
+    width: 100%;
+    display: block;
+  }
+  .block_courses_site_three {
+    float: none;
+    width: 100%;
+    display: block;
   }
   .format-netcourse #page-content {
     padding-left: 10px;

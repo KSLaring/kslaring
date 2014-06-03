@@ -1,4 +1,4 @@
-// these are content based minor break point adjustments, to override bootstraps where they lok bad
+// these are content based minor break point adjustments, to override bootstraps where they look bad
 // Jon Jack
 // efaktor, 26/03/2013
 
@@ -25,13 +25,16 @@
     background-repeat: no-repeat;
     background-position: 70% 40%;
     h1 {
-      //font-size: @fontSizeH4;
+      font-size: @fontSizeH2;
     }
     .texts {
       width: 95%;
       margin-top: 1%;
     }
     .lead {
+      margin-top: 1%;
+      font-size: @fontSizeH4;
+
     }
   }
   // home page generator responsive fixes
@@ -62,7 +65,7 @@
   .breadcrumb > li:first-child, li:last-child {
     display: inline-block;
   }
-
+  // responsive fix for nett course format
   .format-netcourse #page-content {
     padding-left: 20px;
     padding-right: 20px;
@@ -95,14 +98,30 @@
     }
   }
 
+  // featured courses block
+  .block_courses_site_one {
+    float: none;
+    width: 100%;
+    display: block;
+  }
+  .block_courses_site_two {
+     float: none;
+     width: 100%;
+     display: block;
+   }
+  .block_courses_site_three {
+    float: none;
+    width: 100%;
+    display: block;
+  }
+
+  // nett course responsive fixes
   .format-netcourse #page-content {
     padding-left: 10px;
     padding-right: 10px;
     margin-left: -10px;
     margin-right: -10px;
   }
-
-
   #page-footer #page-footer-inner .column {
     float: none;
     display: block;
