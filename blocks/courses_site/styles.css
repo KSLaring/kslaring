@@ -1,6 +1,6 @@
-.block_courses_site {
+.block_courses_site .coursebox{
     width: 100%;
-    display: block;
+    display: inline-block;
     text-justify:inter-word;
 }
 
@@ -8,6 +8,15 @@
     width: 100%;
     display: inline-block;
     text-justify:inter-word;
+    min-height: 450px;
+    max-height: 450px;
+    white-space: -moz-pre-wrap !important;  /* Mozilla, since 1999 */
+    white-space: -pre-wrap;      /* Opera 4-6 */
+    white-space: -o-pre-wrap;    /* Opera 7 */
+    white-space: pre-wrap;       /* css-3 */
+    word-wrap: break-word;       /* Internet Explorer 5.5+ */
+    white-space: normal;
+
 }
 
 .label_header {
@@ -18,8 +27,11 @@
 
 .block_courses_site_type {
     width: 100%;
-    display: block;
+    display: inline-block;
+    min-height: 200px;
+    max-height: 200px;
     text-justify:inter-word;
+    margin-top: 25px;
 }
 
 .line {
@@ -81,7 +93,7 @@
 
 .course_extra{
     width: 100%;
-    display: block;
+    display: inline-block;
     text-justify:inter-word;
 }
 
@@ -110,8 +122,9 @@
 
 .course_type {
     width: 100%;
-    display:block;
+    display:inline-block;
     text-justify:inter-word;
+    margin-top: 25px;
 }
 
 .course_type .col_one {
