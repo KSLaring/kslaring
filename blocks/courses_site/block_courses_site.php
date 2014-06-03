@@ -153,15 +153,13 @@ class block_courses_site extends block_base {
                 if (array_key_exists(1,$lst_info)) {
                     $this->block_courses_site_AddColumnHeader($lst_info[1],'block_courses_site_two');
                 }
-            $this->content->text .= '</div>';
-        $this->content->text .= '</div>';
+            $this->content->text .= '</div>';//div_block_courses_site_info
 
-        $this->content->text .= '<span class="block_courses_site_one"></span>';
-        $this->content->text .= '<span class="block_courses_site_three"></span>';
-        $this->content->text .= '<span class="block_courses_site_two"></span>';
+            $this->content->text .= '<span class="block_courses_site_one"></span>';
+            $this->content->text .= '<span class="block_courses_site_three"></span>';
+            $this->content->text .= '<span class="block_courses_site_two"></span>';
 
-        /* Add Extra   */
-        $this->content->text .= '<div class="block_courses_site">';
+            /* Add Extra   */
             $this->content->text .= '<div class="block_courses_site_info">';
                 if (array_key_exists(0,$lst_info)) {
                     $this->block_courses_site_AddColumnExtra($lst_info[0],'block_courses_site_one');
@@ -172,15 +170,13 @@ class block_courses_site extends block_base {
                 if (array_key_exists(1,$lst_info)) {
                    $this->block_courses_site_AddColumnExtra($lst_info[1],'block_courses_site_two');
                 }
-            $this->content->text .= '</div>';
-        $this->content->text .= '</div>';
+            $this->content->text .= '</div>';//div_block_courses_site_info
 
-        $this->content->text .= '<span class="block_courses_site_one"></span>';
-        $this->content->text .= '<span class="block_courses_site_three"></span>';
-        $this->content->text .= '<span class="block_courses_site_two"></span>';
+            $this->content->text .= '<span class="block_courses_site_one"></span>';
+            $this->content->text .= '<span class="block_courses_site_three"></span>';
+            $this->content->text .= '<span class="block_courses_site_two"></span>';
 
-        /* Add Button/Type  */
-        $this->content->text .= '<div class="block_courses_site">';
+            /* Add Button/Type  */
             $this->content->text .= '<div class="course_type">';
                 if (array_key_exists(0,$lst_info)) {
                     $this->block_courses_site_AddColumnButton($lst_info[0],'block_courses_site_one');
@@ -191,8 +187,8 @@ class block_courses_site extends block_base {
                 if (array_key_exists(1,$lst_info)) {
                     $this->block_courses_site_AddColumnButton($lst_info[1],'block_courses_site_two');
                 }
-            $this->content->text .= '</div>';
-        $this->content->text .= '</div>';
+            $this->content->text .= '</div>';//dic_course_type
+        $this->content->text .= '</div>';//div_block_courses_site
     }//block_courses_site_AddBlock
 
     function block_courses_site_AddColumnHeader($course_site,$class) {
