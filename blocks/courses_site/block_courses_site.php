@@ -85,11 +85,15 @@ class block_courses_site extends block_base {
                     $lst_info = $this->block_courses_site_GetInfoDisplay($lst_courses_site);
                     if ($total_records <= 3) {
                         /* Block One    */
-                        $this->block_courses_site_AddBlock($lst_info);
+                        $this->content->text .= '<div>';
+                            $this->block_courses_site_AddBlock($lst_info);
+                        $this->content->text .= '</div>';
                     }else {
                         /* Block One    */
                         $block_one = array($lst_info[0],$lst_info[1],$lst_info[2]);
-                        $this->block_courses_site_AddBlock($block_one);
+                        $this->content->text .= '<div>';
+                            $this->block_courses_site_AddBlock($block_one);
+                        $this->content->text .= '</div>';
 
                         /* Block Two    */
                         $block_two = array();
@@ -101,7 +105,9 @@ class block_courses_site extends block_base {
                             $block_two[2] = $lst_info[5];
                         }//pos_5
                         $this->content->text .= '<hr class="line">';
-                        $this->block_courses_site_AddBlock($block_two);
+                        $this->content->text .= '<div>';
+                            $this->block_courses_site_AddBlock($block_two);
+                        $this->content->text .= '</div>';
                     }//if_total_records
                 $this->content->text .= '</div>';
 
