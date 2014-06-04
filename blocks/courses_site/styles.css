@@ -29,7 +29,7 @@
 .block_courses_site_type {
     width: 100%;
     display: inline-block;
-    min-height: 70px;
+    height: 70px;
     text-justify:inter-word;
 }
 

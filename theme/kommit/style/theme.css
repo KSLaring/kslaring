@@ -724,6 +724,12 @@ div.loginpanel h2 {
 #page-course-index-category .generalbox.info p {
   margin: 0;
 }
+#page-enrol-index #block-region-side-pre {
+  display: none;
+}
+#page-enrol-index #region-main.span8 {
+  width: 99%;
+}
 @media (max-width: 600px) {
   .logo-area {
     padding: 20px 19px;
