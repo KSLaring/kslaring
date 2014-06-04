@@ -170,6 +170,8 @@ class block_courses_site extends block_base {
     }//block_courses_site_AddBlock
 
     function block_courses_site_AddColumnHeader($course_site,$class) {
+        /* Variables    */
+        $description = ' ';
         /* Get URL For Course   */
         $url                  = new moodle_url('/local/course_page/home_page.php',array('id' => $course_site->course));
         $this->content->text .= '<div class="' . $class . '">';
@@ -180,7 +182,12 @@ class block_courses_site extends block_base {
             $this->content->text .= '</p>';
 
             /* Description      */
-            $this->content->text .=  '<p class="label_header">' . substr($course_site->description,0,150) . ' ... </br></p>';
+            if (strlen($course_site->description) > 150) {
+                $description = substr($course_site->description,0,150) . ' ...';
+            }else {
+                $description = $course_site->description;
+            }
+            $this->content->text .=  '<p class="label_header">' . $description . '</br></p>';
         $this->content->text .= '</div>';
     }//block_courses_site_AddColumn
 
