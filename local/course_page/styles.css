@@ -87,7 +87,7 @@
 }
 
 .home_page_block_two .extra .extra_home{
-    display:block;
+    display: inline-block;
     margin-bottom: 10px;
     margin-right: 5px;
     word-wrap: break-word;
@@ -111,28 +111,19 @@
 .home_page_block_two .manager .label_manager {
     width:99%;
     text-align: left;
-    padding-top: 5px;
-    padding-bottom: 5px;
-    padding-left: 2px;
-    margin-bottom: 5px;
-    margin-top: 0px;
     display: inline-block;
     color: #7e7e7e;
     text-transform: uppercase;
+    border-bottom: 2px solid #d8d8d8;
 }
 
 .home_page_block_two .manager .label_coordinator {
     width:99%;
     text-align: left;
-    line-height: 15px;
     display: inline-block;
-    margin-top: 10px;
-    border-bottom: 2px solid #d8d8d8;
-    padding-top: 0px;
-    padding-bottom: 0px;
-    padding-left: 0px;
     color: #7e7e7e;
     text-transform: uppercase;
+    border-bottom: 2px solid #d8d8d8;
 }
 
 .home_page_block_two .manager .extra_coordinator {
@@ -179,3 +170,15 @@
     cursor: auto !important;
 }
 
+/* overides for video */
+
+.resourcecontent{
+    width: 100%;
+}
+
+.mediaplugin_html5audio, .mediaplugin_html5video, .mediaplugin_swf, .mediaplugin_flv, .mediaplugin_real, .mediaplugin_youtube, .mediaplugin_vimeo, .mediaplugin_wmp, .mediaplugin_qt {
+    display: block;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    text-align: left;
+}

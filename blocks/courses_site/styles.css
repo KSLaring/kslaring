@@ -16,7 +16,7 @@
     white-space: pre-wrap;       /* css-3 */
     word-wrap: break-word;       /* Internet Explorer 5.5+ */
     white-space: normal;
-    margin-bottom: 20px;
+    margin-bottom: 5px;
 }
 
 .label_header {
@@ -28,10 +28,10 @@
 .block_courses_site_type {
     width: 100%;
     display: inline-block;
-    min-height: 200px;
-    max-height: 200px;
+    //min-height: 200px;
+    //max-height: 200px;
     text-justify:inter-word;
-    margin-top: 30px;
+    margin-top: 00px;
 }
 
 .line {

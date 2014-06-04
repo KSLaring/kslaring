@@ -59,7 +59,7 @@ echo $OUTPUT->doctype() ?>
 <div class="header-background">
     <div class="container-fluid">
         <div class="logo-area">
-            <a class="logo" href="<?php echo $url; ?>"><img class="logo" alt="kommit logo" src="<?php echo
+            <a class="logo" href="<?php echo $CFG->wwwroot;?>"><img class="logo" alt="kommit logo" src="<?php echo
                 $OUTPUT->pix_url('logo', 'theme'); ?>"></a>
         </div>
         <div class="header-right">
