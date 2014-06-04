@@ -192,6 +192,9 @@ class block_courses_site extends block_base {
     }//block_courses_site_AddColumn
 
     function block_courses_site_AddColumnExtra($course_site,$class) {
+        /* Varaibles    */
+        $pre = '';
+
         $this->content->text .= '<div class="' . $class . '">';
             $this->content->text .= '<div class="course_extra">';
                 /* Published */
@@ -213,7 +216,12 @@ class block_courses_site extends block_base {
                     $this->content->text .= '</div>'; //col_one
 
                     $this->content->text .= '<div class="col_three">';
-                        $this->content->text .= substr($course_site->prerequisities,0,150);
+                        if (strlen($course_site->prerequisities) > 50) {
+                            $pre = substr($course_site->prerequisities,0,50) . '..';
+                        }else {
+                            $pre = $course_site->prerequisities;
+                        }
+                        $this->content->text .= '<p>' . $pre .'</p>';
                     $this->content->text .= '</div>'; //col_two
 
                     $this->content->text .= '<div class="col_two">';
