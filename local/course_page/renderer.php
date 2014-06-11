@@ -328,9 +328,9 @@ class local_course_page_renderer extends plugin_renderer_base {
                     $user->description = file_rewrite_pluginfile_urls($user->description, 'pluginfile.php', CONTEXT_USER::instance($user->id)->id, 'user', 'profile', null);
                     $url_user = new moodle_url('/user/profile.php',array('id' => $user->id));
 
-                    $out .= $OUTPUT->user_picture($user, array('size'=>150));
                     $out .= '<label class="label_coordinator">' . get_string('home_coordinater','local_course_page') . '</label>';
-                    $out .= '<a href="' . $url_user . '">' . fullname($user) . '</a>';
+                    $out .= $OUTPUT->user_picture($user, array('size'=>150));
+                    $out .= '<div class="user"><a href="' . $url_user . '">' . fullname($user) . '</a></div>';
                     $out .= '<label class="extra_coordinator">' . $user->description . '</label>';
                 }//if_manager
             $out .= '</p>';
