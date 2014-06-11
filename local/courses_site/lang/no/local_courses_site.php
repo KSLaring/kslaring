@@ -10,38 +10,38 @@
  * @author          eFaktor     (fbv)
  */
 
-$string['pluginname']   = 'Courses Site';
+$string['pluginname']   = 'Forsideblokk for kurs';
 
-$string['title_add']    = 'Add Course';
-$string['title_edit']   = 'Edit Course';
-$string['title_del']    = 'Delete Course';
+$string['title_add']    = 'Legg til kurs';
+$string['title_edit']   = 'Rediger kurs';
+$string['title_del']    = 'Slett kurs';
 
-$string['select_category']      = 'Choose a category...';
-$string['category']             = 'Category';
-$string['category_required']    = 'The Category is required';
+$string['select_category']      = 'Velg en kategori...';
+$string['category']             = 'Kategori';
+$string['category_required']    = 'Du må velge en kategori';
 
-$string['select_course']    = 'Choose a course...';
-$string['course']           = 'Course';
-$string['course_required']  = 'The Course is required';
+$string['select_course']    = 'Velg et kurs...';
+$string['course']           = 'Kurs';
+$string['course_required']  = 'Du må velge et kurs';
 
-$string['order']            = 'Order';
-$string['order_required']   = 'The Order is required';
+$string['order']            = 'Plassering';
+$string['order_required']   = 'Må må velge en plassering';
 
-$string['title']            = 'Title';
-$string['title_required']   = 'The title is required';
+$string['title']            = 'Tittel';
+$string['title_required']   = 'Du må fylle inn en tittel';
 
-$string['description']      = 'Description';
-$string['descrip_required'] = 'The Description is required';
+$string['description']      = 'Beskrivelse';
+$string['descrip_required'] = 'Du må fylle inn en beskrivelse';
 
-$string['picture']          = 'Picture';
-$string['picture_required'] = 'The picture is required';
-$string['current']          = 'Current Picture';
+$string['picture']          = 'Bilde';
+$string['picture_required'] = 'Du må legge til et bilde';
+$string['current']          = 'Nåværende bilde';
 
-$string['save']  = 'Save';
+$string['save']  = 'Lagre';
 
-$string['error_delete']     = 'Sorry, the {$a} course could not be removed from "Courses Site Block". Please, you can try it later or contact with the administrator.';
-$string['delete_course']    = 'The {$a} course has been removed from "Courses Site Block"';
+$string['error_delete']     = 'Beklager, kurset {$a} kan ikke flyttes fra "Forsideblokk for kurs". Vennligst prøv igjen senere, eller kontakt en administrator som kan hjelpe deg.';
+$string['delete_course']    = 'Kurset {$a} har blitt fjernet fra "Forsideblokk for kurs"';
 
-$string['error_del_pic']    = 'If you want to delete the actual picture, you MUST upload a new one.';
+$string['error_del_pic']    = 'Hvis du ønsker å slette det nåværende bildet, MÅ du laste opp et nytt.';
 
-$string['current_picture']  = 'Current picture';
+$string['current_picture']  = 'Nåværende bilde';
