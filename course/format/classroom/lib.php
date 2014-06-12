@@ -710,7 +710,7 @@ class format_classroom extends format_base {
                     }else {
                         $delete = false;
                     }//if_delete
-                    if (isset($data['pagegraphics']) && ($data['pagegraphics']) && isset($data['pagegraphics_filemanager']) && ($data['pagegraphics_filemanager'])) {
+                    if (isset($data['pagegraphics']) && isset($data['pagegraphics_filemanager'])) {
                         $graphic_id = course_page::getHomeGraphicsVideo($data['pagegraphics'],'pagegraphics',$data['pagegraphics_filemanager'],$delete);
                         if ($graphic_id) {
                             $data[$key] = $graphic_id;
@@ -724,7 +724,7 @@ class format_classroom extends format_base {
                     }else {
                         $delete = false;
                     }//if_delete
-                    if (isset($data['pagevideo']) && ($data['pagevideo']) && isset($data['pagevideo_filemanager']) && ($data['pagevideo_filemanager'])) {
+                    if (isset($data['pagevideo']) && isset($data['pagevideo_filemanager'])) {
                         $video_id = course_page::getHomeGraphicsVideo($data['pagevideo'],'pagevideo',$data['pagevideo_filemanager'],$delete);
                         if ($video_id) {
                             $data[$key] = $video_id;

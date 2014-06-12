@@ -440,7 +440,9 @@ class courses_site  {
             if ($course_site->picture) {
                 $fs = get_file_storage();
                 $file = $fs->get_file_by_id($course_site->picture);
-                $DB->delete_records('files',array('itemid' => $file->get_itemid()));
+                if ($file && $file->get_itemid()) {
+                    $DB->delete_records('files',array('itemid' => $file->get_itemid()));
+                }
             }//course_site
 
             return true;

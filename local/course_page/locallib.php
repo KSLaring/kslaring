@@ -356,7 +356,13 @@ class course_page  {
     public static function get_edit_options() {
         global $CFG,$COURSE;
 
-        $context        = CONTEXT_COURSE::instance($COURSE->id);
+        /* Get the context  */
+        if ($COURSE->id) {
+            $context        = CONTEXT_COURSE::instance($COURSE->id);
+        }else {
+            $context = CONTEXT_COURSECAT::instance(0);
+        }//if_else_course
+
         $edit_options   = array('maxfiles' => EDITOR_UNLIMITED_FILES, 'maxbytes'=>$CFG->maxbytes, 'trusttext'=>false, 'noclean'=>true, 'context' => $context);
 
         return array($edit_options,$context);
@@ -375,7 +381,13 @@ class course_page  {
     public static function get_file_options() {
         global $CFG,$COURSE;
 
-        $context        = CONTEXT_COURSE::instance($COURSE->id);
+        /* Get the context  */
+        if ($COURSE->id) {
+            $context        = CONTEXT_COURSE::instance($COURSE->id);
+        }else {
+            $context = CONTEXT_COURSECAT::instance(0);
+        }//if_else_course
+
         $file_options   = array('maxfiles' => 1, 'maxbytes'=>$CFG->maxbytes, 'subdirs' => 0, 'context' => $context);
 
         return array($file_options,$context);
@@ -402,13 +414,17 @@ class course_page  {
         $editor->homesummary       = '';
         $editor->homesummaryformat  = FORMAT_HTML;
 
-        $format_options = course_get_format($COURSE->id)->get_format_options();
-        if (array_key_exists('homesummary',$format_options)) {
-            $editor->homesummary = $format_options['homesummary'];
-        }//if_array_exists
+        /* Prepare the editor   */
+        if ($COURSE->id) {
+            $format_options = course_get_format($COURSE->id)->get_format_options();
+            if (array_key_exists('homesummary',$format_options)) {
+                $editor->homesummary = $format_options['homesummary'];
+            }//if_array_exists
+            $editor = file_prepare_standard_editor($editor, 'homesummary', $edit_options,$context, 'course', 'homesummary',0);
+        }else {
+            $editor = file_prepare_standard_editor($editor, 'homesummary', $edit_options,null, 'course', 'homesummary',0);
+        }//if_course
 
-
-        $editor = file_prepare_standard_editor($editor, 'homesummary', $edit_options,$context, 'course', 'homesummary',0);
 
         return $editor;
     }//prepareStandardHomeSummaryEditor
@@ -430,15 +446,19 @@ class course_page  {
         /* Variables */
         global $COURSE;
         $file_editor = new stdClass();
+        $file_editor->$field  = 0;
 
         /* Prepare Standard Editor */
-        $format_options = course_get_format($COURSE->id)->get_format_options();
-        $file_editor->$field  = 0;
-        if (array_key_exists($field,$format_options)) {
-            $file_editor->$field    = $format_options[$field];
-        }//if_array_Exists
+        if ($COURSE->id) {
+            $format_options = course_get_format($COURSE->id)->get_format_options();
+            if (array_key_exists($field,$format_options)) {
+                $file_editor->$field    = $format_options[$field];
+            }//if_array_Exists
 
-        $file_editor = file_prepare_standard_filemanager($file_editor, $field,$file_options,$context, 'course',$field,0);
+            file_prepare_standard_filemanager($file_editor, $field,$file_options,$context, 'course',$field,0);
+        }else {
+            file_prepare_standard_filemanager($file_editor, $field,$file_options,null, 'course',$field,0);
+        }//if_course
 
         return $file_editor;
     }//prepareFileManagerHomeGraphics
@@ -502,6 +522,7 @@ class course_page  {
         $file_graphicVideo->$field_manager = $file_manager;
 
         $file_graphicVideo = file_postupdate_standard_filemanager($file_graphicVideo, $field, $file_options, $context, 'course', $field, $file_graphicVideo->$field_manager);
+
         if ($files = $fs->get_area_files($context->id, 'course', $field, $file_graphicVideo->$field_manager, 'id DESC', false)) {
             /* Remove Previous  */
             $file = reset($files);
@@ -725,12 +746,13 @@ class course_page  {
 
                 $page_graphics = $form->createElement('filemanager', 'pagegraphics_filemanager', get_string('home_graphics','local_course_page'), null, $file_options);
                 $form->insertElementBefore($page_graphics,'courseformathdr');
+                $form->setDefault('pagegraphics_filemanager',$file_editor->pagegraphics);
 
                 $form->addElement('hidden','pagegraphics');
                 $form->setType('pagegraphics',PARAM_RAW);
                 $format_options = course_get_format($COURSE->id)->get_format_options();
-                if (array_key_exists('homegraphics',$format_options)) {
-                    $form->setDefault('homegraphics',$format_options['homegraphics']);
+                if (array_key_exists('pagegraphics',$format_options)) {
+                    $form->setDefault('pagegraphics',$format_options['pagegraphics']);
                 }//if_exists
 
                 break;
@@ -754,6 +776,7 @@ class course_page  {
 
                 $page_video = $form->createElement('filemanager', 'pagevideo_filemanager', get_string('home_video','local_course_page'), null, $file_options);
                 $form->insertElementBefore($page_video,'courseformathdr');
+                $form->setDefault('pagegraphics_filemanager',$file_editor->pagevideo_filemanager);
 
                 $form->addElement('hidden','pagevideo');
                 $form->setType('pagevideo',PARAM_RAW);
