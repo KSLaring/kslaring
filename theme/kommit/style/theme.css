@@ -473,6 +473,7 @@ body {
   position: relative;
 }
 #page-footer #page-footer-inner p {
+  padding: 0 20px;
   color: white;
 }
 #page-footer #page-footer-inner .column {
