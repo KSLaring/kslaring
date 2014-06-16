@@ -136,7 +136,7 @@ echo $OUTPUT->doctype() ?>
 
         <div class="column">
             <div class="footer-logo">
-                <img src="<?php echo $OUTPUT->pix_url('ks_footer_logo', 'theme'); ?>" width="71" height="35"/>
+                <img src="<?php echo $OUTPUT->pix_url('ks_footer_logo', 'theme'); ?>" width="278" height="45"/>
             </div>
         </div>
         <p>© 2014 KOMMUNESEKTORENS ORGANISASJON</p>
