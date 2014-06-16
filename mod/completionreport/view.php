@@ -204,7 +204,13 @@ if ($enrolled && $completionenabled) {
             $row['timecompleted'] = $completion->timecompleted;
             $row['details'] = $criteria->get_details($completion);
 
-            // If the module is palced in section 0 then add the information
+            // In details/requirement the module name is not translated.
+            // Get the language module name and change the requirement string.
+            $modname = get_string('modulename', $criteria->module);
+            $newrequirement = get_string('viewingactivity', 'completion', $modname);
+            $row['details']['requirement'] = $newrequirement;
+
+            // If the module is placed in section 0 then add the information
             // to the link that no menu shall be shown.
             $modinstance = $criteria->moduleinstance;
             if (in_array($modinstance, $sec0modinstances)) {
@@ -242,7 +248,7 @@ if ($enrolled && $completionenabled) {
                         echo core_text::strtolower(get_string('any', 'completion'));
                     }
 
-                    echo html_writer::end_tag('span') .core_text::strtolower(get_string('required')).')';
+                    echo html_writer::end_tag('span').' '.core_text::strtolower(get_string('required')).')';
                     $agg_type = false;
                 }
             }
