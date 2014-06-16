@@ -467,7 +467,6 @@ body {
 }
 #page-footer #page-footer-inner {
   margin: 0 auto;
-  min-height: 8em;
   max-width: 1200px;
   padding: 0 0%;
   text-align: left;
@@ -479,9 +478,13 @@ body {
 #page-footer #page-footer-inner .column {
   display: inline-block;
   vertical-align: top;
+  height: 80px;
   width: 15%;
   max-width: 200px;
   padding: 0 5px;
+}
+#page-footer #page-footer-inner .column .footer-logo {
+  padding: 20px;
 }
 #page-footer #page-footer-inner .column p {
   font-size: 13.504px;
@@ -761,7 +764,7 @@ div.loginpanel h2 {
     font-size: 28.32px;
   }
   .hero-unit .texts {
-    width: 95%;
+    width: 85%;
     margin-top: 1%;
   }
   .hero-unit .lead {

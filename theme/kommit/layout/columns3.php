@@ -131,67 +131,16 @@ echo $OUTPUT->doctype() ?>
 
     </div>
 
-    <footer id="page-footer">
-        <div id="page-footer-inner" class="wrapper clearfix">
+<footer id="page-footer">
+    <div id="page-footer-inner" class="wrapper clearfix">
 
-            <div class="column">
-                <h4>Kontakt:</h4>
-                <p>Telefon: +47 09088</br>
-                    Epost: info@kommit.no
-                </p>
+        <div class="column">
+            <div class="footer-logo">
                 <img src="<?php echo $OUTPUT->pix_url('ks_footer_logo', 'theme'); ?>" width="71" height="35"/>
             </div>
-            <div class="column">
-                <h4>Siste nytt</h4>
-                <p>Informasjonssikkerhet</br>
-                    KOLS-kurs</br>
-                    Saksbehandlers arkivrutiner</br>
-                    Er du god i norsk og nynorsk?</br>
-                    Introduksjonsprogrammet</br>
-                </p>
-            </div>
-            <div class="column">
-                <h4>Populære kurs</h4>
-
-                <p>Informasjonssikkerhet</br>
-                    KOLS-kurs</br>
-                    Saksbehandlers arkivrutiner</br>
-                    Er du god i norsk og nynorsk?</br>
-                    Introduksjonsprogrammet</br>
-                </p>
-            </div>
-            <div class="column">
-                <h4>Populære nedlastinger</h4>
-                <p>Informasjonssikkerhet</br>
-                    KOLS-kurs</br>
-                    Saksbehandlers arkivrutiner</br>
-                    Er du god i norsk og nynorsk?</br>
-                    Introduksjonsprogrammet</br>
-
-                </p>
-            </div>
-            <div class="column">
-                <h4>Siste fra brukerfora</h4>
-                <p>Informasjonssikkerhet</br>
-                    KOLS-kurs</br>
-                    Saksbehandlers arkivrutiner</br>
-                    Er du god i norsk og nynorsk?</br>
-                    Introduksjonsprogrammet</br>
-                </p>
-            </div>
-            <div class="column">
-                <h4>Hyppige søk</h4>
-                <p>Informasjonssikkerhet</br>
-                    KOLS</br>
-                    Saksbehandlers</br>
-                    nynorsk?</br>
-                    Introduksjonsprogram</br>
-                </p>
-            </div>
-            <p>© 2014 KOMMUNESEKTORENS ORGANISASJON</p>
-
         </div>
-
+        <p>© 2014 KOMMUNESEKTORENS ORGANISASJON</p>
+    </div>
 </footer>
 <?php echo $OUTPUT->standard_end_of_body_html() ?>
 
