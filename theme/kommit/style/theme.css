@@ -457,6 +457,7 @@ body {
   text-align: left;
   background: #1a1a1a;
   border-top: 3px solid #00aef0;
+  padding: 0;
 }
 #page-footer h4 {
   text-align: left;
@@ -839,12 +840,6 @@ div.loginpanel h2 {
     margin-left: -10px;
     margin-right: -10px;
   }
-  #page-footer #page-footer-inner .column {
-    float: none;
-    display: block;
-    width: 100%;
-    margin-left: 0;
-  }
   .label_header {
     min-height: 70px;
   }
@@ -904,6 +899,12 @@ div.loginpanel h2 {
   }
   .home_page_block_two {
     width: 100%;
+  }
+  #page-footer #page-footer-inner .column {
+    float: none;
+    display: block;
+    width: 100%;
+    margin-left: 0;
   }
 }
 @media (min-width: 979px) {

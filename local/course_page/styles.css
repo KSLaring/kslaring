@@ -140,6 +140,7 @@
 }
 
 .home_page_block_two .manager .extra_coordinator {
+    width: 99%;
     display: inline-block;
     margin-right: 5px;
     word-wrap: break-word;
