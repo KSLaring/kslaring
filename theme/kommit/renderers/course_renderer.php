@@ -56,7 +56,7 @@ class theme_kommit_core_course_renderer extends core_course_renderer {
             if ('ltr' === get_string('thisdirection', 'langconfig')) {
                 $icondirection = 'right';
             }
-            $btn = html_writer::tag('div', get_string('course') . ' ' . $arrow, array('class' => 'coursequicklink'));
+            $btn = html_writer::tag('div', get_string('readmore','theme_kommit') . ' ' . $arrow, array('class' => 'coursequicklink'));
             $content .= html_writer::link(new moodle_url('/course/view.php',
                 array('id' => $course->id)), $btn, array('class' => 'coursebtn btn buttons'));
         }

@@ -845,6 +845,12 @@ div.loginpanel h2 {
     width: 100%;
     margin-left: 0;
   }
+  .label_header {
+    min-height: 70px;
+  }
+  .block_courses_site_type {
+    height: 60px;
+  }
 }
 @media (min-width: 600px) and (max-width: 767px) {
   .header-background {
@@ -854,6 +860,22 @@ div.loginpanel h2 {
   .logo-area {
     float: left;
     padding-left: 20px;
+  }
+}
+@media (min-width: 770px) and (max-width: 849px) {
+  .label_header {
+    min-height: 130px;
+  }
+  .block_courses_site_type {
+    height: 80px;
+  }
+}
+@media (min-width: 850px) and (max-width: 978px) {
+  .label_header {
+    min-height: 100px;
+  }
+  .block_courses_site_type {
+    height: 80px;
   }
 }
 @media (max-width: 979px) {

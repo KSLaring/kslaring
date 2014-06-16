@@ -128,6 +128,15 @@
     width: 100%;
     margin-left: 0;
   }
+
+  // adjust height of featured courses
+  // -------------------------------
+  .label_header{
+    min-height: 70px;
+  }
+  .block_courses_site_type {
+    height: 60px;
+  }
 }
 
 @media (min-width:600px) and (max-width: 767px) {
@@ -140,6 +149,30 @@
     padding-left: 20px;
   }
 }
+
+
+@media (min-width:770px) and (max-width: 849px) {
+  // adjust height of featured courses
+  // -------------------------------
+  .label_header{
+    min-height: 130px;
+  }
+  .block_courses_site_type {
+    height: 80px;
+  }
+}
+
+@media (min-width:850px) and (max-width: 978px) {
+  // adjust height of featured courses
+  // -------------------------------
+  .label_header{
+    min-height: 100px;
+  }
+  .block_courses_site_type {
+    height: 80px;
+  }
+}
+
 
 @media (max-width: 979px) {
   .nav-collapse.active {
@@ -163,12 +196,9 @@
 
   // Lesson Module - Set min-height on lesson pages
   // -------------------------------------
-
-  #page-mod-lesson-view .contents {
+ #page-mod-lesson-view .contents {
     //min-height: 12em;
   }
-
-
   // Switch home page layout to 100%
   // -------------------------------
   .home_page_block_one {

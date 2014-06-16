@@ -45,3 +45,4 @@ $string['delete_course']    = 'Kurset {$a} har blitt fjernet fra "Forsideblokk f
 $string['error_del_pic']    = 'Hvis du ønsker å slette det nåværende bildet, MÅ du laste opp et nytt.';
 
 $string['current_picture']  = 'Nåværende bilde';
+$string['btn_more']         = 'Les mer';

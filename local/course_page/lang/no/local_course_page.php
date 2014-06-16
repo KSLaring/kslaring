@@ -45,4 +45,4 @@ $string['home_visible']             = 'Publiseringsstatus';
 $string['home_course_id']           = 'Kurs ID';
 $string['block_staff']              = 'Kurslærere';
 $string['home_type']                = 'Type';
-$string['btn_more']                 = 'Mer informasjon';
+$string['btn_more']                 = 'Les mer';

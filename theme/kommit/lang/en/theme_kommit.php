@@ -63,4 +63,7 @@ $string['edit_label'] = 'Edit mode:';
 $string['sethome']      = 'Set as my home page';
 $string['resethome']    = 'Reset to default page';
 
+/* Read more */
+$string['readmore']      = 'Read more';
+
 

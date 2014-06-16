@@ -20,7 +20,7 @@
 .label_header{
     display: block;
     width:99%;
-    min-height: 70px;
+    min-height: 85px;
     word-wrap: break-word;
     margin-bottom: 0;
 
@@ -42,7 +42,6 @@
     image-rendering: auto;
     image-rendering: crisp-edges;
     image-rendering: pixelated;
-
     image-rendering: inherit;
     margin-bottom: 10px;
     margin-top: 10px;
@@ -55,10 +54,9 @@
     margin-left: 0px;
 }
 .title_site {
-    height:10px;
-    font:bold 14px Verdana,Verdana Pro,sans-serif;
+    font-size: 1.2em;
+    height:20px;
     text-align: left;
-    line-height: 10px;
     padding-top: 0px;
     padding-bottom: 5px;
     margin-bottom: 10px;
@@ -99,7 +97,6 @@
 .course_extra .col_one {
     float: left;
     text-align: left;
-    font:bold 12px Verdana,Verdana Pro,sans-serif;
     color:#0E7B9E;
     width: 25%;
     display: inline-block;
@@ -114,7 +111,7 @@
     float: right;
     text-align: right;
     font-weight: normal;
-    width: 60%;
+    width: 64%;
     display: inline-block;
     white-space: -moz-pre-wrap !important;  /* Mozilla, since 1999 */
     white-space: -pre-wrap;      /* Opera 4-6 */
@@ -133,9 +130,8 @@
 .course_type .col_one {
     float: left;
     text-align: left;
-    font:bold 12px Verdana,Verdana Pro,sans-serif;
     color:#0E7B9E;
-    width: 25%;
+    width: 30%;
     margin-right: 10px;
     display: inline-block;
 }

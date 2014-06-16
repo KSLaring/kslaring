@@ -63,3 +63,7 @@ $string['edit_label'] = 'Redigeringsmodus:';
 $string['sethome']      = 'Angi som startside';
 $string['resethome']    = 'Bruk standard startside';
 
+
+/* Read more */
+$string['readmore']      = 'Les mer';
+
