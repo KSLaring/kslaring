@@ -45,3 +45,4 @@ $string['delete_course']    = 'The {$a} course has been removed from "Courses Si
 $string['error_del_pic']    = 'If you want to delete the actual picture, you MUST upload a new one.';
 
 $string['current_picture']  = 'Current picture';
+$string['btn_more']         = 'More';

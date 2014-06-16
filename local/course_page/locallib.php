@@ -98,7 +98,7 @@ class course_page  {
 
             /* SQL Instruction  */
             $sql = " SELECT		DISTINCT u.id,
-                                CONCAT(u.firstname, ',' , u.lastname) as 'name'
+                                CONCAT(u.firstname, ' ' , u.lastname) as 'name'
                      FROM		{user}					u
                         JOIN	{role_assignments}		ra		ON		ra.userid 		= u.id
                         JOIN	{role}					r		ON		r.id 			= ra.roleid

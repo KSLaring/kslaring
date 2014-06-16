@@ -330,8 +330,8 @@ class local_course_page_renderer extends plugin_renderer_base {
 
                     $out .= '<label class="label_coordinator">' . get_string('home_coordinater','local_course_page') . '</label>';
                     $out .= $OUTPUT->user_picture($user, array('size'=>150));
-                    $out .= '<div class="user"><a href="' . $url_user . '">' . fullname($user) . '</a></div>';
-                    $out .= '<label class="extra_coordinator">' . $user->description . '</label>';
+                    $out .= '<div class="user"><a href="' . $url_user . '">' . fullname($user) . '</a>';
+                    $out .= '<label class="extra_coordinator">' . $user->description . '</label></div>';
                 }//if_manager
             $out .= '</p>';
 
