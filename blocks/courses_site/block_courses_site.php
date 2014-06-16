@@ -257,7 +257,7 @@ class block_courses_site extends block_base {
         $this->content->text .= '<div class="' . $class . '">';
             $this->content->text .= '<div class="col_one">';
                 /* Button */
-                $this->content->text .= '<a href="' . $url . '"><button class="button_site">' . get_string('btn_more','local_course_page') . '</button></a>';
+                $this->content->text .= '<a href="' . $url . '"><button class="button_site">' . get_string('btn_more','local_courses_site') . '</button></a>';
             $this->content->text .= '</div>'; //col_one
 
             $this->content->text .= '<div class="col_three">';
