@@ -231,13 +231,16 @@ class local_course_page_renderer extends plugin_renderer_base {
 
             switch ($course->format) {
                 case 'netcourse':
-                    $out .= html_writer::empty_tag('img', array('src'=>$OUTPUT->pix_url('i/nett_kurs'),'alt'=> '','class'=>'icon'));
+                    $url_img = new moodle_url('/local/courses_site/img/nett_kurs.svg');
+                    $out .= html_writer::empty_tag('img', array('src'=>$url_img,'alt'=> '','class'=>'icon'));
                     break;
                 case 'classroom':
-                    $out .= html_writer::empty_tag('img', array('src'=>$OUTPUT->pix_url('i/classroom'),'alt'=> '','class'=>'icon'));
+                    $url_img = new moodle_url('/local/courses_site/img/classroom.svg');
+                    $out .= html_writer::empty_tag('img', array('src'=>$url_img,'alt'=> '','class'=>'icon'));
                     break;
                 case 'whitepaper':
-                    $out .= html_writer::empty_tag('img', array('src'=>$OUTPUT->pix_url('i/whitepaper'),'alt'=> '','class'=>'icon'));
+                    $url_img = new moodle_url('/local/courses_site/img/whitepaper.svg');
+                    $out .= html_writer::empty_tag('img', array('src'=>$url_img,'alt'=> '','class'=>'icon'));
                     break;
                 default:
                     break;

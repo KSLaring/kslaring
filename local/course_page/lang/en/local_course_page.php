@@ -10,13 +10,13 @@
  * @author          eFaktor     (fbv)
  */
 
-$string['pluginname']   = 'Course Home Page';
+$string['pluginname']           = 'Course Home Page';
 $string['course_page:manage']   = 'Manage Course Home Page';
 
 $string['checkbox_home']            = 'Create Course Home Page';
 $string['checkbox_home_help']       = 'If the Course Home Page has to be generated';
 $string['home_page']                = 'Course Home Page';
-$string['home_desc']                = 'Description';
+$string['home_desc']                = 'About this course';
 $string['home_prerequisities']      = 'Prerequisites';
 $string['home_effort']              = 'Estimated Effort';
 $string['home_graphics']            = 'Home page graphics';
