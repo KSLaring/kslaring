@@ -182,7 +182,7 @@ class block_courses_site extends block_base {
                 $this->content->text .= '</a>';
                 $this->content->text .= '</br>';
             $this->content->text .= '<a href="' . $url . '">' ;
-                    $this->content->text .= '<label class="title_site">'  . $course_site->title . '</label>';
+                    $this->content->text .= '<p class="title_site">'  . $course_site->title . '</p>';
                 $this->content->text .= '</a>';
             $this->content->text .= '</p>';
 
