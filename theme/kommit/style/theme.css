@@ -865,12 +865,12 @@ div.loginpanel h2 {
     padding-left: 20px;
   }
 }
-@media (min-width: 770px) and (max-width: 849px) {
+@media (min-width: 767px) and (max-width: 849px) {
   .label_header {
     min-height: 130px;
   }
   .block_courses_site_type {
-    height: 80px;
+    height: 100px;
   }
 }
 @media (min-width: 850px) and (max-width: 978px) {
@@ -913,6 +913,14 @@ div.loginpanel h2 {
     display: block;
     width: 100%;
     margin-left: 0;
+  }
+}
+@media (min-width: 976px) and (max-width: 1090px) {
+  .label_header {
+    min-height: 100px;
+  }
+  .block_courses_site_type {
+    height: 90px;
   }
 }
 @media (min-width: 979px) {
