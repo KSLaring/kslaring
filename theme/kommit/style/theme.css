@@ -866,6 +866,9 @@ div.loginpanel h2 {
   }
 }
 @media (min-width: 767px) and (max-width: 849px) {
+  .course_extra .col_three {
+    width: 56%;
+  }
   .label_header {
     min-height: 130px;
   }
