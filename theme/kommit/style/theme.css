@@ -772,6 +772,16 @@ div.loginpanel h2 {
     margin-top: 1%;
     font-size: 21.328px;
   }
+  #navsearchbox {
+    width: 80px;
+  }
+  #page-course-index-category .categorypicker .singleselect {
+    width: 100%;
+  }
+  #page-course-index-category .generalbox.info h1,
+  h2 {
+    word-break: break-all;
+  }
   .home_page_block_one {
     width: 100%;
   }
