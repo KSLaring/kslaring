@@ -182,7 +182,7 @@ class block_courses_site extends block_base {
                 $this->content->text .= '</a>';
                 $this->content->text .= '</br>';
             $this->content->text .= '<a href="' . $url . '">' ;
-                    $this->content->text .= '<label class="title_site">'  . $course_site->title . '</label>';
+                    $this->content->text .= '<p class="title_site">'  . $course_site->title . '</p>';
                 $this->content->text .= '</a>';
             $this->content->text .= '</p>';
 
@@ -250,7 +250,7 @@ class block_courses_site extends block_base {
     }//block_courses_site_AddColumnExtra
 
     function block_courses_site_AddColumnButton($course_site,$class) {
-        global $OUTPUT;
+        global $OUTPUT,$CFG;
         /* Get URL For Course   */
         $url                  = new moodle_url('/local/course_page/home_page.php',array('id' => $course_site->course));
 
@@ -263,13 +263,16 @@ class block_courses_site extends block_base {
             $this->content->text .= '<div class="col_three">';
                 switch ($course_site->type) {
                     case 'netcourse':
-                        $this->content->text .= html_writer::empty_tag('img', array('src'=>$OUTPUT->pix_url('i/nett_kurs'),'alt'=> '','class'=>'icon'));
+                        $url_img = new moodle_url('/local/courses_site/img/nett_kurs.svg');
+                        $this->content->text .= html_writer::empty_tag('img', array('src'=>$url_img,'class'=>'icon'));
                         break;
                     case 'classroom':
-                        $this->content->text .= html_writer::empty_tag('img', array('src'=>$OUTPUT->pix_url('i/classroom'),'alt'=> '','class'=>'icon'));
+                        $url_img = new moodle_url('/local/courses_site/img/classroom.svg');
+                        $this->content->text .= html_writer::empty_tag('img', array('src'=>$url_img,'alt'=> '','class'=>'icon'));
                         break;
                     case 'whitepaper':
-                        $this->content->text .= html_writer::empty_tag('img', array('src'=>$OUTPUT->pix_url('i/whitepaper'),'alt'=> '','class'=>'icon'));
+                        $url_img = new moodle_url('/local/courses_site/img/whitepaper.svg');
+                        $this->content->text .= html_writer::empty_tag('img', array('src'=>$url_img,'alt'=> '','class'=>'icon'));
                         break;
                     default:
                         break;
