@@ -263,15 +263,15 @@ class block_courses_site extends block_base {
             $this->content->text .= '<div class="col_three">';
                 switch ($course_site->type) {
                     case 'netcourse':
-                        $url_img = new moodle_url('/local/courses_site/img/nett_kurs.svg');
+                        $url_img = new moodle_url('/pix/i/nett_kurs');
                         $this->content->text .= html_writer::empty_tag('img', array('src'=>$url_img,'class'=>'icon'));
                         break;
                     case 'classroom':
-                        $url_img = new moodle_url('/local/courses_site/img/classroom.svg');
+                        $url_img = new moodle_url('/pix/i/classroom');
                         $this->content->text .= html_writer::empty_tag('img', array('src'=>$url_img,'alt'=> '','class'=>'icon'));
                         break;
                     case 'whitepaper':
-                        $url_img = new moodle_url('/local/courses_site/img/whitepaper.svg');
+                        $url_img = new moodle_url('/pix/i/whitepaper');
                         $this->content->text .= html_writer::empty_tag('img', array('src'=>$url_img,'alt'=> '','class'=>'icon'));
                         break;
                     default:

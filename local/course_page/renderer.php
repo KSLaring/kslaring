@@ -231,15 +231,15 @@ class local_course_page_renderer extends plugin_renderer_base {
 
             switch ($course->format) {
                 case 'netcourse':
-                    $url_img = new moodle_url('/local/courses_site/img/nett_kurs.svg');
+                    $url_img = new moodle_url('/pix/i/nett_kurs');
                     $out .= html_writer::empty_tag('img', array('src'=>$url_img,'alt'=> '','class'=>'icon'));
                     break;
                 case 'classroom':
-                    $url_img = new moodle_url('/local/courses_site/img/classroom.svg');
+                    $url_img = new moodle_url('/pix/i/classroom');
                     $out .= html_writer::empty_tag('img', array('src'=>$url_img,'alt'=> '','class'=>'icon'));
                     break;
                 case 'whitepaper':
-                    $url_img = new moodle_url('/local/courses_site/img/whitepaper.svg');
+                    $url_img = new moodle_url('/pix/i/whitepaper');
                     $out .= html_writer::empty_tag('img', array('src'=>$url_img,'alt'=> '','class'=>'icon'));
                     break;
                 default:
