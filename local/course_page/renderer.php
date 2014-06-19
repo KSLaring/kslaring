@@ -231,15 +231,15 @@ class local_course_page_renderer extends plugin_renderer_base {
 
             switch ($course->format) {
                 case 'netcourse':
-                    $url_img = new moodle_url('/pix/i/nett_kurs');
+                    $url_img = $this->getURLIcon('nett_kurs');
                     $out .= html_writer::empty_tag('img', array('src'=>$url_img,'alt'=> '','class'=>'icon'));
                     break;
                 case 'classroom':
-                    $url_img = new moodle_url('/pix/i/classroom');
+                    $url_img = $this->getURLIcon('classroom');
                     $out .= html_writer::empty_tag('img', array('src'=>$url_img,'alt'=> '','class'=>'icon'));
                     break;
                 case 'whitepaper':
-                    $url_img = new moodle_url('/pix/i/whitepaper');
+                    $url_img = $this->getURLIcon('whitepaper');
                     $out .= html_writer::empty_tag('img', array('src'=>$url_img,'alt'=> '','class'=>'icon'));
                     break;
                 default:
@@ -251,6 +251,60 @@ class local_course_page_renderer extends plugin_renderer_base {
 
         return $out;
     }//addExtraInfo_HomePage
+
+    /**
+     * @param           $icon
+     * @return          moodle_url|string
+     *
+     * @creationDate    19/06/2014
+     * @author          efaktor     (fbv)
+     *
+     * Description
+     * Get the url for the icon
+     */
+    protected function getURLIcon($icon) {
+        /* Variables    */
+        global $CFG;
+        $url_img = '#';
+
+        /* svg  */
+        $file =  $CFG->dirroot . '/pix/i/' . $icon . '.svg';
+        if (file_exists($file)) {
+            return new moodle_url('/pix/i/' . $icon . '.svg');
+        }//if_svg
+
+        /* png  */
+        $file = $CFG->dirroot . '/pix/i/' . $icon . '.png';
+        if (file_exists($file)) {
+            return new moodle_url('/pix/i/' . $icon . '.png');
+        }//if_png
+
+        /* gif  */
+        $file = $CFG->dirroot . '/pix/i/' . $icon . '.gif';
+        if (file_exists($file)) {
+            return new moodle_url('/pix/i/' . $icon . '.gif');
+        }//if_gif
+
+        /* jpg  */
+        $file = $CFG->dirroot . '/pix/i/' . $icon . '.jpg';
+        if (file_exists($file)) {
+            return new moodle_url('/pix/i/' . $icon . '.jpg');
+        }//if_jpg
+
+        /* jpeg */
+        $file = $CFG->dirroot . '/pix/i/' . $icon . '.jpeg';
+        if (file_exists($file)) {
+            return new moodle_url('/pix/i/' . $icon . '.jpeg');
+        }//if_jpeg
+
+        /* ico  */
+        $file = $CFG->dirroot . '/pix/i/' . $icon . '.ico';
+        if (file_exists($file)) {
+            return new moodle_url('/pix/i/' . $icon . '.ico');
+        }//if_ico
+
+        return $url_img;
+    }//getURLIcon
 
     /**
      * @param           $option

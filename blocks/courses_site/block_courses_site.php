@@ -263,15 +263,15 @@ class block_courses_site extends block_base {
             $this->content->text .= '<div class="col_three">';
                 switch ($course_site->type) {
                     case 'netcourse':
-                        $url_img = new moodle_url($CFG->dirroot . '/pix/i/nett_kurs');
+                        $url_img = $this->block_courses_getURLIcon('nett_kurs');
                         $this->content->text .= html_writer::empty_tag('img', array('src'=>$url_img,'class'=>'icon'));
                         break;
                     case 'classroom':
-                        $url_img = new moodle_url('/pix/i/classroom');
+                        $url_img = $this->block_courses_getURLIcon('classroom');
                         $this->content->text .= html_writer::empty_tag('img', array('src'=>$url_img,'alt'=> '','class'=>'icon'));
                         break;
                     case 'whitepaper':
-                        $url_img = new moodle_url('/pix/i/whitepaper');
+                        $url_img = $this->block_courses_getURLIcon('whitepaper');
                         $this->content->text .= html_writer::empty_tag('img', array('src'=>$url_img,'alt'=> '','class'=>'icon'));
                         break;
                     default:
@@ -283,4 +283,58 @@ class block_courses_site extends block_base {
             $this->content->text .= '</div>'; //col_two
         $this->content->text .= '</div>';
     }//block_courses_site_AddColumnButton
+
+    /**
+     * @param           $icon
+     * @return          moodle_url|string
+     *
+     * @creationDate    19/06/2014
+     * @author          efaktor     (fbv)
+     *
+     * Description
+     * Get the url for the icon
+     */
+    function block_courses_getURLIcon($icon) {
+        /* Variables    */
+        global $CFG;
+        $url_img = '#';
+
+        /* svg  */
+        $file =  $CFG->dirroot . '/pix/i/' . $icon . '.svg';
+        if (file_exists($file)) {
+            return new moodle_url('/pix/i/' . $icon . '.svg');
+        }//if_svg
+
+        /* png  */
+        $file = $CFG->dirroot . '/pix/i/' . $icon . '.png';
+        if (file_exists($file)) {
+            return new moodle_url('/pix/i/' . $icon . '.png');
+        }//if_png
+
+        /* gif  */
+        $file = $CFG->dirroot . '/pix/i/' . $icon . '.gif';
+        if (file_exists($file)) {
+            return new moodle_url('/pix/i/' . $icon . '.gif');
+        }//if_gif
+
+        /* jpg  */
+        $file = $CFG->dirroot . '/pix/i/' . $icon . '.jpg';
+        if (file_exists($file)) {
+            return new moodle_url('/pix/i/' . $icon . '.jpg');
+        }//if_jpg
+
+        /* jpeg */
+        $file = $CFG->dirroot . '/pix/i/' . $icon . '.jpeg';
+        if (file_exists($file)) {
+            return new moodle_url('/pix/i/' . $icon . '.jpeg');
+        }//if_jpeg
+
+        /* ico  */
+        $file = $CFG->dirroot . '/pix/i/' . $icon . '.ico';
+        if (file_exists($file)) {
+            return new moodle_url('/pix/i/' . $icon . '.ico');
+        }//if_ico
+
+        return $url_img;
+    }//block_courses_getExtensionIcon
 }//block_courses_site
