@@ -1,0 +1,341 @@
+.clearfix {
+  *zoom: 1;
+}
+.clearfix:before,
+.clearfix:after {
+  display: table;
+  content: "";
+  line-height: 0;
+}
+.clearfix:after {
+  clear: both;
+}
+.hide-text {
+  font: 0/0 a;
+  color: transparent;
+  text-shadow: none;
+  background-color: transparent;
+  border: 0;
+}
+.input-block-level {
+  display: block;
+  width: 100%;
+  min-height: 30px;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+.well {
+  min-height: 20px;
+  padding: 19px;
+  margin-bottom: 20px;
+  border: 1px solid #e3e3e3;
+}
+.well blockquote {
+  border-color: #ddd;
+  border-color: rgba(0, 0, 0, 0.15);
+}
+.well-large {
+  padding: 24px;
+}
+.well-small {
+  padding: 9px;
+}
+h1 {
+  font-size: 25.919999999999998px;
+}
+h2 {
+  font-size: 21.599999999999998px;
+}
+h3 {
+  font-size: 18px;
+}
+h4 {
+  font-size: 15px;
+}
+h5 {
+  font-size: 15px;
+}
+h6 {
+  font-size: 15px;
+}
+.unlist,
+.unlist li,
+.inline-list,
+.inline-list li,
+.block .list,
+.block .list li,
+.section li.activity,
+.section li.movehere,
+.tabtree li {
+  margin: 0.2em 0;
+}
+.editing section[data-droptarget="1"] {
+  min-height: 1em;
+}
+.loginpanel {
+  border: 1px solid #dddddd;
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  border-radius: 4px;
+  background: #f5f5f5;
+  padding: 10px 10px;
+  position: relative;
+  min-width: 210px;
+  max-width: 35%;
+  margin: 0 auto;
+}
+div.loginpanel h2 {
+  color: #555555;
+  font-size: 25.919999999999998px;
+  font-weight: normal;
+  line-height: 20px;
+  margin: 0;
+}
+.loginbox .loginform .form-input {
+  vertical-align: middle;
+  text-align: center;
+  float: none;
+  clear: both;
+  width: 100%;
+  padding-bottom: 1em;
+}
+.loginbox .loginform .form-input #username,
+.loginbox .loginform .form-input #password {
+  position: relative;
+  width: 60%;
+}
+.loginbox .loginform .form-input #loginbtn {
+  vertical-align: middle;
+  text-align: center;
+  width: 60%;
+  padding: 5px;
+}
+.loginbox .loginform .form-label {
+  padding: 0em 0em 0.3em 2em;
+  text-align: center;
+}
+@font-face {
+  font-family: "FontAwesome";
+  font-weight: normal;
+  font-style: normal;
+  src: url("[[setting:fontwww]]fontawesome-webfont.eot?v=4.0.0");
+  src: url("[[setting:fontwww]]fontawesome-webfont.eot?#iefix&v=4.0.0") format("embedded-opentype"), url("[[setting:fontwww]]fontawesome-webfont.woff?v=4.0.0") format("woff"), url("[[setting:fontwww]]fontawesome-webfont.ttf?v=4.0.0") format("truetype"), url("[[setting:fontwww]]fontawesome-webfont.svg#fontawesomeregular?v=4.0.0") format("svg");
+}
+.fa {
+  margin-left: -1.4em;
+  padding-right: 0.4em;
+  min-width: 1em;
+  text-align: center;
+}
+.fa-circle {
+  font-size: .7em;
+}
+p {
+  color: #333333;
+}
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  color: #555555;
+}
+.profilepicture {
+  border: 1px solid #dddddd;
+  background: white;
+  padding: 4px;
+  display: inline-block;
+  max-width: 100%;
+  box-shadow: rgba(0, 0, 0, 0.14902) 1px 1px 1px;
+}
+.descriptionbox {
+  margin: 20px 0 5px 0;
+  border: 1px solid #dddddd;
+  background: #f5f5f5;
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  border-radius: 4px;
+}
+.userprofile h2 {
+  color: #555555;
+}
+.userprofile .description {
+  margin-bottom: 0px;
+  padding: 0 10px 0 10px;
+}
+.userprofile dl {
+  background: #f5f5f5;
+  margin-bottom: 0px;
+  margin-top: 0px;
+}
+.userprofile dl.list dt {
+  padding: 6px 10px 6px 10px;
+  font-weight: normal;
+}
+.userprofile dl.list dd {
+  background: white;
+  text-align: left;
+  padding: 6px 10px 6px 10px;
+  font-weight: normal;
+}
+.navbar-fixed-top .navbar-inner {
+  background: #eeeeee;
+  background-image: none;
+  filter: progid:DXImageTransform.Microsoft.gradient(enabled = false);
+  -webkit-border-radius: 0;
+  -moz-border-radius: 0;
+  border-radius: 0;
+  -webkit-box-shadow: 0px 0px 18px -2px #dddddd;
+  -moz-box-shadow: 0px 0px 18px -2px #dddddd;
+  box-shadow: 0px 0px 18px -2px #dddddd;
+  *zoom: 1;
+}
+.navbar-fixed-top .navbar-inner:before,
+.navbar-fixed-top .navbar-inner:after {
+  display: table;
+  content: "";
+  line-height: 0;
+}
+.navbar-fixed-top .navbar-inner:after {
+  clear: both;
+}
+.navbar .nav .fa {
+  margin-left: -0.4em;
+}
+.sectionname {
+  font-size: 1.3em;
+}
+.section li.activity {
+  padding: 0;
+}
+.course-content .section-summary .section-title {
+  font-size: 1.3em;
+}
+.path-course-view .section .summary {
+  line-height: inherit;
+}
+#section-0 .sectionname {
+  margin-top: 0;
+}
+#site-news-forum h2,
+#frontpage-course-list h2,
+#frontpage-category-names h2,
+#frontpage-category-combo h2 {
+  font-size: 1.3em;
+}
+.coursebox {
+  -webkit-border-radius: 0;
+  -moz-border-radius: 0;
+  border-radius: 0;
+}
+.coursebox > .info > h3.coursename {
+  font-size: 1.3em;
+}
+.coursebox > .info > h3.coursename a {
+  background-position: left .7em;
+}
+.courses .coursebox:hover {
+  background-color: inherit;
+}
+/* To make the course titles have more space on the frontage
+Courses and categories lists, from Mary Evans
+----------------------------*/
+.coursebox .content .summary,
+.coursebox .content .coursecat {
+  width: 100%;
+  float: left;
+}
+.coursebox > .info > .name {
+  width: auto;
+}
+.coursebox .content .teachers,
+.coursebox .content .courseimage,
+.coursebox .content .coursefile {
+  width: 100%;
+}
+#page-course-index-category .generalbox.info {
+  margin: 1em 0;
+  padding: 0 5px;
+}
+.toggle_switch {
+  position: relative;
+  float: left;
+  background: #eeeeee;
+  height: 24px;
+  width: 24px;
+  border: 1px solid #ccc;
+  border-radius: 15px;
+}
+.toggle_container {
+  display: inline-block;
+  position: relative;
+  box-shadow: inset 0 0 0px 1px #d5d5d5;
+  background-color: #f5f5f5;
+  height: 25px;
+  width: 55px;
+  border-radius: 15px;
+}
+.edit_text {
+  float: right;
+  color: #999999;
+  font-weight: normal;
+  font-size: 12.495px;
+  padding-top: 3px;
+  padding-right: 10px;
+}
+.toggle_switch_active {
+  float: right;
+  position: relative;
+  background: #eeeeee;
+  height: 24px;
+  width: 24px;
+  border: 1px solid #ccc;
+  border-radius: 15px;
+}
+.toggle_container_active {
+  display: inline-block;
+  position: relative;
+  background-color: #46a546;
+  box-shadow: inset 0 0 0px 1px #d5d5d5;
+  height: 25px;
+  width: 55px;
+  border-radius: 15px;
+}
+.edit_text_active {
+  float: left;
+  color: white;
+  font-weight: normal;
+  font-size: 12.495px;
+  padding-top: 3px;
+  padding-left: 10px;
+}
+.edit-label {
+  float: left;
+  font-weight: normal;
+  font-size: 12.495px;
+  padding-top: 3px;
+  padding-right: 5px;
+}
+@media (min-width: 1200px) {
+  .container-fluid {
+    width: 1160px;
+    margin: 0 auto;
+  }
+}
+@media (min-width: 979px) {
+  .navbar-right {
+    float: right !important;
+  }
+}
+#totop {
+  position: fixed;
+  bottom: 20px;
+  text-align: center;
+  width: 98%;
+}
+#totop a {
+  background: rgba(255, 255, 255, 0.7);
+  padding: 1em;
+}

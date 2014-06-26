@@ -1,0 +1,21 @@
+//
+// Breadcrumbs
+// --------------------------------------------------
+
+.breadcrumb {
+    padding: 8px 15px;
+    margin: 0 0 @baseLineHeight;
+    list-style: none;
+    > li {
+        display: inline-block;
+        padding: 0 5px;
+        .ie7-inline-block();
+        > .divider {
+            padding: 0 5px;
+            color: #ccc;
+        }
+    }
+    > .active {
+        color: @grayLight;
+    }
+}

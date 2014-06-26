@@ -1,0 +1,198 @@
+/**
+ * New styles to integrate into the theme
+ *
+ * 2014-05-14
+ *
+ * Please remove the styles which are moved to the theme here.
+ */
+
+.home_page {
+    width: 100%;
+    display:block;
+    text-justify:inter-word;
+}
+
+.home_page .header {
+    width: 100%;
+    margin-bottom: 5px;
+
+}
+
+.home_page .header h1{
+    text-align: left;
+    padding-left: 0px;
+}
+
+.home_page_block_one {
+    float:left;
+    width: 68%;
+    display:inline-block;
+    margin-right: 1px;
+    text-justify:inter-word;
+}
+
+.home_page_block_one .buttons{
+    margin-top: 0px;
+    margin-left: -10px;
+    margin-bottom: 25px;
+}
+
+.home_page_block_one .graphic {
+    image-rendering: auto;
+    image-rendering: crisp-edges;
+    image-rendering: pixelated;
+
+    image-rendering: inherit;
+}
+
+.home_page_block_one .video {
+    width: 100%;
+    height: 100%;
+}
+
+.home_page_block_one  h3 {
+    text-align: left;
+
+    margin-top: 0px;
+}
+
+.home_page_block_two {
+    border-left: 3px solid #d8d8d8;
+    padding-left: 10px;
+    float:right;
+    width:30%;
+    display:inline-block;
+    text-justify:inter-word;
+}
+
+.home_page_block_two .extra {
+    display:block;
+    padding-right: 10px;
+}
+
+.home_page_block_two .extra .icon {
+    height: 80px;
+    margin-right: 3px;
+    vertical-align: middle;
+    width: 80px;
+}
+
+.home_page_block_two .extra .label_home {
+    width:99%;
+    text-align: left;
+    display: inline-block;
+    color: #7e7e7e;
+    text-transform: uppercase;
+    border-bottom: 2px solid #d8d8d8;
+}
+
+.home_page_block_two .extra .extra_home{
+    display: inline-block;
+    margin-bottom: 10px;
+    margin-right: 5px;
+    word-wrap: break-word;
+}
+
+.home_page_block_two .manager {
+    display:block;
+    padding-top: 10px;
+    padding-bottom: 2px;
+    padding-right: 10px;
+}
+
+.home_page_block_two .manager .userpicture {
+    image-rendering: auto;
+    image-rendering: crisp-edges;
+    image-rendering: pixelated;
+    image-rendering: inherit;
+    float: left;
+    width: 100px;
+    height: 100px;
+    border-radius: 50px;
+    -webkit-border-radius: 50px;
+    -moz-border-radius: 50px;
+}
+
+.home_page_block_two .manager .user {
+    float: right;
+    width: 55%;
+    margin-top: 10px;
+}
+
+.home_page_block_two .manager .label_manager {
+    width:99%;
+    text-align: left;
+    font-size: 2em;
+    line-height: 40px;
+    display: inline-block;
+    color: #7e7e7e;
+//text-transform: uppercase;
+//border-bottom: 2px solid #d8d8d8;
+}
+
+.home_page_block_two .manager .label_coordinator {
+    width:99%;
+    text-align: left;
+    display: inline-block;
+    color: #7e7e7e;
+    text-transform: uppercase;
+    border-bottom: 2px solid #d8d8d8;
+}
+
+.home_page_block_two .manager .extra_coordinator {
+    width: 99%;
+    display: inline-block;
+    margin-right: 5px;
+    word-wrap: break-word;
+}
+
+.home_page_block_two .manager .label_teacher {
+    width:99%;
+    text-align: left;
+    display: inline-block;
+    color: #7e7e7e;
+    text-transform: uppercase;
+    border-bottom: 2px solid #d8d8d8;
+}
+
+.home_page_block_two .ratings {
+    display:block;
+    padding-top: 10px;
+    padding-right: 10px;
+}
+
+.home_page_block_two .ratings .title_ratings {
+    width:99%;
+    text-align: left;
+    display: inline-block;
+    color: #7e7e7e;
+    text-transform: uppercase;
+    border-bottom: 2px solid #d8d8d8;
+}
+
+.home_page_block_two .ratings .label_ratings {
+    width:99%;
+    text-align: left;
+    display: inline-block;
+    color: #7e7e7e;
+    text-transform: uppercase;
+    border-bottom: 2px solid #d8d8d8;
+}
+
+
+#page-local-course_page-home_page label{
+    cursor: auto !important;
+}
+
+/* overides for video */
+
+.resourcecontent{
+    width: 100%;
+}
+
+.mediaplugin_html5audio, .mediaplugin_html5video, .mediaplugin_swf, .mediaplugin_flv, .mediaplugin_real, .mediaplugin_youtube, .mediaplugin_vimeo, .mediaplugin_wmp, .mediaplugin_qt {
+    display: block;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    text-align: left;
+}

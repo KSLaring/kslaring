@@ -50,8 +50,7 @@ class block_mentees extends block_base {
         $this->content = new stdClass();
 
         // get all the mentees, i.e. users you have a direct assignment to
-        $allusernames = get_all_user_name_fields(true, 'u');
-        if ($usercontexts = $DB->get_records_sql("SELECT c.instanceid, c.instanceid, $allusernames
+        if ($usercontexts = $DB->get_records_sql("SELECT c.instanceid, c.instanceid, u.firstname, u.lastname
                                                     FROM {role_assignments} ra, {context} c, {user} u
                                                    WHERE ra.userid = ?
                                                          AND ra.contextid = c.id
