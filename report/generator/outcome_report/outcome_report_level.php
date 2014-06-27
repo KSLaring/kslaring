@@ -1,0 +1,104 @@
+<?php
+
+/**
+ * Report generator - Outcome report Level.
+ *
+ * Description
+ *
+ * @package     report
+ * @subpackage  generator/outcome_report
+ * @copyright   2010 eFaktor
+ * @licence     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ *
+ * @updateDate  14/09/2012
+ * @author      eFaktor     (fbv)
+ *
+ */
+
+require_once('../../../config.php');
+require_once( '../locallib.php');
+require_once('outcome_report_level_form.php');
+require_once($CFG->libdir . '/adminlib.php');
+require_once($CFG->libdir . '/gradelib.php');
+
+/* Params */
+$report_level   = required_param('rpt', PARAM_INT);
+$return_url     = new moodle_url('/report/generator/outcome_report/outcome_report.php');
+
+/* Context */
+$site_context = CONTEXT_SYSTEM::instance();
+$site = get_site();
+
+require_login();
+
+$PAGE->https_required();
+$PAGE->set_context($site_context);
+
+$PAGE->set_pagelayout('report');
+$PAGE->set_url('/report/generator/outcome_report/outcome_report_level.php');
+
+/* ADD requiere_capibility */
+switch ($report_level) {
+    case 1:
+        if (!has_capability('report/generator:viewlevel1', $site_context)) {
+            print_error('nopermissions', 'error', '', 'report/generator:viewlevel1');
+        }
+        break;
+    case 2:
+        if (!has_capability('report/generator:viewlevel2', $site_context)) {
+            print_error('nopermissions', 'error', '', 'report/generator:viewlevel2');
+        }
+        break;
+    case 3:
+        if (!has_capability('report/generator:viewlevel3', $site_context)) {
+            print_error('nopermissions', 'error', '', 'report/generator:viewlevel3');
+        }
+        break;
+}//switch
+
+if (empty($CFG->loginhttps)) {
+   $secure_www_root = $CFG->wwwroot;
+} else {
+    $secure_www_root = str_replace('http:','https:',$CFG->wwwroot);
+}//if_security
+
+/* Show Form */
+$url = new moodle_url('/report/generator/outcome_report/outcome_report_level.php',array('rpt'=>$report_level));
+$form = new generator_outcome_report_level_form(null,array($report_level));
+/* Report Variables */
+$out     = '';
+
+if ($form->is_cancelled()) {
+    setcookie('parentLevelOne',0);
+    setcookie('parentLevelTwo',0);
+    setcookie('parentLevelTree',0);
+    setcookie('courseReport',0);
+    setcookie('outcomeReport',0);
+    $_POST = array();
+    redirect($return_url);
+}else if($data = $form->get_data()) {
+    /* Get Data */
+    $data_form = (Array)$data;
+
+    $out = report_generator_display_outcome_report($data_form);
+}//if_else
+
+/* Start the page */
+$PAGE->verify_https_required();
+
+/* Print Header */
+echo $OUTPUT->header();
+
+if (!empty($out)) {
+    echo $OUTPUT->heading($out);
+}else {
+    /* Print tabs at the top */
+    $current_tab = 'outcome_report';
+    $show_roles = 1;
+    require('../tabs.php');
+
+    $form->display();
+}//if_else
+
+/* Print Footer */
+echo $OUTPUT->footer();

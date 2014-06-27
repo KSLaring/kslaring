@@ -1,0 +1,68 @@
+<?php
+
+/**
+ * Report generator - Course report.
+ *
+ * Description
+ *
+ * @package     report
+ * @subpackage  generator
+ * @copyright   2010 eFaktor
+ * @licence     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ *
+ * @updateDate  06/09/2012
+ * @author      eFaktor     (fbv)
+ *
+ */
+
+require_once('../../../config.php');
+require_once( '../locallib.php');
+require_once($CFG->libdir . '/adminlib.php');
+require_once($CFG->libdir . '/gradelib.php');
+
+/* Params */
+require_login();
+
+/* Start the page */
+$site_context = CONTEXT_SYSTEM::instance();
+//HTTPS is required in this page when $CFG->loginhttps enabled
+$PAGE->https_required();
+$PAGE->set_context($site_context);
+
+$PAGE->set_pagelayout('report');
+$PAGE->set_url('/report/generator/course_report/course_report.php');
+
+/* ADD require_capability */
+require_capability('report/generator:viewlevel3', $site_context);
+
+if (empty($CFG->loginhttps)) {
+    $secure_www_root = $CFG->wwwroot;
+} else {
+    $secure_www_root = str_replace('http:','https:',$CFG->wwwroot);
+}//if_security
+
+$PAGE->verify_https_required();
+
+/* Clean Cookies */
+setcookie('parentLevelOne',0);
+setcookie('parentLevelTwo',0);
+setcookie('parentLevelTree',0);
+setcookie('courseReport',0);
+setcookie('outcomeReport',0);
+
+/* Print Header */
+echo $OUTPUT->header();
+/* Print tabs at the top */
+$current_tab = 'course_report';
+$show_roles = 1;
+require('../tabs.php');
+
+/* Print Title */
+echo $OUTPUT->heading(get_string('course_report', 'report_generator'));
+
+/* Report Levels Links  */
+echo get_string('underconstruction','report_generator');
+//report_generator_print_report_page($current_tab,$site_context);
+
+/* Print Footer */
+echo $OUTPUT->footer();
