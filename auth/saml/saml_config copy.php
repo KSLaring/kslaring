@@ -1,0 +1,1 @@
+{"samllib":"\/www\/efaktor\/simplesamlphp\/kommitkurs\/lib","sp_source":"idporten-ver1","dosinglelogout":"on"}
