@@ -1,0 +1,17 @@
+<?php
+
+/**
+ * Municipality Block - Version Settings
+ *
+ * @package         block
+ * @subpackage      municipality
+ * @copyright       2013 efaktor    {@link http://www.efaktor.no}
+ *
+ * @creationDate    22/08/2013
+ * @author          efaktor     (fbv)
+ */
+defined('MOODLE_INTERNAL') || die();
+
+$plugin->version   = 2013082202;                // The current plugin version (Date: YYYYMMDDXX)
+//$plugin->requires  = 2012112900;              // Requires this Moodle version
+$plugin->component = 'block_municipality';      // Full name of the plugin (used for diagnostics)
