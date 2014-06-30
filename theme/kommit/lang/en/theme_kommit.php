@@ -66,4 +66,8 @@ $string['resethome']    = 'Reset to default page';
 /* Read more */
 $string['readmore']      = 'Read more';
 
+/* JS toggle admin login */
+$string['adminlogin']      = 'admin login';
+
+
 
