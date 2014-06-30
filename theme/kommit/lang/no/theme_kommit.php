@@ -67,3 +67,6 @@ $string['resethome']    = 'Bruk standard startside';
 /* Read more */
 $string['readmore']      = 'Les mer';
 
+/* JS toggle admin login */
+$string['adminlogin']      = 'admin login';
+
