@@ -1,0 +1,22 @@
+
+
+
+.admin-toggle{
+    text-align: center;
+    padding-top: 80px;
+}
+
+#toggle {
+    border: 0;
+    background: none;
+    box-shadow: none;
+    -webkit-box-shadow: none;
+    -moz-box-shadow: none;
+
+    cursor  : pointer;
+    color   : #ccc;
+    border  : none;
+    margin      : 0px;
+    padding     : 0px;
+
+}

@@ -65,6 +65,16 @@ if (in_array('saml', $authsequence)){
 echo '</center>';
 
 ?>
+
+      <div class="admin-toggle">
+          <button id="toggle" type="image" >
+              <img src="<?php echo $CFG->wwwroot ?>/auth/saml/resources/images/ui-icons_admin">
+              <?php  echo (get_string('adminlogin' ,'theme_kommit')) ?>
+
+          </button>
+
+      </div>
+
       <div class="subcontent loginsub">
         <div class="desc">
           <?php
@@ -116,7 +126,14 @@ echo '</center>';
         </form>
       </div>
 
-<?php if ($CFG->guestloginbutton and !isguestuser()) {  ?>
+
+      <?php
+
+      // link to JS toggle file
+      $PAGE->requires->js( new moodle_url($CFG->wwwroot . '/auth/saml/resources/login_toggle.js') );?>
+
+
+      <?php if ($CFG->guestloginbutton and !isguestuser()) {  ?>
       <div class="subcontent guestsub">
         <div class="desc">
           <?php print_string("someallowguest") ?>
