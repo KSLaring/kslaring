@@ -203,7 +203,9 @@ class theme_kommit_core_renderer extends core_renderer {
                         array('id' => $USER->id)),
                     get_string('editmyprofile'));
             } else {
-                $usermenu = $menu->add(get_string('login'), new moodle_url('/login/index.php'), get_string('login'), 10001);
+                /*
+                 * Hide login in custom menu area
+                $usermenu = $menu->add(get_string('login'), new moodle_url('/login/index.php'), get_string('login'), 10001);*/
             }
         }
 

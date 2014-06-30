@@ -38,7 +38,7 @@ $THEME->name = 'kommit';
 //
 $THEME->doctype = 'html5';
 $THEME->parents = array('bootstrapbase');
-$THEME->sheets = array('font-awesome.min', 'moodle', 'theme', 'custom');
+$THEME->sheets = array('font-awesomemin', 'moodle', 'theme', 'custom');
 $THEME->supportscssoptimisation = false;
 $THEME->yuicssmodules = array();
 

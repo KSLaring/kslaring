@@ -160,6 +160,11 @@ echo $OUTPUT->doctype() ?>
                 </div>
             </div>
             <p>© 2014 KOMMUNESEKTORENS ORGANISASJON</p>
+            <p>
+                <a href="<?php echo $CFG->wwwroot ?>//login/index.php">
+                    <?php echo (get_string('login')) ?>
+                </a>
+            </p>
         </div>
     </footer>
 
