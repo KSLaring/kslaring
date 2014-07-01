@@ -68,7 +68,7 @@ echo '</center>';
 
       <div class="admin-toggle">
           <button id="toggle" type="image" >
-              <img src="<?php echo $CFG->wwwroot ?>/auth/saml/resources/images/ui-icons_admin">
+              <img src="<?php echo $CFG->wwwroot ?>/auth/saml/resources/images/ui-icons_admin.png">
               <?php  echo (get_string('adminlogin' ,'theme_kommit')) ?>
 
           </button>
