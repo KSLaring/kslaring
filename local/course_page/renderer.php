@@ -149,7 +149,7 @@ class local_course_page_renderer extends plugin_renderer_base {
         /* Variables */
         $out = '';
 
-        $out .=  '<h3>' . get_string('home_about','local_course_page') . '</h3>';
+        $out .=  '<h2>' . get_string('home_about','local_course_page') . '</h2>';
 
         $out .=  '<p>' . $home_summary->value . '</p>';
         /* Graphics */
@@ -219,10 +219,10 @@ class local_course_page_renderer extends plugin_renderer_base {
 
         $out .= html_writer::start_tag('div',array('class' => 'extra'));
             $out .= '<p>';
-                $out .= '<label class="label_home">' . get_string('home_course_id','local_course_page') . ':</label>';
-                $out .= '<label class="extra_home">' . $course->idnumber . '</label>';
-                $out .= '<label class="label_home">' . get_string('home_published','local_course_page') . ':</label>';
-                $out .= '<label class="extra_home">' . userdate($course->startdate,'%d.%m.%Y', 99, false) . '</label>';
+                $out .= '<h5 class="label_home">' . get_string('home_course_id','local_course_page') . ':</h5>';
+                $out .= '<div class="extra_home">' . $course->idnumber . '</div>';
+                $out .= '<h5 class="label_home">' . get_string('home_published','local_course_page') . ':</h5>';
+                $out .= '<div class="extra_home">' . userdate($course->startdate,'%d.%m.%Y', 99, false) . '</div>';
 
                 foreach ($format_options as $option) {
                     $out .= $this->addExtraOption($option,$manager);
@@ -232,15 +232,15 @@ class local_course_page_renderer extends plugin_renderer_base {
             switch ($course->format) {
                 case 'netcourse':
                     $url_img = $this->getURLIcon('nett_kurs');
-                    $out .= html_writer::empty_tag('img', array('src'=>$url_img,'alt'=> '','class'=>'icon'));
+                    $out .= html_writer::empty_tag('img', array('src'=>$url_img,'alt'=> 'nett kurs icon','class'=>'icon'));
                     break;
                 case 'classroom':
                     $url_img = $this->getURLIcon('classroom');
-                    $out .= html_writer::empty_tag('img', array('src'=>$url_img,'alt'=> '','class'=>'icon'));
+                    $out .= html_writer::empty_tag('img', array('src'=>$url_img,'alt'=> 'classroom icon','class'=>'icon'));
                     break;
                 case 'whitepaper':
                     $url_img = $this->getURLIcon('whitepaper');
-                    $out .= html_writer::empty_tag('img', array('src'=>$url_img,'alt'=> '','class'=>'icon'));
+                    $out .= html_writer::empty_tag('img', array('src'=>$url_img,'alt'=> 'whitepaper icon','class'=>'icon'));
                     break;
                 default:
                     break;
@@ -323,35 +323,35 @@ class local_course_page_renderer extends plugin_renderer_base {
 
         switch ($option->name) {
             case 'prerequisities':
-                $out .= '<label class="label_home">' . get_string('home_prerequisities','local_course_page') . ':</label>';
-                $out .= '<label class="extra_home">' . $option->value . '</label>';
+                $out .= '<h5 class="label_home">' . get_string('home_prerequisities','local_course_page') . ':</h5>';
+                $out .= '<div class="extra_home">' . $option->value . '</div>';
                 break;
             case 'producedby':
-                $out .= '<label class="label_home">' . get_string('home_producedby','local_course_page') . ':</label>';
-                $out .= '<label class="extra_home">' . $option->value . '</label>';
+                $out .= '<h5 class="label_home">' . get_string('home_producedby','local_course_page') . ':</h5>';
+                $out .= '<div class="extra_home">' . $option->value . '</div>';
                 break;
             case 'location':
-                $out .= '<label class="label_home">' . get_string('home_location','local_course_page') . ':</label>';
-                $out .= '<label class="extra_home">' . $option->value . '</label>';
+                $out .= '<h5 class="label_home">' . get_string('home_location','local_course_page') . ':</h5>';
+                $out .= '<div class="extra_home">' . $option->value . '</div>';
                 break;
             case 'length':
-                $out .= '<label class="label_home">' . get_string('home_length','local_course_page') . ':</label>';
-                $out .=  '<label class="extra_home">' . $option->value . '</label>';
+                $out .= '<h5 class="label_home">' . get_string('home_length','local_course_page') . ':</h5>';
+                $out .=  '<div class="extra_home">' . $option->value . '</div>';
                 break;
             case 'effort':
-                $out .= '<label class="label_home">' . get_string('home_effort','local_course_page') . ':</label>';
-                $out .= '<label class="extra_home">' . $option->value . '</label>';
+                $out .= '<h5 class="label_home">' . get_string('home_effort','local_course_page') . ':</h5>';
+                $out .= '<div class="extra_home">' . $option->value . '</div>';
                 break;
             case 'manager':
                 $manager = $option->value;
                 break;
             case 'author':
-                $out .= '<label class="label_home">' . get_string('home_author','local_course_page') . ':</label>';
-                $out .= '<label class="extra_home">' . $option->value . '</label>';
+                $out .= '<h5 class="label_home">' . get_string('home_author','local_course_page') . ':</h5>';
+                $out .= '<div class="extra_home">' . $option->value . '</div>';
                 break;
             case 'licence':
-                $out .= '<label class="label_home">' . get_string('home_licence','local_course_page') . ':</label>';
-                $out .= '<label class="extra_home">' . $option->value . '</label>';
+                $out .= '<h5 class="label_home">' . get_string('home_licence','local_course_page') . ':</h5>';
+                $out .= '<div class="extra_home">' . $option->value . '</div>';
                 break;
             default:
                 break;
@@ -378,23 +378,23 @@ class local_course_page_renderer extends plugin_renderer_base {
 
         $out .= html_writer::start_tag('div',array('class' => 'manager'));
             $out .= '<p>';
-                $out .= '<label class="label_manager">' . get_string('block_staff','local_course_page') . '</label>';
+                $out .= '<h4 class="label_manager">' . get_string('block_staff','local_course_page') . '</h4>';
                 /* Main Manager */
                 if ($manager) {
                     $user = $DB->get_record('user',array('id' => $manager));
                     $user->description = file_rewrite_pluginfile_urls($user->description, 'pluginfile.php', CONTEXT_USER::instance($user->id)->id, 'user', 'profile', null);
                     $url_user = new moodle_url('/user/profile.php',array('id' => $user->id));
 
-                    $out .= '<label class="label_coordinator">' . get_string('home_coordinater','local_course_page') . '</label>';
+                    $out .= '<h5 class="label_coordinator">' . get_string('home_coordinater','local_course_page') . '</h5>';
                     $out .= $OUTPUT->user_picture($user, array('size'=>150));
                     $out .= '<div class="user"><a href="' . $url_user . '">' . fullname($user) . '</a>';
-                    $out .= '<label class="extra_coordinator">' . $user->description . '</label></div>';
+                    $out .= '<div class="extra_coordinator">' . $user->description . '</div></div>';
                 }//if_manager
             $out .= '</p>';
 
             /* Teachers */
             $out .= '<p>';
-                $out .= '<label class="label_teacher">' . get_string('home_teachers','local_course_page') . '</label>';
+                $out .= '<h5 class="label_teacher">' . get_string('home_teachers','local_course_page') . '</h5>';
 
                 $lst_teachers = course_page::getCoursesTeachers($course_id,$manager);
                 if ($lst_teachers) {
@@ -435,7 +435,7 @@ class local_course_page_renderer extends plugin_renderer_base {
 
         $out .= html_writer::start_tag('div',array('class' => 'ratings'));
             $out .= '<p>';
-                $out .= '<label class="title_ratings">' . get_string('home_ratings','local_course_page') . '</label>';
+                $out .= '<h5 class="title_ratings">' . get_string('home_ratings','local_course_page') . '</h5>';
                 $out .= $OUTPUT->pix_icon('star', get_string('giverating', 'block_rate_course'),'block_rate_course', array('class'=>'icon'));
                 $url = new moodle_url('/blocks/rate_course/rate.php', array('courseid'=>$course_id));
                 $out .= $OUTPUT->action_link($url, get_string('giverating', 'block_rate_course'));
@@ -444,16 +444,16 @@ class local_course_page_renderer extends plugin_renderer_base {
             if ($is_rating) {
                 $url_avg = new moodle_url('/blocks/rate_course/pix/rating_graphic.php',array('courseid' => $course_id));
                 $out .= '<p>';
-                    $out .= '<label class="label_ratings">' . get_string('rate_avg','local_course_page') . '</label>';
-                    $out .= '<img src="'. $url_avg . '"/>';
+                    $out .= '<h5 class="label_ratings">' . get_string('rate_avg','local_course_page') . '</h5>';
+                    $out .= '<img src="'. $url_avg . '" .  alt="average ratings"/>';
                 $out .= '</p>';
                 $url_user = new moodle_url('/blocks/rate_course/pix/rating_user_graphic.php');
                 $out .= '<p>';
-                    $out .= '<label class="label_ratings">' . get_string('rate_users','local_course_page') . '</label>';
+                    $out .= '<h5 class="label_ratings">' . get_string('rate_users','local_course_page') . '</h5>';
                     foreach ($last_rates as $user=>$rate) {
                         $url_user->param('rate',$rate);
                         $out .= $user  . '</br>';
-                        $out .= '<img src="'. $url_user .'"/></br>';
+                        $out .= '<img src="'. $url_user .'" .  alt="user ratings"/></br>';
                     }//for_each_rate
                 $out .= '</p>';
             }//if_$rate_avg
