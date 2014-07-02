@@ -57,8 +57,6 @@ echo $OUTPUT->doctype() ?>
 <div class="top-border">
 </div>
 
-
-
 <div class="header-background">
     <div class="container-fluid">
         <div class="logo-area">
@@ -68,9 +66,9 @@ echo $OUTPUT->doctype() ?>
 
         <div class="header-right">
             <div class="social">
-                <div class="col1"><a href="http://facebook.com/kskommit" target=_blank"><i class="fa fa-facebook
+                <div class="col1"><a href="http://facebook.com/kskommit" target=_blank" alt="facebook icon"><i class="fa fa-facebook
                 fa-2x" id="icon"></i></a></div>
-                <div class="col2"><a href="https://twitter.com/KSKommIT" target=_blank"><i class="fa fa-twitter
+                <div class="col2"><a href="https://twitter.com/KSKommIT" target=_blank" alt="twitter icon"><i class="fa fa-twitter
                 fa-2x" id="icon"></i></a></div>
             </div>
         </div>
