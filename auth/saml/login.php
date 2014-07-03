@@ -93,12 +93,10 @@ echo '</center>';
           <div class="loginform">
             <div class="form-label"><label for="username"><?php print_string("username") ?></label></div>
             <div class="form-input">
-              <input type="text" name="username" id="username" size="15" value="
-              <?php
+              <input type="text" name="username" id="username" size="15" value="<?php
                 if (isset($frm) && isset($frm->username)) {
-                    p($frm->username);
-                }
-              ?>" />
+                    p(trim($frm->username));
+                }?>" />
             </div>
             <div class="clearer"><!-- --></div>
             <div class="form-label"><label for="password"><?php print_string("password") ?></label></div>
