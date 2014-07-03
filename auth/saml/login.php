@@ -56,10 +56,20 @@ echo '<center>';
 
 if (in_array('saml', $authsequence)){
     if (isset($saml_config->samllogoimage) && $saml_config->samllogoimage != NULL) {
-        echo '<a href="index.php"><img src="'.$saml_config->samllogoimage.'" border="0" alt="SAML login" ></a>';
+        echo '<div href="index.php" class="login-logo"><img src="'.$saml_config->samllogoimage.'" border="0" alt="SAML login" ></div>';
     }
     if (isset($saml_config->samllogoinfo)) {
-        echo "<div class='desc'>$saml_config->samllogoinfo</div>";
+        //echo "<div class='desc'>$saml_config->samllogoinfo</div>";
+
+        // echo '<i class="fa fa-chevron-circle-right fa-2x"></i>';
+
+        echo '<a href="index.php" class="btn-login">'
+            . '<span class="login-icon"><i class="fa fa-arrow-right"></i></span>'
+            . $saml_config->samllogoinfo .
+            '</a>';
+
+
+
     }
 }
 echo '</center>';
