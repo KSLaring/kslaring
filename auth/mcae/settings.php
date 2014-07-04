@@ -46,9 +46,12 @@ if ($ADMIN->fulltree) {
     }; 
 
     // Custom profile field values
-    foreach ($usr_helper->profile as $key => $val) {
-        $fldlist[] = "<span title=\"%profile_field_$key\">%profile_field_$key</span>";
-    };
+    if (isset($usr_helper->profile)) {
+        foreach ($usr_helper->profile as $key => $val) {
+            $fldlist[] = "<span title=\"%profile_field_$key\">%profile_field_$key</span>";
+        };
+    }//if_isset_profile
+
 
     // Additional values for email
     $fldlist[] = "<span title=\"%email_username\">%email_username</span>";
