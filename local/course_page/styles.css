@@ -68,6 +68,7 @@
 .home_page_block_two .extra {
     display:block;
     padding-right: 10px;
+    margin-top: 25px;
 }
 
 .home_page_block_two .extra .icon {
@@ -84,18 +85,18 @@
     color: #7e7e7e;
     text-transform: uppercase;
     border-bottom: 2px solid #d8d8d8;
+    margin: 0px;
 }
 
 .home_page_block_two .extra .extra_home{
     display: inline-block;
-    margin-bottom: 10px;
+    margin-bottom: 15px;
     margin-right: 5px;
     word-wrap: break-word;
 }
 
 .home_page_block_two .manager {
     display:block;
-    padding-top: 10px;
     padding-bottom: 2px;
     padding-right: 10px;
 }
@@ -119,6 +120,11 @@
     margin-top: 10px;
 }
 
+.home_page_block_two .manager .user_picture {
+    float: left;
+    margin-top: 10px;
+}
+
 .home_page_block_two .manager .label_manager {
     width:99%;
     text-align: left;
@@ -126,8 +132,6 @@
     line-height: 40px;
     display: inline-block;
     color: #7e7e7e;
-//text-transform: uppercase;
-//border-bottom: 2px solid #d8d8d8;
 }
 
 .home_page_block_two .manager .label_coordinator {
@@ -155,6 +159,10 @@
     border-bottom: 2px solid #d8d8d8;
 }
 
+.home_page_block_two .manager .extra_teacher {
+    margin-bottom: 25px;
+}
+
 .home_page_block_two .ratings {
     display:block;
     padding-top: 10px;
@@ -168,15 +176,14 @@
     color: #7e7e7e;
     text-transform: uppercase;
     border-bottom: 2px solid #d8d8d8;
+    margin: 0px;
 }
 
 .home_page_block_two .ratings .label_ratings {
-    width:99%;
-    text-align: left;
     display: inline-block;
-    color: #7e7e7e;
-    text-transform: uppercase;
-    border-bottom: 2px solid #d8d8d8;
+    margin-bottom: 15px;
+    margin-right: 5px;
+    word-wrap: break-word;
 }
 
 
