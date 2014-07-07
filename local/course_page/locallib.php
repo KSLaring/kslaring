@@ -14,6 +14,12 @@
  */
 require_once($CFG->libdir.'/formslib.php');
 
+define('EXCELLENT_RATING',5);
+define('GOOD_RATING',4);
+define('AVG_RATING',3);
+define('POOR_RATING',2);
+define('BAD_RATING',1);
+
 class course_page  {
     /* GET FUNCTIONS    */
 
@@ -248,6 +254,201 @@ class course_page  {
             throw $ex;
         }//try_catch
     }//IsCourseRating
+
+    /**
+     * @static
+     * @param           $course_id
+     * @param           $type_rate
+     * @return          null
+     * @throws          Exception
+     *
+     * @creationDate    04/07/2014
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Get how many records there are for each rating
+     */
+    public static function getCountTypeRateCourse($course_id,$type_rate) {
+        global $DB;
+
+        try {
+            /* Search Criteria  */
+            $params = array();
+            $params['course'] = $course_id;
+            $params['rating'] = $type_rate;
+
+            /* Execute  */
+            $total = $DB->count_records('block_rate_course',$params);
+
+            return $total;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//getCountTypeRateCourse
+
+    /**
+     * @static
+     * @param           $course_id
+     * @return          int
+     * @throws          Exception
+     *
+     * @creationDate    07/07/2014
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Get how many users are enrolled in the course
+     */
+    public static function getTotalUsersEnrolledCourse($course_id) {
+        global $DB;
+
+        try {
+            /* Search Criteria  */
+            $params             = array();
+            $params['course']   = $course_id;
+
+            /* SQL Instruction  */
+            $sql = " SELECT		DISTINCT count(u.id) as 'total'
+                     FROM		{user}				u
+                        JOIN	{user_enrolments}	ue	ON 	ue.userid 	= u.id
+                        JOIN	{enrol}				e	ON	e.id		= ue.enrolid
+                                                        AND	e.status	= 0
+                                                        AND e.courseid 	= :course
+                     WHERE		u.deleted = 0 ";
+
+            /* Execute      */
+            $rdo = $DB->get_record_sql($sql,$params);
+            if ($rdo) {
+                return $rdo->total;
+            }else {
+                return 0;
+            }//if_else_rdo
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//getTotalUsersEnrolledCourse
+
+    /**
+     * @static
+     * @param           $course_id
+     * @return          int
+     * @throws          Exception
+     *
+     * @creationDate    07/07/2014
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Count all the rates
+     */
+    public static function getTotalRatesCourse($course_id) {
+        global $DB;
+
+        try {
+            /* Search Criteria  */
+            $params = array();
+            $params['course'] = $course_id;
+
+            /* Execute  */
+            $total = $DB->count_records('block_rate_course',$params);
+
+            return $total;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_Catch
+    }//getTotalRatesCourse
+
+    /**
+     * @static
+     * @param           $rate
+     * @param           $total
+     * @param           $title
+     * @return          string
+     *
+     * @creationDate    07/07/2014
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Add progress bar connected with rating
+     */
+    public static function getProgressBarCode($rate,$total,$title) {
+        /* Variables    */
+        $id_bar     = 'pbar_'.uniqid();
+        $w          = 0;
+        $total_100  = $total;
+        $rate_100   = $rate;
+        $per        = 1;
+
+        if ($total) {
+            if ($rate) {
+                if ($rate == $total) {
+                    $w = 100;
+                }else {
+                    if ($total > 10000000000 ) {
+                        $total_100  = $total / 10000000000;
+                        $rate_100   = $rate / 10000000000;
+
+                        $per = 1000000000;
+                    }else if ($total > 1000000000) {
+                        $total_100  = $total / 1000000000;
+                        $rate_100   = $rate / 1000000000;
+
+                        $per = 100000000;
+                    }else if ($total > 100000000) {
+                        $total_100  = $total / 100000000;
+                        $rate_100   = $rate / 100000000;
+
+                        $per = 10000000;
+                    }else if ($total > 10000000) {
+                        $total_100  = $total / 10000000;
+                        $rate_100   = $rate / 10000000;
+
+                        $per = 1000000;
+                    }else if ($total > 1000000) {
+                        $total_100  = $total / 1000000;
+                        $rate_100   = $rate / 1000000;
+
+                        $per = 100000;
+                    }else if ($total > 100000) {
+                        $total_100  = $total / 100000;
+                        $rate_100   = $rate / 100000;
+
+                        $per = 10000;
+                    }else if ($total > 10000) {
+                        $total_100  = $total / 10000;
+                        $rate_100   = $rate / 10000;
+
+                        $per = 1000;
+                    }else if ($total > 1000) {
+                        $total_100  = $total / 1000;
+                        $rate_100   = $rate / 1000;
+
+                        $per = 100;
+                    }else if ($total > 100) {
+                        $total_100  = $total / 100;
+                        $rate_100   = $rate / 100;
+
+                        $per = 10;
+                    }
+
+
+                    $w = round(($rate_100*100/$total_100)*$per,2)/2;
+                }
+            }//if_rate
+        }//if_total
+
+
+        $bar_out = '';
+
+        $bar_out .= '<div class="rating_bar_block">';
+            $bar_out .= '<div class="rating_title">' . $title . '</div>';
+
+            $bar_out .= '<div class="rating_bar" id="bar_{' . $id_bar . '}">';
+                $bar_out .= '<div id="progress_{' . $id_bar .'}" class="rating_progress" style="width:'. $w . '%;"></div>';
+            $bar_out .= '</div>';
+            $bar_out .= '<div class="rating_value">' . $rate . '</div>';
+        $bar_out .= '</div>';//rating_bar_block
+
+        return $bar_out;
+    }//getProgressBarCode
 
     /**
      * @static
