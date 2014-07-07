@@ -68,7 +68,6 @@
 .home_page_block_two .extra {
     display:block;
     padding-right: 10px;
-    margin-top: 25px;
 }
 
 .home_page_block_two .extra .icon {
@@ -167,6 +166,7 @@
     display:block;
     padding-top: 10px;
     padding-right: 10px;
+    padding-bottom: 40px;
 }
 
 .home_page_block_two .ratings .title_ratings {
@@ -186,6 +186,46 @@
     word-wrap: break-word;
 }
 
+.home_page_block_two   .rating_bar_block .rating_value{
+    width: 10%;
+    text-indent: 10px;
+    float:left;
+    text-align: left;
+}
+
+.home_page_block_two   .rating_bar_block .rating_bar{
+    width: 40%;
+    float:left;
+    background:#f2f2f3;
+    height:20px;
+    margin-right: 0px;
+}
+
+.home_page_block_two .rating_bar_block .rating_progress {
+    background:green;
+    height:20px;
+}
+
+.home_page_block_two  .rating_bar_block .rating_title{
+    float: left;
+    width: 35%;
+    color: #0e7b9e;
+    text-align:left;
+    text-indent: 5px;
+}
+
+.home_page_block_two .ratings .rating_bar_block {
+    padding-top: 5px;
+    display: block;
+    clear: both;
+    word-wrap: break-word;
+    height: 25px;
+}
+
+.home_page_block_two .ratings .content_rating_bar {
+    background: white;
+    width: 99%;
+}
 
 #page-local-course_page-home_page label{
     cursor: auto !important;

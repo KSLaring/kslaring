@@ -71,6 +71,16 @@ if ($id) {
 // Prepare course and the editor.
 $editoroptions = array('maxfiles' => EDITOR_UNLIMITED_FILES, 'maxbytes'=>$CFG->maxbytes, 'trusttext'=>false, 'noclean'=>true);
 $overviewfilesoptions = course_overviewfiles_options($course);
+/**
+ * @updateDate 09/05/2014
+ * @author      eFaktor     (fbv)
+ *
+ * Description
+ * Course Summary Files --> Only one and image
+ */
+$overviewfilesoptions['subdirs'] = 0;
+$overviewfilesoptions['maxfiles'] = 1;
+$overviewfilesoptions['accepted_types'] = 'web_image';
 if (!empty($course)) {
     // Add context for editor.
     $editoroptions['context'] = $coursecontext;

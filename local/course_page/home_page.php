@@ -30,7 +30,6 @@ if (isloggedin()) {
 
 $PAGE->set_url($url);
 $PAGE->set_context($context);
-$PAGE->set_title($SITE->fullname);
 $PAGE->set_pagelayout('course');
 
 if (!isset($USER->editing)) {
