@@ -56,10 +56,20 @@ echo '<center>';
 
 if (in_array('saml', $authsequence)){
     if (isset($saml_config->samllogoimage) && $saml_config->samllogoimage != NULL) {
-        echo '<a href="index.php"><img src="'.$saml_config->samllogoimage.'" border="0" alt="SAML login" ></a>';
+        echo '<div href="index.php" class="login-logo"><img src="'.$saml_config->samllogoimage.'" border="0" alt="SAML login" ></div>';
     }
     if (isset($saml_config->samllogoinfo)) {
-        echo "<div class='desc'>$saml_config->samllogoinfo</div>";
+        //echo "<div class='desc'>$saml_config->samllogoinfo</div>";
+
+        // echo '<i class="fa fa-chevron-circle-right fa-2x"></i>';
+
+        echo '<a href="index.php" class="btn-login">'
+            . '<span class="login-icon"><i class="fa fa-arrow-right"></i></span>'
+            . $saml_config->samllogoinfo .
+            '</a>';
+
+
+
     }
 }
 echo '</center>';
@@ -68,9 +78,11 @@ echo '</center>';
 
       <div class="admin-toggle">
           <button id="toggle" type="image" >
-              <img src="<?php echo $CFG->wwwroot ?>/auth/saml/resources/images/ui-icons_admin">
+              <img src="<?php echo $CFG->wwwroot ?>/auth/saml/resources/images/ui-icons_admin.png">
               <?php  echo (get_string('adminlogin' ,'theme_kommit')) ?>
+
           </button>
+
       </div>
 
       <div class="subcontent loginsub">
@@ -91,12 +103,10 @@ echo '</center>';
           <div class="loginform">
             <div class="form-label"><label for="username"><?php print_string("username") ?></label></div>
             <div class="form-input">
-              <input type="text" name="username" id="username" size="15" value="
-              <?php
+              <input type="text" name="username" id="username" size="15" value="<?php
                 if (isset($frm) && isset($frm->username)) {
-                    p($frm->username);
-                }
-              ?>" />
+                    p(trim($frm->username));
+                }?>" />
             </div>
             <div class="clearer"><!-- --></div>
             <div class="form-label"><label for="password"><?php print_string("password") ?></label></div>
@@ -124,10 +134,11 @@ echo '</center>';
         </form>
       </div>
 
+
       <?php
+
       // link to JS toggle file
-      $PAGE->requires->js( new moodle_url($CFG->wwwroot . '/auth/saml/resources/login_toggle.js') );
-      ?>
+      $PAGE->requires->js( new moodle_url($CFG->wwwroot . '/auth/saml/resources/login_toggle.js') );?>
 
 
 <?php if ($CFG->guestloginbutton and !isguestuser()) {  ?>
