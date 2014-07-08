@@ -941,7 +941,7 @@ class format_netcourse extends format_base {
                 } else if (!$showgrades && $nextpage === -9 && empty($pageid)) {
                     $lastpage = self::LESSON_LASTPAGE_GRADINGOFF;
                 }
-                $this::$lastlessonpage = $lastpage;
+                self::$lastlessonpage = $lastpage;
                 // Check the values in the browser with ChromePHP
 //                ChromePhp::log('$showgrades: ' . $showgrades);
 //                ChromePhp::log('$pageid: ' . $pageid);
