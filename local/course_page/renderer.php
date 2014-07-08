@@ -116,7 +116,7 @@ class local_course_page_renderer extends plugin_renderer_base {
         /* Graphics */
         if ($home_graphics->value) {
             $url_img = course_page::getUrlPageGraphicsVideo($home_graphics->value);
-            $img = '<img src="'  . $url_img . '" class="graphic"></br>';
+            $img = '<img src="'  . $url_img . '" class="img-responsive"></br>';
             $out .= $img;
         }//if_graphics
 
@@ -295,7 +295,6 @@ class local_course_page_renderer extends plugin_renderer_base {
 
             /* Add Info Ratings */
             $is_rating = course_page::IsCourseRating($course_id);
-            if ($is_rating) {
                 /* Add Total Average of course rating   */
                 $url_avg = new moodle_url('/blocks/rate_course/pix/rating_graphic.php',array('courseid' => $course_id));
                 $out .= '<h5 class="title_ratings">' . get_string('rate_avg','local_course_page') . '</h5>';
@@ -328,7 +327,6 @@ class local_course_page_renderer extends plugin_renderer_base {
                     $exc_bar        = course_page::getProgressBarCode($bad_rate,$total_rates,get_string('rate_bad','local_course_page'));
                     $out .= $exc_bar;
                 $out .= '</div>';//content_rating_bar
-            }//if_is_rating
         $out .= html_writer::end_tag('div');//ratings
 
         return $out;
