@@ -135,6 +135,7 @@ class format_netcourse_renderer extends format_section_renderer_base {
      */
     public function print_single_section_page($course, $sections, $mods, $modnames, $modnamesused, $displaysection) {
         global $PAGE;
+        $sectionnavlinks = array();
 
         $edit = optional_param('edit', false, PARAM_BOOL);
 

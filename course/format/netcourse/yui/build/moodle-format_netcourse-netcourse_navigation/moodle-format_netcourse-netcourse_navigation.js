@@ -310,7 +310,7 @@ TREE.prototype = {
         if (e.target.test('a') && (e.keyCode === 0 || e.keyCode === 13)) {
             // A link has been clicked (or keypress is 'enter') don't fire any more events just do the default.
             e.stopPropagation();
-            return;
+            return false;
         }
 
         // Makes sure we can get to the LI containing the branch.
@@ -319,7 +319,7 @@ TREE.prototype = {
             target = target.ancestor('li');
         }
         if (!target) {
-            return;
+            return false;
         }
 
         // If the accordion feature has been enabled collapse all siblings.
