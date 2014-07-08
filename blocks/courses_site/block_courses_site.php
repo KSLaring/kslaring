@@ -178,7 +178,7 @@ class block_courses_site extends block_base {
             /*  Image / Title   */
             $this->content->text .= '<p>';
                 $this->content->text .= '<a href="' . $url . '">' ;
-                    $this->content->text .= '<img src="'  . $course_site->picture . '" class="graphic_site">';
+                    $this->content->text .= '<img src="'  . $course_site->picture . '" class="graphic_site"  alt="' . $course_site->title . " featured image" .'">';
                 $this->content->text .= '</a>';
                 $this->content->text .= '</br>';
             $this->content->text .= '<a href="' . $url . '">' ;
@@ -264,15 +264,15 @@ class block_courses_site extends block_base {
                 switch ($course_site->type) {
                     case 'netcourse':
                         $url_img = $this->block_courses_getURLIcon('nett_kurs');
-                        $this->content->text .= html_writer::empty_tag('img', array('src'=>$url_img,'class'=>'icon'));
+                        $this->content->text .= html_writer::empty_tag('img', array('src'=>$url_img, 'alt'=> 'nett kurs icon', 'class'=>'icon'));
                         break;
                     case 'classroom':
                         $url_img = $this->block_courses_getURLIcon('classroom');
-                        $this->content->text .= html_writer::empty_tag('img', array('src'=>$url_img,'alt'=> '','class'=>'icon'));
+                        $this->content->text .= html_writer::empty_tag('img', array('src'=>$url_img,'alt'=> 'classroom icon','class'=>'icon'));
                         break;
                     case 'whitepaper':
                         $url_img = $this->block_courses_getURLIcon('whitepaper');
-                        $this->content->text .= html_writer::empty_tag('img', array('src'=>$url_img,'alt'=> '','class'=>'icon'));
+                        $this->content->text .= html_writer::empty_tag('img', array('src'=>$url_img,'alt'=> 'whitepaper icon','class'=>'icon'));
                         break;
                     default:
                         break;

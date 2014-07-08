@@ -6934,7 +6934,7 @@ sup {
 sub {
   bottom: -0.25em;
 }
-img {
+.img-responsive {
   /* Responsive images (ensure images don't scale beyond their parents) */
   max-width: 100%;
   /* Part 1: Set a maxium relative to the parent */
@@ -6942,9 +6942,11 @@ img {
   /* IE7-8 need help adjusting responsive images */
   height: auto;
   /* Part 2: Scale the height according to the width, otherwise you get stretching */
+  -ms-interpolation-mode: bicubic;
+}
+img {
   vertical-align: middle;
   border: 0;
-  -ms-interpolation-mode: bicubic;
 }
 #map_canvas img,
 .google-maps img {
