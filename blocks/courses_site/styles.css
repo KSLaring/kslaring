@@ -45,6 +45,14 @@
     image-rendering: inherit;
     margin-bottom: 10px;
     margin-top: 10px;
+    /* Responsive images (ensure images don't scale beyond their parents) */
+    max-width: 100%;
+    /* Part 1: Set a maxium relative to the parent */
+    width: auto\9;
+    /* IE7-8 need help adjusting responsive images */
+    height: auto;
+    /* Part 2: Scale the height according to the width, otherwise you get stretching */
+    -ms-interpolation-mode: bicubic;
 }
 
 .button_site{
