@@ -342,20 +342,16 @@ class local_course_page_renderer extends plugin_renderer_base {
 
                     $out .= '<div class="ratings_review">';
                         $out .= '<div class="ratings_review_title">' . get_string('user') . ' ' . $i . '</div>';
-                        $out .= '<div class="ratings_review_value">' . $str_comment;
-                            $out .= '</br><img src="'. $url_user .'"/>';
+                        $out .= '<div class="ratings_review_value">' . format_text($str_comment);
+                            $out .= '<img src="'. $url_user .'"/>';
                         $out .= '</div>';//ratings_review_value
                     $out .= '</div>';//ratings_review
 
-                    if ($i == 1) {
-                        $out .= '<div class="ratings_break"></div>';
-                    }
-                    
                     $light_box .= '<div class="ratings_panel">';
                         $light_box .= '<div class="ratings_review_title">' . get_string('user') . ' ' . $i . '</div>';
                         $light_box .= '<div class="ratings_review_value">';
-                            $light_box .= trim($rate->comment);
-                            $light_box .= '</br>' . '<img src="'. $url_user .'"/>';
+                            $light_box .= format_text(trim($rate->comment));
+                            $light_box .= '<img src="'. $url_user .'"/>';
                             if ($i == 1) {
                                 $light_box .= '<hr class="line_rating">';
                             }
@@ -366,7 +362,6 @@ class local_course_page_renderer extends plugin_renderer_base {
                 }//for_lastcomments
             }else {
                 $out .= '<div class="ratings_review">No comments</div>';
-                $disabled = 'disabled';
             }//if_lst_comments
 
 
