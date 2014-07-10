@@ -326,6 +326,7 @@ class local_course_page_renderer extends plugin_renderer_base {
 
             /* Add Reviews  */
             $light_box = '';
+            $disabled = '';
             $out .= '<h5 class="title_ratings">' . get_string('title_reviews','local_course_page') . '</h5>';
             $last_rates = course_page::getLastCommentsRateCourse($course_id);
             if ($last_rates) {
@@ -346,6 +347,10 @@ class local_course_page_renderer extends plugin_renderer_base {
                         $out .= '</div>';//ratings_review_value
                     $out .= '</div>';//ratings_review
 
+                    if ($i == 1) {
+                        $out .= '<div class="ratings_break"></div>';
+                    }
+                    
                     $light_box .= '<div class="ratings_panel">';
                         $light_box .= '<div class="ratings_review_title">' . get_string('user') . ' ' . $i . '</div>';
                         $light_box .= '<div class="ratings_review_value">';
@@ -361,6 +366,7 @@ class local_course_page_renderer extends plugin_renderer_base {
                 }//for_lastcomments
             }else {
                 $out .= '<div class="ratings_review">No comments</div>';
+                $disabled = 'disabled';
             }//if_lst_comments
 
 
@@ -368,7 +374,7 @@ class local_course_page_renderer extends plugin_renderer_base {
         $header ='<h5 class="ratings_panel_title">' . get_string('title_reviews','local_course_page') . '</h5>';
         $this->page->requires->yui_module('moodle-local_course_page-ratings','M.local_course_page.ratings',array(array('header' => $header,'content' => $light_box)));
         $out .= html_writer::start_tag('div', array('class' => 'mdl-right','commentPanel'));
-        $out .= '<button class="buttons" id="show">' . get_string('btn_more','local_course_page') . '</button>';
+        $out .= '<button class="buttons" id="show" ' . $disabled .'>' . get_string('btn_more','local_course_page') . '</button>';
         $out.= html_writer::end_tag('div');//div_mdl_right
 
         $out .= html_writer::end_tag('div');//ratings

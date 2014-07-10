@@ -92,7 +92,7 @@ for ($i = 1; $i <= 5; $i++) {
 
 echo '</p>';
 echo '<p>';
-echo '<label>' . get_string('add_comments','block_rate_course') . '</label><textarea rows="4" cols="75" name="comment"></textarea>';
+echo '<label>' . get_string('add_comments','block_rate_course') . '</label><textarea rows="4" cols="75" name="comment" maxlength="255"></textarea>';
 echo '</p>';
 echo '<p><input type="submit" value="'.get_string('submit', 'block_rate_course').'"';
 if ($existing_answer) {

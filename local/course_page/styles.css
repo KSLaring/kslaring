@@ -236,7 +236,29 @@
     word-wrap: break-word;
     font-style:italic;
     display: block;
+    height: 125px;
+}
 
+.home_page_block_two .ratings .ratings_review_value {
+    width: 75%;
+    float:right;
+    display: inline-block;
+    height: 125px;
+}
+
+.home_page_block_two .ratings .ratings_review_title {
+    float: left;
+    color: #0e7b9e;
+    width: 25%;
+    display: inline-block;
+    height: 125px;
+}
+
+.home_page_block_two .ratings .ratings_break{
+    margin-top: 5px;
+    margin-bottom: 5px;
+    display: block;
+    height: 35px;
 }
 
 .ratings_panel_title {
@@ -272,21 +294,6 @@ hr.line_rating {
     width: 15%;
     display: inline-block;
     height: 90px;
-}
-
-.home_page_block_two .ratings .ratings_review_value {
-    width: 75%;
-    float:right;
-    display: inline-block;
-    height: 125px;
-}
-
-.home_page_block_two .ratings .ratings_review_title {
-    float: left;
-    color: #0e7b9e;
-    width: 25%;
-    display: inline-block;
-    height: 125px;
 }
 
 #page-local-course_page-home_page label{
