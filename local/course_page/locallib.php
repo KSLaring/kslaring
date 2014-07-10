@@ -289,6 +289,105 @@ class course_page  {
     /**
      * @static
      * @param           $course_id
+     * @param           $type_rate
+     * @return          array
+     * @throws          Exception
+     *
+     * @creationDate    09/07/2014
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Get the last comments for specific rating
+     */
+    protected static function getComentsTypeRateCourse($course_id,$type_rate) {
+        global $DB;
+
+        try {
+            $coments_rate = array();
+
+            /* Search Criteria  */
+            $params = array();
+            $params['course'] = $course_id;
+            $params['rating'] = $type_rate;
+
+            /* SQL Instruction  */
+            $sql = " SELECT	  rc.id,
+                              rc.comment
+                     FROM	  {block_rate_course}       rc
+                     WHERE	  rc.course = :course_id
+                        AND   rc.rating = :rating
+                        AND   rc.comment IS NOT NULL
+                     ORDER	BY rc.id DESC
+                     LIMIT	2 ";
+
+            /* Execute  */
+            $rdo = $DB->get_records_sql($sql,$params);
+            if ($rdo) {
+                foreach ($rdo as $rate) {
+                    $coments_rate[$rate->id] = $rate->comment;
+                }
+            }//if_rdo
+
+            return $coments_rate;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//getComentsTypeRateCourse
+
+    /**
+     * @static
+     * @param           $course_id
+     * @return          array
+     * @throws          Exception
+     *
+     * @creationDate    08/07/2014
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Get the last comments
+     */
+    public static function getLastCommentsRateCourse($course_id) {
+        global $DB;
+
+        try {
+            /* Last Ratings */
+            $last_comments = array();
+
+            /* PARAMS   */
+            $params = array();
+            $params['course_id'] = $course_id;
+
+            /* SQL Instruction  */
+            $sql = " SELECT	  rc.id,
+                              rc.comment,
+                              rc.rating
+                     FROM	  {block_rate_course}       rc
+                     WHERE	  rc.course = :course_id
+                        AND   rc.comment IS NOT NULL
+                     ORDER	BY rc.id DESC
+                     LIMIT	2 ";
+
+            /* Execue   */
+            $rdo = $DB->get_records_sql($sql,$params);
+            if ($rdo) {
+                foreach($rdo as $rate) {
+                    $info = new stdClass();
+                    $info->comment  = $rate->comment;
+                    $info->rating   = $rate->rating;
+
+                    $last_comments[$rate->id] = $info;
+                }//for_rdo
+            }//if_rdo
+
+            return $last_comments;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//getLastCommentsRateCourse
+
+    /**
+     * @static
+     * @param           $course_id
      * @return          int
      * @throws          Exception
      *
