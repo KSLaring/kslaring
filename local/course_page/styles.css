@@ -29,6 +29,7 @@
     display:inline-block;
     margin-right: 1px;
     text-justify:inter-word;
+    margin-bottom: 15px;
 }
 
 .home_page_block_one .buttons{
@@ -52,17 +53,17 @@
 
 .home_page_block_one  h3 {
     text-align: left;
-
     margin-top: 0px;
 }
 
 .home_page_block_two {
-    border-left: 3px solid #d8d8d8;
-    padding-left: 10px;
+    padding-left: 8px;
     float:right;
     width:30%;
     display:inline-block;
     text-justify:inter-word;
+    margin-bottom: 15px;
+    border-left: 3px solid #d8d8d8;
 }
 
 .home_page_block_two .extra {
@@ -225,6 +226,74 @@
 .home_page_block_two .ratings .content_rating_bar {
     background: white;
     width: 99%;
+    margin-bottom: 10px;
+}
+
+.home_page_block_two .ratings .ratings_review{
+    margin-top: 5px;
+    margin-bottom: 10px;
+    margin-right: 5px;
+    word-wrap: break-word;
+    font-style:italic;
+    display: block;
+    height: 125px;
+}
+
+.home_page_block_two .ratings .ratings_review_value {
+    width: 75%;
+    float:right;
+    display: inline-block;
+    height: 125px;
+}
+
+.home_page_block_two .ratings .ratings_review_title {
+    float: left;
+    color: #0e7b9e;
+    width: 25%;
+    display: inline-block;
+    height: 125px;
+}
+
+.home_page_block_two .ratings .ratings_break{
+    margin-top: 5px;
+    margin-bottom: 5px;
+    display: block;
+    height: 35px;
+}
+
+.ratings_panel_title {
+    color: #0e7b9e;
+    font-weight: bold;
+}
+
+.ratings_panel {
+    margin-right: 5px;
+    word-wrap: break-word;
+    font-style:italic;
+    display: block;
+    height: 120px;
+}
+
+hr.line_rating {
+    margin-top: 10px;
+    border: 0;
+    border-top: 1px solid #CCCCCC;
+}
+
+.ratings_panel .ratings_review_value {
+    width: 85%;
+    float:right;
+    display: inline-block;
+    height: 90px;
+}
+
+.ratings_panel .ratings_review_title {
+    font-size: 21.328px;
+    float: left;
+    color: #0e7b9e;
+    width: 15%;
+    display: inline-block;
+    height: 90px;
 }
 
 #page-local-course_page-home_page label{

@@ -259,16 +259,6 @@ class courses_site  {
             }///deletepicture
 
             $picture_id = self::courses_site_GetPictureId($picture_filemanager,$file_options,$context);
-            //$file_manager = new stdClass();
-            //$file_manager->picture_filemanager = $picture_filemanager;
-
-            //$file_manager = file_postupdate_standard_filemanager($file_manager, 'picture', $file_options, $context, 'course', 'picture', $file_manager->picture_filemanager);
-            //if ($files = $fs->get_area_files($context->id, 'course', 'picture', $file_manager->picture_filemanager, 'id DESC', false)) {
-            //    /* Remove Previous  */
-            //    $file = reset($files);
-
-            //    $picture_id = $file->get_id();
-            //}//if_file
 
             return $picture_id;
         }catch (Exception $ex) {
@@ -276,6 +266,19 @@ class courses_site  {
         }//try_catch
     }//courses_site_GetPictureReference
 
+    /**
+     * @static
+     * @param           $picture_filemanager
+     * @param           $file_options
+     * @param           $context
+     * @return          int
+     *
+     * @creationDate    29/05/2014
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Get the Id connected with the picture
+     */
     public static function courses_site_GetPictureId($picture_filemanager,$file_options,$context) {
         /* Variables    */
         $picture_id = 0;

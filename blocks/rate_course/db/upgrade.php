@@ -25,7 +25,7 @@
  * @license http://www.gnu.org/copyleft/gpl.html GNU Public License
  */
 
-function xmldb_block_rate_course_upgrade($oldversion=0) {
+function xmldb_block_rate_course_upgrade($oldversion) {
     global $CFG, $THEME, $db, $DB;
     $result = true;
     if ($oldversion < 2009020307) {
@@ -73,5 +73,18 @@ function xmldb_block_rate_course_upgrade($oldversion=0) {
             capabilities_cleanup('block/'.$oldblock->name);
         }
     }
+
+    if ($oldversion < 2014070806) {
+        $db_man = $DB->get_manager();
+
+        /* New Fields -- Course */
+        $tableRateCourse = new xmldb_table('block_rate_course');
+        $fieldComment    = new xmldb_field('comment',XMLDB_TYPE_CHAR,'255',null, null, null,null);
+
+        if (!$db_man->field_exists($tableRateCourse,$fieldComment)) {
+            $db_man->add_field($tableRateCourse,$fieldComment);
+        }//if_exists
+    }
+
     return $result;
 }
