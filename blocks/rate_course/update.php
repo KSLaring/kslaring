@@ -29,8 +29,9 @@
 
 require_once("../../config.php");
 
-$id        = required_param('id', PARAM_INT);                 // Course Module ID.
-$grade     = required_param('grade', PARAM_INT);          // User selection.
+$id        = required_param('id', PARAM_INT);             // Course Module ID.
+$grade     = optional_param('grade', 0,PARAM_INT);          // User selection.
+$comment   = optional_param('comment',null, PARAM_TEXT);
 
 if (! $course = $DB->get_record("course", array("id"=>$id))) {
     error("Course ID not found");
@@ -50,11 +51,14 @@ if ($form = data_submitted()) {
         print_error('completed', 'block_rate_course');
     }
 
-    $completion = new stdClass;
-    $completion->course = $COURSE->id;
-    $completion->userid = $USER->id;
-    $completion->rating = $grade;
-    $DB->insert_record( 'block_rate_course', $completion );
+    if ($grade) {
+        $completion = new stdClass;
+        $completion->course = $COURSE->id;
+        $completion->userid = $USER->id;
+        $completion->rating = $grade;
+        $completion->comment = $comment;
+        $DB->insert_record( 'block_rate_course', $completion );
+    }//if_Grade
 
     redirect($CFG->wwwroot.'/course/view.php?id='.$COURSE->id);
 

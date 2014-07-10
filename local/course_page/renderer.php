@@ -196,10 +196,6 @@ class local_course_page_renderer extends plugin_renderer_base {
         /* Variables    */
         $manager        = 0;
         $block_two      = '';
-        $extra_info     = '';
-        $coordinator    = '';
-        $ratings        = '';
-
 
         /* Extra info   */
         $extra_info = $this->addExtraInfo_HomePage($course,$format_options,$manager);
@@ -211,10 +207,10 @@ class local_course_page_renderer extends plugin_renderer_base {
         $block_two .= html_writer::start_tag('div',array('class' => 'home_page_block_two'));
             /* Coordinator  Block   */
             $block_two .= $coordinator;
-            /* Ratings Block        */
-            $block_two .= $ratings;
             /* Add Extra Into */
             $block_two .= $extra_info;
+            /* Ratings Block        */
+            $block_two .= $ratings;
         $block_two .= html_writer::end_tag('div');//home_page_block_two
 
         return $block_two;
@@ -295,38 +291,86 @@ class local_course_page_renderer extends plugin_renderer_base {
 
             /* Add Info Ratings */
             $is_rating = course_page::IsCourseRating($course_id);
-                /* Add Total Average of course rating   */
-                $url_avg = new moodle_url('/blocks/rate_course/pix/rating_graphic.php',array('courseid' => $course_id));
-                $out .= '<h5 class="title_ratings">' . get_string('rate_avg','local_course_page') . '</h5>';
-                $out .= '<div class="label_ratings">' . '<img src="'. $url_avg . '" .  alt="average ratings"/>' . '</div>';
+            /* Add Total Average of course rating   */
+            $url_avg = new moodle_url('/blocks/rate_course/pix/rating_graphic.php',array('courseid' => $course_id));
+            $out .= '<h5 class="title_ratings">' . get_string('rate_avg','local_course_page') . '</h5>';
+            $out .= '<div class="label_ratings">' . '<img src="'. $url_avg . '" .  alt="average ratings"/>' . '</div>';
 
-                $out .= '<h5 class="title_ratings">' . get_string('rate_users','local_course_page') . '</h5>';
+            $out .= '<h5 class="title_ratings">' . get_string('rate_users','local_course_page') . '</h5>';
 
-                $out.= '<div class="content_rating_bar">';
-                    /* Total Rates  */
-                    $total_rates = course_page::getTotalUsersEnrolledCourse($course_id);
+            $out.= '<div class="content_rating_bar">';
+                /* Total Rates  */
+                $total_rates = course_page::getTotalUsersEnrolledCourse($course_id);
 
-                    /* Excellent Rate   */
-                    $excellent_rate = course_page::getCountTypeRateCourse($course_id,EXCELLENT_RATING);
-                    $exc_bar        = course_page::getProgressBarCode($excellent_rate,$total_rates,get_string('rate_exc','local_course_page'));
-                    $out .= $exc_bar;
-                    /* Good Rate        */
-                    $good_rate      = course_page::getCountTypeRateCourse($course_id,GOOD_RATING);
-                    $exc_bar        = course_page::getProgressBarCode($good_rate,$total_rates,get_string('rate_good','local_course_page'));
-                    $out .= $exc_bar;
-                    /* Average Rate */
-                    $avg_rate       = course_page::getCountTypeRateCourse($course_id,AVG_RATING);
-                    $exc_bar        = course_page::getProgressBarCode($avg_rate,$total_rates,get_string('rate_avg','local_course_page'));
-                    $out .= $exc_bar;
-                    /* Poor Rate    */
-                    $poor_rate      = course_page::getCountTypeRateCourse($course_id,POOR_RATING);
-                    $exc_bar        = course_page::getProgressBarCode($poor_rate,$total_rates,get_string('rate_poor','local_course_page'));
-                    $out .= $exc_bar;
-                    /* Bad Rate */
-                    $bad_rate       = course_page::getCountTypeRateCourse($course_id,BAD_RATING);
-                    $exc_bar        = course_page::getProgressBarCode($bad_rate,$total_rates,get_string('rate_bad','local_course_page'));
-                    $out .= $exc_bar;
-                $out .= '</div>';//content_rating_bar
+                /* Excellent Rate   */
+                $excellent_rate = course_page::getCountTypeRateCourse($course_id,EXCELLENT_RATING);
+                $exc_bar        = course_page::getProgressBarCode($excellent_rate,$total_rates,get_string('rate_exc','local_course_page'));
+                $out .= $exc_bar;
+                /* Good Rate        */
+                $good_rate      = course_page::getCountTypeRateCourse($course_id,GOOD_RATING);
+                $good_bar       = course_page::getProgressBarCode($good_rate,$total_rates,get_string('rate_good','local_course_page'));
+                $out .= $good_bar;
+                /* Average Rate */
+                $avg_rate       = course_page::getCountTypeRateCourse($course_id,AVG_RATING);
+                $avg_bar        = course_page::getProgressBarCode($avg_rate,$total_rates,get_string('rate_avg','local_course_page'));
+                $out .= $avg_bar;
+                /* Poor Rate    */
+                $poor_rate      = course_page::getCountTypeRateCourse($course_id,POOR_RATING);
+                $poor_bar       = course_page::getProgressBarCode($poor_rate,$total_rates,get_string('rate_poor','local_course_page'));
+                $out .= $poor_bar;
+                /* Bad Rate */
+                $bad_rate       = course_page::getCountTypeRateCourse($course_id,BAD_RATING);
+                $bad_bar        = course_page::getProgressBarCode($bad_rate,$total_rates,get_string('rate_bad','local_course_page'));
+                $out .= $bad_bar;
+            $out .= '</div>';//content_rating_bar
+
+            /* Add Reviews  */
+            $light_box = '';
+            $out .= '<h5 class="title_ratings">' . get_string('title_reviews','local_course_page') . '</h5>';
+            $last_rates = course_page::getLastCommentsRateCourse($course_id);
+            if ($last_rates) {
+                $url_user = new moodle_url('/blocks/rate_course/pix/rating_user_graphic.php');
+                $i = 1;
+                foreach ($last_rates as $rate) {
+                    $url_user->param('rate',$rate->rating);
+
+                    $str_comment = trim($rate->comment);
+                    if (strlen($str_comment) > 100) {
+                        $str_comment = '"' . substr($str_comment,0,97) . ' ...' .' "';
+                    }
+
+                    $out .= '<div class="ratings_review">';
+                        $out .= '<div class="ratings_review_title">' . get_string('user') . ' ' . $i . '</div>';
+                        $out .= '<div class="ratings_review_value">' . $str_comment;
+                            $out .= '</br><img src="'. $url_user .'"/>';
+                        $out .= '</div>';//ratings_review_value
+                    $out .= '</div>';//ratings_review
+
+                    $light_box .= '<div class="ratings_panel">';
+                        $light_box .= '<div class="ratings_review_title">' . get_string('user') . ' ' . $i . '</div>';
+                        $light_box .= '<div class="ratings_review_value">';
+                            $light_box .= trim($rate->comment);
+                            $light_box .= '</br>' . '<img src="'. $url_user .'"/>';
+                            if ($i == 1) {
+                                $light_box .= '<hr class="line_rating">';
+                            }
+                        $light_box .= '</div>';//ratings_review_value
+                    $light_box .= '</div>';///ratings_panel
+
+                    $i ++;
+                }//for_lastcomments
+            }else {
+                $out .= '<div class="ratings_review">No comments</div>';
+            }//if_lst_comments
+
+
+        /* Lightbox --> see the last five comments  */
+        $header ='<h5 class="ratings_panel_title">' . get_string('title_reviews','local_course_page') . '</h5>';
+        $this->page->requires->yui_module('moodle-local_course_page-ratings','M.local_course_page.ratings',array(array('header' => $header,'content' => $light_box)));
+        $out .= html_writer::start_tag('div', array('class' => 'mdl-right','commentPanel'));
+        $out .= '<button class="buttons" id="show">' . get_string('btn_more','local_course_page') . '</button>';
+        $out.= html_writer::end_tag('div');//div_mdl_right
+
         $out .= html_writer::end_tag('div');//ratings
 
         return $out;
