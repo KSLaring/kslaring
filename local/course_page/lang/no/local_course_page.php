@@ -53,4 +53,5 @@ $string['home_type']                = 'Kurstype';
 $string['btn_more']                 = 'Les mer';
 $string['net_course']               = 'Nettkurs';
 $string['class_course']             = 'Classroom';
+$string['whitepaper']               = 'White paper';
 $string['btn_more']                 = 'More';
