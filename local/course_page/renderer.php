@@ -371,6 +371,7 @@ class local_course_page_renderer extends plugin_renderer_base {
 
 
         /* Lightbox --> see the last five comments  */
+        $out .= '</br>';
         $header ='<h5 class="ratings_panel_title">' . get_string('title_reviews','local_course_page') . '</h5>';
         $this->page->requires->yui_module('moodle-local_course_page-ratings','M.local_course_page.ratings',array(array('header' => $header,'content' => $light_box)));
         $out .= html_writer::start_tag('div', array('class' => 'mdl-right','commentPanel'));
@@ -415,19 +416,22 @@ class local_course_page_renderer extends plugin_renderer_base {
                 switch ($course->format) {
                     case 'netcourse':
                         $url_img = $this->getURLIcon('nett_kurs');
-                        $out .= html_writer::empty_tag('img', array('src'=>$url_img,'alt'=> '','class'=>'icon'));
+                        $alt        = get_string('net_course','local_course_page');
+                        $out .= html_writer::empty_tag('img', array('src'=>$url_img,'alt'=> $alt, 'title' => $alt, 'class'=>'icon'));
                         $out .= get_string('net_course','local_course_page');
 
                         break;
                     case 'classroom':
                         $url_img = $this->getURLIcon('classroom');
-                        $out .= html_writer::empty_tag('img', array('src'=>$url_img,'alt'=> '','class'=>'icon'));
+                        $alt        = get_string('class_course','local_course_page');
+                        $out .= html_writer::empty_tag('img', array('src'=>$url_img,'alt'=> $alt, 'title' => $alt,'class'=>'icon'));
                         $out .= get_string('class_course','local_course_page');
 
                         break;
                     case 'whitepaper':
                         $url_img = $this->getURLIcon('whitepaper');
-                        $out .= html_writer::empty_tag('img', array('src'=>$url_img,'alt'=> '','class'=>'icon'));
+                        $alt = get_string('whitepaper','local_course_page');
+                        $out .= html_writer::empty_tag('img', array('src'=>$url_img,'alt'=> $alt, 'title' => $alt,'class'=>'icon'));
 
                         break;
                     default:

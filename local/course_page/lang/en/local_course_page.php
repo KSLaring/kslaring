@@ -53,4 +53,5 @@ $string['home_type']                = 'Course Type';
 $string['btn_more']                 = 'More';
 $string['net_course']               = 'Netcourse';
 $string['class_course']             = 'Classroom';
+$string['whitepaper']               = 'White paper';
 $string['btn_more']                 = 'More';

@@ -52,12 +52,12 @@ if ($form = data_submitted()) {
     }
 
     if ($grade) {
-    $completion = new stdClass;
-    $completion->course = $COURSE->id;
-    $completion->userid = $USER->id;
-    $completion->rating = $grade;
+        $completion = new stdClass;
+        $completion->course  = $COURSE->id;
+        $completion->userid  = $USER->id;
+        $completion->rating  = $grade;
         $completion->comment = $comment;
-    $DB->insert_record( 'block_rate_course', $completion );
+        $DB->insert_record( 'block_rate_course', $completion );
     }//if_Grade
 
     redirect($CFG->wwwroot.'/course/view.php?id='.$COURSE->id);
