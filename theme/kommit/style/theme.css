@@ -1,3 +1,12 @@
+.ie-scrollbar-white {
+  scrollbar-shadow-color: #FFFFFF;
+  scrollbar-highlight-color: #FFFFFF;
+  scrollbar-face-color: #FFFFFF;
+  scrollbar-3dlight-color: #FFFFFF;
+  scrollbar-darkshadow-color: #FFFFFF;
+  scrollbar-track-color: #FFFFFF;
+  scrollbar-arrow-color: #FFFFFF;
+}
 .clearfix {
   *zoom: 1;
 }
@@ -109,6 +118,173 @@ h6 {
   font-weight: normal;
   font-style: normal;
 }
+article,
+aside,
+details,
+figcaption,
+figure,
+footer,
+header,
+hgroup,
+nav,
+section {
+  display: block;
+}
+audio,
+canvas,
+video {
+  display: inline-block;
+  *display: inline;
+  *zoom: 1;
+}
+audio:not([controls]) {
+  display: none;
+}
+html {
+  font-size: 100%;
+  -webkit-text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%;
+}
+a:focus {
+  outline: thin dotted #333;
+  outline: 5px auto -webkit-focus-ring-color;
+  outline-offset: -2px;
+}
+a:hover,
+a:active {
+  outline: 0;
+}
+sub,
+sup {
+  position: relative;
+  font-size: 75%;
+  line-height: 0;
+  vertical-align: baseline;
+}
+sup {
+  top: -0.5em;
+}
+sub {
+  bottom: -0.25em;
+}
+.img-responsive {
+  /* Responsive images (ensure images don't scale beyond their parents) */
+  max-width: 100%;
+  /* Part 1: Set a maxium relative to the parent */
+  width: auto\9;
+  /* IE7-8 need help adjusting responsive images */
+  height: auto;
+  /* Part 2: Scale the height according to the width, otherwise you get stretching */
+  -ms-interpolation-mode: bicubic;
+}
+img {
+  vertical-align: middle;
+  border: 0;
+}
+#map_canvas img,
+.google-maps img {
+  max-width: none;
+}
+button,
+input,
+select,
+textarea {
+  margin: 0;
+  font-size: 100%;
+  vertical-align: middle;
+}
+button,
+input {
+  *overflow: visible;
+  line-height: normal;
+}
+button::-moz-focus-inner,
+input::-moz-focus-inner {
+  padding: 0;
+  border: 0;
+}
+button,
+html input[type="button"],
+input[type="reset"],
+input[type="submit"] {
+  -webkit-appearance: button;
+  cursor: pointer;
+}
+label,
+select,
+button,
+input[type="button"],
+input[type="reset"],
+input[type="submit"],
+input[type="radio"],
+input[type="checkbox"] {
+  cursor: pointer;
+}
+input[type="search"] {
+  -webkit-box-sizing: content-box;
+  -moz-box-sizing: content-box;
+  box-sizing: content-box;
+  -webkit-appearance: textfield;
+}
+input[type="search"]::-webkit-search-decoration,
+input[type="search"]::-webkit-search-cancel-button {
+  -webkit-appearance: none;
+}
+textarea {
+  overflow: auto;
+  vertical-align: top;
+}
+@media print {
+  * {
+    text-shadow: none !important;
+    color: #000 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+  a,
+  a:visited {
+    text-decoration: underline;
+  }
+  a[href]:after {
+    content: " (" attr(href) ")";
+  }
+  abbr[title]:after {
+    content: " (" attr(title) ")";
+  }
+  .ir a:after,
+  a[href^="javascript:"]:after,
+  a[href^="#"]:after {
+    content: "";
+  }
+  pre,
+  blockquote {
+    border: 1px solid #999;
+    page-break-inside: avoid;
+  }
+  thead {
+    display: table-header-group;
+  }
+  tr,
+  img {
+    page-break-inside: avoid;
+  }
+  img {
+    max-width: 100% !important;
+  }
+  @page {
+    margin: 0.5cm;
+  }
+  p,
+  h2,
+  h3 {
+    orphans: 3;
+    widows: 3;
+  }
+  h2,
+  h3 {
+    page-break-after: avoid;
+  }
+}
 p {
   color: #333333;
   line-height: 21px;
@@ -121,6 +297,30 @@ h4,
 h5,
 h6 {
   color: #7e7e7e;
+}
+.img-responsive-left {
+  /* Responsive images (ensure images don't scale beyond their parents) */
+  max-width: 100%;
+  /* Part 1: Set a maxium relative to the parent */
+  width: auto\9;
+  /* IE7-8 need help adjusting responsive images */
+  height: auto;
+  /* Part 2: Scale the height according to the width, otherwise you get stretching */
+  -ms-interpolation-mode: bicubic;
+  flaot: left;
+  margin-right: 1em;
+}
+.img-responsive-right {
+  /* Responsive images (ensure images don't scale beyond their parents) */
+  max-width: 100%;
+  /* Part 1: Set a maxium relative to the parent */
+  width: auto\9;
+  /* IE7-8 need help adjusting responsive images */
+  height: auto;
+  /* Part 2: Scale the height according to the width, otherwise you get stretching */
+  -ms-interpolation-mode: bicubic;
+  flaot: right;
+  margin-left: 1em;
 }
 .navbar-fixed-top,
 .navbar-fixed-bottom {
@@ -396,6 +596,201 @@ Courses and categories lists, from Mary Evans
 #page-mod-lesson-view .contents {
   //min-height: initial;
 }*/
+#page-mod-quiz-view #region-main > div[role="main"] {
+  margin: 1em 1% 0 0;
+}
+#page-mod-quiz-attempt #region-main > div[role="main"],
+#page-mod-quiz-review #region-main > div[role="main"] {
+  margin: 1em 1% 0 0;
+}
+#page-mod-quiz-attempt .que span.qno,
+#page-mod-quiz-review .que span.qno {
+  font-size: inherit;
+  font-weight: inherit;
+}
+#page-mod-quiz-attempt .que .info,
+#page-mod-quiz-review .que .info {
+  *zoom: 1;
+  background-color: #ffffff;
+  border: 1px solid #e8e8e8;
+  border-width: 1px 0;
+  float: none;
+  margin-bottom: 0;
+  padding: 0.3em 0.5em;
+  width: auto;
+}
+#page-mod-quiz-attempt .que .info:before,
+#page-mod-quiz-review .que .info:before,
+#page-mod-quiz-attempt .que .info:after,
+#page-mod-quiz-review .que .info:after {
+  display: table;
+  content: "";
+  line-height: 0;
+}
+#page-mod-quiz-attempt .que .info:after,
+#page-mod-quiz-review .que .info:after {
+  clear: both;
+}
+#page-mod-quiz-attempt .que .info h3,
+#page-mod-quiz-review .que .info h3 {
+  font-size: 24px;
+  font-weight: bold;
+}
+#page-mod-quiz-attempt .que .info > div,
+#page-mod-quiz-review .que .info > div {
+  clear: none;
+  float: left;
+  margin-right: 1em;
+}
+#page-mod-quiz-attempt .que .content,
+#page-mod-quiz-review .que .content {
+  margin-left: 0;
+  padding: 0;
+}
+#page-mod-quiz-attempt .que .formulation,
+#page-mod-quiz-review .que .formulation {
+  background-color: #ffffff;
+  border: 0;
+  padding: 0.3em 0.5em;
+}
+#page-mod-quiz-attempt .que .formulation select,
+#page-mod-quiz-review .que .formulation select {
+  max-width: 13em;
+}
+#page-mod-quiz-attempt .que .formulation .correct,
+#page-mod-quiz-review .que .formulation .correct {
+  background-color: #ffffff;
+  border-left: 3px solid #46a546;
+}
+#page-mod-quiz-attempt .que .formulation .partiallycorrect,
+#page-mod-quiz-review .que .formulation .partiallycorrect {
+  background-color: #ffffff;
+  border-left: 3px solid #ffc40d;
+}
+#page-mod-quiz-attempt .que .formulation .incorrect,
+#page-mod-quiz-review .que .formulation .incorrect {
+  background-color: #ffffff;
+  border-left: 3px solid #9d261d;
+}
+#page-mod-quiz-attempt .que .formulation div.r0,
+#page-mod-quiz-review .que .formulation div.r0,
+#page-mod-quiz-attempt .que .formulation div.r1,
+#page-mod-quiz-review .que .formulation div.r1 {
+  border-left: 3px solid transparent;
+}
+#page-mod-quiz-attempt .que .formulation div.r0.correct,
+#page-mod-quiz-review .que .formulation div.r0.correct,
+#page-mod-quiz-attempt .que .formulation div.r1.correct,
+#page-mod-quiz-review .que .formulation div.r1.correct {
+  border-left: 3px solid #46a546;
+}
+#page-mod-quiz-attempt .que .formulation div.r0.partiallycorrect,
+#page-mod-quiz-review .que .formulation div.r0.partiallycorrect,
+#page-mod-quiz-attempt .que .formulation div.r1.partiallycorrect,
+#page-mod-quiz-review .que .formulation div.r1.partiallycorrect {
+  border-left: 3px solid #ffc40d;
+}
+#page-mod-quiz-attempt .que .formulation div.r0.incorrect,
+#page-mod-quiz-review .que .formulation div.r0.incorrect,
+#page-mod-quiz-attempt .que .formulation div.r1.incorrect,
+#page-mod-quiz-review .que .formulation div.r1.incorrect {
+  border-left: 3px solid #9d261d;
+}
+#page-mod-quiz-attempt .que .outcome,
+#page-mod-quiz-review .que .outcome {
+  background-color: #ffffff;
+  border: 1px solid #ffc40d;
+  border-left-width: 3px;
+}
+#page-mod-quiz-attempt .que .answer div.r0,
+#page-mod-quiz-review .que .answer div.r0,
+#page-mod-quiz-attempt .que .answer div.r1,
+#page-mod-quiz-review .que .answer div.r1 {
+  margin-bottom: .3em;
+}
+#page-mod-quiz-attempt .que .answer div.r0:after,
+#page-mod-quiz-review .que .answer div.r0:after,
+#page-mod-quiz-attempt .que .answer div.r1:after,
+#page-mod-quiz-review .que .answer div.r1:after {
+  clear: both;
+  content: "";
+  display: table;
+  line-height: 0;
+}
+#page-mod-quiz-attempt .que .answer td.control,
+#page-mod-quiz-review .que .answer td.control {
+  padding-left: .5em;
+}
+#page-mod-quiz-attempt .que .answer tr.r0 td,
+#page-mod-quiz-review .que .answer tr.r0 td,
+#page-mod-quiz-attempt .que .answer tr.r1 td,
+#page-mod-quiz-review .que .answer tr.r1 td {
+  padding-bottom: 1em;
+}
+#page-mod-quiz-attempt .que .answer tr.r0 td.text,
+#page-mod-quiz-review .que .answer tr.r0 td.text,
+#page-mod-quiz-attempt .que .answer tr.r1 td.text,
+#page-mod-quiz-review .que .answer tr.r1 td.text {
+  padding-right: .5em;
+}
+#page-mod-quiz-attempt .que .answer input[type="radio"] + label .img-responsive-left,
+#page-mod-quiz-review .que .answer input[type="radio"] + label .img-responsive-left {
+  margin-right: 2em;
+}
+#page-mod-quiz-attempt .que .answer .specificfeedback,
+#page-mod-quiz-review .que .answer .specificfeedback {
+  padding: 0 .3em 0 0;
+}
+#page-mod-quiz-attempt .que .answer input,
+#page-mod-quiz-review .que .answer input {
+  vertical-align: baseline;
+}
+#page-mod-quiz-review table.quizreviewsummary th.cell,
+#page-mod-quiz-review table.quizreviewsummary td.cell {
+  background-color: #ffffff;
+}
+#page-mod-quiz-review table.quizreviewsummary td {
+  border-color: #e8e8e8;
+}
+#page-mod-quiz-edit .questionbankwindow.block {
+  margin-right: 1%;
+  width: 29%;
+}
+#page-mod-quiz-edit .questionbankwindow.block div.header {
+  background-color: #eeeeee;
+}
+#page-mod-quiz-edit .questionbankwindow.block div.header div.title h2 {
+  color: #333333;
+}
+#page-mod-quiz-edit .questionbankwindow.block input[type="submit"],
+#page-mod-quiz-edit .questionbankwindow.block input[type="button"] {
+  max-width: 100%;
+}
+#page-mod-quiz-edit .questionbankwindow a#showbankcmd,
+#page-mod-quiz-edit .questionbankwindow a#hidebankcmd {
+  color: #003876;
+}
+#page-mod-quiz-edit .questioncontentcontainer label > img {
+  vertical-align: top;
+  padding-top: .2em;
+}
+#page-mod-quiz-edit #categoryquestions > tbody > tr:nth-of-type(even) {
+  background-color: #eeeeee;
+}
+#page-mod-quiz-edit div.quizpage .pagecontent {
+  background-color: #eeeeee;
+}
+#page-mod-quiz-edit div.question div.content div.qorder {
+  background-color: inherit;
+  margin-top: .3em;
+}
+#page-mod-quiz-edit div.question div.content div.questioncontrols {
+  padding: 0;
+}
+#page-mod-quiz-edit div.question div.content div.points input.pointssubmitbutton {
+  margin-top: 0;
+  padding: 0 .3em .1em;
+}
 body {
   padding-top: 0px;
   background: #f2f2f3;
@@ -718,7 +1113,7 @@ div.loginpanel h2 {
 }
 .coursebox .panel-heading {
   font-size: 21.328px;
-  line-height: 31.991999999999997px;
+  line-height: 31.992px;
 }
 #page-course-index-category .categorypicker {
   text-align: right;

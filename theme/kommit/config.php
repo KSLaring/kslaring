@@ -84,6 +84,12 @@ $THEME->layouts = array(
         'defaultregion' => 'side-pre',
         'options' => array('langmenu'=>true),
     ),
+    'incourse' => array(
+        'file' => 'columns3.php',
+        'regions' => array('content-top', 'side-pre', 'side-post', 'top', 'bottom'),
+        'defaultregion' => 'side-pre',
+        'options' => array('langmenu'=>true),
+    ),
     // The site home page.
     'frontpage' => array(
         'file' => 'columns3_front.php',

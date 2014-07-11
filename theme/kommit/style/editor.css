@@ -1,3 +1,12 @@
+.ie-scrollbar-white {
+  scrollbar-shadow-color: #FFFFFF;
+  scrollbar-highlight-color: #FFFFFF;
+  scrollbar-face-color: #FFFFFF;
+  scrollbar-3dlight-color: #FFFFFF;
+  scrollbar-darkshadow-color: #FFFFFF;
+  scrollbar-track-color: #FFFFFF;
+  scrollbar-arrow-color: #FFFFFF;
+}
 .clearfix {
   *zoom: 1;
 }
@@ -74,7 +83,7 @@ sup {
 sub {
   bottom: -0.25em;
 }
-img {
+.img-responsive {
   /* Responsive images (ensure images don't scale beyond their parents) */
   max-width: 100%;
   /* Part 1: Set a maxium relative to the parent */
@@ -82,9 +91,11 @@ img {
   /* IE7-8 need help adjusting responsive images */
   height: auto;
   /* Part 2: Scale the height according to the width, otherwise you get stretching */
+  -ms-interpolation-mode: bicubic;
+}
+img {
   vertical-align: middle;
   border: 0;
-  -ms-interpolation-mode: bicubic;
 }
 #map_canvas img,
 .google-maps img {
@@ -1850,4 +1861,41 @@ a.badge:focus {
 }
 body {
   margin: 8px;
+}
+p {
+  color: #333333;
+  line-height: 21px;
+  margin: 0 0 1.3125em 0;
+}
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  color: #7e7e7e;
+}
+.img-responsive-left {
+  /* Responsive images (ensure images don't scale beyond their parents) */
+  max-width: 100%;
+  /* Part 1: Set a maxium relative to the parent */
+  width: auto\9;
+  /* IE7-8 need help adjusting responsive images */
+  height: auto;
+  /* Part 2: Scale the height according to the width, otherwise you get stretching */
+  -ms-interpolation-mode: bicubic;
+  flaot: left;
+  margin-right: 1em;
+}
+.img-responsive-right {
+  /* Responsive images (ensure images don't scale beyond their parents) */
+  max-width: 100%;
+  /* Part 1: Set a maxium relative to the parent */
+  width: auto\9;
+  /* IE7-8 need help adjusting responsive images */
+  height: auto;
+  /* Part 2: Scale the height according to the width, otherwise you get stretching */
+  -ms-interpolation-mode: bicubic;
+  flaot: right;
+  margin-left: 1em;
 }

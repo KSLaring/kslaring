@@ -1,3 +1,12 @@
+.ie-scrollbar-white {
+  scrollbar-shadow-color: #FFFFFF;
+  scrollbar-highlight-color: #FFFFFF;
+  scrollbar-face-color: #FFFFFF;
+  scrollbar-3dlight-color: #FFFFFF;
+  scrollbar-darkshadow-color: #FFFFFF;
+  scrollbar-track-color: #FFFFFF;
+  scrollbar-arrow-color: #FFFFFF;
+}
 /* core.less */
 /** Page layout CSS starts **/
 .layout-option-noheader #page-header,
@@ -12683,6 +12692,11 @@ body {
 .block_settings .block_tree .type_activity > p.tree_item.active_tree_node img {
   top: .2em;
 }
+.block_navigation .fa-circle,
+.block_settings .fa-circle {
+  margin-left: -1.7em;
+  padding-right: .7em;
+}
 .calendar-event-panel .yui3-overlay-content h2.eventtitle {
   font-size: 1em;
 }
@@ -12737,6 +12751,64 @@ body {
 }
 .block_course_overview .content {
   margin: 0 0;
+}
+.block_login .loginform .btn input {
+  margin-left: 0;
+}
+.format-netcourse #block-region-content-top {
+  margin-right: 1%;
+}
+.format-netcourse #mod_quiz_navblock {
+  scrollbar-shadow-color: #FFFFFF;
+  scrollbar-highlight-color: #FFFFFF;
+  scrollbar-face-color: #FFFFFF;
+  scrollbar-3dlight-color: #FFFFFF;
+  scrollbar-darkshadow-color: #FFFFFF;
+  scrollbar-track-color: #FFFFFF;
+  scrollbar-arrow-color: #FFFFFF;
+}
+.format-netcourse #mod_quiz_navblock .header {
+  display: none;
+}
+.format-netcourse #mod_quiz_navblock .content {
+  overflow: auto;
+  overflow-y: hidden;
+  padding: 0;
+}
+.format-netcourse #mod_quiz_navblock .content .qn_buttons {
+  padding: .3em 0 0;
+}
+.format-netcourse #mod_quiz_navblock .qnbutton {
+  background-color: #f9f9f9;
+  border-color: #e8e8e8;
+  display: inline;
+  float: none;
+  line-height: 3em !important;
+  margin: 0 -1px 0 0;
+  padding: 1em .6em;
+  white-space: pre;
+}
+.format-netcourse #mod_quiz_navblock .qnbutton.correct .trafficlight {
+  border-top: 0;
+  border-bottom: 3px solid #46a546;
+}
+.format-netcourse #mod_quiz_navblock .qnbutton.partiallycorrect .trafficlight {
+  border-top: 0;
+  border-bottom: 3px solid #ffc40d;
+}
+.format-netcourse #mod_quiz_navblock .qnbutton.incorrect .trafficlight {
+  border-top: 0;
+  border-bottom: 3px solid #9d261d;
+}
+.format-netcourse #mod_quiz_navblock .qnbutton.thispage {
+  background-color: #ffffff;
+  border-color: #e8e8e8;
+}
+.format-netcourse #mod_quiz_navblock .qnbutton.thispage .thispageholder {
+  border-color: #e8e8e8;
+}
+.format-netcourse #mod_quiz_navblock .qnbutton:hover {
+  background-color: #ffffff;
 }
 /**
  * Moodle forms HTML isn't changeable via renderers (yet?) so this

@@ -21,7 +21,6 @@
  * @copyright  2014
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
 class theme_kommit_core_renderer extends core_renderer {
     // additional block regions
     public function blocks($region, $classes = array(), $tag = 'aside') {
@@ -29,10 +28,71 @@ class theme_kommit_core_renderer extends core_renderer {
 
         $displayregion = $this->page->apply_theme_region_manipulations($region);
         if ($this->page->blocks->region_has_content($displayregion, $this) || $editing) {
-            return parent::blocks($region, $classes, $tag);
+//            return parent::blocks($region, $classes, $tag);
+            $blocks_html = parent::blocks($region, $classes, $tag);
+            if (strpos($blocks_html, 'mod_quiz_navblock') !== false) {
+                $blocks_html = $this->process_quiz_nav_block($blocks_html);
+            }
+
+            return $blocks_html;
         }
 
         return '';
+    }
+
+    protected function process_quiz_nav_block($blocks_html) {
+        $jsscript = <<<EOT
+YUI().use('anim', function(Y) {
+  var p = Y.one("a.thispage"),
+    c = Y.one("#mod_quiz_navblock .content"),
+    ppos = parseInt(p.getX()),
+    cpos = parseInt(c.getX()),
+    poff = ppos - cpos;
+
+  if (poff > 0) {
+    ani = new Y.Anim({
+      node: c,
+      to: {
+        scrollLeft: poff
+      }
+    });
+    ani.run();
+  }
+});
+EOT;
+
+        $dom = new DOMDocument('1.0', 'utf-8');
+        $dom->validateOnParse = true;
+        $dom->loadHTML($blocks_html);
+        $xpath = new DOMXPath($dom);
+
+        // Get the "qn_buttons"
+        $qn_buttons = $xpath->query("//div[contains(@class, 'qn_buttons')]")->item(0);
+
+//        $wrapper = $dom->createElement('div');
+//        $wrapper->setAttribute('id', 'qn-buttons-wrapper');
+//        $wrapper->appendChild($qn_buttons);
+//
+//        $dom->appendChild($wrapper);
+
+        // Create the script node and append it at the end
+        $blockscript = $dom->createElement('script', $jsscript);
+        $blockscript->setAttribute('type', 'text/javascript');
+        $qn_buttons->appendChild($blockscript);
+
+        $body = $dom->getElementsByTagName('body')->item(0);
+        $out = $this->getNodeInnerHTML($body);
+
+        return $out;
+    }
+
+    protected function getNodeInnerHTML(DOMNode $oNode) {
+        $oDom = new DOMDocument('1.0', 'utf-8');
+        foreach ($oNode->childNodes as $oChild) {
+            $oDom->appendChild($oDom->importNode($oChild, true));
+        }
+
+        return $oDom->saveHTML();
     }
 
     /*
@@ -335,7 +395,6 @@ class theme_kommit_core_renderer extends core_renderer {
             $label = get_string('edit_label', 'theme_kommit');
 
 
-
         } else {
             $url->param('edit', 'on');
             $contain = 'toggle_container';
@@ -347,7 +406,7 @@ class theme_kommit_core_renderer extends core_renderer {
         }
 
         return
-            html_writer::tag('span', $label,  array('class'=>'edit-label') ) .
+            html_writer::tag('span', $label, array('class' => 'edit-label')) .
             html_writer::start_tag('div', array('href' => $url, 'class' => $contain)) .
             html_writer::start_tag('span', array('class' => $edit)) . $title .
             html_writer::end_tag('span') .
