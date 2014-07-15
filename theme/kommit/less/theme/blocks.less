@@ -226,14 +226,40 @@
             display: none;
         }
         .content {
-            overflow: auto;
-            overflow-y: hidden;
-            padding: 0;
+            .othernav {
+                padding-top: .2em;
+            }
 
-            .qn_buttons {
-                padding: .3em 0 0;
+            .btn {
+                float: left;
+                line-height: 3.35em;
+                padding: 0 2%;
+                width: 6%;
+            }
+
+            #qn-buttons-wrapper {
+                float: left;
+                overflow: auto;
+                overflow-y: hidden;
+                padding: 0 0 .2em 0;
+                width: 88%;
+
+                .qn_buttons {
+                    float: left;
+                    padding: .2em 0 0;
+                }
+            }
+
+            @media(max-width: 490px) {
+                .btn {
+                    width: 15%;
+                }
+                #qn-buttons-wrapper {
+                    width: 70%;
+                }
             }
         }
+
         .qnbutton {
             background-color: @kommitMenuBg;
             border-color: @kommitGrayWarm;

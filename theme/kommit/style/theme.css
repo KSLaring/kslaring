@@ -1195,7 +1195,7 @@ div.loginpanel h2 {
     display: none;
   }
   .breadcrumb > li:first-child,
-  li:last-child {
+  .breadcrumb > li:last-child {
     display: inline-block;
   }
   .format-netcourse #page-content {

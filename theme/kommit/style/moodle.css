@@ -12770,13 +12770,33 @@ body {
 .format-netcourse #mod_quiz_navblock .header {
   display: none;
 }
-.format-netcourse #mod_quiz_navblock .content {
+.format-netcourse #mod_quiz_navblock .content .othernav {
+  padding-top: .2em;
+}
+.format-netcourse #mod_quiz_navblock .content .btn {
+  float: left;
+  line-height: 3.35em;
+  padding: 0 2%;
+  width: 6%;
+}
+.format-netcourse #mod_quiz_navblock .content #qn-buttons-wrapper {
+  float: left;
   overflow: auto;
   overflow-y: hidden;
-  padding: 0;
+  padding: 0 0 .2em 0;
+  width: 88%;
 }
-.format-netcourse #mod_quiz_navblock .content .qn_buttons {
-  padding: .3em 0 0;
+.format-netcourse #mod_quiz_navblock .content #qn-buttons-wrapper .qn_buttons {
+  float: left;
+  padding: .2em 0 0;
+}
+@media (max-width: 490px) {
+  .format-netcourse #mod_quiz_navblock .content .btn {
+    width: 15%;
+  }
+  .format-netcourse #mod_quiz_navblock .content #qn-buttons-wrapper {
+    width: 70%;
+  }
 }
 .format-netcourse #mod_quiz_navblock .qnbutton {
   background-color: #f9f9f9;

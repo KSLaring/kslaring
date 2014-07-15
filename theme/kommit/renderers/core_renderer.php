@@ -30,7 +30,7 @@ class theme_kommit_core_renderer extends core_renderer {
         if ($this->page->blocks->region_has_content($displayregion, $this) || $editing) {
 //            return parent::blocks($region, $classes, $tag);
             $blocks_html = parent::blocks($region, $classes, $tag);
-            if (strpos($blocks_html, 'mod_quiz_navblock') !== false) {
+            if ($region === 'content-top' && strpos($blocks_html, 'mod_quiz_navblock') !== false) {
                 $blocks_html = $this->process_quiz_nav_block($blocks_html);
             }
 
@@ -42,12 +42,33 @@ class theme_kommit_core_renderer extends core_renderer {
 
     protected function process_quiz_nav_block($blocks_html) {
         $jsscript = <<<EOT
-YUI().use('anim', function(Y) {
-  var p = Y.one("a.thispage"),
-    c = Y.one("#mod_quiz_navblock .content"),
+YUI().use('anim', 'node-event-simulate', function(Y) {
+  var nbl = Y.one("#mod_quiz_navblock"),
+    p = nbl.one("a.thispage"),
+    p_id = p.getAttribute('id'),
+    p_no = parseInt(p_id.replace(/\D/g, ''), 10),
+    c = nbl.one("#qn-buttons-wrapper"),
+    l_btn_ar = c.all('a:last-child'),
+    l_btn = l_btn_ar.item(0),
+    l_btn_id = l_btn.getAttribute('id'),
+    l_btn_no = parseInt(l_btn_id.replace(/\D/g, ''), 10),
+    btnp = nbl.one(".prev-btn"),
+    btnn = nbl.one(".next-btn"),
     ppos = parseInt(p.getX()),
     cpos = parseInt(c.getX()),
     poff = ppos - cpos;
+
+  btnp.on('click', function() {
+    if (p_no > 1) {
+      c.one('#quiznavbutton' + (p_no - 1)).simulate('click');
+    }
+  });
+
+  btnn.on('click', function() {
+    if (p_no < l_btn_no) {
+      c.one('#quiznavbutton' + (p_no + 1)).simulate('click');
+    }
+  });
 
   if (poff > 0) {
     ani = new Y.Anim({
@@ -58,7 +79,10 @@ YUI().use('anim', function(Y) {
     });
     ani.run();
   }
+
+//  console.log(p_id, p_no, l_btn_no);
 });
+
 EOT;
 
         $dom = new DOMDocument('1.0', 'utf-8');
@@ -66,19 +90,34 @@ EOT;
         $dom->loadHTML($blocks_html);
         $xpath = new DOMXPath($dom);
 
-        // Get the "qn_buttons"
+        // Get the "qn_buttons" and its parent node
         $qn_buttons = $xpath->query("//div[contains(@class, 'qn_buttons')]")->item(0);
+        $othernav = $xpath->query("//div[contains(@class, 'othernav')]")->item(0);
+        $contentNode = $qn_buttons->parentNode;
 
-//        $wrapper = $dom->createElement('div');
-//        $wrapper->setAttribute('id', 'qn-buttons-wrapper');
-//        $wrapper->appendChild($qn_buttons);
-//
-//        $dom->appendChild($wrapper);
+        // Create a new wrapper
+        $wrapper = $dom->createElement('div');
+        $wrapper->setAttribute('id', 'qn-buttons-wrapper');
+
+        $back_btn = $dom->createDocumentFragment();
+        $back_btn->appendXML('<button class="btn prev-btn">&lt;</button>');
+        $next_btn = $dom->createDocumentFragment();
+        $next_btn->appendXML('<button class="btn next-btn">&gt;</button>');
+
+        // Put the new wrapper around the button node and
+        // add both to the content node.
+        $contentNode->removeChild($qn_buttons);
+//        $wrapper->appendChild($back_btn);
+        $wrapper->appendChild($qn_buttons);
+//        $wrapper->appendChild($next_btn);
+        $contentNode->insertBefore($back_btn, $othernav);
+        $contentNode->insertBefore($wrapper, $othernav);
+        $contentNode->insertBefore($next_btn, $othernav);
 
         // Create the script node and append it at the end
         $blockscript = $dom->createElement('script', $jsscript);
         $blockscript->setAttribute('type', 'text/javascript');
-        $qn_buttons->appendChild($blockscript);
+        $wrapper->appendChild($blockscript);
 
         $body = $dom->getElementsByTagName('body')->item(0);
         $out = $this->getNodeInnerHTML($body);
