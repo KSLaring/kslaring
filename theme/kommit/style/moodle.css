@@ -12770,6 +12770,9 @@ body {
 .format-netcourse #mod_quiz_navblock .header {
   display: none;
 }
+.format-netcourse #mod_quiz_navblock .content {
+  padding: .5em 0;
+}
 .format-netcourse #mod_quiz_navblock .content .othernav {
   padding-top: .2em;
 }
@@ -12789,6 +12792,7 @@ body {
 .format-netcourse #mod_quiz_navblock .content #qn-buttons-wrapper .qn_buttons {
   float: left;
   padding: .2em 0 0;
+  width: 100%;
 }
 @media (max-width: 490px) {
   .format-netcourse #mod_quiz_navblock .content .btn {
