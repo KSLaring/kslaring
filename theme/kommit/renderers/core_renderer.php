@@ -87,7 +87,9 @@ EOT;
 
         $dom = new DOMDocument('1.0', 'utf-8');
         $dom->validateOnParse = true;
+        libxml_use_internal_errors(true);
         $dom->loadHTML($blocks_html);
+        libxml_clear_errors();
         $xpath = new DOMXPath($dom);
 
         // Get the "qn_buttons" and its parent node
