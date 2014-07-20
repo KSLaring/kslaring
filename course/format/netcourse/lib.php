@@ -163,14 +163,24 @@ class format_netcourse extends format_base {
      * @param moodle_page $page instance of page calling set_course
      */
     public function page_set_course(moodle_page $page) {
-        global $USER, $FULLME;
+        global $USER, $FULLME, $ME;
 
         if (is_null($this->openlast)) {
             $this->openlast = new format_netcourse_openlast($page,
                 $page->course, $USER, $FULLME);
         }
 
-        $redirecturl = $this->openlast->redirect($_SERVER['REQUEST_URI']);
+//        ChromePhp::log($ME);
+        $redirecturl = $this->openlast->redirect($ME);
+        // Check if the SCORM player is called
+        // With this change the SCORM opens directly in the page, not in the lightbox
+//        if (strpos($_SERVER['REQUEST_URI'], 'mod/scorm/player.php') !== false) {
+//            $redirect = $_SERVER['REQUEST_URI'];
+//            $redirect = preg_replace('#^.*/mod/scorm/player#', '/local/scorm_lightbox/view', $redirect);
+//            $redirecturl = new moodle_url($redirect);
+//            $redirecturl->param('lightbox', 1);
+//        }
+//        ChromePhp::log($redirecturl);
 
         if ($redirecturl === -1) {
             return;
@@ -185,6 +195,11 @@ class format_netcourse extends format_base {
         if (!$nonav) {
             $this->add_fake_nav_block($page);
         }
+
+        // Load the lightbox script
+        $page->requires->yui_module(array('moodle-local_lightbox-lightbox'),
+            'M.local_lightbox.lightbox.init_lightbox',
+            array());
     }
 
     /**
