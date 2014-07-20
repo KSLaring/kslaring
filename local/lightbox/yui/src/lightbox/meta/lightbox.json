@@ -1,0 +1,18 @@
+{
+    "moodle-local_lightbox-lightbox": {
+        "requires": [
+            "panel",
+            "dd-plugin",
+            "node",
+            "event-resize"
+        ],
+        "config": {
+            "use": [
+                "panel",
+                "dd-plugin",
+                "node",
+                "event-resize"
+            ]
+        }
+    }
+}

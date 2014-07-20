@@ -1,0 +1,50 @@
+@media all and (min-width: 960px) {
+    body:after { /* http://adactio.com/journal/5429/ */
+        content: 'widescreen';
+        display: none;
+    }
+}
+
+.test-span {
+    background-color: #fff8d2;
+    border: 2px solid #ddd;
+    padding: .5em 1em;
+}
+
+.yui3-moodle-local_lightbox-lightbox {
+    background-color: #fff;
+}
+
+.yui3-skin-sam .yui3-moodle-local_lightbox-lightbox.yui3-panel .yui3-widget-hd {
+    cursor: move;
+    height: 2%;
+    min-height: 2%;
+    padding: 1%;
+}
+
+.yui3-skin-sam .yui3-moodle-local_lightbox-lightbox.yui3-panel .yui3-widget-bd {
+    height: 93%;
+    overflow: auto;
+    padding: 0;
+}
+
+.yui3-skin-sam .yui3-moodle-local_lightbox-lightbox.yui3-panel #external-links {
+    border: 0;
+    height: 99%;
+    width: 100%;
+}
+
+.yui3-moodle-local_lightbox-lightbox-hidden {
+    display: none;
+}
+
+.yui3-skin-sam .yui3-moodle-local_lightbox-lightbox.yui3-panel .yui3-widget-hd .yui3-button-close:before {
+    content: url([[pix:theme|sprite]]);
+}
+
+.yui3-skin-sam .yui3-moodle-local_lightbox-lightbox.yui3-panel .yui3-widget-hd .yui3-button-close {
+    font-size: 0;
+    height: 16px;
+    text-align: left;
+    width: 28px;
+}

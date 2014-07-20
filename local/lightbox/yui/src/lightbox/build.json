@@ -1,0 +1,13 @@
+{
+    "name": "moodle-local_lightbox-lightbox",
+    "builds": {
+        "moodle-local_lightbox-lightbox": {
+            "replace": {
+                "@VERSION@": "0.1.0"
+            },
+            "jsfiles": [
+                "lightbox.js"
+            ]
+        }
+    }
+}
