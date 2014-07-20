@@ -62,6 +62,30 @@
             }
         }
     }
+
+    // Switch long button text and short button text
+    // with media queries
+    // -------------------------------------
+
+    button {
+        margin-top: .5em;
+
+        .btn-text-short {
+            display: none;
+        }
+
+        @media (min-width: 768px) and (max-width: 1120px) {
+            padding-left: .5em;
+            padding-right: .5em;
+
+            .btn-text-long {
+                display: none;
+            }
+            .btn-text-short {
+                display: inline;
+            }
+        }
+    }
 }
 
 .toppos {
@@ -200,116 +224,133 @@
     margin: 0 0;
 }
 
-// overide padding on my course overview block
+// Correct icon - text distance in the block_online_users
 // ---------------------------------------------------
 
-.block_login {
-    .loginform {
-        .btn {
-            input {
-                margin-left: 0;
+.block_online_users {
+    .content {
+        .list {
+            li.listentry {
+                .user {
+                    .userpicture {
+                        padding-right: .5em;
+                    }
+                }
             }
         }
     }
-}
 
-// change the quiz navigation block to a top navigation
-// ---------------------------------------------------
+    // overide padding on my course overview block
+    // ---------------------------------------------------
 
-.format-netcourse {
-    #block-region-content-top {
-        margin-right: 1%;
-    }
-    #mod_quiz_navblock {
-        .ie-scrollbar-white;
-        .header {
-            display: none;
-        }
-        .content {
-            padding: .5em 0;
-
-            .othernav {
-                padding-top: .2em;
-            }
-
+    .block_login {
+        .loginform {
             .btn {
-                float: left;
-                line-height: 3.35em;
-                padding: 0 2%;
-                width: 6%;
-            }
-
-            #qn-buttons-wrapper {
-                float: left;
-                overflow: auto;
-                overflow-y: hidden;
-                padding: 0 0 .2em 0;
-                width: 88%;
-
-                .qn_buttons {
-                    float: left;
-                    padding: .2em 0 0;
-                    width: 100%;
-                }
-            }
-
-            @media(max-width: 490px) {
-                .btn {
-                    width: 15%;
-                }
-                #qn-buttons-wrapper {
-                    width: 70%;
+                input {
+                    margin-left: 0;
                 }
             }
         }
+    }
 
-        .qnbutton {
-            background-color: @kommitMenuBg;
-            border-color: @kommitGrayWarm;
-            display: inline;
-            float: none;
-            line-height: 3em !important;
-            margin: 0 -1px 0 0;
-            padding: 1em .6em;
-            white-space: pre;
+    // change the quiz navigation block to a top navigation
+    // ---------------------------------------------------
 
-            &.notyetanswered,
-            &.requiresgrading,
-            &.invalidanswer {
+    .format-netcourse {
+        #block-region-content-top {
+            margin-right: 1%;
+        }
+        #mod_quiz_navblock {
+            .ie-scrollbar-white;
+            .header {
+                display: none;
             }
+            .content {
+                padding: .5em 0;
 
-            &.correct {
-                .trafficlight {
-                    border-top: 0;
-                    border-bottom: 3px solid @green;
+                .othernav {
+                    padding-top: .2em;
+                }
+
+                .btn {
+                    float: left;
+                    line-height: 3.35em;
+                    padding: 0 2%;
+                    width: 6%;
+                }
+
+                #qn-buttons-wrapper {
+                    float: left;
+                    overflow: auto;
+                    overflow-y: hidden;
+                    padding: 0 0 .2em 0;
+                    width: 88%;
+
+                    .qn_buttons {
+                        float: left;
+                        padding: .2em 0 0;
+                        width: 100%;
+                    }
+                }
+
+                @media(max-width: 490px) {
+                    .btn {
+                        width: 15%;
+                    }
+                    #qn-buttons-wrapper {
+                        width: 70%;
+                    }
                 }
             }
 
-            &.partiallycorrect {
-                .trafficlight {
-                    border-top: 0;
-                    border-bottom: 3px solid @yellow;
-                }
-            }
-
-            &.incorrect {
-                .trafficlight {
-                    border-top: 0;
-                    border-bottom: 3px solid @red;
-                }
-            }
-
-            &.thispage {
-                background-color: @white;
+            .qnbutton {
+                background-color: @kommitMenuBg;
                 border-color: @kommitGrayWarm;
+                display: inline;
+                float: none;
+                line-height: 3em !important;
+                margin: 0 -1px 0 0;
+                padding: 1em .6em;
+                white-space: pre;
 
-                .thispageholder {
-                    border-color: @kommitGrayWarm;
+                &.notyetanswered,
+                &.requiresgrading,
+                &.invalidanswer {
                 }
-            }
 
-            &:hover {
-                background-color: @white;
+                &.correct {
+                    .trafficlight {
+                        border-top: 0;
+                        border-bottom: 3px solid @green;
+                    }
+                }
+
+                &.partiallycorrect {
+                    .trafficlight {
+                        border-top: 0;
+                        border-bottom: 3px solid @yellow;
+                    }
+                }
+
+                &.incorrect {
+                    .trafficlight {
+                        border-top: 0;
+                        border-bottom: 3px solid @red;
+                    }
+                }
+
+                &.thispage {
+                    background-color: @white;
+                    border-color: @kommitGrayWarm;
+
+                    .thispageholder {
+                        border-color: @kommitGrayWarm;
+                    }
+                }
+
+                &:hover {
+                    background-color: @white;
+                }
             }
         }
     }

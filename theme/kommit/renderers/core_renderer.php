@@ -457,4 +457,66 @@ EOT;
                 html_writer::end_tag('a'), array('href' => $url)) .
             html_writer::end_tag('div');
     }
+
+    /**
+     * Renders a single button widget.
+     * Made the input button responsive, the input label does not adopt
+     * to the line length - changed submit button from input element to button element.
+     *
+     * This will return HTML to display a form containing a single button.
+     *
+     * @param single_button $button
+     *
+*@return string HTML fragment
+     */
+    protected function render_single_button(single_button $button) {
+        $attributes = array('type'     => 'submit',
+//                            'value'    => $button->label,
+                            'disabled' => $button->disabled ? 'disabled' : null,
+                            'title'    => $button->tooltip);
+
+        if ($button->actions) {
+            $id = html_writer::random_id('single_button');
+            $attributes['id'] = $id;
+            foreach ($button->actions as $action) {
+                $this->add_action_handler($action, $id);
+            }
+        }
+
+        // Test the long and short text span
+//        $button->label = '<span class="btn-long-text">' . $button->label . '</span>' .
+//            '<span class="btn-short-text">' . substr($button->label, 0, 10) . ' ...</span>';
+        // first the input element
+//        $output = html_writer::empty_tag('input', $attributes);
+        $output = html_writer::tag('button', $button->label, $attributes);
+
+        // then hidden fields
+        $params = $button->url->params();
+        if ($button->method === 'post') {
+            $params['sesskey'] = sesskey();
+        }
+        foreach ($params as $var => $val) {
+            $output .= html_writer::empty_tag('input', array('type' => 'hidden', 'name' => $var, 'value' => $val));
+        }
+
+        // then div wrapper for xhtml strictness
+        $output = html_writer::tag('div', $output);
+
+        // now the form itself around it
+        if ($button->method === 'get') {
+            $url = $button->url->out_omit_querystring(true); // url without params, the anchor part allowed
+        } else {
+            $url = $button->url->out_omit_querystring();     // url without params, the anchor part not allowed
+        }
+        if ($url === '') {
+            $url = '#'; // there has to be always some action
+        }
+        $attributes = array('method' => $button->method,
+                            'action' => $url,
+                            'id'     => $button->formid);
+        $output = html_writer::tag('form', $output, $attributes);
+
+        // and finally one more wrapper with class
+        return html_writer::tag('div', $output, array('class' => $button->class));
+    }
 }
