@@ -1085,6 +1085,12 @@ EOT;
         // Get the current course nodes and extract the course node collection
         // The current course has only one collection, can be fetched with "last"
         $thiscourse_navigation = $course_navigation->get("currentcourse");
+
+        // return null if the currentcourse has no navigation items.
+        if (empty($thiscourse_navigation->children)) {
+            return null;
+        }
+
         $thiscourse_navigation = $thiscourse_navigation->children->last();
 
         // Remove all nodes which are not section nodes
