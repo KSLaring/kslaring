@@ -17,9 +17,8 @@
 
 .yui3-skin-sam .yui3-moodle-local_lightbox-lightbox.yui3-panel .yui3-widget-hd {
     cursor: move;
-    height: 2%;
-    min-height: 2%;
-    padding: 1%;
+    min-height: 18px;
+    padding: 2px 8px;
 }
 
 .yui3-skin-sam .yui3-moodle-local_lightbox-lightbox.yui3-panel .yui3-widget-bd {

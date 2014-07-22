@@ -15,9 +15,9 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Renderers to align Moodle's HTML with that expected by nakos
+ * Renderers to align Moodle's HTML with that expected by kommit
  *
- * @package    theme_nakos
+ * @package    theme_kommit
  * @copyright  2014
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */

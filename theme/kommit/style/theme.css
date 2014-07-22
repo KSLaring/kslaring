@@ -585,6 +585,9 @@ Courses and categories lists, from Mary Evans
   padding-top: 3px;
   padding-right: 5px;
 }
+.mod_introbox {
+  padding: 0;
+}
 #page-mod-lesson-view .ftoggler {
   display: none;
 }

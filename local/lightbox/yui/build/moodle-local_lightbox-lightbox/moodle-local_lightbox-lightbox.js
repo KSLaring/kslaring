@@ -22,6 +22,7 @@ var LIGHTBOX = 'Lightbox',
         MDLPAGE: '#page-content',
         MDLCUSTOMMENU: '.navbar-fixed-top',
         EXTLINKS: 'a[rel="lightbox"]',
+        EXTURL: '.urlworkaround a',
         IFRAME: '#external-links'
     },
     VALUES = {
@@ -41,35 +42,53 @@ var LIGHTBOX = 'Lightbox',
 NS[LIGHTBOX] = Y.Base.create(LIGHTBOXNAME, Y.Panel, [], {
     theframe: null,
     firstload: true,
-    clickdelegate: null,
+    clickdelegate: [],
     clickoutside: null,
     hasbeenshown: false,
 
     initializer: function () {
-        var that = this;
-//            custommenu;
+        var that = this,
+            mdlpage = Y.one(SELECTORS.MDLPAGE);
 
         // handle lightbox links in the content area
-        this.clickdelegate = Y.one(SELECTORS.MDLPAGE).delegate('click', function (e) {
+        this.clickdelegate.push(mdlpage.delegate('click', function (e) {
             e.preventDefault();
             e.stopPropagation();
             that.handleExtLinkClick(e.currentTarget);
-        }, SELECTORS.EXTLINKS);
+        }, SELECTORS.EXTLINKS));
 
-        // handle lightbox links in the custom menu
-//        custommenu = Y.one(SELECTORS.MDLCUSTOMMENU);
-//        if (custommenu) {
-//            this.clickdelegate = custommenu.delegate('click', function (e) {
-//                e.preventDefault();
-//                e.stopPropagation();
-//                that.handleExtLinkClick(e.currentTarget);
-//            }, SELECTORS.EXTLINKS);
-//        }
+        // handle URL resource links in the content area
+        this.clickdelegate.push(mdlpage.delegate('click', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            that.handleURLLinkClick(e.currentTarget);
+        }, SELECTORS.EXTURL));
+
+        mdlpage.all(SELECTORS.EXTURL).each(function(node) {
+            var popup = node.getAttribute('onclick');
+
+            if (popup !== '') {
+                var wmatch = popup.match(/width=(\d*)/),
+                    hmatch = popup.match(/height=(\d*)/),
+                    width,
+                    height;
+
+                width = wmatch !== null ? wmatch[1] : 0;
+                height = hmatch !== null ? hmatch[1] : 0;
+
+                node.setAttribute('data-width', '' + width);
+                node.setAttribute('data-height', '' + height);
+                node.setAttribute('onclick', '');
+            }
+        });
     },
     destructor: function () {
         this.set('bodyContent', '');
         this.get('contentBox').detach('clickoutside');
-        this.clickdelegate.detach();
+        this.clickdelegate.forEach(function(clickdele) {
+            console.log(clickdele);
+            clickdele.detach();
+        });
     },
     /**
      * Show the dialogue
@@ -104,11 +123,32 @@ NS[LIGHTBOX] = Y.Base.create(LIGHTBOXNAME, Y.Panel, [], {
     handleExtLinkClick: function (ele) {
         var src = ele.getAttribute('href');
 
-        // Modify the link url to load a modified SCORM view page
-        src = src.replace('mod/scorm', 'local/scorm_lightbox');
+        // If the url links to a SCORM modify the link url
+        // to load a modified SCORM view page
+        if (src.indexOf('scorm') !== -1) {
+            src = src.replace('mod/scorm', 'local/scorm_lightbox');
+        }
 
         if (src !== '') {
             this.set('src', src);
+            this.display();
+//            this.set('frameloaded', false);
+        }
+    },
+    handleURLLinkClick: function (ele) {
+        var src = ele.getAttribute('href'),
+            width =  ele.getAttribute('data-width'),
+            height =  ele.getAttribute('data-height');
+
+        if (src !== '') {
+            this.set('src', src);
+
+            // If width and height are given set the lightbox size
+            if (width && height) {
+                this.set('width', width);
+                this.set('height', parseInt(height, 10) + 20);
+            }
+
             this.display();
 //            this.set('frameloaded', false);
         }

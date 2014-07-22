@@ -29,6 +29,14 @@
  */
 
 /**
+ * Let the theme modify the page object before the page is generated.
+ *
+ * @param moodle_page $page
+ */
+function theme_kommit_page_init(moodle_page $page) {
+}
+
+/**
  * Parses CSS before it is cached.
  *
  * This function can make alterations and replace patterns within the CSS.

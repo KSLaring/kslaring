@@ -12692,7 +12692,11 @@ body {
 }
 .block_navigation .block_tree .tree_item.branch,
 .block_settings .block_tree .tree_item.branch {
-  background-position: 0 .3em;
+  background-position: 0 .1em;
+}
+.block_navigation .block_tree .tree_item.active_tree_node,
+.block_settings .block_tree .tree_item.active_tree_node {
+  background-position: 0 .2em;
 }
 .block_navigation .block_tree li.item_with_icon > p img,
 .block_settings .block_tree li.item_with_icon > p img {
