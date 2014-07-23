@@ -19,9 +19,11 @@ var LIGHTBOX = 'Lightbox',
         MDLBODY: 'body',
         MDLPAGE: '#page-content',
         MDLCUSTOMMENU: '.navbar-fixed-top',
-        EXTLINKS: 'a[rel="lightbox"]',
-        EXTURL: '.urlworkaround a',
         IFRAME: '#external-links'
+    },
+    LINKSOURCE = {
+        EXTLINKS: 'a[rel="lightbox"]',
+        EXTURL: '.urlworkaround a'
     },
     VALUES = {
         LBPADDINGBOTTOM: 5,
@@ -53,16 +55,16 @@ NS[LIGHTBOX] = Y.Base.create(LIGHTBOXNAME, Y.Panel, [], {
             e.preventDefault();
             e.stopPropagation();
             that.handleExtLinkClick(e.currentTarget);
-        }, SELECTORS.EXTLINKS));
+        }, LINKSOURCE.EXTLINKS));
 
         // handle URL resource links in the content area
         this.clickdelegate.push(mdlpage.delegate('click', function (e) {
             e.preventDefault();
             e.stopPropagation();
             that.handleURLLinkClick(e.currentTarget);
-        }, SELECTORS.EXTURL));
+        }, LINKSOURCE.EXTURL));
 
-        mdlpage.all(SELECTORS.EXTURL).each(function(node) {
+        mdlpage.all(LINKSOURCE.EXTURL).each(function(node) {
             var popup = node.getAttribute('onclick');
 
             if (popup !== '') {
@@ -264,7 +266,7 @@ MNS.init_lightbox = function (config) {
     var dialogwrapper,
         lb,
         winWidth;
-console.log('init_lightbox');
+
     if (window.getComputedStyle !== undefined) {
         winWidth = window.getComputedStyle(document.body, ':after')
             .getPropertyValue('content');
@@ -273,7 +275,18 @@ console.log('init_lightbox');
     }
 
     if (winWidth.indexOf('widescreen') !== -1) {
-        if (!Y.one(SELECTORS.EXTLINKS) && !Y.one(SELECTORS.EXTURL)) {
+        // Check if one of the possible lighbox sources is present in the actual page.
+        // All possible link sources are collected in the LINKSOURCE object.
+        var nolink = true,
+            link;
+        for (link in LINKSOURCE) {
+            if (Y.one(LINKSOURCE[link])) {
+                nolink = false;
+                break;
+            }
+        }
+
+        if (nolink) {
             return;
         }
 
