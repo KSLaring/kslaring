@@ -1,3 +1,4 @@
+/* Define the minimum screen width to open the lightbox */
 @media all and (min-width: 920px) {
     body:after { /* http://adactio.com/journal/5429/ */
         content: 'widescreen';
