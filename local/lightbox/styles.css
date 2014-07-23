@@ -1,4 +1,4 @@
-@media all and (min-width: 960px) {
+@media all and (min-width: 920px) {
     body:after { /* http://adactio.com/journal/5429/ */
         content: 'widescreen';
         display: none;

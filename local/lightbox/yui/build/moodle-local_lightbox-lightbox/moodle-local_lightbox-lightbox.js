@@ -259,7 +259,7 @@ MNS.init_lightbox = function (config) {
     var dialogwrapper,
         lb,
         winWidth;
-
+    console.log('init_lightbox');
     if (window.getComputedStyle !== undefined) {
         winWidth = window.getComputedStyle(document.body, ':after')
             .getPropertyValue('content');
