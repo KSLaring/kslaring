@@ -259,7 +259,7 @@ MNS.init_lightbox = function (config) {
     var dialogwrapper,
         lb,
         winWidth;
-    console.log('init_lightbox');
+console.log('init_lightbox');
     if (window.getComputedStyle !== undefined) {
         winWidth = window.getComputedStyle(document.body, ':after')
             .getPropertyValue('content');
@@ -268,7 +268,7 @@ MNS.init_lightbox = function (config) {
     }
 
     if (winWidth.indexOf('widescreen') !== -1) {
-        if (!Y.one(SELECTORS.EXTLINKS)) {
+        if (!Y.one(SELECTORS.EXTLINKS) && !Y.one(SELECTORS.EXTURL)) {
             return;
         }
 
