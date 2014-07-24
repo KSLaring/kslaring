@@ -2,42 +2,41 @@
 // ---------------------------------------
 
 .netcourse-header {
-  .btn {
-  color: @kommitBlue;
-  }
-  .btn:hover {
-    color: #ffffff;
-  }
-  .btn-primary:active, .btn-primary.active, {
-    color: #ffffff;
-    background-color: @kommitBlue;
-  }
+    .btn {
+        color: @kommitBlue;
+    }
+    .btn:hover {
+        color: #ffffff;
+    }
+    .btn-primary:active, .btn-primary.active, {
+        color: #ffffff;
+        background-color: @kommitBlue;
+    }
 
 }
 
-
 #instcnav .block_tree .tree_item.leaf {
-  a {
-    color: @kommitGray;
-  }
+    a {
+        color: @kommitGray;
+    }
 }
 
 #instcnav li.contains_branch > p.branch {
-  background-color: #f9f9f9;
-  color: @kommitGray;
+    background-color: #f9f9f9;
+    color: @kommitGray;
 }
 
 #instcnav li.contains_branch.collapsed > p.branch {
-  border-top: 1px solid #fff;
-  border-bottom: 1px solid @kommitGrayWarm;
-  color: @kommitGray;
+    border-top: 1px solid #fff;
+    border-bottom: 1px solid @kommitGrayWarm;
+    color: @kommitGray;
 }
 
 #instcnav .block_tree li.depth_2 ul {
-  //box-shadow: inset 0 0 10px @kommitGrayWarm;
-  //.inner-shadow (@x: 0, @y: 1px, @blur: 2px, @spread: 0, @alpha: 0.25);
-  .inner-shadow (0px, 0px, 8px, 0px, .10);
-  background: #f7f7f7;
+    //box-shadow: inset 0 0 10px @kommitGrayWarm;
+    //.inner-shadow (@x: 0, @y: 1px, @blur: 2px, @spread: 0, @alpha: 0.25);
+    .inner-shadow (0px, 0px, 8px, 0px, .10);
+    background: #f7f7f7;
 }
 
 // Jon Overide progress bar
@@ -45,25 +44,25 @@
 // -------------------------------------------------------
 
 .format-netcourse.path-mod-lesson .box .progress_bar {
-  border: none;
-  height: 20px;
-  margin-top: -22px;
-  background: none;
+    border: none;
+    height: 20px;
+    margin-top: -22px;
+    background: none;
 }
 
 .format-netcourse.path-mod-lesson .progress_bar {
-  //display: none;
-  background: @kommitGrayLight;
-  border: 1px solid @kommitGrayWarm;
-  height: 20px;
-  margin-top: 40px;
-  margin-right: 20px;
+    //display: none;
+    background: @kommitGrayLight;
+    border: 1px solid @kommitGrayWarm;
+    height: 20px;
+    margin-top: 40px;
+    margin-right: 20px;
 }
 
 .format-netcourse.path-mod-lesson .progress_bar_completed {
-  background-color: #46a546;
-  #gradient .vertical(#b4d95b, #46a546);
-  padding-right: 20px;
+    background-color: #46a546;
+    #gradient .vertical(#b4d95b, #46a546);
+    padding-right: 20px;
 }
 
 // Jon new styles
@@ -72,50 +71,51 @@
 
 // set background main content window white
 
-.format-netcourse  #page-content {
-  background: #fff;
-  border: 1px solid @kommitGrayWarm;
+.format-netcourse #page-content {
+    background: #fff;
+    border: 1px solid @kommitGrayWarm;
 }
 
 //remove padding on block nav
 .format-netcourse .block .list li, {
-  margin: 0;
+    margin: 0;
 }
 
 // remove gray background on submit button
-.format-netcourse  #fitem_id_submitbutton{
-  border-top: none;
-  background-color: #fff;
+.format-netcourse #fitem_id_submitbutton {
+    border-top: none;
+    background-color: #fff;
 }
 
 // submit button colour overide
 .format-netcourse input#id_submitbutton {
-  color: #ffffff;
-  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
-  background-color: #46a546;
-  background-image: none;
-  &:hover,
-  &:focus {
-    background: #b4d95b;
-}
+    background-color: #46a546;
+    background-image: none;
+    color: #ffffff;
+    text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+    margin-left: 0;
+
+    &:hover,
+    &:focus {
+        background: #b4d95b;
+    }
 }
 
 // Fix for section 0 elements jumping out of the side of interface
 // 11/06/2014
 // -------------------------------------------------------
 
-
 .format-netcourse {
-  #criteriastatus {
-    width: 97%;
-  }
-  .forumheaderlist {
-    width: 97%;
-  }
-  .generalbox {
-    p {
-      width: 97%;
+    #criteriastatus {
+        width: 97%;
     }
-  }
+    .forumheaderlist {
+        width: 97%;
+    }
+    .generalbox {
+        p {
+            width: 97%;
+        }
+    }
 }
 

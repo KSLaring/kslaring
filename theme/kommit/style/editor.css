@@ -1884,7 +1884,7 @@ h6 {
   height: auto;
   /* Part 2: Scale the height according to the width, otherwise you get stretching */
   -ms-interpolation-mode: bicubic;
-  flaot: left;
+  float: left;
   margin-right: 1em;
 }
 .img-responsive-right {

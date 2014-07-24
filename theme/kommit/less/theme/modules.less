@@ -83,16 +83,58 @@
     }
     div[role=main] {
         margin: 0 1em 1em 0;
+
+        .singlebutton {
+            margin-top: 1em;
+        }
+
+        & > .box {
+            & > .lessonbutton {
+                display: block;
+                float: left;
+                margin: 1em 1em 0 0;
+            }
+        }
     }
     .branchbuttoncontainer {
         margin-top: 1em;
     }
 
-    @media (min-height: 800px) {
-        .contents {
-            min-height: 16em;
+    #region-main {
+        .mform {
+            &:not(.unresponsive) {
+                .femptylabel {
+                    .fitemtitle {
+                        display: none;
+                    }
+                }
+            }
         }
     }
+}
+
+#page-mod-lesson-continue {
+    .ftoggler {
+        display: none;
+    }
+    div[role=main] {
+        margin: 0 1em 1em 0;
+
+        .singlebutton {
+            margin-top: 1em;
+        }
+        form {
+            & > .singlebutton {
+                input[type=submit] {
+                    margin: 0;
+                }
+            }
+        }
+    }
+    .branchbuttoncontainer {
+        margin-top: 1em;
+    }
+
 }
 
 // Set min-height on lesson pages

@@ -307,7 +307,7 @@ h6 {
   height: auto;
   /* Part 2: Scale the height according to the width, otherwise you get stretching */
   -ms-interpolation-mode: bicubic;
-  flaot: left;
+  float: left;
   margin-right: 1em;
 }
 .img-responsive-right {
@@ -594,13 +594,34 @@ Courses and categories lists, from Mary Evans
 #page-mod-lesson-view div[role=main] {
   margin: 0 1em 1em 0;
 }
+#page-mod-lesson-view div[role=main] .singlebutton {
+  margin-top: 1em;
+}
+#page-mod-lesson-view div[role=main] > .box > .lessonbutton {
+  display: block;
+  float: left;
+  margin: 1em 1em 0 0;
+}
 #page-mod-lesson-view .branchbuttoncontainer {
   margin-top: 1em;
 }
-@media (min-height: 800px) {
-  #page-mod-lesson-view .contents {
-    min-height: 16em;
-  }
+#page-mod-lesson-view #region-main .mform:not(.unresponsive) .femptylabel .fitemtitle {
+  display: none;
+}
+#page-mod-lesson-continue .ftoggler {
+  display: none;
+}
+#page-mod-lesson-continue div[role=main] {
+  margin: 0 1em 1em 0;
+}
+#page-mod-lesson-continue div[role=main] .singlebutton {
+  margin-top: 1em;
+}
+#page-mod-lesson-continue div[role=main] form > .singlebutton input[type=submit] {
+  margin: 0;
+}
+#page-mod-lesson-continue .branchbuttoncontainer {
+  margin-top: 1em;
 }
 /*
 #page-mod-lesson-view .contents {
@@ -1048,10 +1069,11 @@ body {
   background-color: #fff;
 }
 .format-netcourse input#id_submitbutton {
-  color: #ffffff;
-  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
   background-color: #46a546;
   background-image: none;
+  color: #ffffff;
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+  margin-left: 0;
 }
 .format-netcourse input#id_submitbutton:hover,
 .format-netcourse input#id_submitbutton:focus {

@@ -5,68 +5,64 @@
 // --------------------------------------------------
 
 body {
+    padding-top: 0px;
+    background: @kommitGrayLight;
 
-  padding-top: 0px;
-  background: @kommitGrayLight;
-
-  //background-image: url("../pix/cream_dust.png");
-
-
+    //background-image: url("../pix/cream_dust.png");
 }
 
 // Page Header
 // --------------------------------------------------
 
 .top-border {
-  border-top: 2px solid @kommitGreyDark;
-  border-bottom: 4px solid @kommitBlueLight;
+    border-top: 2px solid @kommitGreyDark;
+    border-bottom: 4px solid @kommitBlueLight;
 }
 
-
 .header-background {
-  #gradient > .horizontal-three-colors(#fff, #fff, 60%, @kommitGrayLight);
-  height: 100px;
-  padding: 0;
-  margin: 0;
+    #gradient > .horizontal-three-colors(#fff, #fff, 60%, @kommitGrayLight);
+    height: 100px;
+    padding: 0;
+    margin: 0;
 
 }
 
 // logo holder
 // --------------------------------------------------
 
-.logo-area  {
-  float: left;
-  //width: 224px;
-  height: 52px;
-  margin: 19px 0;
-  //padding: 10px 0 10px 0;
+.logo-area {
+    float: left;
+    //width: 224px;
+    height: 52px;
+    margin: 19px 0;
+    //padding: 10px 0 10px 0;
 }
 
-.header-right  {
-  float: right;
-  background-image: url([[pix:theme|header_curve]]);
-  width: 540px;
-  height: 100px;
-
-  .social {
+.header-right {
     float: right;
-    position: relative;
-    top: 40px;;
-    .col1,
-    .col2 {
-      display:inline-block;
-      width: 40px;
-      height: 40px;
-      margin: 10px;
-      .fa {
-        color: @kommitBlueDark;
-        margin: 0;
-        padding: 2px;
-        border: 2px solid @kommitBlueDark;
+    background-image: url([[pix:theme|header_curve]]);
+    width: 540px;
+    height: 100px;
 
-      }
+    .social {
+        float: right;
+        position: relative;
+        top: 40px;;
+        .col1,
+        .col2 {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            margin: 10px;
+            .fa {
+                color: @kommitBlueDark;
+                margin: 0;
+                padding: 2px;
+                border: 2px solid @kommitBlueDark;
+
+            }
+        }
     }
-  }
 }
 
 // Footer
@@ -80,13 +76,13 @@ body {
     border-top: 3px solid @kommitBlueLight;
     padding: 0;
 
-  h4 {
-    text-align: left;
-    font-size: @baseFontSize;
-    color: white;
-    width: 90%;
-    //border-bottom: 1px solid  white;
-  }
+    h4 {
+        text-align: left;
+        font-size: @baseFontSize;
+        color: white;
+        width: 90%;
+        //border-bottom: 1px solid  white;
+    }
 
     #page-footer-inner {
         margin: 0 auto;
@@ -95,31 +91,31 @@ body {
         padding: 0 0%;
         text-align: left;
         position: relative;
-      a {
-        color: @kommitGray;
-      }
-      p{
-        padding: 0 20px;
-        color: white;
-      }
+        a {
+            color: @kommitGray;
+        }
+        p {
+            padding: 0 20px;
+            color: white;
+        }
 
-  .column {
-    display: inline-block;
-    vertical-align: top;
-    height: 80px;
-    //float: left;
-    width: 15%;
-    max-width: 200px;
-    padding: 0 5px;
-    .footer-logo {
-      padding: 20px;
+        .column {
+            display: inline-block;
+            vertical-align: top;
+            height: 80px;
+            //float: left;
+            width: 15%;
+            max-width: 200px;
+            padding: 0 5px;
+            .footer-logo {
+                padding: 20px;
+            }
+            p {
+                font-size: @fontSizeSmall;
+                color: @kommitGray;
+            }
+        }
     }
-    p{
-      font-size: @fontSizeSmall;
-      color: @kommitGray;
-    }
-  }
-  }
 }
 
 
