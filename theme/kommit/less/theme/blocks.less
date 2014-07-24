@@ -81,6 +81,7 @@
             .btn-text-long {
                 display: none;
             }
+
             .btn-text-short {
                 display: inline;
             }
@@ -242,118 +243,120 @@
             }
         }
     }
+}
 
-    // overide padding on my course overview block
-    // ---------------------------------------------------
+// overide padding on my course overview block
+// ---------------------------------------------------
 
-    .block_login {
-        .loginform {
-            .btn {
-                input {
-                    margin-left: 0;
-                }
+.block_login {
+    .loginform {
+        .btn {
+            input {
+                margin-left: 0;
             }
         }
     }
+}
 
-    // change the quiz navigation block to a top navigation
-    // ---------------------------------------------------
+// change the quiz navigation block to a top navigation
+// ---------------------------------------------------
 
-    .format-netcourse {
-        #block-region-content-top {
-            margin-right: 1%;
+.format-netcourse {
+    #block-region-content-top {
+        margin-right: 1%;
+    }
+    #mod_quiz_navblock {
+        .ie-scrollbar-white;
+        .header {
+            display: none;
         }
-        #mod_quiz_navblock {
-            .ie-scrollbar-white;
-            .header {
-                display: none;
+        .content {
+            padding: .5em 0;
+
+            .othernav {
+                padding-top: .2em;
             }
-            .content {
-                padding: .5em 0;
 
-                .othernav {
-                    padding-top: .2em;
-                }
+            .btn {
+                float: left;
+                line-height: 3.35em;
+                margin-top: 0;
+                padding: 0 2%;
+                width: 6%;
+            }
 
-                .btn {
+            #qn-buttons-wrapper {
+                float: left;
+                overflow: auto;
+                overflow-y: hidden;
+                padding: 0 0 .2em 0;
+                width: 88%;
+
+                .qn_buttons {
                     float: left;
-                    line-height: 3.35em;
-                    padding: 0 2%;
-                    width: 6%;
+                    padding: .2em 0 0;
+                    width: 100%;
+                }
+            }
+
+            @media (max-width: 490px) {
+                .btn {
+                    width: 15%;
                 }
 
                 #qn-buttons-wrapper {
-                    float: left;
-                    overflow: auto;
-                    overflow-y: hidden;
-                    padding: 0 0 .2em 0;
-                    width: 88%;
-
-                    .qn_buttons {
-                        float: left;
-                        padding: .2em 0 0;
-                        width: 100%;
-                    }
+                    width: 70%;
                 }
+            }
+        }
 
-                @media(max-width: 490px) {
-                    .btn {
-                        width: 15%;
-                    }
-                    #qn-buttons-wrapper {
-                        width: 70%;
-                    }
+        .qnbutton {
+            background-color: @kommitMenuBg;
+            border-color: @kommitGrayWarm;
+            display: inline;
+            float: none;
+            line-height: 3em !important;
+            margin: 0 -1px 0 0;
+            padding: 1em .6em;
+            white-space: pre;
+
+            &.notyetanswered,
+            &.requiresgrading,
+            &.invalidanswer {
+            }
+
+            &.correct {
+                .trafficlight {
+                    border-top: 0;
+                    border-bottom: 3px solid @green;
                 }
             }
 
-            .qnbutton {
-                background-color: @kommitMenuBg;
+            &.partiallycorrect {
+                .trafficlight {
+                    border-top: 0;
+                    border-bottom: 3px solid @yellow;
+                }
+            }
+
+            &.incorrect {
+                .trafficlight {
+                    border-top: 0;
+                    border-bottom: 3px solid @red;
+                }
+            }
+
+            &.thispage {
+                background-color: @white;
                 border-color: @kommitGrayWarm;
-                display: inline;
-                float: none;
-                line-height: 3em !important;
-                margin: 0 -1px 0 0;
-                padding: 1em .6em;
-                white-space: pre;
 
-                &.notyetanswered,
-                &.requiresgrading,
-                &.invalidanswer {
-                }
-
-                &.correct {
-                    .trafficlight {
-                        border-top: 0;
-                        border-bottom: 3px solid @green;
-                    }
-                }
-
-                &.partiallycorrect {
-                    .trafficlight {
-                        border-top: 0;
-                        border-bottom: 3px solid @yellow;
-                    }
-                }
-
-                &.incorrect {
-                    .trafficlight {
-                        border-top: 0;
-                        border-bottom: 3px solid @red;
-                    }
-                }
-
-                &.thispage {
-                    background-color: @white;
+                .thispageholder {
                     border-color: @kommitGrayWarm;
-
-                    .thispageholder {
-                        border-color: @kommitGrayWarm;
-                    }
                 }
+            }
 
-                &:hover {
-                    background-color: @white;
-                }
+            &:hover {
+                background-color: @white;
             }
         }
     }

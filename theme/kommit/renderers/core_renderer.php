@@ -109,9 +109,7 @@ EOT;
         // Put the new wrapper around the button node and
         // add both to the content node.
         $contentNode->removeChild($qn_buttons);
-//        $wrapper->appendChild($back_btn);
         $wrapper->appendChild($qn_buttons);
-//        $wrapper->appendChild($next_btn);
         $contentNode->insertBefore($back_btn, $othernav);
         $contentNode->insertBefore($wrapper, $othernav);
         $contentNode->insertBefore($next_btn, $othernav);

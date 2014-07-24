@@ -12777,13 +12777,13 @@ body {
 .block_online_users .content .list li.listentry .user .userpicture {
   padding-right: .5em;
 }
-.block_online_users .block_login .loginform .btn input {
+.block_login .loginform .btn input {
   margin-left: 0;
 }
-.block_online_users .format-netcourse #block-region-content-top {
+.format-netcourse #block-region-content-top {
   margin-right: 1%;
 }
-.block_online_users .format-netcourse #mod_quiz_navblock {
+.format-netcourse #mod_quiz_navblock {
   scrollbar-shadow-color: #FFFFFF;
   scrollbar-highlight-color: #FFFFFF;
   scrollbar-face-color: #FFFFFF;
@@ -12792,42 +12792,43 @@ body {
   scrollbar-track-color: #FFFFFF;
   scrollbar-arrow-color: #FFFFFF;
 }
-.block_online_users .format-netcourse #mod_quiz_navblock .header {
+.format-netcourse #mod_quiz_navblock .header {
   display: none;
 }
-.block_online_users .format-netcourse #mod_quiz_navblock .content {
+.format-netcourse #mod_quiz_navblock .content {
   padding: .5em 0;
 }
-.block_online_users .format-netcourse #mod_quiz_navblock .content .othernav {
+.format-netcourse #mod_quiz_navblock .content .othernav {
   padding-top: .2em;
 }
-.block_online_users .format-netcourse #mod_quiz_navblock .content .btn {
+.format-netcourse #mod_quiz_navblock .content .btn {
   float: left;
   line-height: 3.35em;
+  margin-top: 0;
   padding: 0 2%;
   width: 6%;
 }
-.block_online_users .format-netcourse #mod_quiz_navblock .content #qn-buttons-wrapper {
+.format-netcourse #mod_quiz_navblock .content #qn-buttons-wrapper {
   float: left;
   overflow: auto;
   overflow-y: hidden;
   padding: 0 0 .2em 0;
   width: 88%;
 }
-.block_online_users .format-netcourse #mod_quiz_navblock .content #qn-buttons-wrapper .qn_buttons {
+.format-netcourse #mod_quiz_navblock .content #qn-buttons-wrapper .qn_buttons {
   float: left;
   padding: .2em 0 0;
   width: 100%;
 }
 @media (max-width: 490px) {
-  .block_online_users .format-netcourse #mod_quiz_navblock .content .btn {
+  .format-netcourse #mod_quiz_navblock .content .btn {
     width: 15%;
   }
-  .block_online_users .format-netcourse #mod_quiz_navblock .content #qn-buttons-wrapper {
+  .format-netcourse #mod_quiz_navblock .content #qn-buttons-wrapper {
     width: 70%;
   }
 }
-.block_online_users .format-netcourse #mod_quiz_navblock .qnbutton {
+.format-netcourse #mod_quiz_navblock .qnbutton {
   background-color: #f9f9f9;
   border-color: #e8e8e8;
   display: inline;
@@ -12837,26 +12838,26 @@ body {
   padding: 1em .6em;
   white-space: pre;
 }
-.block_online_users .format-netcourse #mod_quiz_navblock .qnbutton.correct .trafficlight {
+.format-netcourse #mod_quiz_navblock .qnbutton.correct .trafficlight {
   border-top: 0;
   border-bottom: 3px solid #46a546;
 }
-.block_online_users .format-netcourse #mod_quiz_navblock .qnbutton.partiallycorrect .trafficlight {
+.format-netcourse #mod_quiz_navblock .qnbutton.partiallycorrect .trafficlight {
   border-top: 0;
   border-bottom: 3px solid #ffc40d;
 }
-.block_online_users .format-netcourse #mod_quiz_navblock .qnbutton.incorrect .trafficlight {
+.format-netcourse #mod_quiz_navblock .qnbutton.incorrect .trafficlight {
   border-top: 0;
   border-bottom: 3px solid #9d261d;
 }
-.block_online_users .format-netcourse #mod_quiz_navblock .qnbutton.thispage {
+.format-netcourse #mod_quiz_navblock .qnbutton.thispage {
   background-color: #ffffff;
   border-color: #e8e8e8;
 }
-.block_online_users .format-netcourse #mod_quiz_navblock .qnbutton.thispage .thispageholder {
+.format-netcourse #mod_quiz_navblock .qnbutton.thispage .thispageholder {
   border-color: #e8e8e8;
 }
-.block_online_users .format-netcourse #mod_quiz_navblock .qnbutton:hover {
+.format-netcourse #mod_quiz_navblock .qnbutton:hover {
   background-color: #ffffff;
 }
 /**
