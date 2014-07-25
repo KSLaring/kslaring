@@ -1057,6 +1057,16 @@ body {
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffb4d95b', endColorstr='#ff46a546', GradientType=0);
   padding-right: 20px;
 }
+.format-netcourse #block-region-content-bottom {
+  background-color: #f9f9f9;
+  border: 1px solid;
+  border-color: #e8e8e8 #ffffff #e8e8e8 #e8e8e8;
+  padding: .5em 1% 1em 2%;
+  margin: 0 0 1em -2%;
+}
+.format-netcourse #block-region-content-bottom .title h2 {
+  margin-top: 0;
+}
 .format-netcourse #page-content {
   background: #fff;
   border: 1px solid #e8e8e8;
@@ -1067,6 +1077,7 @@ body {
 .format-netcourse #fitem_id_submitbutton {
   border-top: none;
   background-color: #fff;
+  padding: 0;
 }
 .format-netcourse input#id_submitbutton {
   background-color: #46a546;

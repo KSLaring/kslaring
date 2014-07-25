@@ -120,6 +120,7 @@ echo $OUTPUT->doctype() ?>
                         echo $OUTPUT->course_content_header();
                         echo $OUTPUT->blocks('content-top', 'content-top-blocks', 'section');
                         echo $OUTPUT->main_content();
+                        echo $OUTPUT->blocks('content-bottom', 'content-bottom-blocks', 'section');
                         echo $OUTPUT->course_content_footer();
                         ?>
                     </section>

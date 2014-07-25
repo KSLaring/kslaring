@@ -26,6 +26,8 @@
 
 defined('MOODLE_INTERNAL') || die();
 require_once($CFG->dirroot . '/course/format/lib.php');
+require_once($CFG->dirroot . '/local/course_page/locallib.php');
+
 /**
  * Main class for the Netcourse course format
  *
@@ -41,8 +43,6 @@ require_once($CFG->dirroot . '/course/format/lib.php');
  * Add all the reference for the extra fields.
  * Add extra fields.
  */
-require_once($CFG->dirroot . '/local/course_page/locallib.php');
-
 class format_netcourse extends format_base {
 
     /** @var int Trim characters from the right */
@@ -153,8 +153,8 @@ class format_netcourse extends format_base {
 
     /**
      * Allows course format to execute code on moodle_page::set_course()
-     * Check the REQUEST_URI and redirext to the last visited
-     * activity/resource if the REQUEST_URI is the course page. Redirect
+     * Check the $ME and redirect to the last visited
+     * activity/resource if the $ME is the course page. Redirect
      * to the first activity/resource in section 0 (description) if the user never
      * has entered the course before.
      *
@@ -200,6 +200,12 @@ class format_netcourse extends format_base {
         $page->requires->yui_module(array('moodle-local_lightbox-lightbox'),
             'M.local_lightbox.lightbox.init_lightbox',
             array());
+
+        // Modify the default block region for the lesson module to move
+        // the fake "linked media" block below the lesson content
+        if (strpos($page->pagetype, 'mod-lesson') !== false) {
+            $page->blocks->set_default_region('content-bottom');
+        }
     }
 
     /**

@@ -80,13 +80,13 @@ $THEME->layouts = array(
     // Main course page.
     'course' => array(
         'file' => 'columns3.php',
-        'regions' => array('side-pre', 'side-post', 'top', 'bottom', 'content-top'),
+        'regions' => array('side-pre', 'side-post', 'top', 'bottom', 'content-top', 'content-bottom'),
         'defaultregion' => 'side-pre',
         'options' => array('langmenu'=>true),
     ),
     'incourse' => array(
         'file' => 'columns3.php',
-        'regions' => array('content-top', 'side-pre', 'side-post', 'top', 'bottom'),
+        'regions' => array('content-top', 'content-bottom', 'side-pre', 'side-post', 'top', 'bottom'),
         'defaultregion' => 'side-pre',
         'options' => array('langmenu'=>true),
     ),
