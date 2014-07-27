@@ -261,12 +261,19 @@ class format_netcourse extends format_base {
             }
         }
 
-        $PAGE->initialise_theme_and_output();
-        if (!$PAGE->user_is_editing()) {
-            $PAGE->theme->layouts['incourse']['options']['nonavbar'] = true;
-        }
-
         return array();
+    }
+
+    /**
+     * Let the course format modify the page object before the page is generated.
+     *
+     * This hook is called from the method theme_kommit_page_init in
+     * theme/kommit/lib.php.
+     */
+    public function page_init(moodle_page $page) {
+        if (!$page->user_is_editing()) {
+            $page->theme->layouts['incourse']['options']['nonavbar'] = true;
+        }
     }
 
     /**
