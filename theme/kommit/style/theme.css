@@ -1070,6 +1070,7 @@ body {
 .format-netcourse #page-content {
   background: #fff;
   border: 1px solid #e8e8e8;
+  padding-bottom: 1em;
 }
 .format-netcourse .block .list li {
   margin: 0;

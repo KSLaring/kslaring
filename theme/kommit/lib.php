@@ -29,6 +29,27 @@
  */
 
 /**
+ * Let the theme modify the page object before the page is generated.
+ *
+ * Add a course format hook with the method "page_init" in the course format
+ * lib.php. On non course pages the format library is not loaded -
+ * call the course format hook only on course related pages.
+ *
+ * @param moodle_page $page
+ */
+function theme_kommit_page_init(moodle_page $page) {
+    if (function_exists('course_get_format')) {
+        $courseformat = course_get_format($page->course);
+
+        // Call a hook in the course format class to enable page manipulation
+        // in the course format.
+        if (method_exists($courseformat, 'page_init')) {
+            $courseformat->page_init($page);
+        }
+    }
+}
+
+/**
  * Parses CSS before it is cached.
  *
  * This function can make alterations and replace patterns within the CSS.
