@@ -117,9 +117,16 @@ if ( $show ) {
     $show = '';
 }
 /// Processing standard security processes
-if ($course->id != SITEID) {
-    require_login($course);
-}
+/* Change uh
+ * Commented out the second require_login because it produces errors with the
+ * netcourse format and it seams not necessary.
+ * See Moodle forum discussion https://moodle.org/mod/forum/discuss.php?d=264687
+ * Date: 2014-07-27
+ */
+//if ($course->id != SITEID) {
+//    require_login($course);
+//}
+// End change uh
 if (!$cm->visible and !has_capability('moodle/course:viewhiddenactivities', $context)) {
     echo $OUTPUT->header();
     notice(get_string("activityiscurrentlyhidden"));
