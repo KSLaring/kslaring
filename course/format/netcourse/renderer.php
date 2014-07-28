@@ -363,8 +363,11 @@ class format_netcourse_fakeblock_renderer extends plugin_renderer_base {
                 $content = $this->output->render($link);
                 $linkrendered = true;
             } else if ($item->action instanceof moodle_url) {
-//                $content = html_writer::link($item->action, $content, $attributes);
+                // Remove the $isbranch option for activity nodes to deactivate
+                // the optional activity offered direct links
+                $isbranch = false;
                 $action_url = $item->action;
+
                 // Add the rel='lightbox' attribute to SCORM links to trigger the lightbox
                 if (strpos($action_url->get_path(), 'scorm/view') !== false) {
                     $attributes['rel'] = 'lightbox';
