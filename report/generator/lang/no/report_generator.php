@@ -5,7 +5,7 @@ $string['pluginname']           = 'Rapportgenerator';
 $string['company_report']       = 'Arbeidssted';
 $string['company_report_level'] = 'Arbeidsstedsrapport - alle medarbeidere {$a}';
 $string['company_report_note']  = 'Vennligst velg en rapport fra listen';
-$string['company_report_link']  = 'Medarbeiderrapport';
+$string['company_report_link']  = 'Status alle medarbeidere';
 
 $string['course_report']                    = 'Kursrapport';
 $string['course_report_level']              = 'Kursrapport - nivå {$a}';
@@ -354,6 +354,6 @@ $string['employee_return_to_selection'] = 'Gå tilbake til rapportmenyen';
 $string['sel_job_role']                 = "Velg en jobbrolle...";
 $string['expired_next']     = 'Utløper neste';
 $string['existing_item']    = 'Eksisterende element';
-$string['employee_report_link'] = 'Oversiktsrapport';
+$string['employee_report_link'] = 'Status på sertifiseringer';
 
 $string['underconstruction'] = 'Sorry, this report is not available. We are working on it.';

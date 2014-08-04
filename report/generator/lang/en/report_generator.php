@@ -5,7 +5,7 @@ $string['pluginname']       = 'Report generator';
 $string['company_report']       = 'Company report';
 $string['company_report_level'] = 'Company report - level {$a}';
 $string['company_report_note']  = 'Please click on the report link to open the report selection page.';
-$string['company_report_link']  = 'Go to report.';
+$string['company_report_link']  = 'Employee report';
 
 $string['course_report'] = 'Course report';
 $string['course_report_level'] = 'Course report - level {$a}';

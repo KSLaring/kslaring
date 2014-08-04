@@ -27,6 +27,8 @@ class company_report {
         /* My Company           */
         $my_company =  new stdClass();
         $my_company->id = report_generator_getCompanyUser($USER->id);
+        $my_company->name   = '';
+
         if ($my_company->id) {
             $my_company->name = report_generator_get_company_name($my_company->id);
         }//my_company
@@ -109,6 +111,10 @@ class company_report {
             $params = array();
             $params['rgcompany'] = 'rgcompany';
 
+
+            if (!$company) {
+                $company = 0;
+            }
 
             /* SQL Instruction  */
             $sql = " SELECT		u.id
