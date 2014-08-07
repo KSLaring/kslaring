@@ -15,3 +15,6 @@ $string['pluginname']   = 'Kommune';
 $string['name']         = 'Kommune';
 
 $string['edit_muni']    = 'Legg til kommune';
+
+$string['municipality:myaddinstance'] = 'Add a new Municipality block to My home';
+$string['municipality:addinstance'] = 'Add a new Municipality block';
