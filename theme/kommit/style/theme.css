@@ -50,51 +50,6 @@
 .well-small {
   padding: 9px;
 }
-h1 {
-  font-size: 32px;
-  line-height: 1.1667em;
-  /* 42px */
-  margin-top: 0.5833em;
-  margin-bottom: 0.0000em;
-}
-h2 {
-  font-size: 28.32px;
-  line-height: 1.7500em;
-  /* 42px */
-  margin-top: 0.8750em;
-  margin-bottom: 0.0000em;
-}
-h3 {
-  font-size: 24px;
-  line-height: 1.0500em;
-  /* 21px */
-  margin-top: 1.0500em;
-  margin-bottom: 0.0000em;
-}
-h4 {
-  font-size: 21.328px;
-  line-height: 1.1667em;
-  /* 21px */
-  margin-top: 1.1667em;
-  margin-bottom: 0.0000em;
-}
-h5 {
-  font-size: 16px;
-}
-h6 {
-  font-size: 16px;
-}
-.unlist,
-.unlist li,
-.inline-list,
-.inline-list li,
-.block .list,
-.block .list li,
-.section li.activity,
-.section li.movehere,
-.tabtree li {
-  margin: 0.2em 0;
-}
 @font-face {
   font-family: "FontAwesome";
   font-weight: normal;
@@ -284,19 +239,6 @@ textarea {
   h3 {
     page-break-after: avoid;
   }
-}
-p {
-  color: #333333;
-  line-height: 21px;
-  margin: 0 0 1.3125em 0;
-}
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  color: #7e7e7e;
 }
 .img-responsive-left {
   /* Responsive images (ensure images don't scale beyond their parents) */
@@ -1161,7 +1103,7 @@ div.loginpanel h2 {
 }
 .coursebox .panel-heading {
   font-size: 21.328px;
-  line-height: 31.992px;
+  line-height: 31.991999999999997px;
 }
 #page-course-index-category .categorypicker {
   text-align: right;

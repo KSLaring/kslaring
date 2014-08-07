@@ -1862,19 +1862,6 @@ a.badge:focus {
 body {
   margin: 8px;
 }
-p {
-  color: #333333;
-  line-height: 21px;
-  margin: 0 0 1.3125em 0;
-}
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  color: #7e7e7e;
-}
 .img-responsive-left {
   /* Responsive images (ensure images don't scale beyond their parents) */
   max-width: 100%;

@@ -1,13 +1,13 @@
 
 .block_municipality .content {
-
     background: #FFF !important;
-    border: 0px !important;
-    padding: 0px !important;
-
     text-align: center;
 }
 
+.block_municipality h2{
+    padding-bottom: 0px;
+    margin-bottom: 0px;
+}
 
 
 
