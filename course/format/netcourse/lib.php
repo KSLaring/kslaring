@@ -1087,7 +1087,7 @@ EOT;
      * @return object $this->content
      */
     protected function get_content() {
-        $trimmode = self::TRIM_LEFT;
+        $trimmode = self::TRIM_RIGHT;
         $trimlength = 50;
 
         // Get the course_navigation object or don't display the block if none provided.
@@ -1280,8 +1280,9 @@ EOT;
      * @return string The truncated string
      */
     protected function trim_left($string, $length) {
-        return '...' . core_text::substr($string,
-            core_text::strlen($string) - $length, $length);
+//        return '...' . core_text::substr($string,
+//            core_text::strlen($string) - $length, $length);
+        return '... ' . shorten_text($string, $ideal=$length, $exact = false, $ending='');
     }
 
     /**
@@ -1293,7 +1294,7 @@ EOT;
      * @return string The truncated string
      */
     protected function trim_right($string, $length) {
-        return core_text::substr($string, 0, $length) . '...';
+        return shorten_text($string, $ideal=$length, $exact = false, $ending='...');
     }
 
     /**
