@@ -68,7 +68,7 @@ if ($context->contextlevel == CONTEXT_COURSECAT) {
 }
 
 /// Check login and permissions.
-require_login($course, false, $cm);
+//require_login($course, false, $cm); // double
 require_capability('moodle/filter:manage', $context);
 
 $PAGE->set_context($context);
