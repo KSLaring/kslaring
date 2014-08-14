@@ -801,7 +801,7 @@ class format_netcourse extends format_base {
         $description = optional_param('description', 0, PARAM_BOOL);
 
         list($text, $module, $openedcmid, $courseurl) =
-            $this->openlast->get_last_opened($this->courseid, $USER->id);
+            $this->openlast->get_last_opened();
         $modinfo = $this->openlast->get_modinfo();
 
         // If the user never visited the course the last opened page URL is null.
