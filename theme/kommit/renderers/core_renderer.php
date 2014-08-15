@@ -44,43 +44,46 @@ class theme_kommit_core_renderer extends core_renderer {
         $jsscript = <<<EOT
 YUI().use('anim', 'node-event-simulate', function(Y) {
   var nbl = Y.one("#mod_quiz_navblock"),
-    p = nbl.one("a.thispage"),
-    p_id = p.getAttribute('id'),
-    p_no = parseInt(p_id.replace(/\D/g, ''), 10),
-    c = nbl.one("#qn-buttons-wrapper"),
-    l_btn_ar = c.all('a:last-child'),
-    l_btn = l_btn_ar.item(0),
-    l_btn_id = l_btn.getAttribute('id'),
-    l_btn_no = parseInt(l_btn_id.replace(/\D/g, ''), 10),
-    btnp = nbl.one(".prev-btn"),
-    btnn = nbl.one(".next-btn"),
-    ppos = parseInt(p.getX()),
-    cpos = parseInt(c.getX()),
-    poff = ppos - cpos;
+    p = nbl.one("a.thispage");
 
-  btnp.on('click', function() {
-    if (p_no > 1) {
-      c.one('#quiznavbutton' + (p_no - 1)).simulate('click');
-    }
-  });
+  if (p) {
+    var p_id = p.getAttribute('id'),
+        p_no = parseInt(p_id.replace(/\D/g, ''), 10),
+        c = nbl.one("#qn-buttons-wrapper"),
+        l_btn_ar = c.all('a:last-child'),
+        l_btn = l_btn_ar.item(0),
+        l_btn_id = l_btn.getAttribute('id'),
+        l_btn_no = parseInt(l_btn_id.replace(/\D/g, ''), 10),
+        btnp = nbl.one(".prev-btn"),
+        btnn = nbl.one(".next-btn"),
+        ppos = parseInt(p.getX()),
+        cpos = parseInt(c.getX()),
+        poff = ppos - cpos;
 
-  btnn.on('click', function() {
-    if (p_no < l_btn_no) {
-      c.one('#quiznavbutton' + (p_no + 1)).simulate('click');
-    }
-  });
+      btnp.on('click', function() {
+        if (p_no > 1) {
+          c.one('#quiznavbutton' + (p_no - 1)).simulate('click');
+        }
+      });
 
-  if (poff > 0) {
-    ani = new Y.Anim({
-      node: c,
-      to: {
-        scrollLeft: poff
+      btnn.on('click', function() {
+        if (p_no < l_btn_no) {
+          c.one('#quiznavbutton' + (p_no + 1)).simulate('click');
+        }
+      });
+
+      if (poff > 0) {
+        ani = new Y.Anim({
+          node: c,
+          to: {
+            scrollLeft: poff
+          }
+        });
+        ani.run();
       }
-    });
-    ani.run();
-  }
 
-//  console.log(p_id, p_no, l_btn_no);
+    //  console.log(p_id, p_no, l_btn_no);
+    }
 });
 
 EOT;
@@ -454,67 +457,5 @@ EOT;
                 html_writer::end_tag('div') .
                 html_writer::end_tag('a'), array('href' => $url)) .
             html_writer::end_tag('div');
-    }
-
-    /**
-     * Renders a single button widget.
-     * Made the input button responsive, the input label does not adopt
-     * to the line length - changed submit button from input element to button element.
-     *
-     * This will return HTML to display a form containing a single button.
-     *
-     * @param single_button $button
-     *
-*@return string HTML fragment
-     */
-    protected function render_single_button(single_button $button) {
-        $attributes = array('type'     => 'submit',
-//                            'value'    => $button->label,
-                            'disabled' => $button->disabled ? 'disabled' : null,
-                            'title'    => $button->tooltip);
-
-        if ($button->actions) {
-            $id = html_writer::random_id('single_button');
-            $attributes['id'] = $id;
-            foreach ($button->actions as $action) {
-                $this->add_action_handler($action, $id);
-            }
-        }
-
-        // Test the long and short text span
-//        $button->label = '<span class="btn-long-text">' . $button->label . '</span>' .
-//            '<span class="btn-short-text">' . substr($button->label, 0, 10) . ' ...</span>';
-        // first the input element
-//        $output = html_writer::empty_tag('input', $attributes);
-        $output = html_writer::tag('button', $button->label, $attributes);
-
-        // then hidden fields
-        $params = $button->url->params();
-        if ($button->method === 'post') {
-            $params['sesskey'] = sesskey();
-        }
-        foreach ($params as $var => $val) {
-            $output .= html_writer::empty_tag('input', array('type' => 'hidden', 'name' => $var, 'value' => $val));
-        }
-
-        // then div wrapper for xhtml strictness
-        $output = html_writer::tag('div', $output);
-
-        // now the form itself around it
-        if ($button->method === 'get') {
-            $url = $button->url->out_omit_querystring(true); // url without params, the anchor part allowed
-        } else {
-            $url = $button->url->out_omit_querystring();     // url without params, the anchor part not allowed
-        }
-        if ($url === '') {
-            $url = '#'; // there has to be always some action
-        }
-        $attributes = array('method' => $button->method,
-                            'action' => $url,
-                            'id'     => $button->formid);
-        $output = html_writer::tag('form', $output, $attributes);
-
-        // and finally one more wrapper with class
-        return html_writer::tag('div', $output, array('class' => $button->class));
     }
 }
