@@ -1112,6 +1112,20 @@ body {
 p.active_tree_node a {
   color: #00aef0 !important;
 }
+.format-netcourse #page-content #region-main a {
+  color: #003876;
+  text-decoration: none;
+  border-bottom: 1px dotted;
+}
+.format-netcourse #page-content #region-main a:hover,
+.format-netcourse #page-content #region-main a:focus {
+  color: #bf4126;
+  text-decoration: none;
+}
+.format-netcourse #page-content #region-main a:visited {
+  color: #00142a;
+  text-decoration: none;
+}
 .loginpanel {
   border: 1px solid #cccccc;
   -webkit-border-radius: 4px;

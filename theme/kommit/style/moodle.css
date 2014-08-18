@@ -504,20 +504,20 @@ a.skip:active {
 .loginbox .loginform .form-label {
   float: left;
   text-align: right;
-  width: 44%;
+  width: 49%;
   direction: rtl;
   white-space: nowrap;
 }
 .dir-rtl .loginbox .loginform .form-label {
   float: left;
   text-align: right;
-  width: 44%;
+  width: 49%;
   direction: ltr;
   white-space: nowrap;
 }
 .loginbox .loginform .form-input {
   float: right;
-  width: 55%;
+  width: 50%;
 }
 .loginbox .loginform .form-input input {
   width: 6em;
@@ -1188,6 +1188,7 @@ body.tag .managelink {
 }
 .dir-rtl .loginbox .loginform .form-input {
   text-align: right;
+  margin-right: 1%;
 }
 .dir-rtl .yui3-menu-hidden {
   left: 0;
@@ -13615,7 +13616,7 @@ select {
 .path-mod-forum .forumheaderlist .discussion .lastpost {
   vertical-align: top;
 }
-.path-mod-feedback .generalbox div table tbody img {
+.path-mod-feedback .feedback_bar_image {
   height: 5px;
 }
 .forumpost {
@@ -13778,6 +13779,17 @@ div#dock {
 .path-mod-wiki .wiki_contentbox {
   width: 100%;
 }
+.dropdown-menu > li > a {
+  padding: 3px 20px 3px 8px;
+}
+.dir-rtl .dropdown-menu > li > a {
+  padding: 3px 8px 3px 20px;
+}
+.dir-rtl .dropdown-submenu > .dropdown-menu {
+  -webkit-border-radius: 6px 0px 6px 6px;
+  -moz-border-radius: 6px 0px 6px 6px;
+  border-radius: 6px 0px 6px 6px;
+}
 .path-mod-survey .surveytable > tbody > tr:nth-of-type(odd) {
   background-color: transparent;
 }
@@ -13799,6 +13811,12 @@ div#dock {
 }
 .dir-rtl.path-mod-forum .forumheaderlist .discussion .lastpost {
   text-align: left;
+}
+.nav .caret {
+  margin-left: 4px;
+}
+.dir-rtl .nav .caret {
+  margin-right: 4px;
 }
 .yui-skin-sam .yui-layout.path-mod-chat-gui_ajax {
   background-color: #ffffff;
@@ -15900,6 +15918,7 @@ input[type="reset"][disabled] {
 .dir-rtl .dropdown-menu {
   right: 0;
   left: auto;
+  margin-right: 0px;
 }
 .dir-rtl .navbar .nav > li > .dropdown-menu:before {
   right: 9px;
@@ -15910,8 +15929,9 @@ input[type="reset"][disabled] {
   left: auto;
 }
 .dir-rtl .dropdown-submenu > a:after {
-  margin-right: -10px;
-  margin-left: 0;
+  margin-right: 0;
+  margin-left: -10px;
+  float: left;
   border-right-color: #ccc;
   border-left-color: transparent;
   border-width: 5px 5px 5px 0px;

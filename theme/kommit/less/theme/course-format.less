@@ -149,3 +149,29 @@
 p.active_tree_node a {
   color: @kommitBlueLight !important;
 }
+
+
+// add under line to Links in net course format
+// Jon Jack 18/08/2014
+// -------------------------------------------------------
+
+.format-netcourse {
+  #page-content {
+    #region-main {
+      a {
+        color: @linkColor;
+        text-decoration: none;
+        border-bottom: 1px dotted;
+      }
+      a:hover,
+      a:focus {
+        color: @kommitRed;
+        text-decoration: none;
+      }
+      a:visited {
+        color: @linkColorHover;
+        text-decoration: none;
+      }
+    }
+  }
+}
