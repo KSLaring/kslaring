@@ -587,6 +587,9 @@ Courses and categories lists, from Mary Evans
 .mod_introbox {
   padding: 0;
 }
+#page-mod-feedback-view.format-netcourse #page-content #region-main div[role="main"] > h2 a {
+  border-bottom: 0;
+}
 .path-mod-feedback .boxaligncenter.boxwidthwide {
   margin-left: 0;
 }
@@ -1214,7 +1217,7 @@ div.loginpanel h2 {
 }
 .coursebox .panel-heading {
   font-size: 21.328px;
-  line-height: 31.991999999999997px;
+  line-height: 31.992px;
 }
 #page-course-index-category .categorypicker {
   text-align: right;
