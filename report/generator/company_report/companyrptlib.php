@@ -156,7 +156,6 @@ class company_report {
             $report->company    = self::$company->name;
             $report->my_users   = self::company_report_getMyUsers();
             $report->outcomes   = self::company_report_getOutcomesCourses();
-            $report->individual = self::company_report_getIndividualCourses();
 
             return $report;
         }catch (Exception $ex) {
@@ -179,6 +178,9 @@ class company_report {
     public static function company_report_PrintTracker($report) {
         /* Variables    */
         $out_report = '';
+        $out_content        = '';
+        $courses_outcome    = '';
+        $individual         = '';
 
         try {
             $out_report .= html_writer::start_div('company_rpt_div');
@@ -222,7 +224,7 @@ class company_report {
 
                                                     /* Table Content    */
                                                     $out_report .= html_writer::start_tag('div',array('class' => 'outcome_list','id' => $id_toggle_outcome . '_div'));
-                                                        $out_report .= self::company_report_AddTableContentUser($outcome->courses,$user->id,$outcome->expiration);
+                                                            $out_report .= self::company_report_AddTableContentUser($outcome->courses,$user->id,$outcome->expiration,$user->courses_outcomes);
                                                     $out_report .= html_writer::end_tag('div');//outcome_list
                                                 $out_report .= html_writer::end_tag('div');//outcome_div
                                                 }//if_job_roles
@@ -231,7 +233,8 @@ class company_report {
                                     }//if_outcomes
 
                                     /* Individual - COURSES     */
-                                    if ($report->individual) {
+                                    $individual = self::company_report_getIndividualCourses($user->courses_outcomes,$user->id);
+                                    if ($individual) {
                                         $id_toggle_individual = $id_toggle . '_0_';
                                         $out_report .= '</br></br>';
                                         $out_report .= html_writer::start_tag('div',array('class' => 'outcome_div'));
@@ -245,7 +248,7 @@ class company_report {
 
                                             /* Table Content    */
                                             $out_report .= html_writer::start_tag('div',array('class' => 'outcome_list','id' => $id_toggle_individual . '_div'));
-                                                $out_report .= self::company_report_AddTableContentUser($report->individual,$user->id,0,true);
+                                                $out_report .= self::company_report_AddTableContentUserIndividual($individual,$user->id);
                                             $out_report .= html_writer::end_tag('div');//outcome_list
                                         $out_report .= html_writer::end_tag('div');//outcome_div
 
@@ -282,6 +285,9 @@ class company_report {
 
 
         try {
+            $individual         = array();
+            $outcomes_courses   = array();
+
             require_once($CFG->dirroot.'/lib/excellib.class.php');
 
             /* File Name    */
@@ -294,16 +300,58 @@ class company_report {
             $export->send($file_name);
 
             /* One Outcome -- One Sheet    */
+            if ($report->my_users) {
+                foreach($report->my_users as $user) {
             if ($report->outcomes) {
+                        $user_jr = explode(',',$user->job_roles);
                 foreach($report->outcomes as $outcome) {
-                    self::company_report_CreateExcelSheet($outcome,$report->my_users,$export);
+                            $outcomes_courses[$outcome->id][$user->id] = null;
+                            $info = new stdClass();
+                            $info->not_completed    = null;
+                            $info->completed        = null;
+                            $info->not_enrol        = null;
+
+                            if ($outcome->courses && !empty($outcome->courses)) {
+                                $out_jr  = explode(',',$outcome->job_roles);
+                                $job_roles= array_intersect($user_jr,$out_jr);
+                                if ($job_roles) {
+
+                                    /* Not Completed    */
+                                    $info->not_completed = self::company_report_getEnrolNotCompleted($outcome->courses,$user->id);
+                                    if ($info->not_completed) {
+                                        if ($user->courses_outcomes) {
+                                            $user->courses_outcomes .= ',';
+                                        }
+                                        $user->courses_outcomes .= implode(',',array_keys($info->not_completed));
+                                    }//if_not_completed
+
+                                    /* Completed        */
+                                    $info->completed = self::company_report_getEnrolCompleted($outcome->courses,$user->id);
+                                    if ($info->completed) {
+                                        if ($user->courses_outcomes) {
+                                            $user->courses_outcomes .= ',';
+                                        }
+                                        $user->courses_outcomes .= implode(',',array_keys($info->completed));
+                                    }//if_completed
+
+                                    /* Not Enrol        */
+                                    $info->not_enrol = self::company_report_getNotEnrol($outcome->courses,$info->not_completed,$info->completed);
+
+                                    $outcomes_courses[$outcome->id][$user->id] = $info;
+                                }//job_roles
+                            }//if_courses
                 }//for_outcomes
-            }//if_outcomes
+                    }//if_report_outcome
 
             /* Individual Courses   */
-            if ($report->individual) {
-                self::company_report_AddIndividualCourses($report->individual,$report->my_users,$export);
-            }//if_individual
+                    $individual[$user->id] = self::company_report_getIndividualCourses($user->courses_outcomes,$user->id);
+                }//for_users
+            }//if_my_users
+
+            /* Add Outcome Courses      */
+            self::company_report_CreateExcelSheet($report->outcomes,$outcomes_courses,$report->my_users,$export);
+            /* Add Individual Courses   */
+            self::company_report_AddIndividualCourses($individual,$report->my_users,$export);
 
             $export->close();
             exit;
@@ -398,6 +446,8 @@ class company_report {
 
     /**
      * @static
+     * @param           $courses_outcome
+     * @param           $user_id
      * @return          null|string
      * @throws          Exception
      *
@@ -407,22 +457,31 @@ class company_report {
      * Description
      * Get all the courses are not connected with outcomes
      */
-    protected static function company_report_getIndividualCourses() {
+    protected static function company_report_getIndividualCourses($courses_outcome,$user_id) {
         /* Variables    */
         global $DB;
 
         try {
+            /* Search Criteria  */
+            $params = array();
+            $params['user'] = $user_id;
+
             /* SQL Instruction  */
-            $sql = " SELECT		id
-                     FROM		{course}
-                     WHERE		visible = 1
-                        AND 	id 	!= 1
-                        AND		id NOT IN (SELECT	DISTINCT courseid
-                                           FROM 	{grade_outcomes_courses})
-                     ORDER BY	fullname ASC ";
+            $sql = " SELECT		c.id
+                     FROM		{course}                    c
+                        JOIN	{enrol}						e	ON		e.courseid   	= c.id
+                        JOIN	{user_enrolments}			ue	ON		ue.enrolid 		= e.id
+                                                                AND		ue.userid		= :user
+                     WHERE		c.visible = 1
+                        AND 	c.id 	!= 1 ";
+
+            if ($courses_outcome) {
+                $sql .= " AND c.id NOT IN ($courses_outcome) ";
+            }
+            $sql .= " ORDER BY	c.fullname ASC ";
 
             /* Execute          */
-            $rdo = $DB->get_records_sql($sql);
+            $rdo = $DB->get_records_sql($sql,$params);
             if ($rdo) {
                 $lst_courses = array();
                 foreach ($rdo as $course) {
@@ -501,6 +560,7 @@ class company_report {
                     $user_info->id              = $my_user->id;
                     $user_info->name            = $my_user->user_name;
                     $user_info->job_roles       = $my_user->job_roles;
+                    $user_info->courses_outcomes    = null;
 
                     $lst_users[$my_user->id] = $user_info;
                 }
@@ -813,7 +873,7 @@ class company_report {
      * @param           $courses_outcome
      * @param           $user_id
      * @param           $expiration
-     * @param           bool $individual
+     * @param           $user_courses_out
      * @return          string
      * @throws          Exception
      *
@@ -823,7 +883,7 @@ class company_report {
      * Description
      * Add the content of the table
      */
-    protected static function company_report_AddTableContentUser($courses_outcome,$user_id,$expiration,$individual = false) {
+    protected static function company_report_AddTableContentUser($courses_outcome,$user_id,$expiration,&$user_courses_out) {
         /* Variables    */
         global $DB;
         $content = '';
@@ -858,15 +918,17 @@ class company_report {
                             $content .= html_writer::end_tag('td');
                             /* Valid Col    */
                             $content .= html_writer::start_tag('td',array('class' => 'status'));
-                                if (!$individual) {
                                     $content .= '-';
-                                }//if_individual
                             $content .= html_writer::end_tag('td');
                         $content .= html_writer::end_tag('tr');
                     }//not_completed
+
+                    if ($user_courses_out) {
+                        $user_courses_out .= ',';
+                    }
+                    $user_courses_out .= implode(',',array_keys($not_completed));
                 }//not_completed
 
-                if (!$individual) {
                 /* Not Enrol        */
                 $not_enrol = self::company_report_getNotEnrol($courses_outcome,$not_completed,$completed);
                 if ($not_enrol) {
@@ -890,14 +952,11 @@ class company_report {
                             $content .= html_writer::end_tag('td');
                             /* Valid Col    */
                             $content .= html_writer::start_tag('td',array('class' => 'status'));
-                                if (!$individual) {
                                     $content .= '-';
-                                }//if_individual
                             $content .= html_writer::end_tag('td');
                         $content .= html_writer::end_tag('tr');
                     }//not_enrol
                 }//not_enrol
-                }//if_individual
 
 
                 /* Completed        */
@@ -906,7 +965,6 @@ class company_report {
                     $valid = ' - ';
                     $class = '';
                     foreach ($completed as $course) {
-                        if (!$individual) {
                             $ts = strtotime($expiration  . ' month', $course->completed);
                             if ($ts < time()) {
                                 $class = 'expired';
@@ -917,7 +975,6 @@ class company_report {
                                 $valid = userdate($ts,'%d.%m.%Y', 99, false);
                                 $class = 'completed';
                             }//if_ts
-                        }//if_not_individual
 
                         $content .= html_writer::start_tag('tr',array('class' => $class));
                             /* Button Col   */
@@ -939,9 +996,107 @@ class company_report {
 
                             /* Valid Col    */
                             $content .= html_writer::start_tag('td',array('class' => 'status'));
-                                if (!$individual) {
                                     $content .= $valid;
-                                }//individual
+                            $content .= html_writer::end_tag('td');
+                        $content .= html_writer::end_tag('tr');
+                    }//completed
+
+                    if ($user_courses_out) {
+                        $user_courses_out .= ',';
+                    }
+                    $user_courses_out .= implode(',',array_keys($completed));
+                }//if_completed
+            $content .= html_writer::end_tag('table');
+
+            return $content;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//company_report_AddTableContentUser
+
+    /**
+     * @static
+     * @param           $courses_outcome
+     * @param           $user_id
+     * @return          string
+     * @throws          Exception
+     *
+     * @creationDate    15/08/2014
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Add the content table for Individual courses
+     */
+    protected static function company_report_AddTableContentUserIndividual($courses_outcome,$user_id) {
+        /* Variables    */
+        global $DB;
+        $content = '';
+        $class   = '';
+
+        try {
+            /* Not Completed    */
+            $not_completed = self::company_report_getEnrolNotCompleted($courses_outcome,$user_id);
+            /* Completed        */
+            $completed = self::company_report_getEnrolCompleted($courses_outcome,$user_id);
+
+            $content .= html_writer::start_tag('table');
+            /* Not Completed    */
+            if ($not_completed) {
+                foreach ($not_completed as $course) {
+                    $content .= html_writer::start_tag('tr');
+                    /* Button Col   */
+                    $content .= html_writer::start_tag('td',array('class' => 'first'));
+                    $content .= html_writer::end_tag('td');
+                    /* Course Col   */
+                    $content .= html_writer::start_tag('td',array('class' => 'course'));
+                    $content .= $course->name;
+                    $content .= html_writer::end_tag('td');
+                    /* Status Col   */
+                    $content .= html_writer::start_tag('td',array('class' => 'status'));
+                    $content .= get_string('outcome_course_started','local_tracker');
+                    $content .= html_writer::end_tag('td');
+
+                    /* Completion Col   */
+                    $content .= html_writer::start_tag('td',array('class' => 'status'));
+                    $content .= '-';
+                    $content .= html_writer::end_tag('td');
+                    /* Valid Col    */
+                    $content .= html_writer::start_tag('td',array('class' => 'status'));
+                    $content .= '-';
+                    $content .= html_writer::end_tag('td');
+                    $content .= html_writer::end_tag('tr');
+                }//not_completed
+
+            }//not_completed
+
+
+            /* Completed        */
+            if ($completed) {
+                $state = get_string('outcome_course_finished','local_tracker');
+                $valid = ' - ';
+                $class = '';
+                foreach ($completed as $course) {
+                    $content .= html_writer::start_tag('tr',array('class' => $class));
+                    /* Button Col   */
+                    $content .= html_writer::start_tag('td',array('class' => 'first'));
+                    $content .= html_writer::end_tag('td');
+                    /* Course Col   */
+                    $content .= html_writer::start_tag('td',array('class' => 'course'));
+                    $content .= $course->name;
+                    $content .= html_writer::end_tag('td');
+                    /* Status Col   */
+                    $content .= html_writer::start_tag('td',array('class' => 'status'));
+                    $content .= $state;
+                    $content .= html_writer::end_tag('td');
+
+                    /* Completion Col   */
+                    $content .= html_writer::start_tag('td',array('class' => 'status'));
+                    $content .= userdate($course->completed,'%d.%m.%Y', 99, false);
+                    $content .= html_writer::end_tag('td');
+
+                    /* Valid Col    */
+                    $content .= html_writer::start_tag('td',array('class' => 'status'));
+                    $content .= $valid;
                             $content .= html_writer::end_tag('td');
                         $content .= html_writer::end_tag('tr');
                     }//completed
@@ -956,7 +1111,8 @@ class company_report {
 
     /**
      * @static
-     * @param           $outcome
+     * @param           $outcomes
+     * @param           $outcomes_courses
      * @param           $my_users
      * @param           $export
      * @throws          Exception
@@ -967,52 +1123,41 @@ class company_report {
      * Description
      * Create a new Sheet of Excel book
      */
-    protected static function company_report_CreateExcelSheet($outcome,$my_users,&$export) {
+    protected static function company_report_CreateExcelSheet($outcomes,$outcomes_courses,$my_users,&$export) {
         /* Variables    */
-        $row = 0;
 
         try {
+            foreach ($outcomes as $outcome) {
+                $row = 0;
             // Adding the worksheet
             $my_xls = $export->add_worksheet($outcome->name);
-
-            /* Add Header -  Job Roles */
-            //if ($outcome->job_roles) {
-            //    self::company_report_AddExcelJob_Role($outcome->job_roles,$row,$my_xls);
-            //}//if_job_roles
 
             /* Courses */
             /* Header Table */
             self::company_report_AddExcelHeaderTable($row,$my_xls,false);
-            foreach ($my_users as $user) {
-                $user_jr = explode(',',$user->job_roles);
-                $out_jr  = explode(',',$outcome->job_roles);
-                $job_roles= array_intersect($user_jr,$out_jr);
-                if ($job_roles) {
-                /* Not Completed    */
-                $not_completed = self::company_report_getEnrolNotCompleted($outcome->courses,$user->id);
-                /* Completed        */
-                $completed = self::company_report_getEnrolCompleted($outcome->courses,$user->id);
-                /* Not Enrol        */
-                $not_enrol = self::company_report_getNotEnrol($outcome->courses,$not_completed,$completed);
 
+            foreach ($my_users as $user) {
+                    if ($outcomes_courses[$outcome->id][$user->id]) {
+                        $my_courses = $outcomes_courses[$outcome->id][$user->id];
                 /* Add Not Completed    */
-                if ($not_completed) {
-                    self::company_report_AddExcelNotCompletedTable($not_completed,$user->name,$row,$my_xls,false);
+                        if ($my_courses->not_completed) {
+                            self::company_report_AddExcelNotCompletedTable($my_courses->not_completed,$user->name,$row,$my_xls,false);
                 }//if_not_completed
 
                 /* Add Not Enrol        */
-                if ($not_enrol) {
-                    self::company_report_AddExcelNotEnrolTable($not_enrol,$user->name,$row,$my_xls,false);
+                        if ($my_courses->not_enrol) {
+                            self::company_report_AddExcelNotEnrolTable($my_courses->not_enrol,$user->name,$row,$my_xls,false);
                 }//if_not_enrol
 
                 /* Add Completed        */
-                if ($completed) {
-                    self::company_report_AddExcelCompletedTable($completed,$user->name,$outcome->expiration,$row,$my_xls,false);
+                        if ($my_courses->completed) {
+                            self::company_report_AddExcelCompletedTable($my_courses->completed,$user->name,$outcome->expiration,$row,$my_xls,false);
                 }//if_compelted
 
                 $row ++;
-                }//if_job_roles
+                    }
             }//for_my_users
+            }//for_outcome
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
@@ -1040,27 +1185,25 @@ class company_report {
         self::company_report_AddExcelHeaderTable($row,$my_xls,true);
 
         foreach ($my_users as $user) {
+            $my_courses = $courses[$user->id];
+            if ($my_courses) {
             /* Not Completed    */
-            $not_completed = self::company_report_getEnrolNotCompleted($courses,$user->id);
+                $not_completed = self::company_report_getEnrolNotCompleted($my_courses,$user->id);
             /* Completed        */
-            $completed = self::company_report_getEnrolCompleted($courses,$user->id);
-            /* Not Enrol        */
-            $not_enrol = self::company_report_getNotEnrol($courses,$not_completed,$completed);
+                $completed = self::company_report_getEnrolCompleted($my_courses,$user->id);
 
             /* Add Not Completed    */
             if ($not_completed) {
                 self::company_report_AddExcelNotCompletedTable($not_completed,$user->name,$row,$my_xls,true);
             }//if_not_completed
 
-            /* Add Not Enrol        */
-            //if ($not_enrol) {
-            //    self::company_report_AddExcelNotEnrolTable($not_enrol,$user->name,$row,$my_xls,true);
-            //}//if_not_enrol
-
             /* Add Completed        */
             if ($completed) {
                 self::company_report_AddExcelCompletedTable($completed,$user->name,0,$row,$my_xls,true);
             }//if_compelted
+
+                $row ++;
+            }//my_courses
         }//for_my_users
     }//company_report_AddIndividualCourses
 
