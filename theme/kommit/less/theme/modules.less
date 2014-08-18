@@ -74,10 +74,63 @@
     padding: 0;
 }
 
+// Lesson Feedback
+// -------------------------------------
+
+//#page-mod-feedback-view {
+//}
+
+.path-mod-feedback {
+    .boxaligncenter.boxwidthwide {
+        margin-left: 0;
+    }
+    // When the buttons in all activities are left aligned remove the comments
+//    .continuebutton {
+//        input[type="submit"] {
+//            margin-left: 0;
+//        }
+//    }
+    .feedback_form {
+        // When the buttons in all activities are left aligned remove the comments
+//        input[name="gopreviouspage"],
+//        input[name="gonextpage"] {
+//            margin-left: 0;
+//            margin-right: 1em;
+//        }
+        .mform {
+            .fdescription.required {
+                margin-left: auto;
+                float: right;
+            }
+        }
+        .feedback_item_box_left {
+            margin-bottom: 1em;
+
+            input[type="radio"],
+            input[type="checkbox"] {
+                margin-right: .1em;
+            }
+        }
+        li.feedback_item_check_h_left,
+        li.feedback_item_check_h_right,
+        li.feedback_item_radio_h_left,
+        li.feedback_item_radio_h_right {
+            padding-right: .8em;
+        }
+        .feedback_items {
+            clear: both;
+            padding-top: 1em;
+        }
+    }
+}
+
 // Lesson Module
 // -------------------------------------
 
 #page-mod-lesson-view {
+    .boxaligncenter.boxwidthwide {
+        margin-left: 0;
+    }
     .ftoggler {
         display: none;
     }
@@ -104,7 +157,6 @@
     .branchbuttoncontainer {
         margin-top: 1em;
     }
-
     #region-main {
         .mform {
             &:not(.unresponsive) {

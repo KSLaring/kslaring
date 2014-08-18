@@ -7,7 +7,8 @@
  */
 
 /* Style the text for the last lesson page which replaces the button/links */
-.format-netcourse.path-mod-lesson .lastlessonpage-info {
+.format-netcourse.path-mod-lesson .lastlessonpage-info,
+.format-netcourse.path-mod-feedback .lastfeedbackpage-info {
     padding: 1em .5em;
     margin-top: 1em;
     margin-bottom: 1em;

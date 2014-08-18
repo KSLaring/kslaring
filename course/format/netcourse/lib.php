@@ -129,7 +129,8 @@ class format_netcourse extends format_base {
             }
         }
 
-        $url->param('start',1);
+        $url->param('start', 1);
+
         return $url;
     }
 
@@ -450,29 +451,29 @@ class format_netcourse extends format_base {
                  * Description
                  * Add an extra fields
                  */
-                'homepage'          => array(
-                    'label'         => get_string('checkbox_home','local_course_page'),
-                    'element_type'  => 'checkbox',
+                'homepage' => array(
+                    'label' => get_string('checkbox_home', 'local_course_page'),
+                    'element_type' => 'checkbox',
                 ),
-                'homevisible'       => array(
-                    'label'         => get_string('home_visible','local_course_page'),
-                    'default'       => 1,
-                    'element_type'  =>  'select',
+                'homevisible' => array(
+                    'label' => get_string('home_visible', 'local_course_page'),
+                    'default' => 1,
+                    'element_type' => 'select',
                 ),
-                'homesummary'           => array(
-                    'label'             => 'homesummary',
-                    'element_type'      => 'hidden',
-                    'default'           => '',
+                'homesummary' => array(
+                    'label' => 'homesummary',
+                    'element_type' => 'hidden',
+                    'default' => '',
                 ),
-                'pagegraphics'          => array(
-                    'label'             => 'pagegraphics',
-                    'element_type'      => 'hidden',
-                    'default'           => 0,
+                'pagegraphics' => array(
+                    'label' => 'pagegraphics',
+                    'element_type' => 'hidden',
+                    'default' => 0,
                 ),
-                'pagevideo'             => array(
-                    'label'             => 'pagevideo',
-                    'element_type'      => 'hidden',
-                    'default'           => 0,
+                'pagevideo' => array(
+                    'label' => 'pagevideo',
+                    'element_type' => 'hidden',
+                    'default' => 0,
                 ),
                 'prerequisities' => array(
                     'type' => PARAM_TEXT,
@@ -600,6 +601,7 @@ class format_netcourse extends format_base {
     /**
      * @param           MoodleQuickForm $mform
      * @param           bool            $forsection
+     *
      * @return          array
      *
      * @updateDate      27/05/2014
@@ -625,7 +627,7 @@ class format_netcourse extends format_base {
                 case 'homesummary':
                 case 'pagegraphics':
                 case 'pagevideo':
-                    course_page::addCourseHomePage_Section($mform,$optionname);
+                    course_page::addCourseHomePage_Section($mform, $optionname);
 
                     break;
                 default:
@@ -638,7 +640,7 @@ class format_netcourse extends format_base {
                     }
                     $elements[] = call_user_func_array(array($mform, 'addElement'), $args);
                     if (isset($option['help'])) {
-                        $helpcomponent = 'format_'. $this->get_format();
+                        $helpcomponent = 'format_' . $this->get_format();
                         if (isset($option['help_component'])) {
                             $helpcomponent = $option['help_component'];
                         }
@@ -649,12 +651,14 @@ class format_netcourse extends format_base {
                     }
 
                     break;
-            }//swicth
+            }
+            //swicth
 
             if (is_null($mform->getElementValue($optionname)) && isset($option['default'])) {
                 $mform->setDefault($optionname, $option['default']);
             }
-        }//for
+        }
+        //for
 
         // Increase the number of sections combo box values if the user has increased
         // the number of sections using the icon on the course page beyond course
@@ -693,7 +697,8 @@ class format_netcourse extends format_base {
      */
     /**
      * @param       array|stdClass $data
-     * @param       null $oldcourse
+     * @param       null           $oldcourse
+     *
      * @return      bool
      *
      * @updateDate  27/05/2014
@@ -703,7 +708,7 @@ class format_netcourse extends format_base {
      * Update the course format options.
      */
     public function update_course_format_options($data, $oldcourse = null) {
-        global $DB,$delete;
+        global $DB, $delete;
 
         $data = (array)$data;
         $oldcourse = (array)$oldcourse;
@@ -713,48 +718,57 @@ class format_netcourse extends format_base {
                 case 'homepage':
                     if (isset($data['homepage']) && $data['homepage']) {
                         $data[$key] = 1;
-                    }else {
+                    } else {
                         $data[$key] = 0;
-                    }//if_homepage
+                    }
+                    //if_homepage
 
                     break;
                 case 'homesummary':
                     if (isset($data['homesummary_editor']) && ($data['homesummary_editor'])) {
                         $data[$key] = course_page::getHomeSummaryEditor($data['homesummary_editor']);
-                    }//homesummary_editor
+                    }
+                    //homesummary_editor
 
                     break;
                 case 'pagegraphics':
                     if (isset($data['deletepicture']) && ($data['deletepicture'])) {
                         $delete = true;
-                    }else {
+                    } else {
                         $delete = false;
-                    }//if_delete
+                    }
+                    //if_delete
                     if (isset($data['pagegraphics']) && isset($data['pagegraphics_filemanager'])) {
-                        $graphic_id = course_page::getHomeGraphicsVideo($data['pagegraphics'],'pagegraphics',$data['pagegraphics_filemanager'],$delete);
+                        $graphic_id = course_page::getHomeGraphicsVideo($data['pagegraphics'], 'pagegraphics', $data['pagegraphics_filemanager'], $delete);
                         if ($graphic_id) {
                             $data[$key] = $graphic_id;
-                        }//if_graphic_id
-                    }//pagegraphics_filemanager
+                        }
+                        //if_graphic_id
+                    }
+                    //pagegraphics_filemanager
 
                     break;
                 case 'pagevideo':
                     if (isset($data['deletevideo']) && ($data['deletevideo'])) {
                         $delete = true;
-                    }else {
+                    } else {
                         $delete = false;
-                    }//if_delete
+                    }
+                    //if_delete
                     if (isset($data['pagevideo']) && isset($data['pagevideo_filemanager'])) {
-                        $video_id = course_page::getHomeGraphicsVideo($data['pagevideo'],'pagevideo',$data['pagevideo_filemanager'],$delete);
+                        $video_id = course_page::getHomeGraphicsVideo($data['pagevideo'], 'pagevideo', $data['pagevideo_filemanager'], $delete);
                         if ($video_id) {
                             $data[$key] = $video_id;
-                        }//if_graphic_id
-                    }//if_page_video_pagevideo_filemanager
+                        }
+                        //if_graphic_id
+                    }
+                    //if_page_video_pagevideo_filemanager
 
                     break;
                 default:
                     break;
-            }//switch_key
+            }
+            //switch_key
 
             if (!array_key_exists($key, $data)) {
                 if (array_key_exists($key, $oldcourse)) {
@@ -769,10 +783,15 @@ class format_netcourse extends format_base {
                         // If there are no sections, or just default 0-section,
                         // 'numsections' will be set to default
                         $data['numsections'] = $maxsection;
-                    }//if_maxsection
-                }//if_array_key
-            }//if_array_key
-        }//for_options
+                    }
+                    //if_maxsection
+                }
+                //if_array_key
+            }
+            //if_array_key
+        }
+
+        //for_options
 
         return $this->update_format_options($data);
     }
@@ -995,11 +1014,47 @@ class format_netcourse extends format_base {
      * @return format_netcourse_specialnav | null
      */
     public function course_content_footer() {
+        global $cm;
+
         $retval = null;
+
+        if (!is_null($cm)) {
+            if ($cm->modname === 'feedback') {
+                $strmessage = get_string('feedbacklastpage', 'format_netcourse');
+                $js = <<< EOT
+                <script>
+                YUI().use("node", function(Y) {
+                    var regionmain = Y.one("#region-main");
+                    var continuebutton = regionmain.one(".continuebutton");
+                    if (continuebutton) {
+                        // console.log('feedback with continue btn.');
+                        var form = continuebutton.one("form");
+                        if (form) {
+                            var action = form.getAttribute('action');
+                            if (action.indexOf('course/view.php') !== -1 ||
+                                action === '#'
+                            ) {
+                                // console.log('feedback with course link.');
+                                var box = Y.one("#region-main").one(".generalbox");
+                                if (box) {
+                                    box
+                                        .set("text", "$strmessage")
+                                        .addClass("lastfeedbackpage-info");
+                                     form.remove();
+                                }
+                            }
+                        }
+                    }
+                });
+                </script>
+EOT;
+                $retval = new format_netcourse_specialnav($js);
+            }
+        }
 
         // If the last lesson page is reached add JavaScript to the page
         // which manipulates the page.
-        if (self::$lastlessonpage === self::LESSON_LASTPAGE_GRADINGON) {
+        else if (self::$lastlessonpage === self::LESSON_LASTPAGE_GRADINGON) {
             $strmessage = get_string('lessonlastpageon', 'format_netcourse');
             $js = <<< EOT
             <script>
@@ -1282,7 +1337,7 @@ EOT;
     protected function trim_left($string, $length) {
 //        return '...' . core_text::substr($string,
 //            core_text::strlen($string) - $length, $length);
-        return '... ' . shorten_text($string, $ideal=$length, $exact = false, $ending='');
+        return '... ' . shorten_text($string, $ideal = $length, $exact = false, $ending = '');
     }
 
     /**
@@ -1294,7 +1349,7 @@ EOT;
      * @return string The truncated string
      */
     protected function trim_right($string, $length) {
-        return shorten_text($string, $ideal=$length, $exact = false, $ending='...');
+        return shorten_text($string, $ideal = $length, $exact = false, $ending = '...');
     }
 
     /**
