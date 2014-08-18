@@ -118,6 +118,8 @@ function tracker_get_tracker_page_user_info($tracker_user,$company_report = fals
     $tracker_info->total_connected = 0;
     $tracker_info->total_not_connected = 0;
 
+    $courses_outcomes = '';
+
     try {
         if ($tracker_user->job_roles) {
             /* Job ROLES */
@@ -158,6 +160,18 @@ function tracker_get_tracker_page_user_info($tracker_user,$company_report = fals
                        Not Completed Courses Info
                     */
                     list($outcome_info->completed,$outcome_info->not_completed) = tracker_get_completed_and_not_course_info_user_outcome($tracker_user->user_id,$outcome->id);
+
+                    /* Get the courses connected with outcomes */
+                    if ($outcome_info->completed) {
+                        $courses_outcomes .= implode(',',array_keys($outcome_info->completed));
+                    }//if_outcome_info->completed
+                    if ($outcome_info->not_completed) {
+                        if ($courses_outcomes) {
+                            $courses_outcomes .= ',';
+                        }
+                        $courses_outcomes .= implode(',',array_keys($outcome_info->not_completed));
+                    }//if_outcome_info->not_completed
+
                     /* Not Enrolled Course          */
                     $outcome_info->not_enrolled     = tracker_get_not_enrolled_course_info_user_outcome($tracker_user->user_id,$outcome->id);
 
@@ -172,7 +186,7 @@ function tracker_get_tracker_page_user_info($tracker_user,$company_report = fals
         }//if_job_list
 
         /* Completed and Not Completed  */
-        list($tracker_info->not_connected_completed,$tracker_info->not_connected_not_completed) = tracker_get_completed_and_not_completed_not_outcome($tracker_user->user_id);
+        list($tracker_info->not_connected_completed,$tracker_info->not_connected_not_completed) = tracker_get_completed_and_not_completed_not_outcome($tracker_user->user_id,$courses_outcomes);
         $tracker_info->total_not_connected += count($tracker_info->not_connected_completed) + count($tracker_info->not_connected_not_completed);
 
         return $tracker_info;
@@ -251,6 +265,7 @@ function tracker_get_completed_and_not_course_info_user_outcome($user_id,$outcom
 
 /**
  * @param           $user_id
+ * @param           $courses_outcomes
  * @return          array
  * @throws          Exception
  *
@@ -260,7 +275,7 @@ function tracker_get_completed_and_not_course_info_user_outcome($user_id,$outcom
  * Description
  * Get all the courses completed and not completed connected with the user and not connected with outcome
  */
-function tracker_get_completed_and_not_completed_not_outcome($user_id) {
+function tracker_get_completed_and_not_completed_not_outcome($user_id,$courses_outcomes) {
     global $DB;
 
     /* Variables    */
@@ -284,9 +299,13 @@ function tracker_get_completed_and_not_completed_not_outcome($user_id) {
                                                                 AND		ue.userid		= :user
                     LEFT JOIN	{course_completions}		cc	ON		cc.course 		= e.courseid
                                                                     AND		cc.userid 		= ue.userid
-                WHERE  c.id NOT IN (SELECT courseid FROM {grade_outcomes_courses} )
-                        AND     c.visible = 1
-                      ORDER BY  c.fullname ASC ";
+                 WHERE     c.visible = 1 ";
+
+        if ($courses_outcomes) {
+            $sql .= " AND  c.id NOT IN ($courses_outcomes) ";
+        }//if_courses_outcome
+
+        $sql .=  " ORDER BY  c.fullname ASC ";
 
         /* Execute  */
         $rdo = $DB->get_records_sql($sql,$params);
