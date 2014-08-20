@@ -194,7 +194,11 @@ class format_netcourse extends format_base {
 
         // If the "nonav" parameter is not set show the course navigation
         if (!$nonav) {
-            $this->add_fake_nav_block($page);
+            // Exclude the SCORM report page - it has issues with
+            // the netcourse navigation block
+            if ($page->pagetype !== 'mod-scorm-report') {
+                $this->add_fake_nav_block($page);
+            }
         }
 
         // Load the lightbox script
@@ -219,6 +223,12 @@ class format_netcourse extends format_base {
      */
     public function extend_course_navigation($navigation, navigation_node $node) {
         global $PAGE, $DB;
+
+        // Exclude the SCORM report page - it has issues with
+        // the netcourse navigation block
+        if ($PAGE->pagetype === 'mod-scorm-report') {
+            return array();
+        }
 
         // If section is specified in course/view.php, make sure it is expanded
         // in navigation
