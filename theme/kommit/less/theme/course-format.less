@@ -151,26 +151,39 @@ p.active_tree_node a {
 }
 
 
+// Add left and right content whitespace on admin and settings pages
+// Urs Hunkler 2014-08-19
+// -------------------------------------------------------
+.format-netcourse {
+  div[role="main"] {
+    margin: 0 1em;
+  }
+}
+
 // add under line to Links in net course format
 // Jon Jack 18/08/2014
+// reduced to links within paragraphs
+// Urs Hunkler 2014-08-20
 // -------------------------------------------------------
 
 .format-netcourse {
   #page-content {
     #region-main {
-      a {
-        color: @linkColor;
-        text-decoration: none;
-        border-bottom: 1px dotted;
-      }
-      a:hover,
-      a:focus {
-        color: @kommitRed;
-        text-decoration: none;
-      }
-      a:visited {
-        color: @linkColorHover;
-        text-decoration: none;
+      p {
+        a {
+          color: @linkColor;
+          text-decoration: none;
+          border-bottom: 1px dotted;
+        }
+        a:hover,
+        a:focus {
+          color: @kommitRed;
+          text-decoration: none;
+        }
+        a:visited {
+          color: @linkColorHover;
+          text-decoration: none;
+        }
       }
     }
   }

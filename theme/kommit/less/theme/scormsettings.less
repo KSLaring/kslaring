@@ -1,0 +1,98 @@
+.number {
+  border-radius: 1em;
+  color: #fff;
+  font-style: normal;
+  font-weight: bold;
+  float: right;
+  line-height: 1.4;
+  margin: 0.5em 0.5em -1.9em;
+  padding: 0 .5em;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale
+}
+.number-orange {
+  background: #ffa200;
+}
+.number-blue {
+  background: #0f44c1;
+}
+
+@changeplayer: rgba(255, 254, 203, 0.6);
+@changepreview: rgba(255, 209, 100, 0.3);
+@changebehaviour: rgba(206, 224, 255, 0.3);
+
+#page-mod-scorm-mod {
+  &.pagelayout-admin {
+    // Appearance section
+    #fitem_id_popup {
+      background-color: @changeplayer;
+
+      &:before{content:"1"; .number; .number-orange;}
+    }
+    #fitem_id_width,
+    #fitem_id_height,
+    #fgroup_id_winoptgrp {
+      background-color: @changeplayer;
+    }
+    #fitem_id_displayactivityname {
+      background-color: @changeplayer;
+
+      &:before{content:"2"; .number; .number-orange;}
+    }
+    #fitem_id_skipview {
+      background-color: @changepreview;
+
+      &:before{content:"3"; .number; .number-orange;}
+    }
+    #fitem_id_hidebrowse {
+      background-color: @changepreview;
+
+      &:before{content:"4"; .number; .number-orange;}
+    }
+    #fitem_id_displaycoursestructure {
+      background-color: @changepreview;
+
+      &:before{content:"5"; .number; .number-orange;}
+    }
+    #fitem_id_hidetoc {
+      background-color: @changeplayer;
+
+      &:before{content:"6"; .number; .number-orange;}
+    }
+    #fitem_id_nav {
+      background-color: @changeplayer;
+
+      &:before{content:"7"; .number; .number-orange;}
+    }
+    #fitem_id_navpositionleft,
+    #fitem_id_navpositiontop {
+      background-color: @changeplayer;
+    }
+    #fitem_id_displayattemptstatus {
+      background-color: @changepreview;
+
+      &:before{content:"8"; .number; .number-orange;}
+    }
+    // Attempts management section
+    #fitem_id_maxattempt {
+      background-color: @changebehaviour;
+
+      &:before{content:"9"; .number; .number-blue;}
+    }
+    #fitem_id_whatgrade {
+      background-color: @changebehaviour;
+
+      &:before{content:"10"; .number; .number-blue;}
+    }
+    #fitem_id_forcenewattempt {
+      background-color: @changebehaviour;
+
+      &:before{content:"11"; .number; .number-blue;}
+    }
+    #fitem_id_lastattemptlock {
+      background-color: @changepreview;
+
+      &:before{content:"12"; .number; .number-orange;}
+    }
+  }
+}
