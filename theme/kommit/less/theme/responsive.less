@@ -166,6 +166,42 @@
         margin-left: -20px;
         padding-right: 40px;
     }
+
+
+    // adjust tabbed navigation on net course format
+    // -------------------------------
+
+    .netcourse-header {
+      margin-left: -10px;
+      margin-right: -10px;
+      .btn-toolbar {
+        border: 1px solid #ccc;
+        margin: 0;
+        padding: 0;
+        .btn {
+          box-shadow: none;
+          //padding: 15px 28px;
+        }
+        .btn:nth-child(-n+2) {
+          width: 50%;
+          margin: 0;
+          padding-left: 0;
+          padding-right: 0;
+        }
+        .btn:nth-child(n+3) {
+          width: 33%;
+          margin: 0;
+          padding-left: 0;
+          padding-right: 0;
+        }
+        .btn:last-child {
+          width: 34%;
+          margin: 0;
+          padding-left: 0;
+          padding-right: 0;
+        }
+      }
+    }
 }
 
 @media (min-width: 600px) and (max-width: 767px) {

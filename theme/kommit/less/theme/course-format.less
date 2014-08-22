@@ -5,17 +5,31 @@
 // ---------------------------------------
 
 .netcourse-header {
-  .btn {
-    color: @kommitBlue;
+  margin: 1em 0 0 0;
+  .btn-toolbar {
+    //border-bottom: 0px solid white;
+    margin-top: 10.5px;
+    margin-bottom: 0px;
+    .btn {
+      color: @kommitGray;
+      margin: 0.2em 0 0 0;
+      padding: 15px 28px;
+      outline: 1px solid darken(@kommitGrayLight, 5%);
+      #gradient .vertical(lighten(@kommitGrayLight, 5%), darken(@kommitGrayLight, 1%));
+      box-shadow:inset 0 -4px 6px rgba(0,0,0,0.08);
+    }
+    .btn:hover {
+      color: @kommitBlue;
+      background: white;
+      background-image: none;
+    }
+    .btn-primary:active, .btn-primary.active, {
+      color: @kommitBlue;
+      background-color: white;
+      background-image: none;
+      box-shadow: none;
+    }
   }
-  .btn:hover {
-    color: #ffffff;
-  }
-  .btn-primary:active, .btn-primary.active, {
-    color: #ffffff;
-    background-color: @kommitBlue;
-  }
-
 }
 
 #instcnav .block_tree .tree_item.leaf {
@@ -151,39 +165,26 @@ p.active_tree_node a {
 }
 
 
-// Add left and right content whitespace on admin and settings pages
-// Urs Hunkler 2014-08-19
-// -------------------------------------------------------
-.format-netcourse {
-  div[role="main"] {
-    margin: 0 1em;
-  }
-}
-
 // add under line to Links in net course format
 // Jon Jack 18/08/2014
-// reduced to links within paragraphs
-// Urs Hunkler 2014-08-20
 // -------------------------------------------------------
 
 .format-netcourse {
   #page-content {
     #region-main {
-      p {
-        a {
-          color: @linkColor;
-          text-decoration: none;
-          border-bottom: 1px dotted;
-        }
-        a:hover,
-        a:focus {
-          color: @kommitRed;
-          text-decoration: none;
-        }
-        a:visited {
-          color: @linkColorHover;
-          text-decoration: none;
-        }
+      a {
+        color: @linkColor;
+        text-decoration: none;
+        border-bottom: 1px dotted;
+      }
+      a:hover,
+      a:focus {
+        color: @kommitRed;
+        text-decoration: none;
+      }
+      a:visited {
+        color: @linkColorHover;
+        text-decoration: none;
       }
     }
   }

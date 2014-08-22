@@ -1055,16 +1055,39 @@ body {
   line-height: normal;
   vertical-align: middle;
 }
-.netcourse-header .btn {
+.netcourse-header {
+  margin: 1em 0 0 0;
+}
+.netcourse-header .btn-toolbar {
+  margin-top: 10.5px;
+  margin-bottom: 0px;
+}
+.netcourse-header .btn-toolbar .btn {
+  color: #7e7e7e;
+  margin: 0.2em 0 0 0;
+  padding: 15px 28px;
+  outline: 1px solid #e5e5e7;
+  background-color: #f9f9f9;
+  background-image: -moz-linear-gradient(top, #ffffff, #efeff1);
+  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#ffffff), to(#efeff1));
+  background-image: -webkit-linear-gradient(top, #ffffff, #efeff1);
+  background-image: -o-linear-gradient(top, #ffffff, #efeff1);
+  background-image: linear-gradient(to bottom, #ffffff, #efeff1);
+  background-repeat: repeat-x;
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffffff', endColorstr='#ffefeff1', GradientType=0);
+  box-shadow: inset 0 -4px 6px rgba(0, 0, 0, 0.08);
+}
+.netcourse-header .btn-toolbar .btn:hover {
   color: #0e7b9e;
+  background: white;
+  background-image: none;
 }
-.netcourse-header .btn:hover {
-  color: #ffffff;
-}
-.netcourse-header .btn-primary:active,
-.netcourse-header .btn-primary.active {
-  color: #ffffff;
-  background-color: #0e7b9e;
+.netcourse-header .btn-toolbar .btn-primary:active,
+.netcourse-header .btn-toolbar .btn-primary.active {
+  color: #0e7b9e;
+  background-color: white;
+  background-image: none;
+  box-shadow: none;
 }
 #instcnav .block_tree .tree_item.leaf a {
   color: #7e7e7e;
@@ -1155,20 +1178,17 @@ body {
 p.active_tree_node a {
   color: #00aef0 !important;
 }
-.format-netcourse div[role="main"] {
-  margin: 0 1em;
-}
-.format-netcourse #page-content #region-main p a {
+.format-netcourse #page-content #region-main a {
   color: #003876;
   text-decoration: none;
   border-bottom: 1px dotted;
 }
-.format-netcourse #page-content #region-main p a:hover,
-.format-netcourse #page-content #region-main p a:focus {
+.format-netcourse #page-content #region-main a:hover,
+.format-netcourse #page-content #region-main a:focus {
   color: #bf4126;
   text-decoration: none;
 }
-.format-netcourse #page-content #region-main p a:visited {
+.format-netcourse #page-content #region-main a:visited {
   color: #00142a;
   text-decoration: none;
 }
@@ -1233,7 +1253,7 @@ div.loginpanel h2 {
 }
 .coursebox .panel-heading {
   font-size: 21.328px;
-  line-height: 31.992px;
+  line-height: 31.991999999999997px;
 }
 #page-course-index-category .categorypicker {
   text-align: right;
@@ -1374,6 +1394,36 @@ div.loginpanel h2 {
   #page-footer {
     margin-left: -20px;
     padding-right: 40px;
+  }
+  .netcourse-header {
+    margin-left: -10px;
+    margin-right: -10px;
+  }
+  .netcourse-header .btn-toolbar {
+    border: 1px solid #ccc;
+    margin: 0;
+    padding: 0;
+  }
+  .netcourse-header .btn-toolbar .btn {
+    box-shadow: none;
+  }
+  .netcourse-header .btn-toolbar .btn:nth-child(-n+2) {
+    width: 50%;
+    margin: 0;
+    padding-left: 0;
+    padding-right: 0;
+  }
+  .netcourse-header .btn-toolbar .btn:nth-child(n+3) {
+    width: 33%;
+    margin: 0;
+    padding-left: 0;
+    padding-right: 0;
+  }
+  .netcourse-header .btn-toolbar .btn:last-child {
+    width: 34%;
+    margin: 0;
+    padding-left: 0;
+    padding-right: 0;
   }
 }
 @media (min-width: 600px) and (max-width: 767px) {
