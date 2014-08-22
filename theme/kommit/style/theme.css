@@ -1199,13 +1199,24 @@ p.active_tree_node a {
 #page-mod-lesson-view #page-content #region-main .nav-tabs a {
   border-bottom: none;
 }
+#page-course-edit #page-content #region-main a,
+#page-mod-page-mod #page-content #region-main a,
+#page-mod-url-mod #page-content #region-main a,
+#page-mod-lesson-edit #page-content #region-main a,
 #page-mod-folder-view #page-content #region-main a,
+#page-mod-folder-mod #page-content #region-main a,
 #page-mod-data-view #page-content #region-main a,
+#page-mod-data-mod #page-content #region-main a,
 #page-mod-quiz-review #page-content #region-main a,
 #page-mod-quiz-attempt #page-content #region-main a,
+#page-mod-quiz-mod #page-content #region-main a,
 #page-mod-forum-view #page-content #region-main a,
+#page-mod-forum-mod #page-content #region-main a,
+#page-mod-glossary-view #page-content #region-main a,
 #page-mod-glossary-view #page-content #region-main a,
 #page-mod-wiki-edit #page-content #region-main a,
+#page-mod-wiki-mod #page-content #region-main a,
+#page-mod-assign-view #page-content #region-main a,
 #page-mod-assign-view #page-content #region-main a {
   border-bottom: none;
 }
