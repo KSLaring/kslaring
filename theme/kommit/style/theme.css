@@ -1192,6 +1192,22 @@ p.active_tree_node a {
   color: #00142a;
   text-decoration: none;
 }
+#page-mod-lesson-view #page-content #region-main .helptooltip a {
+  border-bottom: none;
+}
+#page-mod-lesson-view #page-content #region-main .nav-tabs a {
+  border-bottom: none;
+}
+#page-mod-folder-view #page-content #region-main a,
+#page-mod-data-view #page-content #region-main a,
+#page-mod-quiz-review #page-content #region-main a,
+#page-mod-quiz-attempt #page-content #region-main a,
+#page-mod-forum-view #page-content #region-main a,
+#page-mod-glossary-view #page-content #region-main a,
+#page-mod-wiki-edit #page-content #region-main a,
+#page-mod-assign-view #page-content #region-main a {
+  border-bottom: none;
+}
 .loginpanel {
   border: 1px solid #cccccc;
   -webkit-border-radius: 4px;

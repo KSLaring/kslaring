@@ -189,3 +189,30 @@ p.active_tree_node a {
     }
   }
 }
+// override for underlined links in activity interface elements
+// Jon Jack 22/08/2014
+// -------------------------------------------------------
+
+
+#page-mod-lesson-view {
+  #page-content #region-main {
+    .helptooltip a {
+      border-bottom: none;
+    }
+    .nav-tabs a {
+      border-bottom: none;
+    }
+  }
+}
+#page-mod-folder-view,
+#page-mod-data-view,
+#page-mod-quiz-review,
+#page-mod-quiz-attempt,
+#page-mod-forum-view,
+#page-mod-glossary-view,
+#page-mod-wiki-edit,
+#page-mod-assign-view{
+  #page-content #region-main  a {
+    border-bottom: none;
+  }
+}
