@@ -174,14 +174,20 @@
     .netcourse-header {
       margin-left: -10px;
       margin-right: -10px;
+      border-bottom: none;
       .btn-toolbar {
-        border: 1px solid #ccc;
+        border: none;
         margin: 0;
         padding: 0;
+        .btn-primary:active, .btn-primary.active, {
+          border-bottom: none;
+        }
         .btn {
           box-shadow: none;
-          //padding: 15px 28px;
+          border: none;
+          outline: 1px solid darken(@kommitGrayLight, 5%);
         }
+
         .btn:nth-child(-n+2) {
           width: 50%;
           margin: 0;

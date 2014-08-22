@@ -1066,7 +1066,7 @@ body {
   color: #7e7e7e;
   margin: 0.2em 0 0 0;
   padding: 15px 28px;
-  outline: 1px solid #e5e5e7;
+  border: 1px solid #e5e5e7;
   background-color: #f9f9f9;
   background-image: -moz-linear-gradient(top, #ffffff, #efeff1);
   background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#ffffff), to(#efeff1));
@@ -1085,6 +1085,7 @@ body {
 .netcourse-header .btn-toolbar .btn-primary:active,
 .netcourse-header .btn-toolbar .btn-primary.active {
   color: #0e7b9e;
+  border-bottom: 1px solid white;
   background-color: white;
   background-image: none;
   box-shadow: none;
@@ -1414,14 +1415,21 @@ div.loginpanel h2 {
   .netcourse-header {
     margin-left: -10px;
     margin-right: -10px;
+    border-bottom: none;
   }
   .netcourse-header .btn-toolbar {
-    border: 1px solid #ccc;
+    border: none;
     margin: 0;
     padding: 0;
   }
+  .netcourse-header .btn-toolbar .btn-primary:active,
+  .netcourse-header .btn-toolbar .btn-primary.active {
+    border-bottom: none;
+  }
   .netcourse-header .btn-toolbar .btn {
     box-shadow: none;
+    border: none;
+    outline: 1px solid #e5e5e7;
   }
   .netcourse-header .btn-toolbar .btn:nth-child(-n+2) {
     width: 50%;
