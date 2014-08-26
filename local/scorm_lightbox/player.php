@@ -51,6 +51,16 @@ if (!empty($id)) {
 } else {
     print_error('missingparameter');
 }
+
+/* Change uh
+ * Force the $scorm->popup information to 0 to force the player
+ * to open the SCORM in the lightbox.
+ *
+ * Date: 2014-08-26
+ */
+$scorm->popup = 0;
+/* End change uh */
+
 // If new attempt is being triggered set normal mode and increment attempt number.
 $attempt = scorm_get_last_attempt($scorm->id, $USER->id);
 
@@ -166,8 +176,13 @@ $PAGE->requires->data_for_js('scormplayerdata', Array('launch' => false,
 $PAGE->requires->js('/mod/scorm/request.js', true);
 $PAGE->requires->js('/lib/cookies.js', true);
 
-// Only display the content area
+/* Change uh
+ * Only display the content area
+ *
+ * Date: 2014-08-26
+ */
 $PAGE->set_pagelayout('embedded');
+/* End change uh */
 
 echo $OUTPUT->header();
 if (!empty($scorm->displayactivityname)) {

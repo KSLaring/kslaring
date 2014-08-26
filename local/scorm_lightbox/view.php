@@ -49,8 +49,16 @@ if (!empty($id)) {
     print_error('missingparameter');
 }
 
-// Force "Always skip" setting to open the SCORM directly for students
+/* Change uh
+ * Force the $scorm->popup information to 0 to force the player
+ * to open the SCORM directly in the lightbox.
+ * Force "Always skip" setting to open the SCORM directly for students
+ *
+ * Date: 2014-08-26
+ */
+$scorm->popup = 0;
 $scorm->skipview = SCORM_SKIPVIEW_ALWAYS;
+/* End change uh */
 
 $url = new moodle_url('/mod/scorm/view.php', array('id'=>$cm->id));
 if ($organization !== '') {

@@ -1060,52 +1060,106 @@ class format_netcourse extends format_base {
 EOT;
                 $retval = new format_netcourse_specialnav($js);
             }
-        }
 
-        // If the last lesson page is reached add JavaScript to the page
-        // which manipulates the page.
-        else if (self::$lastlessonpage === self::LESSON_LASTPAGE_GRADINGON) {
-            $strmessage = get_string('lessonlastpageon', 'format_netcourse');
-            $js = <<< EOT
-            <script>
-            YUI().use("node", function(Y) {
-                var lbtns = Y.all(".lessonbutton.standardbutton");
-                lbtns.remove();
-                var box = Y.one("#region-main").one(".generalbox");
-                if (box) {
-                    box
-                        .set("text", "$strmessage")
-                        .addClass("lastlessonpage-info");
-                }
-            });
-            </script>
-EOT;
-            $retval = new format_netcourse_specialnav($js);
-
-        } else if (self::$lastlessonpage === self::LESSON_LASTPAGE_GRADINGOFF) {
-            $strmessage = get_string('lessonlastpageoff', 'format_netcourse');
-            $js = <<< EOT
-            <script>
-            YUI().use("node", function(Y) {
-                var regionmain = Y.one("#region-main");
-                var singlebtn = regionmain.one(".singlebutton");
-                if (singlebtn) {
-                    var pageid = singlebtn.one("input[name=pageid]");
-                    if (pageid && pageid.get("value") == -9) {
-                        singlebtn.one("form").remove();
-                        singlebtn
+            // If the last lesson page is reached add JavaScript to the page
+            // which manipulates the page.
+            else if (self::$lastlessonpage === self::LESSON_LASTPAGE_GRADINGON) {
+                $strmessage = get_string('lessonlastpageon', 'format_netcourse');
+                $js = <<< EOT
+                <script>
+                YUI().use("node", function(Y) {
+                    var lbtns = Y.all(".lessonbutton.standardbutton");
+                    lbtns.remove();
+                    var box = Y.one("#region-main").one(".generalbox");
+                    if (box) {
+                        box
                             .set("text", "$strmessage")
-                            .removeClass("singlebutton")
-                            .addClass("box generalbox lastlessonpage-info");
+                            .addClass("lastlessonpage-info");
                     }
-                }
-            });
-            </script>
+                });
+                </script>
 EOT;
-            $retval = new format_netcourse_specialnav($js);
+                $retval = new format_netcourse_specialnav($js);
+
+            } else if (self::$lastlessonpage === self::LESSON_LASTPAGE_GRADINGOFF) {
+                $strmessage = get_string('lessonlastpageoff', 'format_netcourse');
+                $js = <<< EOT
+                <script>
+                YUI().use("node", function(Y) {
+                    var regionmain = Y.one("#region-main");
+                    var singlebtn = regionmain.one(".singlebutton");
+                    if (singlebtn) {
+                        var pageid = singlebtn.one("input[name=pageid]");
+                        if (pageid && pageid.get("value") == -9) {
+                            singlebtn.one("form").remove();
+                            singlebtn
+                                .set("text", "$strmessage")
+                                .removeClass("singlebutton")
+                                .addClass("box generalbox lastlessonpage-info");
+                        }
+                    }
+                });
+                </script>
+EOT;
+                $retval = new format_netcourse_specialnav($js);
+            } else if ($cm->modname === 'scorm') {
+                $scormdata = $this->get_scorm_data($cm);
+                $url = new moodle_url('/mod/scorm/view.php',
+                    array('id' => $cm->id));
+
+                // Set parameters for the link
+//                $params['rel'] = 'lightbox';
+                $params['class'] = 'btn btn-lightbox scorm';
+                $params['data-scormid'] = $cm->id;
+                if (!is_null($scormdata)) {
+                    $params['data-scormwidth'] = $scormdata->width;
+                    $params['data-scormheight'] = $scormdata->height;
+                    $params['data-scormlaunch'] = $scormdata->launch;
+                }
+
+                $link = html_writer::link($url, get_string('enter', 'mod_scorm'), $params);
+
+                $js = <<< EOT
+                <script>
+                YUI().use("node", function(Y) {
+                    if (WURFL && WURFL.form_factor === "Desktop") {
+                        var regionmain = Y.one("#region-main");
+                        var scormviewform = regionmain.one("#scormviewform");
+                        if (scormviewform) {
+                            scormviewform.replace('{$link}');
+//                            scormviewform.get('parentNode').append('{$link}');
+                        }
+                    }
+                });
+                </script>
+EOT;
+                $retval = new format_netcourse_specialnav($js);
+            }
         }
 
         return $retval;
+    }
+
+    /**
+     * Get the width and height set in the SCROM module settings.
+     *
+     * @param object $cm The SCORM course module
+     *
+     * @return stdClass The width and hieght set for the SCORM module
+     */
+    protected function get_scorm_data($cm) {
+        global $DB;
+
+        $scormdata = null;
+
+        if ($result = $DB->get_record('scorm', array('id' => $cm->instance))) {
+            $scormdata = new stdClass();
+            $scormdata->width = $result->width;
+            $scormdata->height = $result->height;
+            $scormdata->launch = $result->launch;
+        }
+
+        return $scormdata;
     }
 
     /**

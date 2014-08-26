@@ -1184,6 +1184,10 @@ p.active_tree_node a {
   text-decoration: none;
   border-bottom: 1px dotted;
 }
+.format-netcourse #page-content #region-main a.btn-lightbox {
+  color: #ffffff;
+  border-bottom: 0;
+}
 .format-netcourse #page-content #region-main a:hover,
 .format-netcourse #page-content #region-main a:focus {
   color: #bf4126;
@@ -1193,12 +1197,18 @@ p.active_tree_node a {
   color: #00142a;
   text-decoration: none;
 }
+.format-netcourse #page-content #region-main a:visited.btn-lightbox {
+  color: #ffffff;
+  border-bottom: 0;
+}
 #page-mod-lesson-view #page-content #region-main .helptooltip a {
   border-bottom: none;
 }
 #page-mod-lesson-view #page-content #region-main .nav-tabs a {
   border-bottom: none;
 }
+.pagelayout-admin #page-content #region-main a,
+#page-course-view-netcourse.editing #page-content #region-main a,
 #page-course-edit #page-content #region-main a,
 #page-mod-page-mod #page-content #region-main a,
 #page-mod-url-mod #page-content #region-main a,
@@ -1213,11 +1223,11 @@ p.active_tree_node a {
 #page-mod-forum-view #page-content #region-main a,
 #page-mod-forum-mod #page-content #region-main a,
 #page-mod-glossary-view #page-content #region-main a,
-#page-mod-glossary-view #page-content #region-main a,
+#page-mod-glossary-mod #page-content #region-main a,
 #page-mod-wiki-edit #page-content #region-main a,
 #page-mod-wiki-mod #page-content #region-main a,
 #page-mod-assign-view #page-content #region-main a,
-#page-mod-assign-view #page-content #region-main a {
+#page-mod-assign-mod #page-content #region-main a {
   border-bottom: none;
 }
 .loginpanel {
@@ -1281,7 +1291,7 @@ div.loginpanel h2 {
 }
 .coursebox .panel-heading {
   font-size: 21.328px;
-  line-height: 31.991999999999997px;
+  line-height: 31.992px;
 }
 #page-course-index-category .categorypicker {
   text-align: right;

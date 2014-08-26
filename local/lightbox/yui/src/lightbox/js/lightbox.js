@@ -30,6 +30,10 @@ var LIGHTBOX = 'Lightbox',
             link: 'a[rel="lightbox"]',
             method: 'handleExtLinkClick'
         },
+        SCORMLINKS: {
+            link: 'a.scorm',
+            method: 'handleSCORMLinkClick'
+        },
         EXTURL: {
             link: '.urlworkaround a',
             method: 'handleURLLinkClick'
@@ -134,7 +138,7 @@ NS[LIGHTBOX] = Y.Base.create(LIGHTBOXNAME, Y.Panel, [], {
     /**
      * Add the click delegate.
      *
-     * Create the delegate for the given link and set the given mehtod as
+     * Create the delegate for the given link and set the given method as
      * the click handler. Collect all click delegates to be able to detach them
      * in the deconstruct method.
      *
@@ -178,7 +182,51 @@ NS[LIGHTBOX] = Y.Base.create(LIGHTBOXNAME, Y.Panel, [], {
     },
 
     /**
+     * Handle links to SCORMs.
+     *
+     * Get the href from the click target and use it as the src for the iframe
+     * to load the page. Change the lightbox width and height to the given
+     * values.
+     *
+     * @param {object} ele   The click target
+     */
+    handleSCORMLinkClick: function (ele) {
+        var src = ele.getAttribute('href'),
+            width =  ele.getAttribute('data-scormwidth'),
+            height =  ele.getAttribute('data-scormheight'),
+            launch =  ele.getAttribute('data-scormlaunch');
+
+        // Change the URL to load the local/scorm_lightbox/player scripts
+        // The SCORM parameter "popup" must be changed to load the page into the
+        // lightbox and not open a new window. That task seams quite complicated!!!
+//        if (src.indexOf('/mod/scorm/') !== -1) {
+//            src = src.replace('/mod/scorm/view', '/local/scorm_lightbox/player');
+//            src = src.replace('?id=', '?cm=');
+//            src += '&scoid=' + launch;
+//        }
+
+        // Change the URL to load the local/scorm_lightbox/player scripts
+        if (src.indexOf('/mod/scorm/') !== -1) {
+            src = src.replace('/mod/scorm/', '/local/scorm_lightbox/');
+        }
+
+        console.log(src, width, height);
+        if (src !== '') {
+            this.set('src', src);
+
+            // If width and height are given set the lightbox size
+            if (width && height) {
+                this.set('width', width);
+                this.set('height', parseInt(height, 10) + 20);
+            }
+
+            this.display();
+        }
+    },
+
+    /**
      * Handle links set by the Moodle URL resource.
+     *
      * Get the href from the click target and use it as the src for the iframe
      * to load the page. Change the lightbox width and height to the given
      * values.
@@ -203,6 +251,7 @@ NS[LIGHTBOX] = Y.Base.create(LIGHTBOXNAME, Y.Panel, [], {
             // this.set('frameloaded', false);
         }
     },
+
     handleIFrameLoaded: function () {
         if (this.firstload) {
             this.firstload = false;
@@ -215,11 +264,13 @@ NS[LIGHTBOX] = Y.Base.create(LIGHTBOXNAME, Y.Panel, [], {
             Y.log('iframe loaded false');
         }
     },
+
     handleResizeChange: function () {
         Y.log('handleResizeChange: ' + this.get('resized'));
         this.resizeBody();
         this.centerDialogue();
     },
+
     /**
      * Center the dialogue
      *
@@ -238,6 +289,7 @@ NS[LIGHTBOX] = Y.Base.create(LIGHTBOXNAME, Y.Panel, [], {
             winH = bb.get('winHeight');
         this.set('xy', [(winW - w) / 2, (winH - h) / 2]);
     },
+
     resizeBody: function () {
         var Pbox = this.get('contentBox'),
             Pheader = this.getStdModNode(Y.WidgetStdMod.HEADER),
@@ -249,6 +301,7 @@ NS[LIGHTBOX] = Y.Base.create(LIGHTBOXNAME, Y.Panel, [], {
         Pbody.setStyle('height', (PbodyHeight - VALUES.LBIFRAMEGBOTTOM) + 'px');
         Y.log(PbodyHeight);
     },
+
     renderUI: function () {
         this.set('bodyContent', '<iframe id="external-links"/>');
         this.set('headerContent', '');
@@ -260,6 +313,7 @@ NS[LIGHTBOX] = Y.Base.create(LIGHTBOXNAME, Y.Panel, [], {
         this.getStdModNode(Y.WidgetStdMod.HEADER, true)
             .addClass(CSS.MOODLEDIALOGHDCLASS);
     },
+
     bindUI: function () {
         var that = this;
 
@@ -273,6 +327,7 @@ NS[LIGHTBOX] = Y.Base.create(LIGHTBOXNAME, Y.Panel, [], {
         this.after('visibleChange', this.handleVisibleChange, this);
         this.after('srcChange', this.syncUI, this);
     },
+
     syncUI: function () {
         this.theframe.setAttribute('src', this.get('src'));
     }

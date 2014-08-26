@@ -178,6 +178,11 @@ p.active_tree_node a {
         color: @linkColor;
         text-decoration: none;
         border-bottom: 1px dotted;
+
+        &.btn-lightbox {
+          color: @white;
+          border-bottom: 0;
+        }
       }
       a:hover,
       a:focus {
@@ -187,6 +192,11 @@ p.active_tree_node a {
       a:visited {
         color: @linkColorHover;
         text-decoration: none;
+
+        &.btn-lightbox {
+          color: @white;
+          border-bottom: 0;
+        }
       }
     }
   }
@@ -205,17 +215,19 @@ p.active_tree_node a {
     }
   }
 }
+.pagelayout-admin,
+#page-course-view-netcourse.editing,
 #page-course-edit,
 #page-mod-page-mod,
 #page-mod-url-mod,
 #page-mod-lesson-edit,
-#page-mod-folder-view,#page-mod-folder-mod,
+#page-mod-folder-view, #page-mod-folder-mod,
 #page-mod-data-view, #page-mod-data-mod,
 #page-mod-quiz-review, #page-mod-quiz-attempt, #page-mod-quiz-mod,
 #page-mod-forum-view, #page-mod-forum-mod,
-#page-mod-glossary-view, #page-mod-glossary-view,
+#page-mod-glossary-view, #page-mod-glossary-mod,
 #page-mod-wiki-edit, #page-mod-wiki-mod,
-#page-mod-assign-view, #page-mod-assign-view
+#page-mod-assign-view, #page-mod-assign-mod
 {
   #page-content #region-main  a {
     border-bottom: none;
