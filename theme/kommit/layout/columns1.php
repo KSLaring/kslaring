@@ -49,6 +49,8 @@ echo $OUTPUT->doctype() ?>
                 fa-2x" id="icon" aria-hidden="true"></i></a></div>
                 <div class="col2"><a href="https://twitter.com/KSKommIT" target=_blank" alt="twitter icon"><i class="fa fa-twitter
                 fa-2x" id="icon" aria-hidden="true"></i></a></div>
+                <div class="col2"><a href="<?php echo $CFG->wwwroot ?>/my" alt="twitter icon"><i class="fa fa-home
+                fa-2x" id="icon" aria-hidden="true"></i></a></div>
             </div>
         </div>
     </div>
