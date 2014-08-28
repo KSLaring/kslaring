@@ -111,7 +111,7 @@
 
             input[type="radio"],
             input[type="checkbox"] {
-                margin-right: .1em;
+                margin-right: .2em;
             }
         }
         li.feedback_item_check_h_left,
@@ -129,6 +129,30 @@
 
 // Lesson Module
 // -------------------------------------
+.path-mod-feedback {
+    div[role=main] {
+        margin: 0 1em 1em 0;
+    }
+
+    .feedback_form {
+        li {
+            &.feedback_item_check_h_left,
+            &.feedback_item_check_h_right,
+            &.feedback_item_radio_h_left,
+            &.feedback_item_radio_h_right {
+                white-space: nowrap;
+            }
+        }
+    }
+    .feedback_items {
+        ul {
+            li {
+                padding-top: .2em;
+                padding-bottom: .3em;
+            }
+        }
+    }
+}
 
 #page-mod-lesson-view {
     .boxaligncenter.boxwidthwide {

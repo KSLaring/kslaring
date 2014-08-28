@@ -602,7 +602,7 @@ Courses and categories lists, from Mary Evans
 }
 .path-mod-feedback .feedback_form .feedback_item_box_left input[type="radio"],
 .path-mod-feedback .feedback_form .feedback_item_box_left input[type="checkbox"] {
-  margin-right: .1em;
+  margin-right: .2em;
 }
 .path-mod-feedback .feedback_form li.feedback_item_check_h_left,
 .path-mod-feedback .feedback_form li.feedback_item_check_h_right,
@@ -613,6 +613,19 @@ Courses and categories lists, from Mary Evans
 .path-mod-feedback .feedback_form .feedback_items {
   clear: both;
   padding-top: 1em;
+}
+.path-mod-feedback div[role=main] {
+  margin: 0 1em 1em 0;
+}
+.path-mod-feedback .feedback_form li.feedback_item_check_h_left,
+.path-mod-feedback .feedback_form li.feedback_item_check_h_right,
+.path-mod-feedback .feedback_form li.feedback_item_radio_h_left,
+.path-mod-feedback .feedback_form li.feedback_item_radio_h_right {
+  white-space: nowrap;
+}
+.path-mod-feedback .feedback_items ul li {
+  padding-top: .2em;
+  padding-bottom: .3em;
 }
 #page-mod-lesson-view .boxaligncenter.boxwidthwide {
   margin-left: 0;
@@ -1294,7 +1307,7 @@ div.loginpanel h2 {
 }
 .coursebox .panel-heading {
   font-size: 21.328px;
-  line-height: 31.991999999999997px;
+  line-height: 31.992px;
 }
 #page-course-index-category .categorypicker {
   text-align: right;
