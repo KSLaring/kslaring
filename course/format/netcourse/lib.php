@@ -871,11 +871,14 @@ class format_netcourse extends format_base {
         }
 
         // Set the link to the progress page
-        $progressurl = new moodle_url('#');
+        // Dont't show the progress button when no completion activity set
+        $progressurl = false;
         if (!is_null($this->openlast->get_section0modids())) {
             foreach ($this->openlast->get_section0modids() as $cmid) {
                 if ($modinfo->cms[$cmid]->modname === 'completionreport') {
-                    $progressurl = $modinfo->cms[$cmid]->url;
+                    if ($modinfo->cms[$cmid]->uservisible) {
+                        $progressurl = $modinfo->cms[$cmid]->url;
+                    }
                     break;
                 }
             }
@@ -889,7 +892,7 @@ class format_netcourse extends format_base {
             $descactive = ' btn-primary active';
         } else if ($PAGE->url->compare($discussionurl, URL_MATCH_EXACT)) {
             $discussactive = ' btn-primary active';
-        } else if ($PAGE->url->compare($progressurl, URL_MATCH_EXACT)) {
+        } else if ($progressurl && $PAGE->url->compare($progressurl, URL_MATCH_EXACT)) {
             $progressactive = ' btn-primary active';
         } else {
             $courseactive = ' btn-primary active';
@@ -910,24 +913,28 @@ class format_netcourse extends format_base {
         }
         $descriptionurl = $descriptionurl->out();
 
-        // Add the nonav parameter to hide the course navigation
-        if ($progressurl->get_host() !== "") {
-            $progressurl->param('nonav', 1);
+        if ($progressurl) {
+            // Add the nonav parameter to hide the course navigation
+            if ($progressurl->get_host() !== "") {
+                $progressurl->param('nonav', 1);
+            }
+            $progressurl = $progressurl->out();
         }
-        $progressurl = $progressurl->out();
 
-        return new format_netcourse_specialnav('
-        <div class="btn-toolbar">
+        $out = '<div class="btn-toolbar">
             <a class="btn' . $courseactive . '" type="button" href="' .
             $courseurl . '">' . $strcourse . '</a>
             <a class="btn' . $descactive . '" type="button" href="' .
             $descriptionurl . '">' . $strdescription . '</a>
             <a class="btn' . $discussactive . '" type="button" href="' .
-            $discussionurl . '">' . $strforums . '</a>
-            <a class="btn' . $progressactive . '" type="button" href="' .
-            $progressurl . '">' . $strprogress . '</a>
-        </div>'
-        );
+            $discussionurl . '">' . $strforums . '</a>';
+       if ($progressurl) {
+            $out .= '<a class="btn' . $progressactive . '" type="button" href="' .
+                $progressurl . '">' . $strprogress . '</a>';
+        }
+        $out .= '</div>';
+
+        return new format_netcourse_specialnav($out);
     }
 
     /**
