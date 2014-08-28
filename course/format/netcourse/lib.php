@@ -171,17 +171,7 @@ class format_netcourse extends format_base {
                 $page->course, $USER, $FULLME);
         }
 
-//        ChromePhp::log($ME);
         $redirecturl = $this->openlast->redirect($ME);
-        // Check if the SCORM player is called
-        // With this change the SCORM opens directly in the page, not in the lightbox
-//        if (strpos($_SERVER['REQUEST_URI'], 'mod/scorm/player.php') !== false) {
-//            $redirect = $_SERVER['REQUEST_URI'];
-//            $redirect = preg_replace('#^.*/mod/scorm/player#', '/local/scorm_lightbox/view', $redirect);
-//            $redirecturl = new moodle_url($redirect);
-//            $redirecturl->param('lightbox', 1);
-//        }
-//        ChromePhp::log($redirecturl);
 
         if ($redirecturl === -1) {
             return;
@@ -228,6 +218,12 @@ class format_netcourse extends format_base {
         // the netcourse navigation block
         if ($PAGE->pagetype === 'mod-scorm-report') {
             return array();
+        }
+
+        // On the »mod-quiz-attempt« page the section with the quiz is not expanded
+        // and the active quiz is not hightlighted in the left navigation.
+        if ($PAGE->pagetype === 'mod-quiz-attempt') {
+//            $navigation->includesectionnum = 2;
         }
 
         // If section is specified in course/view.php, make sure it is expanded
@@ -928,7 +924,7 @@ class format_netcourse extends format_base {
             $descriptionurl . '">' . $strdescription . '</a>
             <a class="btn' . $discussactive . '" type="button" href="' .
             $discussionurl . '">' . $strforums . '</a>';
-       if ($progressurl) {
+        if ($progressurl) {
             $out .= '<a class="btn' . $progressactive . '" type="button" href="' .
                 $progressurl . '">' . $strprogress . '</a>';
         }
@@ -1255,17 +1251,35 @@ EOT;
                     $activenode->parent->forceopen = false;
                     $cmnode->make_active();
                 }
+            } else if ($this->page->pagetype === 'mod-quiz-attempt' ||
+                $this->page->pagetype === 'mod-quiz-summary' ||
+                $this->page->pagetype === 'mod-quiz-review'
+            ) {
+                // In quiz attempts the action url and the node fullme url don't match -
+                // get the quiz attemptobject, from that get the course module
+                // and activate the quiz node.
+                $attemptid = $fullmeurl->get_param('attempt');
+                $attemptobj = quiz_attempt::create($attemptid);
+                $cm = $attemptobj->get_cm();
+                if (!is_null($cm)) {
+                    $cmnode = $thiscourse_navigation->find($cm->id, navigation_node::TYPE_ACTIVITY);
+                    if ($cmnode) {
+                        $activenode->make_inactive();
+                        $activenode->parent->forceopen = false;
+                        $cmnode->make_active();
+                    }
+                }
             } else {
-//                $activitynodes = $thiscourse_navigation->
-//                    find_all_of_type(navigation_node::TYPE_ACTIVITY);
-//                foreach ($activitynodes as $activitynode) {
-//                    if ($activitynode->action->compare($fullmeurl, URL_MATCH_PARAMS)) {
-//                        $activenode->make_inactive();
-//                        $activenode->parent->forceopen = false;
-//                        $activitynode->make_active();
-//                        break;
-//                    }
-//                }
+                $activitynodes = $thiscourse_navigation->
+                    find_all_of_type(navigation_node::TYPE_ACTIVITY);
+                foreach ($activitynodes as $activitynode) {
+                    if ($activitynode->action->compare($fullmeurl, URL_MATCH_PARAMS)) {
+                        $activenode->make_inactive();
+                        $activenode->parent->forceopen = false;
+                        $activitynode->make_active();
+                        break;
+                    }
+                }
             }
         }
 
