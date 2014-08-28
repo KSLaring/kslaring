@@ -21,33 +21,6 @@
     padding: 0 1em .5em;
 }
 
-/* remove the white gap between the gray page frame and the block start */
-#instcnav {
-    margin-top: 0;
-}
-
-#instcnav .list {
-    margin-top: 0;
-}
-
-#instcnav .block_tree .tree_item.branch {
-    padding-right: .2em;
-}
-
-#instcnav .block_tree .tree_item.leaf {
-    margin: .3em 0 0 0;
-}
-
-#instcnav .block_tree .tree_item.leaf a {
-    display: block;
-    padding: 0 0 .4em;
-}
-
-/* Make the actual opened activity bold */
-#instcnav .list .active_tree_node a {
-    font-weight: bold;
-}
-
 /* Add a bit space to the percentage number in the progress bar */
 .format-netcourse.path-mod-lesson .progress_bar_completed {
     padding: 0 20px 0 2px;
@@ -106,22 +79,45 @@
     color: #ffffff;
     background-color: #7e7e7e;
 }
+
+/* !!! The top and bottom margin padding values of the navigation entries
+   influence the height calculation of the left navigation block JavaScript.
+   Safari and Firefox may not return correct height values when margin and/or padding
+   values are changed. Please test the navigation block behaviour carefully after
+   changes !!! */
+/* remove the white gap between the gray page frame and the block start */
 #instcnav {
+    margin-top: 0;
     padding: 0;
+}
+
+#instcnav .list {
+    margin-top: 0;
+}
+
+/* Make the actual opened activity bold */
+#instcnav .list .active_tree_node a {
+    font-weight: bold;
 }
 #instcnav .block_tree .tree_item.branch {
     background-position: 10px 1.1em;
     margin: 0;
     padding-top: 1em;
+    padding-right: .2em;
     padding-bottom: 1em;
 }
 #instcnav .block_tree .tree_item.leaf {
-    margin: .3em 0 .2em 0;
+    margin: 0;
     font-size: 1em;
     font-weight: normal;
 }
 #instcnav .block_tree .tree_item.leaf a {
     color: #7e7e7e;
+    display: block;
+    padding: .3em 0;
+}
+#instcnav .block_tree .tree_item.leaf a .smallicon {
+    top: .4em;
 }
 #instcnav .content {
     padding: 0;
@@ -148,6 +144,7 @@
 }
 #instcnav .block_tree li.depth_2 ul {
     padding-left: 22px;
+    padding-top: .2em;
     overflow: hidden;
 }
 .format-netcourse.path-mod-lesson .box .progress_bar {
