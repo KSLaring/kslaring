@@ -91,7 +91,12 @@ EOT;
         $dom = new DOMDocument('1.0', 'utf-8');
         $dom->validateOnParse = true;
         libxml_use_internal_errors(true);
-        $dom->loadHTML($blocks_html);
+//        $dom->loadHTML($blocks_html);
+        // DOMDocument uses the ISO-8859-1 encoding, to keep unicode text UTF-8 needs
+        // to be converted to HTML entities.
+        // http://stackoverflow.com/questions/11309194/php-domdocument-failing-to-handle-utf-8-characters-%E2%98%86
+        $blocks_html_encoded = mb_convert_encoding($blocks_html, 'HTML-ENTITIES', 'UTF-8');;
+        $dom->loadHTML($blocks_html_encoded);
         libxml_clear_errors();
         $xpath = new DOMXPath($dom);
 

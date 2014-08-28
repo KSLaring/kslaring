@@ -220,12 +220,6 @@ class format_netcourse extends format_base {
             return array();
         }
 
-        // On the »mod-quiz-attempt« page the section with the quiz is not expanded
-        // and the active quiz is not hightlighted in the left navigation.
-        if ($PAGE->pagetype === 'mod-quiz-attempt') {
-//            $navigation->includesectionnum = 2;
-        }
-
         // If section is specified in course/view.php, make sure it is expanded
         // in navigation
         if ($navigation->includesectionnum === false) {
