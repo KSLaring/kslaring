@@ -275,7 +275,8 @@ TREE.prototype = {
             M.format_netcourse.expandablebranchcount++;
             this.branches[siteadminbranch.get('id')] = siteadminbranch;
             // Remove link on site admin with JS to keep old UI.
-            var siteadminlinknode = siteadminbranch.node.get('childNodes').item(0);
+            var siteadminlinknode = siteadminbranch.node ?
+                siteadminbranch.node.get('childNodes').item(0) : null;
             if (siteadminlinknode) {
                 var siteadminnode = Y.Node.create('<span tabindex="0">' + siteadminlinknode.get('innerHTML') + '</span>');
                 siteadminbranch.node.replaceChild(siteadminnode, siteadminlinknode);
