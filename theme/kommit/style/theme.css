@@ -587,6 +587,13 @@ Courses and categories lists, from Mary Evans
 .mod_introbox {
   padding: 0;
 }
+.path-mod-glossary div[role=main] {
+  margin: 0 1em 1em 0;
+}
+#page-mod-glossary-view .glossarycontrol {
+  margin-top: 10px;
+  padding-top: 5px;
+}
 #page-mod-feedback-view.format-netcourse #page-content #region-main div[role="main"] > h2 a {
   border-bottom: 0;
 }
