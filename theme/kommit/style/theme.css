@@ -1461,27 +1461,35 @@ div.loginpanel h2 {
   }
   .netcourse-header .btn-toolbar .btn-primary:active,
   .netcourse-header .btn-toolbar .btn-primary.active {
-    border-bottom: none;
+    border: none;
   }
   .netcourse-header .btn-toolbar .btn {
     box-shadow: none;
     border: none;
-    outline: 1px solid #e5e5e7;
+    outline: 1px solid #d7d7db;
+    background-color: #eeeeef;
+    background-image: -moz-linear-gradient(top, #f7f7f8, #dfdfe2);
+    background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#f7f7f8), to(#dfdfe2));
+    background-image: -webkit-linear-gradient(top, #f7f7f8, #dfdfe2);
+    background-image: -o-linear-gradient(top, #f7f7f8, #dfdfe2);
+    background-image: linear-gradient(to bottom, #f7f7f8, #dfdfe2);
+    background-repeat: repeat-x;
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#fff7f7f8', endColorstr='#ffdfdfe2', GradientType=0);
   }
-  .netcourse-header .btn-toolbar .btn:nth-child(-n+2) {
+  .netcourse-header .btn-toolbar .btn:first-child {
+    width: 100%;
+    margin: 0;
+    padding-left: 0;
+    padding-right: 0;
+  }
+  .netcourse-header .btn-toolbar .btn:nth-child(n+2) {
     width: 50%;
     margin: 0;
     padding-left: 0;
     padding-right: 0;
   }
-  .netcourse-header .btn-toolbar .btn:nth-child(n+3) {
-    width: 33%;
-    margin: 0;
-    padding-left: 0;
-    padding-right: 0;
-  }
-  .netcourse-header .btn-toolbar .btn:last-child {
-    width: 34%;
+  .netcourse-header .btn-toolbar .btn:nth-child(4) {
+    width: 100%;
     margin: 0;
     padding-left: 0;
     padding-right: 0;
