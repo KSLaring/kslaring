@@ -1299,14 +1299,17 @@ EOT;
                 // get the quiz attemptobject, from that get the course module
                 // and activate the quiz node.
                 $attemptid = $fullmeurl->get_param('attempt');
-                $attemptobj = quiz_attempt::create($attemptid);
-                $cm = $attemptobj->get_cm();
-                if (!is_null($cm)) {
-                    $cmnode = $thiscourse_navigation->find($cm->id, navigation_node::TYPE_ACTIVITY);
-                    if ($cmnode) {
-                        $activenode->make_inactive();
-                        $activenode->parent->forceopen = false;
-                        $cmnode->make_active();
+                // The attemptid may be null, so check
+                if ($attemptid) {
+                    $attemptobj = quiz_attempt::create($attemptid);
+                    $cm = $attemptobj->get_cm();
+                    if (!is_null($cm)) {
+                        $cmnode = $thiscourse_navigation->find($cm->id, navigation_node::TYPE_ACTIVITY);
+                        if ($cmnode) {
+                            $activenode->make_inactive();
+                            $activenode->parent->forceopen = false;
+                            $cmnode->make_active();
+                        }
                     }
                 }
             } else {
