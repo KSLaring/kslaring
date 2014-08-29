@@ -805,11 +805,11 @@ class format_netcourse extends format_base {
     public function course_header() {
         global $USER, $CFG, $PAGE, $FULLME;
 
-        $strcourse = get_string('course');
-        $strdescription = get_string('description');
+        $strcourse = get_string('course', 'format_netcourse');
+        $strdescription = get_string('description', 'format_netcourse');
         $strforums = get_string('forums', 'format_netcourse');
         $strprogress = get_string('progress', 'format_netcourse');
-        $mymoodle = get_string('mymoodle', 'my');
+        $mymoodle = get_string('mymoodle', 'format_netcourse');
 
         if (is_null($this->openlast)) {
             $this->openlast = new format_netcourse_openlast($PAGE,

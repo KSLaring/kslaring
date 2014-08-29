@@ -766,11 +766,11 @@ class format_classroom extends format_base {
     public function course_header() {
         global $USER, $CFG, $PAGE, $FULLME;
 
-        $strcourse = get_string('course');
-        $strdescription = get_string('description');
+        $strcourse = get_string('course', 'format_classroom');
+        $strdescription = get_string('description', 'format_classroom');
         $strforums = get_string('forums', 'format_classroom');
         $strprogress = get_string('progress', 'format_classroom');
-        $mymoodle = get_string('mymoodle', 'my');
+        $mymoodle = get_string('mymoodle', 'format_classroom');
 
         if (is_null($this->openlast)) {
             $this->openlast = new format_classroom_openlast($PAGE,
