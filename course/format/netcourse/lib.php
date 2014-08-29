@@ -179,28 +179,19 @@ class format_netcourse extends format_base {
             redirect($redirecturl);
         }
 
-        // Check if the navigation trigger parameter "nonav" is set
-        $nonav = optional_param('nonav', 0, PARAM_INT);
-
-        // If the "nonav" parameter is not set show the course navigation
-        if (!$nonav) {
-            // Exclude the SCORM report page - it has issues with
-            // the netcourse navigation block
-            if ($page->pagetype !== 'mod-scorm-report') {
-                $this->add_fake_nav_block($page);
-            }
-        }
-
         // Load the lightbox script
         $page->requires->yui_module(array('moodle-local_lightbox-lightbox'),
             'M.local_lightbox.lightbox.init_lightbox',
             array());
 
+        // After moving the fake nav block handling to the _init function
+        // the block regions are not yet known here -> error.
+        //
         // Modify the default block region for the lesson module to move
         // the fake "linked media" block below the lesson content
-        if (strpos($page->pagetype, 'mod-lesson') !== false) {
-            $page->blocks->set_default_region('content-bottom');
-        }
+//        if (strpos($page->pagetype, 'mod-lesson') !== false) {
+//            $page->blocks->set_default_region('content-bottom');
+//        }
     }
 
     /**
@@ -275,6 +266,18 @@ class format_netcourse extends format_base {
         if (!$page->user_is_editing()) {
             $page->theme->layouts['incourse']['options']['nonavbar'] = true;
         }
+
+        // Check if the navigation trigger parameter "nonav" is set
+        $nonav = optional_param('nonav', 0, PARAM_INT);
+
+        // If the "nonav" parameter is not set show the course navigation
+        if (!$nonav) {
+            // Exclude the SCORM report page - it has issues with
+            // the netcourse navigation block
+            if ($page->pagetype !== 'mod-scorm-report') {
+                $this->add_fake_nav_block_later($page);
+            }
+        }
     }
 
     /**
@@ -290,7 +293,7 @@ class format_netcourse extends format_base {
             return false;
         }
         $section = $this->get_section($section);
-        if (!$section->section) {
+        if (!$section->section || empty($section->parent)) {
             return false;
         } else if ($section->parent == $parentnum) {
             return true;
@@ -358,8 +361,17 @@ class format_netcourse extends format_base {
         } else {
             $icon = new pix_icon('icon', $cm->modfullname, $cm->modname);
         }
-        $activitynode = $node->add($activityname, $action, navigation_node::TYPE_ACTIVITY,
-            null, $cm->id, $icon);
+
+        $key = $cm->id;
+        $type = navigation_node::TYPE_ACTIVITY;
+
+        // Check if node exists, if not add it
+        $activitynode = $node->get($key, $type);
+        if (!$activitynode) {
+            $activitynode = $node->add($activityname, $action, $type,
+                null, $key, $icon);
+        }
+
         if (global_navigation::module_extends_navigation($cm->modname)) {
             $activitynode->nodetype = navigation_node::NODETYPE_BRANCH;
         } else {
@@ -944,6 +956,9 @@ class format_netcourse extends format_base {
             if ($cm->modname === 'lesson') {
                 global $pageid, $USER, $lesson, $lessonoutput;
 
+                // hack: page->cm is null in this state, add it here
+                $PAGE->set_cm($cm);
+
                 // Get the lesson library with the lesson class and create a new instance
                 // and get the lesson renderer if the global lesson object is not present.
                 if (empty($lesson)) {
@@ -960,7 +975,9 @@ class format_netcourse extends format_base {
                     }
                 }
                 if (empty($lessonoutput)) {
-                    $lessonoutput = $PAGE->get_renderer('mod_lesson');
+                    $lessonoutput_local = $PAGE->get_renderer('mod_lesson');
+                } else {
+                    $lessonoutput_local = $lessonoutput;
                 }
 
                 // Force the progressbar on, render the progressbar
@@ -999,7 +1016,7 @@ class format_netcourse extends format_base {
 //                ChromePhp::log('$nextpage: ' . $nextpage);
 //                ChromePhp::log('$lastpage: ' . $lastpage);
 
-                $progressbar = $lessonoutput->progress_bar($lesson);
+                $progressbar = $lessonoutput_local->progress_bar($lesson);
                 $lesson->properties()->progressbar = 0;
 //                $lesson->progressbar = 0;
 
@@ -1192,6 +1209,35 @@ EOT;
 
         $defaultregion = $page->blocks->get_default_region();
         $page->blocks->add_fake_block($bc, $defaultregion);
+    }
+
+    /**
+     * Add the course navigation sticky block at the top of the default region
+     */
+    public function add_fake_nav_block_later($page) {
+        global $CFG, $COURSE, $SCRIPT;
+
+        $blockid = 'cnav';
+
+        $this->page = $page;
+
+        $this->get_required_javascript($blockid);
+
+        $content = $this->get_content();
+
+        $bc = new block_contents();
+        $bc->title = '';
+        $bc->annotation = '';
+        $bc->attributes['id'] = 'inst' . $blockid;
+        $bc->attributes['class'] = 'block no-header block_navigation';
+        $bc->attributes['data-block'] = 'navigation';
+        $bc->attributes['data-instanceid'] = $blockid;
+        $bc->attributes['role'] = 'navigation';
+        $bc->attributes['aria-label'] = 'Course navigation';
+        $bc->content = $content;
+
+        // Place the nav in the 'side-pre' region
+        $page->blocks->add_fake_block($bc, 'side-pre');
     }
 
     /**

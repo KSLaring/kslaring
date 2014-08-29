@@ -98,3 +98,11 @@ $THEME->layouts = array(
         'options' => array('nonavbar'=>true),
     )
 );
+
+// For the lesson pages force the default region to 'content-bottom'
+// to place the 'Linked media' fake block away from the left column below the content.
+// This change can only be done in the theme config.
+global $cm;
+if ($cm && $cm->modname === 'lesson') {
+    $THEME->layouts['incourse']['defaultregion'] = 'content-bottom';
+}
