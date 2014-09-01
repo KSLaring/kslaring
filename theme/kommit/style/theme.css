@@ -1405,28 +1405,19 @@ div.loginpanel h2 {
   .breadcrumb > li:last-child {
     display: inline-block;
   }
-  .format-netcourse #page-content {
-    padding-left: 20px;
-    padding-right: 20px;
-    margin-left: -20px;
-    margin-right: -20px;
-  }
 }
 @media (max-width: 767px) {
   .top-border {
-    margin-left: -20px;
-    margin-right: -20px;
+    margin: 0 -20px;
   }
   .header-right {
     display: none;
   }
   .navbar .navbar-fixed-top {
-    margin-left: -20px;
-    margin-right: -20px;
+    margin: 0 -20px;
   }
   .hero-unit {
-    margin-left: -20px;
-    margin-right: -20px;
+    margin: 0 -20px;
   }
   .hero-unit .texts {
     margin-top: 5%;
@@ -1447,10 +1438,12 @@ div.loginpanel h2 {
     display: block;
   }
   .format-netcourse #page-content {
-    padding-left: 10px;
-    padding-right: 10px;
-    margin-left: -10px;
-    margin-right: -10px;
+    padding: 0 10px;
+    margin: 0 -10px;
+  }
+  .format-classroom #page-content {
+    padding: 0 10px;
+    margin: 0 -10px;
   }
   .label_header {
     min-height: 70px;
