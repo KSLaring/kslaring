@@ -81,12 +81,50 @@
     div[role=main] {
         margin: 0 1em 1em 0;
     }
-}
-
-#page-mod-glossary-view {
+    .glossarysearchbox {
+        input[type="submit"] {
+            margin-top: 0;
+        }
+    }
     .glossarycontrol {
         margin-top: 10px;
         padding-top: 5px;
+    }
+    .glossarypost {
+        width: 100%;
+
+        .concept {
+            h4 {
+                margin-top: .5em;
+                margin-bottom: .5em;
+            }
+            a {
+                h4 {
+                    border-bottom: 1px dotted;
+                    float: left;
+                }
+            }
+        }
+        td.picture {
+            padding-right: .5em;
+        }
+        &.faq {
+            .concept {
+                padding-top: 1.5em;
+            }
+            .entry {
+                padding-top: 1em;
+            }
+        }
+    }
+    .glossarycategoryheader {
+        width: 100%;
+
+        h3 {
+            border-bottom: 1px solid @grayLighter;
+            text-align: center;
+            padding-bottom: .3em;
+        }
     }
 }
 

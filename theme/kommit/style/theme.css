@@ -590,9 +590,40 @@ Courses and categories lists, from Mary Evans
 .path-mod-glossary div[role=main] {
   margin: 0 1em 1em 0;
 }
-#page-mod-glossary-view .glossarycontrol {
+.path-mod-glossary .glossarysearchbox input[type="submit"] {
+  margin-top: 0;
+}
+.path-mod-glossary .glossarycontrol {
   margin-top: 10px;
   padding-top: 5px;
+}
+.path-mod-glossary .glossarypost {
+  width: 100%;
+}
+.path-mod-glossary .glossarypost .concept h4 {
+  margin-top: .5em;
+  margin-bottom: .5em;
+}
+.path-mod-glossary .glossarypost .concept a h4 {
+  border-bottom: 1px dotted;
+  float: left;
+}
+.path-mod-glossary .glossarypost td.picture {
+  padding-right: .5em;
+}
+.path-mod-glossary .glossarypost.faq .concept {
+  padding-top: 1.5em;
+}
+.path-mod-glossary .glossarypost.faq .entry {
+  padding-top: 1em;
+}
+.path-mod-glossary .glossarycategoryheader {
+  width: 100%;
+}
+.path-mod-glossary .glossarycategoryheader h3 {
+  border-bottom: 1px solid #eeeeee;
+  text-align: center;
+  padding-bottom: .3em;
 }
 #page-mod-feedback-view.format-netcourse #page-content #region-main div[role="main"] > h2 a {
   border-bottom: 0;
@@ -1320,7 +1351,7 @@ div.loginpanel h2 {
 }
 .coursebox .panel-heading {
   font-size: 21.328px;
-  line-height: 31.991999999999997px;
+  line-height: 31.992px;
 }
 #page-course-index-category .categorypicker {
   text-align: right;
