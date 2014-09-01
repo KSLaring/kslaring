@@ -41,7 +41,7 @@ function theme_kommit_page_init(moodle_page $page) {
     global $CFG;
 
     $jshead = <<<EOT
-    <script type='text/javascript' src="http://wurfl.io/wurfl.js"></script>
+    <script type='text/javascript' src="//wurfl.io/wurfl.js"></script>
 EOT;
 
     if (!empty($CFG->additionalhtmlhead)) {
