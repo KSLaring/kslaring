@@ -1314,7 +1314,7 @@ div.loginpanel h2 {
 }
 .coursebox .panel-heading {
   font-size: 21.328px;
-  line-height: 31.992px;
+  line-height: 31.991999999999997px;
 }
 #page-course-index-category .categorypicker {
   text-align: right;
@@ -1455,6 +1455,9 @@ div.loginpanel h2 {
   #page-footer {
     margin-left: -20px;
     padding-right: 40px;
+  }
+  .format-netcourse.path-mod-lesson .progress_bar {
+    margin-left: 20px;
   }
   .netcourse-header {
     margin-left: -10px;
