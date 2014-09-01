@@ -1075,13 +1075,16 @@ body {
   line-height: normal;
   vertical-align: middle;
 }
+.classroom-header,
 .netcourse-header {
   margin: 1em 0 0 0;
 }
+.classroom-header .btn-toolbar,
 .netcourse-header .btn-toolbar {
   margin-top: 10.5px;
   margin-bottom: 0px;
 }
+.classroom-header .btn-toolbar .btn,
 .netcourse-header .btn-toolbar .btn {
   color: #7e7e7e;
   margin: 0.2em 0 0 0;
@@ -1097,12 +1100,15 @@ body {
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffffff', endColorstr='#ffefeff1', GradientType=0);
   box-shadow: inset 0 -4px 6px rgba(0, 0, 0, 0.08);
 }
+.classroom-header .btn-toolbar .btn:hover,
 .netcourse-header .btn-toolbar .btn:hover {
   color: #0e7b9e;
   background: white;
   background-image: none;
 }
+.classroom-header .btn-toolbar .btn-primary:active,
 .netcourse-header .btn-toolbar .btn-primary:active,
+.classroom-header .btn-toolbar .btn-primary.active,
 .netcourse-header .btn-toolbar .btn-primary.active {
   color: #0e7b9e;
   border-bottom: 1px solid white;
@@ -1399,28 +1405,19 @@ div.loginpanel h2 {
   .breadcrumb > li:last-child {
     display: inline-block;
   }
-  .format-netcourse #page-content {
-    padding-left: 20px;
-    padding-right: 20px;
-    margin-left: -20px;
-    margin-right: -20px;
-  }
 }
 @media (max-width: 767px) {
   .top-border {
-    margin-left: -20px;
-    margin-right: -20px;
+    margin: 0 -20px;
   }
   .header-right {
     display: none;
   }
   .navbar .navbar-fixed-top {
-    margin-left: -20px;
-    margin-right: -20px;
+    margin: 0 -20px;
   }
   .hero-unit {
-    margin-left: -20px;
-    margin-right: -20px;
+    margin: 0 -20px;
   }
   .hero-unit .texts {
     margin-top: 5%;
@@ -1441,10 +1438,12 @@ div.loginpanel h2 {
     display: block;
   }
   .format-netcourse #page-content {
-    padding-left: 10px;
-    padding-right: 10px;
-    margin-left: -10px;
-    margin-right: -10px;
+    padding: 0 10px;
+    margin: 0 -10px;
+  }
+  .format-classroom #page-content {
+    padding: 0 10px;
+    margin: 0 -10px;
   }
   .label_header {
     min-height: 70px;
@@ -1459,20 +1458,25 @@ div.loginpanel h2 {
   .format-netcourse.path-mod-lesson .progress_bar {
     margin-left: 20px;
   }
+  .classroom-header,
   .netcourse-header {
     margin-left: -10px;
     margin-right: -10px;
     border-bottom: none;
   }
+  .classroom-header .btn-toolbar,
   .netcourse-header .btn-toolbar {
     border: none;
     margin: 0;
     padding: 0;
   }
+  .classroom-header .btn-toolbar .btn-primary:active,
   .netcourse-header .btn-toolbar .btn-primary:active,
+  .classroom-header .btn-toolbar .btn-primary.active,
   .netcourse-header .btn-toolbar .btn-primary.active {
     border: none;
   }
+  .classroom-header .btn-toolbar .btn,
   .netcourse-header .btn-toolbar .btn {
     box-shadow: none;
     border: none;
@@ -1486,18 +1490,21 @@ div.loginpanel h2 {
     background-repeat: repeat-x;
     filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#fff7f7f8', endColorstr='#ffdfdfe2', GradientType=0);
   }
+  .classroom-header .btn-toolbar .btn:first-child,
   .netcourse-header .btn-toolbar .btn:first-child {
     width: 100%;
     margin: 0;
     padding-left: 0;
     padding-right: 0;
   }
+  .classroom-header .btn-toolbar .btn:nth-child(n+2),
   .netcourse-header .btn-toolbar .btn:nth-child(n+2) {
     width: 50%;
     margin: 0;
     padding-left: 0;
     padding-right: 0;
   }
+  .classroom-header .btn-toolbar .btn:nth-child(4),
   .netcourse-header .btn-toolbar .btn:nth-child(4) {
     width: 100%;
     margin: 0;

@@ -878,9 +878,6 @@ class format_classroom extends format_base {
             $discussionurl . '">' . $strforums . '</a>
             <a class="btn' . $progressactive . '" type="button" href="' .
             $progressurl . '">' . $strprogress . '</a>
-            <a class="btn" type="button" href="javascript:void(0)"
-            onclick="document.location.href=\'' . $CFG->wwwroot . '/my\'">' .
-            $mymoodle . '</a>
         </div>'
         );
     }

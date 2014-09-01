@@ -88,15 +88,6 @@
     .breadcrumb > li:last-child {
         display: inline-block;
     }
-
-    // responsive fix for nett course format
-    .format-netcourse #page-content {
-        padding-left: 20px;
-        padding-right: 20px;
-        margin-left: -20px;
-        margin-right: -20px;
-    }
-
 }
 
 // Mid size screen
@@ -104,8 +95,7 @@
 
 @media (max-width: 767px) {
     .top-border {
-        margin-left: -20px;
-        margin-right: -20px;
+        margin: 0 -20px;
     }
 
     .header-right {
@@ -113,13 +103,11 @@
     }
 
     .navbar .navbar-fixed-top {
-        margin-left: -20px;
-        margin-right: -20px;
+        margin: 0 -20px;
     }
 
     .hero-unit {
-        margin-left: -20px;
-        margin-right: -20px;
+        margin: 0 -20px;
         .texts {
             margin-top: 5%;
         }
@@ -146,10 +134,14 @@
 
     // nett course responsive fixes
     .format-netcourse #page-content {
-        padding-left: 10px;
-        padding-right: 10px;
-        margin-left: -10px;
-        margin-right: -10px;
+        padding: 0 10px;
+        margin: 0 -10px;
+    }
+
+    // responsive fix for classroom course format
+    .format-classroom #page-content {
+        padding: 0 10px;
+        margin: 0 -10px;
     }
 
     // adjust height of featured courses
@@ -175,7 +167,7 @@
 
     // adjust tabbed navigation on net course format
     // -------------------------------
-
+    .classroom-header,
     .netcourse-header {
       margin-left: -10px;
       margin-right: -10px;
@@ -188,27 +180,22 @@
           border: none;
         }
         .btn {
-
           box-shadow: none;
           border: none;
           outline: 1px solid darken(@kommitGrayLight, 10%);
           #gradient .vertical(lighten(@kommitGrayLight, 2%), darken(@kommitGrayLight, 7%));
-
         }
-
         .btn:first-child {
           width: 100%;
           margin: 0;
           padding-left: 0;
           padding-right: 0;
-
         }
         .btn:nth-child(n+2) {
           width: 50%;
           margin: 0;
           padding-left: 0;
           padding-right: 0;
-
         }
         .btn:nth-child(4) {
           width: 100%;
@@ -303,7 +290,6 @@
     // footer adjustments
     // -------------------------------------
     #page-footer {
-
     }
 
     #page-footer #page-footer-inner .column {
