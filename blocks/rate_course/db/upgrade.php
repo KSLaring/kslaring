@@ -74,7 +74,7 @@ function xmldb_block_rate_course_upgrade($oldversion) {
         }
     }
 
-    if ($oldversion < 2014070806) {
+    if ($oldversion < 2014070808) {
         $db_man = $DB->get_manager();
 
         /* New Fields -- Course */
