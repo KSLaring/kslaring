@@ -19,7 +19,9 @@ var LIGHTBOX = 'Lightbox',
         MOODLEDIALOGBASE: '.moodle-dialogue-base',
         MOODLEDIALOGCLASS: 'moodle-dialogue',
         MOODLEDIALOGWRAPCLASS: 'moodle-dialogue-wrap',
-        MOODLEDIALOGHDCLASS: 'moodle-dialogue-hd'
+        MOODLEDIALOGHDCLASS: 'moodle-dialogue-hd',
+        INLIGHTBOX: 'in-lightbox',
+        NOLIGHTBOX: 'no-lightbox'
     },
     SELECTORS = {
         MDLBODY: 'body',
@@ -38,6 +40,10 @@ var LIGHTBOX = 'Lightbox',
         },
         EXTURL: {
             link: '.urlworkaround a',
+            method: 'handleURLLinkClick'
+        },
+        EXTURLLIGHTBOX: {
+            link: '.urlworkaround a.in-lightbox',
             method: 'handleURLLinkClick'
         }
     },
@@ -72,24 +78,33 @@ NS[LIGHTBOX] = Y.Base.create(LIGHTBOXNAME, Y.Panel, [], {
         // Add the click delegate on the 'page-content' element
         // to handle all clicks centrally.
         for (alink in LINKSOURCE) {
-            this.addClickDelegate(LINKSOURCE[alink]);
+            // Check if the link is an external URL
+            // to be able to differentiate between http and https links
+            // because http links must not open in the lightbox.
+            if (alink === 'EXTURL') {
+                this.check_https(LINKSOURCE[alink]);
+            } else {
+                this.addClickDelegate(LINKSOURCE[alink]);
+            }
         }
 
         mdlpage.all(LINKSOURCE.EXTURL.link).each(function(node) {
-            var popup = node.getAttribute('onclick');
+            if (node.hasClass(CSS.INLIGHTBOX)) {
+                var popup = node.getAttribute('onclick');
 
-            if (popup !== '') {
-                var wmatch = popup.match(/width=(\d*)/),
-                    hmatch = popup.match(/height=(\d*)/),
-                    width,
-                    height;
+                if (popup !== '') {
+                    var wmatch = popup.match(/width=(\d*)/),
+                        hmatch = popup.match(/height=(\d*)/),
+                        width,
+                        height;
 
-                width = wmatch !== null ? wmatch[1] : 0;
-                height = hmatch !== null ? hmatch[1] : 0;
+                    width = wmatch !== null ? wmatch[1] : 0;
+                    height = hmatch !== null ? hmatch[1] : 0;
 
-                node.setAttribute('data-width', '' + width);
-                node.setAttribute('data-height', '' + height);
-                node.setAttribute('onclick', '');
+                    node.setAttribute('data-width', '' + width);
+                    node.setAttribute('data-height', '' + height);
+                    node.setAttribute('onclick', '');
+                }
             }
         });
     },
@@ -152,6 +167,28 @@ NS[LIGHTBOX] = Y.Base.create(LIGHTBOXNAME, Y.Panel, [], {
             e.stopPropagation();
             that[alink.method].call(that, e.currentTarget);
         }, alink.link));
+    },
+
+    /**
+     * Check if the given link source protokoll is https.
+     *
+     * @param {object} alink   The link source object (link and method)
+     */
+    check_https: function(alink) {
+        var mdlpage = Y.one(SELECTORS.MDLPAGE),
+            links = mdlpage.all(alink.link);
+
+        if (links) {
+            links.each(function(el) {
+                var href = el.getAttribute('href');
+
+                if (href.indexOf('https') !== -1) {
+                    el.addClass(CSS.INLIGHTBOX);
+                } else {
+                    el.addClass(CSS.NOLIGHTBOX);
+                }
+            });
+        }
     },
 
     /**
