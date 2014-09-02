@@ -8,10 +8,11 @@
  * @copyright       2013 efaktor    {@link http://www.efaktor.no}
  *
  * @creationDate    22/08/2013
+ * @updateDate      20/08/2014
  * @author          efaktor     (fbv)
  */
 
-require($CFG->dirroot . '/local/muni_block/locallib.php');
+require('municipalitylib.php');
 
 class block_municipality extends block_base {
     function init() {
@@ -25,7 +26,7 @@ class block_municipality extends block_base {
 
         if (isloggedin()) {
             /* Get the municipality connected with the user */
-            $muni = local_muni_exists_municipality_user($USER->id);
+            $muni = Municipality::municipality_ExitsMuni_User($USER->id);
 
             if ($muni) {
                 /* Show the Municipality Logo */
@@ -33,14 +34,13 @@ class block_municipality extends block_base {
                 $this->content->footer = '';
 
                 /* Get the municipality logo */
-                $logo = local_muni_get_municipality_logo($muni);
+                $logo = Municipality::municipality_GetLogo($muni);
                 $this->content->text .= $logo;
                 $this->content->text .= html_writer::end_tag('div');
                 $this->content->text .= '<h2 style="text-align: center;">' . $muni . '</h2>';
             }else {
-                $url_muni = new moodle_url('/local/muni_block/edit_muni.php');
+                $url_muni = new moodle_url('/blocks/municipality/edit_muni.php');
                 $this->content->footer = $OUTPUT->action_link($url_muni, get_string('edit_muni', 'block_municipality'),null);
-                redirect($url_muni);
             }//if_else
         }//if_loggin
 

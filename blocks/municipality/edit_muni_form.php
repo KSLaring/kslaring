@@ -1,15 +1,16 @@
 <?php
-
 /**
- * Local Municipality Block  - Form Municipality
+ * Municipality Block - Edit Muni Form
  *
- * @package         local
- * @subpackage      muni_block
+ * @package         block
+ * @subpackage      municipality
  * @copyright       2013 efaktor    {@link http://www.efaktor.no}
  *
  * @creationDate    22/08/2013
+ * @updateDate      20/08/2014
  * @author          efaktor     (fbv)
  */
+
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -20,22 +21,20 @@ class municipality_block_form extends moodleform {
         $m_form = $this->_form;
 
         /* Municipalities    */
-        $options = local_muni_get_list_municipalities();
-        $m_form->addElement('select','sel_muni',get_string('sel_muni','local_muni_block'),$options);
-        //$m_form->addRule('sel_muni',get_string('required','local_muni_block'), 'required', null, 'server');
+        $options = Municipality::municipality_GetMunicipality_List();
+        $m_form->addElement('select','sel_muni',get_string('sel_muni','block_municipality'),$options);
 
         /* Add Actions Buttons */
-        $this->add_action_buttons(true, get_string('save','local_muni_block'));
+        $this->add_action_buttons(true, get_string('save','block_municipality'));
     }//definition
 
     function validation($data, $files) {
         $errors = parent::validation($data, $files);
 
         if ($data['sel_muni'] == '0') {
-            $errors['sel_muni'] = get_string('required','local_muni_block');
+            $errors['sel_muni'] = get_string('required','block_municipality');
         }//if_title_exist
 
         return $errors;
     }//validation
 }//municipality_block_form
-

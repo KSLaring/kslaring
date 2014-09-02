@@ -8,6 +8,7 @@
  * @copyright       2013 efaktor    {@link http://www.efaktor.no}
  *
  * @creationDate    22/08/2013
+ * @updateDate      20/08/2014
  * @author          efaktor     (fbv)
  */
 
