@@ -1326,6 +1326,12 @@ EOT;
             }
         }
 
+        // Remove all activty submenu entries with the node type TYPE_CUSTOM
+        $customnodes = $thiscourse_navigation->
+                            find_all_of_type(navigation_node::TYPE_CUSTOM);
+        foreach ($customnodes as $customnode) {
+            $customnode->remove();
+        }
 
         $expansionlimit = null;
         $this->trim($thiscourse_navigation, $trimmode, $trimlength, ceil($trimlength / 2));
