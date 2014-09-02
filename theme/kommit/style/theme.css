@@ -1379,20 +1379,19 @@ div.loginpanel h2 {
   image-rendering: pixelated;
   image-rendering: inherit;
   float: left;
-  width: 75px;
-  height: 75px;
-  border-radius: 50px;
-  -webkit-border-radius: 50px;
-  -moz-border-radius: 50px;
+  width: 70px;
+  height: 70px;
+  border-radius: 35px;
+  -webkit-border-radius: 35px;
+  -moz-border-radius: 35px;
 }
 .home_page_block_two .manager .user {
   float: right;
   width: 55%;
-  margin-top: 10px;
 }
 .home_page_block_two .manager .user_picture {
   float: left;
-  margin-top: 10px;
+  margin: 10px 0;
 }
 @media (max-width: 600px) {
   .logo-area {

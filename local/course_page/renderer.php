@@ -233,7 +233,7 @@ class local_course_page_renderer extends plugin_renderer_base {
         $out = '';
 
         $out .= html_writer::start_tag('div',array('class' => 'manager'));
-            $out .= '<div class="label_manager">' . get_string('block_staff','local_course_page') . '</div>';
+            //$out .= '<div class="label_manager">' . get_string('block_staff','local_course_page') . '</div>';
             /* Main Manager */
             if ($manager) {
                 $user = $DB->get_record('user',array('id' => $manager));
