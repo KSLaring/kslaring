@@ -74,60 +74,6 @@
     padding: 0;
 }
 
-// Glossary Module
-// -------------------------------------
-
-.path-mod-glossary {
-    div[role=main] {
-        margin: 0 1em 1em 0;
-    }
-    .glossarysearchbox {
-        input[type="submit"] {
-            margin-top: 0;
-        }
-    }
-    .glossarycontrol {
-        margin-top: 10px;
-        padding-top: 5px;
-    }
-    .glossarypost {
-        width: 100%;
-
-        .concept {
-            h4 {
-                margin-top: .5em;
-                margin-bottom: .5em;
-            }
-            a {
-                h4 {
-                    border-bottom: 1px dotted;
-                    float: left;
-                }
-            }
-        }
-        td.picture {
-            padding-right: .5em;
-        }
-        &.faq {
-            .concept {
-                padding-top: 1.5em;
-            }
-            .entry {
-                padding-top: 1em;
-            }
-        }
-    }
-    .glossarycategoryheader {
-        width: 100%;
-
-        h3 {
-            border-bottom: 1px solid @grayLighter;
-            text-align: center;
-            padding-bottom: .3em;
-        }
-    }
-}
-
 // Feedback Module
 // -------------------------------------
 
@@ -179,6 +125,11 @@
             padding-top: 1em;
         }
     }
+    .feedback_complete_cancel {
+        button[type="submit"] {
+            margin: 10px 10px 0 10px;
+        }
+    }
 }
 
 .path-mod-feedback {
@@ -202,6 +153,60 @@
                 padding-top: .2em;
                 padding-bottom: .3em;
             }
+        }
+    }
+}
+
+// Glossary Module
+// -------------------------------------
+
+.path-mod-glossary {
+    div[role=main] {
+        margin: 0 1em 1em 0;
+    }
+    .glossarysearchbox {
+        input[type="submit"] {
+            margin-top: 0;
+        }
+    }
+    .glossarycontrol {
+        margin-top: 10px;
+        padding-top: 5px;
+    }
+    .glossarypost {
+        width: 100%;
+
+        .concept {
+            h4 {
+                margin-top: .5em;
+                margin-bottom: .5em;
+            }
+            a {
+                h4 {
+                    border-bottom: 1px dotted;
+                    float: left;
+                }
+            }
+        }
+        td.picture {
+            padding-right: .5em;
+        }
+        &.faq {
+            .concept {
+                padding-top: 1.5em;
+            }
+            .entry {
+                padding-top: 1em;
+            }
+        }
+    }
+    .glossarycategoryheader {
+        width: 100%;
+
+        h3 {
+            border-bottom: 1px solid @grayLighter;
+            text-align: center;
+            padding-bottom: .3em;
         }
     }
 }

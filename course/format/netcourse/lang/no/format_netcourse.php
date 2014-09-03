@@ -39,3 +39,4 @@ $string['progress'] = 'Min progresjon';
 $string['mymoodle'] = 'My';
 $string['lessonlastpageon'] = 'Vennligs velg neste aktivitet fra navigasjonsmenyen til venstre.';
 $string['lessonlastpageoff'] = 'Du har fullført denne leksjonen. Vennligst velg neste aktivitet i navigasjonsmenyen til venstre.';
+$string['feedbacklastpage'] = 'You finished the feedback. Please select the next activity in the navigation menu.';
