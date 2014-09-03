@@ -341,7 +341,7 @@ class local_course_page_renderer extends plugin_renderer_base {
                     }
 
                     $out .= '<div class="ratings_review">';
-                        $out .= '<div class="ratings_review_title">' . get_string('user') . ' ' . $i . '</div>';
+                        $out .= '<div class="ratings_review_title">' . $rate->modified . '</div>';
                         $out .= '<div class="ratings_review_value">' . format_text($str_comment);
                             $out .= '<img src="'. $url_user .'"/>';
                         $out .= '</div>';//ratings_review_value
@@ -352,7 +352,7 @@ class local_course_page_renderer extends plugin_renderer_base {
                     }
 
                     $light_box .= '<div class="ratings_panel">';
-                        $light_box .= '<div class="ratings_review_title">' . get_string('user') . ' ' . $i . '</div>';
+                        $light_box .= '<div class="ratings_review_title">' . $rate->modified . '</div>';
                         $light_box .= '<div class="ratings_review_value">';
                             $light_box .= format_text(trim($rate->comment));
                             $light_box .= '<img src="'. $url_user .'"/>';

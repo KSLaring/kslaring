@@ -240,7 +240,7 @@
 }
 
 .home_page_block_two .ratings .ratings_review .ratings_review_value {
-    width: 75%;
+    width: 68%;
     float:right;
     display: inline-block;
 }
@@ -248,7 +248,7 @@
 .home_page_block_two .ratings .ratings_review .ratings_review_title {
     float: left;
     color: #0e7b9e;
-    width: 25%;
+    width: 32%;
     display: inline-block;
 }
 

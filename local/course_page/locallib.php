@@ -360,7 +360,8 @@ class course_page  {
             /* SQL Instruction  */
             $sql = " SELECT	  rc.id,
                               rc.comment,
-                              rc.rating
+                              rc.rating,
+                              rc.modified
                      FROM	  {block_rate_course}       rc
                      WHERE	  rc.course = :course_id
                         AND   rc.comment IS NOT NULL
@@ -374,6 +375,7 @@ class course_page  {
                     $info = new stdClass();
                     $info->comment  = $rate->comment;
                     $info->rating   = $rate->rating;
+                    $info->modified = userdate($rate->modified,'%d.%m.%Y', 99, false);
 
                     $last_comments[$rate->id] = $info;
                 }//for_rdo
