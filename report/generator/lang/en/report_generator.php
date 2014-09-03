@@ -349,3 +349,9 @@ $string['existing_item']    = 'Existing Item';
 $string['employee_report_link'] = 'Company overview report';
 
 $string['underconstruction'] = 'Sorry, this report is not available. We are working on it.';
+
+$string['county']       = 'County';
+$string['sel_county']   = 'Choose a county...';
+
+$string['municipality']     = 'Municipality';
+$string['sel_municipality'] =  'Choose a municipality...';

@@ -74,6 +74,10 @@ if ($form->is_cancelled()) {
     if ($level == 1) {
         report_generator_insert_company_level($instance);
     }else {
+        if ($level == 3) {
+            $instance->idcounty = $data->county;
+            $instance->idmuni   = $data->municipality_id;
+        }
         report_generator_insert_company_level($instance, $parents[$level-1]);
     }
 

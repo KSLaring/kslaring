@@ -38,6 +38,27 @@ class profile_field_rgcompany extends profile_field_base {
         }
     }
 
+    public function edit_field_company($mform) {
+        if ($this->field->visible != PROFILE_VISIBLE_NONE
+            or has_capability('moodle/user:update', context_system::instance())) {
+
+            $this->edit_field_add_company($mform);
+            $this->edit_field_set_default($mform);
+            $this->edit_field_set_required($mform);
+            return true;
+        }
+        return false;
+    }
+
+    public function edit_field_add_company($mform) {
+        global $USER,$PAGE;
+
+
+        /* filter field right version */
+        $mform->addElement('select', $this->inputname, format_string($this->field->name), $this->options,'disabled');
+        $this->edit_field_set_default($mform);
+    }
+
     /**
      * @param       $mform
      *
@@ -65,6 +86,7 @@ class profile_field_rgcompany extends profile_field_base {
         $attributes = 'size="25"';
         $mform->addElement('text', 'input_rgcompany', get_string('search'), $attributes);
         $mform->setType('input_rgcompany',PARAM_TEXT);
+
 
         $mform->addElement('html', '</div></div>');
     }

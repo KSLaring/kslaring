@@ -467,7 +467,7 @@ class company_report {
             $params['user'] = $user_id;
 
             /* SQL Instruction  */
-            $sql = " SELECT		c.id
+            $sql = " SELECT		DISTINCT c.id
                      FROM		{course}                    c
                         JOIN	{enrol}						e	ON		e.courseid   	= c.id
                         JOIN	{user_enrolments}			ue	ON		ue.enrolid 		= e.id

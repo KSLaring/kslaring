@@ -27,6 +27,15 @@ if ($data = $action_form->get_data()) {
         //case 6: redirect($CFG->wwwroot.'/'.$CFG->admin.'/user/user_bulk_enrol.php'); //TODO: MDL-24064
         case 7: redirect($CFG->wwwroot.'/'.$CFG->admin.'/user/user_bulk_forcepasswordchange.php');
         case 8: redirect($CFG->wwwroot.'/'.$CFG->admin.'/user/user_bulk_cohortadd.php');
+        /**
+         * Description
+         * Add a new action 'Force Update Profile' action
+         *
+         * @updateDate      21/08/2014
+         * @author          eFaktor (fbv)
+         */
+        case 9:
+            redirect(new moodle_url('/local/force_profile/user_bulk_force_profile.php'));
     }
 }
 

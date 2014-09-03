@@ -67,6 +67,11 @@ if ($form->is_cancelled()) {
     $instance->hierarchylevel   = $level;
     $instance->modified         = time();
 
+    if ($level == 3) {
+        $instance->idcounty = $data->county;
+        $instance->idmuni   = $data->municipality_id;
+    }
+
     report_generator_update_company_level($instance);
     $_POST = array();
     redirect($return_url);

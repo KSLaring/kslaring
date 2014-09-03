@@ -57,6 +57,10 @@ if ($form->is_cancelled()) {
     $job_role = new stdClass();
     $job_role->modified = time();
     $job_role->name = $data->job_role_name;
+
+    if ($data->municipality_id) {
+        $job_role->idmuni = $data->municipality_id;
+    }
     $select = REPORT_GENERATOR_OUTCOME_LIST;
 
     if (!isset($data->$select)) {

@@ -227,9 +227,26 @@ if ($frm and isset($frm->username)) {                             // Login WITH 
         // Discard any errors before the last redirect.
         unset($SESSION->loginerrormsg);
 
+        /**
+         * @updateDate      28/04/2014
+         * @author          eFaktor     (fbv)
+         *
+         * Description
+         * Check if the user has to update his/her profile
+         */
+        require_once('../local/force_profile/forceprofilelib.php');
+        if (ForceProfile::ForceProfile_HasToUpdateProfile($USER->id)) {
+            echo $OUTPUT->header();
+            $url = new moodle_url('/local/force_profile/confirm_profile.php',array('id' => $USER->id));
+            echo $OUTPUT->notification(get_string('msg_force_update','local_force_profile'), 'notifysuccess');
+            echo $OUTPUT->continue_button($url);
+            echo $OUTPUT->footer();
+            die();
+        }else {
         // test the session actually works by redirecting to self
         $SESSION->wantsurl = $urltogo;
         redirect(new moodle_url(get_login_url(), array('testsession'=>$USER->id)));
+        }//if_else_UpdateProfile
 
     } else {
         if (empty($errormsg)) {

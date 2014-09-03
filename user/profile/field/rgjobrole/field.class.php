@@ -54,6 +54,10 @@ class profile_field_rgjobrole extends profile_field_base {
         $select->setMultiple(true);
     }
 
+    function setOptions($new_options) {
+        $this->options = $new_options;
+    }//setOptions
+
     /**
      * @param       $mform
      *

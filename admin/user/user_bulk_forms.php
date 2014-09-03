@@ -34,6 +34,16 @@ class user_bulk_action_form extends moodleform {
         if (has_capability('moodle/cohort:assign', $syscontext)) {
             $actions[8] = get_string('bulkadd', 'core_cohort');
         }
+        /**
+         * Description
+         * Add a new user bulk action to force the user to update their profile.
+         *
+         * @creationDate    21/08/2014
+         * @author          eFaktor     (fbv)
+         *
+         */
+        $actions[9] = get_string('force_bulk','local_force_profile');
+
         $objs = array();
         $objs[] =& $mform->createElement('select', 'action', null, $actions);
         $objs[] =& $mform->createElement('submit', 'doaction', get_string('go'));

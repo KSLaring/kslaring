@@ -6,6 +6,7 @@ require_once('../../../config.php');
 require_once('../locallib.php');
 require_once($CFG->libdir . '/adminlib.php');
 require_once($CFG->libdir.'/formslib.php');
+$PAGE->requires->js('/report/generator/js/muni.js');
 
 /* Form to add a new company into one level */
 class generator_edit_company_structure_form extends moodleform {
@@ -35,8 +36,44 @@ class generator_edit_company_structure_form extends moodleform {
             }//for
         }//if_level
         $m_form->addElement('text', 'name', get_string('edit_company_level','report_generator'), $text_attr);
-        $m_form->setDefault('name',report_generator_get_company_name($parents[$level]));
+        $company_info = report_generator_getCompany_Detail($parents[$level]);
+        if ($company_info) {
+            $m_form->setDefault('name',$company_info->name);
+        }//company_info
+
         $m_form->setType('name',PARAM_TEXT);
+
+        /* Level == 3 */
+        if ($level == 3) {
+            /* County           */
+            $options        = report_generator_GetCounties_List();
+            $m_form->addElement('select','county',get_string('county','report_generator'),$options);
+            $m_form->addRule('county','','required', null, 'server');
+
+            /* Municipality     */
+            $options    = array();
+            if ($company_info && $company_info->idcounty) {
+                $m_form->setDefault('county',$company_info->idcounty);
+                $options = report_generator_GetMunicipalities_List($company_info->idcounty);
+            }else {
+                $options[0] = get_string('sel_municipality','report_generator');
+            }//company_info_&&idmuni
+
+
+            $m_form->addElement('select','munis',get_string('municipality','report_generator'),$options);
+            $m_form->addRule('munis','','required', null, 'server');
+            if ($company_info && $company_info->idmuni) {
+                $m_form->setDefault('munis',$company_info->idmuni);
+            }//company_info_&&_idcounty
+
+            /* Municipality hidden */
+            $options = report_generator_GetMunicipalities_List();
+            $m_form->addElement('select','hidden_munis','',$options,'style="visibility:hidden;height:0px;"');
+
+            /* Municipality hidden */
+            $m_form->addElement('text','municipality_id',null,'style="visibility:hidden;height:0px;"');
+            $m_form->setType('municipality_id',PARAM_TEXT);
+        }//level_3
 
         $m_form->addElement('hidden','level');
         $m_form->setDefault('level',$level);
@@ -59,9 +96,9 @@ class generator_edit_company_structure_form extends moodleform {
             $bln_exist = false;
             if ($level > 1) {
                 $index = $level-1;
-                $bln_exist = report_generator_exists_company($level,$data['name'],$parents[$index]);
+                $bln_exist = report_generator_exists_company($level,$data,$parents[$index]);
             }else {
-                $bln_exist = report_generator_exists_company($level,$data['name']);
+                $bln_exist = report_generator_exists_company($level,$data);
             }
             if ($bln_exist) {
                 $errors['name'] = get_string('exists_name','report_generator');

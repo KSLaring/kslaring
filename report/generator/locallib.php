@@ -115,6 +115,79 @@ class RGException extends Exception {
 /*******************************/
 
 /**
+ * @return          array
+ * @throws          Exception
+ *
+ * @creationDate    21/08/2014
+ * @author          eFaktor     (fbv)
+ *
+ * Description
+ * Get the counties list
+ */
+function report_generator_GetCounties_List() {
+    /* Variables    */
+    global $DB;
+
+    try {
+        /* Counties List    */
+        $county_lst     = array();
+        $county_lst[0]  = get_string('sel_county','report_generator');
+
+        /* Execute  */
+        $rdo = $DB->get_records('counties',null,'county','idcounty,county');
+        if ($rdo) {
+            foreach ($rdo as $county) {
+                $county_lst[$county->idcounty] = $county->county;
+            }//for_rdo
+        }//if_rdo
+
+        return $county_lst;
+    }catch (Exception $ex) {
+        throw $ex;
+    }//try_catch
+}//report_generator_GetCounties_List
+
+/**
+ * @param           null $id_county
+ * @return          array
+ * @throws          Exception
+ *
+ * @creationDate    21/08/2014
+ * @author          eFaktor     (fbv)
+ *
+ * Description
+ * Get all the municipalities connected with the county
+ */
+function  report_generator_GetMunicipalities_List($id_county = null) {
+    /* Variables    */
+    global $DB;
+
+    try {
+        /* Municipalities List  */
+        $municipality_lst       = array();
+        $municipality_lst[0]    = get_string('sel_municipality','report_generator');
+
+        /* Search Criteria  */
+        $params = null;
+        if ($id_county) {
+            $params = array();
+            $params['idcounty'] = $id_county;
+        }
+        /* Execute  */
+        $rdo = $DB->get_records('municipality',$params,'idcounty,municipality','idmuni,municipality');
+        if ($rdo) {
+            foreach ($rdo as $muni) {
+                $municipality_lst[$muni->idmuni] = $muni->municipality;
+            }//for_rdo
+        }//if_rdo
+
+        return $municipality_lst;
+    }catch (Exception $ex) {
+        throw $ex;
+    }//try_catch
+}//report_generator_GetMunicipalities_List
+
+/**
  * @param           $user_id
  * @return          null
  * @throws          Exception
@@ -313,6 +386,8 @@ function report_generator_get_companies_user($user_id) {
         }else if(has_capability('report/generator:viewlevel4',$site_context,$user_id)) {
             return  $my_company;
         }//IF_capabilities
+
+        return null;
     }catch(Exception $ex) {
         throw $ex;
     }//try_catch
@@ -935,9 +1010,38 @@ function report_generator_get_company_name($company) {
     /* Execute */
     if ($rdo = $DB->get_record_sql($sql,$params)) {
         return $rdo->name;
+    }else {
+        return null;
     }//if_rdo
 }//report_generator_get_company_name
 
+/**
+ * @param           $company_id
+ * @return          mixed|null
+ * @throws          Exception
+ *
+ * @creationDate    02/09/2014
+ * @author          eFaktor     (fbv)
+ *
+ * Description
+ * Get all details of the company
+ */
+function report_generator_getCompany_Detail($company_id) {
+    /* Variables    */
+    global $DB;
+
+    try {
+        /* Execute  */
+        $rdo = $DB->get_record('report_gen_companydata',array('id' => $company_id),'id,name,idcounty,idmuni');
+        if ($rdo) {
+            return $rdo;
+        }else {
+            return null;
+        }//if_rdo
+    }catch (Exception $ex) {
+        throw $ex;
+    }//try_catch
+}//report_generator_getCompany_Detail
 
 /**
  * @param       null $list
@@ -1187,6 +1291,8 @@ function report_generator_update_job_role_out($job_role,$outcome_list) {
                 }
             }//for_select_outcomes
         }//if_outcomelist
+
+        return true;
     }else {
         return false;
     }
@@ -1223,6 +1329,8 @@ function report_generator_update_outcome_role($outcome,$role_list){
                 print_error('error_updating_outcome_job_role', 'report_generator', $url);
             }
         }//for
+
+        return true;
     }else {
         return false;
     }
@@ -1371,6 +1479,48 @@ function report_generator_get_job_role_name($job_role_id) {
         return false;
     }
 }//report_generator_get_job_role_name
+
+/**
+ * @param           $job_role_id
+ * @return          mixed|null
+ * @throws          Exception
+ *
+ * @creationDate    21/08/2014
+ * @author          eFaktor     (fbv)
+ *
+ * Description
+ * Get all the information connected with the Job Role
+ */
+function report_generator_getJobRole_Detail($job_role_id) {
+    /* Variables    */
+    global $DB;
+
+    try {
+        /* Search Criteria  */
+        $params = array();
+        $params['jr_id'] = $job_role_id;
+
+        /* SQL Instruction  */
+        $sql = " SELECT			jr.id,
+                                jr.name,
+                                m.idcounty,
+                                m.idmuni
+                 FROM			{report_gen_jobrole}	jr
+                    LEFT JOIN	{municipality}		    m ON m.idmuni = jr.idmuni
+                 WHERE          jr.id = :jr_id";
+
+        /* Execute  */
+        $rdo = $DB->get_record_sql($sql,$params);
+        if ($rdo) {
+            return $rdo;
+        }else {
+            return null;
+        }//if_rdo
+    }catch (Exception $ex) {
+        throw $ex;
+    }//try_catch
+}//report_generator_getJobRole_Detail
+
 
 /**
  * @param           $exp_id         Outcome expedition identity

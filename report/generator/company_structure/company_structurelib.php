@@ -14,17 +14,18 @@
 
 /**
  * @param           $level.         Hierarchy level of company.
- * @param           $company.       Company Identity.
+ * @param           $company_info.      Company Identity.
  * @param   int     $parent.        Company's parent identity.
  * @return          bool
  *
  * @creationDate    07/09/2012
+ * @updateDate      02/09/2014
  * @author          eFaktor     (fbv)
  *
  * Description
  * Return if one company already exists to a specific level and parent.
  */
-function report_generator_exists_company($level, $company,$parent=0) {
+function report_generator_exists_company($level, $company_info,$parent=0) {
     global $DB;
 
     /* SQL Instruction */
@@ -44,9 +45,21 @@ function report_generator_exists_company($level, $company,$parent=0) {
 
     /* Search Criteria */
     $params = array();
-    $params['company']  = $company;
+    $params['company']  = $company_info['name'];
     $params['level']    = $level;
     $params['parent']   = $parent;
+
+    if ($level == 3) {
+        if (isset($company_info['county']) && $company_info['county']) {
+            $params['county']   = $company_info['county'];
+            $sql .= " AND idcounty = :county ";
+        }//if_county
+        if (isset($company_info['municipality_id']) && $company_info['municipality_id']) {
+            $params['muni']   = $company_info['municipality_id'];
+            $sql .= " AND idmuni = :muni ";
+        }//if_muni
+    }//if_level_3
+
 
     /* Execute */
     if ($rdo = $DB->get_records_sql($sql,$params)) {
@@ -55,6 +68,7 @@ function report_generator_exists_company($level, $company,$parent=0) {
         return false;
     }
 }//report_generator_exists_company
+
 
 /**
  * @param           $instance.      Company data.

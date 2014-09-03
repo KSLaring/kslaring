@@ -5,6 +5,7 @@ defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->libdir . '/adminlib.php');
 require_once($CFG->libdir.'/formslib.php');
+$PAGE->requires->js('/report/generator/js/muni.js');
 
 /* Form to add a new company into one level */
 class generator_add_company_structure_form extends moodleform {
@@ -50,6 +51,28 @@ class generator_add_company_structure_form extends moodleform {
             $m_form->addElement('select','other_company',get_string('existing_item','report_generator'),$options);
         }//if_level_>_1
 
+        /* Level == 3 */
+        if ($level == 3) {
+            /* County           */
+            $options        = report_generator_GetCounties_List();
+            $m_form->addElement('select','county',get_string('county','report_generator'),$options);
+            $m_form->addRule('county','','required', null, 'server');
+            /* Municipality     */
+            $options    = array();
+            $options[0] = get_string('sel_municipality','report_generator');
+
+            $m_form->addElement('select','munis',get_string('municipality','report_generator'),$options);
+            $m_form->addRule('munis','','required', null, 'server');
+
+            /* Municipality hidden */
+            $options = report_generator_GetMunicipalities_List();
+            $m_form->addElement('select','hidden_munis','',$options,'style="visibility:hidden;height:0px;"');
+
+            /* Municipality hidden */
+            $m_form->addElement('text','municipality_id',null,'style="visibility:hidden;height:0px;"');
+            $m_form->setType('municipality_id',PARAM_TEXT);
+        }//level_3
+
         /* Another Company From Parent Level    */
         $m_form->addElement('hidden','level');
         $m_form->setDefault('level',$level);
@@ -83,9 +106,9 @@ class generator_add_company_structure_form extends moodleform {
 
         if ($level > 1) {
                 $index = $level-1;
-                $bln_exist = report_generator_exists_company($level,$name,$parents[$index]);
+                $bln_exist = report_generator_exists_company($level,$data,$parents[$index]);
         }else {
-                $bln_exist = report_generator_exists_company($level,$name);
+                $bln_exist = report_generator_exists_company($level,$data);
         }
         if ($bln_exist) {
             $errors['name'] = get_string('exists_name','report_generator');
