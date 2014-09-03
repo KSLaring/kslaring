@@ -257,6 +257,36 @@ class course_page  {
 
     /**
      * @static
+     * @param           $user_id
+     * @param           $course_id
+     * @return          bool
+     * @throws          Exception
+     *
+     * @creationDate    03/09/2014
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Check if the course has been evaluated by user
+     */
+    public static function UserRateCourse($user_id,$course_id) {
+        /* Variables    */
+        global $DB;
+
+        try {
+            /* Execute   */
+            $rdo = $DB->get_records('block_rate_course',array('course' => $course_id,'userid' => $user_id));
+            if ($rdo) {
+                return true;
+            }else {
+                return false;
+            }//if_else_rdo
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//UserRateCourse
+
+    /**
+     * @static
      * @param           $course_id
      * @param           $type_rate
      * @return          null

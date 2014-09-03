@@ -308,3 +308,9 @@ hr.line_rating {
     margin-bottom: 5px;
     text-align: left;
 }
+
+a.disabled_ratings {
+    pointer-events: none;
+    cursor: default;
+    color: #7e7e7e;
+}
