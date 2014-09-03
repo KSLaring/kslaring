@@ -300,35 +300,33 @@ class local_course_page_renderer extends plugin_renderer_base {
             /* Add Info Ratings */
             //$is_rating = course_page::IsCourseRating($course_id);
             /* Add Total Average of course rating   */
-            $url_avg = new moodle_url('/blocks/rate_course/pix/rating_graphic.php',array('courseid' => $course_id));
-            $out .= '<h5 class="title_ratings">' . get_string('rate_avg','local_course_page') . '</h5>';
-            $out .= '<div class="label_ratings">' . '<img src="'. $url_avg . '" .  alt="average ratings"/>' . '</div>';
+            /* Total Rates  */
+            $total_rates = course_page::getTotalRatesCourse($course_id);
+            $out .= course_page::AddRatingsTotal($course_id,$total_rates);
 
             $out .= '<h5 class="title_ratings">' . get_string('rate_users','local_course_page') . '</h5>';
 
+            $total_users = course_page::getTotalUsersEnrolledCourse($course_id);
             $out.= '<div class="content_rating_bar">';
-                /* Total Rates  */
-                $total_rates = course_page::getTotalUsersEnrolledCourse($course_id);
-
                 /* Excellent Rate   */
                 $excellent_rate = course_page::getCountTypeRateCourse($course_id,EXCELLENT_RATING);
-                $exc_bar        = course_page::getProgressBarCode($excellent_rate,$total_rates,get_string('rate_exc','local_course_page'));
+                $exc_bar        = course_page::getProgressBarCode($excellent_rate,$total_users,get_string('rate_exc','local_course_page'));
                 $out .= $exc_bar;
                 /* Good Rate        */
                 $good_rate      = course_page::getCountTypeRateCourse($course_id,GOOD_RATING);
-                $good_bar       = course_page::getProgressBarCode($good_rate,$total_rates,get_string('rate_good','local_course_page'));
+                $good_bar       = course_page::getProgressBarCode($good_rate,$total_users,get_string('rate_good','local_course_page'));
                 $out .= $good_bar;
                 /* Average Rate */
                 $avg_rate       = course_page::getCountTypeRateCourse($course_id,AVG_RATING);
-                $avg_bar        = course_page::getProgressBarCode($avg_rate,$total_rates,get_string('rate_avg','local_course_page'));
+                $avg_bar        = course_page::getProgressBarCode($avg_rate,$total_users,get_string('rate_avg','local_course_page'));
                 $out .= $avg_bar;
                 /* Poor Rate    */
                 $poor_rate      = course_page::getCountTypeRateCourse($course_id,POOR_RATING);
-                $poor_bar       = course_page::getProgressBarCode($poor_rate,$total_rates,get_string('rate_poor','local_course_page'));
+                $poor_bar       = course_page::getProgressBarCode($poor_rate,$total_users,get_string('rate_poor','local_course_page'));
                 $out .= $poor_bar;
                 /* Bad Rate */
                 $bad_rate       = course_page::getCountTypeRateCourse($course_id,BAD_RATING);
-                $bad_bar        = course_page::getProgressBarCode($bad_rate,$total_rates,get_string('rate_bad','local_course_page'));
+                $bad_bar        = course_page::getProgressBarCode($bad_rate,$total_users,get_string('rate_bad','local_course_page'));
                 $out .= $bad_bar;
             $out .= '</div>';//content_rating_bar
 

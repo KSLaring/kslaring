@@ -508,11 +508,12 @@ class course_page  {
         $rate_100   = $rate;
         $per        = 1;
 
+
         if ($total) {
-        if ($rate) {
+            if ($rate) {
                 if ($rate == $total) {
                     $w = 100;
-        }else {
+                }else {
                     if ($total > 10000000000 ) {
                         $total_100  = $total / 10000000000;
                         $rate_100   = $rate / 10000000000;
@@ -560,12 +561,10 @@ class course_page  {
                         $per = 10;
                     }
 
-
                     $w = round(($rate_100*100/$total_100)*$per,2)/2;
-        }
+                }//if_else
             }//if_rate
         }//if_total
-
 
         $bar_out = '';
 
@@ -575,11 +574,36 @@ class course_page  {
             $bar_out .= '<div class="rating_bar" id="bar_{' . $id_bar . '}">';
                 $bar_out .= '<div id="progress_{' . $id_bar .'}" class="rating_progress" style="width:'. $w . '%;"></div>';
             $bar_out .= '</div>';
-            $bar_out .= '<div class="rating_value">' . $rate . '</div>';
+            $bar_out .= '<div class="rating_value">' .  round($rate*100/$total,0). '</div>';
         $bar_out .= '</div>';//rating_bar_block
 
         return $bar_out;
     }//getProgressBarCode
+
+    /**
+     * @static
+     * @param           $course_id
+     * @param           $total_rates
+     * @return          string
+     *
+     * @creationDate    03/09/2014
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Add the Ratings Total
+     */
+    public static function AddRatingsTotal($course_id,$total_rates) {
+        /* Variables    */
+        $out = '';
+
+        $url_avg = new moodle_url('/blocks/rate_course/pix/rating_graphic.php',array('courseid' => $course_id));
+        $out .= '<h5 class="title_ratings">' . get_string('rate_avg','local_course_page') . '</h5>';
+
+        $out .= '<div class="rating_total_title">' . '<img src="'. $url_avg . '" .  alt="average ratings"/>' . '</div>';
+        $out .= '<div class="rating_total_value">' . $total_rates . '</div>';
+
+        return $out;
+    }//AddRatingsTotal
 
     /**
      * @static

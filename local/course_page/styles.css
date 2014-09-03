@@ -188,7 +188,7 @@
 }
 
 .home_page_block_two   .rating_bar_block .rating_value{
-    width: 10%;
+    width: 15%;
     text-indent: 10px;
     float:left;
     text-align: left;
@@ -228,6 +228,24 @@
     width: 99%;
     margin-bottom: 10px;
 }
+
+.home_page_block_two  .ratings .rating_total_title{
+    float: left;
+    width: 75%;
+    color: #0e7b9e;
+    text-align:left;
+    margin-bottom: 10px;
+}
+
+.home_page_block_two  .ratings .rating_total_value{
+    text-indent: 10px;
+    text-align: left;
+    float: right;
+    margin-bottom: 10px;
+    margin-top: 2px;
+    width: 25%;
+}
+
 
 .home_page_block_two .ratings .ratings_review{
     margin-top: 5px;
