@@ -106,6 +106,7 @@ class Municipality  {
             /* Get the identifier of Municipality Profile Field */
             $field_id = self::municipality_GetIdentifierProfileField('Municipality');
 
+            if ($field_id) {
             /* New Instace */
             $instance = new stdClass();
             $instance->userid   = $user_id;
@@ -113,6 +114,8 @@ class Municipality  {
             $instance->data     = $municipality;
 
             $DB->insert_record('user_info_data',$instance);
+            }
+
 
             return true;
         }catch (Exception $ex) {
