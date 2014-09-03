@@ -44,7 +44,7 @@ echo $OUTPUT->doctype() ?>
 <html <?php echo $OUTPUT->htmlattributes(); ?> xmlns="http://www.w3.org/1999/html">
 <head>
     <title><?php echo $OUTPUT->page_title(); ?></title>
-    <link rel="shortcut icon" href="<?php echo $OUTPUT->favicon(); ?>" />
+    <link rel="shortcut icon" href="<?php echo $OUTPUT->favicon(); ?>"/>
     <?php echo $OUTPUT->standard_head_html() ?>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
@@ -53,105 +53,45 @@ echo $OUTPUT->doctype() ?>
 
 <?php echo $OUTPUT->standard_top_of_body_html() ?>
 
-<div class="top-border">
-</div>
+<?php include 'inc/header.php'; ?>
 
-<div class="header-background">
-    <div class="container-fluid">
-        <div class="logo-area">
-            <a class="logo" href="<?php echo $CFG->wwwroot;?>"><img class="logo" alt="kommit logo" src="<?php echo
-                $OUTPUT->pix_url('logo', 'theme'); ?>"></a>
+<div id="page" class="container-fluid">
+    <header id="page-header" class="clearfix">
+        <div id="page-navbar" class="clearfix">
+            <div class="breadcrumb-nav"><?php echo $OUTPUT->navbar(); ?></div>
+            <nav class="breadcrumb-button"><?php echo $OUTPUT->page_heading_button(); ?></nav>
         </div>
-        <div class="header-right">
-            <div class="social">
-                <div class="col1"><a href="http://facebook.com/kskommit" target=_blank" alt="facebook icon"><i class="fa fa-facebook
-                fa-2x" id="icon" aria-hidden="true"></i></a></div>
-                <div class="col2"><a href="https://twitter.com/KSKommIT" target=_blank" alt="twitter icon"><i class="fa fa-twitter
-                fa-2x" id="icon" aria-hidden="true"></i></a></div>
-                <div class="col2"><a href="<?php echo $CFG->wwwroot ?>/my" alt="twitter icon"><i class="fa fa-home
-                fa-2x" id="icon" aria-hidden="true"></i></a></div>
+
+        <div id="course-header">
+            <?php echo $OUTPUT->course_header(); ?>
+        </div>
+
+        <?php echo $OUTPUT->blocks('top', 'top-blocks', 'section'); ?>
+    </header>
+
+    <div id="page-content" class="row-fluid">
+        <div id="<?php echo $regionbsid ?>" class="span9">
+            <div class="row-fluid">
+                <section id="region-main" class="span8 pull-right">
+                    <?php
+                    //echo $html->heading;
+                    echo $OUTPUT->course_content_header();
+                    echo $OUTPUT->blocks('content-top', 'content-top-blocks', 'section');
+                    echo $OUTPUT->main_content();
+                    echo $OUTPUT->blocks('content-bottom', 'content-bottom-blocks', 'section');
+                    echo $OUTPUT->course_content_footer();
+                    ?>
+                </section>
+                <?php echo $OUTPUT->blocks('side-pre', 'span4 desktop-first-column'); ?>
             </div>
         </div>
+        <?php echo $OUTPUT->blocks('side-post', 'span3'); ?>
     </div>
 </div>
 
-    <div id="header" class="header">
-        <header role="banner" class="navbar navbar-fixed-top<?php echo $html->navbarclass ?> moodle-has-zindex">
-            <nav role="navigation" class="navbar-inner">
-                <div class="container-fluid">
+<?php include 'inc/footer.php'; ?>
 
-                    <a class="btn btn-navbar" data-toggle="workaround-collapse" data-target=".nav-collapse">
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                    </a>
-
-                    <div id="moodle-navbar" class="nav-collapse collapse">
-                        <?php echo $OUTPUT->custom_menu(); ?>
-                        <?php echo $OUTPUT->user_menu(); ?>
-
-                    </div>
-                </div>
-            </nav>
-        </header>
-    </div>
-
-
-    <div id="page" class="container-fluid">
-
-
-        <header id="page-header" class="clearfix">
-            <div id="page-navbar" class="clearfix">
-                <div class="breadcrumb-nav"><?php echo $OUTPUT->navbar(); ?></div>
-                <nav class="breadcrumb-button"><?php echo $OUTPUT->page_heading_button(); ?></nav>
-            </div>
-
-            <div id="course-header">
-                <?php echo $OUTPUT->course_header(); ?>
-            </div>
-
-            <?php echo $OUTPUT->blocks('top', 'top-blocks', 'section'); ?>
-        </header>
-
-        <div id="page-content" class="row-fluid">
-            <div id="<?php echo $regionbsid ?>" class="span9">
-                <div class="row-fluid">
-                    <section id="region-main" class="span8 pull-right">
-                        <?php
-                        //echo $html->heading;
-                        echo $OUTPUT->course_content_header();
-                        echo $OUTPUT->blocks('content-top', 'content-top-blocks', 'section');
-                        echo $OUTPUT->main_content();
-                        echo $OUTPUT->blocks('content-bottom', 'content-bottom-blocks', 'section');
-                        echo $OUTPUT->course_content_footer();
-                        ?>
-                    </section>
-                    <?php echo $OUTPUT->blocks('side-pre', 'span4 desktop-first-column'); ?>
-                </div>
-            </div>
-            <?php echo $OUTPUT->blocks('side-post', 'span3'); ?>
-        </div>
-
-    </div>
-
-<footer id="page-footer">
-    <div id="page-footer-inner" class="wrapper clearfix">
-
-        <div class="column">
-            <div class="footer-logo">
-                <img src="<?php echo $OUTPUT->pix_url('ks_footer_logo', 'theme'); ?>" width="278" height="45" alt="ks footer logo">
-            </div>
-        </div>
-        <p>© 2014 KOMMUNESEKTORENS ORGANISASJON</p>
-        <p>
-            <a href="<?php echo $CFG->wwwroot ?>//login/index.php">
-                <?php echo (get_string('login')) ?>
-            </a>
-        </p>
-    </div>
-</footer>
 <?php echo $OUTPUT->standard_end_of_body_html() ?>
-
 
 </body>
 </html>
