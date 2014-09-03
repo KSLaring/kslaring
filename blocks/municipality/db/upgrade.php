@@ -32,16 +32,36 @@ function xmldb_block_municipality_upgrade($old_version) {
         //Adding Keys
         $table_muni_logos->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
 
-        if ($db_man->table_exists('muni_logos')) {
-            $db_man->drop_table($table_muni_logos);
-        }
-
 
         /*********************/
         /* Create the table  */
         /*********************/
+
         if (!$db_man->table_exists('muni_logos')) {
             $db_man->create_table($table_muni_logos);
+
+            install_logos_Østfold();
+            install_logos_Akershus();
+            install_logos_Oslo();
+            install_logos_Hedmark();
+            install_logos_Oppland();
+            install_logos_Buskerud();
+            install_logos_Vestfold();
+            install_logos_Telemark();
+            install_logos_Aust_Agder();
+            install_logos_Vest_Agder();
+            install_logos_Rogaland();
+            install_logos_Hordaland();
+            install_logos_Sogn_og_Fjordane();
+            install_logos_Møre_og_Romsdal();
+            install_logos_Sør_Trøndelag();
+            install_logos_Nord_Trøndelag();
+            install_logos_Nordland();
+            install_logos_Troms();
+            install_logos_Finnmark();
+            install_logos_Svalbard();
+        }else {
+            $DB->delete_records('muni_logos');
 
             install_logos_Østfold();
             install_logos_Akershus();
