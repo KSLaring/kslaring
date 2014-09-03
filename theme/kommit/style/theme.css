@@ -429,6 +429,15 @@ h6 {
 .navbar-right .dropdown-menu > li > a {
   padding: 3px 35px;
 }
+.dropdown-menu i {
+  margin-right: 5px;
+}
+.dropdown-menu hr.sep {
+  margin: 0px;
+  height: 0px;
+  border: none;
+  border-bottom: 1px dotted #7e7e7e;
+}
 .sectionname {
   font-size: 1.3em;
 }
@@ -1300,7 +1309,7 @@ div.loginpanel h2 {
 }
 .coursebox .panel-heading {
   font-size: 21.328px;
-  line-height: 31.992px;
+  line-height: 31.991999999999997px;
 }
 #page-course-index-category .categorypicker {
   text-align: right;

@@ -294,10 +294,9 @@ EOT;
 
         if ($addusermenu) {
             if (isloggedin()) {
-                $usermenu = $menu->add(fullname($USER), new moodle_url('#'), fullname($USER), 10001);
-                $usermenu->add('<i class="fa fa-lock"></i>' . get_string('logout'), new moodle_url('/login/logout.php',
-                        array('sesskey' => sesskey(), 'alt' => 'logout')),
-                    get_string('logout'));
+                $usermenu = $menu->add(fullname($USER), new moodle_url(''), fullname($USER), 10001);
+
+                $usermenu->add('<i class="fa fa-file"></i>' . get_string('myhome'), new moodle_url('/my/'));
 
                 $usermenu->add('<i class="fa fa-user"></i>' . get_string('viewprofile'), new moodle_url('/user/profile.php',
                         array('id' => $USER->id)),
@@ -307,6 +306,11 @@ EOT;
                     new moodle_url('/user/edit.php',
                         array('id' => $USER->id)),
                     get_string('editmyprofile'));
+
+                $usermenu->add('<i class="fa fa-lock"></i>' . get_string('logout'), new moodle_url('/login/logout.php',
+                        array('sesskey' => sesskey(), 'alt' => 'logout')),
+                    get_string('logout'));
+
             } else {
                 /*
                  * Hide login in custom menu area
