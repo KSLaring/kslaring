@@ -17,8 +17,6 @@ function xmldb_block_municipality_upgrade($old_version) {
     $db_man = $DB->get_manager();
 
     if ($old_version < 2014082002) {
-        $db_man->drop_table('muni_logos');
-
         /*********************/
         /* mdl_muni_logos    */
         /*********************/
@@ -33,6 +31,11 @@ function xmldb_block_municipality_upgrade($old_version) {
 
         //Adding Keys
         $table_muni_logos->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+
+        if ($db_man->table_exists('muni_logos')) {
+            $db_man->drop_table($table_muni_logos);
+        }
+
 
         /*********************/
         /* Create the table  */
