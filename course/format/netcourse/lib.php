@@ -1278,49 +1278,55 @@ EOT;
 
         $fullmeurl = new moodle_url($FULLME);
         $activenode = $thiscourse_navigation->find_active_node();
-        $activeaction = $activenode->action;
 
-        // Walk all nodes and find the node with the same action url as fullme
-        // if the action and the fullme URL don't match.
-        // Deactivate the wrong node and activate the right one.
-        if (!$activeaction->compare($fullmeurl, URL_MATCH_PARAMS)) {
-            if (!is_null($cm)) {
-                $cmnode = $thiscourse_navigation->find($cm->id, navigation_node::TYPE_ACTIVITY);
-                if ($cmnode) {
-                    $activenode->make_inactive();
-                    $activenode->parent->forceopen = false;
-                    $cmnode->make_active();
-                }
-            } else if ($this->page->pagetype === 'mod-quiz-attempt' ||
-                $this->page->pagetype === 'mod-quiz-summary' ||
-                $this->page->pagetype === 'mod-quiz-review'
-            ) {
-                // In quiz attempts the action url and the node fullme url don't match -
-                // get the quiz attemptobject, from that get the course module
-                // and activate the quiz node.
-                $attemptid = $fullmeurl->get_param('attempt');
-                // The attemptid may be null, so check
-                if ($attemptid) {
-                    $attemptobj = quiz_attempt::create($attemptid);
-                    $cm = $attemptobj->get_cm();
-                    if (!is_null($cm)) {
-                        $cmnode = $thiscourse_navigation->find($cm->id, navigation_node::TYPE_ACTIVITY);
-                        if ($cmnode) {
-                            $activenode->make_inactive();
-                            $activenode->parent->forceopen = false;
-                            $cmnode->make_active();
-                        }
-                    }
-                }
-            } else {
-                $activitynodes = $thiscourse_navigation->
-                    find_all_of_type(navigation_node::TYPE_ACTIVITY);
-                foreach ($activitynodes as $activitynode) {
-                    if ($activitynode->action->compare($fullmeurl, URL_MATCH_PARAMS)) {
+        // Check if there is an active node - activities from section 0
+        // are not included in the left navigation and when the user is
+        // going to edit such an activity find_active_node returns false.
+        if ($activenode) {
+            $activeaction = $activenode->action;
+
+            // Walk all nodes and find the node with the same action url as fullme
+            // if the action and the fullme URL don't match.
+            // Deactivate the wrong node and activate the right one.
+            if (!$activeaction->compare($fullmeurl, URL_MATCH_PARAMS)) {
+                if (!is_null($cm)) {
+                    $cmnode = $thiscourse_navigation->find($cm->id, navigation_node::TYPE_ACTIVITY);
+                    if ($cmnode) {
                         $activenode->make_inactive();
                         $activenode->parent->forceopen = false;
-                        $activitynode->make_active();
-                        break;
+                        $cmnode->make_active();
+                    }
+                } else if ($this->page->pagetype === 'mod-quiz-attempt' ||
+                    $this->page->pagetype === 'mod-quiz-summary' ||
+                    $this->page->pagetype === 'mod-quiz-review'
+                ) {
+                    // In quiz attempts the action url and the node fullme url don't match -
+                    // get the quiz attemptobject, from that get the course module
+                    // and activate the quiz node.
+                    $attemptid = $fullmeurl->get_param('attempt');
+                    // The attemptid may be null, so check
+                    if ($attemptid) {
+                        $attemptobj = quiz_attempt::create($attemptid);
+                        $cm = $attemptobj->get_cm();
+                        if (!is_null($cm)) {
+                            $cmnode = $thiscourse_navigation->find($cm->id, navigation_node::TYPE_ACTIVITY);
+                            if ($cmnode) {
+                                $activenode->make_inactive();
+                                $activenode->parent->forceopen = false;
+                                $cmnode->make_active();
+                            }
+                        }
+                    }
+                } else {
+                    $activitynodes = $thiscourse_navigation->
+                        find_all_of_type(navigation_node::TYPE_ACTIVITY);
+                    foreach ($activitynodes as $activitynode) {
+                        if ($activitynode->action->compare($fullmeurl, URL_MATCH_PARAMS)) {
+                            $activenode->make_inactive();
+                            $activenode->parent->forceopen = false;
+                            $activitynode->make_active();
+                            break;
+                        }
                     }
                 }
             }
