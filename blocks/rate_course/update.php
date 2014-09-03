@@ -53,10 +53,11 @@ if ($form = data_submitted()) {
 
     if ($grade) {
         $completion = new stdClass;
-        $completion->course  = $COURSE->id;
-        $completion->userid  = $USER->id;
-        $completion->rating  = $grade;
-        $completion->comment = $comment;
+        $completion->course     = $COURSE->id;
+        $completion->userid     = $USER->id;
+        $completion->rating     = $grade;
+        $completion->comment    = $comment;
+        $completion->modified   = time();
         $DB->insert_record( 'block_rate_course', $completion );
     }//if_Grade
 
