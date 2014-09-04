@@ -507,7 +507,7 @@ class course_page  {
         $total_100  = $total;
         $rate_100   = $rate;
         $per        = 1;
-
+        $total_per  = 0;
 
         if ($total) {
             if ($rate) {
@@ -576,7 +576,10 @@ class course_page  {
                 $bar_out .= '<div id="progress_{' . $id_bar .'}" class="rating_progress" style="width:'. $w . '%;"></div>';
             $bar_out .= '</div>';
 
-            $bar_out .= '<div class="rating_value">' .  round($rate*100/$total,0). '</div>';
+            if ($total) {
+                $total_per = round($rate*100/$total,0);
+            }//total_per
+            $bar_out .= '<div class="rating_value">' .  $total_per . '</div>';
         $bar_out .= '</div>';//rating_bar_block
 
         return $bar_out;
