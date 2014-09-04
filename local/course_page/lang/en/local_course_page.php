@@ -37,6 +37,7 @@ $string['home_published']           = 'Published';
 $string['home_coordinater']         = 'Coordinator';
 $string['home_teachers']            = 'Teachers';
 $string['home_ratings']             = 'Course Ratings';
+$string['ratings_avg']              = 'On the Average';
 $string['rate_avg']                 = 'Average';
 $string['rate_users']               = 'User Ratings';
 $string['rate_exc']                 = 'Excellent';

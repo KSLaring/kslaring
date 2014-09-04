@@ -570,10 +570,12 @@ class course_page  {
 
         $bar_out .= '<div class="rating_bar_block">';
             $bar_out .= '<div class="rating_title">' . $title . '</div>';
+            $bar_out .= '<div class="rating_label_per">%</div>';
 
             $bar_out .= '<div class="rating_bar" id="bar_{' . $id_bar . '}">';
                 $bar_out .= '<div id="progress_{' . $id_bar .'}" class="rating_progress" style="width:'. $w . '%;"></div>';
             $bar_out .= '</div>';
+
             $bar_out .= '<div class="rating_value">' .  round($rate*100/$total,0). '</div>';
         $bar_out .= '</div>';//rating_bar_block
 
@@ -597,10 +599,11 @@ class course_page  {
         $out = '';
 
         $url_avg = new moodle_url('/blocks/rate_course/pix/rating_graphic.php',array('courseid' => $course_id));
-        $out .= '<h5 class="title_ratings">' . get_string('rate_avg','local_course_page') . '</h5>';
+        $out .= '<h5 class="title_ratings">' . get_string('ratings_avg','local_course_page') . '</h5>';
 
-        $out .= '<div class="rating_total_title">' . '<img src="'. $url_avg . '" .  alt="average ratings"/>' . '</div>';
-        $out .= '<div class="rating_total_value">' . $total_rates . '</div>';
+            $out .= '<div class="rating_total_title">' . '<img src="'. $url_avg . '" .  alt="average ratings"/>' . '</div>';
+            $out .= '<div class="rating_label_per"></div>';
+            $out .= '<div class="rating_total_value">' . $total_rates . '</div>';
 
         return $out;
     }//AddRatingsTotal

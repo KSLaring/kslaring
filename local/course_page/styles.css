@@ -187,11 +187,31 @@
     word-wrap: break-word;
 }
 
-.home_page_block_two   .rating_bar_block .rating_value{
-    width: 15%;
-    text-indent: 10px;
+.home_page_block_two .ratings .rating_bar_block {
+    padding-top: 5px;
+    display: block;
+    clear: both;
+    word-wrap: break-word;
+    height: 25px;
+    width: 99%;
+}
+
+.home_page_block_two  .rating_bar_block .rating_title{
+    float: left;
+    color: #0e7b9e;
+    text-align:left;
+    text-indent: 5px;
+    width: 35%;
+}
+
+.home_page_block_two .rating_bar_block .rating_label_per {
+    width: 5%;
+    margin-right: 2px;
+    margin-left: 0px;
+    font-size: 1em;
     float:left;
-    text-align: left;
+    text-align:right;
+    color: #0e7b9e;
 }
 
 .home_page_block_two   .rating_bar_block .rating_bar{
@@ -207,20 +227,11 @@
     height:20px;
 }
 
-.home_page_block_two  .rating_bar_block .rating_title{
-    float: left;
-    width: 35%;
-    color: #0e7b9e;
-    text-align:left;
-    text-indent: 5px;
-}
-
-.home_page_block_two .ratings .rating_bar_block {
-    padding-top: 5px;
-    display: block;
-    clear: both;
-    word-wrap: break-word;
-    height: 25px;
+.home_page_block_two   .rating_bar_block .rating_value{
+    width: 15%;
+    text-indent: 10px;
+    float:left;
+    text-align: left;
 }
 
 .home_page_block_two .ratings .content_rating_bar {
@@ -231,7 +242,7 @@
 
 .home_page_block_two  .ratings .rating_total_title{
     float: left;
-    width: 75%;
+    width: 70%;
     color: #0e7b9e;
     text-align:left;
     margin-bottom: 10px;
@@ -240,7 +251,7 @@
 .home_page_block_two  .ratings .rating_total_value{
     text-indent: 10px;
     text-align: left;
-    float: right;
+    float: left;
     margin-bottom: 10px;
     margin-top: 2px;
     width: 25%;
