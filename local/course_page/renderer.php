@@ -247,10 +247,9 @@ class local_course_page_renderer extends plugin_renderer_base {
             }//if_manager
 
             /* Teachers */
-            $out .= '<div class="label_teacher">' . get_string('home_teachers','local_course_page') . '</div>';
-
             $lst_teachers = course_page::getCoursesTeachers($course_id,$manager);
             if ($lst_teachers) {
+                $out .= '<div class="label_teacher">' . get_string('home_teachers','local_course_page') . '</div>';
                 $url_user = new moodle_url('/user/profile.php');
                 $out .= '<div class="extra_teacher">';
                     foreach ($lst_teachers as $id => $teacher) {
@@ -407,10 +406,15 @@ class local_course_page_renderer extends plugin_renderer_base {
 
         /* Get Extra Options    */
         $out .= html_writer::start_tag('div',array('class' => 'extra'));
-            $out .= '<h5 class="label_home">' . get_string('home_course_id','local_course_page') . ':</h5>';
-            $out .= '<div class="extra_home">' . $course->idnumber . '</div>';
-            $out .= '<h5 class="label_home">' . get_string('home_published','local_course_page') . ':</h5>';
-            $out .= '<div class="extra_home">' . userdate($course->startdate,'%d.%m.%Y', 99, false) . '</div>';
+            if (isset($course->idnumber) && $course->idnumber) {
+                $out .= '<h5 class="label_home">' . get_string('home_course_id','local_course_page') . ':</h5>';
+                $out .= '<div class="extra_home">' . $course->idnumber . '</div>';
+            }//if_number
+
+            if (isset($course->startdate) && $course->startdate) {
+                $out .= '<h5 class="label_home">' . get_string('home_published','local_course_page') . ':</h5>';
+                $out .= '<div class="extra_home">' . userdate($course->startdate,'%d.%m.%Y', 99, false) . '</div>';
+            }//if_startdate
 
             foreach ($format_options as $option) {
                 $out .= $this->addExtraOption($option,$manager);
@@ -421,22 +425,22 @@ class local_course_page_renderer extends plugin_renderer_base {
             $out .= '<div class="extra_home">';
                 switch ($course->format) {
                     case 'netcourse':
-                        $url_img = $this->getURLIcon('nett_kurs');
+                        $url_img    = $this->getURLIcon('nett_kurs');
                         $alt        = get_string('net_course','local_course_page');
                         $out .= html_writer::empty_tag('img', array('src'=>$url_img,'alt'=> $alt, 'title' => $alt, 'class'=>'icon'));
                         $out .= get_string('net_course','local_course_page');
 
                         break;
                     case 'classroom':
-                        $url_img = $this->getURLIcon('classroom');
+                        $url_img    = $this->getURLIcon('classroom');
                         $alt        = get_string('class_course','local_course_page');
                         $out .= html_writer::empty_tag('img', array('src'=>$url_img,'alt'=> $alt, 'title' => $alt,'class'=>'icon'));
                         $out .= get_string('class_course','local_course_page');
 
                         break;
                     case 'whitepaper':
-                        $url_img = $this->getURLIcon('whitepaper');
-                        $alt = get_string('whitepaper','local_course_page');
+                        $url_img    = $this->getURLIcon('whitepaper');
+                        $alt        = get_string('whitepaper','local_course_page');
                         $out .= html_writer::empty_tag('img', array('src'=>$url_img,'alt'=> $alt, 'title' => $alt,'class'=>'icon'));
 
                         break;
@@ -466,35 +470,57 @@ class local_course_page_renderer extends plugin_renderer_base {
 
         switch ($option->name) {
             case 'prerequisities':
-                $out .= '<h5 class="label_home">' . get_string('home_prerequisities','local_course_page') . ':</h5>';
-                $out .= '<div class="extra_home">' . $option->value . '</div>';
+                if ($option->value) {
+                    $out .= '<h5 class="label_home">' . get_string('home_prerequisities','local_course_page') . ':</h5>';
+                    $out .= '<div class="extra_home">' . $option->value . '</div>';
+                }//if_value
+
                 break;
             case 'producedby':
-                $out .= '<h5 class="label_home">' . get_string('home_producedby','local_course_page') . ':</h5>';
-                $out .= '<div class="extra_home">' . $option->value . '</div>';
+                if ($option->value) {
+                    $out .= '<h5 class="label_home">' . get_string('home_producedby','local_course_page') . ':</h5>';
+                    $out .= '<div class="extra_home">' . $option->value . '</div>';
+                }//if_value
+
                 break;
             case 'location':
-                $out .= '<h5 class="label_home">' . get_string('home_location','local_course_page') . ':</h5>';
-                $out .= '<div class="extra_home">' . $option->value . '</div>';
+                if ($option->value) {
+                    $out .= '<h5 class="label_home">' . get_string('home_location','local_course_page') . ':</h5>';
+                    $out .= '<div class="extra_home">' . $option->value . '</div>';
+                }//if_value
+
                 break;
             case 'length':
-                $out .= '<h5 class="label_home">' . get_string('home_length','local_course_page') . ':</h5>';
-                $out .=  '<div class="extra_home">' . $option->value . '</div>';
+                if ($option->value) {
+                    $out .= '<h5 class="label_home">' . get_string('home_length','local_course_page') . ':</h5>';
+                    $out .=  '<div class="extra_home">' . $option->value . '</div>';
+                }//if_value
+
                 break;
             case 'effort':
-                $out .= '<h5 class="label_home">' . get_string('home_effort','local_course_page') . ':</h5>';
-                $out .= '<div class="extra_home">' . $option->value . '</div>';
+                if ($option->value) {
+                    $out .= '<h5 class="label_home">' . get_string('home_effort','local_course_page') . ':</h5>';
+                    $out .= '<div class="extra_home">' . $option->value . '</div>';
+                }//if_value
+
                 break;
             case 'manager':
                 $manager = $option->value;
+
                 break;
             case 'author':
-                $out .= '<h5 class="label_home">' . get_string('home_author','local_course_page') . ':</h5>';
-                $out .= '<div class="extra_home">' . $option->value . '</div>';
+                if ($option->value) {
+                    $out .= '<h5 class="label_home">' . get_string('home_author','local_course_page') . ':</h5>';
+                    $out .= '<div class="extra_home">' . $option->value . '</div>';
+                }//if_value
+
                 break;
             case 'licence':
-                $out .= '<h5 class="label_home">' . get_string('home_licence','local_course_page') . ':</h5>';
-                $out .= '<div class="extra_home">' . $option->value . '</div>';
+                if ($option->value) {
+                    $out .= '<h5 class="label_home">' . get_string('home_licence','local_course_page') . ':</h5>';
+                    $out .= '<div class="extra_home">' . $option->value . '</div>';
+                }//if_value
+
                 break;
             default:
                 break;
