@@ -593,6 +593,10 @@ Courses and categories lists, from Mary Evans
   padding-top: .2em;
   padding-bottom: .3em;
 }
+a.autolink.glossary {
+  color: inherit;
+  background: #d9e3ed;
+}
 .path-mod-glossary div[role=main] {
   margin: 0 1em 1em 0;
 }
