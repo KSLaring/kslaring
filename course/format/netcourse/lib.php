@@ -183,15 +183,6 @@ class format_netcourse extends format_base {
         $page->requires->yui_module(array('moodle-local_lightbox-lightbox'),
             'M.local_lightbox.lightbox.init_lightbox',
             array());
-
-        // After moving the fake nav block handling to the _init function
-        // the block regions are not yet known here -> error.
-        //
-        // Modify the default block region for the lesson module to move
-        // the fake "linked media" block below the lesson content
-//        if (strpos($page->pagetype, 'mod-lesson') !== false) {
-//            $page->blocks->set_default_region('content-bottom');
-//        }
     }
 
     /**

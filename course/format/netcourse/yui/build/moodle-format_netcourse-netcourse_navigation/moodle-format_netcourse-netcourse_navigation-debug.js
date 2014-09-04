@@ -386,7 +386,7 @@ TREE.prototype = {
         list.all('> li').each(function (el) {
             to_height += el.get('scrollHeight');
         });
-        console.log(to_height);
+        // console.log(to_height);
         list.transition({
             duration: 0.3,
             height: to_height + 'px',
