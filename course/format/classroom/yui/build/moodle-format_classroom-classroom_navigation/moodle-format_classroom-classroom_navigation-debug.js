@@ -275,7 +275,8 @@ TREE.prototype = {
             M.format_classroom.expandablebranchcount++;
             this.branches[siteadminbranch.get('id')] = siteadminbranch;
             // Remove link on site admin with JS to keep old UI.
-            var siteadminlinknode = siteadminbranch.node.get('childNodes').item(0);
+            var siteadminlinknode = siteadminbranch.node ?
+                siteadminbranch.node.get('childNodes').item(0) : null;
             if (siteadminlinknode) {
                 var siteadminnode = Y.Node.create('<span tabindex="0">' + siteadminlinknode.get('innerHTML') + '</span>');
                 siteadminbranch.node.replaceChild(siteadminnode, siteadminlinknode);
@@ -311,7 +312,7 @@ TREE.prototype = {
         if (e.target.test('a') && (e.keyCode === 0 || e.keyCode === 13)) {
             // A link has been clicked (or keypress is 'enter') don't fire any more events just do the default.
             e.stopPropagation();
-            return true;
+            return false;
         }
 
         // Makes sure we can get to the LI containing the branch.
@@ -320,7 +321,7 @@ TREE.prototype = {
             target = target.ancestor('li');
         }
         if (!target) {
-            return true;
+            return false;
         }
 
         // If the accordion feature has been enabled collapse all siblings.
@@ -382,12 +383,13 @@ TREE.prototype = {
         }
         ele.removeClass('collapsed');
         ele.set('aria-expanded', !ele.hasClass('collapsed'));
-        list.all('> *').each(function (el) {
+        list.all('> li').each(function (el) {
             to_height += el.get('scrollHeight');
         });
+        // console.log(to_height);
         list.transition({
             duration: 0.3,
-            height: (to_height + 5) + 'px',
+            height: to_height + 'px',
             opacity: 1.0
         });
     },

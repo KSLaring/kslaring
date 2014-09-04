@@ -135,6 +135,7 @@ class format_classroom_renderer extends format_section_renderer_base {
      */
     public function print_single_section_page($course, $sections, $mods, $modnames, $modnamesused, $displaysection) {
         global $PAGE;
+        $sectionnavlinks = array();
 
         $edit = optional_param('edit', false, PARAM_BOOL);
 
@@ -362,7 +363,11 @@ class format_classroom_fakeblock_renderer extends plugin_renderer_base {
                 $content = $this->output->render($link);
                 $linkrendered = true;
             } else if ($item->action instanceof moodle_url) {
-                $content = html_writer::link($item->action, $content, $attributes);
+                // Remove the $isbranch option for activity nodes to deactivate
+                // the optional activity offered direct links
+                $isbranch = false;
+                $action_url = $item->action;
+                $content = html_writer::link($action_url, $content, $attributes);
             }
 
             // this applies to the li item which contains all child lists too

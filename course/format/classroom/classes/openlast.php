@@ -81,7 +81,13 @@ class format_classroom_openlast {
     public function redirect($request = '') {
         // Check if the request is an AJAX call, don't redirect if true
         if ($this->is_ajax_call() ||
-            strpos($request, 'course/completion.php') !== false) {
+            strpos($request, 'course/completion.php') !== false
+        ) {
+            return -1;
+        } else if (strpos($request, 'scorm') !== false &&
+            strpos($request, 'view.php') === false &&
+            strpos($request, 'player.php') === false
+        ) {
             return -1;
         }
 
@@ -121,10 +127,12 @@ class format_classroom_openlast {
 
                 $altcmid = $this->modinfo->sections[1][0];
 
-                $url = $this->modinfo->cms[$altcmid]->url;
-                if (empty($url)) {
-                    $url = new moodle_url('#');
+                $cmsurl = $this->modinfo->cms[$altcmid]->url;
+                if (empty($cmsurl)) {
+                    $cmsurl = new moodle_url('#');
                 }
+
+                $url = $cmsurl;
             }
 
             return $url;
@@ -199,18 +207,18 @@ class format_classroom_openlast {
         // and module not 'course' to get the last viewed activity/resource
         $sql = "
         SELECT *
-        FROM   {log}
+        FROM   {logstore_standard_log}
         WHERE  userid = :userid
-           AND course = :courseid
-           AND module != 'course'
-           AND module != 'role'
+           AND courseid = :courseid
+           AND target = 'course_module'
+           AND action = 'viewed'
         ";
 
         // Exclude all activities/resources in section 0
         // "<> IN(id1,id2)" with the module ids from section0modids
         list($insql, $inparams) = $DB->get_in_or_equal($this->section0modids,
             SQL_PARAMS_NAMED, 'param', false);
-        $insql = "\nAND cmid " . $insql;
+        $insql = "\nAND contextinstanceid " . $insql;
 
         // Set the ORDER BY SQL.
         $ordersql = "\nORDER BY id DESC";
@@ -254,13 +262,18 @@ class format_classroom_openlast {
             }
 
             // Set the module type and create the url for the last opened page
-            $module = $row->module;
-            $mod = $module === 'course' ? '' : 'mod/';
-            $cmid = $row->cmid;
+            // Redirect to SCORM lightbox when a course is entered does not work here.
+//            if (strpos($row->component, 'scorm') === false) {
+//                $module = str_replace('mod_', 'mod/', $row->component);
+//            } else {
+//                $module = 'local/scorm_lightbox';
+//            }
+            $module = str_replace('mod_', 'mod/', $row->component);
+            $cmid = $row->contextinstanceid;
 
             // Check if the course module exists
             if ($DB->record_exists('course_modules', array('id' => $cmid))) {
-                $url = new moodle_url('/' . $mod . $module . '/' . $row->url);
+                $url = new moodle_url('/' . $module . '/view.php?id=' . $cmid);
             }
         }
 
