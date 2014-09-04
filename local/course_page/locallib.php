@@ -1150,6 +1150,107 @@ class course_page  {
         }//switch_field
     }//addCourseHomePage_Section
 
+    /**
+     * @static
+     * @param           $text
+     * @param           $file
+     * @param           $contextid
+     * @param           $component
+     * @param           $filearea
+     * @param           $itemid
+     * @param           array $options
+     * @return          mixed
+     *
+     * @creationDate    04/09/2014
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Get the url to show the content of home page summary like images...
+     */
+    public static function fileRewritePluginfileUrls_HomePage($text, $file, $contextid, $component, $filearea, $itemid, array $options=null) {
+        global $CFG;
+
+        $options = (array)$options;
+        if (!isset($options['forcehttps'])) {
+            $options['forcehttps'] = false;
+        }
+
+        if (!$CFG->slasharguments) {
+            $file = $file . '?file=';
+        }
+
+        $baseurl = "$CFG->wwwroot/local/course_page/$file/$contextid/$component/$filearea/";
+
+        if ($itemid !== null) {
+            $baseurl .= "$itemid/";
+        }
+
+        if ($options['forcehttps']) {
+            $baseurl = str_replace('http://', 'https://', $baseurl);
+        }
+
+        return str_replace('@@PLUGINFILE@@/', $baseurl, $text);
+    }//fileRewritePluginfileUrls_HomePage
+
+    /**
+     * @static
+     * @param           $relativepath
+     * @param           $forcedownload
+     * @param           $preview
+     *
+     * @creationDate    04/09/2014
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Show the content of home page summary like images...
+     */
+    public static function filePluginfile_HomePage($relativepath,$forcedownload,$preview) {
+        global $DB, $CFG, $USER;
+        // relative path must start with '/'
+        if (!$relativepath) {
+            print_error('invalidargorconf');
+        } else if ($relativepath[0] != '/') {
+            print_error('pathdoesnotstartslash');
+        }
+
+        // extract relative path components
+        $args = explode('/', ltrim($relativepath, '/'));
+
+        if (count($args) < 3) { // always at least context, component and filearea
+            print_error('invalidarguments');
+        }
+
+        $contextid = (int)array_shift($args);
+        $component = clean_param(array_shift($args), PARAM_COMPONENT);
+        $filearea  = clean_param(array_shift($args), PARAM_AREA);
+
+        list($context, $course, $cm) = get_context_info_array($contextid);
+
+        $fs = get_file_storage();
+
+        if ($component === 'course') {
+            if ($context->contextlevel != CONTEXT_COURSE) {
+                send_file_not_found();
+            }
+
+            if ($filearea === 'homesummary') {
+                if ($CFG->forcelogin) {
+                    require_login();
+                }
+
+                $filename = array_pop($args);
+                $filepath = $args ? '/'.implode('/', $args).'/' : '/';
+                if (!$file = $fs->get_file($context->id, 'course', $filearea, 0, $filepath, $filename) or $file->is_directory()) {
+                    send_file_not_found();
+                }
+
+                \core\session\manager::write_close(); // Unlock session during file serving.
+                send_stored_file($file, 60*60, 0, $forcedownload, array('preview' => $preview));
+
+            }
+        }
+    }//filePluginfile_HomePage
+
     /* PRIVATE          */
 }//course_page
 

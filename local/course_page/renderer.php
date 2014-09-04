@@ -28,7 +28,7 @@ class local_course_page_renderer extends plugin_renderer_base {
 
         $course->summary = file_rewrite_pluginfile_urls($course->summary, 'pluginfile.php', $context->id, 'course', 'summary',null);
         $home_summary = $format_options['homesummary']->value;
-        $home_summary = file_rewrite_pluginfile_urls($home_summary, 'pluginfile.php', $context->id, 'course', 'homesummary',null);
+        $home_summary = course_page::fileRewritePluginfileUrls_HomePage($home_summary, 'pluginfile.php', $context->id, 'course', 'homesummary',null);
         $format_options['homesummary']->value = $home_summary;
 
         $output .= html_writer::start_tag('div',array('class' => 'home_page'));
