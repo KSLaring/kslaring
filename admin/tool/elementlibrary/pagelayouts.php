@@ -91,7 +91,7 @@ if ($layout) {
 }
 
 // Start setting up the page
-$PAGE->set_context(get_system_context());
+$PAGE->set_context(context_system::instance());
 $url = new moodle_url('/admin/tool/elementlibrary/pagelayouts.php', array('layout' => $layout));
 $PAGE->set_url($url);
 $PAGE->set_title($strheading);
