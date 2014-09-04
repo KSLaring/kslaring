@@ -9,7 +9,7 @@ $url = new moodle_url('/admin/tool/elementlibrary/headings.php');
 
 // Start setting up the page
 $params = array();
-$PAGE->set_context(get_system_context());
+$PAGE->set_context(context_system::instance());
 $PAGE->set_url($url);
 $PAGE->set_title($strheading);
 $PAGE->set_heading($strheading);
