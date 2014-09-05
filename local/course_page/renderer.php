@@ -252,6 +252,13 @@ class local_course_page_renderer extends plugin_renderer_base {
                             }//if_value
                         }//if_prerequisites
 
+                        if ($option->name == 'producedby') {
+                            if ($option->value) {
+                                $out .= '<h5 class="label_home">' . get_string('home_producedby','local_course_page') . ':</h5>';
+                                $out .= '<div class="extra_home">' . $option->value . '</div>';
+                            }//if_value
+                        }//if_produced
+
                         if ($option->name == 'manager') {
                             $manager = $option->value;
                         }//if_manager
