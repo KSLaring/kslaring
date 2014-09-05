@@ -204,16 +204,6 @@
     width: 35%;
 }
 
-.home_page_block_two .rating_bar_block .rating_label_per {
-    width: 5%;
-    margin-right: 2px;
-    margin-left: 0px;
-    font-size: 1em;
-    float:left;
-    text-align:right;
-    color: #0e7b9e;
-}
-
 .home_page_block_two   .rating_bar_block .rating_bar{
     width: 40%;
     float:left;
@@ -222,16 +212,27 @@
     margin-right: 0px;
 }
 
-.home_page_block_two .rating_bar_block .rating_progress {
+.home_page_block_two .rating_bar_block .rating_bar .rating_progress {
     background:green;
     height:20px;
 }
 
 .home_page_block_two   .rating_bar_block .rating_value{
-    width: 15%;
-    text-indent: 10px;
+    color: #0e7b9e;
+    display: block;
+}
+.home_page_block_two   .rating_bar_block .rating_value .rating_value_num{
+    width: 12%;
+    text-indent: 5px;
     float:left;
     text-align: left;
+    font-size: 0.9em;
+}
+.home_page_block_two   .rating_bar_block .rating_value .rating_value_per{
+    width: 8%;
+    float: left;
+    text-align: left;
+    font-size: 0.7em;
 }
 
 .home_page_block_two .ratings .content_rating_bar {

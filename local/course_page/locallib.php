@@ -504,82 +504,23 @@ class course_page  {
         /* Variables    */
         $id_bar = 'pbar_'.uniqid();
         $w          = 0;
-        $total_100  = $total;
-        $rate_100   = $rate;
-        $per        = 1;
-        $total_per  = 0;
+        $bar_out    = '';
 
         if ($total) {
-            if ($rate) {
-                if ($rate == $total) {
-                    $w = 100;
-                }else {
-                    if ($total > 10000000000 ) {
-                        $total_100  = $total / 10000000000;
-                        $rate_100   = $rate / 10000000000;
-
-                        $per = 1000000000;
-                    }else if ($total > 1000000000) {
-                        $total_100  = $total / 1000000000;
-                        $rate_100   = $rate / 1000000000;
-
-                        $per = 100000000;
-                    }else if ($total > 100000000) {
-                        $total_100  = $total / 100000000;
-                        $rate_100   = $rate / 100000000;
-
-                        $per = 10000000;
-                    }else if ($total > 10000000) {
-                        $total_100  = $total / 10000000;
-                        $rate_100   = $rate / 10000000;
-
-                        $per = 1000000;
-                    }else if ($total > 1000000) {
-                        $total_100  = $total / 1000000;
-                        $rate_100   = $rate / 1000000;
-
-                        $per = 100000;
-                    }else if ($total > 100000) {
-                        $total_100  = $total / 100000;
-                        $rate_100   = $rate / 100000;
-
-                        $per = 10000;
-                    }else if ($total > 10000) {
-                        $total_100  = $total / 10000;
-                        $rate_100   = $rate / 10000;
-
-                        $per = 1000;
-                    }else if ($total > 1000) {
-                        $total_100  = $total / 1000;
-                        $rate_100   = $rate / 1000;
-
-                        $per = 100;
-                    }else if ($total > 100) {
-                        $total_100  = $total / 100;
-                        $rate_100   = $rate / 100;
-
-                        $per = 10;
-                    }
-
-                    $w = round(($rate_100*100/$total_100)*$per,2)/2;
-                }//if_else
-            }//if_rate
+            $w = round(($rate*100/$total),0);
         }//if_total
-
-        $bar_out = '';
 
         $bar_out .= '<div class="rating_bar_block">';
             $bar_out .= '<div class="rating_title">' . $title . '</div>';
-            $bar_out .= '<div class="rating_label_per">%</div>';
 
             $bar_out .= '<div class="rating_bar" id="bar_{' . $id_bar . '}">';
                 $bar_out .= '<div id="progress_{' . $id_bar .'}" class="rating_progress" style="width:'. $w . '%;"></div>';
             $bar_out .= '</div>';
 
-            if ($total) {
-                $total_per = round($rate*100/$total,0);
-            }//total_per
-            $bar_out .= '<div class="rating_value">' .  $total_per . '</div>';
+            $bar_out .= '<div class="rating_value">';
+                $bar_out .= '<div class="rating_value_num">' . $w . '</div>';
+                $bar_out .= '<div class="rating_value_per">(%)</div>';
+            $bar_out .='</div>';
         $bar_out .= '</div>';//rating_bar_block
 
         return $bar_out;
@@ -605,7 +546,6 @@ class course_page  {
         $out .= '<h5 class="title_ratings">' . get_string('ratings_avg','local_course_page') . '</h5>';
 
             $out .= '<div class="rating_total_title">' . '<img src="'. $url_avg . '" .  alt="average ratings"/>' . '</div>';
-            $out .= '<div class="rating_label_per"></div>';
             $out .= '<div class="rating_total_value">' . $total_rates . '</div>';
 
         return $out;
