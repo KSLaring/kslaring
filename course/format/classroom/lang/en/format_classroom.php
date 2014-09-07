@@ -39,3 +39,4 @@ $string['progress'] = 'Progress';
 $string['mymoodle'] = 'My';
 $string['lessonlastpageon'] = 'Please select the next activity in the navigation menu.';
 $string['lessonlastpageoff'] = 'You finished this lesson. Please select the next activity in the navigation menu.';
+$string['feedbacklastpage'] = 'You finished the feedback. Please select the next activity in the navigation menu.';

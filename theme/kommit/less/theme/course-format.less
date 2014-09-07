@@ -3,8 +3,8 @@
 
 // colour overides for net course format
 // ---------------------------------------
-.classroom-header,
-.netcourse-header {
+.netcourse-header,
+.classroom-header {
   margin: 1em 0 0 0;
   .btn-toolbar {
     //border-bottom: 0px solid white;
@@ -62,14 +62,16 @@
 // 14/05/2014
 // -------------------------------------------------------
 
-.format-netcourse.path-mod-lesson .box .progress_bar {
+.format-netcourse.path-mod-lesson .box .progress_bar,
+.format-classroom.path-mod-lesson .box .progress_bar {
   border: none;
   height: 20px;
   margin-top: -22px;
   background: none;
 }
 
-.format-netcourse.path-mod-lesson .progress_bar {
+.format-netcourse.path-mod-lesson .progress_bar,
+.format-classroom.path-mod-lesson .progress_bar {
   //display: none;
   background: @kommitGrayLight;
   border: 1px solid @kommitGrayWarm;
@@ -78,13 +80,15 @@
   margin-right: 20px;
 }
 
-.format-netcourse.path-mod-lesson .progress_bar_completed {
+.format-netcourse.path-mod-lesson .progress_bar_completed,
+.format-classroom.path-mod-lesson .progress_bar_completed {
   background-color: #46a546;
   #gradient .vertical(#b4d95b, #46a546);
   padding-right: 20px;
 }
 
-.format-netcourse {
+.format-netcourse,
+.format-classroom {
   #block-region-content-bottom {
     background-color: @kommitMenuBg;
     border: 1px solid;
@@ -106,7 +110,8 @@
 
 // set background main content window white
 
-.format-netcourse {
+.format-netcourse,
+.format-classroom {
   #page-content {
     background: #fff;
     border: 1px solid @kommitGrayWarm;
@@ -115,19 +120,22 @@
 }
 
 //remove padding on block nav
-.format-netcourse .block .list li, {
+.format-netcourse .block .list li,
+.format-classroom .block .list li {
   margin: 0;
 }
 
 // remove gray background on submit button
-.format-netcourse #fitem_id_submitbutton {
+.format-netcourse #fitem_id_submitbutton,
+.format-classroom #fitem_id_submitbutton {
   border-top: none;
   background-color: #fff;
   padding: 0;
 }
 
 // submit button colour overide
-.format-netcourse input#id_submitbutton {
+.format-netcourse input#id_submitbutton,
+.format-classroom input#id_submitbutton {
   background-color: #46a546;
   background-image: none;
   color: #ffffff;
@@ -144,7 +152,8 @@
 // 11/06/2014
 // -------------------------------------------------------
 
-.format-netcourse {
+.format-netcourse,
+.format-classroom {
   #criteriastatus {
     width: 97%;
   }

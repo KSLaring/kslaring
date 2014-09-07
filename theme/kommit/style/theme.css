@@ -1076,17 +1076,17 @@ body {
   line-height: normal;
   vertical-align: middle;
 }
-.classroom-header,
-.netcourse-header {
+.netcourse-header,
+.classroom-header {
   margin: 1em 0 0 0;
 }
-.classroom-header .btn-toolbar,
-.netcourse-header .btn-toolbar {
+.netcourse-header .btn-toolbar,
+.classroom-header .btn-toolbar {
   margin-top: 10.5px;
   margin-bottom: 0px;
 }
-.classroom-header .btn-toolbar .btn,
-.netcourse-header .btn-toolbar .btn {
+.netcourse-header .btn-toolbar .btn,
+.classroom-header .btn-toolbar .btn {
   color: #7e7e7e;
   margin: 0.2em 0 0 0;
   padding: 15px 28px;
@@ -1101,16 +1101,16 @@ body {
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffffff', endColorstr='#ffefeff1', GradientType=0);
   box-shadow: inset 0 -4px 6px rgba(0, 0, 0, 0.08);
 }
-.classroom-header .btn-toolbar .btn:hover,
-.netcourse-header .btn-toolbar .btn:hover {
+.netcourse-header .btn-toolbar .btn:hover,
+.classroom-header .btn-toolbar .btn:hover {
   color: #0e7b9e;
   background: white;
   background-image: none;
 }
-.classroom-header .btn-toolbar .btn-primary:active,
 .netcourse-header .btn-toolbar .btn-primary:active,
-.classroom-header .btn-toolbar .btn-primary.active,
-.netcourse-header .btn-toolbar .btn-primary.active {
+.classroom-header .btn-toolbar .btn-primary:active,
+.netcourse-header .btn-toolbar .btn-primary.active,
+.classroom-header .btn-toolbar .btn-primary.active {
   color: #0e7b9e;
   border-bottom: 1px solid white;
   background-color: white;
@@ -1135,20 +1135,23 @@ body {
   box-shadow: inset 0px 0px 8px 0px rgba(0, 0, 0, 0.1);
   background: #f7f7f7;
 }
-.format-netcourse.path-mod-lesson .box .progress_bar {
+.format-netcourse.path-mod-lesson .box .progress_bar,
+.format-classroom.path-mod-lesson .box .progress_bar {
   border: none;
   height: 20px;
   margin-top: -22px;
   background: none;
 }
-.format-netcourse.path-mod-lesson .progress_bar {
+.format-netcourse.path-mod-lesson .progress_bar,
+.format-classroom.path-mod-lesson .progress_bar {
   background: #f2f2f3;
   border: 1px solid #e8e8e8;
   height: 20px;
   margin-top: 40px;
   margin-right: 20px;
 }
-.format-netcourse.path-mod-lesson .progress_bar_completed {
+.format-netcourse.path-mod-lesson .progress_bar_completed,
+.format-classroom.path-mod-lesson .progress_bar_completed {
   background-color: #46a546;
   background-color: #88c453;
   background-image: -moz-linear-gradient(top, #b4d95b, #46a546);
@@ -1160,30 +1163,36 @@ body {
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffb4d95b', endColorstr='#ff46a546', GradientType=0);
   padding-right: 20px;
 }
-.format-netcourse #block-region-content-bottom {
+.format-netcourse #block-region-content-bottom,
+.format-classroom #block-region-content-bottom {
   background-color: #f9f9f9;
   border: 1px solid;
   border-color: #e8e8e8 #ffffff #e8e8e8 #e8e8e8;
   padding: .5em 1% 1em 2%;
   margin: 0 0 1em -2%;
 }
-.format-netcourse #block-region-content-bottom .title h2 {
+.format-netcourse #block-region-content-bottom .title h2,
+.format-classroom #block-region-content-bottom .title h2 {
   margin-top: 0;
 }
-.format-netcourse #page-content {
+.format-netcourse #page-content,
+.format-classroom #page-content {
   background: #fff;
   border: 1px solid #e8e8e8;
   padding-bottom: 1em;
 }
-.format-netcourse .block .list li {
+.format-netcourse .block .list li,
+.format-classroom .block .list li {
   margin: 0;
 }
-.format-netcourse #fitem_id_submitbutton {
+.format-netcourse #fitem_id_submitbutton,
+.format-classroom #fitem_id_submitbutton {
   border-top: none;
   background-color: #fff;
   padding: 0;
 }
-.format-netcourse input#id_submitbutton {
+.format-netcourse input#id_submitbutton,
+.format-classroom input#id_submitbutton {
   background-color: #46a546;
   background-image: none;
   color: #ffffff;
@@ -1191,16 +1200,21 @@ body {
   margin-left: 0;
 }
 .format-netcourse input#id_submitbutton:hover,
-.format-netcourse input#id_submitbutton:focus {
+.format-classroom input#id_submitbutton:hover,
+.format-netcourse input#id_submitbutton:focus,
+.format-classroom input#id_submitbutton:focus {
   background: #b4d95b;
 }
-.format-netcourse #criteriastatus {
+.format-netcourse #criteriastatus,
+.format-classroom #criteriastatus {
   width: 97%;
 }
-.format-netcourse .forumheaderlist {
+.format-netcourse .forumheaderlist,
+.format-classroom .forumheaderlist {
   width: 97%;
 }
-.format-netcourse .generalbox p {
+.format-netcourse .generalbox p,
+.format-classroom .generalbox p {
   width: 97%;
 }
 p.active_tree_node a {
@@ -1267,7 +1281,7 @@ div.loginpanel h2 {
 }
 .coursebox .panel-heading {
   font-size: 21.328px;
-  line-height: 31.991999999999997px;
+  line-height: 31.992px;
 }
 #page-course-index-category .categorypicker {
   text-align: right;
