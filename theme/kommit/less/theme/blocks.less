@@ -53,6 +53,7 @@
         }
     }
     .content {
+        word-wrap: break-word;
         padding: 10px 15px;
         background: @white;
 
@@ -163,6 +164,13 @@
     max-width: 92%;
 }
 
+.block_private_files {
+    input[type="submit"]{
+      width: 92%;
+      white-space: pre-wrap;
+    }
+  }
+
 .block .minicalendar,
 .block_login .content {
     max-width: 280px;
@@ -173,7 +181,6 @@
 .block {
     .minicalendar {
         width: 92%;
-
         th, td {
             padding: 2px 1px;
         }
