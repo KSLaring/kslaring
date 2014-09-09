@@ -923,7 +923,7 @@ body {
 .logo-area {
   float: left;
   height: 52px;
-  margin: 19px 0;
+  margin: 19px 0px;
 }
 .header-right {
   float: right;
@@ -931,6 +931,17 @@ body {
   width: 540px;
   height: 100px;
 }
+
+.header-center {
+    float: left;
+    height: 52px;
+    margin: 0px;
+    padding: 0px;
+    transform: scale(0.5, 0.5);
+    -ms-transform: scale(0.5, 0.5);
+    -webkit-transform: scale(0.5, 0.5);
+}
+
 .header-right .social {
   float: right;
   position: relative;

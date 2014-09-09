@@ -1,20 +1,52 @@
 <div class="top-border">
 </div>
 
+<?php
+    /**
+     * @updateDate  09/09/2014
+     * @author      eFaktor     (fbv)
+     *
+     * Description
+     * Add the Municipality log to the header
+     */
+    $muni = null;
+    $logo = null;
+    require_once($CFG->dirroot . '/blocks/municipality/municipalitylib.php');
+    if (isloggedin()) {
+        /* Get the municipality connected with the user */
+        $muni = Municipality::municipality_ExitsMuni_User($USER->id);
+        /* Get the municipality logo */
+        $logo = Municipality::municipality_GetLogo($muni);
+    }
+?>
+
 <div class="header-background">
     <div class="container-fluid">
         <div class="logo-area">
             <a class="logo" href="<?php echo $CFG->wwwroot;?>"><img class="logo" alt="kommit logo" src="<?php echo
                 $OUTPUT->pix_url('logo', 'theme'); ?>"></a>
         </div>
+
         <div class="header-right">
             <div class="social">
                 <div class="col1"><a href="http://facebook.com/kskommit" target=_blank" alt="facebook icon"><i class="fa fa-facebook
-                fa-2x" id="icon" aria-hidden="true"></i></a></div>
+                fa-2x" id="icon_facebook" aria-hidden="true"></i></a></div>
                 <div class="col2"><a href="https://twitter.com/KSKommIT" target=_blank" alt="twitter icon"><i class="fa fa-twitter
-                fa-2x" id="icon" aria-hidden="true"></i></a></div>
+                fa-2x" id="icon_twitter" aria-hidden="true"></i></a></div>
             </div>
         </div>
+        <?php
+            /**
+             * @updateDate  09/09/2014
+             * @author      eFaktor     (fbv)
+             *
+             * Description
+             * Add the Municipality log to the header
+             */
+            if ($logo) {
+                echo '<div class="header-center">' . $logo . '</div>';
+            }
+        ?>
     </div>
 </div>
 
