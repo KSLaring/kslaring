@@ -87,7 +87,7 @@ if ($certificate->requiredtime && !has_capability('mod/certificate:manage', $con
 // Create new certificate record, or return existing record
 $certrecord = certificate_get_issue($course, $USER, $certificate, $cm);
 
-    make_cache_directory('tcpdf');
+make_cache_directory('tcpdf');
 
 // Load the specific certificate type.
 require("$CFG->dirroot/mod/certificate/type/$certificate->certificatetype/certificate.php");

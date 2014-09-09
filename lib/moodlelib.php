@@ -4734,6 +4734,9 @@ function update_internal_user_password($user, $password, $fasthash = false) {
     require_once($CFG->libdir.'/password_compat/lib/password.php');
 
     // Figure out what the hashed password should be.
+    if (!isset($user->auth)) {
+        $user->auth = $DB->get_field('user', 'auth', array('id' => $user->id));
+    }
     $authplugin = get_auth_plugin($user->auth);
     if ($authplugin->prevent_local_passwords()) {
         $hashedpassword = AUTH_PASSWORD_NOT_CACHED;
@@ -4741,13 +4744,19 @@ function update_internal_user_password($user, $password, $fasthash = false) {
         $hashedpassword = hash_internal_user_password($password, $fasthash);
     }
 
-    // If verification fails then it means the password has changed.
-    if (isset($user->password)) {
-        // While creating new user, password in unset in $user object, to avoid
-        // saving it with user_create()
+    $algorithmchanged = false;
+
+    if ($hashedpassword === AUTH_PASSWORD_NOT_CACHED) {
+        // Password is not cached, update it if not set to AUTH_PASSWORD_NOT_CACHED.
+        $passwordchanged = ($user->password !== $hashedpassword);
+
+    } else if (isset($user->password)) {
+        // If verification fails then it means the password has changed.
         $passwordchanged = !password_verify($password, $user->password);
         $algorithmchanged = password_needs_rehash($user->password, PASSWORD_DEFAULT);
     } else {
+        // While creating new user, password in unset in $user object, to avoid
+        // saving it with user_create()
         $passwordchanged = true;
     }
 
@@ -8754,8 +8763,7 @@ function message_popup_window() {
     }
 
     // There are unread messages so now do a more complex but slower query.
-    $namefields = get_all_user_name_fields(true, 'u');
-    $messagesql = "SELECT m.id, m.smallmessage, m.fullmessageformat, m.notification, m.useridto, m.useridfrom, $namefields, c.blocked
+    $messagesql = "SELECT m.id, c.blocked
                      FROM {message} m
                      JOIN {message_working} mw ON m.id=mw.unreadmessageid
                      JOIN {message_processors} p ON mw.processorid=p.id
@@ -8772,13 +8780,15 @@ function message_popup_window() {
         $messagesql .= 'AND m.timecreated > :lastpopuptime';
     }
 
-    $messageusers = $DB->get_records_sql($messagesql, array('userid' => $USER->id, 'lastpopuptime' => $USER->message_lastpopup));
+    $waitingmessages = $DB->get_records_sql($messagesql, array('userid' => $USER->id, 'lastpopuptime' => $USER->message_lastpopup));
 
     $validmessages = 0;
-    foreach($messageusers as $message) {
-        if ($message->blocked) {
+    foreach ($waitingmessages as $messageinfo) {
+        if ($messageinfo->blocked) {
             // Message is from a user who has since been blocked so just mark it read.
-            message_mark_message_read($message, time());
+            // Get the full message to mark as read.
+            $messageobject = $DB->get_record('message', array('id' => $messageinfo->id));
+            message_mark_message_read($messageobject, time());
         } else {
             $validmessages++;
         }
