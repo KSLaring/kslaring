@@ -25,7 +25,23 @@
         <div class="logo-area">
             <a class="logo" href="<?php echo $CFG->wwwroot;?>"><img class="logo" alt="kommit logo" src="<?php echo
                 $OUTPUT->pix_url('logo', 'theme'); ?>"></a>
+
+
+
         </div>
+
+        <?php
+        /**
+         * @updateDate  09/09/2014
+         * @author      eFaktor     (fbv)
+         *
+         * Description
+         * Add the Municipality log to the header
+         */
+        if ($logo) {
+            echo '<div class="header-center">' . $logo . '</div>';
+        }
+        ?>
 
         <div class="header-right">
             <div class="social">
@@ -35,18 +51,7 @@
                 fa-2x" id="icon_twitter" aria-hidden="true"></i></a></div>
             </div>
         </div>
-        <?php
-            /**
-             * @updateDate  09/09/2014
-             * @author      eFaktor     (fbv)
-             *
-             * Description
-             * Add the Municipality log to the header
-             */
-            if ($logo) {
-                echo '<div class="header-center">' . $logo . '</div>';
-            }
-        ?>
+
     </div>
 </div>
 
