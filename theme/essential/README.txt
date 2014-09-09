@@ -52,6 +52,26 @@ Uninstallation
  3. In '/theme/' remove the folder 'essential'.
  4. Put Moodle out of Maintenance Mode.
 
+Downgrading
+===========
+If for any reason you wish to downgrade to a previous version of the theme (unsupported) then this procedure will inform you of how to
+do so:
+1.  Ensure that you have a copy of the existing and older replacement theme files.
+2.  Put Moodle into 'Maintenance mode' under 'Home -> Administration -> Site administration -> Server -> Maintenance mode', so that there
+    are no users using it bar you as the administrator.
+3.  Switch to a core theme, 'Clean' for example, under 'Home -> Administration -> Site administration -> Appearance -> Themes ->
+    Theme selector -> Default'.
+4.  In '/theme/' remove the folder 'essential' i.e. ALL of the contents - this is VITAL.
+5.  Put in the replacement 'essential' folder into '/theme/'.
+6.  In the database, remove the row with the 'plugin' of 'theme_essential' and 'name' of 'version' in the 'config_plugins' table, then
+    in the 'config' table find the 'name' with the value 'allversionhash' and clear its 'value' field.  Perform a 'Purge all caches'
+    under 'Home -> Site administration -> Development -> Purge all caches'.
+7.  Go back in as an administrator and follow standard the 'plugin' update notification.  If needed, go to
+    'Site administration' -> 'Notifications' if this does not happen.
+8.  Switch the theme back to 'Essential' under 'Home -> Administration -> Site administration -> Appearance -> Themes -> Theme selector ->
+    Default'.
+9.  Put Moodle out of 'Maintenance mode' under 'Home -> Administration -> Site administration -> Server -> Maintenance mode'.
+
 Reporting issues
 ================
 Before reporting an issue, please ensure that you are running the latest version for your release of Moodle.  It is essential
@@ -66,8 +86,128 @@ It is essential that you provide as much information as possible, the critical i
 'version.php' file.  Other version information such as specific Moodle version, theme name and version also helps.  A screen shot
 can be really useful in visualising the issue along with any files you consider to be relevant.
 
+New in 2.7.7
+============
+- FIX: Issue #173: Message menu shows wrong time difference in Russian.
+- FIX: Issue #175: Gradebook several bugs.
+- FIX: Issue #179: User picture error.
+- FIX: Issue #189: Gradebook - column text and sorting doesn't fit the column.
+- FIX: Issue #191: Blocks not showing on the right of the frontpage for non-admins.
+- FIX: Issue #196: Gradebook - vertical size in fixed column view.
+- FIX: Issue #200: Category Edit / Delete Missing in newest version of Essential.
+- FIX: Issue #208: Bug: Undefined function is_loggedin().
+- FIX: Issue #209: Showing white background.
+- FIX: Issue #211: Image size in message menu.
+- FIX: Issue #220: Standard Moodle Chat interface fails to load.
+- FIX: Issue #221: Missing string 'unreadnewnotification'.
+- FIX: Issue #225: Blank pages after some times.
+- FIX: Issue #228: Incorrect z-index in menu.
+- FIX: Issue #233: User image wrong in IE.
+- FIX: Issue #237: Homepage main content block layout issues.
+- FIX: Issue #238: Logged in user block styling.
+- FIX: Issue #241: Background image appears as text box background.
+- FIX: Issue #243: View Full toggle button not functional 2.6.9b.
+- FIX: Issue #246: Menu bar down arrow caret causes shift of menu.
+- NEW: Issue #74 : Fonts are CDN only.
+- NEW: Issue #139: Enter own CDN font names.
+- NEW: Issue #149: Add setting to not show the site shortname.
+- NEW: Issue #170: Option in settings to choose how the site title in header appears.
+- NEW: Issue #176: Option to Hide Calendar, Private Files, Forum Posts and Discussions from Dropdown.
+- NEW: Issue #178: Error when editing user preferences.
+- NEW: Issue #180: Same height marketing spots.
+- NEW: Issue #181: Marketing spot header same as navbar.
+- NEW: Issue #185: Custom background image dimensions.
+- NEW: Issue #186: Add edit links to custom frontpage content items.
+- NEW: Issue #197: Gradebook overall average font colour.
+- NEW: Issue #204: Windows Mobile Apps.
+- NEW: Issue #212: Upgrade FontAwesome 4.2.0.
+- NEW: Issue #223: How to make a sub menu from custom menu.
+- NEW: Issue #226: Move slideshow slides loading to function in lib.php.
+- NEW: Issue #235: Color of course navigation block.
+- NEW: Issue #240: Header title not wrapping in mobile view.
+
+New in 2.7.6b
+=============
+- FIX: Issue #205: Has the eye icon used to Enable/Disable an element been reversed in functionality?
+- FIX: Issue #207: Fixed solution for #175 #196 - thanks @ppv1979.
+- FIX: main site regions clean-up to prevent issues with blocks.
+- FIX: huge code rewrite for menu items.
+- FIX: optimized more icons to be loaded from font.
+- NEW: New loading gif, reducing size by 500%.
+- NEW: Issue #198: Collapsed Topics and other course formats (like core weeks) need print single page the same.
+       Course formats catered for: Topics, Weeks, Collapsed Topics, Columns, Grid and Noticeboard.  If you require others,
+       please let us know.
+       NOTE: If you are using the Collapsed Topics course format then you MUST have version 2.6.1.3 or above installed.
+             If you are using the Columns course format then you MUST have version 2.6.1.1 or above installed.
+
+New in 2.7.6a
+=============
+- FIX: Issue #159: Custom Category Icons not displaying in 2.7.5h (Build: 2014081404).
+- FIX: Various code optimizations
+- NEW: Issue #172: Google font character sets.  Implemented in #174 - thanks @vgango
+- NEW: Issue #194: Centred slide show caption.
+
+New in 2.7.6
+============
+- FIX: Issue #159: Custom Category Icons not displaying in 2.7.5h (Build: 2014081404).
+- FIX: Issue #155: Social Icons Missing 2.7.5h
+- FIX: Issue #156, #70, #56: Caption background colour frontpage slider & active slide colours
+- FIX: Issue #164: When side pre is empty, then content area does not fill space when editing is off.
+- FIX: Issue #165: Menu options has transparent background for a hidden block
+- FIX: Issue #166: invalid email and white page for main administrator
+- FIX: Issue #166: invalid email and white page for main administrator
+- NEW: Full filter support in all custom areas (frontcontent, slider, alerts, footer), this includes the multilang filter
+- NEW: Also show read messages, but distinct from unread ones
+- NEW: Add courses titles to course pages
+- NEW: Add styling to block regions for easier drag/drop regions, especially for footer
+- NEW: Create github page for Essential theme
+- NEW: Backported to Moodle 2.5!!!
+- HELP WANTED: All language strings are now in AMOS (Moodle Language packs) please update your own language!
+
+New in 2.7.5
+============
+- FIX: Issue #96:  2.7.4 breaks 'oldnavbar' setting.
+- FIX: Issue #98:  Lang en/iosicondesc - Change 'them' to 'theme'.  Thanks to Skylar Kelty.
+- FIX: Issue #101: Navbar not expanding properly on android mobile and tablet.
+- FIX: Issue #107: No fixed width to header on login page.
+- FIX: Issue #113: Remove FontAwesome from all links in section heading except for the edit icon.
+- FIX: Issue #110: Refactor middle blocks wording, thanks @mkpelletier.
+- FIX: Issue #109: Re-order middle blocks settings, thanks @mkpelletier.
+- FIX: Issue #108: Add similar toggle options to front page content, thanks @mkpelletier.
+- FIX: Issue #67:  Refactored so menus are renderer all separately.
+- FIX: Issue #60:  Add styling to invisible courses in breadcrumb.
+- FIX: Issue #126: Header logo right border syntax.
+- FIX: Issue #127: Need to guard against uninitialised settings.
+- FIX: Issue #128: Dropdown menu items are invisible when navigation bar text is white.
+- FIX: Issue #134: Marketing height broken.
+- FIX: Issue #135: Cannot edit topic summary.
+- FIX: Issue #136: Too many docked icons.
+- FIX: Issue #138: Breadcrumb above content / blocks.
+- FIX: Issue #141: Check slider caption underneath in 2.7.5g.
+- FIX: Issue #142: Check slider speed.
+- FIX: Issue #144: Unmatched end tags in carousel.
+- FIX: Issue #145: Language dropdown cut short when open.
+- FIX: Correctly show no enrolments message when all courses are hidden.
+- FIX: Reworked header menu and added responsive options to apps/social icons.
+- FIX: Removed dnd upload status as it blocks the edit icons.
+- FIX: Further work on RTL support.
+- FIX: Theme Cleanup milestone completely finished!
+- FIX: Further performance optimalizations using own CSS
+- FIX: Provide fixes for IE8, Essential now largely works with IE8 as expected, but no support is given
+- NEW: Issue #114: Add downgrade instructions.  See above.
+- NEW: Removed bootstrapbase dependency for further minification.
+- NEW: Split out alternative theme colours to reduce CSS loading when this is not enabled.
+- NEW: Small tweak to site widths, now available options are 1400px, 1200px and 960px.
+- NEW: Switched to bootstrap all in one for massive speed improvement (from 10 to 1 http request).
+- NEW: Removed option for restricting block width as it was not possible to get this working properly.
+- NEW: Issue #123: Add messages menu from Shoehorn and give it a FaceBook restyle
+- NEW: Issue #14: Add a brand new user menu replacing the Dashboard menu
+- NEW: Automatically collapsing breadcrumb
+- NEW: Updated HTMLshiv
+- NEW: Persistent link to your own grade report, available as long as you are enrolled in one visible course
+
 New in 2.7.4
-========================
+============
 - FIX: Issue #68.  Expand all not showing on Edit course settings.
 - FIX: Issue #58.  Add font colour setting.
 - FIX: Issue #63.  Slider caption overlap.
@@ -94,7 +234,7 @@ New in 2.7.4
         lots of redundant CSS.  This presents problems when it comes to portable devices and bandwidth.
 
 New in 2.7.3
-========================
+============
 - FIX: Fixed slide show by replacing with Bootstrap 2.3.2 one.  Issue #18.
 - FIX: Make background image fixed and set a background transparent colour
 - FIX: Permanently replace edit icons with FontAwesome icons
@@ -120,14 +260,14 @@ New in 2.7.3
 - NEW: Transparent fixed background when setting a background image
 
 New in 2.7.2
-========================
+============
 - FIX: Slideshow CSS fixes
 - FIX: Image alignment on slideshow
 - NEW: Select slideshow background color
 - NEW: Option to bring back the old navbar location
  
 New in 2.7.1
-========================
+============
 - FIX: Numerous CSS fixes
 - FIX: Translation fixes
 - FIX: Updated Google Analytics code
@@ -141,7 +281,7 @@ New in 2.7.1
 - NEW: New slideshow design (WIP)
  
 New in 2.6.3
-========================
+============
 - FIX: Numerous CSS fixes
 - FIX: Due to popular request reports are now 2 column again
 - FIX: Significantly improved RTL support
@@ -153,7 +293,7 @@ New in 2.6.3
 - NEW: Start Dutch translation
 
 New in 2.6.2
-========================
+============
 - FIX: Numerous CSS fixes
 - FIX: Third level dropdown in custom menu now works
 - FIX: iOS7 custom menu now works when changed to a sing dropdown in portrait view
@@ -162,7 +302,7 @@ New in 2.6.2
 - NEW: Frontpage content now goes full width if all blocks removed.
 
 New in 2.6.1
-========================
+============
 - NEW: MAJOR UPDATES for 2.6 compatibility.
 - NEW: Moved layouts to a more "Moodle standard" 1, 2 and 3 column layout.
 - NEW: Can now add three columns of blocks to middle of the homepage under marketing spots.
@@ -177,7 +317,7 @@ New in 2.6.1
 - FIX: Numerous CSS fixes and cleanup
 
 New in 2.6
-========================
+==========
 - Added ability to select from 21 preset Google Font combinations or disable their use completely.
 - Now includes additional Bootstrap JS plugins to allow for more dynamic formatting as shown on http://getbootstrap.com/javascript/
 - New Frontpage Slideshow settings to allow to display; all the time, only before login, only after login or never.
@@ -187,7 +327,7 @@ New in 2.6
 - Further minor bug fixes and tidy up.
 
 New in 2.5.4
-========================
+============
 - Display current enrolled courses in dropdown menu and choose terminology (modules, courses, classes or units).
 - New 'My Dashboard" in custommenu provides quick links to student tools. Can be disabled in theme settings.
 - iOS home screen icons now built in. Can upload your own via settings.
@@ -200,7 +340,7 @@ New in 2.5.4
 - New "Frontpage Content" box to add custom content in between the slideshow and marketing spots.
 
 Fixes in 2.5.4
-=======================
+==============
 - Fix to frontpage slideshow. First slide now loads properly.
 - Updated include method to minimise conflicts with 3rd party plugins
 - Code significantly optimised. (about 1/5 less lines!)
@@ -208,7 +348,7 @@ Fixes in 2.5.4
 - IMPORTANT: Theme requires Moodle 2.5.1 or higher
 
 New in 2.5.3
-========================
+============
 - New Settings screen just for colour selection
 - Admin can now toggle to use "autohide" functionality in courses.
 - Admin now upload their own background image
@@ -225,7 +365,7 @@ New in 2.5.3
 - EXPERIMENTAL: New course editing icons formatted and built with Font Awesome can now be used.
  
 New in  2.5.2
-========================
+=============
  - New theme setting to have user image show in the header when logged in.
  - Admin can choose to revert courses to a "standard" layout with blocks on the left and right sides
  - Admin can choose the default Navbar/breadcrumb separator
@@ -235,7 +375,7 @@ New in  2.5.2
  - Minor CSS fixes
  
 See the theme in Action
-========================
+=======================
 A video showing many of the core features is available for viewing at http://vimeo.com/69683774
 
 Documentation
@@ -243,10 +383,17 @@ Documentation
 As always, documentation is a work in progress. Available documentation is available at http://docs.moodle.org/25/en/Essential_theme
 If you have questions you can post them in the issue tracker at https://github.com/DBezemer/moodle-theme_essential/issues
 
+Original Author
+===============
+Julian Ridden
+Moodle profile: https://moodle.org/user/profile.php?id=39680
+Web profile:    http://au.linkedin.com/in/eduridden/
+
 Maintained by
-========================
+=============
 David Bezemer
 Moodle profile: https://moodle.org/user/profile.php?id=1416592
+Web profile:    http://www.davidbezemer.nl
 
 G J Barnard MSc. BSc(Hons)(Sndw). MBCS. CEng. CITP. PGCE.
 Moodle profile: http://moodle.org/user/profile.php?id=442195

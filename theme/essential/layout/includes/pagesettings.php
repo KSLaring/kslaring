@@ -23,96 +23,99 @@
  * @copyright   2014 Gareth J Barnard, David Bezemer
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
- 
+
+/* Default globals */
+global $CFG, $PAGE, $USER, $SITE, $COURSE;
+
 /* Group Body */
-theme_essential_check_colours_switch();
-theme_essential_initialise_colourswitcher($PAGE);
-
 $bodyclasses = array();
-$bodyclasses[] = 'essential-colours-' . theme_essential_get_colours();
-if (!empty($PAGE->theme->settings->sideregionsmaxwidth)) {
-    $bodyclasses[] = 'side-regions-with-max-width';
-}
-if (!empty($PAGE->theme->settings->slidecaptionbelow)) {
-    $bodyclasses[] = 'frontpageslidercaptionbelow';
+
+if (theme_essential_get_setting('enablealternativethemecolors1') ||
+    theme_essential_get_setting('enablealternativethemecolors2') ||
+    theme_essential_get_setting('enablealternativethemecolors3')
+) {
+    $colourswitcher = true;
+    theme_essential_check_colours_switch();
+    theme_essential_initialise_colourswitcher($PAGE);
+    $bodyclasses[]  = 'essential-colours-' . theme_essential_get_colours();
+} else {
+    $colourswitcher = false;
 }
 
-if (!empty($PAGE->theme->settings->pagewidth)) {
-    switch ($PAGE->theme->settings->pagewidth) {
-        case 100:
-            $bodyclasses[] = 'pagewidthvariable';
-            break;
-        case 1200:
-            $bodyclasses[] = 'pagewidthnarrow';
-            break;
-        case 1600:
-            $bodyclasses[] = 'pagewidthwide';
-            break;
-    }
+switch (theme_essential_get_setting('pagewidth')) {
+    case 100:
+        $bodyclasses[] = 'pagewidthvariable';
+        break;
+    case 960:
+        $bodyclasses[] = 'pagewidthnarrow';
+        break;
+    case 1200:
+        $bodyclasses[] = 'pagewidthnormal';
+        break;
+    case 1400:
+        $bodyclasses[] = 'pagewidthwide';
+        break;
 }
 if (!empty($CFG->custommenuitems)) {
     $bodyclasses[] = 'custommenuitems';
 }
-
-if (right_to_left()) {
-    $regionbsid = 'region-bs-main-and-post';
-    $left = false;
-} else {
-    $regionbsid = 'region-bs-main-and-pre';
-    $left = true;
+if (theme_essential_get_setting('enablecategoryicon')) {
+    $bodyclasses[] = 'categoryicons';
 }
 
-$fontselect = $PAGE->theme->settings->fontselect;
- 
+$regionbsid = 'region-bs-main-and-pre';
+$left = true;
+if (right_to_left()) {
+    $regionbsid = 'region-bs-main-and-pre';
+    $left = false;
+}
+
+$fontselect = theme_essential_get_setting('fontselect');
+$fontcharacterset = '&subset=latin';
+if(theme_essential_get_setting('fontcharacterset')) {
+    $fontcharacterset = '&subset=latin,'.theme_essential_get_setting('fontcharacterset');
+}
+$headingfont = urlencode(theme_essential_get_setting('fontnameheading'));
+$bodyfont = urlencode(theme_essential_get_setting('fontnamebody'));
+
+
+
 /* Group Header */
 
-$hasanalytics = $PAGE->theme->settings->useanalytics;
-
-$hassocialnetworks = (  empty($PAGE->theme->settings->facebook)     &&
-                        empty($PAGE->theme->settings->twitter)      &&
-                        empty($PAGE->theme->settings->googleplus)   &&
-                        empty($PAGE->theme->settings->linkedin)     &&
-                        empty($PAGE->theme->settings->youtube)      &&
-                        empty($PAGE->theme->settings->flickr)       &&
-                        empty($PAGE->theme->settings->vk)           &&
-                        empty($PAGE->theme->settings->pinterest)    &&
-                        empty($PAGE->theme->settings->instagram)    &&
-                        empty($PAGE->theme->settings->skype)        &&
-                        empty($PAGE->theme->settings->website)
-                        ? false : true );
-$hasmobileapps =    (   empty($PAGE->theme->settings->ios)          &&
-                        empty($PAGE->theme->settings->android)
-                        ? false : true );
-
-$hasprofilepic = $PAGE->theme->settings->headerprofilepic;
+$hassocialnetworks = (
+    theme_essential_get_setting('facebook') ||
+    theme_essential_get_setting('twitter') ||
+    theme_essential_get_setting('googleplus') ||
+    theme_essential_get_setting('linkedin') ||
+    theme_essential_get_setting('youtube') ||
+    theme_essential_get_setting('flickr') ||
+    theme_essential_get_setting('vk') ||
+    theme_essential_get_setting('pinterest') ||
+    theme_essential_get_setting('instagram') ||
+    theme_essential_get_setting('skype') ||
+    theme_essential_get_setting('website')
+);
+$hasmobileapps = (theme_essential_get_setting('ios') ||
+    theme_essential_get_setting('android')
+);
 
 $logoclass = 'span12';
-if (($hassocialnetworks || $hasmobileapps) && $hasprofilepic) {
-    $logoclass = 'span5';
-} else if (!($hassocialnetworks || $hasmobileapps) && $hasprofilepic) {
-    $logoclass = 'span11';
-} else if (($hassocialnetworks || $hasmobileapps) && !$hasprofilepic) {
+if ($hassocialnetworks || $hasmobileapps) {
     $logoclass = 'span6';
 }
 
-$oldnavbar = $PAGE->theme->settings->oldnavbar;
-$haslogo = (!empty($PAGE->theme->settings->logo));
+$oldnavbar = theme_essential_get_setting('oldnavbar');
+$haslogo = theme_essential_get_setting('logo');
 
-/* Group Slideshow */
 
 /* Group Frontpage */
 $alertinfo = '<span class="fa-stack "><i class="fa fa-square fa-stack-2x"></i><i class="fa fa-info fa-stack-1x fa-inverse"></i></span>';
-$alertwarning = '<span class="fa-stack"><i class="fa fa-square fa-stack-2x"></i><i class="fa fa-warning fa-stack-1x fa-inverse"></i></span>';
+$alerterror = '<span class="fa-stack"><i class="fa fa-square fa-stack-2x"></i><i class="fa fa-warning fa-stack-1x fa-inverse"></i></span>';
 $alertsuccess = '<span class="fa-stack"><i class="fa fa-square fa-stack-2x"></i><i class="fa fa-bullhorn fa-stack-1x fa-inverse"></i></span>';
 
-$hasmarketing1image = (!empty($PAGE->theme->settings->marketing1image));
-$hasmarketing2image = (!empty($PAGE->theme->settings->marketing2image));
-$hasmarketing3image = (!empty($PAGE->theme->settings->marketing3image));
-
 /* Group Content */
-$hasboringlayout = $PAGE->theme->settings->layout;
+$hasboringlayout = theme_essential_get_setting('layout');
 
 /* Group Footer */
-$hashiddendock = (empty($PAGE->layout_options['noblocks']) && $PAGE->blocks->region_has_content('hidden-dock', $OUTPUT));
-$hascopyright = (empty($PAGE->theme->settings->copyright)) ? false : $PAGE->theme->settings->copyright;
-$hasfootnote = (empty($PAGE->theme->settings->footnote)) ? false : $PAGE->theme->settings->footnote;
+$hascopyright = theme_essential_get_setting('copyright', true);
+$hasfootnote = theme_essential_get_setting('footnote', 'format_text');
