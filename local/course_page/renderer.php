@@ -332,7 +332,7 @@ class local_course_page_renderer extends plugin_renderer_base {
                     break;
                 case 'classroom':
                     foreach ($format_options as $option) {
-                        if ($option->name = 'location') {
+                        if ($option->name == 'location') {
                             if ($option->value) {
                                 $out .= '<h5 class="label_home">' . get_string('home_location','local_course_page') . '</h5>';
                                 $out .= '<div class="extra_home">' . $option->value . '</div>';
