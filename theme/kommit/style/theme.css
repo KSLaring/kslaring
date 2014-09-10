@@ -1188,7 +1188,7 @@ body {
   border: 1px solid;
   border-color: #e8e8e8 #ffffff #e8e8e8 #e8e8e8;
   padding: .5em 1% 1em 2%;
-  margin: 0 0 1em -2%;
+  margin: 0 0 1em 0%;
 }
 .format-netcourse #block-region-content-bottom .title h2,
 .format-classroom #block-region-content-bottom .title h2 {
