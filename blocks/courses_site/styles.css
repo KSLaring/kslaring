@@ -106,7 +106,7 @@
     float: left;
     text-align: left;
     color:#0E7B9E;
-    width: 28%;
+    width: 45%;
     display: inline-block;
 }
 
@@ -119,7 +119,7 @@
     float: right;
     text-align: right;
     font-weight: normal;
-    width: 59%;
+    width: 50%;
     display: inline-block;
     white-space: -moz-pre-wrap !important;  /* Mozilla, since 1999 */
     white-space: -pre-wrap;      /* Opera 4-6 */
