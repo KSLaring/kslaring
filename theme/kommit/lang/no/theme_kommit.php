@@ -22,9 +22,9 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-$string['choosereadme'] = 'Hei, jeg er kommit';
+$string['choosereadme'] = 'Hei, jeg er Kommit-designet';
 
-$string['configtitle'] = 'kommit';
+$string['configtitle'] = 'Kommit';
 
 $string['customcss'] = 'Egendefinert CSS';
 $string['customcssdesc'] = 'All CSS du legger til her vil benyttes på alle sider og gjør det lettere å gjøre mindre endringer i dette designet.';

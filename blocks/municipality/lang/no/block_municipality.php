@@ -17,11 +17,11 @@ $string['name']         = 'Kommune';
 
 $string['edit_muni']    = 'Legg til kommune';
 
-$string['municipality:myaddinstance'] = 'Add a new Municipality block to My home';
-$string['municipality:addinstance'] = 'Add a new Municipality block';
+$string['municipality:myaddinstance'] = 'Legg til en ny kommuneblokk på Min startside';
+$string['municipality:addinstance'] = 'Legg til en ny kommuneblokk';
 
 $string['title']        = 'Kommune';
-$string['required']     = 'Dette feltet er nødvendig';
+$string['required']     = 'Dette feltet er obligatorisk';
 $string['save']         = 'Lagre';
 $string['choose_muni']  = 'Velg kommune ...';
 $string['sel_muni']     = 'Kommuner';

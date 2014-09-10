@@ -9,5 +9,5 @@ $string['countrycode']          = 'NO';
 $string['loginerrortext']       = 'Kurskoden er feil.';
 $string['createusererrortext'] = 'Moodle melder om en brukerfeil.';
 
-$string['leave_link']           = 'Return Link:';
+$string['leave_link']           = 'Returlenke:';
 $string['leave_value']          = 'https://kurs.kommit.no';

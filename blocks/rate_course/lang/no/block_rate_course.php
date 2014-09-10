@@ -38,8 +38,8 @@ $string['intro'] = 'Vennligst angi hvor høyt du vurderer dette kurset.';
 $string['submit'] = 'Send inn min vurdering';
 $string['noguestuseage'] = 'For å vurderdere dette kurset må du være innlogget.';
 $string['rate_course:rate'] ='Gi en vurdering til et kurs';
-$string['rating_alt0'] ='Kursvurdering: Ingen vurdering gitt.';
-$string['rating_altnum'] ='Kursvurdering: {$a} stjerner.';
+$string['rating_alt0'] ='Course rating: Ingen vurderinger gitt.';
+$string['rating_altnum'] ='Course rating: {$a} stjerner.';
 $string['rating_users'] ='Vurdert av {$a} kursdeltakere)';
 $string['editingsitehome'] = 'Denne blokken vil kun vise kursvurderinger på kurssiden, og skjules alle andre steder.';
 

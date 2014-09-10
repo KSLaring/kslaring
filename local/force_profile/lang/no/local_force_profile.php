@@ -35,10 +35,10 @@ $string['not_selected']      = 'Det er ikke valgt noen felt fra listen';
 
 $string['msg_force_update'] = 'Du må oppdatere brukerprofilen din';
 
-$string['county']       = 'County';
-$string['sel_county']   = 'Choose a county...';
+$string['county']       = 'Fylke';
+$string['sel_county']   = 'Velg et fylke...';
 
-$string['municipality']     = 'Municipality';
-$string['sel_municipality'] =  'Choose a municipality...';
+$string['municipality']     = 'Kommune';
+$string['sel_municipality'] =  'Velg en kommune...';
 
-$string['filtermunilist'] = 'Select your municipality from the menu or enter the first letters to reduce the list.';
+$string['filtermunilist'] = 'Velg kommunen din fra menyen eller skriv første bokstav for å korte ned listen.';

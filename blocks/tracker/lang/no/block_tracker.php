@@ -11,8 +11,8 @@
  * @author          efaktor     (fbv)
  */
 
-$string['pluginname']   = 'Tracker';
-$string['name']         = 'Tracker';
+$string['pluginname']   = 'Min side';
+$string['name']         = 'Min side';
 
-$string['tracker:addinstance']      = 'Add a new Tracker block';
-$string['tracker:myaddinstance']    = 'Add a new Tracker block';
+$string['tracker:addinstance']      = 'Legg til en ny Min side-blokk';
+$string['tracker:myaddinstance']    = 'Legg til en ny Min side-blokk';
