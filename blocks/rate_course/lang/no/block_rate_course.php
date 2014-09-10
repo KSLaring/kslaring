@@ -45,6 +45,6 @@ $string['editingsitehome'] = 'Denne blokken vil kun vise kursvurderinger på kur
 
 // Questionnaire integration.
 $string['survey'] = 'Hva er spørreskjemaets navn?';
-$string['survey_help'] = 'Dette er spørreundersøkelsesn som det blir lenket til (la feltet være tomt for IKKE å lenke til spørreundersøkelsen)';
+$string['survey_help'] = 'Dette er spørreundersøkelsen som det blir lenket til (la feltet være tomt for IKKE å lenke til spørreundersøkelsen)';
 $string['viewreview'] = 'Vis responser fra spørreundersøkelsen';
-$string['add_comments'] = 'Add your comments';
+$string['add_comments'] = 'Legg til kommentar';
