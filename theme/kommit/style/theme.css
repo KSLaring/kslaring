@@ -899,6 +899,9 @@ a.autolink.glossary {
 .path-mod-scorm .scorm-center {
   text-align: left;
 }
+#page-mod-feedback-delete_completed .mform .fitem .felement {
+  margin-left: 165px;
+}
 body {
   padding-top: 0px;
   background: #f2f2f3;
