@@ -902,6 +902,12 @@ a.autolink.glossary {
 #page-mod-feedback-delete_completed .mform .fitem .felement {
   margin-left: 165px;
 }
+#page-mod-feedback-edit .mform .fitem div.fitemtitle {
+  width: 235px;
+}
+#page-mod-feedback-edit .mform .fitem .felement {
+  margin-left: 245px;
+}
 body {
   padding-top: 0px;
   background: #f2f2f3;
