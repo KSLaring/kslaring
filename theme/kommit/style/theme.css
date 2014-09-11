@@ -1375,6 +1375,12 @@ div.loginpanel h2 {
 .home_page_block_two .manager .extra_coordinator {
   display: block;
 }
+.home_page_block_two .ratings .content_rating_bar {
+  background: none;
+}
+.home_page_block_two .rating_bar_block .rating_bar {
+  background: #e8e8e8;
+}
 @media (max-width: 600px) {
   .logo-area {
     padding: 20px 19px;
