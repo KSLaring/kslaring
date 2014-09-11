@@ -486,6 +486,23 @@ Courses and categories lists, from Mary Evans
 .coursebox .enrolmenticons {
   float: right;
 }
+/* Align course search box course page
+// Jon Jack
+*/
+.coursesearchbox input[type="text"],
+.coursesearchbox input[type="search"] {
+  margin-bottom: 0;
+  width: 200px;
+}
+#coursesearch2 {
+  float: right;
+  padding: 10px 20px 10px 0;
+}
+#coursesearch2 input[type="text"],
+#coursesearch2 input[type="search"] {
+  margin-bottom: 0;
+  width: 200px !important;
+}
 .toggle_switch {
   position: relative;
   float: left;
@@ -936,38 +953,21 @@ body {
   margin: 19px 0px;
   padding: 0px;
 }
-.header-center {
-  float: left;
-  width: 16px;
-  height: 54px;
-  transform: scale(0.28, 0.28);
-  -ms-transform: scale(0.28, 0.28);
-  -webkit-transform: scale(0.28, 0.28);
-}
 .header-right {
   float: right;
   background-image: url([[pix:theme|header_curve]]);
   width: 540px;
   height: 100px;
+  min-height: 100px;
 }
-.header-right .social {
+.header-right .muni-logo {
+  display: block;
   float: right;
-  position: relative;
-  top: 40px;
+  padding: 40px 30px;
 }
-.header-right .social .col1,
-.header-right .social .col2 {
-  display: inline-block;
-  width: 40px;
-  height: 40px;
-  margin: 10px;
-}
-.header-right .social .col1 .fa,
-.header-right .social .col2 .fa {
-  color: #003876;
-  margin: 0;
-  padding: 2px;
-  border: 2px solid #003876;
+.header-right .muni-logo img {
+  float: right;
+  width: 25%;
 }
 #page-footer {
   width: 100%;
@@ -975,7 +975,6 @@ body {
   text-align: left;
   background: #1a1a1a;
   border-top: 3px solid #00aef0;
-  padding: 0;
 }
 #page-footer h4 {
   text-align: left;
@@ -986,7 +985,7 @@ body {
 #page-footer #page-footer-inner {
   margin: 0 auto;
   max-width: 1200px;
-  padding: 0 0%;
+  padding: 0;
   text-align: left;
   position: relative;
 }
@@ -997,20 +996,39 @@ body {
   padding: 0 20px;
   color: white;
 }
-#page-footer #page-footer-inner .column {
-  display: inline-block;
+#page-footer #page-footer-inner .footer-left {
+  display: block;
   vertical-align: top;
-  height: 80px;
-  width: 15%;
-  max-width: 200px;
+  float: left;
   padding: 0 5px;
 }
-#page-footer #page-footer-inner .column .footer-logo {
+#page-footer #page-footer-inner .footer-left .footer-logo {
   padding: 20px;
 }
-#page-footer #page-footer-inner .column p {
+#page-footer #page-footer-inner .footer-left p {
   font-size: 13.504px;
-  color: #7e7e7e;
+  color: white;
+}
+#page-footer #page-footer-inner .footer-right {
+  float: right;
+  display: block;
+}
+#page-footer #page-footer-inner .footer-right .social {
+  padding: 20px;
+}
+#page-footer #page-footer-inner .footer-right .social .col1,
+#page-footer #page-footer-inner .footer-right .social .col2 {
+  display: inline-block;
+  width: 40px;
+  height: 40px;
+  margin: 10px;
+}
+#page-footer #page-footer-inner .footer-right .social .col1 .fa,
+#page-footer #page-footer-inner .footer-right .social .col2 .fa {
+  color: white;
+  margin: 0;
+  padding: 2px;
+  border: 2px solid white;
 }
 .profilepicture {
   border: 1px solid #cccccc;
