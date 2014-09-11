@@ -1257,6 +1257,10 @@ body {
 p.active_tree_node a {
   color: #00aef0 !important;
 }
+.format-netcourse #region-main form,
+.format-classroom #region-main form {
+  margin: 30px 20px;
+}
 .loginpanel {
   border: 1px solid #cccccc;
   -webkit-border-radius: 4px;
