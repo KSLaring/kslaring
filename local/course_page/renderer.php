@@ -568,7 +568,7 @@ class local_course_page_renderer extends plugin_renderer_base {
                     $i ++;
                 }//for_lastcomments
             }else {
-                $out .= '<div class="ratings_review">No comments</div>';
+                $out .= '<div class="ratings_review">' . get_string('not_comments','local_course_page') . '</div>';
                 $disabled = 'disabled';
             }//if_lst_comments
 
