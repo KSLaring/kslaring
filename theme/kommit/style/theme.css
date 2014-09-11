@@ -1423,6 +1423,22 @@ div.loginpanel h2 {
   .breadcrumb > li:last-child {
     display: inline-block;
   }
+  .course_extra .col_one {
+    float: left;
+    text-align: left;
+    width: 100%;
+    display: block;
+  }
+  .course_extra .col_three {
+    float: left;
+    text-align: left;
+    width: 100%;
+    display: block;
+  }
+  .course_extra .col_two {
+    width: 100%;
+    display: block;
+  }
 }
 @media (max-width: 767px) {
   .top-border {
