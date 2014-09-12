@@ -1344,9 +1344,10 @@ div.loginpanel h2 {
 #page-course-index-category .generalbox.info {
   margin: 0;
   background: none;
-  padding: 1px;
+  padding: 2px;
   margin-bottom: 15px;
   border: none;
+  border-radius: 0;
 }
 #page-course-index-category .generalbox.info img {
   margin: 0 !important;
