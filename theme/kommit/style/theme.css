@@ -692,6 +692,9 @@ a.autolink.glossary {
 #page-mod-lesson-continue div[role=main] form > .singlebutton input[type=submit] {
   margin: 0;
 }
+#page-mod-lesson-continue div[role=main] .singlebutton form input[type=submit] {
+  margin: 0;
+}
 @media (max-width: 767px) {
   #page-mod-lesson-continue div[role=main] {
     margin-right: 0;
@@ -1322,7 +1325,7 @@ div.loginpanel h2 {
 }
 .coursebox .panel-heading {
   font-size: 21.328px;
-  line-height: 31.991999999999997px;
+  line-height: 31.992px;
 }
 #page-course-index-category .categorypicker {
   text-align: right;

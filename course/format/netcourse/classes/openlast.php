@@ -276,7 +276,7 @@ class format_netcourse_openlast {
                 $url = new moodle_url('/' . $module . '/view.php?id=' . $cmid);
             }
 
-            // Exclude resource modules to avoid the repeated automtic download trap
+            // Exclude resource modules to avoid the repeated automatic download trap
             if (strpos($row->component, 'resource') !== false) {
                 $url = null;
             }
