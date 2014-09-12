@@ -275,6 +275,11 @@ class format_netcourse_openlast {
             if ($DB->record_exists('course_modules', array('id' => $cmid))) {
                 $url = new moodle_url('/' . $module . '/view.php?id=' . $cmid);
             }
+
+            // Exclude resource modules to avoid the repeated automtic download trap
+            if (strpos($row->component, 'resource') !== false) {
+                $url = null;
+            }
         }
 
         // return the values as an array
