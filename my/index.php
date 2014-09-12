@@ -150,10 +150,18 @@ if ($PAGE->user_allowed_editing()) {
         $resetbutton = $OUTPUT->single_button($reseturl, $resetstring);
     }
 
-    $url = new moodle_url("$CFG->wwwroot/my/index.php", $params);
-    $button = $OUTPUT->single_button($url, $editstring);
-    $PAGE->set_button($resetbutton . $button);
-
+    /**
+     * @updateDate  12/10/2014
+     * @author      eFaktor     (fbV)
+     *
+     * Description
+     * Remove the edit button
+     */
+    if (is_siteadmin($USER->id)) {
+        $url = new moodle_url("$CFG->wwwroot/my/index.php", $params);
+        $button = $OUTPUT->single_button($url, $editstring);
+        $PAGE->set_button($resetbutton . $button);
+    }
 } else {
     $USER->editing = $edit = 0;
 }
