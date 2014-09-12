@@ -1325,7 +1325,7 @@ div.loginpanel h2 {
 }
 .coursebox .panel-heading {
   font-size: 21.328px;
-  line-height: 31.992px;
+  line-height: 31.991999999999997px;
 }
 #page-course-index-category .categorypicker {
   text-align: right;
@@ -1336,10 +1336,20 @@ div.loginpanel h2 {
   margin-bottom: 5px;
 }
 #page-course-index-category .generalbox.info {
-  margin: 1em 0;
+  margin: 0;
   background: white;
-  padding: 10px 20px;
+  padding: 0px;
   color: #7e7e7e;
+}
+#page-course-index-category .generalbox.info {
+  margin: 0;
+  background: none;
+  padding: 1px;
+  margin-bottom: 15px;
+  border: none;
+}
+#page-course-index-category .generalbox.info img {
+  margin: 0 !important;
 }
 #page-enrol-index #block-region-side-pre {
   display: none;
