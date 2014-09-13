@@ -19,6 +19,7 @@ define('COMPANY_REPORT_FORMAT_LIST', 'report_format_list');
 class company_report {
     protected static $company;
     protected static $not_allowed;
+    private   static    $users_filter;
 
     /* CONSTRUCTOR      */
     public function __construct() {
@@ -40,6 +41,16 @@ class company_report {
     public static function get_MyCompany() {
         return self::$company;
     }//get_Mycompany
+
+    public static function get_UsersFilter() {
+        return self::$users_filter;
+    }//set_UsersFilter
+
+    /* PUBLIC SET       */
+    public static function set_UsersFilter($lst_users) {
+        self::$users_filter = $lst_users;
+    }//set_UsersFilter
+
 
     /* PUBLIC FUNCTIONS */
 
@@ -136,7 +147,7 @@ class company_report {
         }catch(Exception $ex) {
             throw $ex;
         }//try_catch
-    }//report_generator_UsersNotMyCompanies
+    }//company_report_UsersNotMyCompanies
 
     /**
      * @static
@@ -516,8 +527,9 @@ class company_report {
 
         try {
             /* Get Users Filter */
-            if (isset($SESSION->bulk_users) && !empty($SESSION->bulk_users)) {
-                $filter_users = implode(',',$SESSION->bulk_users);
+            $filter_users = self::get_UsersFilter();
+            if ($filter_users) {
+                $filter_users = implode(',',$filter_users);
             }//if_SESSION
 
             /* Search Params    */

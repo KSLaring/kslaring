@@ -152,25 +152,47 @@ class user_filter_profilefield extends user_filter_type {
             return '';
         }
 
+        /**
+         * @updateDate  19/03/2014
+         * @author      eFaktor     (fbv)
+         *
+         * Description
+         * Competence Manager Profile works different. It must take a look in the mdl_report_gen_jobrole and mdl_report_gen_companydata
+         */
         switch($operator) {
             case 0: // Contains.
                 $where = $DB->sql_like('data', ":$name", false, false);
+                $rgcompany  = $DB->sql_like('rgc.name', ":$name", false, false);
+                $rgjobrole  = $DB->sql_like('rgj.name', ":$name", false, false);
+
                 $params[$name] = "%$value%";
                 break;
             case 1: // Does not contain.
                 $where = $DB->sql_like('data', ":$name", false, false, true);
+                $rgcompany  = $DB->sql_like('rgc.name', ":$name", false, false, true);
+                $rgjobrole  = $DB->sql_like('rgj.name', ":$name", false, false, true);
+
                 $params[$name] = "%$value%";
                 break;
             case 2: // Equal to.
                 $where = $DB->sql_like('data', ":$name", false, false);
+                $rgcompany  = $DB->sql_like('rgc.name', ":$name", false, false);
+                $rgjobrole  = $DB->sql_like('rgj.name', ":$name", false, false);
+
                 $params[$name] = "$value";
                 break;
             case 3: // Starts with.
                 $where = $DB->sql_like('data', ":$name", false, false);
+                $rgcompany  = $DB->sql_like('rgc.name', ":$name", false, false);
+                $rgjobrole  = $DB->sql_like('rgj.name', ":$name", false, false);
+
                 $params[$name] = "$value%";
                 break;
             case 4: // Ends with.
                 $where = $DB->sql_like('data', ":$name", false, false);
+                $rgcompany  = $DB->sql_like('rgc.name', ":$name", false, false);
+                $rgjobrole  = $DB->sql_like('rgj.name', ":$name", false, false);
+
                 $params[$name] = "%$value";
                 break;
             case 5: // Empty.
@@ -179,6 +201,9 @@ class user_filter_profilefield extends user_filter_type {
                 break;
             case 6: // Is not defined.
                 $op = " NOT IN ";
+                $rgcompany  = "rgc.name = :$name";
+                $rgjobrole  = "rgj.name = :$name";
+
                 break;
             case 7: // Is defined.
                 break;
@@ -192,7 +217,35 @@ class user_filter_profilefield extends user_filter_type {
         if ($where !== '') {
             $where = "WHERE $where";
         }
+
+        /**
+         * @updateDate  19/03/2014
+         * @author      eFaktor     (fbv)
+         *
+         * Description
+         * Competence Manager Profile works different. It must take a look in the mdl_report_gen_jobrole and mdl_report_gen_companydata
+         */
+        switch ($profilefields[$profile]) {
+            case 'rgcompany':
+                $sql = " SELECT 	userid
+                         FROM 		{user_info_data} 	        uid
+                            JOIN	{report_gen_companydata}	rgc		ON 		rgc.id = uid.data
+                                                                        AND		$rgcompany
+                         WHERE 		fieldid=" . $profile;
+
+                return array("id $op ($sql)", $params);
+            case 'rgjobrole':
+                $sql = " SELECT 	userid
+                         FROM 		{user_info_data} 	        uid
+                            JOIN	{report_gen_jobrole}	    rgj		ON 		rgj.id = uid.data
+                                                                        AND		$rgjobrole
+                         WHERE 		fieldid=" . $profile;
+
+                return array("id $op ($sql)", $params);
+            default:
         return array("id $op (SELECT userid FROM {user_info_data} $where)", $params);
+        }//switch
+
     }
 
     /**

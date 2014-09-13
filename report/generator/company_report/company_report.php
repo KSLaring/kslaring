@@ -130,6 +130,14 @@ if ($form->is_cancelled()) {
     $data_form = (Array)$data;
 
     /* Report   */
+    if (!$SESSION->bulk_users) {
+        company_report::company_report_AddSelectionAll($user_filter);
+        company_report::set_UsersFilter($SESSION->bulk_users);
+        unset($SESSION->bulk_users);
+    }else {
+        company_report::set_UsersFilter($SESSION->bulk_users);
+    }//if_sesion_users_bulk
+
     $report             = $company_report::company_report_GetTracker();
     $report->return     = $url;
 
