@@ -222,14 +222,14 @@
     display: block;
 }
 .home_page_block_two   .rating_bar_block .rating_value .rating_value_num{
-    width: 12%;
+    //width: 12%;
     text-indent: 5px;
     float:left;
     text-align: left;
     font-size: 0.9em;
 }
 .home_page_block_two   .rating_bar_block .rating_value .rating_value_per{
-    width: 8%;
+    //width: 8%;
     float: left;
     text-align: left;
     font-size: 0.7em;

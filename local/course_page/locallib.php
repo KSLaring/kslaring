@@ -518,8 +518,8 @@ class course_page  {
             $bar_out .= '</div>';
 
             $bar_out .= '<div class="rating_value">';
-                $bar_out .= '<div class="rating_value_num">' . $w . '</div>';
-                $bar_out .= '<div class="rating_value_per">(%)</div>';
+                $bar_out .= '<div class="rating_value_num">' . $w.'</div>';
+                $bar_out .= '<div class="rating_value_per"> %</div>';
             $bar_out .='</div>';
         $bar_out .= '</div>';//rating_bar_block
 
