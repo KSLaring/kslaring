@@ -517,6 +517,11 @@ Courses and categories lists, from Mary Evans
 .format-netcourse .mform .fitem .felement input[size] {
   width: 100%;
 }
+.empty-region-side-pre #region-bs-main-and-pre.span9 #region-main,
+.jsenabled.docked-region-side-pre #region-bs-main-and-pre.span9 #region-main {
+  float: none;
+  width: 96%;
+}
 .toggle_switch {
   position: relative;
   float: left;
