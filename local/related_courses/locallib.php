@@ -13,6 +13,7 @@
  *
  */
 
+
 /**
  * @param           $course_id
  * @return          array
@@ -40,9 +41,9 @@ function local_related_courses_getMyRelatedCourses($course_id) {
         $sql = " SELECT		c.id,
                             c.fullname
                  FROM		{course} 	c
-                    JOIN	{enrol}	    e 	ON 	e.customint1  = c.id
+                    JOIN	{enrol}	    e 	ON 	e.customint1  = :course_id
                                             AND	e.enrol 	  = :enrol
-                                            AND	e.courseid 	  = :course_id
+                                            AND	e.courseid 	  = c.id
                  WHERE      c.visible = 1
                  ORDER BY	c.fullname ASC ";
 
@@ -127,8 +128,8 @@ function local_related_courses_AddCourse($course_id,$lst_related) {
             $instance = new stdClass();
             $instance->enrol        = 'meta';
             $instance->status       = 0;
-            $instance->courseid     = $course_id;
-            $instance->customint1   = $rel;
+            $instance->courseid     = $rel;
+            $instance->customint1   = $course_id;
             $instance->timcreated   = $time;
             $instance->timemodified = $time;
 
@@ -159,10 +160,11 @@ function local_related_courses_RemoveCourse($course_id,$lst_related) {
         $params = array();
         $params['enrol']    = 'meta';
         $params['status']   = 0;
-        $params['courseid'] = $course_id;
+
+        $params['customint1'] = $course_id;
 
         foreach ($lst_related as $rel) {
-            $params['customint1'] = $rel;
+            $params['courseid'] = $rel;
 
             /* Delete   */
             $DB->delete_records('enrol',$params);
