@@ -22,9 +22,8 @@ class profile_field_rgjobrole extends profile_field_base {
         /// get the actual companylist for menu
         $options = $this->get_report_jobroles();
         $this->options = array();
-        if ($this->field->required){
-            $this->options[''] = get_string('choose').'...';
-        }
+
+        $this->options[''] = get_string('choose').'...';
 
         if ($options) {
             foreach ($options as $key => $option) {
