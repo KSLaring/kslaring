@@ -56,4 +56,4 @@ $string['net_course']               = 'Nettkurs';
 $string['class_course']             = 'Klasserom';
 $string['whitepaper']               = 'Dokumentformat';
 $string['btn_more']                 = 'Mer';
-$string['not_comments']             = 'Not comments';
+$string['not_comments']             = 'Ingen kommentarer';
