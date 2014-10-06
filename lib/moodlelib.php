@@ -1168,10 +1168,11 @@ function clean_param($param, $type) {
 
         case PARAM_USERNAME:
             $param = fix_utf8($param);
-            $param = str_replace(" " , "", $param);
+            $param = trim($param);
             // Convert uppercase to lowercase MDL-16919.
             $param = core_text::strtolower($param);
             if (empty($CFG->extendedusernamechars)) {
+                $param = str_replace(" " , "", $param);
                 // Regular expression, eliminate all chars EXCEPT:
                 // alphanum, dash (-), underscore (_), at sign (@) and period (.) characters.
                 $param = preg_replace('/[^-\.@_a-z0-9]/', '', $param);
@@ -8613,7 +8614,8 @@ function getremoteaddr($default='0.0.0.0') {
     }
     if (!($variablestoskip & GETREMOTEADDR_SKIP_HTTP_X_FORWARDED_FOR)) {
         if (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
-            $address = cleanremoteaddr($_SERVER['HTTP_X_FORWARDED_FOR']);
+            $hdr = explode(",", $_SERVER['HTTP_X_FORWARDED_FOR']);
+            $address = cleanremoteaddr($hdr[0]);
             return $address ? $address : $default;
         }
     }
