@@ -26,7 +26,7 @@ class generator_import_structure_form extends moodleform {
         $form->addElement('html','</br>');
 
         /* Level to Import  */
-        $options = report_generator_get_level_list_to_import();
+        $options = Import_Companies::GetLevel_To_Import();
         $url = new moodle_url('/report/generator/import_structure/import.php');
         $form->addElement('select', 'level',get_string('level_to_import','report_generator'),$options,'onchange=getLevelImport("level","' . $url .'")');
         $form->addRule('level', null, 'required');
@@ -38,21 +38,21 @@ class generator_import_structure_form extends moodleform {
         switch ($level) {
             case 2:
                 /* Company Parent   */
-                $options = report_generator_get_list_parent_import($level);
+                $options = Import_Companies::GetParentList_ToImport($level);
                 $form->addElement('select', 'parent_1',get_string('comp_parent_1','report_generator'),$options);
                 $form->addRule('parent_1', null, 'required');
                 break;
             case 3:
                 /* Company Parent   */
-                $options = report_generator_get_list_parent_import($level-1);
+                $options = Import_Companies::GetParentList_ToImport($level-1);
                 $form->addElement('select', 'parent_1',get_string('comp_parent_1','report_generator'),$options,'onchange=getParentTwoImport("parent_1")');
                 $form->addRule('parent_1', null, 'required');
                 if (isset($_COOKIE['parentImportTwo']) && isset($_COOKIE['parentImportTwo']) != 0) {
                     $form->setDefault('parent_1',$_COOKIE['parentImportTwo']);
-                    $options = report_generator_get_list_parent_import($level,$_COOKIE['parentImportTwo']);
+                    $options = Import_Companies::GetParentList_ToImport($level,$_COOKIE['parentImportTwo']);
                 }else {
                     $form->setDefault('parent_1',0);
-                    $options = report_generator_get_list_parent_import(0);
+                    $options = Import_Companies::GetParentList_ToImport(0);
                 }//if_cookie
 
                 /* Company Parent   */

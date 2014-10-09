@@ -33,6 +33,8 @@ $string['level3'] = 'Companies - Level 3';
 $string['unit'] = 'Unit';
 $string['company'] = 'Company';
 $string['completed'] = 'Completed';
+$string['progress']     = 'In Progress';
+$string['not_start']    = 'Not Enrol';
 $string['expires'] = 'Expires';
 $string['username'] = 'Name';
 $string['count'] = 'Amount';
@@ -157,6 +159,7 @@ $string['job_roles_for_outcome'] = 'Connected job role/s';
 
 $string['outcome'] = 'Outcome';
 $string['outcomes'] = 'Outcomes';
+$string['edit_outcome'] = 'Edit Outcomes';
 $string['outcome_note'] = 'This page will show the outcome expiration form.';
 $string['expiration_period'] = 'Expiration period';
 $string['expiration_period_in_month'] = 'Expiration period<br/>(in Month)';

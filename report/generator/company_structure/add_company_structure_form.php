@@ -3,7 +3,6 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once($CFG->libdir . '/adminlib.php');
 require_once($CFG->libdir.'/formslib.php');
 $PAGE->requires->js('/report/generator/js/muni.js');
 
@@ -27,7 +26,7 @@ class generator_add_company_structure_form extends moodleform {
         /* Add reference's parents */
         $parents = $SESSION->parents;
         if ($level > 1) {
-            $parent_name = report_generator_get_parent_name($level-1,$parents[$level-1]);
+            $parent_name = company_structure::Get_Company_ParentName($level-1,$parents[$level-1]);
             $m_form->addElement('text','parent_' . $level-1,'Company Parent - Level ' . ($level-1),'size = 50 readonly');
             $m_form->setDefault('parent_' . $level-1,$parent_name);
             $m_form->setType('parent_' . $level-1,PARAM_TEXT);
@@ -37,17 +36,17 @@ class generator_add_company_structure_form extends moodleform {
 
         if ($level > 1) {
             $company_parent = array_flip($parents);
-            $companies  = report_generator_get_level_list(1);
+            $companies  = company_structure::Get_Companies_LevelList(1);
             $companies  = array_diff_key($companies,$company_parent);
 
             if ($level > 2) {
                 $parent_lst = implode(',',array_keys($companies));
-                $companies  = report_generator_get_level_list($level-1,$parent_lst);
+                $companies  = company_structure::Get_Companies_LevelList($level-1,$parent_lst);
                 $companies  = array_diff_key($companies,$company_parent);
             }
 
             $parent_lst = implode(',',array_keys($companies));
-            $options = report_generator_get_level_list($level,$parent_lst);
+            $options = company_structure::Get_Companies_LevelList($level,$parent_lst);
             $m_form->addElement('select','other_company',get_string('existing_item','report_generator'),$options);
         }//if_level_>_1
 
@@ -93,26 +92,19 @@ class generator_add_company_structure_form extends moodleform {
         if (empty($data['name'])) {
             if (!$data['other_company']) {
                 $errors['name'] = get_string('missing_name','report_generator');
-
-                return $errors;
             }//other_company
         }//data_name
 
-        if ($data['name']) {
-            $name = $data['name'];
-        }else {
-            $name = report_generator_get_company_name($data['other_company']);
-        }//if_data_name
-
         if ($level > 1) {
                 $index = $level-1;
-                $bln_exist = report_generator_exists_company($level,$data,$parents[$index]);
+                $bln_exist = company_structure::Exists_Company($level,$data,$parents[$index]);
         }else {
-                $bln_exist = report_generator_exists_company($level,$data);
+                $bln_exist = company_structure::Exists_Company($level,$data);
         }
         if ($bln_exist) {
             $errors['name'] = get_string('exists_name','report_generator');
-            return $errors;
         }//if_exist
+
+        return $errors;
     }//validation
 }//generator_add_company_structure_form

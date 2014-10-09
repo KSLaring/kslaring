@@ -16,12 +16,15 @@
  */
 
 require_once('../../../config.php');
-require_once( '../locallib.php');
+require_once( 'outcomerptlib.php');
 require_once('outcome_report_level_form.php');
 require_once($CFG->libdir . '/adminlib.php');
 
-/* Params */
 require_login();
+
+/* Params */
+$url        = new moodle_url('/report/generator/outcome_report/outcome_report.php');
+$return_url = new moodle_url('/report/generator/index.php');
 
 $site_context = CONTEXT_SYSTEM::instance();
 $site = get_site();
@@ -30,7 +33,12 @@ $PAGE->https_required();
 $PAGE->set_context($site_context);
 
 $PAGE->set_pagelayout('report');
-$PAGE->set_url('/report/generator/outcome_report/outcome_report.php');
+$PAGE->set_url($url);
+
+$PAGE->set_title($SITE->fullname);
+$PAGE->set_heading($SITE->fullname);
+$PAGE->navbar->add(get_string('report_generator','local_tracker'),$return_url);
+$PAGE->navbar->add(get_string('outcome_report', 'report_generator'),$url);
 
 /* ADD require_capability */
 require_capability('report/generator:viewlevel3', $site_context);
@@ -62,8 +70,7 @@ require('../tabs.php');
 echo $OUTPUT->heading(get_string('outcome_report', 'report_generator'));
 
 /* Report Levels Links  */
-echo get_string('underconstruction','report_generator');
-//report_generator_print_report_page($current_tab,$site_context);
+outcome_report::GetLevelLink_ReportPage($current_tab,$site_context);
 
 /* Print Fo>r */
 echo $OUTPUT->footer();

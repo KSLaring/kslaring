@@ -360,9 +360,9 @@ class company_report {
             }//if_my_users
 
             /* Add Outcome Courses      */
-            self::company_report_CreateExcelSheet($report->outcomes,$outcomes_courses,$report->my_users,$export);
+            self::company_report_CreateExcelSheet($report->company,$report->outcomes,$outcomes_courses,$report->my_users,$export);
             /* Add Individual Courses   */
-            self::company_report_AddIndividualCourses($individual,$report->my_users,$export);
+            self::company_report_AddIndividualCourses($report->company,$individual,$report->my_users,$export);
 
             $export->close();
             exit;
@@ -1123,6 +1123,7 @@ class company_report {
 
     /**
      * @static
+     * @param           $company
      * @param           $outcomes
      * @param           $outcomes_courses
      * @param           $my_users
@@ -1135,7 +1136,7 @@ class company_report {
      * Description
      * Create a new Sheet of Excel book
      */
-    protected static function company_report_CreateExcelSheet($outcomes,$outcomes_courses,$my_users,&$export) {
+    protected static function company_report_CreateExcelSheet($company,$outcomes,$outcomes_courses,$my_users,&$export) {
         /* Variables    */
 
         try {
@@ -1146,7 +1147,7 @@ class company_report {
 
             /* Courses */
             /* Header Table */
-            self::company_report_AddExcelHeaderTable($row,$my_xls,false);
+                self::company_report_AddExcelHeaderTable($company,$outcome->name,$row,$my_xls,false);
 
             foreach ($my_users as $user) {
                     if ($outcomes_courses[$outcome->id][$user->id]) {
@@ -1166,6 +1167,7 @@ class company_report {
                             self::company_report_AddExcelCompletedTable($my_courses->completed,$user->name,$outcome->expiration,$row,$my_xls,false);
                 }//if_compelted
 
+                        $my_xls->merge_cells($row,0,$row,17);
                 $row ++;
                     }
             }//for_my_users
@@ -1177,6 +1179,7 @@ class company_report {
 
     /**
      * @static
+     * @param           $company
      * @param           $courses
      * @param           $my_users
      * @param           $export
@@ -1187,14 +1190,14 @@ class company_report {
      * Description
      * Add the individual courses
      */
-    protected static function company_report_AddIndividualCourses($courses,$my_users,&$export) {
+    protected static function company_report_AddIndividualCourses($company,$courses,$my_users,&$export) {
         /* Variables */
         $row = 0;
 
         // Adding the worksheet
         $my_xls = $export->add_worksheet(get_string('individual_courses','local_tracker'));
         /* Header Table */
-        self::company_report_AddExcelHeaderTable($row,$my_xls,true);
+        self::company_report_AddExcelHeaderTable($company,null,$row,$my_xls,true);
 
         foreach ($my_users as $user) {
             $my_courses = $courses[$user->id];
@@ -1214,6 +1217,7 @@ class company_report {
                 self::company_report_AddExcelCompletedTable($completed,$user->name,0,$row,$my_xls,true);
             }//if_compelted
 
+                $my_xls->merge_cells($row,0,$row,14);
                 $row ++;
             }//my_courses
         }//for_my_users
@@ -1253,6 +1257,8 @@ class company_report {
 
     /**
      * @static
+     * @param           $company
+     * @param           null | $outcome
      * @param           $row
      * @param           $my_xls
      * @param           bool $individual
@@ -1264,34 +1270,66 @@ class company_report {
      * Description
      * Add the header of the table
      */
-    protected static function company_report_AddExcelHeaderTable(&$row,&$my_xls,$individual = false) {
+    protected static function company_report_AddExcelHeaderTable($company,$outcome=null,&$row,&$my_xls,$individual = false) {
         /* Varaibles    */
-        $str_user           = get_string('user');
-        $str_course         = get_string('course');
-        $str_state          = get_string('state','local_tracker');
-        $str_valid          = get_string('outcome_valid_until','local_tracker');
-        $str_completion     = get_string('completion_time','local_tracker');
+        $str_user           = strtoupper(get_string('user'));
+        $str_course         = strtoupper(get_string('course'));
+        $str_state          = strtoupper(get_string('state','local_tracker'));
+        $str_valid          = strtoupper(get_string('outcome_valid_until','local_tracker'));
+        $str_completion     = strtoupper(get_string('completion_time','local_tracker'));
 
         try {
-            $row ++;
-            $row ++;
+            /* Company Name  */
             $col = 0;
+            $my_xls->write($row, $col, $company,array('size'=>14, 'name'=>'Arial','bold'=>'1','color' => '#004b93','bg_color'=>'#efefef','text_wrap'=>true,'v_align'=>'center'));
+            $my_xls->merge_cells($row,$col,$row,$col+10);
+            $my_xls->set_row($row,25);
+
+            /* Outcome Name */
+            if ($outcome) {
+            $row ++;
+                $title_out          = get_string('outcome', 'report_generator')  . ' - ' . $outcome;
+                $my_xls->write($row, $col, $title_out,array('size'=>12, 'name'=>'Arial','bold'=>'1','color' => '#004b93','text_wrap'=>true,'v_align'=>'center'));
+                $my_xls->merge_cells($row,$col,$row,$col+10);
+                $my_xls->set_row($row,25);
+            }//if_outcome
+
+            /* Merge Cells  */
+            $row ++;
+            $my_xls->merge_cells($row,$col,$row,$col+10);
+            $row++;
+            $my_xls->merge_cells($row,$col,$row,$col+10);
+            $row ++;
 
             /* User     */
-            $my_xls->write_string($row, $col, $str_user,array('size'=>12, 'name'=>'Arial','bold'=>'1'));
+            $my_xls->write($row, $col, $str_user,array('size'=>12, 'name'=>'Arial','bold'=>'1','color' => '#004b93','bg_color'=>'#efefef','align'=>'left','v_align'=>'center'));
+            $my_xls->merge_cells($row,$col,$row,$col+2);
+            $my_xls->set_row($row,20);
+
             /* Course   */
-            $col ++;
-            $my_xls->write_string($row, $col, $str_course,array('size'=>12, 'name'=>'Arial','bold'=>'1'));
+            $col = $col + 3;
+            $my_xls->write($row, $col, $str_course,array('size'=>12, 'name'=>'Arial','bold'=>'1','color' => '#004b93','bg_color'=>'#efefef','align'=>'left','v_align'=>'center'));
+            $my_xls->merge_cells($row,$col,$row,$col+5);
+            $my_xls->set_row($row,20);
+
             /* State    */
-            $col ++;
-            $my_xls->write_string($row, $col, $str_state,array('size'=>12, 'name'=>'Arial','bold'=>'1'));
+            $col = $col + 6;
+            $my_xls->write($row, $col, $str_state,array('size'=>12, 'name'=>'Arial','bold'=>'1','color' => '#004b93','bg_color'=>'#efefef','align'=>'center','v_align'=>'center'));
+            $my_xls->merge_cells($row,$col,$row,$col+2);
+            $my_xls->set_row($row,20);
+
             /* Completion   */
-            $col ++;
-            $my_xls->write_string($row, $col, $str_completion,array('size'=>12, 'name'=>'Arial','bold'=>'1'));
+            $col = $col + 3;
+            $my_xls->write($row, $col, $str_completion,array('size'=>12, 'name'=>'Arial','bold'=>'1','color' => '#004b93','bg_color'=>'#efefef','align'=>'center','v_align'=>'center'));
+            $my_xls->merge_cells($row,$col,$row,$col+2);
+            $my_xls->set_row($row,20);
+
             /* Valid Until  */
             if (!$individual) {
-                $col ++;
-                $my_xls->write_string($row, $col, $str_valid,array('size'=>12, 'name'=>'Arial','bold'=>'1'));
+                $col = $col + 3;
+                $my_xls->write($row, $col, $str_valid,array('size'=>12, 'name'=>'Arial','bold'=>'1','color' => '#004b93','bg_color'=>'#efefef','align'=>'center','v_align'=>'center'));
+                $my_xls->merge_cells($row,$col,$row,$col+2);
+                $my_xls->set_row($row,20);
             }
 
             $row ++;
@@ -1320,21 +1358,36 @@ class company_report {
             foreach ($not_completed as $course) {
                 $col = 0;
                 /* User     */
-                $my_xls->write_string($row, $col, $user_name);
+                $my_xls->write($row, $col, $user_name,array('size'=>12, 'name'=>'Arial','align'=>'left','v_align'=>'center'));
+                $my_xls->merge_cells($row,$col,$row,$col+2);
+                $my_xls->set_row($row,20);
+
                 /* Course   */
-                $col ++;
-                $my_xls->write_string($row, $col, $course->name);
+                $col = $col + 3;
+                $my_xls->write($row, $col, $course->name,array('size'=>12, 'name'=>'Arial','align'=>'left','v_align'=>'center'));
+                $my_xls->merge_cells($row,$col,$row,$col+5);
+                $my_xls->set_row($row,20);
+
                 /* State    */
-                $col ++;
-                $my_xls->write_string($row, $col, get_string('outcome_course_started','local_tracker'));
+                $col = $col + 6;
+                $my_xls->write($row, $col, get_string('outcome_course_started','local_tracker'),array('size'=>12, 'name'=>'Arial','align'=>'center','v_align'=>'center'));
+                $my_xls->merge_cells($row,$col,$row,$col+2);
+                $my_xls->set_row($row,20);
+
                 /* Completion   */
-                $col ++;
-                $my_xls->write_string($row, $col, ' - ');
+                $col = $col + 3;
+                $my_xls->write($row, $col, ' - ',array('size'=>12, 'name'=>'Arial','align'=>'center','v_align'=>'center'));
+                $my_xls->merge_cells($row,$col,$row,$col+2);
+                $my_xls->set_row($row,20);
+
                 /* Valid Until  */
                 if (!$individual) {
-                    $col ++;
-                    $my_xls->write_string($row, $col, ' - ');
-                }
+                    $col = $col + 3;
+                    $my_xls->write($row, $col, ' - ',array('size'=>12, 'name'=>'Arial','align'=>'center','v_align'=>'center'));
+                    $my_xls->merge_cells($row,$col,$row,$col+2);
+                    $my_xls->set_row($row,20);
+                }//if_individual
+
                 $row ++;
             }//for_not_completed
         }catch (Exception $ex) {
@@ -1362,22 +1415,36 @@ class company_report {
             foreach ($not_enrol as $course) {
                 $col = 0;
                 /* User     */
-                $my_xls->write_string($row, $col, $user_name);
+                $my_xls->write($row, $col, $user_name,array('size'=>12, 'name'=>'Arial','bg_color'=>'#fcf8e3','align'=>'left','v_align'=>'center'));
+                $my_xls->merge_cells($row,$col,$row,$col+2);
+                $my_xls->set_row($row,20);
 
                 /* Course   */
-                $col ++;
-                $my_xls->write_string($row, $col, $course->name);
+                $col = $col + 3;
+                $my_xls->write($row, $col, $course->name,array('size'=>12, 'name'=>'Arial','bg_color'=>'#fcf8e3','align'=>'left','v_align'=>'center'));
+                $my_xls->merge_cells($row,$col,$row,$col+5);
+                $my_xls->set_row($row,20);
+
                 /* State    */
-                $col ++;
-                $my_xls->write_string($row, $col, get_string('outcome_course_not_enrolled','local_tracker'));
+                $col = $col + 6;
+                $my_xls->write($row, $col, get_string('outcome_course_not_enrolled','local_tracker'),array('size'=>12, 'name'=>'Arial','bg_color'=>'#fcf8e3','align'=>'center','v_align'=>'center'));
+                $my_xls->merge_cells($row,$col,$row,$col+2);
+                $my_xls->set_row($row,20);
+
                 /* Completion   */
-                $col ++;
-                $my_xls->write_string($row, $col, ' - ');
+                $col = $col + 3;
+                $my_xls->write($row, $col, ' - ',array('size'=>12, 'name'=>'Arial','bg_color'=>'#fcf8e3','align'=>'center','v_align'=>'center'));
+                $my_xls->merge_cells($row,$col,$row,$col+2);
+                $my_xls->set_row($row,20);
+
                 /* Valid Until  */
                 if (!$individual) {
-                    $col ++;
-                    $my_xls->write_string($row, $col, ' - ');
-                }
+                    $col = $col + 3;
+                    $my_xls->write($row, $col, ' - ',array('size'=>12, 'name'=>'Arial','bg_color'=>'#fcf8e3','align'=>'center','v_align'=>'center'));
+                    $my_xls->merge_cells($row,$col,$row,$col+2);
+                    $my_xls->set_row($row,20);
+                }//if_individual
+
                 $row ++;
             }//for_not_completed
         }catch (Exception $ex) {
@@ -1410,33 +1477,68 @@ class company_report {
                 if (!$individual) {
                     $ts = strtotime($expiration  . ' month', $course->completed);
                     if ($ts < time()) {
-                        $class = 'expired';
+                        $bg_color = '#f2dede';
                         $state = get_string('outcome_course_expired','local_tracker');
                         $valid = ' - ';
                     }else {
                         $state = get_string('outcome_course_finished','local_tracker');
                         $valid = userdate($ts,'%d.%m.%Y', 99, false);
-                        $class = 'completed';
+                        $bg_color = '#dff0d8';
                     }//if_ts
-                }//if_not_individual
+
 
                 /* User     */
-                $my_xls->write_string($row, $col, $user_name);
+                $my_xls->write($row, $col, $user_name,array('size'=>12, 'name'=>'Arial','bg_color'=>$bg_color,'align'=>'left','v_align'=>'center'));
+                $my_xls->merge_cells($row,$col,$row,$col+2);
+                $my_xls->set_row($row,20);
 
                 /* Course   */
-                $col ++;
-                $my_xls->write_string($row, $col, $course->name);
+                $col = $col + 3;
+                $my_xls->write($row, $col, $course->name,array('size'=>12, 'name'=>'Arial','bg_color'=>$bg_color,'align'=>'left','v_align'=>'center'));
+                $my_xls->merge_cells($row,$col,$row,$col+5);
+                $my_xls->set_row($row,20);
+
                 /* State    */
-                $col ++;
-                $my_xls->write_string($row, $col, $state);
+                $col = $col + 6;
+                $my_xls->write($row, $col, $state,array('size'=>12, 'name'=>'Arial','bg_color'=>$bg_color,'align'=>'center','v_align'=>'center'));
+                $my_xls->merge_cells($row,$col,$row,$col+2);
+                $my_xls->set_row($row,20);
+
                 /* Completion   */
-                $col ++;
-                $my_xls->write_string($row, $col, userdate($course->completed,'%d.%m.%Y', 99, false));
+                $col = $col + 3;
+                $my_xls->write($row, $col, userdate($course->completed,'%d.%m.%Y', 99, false),array('size'=>12, 'name'=>'Arial','bg_color'=>$bg_color,'align'=>'center','v_align'=>'center'));
+                $my_xls->merge_cells($row,$col,$row,$col+2);
+                $my_xls->set_row($row,20);
+
                 /* Valid Until  */
-                if (!$individual) {
-                $col ++;
-                $my_xls->write_string($row, $col, $valid);
-                }
+                    $col = $col + 3;
+                    $my_xls->write($row, $col, $valid,array('size'=>12, 'name'=>'Arial','bg_color'=>$bg_color,'align'=>'center','v_align'=>'center'));
+                    $my_xls->merge_cells($row,$col,$row,$col+2);
+                    $my_xls->set_row($row,20);
+                }else {
+                    /* User     */
+                    $my_xls->write($row, $col, $user_name,array('size'=>12, 'name'=>'Arial','align'=>'left','v_align'=>'center'));
+                    $my_xls->merge_cells($row,$col,$row,$col+2);
+                    $my_xls->set_row($row,20);
+
+                    /* Course  */
+                    $col = $col + 3;
+                    $my_xls->write($row, $col, $course->name,array('size'=>12, 'name'=>'Arial','align'=>'left','v_align'=>'center'));
+                    $my_xls->merge_cells($row,$col,$row,$col+5);
+                    $my_xls->set_row($row,20);
+
+                    /* State        */
+                    $col = $col + 6;
+                    $my_xls->write($row, $col, $state,array('size'=>12, 'name'=>'Arial','align'=>'center','v_align'=>'center'));
+                    $my_xls->merge_cells($row,$col,$row,$col+2);
+                    $my_xls->set_row($row,20);
+
+                    /* Completion   */
+                    $col = $col + 3;
+                    $my_xls->write($row, $col, userdate($course->completed,'%d.%m.%Y', 99, false),array('size'=>12, 'name'=>'Arial','align'=>'center','v_align'=>'center'));
+                    $my_xls->merge_cells($row,$col,$row,$col+2);
+                    $my_xls->set_row($row,20);
+                }//if_not_individual
 
                 $row ++;
             }//for_not_completed

@@ -57,6 +57,7 @@ define('CSV_FEW_COLUMNS','csv_few_columns');
 define('INVALID_FILE_NAME','invalid_field_name');
 define('DUPLICATE_FIELD_NAME','duplicate_field_name');
 define('NON_ERROR','non_error');
+
 if (!defined('MAX_BULK_USERS')) {
     define('MAX_BULK_USERS', 2000);
 }
@@ -201,12 +202,12 @@ function  report_generator_GetMunicipalities_List($id_county = null) {
 function report_generator_getCompanyUser($user_id) {
     global $DB;
 
-    /* Search Criteria  */
-    $params = array();
-    $params['user_id']  = $user_id;
-    $params['rg']       = 'rgcompany';
-
     try {
+        /* Search Criteria  */
+        $params = array();
+        $params['user_id']  = $user_id;
+        $params['rg']       = 'rgcompany';
+
         /* SQL Instruction  */
         $sql = " SELECT		uid.data
                  FROM		{user_info_data}	uid
@@ -328,6 +329,10 @@ function report_generator_UsersNotMyCompanies($user_id) {
         /* Companies alowwed */
         $companies = report_generator_get_companies_user($user_id);
 
+        if (!$companies) {
+            $companies = 0;
+        }
+
         /* Search Criteria  */
         $params = array();
         $params['rgcompany'] = 'rgcompany';
@@ -440,1107 +445,170 @@ function report_generator_getCompanies_Level($level,$lst_parent=null) {
     }//try_catch
 }//report_generator_getCompanies_LastLevel
 
-/**
- * @return          array
- *
- * @creationDate    18/11/2013
- * @author          eFaktor (fbv)
- *
- * Description
- * Gets the levels list for the 'Import Structure Companies' function
- */
-function report_generator_get_level_list_to_import() {
-    /* Level to Import  */
-    $level_to_import = array();
 
-    $level_to_import[0] = get_string('sel_level','report_generator');
-    $level_to_import[REPORT_GENERATOR_IMPORT_1] = get_string('level_1','report_generator');
-    $level_to_import[REPORT_GENERATOR_IMPORT_2] = get_string('level_2','report_generator');
-    $level_to_import[REPORT_GENERATOR_IMPORT_3] = get_string('level_3','report_generator');
 
-    return $level_to_import;
-}//report_generator_get_level_list_to_import
 
 /**
  * @param           $level
- * @param           $parent
+ * @param           $list_parent
  * @return          array
  * @throws          Exception
  *
- * @creationDate    18/11/2013
- * @author          eFaktor (fbv)
- *
- * Description
- * Gets children list for one level.
- */
-function report_generator_get_list_parent_import($level, $parent=null) {
-    global $DB;
-
-    /* parent_import */
-    $parent_import = array();
-    $parent_import[0] = get_string('sel_parent','report_generator');
-
-    try {
-        if ($level > 1) {
-            /* Search Criteria  */
-            $params = array();
-            $params['hierarchylevel'] = $level-1;
-
-            if (!$parent) {
-                $rdo = $DB->get_records('report_gen_companydata',$params,'name ASC','id, name');
-            }else {
-                /* Search Criteria  */
-                $params = array();
-                $params['parent'] = $parent;
-
-                /* SQL Instruction   */
-                $sql = " SELECT     rcd.id,
-                                    rcd.name
-                         FROM       {report_gen_companydata}       rcd
-                            JOIN    {report_gen_company_relation}  rcr ON    rcr.companyid = rcd.id
-                                                                       AND   rcr.parentid  = :parent ";
-
-                $rdo = $DB->get_records_sql($sql,$params);
-            }
-
-            if ($rdo) {
-                foreach ($rdo as $instance) {
-                    $parent_import[$instance->id] = $instance->name;
-                }//for_rdo
-            }//if_rdo
-        }//if_level
-
-        return $parent_import;
-    }catch (Exception $ex) {
-        throw $ex;
-    }//try_catch
-}//report_generator_get_list_parent_import
-
-/**
- * @param           csv_import_reader $cir
- * @param           $stdfields
- * @param           $error
- * @return          array
- *
- * @creationDate    18/11/2013
- * @author          eFaktor     (fbv)
- *
- * Description
- * Checks the columns from the CSV file
- */
-function report_generator_import_validate_columns(csv_import_reader $cir, $stdfields, &$error) {
-    $columns = $cir->get_columns();
-    $error = NON_ERROR;
-
-    if (empty($columns)) {
-        $cir->close();
-        $cir->cleanup();
-        $error = CANNOT_READ_TMP_FILE;
-    }
-
-    // test columns
-    $processed = array();
-    foreach ($columns as $key=>$unused) {
-        $field = $columns[$key];
-        $lcfield = $field;
-        if (in_array($field, $stdfields) or in_array($lcfield, $stdfields)) {
-            // standard fields are only lowercase
-            $newfield = $lcfield;
-        } else if (preg_match('/^(cohort|course|group|type|role|enrolperiod)\d+$/', $lcfield)) {
-            // special fields for enrolments
-            $newfield = $lcfield;
-        } else {
-            $cir->close();
-            $cir->cleanup();
-            $error = CSV_LOAD_ERROR;
-        }
-        if (in_array($newfield, $processed)) {
-            $cir->close();
-            $cir->cleanup();
-            $error = DUPLICATE_FIELD_NAME;
-        }
-        $processed[$key] = $newfield;
-    }//for
-
-    return $processed;
-}//report_generator_import_validate_columns
-
-/**
- * @param           $columns
- * @param           $cir
- * @return          stdClass
- *
- * @creationDate    18/11/2013
- * @author          eFaktor     (fbv)
- *
- * Description
- * Validates the content of the CSV file
- */
-function report_generator_import_validate_data($columns, $cir) {
-    global $DB;
-
-    /* Records File */
-    $records_file               = new stdClass();
-    $records_file->errors       = array();
-    $records_file->info         = array();
-
-    /* Validate the file */
-    $i = 0;
-    $cir->init();
-    while ($fields = $cir->next()) {
-        $status = '';
-        foreach($fields as $key => $field) {
-            $field_name         = $columns[$key];
-            $rows[$field_name]  = trim(s($field));
-
-            /* Check that doesn't exist another company with the same name */
-            $data = trim(s($field));
-            if ($DB->get_record('report_gen_companydata',array('name' => $data),'id')) {
-                $status .= get_string('err_company','report_generator') . '<br/>';
-            }//if_exist
-        }//foreach
-
-        if ($status != '') {
-            $records_file->errors[$i] = $i;
-        }//if_error
-        $rows['status'] = $status;
-        $records_file->info[$i] = $rows;
-
-        $i += 1;
-    }//while
-
-    $cir->close();
-
-    return $records_file;
-}//report_generator_import_validate_data
-
-/**
- * @param           $records_file
- * @param           $level
- * @param           $level_parent
- * @return          bool
- *
- * @creationDate    18/11/2013
- * @author          eFaktor     (fbv)
- *
- * Description
- * Import the company structure for a specific level
- */
-function report_generator_import_structure($records_file,$level,$level_parent) {
-    global $DB;
-
-    /* Import Company Structure */
-    $errors         = $records_file->errors;
-    $info_records   = $records_file->info;
-
-    /* Begin Transaction */
-    $trans = $DB->start_delegated_transaction();
-    try {
-        foreach($info_records as $line=>$record) {
-            if (!array_key_exists($line,$errors)) {
-                $record = $info_records[$line];
-
-                /* Insert the new company  */
-                $company = new stdClass();
-                $company->name              = $record['company'];
-                $company->hierarchylevel    = $level;
-                $company->modified          = time();
-
-                $company->id = $DB->insert_record('report_gen_companydata',$company);
-                if ($level_parent) {
-                    $parent = new stdClass();
-                    $parent->companyid  = $company->id;
-                    $parent->parentid   = $level_parent;
-                    $parent->modified   = time();
-
-                    $DB->insert_record('report_gen_company_relation',$parent);
-                }//if_parent
-            }//if_line_error
-        }//for
-
-        /* Commit */
-        $trans->allow_commit();
-
-        return true;
-    }catch(Exception $ex){
-        /* Rollback */
-        $trans->rollback($ex);
-
-        return false;
-    }//try_catch
-}//report_generator_import_structure
-
-/**
- * @param           $records_file
- * @param           $per_page
- * @param           $total_not_imported
- * @return          html_table
- *
- * @creationDate    18/11/2013
- * @author          eFaktor     (fbv)
- *
- * Description
- * Creates the table which shows all the records have not been imported
- */
-function report_generator_import_not_imported($records_file,$per_page,$total_not_imported) {
-    /* Table Not Imported   */
-    $table_not_imported = report_generator_import_header_not_imported();
-
-    /* Data */
-    $errors         = $records_file->errors;
-    $info_records   = $records_file->info;
-
-    /* Records to show  */
-    if ($total_not_imported <= $per_page) {
-        $index = $total_not_imported;
-    }else {
-        $index = $per_page;
-    }//if_total_not_imported
-
-    for ($i = 0; $i<$index; $i++) {
-        /* Info */
-        $err_line = array_shift($errors);
-        $info = $info_records[$err_line];
-
-        /* New Row  */
-        $row = array();
-
-        /* Line Row     */
-        $row[] = $err_line;
-        /* Company Row  */
-        $row[] = $info['company'];
-        /* Status Row   */
-        $row[] = $info['status'];
-
-        $table_not_imported->data[] = $row;
-    }//for_index
-
-    if ($total_not_imported > $per_page) {
-        /* Empty Row    */
-        $row = array();
-
-        /* Line Row     */
-        $row[] = '...';
-        /* Company Row  */
-        $row[] = '';
-        /* Status Row   */
-        $row[] = '';
-
-        $table_not_imported->data[] = $row;
-    }//if_empty_row
-
-    return $table_not_imported;
-}//report_generator_import_not_imported
-
-/**
- * @return          html_table
- *
- * @creationDate    18/11/2013
- * @author          eFaktor     (fbv)
- *
- * Description
- * Creates the header of the table.
- */
-function report_generator_import_header_not_imported() {
-    /* Table */
-    $table = new html_table();
-    $table->id                  = "uupreview";
-    $table->attributes['class'] = 'generaltable';
-    $table->attributes['align'] = 'center';
-
-    /* Header */
-    $table->head                = array(get_string('csv_line','report_Generator'),
-                                        get_string('company','report_Generator'),
-                                        get_string('status','report_Generator'));
-
-    return $table;
-}//report_generator_import_header_not_imported
-
-
-/**
- * @param       $level.         Hierarchy level of company.
- * @param   int $parent_id      Company´s parent.
- * @return      array           Companies list.
- *
- * @updateDate  06/09/2012
- * @author      eFaktor     (fbv)
- *
- * Description
- * Get a list of all the companies are connected a specific level.
- */
-function report_generator_get_level_list($level, $parent_id = 0) {
-    global $DB;
-
-    /* Variables */
-    $levels = array();
-
-    /* Research Criteria */
-    $params = array();
-    $params['level']    = $level;
-
-    /* SQL Instruction   */
-    $sql_Select = " SELECT     DISTINCT rcd.id,
-                               rcd.name
-                    FROM       {report_gen_companydata} rcd ";
-    /* Join */
-    $sql_Join = " ";
-    if ($level > 1) {
-           $sql_Join = " JOIN  {report_gen_company_relation} rcr ON    rcr.companyid = rcd.id
-                                                                 AND   rcr.parentid  IN ($parent_id) ";
-    }//if_level
-
-    $sql_Where = " WHERE rcd.hierarchylevel = :level ";
-    $sql_Order = " ORDER BY rcd.name ASC ";
-
-    /* SQL */
-    $sql = $sql_Select . $sql_Join . $sql_Where . $sql_Order;
-
-    $levels[0] = get_string('select_level_list','report_generator');
-    if ($rdo = $DB->get_records_sql($sql,$params)) {
-        foreach ($rdo as $field) {
-            $levels[$field->id] = $field->name;
-        }//foreach
-    }//if_rdo
-
-    return $levels;
-}//report_generator_get_level_list
-
-/**
- * @param           $level          Company Level
- * @param           $list_parent    Parent List
- * @return          array           Companies List
- *
  * @creationDate    18/09/2012
- * @autho           eFaktor     (fbv)
+ * @updateDate      08/10/2014
+ * @author          eFaktor     (fbv)
  *
  * Description
  * Return a list of all companies that belong to a specific level and they are under a specific company.
  */
 function report_generator_get_company_level($level,$list_parent){
+    /* Variables    */
     global $DB;
-
     $company_list = array();
 
-    /* SQL Instruction */
-    $sql = " SELECT     DISTINCT rcd.id,
-                        rcd.name
-             FROM       {report_gen_companydata} rcd
-                JOIN    {report_gen_company_relation} rcr ON    rcr.companyid = rcd.id
-                                                          AND   rcr.parentid  IN ({$list_parent})
-             WHERE      rcd.hierarchylevel = :level
-             ORDER BY   rcd.name ASC ";
+    try {
+        /* Search Criteria */
+        $params = array();
+        $params['level'] = $level;
 
-    /* Search Criteria */
-    $params = array();
-    $params['level'] = $level;
+        /* SQL Instruction */
+        $sql = " SELECT     DISTINCT rcd.id,
+                            rcd.name
+                 FROM       {report_gen_companydata} rcd
+                    JOIN    {report_gen_company_relation} rcr ON    rcr.companyid = rcd.id
+                                                              AND   rcr.parentid  IN ({$list_parent})
+                 WHERE      rcd.hierarchylevel = :level
+                 ORDER BY   rcd.name ASC ";
 
-    /* Execute  */
-    if ($rdo = $DB->get_records_sql($sql,$params)) {
-        foreach ($rdo as $field) {
-            $company_info = new stdClass();
-            $company_info->company_name     = $field->name;
-            $company_info->total_completed  = 0;
-            $company_info->total_progress   = 0;
-            $company_info->total_before     = 0;
-            $company_info->report_job       = null;
+        /* Execute  */
+        if ($rdo = $DB->get_records_sql($sql,$params)) {
+            foreach ($rdo as $field) {
+                $company_info = new stdClass();
+                $company_info->company_name     = $field->name;
+                $company_info->total_completed  = 0;
+                $company_info->total_progress   = 0;
+                $company_info->total_before     = 0;
+                $company_info->report_job       = null;
 
-            $company_list[$field->id] = $company_info;
-        }//foreach
-    }//if_rdo
+                $company_list[$field->id] = $company_info;
+            }//foreach
+        }//if_rdo
 
-    return $company_list;
+        return $company_list;
+    }catch (Exception $ex) {
+        throw $ex;
+    }//try_catch
 }//report_generator_get_company_last_level
 
 /**
- * @param       $parent.        It's the company who has employees.
- * @return      array.          Employees List.
- *
- * @updateDate  13/09/2012
- * @author      eFaktor     (fbv)
- *
- * Description
- * Get a list of all employees who work to a specific company.
- */
-function report_generator_get_level_Employee($parent) {
-    global $DB;
-
-    $employee_list = array();
-
-    /* SQL Instruction   */
-    $sql = " SELECT 	DISTINCT u.id,
-                        CONCAT(u.firstname,
-                               ' ',
-                               u.lastname) name
-             FROM		{user} 			  u
-                JOIN	{user_info_data}  uid	ON 	u.id 		 	= uid.userid
-                                                AND uid.data 	 	= :parent
-                JOIN	{user_info_field} uif	ON	uid.fieldid 	= uif.id
-                                                AND uif.datatype 	= :dtotype
-             ORDER BY	u.lastname ASC ";
-
-    /* Research Criteria */
-    $params = array();
-    $params['parent']   = $parent;
-    $params['dtotype']  = 'rgcompany';
-
-    /* Execute */
-    if ($rdo = $DB->get_records_sql($sql,$params)) {
-        foreach ($rdo as $field) {
-            $employee_list[$field->id] = $field->name;
-        }//for
-    }
-
-    return $employee_list;
-}//report_generator_get_level_Employee
-
-/**
- * @param       array   $data.      Form data.
- * @return      array               Action and level.
- *
- * @updateDate  06/09/2012.
- * @author      eFaktor     (fbv)
- *
- * Description
- * Return the action that the user want to carry out and the level.
- */
-function report_generator_get_action_and_level($data = array()) {
-    $action = null;
-    $level = 0;
-
-    if ($data) {
-        foreach ($data as $key => $value) {
-                if (strpos($key, 'submitbutton') !== false) {
-                    $action = 'submit';
-                    $level = -1;
-                } else if (strpos($key, 'btn-') !== false) {
-                    $action = substr($key, 4, -1);
-                    $level = (int)substr($key, -1);
-                }
-        }//for
-    }//if_data
-
-    return array($action, $level);
-}//report_generator_get_action_and_level
-
-/**
- * @param           $job_role
- * @return          bool
- *
- * @creationDate    08/01/2013
- * @author          eFaktor     (fbv)
- *
- * Description
- * Return if the job role already exists.
- */
-function report_generator_exists_jobrole($job_role) {
-    global $DB;
-
-    /* SQL Instruction */
-    $sql = " SELECT   id
-             FROM     {report_gen_jobrole}
-             WHERE    name = :job_role ";
-
-    /* Search Criteria */
-    $params = array();
-    $params['job_role'] = $job_role;
-
-    /* Execute */
-    if ($rdo = $DB->get_records_sql($sql,$params)) {
-        return true;
-    }else {
-        return false;
-    }
-}//report_generator_exists_jobrole
-
-
-
-/**
- * @param       $level.       Hierarchy level of company.
- * @param       $parent       Company's parent identity.
- * @return      mixed         Company's name
- *
- * @updateDate  10/09/2012
- * @author      eFaktor     (fbv)
- *
- * Description
- * Get the company's name
- */
-function report_generator_get_parent_name($level, $parent) {
-    global $DB;
-
-    /* SQL Instruction   */
-    $sql = " SELECT     name
-             FROM       {report_gen_companydata}
-             WHERE      id = :parent
-                AND     hierarchylevel = :level ";
-
-    /* Research Criteria */
-    $params = array();
-    $params['level']    = $level;
-    $params['parent']   = $parent;
-
-    /* Execute */
-    if ($rdo = $DB->get_record_sql($sql,$params)) {
-        return $rdo->name;
-    }//if_rdo
-}//report_generator_get_parent_name
-
-/**
  * @param           $company
- * @return          mixed
+ * @return          null
+ * @throws          Exception
  *
  * @creationDate    08/01/2013
- * @author          eFaktor     (fbv)
+ * @auhor           eFaktor         (fbv)
  *
  * Description
- * Get the name of the company.
+ * Get the name of the company
  */
 function report_generator_get_company_name($company) {
     global $DB;
 
-    /* SQL Instruction   */
-    $sql = " SELECT     name
+    try {
+        /* SQL Instruction   */
+        $sql = " SELECT     name
              FROM       {report_gen_companydata}
              WHERE      id = :company ";
 
-    /* Research Criteria */
-    $params = array();
-    $params['company']   = $company;
+        /* Research Criteria */
+        $params = array();
+        $params['company']   = $company;
 
-    /* Execute */
-    if ($rdo = $DB->get_record_sql($sql,$params)) {
-        return $rdo->name;
-    }else {
-        return null;
-    }//if_rdo
-}//report_generator_get_company_name
-
-/**
- * @param           $company_id
- * @return          mixed|null
- * @throws          Exception
- *
- * @creationDate    02/09/2014
- * @author          eFaktor     (fbv)
- *
- * Description
- * Get all details of the company
- */
-function report_generator_getCompany_Detail($company_id) {
-    /* Variables    */
-    global $DB;
-
-    try {
-        /* Execute  */
-        $rdo = $DB->get_record('report_gen_companydata',array('id' => $company_id),'id,name,idcounty,idmuni');
-        if ($rdo) {
-            return $rdo;
+        /* Execute */
+        if ($rdo = $DB->get_record_sql($sql,$params)) {
+            return $rdo->name;
         }else {
             return null;
         }//if_rdo
     }catch (Exception $ex) {
         throw $ex;
     }//try_catch
-}//report_generator_getCompany_Detail
+}//report_generator_get_company_name
 
 /**
  * @param       null $list
  * @return      array
+ * @throws      Exception
  *
- * @updateDate  14/09/2012
- * @author      eFaktor
+ * @updateDate  08/10/2014
+ * @author      eFaktor     (fbv)
  *
  * Description
  * Return a list of all job roles available
  */
 function report_generator_get_job_role_list($list = null){
+    /* Variables    */
     global $DB;
-
     $job_role_list = array();
 
-    /* SQL Instruction */
-    $sql_Select = " SELECT     id,
-                               name
-                    FROM       {report_gen_jobrole} ";
+    try {
+        /* SQL Instruction */
+        $sql_Select = " SELECT     id,
+                                   name
+                        FROM       {report_gen_jobrole} ";
 
-    $sql_Where = '';
-    if ($list) {
-        $sql_Where .= " WHERE id IN ({$list}) ";
-    }
-    $sql_Order = " ORDER BY name ASC ";
+        $sql_Where = '';
+        if ($list) {
+            $sql_Where .= " WHERE id IN ({$list}) ";
+        }//if_list
+        $sql_Order = " ORDER BY name ASC ";
 
-    $sql = $sql_Select . $sql_Where . $sql_Order;
-    /* Execute */
-    if ($rdo = $DB->get_records_sql($sql)) {
-        foreach ($rdo as $field) {
-            $job_role_list[$field->id] = $field->name;
-        }
-    }//if_execute
+        $sql = $sql_Select . $sql_Where . $sql_Order;
 
-    return $job_role_list;
+        /* Execute */
+        if ($rdo = $DB->get_records_sql($sql)) {
+            foreach ($rdo as $field) {
+                $job_role_list[$field->id] = $field->name;
+            }//for_rod_job_roles
+        }//if_execute
+
+        return $job_role_list;
+    }catch (Exception $ex) {
+        throw $ex;
+    }//try_catch
 }//report_generator_get_job_role_list
 
-/**
- * @return      array|bool      List of all job roles and their outcomes connected with them.
- *
- * @updateDate  12/09/2012
- * @author      eFaktor     (fbv)
- *
- * Description
- * Get a list of all job roles and their outcomes connected with them.
- */
-function report_generator_get_jobrole_list_with_rel_outcomes(){
-    global $DB;
-
-    $job_roles = array();
-    /* SQL Instruction */
-    $sql = " SELECT		jr.id,
-                        jr.name,
-                        oc.outcomename outcome_name
-             FROM  		{report_gen_jobrole} 			jr
-                LEFT JOIN (SELECT     GROUP_CONCAT(go.fullname
-                                                   ORDER BY go.fullname ASC
-                                                   SEPARATOR ', '
-                                                   ) outcomename,
-                                      ojrel.jobroleid
-                           FROM     {report_gen_outcome_jobrole} ojrel
-                              JOIN  {grade_outcomes} go
-                                ON  ojrel.outcomeid = go.id
-                           GROUP BY ojrel.jobroleid
-                          ) oc
-                      ON jr.id = oc.jobroleid
-             ORDER BY	jr.name ASC ";
-
-    /* Execute */
-    if ($rdo = $DB->get_records_sql($sql)) {
-        foreach ($rdo as $field) {
-            $job_roles[$field->id] = $field;
-        }//for_rdo
-        return $job_roles;
-    }else {
-        return false;
-    }
-}//report_generator_get_jobrole_list_with_rel_outcomes
 
 
-/**
- * @return      array|bool.     List of all outcomes and their job roles connected with them.
- *
- * @updateDate  12/09/2012
- * @author      eFaktor     (fbv)
- *
- * Description
- * Get a list of all outcomes and their job roles connected with them.
- */
-function report_generator_get_outcome_list_with_rel_roles() {
-    global $DB;
-
-    $outcome_list = array();
-
-    /* SQL Instruction */
-    $sql = " SELECT       go.id,
-                          go.fullname,
-                          jr.jobrolename jobroles,
-                          oex.id expirationid,
-                          oex.expirationperiod
-             FROM         {grade_outcomes}  go
-                LEFT JOIN (SELECT   GROUP_CONCAT(job.name
-                                                 ORDER BY job.name ASC
-                                                 SEPARATOR ', ') jobrolename,
-                                    ojrel.outcomeid
-                           FROM     {report_gen_outcome_jobrole} ojrel
-                              JOIN  {report_gen_jobrole}         job
-                                ON  ojrel.jobroleid = job.id
-                           GROUP BY ojrel.outcomeid
-                          ) jr
-                     ON go.id = jr.outcomeid
-                LEFT JOIN {report_gen_outcome_exp} oex
-                     ON   go.id = oex.outcomeid
-             WHERE    go.courseid IS NULL
-                OR    go.courseid = 0
-             ORDER BY go.fullname ASC ";
-
-    /* Execute */
-    if ($rdo = $DB->get_records_sql($sql)) {
-        foreach ($rdo as $field) {
-            $outcome_list[$field->id] = $field;
-        }//for
-        return $outcome_list;
-    }else {
-        return false;
-    }//if_else
-}//report_generator_get_outcome_list_with_rel_roles
-
-/**
- * @param           $job_role_id.       Job role Identity.
- * @return          array|bool          Outcome List
- *
- * @updateDate      12/09/2012
- * @author          eFaktor     (fbv)
- *
- * Description
- * Get a list of all outcomes available and which of them are connected with a specific job role.
- */
-function report_generator_get_outcome_list_with_selected($job_role_id){
-    global $DB;
-
-    $out_job_roles  = array();
-    $out_selected   = array();
-
-    /* SQL Instruction */
-    $sql = " SELECT 	   	go.id,
-                            go.fullname,
-                            ojr.outcomeid
-             FROM	  	   	{grade_outcomes} 				go
-                LEFT JOIN	{report_gen_outcome_jobrole}	ojr ON 	ojr.outcomeid = go.id
-                                                                AND	ojr.jobroleid = :jobrole
-             ORDER BY		go.fullname ASC ";
-
-    /* Params  */
-    $params = array();
-    $params['jobrole'] = $job_role_id;
-
-    /* Execute */
-    if ($rdo = $DB->get_records_sql($sql,$params)) {
-        foreach ($rdo as $field) {
-            $out_job_roles[$field->id] = $field->fullname;
-            if ($field->outcomeid) {
-                $out_selected[] = $field->id;
-            }//if_selected
-        }//for
-        return array($out_job_roles,$out_selected);
-    }else {
-        return false;
-    }
-}//report_generator_get_outcome_list_with_selected
-
-/**
- * @param           $outcome_id.    Outcome Identity.
- * @return          array|bool      Job role list.
- *
- * @updateDate      12/09/2012
- * @author          eFaktor (fbv)
- *
- * Description
- * Get a list of all job roles available and which of them are connected with a specific outcome.
- */
-function report_generator_get_role_list_with_selected($outcome_id) {
-    global $DB;
-
-    $job_roles_list = array();
-    $roles_selected = array();
-
-    /* SQL Instruction */
-    $sql = " SELECT        	jr.id,
-                            jr.name,
-                            ojr.jobroleid
-             FROM          	{report_gen_jobrole}  		  jr
-                LEFT JOIN	{report_gen_outcome_jobrole}  ojr   ON 	ojr.jobroleid = jr.id
-                                                                AND	ojr.outcomeid = :outcome
-             ORDER BY jr.name ASC ";
-
-    /* Params  */
-    $params = array();
-    $params['outcome'] = $outcome_id;
-
-    /* Execute */
-    if ($rdo = $DB->get_records_sql($sql,$params)) {
-        foreach ($rdo as $field) {
-            $job_roles_list[$field->id] = $field->name;
-            if ($field->jobroleid) {
-                $roles_selected[] = $field->id;
-            }
-        }//for
-        return array($job_roles_list,$roles_selected);
-    }else {
-        return false;
-    }
-
-}//report_generator_get_role_list_with_selected
-
-/**
- * @param           $job_role.          Job role data.
- * @param           $outcome_list       Outcomes are connected with job role.
- * @return          bool
- *
- * @updateDate      13/09/2012
- * @author          eFaktor     (fbv)
- *
- * Description
- * Update job role data
- */
-function report_generator_update_job_role_out($job_role,$outcome_list) {
-    global $DB;
-
-    if ($DB->update_record('report_gen_jobrole',$job_role)) {
-        /* If it has outcomes selected
-            First   --> Delete all relations
-            Second  --> Create new relations */
-        $DB->delete_records_select('report_gen_outcome_jobrole','jobroleid='.$job_role->id);
-
-        $outcome_rel = new stdClass();
-        $outcome_rel->modified = $job_role->modified;
-        $outcome_rel->jobroleid = $job_role->id;
-        $url = new moodle_url('/report/generator/job_role/edit_job_role.php',array('id'=>$job_role->id));
-
-        if ($outcome_list) {
-            foreach ($outcome_list as $outcome) {
-                $outcome_rel->outcomeid = $outcome;
-                if (!$DB->insert_record('report_gen_outcome_jobrole',$outcome_rel)) {
-                    print_error('error_updating_job_role', 'report_generator', $url);
-                }
-            }//for_select_outcomes
-        }//if_outcomelist
-
-        return true;
-    }else {
-        return false;
-    }
-}//report_generator_update_job_role_out
-
-/**
- * @param           $outcome        Outcome data.
- * @param           $role_list      Job roles are connected with outcome.
- * @return          bool
- *
- * @updateDate      14/09/2012
- * @author          eFaktor     (fbv)
- *
- * Description
- * Update outcome data
- */
-function report_generator_update_outcome_role($outcome,$role_list){
-    global $DB;
-
-    if ($DB->update_record('report_gen_outcome_exp',$outcome)) {
-        /* First --> Clean old relations */
-        $DB->delete_records_select('report_gen_outcome_jobrole','outcomeid='.$outcome->outcomeid);
-
-        /* Second --> Add new relations */
-        $job_role_sel = new stdClass();
-        $job_role_sel->modified = $outcome->modified;
-        $job_role_sel->outcomeid = $outcome->outcomeid;
-
-        $url = new moodle_url('/report/generator/outcome/edit_outcome.php');
-
-        foreach ($role_list as $rol) {
-            $job_role_sel->jobroleid = $rol;
-            if (!$DB->insert_record('report_gen_outcome_jobrole',$job_role_sel)) {
-                print_error('error_updating_outcome_job_role', 'report_generator', $url);
-            }
-        }//for
-
-        return true;
-    }else {
-        return false;
-    }
-}//report_generator_update_outcome_role
-
-/**
- * @param           $job_role           Job role data.
- * @param           $outcome_list       Outcomes are connected with job role.
- *
- * @updateDate      13/09/2012
- * @author          eFaktor     (fbv)
- *
- * Description
- * Insert a new job role into database.
- */
-function report_generator_insert_job_role_out($job_role,$outcome_list) {
-    global $DB;
-
-    $url = new moodle_url('/report/generator/job_role/edit_job_role.php');
-    if ($job_role->id = $DB->insert_record('report_gen_jobrole',$job_role)) {
-        /* Create all relations */
-        $outcome_rel = new stdClass();
-        $outcome_rel->modified = $job_role->modified;
-        $outcome_rel->jobroleid = $job_role->id;
-        $url = new moodle_url('/report/generator/job_role/edit_job_role.php',array('id'=>$job_role->id));
-
-        if ($outcome_list) {
-            foreach ($outcome_list as $outcome) {
-                $outcome_rel->outcomeid = $outcome;
-                if (!$DB->insert_record('report_gen_outcome_jobrole',$outcome_rel)) {
-                    print_error('error_insert_job_role', 'report_generator', $url);
-                }
-            }//for_select_outcomes
-        }//if_outcome_list
-    }else {
-        print_error('error_insert_job_role', 'report_generator', $url);
-    }//if-else
-}//report_generator_insert_job_role_out
-
-/**
- * @param           $outcome        Outcome data.
- * @param           $role_list      Job role are connected with outcome.
- *
- * @updateDate      14/09/2012
- * @author          eFaktor     (fbv)
- *
- * Description
- * Insert a new outcome into database.
- */
-function report_generator_insert_outcome_role($outcome,$role_list){
-    global $DB;
-
-    $url = new moodle_url('/report/generator/outcome/edit_outcome.php');
-    if ($outcome->id = $DB->insert_record('report_gen_outcome_exp',$outcome)) {
-        $job_role_sel = new stdClass();
-        $job_role_sel->modified = $outcome->modified;
-        $job_role_sel->outcomeid = $outcome->outcomeid;
-
-        /* First --> Clean old relations */
-        $DB->delete_records_select('report_gen_outcome_jobrole','outcomeid='.$outcome->outcomeid);
-        /* Second --> Add new relations. */
-        foreach ($role_list as $rol) {
-            $job_role_sel->jobroleid = $rol;
-            if (!$DB->insert_record('report_gen_outcome_jobrole',$job_role_sel)) {
-                print_error('error_updating_outcome_job_role', 'report_generator', $url);
-            }
-        }//for
-    }else {
-        print_error('error_updating_outcome_job_role', 'report_generator', $url);
-    }
-}//report_generator_insert_outcome_role
-
-/**
- * @param               $job_role_id        Job role identity.
- * @param       string  $field              Type of company
- * @return              int                 Number of users
- *
- * @updateDate          10/09/2012
- * @author              eFaktor     (fbv)
- *
- * Description
- * Return the number of users that are connected with a specific job role.
- */
-function report_generator_count_connected_users($job_role_id, $field = REPORT_GENERATOR_COMPANY_FIELD) {
-    global $DB;
-
-    $count = 0;
-    /* SQL Instruction   */
-    $sql = " SELECT 	COUNT(DISTINCT uid.id) count
-             FROM		{user_info_data} 	uid
-                JOIN	{user_info_field} 	uif ON uid.fieldid = uif.id
-             WHERE 		uid.data = :job_role_id
-                AND     uif.datatype = :field ";
-    /* Research Criteria */
-    $params = array();
-    $params['job_role_id'] = $job_role_id;
-    $params['field'] = $field;
-    /* Execute */
-    if ($rdo = $DB->get_record_sql($sql,$params)) {
-        $count = $rdo->count;
-    }
-    return $count;
-}//report_generator_count_connected_users
-
-/**
- * @param       $job_role_id        Job role identity.
- *
- * @updateDate  12/09/2012
- * @author      eFaktor (fbv)
- *
- * Description
- * Delete the job role from database.
- */
-function report_generator_delete_job_role_out($job_role_id){
-    global $DB;
-
-    $url = new moodle_url('/report/generator/job_role/job_role.php');
-    if ($DB->delete_records('report_gen_jobrole',array('id'=>$job_role_id))) {
-        /* Remove all outcomes connected */
-        $DB->delete_records_select('report_gen_outcome_jobrole','jobroleid='.$job_role_id);
-    }else {
-        print_error('error_deleting_job_role', 'report_generator', $url);
-    }//if_else
-
-    /* Add log */
-    add_to_log(SITEID, 'report_gen_jobrole', 'delete', "delete_job_role.php?id=$job_role_id");
-}//report_generator_delete_job_role_out
-
-
-/**
- * @param           $job_role_id        Job role identity
- * @return          bool
- *
- * @creationDate    12/09/2012
- * @author          eFaktor     (fbv)
- *
- * Description
- * Return job role's name.
- */
-function report_generator_get_job_role_name($job_role_id) {
-    global $DB;
-
-    if ($rdo = $DB->get_record('report_gen_jobrole',array('id'=>$job_role_id))) {
-        return $rdo->name;
-    }else {
-        return false;
-    }
-}//report_generator_get_job_role_name
 
 /**
  * @param           $job_role_id
- * @return          mixed|null
+ * @return          bool
  * @throws          Exception
  *
- * @creationDate    21/08/2014
- * @author          eFaktor     (fbv)
+ * @creationDate    12/09/2012
+ * @updateDate      08/10/2014
+ * @author          eFaktor         (fbv)
  *
  * Description
- * Get all the information connected with the Job Role
+ * Get the job role's name
  */
-function report_generator_getJobRole_Detail($job_role_id) {
+function report_generator_get_job_role_name($job_role_id) {
     /* Variables    */
     global $DB;
 
     try {
-        /* Search Criteria  */
-        $params = array();
-        $params['jr_id'] = $job_role_id;
-
-        /* SQL Instruction  */
-        $sql = " SELECT			jr.id,
-                                jr.name,
-                                m.idcounty,
-                                m.idmuni
-                 FROM			{report_gen_jobrole}	jr
-                    LEFT JOIN	{municipality}		    m ON m.idmuni = jr.idmuni
-                 WHERE          jr.id = :jr_id";
-
-        /* Execute  */
-        $rdo = $DB->get_record_sql($sql,$params);
-        if ($rdo) {
-            return $rdo;
+        if ($rdo = $DB->get_record('report_gen_jobrole',array('id'=>$job_role_id))) {
+            return $rdo->name;
         }else {
-            return null;
-        }//if_rdo
+            return false;
+        }//if_else_rdo
     }catch (Exception $ex) {
         throw $ex;
     }//try_catch
-}//report_generator_getJobRole_Detail
+}//report_generator_get_job_role_name
 
 
-/**
- * @param           $exp_id         Outcome expedition identity
- * @return          bool
- *
- * @creationDate    14/09/2012
- * @author          eFaktor     (fbv)
- *
- * Description
- * Return the expiration period connected with a specific outcome.
- */
-function report_generator_get_outcome_expiration_period($exp_id) {
-    global $DB;
-
-    if ($rdo = $DB->get_record('report_gen_outcome_exp',array('id'=>$exp_id))) {
-        return $rdo->expirationperiod;
-    }else {
-        return false;
-    }
-}//report_generator_get_outcome_expiration_period
 
 
 /**
@@ -1553,6 +621,7 @@ function report_generator_get_outcome_expiration_period($exp_id) {
  * Get a list of all courses available
  */
 function report_generator_get_course_list() {
+    /* Variables    */
     global $DB;
 
     try {
@@ -1577,33 +646,13 @@ function report_generator_get_course_list() {
 }//report_generator_get_course_list
 
 /**
- * @return array
+ * @return      array
+ *
+ * @author      eFaktor
  *
  * Description
- * Get a list with all outcomes available.
+ * Completed List
  */
-function report_generator_get_outcome_list(){
-    global $DB;
-
-    $outcome_list = array();
-
-    /* SQL Instruction */
-    $sql = " SELECT     id,
-                        fullname
-             FROM       {grade_outcomes}
-             ORDER BY   fullname ASC ";
-
-    /* Execute */
-    if ($rdo = $DB->get_records_sql($sql)) {
-        $outcome_list[0] = get_string('select') . '...';
-        foreach ($rdo as $field) {
-            $outcome_list[$field->id] = $field->fullname;
-        }
-    }
-
-    return $outcome_list;
-}//report_generator_get_outcome_list
-
 function report_generator_get_completed_list() {
     $list = array(
         0 => get_string('numdays', '', 1),
@@ -1623,6 +672,15 @@ function report_generator_get_completed_list() {
     return $list;
 }//report_generator_get_completed_list
 
+/**
+ * @param           bool $with_csv
+ * @return          array
+ *
+ * @author          eFaktor
+ *
+ * Description
+ * Report format List
+ */
 function report_generator_get_report_format_list( $with_csv = true ) {
     $list = array(
         REPORT_GENERATOR_REP_FORMAT_SCREEN      => get_string('preview', 'report_generator'),
@@ -1685,289 +743,6 @@ function report_generator_get_companies_to_report($data_form) {
 
     return $company_list;
 }//report_generator_get_companies_to_report
-
-/**
- * @param           $data_form
- * @return          string
- *
- * @updateDate      21/09/2012
- * @author          eFaktor     (fbv)
- *
- * Description
- * Get the outcome report
- */
-function report_generator_display_outcome_report($data_form) {
-    global $DB;
-
-    /* Variables */
-    $return_url = new moodle_url('/report/generator/outcome_report/outcome_report_level.php',array('rpt' => $data_form['rpt']));
-    $return     = '<a href="'.$return_url .'">'. get_string('outcome_return_to_selection','report_generator') .'</a>';
-    $no_data    = get_string('no_data', 'report_generator');
-    $no_data   .=  '<br/>' . $return;
-    $data       = array();
-    $out        = '';
-
-    /* All job roles  selected */
-    $outcome = $data_form[REPORT_GENERATOR_OUTCOME_LIST];
-    if (!empty($data_form[REPORT_GENERATOR_JOB_ROLE_LIST])) {
-        $list = join(',',$data_form[REPORT_GENERATOR_JOB_ROLE_LIST]);
-        $job_role_list = report_generator_outcome_job_role_list($outcome,$list);
-    }else {
-        $job_role_list = report_generator_outcome_job_role_list($outcome);
-    }//if_else
-
-    if (!$job_role_list) {
-        return $no_data;
-    }//if_job_role_list
-
-    /* Get Completed Time - Course  */
-    $completed_time = $data_form[REPORT_GENERATOR_COMPLETED_LIST];
-    $completed_time = report_generator_get_completed_date_timestamp($completed_time,true);
-
-    /* Get companies selected */
-    $outcome_report_info = report_generator_get_companies_to_report($data_form);
-    if (!$outcome_report_info) {
-        return $no_data;
-    }//if_empty_company_list
-
-    /* Get information about how many users have finished the course or not by Job Role... */
-    report_generator_get_outcome_report_info($outcome,$outcome_report_info,$job_role_list,$completed_time);
-    if (!$outcome_report_info) {
-        return $no_data;
-    }//if_empty_outcome_report
-
-    /* Outcome Report  Data */
-    $data['report_type']            = 'outcome';
-    $data['report_level']           = $data_form['rpt'];
-    $data['completed_time']         = $completed_time;
-    $data['outcome_report_info']    = $outcome_report_info;
-    $company_id                     = $data_form[REPORT_GENERATOR_COMPANY_STRUCTURE_LEVEL .'1'];
-    $data['level_1']                = report_generator_get_company_name($company_id);
-
-    if ($data['report_level'] > 1) {
-        $company_id                 = $data_form[REPORT_GENERATOR_COMPANY_STRUCTURE_LEVEL .'2'];
-        $data['level_2']            = report_generator_get_company_name($company_id);
-    }
-
-    $data['outcome']                = $outcome;
-    $data['format']                 = $data_form[REPORT_GENERATOR_REPORT_FORMAT_LIST];
-    /* Create Report Data */
-    switch ($data_form[REPORT_GENERATOR_REPORT_FORMAT_LIST]) {
-        case REPORT_GENERATOR_REP_FORMAT_SCREEN:
-            $out = '<br/><br/>';
-            $out .= report_generator_create_outcome_report_screen_out($data);
-            $out .= $return;
-            $out .= '<br/><br/>';
-
-            break;
-
-        case REPORT_GENERATOR_REP_FORMAT_PDF:
-        case REPORT_GENERATOR_REP_FORMAT_PDF_MAIL:
-            $out = report_generator_create_outcome_report_pdf_out($data);
-            /* Check if the report has been created and send it.    */
-            $return     = '<a href="'.$return_url .'">'. get_string('outcome_return_to_selection','report_generator') .'</a>';
-            if ($out){
-                $no_data =  $out . '<br/>' . $return;
-                return $no_data;
-            }//_if_out
-
-            break;
-        case REPORT_GENERATOR_REP_FORMAT_CSV:
-            $out = report_generator_create_outcome_report_csv_out($data);
-            break;
-    }//switch_report
-
-    return $out;
-}//report_generator_display_outcome_report
-
-/**
- * @param           $outcome_id         Outcome identity
- * @param           $company_list       Companies selected
- * @param           $job_role_list      Job roles selected
- * @param           $completed_time     Completed time
- * @throws          moodle_exception
- *
- * @creationDate    21/09/2012
- * @author          eFaktor     (fbv)
- *
- * Description
- * Get all information of the report. How many users have completed or not the course, when they have completed it...
- *
- * Outcome report info - Structure
- *
- *      [id_company]
- *                  --> company_name
- *                  --> total_completed
- *                  --> total_progress
- *                  --> total_before
- *                  --> report_job      Array
- *                      [id_job_role]
- *                              --> job_role    (name)
- *                              --> courses     Array
- *                                     [id_course]
- *                                          --> course_name
- *                                          --> user_completed      Array
- *                                                  [id_user]
- *                                                      --> user_name
- *                                                      --> time_completed
- *                                          --> user_before         Array
- *                                                  [id_user]
- *                                                      --> user_name
- *                                                      --> time_completed
- *                                          --> user_progress       Array
- *                                                  [id_user]
- *                                                      --> user_name
- *                                                      --> time_completed
- *
- */
-function report_generator_get_outcome_report_info($outcome_id,&$company_list,&$job_role_list,$completed_time)  {
-    global $DB;
-
-    /* Company List */
-    $companies_keys = array_keys($company_list);
-    $companies = join(',',$companies_keys);
-
-    /* Outcome Expiration */
-    $out_expiration = report_generator_get_outcome_expiration($outcome_id);
-
-    try {
-        /* SQL Instruction */
-        $sql_Sel = " SELECT		DISTINCT concat(u.id, '_', uid_cd.data,'_',e.courseid) as uc_id,
-                                uid_cd.data as company,
-                                e.courseid,
-                                u.id,
-                                CONCAT(u.firstname, ' ', u.lastname) as user_name
-                     FROM 		{user}					u
-                        JOIN	{user_enrolments}		ue			ON		ue.userid 	  		= u.id
-                        JOIN	{enrol}					e			ON		e.id		  		= ue.enrolid
-                        JOIN	{user_info_data}		uid_cd		ON		uid_cd.userid 		= ue.userid
-                                                                    AND		uid_cd.data		    IN (". $companies . ")
-                        JOIN	{user_info_field}		uif_cd  	ON 		uif_cd.id	    	= uid_cd.fieldid
-                                                                    AND		uif_cd.datatype	    = 'rgcompany'
-                        JOIN	{user_info_data}		uid_rg		ON		uid_rg.userid   	= uid_cd.userid
-                        JOIN	{user_info_field}		uif_rg		ON		uif_rg.id			= uid_rg.fieldid
-                                                                    AND 	uif_rg.datatype 	= 'rgjobrole'
-                     WHERE      u.deleted = 0 ";
-
-        /* Execute  */
-        foreach ($job_role_list as $job_id=>$job_role) {
-            /* Courses List */
-            $courses_keys = array_keys($job_role->courses);
-            $courses_list = join(',',$courses_keys);
-
-            $sql = $sql_Sel . " AND 		uid_rg.data like '%{$job_id}%'
-                                    AND		e.courseid IN (" . $courses_list . ")
-                                ORDER BY	company, user_name ASC ";
-
-            $rdo_users = $DB->get_records_sql($sql);
-            if ($rdo_users) {
-                foreach ($rdo_users as $user) {
-                    /* User Info */
-                    $user_info = new stdClass();
-                    $user_info->user_name       = $user->user_name;
-                    $time_completed             = report_generator_get_course_completed_info_user($user->courseid,$user->id);
-                    $user_info->time_completed  = $time_completed;
-
-                    /* Course Info */
-                    $course_info = $job_role->courses[$user->courseid];
-                    if ($time_completed) {
-                        if ($time_completed + $out_expiration < $completed_time) {
-                            $course_info->users_before[$user->id] = $user_info;
-                            $company_list[$user->company]->total_before += 1;
-                        }else {
-                            $course_info->users_completed[$user->id] = $user_info;
-                            $company_list[$user->company]->total_completed += 1;
-                        }
-                    }else {
-                        $course_info->users_progress[$user->id] = $user_info;
-                        $company_list[$user->company]->total_progress += 1;
-                    }//if_time_completed
-
-                    $job_role->courses[$user->courseid]                 = $course_info;
-                    $company_list[$user->company]->report_job[$job_id]  = $job_role;
-                }//for_user
-            }//if_rdo_urses
-        }//for_job_role
-    }catch (Exception $ex){
-        throw new moodle_exception($ex->getMessage());
-    }//try_catch
-}//report_generator_get_outcome_report_info
-
-/**
- * @param           $outcome_id
- * @param           $job_role_id
- * @return          array|bool
- * @throws          moodle_exception
- *
- * @creationDate    21/09/2012
- * @author          eFaktor     (fbv)
- *
- * Description
- * Get the list of all courses are connected with an outcome and job role
- */
-function report_generator_get_courses_list_by_outcome_job_role($outcome_id,$job_role_id) {
-    global $DB;
-
-    /* Courses */
-    $course_list    = array();
-
-    try {
-        /* Search Criteria  */
-        $params = array();
-        $params['outcome']  = $outcome_id;
-        $params['job_role'] = $job_role_id;
-
-        /* SQL Instruction  */
-        $sql = " SELECT			co.id,
-                                co.fullname
-                 FROM			{course}						co
-                    JOIN		{grade_outcomes_courses}		goc		ON		goc.courseid	=	co.id
-                                                                        AND		goc.outcomeid 	= 	:outcome
-                    JOIN		{report_gen_outcome_jobrole}	jro		ON		jro.outcomeid	= 	goc.outcomeid
-                                                                        AND		jro.jobroleid	= 	:job_role
-                 ORDER BY	fullname ASC ";
-
-        /* Execute  */
-        $rdo = $DB->get_records_sql($sql,$params);
-        if ($rdo) {
-            foreach ($rdo as $course) {
-                $course_info = new stdClass();
-
-                $course_info->course_name       = $course->fullname;
-                $course_info->users_completed   = array();
-                $course_info->users_progress    = array();
-                $course_info->users_before      = array();
-
-                $course_list[$course->id] = $course_info;
-            }//for_rdo
-        }//if_rdo
-
-        return $course_list;
-    }catch(Exception $ex){
-        throw new moodle_exception($ex->getMessage());
-    }//try_catch
-}//report_generator_get_courses_list_by_outcome_job_role
-
-/**
- * @param           $outcome_id
- * @return          mixed
- *
- * @creationDate    21/09/2012
- * @author          eFaktor     (fbv)
- *
- * Description
- * Return the expiration period of an outcome
- */
-function report_generator_get_outcome_expiration($outcome_id) {
-    global $DB;
-
-    /* Execute  */
-    if ($rdo = $DB->get_record('report_gen_outcome_exp',array('outcomeid'=>$outcome_id))) {
-        return $rdo->expirationperiod;
-    }else {
-        return 0;
-    }//if_rdo
-}//report_generator_get_outcome_expiration
 
 /**
  * @param           $data_form      Data form
@@ -2221,59 +996,6 @@ function report_generator_job_role_outcome_course_list($list = null) {
     return $job_role_list;
 }//report_generator_job_role_outcome_course_list
 
-/**
- * @param           $outcome_id
- * @param           null $list
- * @return          array
- * @throws          moodle_exception
- *
- * @updateDate      21/09/2012
- * @author          eFaktor     (fbv)
- *
- * Description
- * Return all job roles connected with a specific outcome.
- */
-function report_generator_outcome_job_role_list($outcome_id, $list = null) {
-    global $DB;
-
-    /* Job Roles & Course */
-    $job_role_list = array();
-
-    try {
-        /* Search Criteria  */
-        $params = array();
-        $params['outcome_id'] = $outcome_id;
-
-        /* SQL Instruction  */
-        $sql = " SELECT		jr.id,
-                            jr.name
-                 FROM		{report_gen_jobrole} 			jr
-                     JOIN	{report_gen_outcome_jobrole}	jro		ON  	jro.jobroleid 	= jr.id
-                                                                    AND		jro.outcomeid	= :outcome_id
-                     ";
-        if ($list) {
-            $sql = $sql . "WHERE		jr.id IN ({$list}) ";
-        }
-        $sql = $sql . " ORDER BY 	jr.name ASC ";
-
-        /* Execute  */
-        $rdo = $DB->get_records_sql($sql,$params);
-        if ($rdo) {
-            foreach ($rdo as $job_role) {
-                $report_info = new stdClass();
-                $report_info->job_role          = $job_role->name;
-                /* Get the courses connected with   */
-                $report_info->courses   = report_generator_get_courses_list_by_outcome_job_role($outcome_id,$job_role->id);
-
-                $job_role_list[$job_role->id] = $report_info;
-            }//
-        }//if_rdo
-
-        return $job_role_list;
-    }catch (Exception $ex) {
-        throw new moodle_exception($ex->getMessage());
-    }
-}//report_generator_outcome_job_role_list
 
 /**
  * @param           $course_id      Course Identity
@@ -2307,298 +1029,6 @@ function report_generator_get_course_completed_info_user($course_id,$user_id) {
         return false;
     }
 }//report_generator_get_course_completed_info_user
-
-/**
- * @param           $data       Information of the report
- * @return          string
- *
- * @updateDate      21/09/2012
- * @author          eFaktor     (fbv)
- *
- * Description
- * Get the outcome report - Screen Format
- */
-function report_generator_create_outcome_report_screen_out($data){
-    global $DB;
-
-    /* Variables    */
-    $out                    = '';
-    $report_type            = $data['report_type'];
-    $report_level           = $data['report_level'];
-    $completed_time         = $data['completed_time'];
-    $outcome_report_info    = $data['outcome_report_info'];
-    $level_1                = $data['level_1'];
-    if ($report_level > 1) {
-        $level_2            = $data['level_2'];
-    }
-    $outcome                = $data['outcome'];
-
-    /* Create Report */
-    $time = userdate(time(),'%d.%m.%Y', 99, false);
-    $out .= '<div id="course-report" class="rg-report">';
-    $out .= '<h3>';
-    $out .= get_string('date') . ': ' . $time;
-    $out .= '</h3>';
-    $out .= '</div>';
-
-    /* Get detail outcome */
-    $outcome_detail = $DB->get_record('grade_outcomes',array('id'=>$outcome));
-    $out .= '<h2>';
-    $out .= get_string('outcome', 'report_generator') . ' "' . $outcome_detail->fullname . '"';
-    $out .= '</h2>';
-    $out .= '<h6>' . format_text($outcome_detail->description) . '</h6>' . '<br/>';
-
-    /* Information about Companies Level */
-    $out .= '<ul class="level-list unlist">';
-    $out .= '<li><h2>';
-    $out .= get_string('company_structure_level', 'report_generator', 1) . ': ' . $level_1;
-    $out .= '</h2></li>';
-    if ($report_level > 1) {
-        $out .= '<li><h2>';
-        $out .= get_string('company_structure_level', 'report_generator', 2) . ': ' . $level_2;
-        $out .= '</h2></li>';
-    }//if_level_2
-    $out .= '</ul>';
-
-    $out .= report_generator_print_report_tables($report_type,$report_level,$outcome_report_info,$completed_time);
-
-    return $out;
-}//report_generator_create_outcome_report_screen_out
-
-
-/**
- * @param       $data           Information of the report
- * @return      bool|string
- *
- * @updateDate  25/09/2012
- * @author      eFaktor     (fbv)
- *
- * Description
- * Get outcome report - PDF Format.
- */
-function report_generator_create_outcome_report_pdf_out($data) {
-    global $DB;
-
-    /* Variables    */
-    $out_pdf                = array();
-    $report_type            = $data['report_type'];
-    $report_level           = $data['report_level'];
-    $completed_time         = $data['completed_time'];
-    $outcome_report_info    = $data['outcome_report_info'];
-    $level_1                = $data['level_1'];
-    if ($report_level > 1) {
-        $level_2                = $data['level_2'];
-    }
-    $outcome                = $data['outcome'];
-    $format                 = $data['format'];
-
-    $out_pdf['report_date'] = userdate(time(),'%d.%m.%Y', 99, false);
-    /* Get detail outcome */
-    $outcome_detail = $DB->get_record('grade_outcomes',array('id'=>$outcome));
-    $out_pdf['report_name'] = get_string('outcome', 'report_generator') . ' "' . $outcome_detail->fullname . '"';
-    $out_pdf['summary'] = strip_tags($outcome_detail->description);
-
-    /* Information about Companies Level */
-    $out_pdf['level_1'] = get_string('company_structure_level', 'report_generator', 1) . ': ' . $level_1;
-    if ($report_level > 1) {
-        $out_pdf['level_2'] = get_string('company_structure_level', 'report_generator', 2) . ': ' . $level_2;
-    }//if_level_2
-
-    $out_pdf['report_format']   = $format;
-    $out_pdf['report_type']     = $report_type;
-    $out_pdf['report_level']    = $report_level;
-
-    report_generator_print_report_pdf_tables($report_type,$report_level,$outcome_report_info,$completed_time,$out_pdf);
-    return report_generator_prepare_send_pdf($out_pdf);
-}//report_generator_create_outcome_pdf_out
-
-/**
- * @param       $data           Information of the report
- * @return      bool|string
- *
- * @updateDate  01/10/2012
- * @author      eFaktor     (fbv)
- *
- * Description
- * Get outcome report - CSV Format.
- */
-function report_generator_create_outcome_report_csv_out($data){
-    /* Variables    */
-    $report_type            = $data['report_type'];
-    $report_level           = $data['report_level'];
-    $level_1                = $data['level_1'];
-    if ($report_level > 1) {
-        $level_2            = $data['level_2'];
-    }else {
-        $level_2            = 0;
-    }
-    $outcome                = $data['outcome'];
-    $outcome_report_info    = $data['outcome_report_info'];
-    $completed_time         = $data['completed_time'];
-    /* Data of the report */
-    $out_cvs = array();
-
-    $fields_cvs = report_generator_get_fields_report_outcome_cvs($report_level);
-    /* Create Empty Row */
-    $cols_cvs   = count($fields_cvs);
-    $empty_row  = report_generator_create_empty_row_cvs($cols_cvs);
-
-    /* Create Header    */
-    $out_cvs    = report_generator_get_header_report_outcome_cvs($empty_row,$report_level,$outcome,$level_1,$level_2);
-    /* Fill the file    */
-    report_generator_print_report_outcome_csv_tables($empty_row,$report_type,$report_level,$outcome_report_info,$completed_time,$out_cvs);
-    /* Download the CVS report  */
-    report_generator_download_report_cvs($out_cvs,$report_type);
-
-    return true;
-}//report_generator_create_outcome_report_csv_out
-
-/**
- * @param       $empty_row
- * @param       $report_level
- * @param       $outcome
- * @param       $level_1
- * @param       $level_2
- * @return      array
- *
- * @updateDate  01/10/2012
- * @author      eFaktor (fbv)
- *
- * Description
- * Get the header of the csv outcome file.
- */
-function report_generator_get_header_report_outcome_cvs($empty_row,$report_level,$outcome,$level_1, $level_2) {
-    global $DB;
-
-    /* Data of the report   */
-    $out = array();
-
-    $row    = $empty_row;
-    $row[0] = userdate(time(),'%d.%m.%Y', 99, false);
-    $out[]  = $row;
-    /* Outcome Detail   */
-    $outcome_detail = $DB->get_record('grade_outcomes',array('id'=>$outcome));
-    /* Outcome Name     */
-    $row    = $empty_row;
-    $row[0] = get_string('outcome', 'report_generator') . ' "' . $outcome_detail->fullname . '"';
-    $out[]  = $row;
-    /* Outcome Description  */
-    $row    = $empty_row;
-    $row[0] = strip_tags($outcome_detail->description);
-    $out[]  = $row;
-
-    /* Information about companies level */
-    /* Level 1 */
-    $row    = $empty_row;
-    $row[0] = get_string('company_structure_level', 'report_generator', 1) . ': ' . $level_1;
-    $out[]  = $row;
-    /* Level 2 */
-    if ($report_level > 1) {
-        $row    = $empty_row;
-        $row[0] = get_string('company_structure_level', 'report_generator', 2) . ': ' . $level_2;
-        $out[]  = $row;
-    }//if_level_2
-
-    return $out;
-}//report_generator_get_header_report_outcome_cvs
-
-/**
- * @param       $report_level
- * @return      array
- *
- * @updateDate  01/10/2012
- * @author      eFaktor     (fbv)
- *
- * Description
- * Get the columns of the csv outcome file.
- */
-function report_generator_get_fields_report_outcome_cvs($report_level) {
-    /* Variables    */
-    $str_job_role       = get_string('job_role', 'report_generator');
-    $str_count          = get_string('count', 'report_generator');
-    $str_company_name   = get_string('company', 'report_generator');
-    $str_course         = get_string('course');
-    $str_username       = get_string('name');
-    $str_cert_date      = get_string('cert_date', 'report_generator');
-
-    /* Fields of the CVS file   */
-    $fields_cvs = array();
-
-    switch ($report_level) {
-        case 1;case 2:
-            $fields_cvs = array($str_company_name,
-                                $str_job_role,
-                                $str_course,
-                                $str_count);
-
-            break;
-        case 3:
-            $fields_cvs = array($str_company_name,
-                                $str_job_role,
-                                $str_course,
-                                $str_username,
-                                $str_cert_date,
-                                $str_count);
-            break;
-    }//switch_report_level
-
-    return $fields_cvs;
-}//report_generator_get_fields_report_cvs
-
-/**
- * @param       $empty_row
- * @param       $report_type
- * @param       $report_level
- * @param       $company_report_info
- * @param       $completed_time
- * @param       $out_cvs
- *
- * @updateDate  01/10/2012
- * @author      eFaktor (fbv)
- *
- * Description
- * Get the data for the csv outcome file.
- */
-function report_generator_print_report_outcome_csv_tables($empty_row,$report_type,$report_level,$company_report_info,$completed_time,&$out_cvs) {
-    /* Variables     */
-    $completed_time = userdate($completed_time,'%d.%m.%Y', 99, false);
-    $str_completed  = get_string($report_type . '_units_have_completed_since', 'report_generator',$completed_time);
-    $str_progress   = get_string($report_type . '_units_in_progress', 'report_generator');
-    $str_before     = get_string($report_type . '_units_have_completed_before', 'report_generator',$completed_time);
-
-    /* Create Tables    */
-    foreach ($company_report_info as $id=>$company_info) {
-        $company    = $company_info->company_name;
-        $report_job = $company_info->report_job;
-
-        /* Before       */
-        if ($company_info->total_before) {
-            $total      = $company_info->total_before;
-            $row        = $empty_row;
-            $row[0]     = strip_tags($str_before);
-            $out_cvs[]  = $row;
-            report_generator_get_cvs_outcome_table($empty_row,$report_level,$company,$report_job,'before',$out_cvs);
-        }//_before
-
-        /* Progress     */
-        if ($company_info->total_progress) {
-            $total      = $company_info->total_progress;
-            $row        = $empty_row;
-            $row[0]     = strip_tags($str_progress);
-            $out_cvs[]  = $row;
-            report_generator_get_cvs_outcome_table($empty_row,$report_level,$company,$report_job,'progress',$out_cvs);
-        }//_progress
-
-        /* Completed    */
-        if ($company_info->total_completed) {;
-            $total      = $company_info->total_completed;
-            $row        = $empty_row;
-            $row[0]     = strip_tags($str_completed);
-            $out_cvs[]  = $row;
-            report_generator_get_cvs_outcome_table($empty_row,$report_level,$company,$report_job,'completed',$out_cvs);
-        }//_completed
-    }//for_company
-}//report_generator_print_report_outcome_csv_tables
 
 /**
  * @param       $empty_row
@@ -3747,139 +2177,6 @@ function report_generator_get_feedback_dialog($text) {
     return $sendpdfdialog;
 }
 
-/**
- * @param           $job_roles      Job roles list
- * @return          html_table
- *
- * @updateDate      12/09/2012
- * @author          eFaktor     (fbv)
- *
- * Description
- * Draw a table which contains all job roles available.
- */
-function report_generator_table_job_roles($job_roles){
-    global $CFG;
-
-    $context      = CONTEXT_SYSTEM::instance();
-    $can_edit      = has_capability('report/generator:edit', $context);
-
-    $str_fullname  = get_string('fullname');
-    $str_outcomes  = get_string('outcomes_for_job_role', 'report_generator');
-    $str_edit      = get_string('edit');
-
-    /* Create Table */
-    $table = new html_table();
-
-    $table->head = array($str_fullname, $str_outcomes, $str_edit);
-    $table->colclasses = array($str_fullname, $str_outcomes, $str_edit);
-
-    $table->width = "60%";
-
-    foreach ($job_roles as $job_role) {
-        global $OUTPUT;
-
-        /* Rows */
-        $row = array();
-        /* Buttons */
-        $buttons = array();
-
-        /* Fullname Col */
-        $row[] = $job_role->name;
-        /* Outcomes Col */
-        $row[] = $job_role->outcome_name;
-        /* Edit Col */
-        if ($can_edit) {
-            /* Edit Button */
-            $url_edit = new moodle_url('/report/generator/job_role/edit_job_role.php',array('id'=>$job_role->id));
-            $buttons[] = html_writer::link($url_edit,
-                                           html_writer::empty_tag('img', array('src'=>$OUTPUT->pix_url('t/edit'),
-                                                                               'alt'=>get_string('edit'),
-                                                                               'class'=>'iconsmall')),
-                                           array('title'=>get_string('edit_this_job_role', 'report_generator')));
-            /* Delete Button */
-            $url_delete = new moodle_url('/report/generator/job_role/delete_job_role.php',array('id'=>$job_role->id));
-            $buttons[] = html_writer::link($url_delete,
-                                           html_writer::empty_tag('img', array('src'=>$OUTPUT->pix_url('t/delete'),
-                                                                               'alt'=>get_string('delete'),
-                                                                               'class'=>'iconsmall')),
-                                           array('title'=>get_string('delete_this_job_role', 'report_generator')));
-
-            $row[] = implode(' ',$buttons);
-        }else {
-            $row[] = '';
-        }//if_can_edit
-
-        /* Add row */
-        $table->data[] = $row;
-    }//for_job_roles
-
-    return $table;
-}//report_generator_table_jobroles
-
-
-/**
- * @param           $outcome_list       Outcome list
- * @return          html_table
- *
- * @updateDate      13/09/2012
- * @author          eFaktor     (fbv)
- *
- * Description
- * Draw a table which contains all outcomes available
- */
-function report_generator_table_outcomes($outcome_list) {
-    global $CFG;
-
-    $context = CONTEXT_SYSTEM::instance();
-    $can_edit = has_capability('report/generator:edit', $context);
-
-    $str_fullname           = get_string('fullname');
-    $str_expiration_period  = get_string('expiration_period', 'report_generator');
-    $str_job_roles          = get_string('job_roles_for_outcome', 'report_generator');
-    $str_edit               = get_string('edit');
-
-    /* Create Table */
-    $table = new html_table();
-
-    $table->head = array($str_fullname, $str_expiration_period, $str_job_roles, $str_edit);
-    $table->colclasses = array($str_fullname, $str_expiration_period, $str_job_roles, $str_edit);
-    $table->width = "60%";
-
-    foreach ($outcome_list as $outcome) {
-        global $OUTPUT;
-
-        /* Rows */
-        $row = array();
-        /* Buttons */
-        $buttons = array();
-
-        /* Fullname Column */
-        $row[] = $outcome->fullname;
-        /* Expiration Period Col */
-        $row[] = $outcome->expirationperiod;
-        /* Job Roles Col */
-        $row[] = $outcome->jobroles;
-        /* Edit Col */
-        if ($can_edit) {
-            /* Edit Button */
-            $url_edit = new moodle_url('/report/generator/outcome/edit_outcome.php',array('id'=>$outcome->id,'expid'=>$outcome->expirationid));
-            $buttons[] = html_writer::link($url_edit,
-                                           html_writer::empty_tag('img', array('src'=>$OUTPUT->pix_url('t/edit'),
-                                                                               'alt'=>get_string('edit'),
-                                                                               'class'=>'iconsmall')),
-                                           array('title'=>get_string('edit')));
-
-            $row[] = implode('',$buttons);
-        }else {
-            $row[] = '';
-        }//if_can_edit
-
-        /* Add Row */
-        $table->data[] = $row;
-    }//for
-
-    return $table;
-}//report_generator_table_outcomes
 
 /**
  * @updateDate      14/09/2012
@@ -3896,9 +2193,9 @@ function report_generator_print_report_page($tab, $site_context) {
         if (has_capability('report/generator:viewlevel3', $site_context)) {
             $out .= report_generator_get_links_report_third_level($tab);
         }else if(has_capability('report/generator:viewlevel2', $site_context)) {
-            $out .= report_generator_get_links_report_second_level($tab);
+            //$out .= report_generator_get_links_report_second_level($tab);
         }else if (has_capability('report/generator:viewlevel1', $site_context)) {
-            $out .= report_generator_get_links_report_first_level($tab);
+            //$out .= report_generator_get_links_report_first_level($tab);
         }//if_capabitity
     $out .= '</ul>' . "\n";
 
@@ -3961,8 +2258,8 @@ function report_generator_get_links_report_second_level($tab) {
 function report_generator_get_links_report_third_level($tab) {
     $url_level_3 = new moodle_url('/report/generator/' . $tab .'/' . $tab .'_level.php',array('rpt'=>3));
 
-    $out = report_generator_get_links_report_second_level($tab);
-    $out .= '<li class="last">' . "\n";
+    //$out = report_generator_get_links_report_second_level($tab);
+    $out = '<li class="last">' . "\n";
     $out .= '<a href="'.$url_level_3 .'">'. get_string('level_report','report_generator',3) .'</a>';
     $out .= '</li>' . "\n";
 

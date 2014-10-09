@@ -20,30 +20,25 @@ require_once( '../locallib.php');
 require_once($CFG->libdir . '/adminlib.php');
 require_once('employee_report_form.php');
 require_once( 'employeelib.php');
+
+
 /* Params */
-$return_url     = new moodle_url('/report/generator/index.php');
+$url        = new moodle_url('/report/generator/employee_report/employee_report.php');
+$return     = new moodle_url('/report/generator/index.php');
 
 require_login();
 
-
-/* Clean Cookies */
-setcookie('parentLevelOne',0);
-setcookie('parentLevelTwo',0);
-setcookie('parentLevelTree',0);
-setcookie('courseReport',0);
-setcookie('outcomeReport',0);
-
 /* Start the page */
 $site_context = CONTEXT_SYSTEM::instance();
-//HTTPS is required in this page when $CFG->loginhttps enabled
-//$PAGE->requires->js(new moodle_url('/report/generator/js/employee.js'));
 $PAGE->https_required();
 $PAGE->set_context($site_context);
 
 $PAGE->set_pagelayout('report');
-$PAGE->set_url('/report/generator/employee_report/employee_report.php');
-$return_url = new moodle_url('/report/generator/employee_report/employee_report.php');
-$return     = new moodle_url('/report/generator/index.php');
+$PAGE->set_url($url);
+$PAGE->set_title($SITE->fullname);
+$PAGE->set_heading($SITE->fullname);
+$PAGE->navbar->add(get_string('report_generator','local_tracker'),$return);
+$PAGE->navbar->add(get_string('employee_report','report_generator'),$url);
 
 require_capability('report/generator:viewlevel4', $site_context,$USER->id);
 
@@ -62,6 +57,7 @@ setcookie('parentLevelTree',0);
 setcookie('courseReport',0);
 setcookie('outcomeReport',0);
 setcookie('employeeReport',0);
+
 $form = new generator_employee_report_form(null);
 if ($form->is_cancelled()) {
     $_POST = array();
@@ -80,7 +76,7 @@ if ($form->is_cancelled()) {
     $employee_rpt = report_generator_EmployeeReport_getInfo($company_id,$outcome_id);
 
     /* Get the report to display    */
-    $out  = '<a href="'.$return_url .'">'. get_string('employee_return_to_selection','report_generator') .'</a></br>';
+    $out  = '<a href="'.$url .'">'. get_string('employee_return_to_selection','report_generator') .'</a></br>';
     $out .= html_writer::start_tag('div',array('class' => 'employee_div'));
         $out .= html_writer::start_tag('div',array('class' => 'expiration'));
         $out .= get_string('expired_next','report_generator') . ': ' . $options[$data_form[REPORT_GENERATOR_COMPLETED_LIST]];
@@ -95,7 +91,7 @@ if ($form->is_cancelled()) {
         }//if_courses
     $out .= html_writer::end_tag('div');
 
-    $out .= '<a href="'.$return_url .'">'. get_string('employee_return_to_selection','report_generator') .'</a>';
+    $out .= '<a href="'.$url .'">'. get_string('employee_return_to_selection','report_generator') .'</a>';
 }//if_else_form
 
 /* Print Header */

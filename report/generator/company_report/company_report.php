@@ -17,9 +17,7 @@
 
 require_once('../../../config.php');
 require_once( '../locallib.php');
-//require_once('../trackerlib.php');
 require_once('companyrptlib.php');
-require_once($CFG->libdir . '/adminlib.php');
 require_once($CFG->dirroot . '/report/generator/company_report/filter/lib.php');
 require_once($CFG->dirroot.'/'.$CFG->admin.'/user/lib.php');
 require_once('company_report_form.php');
@@ -59,8 +57,12 @@ $PAGE->https_required();
 $PAGE->set_context($site_context);
 
 $PAGE->set_pagelayout('report');
-$PAGE->set_url('/report/generator/company_report/company_report.php');
+$PAGE->set_url($url);
 $PAGE->verify_https_required();
+$PAGE->set_title($SITE->fullname);
+$PAGE->set_heading($SITE->fullname);
+$PAGE->navbar->add(get_string('report_generator','local_tracker'),$return_url);
+$PAGE->navbar->add(get_string('company_report','report_generator'),$url);
 
 /* My Company   */
 $company_report = new company_report();
@@ -153,8 +155,7 @@ if ($form->is_cancelled()) {
                 break;
         }//switch
     }else {
-        $return_url = new moodle_url('/report/generator/company_report/company_report.php');
-        $return     = '<a href="'.$return_url .'">'. get_string('company_report_link','report_generator') .'</a>';
+        $return     = '<a href="'.$url .'">'. get_string('company_report_link','report_generator') .'</a>';
         $out        = get_string('no_data', 'report_generator');
         $out       .=  '<br/>' . $return;
     }//if_else_my_users

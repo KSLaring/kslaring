@@ -18,21 +18,27 @@
  */
 
 require_once('../../../config.php');
+require_once( 'jobrolelib.php');
 require_once('../locallib.php');
 require_once($CFG->libdir . '/adminlib.php');
 
 /* Params */
-$job_role_id  = required_param('id',PARAM_INT);
-$return_url = new moodle_url('/report/generator/job_role/job_role.php');
+$job_role_id    = required_param('id',PARAM_INT);
+$return_url     = new moodle_url('/report/generator/job_role/job_role.php');
+$return         = new moodle_url('/report/generator/index.php');
+$url            = new moodle_url('/report/generator/job_role/delete_job_role.php');
 
 /* Start the page */
 $site_context = CONTEXT_SYSTEM::instance();
 //HTTPS is required in this page when $CFG->loginhttps enabled
 $PAGE->https_required();
-$PAGE->set_context($site_context);
-
 $PAGE->set_pagelayout('report');
-$PAGE->set_url('/report/generator/job_role/delete_job_role.php');
+$PAGE->set_url($url);
+$PAGE->set_context($site_context);
+$PAGE->set_title($SITE->fullname);
+$PAGE->set_heading($SITE->fullname);
+$PAGE->navbar->add(get_string('report_generator','local_tracker'),$return);
+$PAGE->navbar->add(get_string('job_roles', 'report_generator'),$return_url);
 
 /* ADD require_capability */
 if (!has_capability('report/generator:edit', $site_context)) {
@@ -51,10 +57,10 @@ $PAGE->verify_https_required();
 echo $OUTPUT->header();
 
 /* Check if the job role can be removed */
-$user_connected = report_generator_count_connected_users($job_role_id,REPORT_GENERATOR_JOB_ROLE_FIELD);
+$user_connected = job_role::Users_Connected_JobRole($job_role_id,REPORT_GENERATOR_JOB_ROLE_FIELD);
 if (!$user_connected) {
     /* Remove */
-    report_generator_delete_job_role_out($job_role_id);
+    job_role::Delete_JobRole($job_role_id);
     echo $OUTPUT->notification(get_string('deleted_job_role','report_generator'), 'notifysuccess');
     echo $OUTPUT->continue_button($return_url);
 }else {
@@ -62,5 +68,6 @@ if (!$user_connected) {
     echo $OUTPUT->notification(get_string('error_deleting_job_role','report_generator'), 'notifysuccess');
     echo $OUTPUT->continue_button($return_url);
 }//if_else
+
 /* Print Footer */
 echo $OUTPUT->footer();

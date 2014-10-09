@@ -2,9 +2,6 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once('../../../config.php');
-require_once('../locallib.php');
-require_once($CFG->libdir . '/adminlib.php');
 require_once($CFG->libdir.'/formslib.php');
 $PAGE->requires->js('/report/generator/js/libdev.js');
 
@@ -12,13 +9,10 @@ $PAGE->requires->js('/report/generator/js/libdev.js');
 class generator_company_structure_form extends moodleform {
     function definition() {
         /* General Settings */
-        $level_select_attr = array(
-            'class' => REPORT_GENERATOR_COMPANY_STRUCTURE_LEVEL,
-            //'size' => '5'
-        );
         $button_array_attr = array(
             'class' => 'submit-btn'
         );
+
         /* URL to import level  */
         $url_import = new moodle_url('/report/generator/import_structure/import.php');
 
@@ -32,7 +26,7 @@ class generator_company_structure_form extends moodleform {
         $m_form->addElement('html',$link);
 
         $m_form->addElement('html', '<div class="level-wrapper">');
-        $options = report_generator_get_level_list(1);
+        $options = company_structure::Get_Companies_LevelList(1);
             $m_form->addElement('select',
                                 REPORT_GENERATOR_COMPANY_STRUCTURE_LEVEL . '1',
                                 get_string('level1','report_generator'),
@@ -71,7 +65,7 @@ class generator_company_structure_form extends moodleform {
         /* Level 2 */
         $options = array();
         if (isset($_COOKIE['parentLevelOne'])) {
-            $options = report_generator_get_level_list(2,$_COOKIE['parentLevelOne']);
+            $options = company_structure::Get_Companies_LevelList(2,$_COOKIE['parentLevelOne']);
         }else {
             $options[0] = get_string('select_level_list','report_generator');
         }//IF_COOKIE
@@ -121,7 +115,7 @@ class generator_company_structure_form extends moodleform {
         /* Level 3 */
         $options = array();
         if (isset($_COOKIE['parentLevelTwo'])) {
-            $options = report_generator_get_level_list(3,$_COOKIE['parentLevelTwo']);
+            $options = company_structure::Get_Companies_LevelList(3,$_COOKIE['parentLevelTwo']);
         }else {
             $options[0] = get_string('select_level_list','report_generator');
         }//IF_COOKIE
@@ -172,7 +166,7 @@ class generator_company_structure_form extends moodleform {
         /* Employees */
         $options = array();
         if (isset($_COOKIE['parentLevelTree'])) {
-            $options = report_generator_get_level_Employee($_COOKIE['parentLevelTree']);
+            $options = company_structure::Get_EmployeeLevel($_COOKIE['parentLevelTree']);
         }//if
         $m_form->addElement('header', 'employees', get_string('company_structure_employees', 'report_generator'));
         $m_form->setExpanded('employees',true);

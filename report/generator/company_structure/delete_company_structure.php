@@ -18,25 +18,28 @@
  */
 
 require_once('../../../config.php');
-require_once('../locallib.php');
 require_once('company_structurelib.php');
 require_once($CFG->libdir . '/adminlib.php');
 
 
 /* Params */
-$company_id  = required_param('id',PARAM_INT);
-$level  = optional_param('level', 1, PARAM_INT);
-$return_url = new moodle_url('/report/generator/company_structure/company_structure.php',array('level'=>$level));
-
+$company_id     = required_param('id',PARAM_INT);
+$level          = optional_param('level', 1, PARAM_INT);
+$return_url     = new moodle_url('/report/generator/company_structure/company_structure.php',array('level'=>$level));
+$url            = new moodle_url('/report/generator/company_structure/delete_company_structure.php',array('level' => $level,'id' => $company_id));
 /* Start the page */
 $site_context = context_system::instance();
 
 //HTTPS is required in this page when $CFG->loginhttps enabled
 $PAGE->https_required();
 $PAGE->set_context($site_context);
-
 $PAGE->set_pagelayout('report');
-$PAGE->set_url('/report/generator/company_structure/delete_company_structure.php');
+$PAGE->set_url($url);
+$PAGE->set_title($SITE->fullname);
+$PAGE->set_heading($SITE->fullname);
+$PAGE->navbar->add(get_string('report_generator','report_generator'),new moodle_url('/report/generator/index.php'));
+$PAGE->navbar->add(get_string('company_structure','report_generator'),$return_url);
+$PAGE->navbar->add(get_string('delete_company_level','report_generator'));
 
 /* ADD require_capability */
 require_capability('report/generator:edit', $site_context);
@@ -53,19 +56,19 @@ $PAGE->verify_https_required();
 echo $OUTPUT->header();
 
 /* Check If the company can be removed */
-if (report_generator_company_has_employees($company_id)) {
+if (company_structure::Company_HasEmployees($company_id)) {
     /* Not Remove */
     echo $OUTPUT->notification(get_string('error_deleting_company_structure','report_generator'), 'notifysuccess');
     echo $OUTPUT->continue_button($return_url);
 }else {
     /* Remove */
-    if (report_generator_company_has_child($company_id)) {
+    if (company_structure::Company_HasChildren($company_id)) {
         /* Not Remove */
         echo $OUTPUT->notification(get_string('error_deleting_company_structure','report_generator'), 'notifysuccess');
         echo $OUTPUT->continue_button($return_url);
     }else {
         /* Remove */
-        if (report_generator_delete_company($company_id)) {
+        if (company_structure::Delete_Company($company_id)) {
             echo $OUTPUT->notification(get_string('deleted_company_structure','report_generator'), 'notifysuccess');
             echo $OUTPUT->continue_button($return_url);
         }

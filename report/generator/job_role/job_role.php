@@ -16,10 +16,14 @@
  */
 
 require_once('../../../config.php');
-require_once( '../locallib.php');
+require_once( 'jobrolelib.php');
 require_once($CFG->libdir . '/adminlib.php');
 
 require_login();
+
+/* PARAMS */
+$url        = new moodle_url('/report/generator/job_role/job_role.php');
+$return_url = new moodle_url('/report/generator/index.php');
 
 /* Clean Cookies */
 setcookie('parentLevelOne',0);
@@ -31,10 +35,13 @@ $_POST = array();
 $site_context = CONTEXT_SYSTEM::instance();
 //HTTPS is required in this page when $CFG->loginhttps enabled
 $PAGE->https_required();
-$PAGE->set_context($site_context);
-
 $PAGE->set_pagelayout('report');
-$PAGE->set_url('/report/generator/job_role/job_role.php');
+$PAGE->set_url($url);
+$PAGE->set_context($site_context);
+$PAGE->set_title($SITE->fullname);
+$PAGE->set_heading($SITE->fullname);
+$PAGE->navbar->add(get_string('report_generator','local_tracker'),$return_url);
+$PAGE->navbar->add(get_string('job_roles', 'report_generator'),$url);
 
 /* ADD require_capability */
 if (!has_capability('report/generator:edit', $site_context)) {
@@ -58,7 +65,7 @@ require('../tabs.php');
 
 
 /* Get Job Role List */
-$job_roles = report_generator_get_jobrole_list_with_rel_outcomes();
+$job_roles = job_role::JobRole_With_Outcomes();
 
 if (empty($job_roles)) {
     /* Print Title */
@@ -67,7 +74,7 @@ if (empty($job_roles)) {
 }else {
     /* Print Title */
     echo $OUTPUT->heading(get_string('job_roles', 'report_generator'));
-    $table = report_generator_table_job_roles($job_roles);
+    $table = job_role::JobRoles_table($job_roles);
 
     echo html_writer::table($table);
 }//if_else

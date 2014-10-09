@@ -19,6 +19,7 @@
 
 require_once('../../../config.php');
 require_once('../locallib.php');
+require_once( 'jobrolelib.php');
 require_once('edit_job_role_form.php');
 require_once($CFG->libdir . '/adminlib.php');
 
@@ -26,14 +27,21 @@ require_once($CFG->libdir . '/adminlib.php');
 /* Params */
 $job_role_id    = optional_param('id',0,PARAM_INT);
 $return_url     = new moodle_url('/report/generator/job_role/job_role.php');
+$url            = new moodle_url('/report/generator/job_role/edit_job_role.php');
+$return         = new moodle_url('/report/generator/index.php');
+
 /* Start the page */
 $site_context = CONTEXT_SYSTEM::instance();
 //HTTPS is required in this page when $CFG->loginhttps enabled
 $PAGE->https_required();
-$PAGE->set_context($site_context);
-
 $PAGE->set_pagelayout('report');
-$PAGE->set_url('/report/generator/job_role/edit_job_role.php');
+$PAGE->set_url($url);
+$PAGE->set_context($site_context);
+$PAGE->set_title($SITE->fullname);
+$PAGE->set_heading($SITE->fullname);
+$PAGE->navbar->add(get_string('report_generator','local_tracker'),$return);
+$PAGE->navbar->add(get_string('job_roles', 'report_generator'),$return_url);
+$PAGE->navbar->add(get_string('edit_job_roles', 'report_generator'));
 
 /* ADD require_capability */
 if (!has_capability('report/generator:edit', $site_context)) {
@@ -58,9 +66,10 @@ if ($form->is_cancelled()) {
     $job_role->modified = time();
     $job_role->name = $data->job_role_name;
 
-    if ($data->municipality_id) {
+    if (isset($data->municipality_id) && ($data->municipality_id)) {
         $job_role->idmuni = $data->municipality_id;
     }
+
     $select = REPORT_GENERATOR_OUTCOME_LIST;
 
     if (!isset($data->$select)) {
@@ -72,10 +81,10 @@ if ($form->is_cancelled()) {
     if ($job_role_id){
         /* Update Job Role      */
         $job_role->id = $data->id;
-        report_generator_update_job_role_out($job_role,$outcome_list);
+        job_role::Update_JobRole($job_role,$outcome_list);
     }else {
         /* Insert New Job Role */
-        report_generator_insert_job_role_out($job_role,$outcome_list);
+        job_role::Insert_JobRole($job_role,$outcome_list);
     }//if_job_id
 
     $_POST = array();

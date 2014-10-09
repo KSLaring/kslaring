@@ -12,33 +12,25 @@ $PAGE->requires->js('/report/generator/js/libdev.js');
 class generator_outcome_report_level_form extends moodleform {
     function definition() {
         /* General Settings */
-        $level_select_attr = array(
-            'class' => REPORT_GENERATOR_COMPANY_STRUCTURE_LEVEL,
+        $level_select_attr = array('class' => REPORT_GENERATOR_COMPANY_STRUCTURE_LEVEL,
             'size' => '5'
-        );
-        $button_array_attr = array(
-            'class' => 'submit-btn'
         );
 
         $m_form = $this->_form;
-        list($report_level) = $this->_customdata;
+        list($report_level,$my_hierarchy) = $this->_customdata;
 
         /* Outcome List */
         $m_form->addElement('header', 'outcome', get_string('outcome', 'report_generator'));
-
         $m_form->addElement('html', '<div class="level-wrapper">');
-            $m_form->addElement('select',
-                                REPORT_GENERATOR_OUTCOME_LIST,
-                                get_string('select_outcome_to_report', 'report_generator'),
-                                report_generator_get_outcome_list(),
-                                'onChange=saveOutcome("outcome_list")');
+                $options = outcome_report::Get_OutcomesList();
+                $m_form->addElement('select',REPORT_GENERATOR_OUTCOME_LIST,get_string('select_outcome_to_report', 'report_generator'),$options,'onChange=saveOutcome("outcome_list")');
 
         if (isset($_COOKIE['outcomeReport'])) {
             $m_form->setDefault(REPORT_GENERATOR_OUTCOME_LIST,$_COOKIE['outcomeReport']);
         }//if_cookie
         $m_form->addElement('html', '</div>');
 
-        /* Levels */
+        /* Company Hierarchy - Levels */
         $m_form->addElement('header', 'company', get_string('company', 'report_generator'));
         $m_form->setExpanded('company',true);
         for ($i = 1; $i <= $report_level; $i++) {
@@ -47,10 +39,8 @@ class generator_outcome_report_level_form extends moodleform {
             $title = get_string('select_company_structure_level', 'report_generator', $i);
             $event = $this->getEvent($i,$report_level);
 
-            /* List */
-            $options = $this->getCompanies_Level($i);
-
             /* Select */
+            $options = $this->getCompanies_Level($i,$my_hierarchy);
             $m_form->addElement('html', '<div class="level-wrapper">');
                 $select = &$m_form->addElement('select',$name_select, $title,$options,$event);
                 /* Multiple Selection - Level 3 */
@@ -59,7 +49,6 @@ class generator_outcome_report_level_form extends moodleform {
                     $select->setSize(10);
                     $m_form->addElement('html', '<p class="helptext">' . get_string('help_multi_select', 'report_generator') . '</p>');
                 }
-            $m_form->addElement('html', '</div>');
 
             /* Default Values */
             $m_form->setDefault($name_select,$this->getDefault_Value($i));
@@ -69,18 +58,15 @@ class generator_outcome_report_level_form extends moodleform {
                 $name_parent = REPORT_GENERATOR_COMPANY_STRUCTURE_LEVEL . ($i-1);
                 $m_form->disabledIf($name_select,$name_parent,'eq',0);
             }//if_>_1
-        }//for
+            $m_form->addElement('html', '</div>');
+        }//for_level
 
         /* Job Role */
         $m_form->addElement('header', 'job_role', get_string('job_role', 'report_generator'));
         $m_form->setExpanded('job_role',true);
         $m_form->addElement('html', '<div class="level-wrapper">');
-            $select =& $m_form->addElement('select',
-                                           REPORT_GENERATOR_JOB_ROLE_LIST,
-                                           get_string('select_job_role', 'report_generator'),
-                                           report_generator_get_job_role_list(),
-                                           $level_select_attr);
-
+            $options = outcome_report::Get_JobRolesList();
+            $select =& $m_form->addElement('select',REPORT_GENERATOR_JOB_ROLE_LIST,get_string('select_job_role', 'report_generator'),$options,$level_select_attr);
             $select->setMultiple(true);
             $m_form->addElement('html', '<p class="helptext">' . get_string('help_multi_select', 'report_generator') . '</p>');
         $m_form->addElement('html', '</div>');
@@ -89,20 +75,21 @@ class generator_outcome_report_level_form extends moodleform {
         $m_form->addElement('header', 'report', get_string('report'));
         $m_form->setExpanded('report',true);
         $m_form->addElement('html', '<div class="level-wrapper">');
-            $m_form->addElement('select',
-                                REPORT_GENERATOR_COMPLETED_LIST,
-                                get_string('completed_list', 'report_generator'),
-                                report_generator_get_completed_list());
+            /* Completed List   */
+            $options = report_generator_get_completed_list();
+            $m_form->addElement('select',REPORT_GENERATOR_COMPLETED_LIST,get_string('completed_list', 'report_generator'),$options);
             $m_form->setDefault(REPORT_GENERATOR_COMPLETED_LIST, 4);
 
             /* Format Report */
-            $m_form->addElement('select',
-                                REPORT_GENERATOR_REPORT_FORMAT_LIST,
-                                get_string('report_format_list', 'report_generator'),
-                                report_generator_get_report_format_list());
+            $list = array(
+                OUTCOME_REPORT_FORMAT_SCREEN        => get_string('preview', 'report_generator'),
+                OUTCOME_REPORT_FORMAT_SCREEN_EXCEL  => get_string('excel', 'report_generator')
+            );
+            /* Format Report */
+            $m_form->addElement('select',OUTCOME_REPORT_FORMAT_LIST,get_string('report_format_list', 'report_generator'),$list);
         $m_form->addElement('html', '</div>');
 
-        /* */
+
         $m_form->addElement('hidden','rpt');
         $m_form->setDefault('rpt',$report_level);
         $m_form->setType('rpt',PARAM_INT);
@@ -112,8 +99,6 @@ class generator_outcome_report_level_form extends moodleform {
 
     function validation($data, $files) {
         $errors = parent::validation($data, $files);
-
-        list($report_level) = $this->_customdata;
 
         /* Check Outcome */
         if (!$data[REPORT_GENERATOR_OUTCOME_LIST]){
@@ -131,6 +116,113 @@ class generator_outcome_report_level_form extends moodleform {
 
         return $errors;
     }//validation
+
+    function definition_after_data() {
+        global $SESSION;
+        $m_form = $this->_form;
+
+        /* Select the last level    */
+        if (isset($SESSION->level_three) && $SESSION->level_three) {
+            $m_form->getElement(REPORT_GENERATOR_COMPANY_STRUCTURE_LEVEL . '3')->setSelected($SESSION->level_three);
+            unset($SESSION->level_three);
+        }//set_default_level_three
+
+        /* Select the job roles */
+        if (isset($SESSION->job_roles) && $SESSION->job_roles) {
+            $m_form->getElement(REPORT_GENERATOR_JOB_ROLE_LIST)->setSelected($SESSION->job_roles);
+            unset($SESSION->job_roles);
+        }//job_roles_set_defautl
+    }
+
+    /**
+     * @param           $level
+     * @param           $my_hierarchy
+     * @return          array
+     *
+     * @creationDate    10/09/2014
+     * @author          eFaktor     (fbV)
+     *
+     * Description
+     * Get the companies list connected with level
+     */
+    function getCompanies_Level($level,$my_hierarchy) {
+        /* Companies List */
+        $lst_companies = array();
+        $in_one     = null;
+        $in_two     = null;
+
+        switch ($my_hierarchy->my_level) {
+            case 2:
+                $in_one = $my_hierarchy->level_one;
+
+                break;
+            case 3:
+                $in_one = $my_hierarchy->level_one;
+                $in_two = $my_hierarchy->level_two;
+
+                        break;
+            default:
+                break;
+        }//switch_my_level
+
+        switch ($level) {
+            case 1:
+                $lst_companies = outcome_report::Get_CompaniesLevel($level,$in_one);
+
+                break;
+            case 2:
+                if (isset($_COOKIE['parentLevelOne'])) {
+                    $lst_companies = outcome_report::Get_CompaniesLevel($level,$in_two,$_COOKIE['parentLevelOne']);
+                }else {
+                    $lst_companies[0] = get_string('select_level_list','report_generator');
+                }//IF_COOKIE
+
+                break;
+            case 3:
+                if (isset($_COOKIE['parentLevelTwo'])) {
+                    $lst_companies = outcome_report::Get_CompaniesLevel($level,null,$_COOKIE['parentLevelTwo']);
+                }//IF_COOKIE
+
+                break;
+            default:
+                break;
+        }//switch_level
+
+        return $lst_companies;
+    }//getCompanies_Level
+
+    /**
+     * @param           $level
+     * @return          int
+     *
+     * @creationDate    10/09/2014
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Set the default value
+     */
+    function getDefault_Value($level){
+        $str_value = 0;
+
+        /* Get Default Value */
+        switch ($level) {
+            case 1:
+                if (isset($_COOKIE['parentLevelOne']) && isset($_COOKIE['parentLevelOne']) != 0) {
+                    $str_value = $_COOKIE['parentLevelOne'];
+                }
+                break;
+            case 2:
+                if (isset($_COOKIE['parentLevelTwo'])) {
+                    $str_value = $_COOKIE['parentLevelTwo'];
+                }
+                break;
+            case 3:
+                $str_value = -1;
+                break;
+        }//switch
+
+        return $str_value;
+    }//setDefault_Value
 
     /**
      * @param           $parent_level       Parent Level
@@ -167,64 +259,4 @@ class generator_outcome_report_level_form extends moodleform {
 
         return $str_event;
     }//getEvent
-
-    /**
-     * @param           $level      Level
-     * @return          array
-     *
-     * @creationDate    14/09/2012
-     * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Return a list of all companies that are connected with a level.
-     */
-    function getCompanies_Level($level) {
-        /* Companies List */
-        $options = array();
-
-        /* Get parent */
-        switch ($level) {
-            case 1:
-                $options = report_generator_get_level_list($level);
-                break;
-            case 2:
-                if (isset($_COOKIE['parentLevelOne'])) {
-                    $options = report_generator_get_level_list($level,$_COOKIE['parentLevelOne']);
-                }else {
-                    $options[0] = get_string('select_level_list','report_generator');
-                }//IF_COOKIE
-                break;
-            case 3:
-                if (isset($_COOKIE['parentLevelTwo'])) {
-                    $options = report_generator_get_level_list($level,$_COOKIE['parentLevelTwo']);
-                }//IF_COOKIE
-                break;
-        }//switch
-
-        return $options;
-    }//getParent_Company
-
-
-    function getDefault_Value($level){
-        $str_value = 0;
-
-        /* Get Default Value */
-        switch ($level) {
-            case 1:
-                if (isset($_COOKIE['parentLevelOne']) && isset($_COOKIE['parentLevelOne']) != 0) {
-                    $str_value = $_COOKIE['parentLevelOne'];
-                }
-                break;
-            case 2:
-                if (isset($_COOKIE['parentLevelTwo'])) {
-                    $str_value = $_COOKIE['parentLevelTwo'];
-                }
-                break;
-            case 3:
-                $str_value = -1;
-                break;
-        }//switch
-
-        return $str_value;
-    }//setDefault_Value
 }//generator_outcome_report_level_form

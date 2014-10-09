@@ -22,6 +22,8 @@ require_once($CFG->libdir . '/gradelib.php');
 
 /* Params */
 require_login();
+$return_url = new moodle_url('/report/generator/index.php');
+$url        = new moodle_url('/report/generator/course_report/course_report.php');
 
 /* Start the page */
 $site_context = CONTEXT_SYSTEM::instance();
@@ -30,7 +32,12 @@ $PAGE->https_required();
 $PAGE->set_context($site_context);
 
 $PAGE->set_pagelayout('report');
-$PAGE->set_url('/report/generator/course_report/course_report.php');
+$PAGE->set_url($url);
+
+$PAGE->set_title($SITE->fullname);
+$PAGE->set_heading($SITE->fullname);
+$PAGE->navbar->add(get_string('report_generator','local_tracker'),$return_url);
+$PAGE->navbar->add(get_string('course_report', 'report_generator'),$url);
 
 /* ADD require_capability */
 require_capability('report/generator:viewlevel3', $site_context);

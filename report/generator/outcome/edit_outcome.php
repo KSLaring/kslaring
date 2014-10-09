@@ -19,6 +19,7 @@
 
 require_once('../../../config.php');
 require_once('../locallib.php');
+require_once( 'outcomelib.php');
 require_once('edit_outcome_form.php');
 require_once($CFG->libdir . '/adminlib.php');
 
@@ -26,16 +27,22 @@ require_once($CFG->libdir . '/adminlib.php');
 $outcome_id    = required_param('id', PARAM_INT);
 $expiration_id = optional_param('expid', 0, PARAM_INT);
 
+$url            = new moodle_url('/report/generator/outcome/edit_outcome.php',array('id' => $outcome_id));
+$return         = new moodle_url('/report/generator/index.php');
 $return_url     = new moodle_url('/report/generator/outcome/outcome.php');
 
 /* Start the page */
 $site_context = CONTEXT_SYSTEM::instance();
 //HTTPS is required in this page when $CFG->loginhttps enabled
 $PAGE->https_required();
-$PAGE->set_context($site_context);
-
 $PAGE->set_pagelayout('report');
-$PAGE->set_url('/report/generator/outcome/edit_outcome.php');
+$PAGE->set_url($url);
+$PAGE->set_context($site_context);
+$PAGE->set_title($SITE->fullname);
+$PAGE->set_heading($SITE->fullname);
+$PAGE->navbar->add(get_string('report_generator','local_tracker'),$return_url);
+$PAGE->navbar->add(get_string('outcome', 'report_generator'),$return);
+$PAGE->navbar->add(get_string('edit_outcome', 'report_generator'));
 
 /* ADD require_capability */
 if (!has_capability('report/generator:edit', $site_context)) {
@@ -57,6 +64,7 @@ if ($form->is_cancelled()) {
     setcookie('parentLevelTree',0);
     setcookie('courseReport',0);
     setcookie('outcomeReport',0);
+
     $_POST = array();
     redirect($return_url);
 }else if($data = $form->get_data()) {
@@ -71,10 +79,10 @@ if ($form->is_cancelled()) {
     if ($expiration_id) {
         /* Update Outcome */
         $outcome->id = $data->expid;
-        report_generator_update_outcome_role($outcome,$role_list);
+        outcome::Update_Outcome($outcome,$role_list);
     }else {
         /* Insert */
-        report_generator_insert_outcome_role($outcome,$role_list);
+        outcome::Insert_Outcome($outcome,$role_list);
     }//if_else
 
     $_POST = array();

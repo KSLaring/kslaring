@@ -33,7 +33,9 @@ $string['level3'] = 'Arbeidsstedene';
 
 $string['unit']                         = 'Enhet';
 $string['company']                      = 'Arbeidssted';
-$string['completed']                    = 'OK';
+$string['completed']                    = 'Completed';
+$string['progress']                     = 'In Progress';
+$string['not_start']                    = 'Not Enrol';
 $string['expires']                      = 'Utløper';
 $string['username']                     = 'Navn';
 $string['count']                        = 'Antall';
@@ -166,6 +168,7 @@ $string['job_roles_for_outcome']    = 'Koble til jobbrolle(r)';
 
 $string['outcome']                      = 'Godkjenning som';
 $string['outcomes']                     = 'Godkjenninger';
+$string['edit_outcome']                 = 'Edit Outcomes';
 $string['outcome_note']                 = 'Denne siden vil vise skjemaet for godkjenningsvarighet.';
 $string['expiration_period']            = 'Gyldighetsperiode (Måneder)';
 $string['expiration_period_in_month']   = 'Varighet<br />(i mnd)';
@@ -356,10 +359,4 @@ $string['expired_next']     = 'Utløper neste';
 $string['existing_item']    = 'Eksisterende element';
 $string['employee_report_link'] = 'Status på sertifiseringer';
 
-$string['underconstruction'] = 'Sorry, this report is not available. We are working on it.';
-
-$string['county']       = 'County';
-$string['sel_county']   = 'Choose a county...';
-
-$string['municipality']     = 'Municipality';
-$string['sel_municipality'] =  'Choose a municipality...';
+$string['underconstruction'] = 'Beklager, men denne rapporten er for tiden deaktivert. Vi arbeider med å forbedre den.';

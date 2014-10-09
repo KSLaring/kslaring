@@ -12,6 +12,7 @@
  */
 
 require_once('../../../config.php');
+require_once('importlib.php');
 require_once('../locallib.php');
 require_once($CFG->libdir . '/adminlib.php');
 require_once($CFG->libdir.'/csvlib.class.php');
@@ -19,8 +20,10 @@ require_once('import_form.php');
 
 /* PARAMS   */
 $level              = optional_param('level',0,PARAM_INT);
+$return             = new moodle_url('/report/generator/index.php');
 $return_url         = new moodle_url('/report/generator/company_structure/company_structure.php');
 $return_err         = new moodle_url('/report/generator/import_structure/import.php',array('level'=>$level));
+$url                = new moodle_url('/report/generator/import_structure/import.php',array('level'=>$level));
 $imported           = false;
 $err_import         = false;
 $table_not_imported = null;
@@ -38,10 +41,14 @@ $site_context = context_system::instance();
 
 //HTTPS is required in this page when $CFG->loginhttps enabled
 $PAGE->https_required();
-$PAGE->set_context($site_context);
-
 $PAGE->set_pagelayout('report');
-$PAGE->set_url('/report/generator/import_structure/import.php');
+$PAGE->set_url($url);
+$PAGE->set_context($site_context);
+$PAGE->set_title($SITE->fullname);
+$PAGE->set_heading($SITE->fullname);
+$PAGE->navbar->add(get_string('report_generator','local_tracker'),$return);
+$PAGE->navbar->add(get_string('company_structure', 'report_generator'),$return_url);
+$PAGE->navbar->add(get_string('header_import', 'report_generator'),$url);
 
 /* ADD require_capability */
 if (!has_capability('report/generator:edit', $site_context)) {
@@ -69,6 +76,7 @@ if ($form->is_cancelled()) {
 }else if ($data = $form->get_data()) {
     setcookie('parentImportTwo',0);
     try {
+        $file_columns = null;
         $iid = csv_import_reader::get_new_iid('import_structure');
         $cir = new csv_import_reader($iid, 'import_structure');
 
@@ -83,12 +91,12 @@ if ($form->is_cancelled()) {
             $error = CSV_EMPTY_FILE;
         }else {
             $error = NON_ERROR;
-            $file_columns   = report_generator_import_validate_columns($cir, $std_fields, $error);
+            $file_columns   = Import_Companies::ValidateColumns($cir, $std_fields, $error);
         }//if_read_count
 
         /* Import the new companies */
         $imported       = true;
-        $records_file   = report_generator_import_validate_data($file_columns,$cir);
+        $records_file   = Import_Companies::ValidateData($file_columns,$cir);
         switch ($level) {
             case 2:
                 $level_parent = $data->parent_1;
@@ -100,11 +108,11 @@ if ($form->is_cancelled()) {
                 $level_parent = null;
                 break;
         }//switch_level
-        $err_import     = report_generator_import_structure($records_file,$level,$level_parent);
+        $err_import     = Import_Companies::ImportStructure($records_file,$level,$level_parent);
         /* Get the companies have not been imported  */
         $total_not_imported = count($records_file->errors);
         if ($total_not_imported) {
-            $table_not_imported = report_generator_import_not_imported($records_file,$per_page,$total_not_imported);
+            $table_not_imported = Import_Companies::ImportNotImported($records_file,$per_page,$total_not_imported);
         }//if_records_file_errors
     }catch (Exception $ex) {
         $error = CSV_LOAD_ERROR;

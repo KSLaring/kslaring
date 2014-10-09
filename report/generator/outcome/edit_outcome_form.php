@@ -2,9 +2,6 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once('../../../config.php');
-require_once('../locallib.php');
-require_once($CFG->libdir . '/adminlib.php');
 require_once($CFG->libdir.'/formslib.php');
 
 /* Form to edit a outcome. */
@@ -25,12 +22,12 @@ class generator_edit_outcome_form extends moodleform {
         $m_form->setType('expiration_period',PARAM_INT);
 
         if ($expiration_id) {
-            $m_form->setDefault('expiration_period',report_generator_get_outcome_expiration_period($expiration_id));
-        }
+            $m_form->setDefault('expiration_period',outcome::Outcome_Expiration($expiration_id));
+        }//if_expiration
 
         $m_form->addElement('header', 'job_roles', get_string('related_job_roles', 'report_generator'));
         $m_form->addElement('html', '<div class="level-wrapper">');
-            list($job_role_list, $roles_selected) = report_generator_get_role_list_with_selected($outcome_id);
+            list($job_role_list, $roles_selected) = outcome::Get_JobRoles_ConnectedOutcome($outcome_id);
             $select = &$m_form->addElement('select',
                                            REPORT_GENERATOR_JOB_ROLE_LIST,
                                            get_string(REPORT_GENERATOR_JOB_ROLE_LIST, 'report_generator'),

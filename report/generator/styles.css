@@ -8,14 +8,22 @@
 .header_user_rpt {
     background: #edf2fa;
     height: 25px;
+    clear:both;
+}
+
+.company_rpt_div .header_user_rpt {
+    background: #edf2fa;
+    height: 28px;
+    display:block;
+    margin-bottom: 2px;
 }
 
 .header_user_rpt h3 {
     text-align: left;
-    color:  #757474;
-    font:bold 18px Verdana,Verdana Pro,sans-serif;
+    /* color:  #757474; */
+    /* font:bold 18px Verdana,Verdana Pro,sans-serif; */
     margin      : 0px;
-    padding     : 5px;
+    /* padding     : 5px; */
 }
 
 .header_col_one {
@@ -46,7 +54,7 @@
 
 .outcome_div {
     clear: both;
-    margin-bottom: 5px;
+    margin-bottom: 15px;
     margin-left: 1em;
     display: block;
 }
@@ -85,13 +93,13 @@
     cursor: pointer;
 }
 
-.outcome_list tr.completed {
+.completed {
     background: #dff0d8;
 }
-.outcome_list tr.expired {
+.expired {
     background: #f2dede;
 }
-.outcome_list tr.not_enroll {
+.not_enroll {
     background: #fcf8e3;
 }
 
@@ -121,7 +129,8 @@
     clear: both;
     width:100%;
 }
-.employee_div .expiration {
+.employee_div .expiration,
+.outcome_detail_rpt .expiration {
     position: relative;
     float: right;
     margin-top: -40px;
@@ -358,4 +367,235 @@
   color: #004b93;
     padding: 8px 8px 8px 8px;
     margin-left: 20px;
+}
+
+.outcome_rpt_div {
+    margin-top: 1em;
+    margin-bottom: 1.5em;
+    clear: both;
+    width:100%;
+}
+
+.outcome_detail_rpt {
+    margin-bottom: 5px;
+}
+
+.outcome_detail_rpt h6{
+    color: rgba(94, 83, 83, 0.86);
+    margin-bottom: 0px;
+    margin-top: 0px;
+}
+
+.outcome_detail_rpt h2{
+    margin-bottom: 2px;
+    margin-top: 0px;
+}
+
+.outcome_rpt_div .header_outcome_company_rpt {
+    background: #edf2fa;
+    height: 28px;
+    display:block;
+    margin-bottom: 2px;
+}
+
+.outcome_rpt_div .user_div,
+.outcome_rpt_div .level_div {
+    clear: both;
+    margin-bottom: 15px;
+    margin-left: 1em;
+    display: block;
+}
+
+.outcome_rpt_div .user_div .user_header,
+.outcome_rpt_div .level_div .header_outcome_company_rpt {
+    height: 25px;
+    background: #efefef;
+    margin-top: 0px;
+    margin-bottom: 2px;
+}
+
+.outcome_rpt_div .user_div .job_header  {
+    height: 15px;
+    margin-top: 0px;
+    clear: both;
+    text-align: left;
+    margin-bottom: 15px;
+}
+
+.outcome_rpt_div .user_div .job_header h5{
+    margin: 0px;
+    color:  #000;
+}
+
+.company_rpt_div .header_user_rpt .header_col_one,
+.outcome_rpt_div .header_outcome_company_rpt .header_col_one,
+.outcome_rpt_div .user_div .user_header .header_col_one,
+.outcome_rpt_div .level_div .header_outcome_company_rpt .header_col_one{
+    float:left;
+    width:2%;
+    margin-right: 5px;
+    height: 20px;
+    line-height: 10px;
+}
+
+.company_rpt_div .header_user_rpt .header_col_two,
+.outcome_rpt_div .header_outcome_company_rpt .header_col_two,
+.outcome_rpt_div .user_div .user_header .header_col_two,
+.outcome_rpt_div .level_div .header_outcome_company_rpt .header_col_two{
+    float:left;
+    height: 20px;
+    line-height: 10px;
+}
+
+.company_rpt_div .header_user_rpt .header_col_two h3,
+.outcome_rpt_div .header_outcome_company_rpt .header_col_two h3 {
+    height: 20px;
+    line-height: 10px;
+    margin: 8px 0px;
+}
+
+.outcome_rpt_div .user_div .user_header .header_col_two h4,
+.outcome_rpt_div .level_div .header_outcome_company_rpt .header_col_two h4 {
+    height: 20px;
+    line-height: 10px;
+    margin: 8px 0px;
+}
+
+.outcome_rpt_div .user_list,
+.outcome_rpt_div .level_two_list {
+    width: 100%;
+    height: auto;
+    clear: both;
+    display: block;
+    padding: 0;
+    margin: 0;
+}
+
+.outcome_rpt_div .course_list {
+    width: 100%;
+    height: auto;
+    clear: both;
+    display: block;
+    padding: 0;
+    margin-top: 2px;
+    margin-bottom: 10px;
+}
+
+.outcome_rpt_div .course_list table {
+    width: 100%;
+    background: white;
+    color:  #000;
+}
+
+.outcome_rpt_div .course_list tr.head {
+    padding: 0px 0px 0px 0px;
+    margin-bottom: 0px;
+    font:bold 14px Verdana,Verdana Pro,sans-serif;
+    background: #efefef;
+}
+
+.outcome_rpt_div .level_div .course_list tr.head {
+    padding: 0px 0px 0px 0px;
+    margin-bottom: 0px;
+    font:bold 14px Verdana,Verdana Pro,sans-serif;
+    background: white;
+}
+
+.outcome_rpt_div .course_list td.head_first {
+    width: 2%;
+    text-align: left;
+    cursor: pointer;
+}
+
+.outcome_rpt_div .course_list td.head_course {
+    width: 40%;
+    text-align: left;
+    cursor: pointer;
+}
+
+.outcome_rpt_div .course_list td.head_status {
+    width: 15%;
+    text-align: center;
+    cursor: pointer;
+}
+
+.outcome_rpt_div .course_list td.first {
+    width: 2%;
+    text-align: left;
+    cursor: pointer;
+    font:12px Verdana,Verdana Pro,sans-serif;
+}
+
+.outcome_rpt_div .course_list td.course {
+    width: 40%;
+    text-align: left;
+    cursor: pointer;
+    font: 12px Verdana,Verdana Pro,sans-serif;
+}
+
+.outcome_rpt_div .course_list td.status {
+    width: 15%;
+    text-align: center;
+    cursor: pointer;
+    font: 12px Verdana,Verdana Pro,sans-serif;
+}
+
+.outcome_course_list {
+    clear: both;
+}
+
+.outcome_course_list table {
+    width: 100%;
+    background: white;
+    color:  #000;
+}
+
+.outcome_course_list tr.head {
+    padding: 0px 0px 0px 0px;
+    margin-bottom: 0px;
+    font:bold 14px Verdana,Verdana Pro,sans-serif;
+}
+
+.outcome_course_list td.head_first {
+    width: 2%;
+    text-align: left;
+    cursor: pointer;
+}
+
+.outcome_course_list td.head_course {
+    width: 40%;
+    text-align: left;
+    cursor: pointer;
+}
+
+.outcome_course_list td.head_status {
+    width: 20%;
+    text-align: center;
+    cursor: pointer;
+}
+
+.outcome_course_list td.first {
+    width: 2%;
+    text-align: left;
+    cursor: pointer;
+    font:12px Verdana,Verdana Pro,sans-serif;
+}
+
+.outcome_course_list td.course {
+    width: 40%;
+    text-align: left;
+    cursor: pointer;
+    font: 12px Verdana,Verdana Pro,sans-serif;
+}
+
+.outcome_course_list td.status {
+    width: 20%;
+    text-align: center;
+    cursor: pointer;
+    font: 12px Verdana,Verdana Pro,sans-serif;
+}
+
+.link_return {
+    text-align: left;
+    font: 14px Verdana,Verdana Pro,sans-serif;
 }

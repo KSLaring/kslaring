@@ -2,9 +2,6 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once('../../../config.php');
-require_once('../locallib.php');
-require_once($CFG->libdir . '/adminlib.php');
 require_once($CFG->libdir.'/formslib.php');
 $PAGE->requires->js('/report/generator/js/muni.js');
 
@@ -23,7 +20,7 @@ class generator_edit_job_role_form extends moodleform {
         $job_role = null;
         if ($job_role_id) {
             /* Job Role Information */
-            $job_role = report_generator_getJobRole_Detail($job_role_id);
+            $job_role = job_role::JobRole_Info($job_role_id);
         }//if_job_role_id
 
         $m_form->addElement('header', 'name_area', get_string('job_role_name', 'report_generator'));
@@ -34,7 +31,7 @@ class generator_edit_job_role_form extends moodleform {
         /* County           */
         $options        = report_generator_GetCounties_List();
         $m_form->addElement('select','county',get_string('county','report_generator'),$options);
-        $m_form->addRule('county','','required', null, 'server');
+
         /* Municipality     */
         $options    = array();
         if ($job_role) {
@@ -44,7 +41,6 @@ class generator_edit_job_role_form extends moodleform {
         }
 
         $m_form->addElement('select','munis',get_string('municipality','report_generator'),$options);
-        $m_form->addRule('munis','','required', null, 'server');
 
         if ($job_role) {
             $m_form->setDefault('job_role_name',$job_role->name);
@@ -55,15 +51,15 @@ class generator_edit_job_role_form extends moodleform {
         /* ADD List with all outcomes */
         $m_form->addElement('header', 'outcomes', get_string('related_outcomes', 'report_generator'));
         $m_form->addElement('html', '<div class="level-wrapper">');
-            list($out_job_roles,$out_selected) = report_generator_get_outcome_list_with_selected($job_role_id);
-            $select = $m_form->addElement('select',
-                                           REPORT_GENERATOR_OUTCOME_LIST,
-                                           get_string(REPORT_GENERATOR_OUTCOME_LIST, 'report_generator'),
-                                           $out_job_roles,
-                                           $level_select_attr);
+        list($out_job_roles,$out_selected) = job_role::Get_Outcomes_ConnectedJobRole($job_role_id);
+        $select = $m_form->addElement('select',
+                                      REPORT_GENERATOR_OUTCOME_LIST,
+                                      get_string(REPORT_GENERATOR_OUTCOME_LIST, 'report_generator'),
+                                      $out_job_roles,
+                                      $level_select_attr);
 
-            $select->setMultiple(true);
-            $m_form->setDefault(REPORT_GENERATOR_OUTCOME_LIST, $out_selected);
+        $select->setMultiple(true);
+        $m_form->setDefault(REPORT_GENERATOR_OUTCOME_LIST, $out_selected);
 
         $m_form->addElement('html', '</div>');
         $m_form->addElement('hidden','id');
@@ -92,7 +88,7 @@ class generator_edit_job_role_form extends moodleform {
             $errors['job_role_name'] = get_string('missing_job_role_name','report_generator');
         }else {
             if (!$job_role_id) {
-                $bln_exist = report_generator_exists_jobrole($data['job_role_name']);
+                $bln_exist = job_role::JobRole_Exists($data['job_role_name']);
 
                 if ($bln_exist) {
                     $errors['job_role_name'] = get_string('exists_job_role','report_generator');

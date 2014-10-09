@@ -26,6 +26,7 @@ require_once($CFG->libdir . '/adminlib.php');
 /* Params */
 $level  = optional_param('level', 1, PARAM_INT);
 $return_url = new moodle_url('/report/generator/company_structure/company_structure.php',array('level'=>$level));
+$url        = new moodle_url('/report/generator/company_structure/add_company_structure.php',array('level' => $level));
 
 /* Start the page */
 $site_context = context_system::instance();
@@ -33,9 +34,13 @@ $site_context = context_system::instance();
 //HTTPS is required in this page when $CFG->loginhttps enabled
 $PAGE->https_required();
 $PAGE->set_context($site_context);
-
 $PAGE->set_pagelayout('report');
-$PAGE->set_url('/report/generator/company_structure/add_company_structure.php');
+$PAGE->set_url($url);
+$PAGE->set_title($SITE->fullname);
+$PAGE->set_heading($SITE->fullname);
+$PAGE->navbar->add(get_string('report_generator','report_generator'),new moodle_url('/report/generator/index.php'));
+$PAGE->navbar->add(get_string('company_structure','report_generator'),$return_url);
+$PAGE->navbar->add(get_string('add_company_level','report_generator'));
 
 /* ADD require_capability */
 require_capability('report/generator:edit', $site_context);
@@ -46,39 +51,35 @@ if (empty($CFG->loginhttps)) {
     $secure_www_root = str_replace('http:','https:',$CFG->wwwroot);
 }//if_security
 
+
 /* Show Form */
 $form = new generator_add_company_structure_form(null,$level);
 
 if ($form->is_cancelled()) {
-    setcookie('parentLevelOne',0);
-    setcookie('parentLevelTwo',0);
-    setcookie('parentLevelTree',0);
-    setcookie('courseReport',0);
-    setcookie('outcomeReport',0);
     $_POST = array();
     redirect($return_url);
 }else if($data = $form->get_data()) {
-    $parents = $SESSION->parents;
-    $instance       = new stdClass();
+    $parents    = $SESSION->parents;
+    $instance   = new stdClass();
 
     /* Get Data */
     if ($data->name) {
         $instance->name   = $data->name;
     }else {
         $instance->name   = report_generator_get_company_name($data->other_company);
-    }
+    }//if_else_data_name
 
     $instance->hierarchylevel   = $level;
     $instance->modified         = time();
 
     if ($level == 1) {
-        report_generator_insert_company_level($instance);
+        company_structure::Insert_CompanyLevel($instance);
     }else {
         if ($level == 3) {
             $instance->idcounty = $data->county;
             $instance->idmuni   = $data->municipality_id;
         }
-        report_generator_insert_company_level($instance, $parents[$level-1]);
+        company_structure::Insert_CompanyLevel($instance, $parents[$level-1]);
     }
 
     $_POST = array();

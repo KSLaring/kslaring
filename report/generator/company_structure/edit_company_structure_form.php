@@ -2,9 +2,6 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once('../../../config.php');
-require_once('../locallib.php');
-require_once($CFG->libdir . '/adminlib.php');
 require_once($CFG->libdir.'/formslib.php');
 $PAGE->requires->js('/report/generator/js/muni.js');
 
@@ -29,14 +26,14 @@ class generator_edit_company_structure_form extends moodleform {
         $parents = $SESSION->parents;
         if ($level > 1) {
             for ($i = 1; $i < $level; $i++) {
-                $parent_name = report_generator_get_parent_name($i,$parents[$i]);
+                $parent_name = company_structure::Get_Company_ParentName($i,$parents[$i]);
                 $m_form->addElement('text','parent_' . $i,'Company Parent - Level ' . ($i),'size = 50 readonly');
                 $m_form->setDefault('parent_' . $i,$parent_name);
                 $m_form->setType('parent_' . $i,PARAM_TEXT);
             }//for
         }//if_level
         $m_form->addElement('text', 'name', get_string('edit_company_level','report_generator'), $text_attr);
-        $company_info = report_generator_getCompany_Detail($parents[$level]);
+        $company_info = company_structure::Get_CompanyInfo($parents[$level]);
         if ($company_info) {
             $m_form->setDefault('name',$company_info->name);
         }//company_info
@@ -96,9 +93,9 @@ class generator_edit_company_structure_form extends moodleform {
             $bln_exist = false;
             if ($level > 1) {
                 $index = $level-1;
-                $bln_exist = report_generator_exists_company($level,$data,$parents[$index]);
+                $bln_exist = company_structure::Exists_Company($level,$data,$parents[$index]);
             }else {
-                $bln_exist = report_generator_exists_company($level,$data);
+                $bln_exist = company_structure::Exists_Company($level,$data);
             }
             if ($bln_exist) {
                 $errors['name'] = get_string('exists_name','report_generator');

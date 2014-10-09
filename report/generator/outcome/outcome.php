@@ -16,10 +16,14 @@
  */
 
 require_once('../../../config.php');
-require_once( '../locallib.php');
+require_once( 'outcomelib.php');
 require_once($CFG->libdir . '/adminlib.php');
 
 require_login();
+
+/* PARAMS   */
+$url        = new moodle_url('/report/generator/outcome/outcome.php');
+$return_url = new moodle_url('/report/generator/index.php');
 
 /* Clean Cookies */
 setcookie('parentLevelOne',0);
@@ -27,16 +31,18 @@ setcookie('parentLevelTwo',0);
 setcookie('parentLevelTree',0);
 setcookie('courseReport',0);
 setcookie('outcomeReport',0);
-$_POST = array();
 
 /* Start the page */
 $site_context = CONTEXT_SYSTEM::instance();
 //HTTPS is required in this page when $CFG->loginhttps enabled
 $PAGE->https_required();
-$PAGE->set_context($site_context);
-
 $PAGE->set_pagelayout('report');
-$PAGE->set_url('/report/generator/outcome/outcome.php');
+$PAGE->set_url($url);
+$PAGE->set_context($site_context);
+$PAGE->set_title($SITE->fullname);
+$PAGE->set_heading($SITE->fullname);
+$PAGE->navbar->add(get_string('report_generator','local_tracker'),$return_url);
+$PAGE->navbar->add(get_string('outcome', 'report_generator'),$url);
 
 /* ADD require_capability */
 if (!has_capability('report/generator:edit', $site_context)) {
@@ -59,7 +65,7 @@ $show_roles = 1;
 require('../tabs.php');
 
 /* Get Outcome List */
-$outcome_list = report_generator_get_outcome_list_with_rel_roles();
+$outcome_list = outcome::Outcomes_With_JobRoles();
 
 if (empty($outcome_list)) {
     /* Print Title */
@@ -68,7 +74,7 @@ if (empty($outcome_list)) {
 }else {
     /* Print Title */
     echo $OUTPUT->heading(get_string('outcome', 'report_generator'));
-    $table = report_generator_table_outcomes($outcome_list);
+    $table = outcome::Outcomes_Table($outcome_list);
 
     echo html_writer::table($table);
 }//if_else
