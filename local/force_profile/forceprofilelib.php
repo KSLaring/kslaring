@@ -272,6 +272,14 @@ class ForceProfile {
                     $formfield->edit_field_company($form);
                     $form->setDefault('profile_field_'.$extra->shortname,$extra->data);
 
+                    /* Old Value   */
+                    $company_user = self::ForceProfile_GetCompany_User($user_id);
+                    $form->addElement('text','old_company','','size="65" disabled');
+                    if ($company_user) {
+                        $form->setDefault('old_company',$company_user);
+                    }//if_job_roles
+                    $form->setType('old_company',PARAM_TEXT);
+
                     /* Hide Municipalities  */
                     $options = self::ForceProfile_GetMunicipalities_List();
                     $form->addElement('select','comp_munis_hidden','',$options,'style="visibility:hidden;height:0px;"');
@@ -308,13 +316,18 @@ class ForceProfile {
                     $form->addElement('select','munis',get_string('municipality','local_force_profile'),$options);
 
                     /* Job Roles    */
-                    $options = array();
-                    $options[0] = get_string('choose').'...';
                     $newfield = 'profile_field_'.$extra->datatype;
                     $formfield = new $newfield($extra->id, $user_id);
-                    $formfield->setOptions($options);
                     $formfield->edit_field($form);
                     $form->setDefault('profile_field_'.$extra->shortname,$extra->data);
+
+                    /* Old Values   */
+                    $job_roles = self::ForceProfile_GetJobRoles_User($user_id);
+                    $form->addElement('text','old_jr','','size="65" disabled');
+                    if ($job_roles) {
+                        $form->setDefault('old_jr',implode(', ',$job_roles));
+                    }//if_job_roles
+                    $form->setType('old_jr',PARAM_TEXT);
 
                     /* Hide Municipalities  */
                     $options = self::ForceProfile_GetMunicipalities_List();
@@ -1046,4 +1059,109 @@ class ForceProfile {
             throw $ex;
         }//try_catch
     }//ForceProfile_GetJobRoles_List
+
+    /*********************/
+    /* PRIVATE FUNCTIONS */
+    /*********************/
+
+    /**
+     * @static
+     * @param           $user_id
+     * @return          array|null
+     * @throws          Exception
+     *
+     * @creationDate    09/10/2014
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Get the job roles connected with the user
+     */
+    private static function ForceProfile_GetJobRoles_User($user_id) {
+        /* Variables    */
+        global $DB;
+        $job_roles = null;
+
+        try {
+            /* First Get the Job Roles */
+            /* Search Criteria  */
+            $params = array();
+            $params['user_id']  = $user_id;
+            $params['type']     = 'rgjobrole';
+
+            /* SQL Instruction  */
+            $sql = " SELECT 	uid.data
+					 FROM		{user_info_data}		uid
+					    JOIN	{user_info_field}		uif		ON 	uif.id 			= uid.fieldid
+																AND	uif.datatype	= :type
+					 WHERE      uid.userid = :user_id ";
+
+            /* Execute  */
+            $rdo_jr = $DB->get_record_sql($sql,$params);
+            if ($rdo_jr && $rdo_jr->data) {
+                /* Second Get the names connected with */
+                /* SQL Instrunction */
+                $sql = " SELECT		jr.id,
+                                    jr.name
+                         FROM		{report_gen_jobrole}		jr
+                         WHERE		jr.id IN ($rdo_jr->data)
+                         ORDER BY 	jr.name ";
+
+                /* Execute  */
+                $rdo = $DB->get_records_sql($sql);
+                if ($rdo) {
+                    $job_roles = array();
+                    foreach ($rdo as $jr) {
+                        $job_roles[$jr->id] = $jr->name;
+                    }//for_rdo
+                }//if_rdo
+            }//if_rdo
+
+            return $job_roles;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//ForceProfile_GetJobRoles_User
+
+    /**
+     * @static
+     * @param           $user_id
+     * @return          null
+     * @throws          Exception
+     *
+     * @creationDate    09/10/2014
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Get the company connected with the user
+     */
+    private static function ForceProfile_GetCompany_User($user_id) {
+        /* Variables    */
+        global $DB;
+
+        try {
+            /* Search Criteria  */
+            $params = array();
+            $params['user_id']  = $user_id;
+            $params['type']     = 'rgcompany';
+
+            /* SQL Instruction  */
+            $sql = " SELECT 		co.name
+                     FROM			{user_info_data}			uid
+                        JOIN		{user_info_field}			uif		ON 	uif.id 			= uid.fieldid
+                                                                        AND	uif.datatype	= :type
+                        LEFT JOIN 	{report_gen_companydata}	co		ON	co.id			= uid.data
+                     WHERE		uid.userid = :user_id ";
+
+            /* Execute  */
+            $rdo = $DB->get_record_sql($sql,$params);
+            if ($rdo) {
+                return $rdo->name;
+            }else {
+                return null;
+            }//if_else_rdo
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//ForceProfile_GetCompany_User
+
 }//ForceProfile

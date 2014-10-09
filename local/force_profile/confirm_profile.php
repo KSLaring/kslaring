@@ -30,17 +30,19 @@ $url        = new moodle_url('/local/force_profile/confirm_profile.php',array('i
 if (!isset($SESSION->elements)) {
     $SESSION->elements = array();
 }
+$user_context = context_user::instance($user_id);
 
 $PAGE->set_url($url);
-$PAGE->set_context($context);
+$PAGE->set_context($user_context);
 $PAGE->set_heading($SITE->fullname);
-$PAGE->set_pagelayout('standard');
+$PAGE->set_title($SITE->fullname);
+$PAGE->set_pagelayout('admin');
+$PAGE->navbar->add(get_string('force_bulk','local_force_profile'));
 
 /* My Fields    */
 $my_fields  = ForceProfile::ForceProfile_GetFieldsToUpdate($user_id);
 $user       = $DB->get_record('user',array('id' => $user_id));
 // Prepare the editor and create form
-$personalcontext = context_user::instance($user->id);
 
 // Prepare filemanager draft area.
 $draftitemid = 0;
@@ -48,7 +50,7 @@ $filemanageroptions = array('maxbytes'       => $CFG->maxbytes,
                             'subdirs'        => 0,
                             'maxfiles'       => 1,
                             'accepted_types' => 'web_image');
-file_prepare_draft_area($draftitemid, $personalcontext->id, 'user', 'newicon', 0, $filemanageroptions);
+file_prepare_draft_area($draftitemid, $user_context->id, 'user', 'newicon', 0, $filemanageroptions);
 $user->imagefile = $draftitemid;
 
 /* Add Form */

@@ -72,6 +72,8 @@ if($data = $form->get_data()) {
 
 $form_msg = new force_profile_message_form(null);
 if ($form_msg->is_cancelled()) {
+    unset($SESSION->fields);
+
     $_POST = array();
     redirect($return);
 }else if ($data = $form_msg->get_data()){
@@ -82,6 +84,9 @@ if ($form_msg->is_cancelled()) {
         echo $OUTPUT->notification(get_string('exit_notification','local_force_profile'), 'notifysuccess');
         echo $OUTPUT->continue_button($return);
         echo $OUTPUT->footer();
+
+        unset($SESSION->fields);
+
         die();
     }else {
         echo $OUTPUT->header();

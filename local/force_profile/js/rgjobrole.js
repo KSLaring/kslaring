@@ -12,9 +12,6 @@
  */
 
 YUI().use('node', function(Y) {
-    Y.one('#id_profile_field_rgjobrole').set('disabled',true);
-
-
     /* JOB ROLES    */
     Y.one('#id_county').on('change', function (e) {
         var county      = Y.one('#id_county').get('value');
@@ -50,6 +47,7 @@ YUI().use('node', function(Y) {
         });
 
         Y.one("#id_munis").focus();
+
         window.onbeforeunload = null;
     });
 
@@ -77,26 +75,21 @@ YUI().use('node', function(Y) {
                 }
             }
         });
+
         window.onbeforeunload = null;
     });
 
-    /* Save new Company */
+    /* Save new Job Role */
     Y.one('#id_profile_field_rgjobrole').on('change', function (e) {
         var sel_jr = '';
-        var id_jr;
-        var index;
-        Y.one('#id_profile_field_rgjobrole').get('options').each(function(){
 
+        Y.one('#id_profile_field_rgjobrole').get('options').each(function(){
             if (this.get('selected')) {
-                index = this.get('value').indexOf('_');
-                if (index != -1) {
-                    id_jr = this.get('value').substr(index+1);
-                    if (sel_jr == '') {
-                        sel_jr = id_jr;
-                    }else {
-                        sel_jr = sel_jr + ',' + id_jr;
-                    }//if_sel_jr
-                }//if_index
+                if (sel_jr == '') {
+                    sel_jr = this.get('value');
+                }else {
+                    sel_jr = sel_jr + ',' + this.get('value');
+                }//if_sel_jr
             }//if_selected
         });
 
@@ -104,5 +97,8 @@ YUI().use('node', function(Y) {
             Y.one('#id_jr_id').set('value',sel_jr);
         }
 
+        window.onbeforeunload = null;
     });
+
+    window.onbeforeunload = null;
 });

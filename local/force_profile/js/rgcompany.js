@@ -47,6 +47,7 @@ YUI().use('node', function(Y) {
         });
 
         Y.one("#id_comp_munis").focus();
+
         window.onbeforeunload = null;
     });
 
@@ -74,6 +75,7 @@ YUI().use('node', function(Y) {
                 }
             }
         });
+
         window.onbeforeunload = null;
     });
 
@@ -81,4 +83,6 @@ YUI().use('node', function(Y) {
     Y.one('#id_profile_field_rgcompany').on('change', function (e) {
         Y.one('#id_company_id').set('value',this.get('value'));
     });
+
+    window.onbeforeunload = null;
 });
