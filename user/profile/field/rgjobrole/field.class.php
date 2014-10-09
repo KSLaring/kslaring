@@ -51,6 +51,7 @@ class profile_field_rgjobrole extends profile_field_base {
         $mform->addElement('static', 'rgjobrole-description', '', get_string('profilefieldintrojobrole', 'profilefield_rgjobrole'));
         $select = &$mform->addElement('select', $this->inputname, format_string($this->field->name), $this->options);
         $select->setMultiple(true);
+        $select->setSize(6);
     }
 
     function setOptions($new_options) {
