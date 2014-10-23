@@ -131,7 +131,7 @@ function xmldb_report_generator_install() {
     $table_municipality->add_field('logo',XMLDB_TYPE_CHAR,'255',null, XMLDB_NOTNULL,null,null);
     //Adding Keys
     $table_municipality->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
-    $table_municipality->add_key('countyId',XMLDB_KEY_FOREIGN,array('countyId'), 'counties', array('countyId'));
+    $table_municipality->add_key('idcounty',XMLDB_KEY_FOREIGN,array('idcounty'), 'counties', array('idcounty'));
 
     /* Counties */
     $table_counties = new xmldb_table('counties');
