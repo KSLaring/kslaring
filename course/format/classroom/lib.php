@@ -970,11 +970,24 @@ class format_classroom extends format_base {
     protected function check_course_homepage_active($courseid) {
         global $DB;
 
-        $isactive = $DB->count_records('course_format_options', array(
+        $sql = "SELECT *
+            FROM {course_format_options}
+            WHERE";
+
+        $where_clause = ' ' .
+            $DB->sql_compare_text('courseid') . ' = ' . $DB->sql_compare_text(':courseid') .
+            ' AND ' .
+            $DB->sql_compare_text('name') . ' = ' . $DB->sql_compare_text(':name') .
+            ' AND ' .
+            $DB->sql_compare_text('value') . ' = ' . $DB->sql_compare_text(':value');
+
+        $params = array(
             'courseid' => $courseid,
             'name' => 'homepage',
-            'value' => 1
-        )) > 0;
+            'value' => '1'
+        );
+
+        $isactive = $DB->record_exists_sql($sql . $where_clause, $params);
 
         return $isactive;
     }

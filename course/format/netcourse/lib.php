@@ -889,7 +889,7 @@ class format_netcourse extends format_base {
         $courseactive = '';
         $discussactive = '';
         $descactive = '';
-        $progressactive = '';
+        $coursehomepactive = '';
         $progressactive = '';
         if ($PAGE->url->compare($descriptionurl, URL_MATCH_EXACT)) {
             $descactive = ' btn-primary active';
@@ -960,11 +960,24 @@ class format_netcourse extends format_base {
     protected function check_course_homepage_active($courseid) {
         global $DB;
 
-        $isactive = $DB->count_records('course_format_options', array(
-                'courseid' => $courseid,
-                'name' => 'homepage',
-                'value' => 1
-            )) > 0;
+        $sql = "SELECT *
+            FROM {course_format_options}
+            WHERE";
+
+        $where_clause = ' ' .
+            $DB->sql_compare_text('courseid') . ' = ' . $DB->sql_compare_text(':courseid') .
+            ' AND ' .
+            $DB->sql_compare_text('name') . ' = ' . $DB->sql_compare_text(':name') .
+            ' AND ' .
+            $DB->sql_compare_text('value') . ' = ' . $DB->sql_compare_text(':value');
+
+        $params = array(
+            'courseid' => $courseid,
+            'name' => 'homepage',
+            'value' => '1'
+        );
+
+        $isactive = $DB->record_exists_sql($sql . $where_clause, $params);
 
         return $isactive;
     }
