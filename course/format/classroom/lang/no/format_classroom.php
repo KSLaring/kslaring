@@ -36,6 +36,7 @@ $string['course'] = 'Innhold';
 $string['description'] = 'Introduksjon';
 $string['forums'] = 'Oppslagstavle';
 $string['progress'] = 'Min progresjon';
+$string['coursehomepage'] = 'Kurs startside';
 $string['mymoodle'] = 'Min startside';
 $string['lessonlastpageon'] = 'Vennligst velg neste aktivitet fra navigasjonsmenyen til venstre.';
 $string['lessonlastpageoff'] = 'Du er ferdig med denne leksjonen. Vennligst velg neste aktivitet i navigasjonsmenyen til venstre.';

@@ -812,6 +812,7 @@ class format_netcourse extends format_base {
         $strdescription = get_string('description', 'format_netcourse');
         $strforums = get_string('forums', 'format_netcourse');
         $strprogress = get_string('progress', 'format_netcourse');
+        $strcoursehomepage = get_string('coursehomepage', 'format_netcourse');
         $mymoodle = get_string('mymoodle', 'format_netcourse');
 
         if (is_null($this->openlast)) {
@@ -877,9 +878,18 @@ class format_netcourse extends format_base {
             }
         }
 
+        // Set the link to the course home page
+        // Dont't show the course home button when it is not set in the course
+        $coursehomepageurl = false;
+        if ($this->check_course_homepage_active($PAGE->course->id)) {
+            $coursehomepageurl = new moodle_url('/local/course_page/home_page.php',
+                array('id' => $PAGE->course->id));
+        }
+
         $courseactive = '';
         $discussactive = '';
         $descactive = '';
+        $progressactive = '';
         $progressactive = '';
         if ($PAGE->url->compare($descriptionurl, URL_MATCH_EXACT)) {
             $descactive = ' btn-primary active';
@@ -887,6 +897,8 @@ class format_netcourse extends format_base {
             $discussactive = ' btn-primary active';
         } else if ($progressurl && $PAGE->url->compare($progressurl, URL_MATCH_EXACT)) {
             $progressactive = ' btn-primary active';
+        } else if ($coursehomepageurl && $PAGE->url->compare($coursehomepageurl, URL_MATCH_EXACT)) {
+            $coursehomepactive = ' btn-primary active';
         } else {
             $courseactive = ' btn-primary active';
         }
@@ -914,6 +926,10 @@ class format_netcourse extends format_base {
             $progressurl = $progressurl->out();
         }
 
+        if ($coursehomepageurl) {
+            $coursehomepageurl = $coursehomepageurl->out();
+        }
+
         $out = '<div class="btn-toolbar">
             <a class="btn' . $courseactive . '" type="button" href="' .
             $courseurl . '">' . $strcourse . '</a>
@@ -925,9 +941,32 @@ class format_netcourse extends format_base {
             $out .= '<a class="btn' . $progressactive . '" type="button" href="' .
                 $progressurl . '">' . $strprogress . '</a>';
         }
+        if ($coursehomepageurl) {
+            $out .= '<a class="btn' . $coursehomepactive . '" type="button" href="' .
+                $coursehomepageurl . '">' . $strcoursehomepage . '</a>';
+        }
         $out .= '</div>';
 
         return new format_netcourse_specialnav($out);
+    }
+
+    /**
+     * Check if the course homepage option is active for the given course
+     *
+     * @param Int $courseid The course id to check for
+     *
+     * @return bool Return true if the course homepage is set
+     */
+    protected function check_course_homepage_active($courseid) {
+        global $DB;
+
+        $isactive = $DB->count_records('course_format_options', array(
+                'courseid' => $courseid,
+                'name' => 'homepage',
+                'value' => 1
+            )) > 0;
+
+        return $isactive;
     }
 
     /**
@@ -1310,7 +1349,7 @@ EOT;
                     }
                 } else {
                     $activitynodes = $thiscourse_navigation->
-                        find_all_of_type(navigation_node::TYPE_ACTIVITY);
+                    find_all_of_type(navigation_node::TYPE_ACTIVITY);
                     foreach ($activitynodes as $activitynode) {
                         if ($activitynode->action->compare($fullmeurl, URL_MATCH_PARAMS)) {
                             $activenode->make_inactive();
@@ -1325,13 +1364,13 @@ EOT;
 
         // Remove all activty submenu entries with the node type TYPE_SETTING
         $customnodes = $thiscourse_navigation->
-                            find_all_of_type(navigation_node::TYPE_SETTING);
+        find_all_of_type(navigation_node::TYPE_SETTING);
         foreach ($customnodes as $customnode) {
             $customnode->remove();
         }
         // Remove all activty submenu entries with the node type TYPE_CUSTOM
         $customnodes = $thiscourse_navigation->
-                            find_all_of_type(navigation_node::TYPE_CUSTOM);
+        find_all_of_type(navigation_node::TYPE_CUSTOM);
         foreach ($customnodes as $customnode) {
             $customnode->remove();
         }
