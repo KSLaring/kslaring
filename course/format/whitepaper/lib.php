@@ -587,13 +587,13 @@ class format_whitepaper extends format_base {
                     // Student views an empty course page.
                     return;
                 }
-            } else if (!$cm->uservisible || !$cm->get_url()) {
+            } else if (!$cm->uservisible || !$cm->url) {
                 // Activity is set but not visible to current user or does not have url.
                 // Display course page (either empty or with availability restriction info).
                 return;
             } else {
                 // Everything is set up and accessible, redirect to the activity page!
-                redirect($cm->get_url());
+                redirect($cm->url);
             }
         }
     }
