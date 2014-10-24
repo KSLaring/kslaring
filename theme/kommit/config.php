@@ -90,6 +90,12 @@ $THEME->layouts = array(
         'defaultregion' => 'side-pre',
         'options' => array('langmenu'=>true),
     ),
+    'coursehomepage' => array(
+        'file' => 'columns3.php',
+        'regions' => array('content-top', 'content-bottom', 'side-pre', 'side-post', 'top'),
+        'defaultregion' => 'side-pre',
+        'options' => array('langmenu'=>true, 'nonavbar'=>true),
+    ),
     // The site home page.
     'frontpage' => array(
         'file' => 'columns3_front.php',
