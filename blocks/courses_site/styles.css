@@ -39,10 +39,7 @@
 }
 
 .graphic_site {
-    image-rendering: auto;
     image-rendering: crisp-edges;
-    image-rendering: pixelated;
-    image-rendering: inherit;
     margin-bottom: 10px;
     margin-top: 10px;
     /* Responsive images (ensure images don't scale beyond their parents) */

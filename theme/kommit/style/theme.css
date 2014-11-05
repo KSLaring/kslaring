@@ -1344,7 +1344,7 @@ div.loginpanel h2 {
 }
 .coursebox .panel-heading {
   font-size: 21.328px;
-  line-height: 31.991999999999997px;
+  line-height: 31.992px;
 }
 #page-course-index-category .categorypicker {
   text-align: right;
@@ -1376,43 +1376,6 @@ div.loginpanel h2 {
 }
 #page-enrol-index #region-main.span8 {
   width: 99%;
-}
-.home_page_block_two .manager .userpicture {
-  image-rendering: auto;
-  image-rendering: crisp-edges;
-  image-rendering: pixelated;
-  image-rendering: inherit;
-  float: left;
-  width: 60px;
-  height: 60px;
-  border-radius: 40px;
-  -webkit-border-radius: 40px;
-  -moz-border-radius: 40px;
-  margin: 0 10px 0 0px;
-}
-.home_page_block_two .manager .user {
-  margin-top: 0px;
-}
-.home_page_block_two .manager .user_picture {
-  float: left;
-  margin: 10px 0;
-}
-.home_page_block_one .buttons {
-  margin: 20px 0;
-}
-.home_page_block_two .manager .user {
-  float: none;
-  width: 100%;
-  /* margin-top: 10px; */
-}
-.home_page_block_two .manager .extra_coordinator {
-  display: block;
-}
-.home_page_block_two .ratings .content_rating_bar {
-  background: none;
-}
-.home_page_block_two .rating_bar_block .rating_bar {
-  background: #e8e8e8;
 }
 @media (max-width: 600px) {
   .logo-area {
@@ -1661,12 +1624,6 @@ div.loginpanel h2 {
   .navbar-fixed-top .navbar-inner,
   .navbar-fixed-bottom .navbar-inner {
     padding: 0px;
-  }
-  .home_page_block_one {
-    width: 100%;
-  }
-  .home_page_block_two {
-    width: 100%;
   }
   #page-footer #page-footer-inner .column {
     float: none;

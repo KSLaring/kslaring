@@ -543,10 +543,12 @@ class course_page  {
         $out = '';
 
         $url_avg = new moodle_url('/blocks/rate_course/pix/rating_graphic.php',array('courseid' => $course_id));
-        $out .= '<h5 class="title_ratings">' . get_string('ratings_avg','local_course_page') . '</h5>';
+        $out .= '<h5 class="title_ratings chp-title">' . get_string('ratings_avg','local_course_page') . '</h5>';
 
-            $out .= '<div class="rating_total_title">' . '<img src="'. $url_avg . '" .  alt="average ratings"/>' . '</div>';
-            $out .= '<div class="rating_total_value">' . $total_rates . '</div>';
+        $out .= '<div class="rating_total clearfix chp-content">';
+        $out .= '<div class="rating_total_title">' . '<img src="'. $url_avg . '" .  alt="average ratings"/>' . '</div>';
+        $out .= '<div class="rating_total_value">' . $total_rates . '</div>';
+        $out .= '</div>';
 
         return $out;
     }//AddRatingsTotal
