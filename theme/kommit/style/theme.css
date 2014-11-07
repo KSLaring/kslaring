@@ -383,7 +383,6 @@ h6 {
 }
 @media all and (max-width: 979px) {
   .navbar-text .logininfo {
-    margin-top: -1em;
     margin-left: 1em;
   }
 }
