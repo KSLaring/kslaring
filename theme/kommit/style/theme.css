@@ -297,7 +297,7 @@ h6 {
   margin-bottom: 0;
   background-image: none !important;
 }
-.navbar .dropdown:last-of-type {
+.header.loggedin .navbar .dropdown:last-of-type {
   min-width: 10em;
 }
 .navbar-inner {
@@ -307,10 +307,12 @@ h6 {
   border-bottom: 1px solid #000000 !important;
   line-height: 0;
   filter: none;
+  -webkit-border-radius: 0;
+  -moz-border-radius: 0;
   border-radius: 0;
 }
 .navbar .brand {
-  color: #fff !important;
+  color: #ffffff !important;
   text-shadow: none;
   line-height: 20px;
 }
@@ -320,11 +322,11 @@ h6 {
   margin-left: 5px;
 }
 .navbar .nav > li > a {
-  color: #fff;
+  color: #ffffff;
   text-shadow: none;
 }
 .navbar .nav > li > a:hover {
-  color: #fff;
+  color: #ffffff;
 }
 .navbar .btn-navbar {
   position: relative;
@@ -335,6 +337,8 @@ h6 {
   background-color: #00aef0;
   background-image: none;
   border: 1px solid transparent;
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
   border-radius: 4px;
 }
 .navbar .btn-navbar:hover {
@@ -357,8 +361,8 @@ h6 {
 .navbar .btn-navbar.disabled .icon-bar,
 .navbar .btn-navbar[disabled] .icon-bar {
   background: #003876;
-  width: 15px;
   height: 3px;
+  width: 15px;
 }
 .navbar .btn-navbar .icon-bar {
   background-color: #f2f2f3;
@@ -383,7 +387,15 @@ h6 {
 }
 @media all and (max-width: 979px) {
   .navbar-text .logininfo {
-    margin-left: 1em;
+    margin: 0;
+    right: 86px;
+    position: absolute;
+    top: 8px;
+  }
+}
+@media all and (max-width: 767px) {
+  .navbar-text .logininfo {
+    right: 66px;
   }
 }
 .navbar-text .logininfo a {

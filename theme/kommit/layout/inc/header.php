@@ -10,11 +10,13 @@ $muni = null;
 $logo = null;
 require_once($CFG->dirroot . '/blocks/municipality/municipalitylib.php');
 $loggedin = isloggedin();
+$loggedinclass = ' not-loggedin';
 if ($loggedin) {
     /* Get the municipality connected with the user */
     $muni = Municipality::municipality_ExitsMuni_User($USER->id);
     /* Get the municipality logo */
     $logo = Municipality::municipality_GetLogo($muni);
+    $loggedinclass = ' loggedin';
 }
 ?>
 
@@ -49,7 +51,7 @@ if ($loggedin) {
     </div>
 </div>
 
-<div id="header" class="header">
+<div id="header" class="header<?php echo $loggedinclass; ?>">
     <header role="banner"
             class="navbar navbar-fixed-top<?php echo $html->navbarclass ?> moodle-has-zindex">
         <nav role="navigation" class="navbar-inner">
@@ -65,10 +67,11 @@ if ($loggedin) {
                 <div id="moodle-navbar" class="nav-collapse collapse">
                     <?php echo $OUTPUT->custom_menu(); ?>
                     <?php echo $OUTPUT->user_menu(); ?>
-                    <?php if (!$loggedin) : ?>
-                    <div class="navbar-text"><?php echo $OUTPUT->login_info() ?></div>
-                    <?php endif ?>
                 </div>
+
+                <?php if (!$loggedin) : ?>
+                <div class="navbar-text"><?php echo $OUTPUT->login_info() ?></div>
+                <?php endif ?>
             </div>
         </nav>
     </header>
