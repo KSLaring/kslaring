@@ -279,14 +279,7 @@ h6 {
 .navbar-fixed-bottom {
   position: relative;
 }
-/* @group Navbar
- */
-.navbar-inner {
-  border-top: 1px solid #000000 !important;
-  border-bottom: 1px solid #000000 !important;
-  background-color: #1a1a1a !important;
-  filter: none;
-}
+/* @group Navbar */
 .navbar .nav > li > a:hover {
   background: #7e7e7e !important;
 }
@@ -296,46 +289,45 @@ h6 {
 .navbar .nav li.dropdown.open > .dropdown-toggle,
 .navbar .nav li.dropdown.active > .dropdown-toggle,
 .navbar .nav li.dropdown.open.active > .dropdown-toggle {
+  color: #ffffff;
   background: #7e7e7e !important;
 }
-/* @end */
-/* @group Navbar
- */
+/* @group Navbar */
 .navbar {
-  margin-bottom: 0px;
+  margin-bottom: 0;
   background-image: none !important;
 }
+.header.loggedin .navbar .dropdown:last-of-type {
+  min-width: 10em;
+}
 .navbar-inner {
-  border-radius: 0px;
-  line-height: 0px;
+  background-color: #1a1a1a !important;
   background-image: none;
+  border-top: 1px solid #000000 !important;
+  border-bottom: 1px solid #000000 !important;
+  line-height: 0;
+  filter: none;
+  -webkit-border-radius: 0;
+  -moz-border-radius: 0;
+  border-radius: 0;
 }
 .navbar .brand {
-  color: #fff !important;
+  color: #ffffff !important;
   text-shadow: none;
   line-height: 20px;
 }
-.navbar .nav .active > a,
-.navbar .nav .active > a:hover,
-.navbar .nav .active > a:focus,
-.navbar .nav li.dropdown.open > .dropdown-toggle,
-.navbar .nav li.dropdown.active > .dropdown-toggle,
-.navbar .nav li.dropdown.open.active > .dropdown-toggle {
-  color: #fff;
-}
 .navbar .caret {
-  border-top-color: white !important;
-  border-bottom-color: white !important;
+  border-top-color: #ffffff !important;
+  border-bottom-color: #ffffff !important;
   margin-left: 5px;
 }
 .navbar .nav > li > a {
-  color: #fff;
+  color: #ffffff;
   text-shadow: none;
 }
 .navbar .nav > li > a:hover {
-  color: #fff;
+  color: #ffffff;
 }
-/* @end */
 .navbar .btn-navbar {
   position: relative;
   float: right;
@@ -345,6 +337,8 @@ h6 {
   background-color: #00aef0;
   background-image: none;
   border: 1px solid transparent;
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
   border-radius: 4px;
 }
 .navbar .btn-navbar:hover {
@@ -355,7 +349,7 @@ h6 {
 .navbar .btn-navbar.disabled,
 .navbar .btn-navbar[disabled] {
   color: #003876;
-  background-color: white !important;
+  background-color: #ffffff !important;
   transform: rotate(90deg);
   -ms-transform: rotate(90deg);
   /* IE 9 */
@@ -367,11 +361,11 @@ h6 {
 .navbar .btn-navbar.disabled .icon-bar,
 .navbar .btn-navbar[disabled] .icon-bar {
   background: #003876;
-  width: 15px;
   height: 3px;
+  width: 15px;
 }
 .navbar .btn-navbar .icon-bar {
-  background-color: #f5f5f5;
+  background-color: #f2f2f3;
   -webkit-border-radius: 1px;
   -moz-border-radius: 1px;
   border-radius: 1px;
@@ -383,12 +377,37 @@ h6 {
 .navbar-right .dropdown-menu > li > a {
   padding: 3px 35px;
 }
+.navbar-text {
+  text-align: right;
+}
+.navbar-text .logininfo {
+  color: #ffffff;
+  float: right;
+  margin-right: .5em;
+}
+@media all and (max-width: 979px) {
+  .navbar-text .logininfo {
+    margin: 0;
+    right: 86px;
+    position: absolute;
+    top: 8px;
+  }
+}
+@media all and (max-width: 767px) {
+  .navbar-text .logininfo {
+    right: 66px;
+  }
+}
+.navbar-text .logininfo a {
+  color: #00aef0;
+  text-decoration: none;
+}
 .dropdown-menu i {
   margin-right: 5px;
 }
 .dropdown-menu hr.sep {
-  margin: 0px;
-  height: 0px;
+  margin: 0;
+  height: 0;
   border: none;
   border-bottom: 1px dotted #7e7e7e;
 }
@@ -1344,7 +1363,7 @@ div.loginpanel h2 {
 }
 .coursebox .panel-heading {
   font-size: 21.328px;
-  line-height: 31.991999999999997px;
+  line-height: 31.992px;
 }
 #page-course-index-category .categorypicker {
   text-align: right;
