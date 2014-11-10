@@ -235,7 +235,7 @@ if ($frm and isset($frm->username)) {                             // Login WITH 
          * Check if it is the first access. Then the user has to check and update his/her profile
          */
         require_once('../local/first_access/locallib.php');
-        if (!FirstAccess::IsFirstAccess($USER->id)) {
+        if (FirstAccess::HasToUpdate_Profile($USER->id)) {
             redirect(new moodle_url('/local/first_access/index.php',array('id'=>$USER->id)));
         }else {
             /**
