@@ -3962,7 +3962,7 @@ function forum_search_form($course, $search='') {
     $output .= '<fieldset class="invisiblefieldset">';
     $output .= $OUTPUT->help_icon('search');
     $output .= '<label class="accesshide" for="search" >'.get_string('search', 'forum').'</label>';
-    $output .= '<input id="search" name="search" type="text" size="18" value="'.s($search, true).'" alt="search" />';
+    $output .= '<input id="search" name="search" type="text" size="18" value="'.s($search, true).'" />';
     $output .= '<label class="accesshide" for="searchforums" >'.get_string('searchforums', 'forum').'</label>';
     $output .= '<input id="searchforums" value="'.get_string('searchforums', 'forum').'" type="submit" />';
     $output .= '<input name="id" type="hidden" value="'.$course->id.'" />';
@@ -4800,7 +4800,6 @@ function forum_get_subscribed_forums($course) {
               FROM {forum} f
                    LEFT JOIN {forum_subscriptions} fs ON (fs.forum = f.id AND fs.userid = ?)
              WHERE f.course = ?
-                   AND f.forcesubscribe <> ".FORUM_DISALLOWSUBSCRIBE."
                    AND (f.forcesubscribe = ".FORUM_FORCESUBSCRIBE." OR fs.id IS NOT NULL)";
     if ($subscribed = $DB->get_records_sql($sql, array($USER->id, $course->id))) {
         foreach ($subscribed as $s) {
@@ -5128,7 +5127,10 @@ function forum_get_tracking_link($forum, $messages=array(), $fakelink=true) {
         // use <noscript> to print button in case javascript is not enabled
         $link .= '<noscript>';
     }
-    $url = new moodle_url('/mod/forum/settracking.php', array('id'=>$forum->id));
+    $url = new moodle_url('/mod/forum/settracking.php', array(
+            'id' => $forum->id,
+            'sesskey' => sesskey(),
+        ));
     $link .= $OUTPUT->single_button($url, $linktext, 'get', array('title'=>$linktitle));
 
     if ($fakelink) {
@@ -7882,7 +7884,10 @@ function forum_extend_settings_navigation(settings_navigation $settingsnav, navi
             } else {
                 $linktext = get_string('trackforum', 'forum');
             }
-            $url = new moodle_url('/mod/forum/settracking.php', array('id'=>$forumobject->id));
+            $url = new moodle_url('/mod/forum/settracking.php', array(
+                    'id' => $forumobject->id,
+                    'sesskey' => sesskey(),
+                ));
             $forumnode->add($linktext, $url, navigation_node::TYPE_SETTING);
         }
     }
