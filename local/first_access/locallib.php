@@ -14,21 +14,33 @@
  */
 
 class FirstAccess {
+    /**
+     * @static
+     * @param           $user_id
+     * @return          bool
+     * @throws          Exception
+     *
+     * @creationDate    10/11/2014
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Check if it's the first time that the user log in.
+     */
     public static function IsFirstAccess($user_id) {
         /* Variables    */
         global $DB;
 
         try {
             /* Execute  */
-            $rdo = $DB->get_record('user',array('id' => $user_id),'firstaccess');
+            $rdo = $DB->get_record('user',array('id' => $user_id),'firstaccess,lastaccess,lastlogin');
             if ($rdo) {
-                if ($rdo->firstaccess) {
-                    return false;
-                }else {
+                if (($rdo->firstaccess != $rdo->lastaccess) && ($rdo->lastlogin)) {
                     return true;
+                }else {
+                    return false;
                 }
             }else {
-                return true;
+                return false;
             }//if_else
         }catch (Exception $ex) {
             throw $ex;

@@ -235,9 +235,9 @@ if ($frm and isset($frm->username)) {                             // Login WITH 
          * Check if it is the first access. Then the user has to check and update his/her profile
          */
         require_once('../local/first_access/locallib.php');
-        //if (!FirstAccess::IsFirstAccess($USER->id)) {
-        //    redirect(new moodle_url('/local/first_access/index.php',array('id'=>$USER->id)));
-        //}else {
+        if (!FirstAccess::IsFirstAccess($USER->id)) {
+            redirect(new moodle_url('/local/first_access/index.php',array('id'=>$USER->id)));
+        }else {
             /**
              * @updateDate      28/04/2014
              * @author          eFaktor     (fbv)
@@ -254,11 +254,11 @@ if ($frm and isset($frm->username)) {                             // Login WITH 
                 echo $OUTPUT->footer();
                 die();
             }else {
-            // test the session actually works by redirecting to self
-            $SESSION->wantsurl = $urltogo;
-            redirect(new moodle_url(get_login_url(), array('testsession'=>$USER->id)));
+                // test the session actually works by redirecting to self
+                $SESSION->wantsurl = $urltogo;
+                redirect(new moodle_url(get_login_url(), array('testsession'=>$USER->id)));
             }//if_else_UpdateProfile
-        //}//if_first_access
+        }//if_first_access
     } else {
         if (empty($errormsg)) {
             $errormsg = get_string("invalidlogin");
