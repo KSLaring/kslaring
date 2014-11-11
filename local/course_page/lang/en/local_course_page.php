@@ -20,6 +20,7 @@ $string['home_desc']                = 'About this course';
 $string['home_prerequisities']      = 'Prerequisites';
 $string['home_effort']              = 'Estimated Effort';
 $string['home_graphics']            = 'Home page graphics';
+$string['home_graphicstitle']       = 'Home page graphics title';
 $string['current_graphic']          = 'Current graphics';
 $string['home_video']               = 'Home page video';
 $string['home_delete_video']        = 'Delete previous video';

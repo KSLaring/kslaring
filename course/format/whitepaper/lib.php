@@ -176,6 +176,9 @@ class format_whitepaper extends format_base {
                     'element_type'      => 'hidden',
                     'default'           => 0,
                 ),
+                'pagegraphicstitle' => array(
+                    'type' => PARAM_TEXT,
+                ),
                 'author'        => array(
                     'type'      => PARAM_TEXT,
                 ),
@@ -193,6 +196,13 @@ class format_whitepaper extends format_base {
                     'help_component' => 'format_whitepaper',
                     'element_type' => 'select',
                     'element_attributes' => array($availabletypes),
+                ),
+                'pagegraphicstitle' => array(
+                    'label' => get_string('home_graphicstitle', 'local_course_page'),
+                    'element_type' => 'text',
+                    'element_attributes' => array(
+                        0 => 'style="width:95%;"'
+                    )
                 ),
                 'author'        => array(
                     'label'                 => get_string('home_author','local_course_page'),

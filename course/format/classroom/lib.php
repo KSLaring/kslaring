@@ -478,6 +478,9 @@ class format_classroom extends format_base {
                     'element_type' => 'hidden',
                     'default' => 0,
                 ),
+                'pagegraphicstitle' => array(
+                    'type' => PARAM_TEXT,
+                ),
                 'prerequisities' => array(
                     'type' => PARAM_TEXT,
                 ),
@@ -534,6 +537,13 @@ class format_classroom extends format_base {
                  * Description
                  * Add an extra fields
                  */
+                'pagegraphicstitle' => array(
+                    'label' => get_string('home_graphicstitle', 'local_course_page'),
+                    'element_type' => 'text',
+                    'element_attributes' => array(
+                        0 => 'style="width:95%;"'
+                    )
+                ),
                 'prerequisities' => array(
                     'label' => get_string('home_prerequisities', 'local_course_page'),
                     'element_type' => 'textarea',

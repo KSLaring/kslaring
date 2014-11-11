@@ -87,7 +87,9 @@ class local_course_page_renderer extends plugin_renderer_base {
 
         $block_one .= html_writer::start_tag('div',array('class' => 'home_page_block_one'));
             /* Add Short Description  */
-            $block_one .= $this->addSummary_HomePage($course,$format_options['pagegraphics']);
+            $pagegraphicstitle = !empty($format_options['pagegraphicstitle']) ?
+                $format_options['pagegraphicstitle']->value : '';
+            $block_one .= $this->addSummary_HomePage($course,$format_options['pagegraphics'],$pagegraphicstitle);
             /* Add Home Description / Video */
             $block_one .= $this->addDescription_HomePage($format_options['homesummary'],$format_options['pagevideo']);
         $block_one .= html_writer::end_tag('div');//home_page_block_one
@@ -106,7 +108,7 @@ class local_course_page_renderer extends plugin_renderer_base {
      * Description
      * Add the summary. Short Description/Button Register/Graphics
      */
-    protected function addSummary_HomePage($course,$home_graphics) {
+    protected function addSummary_HomePage($course,$home_graphics,$home_graphicstitle) {
         /* Variables   */
         global $USER;
         $disabled = '';
@@ -116,7 +118,9 @@ class local_course_page_renderer extends plugin_renderer_base {
         /* Graphics */
         if ($home_graphics->value) {
             $url_img = course_page::getUrlPageGraphicsVideo($home_graphics->value);
-            $img = '<img src="'  . $url_img . '" class="img-responsive"></br>';
+            $img = '<img src="'  . $url_img . '" class="img-responsive"' .
+                ' title="' . $home_graphicstitle . '" alt ="' .
+                $home_graphicstitle . '"></br>';
             $out .= $img;
         }//if_graphics
 

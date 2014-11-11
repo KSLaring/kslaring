@@ -178,7 +178,9 @@ class block_courses_site extends block_base {
             /*  Image / Title   */
             $this->content->text .= '<p>';
                 $this->content->text .= '<a href="' . $url . '">' ;
-                    $this->content->text .= '<img src="'  . $course_site->picture . '" class="graphic_site"  alt="' . $course_site->title . " featured image" .'">';
+                    $this->content->text .= '<img src="'  . $course_site->picture .
+                        '" class="graphic_site"  title="' . $course_site->picturetitle .
+                        '" alt="' . $course_site->picturetitle . '">';
                 $this->content->text .= '</a>';
                 $this->content->text .= '</br>';
             $this->content->text .= '<a href="' . $url . '">' ;

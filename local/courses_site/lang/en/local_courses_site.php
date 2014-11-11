@@ -37,6 +37,9 @@ $string['picture']          = 'Picture';
 $string['picture_required'] = 'The picture is required';
 $string['current']          = 'Current Picture';
 
+$string['picturetitle']     = 'Picture title';
+$string['picturetitle_required'] = 'The picture title is required';
+
 $string['save']  = 'Save';
 
 $string['error_delete']     = 'Sorry, the {$a} course could not be removed from "Courses Site Block". Please, you can try it later or contact with the administrator.';

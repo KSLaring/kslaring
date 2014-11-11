@@ -37,6 +37,9 @@ $string['picture']          = 'Bilde';
 $string['picture_required'] = 'Du må legge til et bilde';
 $string['current']          = 'Nåværende bilde';
 
+$string['picturetitle']     = 'Bilde title';
+$string['picturetitle_required'] = 'Du må legge til et bilde title';
+
 $string['save']  = 'Lagre';
 
 $string['error_delete']     = 'Beklager, kurset {$a} kan ikke flyttes fra "Forsideblokk for kurs". Vennligst prøv igjen senere, eller kontakt en administrator som kan hjelpe deg.';

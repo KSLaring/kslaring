@@ -20,6 +20,7 @@ $string['home_desc']                = 'Om dette kurset';
 $string['home_prerequisities']      = 'Forutsetninger';
 $string['home_effort']              = 'Beregnet arbeidsmengde';
 $string['home_graphics']            = 'Hjemmesidegrafikk';
+$string['home_graphicstitle']       = 'Hjemmesidegrafikk title';
 $string['current_graphic']          = 'Gjeldende grafikk';
 $string['home_video']               = 'Hjemmesidevideo';
 $string['home_delete_video']        = 'Slett eksisterende hjemmesidevideo';
