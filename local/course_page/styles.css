@@ -170,7 +170,6 @@
   color: #0e7b9e;
   float: left;
   text-align: left;
-  text-indent: 5px;
   width: 35%;
 }
 .home_page_block_two .ratings .rating_bar_block .rating_bar {
@@ -213,6 +212,9 @@
   float: left;
   text-align: left;
   width: 72%;
+}
+.home_page_block_two .ratings .rating_total_title img {
+  margin-left: -6px;
 }
 .home_page_block_two .ratings .rating_total_value {
   float: left;
