@@ -226,6 +226,11 @@ EOT;
         if (!empty($CFG->custommenuitems)) {
             $custommenuitems .= $CFG->custommenuitems;
         }
+
+        if (is_siteadmin()) {
+            $custommenuitems .= "\r\n" . get_string('adminmenuentry', 'theme_kommit') . '|#hidden-blocks-admin';
+        }
+
         $custommenu = new custom_menu($custommenuitems, current_language());
 
         return $this->render_custom_menu($custommenu);

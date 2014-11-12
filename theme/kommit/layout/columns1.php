@@ -16,6 +16,7 @@
 
 // Get the HTML for the settings bits.
 $html = theme_kommit_get_html_for_settings($OUTPUT, $PAGE);
+$str_visibleadminonly = get_string('visibleadminonly', 'theme_kommit');
 
 // Get the URL for the logo link
 $url = new moodle_url('/', array('redirect' => 0));
@@ -57,6 +58,12 @@ echo $OUTPUT->doctype() ?>
         </section>
     </div>
 
+    <?php if (is_siteadmin()) : ?>
+    <div id="hidden-blocks-admin" class="clearfix">
+        <h4><?php echo $str_visibleadminonly; ?></h4>
+        <?php echo $OUTPUT->blocks('hidden-dock'); ?>
+    </div>
+    <?php endif ?>
 </div>
 
 <?php include 'inc/footer.php'; ?>
