@@ -16,8 +16,6 @@
 require_once('../../config.php');
 require_once('locallib.php');
 
-require_login();
-
 /* PARAMS */
 $user_id        = required_param('id',PARAM_INT);
 $context        = context_system::instance();
