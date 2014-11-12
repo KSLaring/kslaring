@@ -30,6 +30,7 @@
 
 // Get the HTML for the settings bits.
 $html = theme_kommit_get_html_for_settings($OUTPUT, $PAGE);
+$str_visibleadminonly = get_string('visibleadminonly', 'theme_kommit');
 
 if (right_to_left()) {
     $regionbsid = 'region-bs-main-and-post';
@@ -87,6 +88,13 @@ echo $OUTPUT->doctype() ?>
         </div>
         <?php echo $OUTPUT->blocks('side-post', 'span3'); ?>
     </div>
+
+    <?php if (is_siteadmin()) : ?>
+    <div id="hidden-blocks-admin" class="clearfix">
+        <h4><?php echo $str_visibleadminonly; ?></h4>
+        <?php echo $OUTPUT->blocks('hidden-dock'); ?>
+    </div>
+    <?php endif ?>
 </div>
 
 <?php include 'inc/footer.php'; ?>

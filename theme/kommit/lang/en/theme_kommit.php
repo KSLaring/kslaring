@@ -48,8 +48,10 @@ $string['region-side-pre'] = 'Left';
 
 // additional block regions
 $string['region-content-top'] = 'Content top';
+$string['region-content-bottom'] = 'Content bottom';
 $string['region-top'] = 'Top';
 $string['region-bottom'] = 'Bottom';
+$string['region-hidden-dock'] = 'Admin Only';
 
 /* My Dashboard custommenu dropdown */
 $string['mydashboard'] = 'My Dashboard';
@@ -60,13 +62,14 @@ $string['editon'] = 'on';
 $string['edit_label'] = 'Edit mode:';
 
 /* Set my home page */
-$string['sethome']      = 'Set as my home page';
-$string['resethome']    = 'Reset to default page';
+$string['sethome'] = 'Set as my home page';
+$string['resethome'] = 'Reset to default page';
 
 /* Read more */
-$string['readmore']      = 'Read more';
+$string['readmore'] = 'Read more';
 
 /* JS toggle admin login */
-$string['adminlogin']      = 'admin login';
+$string['adminlogin'] = 'admin login';
 
-
+$string['visibleadminonly'] = 'Blocks moved into the area below will only be seen by admins.';
+$string['adminmenuentry'] = 'Bottom blocks';

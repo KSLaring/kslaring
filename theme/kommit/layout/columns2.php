@@ -16,6 +16,7 @@
 
 // Get the HTML for the settings bits.
 $html = theme_kommit_get_html_for_settings($OUTPUT, $PAGE);
+$str_visibleadminonly = get_string('visibleadminonly', 'theme_kommit');
 
 $left = (!right_to_left()); // To know if to add 'pull-right' and 'desktop-first-column' classes in the layout for LTR.
 
@@ -68,6 +69,13 @@ echo $OUTPUT->doctype() ?>
         echo $OUTPUT->blocks('side-pre', 'span3' . $classextra);
         ?>
     </div>
+
+    <?php if (is_siteadmin()) : ?>
+    <div id="hidden-blocks-admin" class="clearfix">
+        <h4><?php echo $str_visibleadminonly; ?></h4>
+        <?php echo $OUTPUT->blocks('hidden-dock'); ?>
+    </div>
+    <?php endif ?>
 </div>
 
 <?php include 'inc/footer.php'; ?>

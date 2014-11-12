@@ -383,3 +383,30 @@
   line-height: @baseLineHeight;
   font-weight: normal
 }
+
+
+// Hidden blocks area
+// -----------------------------------------------------
+
+#hidden-blocks-admin {
+    background: lighten(@kommitRed, 60%);
+    padding: 20px;
+    border: 1px solid @white;
+    border-radius: 0;
+    margin: 0;
+//    .clearfix;
+
+    h4 {
+        text-align: left;
+        padding-bottom: 8px;
+        margin-bottom: 8px;
+        border-bottom: 1px solid @grayLighter;
+        margin-top: 0;
+        color: lighten(@kommitRed, 30%);
+    }
+    .block {
+        float: right;
+        width: 30%;
+        margin-left: 1%;
+    }
+}
