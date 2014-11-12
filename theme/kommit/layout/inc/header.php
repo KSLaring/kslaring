@@ -64,14 +64,14 @@ if ($loggedin) {
                     <span class="icon-bar"></span>
                 </a>
 
+                <?php if (!$loggedin) : ?>
+                    <div class="navbar-text"><?php echo $OUTPUT->login_info() ?></div>
+                <?php endif ?>
+
                 <div id="moodle-navbar" class="nav-collapse collapse">
                     <?php echo $OUTPUT->custom_menu(); ?>
                     <?php echo $OUTPUT->user_menu(); ?>
                 </div>
-
-                <?php if (!$loggedin) : ?>
-                <div class="navbar-text"><?php echo $OUTPUT->login_info() ?></div>
-                <?php endif ?>
             </div>
         </nav>
     </header>
