@@ -12,8 +12,8 @@
  * @author          eFaktor     (fbv)
  *
  */
-$string['pluginname']   = 'First Access';
+$string['pluginname']   = 'Profilfullføring';
 
-$string['welcome_title']    = 'Velkomment som ny bruker på KS læring';
-$string['welcome_message']  = 'Før vi starter måa vi be deg om å fullføre din personlige brukerprofil. Det tar bare et par minutter og er viktig for at vi skal få registrert deg på riktig kommune m.m.';
+$string['welcome_title']    = 'Velkommen som ny bruker på KS læring';
+$string['welcome_message']  = 'Før vi starter måa vi be deg om å fullføre din personlige brukerprofil. Det tar bare et par minutter og er viktig for at vi skal få registrert deg med riktig personalia, kommune, jobbroller du måtte ha osv.';
 $string['welcome_btn']      = 'Fullfør min personlige brukerprofil';
