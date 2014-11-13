@@ -74,11 +74,11 @@ function xmldb_report_generator_install() {
     /* County  */
     $table_job_role_relation->add_field('idcounty',XMLDB_TYPE_CHAR,'10',null, null,null,null);
     /* Level  One */
-    $table_job_role_relation->add_field('levelOne',XMLDB_TYPE_INTEGER,'10',null, null,null,null);
+    $table_job_role_relation->add_field('levelone',XMLDB_TYPE_INTEGER,'10',null, null,null,null);
     /* Level  Two */
-    $table_job_role_relation->add_field('levelTwo',XMLDB_TYPE_INTEGER,'10',null, null,null,null);
+    $table_job_role_relation->add_field('leveltwo',XMLDB_TYPE_INTEGER,'10',null, null,null,null);
     /* Level  Three */
-    $table_job_role_relation->add_field('levelThree',XMLDB_TYPE_INTEGER,'10',null, null,null,null);
+    $table_job_role_relation->add_field('levelthree',XMLDB_TYPE_INTEGER,'10',null, null,null,null);
     /* modified         (Not null)      */
     $table_job_role_relation->add_field('modified',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL,null,null);
     //Adding Keys
