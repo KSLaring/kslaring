@@ -1109,6 +1109,14 @@ body {
   padding: 6px 10px 6px 10px;
   font-weight: normal;
 }
+.path-admin #explaincaps .rolecap.yes th,
+.path-admin #explaincaps .rolecap.yes td {
+  background-color: #e6f4e6;
+}
+.path-admin #explaincaps .rolecap.no th,
+.path-admin #explaincaps .rolecap.no td {
+  background-color: #fae5e3;
+}
 /* fix for feedback module dropdowns
 // Jon Jack
 */

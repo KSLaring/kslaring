@@ -28,7 +28,6 @@ class theme_kommit_core_renderer extends core_renderer {
 
         $displayregion = $this->page->apply_theme_region_manipulations($region);
         if ($this->page->blocks->region_has_content($displayregion, $this) || $editing) {
-//            return parent::blocks($region, $classes, $tag);
             $blocks_html = parent::blocks($region, $classes, $tag);
             if ($region === 'content-top' && strpos($blocks_html, 'mod_quiz_navblock') !== false) {
                 $blocks_html = $this->process_quiz_nav_block($blocks_html);
@@ -227,7 +226,7 @@ EOT;
             $custommenuitems .= $CFG->custommenuitems;
         }
 
-        if (is_siteadmin()) {
+        if (theme_kommit_show_hidden_blocks()) {
             $custommenuitems .= "\r\n" . get_string('adminmenuentry', 'theme_kommit') . '|#hidden-blocks-admin';
         }
 
