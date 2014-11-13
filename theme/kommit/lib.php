@@ -225,6 +225,32 @@ function theme_kommit_get_html_for_settings(renderer_base $output, moodle_page $
 }
 
 /**
+ * Returns true if the user can see the hidden blocks area.
+ * On the front page always invisible for:
+ *   Guest
+ *   Student
+ * ON other pages always visible for:
+ *   Superuser
+ *   Course creator
+ *   teacher
+ *   non-editing teacher
+ *
+ * @param moodle_page $page Pass in $PAGE.
+ * @return bool
+ */
+function theme_kommit_show_hidden_blocks() {
+    global $COURSE;
+    $return = false;
+
+    $coursecontext = context_course::instance($COURSE->id);
+    if (has_capability('theme/kommit:viewhiddenblocks', $coursecontext)) {
+        $return = true;
+    }
+
+    return $return;
+}
+
+/**
  * All theme functions should start with theme_kommit_
  * @deprecated since 2.5.1
  */

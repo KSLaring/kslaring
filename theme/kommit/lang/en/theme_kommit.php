@@ -71,5 +71,10 @@ $string['readmore'] = 'Read more';
 /* JS toggle admin login */
 $string['adminlogin'] = 'admin login';
 
-$string['visibleadminonly'] = 'Blocks moved into the area below will only be seen by admins.';
+/* Hidden blocks area */
+$string['visibleadminonly'] = 'Blocks moved into the area below will only be seen by teachers and admins.';
 $string['adminmenuentry'] = 'Bottom blocks';
+
+/* Capabilities */
+$string['kommit:viewhiddenblocks'] = 'View hidden blocks';
+$string['kommit:frontpageviewhiddenblocks'] = 'View hidden frontpage blocks';
