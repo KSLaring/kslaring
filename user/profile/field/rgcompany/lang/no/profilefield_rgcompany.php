@@ -1,9 +1,24 @@
-<?PHP // $Id$ 
-      // profilefield_rgcompany.php - created with Moodle 1.9.9+ (Build: 20100616) (2007101590)
-      // local modifications from http://dev.7underverker.no
+<?php
+/**
+ * Extra Profile Field Company - Language settings (Norwegian)
+ *
+ * Description
+ *
+ * @package         user/profile
+ * @subpackage      field
+ * @copyright       2014        eFaktor {@link http://www.efaktor.no}
+ *
+ * @creationDate    11/11/2014
+ * @author          eFaktor     (fbv)
+ *
+ */
 
+$string['pluginname']           = 'RG-Company';
+$string['profile_type']         = 'RG-arbeidssted';
+$string['profile_intro']        = 'Select your company/ies/s. Hold ctrl/cmd-Key to select multiple companies.';
 
-$string['filtercompanylist'] = 'Select the company name from the menu or Skriv inn de første bokstavene i arbeidssted for å gjøre listen kortere';
-$string['profilefieldtypergcompany'] = 'RG-arbeidssted';
+$string['county']                           = 'County';
+$string['sel_county']                       = 'Choose a county...';
+$string['select_company_structure_level']   = 'Level {$a}';
+$string['select_level_list']                = 'Select Item';
 
-?>

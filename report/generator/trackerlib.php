@@ -139,8 +139,8 @@ function tracker_get_tracker_page_user_info($tracker_user,$company_report = fals
                     JOIN 	{grade_outcomes_courses}      oucu	    ON 	  oucu.outcomeid    = o.id
                     JOIN 	{report_gen_outcome_exp}      rgo	  	ON 	  rgo.outcomeid     = oucu.outcomeid
                     JOIN 	{report_gen_outcome_jobrole}  oj	  	ON 	  oj.outcomeid      = rgo.outcomeid
-                    JOIN 	{report_gen_jobrole}          jr	  	ON 	  jr.id 		= oj.jobroleid
-                                                                    AND   jr.id 		IN (" . $job_list . ")
+                    JOIN 	{report_gen_jobrole}          jr	  	ON 	  jr.id 		    = oj.jobroleid
+                                                                    AND   jr.id 		    IN (" . $job_list . ")
                 GROUP BY 	o.id, jr.id
                 ORDER BY   o.fullname , jr.name ASC ";
 
@@ -175,8 +175,8 @@ function tracker_get_tracker_page_user_info($tracker_user,$company_report = fals
                     /* Not Enrolled Course          */
                     $outcome_info->not_enrolled     = tracker_get_not_enrolled_course_info_user_outcome($tracker_user->user_id,$outcome->id);
 
-                        $tracker_info->total_connected +=  count($outcome_info->completed) + count($outcome_info->not_completed) + count($outcome_info->not_enrolled);
-                        if (!$company_report) {
+                    $tracker_info->total_connected +=  count($outcome_info->completed) + count($outcome_info->not_completed) + count($outcome_info->not_enrolled);
+                    if (!$company_report) {
                         $tracker_info->connected[$outcome->fullname][$outcome->job_role_name] =  $outcome_info;
                     }else {
                         $tracker_info->connected[$outcome->job_role_name][$outcome->id] =  $outcome_info;
@@ -212,8 +212,8 @@ function tracker_get_completed_and_not_course_info_user_outcome($user_id,$outcom
     global $DB;
 
     /* Variables    */
-    $completed      = array();
-    $not_completed  = array();
+    $completed          = array();
+    $not_completed      = array();
 
     try {
         /* Search Criteria  */
@@ -227,7 +227,7 @@ function tracker_get_completed_and_not_course_info_user_outcome($user_id,$outcom
                                       c.shortname,
                                       c.summary,
                                       cc.timecompleted
-                FROM		    {grade_outcomes_courses}	oc
+                 FROM		    {grade_outcomes_courses}	oc
                     JOIN	    {course}					c	ON 		c.id 			= oc.courseid
                                                                 AND		oc.outcomeid 	= :outcome
                                                                 AND     c.visible       = 1
@@ -236,7 +236,7 @@ function tracker_get_completed_and_not_course_info_user_outcome($user_id,$outcom
                                                                 AND		ue.userid		= :user
                     LEFT JOIN	{course_completions}		cc	ON		cc.course 		= e.courseid
                                                                 AND		cc.userid 		= ue.userid
-                ORDER BY	c.fullname ASC ";
+                 ORDER BY	c.fullname ASC ";
 
         /* Execute  */
         $rdo = $DB->get_records_sql($sql,$params);
@@ -298,7 +298,7 @@ function tracker_get_completed_and_not_completed_not_outcome($user_id,$courses_o
                     JOIN	    {user_enrolments}			ue	ON		ue.enrolid 		= e.id
                                                                 AND		ue.userid		= :user
                     LEFT JOIN	{course_completions}		cc	ON		cc.course 		= e.courseid
-                                                                    AND		cc.userid 		= ue.userid
+                                                                AND		cc.userid 		= ue.userid
                  WHERE     c.visible = 1 ";
 
         if ($courses_outcomes) {

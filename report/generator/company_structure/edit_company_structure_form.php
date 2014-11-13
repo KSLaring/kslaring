@@ -9,6 +9,8 @@ $PAGE->requires->js('/report/generator/js/muni.js');
 class generator_edit_company_structure_form extends moodleform {
     function definition() {
         global $SESSION;
+        $county = null;
+        $muni   = null;
 
         $m_form = $this->_form;
 
@@ -19,11 +21,26 @@ class generator_edit_company_structure_form extends moodleform {
         );
 
         $level= $this->_customdata;
+        /* Company Info */
+        $parents = $SESSION->parents;
+        $company_info = company_structure::Get_CompanyInfo($parents[$level]);
 
         $m_form->addElement('header', 'level_' . $level, 'Company Structure - Level ' .$level);
 
+
+        /* County           */
+        $options        = report_generator_GetCounties_List();
+        $m_form->addElement('select','county',get_string('county','report_generator'),$options);
+        $m_form->setDefault('county',$company_info->idcounty);
+        $m_form->addRule('county','','required', null, 'server');
+
+        /* Municipality     */
+        $options = report_generator_GetMunicipalities_List();
+        $m_form->addElement('select','munis',get_string('municipality','report_generator'),$options);
+        $m_form->addRule('munis','','required', null, 'server');
+
+
         /* Add reference's parents */
-        $parents = $SESSION->parents;
         if ($level > 1) {
             for ($i = 1; $i < $level; $i++) {
                 $parent_name = company_structure::Get_Company_ParentName($i,$parents[$i]);
@@ -32,49 +49,29 @@ class generator_edit_company_structure_form extends moodleform {
                 $m_form->setType('parent_' . $i,PARAM_TEXT);
             }//for
         }//if_level
-        $m_form->addElement('text', 'name', get_string('edit_company_level','report_generator'), $text_attr);
-        $company_info = company_structure::Get_CompanyInfo($parents[$level]);
-        if ($company_info) {
-            $m_form->setDefault('name',$company_info->name);
-        }//company_info
 
+
+        $m_form->addElement('text', 'name', get_string('edit_company_level','report_generator'), $text_attr);
+        $m_form->setDefault('name',$company_info->name);
         $m_form->setType('name',PARAM_TEXT);
 
-        /* Level == 3 */
-        if ($level == 3) {
-            /* County           */
-            $options        = report_generator_GetCounties_List();
-            $m_form->addElement('select','county',get_string('county','report_generator'),$options);
-            $m_form->addRule('county','','required', null, 'server');
-
-            /* Municipality     */
-            $options    = array();
-            if ($company_info && $company_info->idcounty) {
-                $m_form->setDefault('county',$company_info->idcounty);
-                $options = report_generator_GetMunicipalities_List($company_info->idcounty);
-            }else {
-                $options[0] = get_string('sel_municipality','report_generator');
-            }//company_info_&&idmuni
-
-
-            $m_form->addElement('select','munis',get_string('municipality','report_generator'),$options);
-            $m_form->addRule('munis','','required', null, 'server');
-            if ($company_info && $company_info->idmuni) {
-                $m_form->setDefault('munis',$company_info->idmuni);
-            }//company_info_&&_idcounty
-
-            /* Municipality hidden */
-            $options = report_generator_GetMunicipalities_List();
-            $m_form->addElement('select','hidden_munis','',$options,'style="visibility:hidden;height:0px;"');
-
-            /* Municipality hidden */
-            $m_form->addElement('text','municipality_id',null,'style="visibility:hidden;height:0px;"');
-            $m_form->setType('municipality_id',PARAM_TEXT);
-        }//level_3
+        /* Industry Code        */
+        $m_form->addElement('text', 'industry_code', get_string('industry_code','report_generator'), $text_attr);
+        $m_form->setDefault('industry_code',$company_info->industrycode);
+        $m_form->setType('industry_code',PARAM_TEXT);
+        $m_form->addRule('industry_code','','required', null, 'server');
 
         $m_form->addElement('hidden','level');
         $m_form->setDefault('level',$level);
         $m_form->setType('level',PARAM_INT);
+
+        $m_form->addElement('hidden','company');
+        $m_form->setDefault('company',$parents[$level]);
+        $m_form->setType('company',PARAM_INT);
+
+        $m_form->addElement('text','hidden_munis',null,'style="visibility:hidden;height:0px;"');
+        $m_form->setType('hidden_munis',PARAM_TEXT);
+        $m_form->setDefault('hidden_munis',$company_info->idmuni);
 
         $this->add_action_buttons(true);
         $this->set_data($level);

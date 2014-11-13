@@ -23,7 +23,7 @@ require_once('company_structure_form.php');
 
 
 /* PARAMS */
-$url            = new moodle_url('/report/generator/company_structure/company_structure.php');
+$url        = new moodle_url('/report/generator/company_structure/company_structure.php');
 $return_url     = new moodle_url('/report/generator/index.php');
 $redirect_url   = null;
 
@@ -105,6 +105,12 @@ if ($form->is_cancelled()) {
                 $company_id = $data->$select;
 
                 $redirect_url    = new moodle_url('/report/generator/company_structure/delete_company_structure.php',array('id'=>$company_id, 'level'=>$level));
+                break;
+            case REPORT_GENERATOR_UNLINK_SELECTED:
+                $select     = REPORT_GENERATOR_COMPANY_STRUCTURE_LEVEL . $level;
+                $company_id = $data->$select;
+
+                $redirect_url    = new moodle_url('/report/generator/company_structure/unlink_company_structure.php',array('id'=>$company_id));
                 break;
             default:
                 break;

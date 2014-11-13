@@ -70,7 +70,9 @@ require('../tabs.php');
 echo $OUTPUT->heading(get_string('outcome_report', 'report_generator'));
 
 /* Report Levels Links  */
-outcome_report::GetLevelLink_ReportPage($current_tab,$site_context);
+//outcome_report::GetLevelLink_ReportPage($current_tab,$site_context);
+
+echo '<h5>' . get_string('underconstruction','report_generator') . '</h5>';
 
 /* Print Fo>r */
 echo $OUTPUT->footer();

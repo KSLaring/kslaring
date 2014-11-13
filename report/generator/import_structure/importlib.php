@@ -140,6 +140,9 @@ class Import_Companies {
                     $company = new stdClass();
                     $company->name              = $record['company'];
                     $company->hierarchylevel    = $level;
+                    $company->idcounty          = $record['county'];
+                    $company->idmuni            = $record['municipality'];
+                    $company->industrycode      = $record['industry'];
                     $company->modified          = time();
 
                     $company->id = $DB->insert_record('report_gen_companydata',$company);
@@ -204,7 +207,13 @@ class Import_Companies {
             /* Line Row     */
             $row[] = $err_line;
             /* Company Row  */
-            $row[] = $info['company'];
+            $row[]  = $info['company'];
+            /* County Row   */
+            $row[]  = $info['county'];
+            /* Municipality Row */
+            $row[]  = $info['municipality'];
+            /* Industry Code Row    */
+            $row[]  = $info['industry'];
             /* Status Row   */
             $row[] = $info['status'];
 
@@ -218,6 +227,12 @@ class Import_Companies {
             /* Line Row     */
             $row[] = '...';
             /* Company Row  */
+            $row[] = '';
+            /* County Row   */
+            $row[] = '';
+            /* Municipality Row  */
+            $row[] = '';
+            /* Industry Code Row  */
             $row[] = '';
             /* Status Row   */
             $row[] = '';

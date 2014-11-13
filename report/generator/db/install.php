@@ -29,17 +29,19 @@ function xmldb_report_generator_install() {
     $table_company_data = new xmldb_table('report_gen_companydata');
     //Adding fields
     /* id               (Primary)           */
-    $table_company_data->add_field('id',XMLDB_TYPE_INTEGER,'10',XMLDB_UNSIGNED, XMLDB_NOTNULL, XMLDB_SEQUENCE,null);
+    $table_company_data->add_field('id',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, XMLDB_SEQUENCE,null);
     /* name             (Not null)          */
     $table_company_data->add_field('name',XMLDB_TYPE_CHAR,'255',null,XMLDB_NOTNULL,null,null);
     /* hierarchylevel   (Not null - Index)  */
-    $table_company_data->add_field('hierarchylevel',XMLDB_TYPE_INTEGER,'2',XMLDB_UNSIGNED, XMLDB_NOTNULL,null,1);
+    $table_company_data->add_field('hierarchylevel',XMLDB_TYPE_INTEGER,'2',null, XMLDB_NOTNULL,null,1);
     /* County  */
     $table_company_data->add_field('idcounty',XMLDB_TYPE_CHAR,'10',null, null,null,null);
     /* Municipality  */
     $table_company_data->add_field('idmuni',XMLDB_TYPE_CHAR,'10',null, null,null,null);
+    /* naringskode */
+    $table_company_data->add_field('industrycode',XMLDB_TYPE_CHAR,'10',null, null,null,null);
     /* modified         (Not null)          */
-    $table_company_data->add_field('modified',XMLDB_TYPE_INTEGER,'10',XMLDB_UNSIGNED, XMLDB_NOTNULL,null,null);
+    $table_company_data->add_field('modified',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL,null,null);
     //Adding Keys
     $table_company_data->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
     //Adding Index
@@ -52,15 +54,37 @@ function xmldb_report_generator_install() {
     $table_job_role = new xmldb_table('report_gen_jobrole');
     //Adding fields
     /* id               (Primary)       */
-    $table_job_role->add_field('id',XMLDB_TYPE_INTEGER,'10',XMLDB_UNSIGNED, XMLDB_NOTNULL, XMLDB_SEQUENCE,null);
+    $table_job_role->add_field('id',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, XMLDB_SEQUENCE,null);
     /* name             (Not null)      */
     $table_job_role->add_field('name',XMLDB_TYPE_CHAR,'255',null,XMLDB_NOTNULL,null,null);
-    /* Municipality  */
-    $table_job_role->add_field('idmuni',XMLDB_TYPE_CHAR,'10',null, null,null,null);
     /* modified         (Not null)      */
-    $table_job_role->add_field('modified',XMLDB_TYPE_INTEGER,'10',XMLDB_UNSIGNED, XMLDB_NOTNULL,null,null);
+    $table_job_role->add_field('modified',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL,null,null);
     //Adding Keys
     $table_job_role->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+
+    /*******************************/
+    /* report_gen_jobrole_relation */
+    /*******************************/
+    $table_job_role_relation = new xmldb_table('report_gen_jobrole_relation');
+    //Adding fields
+    /* id               (Primary)       */
+    $table_job_role_relation->add_field('id',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, XMLDB_SEQUENCE,null);
+    /* name             (Not null)      */
+    $table_job_role_relation->add_field('jobroleid',XMLDB_TYPE_CHAR,'10',null, null,null,null);
+    /* County  */
+    $table_job_role_relation->add_field('idcounty',XMLDB_TYPE_CHAR,'10',null, null,null,null);
+    /* Level  One */
+    $table_job_role_relation->add_field('levelOne',XMLDB_TYPE_INTEGER,'10',null, null,null,null);
+    /* Level  Two */
+    $table_job_role_relation->add_field('levelTwo',XMLDB_TYPE_INTEGER,'10',null, null,null,null);
+    /* Level  Three */
+    $table_job_role_relation->add_field('levelThree',XMLDB_TYPE_INTEGER,'10',null, null,null,null);
+    /* modified         (Not null)      */
+    $table_job_role_relation->add_field('modified',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL,null,null);
+    //Adding Keys
+    $table_job_role_relation->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+    $table_job_role_relation->add_key('jobroleid',XMLDB_KEY_FOREIGN,array('jobroleid'), 'report_gen_jobrole', array('id'));
+    $table_job_role_relation->add_key('idcounty',XMLDB_KEY_FOREIGN,array('idcounty'), 'counties', array('idcounty'));
 
     /* ************************** */
     /* report_gen_outcome_jobrole */
@@ -68,13 +92,13 @@ function xmldb_report_generator_install() {
     $table_outcome_job_role = new xmldb_table('report_gen_outcome_jobrole');
     //Adding fields
     /* id           (Primary)                   */
-    $table_outcome_job_role->add_field('id',XMLDB_TYPE_INTEGER,'10',XMLDB_UNSIGNED, XMLDB_NOTNULL, XMLDB_SEQUENCE,null);
+    $table_outcome_job_role->add_field('id',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, XMLDB_SEQUENCE,null);
     /* outcomeid    (Foreign key - Not null)    */
-    $table_outcome_job_role->add_field('outcomeid',XMLDB_TYPE_INTEGER,'10',XMLDB_UNSIGNED, XMLDB_NOTNULL,null,null);
+    $table_outcome_job_role->add_field('outcomeid',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL,null,null);
     /* jobroleid    (Foreign key - Not null)    */
-    $table_outcome_job_role->add_field('jobroleid',XMLDB_TYPE_INTEGER,'10',XMLDB_UNSIGNED, XMLDB_NOTNULL,null,null);
+    $table_outcome_job_role->add_field('jobroleid',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL,null,null);
     /* modified     (Not null)                  */
-    $table_outcome_job_role->add_field('modified',XMLDB_TYPE_INTEGER,'10',XMLDB_UNSIGNED, XMLDB_NOTNULL,null,null);
+    $table_outcome_job_role->add_field('modified',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL,null,null);
     //Adding Keys
     $table_outcome_job_role->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
     $table_outcome_job_role->add_key('outcomeid',XMLDB_KEY_FOREIGN,array('outcomeid'), 'grade_outcomes', array('id'));
@@ -86,13 +110,13 @@ function xmldb_report_generator_install() {
     $table_company_relation = new xmldb_table('report_gen_company_relation');
     //Adding fields
     /* id           (Primary)                   */
-    $table_company_relation->add_field('id',XMLDB_TYPE_INTEGER,'10',XMLDB_UNSIGNED, XMLDB_NOTNULL, XMLDB_SEQUENCE,null);
+    $table_company_relation->add_field('id',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, XMLDB_SEQUENCE,null);
     /* companyid    (Foreign Key - Not null)    */
-    $table_company_relation->add_field('companyid',XMLDB_TYPE_INTEGER,'10',XMLDB_UNSIGNED, XMLDB_NOTNULL,null,null);
+    $table_company_relation->add_field('companyid',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL,null,null);
     /* parentid     (Foreign Key - Not null)    */
-    $table_company_relation->add_field('parentid',XMLDB_TYPE_INTEGER,'10',XMLDB_UNSIGNED, XMLDB_NOTNULL,null,null);
+    $table_company_relation->add_field('parentid',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL,null,null);
     /* modified     (Not null)                  */
-    $table_company_relation->add_field('modified',XMLDB_TYPE_INTEGER,'10',XMLDB_UNSIGNED, XMLDB_NOTNULL,null,null);
+    $table_company_relation->add_field('modified',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL,null,null);
     //Adding Keys
     $table_company_relation->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
     $table_company_relation->add_key('companyid',XMLDB_KEY_FOREIGN,array('companyid'), 'report_gen_companydata', array('id'));
@@ -104,13 +128,13 @@ function xmldb_report_generator_install() {
     $table_outcome_expiration = new xmldb_table('report_gen_outcome_exp');
     //Adding fields
     /* id               (Primary)                   */
-    $table_outcome_expiration->add_field('id',XMLDB_TYPE_INTEGER,'10',XMLDB_UNSIGNED, XMLDB_NOTNULL, XMLDB_SEQUENCE,null);
+    $table_outcome_expiration->add_field('id',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, XMLDB_SEQUENCE,null);
     /* outcomeid        (Foreign key - Not null)    */
-    $table_outcome_expiration->add_field('outcomeid',XMLDB_TYPE_INTEGER,'10',XMLDB_UNSIGNED, XMLDB_NOTNULL,null,null);
+    $table_outcome_expiration->add_field('outcomeid',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL,null,null);
     /* expirationperiod (Int - Not null - Index)    */
-    $table_outcome_expiration->add_field('expirationperiod',XMLDB_TYPE_INTEGER,'2',XMLDB_UNSIGNED, XMLDB_NOTNULL,null,0);
+    $table_outcome_expiration->add_field('expirationperiod',XMLDB_TYPE_INTEGER,'2',null, XMLDB_NOTNULL,null,0);
     /* modified         (Not null)                  */
-    $table_outcome_expiration->add_field('modified',XMLDB_TYPE_INTEGER,'10',XMLDB_UNSIGNED, XMLDB_NOTNULL,null,null);
+    $table_outcome_expiration->add_field('modified',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL,null,null);
     //Adding Keys
     $table_outcome_expiration->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
     $table_outcome_expiration->add_key('outcomeid',XMLDB_KEY_FOREIGN,array('outcomeid'), 'grade_outcomes', array('id'));
@@ -179,12 +203,22 @@ function xmldb_report_generator_install() {
         install_Svalbard();
     }//if_municipality
 
+    /* Report_gen_company_data */
     if (!$db_man->table_exists('report_gen_companydata')) {
         $db_man->create_table($table_company_data);
-    }
+    }//report_gen_companydata
+
+    /* report_gen_jobrole */
     if (!$db_man->table_exists('report_gen_jobrole')) {
         $db_man->create_table($table_job_role);
-    }
+    }//report_gen_jobrole
+
+    /* report_gen_jobrole_relation  */
+    if (!$db_man->table_exists('report_gen_jobrole_relation')) {
+        $db_man->create_table($table_job_role_relation);
+    }//report_gen_jobrole_relation
+
+    /* report_gen_outcome_jobrole */
     if (!$db_man->table_exists('report_gen_outcome_jobrole')) {
         $db_man->create_table($table_outcome_job_role);
         if ($db_man->table_exists('report_gen_outcomejobrolerel')) {
@@ -197,7 +231,9 @@ function xmldb_report_generator_install() {
                 $DB->insert_record('report_gen_outcome_jobrole',$new);
             }
         }
-    }
+    }//report_gen_outcome_jobrole
+
+    /* report_gen_company_relation */
     if (!$db_man->table_exists('report_gen_company_relation')) {
         $db_man->create_table($table_company_relation);
         if ($db_man->table_exists('report_gen_companyrelation')) {
@@ -210,7 +246,9 @@ function xmldb_report_generator_install() {
                 $DB->insert_record('report_gen_company_relation',$new);
             }
         }
-    }
+    }//report_gen_company_relation
+
+    /* report_gen_outcome_exp */
     if (!$db_man->table_exists('report_gen_outcome_exp')) {
         $db_man->create_table($table_outcome_expiration);
         if ($db_man->table_exists('report_gen_outcomeexpiration')) {
@@ -223,7 +261,7 @@ function xmldb_report_generator_install() {
                 $DB->insert_record('report_gen_outcome_exp',$new);
             }
         }
-    }
+    }//report_gen_outcome_exp
 }//xmldb_report_generator_install
 
 function install_Counties() {

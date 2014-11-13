@@ -96,6 +96,10 @@ $string['add_item'] = 'Add item';
 $string['rename_selected'] = 'Rename selected item';
 $string['delete_selected'] = 'Delete selected item';
 $string['remove_selected'] = 'Remove selected item/s from list';
+$string['unlink_selected']      = 'Unlink selected item';
+$string['unlink_from']          = 'Unlink item from';
+$string['unlink_title']         = 'Unlink item';
+
 $string['get_level'] = 'Get level {$a} ';
 $string['get_unconnected'] = 'Show unconnected level {$a} items';
 $string['company_structure_employees'] = 'Employees';
@@ -145,7 +149,8 @@ $string['job_role_note'] = 'Job role note';
 $string['job_role_name'] = 'Job role name';
 $string['available_job_roles'] = 'Available job roles';
 $string['no_job_roles_available'] = 'No job roles available';
-$string['edit_job_roles'] = 'Edit job roles';
+$string['add_job_role']     = 'New Job Role';
+$string['edit_job_roles']   = 'Edit job roles';
 $string['edit_this_job_role'] = 'Edit this job role';
 $string['delete_this_job_role'] = 'Delete this job_role';
 $string['add_job_role'] = 'Add new job role';
@@ -268,6 +273,7 @@ $string['missing_name'] = 'Company name required';
 $string['exists_name'] = 'This Item already exists';
 $string['select_level_list'] = 'Select Item';
 $string['btn_cancel'] = 'Cancel';
+$string['txt_item']                     = 'Item';
 $string['add_company_level'] = 'New Item';
 $string['edit_company_level'] = 'Edit Item';
 $string['rename_company_level'] = 'Rename Item';
@@ -352,9 +358,10 @@ $string['existing_item']    = 'Existing Item';
 $string['employee_report_link'] = 'Company overview report';
 
 $string['underconstruction'] = 'Sorry, this report is not available. We are working on it.';
-
 $string['county']       = 'County';
 $string['sel_county']   = 'Choose a county...';
 
 $string['municipality']     = 'Municipality';
 $string['sel_municipality'] =  'Choose a municipality...';
+
+$string['industry_code'] = 'Industry code';

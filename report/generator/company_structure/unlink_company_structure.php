@@ -1,32 +1,31 @@
 <?php
-
 /**
- * Report generator - Company structure.
+ * Report generator - Unlink Company structure.
  *
  * Description
  *
- * @package     report
- * @subpackage  generator/company_structure
- * @copyright   2010 eFaktor
- * @licence     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package         report
+ * @subpackage      generator/company_structure
+ * @copyright       2010 eFaktor
+ * @licence         http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  *
- * @updateDate  11/09/2012
- * @author      eFaktor     (fbv)
- *
- * Edit a company into a specific level
+ * @creationDate    23/10/2014
+ * @author          eFaktor     (fbv)
  *
  */
 
 require_once('../../../config.php');
 require_once('../locallib.php');
 require_once('company_structurelib.php');
-require_once('edit_company_structure_form.php');
 require_once($CFG->libdir . '/adminlib.php');
+require_once('unlink_company_structure_form.php');
 
 /* Params */
-$level      = optional_param('level', 1, PARAM_INT);
-$url        = new moodle_url('/report/generator/company_structure/edit_company_structure.php',array('level'=>$level));
-$return_url = new moodle_url('/report/generator/company_structure/company_structure.php',array('level'=>$level));
+$company_id     = required_param('id',PARAM_INT);
+$url            = new moodle_url('/report/generator/company_structure/unlink_company_structure.php',array('id' => $company_id));
+$return_url     = new moodle_url('/report/generator/company_structure/company_structure.php');
+$index_url      = new moodle_url('/report/generator/index.php');
+
 
 /* Start the page */
 $site_context = context_system::instance();
@@ -38,9 +37,9 @@ $PAGE->set_pagelayout('report');
 $PAGE->set_url($url);
 $PAGE->set_title($SITE->fullname);
 $PAGE->set_heading($SITE->fullname);
-$PAGE->navbar->add(get_string('report_generator','report_generator'),new moodle_url('/report/generator/index.php'));
+$PAGE->navbar->add(get_string('report_generator','report_generator'),$index_url);
 $PAGE->navbar->add(get_string('company_structure','report_generator'),$return_url);
-$PAGE->navbar->add(get_string('edit_company_level','report_generator'));
+$PAGE->navbar->add(get_string('unlink_title','report_generator'));
 
 /* ADD require_capability */
 require_capability('report/generator:edit', $site_context);
@@ -49,25 +48,22 @@ if (empty($CFG->loginhttps)) {
     $secure_www_root = $CFG->wwwroot;
 } else {
     $secure_www_root = str_replace('http:','https:',$CFG->wwwroot);
-}//if_security
+}//if_loginhttps
 
-/* Show Form */
-$form = new generator_edit_company_structure_form(null,$level);
+$PAGE->verify_https_required();
 
+/* Form */
+$form = new unlink_company_structure_form(null,array($company_id));
 if ($form->is_cancelled()) {
     $_POST = array();
     redirect($return_url);
 }else if($data = $form->get_data()) {
-    $parents = $SESSION->parents;
-
-    /* Update Level */
-    company_structure::Update_CompanyLevel($data,$level);
+    /* Unlink Company and Parent    */
+    company_structure::Unlink_Company($company_id,$data->parent_sel);
 
     $_POST = array();
     redirect($return_url);
-}//if_else
-
-$PAGE->verify_https_required();
+}//if_else_form
 
 /* Print Header */
 echo $OUTPUT->header();

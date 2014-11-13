@@ -5,28 +5,29 @@
  *
  * Description
  *
- * @package     report
- * @subpackage  generator/job_role
- * @copyright   2010 eFaktor
- * @licence     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package         report
+ * @subpackage      generator/job_role
+ * @copyright       2010 eFaktor
+ * @licence         http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  *
- * @updateDate  12/09/2012
- * @author      eFaktor     (fbv)
+ * @creationDate    06/11/2014
+ * @author          eFaktor     (fbv)
  *
- * Delete Job Role
+ * Add Job Role
  *
  */
 
 require_once('../../../config.php');
-require_once( 'jobrolelib.php');
 require_once('../locallib.php');
+require_once( 'jobrolelib.php');
+require_once('add_job_role_form.php');
 require_once($CFG->libdir . '/adminlib.php');
 
+
 /* Params */
-$job_role_id  = required_param('id',PARAM_INT);
-$return_url = new moodle_url('/report/generator/job_role/job_role.php');
+$return_url     = new moodle_url('/report/generator/job_role/job_role.php');
+$url            = new moodle_url('/report/generator/job_role/add_job_role.php');
 $return         = new moodle_url('/report/generator/index.php');
-$url            = new moodle_url('/report/generator/job_role/delete_job_role.php');
 
 /* Start the page */
 $site_context = CONTEXT_SYSTEM::instance();
@@ -39,6 +40,7 @@ $PAGE->set_title($SITE->fullname);
 $PAGE->set_heading($SITE->fullname);
 $PAGE->navbar->add(get_string('report_generator','local_tracker'),$return);
 $PAGE->navbar->add(get_string('job_roles', 'report_generator'),$return_url);
+$PAGE->navbar->add(get_string('add_job_role', 'report_generator'));
 
 /* ADD require_capability */
 if (!has_capability('report/generator:edit', $site_context)) {
@@ -51,23 +53,26 @@ if (empty($CFG->loginhttps)) {
     $secure_www_root = str_replace('http:','https:',$CFG->wwwroot);
 }//if_security
 
+/* Show Form */
+$form = new generator_add_job_role_form(null,null);
+
+if ($form->is_cancelled()) {
+    $_POST = array();
+    redirect($return_url);
+}else if($data = $form->get_data()) {
+    /* Insert New Job Role */
+    job_role::Insert_JobRole($data);
+
+    $_POST = array();
+    redirect($return_url);
+}//if_else
+
 $PAGE->verify_https_required();
 
 /* Print Header */
 echo $OUTPUT->header();
 
-/* Check if the job role can be removed */
-$user_connected = job_role::Users_Connected_JobRole($job_role_id,REPORT_GENERATOR_JOB_ROLE_FIELD);
-if (!$user_connected) {
-    /* Remove */
-    job_role::Delete_JobRole($job_role_id);
-    echo $OUTPUT->notification(get_string('deleted_job_role','report_generator'), 'notifysuccess');
-    echo $OUTPUT->continue_button($return_url);
-}else {
-    /* Not Remove */
-    echo $OUTPUT->notification(get_string('error_deleting_job_role','report_generator'), 'notifysuccess');
-    echo $OUTPUT->continue_button($return_url);
-}//if_else
+$form->display();
 
 /* Print Footer */
 echo $OUTPUT->footer();

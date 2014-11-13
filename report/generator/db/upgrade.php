@@ -25,36 +25,20 @@ function xmldb_report_generator_upgrade($old_version) {
 
     $db_man = $DB->get_manager();
 
-    if ($old_version < 2014082008) {
+    if ($old_version < 2014110402) {
         /* NEW TABLES   */
-        /* Municipality */
-        $table_municipality = new xmldb_table('municipality');
-        /* Id - Primary Key */
-        $table_municipality->add_field('id',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, XMLDB_SEQUENCE,null);
-        /* countyID     - Foreign Key - Counties    */
-        $table_municipality->add_field('idcounty',XMLDB_TYPE_CHAR,'10',null, XMLDB_NOTNULL);
-        /* muniId   */
-        $table_municipality->add_field('idmuni',XMLDB_TYPE_CHAR,'10',null, XMLDB_NOTNULL);
-        /* Municipality     */
-        $table_municipality->add_field('municipality',XMLDB_TYPE_CHAR,'255',null, XMLDB_NOTNULL,null,null);
-        /* Logo     */
-        $table_municipality->add_field('logo',XMLDB_TYPE_CHAR,'255',null, XMLDB_NOTNULL,null,null);
-        //Adding Keys
-        $table_municipality->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
-
-        /* Counties */
-        $table_counties = new xmldb_table('counties');
-        /* Id - Primary Key */
-        $table_counties->add_field('id',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, XMLDB_SEQUENCE,null);
-        /* countyID     - Foreign Key - Counties    */
-        $table_counties->add_field('idcounty',XMLDB_TYPE_CHAR,'10',null,XMLDB_NOTNULL);
-        /* County     */
-        $table_counties->add_field('county',XMLDB_TYPE_CHAR,'255',null, XMLDB_NOTNULL,null,null);
-        //Adding Keys
-        $table_counties->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
-
         /* Create Tables    */
         if (!$db_man->table_exists('counties')) {
+            /* Counties */
+            $table_counties = new xmldb_table('counties');
+            /* Id - Primary Key */
+            $table_counties->add_field('id',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, XMLDB_SEQUENCE,null);
+            /* countyID     - Foreign Key - Counties    */
+            $table_counties->add_field('idcounty',XMLDB_TYPE_CHAR,'10',null,XMLDB_NOTNULL);
+            /* County     */
+            $table_counties->add_field('county',XMLDB_TYPE_CHAR,'255',null, XMLDB_NOTNULL,null,null);
+            //Adding Keys
+            $table_counties->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
             $db_man->create_table($table_counties);
 
             install_Counties();
@@ -62,6 +46,21 @@ function xmldb_report_generator_upgrade($old_version) {
 
         /* Create Tables    */
         if (!$db_man->table_exists('municipality')) {
+            /* Municipality */
+            $table_municipality = new xmldb_table('municipality');
+            /* Id - Primary Key */
+            $table_municipality->add_field('id',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, XMLDB_SEQUENCE,null);
+            /* countyID     - Foreign Key - Counties    */
+            $table_municipality->add_field('idcounty',XMLDB_TYPE_CHAR,'10',null, XMLDB_NOTNULL);
+            /* muniId   */
+            $table_municipality->add_field('idmuni',XMLDB_TYPE_CHAR,'10',null, XMLDB_NOTNULL);
+            /* Municipality     */
+            $table_municipality->add_field('municipality',XMLDB_TYPE_CHAR,'255',null, XMLDB_NOTNULL,null,null);
+            /* Logo     */
+            $table_municipality->add_field('logo',XMLDB_TYPE_CHAR,'255',null, XMLDB_NOTNULL,null,null);
+            //Adding Keys
+            $table_municipality->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+
             $db_man->create_table($table_municipality);
 
             install_Østfold();
@@ -86,21 +85,50 @@ function xmldb_report_generator_upgrade($old_version) {
             install_Svalbard();
         }//if_municipality
 
-        /* ADd New Fields   JOB Role Table */
-        $table_job_role = new xmldb_table('report_gen_jobrole');
-        $field_muniId       = new xmldb_field('idmuni', XMLDB_TYPE_CHAR, 10, null, null, null,null,'name');
-        if (!$db_man->field_exists($table_job_role, $field_muniId)) {
-            $db_man->add_field($table_job_role, $field_muniId);
-        }
+        /*******************************/
+        /* report_gen_jobrole_relation */
+        /*******************************/
+        /* Create Table */
+        if (!$db_man->table_exists('report_gen_jobrole_relation')) {
+            $table_job_role_relation = new xmldb_table('report_gen_jobrole_relation');
+            //Adding fields
+            /* id               (Primary)       */
+            $table_job_role_relation->add_field('id',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, XMLDB_SEQUENCE,null);
+            /* name             (Not null)      */
+            $table_job_role_relation->add_field('jobroleid',XMLDB_TYPE_CHAR,'10',null, null,null,null);
+            /* County  */
+            $table_job_role_relation->add_field('idcounty',XMLDB_TYPE_CHAR,'10',null, null,null,null);
+            /* Level  One */
+            $table_job_role_relation->add_field('levelOne',XMLDB_TYPE_INTEGER,'10',null, null,null,null);
+            /* Level  Two */
+            $table_job_role_relation->add_field('levelTwo',XMLDB_TYPE_INTEGER,'10',null, null,null,null);
+            /* Level  Three */
+            $table_job_role_relation->add_field('levelThree',XMLDB_TYPE_INTEGER,'10',null, null,null,null);
+            /* modified         (Not null)      */
+            $table_job_role_relation->add_field('modified',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL,null,null);
+            //Adding Keys
+            $table_job_role_relation->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+            $table_job_role_relation->add_key('jobroleid',XMLDB_KEY_FOREIGN,array('jobroleid'), 'report_gen_jobrole', array('id'));
+            $table_job_role_relation->add_key('idcounty',XMLDB_KEY_FOREIGN,array('idcounty'), 'counties', array('idcounty'));
+            $db_man->create_table($table_job_role_relation);
+        }//report_gen_jobrole_relation
+
         /* ADd New Fields   Company Table */
         $table_company  = new xmldb_table('report_gen_companydata');
+        /* County   */
         $field_countyId = new xmldb_field('idcounty', XMLDB_TYPE_CHAR, 10, null, null, null,null,'hierarchylevel');
         if (!$db_man->field_exists($table_company, $field_countyId)) {
             $db_man->add_field($table_company, $field_countyId);
         }
+        /* Muni */
         $field_muniId   = new xmldb_field('idmuni', XMLDB_TYPE_CHAR, 10, null, null, null,null,'idcounty');
         if (!$db_man->field_exists($table_company, $field_muniId)) {
             $db_man->add_field($table_company, $field_muniId);
+        }
+        /* Industry code    */
+        $field_industryCode   = new xmldb_field('industrycode', XMLDB_TYPE_CHAR, 10, null, null, null,null,'idmuni');
+        if (!$db_man->field_exists($table_company, $field_industryCode)) {
+            $db_man->add_field($table_company, $field_industryCode);
         }
     }//if_old_Version
 

@@ -23,9 +23,9 @@ require_once($CFG->libdir . '/adminlib.php');
 
 
 /* Params */
-$company_id     = required_param('id',PARAM_INT);
-$level          = optional_param('level', 1, PARAM_INT);
-$return_url     = new moodle_url('/report/generator/company_structure/company_structure.php',array('level'=>$level));
+$company_id  = required_param('id',PARAM_INT);
+$level  = optional_param('level', 1, PARAM_INT);
+$return_url = new moodle_url('/report/generator/company_structure/company_structure.php',array('level'=>$level));
 $url            = new moodle_url('/report/generator/company_structure/delete_company_structure.php',array('level' => $level,'id' => $company_id));
 /* Start the page */
 $site_context = context_system::instance();

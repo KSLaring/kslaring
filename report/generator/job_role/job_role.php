@@ -79,7 +79,7 @@ if (empty($job_roles)) {
     echo html_writer::table($table);
 }//if_else
 
-$url_edit = new moodle_url('/report/generator/job_role/edit_job_role.php');
+$url_edit = new moodle_url('/report/generator/job_role/add_job_role.php');
 echo $OUTPUT->single_button($url_edit,get_string('add_job_role', 'report_generator'));
 
 /* Print Footer */

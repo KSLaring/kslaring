@@ -27,8 +27,8 @@ require_once($CFG->libdir . '/adminlib.php');
 $outcome_id    = required_param('id', PARAM_INT);
 $expiration_id = optional_param('expid', 0, PARAM_INT);
 
-$url            = new moodle_url('/report/generator/outcome/edit_outcome.php',array('id' => $outcome_id));
-$return         = new moodle_url('/report/generator/index.php');
+$url        = new moodle_url('/report/generator/outcome/edit_outcome.php',array('id' => $outcome_id));
+$return     = new moodle_url('/report/generator/index.php');
 $return_url     = new moodle_url('/report/generator/outcome/outcome.php');
 
 /* Start the page */
