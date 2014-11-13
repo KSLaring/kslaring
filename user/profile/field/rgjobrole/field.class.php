@@ -164,7 +164,7 @@ class profile_field_rgjobrole extends profile_field_base {
 
             /* Execute  */
             $rdo = $DB->get_record('user_info_data',$params,'data');
-            if ($rdo) {
+            if ($rdo->data) {
                 /* SQL Instruction  */
                 $sql = " SELECT		GROUP_CONCAT(DISTINCT jr.name ORDER BY jr.name SEPARATOR ',') as 'names'
                          FROM		{report_gen_jobrole}	jr
@@ -208,7 +208,7 @@ class profile_field_rgjobrole extends profile_field_base {
 
             /* Execute  */
             $rdo = $DB->get_record('user_info_data',$params,'data');
-            if ($rdo) {
+            if ($rdo->data) {
                 return self::GetReference_JobRole($rdo->data);
             }else {
                 return 0;

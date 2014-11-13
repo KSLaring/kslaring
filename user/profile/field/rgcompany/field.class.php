@@ -176,7 +176,7 @@ class profile_field_rgcompany extends profile_field_base {
 
             /* Execute  */
             $rdo = $DB->get_record('user_info_data',$params,'data');
-            if ($rdo) {
+            if ($rdo->data) {
                 /* SQL Instruction  */
                 $sql = " SELECT		GROUP_CONCAT(DISTINCT rgc.name ORDER BY rgc.name SEPARATOR ',') as 'names'
                          FROM		{report_gen_companydata}	rgc
@@ -220,7 +220,7 @@ class profile_field_rgcompany extends profile_field_base {
 
             /* Execute  */
             $rdo = $DB->get_record('user_info_data',$params,'data');
-            if ($rdo) {
+            if ($rdo->data) {
                 return self::GetReferences_LevelThree($rdo->data);
             }else {
                 return 0;
