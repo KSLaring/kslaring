@@ -542,35 +542,35 @@ class format_netcourse extends format_base {
                     )
                 ),
                 'prerequisities' => array(
-                    'label' => get_string('home_prerequisities', 'local_course_page'),
+                    'label' => get_string('home_prerequisities', 'format_netcourse'),
                     'element_type' => 'textarea',
                     'element_attributes' => array(
                         0 => 'rows="5" style="width:95%;"'
                     )
                 ),
                 'producedby' => array(
-                    'label' => get_string('home_producedby', 'local_course_page'),
+                    'label' => get_string('home_producedby', 'format_netcourse'),
                     'element_type' => 'text',
                     'element_attributes' => array(
                         0 => 'style="width:95%;"'
                     )
                 ),
                 'length' => array(
-                    'label' => get_string('home_length', 'local_course_page'),
+                    'label' => get_string('home_length', 'format_netcourse'),
                     'element_type' => 'text',
                     'element_attributes' => array(
                         0 => 'style="width:95%;"'
                     )
                 ),
                 'effort' => array(
-                    'label' => get_string('home_effort', 'local_course_page'),
+                    'label' => get_string('home_effort', 'format_netcourse'),
                     'element_type' => 'text',
                     'element_attributes' => array(
                         0 => 'style="width:95%;"'
                     )
                 ),
                 'manager' => array(
-                    'label' => get_string('home_manager', 'local_course_page'),
+                    'label' => get_string('home_manager', 'format_netcourse'),
                     'element_type' => 'select',
                     'element_attributes' => array($lst_manager)
                 )

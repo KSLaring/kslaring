@@ -205,14 +205,14 @@ class format_whitepaper extends format_base {
                     )
                 ),
                 'author'        => array(
-                    'label'                 => get_string('home_author','local_course_page'),
+                    'label'                 => get_string('home_author','format_whitepaper'),
                     'element_type'          => 'text',
                     'element_attributes'    => array(
                                                     0 => 'style="width:95%;"'
                                                     )
                 ),
                 'licence'        => array(
-                    'label'                 => get_string('home_licence','local_course_page'),
+                    'label'                 => get_string('home_licence','format_whitepaper'),
                     'element_type'          => 'text',
                     'element_attributes'    => array(
                                                     0 => 'style="width:95%;"'

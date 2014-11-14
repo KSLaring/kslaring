@@ -28,8 +28,10 @@ $string['currentsection'] = 'Dette emnet';
 $string['sectionname'] = 'Emne';
 $string['pluginname'] = 'Klasseromsformat';
 $string['section0name'] = 'Generelt';
+
 $string['page-course-view-classroom'] = 'En kursforside i klasseromsformat';
 $string['page-course-view-classroom-x'] = 'En kursside i klasseromsformat';
+
 $string['hidefromothers'] = 'Skjul emnet';
 $string['showfromothers'] = 'Vis emnet';
 $string['course'] = 'Innhold';
@@ -41,3 +43,10 @@ $string['mymoodle'] = 'Min startside';
 $string['lessonlastpageon'] = 'Vennligst velg neste aktivitet fra navigasjonsmenyen til venstre.';
 $string['lessonlastpageoff'] = 'Du er ferdig med denne leksjonen. Vennligst velg neste aktivitet i navigasjonsmenyen til venstre.';
 $string['feedbacklastpage'] = 'Du er ferdig med feedbacken. Vennligst velg neste aktivitet i menyen til venstre.';
+
+$string['home_prerequisities']      = 'Forutsetninger';
+$string['home_producedby']          = 'Produsert av';
+$string['home_location']            = 'Kurssted';
+$string['home_length']              = 'Tidsbruk';
+$string['home_effort']              = 'Beregnet arbeidsmengde';
+$string['home_manager']             = 'Kursansvarlig';

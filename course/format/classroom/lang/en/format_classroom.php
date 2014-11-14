@@ -27,9 +27,11 @@
 $string['currentsection'] = 'This topic';
 $string['sectionname'] = 'Topic';
 $string['pluginname'] = 'Classroom format';
+
 $string['section0name'] = 'General';
 $string['page-course-view-classroom'] = 'Any course main page in classroom format';
 $string['page-course-view-classroom-x'] = 'Any course page in classroom format';
+
 $string['hidefromothers'] = 'Hide topic';
 $string['showfromothers'] = 'Show topic';
 $string['course'] = 'Course';
@@ -41,3 +43,10 @@ $string['mymoodle'] = 'My';
 $string['lessonlastpageon'] = 'Please select the next activity in the navigation menu.';
 $string['lessonlastpageoff'] = 'You finished this lesson. Please select the next activity in the navigation menu.';
 $string['feedbacklastpage'] = 'You finished the feedback. Please select the next activity in the navigation menu.';
+
+$string['home_prerequisities']      = 'Prerequisites';
+$string['home_producedby']          = 'Produced by';
+$string['home_location']            = 'Course location';
+$string['home_length']              = 'Estimated time spent';
+$string['home_effort']              = 'Estimated Effort';
+$string['home_manager']             = 'Course Manager';

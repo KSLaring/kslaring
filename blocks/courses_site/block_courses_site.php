@@ -78,7 +78,6 @@ class block_courses_site extends block_base {
         }else {
             if ($lst_courses_site) {
                 $total_records  = count($lst_courses_site);
-                $index          = 0;
 
                 $this->title = $config->title;
                 $this->content->text = '<div id="navarea" class="coursebox clearfix">';
@@ -121,8 +120,9 @@ class block_courses_site extends block_base {
      * Get the information connected with the course that has to be displayed
      */
     function block_courses_site_GetInfoDisplay($lst_courses_site) {
-        /* Varaibles    */
+        /* Variables    */
         $lst_info = array();
+
         foreach ($lst_courses_site as $key=>$course_site) {
             $lst_info[] = $info_display = courses_site::courses_site_GetInfoBlock($course_site);
         }//for
@@ -140,9 +140,6 @@ class block_courses_site extends block_base {
      * Add the block with the information
      */
     function block_courses_site_AddBlock($lst_info) {
-        global $OUTPUT;
-
-
         /* Add Block */
             $this->content->text .= '<div class="block_courses_site_one">';
                 if (array_key_exists(0,$lst_info)) {
@@ -170,10 +167,9 @@ class block_courses_site extends block_base {
     }//block_courses_site_AddBlock
 
     function block_courses_site_AddColumnHeader($course_site,$class) {
-        /* Variables    */
-        $description = ' ';
         /* Get URL For Course   */
         $url                  = new moodle_url('/local/course_page/home_page.php',array('id' => $course_site->course));
+
         $this->content->text .= '<div class="' . $class . '">';
             /*  Image / Title   */
             $this->content->text .= '<p>';
@@ -199,8 +195,9 @@ class block_courses_site extends block_base {
     }//block_courses_site_AddColumn
 
     function block_courses_site_AddColumnExtra($course_site,$class) {
-        /* Varaibles    */
-        $pre = '';
+        /* Variables    */
+        $pre = null;
+        $str_format = 'format_' . $course_site->type;
 
         $this->content->text .= '<div class="' . $class . '">';
             $this->content->text .= '<div class="course_extra">';
@@ -219,7 +216,7 @@ class block_courses_site extends block_base {
                 /* Prerequisites / Author   */
                 if (isset($course_site->prerequisities)) {
                     $this->content->text .= '<div class="col_one">';
-                        $this->content->text .= get_string('home_prerequisities','local_course_page') . ':';
+                        $this->content->text .= get_string('home_prerequisities',$str_format) . ':';
                     $this->content->text .= '</div>'; //col_one
 
                     $this->content->text .= '<div class="col_three">';
@@ -237,7 +234,7 @@ class block_courses_site extends block_base {
 
                 if (isset($course_site->author)) {
                     $this->content->text .= '<div class="col_one">';
-                        $this->content->text .= get_string('home_author','local_course_page') . ':';
+                        $this->content->text .= get_string('home_author',$str_format) . ':';
                     $this->content->text .= '</div>'; //col_one
 
                     $this->content->text .= '<div class="col_three">';
@@ -252,7 +249,6 @@ class block_courses_site extends block_base {
     }//block_courses_site_AddColumnExtra
 
     function block_courses_site_AddColumnButton($course_site,$class) {
-        global $OUTPUT,$CFG;
         /* Get URL For Course   */
         $url                  = new moodle_url('/local/course_page/home_page.php',array('id' => $course_site->course));
 

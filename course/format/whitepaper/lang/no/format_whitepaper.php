@@ -33,6 +33,10 @@ $string['defactivitytypedesc'] = 'Velg aktivitetstypen som skal være standard n
 $string['erroractivitytype'] = 'Aktivitetstypen er ikke satt opp i kursets innstillinger';
 $string['orphaned'] = 'Foreldreløse';
 $string['orphanedwarning'] = 'Disse aktivitetene kan ikke vises for brukerne!';
+
 $string['pluginname'] = 'Enkeltelementsformat';
 $string['sectionname'] = '';
 $string['warningchangeformat'] = 'Når du endrer et eksisterende kursformat til "Enkeltelementsformat" må du forsikre deg om at du har tatt vekk alle andre aktiviteter fra kurset - inkludert Oppslagstavla. Merk at emneinndelingen også blir endret.';
+
+$string['home_author']              = 'Forfatter';
+$string['home_licence']             = 'Lisens';
