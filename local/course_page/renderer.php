@@ -203,18 +203,18 @@ class local_course_page_renderer extends plugin_renderer_base {
 
         $block_two .= html_writer::start_tag('div',array('class' => 'home_page_block_two'));
             $block_two .= html_writer::start_tag('div',array('class' => 'go-left clearfix'));
-                /* Block Prerequisites  */
-                $block_two .= $this->addExtra_PrerequisitesBlock($course,$format_options,$manager);
-                /* Block Coordinator    */
-                $block_two .= $this->addCoordinatorBlock($course->id,$manager);
-                /* Block Duration       */
-                $block_two .= $this->addExtra_DurationBlock($course->format,$format_options);
-                /* Block Course Type    */
-                $block_two .= $this->addExtra_TypeCourseBlock($course->format);
+            /* Block Prerequisites  */
+            $block_two .= $this->addExtra_PrerequisitesBlock($course,$format_options,$manager);
+            /* Block Coordinator    */
+            $block_two .= $this->addCoordinatorBlock($course->id,$manager);
+            /* Block Duration       */
+            $block_two .= $this->addExtra_DurationBlock($course->format,$format_options);
+            /* Block Course Type    */
+            $block_two .= $this->addExtra_TypeCourseBlock($course->format);
             $block_two .= html_writer::end_tag('div');//go-left
             $block_two .= html_writer::start_tag('div',array('class' => 'go-right clearfix'));
-                /* Block Ratings        */
-                $block_two .= $this->addCourseRatings($course->id);
+            /* Block Ratings        */
+            $block_two .= $this->addCourseRatings($course->id);
             $block_two .= html_writer::end_tag('div');//go-right
         $block_two .= html_writer::end_tag('div');//home_page_block_two
 
@@ -490,28 +490,12 @@ class local_course_page_renderer extends plugin_renderer_base {
 
         /* Add  Ratings */
         $out .= html_writer::start_tag('div',array('class' => 'ratings chp-block'));
-            $out .= '<h5 class="title_ratings chp-title">' . get_string('home_ratings','local_course_page') . '</h5>';
-            $out .= '<div class="label_ratings chp-content">';
-                $out .= $OUTPUT->pix_icon('star', get_string('giverating', 'block_rate_course'),'block_rate_course', array('class'=>'icon'));
-                $url = new moodle_url('/blocks/rate_course/rate.php', array('courseid'=>$course_id));
-
-                if (course_page::UserRateCourse($USER->id,$course_id)) {
-                    $class = array('class' => 'disabled_ratings');
-                }else {
-                    $class = null;
-                }
-                $out .= $OUTPUT->action_link($url, get_string('giverating', 'block_rate_course'),null,$class);
-            $out .= '</div>';//label_ratings
-
-            /* Add Info Ratings */
-            //$is_rating = course_page::IsCourseRating($course_id);
             /* Add Total Average of course rating   */
             /* Total Rates  */
             $total_rates = course_page::getTotalRatesCourse($course_id);
             $out .= course_page::AddRatingsTotal($course_id,$total_rates);
 
             $out .= '<h5 class="title_ratings chp-title">' . get_string('rate_users','local_course_page') . '</h5>';
-
             $out.= '<div class="content_rating_bar chp-content">';
                 /* Excellent Rate   */
                 $excellent_rate = course_page::getCountTypeRateCourse($course_id,EXCELLENT_RATING);
@@ -580,13 +564,26 @@ class local_course_page_renderer extends plugin_renderer_base {
                 $disabled = ' disabled="disabled"';
             }//if_lst_comments
 
-
             /* Lightbox --> see the last five comments  */
             $header ='<h5 class="ratings_panel_title">' . get_string('title_reviews','local_course_page') . '</h5>';
             $this->page->requires->yui_module('moodle-local_course_page-ratings','M.local_course_page.ratings',array(array('header' => $header,'content' => $light_box)));
             $out .= html_writer::start_tag('div', array('class' => 'mdl-right commentPanel'));
-            $out .= '<button class="buttons" id="show"' . $disabled . '>' . get_string('btn_more','local_course_page') . '</button>';
+            $out .= '<button class="buttons" id="show" ' . $disabled . '>' . get_string('btn_more','local_course_page') . '</button>';
             $out.= html_writer::end_tag('div');//div_mdl_right
+
+            /* Give a rating */
+            $out .= '<h5 class="title_ratings chp-title">' . get_string('home_ratings','local_course_page') . '</h5>';
+            $out .= '<div class="label_ratings chp-content">';
+                $out .= $OUTPUT->pix_icon('star', get_string('giverating', 'block_rate_course'),'block_rate_course', array('class'=>'icon'));
+                $url = new moodle_url('/blocks/rate_course/rate.php', array('courseid'=>$course_id));
+
+                if (course_page::UserRateCourse($USER->id,$course_id)) {
+                    $class = array('class' => 'disabled_ratings');
+                }else {
+                    $class = null;
+                }
+                $out .= $OUTPUT->action_link($url, get_string('giverating', 'block_rate_course'),null,$class);
+            $out .= '</div>';//label_ratings
 
         $out .= html_writer::end_tag('div');//ratings
 
