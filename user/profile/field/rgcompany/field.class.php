@@ -176,17 +176,21 @@ class profile_field_rgcompany extends profile_field_base {
 
             /* Execute  */
             $rdo = $DB->get_record('user_info_data',$params,'data');
-            if ($rdo && isset($rdo->data)) {
-                /* SQL Instruction  */
-                $sql = " SELECT		GROUP_CONCAT(DISTINCT rgc.name ORDER BY rgc.name SEPARATOR ',') as 'names'
+            if ($rdo) {
+                if ($rdo->data) {
+                    /* SQL Instruction  */
+                    $sql = " SELECT		GROUP_CONCAT(DISTINCT rgc.name ORDER BY rgc.name SEPARATOR ',') as 'names'
                          FROM		{report_gen_companydata}	rgc
                          WHERE		rgc.id IN ($rdo->data) ";
 
-                /* Execute  */
-                $rdo_name = $DB->get_record_sql($sql);
-                if ($rdo_name) {
-                    return $rdo_name->names;
-                }//if_rdo_name
+                    /* Execute  */
+                    $rdo_name = $DB->get_record_sql($sql);
+                    if ($rdo_name) {
+                        return $rdo_name->names;
+                    }//if_rdo_name
+                }else {
+                    return null;
+                }
             }//if_rdo
 
             return null;
@@ -220,8 +224,12 @@ class profile_field_rgcompany extends profile_field_base {
 
             /* Execute  */
             $rdo = $DB->get_record('user_info_data',$params,'data');
-            if ($rdo && isset($rdo->data)) {
-                return self::GetReferences_LevelThree($rdo->data);
+            if ($rdo) {
+                if ($rdo->data) {
+                    return self::GetReferences_LevelThree($rdo->data);
+                }else {
+                    return 0;
+                }
             }else {
                 return 0;
             }//if_else
