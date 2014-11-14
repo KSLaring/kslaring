@@ -482,21 +482,6 @@ class local_course_page_renderer extends plugin_renderer_base {
 
         /* Add  Ratings */
         $out .= html_writer::start_tag('div',array('class' => 'ratings'));
-            $out .= '<h5 class="title_ratings">' . get_string('home_ratings','local_course_page') . '</h5>';
-            $out .= '<div class="label_ratings">';
-                $out .= $OUTPUT->pix_icon('star', get_string('giverating', 'block_rate_course'),'block_rate_course', array('class'=>'icon'));
-                $url = new moodle_url('/blocks/rate_course/rate.php', array('courseid'=>$course_id));
-
-                if (course_page::UserRateCourse($USER->id,$course_id)) {
-                    $class = array('class' => 'disabled_ratings');
-                }else {
-                    $class = null;
-                }
-                $out .= $OUTPUT->action_link($url, get_string('giverating', 'block_rate_course'),null,$class);
-            $out .= '</div>';//label_ratings
-
-            /* Add Info Ratings */
-            //$is_rating = course_page::IsCourseRating($course_id);
             /* Add Total Average of course rating   */
             /* Total Rates  */
             $total_rates = course_page::getTotalRatesCourse($course_id);
@@ -580,6 +565,19 @@ class local_course_page_renderer extends plugin_renderer_base {
             $out .= html_writer::start_tag('div', array('class' => 'mdl-right','commentPanel'));
             $out .= '<button class="buttons" id="show" ' . $disabled . '>' . get_string('btn_more','local_course_page') . '</button>';
             $out.= html_writer::end_tag('div');//div_mdl_right
+
+            $out .= '<h5 class="title_ratings">' . get_string('home_ratings','local_course_page') . '</h5>';
+            $out .= '<div class="label_ratings">';
+                $out .= $OUTPUT->pix_icon('star', get_string('giverating', 'block_rate_course'),'block_rate_course', array('class'=>'icon'));
+                $url = new moodle_url('/blocks/rate_course/rate.php', array('courseid'=>$course_id));
+
+                if (course_page::UserRateCourse($USER->id,$course_id)) {
+                    $class = array('class' => 'disabled_ratings');
+                }else {
+                    $class = null;
+                }
+                $out .= $OUTPUT->action_link($url, get_string('giverating', 'block_rate_course'),null,$class);
+            $out .= '</div>';//label_ratings
 
         $out .= html_writer::end_tag('div');//ratings
 

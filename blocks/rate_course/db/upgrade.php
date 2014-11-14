@@ -74,7 +74,7 @@ function xmldb_block_rate_course_upgrade($oldversion) {
         }
     }
 
-    if ($oldversion < 2014070808) {
+    if ($oldversion < 2014111400) {
         $db_man = $DB->get_manager();
 
         /* New Fields -- Course */
@@ -84,10 +84,6 @@ function xmldb_block_rate_course_upgrade($oldversion) {
         if (!$db_man->field_exists($tableRateCourse,$fieldComment)) {
             $db_man->add_field($tableRateCourse,$fieldComment);
         }//if_exists
-    }
-
-    if ($oldversion < 2014090300) {
-        $db_man = $DB->get_manager();
 
         /* New Fields -- Course */
         $tableRateCourse = new xmldb_table('block_rate_course');
