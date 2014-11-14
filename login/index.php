@@ -237,6 +237,7 @@ if ($frm and isset($frm->username)) {                             // Login WITH 
         require_once('../local/first_access/locallib.php');
         if (FirstAccess::HasToUpdate_Profile($USER->id)) {
             redirect(new moodle_url('/local/first_access/index.php',array('id'=>$USER->id)));
+            die();
         }else {
             /**
              * @updateDate      28/04/2014
