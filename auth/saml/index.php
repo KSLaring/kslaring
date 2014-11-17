@@ -201,5 +201,18 @@ define('SAML_INTERNAL', 1);
         if(isset($err) && !empty($err)) {
             saml_error($err, $urltogo, $pluginconfig->samllogfile);
         }
+
+        /**
+         * @updateDate  10/11/2014
+         * @author      eFaktor     (fbv)
+         *
+         * Description
+         * Check if it is the first access. Then the user has to check and update his/her profile
+         */
+        require_once('../../local/first_access/locallib.php');
+        if (FirstAccess::HasToUpdate_Profile($USER->id)) {
+            redirect(new moodle_url('/local/first_access/index.php',array('id'=>$USER->id)));
+        }else {
         redirect($urltogo);
+        }//if_first_access
     }
