@@ -100,6 +100,7 @@ class local_course_page_renderer extends plugin_renderer_base {
     /**
      * @param           $course
      * @param           $home_graphics
+     * @param           $home_graphicstitle
      * @return          string
      *
      * @creationDate    20/05/2014
