@@ -39,7 +39,7 @@ function xmldb_report_generator_install() {
     /* Municipality  */
     $table_company_data->add_field('idmuni',XMLDB_TYPE_CHAR,'10',null, null,null,null);
     /* naringskode */
-    $table_company_data->add_field('industrycode',XMLDB_TYPE_CHAR,'10',null, null,null,null);
+    $table_company_data->add_field('industrycode',XMLDB_TYPE_CHAR,'50',null, null,null,null);
     /* modified         (Not null)          */
     $table_company_data->add_field('modified',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL,null,null);
     //Adding Keys

@@ -18,26 +18,6 @@ class company_structure {
     /* PUBLIC FUNCTIONS  */
     /*********************/
 
-    public static function Get_CountyAndMunicipality($company_id) {
-        /* Variables    */
-        global $DB;
-        $county = 0;
-        $muni   = 0;
-
-        try {
-            /* Execute  */
-            $rdo = $DB->get_record('report_gen_companydata',array('id' => $company_id),'idcounty,idmuni');
-            if ($rdo) {
-                $county = $rdo->idcounty;
-                $muni   = $rdo->idmuni;
-            }//if_rdo
-
-            return array($county,$muni);
-        }catch (Exception $ex) {
-            throw $ex;
-        }//try_catch
-    }//Get_CountyAndMunicipality
-
     /**
      * @static
      * @param       array   $data.      Form data.
@@ -177,7 +157,7 @@ class company_structure {
      * @throws      Exception
      *
      * @updateDate  08/10/2014
-     * @author          eFaktor     (fbv)
+     * @author      eFaktor     (fbv)
      *
      * Description
      * Get the parent's company name
@@ -232,10 +212,11 @@ class company_structure {
             /* Search Criteria */
             $params = array();
             if ($company_info['name']) {
-                $params['company']  = $company_info['name'];
+                $params['company_name']  = $company_info['name'];
             }else {
-                $params['company']  = $company_info['other_company'];
+                $params['company_name']  = $company_info['other_company'];
             }
+
 
             $params['level']    = $level;
             $params['parent']   = $parent;
@@ -251,8 +232,12 @@ class company_structure {
             }//if_level_1
 
             $sql .= " WHERE      rgc.hierarchylevel = :level
-                        AND      rgc.name = :company ";
+                        AND      rgc.name = :company_name ";
 
+            if (isset($company_info['company']) && $company_info['company']) {
+                $params['company'] = $company_info['company'];
+                $sql .= " AND rgc.id <> :company ";
+            }
             /* Execute */
             if ($rdo = $DB->get_records_sql($sql,$params)) {
                 return true;
@@ -279,15 +264,40 @@ class company_structure {
     public static function Get_CompanyInfo($company_id) {
         /* Variables    */
         global $DB;
+        $company_info = null;
 
         try {
+            /* Search Criteria  */
+            $params = array();
+            $params['company'] = $company_id;
+
+            /* SQL Instruction */
+            $sql = " SELECT    		rc.id,
+                                    rc.name,
+                                    rc.idcounty,
+                                    co.county,
+                                    rc.idmuni,
+                                    mu.municipality,
+                                    rc.industrycode
+                     FROM			{report_gen_companydata}	rc
+                        LEFT JOIN	{counties}				    co		ON co.idcounty  = rc.idcounty
+                        LEFT JOIN	{municipality}			    mu		ON mu.idmuni    = rc.idmuni
+                     WHERE          rc.id = :company ";
+
             /* Execute  */
-            $rdo = $DB->get_record('report_gen_companydata',array('id' => $company_id));
+            $rdo = $DB->get_record_sql($sql,$params);
             if ($rdo) {
-                return $rdo;
-            }else {
-                return null;
+                $company_info = new stdClass();
+                $company_info->id           = $rdo->id;
+                $company_info->name         = $rdo->name;
+                $company_info->idcounty     = $rdo->idcounty;
+                $company_info->county       = $rdo->county;
+                $company_info->idmuni       = $rdo->idmuni;
+                $company_info->municipality = $rdo->municipality;
+                $company_info->industrycode = $rdo->industrycode;
             }//if_rdo
+
+            return $company_info;
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch

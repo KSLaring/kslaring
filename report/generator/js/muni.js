@@ -29,18 +29,14 @@ YUI().use('node', function(Y) {
         var county;
         var muniHidden;
         var muniRef;
-        var muniName;
 
         if (Y.one("#id_county").get('value') != 0) {
-            /* Municipality */
-            muniHidden  = Y.one('#id_hidden_munis').get('value');
-            muniName    = Y.one('#id_name').get('value');
-
             /* County       */
             county = Y.one("#id_county").get('value') + '_';
             /* Activate Municipality   */
             ActivateMunicipality(county);
-
+            /* Municipality */
+            muniHidden  = Y.one('#id_hidden_munis').get('value');
             /* Select Municipality */
             if (muniHidden != 0) {
                 muniRef = county + muniHidden;
@@ -48,20 +44,20 @@ YUI().use('node', function(Y) {
                     if (this.get('value') == muniRef) {
                         this.set('selected',true);
                         this.setAttribute('selected');
-
+                        Y.one('#id_name').set('value',this.get('text'));
                     }else {
                         this.set('selected',false);
                         this.removeAttribute('selected');
                     }
                 });
-
-                Y.one('#id_name').set('value',muniName);
                 Y.one('#id_hidden_munis').set('value',0);
             }//if_levelThree
         }//if_county
 
         window.onbeforeunload = null;
     };//RecuperateCounty
+
+
     /*****************/
     /* Municipality */
     /****************/

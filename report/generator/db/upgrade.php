@@ -126,7 +126,7 @@ function xmldb_report_generator_upgrade($old_version) {
             $db_man->add_field($table_company, $field_muniId);
         }
         /* Industry code    */
-        $field_industryCode   = new xmldb_field('industrycode', XMLDB_TYPE_CHAR, 10, null, null, null,null,'idmuni');
+        $field_industryCode   = new xmldb_field('industrycode', XMLDB_TYPE_CHAR, 50, null, null, null,null,'idmuni');
         if (!$db_man->field_exists($table_company, $field_industryCode)) {
             $db_man->add_field($table_company, $field_industryCode);
         }
