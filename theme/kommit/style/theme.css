@@ -462,10 +462,6 @@ Courses and categories lists, from Mary Evans
 .coursebox .content .coursefile {
   width: 100%;
 }
-/* Remove course category titles
-----------------------------*/
-/* Remove course heading on course topic view
-----------------------------*/
 .coursebox {
   border: none;
   position: relative;
@@ -1351,6 +1347,9 @@ div.loginpanel h2 {
   clear: all;
   padding: 0em 0em 0.2em 1.6em;
   text-align: center;
+}
+#page-course-index .buttons input[type="submit"] {
+  margin-top: 1.2em;
 }
 #page-course-index-category .coursebox {
   background: #fff;
