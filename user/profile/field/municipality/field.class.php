@@ -14,6 +14,7 @@
  */
 
 class profile_field_municipality extends profile_field_base {
+
     public function edit_field_add($m_form) {
         global $PAGE;
 
