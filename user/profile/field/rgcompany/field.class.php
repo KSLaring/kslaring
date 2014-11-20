@@ -17,7 +17,7 @@ class profile_field_rgcompany extends profile_field_base {
     public function edit_field_add($m_form) {
         global $PAGE;
 
-        $PAGE->requires->js(new moodle_url('/user/profile/field/rgcompany/FilterCompany.js'));
+        //$PAGE->requires->js(new moodle_url('/user/profile/field/rgcompany/FilterCompany.js'));
 
         /* County    */
         $options        = self::GetCounties_List();
