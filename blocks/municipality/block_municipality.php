@@ -20,24 +20,23 @@ class block_municipality extends block_base {
     }//init
 
     function get_content() {
-        global  $USER,$OUTPUT;
+        global  $USER,$OUTPUT,$CFG;
 
         $this->content = new stdClass;
 
         if (isloggedin()) {
             /* Get the municipality connected with the user */
-            $muni = Municipality::municipality_ExitsMuni_User($USER->id);
+            $municipality = Municipality::municipality_ExitsMuni_User($USER->id);
 
-            if ($muni) {
+            if ($municipality) {
                 /* Show the Municipality Logo */
                 $this->content->text = html_writer::start_tag('div',array('class'=>'municipality-content'));
                 $this->content->footer = '';
 
                 /* Get the municipality logo */
-                $logo = Municipality::municipality_GetLogo($muni);
-                $this->content->text .= $logo;
+                $this->content->text .= '<img class="logo" alt="' . $municipality->name . '"src="' . $municipality->logo . '"/>';
                 $this->content->text .= html_writer::end_tag('div');
-                $this->content->text .= '<h2 style="text-align: center;">' . $muni . '</h2>';
+                $this->content->text .= '<h2 style="text-align: center;">' . $municipality->name . '</h2>';
             }else {
                 $url_muni = new moodle_url('/blocks/municipality/edit_muni.php');
                 $this->content->footer = $OUTPUT->action_link($url_muni, get_string('edit_muni', 'block_municipality'),null);

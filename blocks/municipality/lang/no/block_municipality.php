@@ -25,3 +25,5 @@ $string['required']     = 'Dette feltet er obligatorisk';
 $string['save']         = 'Lagre';
 $string['choose_muni']  = 'Velg kommune ...';
 $string['sel_muni']     = 'Kommuner';
+
+$string['install_municipality'] = 'First, the Municipality Profile Field has to be installed. Please, contact to the administrator.';

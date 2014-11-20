@@ -19,1434 +19,710 @@ function xmldb_block_municipality_install() {
 
     $db_man = $DB->get_manager();
 
-    /*********************/
-    /* mdl_muni_logos    */
-    /*********************/
-    $table_muni_logos = new xmldb_table('muni_logos');
-    //Adding fields
+    /* *************************** */
+    /* Create tables into database */
+    /* *************************** */
+    /* Counties */
+    if (!$db_man->table_exists('counties')) {
+        /* Counties */
+        $table_counties = new xmldb_table('counties');
     /* Id           - Primary Key   */
-    $table_muni_logos->add_field('id',XMLDB_TYPE_INTEGER,'10',XMLDB_UNSIGNED, XMLDB_NOTNULL, XMLDB_SEQUENCE,null);
-    /* municipality    - Foreign Key   */
-    $table_muni_logos->add_field('municipality',XMLDB_TYPE_CHAR,'255',null, XMLDB_NOTNULL, null,null);
-    /* logo */
-    $table_muni_logos->add_field('logo',XMLDB_TYPE_CHAR,'255',null,XMLDB_NOTNULL,null,null);
+        $table_counties->add_field('id',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, XMLDB_SEQUENCE,null);
+        /* countyID     - Foreign Key - Counties    */
+        $table_counties->add_field('idcounty',XMLDB_TYPE_CHAR,'10',null, XMLDB_NOTNULL);
+        /* County     */
+        $table_counties->add_field('county',XMLDB_TYPE_CHAR,'255',null, XMLDB_NOTNULL,null,null);
+        //Adding Keys
+        $table_counties->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
 
+        /* Create   */
+        $db_man->create_table($table_counties);
+
+        /* Add Counties */
+        install_Counties();
+    }//if_counties
+
+    /* Municipality */
+    if (!$db_man->table_exists('municipality')) {
+        /* Municipality */
+        $table_municipality = new xmldb_table('municipality');
+        /* Id - Primary Key */
+        $table_municipality->add_field('id',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, XMLDB_SEQUENCE,null);
+        /* countyID     - Foreign Key - Counties    */
+        $table_municipality->add_field('idcounty',XMLDB_TYPE_CHAR,'10',null, XMLDB_NOTNULL);
+        /* muniId   */
+        $table_municipality->add_field('idmuni',XMLDB_TYPE_CHAR,'10',null, XMLDB_NOTNULL);
+        /* Municipality     */
+        $table_municipality->add_field('municipality',XMLDB_TYPE_CHAR,'255',null, XMLDB_NOTNULL,null,null);
+        /* Logo     */
+        $table_municipality->add_field('logo',XMLDB_TYPE_CHAR,'255',null, XMLDB_NOTNULL,null,null);
     //Adding Keys
-    $table_muni_logos->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+        $table_municipality->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+        $table_municipality->add_key('idcounty',XMLDB_KEY_FOREIGN,array('idcounty'), 'counties', array('idcounty'));
 
-    /*********************/
-    /* Create the table  */
-    /*********************/
-    if (!$db_man->table_exists('muni_logos')) {
-        $db_man->create_table($table_muni_logos);
+        /* Create   */
+        $db_man->create_table($table_municipality);
 
-        install_logos_Østfold();
-        install_logos_Akershus();
-        install_logos_Oslo();
-        install_logos_Hedmark();
-        install_logos_Oppland();
-        install_logos_Buskerud();
-        install_logos_Vestfold();
-        install_logos_Telemark();
-        install_logos_Aust_Agder();
-        install_logos_Vest_Agder();
-        install_logos_Rogaland();
-        install_logos_Hordaland();
-        install_logos_Sogn_og_Fjordane();
-        install_logos_Møre_og_Romsdal();
-        install_logos_Sør_Trøndelag();
-        install_logos_Nord_Trøndelag();
-        install_logos_Nordland();
-        install_logos_Troms();
-        install_logos_Finnmark();
-        install_logos_Svalbard();
-    }//if_table_exists
-
+        /* Add Municipalities   */
+        install_Østfold();
+        install_Akershus();
+        install_Oslo();
+        install_Hedmark();
+        install_Oppland();
+        install_Buskerud();
+        install_Vestfold();
+        install_Telemark();
+        install_Aust_Agder();
+        install_Vest_Agder();
+        install_Rogaland();
+        install_Hordaland();
+        install_Sogn_og_Fjordane();
+        install_Møre_og_Romsdal();
+        install_Sør_Trøndelag();
+        install_Nord_Trøndelag();
+        install_Nordland();
+        install_Troms();
+        install_Finnmark();
+        install_Svalbard();
+    }//if_municipality
 }//_install
 
-function install_logos_Østfold() {
+/* *********************************** */
+/* INSTALL COUNTIES && MUNICIPALITIES  */
+/* *********************************** */
+
+function install_Counties() {
     /* Variables    */
     global $DB;
 
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Aremark','Aremark.png')";
-    $DB->execute($sql,array());
+    $sql = " INSERT INTO {counties} (idcounty, county) VALUES ('01','Østfold'),";
+    $sql .= "  ('02','Akershus'),";
+    $sql .= "  ('03','Oslo'),";
+    $sql .= "  ('04','Hedmark'),";
+    $sql .= "  ('05','Oppland'),";
+    $sql .= "  ('06','Buskerud'),";
+    $sql .= "  ('07','Vestfold'),";
+    $sql .= "  ('08','Telemark'),";
+    $sql .= "  ('09','Aust-Agder'),";
+    $sql .= "  ('10','Vest-Agder'),";
+    $sql .= "  ('11','Rogaland'),";
+    $sql .= "  ('12','Hordaland'),";
+    $sql .= "  ('14','Sogn og Fjordane'),";
+    $sql .= "  ('15','Møre og Romsdal'),";
+    $sql .= "  ('16','Sør-Trøndelag'),";
+    $sql .= "  ('17','Nord-Trøndelag'),";
+    $sql .= "  ('18','Nordland'),";
+    $sql .= "  ('19','Troms'),";
+    $sql .= "  ('20','Finnmark'),";
+    $sql .= "  ('21','Svalbard')";
 
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Askim','Askim.png')";
     $DB->execute($sql);
+}//install_Counties
 
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Eidsberg','Eidsberg.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Fredrikstad','Fredrikstad.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Halden','Halden.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Hobøl','Hoboel.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Hvaler','Hvaler.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Marker','Marker.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Moss','Moss.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Rakkestad','Rakkestad.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Rygge','Rygge.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Rømskog','Roemskog.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Råde','Raade.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Sarpsborg','Sarpsborg.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Skiptvet','Skiptvet.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Spydeberg','Spydeberg.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Trøgstad','Troegstad.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Våler Østfold','Vaaler_Oestfold.png')";
-    $DB->execute($sql);
-}//install_logos_Østfold()
-
-function install_logos_Akershus() {
+function install_Østfold() {
     /* Variables    */
     global $DB;
 
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Asker','Asker.png')";
-    $DB->execute($sql);
+    $sql = " INSERT INTO {municipality} (idcounty, idmuni,municipality,logo) VALUES ('01','0118','Aremark','Aremark.png'),";
+    $sql .= "  ('01','0124','Askim','Askim.png'),";
+    $sql .= "  ('01','0125','Eidsberg','Eidsberg.png'),";
+    $sql .= "  ('01','0106','Fredrikstad','Fredrikstad.png'),";
+    $sql .= "  ('01','0101','Halden','Halden.png'),";
+    $sql .= "  ('01','0138','Hobøl','Hoboel.png'),";
+    $sql .= "  ('01','0111','Hvaler','Hvaler.png'),";
+    $sql .= "  ('01','0119','Marker','Marker.png'),";
+    $sql .= "  ('01','0104','Moss','Moss.png'),";
+    $sql .= "  ('01','0128','Rakkestad','Rakkestad.png'),";
+    $sql .= "  ('01','0136','Rygge','Rygge.png'),";
+    $sql .= "  ('01','0121','Rømskog','Roemskog.png'),";
+    $sql .= "  ('01','0135','Råde','Raade.png'),";
+    $sql .= "  ('01','0105','Sarpsborg','Sarpsborg.png'),";
+    $sql .= "  ('01','0127','Skiptvet','Skiptvet.png'),";
+    $sql .= "  ('01','0123','Spydeberg','Spydeberg.png'),";
+    $sql .= "  ('01','0122','Trøgstad','Troegstad.png'),";
+    $sql .= "  ('01','0137','Våler','Vaaler_Oestfold.png'),";
+    $sql .= "  ('01','01','Østfold Fylkeskommune','ostfold_fylkeskommune.png') ";
 
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Aurskog Høland','Aurskog-Hoeland.png')";
     $DB->execute($sql);
+}//install_Østfold
 
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Bærum','Baerum.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Eidsvoll','Eidsvoll.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Enebakk','Enebakk.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Fet','Fet.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Frogn','Frogn.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Gjerdrum','Gjerdrum.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Hurdal','Hurdal.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Lørenskog','Loerenskog.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Nannestad','Nannestad.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Nes','Nes_Akershus.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Nesodden','Nesodden.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Nittedal','Nittedal.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Oppegård','Oppegaard.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Rælingen','Raelingen.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Skedsmo','Skedsmo.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Ski','Ski.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Sørum','Soerum.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Ullensaker','Ullensaker.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Vestby','Vestby.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Ås','Aas.png')";
-    $DB->execute($sql);
-}//install_logos_Akershus
-
-function install_logos_Oslo() {
+function install_Akershus() {
     /* Variables    */
     global $DB;
 
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Oslo','Oslo.png')";
-    $DB->execute($sql);
-}//install_logos_Oslo
+    $sql  = " INSERT INTO {municipality} (idcounty, idmuni,municipality,logo) VALUES ('02','0220','Asker','Asker.png'),";
+    $sql .= "  ('02','0221','Aurskog-Høland','Aurskog-Hoeland.png'),";
+    $sql .= "  ('02','0219','Bærum','Baerum.png'),";
+    $sql .= "  ('02','0237','Eidsvoll','Eidsvoll.png'),";
+    $sql .= "  ('02','0229','Enebakk','Enebakk.png'),";
+    $sql .= "  ('02','0227','Fet','Fet.png'),";
+    $sql .= "  ('02','0215','Frogn','Frogn.png'),";
+    $sql .= "  ('02','0234','Gjerdrum','Gjerdrum.png'),";
+    $sql .= "  ('02','0239','Hurdal','Hurdal.png'),";
+    $sql .= "  ('02','0230','Lørenskog','Loerenskog.png'),";
+    $sql .= "  ('02','0238','Nannestad','Nannestad.png'),";
+    $sql .= "  ('02','0236','Nes','Nes_Akershus.png'),";
+    $sql .= "  ('02','0216','Nesodden','Nesodden.png'),";
+    $sql .= "  ('02','0233','Nittedal','Nittedal.png'),";
+    $sql .= "  ('02','0217','Oppegård','Oppegaard.png'),";
+    $sql .= "  ('02','0228','Rælingen','Raelingen.png'),";
+    $sql .= "  ('02','0231','Skedsmo','Skedsmo.png'),";
+    $sql .= "  ('02','0213','Ski','Ski.png'),";
+    $sql .= "  ('02','0226','Sørum','Soerum.png'),";
+    $sql .= "  ('02','0235','Ullensaker','Ullensaker.png'),";
+    $sql .= "  ('02','0211','Vestby','Vestby.png'),";
+    $sql .= "  ('02','0214','Ås','Aas.png'), ";
+    $sql .= "  ('02','02','Akershus Fylkeskommune','Akershus_fylkeskommune.png') ";
 
-function install_logos_Hedmark() {
+    $DB->execute($sql);
+}//install_Akershus
+
+function install_Oslo() {
     /* Variables    */
     global $DB;
 
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Alvdal','Alvdal.png')";
-    $DB->execute($sql);
+    $sql = " INSERT INTO {municipality} (idcounty, idmuni,municipality,logo) VALUES ('03','0301','Oslo','Oslo.png'), ";
+    $sql .= " ('03','03','Oslo Fylkeskommune','oslo_fylkeskommune.png') ";
 
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Eidskog','Eidskog.png')";
     $DB->execute($sql);
+}//install_Oslo
 
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Elverum','Elverum.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Engerdal','Engerdal.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Folldal','Folldal.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Grue','Grue.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Hamar','Hamar.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Kongsvinger','Kongsvinger.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Løten','Loeten.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Nord-Odal','Nord-Odal.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Os Hedmark','Os_Hedmark.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Rendalen','Rendalen.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Ringsaker','Ringsaker.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Stange','Stange.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Stor-Elvdal','Stor-Elvdal.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Sør-Odal','Soer-Odal.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Tolga','Tolga.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Trysil','Trysil.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Tynset','Tynset.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Våler Hedmark','Vaaler_Hedmark.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Åmot','Aamot.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Åsnes','Aasnes.png')";
-    $DB->execute($sql);
-}//install_logos_Hedmark
-
-function install_logos_Oppland() {
+function install_Hedmark() {
     /* Variables    */
     global $DB;
 
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Dovre','Dovre.png')";
-    $DB->execute($sql);
+    $sql  = " INSERT INTO {municipality} (idcounty, idmuni,municipality,logo) VALUES ('04','0438','Alvdal','Alvdal.png'),";
+    $sql .= "  ('04','0420','Eidskog','Eidskog.png'),";
+    $sql .= "  ('04','0427','Elverum','Elverum.png'),";
+    $sql .= "  ('04','0434','Engerdal','Engerdal.png'),";
+    $sql .= "  ('04','0439','Folldal','Folldal.png'),";
+    $sql .= "  ('04','0423','Grue','Grue.png'),";
+    $sql .= "  ('04','0403','Hamar','Hamar.png'),";
+    $sql .= "  ('04','0402','Kongsvinger','Kongsvinger.png'),";
+    $sql .= "  ('04','0415','Løten','Loeten.png'),";
+    $sql .= "  ('04','0418','Nord-Odal','Nord-Odal.png'),";
+    $sql .= "  ('04','0441','Os','Os_Hedmark.png'),";
+    $sql .= "  ('04','0432','Rendalen','Rendalen.png'),";
+    $sql .= "  ('04','0412','Ringsaker','Ringsaker.png'),";
+    $sql .= "  ('04','0417','Stange','Stange.png'),";
+    $sql .= "  ('04','0430','Stor-Elvdal','Stor-Elvdal.png'),";
+    $sql .= "  ('04','0419','Sør-Odal','Soer-Odal.png'),";
+    $sql .= "  ('04','0436','Tolga','Tolga.png'),";
+    $sql .= "  ('04','0428','Trysil','Trysil.png'),";
+    $sql .= "  ('04','0437','Tynset','Tynset.png'),";
+    $sql .= "  ('04','0426','Våler','Vaaler_Hedmark.png'),";
+    $sql .= "  ('04','0429','Åmot','Aamot.png'),";
+    $sql .= "  ('04','0425','Åsnes','Aasnes.png'), ";
+    $sql .= "  ('04','04','Hedmark Fylkeskommune','hedmark_fylkeskommune.png') ";
 
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Etnedal','Etnedal.png')";
     $DB->execute($sql);
+}//install_Hedmark
 
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Gausdal','Gausdal.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Gjøvik','Gjoevik.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Gran','Gran.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Jevnaker','Jevnaker.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Lesja','Lesja.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Lillehammer','Lillehammer.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Lom','Lom.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Lunner','Lunner.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Nord-Aurdal','Nord-Aurdal.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Nord-Fron','Nord-Fron.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Nordre Land','Nordre_Land.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Ringebu','Ringebu.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Sel','Sel.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Skjåk','Skjaak.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Søndre Land','Søndre_Land.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Sør-Aurdal','Soer-Aurdal.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Sør-Fron','Soer-Fron.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Vang','Vang.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Vestre Slidre','Vestre_Slidre.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Vestre Toten','Vestre_Toten.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Vågå','Vaagaa.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Østre Toten','Oestre_Toten.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Øyer','Oeyer.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Øystre Slidre','Oeystre_Slidre.png')";
-    $DB->execute($sql);
-}//install_logos_Oppland
-
-function install_logos_Buskerud() {
+function install_Oppland() {
     /* Variables    */
     global $DB;
 
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Drammen','Drammen.png')";
-    $DB->execute($sql);
+    $sql  = " INSERT INTO {municipality} (idcounty, idmuni,municipality,logo) VALUES ('05','0511','Dovre','Dovre.png'),";
+    $sql .= "  ('05','0541','Etnedal','Etnedal.png'),";
+    $sql .= "  ('05','0522','Gausdal','Gausdal.png'),";
+    $sql .= "  ('05','0502','Gjøvik','Gjoevik.png'),";
+    $sql .= "  ('05','0534','Gran','Gran.png'),";
+    $sql .= "  ('05','0532','Jevnaker','Jevnaker.png'),";
+    $sql .= "  ('05','0512','Lesja','Lesja.png'),";
+    $sql .= "  ('05','0501','Lillehammer','Lillehammer.png'),";
+    $sql .= "  ('05','0514','Lom','Lom.png'),";
+    $sql .= "  ('05','0533','Lunner','Lunner.png'),";
+    $sql .= "  ('05','0542','Nord-Aurdal','Nord-Aurdal.png'),";
+    $sql .= "  ('05','0516','Nord-Fron','Nord-Fron.png'),";
+    $sql .= "  ('05','0538','Nordre Land','Nordre_Land.png'),";
+    $sql .= "  ('05','0520','Ringebu','Ringebu.png'),";
+    $sql .= "  ('05','0517','Sel','Sel.png'),";
+    $sql .= "  ('05','0513','Skjåk','Skjaak.png'),";
+    $sql .= "  ('05','0536','Søndre Land','Søndre_Land.png'),";
+    $sql .= "  ('05','0540','Sør-Aurdal','Soer-Aurdal.png'),";
+    $sql .= "  ('05','0519','Sør-Fron','Soer-Fron.png'),";
+    $sql .= "  ('05','0545','Vang','Vang.png'),";
+    $sql .= "  ('05','0543','Vestre Slidre','Vestre_Slidre.png'),";
+    $sql .= "  ('05','0529','Vestre Toten','Vestre_Toten.png'),";
+    $sql .= "  ('05','0515','Vågå','Vaagaa.png'),";
+    $sql .= "  ('05','0528','Østre Toten','Oestre_Toten.png'),";
+    $sql .= "  ('05','0521','Øyer','Oeyer.png'),";
+    $sql .= "  ('05','0544','Øystre Slidre','Oeystre_Slidre.png'), ";
+    $sql .= "  ('05','05','Oppland Fylkeskommune','oppland_fylkeskommune.png') ";
 
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Flesberg','Flesberg.png')";
     $DB->execute($sql);
+}//install_Oppland
 
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Flå','Flaa.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Gol','Gol.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Hemsedal','Hemsedal.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Hol','Hol.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Hole','Hole.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Hurum','Hurum.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Kongsberg','Kongsberg.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Krødsherad','Kroedsherad.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Lier','Lier.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Modum','Modum.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Nedre Eiker','Nedre_Eiker.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Nes Buskerud','Nes_Buskerud.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Nore og Uvdal','Nore_og_Uvdal.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Ringerike','Ringerike.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Rollag','Rollag.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Røyken','Roeyken.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Sigdal','Sigdal.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Øvre Eiker','Oevre_Eiker.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Ål','Aal.png')";
-    $DB->execute($sql);
-}//install_logos_Buskerud
-
-function install_logos_Vestfold() {
+function install_Buskerud() {
     /* Variables    */
     global $DB;
 
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Andebu','Andebu.png')";
-    $DB->execute($sql);
+    $sql  = " INSERT INTO {municipality} (idcounty, idmuni,municipality,logo) VALUES ('06','0602','Drammen','Drammen.png'),";
+    $sql .= "  ('06','0631','Flesberg','Flesberg.png'),";
+    $sql .= "  ('06','0615','Flå','Flaa.png'),";
+    $sql .= "  ('06','0617','Gol','Gol.png'),";
+    $sql .= "  ('06','0618','Hemsedal','Hemsedal.png'),";
+    $sql .= "  ('06','0620','Hol','Hol.png'),";
+    $sql .= "  ('06','0612','Hole','Hole.png'),";
+    $sql .= "  ('06','0628','Hurum','Hurum.png'),";
+    $sql .= "  ('06','0604','Kongsberg','Kongsberg.png'),";
+    $sql .= "  ('06','0622','Krødsherad','Kroedsherad.png'),";
+    $sql .= "  ('06','0626','Lier','Lier.png'),";
+    $sql .= "  ('06','0623','Modum','Modum.png'),";
+    $sql .= "  ('06','0625','Nedre Eiker','Nedre_Eiker.png'),";
+    $sql .= "  ('06','0616','Nes','Nes_Buskerud.png'),";
+    $sql .= "  ('06','0633','Nore og Uvdal','Nore_og_Uvdal.png'),";
+    $sql .= "  ('06','0605','Ringerike','Ringerike.png'),";
+    $sql .= "  ('06','0632','Rollag','Rollag.png'),";
+    $sql .= "  ('06','0627','Røyken','Roeyken.png'),";
+    $sql .= "  ('06','0621','Sigdal','Sigdal.png'),";
+    $sql .= "  ('06','0624','Øvre Eiker','Oevre_Eiker.png'),";
+    $sql .= "  ('06','0619','Ål','Aal.png') , ";
+    $sql .= "  ('06','06','Buskerud Fylkeskommune','buskerud_fylkeskommune.png') ";
 
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Hof','Hof.png')";
     $DB->execute($sql);
+}//install_Buskerud
 
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Holmestrand','Holmestrand.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Horten','Horten_komm.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Lardal','Lardal.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Larvik','Larvik.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Nøtterøy','Noetteroey.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Re','Re.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Sande i Vestfold','Sande_Vestfold.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Sandefjord','Sandefjord.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Stokke','Stokke.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Svelvik','Svelvik.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Tjøme','Tjoeme.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Tønsberg','Toensberg.png')";
-    $DB->execute($sql);
-}//install_logos_Vestfold
-
-function install_logos_Telemark() {
+function install_Vestfold() {
     /* Variables    */
     global $DB;
 
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Bamble','Bamble.png')";
-    $DB->execute($sql);
+    $sql  = " INSERT INTO {municipality} (idcounty, idmuni,municipality,logo) VALUES ('07','0719','Andebu','Andebu.png'),";
+    $sql .= "  ('07','0714','Hof','Hof.png'),";
+    $sql .= "  ('07','0702','Holmestrand','Holmestrand.png'),";
+    $sql .= "  ('07','0701','Horten','Horten_komm.png'),";
+    $sql .= "  ('07','0728','Lardal','Lardal.png'),";
+    $sql .= "  ('07','0709','Larvik','Larvik.png'),";
+    $sql .= "  ('07','0722','Nøtterøy','Noetteroey.png'),";
+    $sql .= "  ('07','0716','Re','Re.png'),";
+    $sql .= "  ('07','0713','Sande','Sande_Vestfold.png'),";
+    $sql .= "  ('07','0706','Sandefjord','Sandefjord.png'),";
+    $sql .= "  ('07','0720','Stokke','Stokke.png'),";
+    $sql .= "  ('07','0711','Svelvik','Svelvik.png'),";
+    $sql .= "  ('07','0723','Tjøme','Tjoeme.png'),";
+    $sql .= "  ('07','0704','Tønsberg','Toensberg.png'), ";
+    $sql .= "  ('07','07','Vestfold Fylkeskommune','vestfold_fylkeskommune.png') ";
 
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Bø Telemark','Boe_Telemark.png')";
     $DB->execute($sql);
+}//install_Vestfold
 
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Drangedal','Drangedal.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Fyresdal','Fyresdal.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Hjartdal','Hjartdal.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Kragerø','Krageroe.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Kviteseid','Kviteseid.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Nissedal','Nissedal.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Nome','Nome.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Notodden','Notodden.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Porsgrunn','Porsgrunn.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Sauherad','Sauherad.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Seljord','Seljord.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Siljan','Siljan.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Skien','Skien.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Tinn','Tinn.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Tokke','Tokke.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Vinje','Vinje.png')";
-    $DB->execute($sql);
-}//install_logos_Telemark
-
-function install_logos_Aust_Agder() {
+function install_Telemark() {
     /* Variables    */
     global $DB;
 
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Arendal','Arendal.png')";
-    $DB->execute($sql);
+    $sql  = " INSERT INTO {municipality} (idcounty, idmuni,municipality,logo) VALUES ('08','0814','Bamble','Bamble.png'),";
+    $sql .= "  ('08','0821','Bø','Boe_Telemark.png'),";
+    $sql .= "  ('08','0817','Drangedal','Drangedal.png'),";
+    $sql .= "  ('08','0831','Fyresdal','Fyresdal.png'),";
+    $sql .= "  ('08','0827','Hjartdal','Hjartdal.png'),";
+    $sql .= "  ('08','0815','Kragerø','Krageroe.png'),";
+    $sql .= "  ('08','0829','Kviteseid','Kviteseid.png'),";
+    $sql .= "  ('08','0830','Nissedal','Nissedal.png'),";
+    $sql .= "  ('08','0819','Nome','Nome.png'),";
+    $sql .= "  ('08','0807','Notodden','Notodden.png'),";
+    $sql .= "  ('08','0805','Porsgrunn','Porsgrunn.png'),";
+    $sql .= "  ('08','0822','Sauherad','Sauherad.png'),";
+    $sql .= "  ('08','0828','Seljord','Seljord.png'),";
+    $sql .= "  ('08','0811','Siljan','Siljan.png'),";
+    $sql .= "  ('08','0806','Skien','Skien.png'),";
+    $sql .= "  ('08','0826','Tinn','Tinn.png'),";
+    $sql .= "  ('08','0833','Tokke','Tokke.png'),";
+    $sql .= "  ('08','0834','Vinje','Vinje.png'), ";
+    $sql .= "  ('08','08','Telemark Fylkeskommune','telemark_fylkeskommune.png') ";
 
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Birkenes','Birkenes.png')";
     $DB->execute($sql);
+}//install_Telemark
 
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Bygland','Bygland.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Bykle','Bykle.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Evje og Hornnes','Evje_og_Hornnes.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Froland','Froland.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Gjerstad','Gjerstad.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Grimstad','Grimstad.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Iveland','Iveland.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Lillesand','Lillesand.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Risør','Risoer.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Tvedestrand','Tvedestrand.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Valle','Valle.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Vegårshei','Vegaarshei.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Åmli','Aamli.png')";
-    $DB->execute($sql);
-}//install_logos_Aust_Agder
-
-function install_logos_Vest_Agder() {
+function install_Aust_Agder() {
     /* Variables    */
     global $DB;
 
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Audnedal','Audnedal.png')";
-    $DB->execute($sql);
+    $sql  = " INSERT INTO {municipality} (idcounty, idmuni,municipality,logo) VALUES ('09','0906','Arendal','Arendal.png'),";
+    $sql .= "  ('09','0928','Birkenes','Birkenes.png'),";
+    $sql .= "  ('09','0938','Bygland','Bygland.png'),";
+    $sql .= "  ('09','0941','Bykle','Bykle.png'),";
+    $sql .= "  ('09','0937','Evje og Hornnes','Evje_og_Hornnes.png'),";
+    $sql .= "  ('09','0919','Froland','Froland.png'),";
+    $sql .= "  ('09','0911','Gjerstad','Gjerstad.png'),";
+    $sql .= "  ('09','0904','Grimstad','Grimstad.png'),";
+    $sql .= "  ('09','0935','Iveland','Iveland.png'),";
+    $sql .= "  ('09','0926','Lillesand','Lillesand.png'),";
+    $sql .= "  ('09','0901','Risør','Risoer.png'),";
+    $sql .= "  ('09','0914','Tvedestrand','Tvedestrand.png'),";
+    $sql .= "  ('09','0940','Valle','Valle.png'),";
+    $sql .= "  ('09','0912','Vegårshei','Vegaarshei.png'),";
+    $sql .= "  ('09','0929','Åmli','Aamli.png'), ";
+    $sql .= "  ('09','09','Aust-Agder Fylkeskommune','aust-agder_fylkeskommune.png') ";
 
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Farsund','Farsund.png')";
     $DB->execute($sql);
+}//install_Aust_Agder
 
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Flekkefjord','Flekkefjord.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Hægebostad','Haegebostad.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Kristiansand','Kristiansand.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Kvinesdal','Kvinesdal.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Lindesnes','Lindesnes.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Lyngdal','Lyngdal.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Mandal','Mandal.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Marnardal','Marnardal.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Sirdal','Sirdal.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Songdalen','Songdalen.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Søgne','Soegne.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Vennesla','Vennesla.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Åseral','Aaseral.png')";
-    $DB->execute($sql);
-}//install_logos_Vest_Agder
-
-function install_logos_Rogaland() {
+function install_Vest_Agder() {
     /* Variables    */
     global $DB;
 
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Bjerkreim','Bjerkreim.png')";
-    $DB->execute($sql);
+    $sql  = " INSERT INTO {municipality} (idcounty, idmuni,municipality,logo) VALUES ('10','1027','Audnedal','Audnedal.png'),";
+    $sql .= "  ('10','1003','Farsund','Farsund.png'),";
+    $sql .= "  ('10','1004','Flekkefjord','Flekkefjord.png'),";
+    $sql .= "  ('10','1034','Hægebostad','Haegebostad.png'),";
+    $sql .= "  ('10','1001','Kristiansand','Kristiansand.png'),";
+    $sql .= "  ('10','1037','Kvinesdal','Kvinesdal.png'),";
+    $sql .= "  ('10','1029','Lindesnes','Lindesnes.png'),";
+    $sql .= "  ('10','1032','Lyngdal','Lyngdal.png'),";
+    $sql .= "  ('10','1002','Mandal','Mandal.png'),";
+    $sql .= "  ('10','1021','Marnardal','Marnardal.png'),";
+    $sql .= "  ('10','1046','Sirdal','Sirdal.png'),";
+    $sql .= "  ('10','1017','Songdalen','Songdalen.png'),";
+    $sql .= "  ('10','1018','Søgne','Soegne.png'),";
+    $sql .= "  ('10','1014','Vennesla','Vennesla.png'),";
+    $sql .= "  ('10','1026','Åseral','Aaseral.png'), ";
+    $sql .= "  ('10','10','Vest-Agder Fylkeskommune','vest-agder_fylkeskommune.png') ";
 
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Bokn','Bokn.png')";
     $DB->execute($sql);
+}//install_Vest_Agder
 
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Eigersund','Eigersund.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Finnøy','Finnoey.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Forsand','Forsand.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Gjesdal','Gjesdal.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Haugesund','Haugesund.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Hjelmeland','Hjelmeland.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Hå','Haa.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Karmøy','Karmoey.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Klepp','Klepp.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Kvitsøy','Kvitsoey.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Lund','Lund.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Randaberg','Randaberg.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Rennesøy','Rennesoey.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Sandnes','Sandnes.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Sauda','Sauda.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Sokndal','Sokndal.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Sola','Sola.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Stavanger','Stavanger.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Strand','Strand.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Suldal','Suldal.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Time','Time.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Tysvær','Tysvaer.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Utsira','Utsira.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Vindafjord','Vindafjord.png')";
-    $DB->execute($sql);
-}//install_logos_Rogaland
-
-function install_logos_Hordaland() {
+function install_Rogaland() {
     /* Variables    */
     global $DB;
 
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Askøy','Askoey.png')";
-    $DB->execute($sql);
+    $sql  = " INSERT INTO {municipality} (idcounty, idmuni,municipality,logo) VALUES ('11','1114','Bjerkreim','Bjerkreim.png'),";
+    $sql .= "  ('11','1145','Bokn','Bokn.png'),";
+    $sql .= "  ('11','1101','Eigersund','Eigersund.png'),";
+    $sql .= "  ('11','1141','Finnøy','Finnoey.png'),";
+    $sql .= "  ('11','1129','Forsand','Forsand.png'),";
+    $sql .= "  ('11','1122','Gjesdal','Gjesdal.png'),";
+    $sql .= "  ('11','1106','Haugesund','Haugesund.png'),";
+    $sql .= "  ('11','1133','Hjelmeland','Hjelmeland.png'),";
+    $sql .= "  ('11','1119','Hå','Haa.png'),";
+    $sql .= "  ('11','1149','Karmøy','Karmoey.png'),";
+    $sql .= "  ('11','1120','Klepp','Klepp.png'),";
+    $sql .= "  ('11','1144','Kvitsøy','Kvitsoey.png'),";
+    $sql .= "  ('11','1112','Lund','Lund.png'),";
+    $sql .= "  ('11','1127','Randaberg','Randaberg.png'),";
+    $sql .= "  ('11','1142','Rennesøy','Rennesoey.png'),";
+    $sql .= "  ('11','1102','Sandnes','Sandnes.png'),";
+    $sql .= "  ('11','1135','Sauda','Sauda.png'),";
+    $sql .= "  ('11','1111','Sokndal','Sokndal.png'),";
+    $sql .= "  ('11','1124','Sola','Sola.png'),";
+    $sql .= "  ('11','1103','Stavanger','Stavanger.png'),";
+    $sql .= "  ('11','1130','Strand','Strand.png'),";
+    $sql .= "  ('11','1134','Suldal','Suldal.png'),";
+    $sql .= "  ('11','1121','Time','Time.png'),";
+    $sql .= "  ('11','1146','Tysvær','Tysvaer.png'),";
+    $sql .= "  ('11','1151','Utsira','Utsira.png'),";
+    $sql .= "  ('11','1160','Vindafjord','Vindafjord.png'), ";
+    $sql .= "  ('11','11','Rogaland Fylkeskommune','rogaland_fylkeskommune.png') ";
 
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Austevoll','Austevoll.png')";
     $DB->execute($sql);
+}//install_Rogaland
 
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Austrheim','Austrheim.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Bergen','Bergen.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Bømlo','Boemlo.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Eidfjord','Eidfjord.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Etne','Etne.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Fedje','Fedje.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Fitjar','Fitjar.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Fjell','Fjell.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Fusa','Fusa.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Granvin','Granvin.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Jondal','Jondal.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Kvam','Kvam.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Kvinnherad','Kvinnherad.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Lindås','Lindaas.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Masfjorden','Masfjorden.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Meland','Meland.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Modalen','Modalen.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Odda','Odda.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Os Hordaland','Os_Hordaland.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Osterøy','Osteroey.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Radøy','Radoey.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Samnanger','Samnanger.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Stord','Stord.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Sund','Sund.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Sveio','Sveio.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Tysnes','Tysnes.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Ullensvang','Ullensvang.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Ulvik','Ulvik.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Vaksdal','Vaksdal.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Voss','Voss.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Øygarden','Oeygarden.png')";
-    $DB->execute($sql);
-}//install_logos_Hordaland
-
-function install_logos_Sogn_og_Fjordane() {
+function install_Hordaland() {
     /* Variables    */
     global $DB;
 
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Askvoll','Askvoll.png')";
-    $DB->execute($sql);
+    $sql  = " INSERT INTO {municipality} (idcounty, idmuni,municipality,logo) VALUES ('12','1247','Askøy','Askoey.png'),";
+    $sql .= "  ('12','1244','Austevoll','Austevoll.png'),";
+    $sql .= "  ('12','1264','Austrheim','Austrheim.png'),";
+    $sql .= "  ('12','1201','Bergen','Bergen.png'),";
+    $sql .= "  ('12','1219','Bømlo','Boemlo.png'),";
+    $sql .= "  ('12','1232','Eidfjord','Eidfjord.png'),";
+    $sql .= "  ('12','1211','Etne','Etne.png'),";
+    $sql .= "  ('12','1265','Fedje','Fedje.png'),";
+    $sql .= "  ('12','1222','Fitjar','Fitjar.png'),";
+    $sql .= "  ('12','1246','Fjell','Fjell.png'),";
+    $sql .= "  ('12','1241','Fusa','Fusa.png'),";
+    $sql .= "  ('12','1234','Granvin','Granvin.png'),";
+    $sql .= "  ('12','1227','Jondal','Jondal.png'),";
+    $sql .= "  ('12','1238','Kvam','Kvam.png'),";
+    $sql .= "  ('12','1224','Kvinnherad','Kvinnherad.png'),";
+    $sql .= "  ('12','1263','Lindås','Lindaas.png'),";
+    $sql .= "  ('12','1266','Masfjorden','Masfjorden.png'),";
+    $sql .= "  ('12','1256','Meland','Meland.png'),";
+    $sql .= "  ('12','1252','Modalen','Modalen.png'),";
+    $sql .= "  ('12','1228','Odda','Odda.png'),";
+    $sql .= "  ('12','1243','Os','Os_Hordaland.png'),";
+    $sql .= "  ('12','1253','Osterøy','Osteroey.png'),";
+    $sql .= "  ('12','1260','Radøy','Radoey.png'),";
+    $sql .= "  ('12','1242','Samnanger','Samnanger.png'),";
+    $sql .= "  ('12','1221','Stord','Stord.png'),";
+    $sql .= "  ('12','1245','Sund','Sund.png'),";
+    $sql .= "  ('12','1216','Sveio','Sveio.png'),";
+    $sql .= "  ('12','1223','Tysnes','Tysnes.png'),";
+    $sql .= "  ('12','1231','Ullensvang','Ullensvang.png'),";
+    $sql .= "  ('12','1233','Ulvik','Ulvik.png'),";
+    $sql .= "  ('12','1251','Vaksdal','Vaksdal.png'),";
+    $sql .= "  ('12','1235','Voss','Voss.png'),";
+    $sql .= "  ('12','1259','Øygarden','Oeygarden.png'), ";
+    $sql .= "  ('12','12','Hordaland Fylkeskommune','hordaland_fylkeskommune.png') ";
 
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Aurland','Aurland.png')";
     $DB->execute($sql);
+}//install_Hordaland
 
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Balestrand','Balestrand.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Bremanger','Bremanger.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Eid','Eid.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Fjaler','Fjaler.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Flora','Flora.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Førde','Foerde.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Gaular','Gaular.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Gloppen','Gloppen.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Gulen','Gulen.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Hornindal','Hornindal.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Hyllestad','Hyllestad.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Høyanger','Hoeyanger.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Jølster','Joelster.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Leikanger','Leikanger.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Luster','Luster.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Lærdal','Laerdal.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Naustdal','Naustdal.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Selje','Selje.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Sogndal','Sogndal.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Solund','Solund.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Stryn','Stryn.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Vik','Vik.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Vågsøy','Vaagsoey.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Årdal','Aardal.png')";
-    $DB->execute($sql);
-}//install_logos_Sogn_og_Fjordane
-
-function install_logos_Møre_og_Romsdal() {
+function install_Sogn_og_Fjordane() {
     /* Variables    */
     global $DB;
 
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Aukra','Aukra.png')";
-    $DB->execute($sql);
+    $sql  = " INSERT INTO {municipality} (idcounty, idmuni,municipality,logo) VALUES ('14','1428','Askvoll','Askvoll.png'),";
+    $sql .= "  ('14','1421','Aurland','Aurland.png'),";
+    $sql .= "  ('14','1418','Balestrand','Balestrand.png'),";
+    $sql .= "  ('14','1438','Bremanger','Bremanger.png'),";
+    $sql .= "  ('14','1443','Eid','Eid.png'),";
+    $sql .= "  ('14','1429','Fjaler','Fjaler.png'),";
+    $sql .= "  ('14','1401','Flora','Flora.png'),";
+    $sql .= "  ('14','1432','Førde','Foerde.png'),";
+    $sql .= "  ('14','1430','Gaular','Gaular.png'),";
+    $sql .= "  ('14','1445','Gloppen','Gloppen.png'),";
+    $sql .= "  ('14','1411','Gulen','Gulen.png'),";
+    $sql .= "  ('14','1444','Hornindal','Hornindal.png'),";
+    $sql .= "  ('14','1413','Hyllestad','Hyllestad.png'),";
+    $sql .= "  ('14','1416','Høyanger','Hoeyanger.png'),";
+    $sql .= "  ('14','1431','Jølster','Joelster.png'),";
+    $sql .= "  ('14','1419','Leikanger','Leikanger.png'),";
+    $sql .= "  ('14','1426','Luster','Luster.png'),";
+    $sql .= "  ('14','1422','Lærdal','Laerdal.png'),";
+    $sql .= "  ('14','1433','Naustdal','Naustdal.png'),";
+    $sql .= "  ('14','1441','Selje','Selje.png'),";
+    $sql .= "  ('14','1420','Sogndal','Sogndal.png'),";
+    $sql .= "  ('14','1412','Solund','Solund.png'),";
+    $sql .= "  ('14','1449','Stryn','Stryn.png'),";
+    $sql .= "  ('14','1417','Vik','Vik.png'),";
+    $sql .= "  ('14','1439','Vågsøy','Vaagsoey.png'),";
+    $sql .= "  ('14','1424','Årdal','Aardal.png'), ";
+    $sql .= "  ('14','14','Sogn og Fjordane Fylkeskommune','sogn_og_fjordane_fylkeskommune.png') ";
 
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Aure','Tustna_Aure.png')";
     $DB->execute($sql);
+}//install_Sogn_og_Fjordane
 
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Averøy','Averoey.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Eide','Eide.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Fræna','Fraena.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Giske','Giske.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Gjemnes','Gjemnes.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Halsa','Halsa.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Haram','Haram.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Hareid','Hareid.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Herøy i Møre og Romsdal','Heroey_Moere_og_Romsdal.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Kristiansund','Kristiansund_vapen.svg')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Midsund','Midsund.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Molde','Molde.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Nesset','Nesset.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Norddal','Norddal.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Rauma','Rauma.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Rindal','Rindal.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Sande i Møre og Romsdal','Sande_Moere_og_Romsdal.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Sandøy','Sandoey.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Skodje','Skodje.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Smøla','Smoela.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Stordal','Stordal.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Stranda','Stranda.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Sula','Sula.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Sunndal','Sunndal.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Surnadal','Surnadal.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Sykkylven','Sykkylven.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Tingvoll','Tingvoll.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Ulstein','Ulstein.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Vanylven','Vanylven.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Vestnes','Vestnes.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Volda','Volda.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Ørskog','Orskog.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Ørsta','Orsta.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Ålesund','Aalesund.png')";
-    $DB->execute($sql);
-}//install_logos_Møre_og_Romsdal
-
-function install_logos_Sør_Trøndelag() {
+function install_Møre_og_Romsdal() {
     /* Variables    */
     global $DB;
 
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Agdenes','Agdenes.png')";
-    $DB->execute($sql);
+    $sql  = " INSERT INTO {municipality} (idcounty, idmuni,municipality,logo) VALUES ('15','1547','Aukra','Aukra.png'),";
+    $sql .= "  ('15','1576','Aure','Tustna_Aure.png'),";
+    $sql .= "  ('15','1554','Averøy','Averoey.png'),";
+    $sql .= "  ('15','1551','Eide','Eide.png'),";
+    $sql .= "  ('15','1548','Fræna','Fraena.png'),";
+    $sql .= "  ('15','1532','Giske','Giske.png'),";
+    $sql .= "  ('15','1557','Gjemnes','Gjemnes.png'),";
+    $sql .= "  ('15','1571','Halsa','Halsa.png'),";
+    $sql .= "  ('15','1534','Haram','Haram.png'),";
+    $sql .= "  ('15','1517','Hareid','Hareid.png'),";
+    $sql .= "  ('15','1515','Herøy','Heroey_Moere_og_Romsdal.png'),";
+    $sql .= "  ('15','1505','Kristiansund','Kristiansund_vapen.svg'),";
+    $sql .= "  ('15','1545','Midsund','Midsund.png'),";
+    $sql .= "  ('15','1502','Molde','Molde.png'),";
+    $sql .= "  ('15','1543','Nesset','Nesset.png'),";
+    $sql .= "  ('15','1524','Norddal','Norddal.png'),";
+    $sql .= "  ('15','1539','Rauma','Rauma.png'),";
+    $sql .= "  ('15','1567','Rindal','Rindal.png'),";
+    $sql .= "  ('15','1514','Sande','Sande_Moere_og_Romsdal.png'),";
+    $sql .= "  ('15','1546','Sandøy','Sandoey.png'),";
+    $sql .= "  ('15','1529','Skodje','Skodje.png'),";
+    $sql .= "  ('15','1573','Smøla','Smoela.png'),";
+    $sql .= "  ('15','1526','Stordal','Stordal.png'),";
+    $sql .= "  ('15','1525','Stranda','Stranda.png'),";
+    $sql .= "  ('15','1531','Sula','Sula.png'),";
+    $sql .= "  ('15','1563','Sunndal','Sunndal.png'),";
+    $sql .= "  ('15','1566','Surnadal','Surnadal.png'),";
+    $sql .= "  ('15','1528','Sykkylven','Sykkylven.png'),";
+    $sql .= "  ('15','1560','Tingvoll','Tingvoll.png'),";
+    $sql .= "  ('15','1516','Ulstein','Ulstein.png'),";
+    $sql .= "  ('15','1511','Vanylven','Vanylven.png'),";
+    $sql .= "  ('15','1535','Vestnes','Vestnes.png'),";
+    $sql .= "  ('15','1519','Volda','Volda.png'),";
+    $sql .= "  ('15','1523','Ørskog','Orskog.png'),";
+    $sql .= "  ('15','1520','Ørsta','Orsta.png'),";
+    $sql .= "  ('15','1504','Ålesund','Aalesund.png'), ";
+    $sql .= "  ('15','15','Møre og Romsdal Fylkeskommune','more_og_romsdal_fylkeskommune.png') ";
 
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Bjugn','Bjugn.png')";
     $DB->execute($sql);
+}//install_Møre_og_Romsdal
 
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Frøya','Froeya.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Hemne','Hemne.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Hitra','Hitra.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Holtålen','Holtaalen.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Klæbu','Klaebu.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Malvik','Malvik.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Meldal','Meldal.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Melhus','Melhus.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Midtre Gauldal','Midtre_Gauldal.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Oppdal','Oppdal.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Orkdal','Orkdal.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Osen','Osen.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Rennebu','Rennebu.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Rissa','Rissa.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Roan','Roan.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Røros','Roeros.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Selbu','Selbu.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Skaun','Skaun.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Snillfjord','Snillfjord.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Trondheim','Trondheim.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Tydal','Tydal.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Ørland','Oerland.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Åfjord','Aafjord.png')";
-    $DB->execute($sql);
-}//install_logos_Sør_Trøndelag
-
-function install_logos_Nord_Trøndelag() {
+function install_Sør_Trøndelag() {
     /* Variables    */
     global $DB;
 
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Flatanger','Flatanger.png')";
-    $DB->execute($sql);
+    $sql  = " INSERT INTO {municipality} (idcounty, idmuni,municipality,logo) VALUES ('16','1622','Agdenes','Agdenes.png'),";
+    $sql .= "  ('16','1627','Bjugn','Bjugn.png'),";
+    $sql .= "  ('16','1620','Frøya','Froeya.png'),";
+    $sql .= "  ('16','1612','Hemne','Hemne.png'),";
+    $sql .= "  ('16','1617','Hitra','Hitra.png'),";
+    $sql .= "  ('16','1644','Holtålen','Holtaalen.png'),";
+    $sql .= "  ('16','1662','Klæbu','Klaebu.png'),";
+    $sql .= "  ('16','1663','Malvik','Malvik.png'),";
+    $sql .= "  ('16','1636','Meldal','Meldal.png'),";
+    $sql .= "  ('16','1653','Melhus','Melhus.png'),";
+    $sql .= "  ('16','1648','Midtre Gauldal','Midtre_Gauldal.png'),";
+    $sql .= "  ('16','1634','Oppdal','Oppdal.png'),";
+    $sql .= "  ('16','1638','Orkdal','Orkdal.png'),";
+    $sql .= "  ('16','1633','Osen','Osen.png'),";
+    $sql .= "  ('16','1635','Rennebu','Rennebu.png'),";
+    $sql .= "  ('16','1624','Rissa','Rissa.png'),";
+    $sql .= "  ('16','1632','Roan','Roan.png'),";
+    $sql .= "  ('16','1640','Røros','Roeros.png'),";
+    $sql .= "  ('16','1664','Selbu','Selbu.png'),";
+    $sql .= "  ('16','1657','Skaun','Skaun.png'),";
+    $sql .= "  ('16','1613','Snillfjord','Snillfjord.png'),";
+    $sql .= "  ('16','1601','Trondheim','Trondheim.png'),";
+    $sql .= "  ('16','1665','Tydal','Tydal.png'),";
+    $sql .= "  ('16','1621','Ørland','Oerland.png'),";
+    $sql .= "  ('16','1630','Åfjord','Aafjord.png'), ";
+    $sql .= "  ('16','16','Sør-Trøndelag Fylkeskommune','sor-tronderlag_fylkeskommune.png') ";
 
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Fosnes','Fosnes.png')";
     $DB->execute($sql);
+}//install_Sør_Trøndelag
 
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Frosta','Frosta.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Grong','Grong.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Høylandet','Hoeylandet.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Inderøy','Inderoey.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Leka','Leka.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Leksvik','Leksvik.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Levanger','Levanger.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Lierne','Lierne.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Meråker','Meraaker.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Namdalseid','Namdalseid.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Namsos','Namsos.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Namsskogan','Namsskogan.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Nærøy','Naeroey.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Overhalla','Overhalla.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Røyrvik','Roeyrvik.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Snåsa','Snaasa.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Steinkjer','Steinkjer.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Stjørdal','Stjoerdal.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Verdal','Verdal.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Verran','Verran.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Vikna','Vikna.png')";
-    $DB->execute($sql);
-}//install_logos_Nord_Trøndelag
-
-function install_logos_Nordland() {
+function install_Nord_Trøndelag() {
     /* Variables    */
     global $DB;
 
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Alstahaug','Alstahaug.png')";
-    $DB->execute($sql);
+    $sql  = " INSERT INTO {municipality} (idcounty, idmuni,municipality,logo) VALUES ('17','1749','Flatanger','Flatanger.png'),";
+    $sql .= "  ('17','1748','Fosnes','Fosnes.png'),";
+    $sql .= "  ('17','1717','Frosta','Frosta.png'),";
+    $sql .= "  ('17','1742','Grong','Grong.png'),";
+    $sql .= "  ('17','1743','Høylandet','Hoeylandet.png'),";
+    $sql .= "  ('17','1756','Inderøy','Inderoey.png'),";
+    $sql .= "  ('17','1755','Leka','Leka.png'),";
+    $sql .= "  ('17','1718','Leksvik','Leksvik.png'),";
+    $sql .= "  ('17','1719','Levanger','Levanger.png'),";
+    $sql .= "  ('17','1738','Lierne','Lierne.png'),";
+    $sql .= "  ('17','1711','Meråker','Meraaker.png'),";
+    $sql .= "  ('17','1725','Namdalseid','Namdalseid.png'),";
+    $sql .= "  ('17','1703','Namsos','Namsos.png'),";
+    $sql .= "  ('17','1740','Namsskogan','Namsskogan.png'),";
+    $sql .= "  ('17','1751','Nærøy','Naeroey.png'),";
+    $sql .= "  ('17','1744','Overhalla','Overhalla.png'),";
+    $sql .= "  ('17','1739','Røyrvik','Roeyrvik.png'),";
+    $sql .= "  ('17','1736','Snåsa','Snaasa.png'),";
+    $sql .= "  ('17','1702','Steinkjer','Steinkjer.png'),";
+    $sql .= "  ('17','1714','Stjørdal','Stjoerdal.png'),";
+    $sql .= "  ('17','1721','Verdal','Verdal.png'),";
+    $sql .= "  ('17','1724','Verran','Verran.png'),";
+    $sql .= "  ('17','1750','Vikna','Vikna.png'), ";
+    $sql .= "  ('17','17','Nord-Trøndelag Fylkeskommune','nord-tronderlag_fylkeskommune.png') ";
 
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Andøy','Andoey.png')";
     $DB->execute($sql);
+}//install_Nord_Trøndelag
 
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Ballangen','Ballangen.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Beiarn','Beiarn.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Bindal','Bindal.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Bodø','Bodo.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Brønnøy','Broennoey.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Bø Nordland','Boe_Nordland.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Dønna','Doenna.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Evenes','Evenes.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Fauske','Fauske.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Flakstad','Flakstad.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Gildeskål','Gildeskaal.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Grane','Grane.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Hadsel','Hadsel.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Hamarøy','Hamaroey.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Hattfjelldal','Hattfjelldal.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Hemnes','Hemnes.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Herøy i Nordland','Heroey_Nordland.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Leirfjord','Leirfjord.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Lurøy','Luroey.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Lødingen','Loedingen.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Meløy','Meloey.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Moskenes','Moskenes.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Narvik','Narvik.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Nesna','Nesna.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Rana','Rana.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Rødøy','Roedoey.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Røst','Roest.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Saltdal','Saltdal.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Sortland','Sortland.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Steigen','Steigen.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Sømna','Soemna.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Sørfold','Soerfold.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Tjeldsund','Tjeldsund.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Træna','Traena.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Tysfjord','Tysfjord.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Vefsn','Vefsn.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Vega','Vega.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Vestvågøy','Vestvaagoey.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Vevelstad','Vevelstad.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Værøy','Vaeroey.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Vågan','Vaagan.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Øksnes','Oeksnes.png')";
-    $DB->execute($sql);
-}//install_logos_Nordland
-
-function install_logos_Troms() {
+function install_Nordland() {
     /* Variables    */
     global $DB;
 
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Balsfjord','Balsfjord.png')";
-    $DB->execute($sql);
+    $sql  = " INSERT INTO {municipality} (idcounty, idmuni,municipality,logo) VALUES ('18','1820','Alstahaug','Alstahaug.png'),";
+    $sql .= "  ('18','1871','Andøy','Andoey.png'),";
+    $sql .= "  ('18','1854','Ballangen','Ballangen.png'),";
+    $sql .= "  ('18','1839','Beiarn','Beiarn.png'),";
+    $sql .= "  ('18','1811','Bindal','Bindal.png'),";
+    $sql .= "  ('18','1804','Bodø','Bodo.png'),";
+    $sql .= "  ('18','1813','Brønnøy','Broennoey.png'),";
+    $sql .= "  ('18','1867','Bø','Boe_Nordland.png'),";
+    $sql .= "  ('18','1827','Dønna','Doenna.png'),";
+    $sql .= "  ('18','1853','Evenes','Evenes.png'),";
+    $sql .= "  ('18','1841','Fauske','Fauske.png'),";
+    $sql .= "  ('18','1859','Flakstad','Flakstad.png'),";
+    $sql .= "  ('18','1838','Gildeskål','Gildeskaal.png'),";
+    $sql .= "  ('18','1825','Grane','Grane.png'),";
+    $sql .= "  ('18','1866','Hadsel','Hadsel.png'),";
+    $sql .= "  ('18','1849','Hamarøy','Hamaroey.png'),";
+    $sql .= "  ('18','1826','Hattfjelldal','Hattfjelldal.png'),";
+    $sql .= "  ('18','1832','Hemnes','Hemnes.png'),";
+    $sql .= "  ('18','1818','Herøy','Heroey_Nordland.png'),";
+    $sql .= "  ('18','1822','Leirfjord','Leirfjord.png'),";
+    $sql .= "  ('18','1834','Lurøy','Luroey.png'),";
+    $sql .= "  ('18','1851','Lødingen','Loedingen.png'),";
+    $sql .= "  ('18','1837','Meløy','Meloey.png'),";
+    $sql .= "  ('18','1874','Moskenes','Moskenes.png'),";
+    $sql .= "  ('18','1805','Narvik','Narvik.png'),";
+    $sql .= "  ('18','1828','Nesna','Nesna.png'),";
+    $sql .= "  ('18','1833','Rana','Rana.png'),";
+    $sql .= "  ('18','1836','Rødøy','Roedoey.png'),";
+    $sql .= "  ('18','1856','Røst','Roest.png'),";
+    $sql .= "  ('18','1840','Saltdal','Saltdal.png'),";
+    $sql .= "  ('18','1870','Sortland','Sortland.png'),";
+    $sql .= "  ('18','1848','Steigen','Steigen.png'),";
+    $sql .= "  ('18','1812','Sømna','Soemna.png'),";
+    $sql .= "  ('18','1845','Sørfold','Soerfold.png'),";
+    $sql .= "  ('18','1852','Tjeldsund','Tjeldsund.png'),";
+    $sql .= "  ('18','1835','Træna','Traena.png'),";
+    $sql .= "  ('18','1850','Tysfjord','Tysfjord.png'),";
+    $sql .= "  ('18','1824','Vefsn','Vefsn.png'),";
+    $sql .= "  ('18','1815','Vega','Vega.png'),";
+    $sql .= "  ('18','1860','Vestvågøy','Vestvaagoey.png'),";
+    $sql .= "  ('18','1816','Vevelstad','Vevelstad.png'),";
+    $sql .= "  ('18','1857','Værøy','Vaeroey.png'),";
+    $sql .= "  ('18','1865','Vågan','Vaagan.png'),";
+    $sql .= "  ('18','1868','Øksnes','Oeksnes.png'), ";
+    $sql .= "  ('18','18','Nordland Fylkeskommune','nordland_fylkeskommune.png') ";
 
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Bardu','Bardu.png')";
     $DB->execute($sql);
+}//install_Nordland
 
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Berg','Berg.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Dyrøy','Dyroey.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Gratangen','Gratangen.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Harstad','Harstad.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Ibestad','Ibestad.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Karlsøy','Karlsoey.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Kvæfjord','Kvaefjord.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Kvænangen','Kvaenangen.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Kåfjord','Kaafjord.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Lavangen','Lavangen.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Lenvik','Lenvik.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Lyngen','Lyngen.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Målselv','Maalselv.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Nordreisa','Nordreisa.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Salangen','Salangen.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Skjervøy','Skjervoey.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Skånland','Skaanland.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Storfjord','Storfjord.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Sørreisa','Soerreisa.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Torsken','Torsken.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Tranøy','Tranoey.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Tromsø','Tromsoe.png')";
-    $DB->execute($sql);
-}//install_logos_Troms
-
-function install_logos_Finnmark() {
+function install_Troms() {
     /* Variables    */
     global $DB;
 
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Alta','Alta.png')";
-    $DB->execute($sql);
+    $sql  = " INSERT INTO {municipality} (idcounty, idmuni,municipality,logo) VALUES ('19','1933','Balsfjord','Balsfjord.png'),";
+    $sql .= "  ('19','1922','Bardu','Bardu.png'),";
+    $sql .= "  ('19','1929','Berg','Berg.png'),";
+    $sql .= "  ('19','1926','Dyrøy','Dyroey.png'),";
+    $sql .= "  ('19','1919','Gratangen','Gratangen.png'),";
+    $sql .= "  ('19','1903','Harstad','Harstad.png'),";
+    $sql .= "  ('19','1917','Ibestad','Ibestad.png'),";
+    $sql .= "  ('19','1936','Karlsøy','Karlsoey.png'),";
+    $sql .= "  ('19','1911','Kvæfjord','Kvaefjord.png'),";
+    $sql .= "  ('19','1943','Kvænangen','Kvaenangen.png'),";
+    $sql .= "  ('19','1940','Kåfjord','Kaafjord.png'),";
+    $sql .= "  ('19','1920','Lavangen','Lavangen.png'),";
+    $sql .= "  ('19','1931','Lenvik','Lenvik.png'),";
+    $sql .= "  ('19','1938','Lyngen','Lyngen.png'),";
+    $sql .= "  ('19','1924','Målselv','Maalselv.png'),";
+    $sql .= "  ('19','1942','Nordreisa','Nordreisa.png'),";
+    $sql .= "  ('19','1923','Salangen','Salangen.png'),";
+    $sql .= "  ('19','1941','Skjervøy','Skjervoey.png'),";
+    $sql .= "  ('19','1913','Skånland','Skaanland.png'),";
+    $sql .= "  ('19','1939','Storfjord','Storfjord.png'),";
+    $sql .= "  ('19','1925','Sørreisa','Soerreisa.png'),";
+    $sql .= "  ('19','1928','Torsken','Torsken.png'),";
+    $sql .= "  ('19','1927','Tranøy','Tranoey.png'),";
+    $sql .= "  ('19','1902','Tromsø','Tromsoe.png'),";
+    $sql .= "  ('19','19','Troms Fylkeskommune','troms_fylkeskommune.png') ";
 
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Berlevåg','Berlevaag.png')";
     $DB->execute($sql);
+}//install_Troms
 
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Båtsfjord','Baatsfjord.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Gamvik','Gamvik.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Hammerfest','Hammerfest_-_kommunevaapen.svg')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Hasvik','Hasvik.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Karasjok','Karasjok.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Kautokeino','Kautokeino.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Kvalsund','Kvalsund.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Lebesby','Lebesby.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Loppa','Loppa.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Måsøy','Maasoey.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Nesseby','Nesseby.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Nordkapp','Nordkapp.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Porsanger','Porsanger.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Sør-Varanger','Soer-Varanger.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Tana','Tana.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Vadsø','Vadsoe.png')";
-    $DB->execute($sql);
-
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Vardø','Vardoe.png')";
-    $DB->execute($sql);
-}//install_logos_Finnmark
-
-function install_logos_Svalbard() {
+function install_Finnmark() {
     /* Variables    */
     global $DB;
 
-    $sql = " INSERT INTO {muni_logos} (municipality,logo) VALUES ('Longyearbyen lokalstyre','Svalbard.png')";
+    $sql  = " INSERT INTO {municipality} (idcounty, idmuni,municipality,logo) VALUES ('20','2012','Alta','Alta.png'),";
+    $sql .= "  ('20','2024','Berlevåg','Berlevaag.png'),";
+    $sql .= "  ('20','2028','Båtsfjord','Baatsfjord.png'),";
+    $sql .= "  ('20','2023','Gamvik','Gamvik.png'),";
+    $sql .= "  ('20','2004','Hammerfest','Hammerfest_-_kommunevaapen.svg'),";
+    $sql .= "  ('20','2015','Hasvik','Hasvik.png'),";
+    $sql .= "  ('20','2021','Karasjok','Karasjok.png'),";
+    $sql .= "  ('20','2011','Kautokeino','Kautokeino.png'),";
+    $sql .= "  ('20','2017','Kvalsund','Kvalsund.png'),";
+    $sql .= "  ('20','2022','Lebesby','Lebesby.png'),";
+    $sql .= "  ('20','2014','Loppa','Loppa.png'),";
+    $sql .= "  ('20','2018','Måsøy','Maasoey.png'),";
+    $sql .= "  ('20','2027','Nesseby','Nesseby.png'),";
+    $sql .= "  ('20','2019','Nordkapp','Nordkapp.png'),";
+    $sql .= "  ('20','2020','Porsanger','Porsanger.png'),";
+    $sql .= "  ('20','2030','Sør-Varanger','Soer-Varanger.png'),";
+    $sql .= "  ('20','2025','Tana','Tana.png'),";
+    $sql .= "  ('20','2003','Vadsø','Vadsoe.png'),";
+    $sql .= "  ('20','2002','Vardø','Vardoe.png'), ";
+    $sql .= "  ('20','20','Finnmark Fylkeskommune','finnmark_fylkeskommune.png')";
+
     $DB->execute($sql);
-}//install_logos_Svalbard
+}//install_Finnmark
+
+function install_Svalbard() {
+    /* Variables    */
+    global $DB;
+
+    $sql = " INSERT INTO {municipality} (idcounty, idmuni,municipality,logo) VALUES ('21','2111','Longyearbyen lokalstyre','Svalbard.png')";
+
+    $DB->execute($sql);
+}//install_Svalbard

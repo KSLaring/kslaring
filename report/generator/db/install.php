@@ -313,7 +313,8 @@ function install_Østfold() {
     $sql .= "  ('01','0127','Skiptvet','Skiptvet.png'),";
     $sql .= "  ('01','0123','Spydeberg','Spydeberg.png'),";
     $sql .= "  ('01','0122','Trøgstad','Troegstad.png'),";
-    $sql .= "  ('01','0137','Våler','Vaaler_Oestfold.png') ";
+    $sql .= "  ('01','0137','Våler','Vaaler_Oestfold.png'),";
+    $sql .= "  ('01','01','Østfold Fylkeskommune','ostfold_fylkeskommune.png') ";
 
     $DB->execute($sql);
 }//install_Østfold
@@ -343,7 +344,8 @@ function install_Akershus() {
     $sql .= "  ('02','0226','Sørum','Soerum.png'),";
     $sql .= "  ('02','0235','Ullensaker','Ullensaker.png'),";
     $sql .= "  ('02','0211','Vestby','Vestby.png'),";
-    $sql .= "  ('02','0214','Ås','Aas.png')";
+    $sql .= "  ('02','0214','Ås','Aas.png'), ";
+    $sql .= "  ('02','02','Akershus Fylkeskommune','Akershus_fylkeskommune.png') ";
 
     $DB->execute($sql);
 }//install_Akershus
@@ -352,7 +354,8 @@ function install_Oslo() {
     /* Variables    */
     global $DB;
 
-    $sql = " INSERT INTO {municipality} (idcounty, idmuni,municipality,logo) VALUES ('03','0301','Oslo','Oslo.png')";
+    $sql = " INSERT INTO {municipality} (idcounty, idmuni,municipality,logo) VALUES ('03','0301','Oslo','Oslo.png'), ";
+    $sql .= " ('03','03','Oslo Fylkeskommune','oslo_fylkeskommune.png') ";
 
     $DB->execute($sql);
 }//install_Oslo
@@ -382,7 +385,8 @@ function install_Hedmark() {
     $sql .= "  ('04','0437','Tynset','Tynset.png'),";
     $sql .= "  ('04','0426','Våler','Vaaler_Hedmark.png'),";
     $sql .= "  ('04','0429','Åmot','Aamot.png'),";
-    $sql .= "  ('04','0425','Åsnes','Aasnes.png')";
+    $sql .= "  ('04','0425','Åsnes','Aasnes.png'), ";
+    $sql .= "  ('04','04','Hedmark Fylkeskommune','hedmark_fylkeskommune.png') ";
 
     $DB->execute($sql);
 }//install_Hedmark
@@ -416,7 +420,8 @@ function install_Oppland() {
     $sql .= "  ('05','0515','Vågå','Vaagaa.png'),";
     $sql .= "  ('05','0528','Østre Toten','Oestre_Toten.png'),";
     $sql .= "  ('05','0521','Øyer','Oeyer.png'),";
-    $sql .= "  ('05','0544','Øystre Slidre','Oeystre_Slidre.png')";
+    $sql .= "  ('05','0544','Øystre Slidre','Oeystre_Slidre.png'), ";
+    $sql .= "  ('05','05','Oppland Fylkeskommune','oppland_fylkeskommune.png') ";
 
     $DB->execute($sql);
 }//install_Oppland
@@ -445,7 +450,8 @@ function install_Buskerud() {
     $sql .= "  ('06','0627','Røyken','Roeyken.png'),";
     $sql .= "  ('06','0621','Sigdal','Sigdal.png'),";
     $sql .= "  ('06','0624','Øvre Eiker','Oevre_Eiker.png'),";
-    $sql .= "  ('06','0619','Ål','Aal.png')";
+    $sql .= "  ('06','0619','Ål','Aal.png') , ";
+    $sql .= "  ('06','06','Buskerud Fylkeskommune','buskerud_fylkeskommune.png') ";
 
     $DB->execute($sql);
 }//install_Buskerud
@@ -467,7 +473,8 @@ function install_Vestfold() {
     $sql .= "  ('07','0720','Stokke','Stokke.png'),";
     $sql .= "  ('07','0711','Svelvik','Svelvik.png'),";
     $sql .= "  ('07','0723','Tjøme','Tjoeme.png'),";
-    $sql .= "  ('07','0704','Tønsberg','Toensberg.png')";
+    $sql .= "  ('07','0704','Tønsberg','Toensberg.png'), ";
+    $sql .= "  ('07','07','Vestfold Fylkeskommune','vestfold_fylkeskommune.png') ";
 
     $DB->execute($sql);
 }//install_Vestfold
@@ -493,7 +500,8 @@ function install_Telemark() {
     $sql .= "  ('08','0806','Skien','Skien.png'),";
     $sql .= "  ('08','0826','Tinn','Tinn.png'),";
     $sql .= "  ('08','0833','Tokke','Tokke.png'),";
-    $sql .= "  ('08','0834','Vinje','Vinje.png')";
+    $sql .= "  ('08','0834','Vinje','Vinje.png'), ";
+    $sql .= "  ('08','08','Telemark Fylkeskommune','telemark_fylkeskommune.png') ";
 
     $DB->execute($sql);
 }//install_Telemark
@@ -516,7 +524,8 @@ function install_Aust_Agder() {
     $sql .= "  ('09','0914','Tvedestrand','Tvedestrand.png'),";
     $sql .= "  ('09','0940','Valle','Valle.png'),";
     $sql .= "  ('09','0912','Vegårshei','Vegaarshei.png'),";
-    $sql .= "  ('09','0929','Åmli','Aamli.png')";
+    $sql .= "  ('09','0929','Åmli','Aamli.png'), ";
+    $sql .= "  ('09','09','Aust-Agder Fylkeskommune','aust-agder_fylkeskommune.png') ";
 
     $DB->execute($sql);
 }//install_Aust_Agder
@@ -539,7 +548,8 @@ function install_Vest_Agder() {
     $sql .= "  ('10','1017','Songdalen','Songdalen.png'),";
     $sql .= "  ('10','1018','Søgne','Soegne.png'),";
     $sql .= "  ('10','1014','Vennesla','Vennesla.png'),";
-    $sql .= "  ('10','1026','Åseral','Aaseral.png')";
+    $sql .= "  ('10','1026','Åseral','Aaseral.png'), ";
+    $sql .= "  ('10','10','Vest-Agder Fylkeskommune','vest-agder_fylkeskommune.png') ";
 
     $DB->execute($sql);
 }//install_Vest_Agder
@@ -573,7 +583,8 @@ function install_Rogaland() {
     $sql .= "  ('11','1121','Time','Time.png'),";
     $sql .= "  ('11','1146','Tysvær','Tysvaer.png'),";
     $sql .= "  ('11','1151','Utsira','Utsira.png'),";
-    $sql .= "  ('11','1160','Vindafjord','Vindafjord.png')";
+    $sql .= "  ('11','1160','Vindafjord','Vindafjord.png'), ";
+    $sql .= "  ('11','11','Rogaland Fylkeskommune','rogaland_fylkeskommune.png') ";
 
     $DB->execute($sql);
 }//install_Rogaland
@@ -614,7 +625,8 @@ function install_Hordaland() {
     $sql .= "  ('12','1233','Ulvik','Ulvik.png'),";
     $sql .= "  ('12','1251','Vaksdal','Vaksdal.png'),";
     $sql .= "  ('12','1235','Voss','Voss.png'),";
-    $sql .= "  ('12','1259','Øygarden','Oeygarden.png')";
+    $sql .= "  ('12','1259','Øygarden','Oeygarden.png'), ";
+    $sql .= "  ('12','12','Hordaland Fylkeskommune','hordaland_fylkeskommune.png') ";
 
     $DB->execute($sql);
 }//install_Hordaland
@@ -648,7 +660,8 @@ function install_Sogn_og_Fjordane() {
     $sql .= "  ('14','1449','Stryn','Stryn.png'),";
     $sql .= "  ('14','1417','Vik','Vik.png'),";
     $sql .= "  ('14','1439','Vågsøy','Vaagsoey.png'),";
-    $sql .= "  ('14','1424','Årdal','Aardal.png')";
+    $sql .= "  ('14','1424','Årdal','Aardal.png'), ";
+    $sql .= "  ('14','14','Sogn og Fjordane Fylkeskommune','sogn_og_fjordane_fylkeskommune.png') ";
 
     $DB->execute($sql);
 }//install_Sogn_og_Fjordane
@@ -692,7 +705,8 @@ function install_Møre_og_Romsdal() {
     $sql .= "  ('15','1519','Volda','Volda.png'),";
     $sql .= "  ('15','1523','Ørskog','Orskog.png'),";
     $sql .= "  ('15','1520','Ørsta','Orsta.png'),";
-    $sql .= "  ('15','1504','Ålesund','Aalesund.png')";
+    $sql .= "  ('15','1504','Ålesund','Aalesund.png'), ";
+    $sql .= "  ('15','15','Møre og Romsdal Fylkeskommune','more_og_romsdal_fylkeskommune.png') ";
 
     $DB->execute($sql);
 }//install_Møre_og_Romsdal
@@ -725,7 +739,8 @@ function install_Sør_Trøndelag() {
     $sql .= "  ('16','1601','Trondheim','Trondheim.png'),";
     $sql .= "  ('16','1665','Tydal','Tydal.png'),";
     $sql .= "  ('16','1621','Ørland','Oerland.png'),";
-    $sql .= "  ('16','1630','Åfjord','Aafjord.png')";
+    $sql .= "  ('16','1630','Åfjord','Aafjord.png'), ";
+    $sql .= "  ('16','16','Sør-Trøndelag Fylkeskommune','sor-tronderlag_fylkeskommune.png') ";
 
     $DB->execute($sql);
 }//install_Sør_Trøndelag
@@ -756,7 +771,8 @@ function install_Nord_Trøndelag() {
     $sql .= "  ('17','1714','Stjørdal','Stjoerdal.png'),";
     $sql .= "  ('17','1721','Verdal','Verdal.png'),";
     $sql .= "  ('17','1724','Verran','Verran.png'),";
-    $sql .= "  ('17','1750','Vikna','Vikna.png')";
+    $sql .= "  ('17','1750','Vikna','Vikna.png'), ";
+    $sql .= "  ('17','17','Nord-Trøndelag Fylkeskommune','nord-tronderlag_fylkeskommune.png') ";
 
     $DB->execute($sql);
 }//install_Nord_Trøndelag
@@ -808,7 +824,8 @@ function install_Nordland() {
     $sql .= "  ('18','1816','Vevelstad','Vevelstad.png'),";
     $sql .= "  ('18','1857','Værøy','Vaeroey.png'),";
     $sql .= "  ('18','1865','Vågan','Vaagan.png'),";
-    $sql .= "  ('18','1868','Øksnes','Oeksnes.png')";
+    $sql .= "  ('18','1868','Øksnes','Oeksnes.png'), ";
+    $sql .= "  ('18','18','Nordland Fylkeskommune','nordland_fylkeskommune.png') ";
 
     $DB->execute($sql);
 }//install_Nordland
@@ -840,7 +857,8 @@ function install_Troms() {
     $sql .= "  ('19','1925','Sørreisa','Soerreisa.png'),";
     $sql .= "  ('19','1928','Torsken','Torsken.png'),";
     $sql .= "  ('19','1927','Tranøy','Tranoey.png'),";
-    $sql .= "  ('19','1902','Tromsø','Tromsoe.png')";
+    $sql .= "  ('19','1902','Tromsø','Tromsoe.png'),";
+    $sql .= "  ('19','19','Troms Fylkeskommune','troms_fylkeskommune.png') ";
 
     $DB->execute($sql);
 }//install_Troms
@@ -867,7 +885,8 @@ function install_Finnmark() {
     $sql .= "  ('20','2030','Sør-Varanger','Soer-Varanger.png'),";
     $sql .= "  ('20','2025','Tana','Tana.png'),";
     $sql .= "  ('20','2003','Vadsø','Vadsoe.png'),";
-    $sql .= "  ('20','2002','Vardø','Vardoe.png')";
+    $sql .= "  ('20','2002','Vardø','Vardoe.png'), ";
+    $sql .= "  ('20','20','Finnmark Fylkeskommune','finnmark_fylkeskommune.png')";
 
     $DB->execute($sql);
 }//install_Finnmark

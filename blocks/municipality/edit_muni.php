@@ -13,8 +13,9 @@
 
 require_once('../../config.php');
 require_once('edit_muni_form.php');
-require('municipalitylib.php');
-
+require_once('municipalitylib.php');
+require_once($CFG->dirroot.'/user/profile/lib.php');
+require_once($CFG->dirroot . '/user/profile/field/municipality/field.class.php');
 
 require_login();
 
@@ -32,24 +33,35 @@ $PAGE->set_heading($SITE->fullname);
 
 $PAGE->verify_https_required();
 
-/* SHOW FORM */
-$form = new municipality_block_form(null);
-if ($form->is_cancelled()) {
-    $_POST = array();
-    redirect($CFG->wwwroot);
-}else if ($data = $form->get_data()){
-    /* Insert the Municipality to the user profile */
-    Municipality::municipality_InsertMunicipality_UserProfile($USER->id,$data->sel_muni);
+/* Check if the Municpality User Profile is installed   */
+$exits_MunicipalityProfile = Municipality::ExistsMunicipality_Profile();
+if ($exits_MunicipalityProfile) {
+    /* SHOW FORM */
+    $form = new municipality_block_form(null);
+    if ($form->is_cancelled()) {
+        $_POST = array();
+        redirect($CFG->wwwroot);
+    }else if ($data = $form->get_data()){
+        // Save custom profile fields data.
+        profile_save_data($data);
 
-    $_POST = array();
-    redirect($CFG->wwwroot);
-}//if_else
+        $_POST = array();
+        redirect($CFG->wwwroot);
+    }//if_else
+}
+
 
 /* Print Header */
 echo $OUTPUT->header();
 echo $OUTPUT->heading(get_string('title', 'block_municipality'));
 
-$form->display();
+if ($exits_MunicipalityProfile) {
+    $form->display();
+}else {
+    echo $OUTPUT->notification(get_string('install_municipality','block_municipality'), 'notifysuccess');
+    echo $OUTPUT->continue_button($CFG->wwwroot);
+}
+
 
 /* Print Footer */
 echo $OUTPUT->footer();

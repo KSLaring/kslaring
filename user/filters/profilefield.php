@@ -158,12 +158,19 @@ class user_filter_profilefield extends user_filter_type {
          *
          * Description
          * Competence Manager Profile works different. It must take a look in the mdl_report_gen_jobrole and mdl_report_gen_companydata
+         *
+         * @updateDate  20/11/2014
+         * @author      eFaktor     (fbv)
+         *
+         * Description
+         * It works different with municipality
          */
         switch($operator) {
             case 0: // Contains.
                 $where = $DB->sql_like('data', ":$name", false, false);
                 $rgcompany  = $DB->sql_like('rgc.name', ":$name", false, false);
                 $rgjobrole  = $DB->sql_like('rgj.name', ":$name", false, false);
+                $municipality   = $DB->sql_like('mu.municipality', ":$name", false, false);
 
                 $params[$name] = "%$value%";
                 break;
@@ -171,6 +178,7 @@ class user_filter_profilefield extends user_filter_type {
                 $where = $DB->sql_like('data', ":$name", false, false, true);
                 $rgcompany  = $DB->sql_like('rgc.name', ":$name", false, false, true);
                 $rgjobrole  = $DB->sql_like('rgj.name', ":$name", false, false, true);
+                $municipality   = $DB->sql_like('mu.municipality', ":$name", false, true);
 
                 $params[$name] = "%$value%";
                 break;
@@ -178,6 +186,7 @@ class user_filter_profilefield extends user_filter_type {
                 $where = $DB->sql_like('data', ":$name", false, false);
                 $rgcompany  = $DB->sql_like('rgc.name', ":$name", false, false);
                 $rgjobrole  = $DB->sql_like('rgj.name', ":$name", false, false);
+                $municipality   = $DB->sql_like('mu.municipality', ":$name", false, false);
 
                 $params[$name] = "$value";
                 break;
@@ -185,6 +194,7 @@ class user_filter_profilefield extends user_filter_type {
                 $where = $DB->sql_like('data', ":$name", false, false);
                 $rgcompany  = $DB->sql_like('rgc.name', ":$name", false, false);
                 $rgjobrole  = $DB->sql_like('rgj.name', ":$name", false, false);
+                $municipality   = $DB->sql_like('mu.municipality', ":$name", false, false);
 
                 $params[$name] = "$value%";
                 break;
@@ -192,6 +202,7 @@ class user_filter_profilefield extends user_filter_type {
                 $where = $DB->sql_like('data', ":$name", false, false);
                 $rgcompany  = $DB->sql_like('rgc.name', ":$name", false, false);
                 $rgjobrole  = $DB->sql_like('rgj.name', ":$name", false, false);
+                $municipality   = $DB->sql_like('mu.municipality', ":$name", false, false);
 
                 $params[$name] = "%$value";
                 break;
@@ -203,6 +214,7 @@ class user_filter_profilefield extends user_filter_type {
                 $op = " NOT IN ";
                 $rgcompany  = "rgc.name = :$name";
                 $rgjobrole  = "rgj.name = :$name";
+                $municipality   = "mu.municipality = :$name";
 
                 break;
             case 7: // Is defined.
@@ -224,8 +236,16 @@ class user_filter_profilefield extends user_filter_type {
          *
          * Description
          * Competence Manager Profile works different. It must take a look in the mdl_report_gen_jobrole and mdl_report_gen_companydata
+         *
+         * @updateDate  20/11/2014
+         * @author      eFaktor     (fbv)
+         *
+         * Description
+         * It works different with municipality
          */
-        switch ($profilefields[$profile]) {
+        /* Get Datatype */
+        $rdo = $DB->get_record('user_info_field',array('id' => $profile),'datatype');
+        switch ($rdo->datatype) {
             case 'rgcompany':
                 $sql = " SELECT 	userid
                          FROM 		{user_info_data} 	        uid
@@ -240,6 +260,15 @@ class user_filter_profilefield extends user_filter_type {
                             JOIN	{report_gen_jobrole}	    rgj		ON 		rgj.id = uid.data
                                                                         AND		$rgjobrole
                          WHERE 		fieldid=" . $profile;
+
+                return array("id $op ($sql)", $params);
+
+            case 'municipality':
+                $sql = " SELECT		userid
+                             FROM		{user_info_data}  uid
+                                JOIN	{municipality}	  mu  	ON		mu.idmuni       = uid.data
+                                                                AND		$municipality
+                             WHERE     fieldid=" . $profile;
 
                 return array("id $op ($sql)", $params);
             default:

@@ -18,23 +18,20 @@ require_once($CFG->libdir.'/formslib.php');
 
 class municipality_block_form extends moodleform {
     function definition() {
+        global $DB,$USER;
+
         $m_form = $this->_form;
 
-        /* Municipalities    */
-        $options = Municipality::municipality_GetMunicipality_List();
-        $m_form->addElement('select','sel_muni',get_string('sel_muni','block_municipality'),$options);
+        $field = $DB->get_record('user_info_field', array('datatype' => 'municipality'));
+        $newfield = 'profile_field_'.$field->datatype;
+        $formfield = new $newfield($field->id, $USER->id);
+        $formfield->edit_field($m_form);
+
+        $m_form->addElement('hidden', 'id');
+        $m_form->setType('id', PARAM_INT);
+        $m_form->setDefault('id',$USER->id);
 
         /* Add Actions Buttons */
         $this->add_action_buttons(true, get_string('save','block_municipality'));
     }//definition
-
-    function validation($data, $files) {
-        $errors = parent::validation($data, $files);
-
-        if ($data['sel_muni'] == '0') {
-            $errors['sel_muni'] = get_string('required','block_municipality');
-        }//if_title_exist
-
-        return $errors;
-    }//validation
 }//municipality_block_form
