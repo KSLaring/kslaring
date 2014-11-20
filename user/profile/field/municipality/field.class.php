@@ -22,7 +22,7 @@ class profile_field_municipality extends profile_field_base {
 
         /* County       */
         $options        = self::GetCounties_List();
-        $m_form->addElement('select','county',get_string('county','profilefield_municipality'),$options);
+        $m_form->addElement('select','sel_county',get_string('county','profilefield_municipality'),$options);
 
         /* Municipality */
         $options        = self::GetMunicipalities();

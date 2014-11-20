@@ -34,7 +34,7 @@ YUI().use('node', function(Y) {
             countyRef = hiddenMuni.substr(0,index);
 
             /* Select County        */
-            Y.one("#id_county").get("options").each( function() {
+            Y.one("#id_sel_county").get("options").each( function() {
                 if (this.get('value') == countyRef) {
                     this.set('selected',true);
                     this.setAttribute('selected');
@@ -117,10 +117,10 @@ YUI().use('node', function(Y) {
     /*********************/
 
     /* County --> Municipality    */
-    if (Y.one('#id_county')) {
+    if (Y.one('#id_sel_county')) {
         RecuperateCountyMunicipality();
 
-        Y.one('#id_county').on('change', function (e) {
+        Y.one('#id_sel_county').on('change', function (e) {
            var county;
 
             /* Get County   */
