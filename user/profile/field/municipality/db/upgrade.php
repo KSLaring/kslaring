@@ -24,7 +24,7 @@ function xmldb_profilefield_municipality_upgrade($old_version) {
     $db_man = $DB->get_manager();
 
 
-    if ($old_version < 2014111902) {
+    if ($old_version < 2014112000) {
         /* Transfer Users with old Municipality (Extra Field) --> New */
         /* Get the info connected with the old version, if it exists*/
         $info_old_profile = GetInfo_OldProfile_Upgrade();
@@ -34,6 +34,7 @@ function xmldb_profilefield_municipality_upgrade($old_version) {
         }//if_info_old_profile
     }
 
+    return true;
 }//xmldb_user_profile_field_municipality_install
 
 /**
