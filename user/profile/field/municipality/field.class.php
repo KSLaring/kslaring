@@ -17,7 +17,7 @@ class profile_field_municipality extends profile_field_base {
     public function edit_field_add($m_form) {
         global $PAGE;
 
-        $PAGE->requires->js(new moodle_url('/user/profile/field/municipality/js/FilterMunicipality.js'));
+        $PAGE->requires->js(new moodle_url('/user/profile/field/municipality/FilterMunicipality.js'));
 
         /* County       */
         $options        = self::GetCounties_List();
