@@ -236,6 +236,14 @@ class enrol_self_plugin extends enrol_plugin {
 
         // Don't show enrolment instance form, if user can't enrol using it.
         if (true === $enrolstatus) {
+            /**
+             * @updateDate      18/11/2014
+             * @author          eFaktor     (fbv)
+             *
+             * Description
+             * If there isn't enrolment key, then enrol the user and redirect to the course directly
+             */
+            if ($instance->password) {
             $form = new enrol_self_enrol_form(NULL, $instance);
             $instanceid = optional_param('instance', 0, PARAM_INT);
             if ($instance->id == $instanceid) {
@@ -248,7 +256,14 @@ class enrol_self_plugin extends enrol_plugin {
             $form->display();
             $output = ob_get_clean();
             return $OUTPUT->box($output);
+            }else {
+                $this->enrol_self($instance);
+                $url =  new moodle_url('/course/view.php',array('id' => $instance->courseid,'start' => 1));
+                redirect($url);
+            }//if_instance
         }
+
+        return true;
     }
 
     /**
