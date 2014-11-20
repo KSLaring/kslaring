@@ -2,49 +2,41 @@
 // Hero unit
 // --------------------------------------------------
 
-
 .hero-unit {
-  margin-left: 0 auto;
-  margin-right: 0 auto;
-  background-image: url([[pix:theme|banner_image]]);
-  max-height: 420px;
-  min-height: 420px;
-  padding: 0px;
-  margin-bottom: 0px;
-  line-height: @baseLineHeight * 1.5;
-  color: @heroUnitLeadColor;
-  background-repeat: no-repeat;
-  background-position: center bottom;
-  text-align: center;
-  background-color: @kommitGrayLight;
-  .border-radius(0px);
-  h1 {
-    margin-bottom: 0;
-    font-family: @heroFontFamily;
-    font-weight: normal;
-    color: @heroUnitHeadingColor;
-    //letter-spacing: -1px;
-  }
-  li {
-    line-height: @baseLineHeight * 1.5; // Reset since we specify in type.less
-  }
-  img {
-  }
+    background-color: @kommitGrayLight;
+    background-image: url(~"[[pix:theme|banner_image]]");
+    background-repeat: no-repeat;
+    background-position: 50% 50%;
+    color: @heroUnitLeadColor;
+    height: 420px;
+    line-height: @baseLineHeight * 1.5;
+    margin: 0 auto;
+    padding: 0px;
+    .border-radius(0px);
 
-  .texts {
-    font-family: @heroFontFamily;
-    width: 50%;
-    padding: 15px;
-    margin-top: 10%;
-    //background-color: rgba(189, 189, 189, 0.75);
-    display: block;
-    color: white !important;
-    text-align: left;
-    line-height: normal;
-    vertical-align: middle;
-
-  }
-
-
+    .editbgimg {
+        background-color: rgba(255, 255, 255, .5);
+        padding: .3em .5em;
+    }
+    h1 {
+        color: @heroUnitHeadingColor;
+        font-family: @heroFontFamily;
+        font-weight: normal;
+        margin-bottom: 0;
+    }
+    li {
+        line-height: @baseLineHeight * 1.5; // Reset since we specify in type.less
+    }
+    .texts {
+        //background-color: rgba(189, 189, 189, 0.75);
+        color: white !important;
+        font-family: @heroFontFamily;
+        display: block;
+        line-height: normal;
+        margin-top: 10%;
+        padding: 15px;
+        text-align: left;
+        vertical-align: middle;
+        width: 50%;
+    }
 }
-

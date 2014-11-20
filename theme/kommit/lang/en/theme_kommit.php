@@ -78,3 +78,7 @@ $string['adminmenuentry'] = 'Bottom blocks';
 /* Capabilities */
 $string['kommit:viewhiddenblocks'] = 'View hidden blocks';
 $string['kommit:frontpageviewhiddenblocks'] = 'View hidden frontpage blocks';
+
+/* Edit frontpage image */
+$string['editimage'] = 'Edit image';
+$string['editimage_alt'] = 'Edit image alt';

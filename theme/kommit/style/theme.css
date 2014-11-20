@@ -1121,42 +1121,42 @@ body {
   margin: 0 0 10.5px 0px;
 }
 .hero-unit {
-  margin-left: 0 auto;
-  margin-right: 0 auto;
-  background-image: url([[pix:theme|banner_image]]);
-  max-height: 420px;
-  min-height: 420px;
-  padding: 0px;
-  margin-bottom: 0px;
-  line-height: 31.5px;
-  color: #ffffff;
-  background-repeat: no-repeat;
-  background-position: center bottom;
-  text-align: center;
   background-color: #f2f2f3;
+  background-image: url([[pix:theme|banner_image]]);
+  background-repeat: no-repeat;
+  background-position: 50% 50%;
+  color: #ffffff;
+  height: 420px;
+  line-height: 31.5px;
+  margin: 0 auto;
+  padding: 0px;
   -webkit-border-radius: 0px;
   -moz-border-radius: 0px;
   border-radius: 0px;
 }
+.hero-unit .editbgimg {
+  background-color: rgba(255, 255, 255, 0.5);
+  padding: .3em .5em;
+}
 .hero-unit h1 {
-  margin-bottom: 0;
+  color: #ffffff;
   font-family: 'clan_otbook', Calibri, Candara, Segoe, "Segoe UI", Optima, Arial, sans-serif;
   font-weight: normal;
-  color: #ffffff;
+  margin-bottom: 0;
 }
 .hero-unit li {
   line-height: 31.5px;
 }
 .hero-unit .texts {
-  font-family: 'clan_otbook', Calibri, Candara, Segoe, "Segoe UI", Optima, Arial, sans-serif;
-  width: 50%;
-  padding: 15px;
-  margin-top: 10%;
-  display: block;
   color: white !important;
-  text-align: left;
+  font-family: 'clan_otbook', Calibri, Candara, Segoe, "Segoe UI", Optima, Arial, sans-serif;
+  display: block;
   line-height: normal;
+  margin-top: 10%;
+  padding: 15px;
+  text-align: left;
   vertical-align: middle;
+  width: 50%;
 }
 .netcourse-header,
 .classroom-header {
