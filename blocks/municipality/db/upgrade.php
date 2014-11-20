@@ -44,7 +44,7 @@ function xmldb_block_municipality_upgrade($old_version) {
             $db_man->create_table($table_counties);
 
             /* Add Counties */
-            install_Counties();
+            install_new_Counties();
         }//if_counties
 
         /* Municipality */
@@ -69,26 +69,26 @@ function xmldb_block_municipality_upgrade($old_version) {
             $db_man->create_table($table_municipality);
 
             /* Add Municipalities   */
-            install_Østfold();
-            install_Akershus();
-            install_Oslo();
-            install_Hedmark();
-            install_Oppland();
-            install_Buskerud();
-            install_Vestfold();
-            install_Telemark();
-            install_Aust_Agder();
-            install_Vest_Agder();
-            install_Rogaland();
-            install_Hordaland();
-            install_Sogn_og_Fjordane();
-            install_Møre_og_Romsdal();
-            install_Sør_Trøndelag();
-            install_Nord_Trøndelag();
-            install_Nordland();
-            install_Troms();
-            install_Finnmark();
-            install_Svalbard();
+            install_new_Østfold();
+            install_new_Akershus();
+            install_new_Oslo();
+            install_new_Hedmark();
+            install_new_Oppland();
+            install_new_Buskerud();
+            install_new_Vestfold();
+            install_new_Telemark();
+            install_new_Aust_Agder();
+            install_new_Vest_Agder();
+            install_new_Rogaland();
+            install_new_Hordaland();
+            install_new_Sogn_og_Fjordane();
+            install_new_Møre_og_Romsdal();
+            install_new_Sør_Trøndelag();
+            install_new_Nord_Trøndelag();
+            install_new_Nordland();
+            install_new_Troms();
+            install_new_Finnmark();
+            install_new_Svalbard();
         }//if_municipality
     }//if_old_version
 
@@ -99,7 +99,7 @@ function xmldb_block_municipality_upgrade($old_version) {
 /* INSTALL COUNTIES && MUNICIPALITIES  */
 /* *********************************** */
 
-function install_Counties() {
+function install_new_Counties() {
     /* Variables    */
     global $DB;
 
@@ -127,7 +127,7 @@ function install_Counties() {
     $DB->execute($sql);
 }//install_Counties
 
-function install_Østfold() {
+function install_new_Østfold() {
     /* Variables    */
     global $DB;
 
@@ -154,7 +154,7 @@ function install_Østfold() {
     $DB->execute($sql);
 }//install_Østfold
 
-function install_Akershus() {
+function install_new_Akershus() {
     /* Variables    */
     global $DB;
 
@@ -185,7 +185,7 @@ function install_Akershus() {
     $DB->execute($sql);
 }//install_Akershus
 
-function install_Oslo() {
+function install_new_Oslo() {
     /* Variables    */
     global $DB;
 
@@ -195,7 +195,7 @@ function install_Oslo() {
     $DB->execute($sql);
 }//install_Oslo
 
-function install_Hedmark() {
+function install_new_Hedmark() {
     /* Variables    */
     global $DB;
 
@@ -226,7 +226,7 @@ function install_Hedmark() {
     $DB->execute($sql);
 }//install_Hedmark
 
-function install_Oppland() {
+function install_new_Oppland() {
     /* Variables    */
     global $DB;
 
@@ -261,7 +261,7 @@ function install_Oppland() {
     $DB->execute($sql);
 }//install_Oppland
 
-function install_Buskerud() {
+function install_new_Buskerud() {
     /* Variables    */
     global $DB;
 
@@ -291,7 +291,7 @@ function install_Buskerud() {
     $DB->execute($sql);
 }//install_Buskerud
 
-function install_Vestfold() {
+function install_new_Vestfold() {
     /* Variables    */
     global $DB;
 
@@ -314,7 +314,7 @@ function install_Vestfold() {
     $DB->execute($sql);
 }//install_Vestfold
 
-function install_Telemark() {
+function install_new_Telemark() {
     /* Variables    */
     global $DB;
 
@@ -341,7 +341,7 @@ function install_Telemark() {
     $DB->execute($sql);
 }//install_Telemark
 
-function install_Aust_Agder() {
+function install_new_Aust_Agder() {
     /* Variables    */
     global $DB;
 
@@ -365,7 +365,7 @@ function install_Aust_Agder() {
     $DB->execute($sql);
 }//install_Aust_Agder
 
-function install_Vest_Agder() {
+function install_new_Vest_Agder() {
     /* Variables    */
     global $DB;
 
@@ -389,7 +389,7 @@ function install_Vest_Agder() {
     $DB->execute($sql);
 }//install_Vest_Agder
 
-function install_Rogaland() {
+function install_new_Rogaland() {
     /* Variables    */
     global $DB;
 
@@ -424,7 +424,7 @@ function install_Rogaland() {
     $DB->execute($sql);
 }//install_Rogaland
 
-function install_Hordaland() {
+function install_new_Hordaland() {
     /* Variables    */
     global $DB;
 
@@ -466,7 +466,7 @@ function install_Hordaland() {
     $DB->execute($sql);
 }//install_Hordaland
 
-function install_Sogn_og_Fjordane() {
+function install_new_Sogn_og_Fjordane() {
     /* Variables    */
     global $DB;
 
@@ -501,7 +501,7 @@ function install_Sogn_og_Fjordane() {
     $DB->execute($sql);
 }//install_Sogn_og_Fjordane
 
-function install_Møre_og_Romsdal() {
+function install_new_Møre_og_Romsdal() {
     /* Variables    */
     global $DB;
 
@@ -546,7 +546,7 @@ function install_Møre_og_Romsdal() {
     $DB->execute($sql);
 }//install_Møre_og_Romsdal
 
-function install_Sør_Trøndelag() {
+function install_new_Sør_Trøndelag() {
     /* Variables    */
     global $DB;
 
@@ -580,7 +580,7 @@ function install_Sør_Trøndelag() {
     $DB->execute($sql);
 }//install_Sør_Trøndelag
 
-function install_Nord_Trøndelag() {
+function install_new_Nord_Trøndelag() {
     /* Variables    */
     global $DB;
 
@@ -612,7 +612,7 @@ function install_Nord_Trøndelag() {
     $DB->execute($sql);
 }//install_Nord_Trøndelag
 
-function install_Nordland() {
+function install_new_Nordland() {
     /* Variables    */
     global $DB;
 
@@ -665,7 +665,7 @@ function install_Nordland() {
     $DB->execute($sql);
 }//install_Nordland
 
-function install_Troms() {
+function install_new_Troms() {
     /* Variables    */
     global $DB;
 
@@ -698,7 +698,7 @@ function install_Troms() {
     $DB->execute($sql);
 }//install_Troms
 
-function install_Finnmark() {
+function install_new_Finnmark() {
     /* Variables    */
     global $DB;
 
@@ -726,7 +726,7 @@ function install_Finnmark() {
     $DB->execute($sql);
 }//install_Finnmark
 
-function install_Svalbard() {
+function install_new_Svalbard() {
     /* Variables    */
     global $DB;
 
