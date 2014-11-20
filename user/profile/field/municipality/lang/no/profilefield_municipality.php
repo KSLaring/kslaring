@@ -12,8 +12,8 @@
  * @author          eFaktor     (fbv)
  *
  */
-$string['pluginname']           = 'Kommune';
-$string['profile_type']         = 'Kommune';
+$string['pluginname']           = 'Municipality';
+$string['profile_type']         = 'Municipality';
 
 $string['county']                           = 'County';
 $string['sel_county']                       = 'Choose a county...';
