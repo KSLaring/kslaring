@@ -132,7 +132,7 @@ function xmldb_report_generator_upgrade($old_version) {
         }
     }//if_old_Version
 
-    if ($old_version < 2014111900) {
+    if ($old_version < 2014112102) {
         if ($db_man->table_exists('municipality')) {
             $sql = " INSERT INTO {municipality} (idcounty, idmuni,municipality,logo) VALUES('01','01','Østfold Fylkeskommune','ostfold_fylkeskommune.png'),";
             $sql .= " ('02','02','Akershus Fylkeskommune','Akershus_fylkeskommune.png'),";
