@@ -133,28 +133,28 @@ function xmldb_report_generator_upgrade($old_version) {
     }//if_old_Version
 
     if ($old_version < 2014111900) {
-        if (!$db_man->table_exists('municipality')) {
-        $sql = " INSERT INTO {municipality} (idcounty, idmuni,municipality,logo) VALUES('01','01','Østfold Fylkeskommune','ostfold_fylkeskommune.png'),";
-        $sql .= " ('02','02','Akershus Fylkeskommune','Akershus_fylkeskommune.png'),";
-        $sql .= " ('03','03','Oslo Fylkeskommune','oslo_fylkeskommune.png'),";
-        $sql .= " ('04','04','Hedmark Fylkeskommune','hedmark_fylkeskommune.png'),";
-        $sql .= " ('05','05','Oppland Fylkeskommune','oppland_fylkeskommune.png'),";
-        $sql .= " ('06','06','Buskerud Fylkeskommune','buskerud_fylkeskommune.png'),";
-        $sql .= " ('07','07','Vestfold Fylkeskommune','vestfold_fylkeskommune.png'),";
-        $sql .= " ('08','08','Telemark Fylkeskommune','telemark_fylkeskommune.png'),";
-        $sql .= " ('09','09','Aust-Agder Fylkeskommune','aust-agder_fylkeskommune.png'),";
-        $sql .= " ('10','10','Vest-Agder Fylkeskommune','vest-agder_fylkeskommune.png'),";
-        $sql .= " ('11','11','Rogaland Fylkeskommune','rogaland_fylkeskommune.png'),";
-        $sql .= " ('12','12','Hordaland Fylkeskommune','hordaland_fylkeskommune.png'),";
-        $sql .= " ('14','14','Sogn og Fjordane Fylkeskommune','sogn_og_fjordane_fylkeskommune.png'),";
-        $sql .= " ('15','15','Møre og Romsdal Fylkeskommune','more_og_romsdal_fylkeskommune.png'),";
-        $sql .= " ('16','16','Sør-Trøndelag Fylkeskommune','sor-tronderlag_fylkeskommune.png'),";
-        $sql .= " ('17','17','Nord-Trøndelag Fylkeskommune','nord-tronderlag_fylkeskommune.png'),";
-        $sql .= " ('18','18','Nordland Fylkeskommune','nordland_fylkeskommune.png'),";
-        $sql .= " ('19','19','Troms Fylkeskommune','troms_fylkeskommune.png'),";
-        $sql .= " ('20','20','Finnmark Fylkeskommune','finnmark_fylkeskommune.png') ";
+        if ($db_man->table_exists('municipality')) {
+            $sql = " INSERT INTO {municipality} (idcounty, idmuni,municipality,logo) VALUES('01','01','Østfold Fylkeskommune','ostfold_fylkeskommune.png'),";
+            $sql .= " ('02','02','Akershus Fylkeskommune','Akershus_fylkeskommune.png'),";
+            $sql .= " ('03','03','Oslo Fylkeskommune','oslo_fylkeskommune.png'),";
+            $sql .= " ('04','04','Hedmark Fylkeskommune','hedmark_fylkeskommune.png'),";
+            $sql .= " ('05','05','Oppland Fylkeskommune','oppland_fylkeskommune.png'),";
+            $sql .= " ('06','06','Buskerud Fylkeskommune','buskerud_fylkeskommune.png'),";
+            $sql .= " ('07','07','Vestfold Fylkeskommune','vestfold_fylkeskommune.png'),";
+            $sql .= " ('08','08','Telemark Fylkeskommune','telemark_fylkeskommune.png'),";
+            $sql .= " ('09','09','Aust-Agder Fylkeskommune','aust-agder_fylkeskommune.png'),";
+            $sql .= " ('10','10','Vest-Agder Fylkeskommune','vest-agder_fylkeskommune.png'),";
+            $sql .= " ('11','11','Rogaland Fylkeskommune','rogaland_fylkeskommune.png'),";
+            $sql .= " ('12','12','Hordaland Fylkeskommune','hordaland_fylkeskommune.png'),";
+            $sql .= " ('14','14','Sogn og Fjordane Fylkeskommune','sogn_og_fjordane_fylkeskommune.png'),";
+            $sql .= " ('15','15','Møre og Romsdal Fylkeskommune','more_og_romsdal_fylkeskommune.png'),";
+            $sql .= " ('16','16','Sør-Trøndelag Fylkeskommune','sor-tronderlag_fylkeskommune.png'),";
+            $sql .= " ('17','17','Nord-Trøndelag Fylkeskommune','nord-tronderlag_fylkeskommune.png'),";
+            $sql .= " ('18','18','Nordland Fylkeskommune','nordland_fylkeskommune.png'),";
+            $sql .= " ('19','19','Troms Fylkeskommune','troms_fylkeskommune.png'),";
+            $sql .= " ('20','20','Finnmark Fylkeskommune','finnmark_fylkeskommune.png') ";
 
-        $DB->execute($sql);
+            $DB->execute($sql);
         }//if_municipality
     }//if_old_version_2014111900
 
