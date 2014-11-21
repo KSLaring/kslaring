@@ -82,3 +82,6 @@ $string['kommit:frontpageviewhiddenblocks'] = 'View hidden frontpage blocks';
 /* Edit frontpage image */
 $string['editimage'] = 'Edit image';
 $string['editimage_alt'] = 'Edit image alt';
+
+/* Course category page */
+$string['expandall_initial'] = 'Collapse/expand all (Expand a section first)';

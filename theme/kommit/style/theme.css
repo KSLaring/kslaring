@@ -1357,16 +1357,25 @@ div.loginpanel h2 {
   border: 1px solid #e8e8e8;
   position: relative;
 }
-.course_category_tree .category > .info {
+.course_category_tree .collapseexpand.disabled:hover,
+.course_category_tree .collapseexpand.disabled {
+  color: #cccccc;
+}
+.course_category_tree .category > .info,
+.course_category_tree .category > .content {
   background: #fff;
   padding-left: 20px;
   border: 1px solid #e8e8e8;
 }
 .course_category_tree .category > .content {
-  background: #fff;
-  padding-left: 20px;
-  border: 1px solid #e8e8e8;
   margin-top: -3px;
+}
+a.disabled:hover,
+a.disabled {
+  text-decoration: none;
+  cursor: default;
+  font-style: italic;
+  color: #808080;
 }
 .coursebox .panel-heading {
   font-size: 21.328px;
