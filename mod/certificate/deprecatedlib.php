@@ -119,7 +119,7 @@ function certificate_print_mod_grade($course, $moduleid){
 function certificate_print_outcome($course, $id) {
     debugging('certificate_print_outcome is deprecated, please use certificate_get_outcome instead', DEBUG_DEVELOPER);
 
-    return certificate_get_outcome($id, $course);
+    return certificate_get_outcome($certificate, $course);
 }
 
 /**
