@@ -673,7 +673,7 @@ table {
 }
 .table-striped tbody > tr:nth-child(odd) > td,
 .table-striped tbody > tr:nth-child(odd) > th {
-  background-color: #f9f9f9;
+  background-color: #e8edf3;
 }
 .table-hover tbody tr:hover > td,
 .table-hover tbody tr:hover > th {
@@ -1885,4 +1885,163 @@ body {
   -ms-interpolation-mode: bicubic;
   flaot: right;
   margin-left: 1em;
+}
+.table-striped tbody > tr:nth-child(odd) > td,
+.table-striped tbody > tr:nth-child(odd) > th {
+  background-color: #e8edf3;
+}
+.kitable {
+  border-collapse: collapse;
+  font-size: 16px;
+  width: 100%;
+}
+.kitable caption {
+  padding: .3em .5em;
+  text-align: left;
+}
+.kitable th,
+.kitable td {
+  background-color: #ffffff;
+  font-size: inherit;
+  padding: .3em .5em;
+  vertical-align: top;
+}
+.kitable1,
+div.editor_atto_content .kitable1 {
+  border-collapse: collapse;
+  font-size: 16px;
+  width: 100%;
+  border: 1px solid #b5c5da;
+  border-top: 0;
+}
+.kitable1 caption,
+div.editor_atto_content .kitable1 caption {
+  padding: .3em .5em;
+  text-align: left;
+}
+.kitable1 th,
+div.editor_atto_content .kitable1 th,
+.kitable1 td,
+div.editor_atto_content .kitable1 td {
+  background-color: #ffffff;
+  font-size: inherit;
+  padding: .3em .5em;
+  vertical-align: top;
+}
+.kitable1 tbody > tr:nth-child(odd) > td,
+div.editor_atto_content .kitable1 tbody > tr:nth-child(odd) > td,
+.kitable1 tbody > tr:nth-child(odd) > th,
+div.editor_atto_content .kitable1 tbody > tr:nth-child(odd) > th {
+  background-color: #e8edf3;
+}
+.kitable1 tbody > tr:nth-child(odd) > td,
+div.editor_atto_content .kitable1 tbody > tr:nth-child(odd) > td,
+.kitable1 tbody > tr:nth-child(odd) > th,
+div.editor_atto_content .kitable1 tbody > tr:nth-child(odd) > th {
+  background-color: #e8edf3;
+}
+.kitable1 caption,
+div.editor_atto_content .kitable1 caption {
+  background-color: #003876;
+  color: #ffffff;
+}
+.kitable1 th,
+div.editor_atto_content .kitable1 th,
+.kitable1 td,
+div.editor_atto_content .kitable1 td {
+  background-color: #ffffff;
+}
+.kitable2,
+div.editor_atto_content .kitable2 {
+  border-collapse: collapse;
+  font-size: 16px;
+  width: 100%;
+}
+.kitable2 caption,
+div.editor_atto_content .kitable2 caption {
+  padding: .3em .5em;
+  text-align: left;
+}
+.kitable2 th,
+div.editor_atto_content .kitable2 th,
+.kitable2 td,
+div.editor_atto_content .kitable2 td {
+  background-color: #ffffff;
+  font-size: inherit;
+  padding: .3em .5em;
+  vertical-align: top;
+}
+.kitable2 caption,
+div.editor_atto_content .kitable2 caption {
+  background-color: #b5c5da;
+  border: solid #003876;
+  border-width: 3px 0;
+}
+.kitable2.table-no-lines th,
+div.editor_atto_content .kitable2.table-no-lines th,
+.kitable2.table-no-lines td,
+div.editor_atto_content .kitable2.table-no-lines td {
+  border: 0;
+}
+.kitable2.table-lines,
+div.editor_atto_content .kitable2.table-lines {
+  border-bottom: 3px solid #003876;
+}
+.kitable2.table-lines th,
+div.editor_atto_content .kitable2.table-lines th,
+.kitable2.table-lines td,
+div.editor_atto_content .kitable2.table-lines td {
+  border: 1px solid #b5c5da;
+}
+.kitable3,
+div.editor_atto_content .kitable3 {
+  border-collapse: collapse;
+  font-size: 16px;
+  width: 100%;
+}
+.kitable3 caption,
+div.editor_atto_content .kitable3 caption {
+  padding: .3em .5em;
+  text-align: left;
+}
+.kitable3 th,
+div.editor_atto_content .kitable3 th,
+.kitable3 td,
+div.editor_atto_content .kitable3 td {
+  background-color: #ffffff;
+  font-size: inherit;
+  padding: .3em .5em;
+  vertical-align: top;
+}
+.kitable3 caption,
+div.editor_atto_content .kitable3 caption {
+  display: none;
+}
+.kitable3 th,
+div.editor_atto_content .kitable3 th {
+  background-color: #b5c5da;
+  border: solid #003876;
+  border-width: 3px 0;
+}
+.kitable3 th,
+div.editor_atto_content .kitable3 th,
+.kitable3 td,
+div.editor_atto_content .kitable3 td {
+  border-right: 5px solid #ffffff;
+}
+.kitable3.table-no-lines th,
+div.editor_atto_content .kitable3.table-no-lines th,
+.kitable3.table-no-lines td,
+div.editor_atto_content .kitable3.table-no-lines td {
+  border: 0;
+}
+.kitable3.table-lines,
+div.editor_atto_content .kitable3.table-lines {
+  border-bottom: 3px solid #003876;
+}
+.kitable3.table-lines th,
+div.editor_atto_content .kitable3.table-lines th,
+.kitable3.table-lines td,
+div.editor_atto_content .kitable3.table-lines td {
+  border: 1px solid #b5c5da;
 }
