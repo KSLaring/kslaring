@@ -601,6 +601,9 @@ Courses and categories lists, from Mary Evans
 .mod_introbox {
   padding: 0;
 }
+#page-mod-certificate-view .reportlink {
+  margin: .2em .5em;
+}
 #page-mod-feedback-view.format-netcourse #page-content #region-main div[role="main"] > h2 a {
   border-bottom: 0;
 }
