@@ -66,17 +66,20 @@ require('tabs.php');
 
 /* Company Report   */
 echo $OUTPUT->heading(get_string('company_report', 'report_generator'));
-$url_company    = new moodle_url('/report/generator/company_report/company_report.php');
-$url_employee   = new moodle_url($CFG->wwwroot.'/report/generator/employee_report/employee_report.php');
-echo '<p class="note">' . get_string('company_report_note', 'report_generator') . '</p>';
-echo '<ul class="unlist report-selection">' . "\n";
-    echo '<li class="first last">' . "\n";
-        echo '<a href="' . $url_employee . '">' . get_string('employee_report_link', 'report_generator') . '</a>';
-    echo '</li>' . "\n";
-    echo '<li class="first last">' . "\n";
-        echo '<a href="' . $url_company . '">' . get_string('company_report_link', 'report_generator') . '</a>';
-        echo '</li>' . "\n";
-echo '</ul>' . "\n" . "</br>";
+
+echo '<h5>' . get_string('underconstruction','report_generator') . '</h5>';
+
+//$url_company    = new moodle_url('/report/generator/company_report/company_report.php');
+//$url_employee   = new moodle_url($CFG->wwwroot.'/report/generator/employee_report/employee_report.php');
+//echo '<p class="note">' . get_string('company_report_note', 'report_generator') . '</p>';
+//echo '<ul class="unlist report-selection">' . "\n";
+//    echo '<li class="first last">' . "\n";
+//        echo '<a href="' . $url_employee . '">' . get_string('employee_report_link', 'report_generator') . '</a>';
+//    echo '</li>' . "\n";
+//    echo '<li class="first last">' . "\n";
+//        echo '<a href="' . $url_company . '">' . get_string('company_report_link', 'report_generator') . '</a>';
+//        echo '</li>' . "\n";
+//echo '</ul>' . "\n" . "</br>";
 
 /* Print Footer */
 echo $OUTPUT->footer();

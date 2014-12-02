@@ -68,7 +68,7 @@ require('../tabs.php');
 echo $OUTPUT->heading(get_string('course_report', 'report_generator'));
 
 /* Report Levels Links  */
-echo get_string('underconstruction','report_generator');
+echo '<h5>' . get_string('underconstruction','report_generator') . '</h5>';
 //report_generator_print_report_page($current_tab,$site_context);
 
 /* Print Footer */

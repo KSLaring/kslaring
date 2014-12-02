@@ -1982,7 +1982,7 @@ table.collection colgroup + tbody tr:first-child td:last-child {
 }
 table.collection tbody > tr:nth-child(odd) > td,
 table.collection tbody > tr:nth-child(odd) > th {
-  background-color: #f9f9f9;
+  background-color: #e8edf3;
 }
 table.collection .name {
   text-align: left;
@@ -4200,7 +4200,7 @@ span.editinstructions {
   padding: 5px;
 }
 .courses .coursebox.even {
-  background-color: #f9f9f9;
+  background-color: #e8edf3;
 }
 .courses .coursebox:hover,
 .course_category_tree .courses > .paging.paging-morelink:hover {
@@ -4431,7 +4431,7 @@ span.editinstructions {
   vertical-align: inherit;
 }
 #course-category-listings li[data-selected='1'] > div {
-  background-color: #f9f9f9;
+  background-color: #e8edf3;
 }
 #course-category-listings li[data-selected='1'] > div:hover {
   background-color: #f5f5f5;
@@ -8983,7 +8983,7 @@ table {
 }
 .table-striped tbody > tr:nth-child(odd) > td,
 .table-striped tbody > tr:nth-child(odd) > th {
-  background-color: #f9f9f9;
+  background-color: #e8edf3;
 }
 .table-hover tbody tr:hover > td,
 .table-hover tbody tr:hover > th {
@@ -13842,7 +13842,7 @@ div#dock {
   background-color: transparent;
 }
 .path-mod-survey .surveytable > tbody > tr:nth-of-type(even) {
-  background-color: #f9f9f9;
+  background-color: #e8edf3;
 }
 .path-mod-survey .surveytable .rblock label {
   text-align: center;
@@ -16272,7 +16272,7 @@ form#movecourses table tbody > tr:nth-child(odd) > th,
 .forumheaderlist tbody > tr:nth-child(odd) > th,
 table.flexible tbody > tr:nth-child(odd) > th,
 .generaltable tbody > tr:nth-child(odd) > th {
-  background-color: #f9f9f9;
+  background-color: #e8edf3;
 }
 .dir-rtl table#explaincaps td,
 .dir-rtl table#defineroletable td,

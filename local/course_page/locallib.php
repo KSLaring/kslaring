@@ -543,10 +543,12 @@ class course_page  {
         $out = '';
 
         $url_avg = new moodle_url('/blocks/rate_course/pix/rating_graphic.php',array('courseid' => $course_id));
-        $out .= '<h5 class="title_ratings">' . get_string('ratings_avg','local_course_page') . '</h5>';
+        $out .= '<h5 class="title_ratings chp-title">' . get_string('ratings_avg','local_course_page') . '</h5>';
 
+        $out .= '<div class="rating_total clearfix chp-content">';
             $out .= '<div class="rating_total_title">' . '<img src="'. $url_avg . '" .  alt="average ratings"/>' . '</div>';
             $out .= '<div class="rating_total_value">' . $total_rates . '</div>';
+        $out .= '</div>';
 
         return $out;
     }//AddRatingsTotal
@@ -918,6 +920,7 @@ class course_page  {
      * @param           $form
      * @param           $option
      * @param           $value
+     * @param           $format
      * @throws          Exception
      *
      * @creationDate    15/05/2014
@@ -926,45 +929,50 @@ class course_page  {
      * Description
      * Print the options/fields connected with the course format. Only for the Course Home Page
      */
-    public static function printFormatOptions(&$form,$option,$value) {
+    public static function printFormatOptions(&$form,$option,$value,$format) {
+        /* Variables*/
+        $str_format = null;;
+
+
         try {
+            $str_format = 'format_' . $format;
                 switch ($option) {
                     case 'prerequisities':
-                        $form->addElement('textarea','prerequisities',get_string('home_prerequisities','local_course_page'),'rows="5" style="width:95%;"');
+                    $form->addElement('textarea','prerequisities',get_string('home_prerequisities',$str_format),'rows="5" style="width:95%;"');
                         $form->setDefault('prerequisities',$value);
                         break;
                     case 'producedby':
-                        $form->addElement('text','producedby',get_string('home_producedby','local_course_page'),'style="width:95%;"');
+                    $form->addElement('text','producedby',get_string('home_producedby',$str_format),'style="width:95%;"');
                         $form->setDefault('producedby',$value);
                         $form->setType('producedby',PARAM_TEXT);
                         break;
                     case 'location':
-                        $form->addElement('text','location',get_string('home_location','local_course_page'),'style="width:95%;"');
+                    $form->addElement('text','location',get_string('home_location',$str_format),'style="width:95%;"');
                         $form->setDefault('location',$value);
                         $form->setType('location',PARAM_TEXT);
                         break;
                     case 'length':
-                        $form->addElement('text','length',get_string('home_length','local_course_page'),'style="width:95%;"');
+                    $form->addElement('text','length',get_string('home_length',$str_format),'style="width:95%;"');
                         $form->setDefault('length',$value);
                         $form->setType('length',PARAM_TEXT);
                         break;
                     case 'effort':
-                        $form->addElement('text','effort',get_string('home_effort','local_course_page'),'style="width:95%;"');
+                    $form->addElement('text','effort',get_string('home_effort',$str_format),'style="width:95%;"');
                         $form->setDefault('effort',$value);
                         $form->setType('effort',PARAM_TEXT);
                         break;
                     case 'manager':
                         $lst_manager = self::getCourseManager();
-                        $form->addElement('select','manager',get_string('home_manager','local_course_page'),$lst_manager);
+                    $form->addElement('select','manager',get_string('home_manager',$str_format),$lst_manager);
                         $form->setDefault('manager',$value);
                         break;
                     case 'author':
-                        $form->addElement('text','author',get_string('home_author','local_course_page'),'style="width:95%;"');
+                    $form->addElement('text','author',get_string('home_author',$str_format),'style="width:95%;"');
                         $form->setDefault('author',$value);
                         $form->setType('author',PARAM_TEXT);
                         break;
                     case 'licence':
-                        $form->addElement('text','licence',get_string('home_licence','local_course_page'),'style="width:95%;"');
+                    $form->addElement('text','licence',get_string('home_licence',$str_format),'style="width:95%;"');
                         $form->setDefault('licence',$value);
                         $form->setType('licence',PARAM_TEXT);
                         break;
@@ -1244,7 +1252,7 @@ class home_page_form extends moodleform {
         $format_options = course_get_format($course)->get_format_options();
         foreach ($format_options as $name=>$option) {
             course_page::addCourseHomePage_Section($form,$name);
-            course_page::printFormatOptions($form,$name,$option);
+            course_page::printFormatOptions($form,$name,$option,$course->format);
         }
 
         $form->addElement('hidden','id');

@@ -6,16 +6,14 @@
  * Description
  * Add the Municipality log to the header
  */
-$muni = null;
-$logo = null;
+$municipality = null;
 require_once($CFG->dirroot . '/blocks/municipality/municipalitylib.php');
+
 $loggedin = isloggedin();
 $loggedinclass = ' not-loggedin';
 if ($loggedin) {
     /* Get the municipality connected with the user */
-    $muni = Municipality::municipality_ExitsMuni_User($USER->id);
-    /* Get the municipality logo */
-    $logo = Municipality::municipality_GetLogo($muni);
+    $municipality = Municipality::municipality_ExitsMuni_User($USER->id);
     $loggedinclass = ' loggedin';
 }
 ?>
@@ -42,8 +40,8 @@ if ($loggedin) {
              * Description
              * Add the Municipality log to the header
              */
-            if ($logo) {
-                echo '<div class="muni-logo">' . $logo . '</div>';
+            if ($municipality) {
+                echo '<div class="muni-logo"><img class="logo" alt="' . $municipality->name . '"src="' . $municipality->logo . '"/></div>';
             }
             ?>
         </div>

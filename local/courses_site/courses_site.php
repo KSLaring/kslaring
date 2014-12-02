@@ -42,6 +42,7 @@ class courses_site  {
                                 cs.title,
                                 cs.description,
                                 cs.picture,
+                                cs.picturetitle,
                                 c.startdate
                      FROM		{block_courses_site}	cs
                         JOIN	{course}		        c 	ON 	  c.id      = cs.course_id
@@ -58,6 +59,7 @@ class courses_site  {
                     $course_site->title         = $instance->title;
                     $course_site->description   = $instance->description;
                     $course_site->picture       = $instance->picture;
+                    $course_site->picturetitle  = $instance->picturetitle;
                     $course_site->startdate     = $instance->startdate;
 
                     $lst_courses_site[] = $course_site;
@@ -362,6 +364,7 @@ class courses_site  {
             $course_site->course_id      = $data->sel_courses;
             $course_site->title          = $data->title;
             $course_site->description    = $data->txt_descrip;
+            $course_site->picturetitle   = $data->picturetitle;
             $course_site->sortorder      = $data->sort_order;
             $course_site->timecreated    = time();
 
@@ -401,6 +404,7 @@ class courses_site  {
             /* New Instance */
             $course_site->title          = $data->title;
             $course_site->description    = $data->txt_descrip;
+            $course_site->picturetitle   = $data->picturetitle;
             $course_site->sortorder      = $data->sort_order;
             $course_site->timemodified    = time();
 
@@ -476,6 +480,7 @@ class courses_site  {
             $info_display->title        = $course_site->title;
             $info_display->description  = $course_site->description;
             $info_display->picture      = self::courses_site_GetUrlReferencePicture($course_site->picture);
+            $info_display->picturetitle = $course_site->picturetitle;
             $info_display->published    = userdate($course_site->startdate,'%d.%m.%Y', 99, false);
 
             /* Get Format Options   */
@@ -559,6 +564,10 @@ class add_course_site_form extends moodleform {
         $form->setType('picture_filemanager',PARAM_RAW);
         $form->addRule('picture_filemanager',null, 'required');
 
+        /* Picture title */
+        $form->addElement('text','picturetitle',get_string('picturetitle','local_courses_site'),'size=50');
+        $form->setType('picturetitle',PARAM_TEXT);
+
         $this->add_action_buttons(true, get_string('save', 'local_courses_site'));
     }//definition
 
@@ -621,6 +630,11 @@ class edit_course_site_form extends moodleform {
 
         $form->addElement('filemanager', 'picture_filemanager', get_string('picture','local_courses_site'), null, $file_options);
         $form->setType('picture_filemanager',PARAM_RAW);
+
+        /* Picture title */
+        $form->addElement('text','picturetitle',get_string('picturetitle','local_courses_site'),'size=50');
+        $form->setType('picturetitle',PARAM_TEXT);
+        $form->setDefault('picturetitle',$course_site->picturetitle);
 
         $form->addElement('hidden','id');
         $form->setDefault('id',$course_site->course_id);

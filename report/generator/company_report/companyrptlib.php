@@ -19,7 +19,7 @@ define('COMPANY_REPORT_FORMAT_LIST', 'report_format_list');
 class company_report {
     protected static $company;
     protected static $not_allowed;
-    private   static    $users_filter;
+    private   static $users_filter;
 
     /* CONSTRUCTOR      */
     public function __construct() {
@@ -31,7 +31,7 @@ class company_report {
         $my_company->name   = '';
 
         if ($my_company->id) {
-            $my_company->name = report_generator_get_company_name($my_company->id);
+            $my_company->name = self::GetNames_MyCompanies($my_company->id);
         }//my_company
         self::$company = $my_company;
         self::$not_allowed = self::company_report_UsersNotMyCompanies($my_company->id);
@@ -114,7 +114,20 @@ class company_report {
         $rs->close();
     }//company_report_AddSelectionAll
 
+    /**
+     * @static
+     * @param           $company
+     * @return          null|string
+     * @throws          Exception
+     *
+     * @creationDate    26/04/2014
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Get all the users that are not connected to my companies
+     */
     public static function company_report_UsersNotMyCompanies($company) {
+        /* Variables    */
         global $DB;
 
         try {
@@ -122,19 +135,18 @@ class company_report {
             $params = array();
             $params['rgcompany'] = 'rgcompany';
 
-
             if (!$company) {
                 $company = 0;
             }
 
             /* SQL Instruction  */
             $sql = " SELECT		u.id
-                 FROM		{user}              u
-                    JOIN    {user_info_data}	uid ON uid.userid 		= u.id
-                    JOIN	{user_info_field}	uif ON uif.id			=	uid.fieldid
-                                                    AND	uif.datatype 	=  :rgcompany
-                 WHERE		uid.data NOT IN ($company)
-                    AND     u.deleted = 0 ";
+                     FROM		{user}              u
+                        JOIN    {user_info_data}	uid ON uid.userid 		= u.id
+                        JOIN	{user_info_field}	uif ON uif.id			=	uid.fieldid
+                                                        AND	uif.datatype 	=  :rgcompany
+                     WHERE		uid.data NOT IN ($company)
+                        AND     u.deleted = 0 ";
 
             /* Execute  */
             $rdo = $DB->get_records_sql($sql,$params);
@@ -521,7 +533,7 @@ class company_report {
      */
     protected static function company_report_getMyUsers() {
         /* Variables    */
-        global $DB, $SESSION, $USER;
+        global $DB, $USER;
         $filter_users   = null;
         $lst_users      = array();
 
@@ -1287,7 +1299,7 @@ class company_report {
 
             /* Outcome Name */
             if ($outcome) {
-            $row ++;
+                $row++;
                 $title_out          = get_string('outcome', 'report_generator')  . ' - ' . $outcome;
                 $my_xls->write($row, $col, $title_out,array('size'=>12, 'name'=>'Arial','bold'=>'1','color' => '#004b93','text_wrap'=>true,'v_align'=>'center'));
                 $my_xls->merge_cells($row,$col,$row,$col+10);
@@ -1546,4 +1558,41 @@ class company_report {
             throw $ex;
         }//try_catch
     }//company_report_AddExcelCompletedTable
+
+    /* PRIVATE */
+
+
+    /**
+     * @static
+     * @param           $my_companies
+     * @return          null
+     * @throws          Exception
+     *
+     * @creationDate    13/11/2014
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Get the name of my companies
+     */
+    private static function GetNames_MyCompanies($my_companies) {
+        /* Variables    */
+        global $DB;
+
+        try {
+            /* SQL Instruction  */
+            $sql = " SELECT     GROUP_CONCAT(DISTINCT rgc.name ORDER BY rgc.name SEPARATOR '</br>') as 'names'
+                     FROM       {report_gen_companydata} rgc
+                      WHERE     rgc.id IN ($my_companies) ";
+
+            /* Execute  */
+            $rdo = $DB->get_record_sql($sql);
+            if ($rdo) {
+                return $rdo->names;
+            }//if_rdo
+
+            return null;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//GetNames_MyCompanies
 }//company_report

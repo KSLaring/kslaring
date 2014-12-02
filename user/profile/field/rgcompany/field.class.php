@@ -1,93 +1,111 @@
 <?php
+/**
+ * Extra Profile Field Company
+ *
+ * Description
+ *
+ * @package         user/profile
+ * @subpackage      field/rgcompany
+ * @copyright       2014        eFaktor {@link http://www.efaktor.no}
+ *
+ * @creationDate    11/11/2014
+ * @author          eFaktor     (fbv)
+ *
+ */
 
 class profile_field_rgcompany extends profile_field_base {
-     var $options;
-     var $datakey;
+    public function edit_field_add($m_form) {
+        global $PAGE;
+
+        $PAGE->requires->js(new moodle_url('/user/profile/field/rgcompany/js/FilterCompany.js'));
+
+        /* County    */
+        $options        = self::GetCounties_List();
+        $m_form->addElement('select','county',get_string('county','profilefield_rgcompany'),$options);
+
+        /* Level One    */
+        $options    = self::GetStructureLevel_By_County(1);
+        $m_form->addElement('select','level_one' ,get_string('select_company_structure_level','profilefield_rgcompany',1),$options,'disabled');
+
+        /* Level Two    */
+        $options = self::GetStructureLevel_By_Parent(2);
+        $m_form->addElement('select','level_two',get_string('select_company_structure_level','profilefield_rgcompany',2),$options,'disabled');
+
+        $m_form->addElement('static', 'rgcompany-description', '', get_string('profile_intro', 'profilefield_rgcompany'));
+
+        /* Level Three  */
+        $options = self::GetStructureLevel_By_Parent(3);
+        $m_form->addElement('select',$this->inputname,format_string($this->field->name),$options,'disabled');
+
+        /* hidden Level Three  */
+        $m_form->addElement('text','hidden_level_three',null,'style="visibility:hidden;height:0px;"');
+        $m_form->setType('hidden_level_three',PARAM_TEXT);
+        $m_form->setDefault('hidden_level_three',0);
+    }//edit_field_add
 
     /**
-     * @param   int $fieldid
-     * @param   int $userid
+     * @param           stdClass $usernew
+     * @return          mixed|void
      *
-     * @author  eFaktor
+     * @creationDate    11/11/2014
+     * @author          eFaktor     (fbv)
      *
      * Description
-     * Constructor method.
-     * Pulls out the options for the menu from the database and sets the
-     * the corresponding key for the data if it exists
+     * Save the company/ies selected
      */
-    function profile_field_rgcompany($fieldid=0, $userid=0) {
-        //first call parent constructor
-        $this->profile_field_base($fieldid, $userid);
+    public function edit_save_data($usernew) {
+        /* Variables    */
+        global $DB;
+        $selectedThree  = null;
+        $levelThree     = array();
+        $companyId      = null;
+        $index          = null;
 
-        /// get the actual companylist for menu
-        $options = $this->get_report_companydata(3);
-        $this->options = array();
 
-        $this->options[''] = get_string('choose').'...';
-
-        if ($options) {
-            foreach($options as $key => $option) {
-                $this->options[$key] = format_string($option); //multilang formatting
-            }
-        }//if_options
-
-        /// Set the data key
-        if ($this->data !== NULL) {
-            $this->datakey = $this->data;
+        if (!isset($usernew->{$this->inputname})) {
+            // Field not present in form, probably locked and invisible - skip it.
+            return;
         }
-    }
 
-    public function edit_field_company($mform) {
-        if ($this->field->visible != PROFILE_VISIBLE_NONE
-            or has_capability('moodle/user:update', context_system::instance())) {
+        /* Get the companies selected   */
+        $selectedThree = explode(',',$usernew->hidden_level_three);
+        foreach ($selectedThree as $ref) {
+            $index      = strripos($ref,"_");
+            $companyId  = substr($ref,$index+1);
 
-            $this->edit_field_add_company($mform);
-            $this->edit_field_set_default($mform);
-            $this->edit_field_set_required($mform);
-            return true;
+            $levelThree[$companyId] = $companyId;
+        }//for_each_selected
+
+        $data = new stdClass();
+
+        $usernew->{$this->inputname} = implode(',',$levelThree);
+
+        $data->userid  = $usernew->id;
+        $data->fieldid = $this->field->id;
+        $data->data    = $usernew->{$this->inputname};
+
+        if ($dataid = $DB->get_field('user_info_data', 'id', array('userid' => $data->userid, 'fieldid' => $data->fieldid))) {
+            $data->id = $dataid;
+            $DB->update_record('user_info_data', $data);
+        } else {
+            $DB->insert_record('user_info_data', $data);
         }
-        return false;
-    }
-
-    public function edit_field_add_company($mform) {
-        global $USER,$PAGE;
-
-
-        /* filter field right version */
-        $mform->addElement('select', $this->inputname, format_string($this->field->name), $this->options,'disabled');
-        $this->edit_field_set_default($mform);
-    }
+    }//edit_save_data
 
     /**
-     * @param       $mform
+     * @param       mixed       $data
+     * @param       stdClass    $datarecord
+     * @return      mixed
      *
-     * @updateDate  23/11/2012
+     * @updateDate  11/11/2014
      * @author      eFaktor     (fbv)
      *
      * Description
-     * Create the code snippet for this field instance
-     * Overwrites the base class method
+     * The data from the form returns the key. This should be converted to the respective option string to be saved in database
+     * Overwrites base class accessor method
      */
-    public function edit_field_add($mform) {
-        global $USER,$PAGE;
-
-        $PAGE->requires->js(new moodle_url('/user/profile/field/rgcompany/FilterCompany.js'));
-        $site_context = CONTEXT_SYSTEM::instance();
-
-        /* filter field right version */
-        $mform->addElement('static', 'rgcompany-description', '', get_string('filtercompanylist', 'profilefield_rgcompany'));
-        $mform->addElement('html', '<div class="rgcompany-wrapper clearfix"><div class="companylist-fitem">');
-
-        $mform->addElement('select', $this->inputname, format_string($this->field->name), $this->options);
-
-        $mform->addElement('html', '</div><div class="rgcompany-fitem">');
-
-        $attributes = 'size="25"';
-        $mform->addElement('text', 'input_rgcompany', get_string('search'), $attributes);
-        $mform->setType('input_rgcompany',PARAM_TEXT);
-
-
-        $mform->addElement('html', '</div></div>');
+    public function edit_save_data_preprocess($data,$datarecord) {
+        return $data;
     }
 
     /**
@@ -101,145 +119,285 @@ class profile_field_rgcompany extends profile_field_base {
      * Overwrites the base class method
      */
     public function edit_field_set_default($mform) {
-        if (FALSE !==array_search($this->field->defaultdata, $this->options)){
-           $defaultkey = (int)array_search($this->field->defaultdata, $this->options);
-        } else {
-            $defaultkey = '';
-        }
-        $mform->setDefault($this->inputname, $defaultkey);
-    }
+        /* Variables    */
+        global $USER;
+        $levelThree = null;
+
+        /* Get My Level Three   */
+        $levelThree = self::GetMyLevelThree($this->userid,$this->fieldid);
+        /* Set the Company and the rest of the data */
+        if ($levelThree) {
+            $mform->getElement($this->inputname)->setMultiple(true);
+            $mform->getElement($this->inputname)->removeAttribute('disabled');
+            $mform->setDefault('hidden_level_three',implode(',',$levelThree));
+        }//if_levelThree
+    }//edit_field_set_default
+
 
     /**
-     * @param       mixed       $data
-     * @param       stdClass    $datarecord
-     * @return      mixed
+     * @return mixed|string
      *
-     * @updateDate  23/11/2012
-     * @author      eFaktor     (fbv)
+     * @creationDate    13/11/2014
+     * @author          eFaktor     (fbv)
      *
      * Description
-     * The data from the form returns the key. This should be converted to the respective option string to be saved in database
-     * Overwrites base class accessor method
+     * Display the correct value
      */
-    public function edit_save_data_preprocess($data,$datarecord) {
-         return $data;
-    }
+    function display_data() {
+        return self::GetNames_MyLevelThree($this->userid,$this->fieldid);
+    }//display_data
+
+    /************/
+    /* PRIVATE  */
+    /************/
 
     /**
-     * @param   $user
+     * @static
+     * @param           $user_id
+     * @param           $field_id
+     * @return          null
+     * @throws          Exception
      *
-     * @author  eFaktor
-     *
-     * Description
-     * When passing the user object to the form class for the edit profile page
-     * we should load the key for the saved data
-     * Overwrites the base class method
-     */
-    public function edit_load_user_data($user) {
-        $user->{$this->inputname} = $this->datakey;
-    }
-
-    /**
-     * @param   $mform
-     *
-     * @author  eFaktor (fbv)
+     * @creationDate    13/11/2014
+     * @author          eFaktor     (fbv)
      *
      * Description
-     * HardFreeze the field if locked.
+     * Get the names connected to my companies
      */
-    public function edit_field_set_locked($mform) {
-        if (!$mform->elementExists($this->inputname)) {
-            return;
-        }
-        if ($this->is_locked() and !has_capability('moodle/user:update', CONTEXT_SYSTEM::instance())) {
-            $mform->hardFreeze($this->inputname);
-            $mform->setConstant($this->inputname, $this->datakey);
-        }
-    }
-
-    /**
-     * @return  string
-     *
-     * @author  eFaktor
-     *
-     * Description
-     * Display the data for this field
-     */
-    public function display_data() {
-        $options = new stdClass();
-        $options->para = false;
-        $id = $this->data;
-        if ($entry = $this->get_report_company_entry($id)) {
-            return $entry;
-        } else {
-            return $id;
-        }
-    }
-
-    /**
-     * @param       $hierarchy_level        list of id/name entries
-     * @return      array|bool              with company entries
-     *
-     * @updateDate  12/09/2012
-     * @author      eFaktor     (fbv)
-     *
-     * Description
-     * Get the company list from report_gen_companydata table with the given hierarchylevel.
-     */
-    protected function get_report_companydata($hierarchy_level) {
+    private static function GetNames_MyLevelThree($user_id,$field_id) {
+        /* Variables    */
         global $DB;
 
-        $company_data = array();
+        try {
+            /* Search Criteria  */
+            $params = array();
+            $params['userid']   = $user_id;
+            $params['fieldid']  = $field_id;
 
-        /* SQL Instruction */
-        $sql = " SELECT     cd.id,
-                            cd.name
-                 FROM       {report_gen_companydata} cd
-                 WHERE      cd.hierarchylevel = :level
-                 ORDER BY   cd.name ASC ";
+            /* Execute  */
+            $rdo = $DB->get_record('user_info_data',$params,'data');
+            if ($rdo) {
+                if ($rdo->data) {
+                    /* SQL Instruction  */
+                    $sql = " SELECT		GROUP_CONCAT(DISTINCT rgc.name ORDER BY rgc.name SEPARATOR ',') as 'names'
+                         FROM		{report_gen_companydata}	rgc
+                         WHERE		rgc.id IN ($rdo->data) ";
 
-        /* Research Criteria */
-        $params = array();
-        $params['level'] = $hierarchy_level;
+                    /* Execute  */
+                    $rdo_name = $DB->get_record_sql($sql);
+                    if ($rdo_name) {
+                        return $rdo_name->names;
+                    }//if_rdo_name
+                }else {
+                    return null;
+                }
+            }//if_rdo
 
-        /* Execute */
-        if ($rdo = $DB->get_records_sql($sql,$params)) {
-            foreach($rdo as $data) {
-                $company_data[$data->id] = $data->name;
-            }//for
-
-            return $company_data;
-        }else {
-            return false;
-        }
-    }//get_report_companydata
+            return null;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//GetNames_MyLevelThree
 
     /**
-     * @param       $id     company id
-     * @return      bool    with company name or false
+     * @static
+     * @param           $user_id
+     * @param           $field_id
+     * @return          int
+     * @throws          Exception
      *
-     * @updateDate  12/09/2012
-     * @author      eFaktor     (fbv)
+     * @creationDate    11/11/2014
+     * @author          eFaktor     (fbv)
      *
      * Description
-     * Get one company name
+     * Get all companies connected to the user
      */
-    protected function get_report_company_entry($id) {
+    private static function GetMyLevelThree($user_id,$field_id) {
+        /* Variables    */
         global $DB;
 
-        /* SQL Instruction */
-        $sql = " SELECT     name
-                 FROM       {report_gen_companydata}
-                 WHERE      id = :company ";
+        try {
+            /* Search Criteria  */
+            $params = array();
+            $params['userid']   = $user_id;
+            $params['fieldid']  = $field_id;
 
-        /* Research Criteria */
-        $params = array();
-        $params['company'] = $id;
+            /* Execute  */
+            $rdo = $DB->get_record('user_info_data',$params,'data');
+            if ($rdo) {
+                if ($rdo->data) {
+                    return self::GetReferences_LevelThree($rdo->data);
+                }else {
+                    return 0;
+                }
+            }else {
+                return 0;
+            }//if_else
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//GetMyLevelThree
 
-        if ($rdo = $DB->get_record('report_gen_companydata',array('id'=>$id))) {
-            return $rdo->name;
-        }else {
-            return false;
-        }//if_else
-    }//get_report_company_entry
-}
+    /**
+     * @static
+     * @param           $levelThree
+     * @return          array
+     * @throws          Exception
+     *
+     * @creationDate    11/11/2014
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Build the references for the level three
+     */
+    private static function GetReferences_LevelThree($levelThree) {
+        /* Variables    */
+        global $DB;
+        $references_lst = array();
+
+        try {
+            /* SQL Instruction  */
+            $sql = " SELECT		CONCAT('P',parentid,'_',companyid) as 'ref'
+                     FROM		{report_gen_company_relation}
+                     WHERE		companyid IN ($levelThree) ";
+
+            /* Execute  */
+            $rdo = $DB->get_records_sql($sql);
+            if ($rdo) {
+                foreach ($rdo as $instance) {
+                    $references_lst[] = $instance->ref . '#';
+                }
+            }//if_rdo
+
+            return $references_lst;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//BuildReference_LevelThree
+
+    /**
+     * @static
+     * @return          array
+     * @throws          Exception
+     *
+     * @creationDate    11/11/2014
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Get the counties list
+     */
+    private static function GetCounties_List() {
+        /* Variables    */
+        global $DB;
+
+        try {
+            /* Counties List    */
+            $county_lst     = array();
+            $county_lst[0]  = get_string('sel_county','profilefield_rgcompany');
+
+            /* Execute  */
+            $rdo = $DB->get_records('counties',null,'county','idcounty,county');
+            if ($rdo) {
+                foreach ($rdo as $county) {
+                    $county_lst[$county->idcounty] = $county->county;
+                }//for_rdo
+            }//if_rdo
+
+            return $county_lst;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//GetCounties_List
+
+    /**
+     * @static
+     * @param           $level
+     * @return          array
+     * @throws          Exception
+     *
+     * @creationDate    05/11/2014
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Get the Structure Level sort by county
+     */
+    private static function GetStructureLevel_By_County($level) {
+        /* Variables    */
+        global $DB;
+        $structure_level = array();
+
+        try {
+            $structure_level[0] = get_string('select_level_list','profilefield_rgcompany');
+
+            /* Search Criteria  */
+            $params = array();
+            $params['level']    = $level;
+
+            /* SQL Instruction  */
+            $sql = " SELECT		concat(idcounty,'_',id) as 'ref',
+                                name
+                     FROM		{report_gen_companydata}
+                     WHERE		hierarchylevel = :level
+                     ORDER BY	idcounty,name ASC ";
+
+
+            /* Execute  */
+            $rdo = $DB->get_records_sql($sql,$params);
+            if ($rdo) {
+                foreach ($rdo as $company) {
+                    $structure_level[$company->ref] = $company->name;
+                }//for_company
+            }//if_rdo
+
+            return $structure_level;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//GetFirstLevel_By_County
+
+    /**
+     * @static
+     * @param           $level
+     * @return          array
+     * @throws          Exception
+     *
+     * @creationDate    05/11/2014
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Get the structure level sort by parent
+     */
+    private static function GetStructureLevel_By_Parent($level) {
+        /* Variables    */
+        global $DB;
+        $structure = array();
+
+        try {
+            $structure[0] = get_string('select_level_list','profilefield_rgcompany');
+
+            /* Search Criteria  */
+            $params = array();
+            $params['level']    = $level;
+
+            /* SQL Instruction  */
+            $sql = " SELECT		concat('P',cr.parentid,'_',c.id) as 'ref',
+                                c.name
+                     FROM		{report_gen_companydata}			c
+                        JOIN	{report_gen_company_relation}		cr		ON cr.companyid = c.id
+                     WHERE		c.hierarchylevel = :level
+                     ORDER BY	cr.parentid, c.name ASC";
+
+            /* Execute      */
+            $rdo = $DB->get_records_sql($sql,$params);
+            if ($rdo) {
+                foreach ($rdo as $company) {
+                    $structure[$company->ref] = $company->name;
+                }//for_company
+            }//if_rdo
+
+            return $structure;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//GetStructureLevel_By_Parent
+}//profile_field_rgcompany

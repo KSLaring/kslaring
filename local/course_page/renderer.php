@@ -87,7 +87,9 @@ class local_course_page_renderer extends plugin_renderer_base {
 
         $block_one .= html_writer::start_tag('div',array('class' => 'home_page_block_one'));
             /* Add Short Description  */
-            $block_one .= $this->addSummary_HomePage($course,$format_options['pagegraphics']);
+            $pagegraphicstitle = !empty($format_options['pagegraphicstitle']) ?
+                $format_options['pagegraphicstitle']->value : '';
+            $block_one .= $this->addSummary_HomePage($course,$format_options['pagegraphics'],$pagegraphicstitle);
             /* Add Home Description / Video */
             $block_one .= $this->addDescription_HomePage($format_options['homesummary'],$format_options['pagevideo']);
         $block_one .= html_writer::end_tag('div');//home_page_block_one
@@ -98,6 +100,7 @@ class local_course_page_renderer extends plugin_renderer_base {
     /**
      * @param           $course
      * @param           $home_graphics
+     * @param           $home_graphicstitle
      * @return          string
      *
      * @creationDate    20/05/2014
@@ -106,7 +109,7 @@ class local_course_page_renderer extends plugin_renderer_base {
      * Description
      * Add the summary. Short Description/Button Register/Graphics
      */
-    protected function addSummary_HomePage($course,$home_graphics) {
+    protected function addSummary_HomePage($course,$home_graphics,$home_graphicstitle) {
         /* Variables   */
         global $USER;
         $disabled = '';
@@ -116,7 +119,9 @@ class local_course_page_renderer extends plugin_renderer_base {
         /* Graphics */
         if ($home_graphics->value) {
             $url_img = course_page::getUrlPageGraphicsVideo($home_graphics->value);
-            $img = '<img src="'  . $url_img . '" class="img-responsive"></br>';
+            $img = '<img src="'  . $url_img . '" class="img-responsive"' .
+                ' title="' . $home_graphicstitle . '" alt ="' .
+                $home_graphicstitle . '"></br>';
             $out .= $img;
         }//if_graphics
 
@@ -198,6 +203,7 @@ class local_course_page_renderer extends plugin_renderer_base {
         $block_two      = '';
 
         $block_two .= html_writer::start_tag('div',array('class' => 'home_page_block_two'));
+            $block_two .= html_writer::start_tag('div',array('class' => 'go-left clearfix'));
             /* Block Prerequisites  */
             $block_two .= $this->addExtra_PrerequisitesBlock($course,$format_options,$manager);
             /* Block Coordinator    */
@@ -206,8 +212,11 @@ class local_course_page_renderer extends plugin_renderer_base {
             $block_two .= $this->addExtra_DurationBlock($course->format,$format_options);
             /* Block Course Type    */
             $block_two .= $this->addExtra_TypeCourseBlock($course->format);
+            $block_two .= html_writer::end_tag('div');//go-left
+            $block_two .= html_writer::start_tag('div',array('class' => 'go-right clearfix'));
             /* Block Ratings        */
             $block_two .= $this->addCourseRatings($course->id);
+            $block_two .= html_writer::end_tag('div');//go-right
         $block_two .= html_writer::end_tag('div');//home_page_block_two
 
         return $block_two;
@@ -229,33 +238,35 @@ class local_course_page_renderer extends plugin_renderer_base {
     protected function addExtra_PrerequisitesBlock($course,$format_options,&$manager) {
         /* Variables */
         $out = '';
+        $str_format     = null;
 
-        $out .= html_writer::start_tag('div',array('class' => 'extra'));
+        $out .= html_writer::start_tag('div',array('class' => 'extra chp-block'));
             if (isset($course->idnumber) && $course->idnumber) {
-                $out .= '<h5 class="label_home">' . get_string('home_course_id','local_course_page') . '</h5>';
-                $out .= '<div class="extra_home">' . $course->idnumber . '</div>';
+                $out .= '<h5 class="title_home chp-title">' . get_string('home_course_id','local_course_page') . '</h5>';
+                $out .= '<div class="extra_home chp-content">' . $course->idnumber . '</div>';
             }//if_number
 
             if (isset($course->startdate) && $course->startdate) {
-                $out .= '<h5 class="label_home">' . get_string('home_published','local_course_page') . '</h5>';
-                $out.= '<div class="extra_home">' . userdate($course->startdate,'%d.%m.%Y', 99, false) . '</div>';
+                $out .= '<h5 class="title_home chp-title">' . get_string('home_published','local_course_page') . '</h5>';
+                $out.= '<div class="extra_home chp-content">' . userdate($course->startdate,'%d.%m.%Y', 99, false) . '</div>';
             }//if_startdate
 
+            $str_format = 'format_' . $course->format;
             switch ($course->format) {
                 case 'netcourse':
                 case 'classroom':
                     foreach ($format_options as $option) {
                         if ($option->name == 'prerequisities') {
                             if ($option->value) {
-                                $out .= '<h5 class="label_home">' . get_string('home_prerequisities','local_course_page') . '</h5>';
-                                $out .= '<div class="extra_home">' . $option->value . '</div>';
+                                $out .= '<h5 class="title_home chp-title">' . get_string('home_prerequisities',$str_format) . '</h5>';
+                                $out .= '<div class="extra_home chp-content">' . $option->value . '</div>';
                             }//if_value
                         }//if_prerequisites
 
                         if ($option->name == 'producedby') {
                             if ($option->value) {
-                                $out .= '<h5 class="label_home">' . get_string('home_producedby','local_course_page') . '</h5>';
-                                $out .= '<div class="extra_home">' . $option->value . '</div>';
+                                $out .= '<h5 class="title_home chp-title">' . get_string('home_producedby',$str_format) . '</h5>';
+                                $out .= '<div class="extra_home chp-content">' . $option->value . '</div>';
                             }//if_value
                         }//if_produced
 
@@ -269,15 +280,15 @@ class local_course_page_renderer extends plugin_renderer_base {
                     foreach ($format_options as $option) {
                         if ($option->name == 'author') {
                             if ($option->value) {
-                                $out .= '<h5 class="label_home">' . get_string('home_author','local_course_page') . '</h5>';
-                                $out .= '<div class="extra_home">' . $option->value . '</div>';
+                                $out .= '<h5 class="title_home chp-title">' . get_string('home_author',$str_format) . '</h5>';
+                                $out .= '<div class="extra_home chp-content">' . $option->value . '</div>';
                             }//if_value
                         }//author
 
                         if ($option->name == 'licence') {
                             if ($option->value) {
-                                $out .= '<h5 class="label_home">' . get_string('home_licence','local_course_page') . '</h5>';
-                                $out .= '<div class="extra_home">' . $option->value . '</div>';
+                                $out .= '<h5 class="title_home chp-title">' . get_string('home_licence',$str_format) . '</h5>';
+                                $out .= '<div class="extra_home chp-content">' . $option->value . '</div>';
                             }//if_value
                         }//licence
 
@@ -309,22 +320,23 @@ class local_course_page_renderer extends plugin_renderer_base {
     protected function addExtra_DurationBlock($course_format,$format_options) {
         /* Variables */
         $out = '';
+        $str_format = 'format_' . $course_format;
 
-        $out .= html_writer::start_tag('div',array('class' => 'extra'));
+        $out .= html_writer::start_tag('div',array('class' => 'extra chp-block'));
             switch ($course_format) {
                 case 'netcourse':
                     foreach ($format_options as $option) {
                         if ($option->name == 'length') {
                             if ($option->value) {
-                                $out .= '<h5 class="label_home">' . get_string('home_length','local_course_page') . '</h5>';
-                                $out .=  '<div class="extra_home">' . $option->value . '</div>';
+                                $out .= '<h5 class="title_home chp-title">' . get_string('home_length',$str_format) . '</h5>';
+                                $out .=  '<div class="extra_home chp-content">' . $option->value . '</div>';
                             }//if_value
                         }//if_length
 
                         if ($option->name == 'effort') {
                             if ($option->value) {
-                                $out .= '<h5 class="label_home">' . get_string('home_effort','local_course_page') . '</h5>';
-                                $out .= '<div class="extra_home">' . $option->value . '</div>';
+                                $out .= '<h5 class="title_home chp-title">' . get_string('home_effort',$str_format) . '</h5>';
+                                $out .= '<div class="extra_home chp-content">' . $option->value . '</div>';
                             }//if_value
                         }//if_effort
                     }//for_format_options
@@ -334,22 +346,22 @@ class local_course_page_renderer extends plugin_renderer_base {
                     foreach ($format_options as $option) {
                         if ($option->name == 'location') {
                             if ($option->value) {
-                                $out .= '<h5 class="label_home">' . get_string('home_location','local_course_page') . '</h5>';
-                                $out .= '<div class="extra_home">' . $option->value . '</div>';
+                                $out .= '<h5 class="title_home chp-title">' . get_string('home_location',$str_format) . '</h5>';
+                                $out .= '<div class="extra_home chp-content">' . $option->value . '</div>';
                             }//if_value
                         }//if_location
 
                         if ($option->name == 'length') {
                             if ($option->value) {
-                                $out .= '<h5 class="label_home">' . get_string('home_length','local_course_page') . '</h5>';
-                                $out .=  '<div class="extra_home">' . $option->value . '</div>';
+                                $out .= '<h5 class="title_home chp-title">' . get_string('home_length',$str_format) . '</h5>';
+                                $out .=  '<div class="extra_home chp-content">' . $option->value . '</div>';
                             }//if_value
                         }//if_length
 
                         if ($option->name == 'effort') {
                             if ($option->value) {
-                                $out .= '<h5 class="label_home">' . get_string('home_effort','local_course_page') . '</h5>';
-                                $out .= '<div class="extra_home">' . $option->value . '</div>';
+                                $out .= '<h5 class="title_home chp-title">' . get_string('home_effort',$str_format) . '</h5>';
+                                $out .= '<div class="extra_home chp-content">' . $option->value . '</div>';
                             }//if_value
                         }//if_effort
                     }//for_format_options
@@ -379,10 +391,10 @@ class local_course_page_renderer extends plugin_renderer_base {
         $out     = '';
 
         /* Get Extra Options    */
-        $out .= html_writer::start_tag('div',array('class' => 'extra'));
+        $out .= html_writer::start_tag('div',array('class' => 'extra chp-block'));
         /* Add Course Type Icon */
-        $out .= '<h5 class="label_home">' . get_string('home_type','local_course_page') . '</h5>';
-            $out .= '<div class="extra_home">';
+        $out .= '<h5 class="title_home chp-title">' . get_string('home_type','local_course_page') . '</h5>';
+            $out .= '<div class="extra_home chp-content">';
             switch ($course_format) {
                 case 'netcourse':
                     $url_img    = $this->getURLIcon('nett_kurs');
@@ -429,15 +441,15 @@ class local_course_page_renderer extends plugin_renderer_base {
         global $OUTPUT,$DB;
         $out = '';
 
-        $out .= html_writer::start_tag('div',array('class' => 'manager'));
+        $out .= html_writer::start_tag('div',array('class' => 'manager chp-block clearfix'));
             /* Main Manager */
             if ($manager) {
                 $user = $DB->get_record('user',array('id' => $manager));
                 $user->description = file_rewrite_pluginfile_urls($user->description, 'pluginfile.php', CONTEXT_USER::instance($user->id)->id, 'user', 'profile', null);
                 $url_user = new moodle_url('/user/profile.php',array('id' => $user->id));
 
-                $out .= '<h5 class="label_coordinator">' . get_string('home_coordinater','local_course_page') . '</h5>';
-                $out .= '<div class="user_profile">';
+                $out .= '<h5 class="title_coordinator chp-title">' . get_string('home_coordinater','local_course_page') . '</h5>';
+                $out .= '<div class="user_profile chp-content clearfix">';
                 $out .= '<div class="user_picture">' . $OUTPUT->user_picture($user, array('size'=>150)) . '</div>';
                     $out .= '<div class="user"><a href="' . $url_user . '">' . fullname($user) . '</a>';
                 $out .= '<div class="extra_coordinator">' . $user->description . '</div>'  . '</div>';
@@ -481,15 +493,14 @@ class local_course_page_renderer extends plugin_renderer_base {
         $class       = null;
 
         /* Add  Ratings */
-        $out .= html_writer::start_tag('div',array('class' => 'ratings'));
+        $out .= html_writer::start_tag('div',array('class' => 'ratings chp-block'));
             /* Add Total Average of course rating   */
             /* Total Rates  */
             $total_rates = course_page::getTotalRatesCourse($course_id);
             $out .= course_page::AddRatingsTotal($course_id,$total_rates);
 
-            $out .= '<h5 class="title_ratings">' . get_string('rate_users','local_course_page') . '</h5>';
-
-            $out.= '<div class="content_rating_bar">';
+            $out .= '<h5 class="title_ratings chp-title">' . get_string('rate_users','local_course_page') . '</h5>';
+            $out.= '<div class="content_rating_bar chp-content">';
                 /* Excellent Rate   */
                 $excellent_rate = course_page::getCountTypeRateCourse($course_id,EXCELLENT_RATING);
                 $exc_bar        = course_page::getProgressBarCode($excellent_rate,$total_rates,get_string('rate_exc','local_course_page'));
@@ -515,7 +526,7 @@ class local_course_page_renderer extends plugin_renderer_base {
             /* Add Reviews  */
             $light_box = '';
             $disabled = '';
-            $out .= '<h5 class="title_ratings">' . get_string('title_reviews','local_course_page') . '</h5>';
+            $out .= '<h5 class="title_ratings chp-title">' . get_string('title_reviews','local_course_page') . '</h5>';
             $last_rates = course_page::getLastCommentsRateCourse($course_id);
             if ($last_rates) {
                 $url_user = new moodle_url('/blocks/rate_course/pix/rating_user_graphic.php');
@@ -528,7 +539,7 @@ class local_course_page_renderer extends plugin_renderer_base {
                         $str_comment = '"' . substr($str_comment,0,97) . ' ...' .' "';
                     }
 
-                    $out .= '<div class="ratings_review">';
+                    $out .= '<div class="ratings_review chp-content clearfix">';
                         $out .= '<div class="ratings_review_title">' . $rate->modified . '</div>';
                         $out .= '<div class="ratings_review_value">' . format_text($str_comment);
                             $out .= '<img src="'. $url_user .'"/>';
@@ -554,20 +565,19 @@ class local_course_page_renderer extends plugin_renderer_base {
                 }//for_lastcomments
             }else {
                 $out .= '<div class="ratings_review">' . get_string('not_comments','local_course_page') . '</div>';
-                $disabled = 'disabled';
+                $disabled = ' disabled="disabled"';
             }//if_lst_comments
 
-
             /* Lightbox --> see the last five comments  */
-            $out .= '</br>';
             $header ='<h5 class="ratings_panel_title">' . get_string('title_reviews','local_course_page') . '</h5>';
             $this->page->requires->yui_module('moodle-local_course_page-ratings','M.local_course_page.ratings',array(array('header' => $header,'content' => $light_box)));
-            $out .= html_writer::start_tag('div', array('class' => 'mdl-right','commentPanel'));
+            $out .= html_writer::start_tag('div', array('class' => 'mdl-right commentPanel'));
             $out .= '<button class="buttons" id="show" ' . $disabled . '>' . get_string('btn_more','local_course_page') . '</button>';
             $out.= html_writer::end_tag('div');//div_mdl_right
 
-            $out .= '<h5 class="title_ratings">' . get_string('home_ratings','local_course_page') . '</h5>';
-            $out .= '<div class="label_ratings">';
+            /* Give a rating */
+            $out .= '<h5 class="title_ratings chp-title">' . get_string('home_ratings','local_course_page') . '</h5>';
+            $out .= '<div class="label_ratings chp-content">';
                 $out .= $OUTPUT->pix_icon('star', get_string('giverating', 'block_rate_course'),'block_rate_course', array('class'=>'icon'));
                 $url = new moodle_url('/blocks/rate_course/rate.php', array('courseid'=>$course_id));
 

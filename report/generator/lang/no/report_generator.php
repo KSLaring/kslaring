@@ -101,6 +101,9 @@ $string['add_item']                     = 'Legg til element';
 $string['rename_selected']              = 'Endre navn på valgte element';
 $string['delete_selected']              = 'Slett valgte element';
 $string['remove_selected']              = 'Fjern valgte elementer fra listen';
+$string['unlink_selected']              = 'Unlink selected item';
+$string['unlink_title']                 = 'Unlink item';
+$string['unlink_from']                  = 'Unlink item from';
 $string['get_level']                    = 'Hent nivå {$a} ';
 $string['get_unconnected']              = 'Vis nivå {$a}-elementer uten overordnet tilknytning';
 $string['company_structure_employees']  = 'Ansatte';
@@ -153,6 +156,7 @@ $string['job_role_name']    = 'Navn på jobbrolle';
 
 $string['available_job_roles']          = 'Tilgjengelige jobbroller';
 $string['no_job_roles_available']       = 'Ingen jobbroller tilgjengelig';
+$string['add_job_role']                 = 'Ny jobbroller';
 $string['edit_job_roles']               = 'Endre jobbroller';
 $string['edit_this_job_role']           = 'Endre denne jobbrollen';
 $string['delete_this_job_role']         = 'Slett denne jobbrollen';
@@ -277,6 +281,7 @@ $string['exists_name'] = 'Dette arbeidsstedet eksisterer allerede';
 $string['select_level_list'] = 'Velg element';
 $string['btn_cancel'] = 'Avbryt';
 $string['add_company_level']         = 'Nytt element';
+$string['txt_item']                  = 'Element';
 $string['edit_company_level']        = 'Endre element';
 $string['rename_company_level']      = 'Endre navn på element';
 $string['delete_company_level']      = 'Slett element';
@@ -360,3 +365,10 @@ $string['existing_item']    = 'Eksisterende element';
 $string['employee_report_link'] = 'Status på sertifiseringer';
 
 $string['underconstruction'] = 'Beklager, men denne rapporten er for tiden deaktivert. Vi arbeider med å forbedre den.';
+$string['county']       = 'County';
+$string['sel_county']   = 'Choose a county...';
+
+$string['municipality']     = 'Municipality';
+$string['sel_municipality'] =  'Choose a municipality...';
+
+$string['industry_code'] = 'Næringskode';

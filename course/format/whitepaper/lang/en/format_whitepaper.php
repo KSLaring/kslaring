@@ -33,6 +33,10 @@ $string['defactivitytypedesc'] = 'Specify the activity type that will be selecte
 $string['erroractivitytype'] = 'Type of activity is not set up in Course settings';
 $string['orphaned'] = 'Orphaned';
 $string['orphanedwarning'] = 'These activities are unreachable by users!';
+
 $string['pluginname'] = 'Whitepaper format';
 $string['sectionname'] = '';
 $string['warningchangeformat'] = 'When changing the existing course format to "Whitepaper activity" make sure that you removed all extra activities from the course including the "News forum". Note that sections structure may be modified.';
+
+$string['home_author']              = 'Author';
+$string['home_licence']             = 'Licence';

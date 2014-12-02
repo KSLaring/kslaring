@@ -24,7 +24,7 @@ require_once('edit_company_structure_form.php');
 require_once($CFG->libdir . '/adminlib.php');
 
 /* Params */
-$level  = optional_param('level', 1, PARAM_INT);
+$level      = optional_param('level', 1, PARAM_INT);
 $url        = new moodle_url('/report/generator/company_structure/edit_company_structure.php',array('level'=>$level));
 $return_url = new moodle_url('/report/generator/company_structure/company_structure.php',array('level'=>$level));
 
@@ -58,25 +58,10 @@ if ($form->is_cancelled()) {
     $_POST = array();
     redirect($return_url);
 }else if($data = $form->get_data()) {
-    $parents    = $SESSION->parents;
-    $instance   = new stdClass();
+    $parents = $SESSION->parents;
 
-    /* Get Data */
-    $instance->id               = $parents[$level];
-    if ($data->name) {
-        $instance->name   = $data->name;
-    }else {
-        $instance->name   = report_generator_get_company_name($data->other_company);
-    }//if_else_data_name
-    $instance->hierarchylevel   = $level;
-    $instance->modified         = time();
-
-    if ($level == 3) {
-        $instance->idcounty = $data->county;
-        $instance->idmuni   = $data->municipality_id;
-    }//if_level_3
-
-    company_structure::Update_CompanyLevel($instance);
+    /* Update Level */
+    company_structure::Update_CompanyLevel($data,$level);
 
     $_POST = array();
     redirect($return_url);

@@ -120,7 +120,6 @@ function certificate_delete_instance($id) {
  * @return array status array
  */
 function certificate_reset_userdata($data) {
-
     global $DB;
 
     $componentstr = get_string('modulenameplural', 'certificate');
@@ -210,7 +209,7 @@ function certificate_user_complete($course, $user, $mod, $certificate) {
         echo get_string('issued', 'certificate') . ": ";
         echo userdate($issue->timecreated);
         $cm = get_coursemodule_from_instance('certificate', $certificate->id, $course->id);
-        certificate_print_user_files($certificate->id, $user->id, context_module::instance($cm->id));
+        certificate_print_user_files($certificate, $user->id, context_module::instance($cm->id)->id);
         echo '<br />';
         echo $OUTPUT->box_end();
     } else {
@@ -232,7 +231,6 @@ function certificate_get_participants($certificateid) {
               FROM {user} u, {certificate_issues} a
              WHERE a.certificateid = :certificateid
                AND u.id = a.userid";
-
     return  $DB->get_records_sql($sql, array('certificateid' => $certificateid));
 }
 
@@ -381,7 +379,6 @@ function certificate_email_others($course, $certificate, $certrecord, $cm) {
                 $other = trim($other);
                 if (validate_email($other)) {
                     $destination = new stdClass;
-
                     $destination->id = 1;
                     $destination->email = $other;
                     $info = new stdClass;
@@ -619,8 +616,8 @@ function certificate_print_user_files($certificate, $userid, $contextid) {
     $files = $fs->get_area_files($contextid, $component, $filearea, $certrecord->id);
     foreach ($files as $file) {
         $filename = $file->get_filename();
-        //$link = file_encode_url($CFG->wwwroot.'/pluginfile.php', '/'.$contextid.'/mod_certificate/issue/'.$certrecord->id.'/'.$filename);
-        $link = new moodle_url($CFG->wwwroot.'/pluginfile.php' . '/'.$contextid.'/mod_certificate/issue/'.$certrecord->id.'/'.$filename);
+        $link = file_encode_url($CFG->wwwroot.'/pluginfile.php', '/'.$contextid.'/mod_certificate/issue/'.$certrecord->id.'/'.$filename);
+
         $output = '<img src="'.$OUTPUT->pix_url(file_mimetype_icon($file->get_mimetype())).'" height="16" width="16" alt="'.$file->get_mimetype().'" />&nbsp;'.
                   '<a href="'.$link.'" >'.s($filename).'</a>';
 
@@ -731,9 +728,10 @@ function certificate_get_issues($certificateid, $sort="ci.timecreated ASC", $gro
 
     // Get all the users that have certificates issued, should only be one issue per user for a certificate
     $allparams = $conditionsparams + array('certificateid' => $certificateid);
-    $namefields = get_all_user_name_fields(true, 'u');
+
+    // The picture fields also include the name fields for the user.
     $picturefields = user_picture::fields('u');
-    $users = $DB->get_records_sql("SELECT u.id, $namefields, $picturefields, ci.code, ci.timecreated
+    $users = $DB->get_records_sql("SELECT $picturefields, u.idnumber, ci.code, ci.timecreated
                                      FROM {user} u
                                INNER JOIN {certificate_issues} ci
                                        ON u.id = ci.userid
@@ -865,7 +863,6 @@ function certificate_get_mods() {
 
     $modules = array();
     $sections = $modinfo->get_section_info_all();
-
     for ($i = 0; $i <= count($sections) - 1; $i++) {
         // should always be true
         if (isset($sections[$i])) {

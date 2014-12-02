@@ -1,100 +1,119 @@
 <?php
+/**
+ * Report generator - Job Role.
+ *
+ * Description
+ *
+ * @package         report
+ * @subpackage      generator/job_role
+ * @copyright       2010 eFaktor
+ * @licence         http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ *
+ * @updateDate      06/11/2014
+ * @author          eFaktor     (fbv)
+ *
+ * Edit Job Role    (Form)
+ *
+ */
 
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->libdir.'/formslib.php');
-$PAGE->requires->js('/report/generator/js/muni.js');
+$PAGE->requires->js('/report/generator/js/jobrole.js');
 
-/* Form to add or edit a job role. */
 class generator_edit_job_role_form extends moodleform {
     function definition () {
+        /* Variables    */
+        $company_ref    = 0;
+
+
         /* General Settings */
         $level_select_attr = array(
             'class' => REPORT_GENERATOR_COMPANY_STRUCTURE_LEVEL,
-            'size'  => '20'
+            'size'  => '10'
         );
 
-        $m_form = $this->_form;
+        /* Form */
+        $m_form         = $this->_form;
+        $jr_info        = $this->_customdata;
 
-        $job_role_id = $this->_customdata;
-        $job_role = null;
-        if ($job_role_id) {
-            /* Job Role Information */
-            $job_role = job_role::JobRole_Info($job_role_id);
-        }//if_job_role_id
-
+        /* Job Role */
         $m_form->addElement('header', 'name_area', get_string('job_role_name', 'report_generator'));
         $m_form->addElement('text', 'job_role_name', get_string('job_role_name', 'report_generator'));
         $m_form->setType('job_role_name',PARAM_TEXT);
         $m_form->addRule('job_role_name','','required', null, 'server');
+        $m_form->setDefault('job_role_name',$jr_info->name);
 
-        /* County           */
+        /* Company Structure    */
+        $m_form->addElement('header', 'company_structure', get_string('company_structure', 'report_generator'));
+        $m_form->setExpanded('company_structure',true);
+        /* County    */
         $options        = report_generator_GetCounties_List();
         $m_form->addElement('select','county',get_string('county','report_generator'),$options);
+        $m_form->addRule('county','','required', null, 'server');
+        if ($jr_info->county) {
+            $m_form->setDefault('county',$jr_info->county);
+        }//if_levelOne
 
-        /* Municipality     */
-        $options    = array();
-        if ($job_role) {
-            $options = report_generator_GetMunicipalities_List($job_role->idcounty);
-        }else {
-            $options[0] = get_string('sel_municipality','report_generator');
-        }
+        /* Level One    */
+        $options    = job_role::GetStructureLevel_By_County(1);
+        $m_form->addElement('select','level_one' ,get_string('select_company_structure_level','report_generator',1),$options,'disabled');
+        if ($jr_info->levelOne) {
+            $company_ref =  $jr_info->county . '_' . $jr_info->levelOne;
+            $m_form->setDefault('level_one',$company_ref);
+        }//if_levelOne
 
-        $m_form->addElement('select','munis',get_string('municipality','report_generator'),$options);
+        /* Level Two    */
+        $options = job_role::GetStructureLevel_By_Parent(2);
+        $m_form->addElement('select','level_two',get_string('select_company_structure_level','report_generator',2),$options,'disabled');
+        if ($jr_info->levelTwo) {
+            $company_ref = 'P' . $jr_info->levelOne . '_' . $jr_info->levelTwo;
+            $m_form->setDefault('level_two',$company_ref);
+        }//if_levelTwo
 
-        if ($job_role) {
-            $m_form->setDefault('job_role_name',$job_role->name);
-            $m_form->setDefault('county',$job_role->idcounty);
-            $m_form->setDefault('munis',$job_role->idmuni);
-        }//if_job_role
+        /* Level Three  */
+        $options = job_role::GetStructureLevel_By_Parent(3);
+        $m_form->addElement('select','level_three',get_string('select_company_structure_level','report_generator',3),$options,'disabled');
 
         /* ADD List with all outcomes */
         $m_form->addElement('header', 'outcomes', get_string('related_outcomes', 'report_generator'));
+        $m_form->setExpanded('outcomes',true);
         $m_form->addElement('html', '<div class="level-wrapper">');
-        list($out_job_roles,$out_selected) = job_role::Get_Outcomes_ConnectedJobRole($job_role_id);
-        $select = $m_form->addElement('select',
-                                      REPORT_GENERATOR_OUTCOME_LIST,
-                                      get_string(REPORT_GENERATOR_OUTCOME_LIST, 'report_generator'),
-                                      $out_job_roles,
-                                      $level_select_attr);
+            list($out_job_roles,$out_selected) = job_role::Get_Outcomes_ConnectedJobRole($jr_info->id);
+            $select = $m_form->addElement('select',
+                                          REPORT_GENERATOR_OUTCOME_LIST,
+                                          get_string(REPORT_GENERATOR_OUTCOME_LIST, 'report_generator'),
+                                          $out_job_roles,
+                                          $level_select_attr);
 
-        $select->setMultiple(true);
-        $m_form->setDefault(REPORT_GENERATOR_OUTCOME_LIST, $out_selected);
-
+            $select->setMultiple(true);
+            $m_form->setDefault(REPORT_GENERATOR_OUTCOME_LIST, $out_selected);
         $m_form->addElement('html', '</div>');
+
         $m_form->addElement('hidden','id');
-        $m_form->setDefault('id',$job_role_id);
-        $m_form->setType('id',PARAM_INT);
+        $m_form->setType('id',PARAM_TEXT);
+        $m_form->setDefault('id',$jr_info->id);
 
-        /* Municipality hidden */
-        $m_form->addElement('text','municipality_id',null,'style="visibility:hidden;height:0px;"');
-        $m_form->setType('municipality_id',PARAM_TEXT);
-
-        $options = report_generator_GetMunicipalities_List();
-        $m_form->addElement('select','hidden_munis','',$options,'style="visibility:hidden;height:0px;"');
+        /* hidden Level Three  */
+        $m_form->addElement('text','hidden_level_three',null,'style="visibility:hidden;height:0px;"');
+        $m_form->setType('hidden_level_three',PARAM_TEXT);
+        if ($jr_info->levelThree) {
+            /* Get Companies Reference for level Three  */
+            $comp_ref = explode(',',$jr_info->levelThree);
+            foreach ($comp_ref as $id=>$ref) {
+                $comp_ref[$id] = 'P' . $jr_info->levelTwo . '_' . $ref . '#';
+            }//for_ref
+            $m_form->setDefault('hidden_level_three',implode(',',$comp_ref));
+        }//if_levelThree
 
         $this->add_action_buttons();
-        $this->set_data($job_role_id);
     }//definition
 
     function validation($data, $files) {
-        global $DB, $CFG, $SESSION;
         $errors = parent::validation($data, $files);
 
-        $job_role_id = $this->_customdata;
 
-        /* Can't be empty */
-        if (empty($data['job_role_name'])) {
-            $errors['job_role_name'] = get_string('missing_job_role_name','report_generator');
-        }else {
-            if (!$job_role_id) {
-                $bln_exist = job_role::JobRole_Exists($data['job_role_name']);
-
-                if ($bln_exist) {
-                    $errors['job_role_name'] = get_string('exists_job_role','report_generator');
-                }//if_exits
-            }
-        }
+        /* New Function to check if the Job Role just exists*/
 
         return $errors;
     }//validation

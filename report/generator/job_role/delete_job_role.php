@@ -23,8 +23,8 @@ require_once('../locallib.php');
 require_once($CFG->libdir . '/adminlib.php');
 
 /* Params */
-$job_role_id    = required_param('id',PARAM_INT);
-$return_url     = new moodle_url('/report/generator/job_role/job_role.php');
+$job_role_id  = required_param('id',PARAM_INT);
+$return_url = new moodle_url('/report/generator/job_role/job_role.php');
 $return         = new moodle_url('/report/generator/index.php');
 $url            = new moodle_url('/report/generator/job_role/delete_job_role.php');
 

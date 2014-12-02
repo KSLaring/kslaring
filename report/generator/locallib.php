@@ -20,6 +20,7 @@ define('REPORT_GENERATOR_JOB_ROLE_FIELD', 'rgjobrole');
 define('REPORT_GENERATOR_ADD_ITEM', 'add_item');
 define('REPORT_GENERATOR_RENAME_SELECTED', 'rename_selected');
 define('REPORT_GENERATOR_DELETE_SELECTED', 'delete_selected');
+define('REPORT_GENERATOR_UNLINK_SELECTED', 'unlink_selected');
 define('REPORT_GENERATOR_GET_LEVEL', 'get_level');
 define('REPORT_GENERATOR_GET_UNCONNECTED', 'get_unconnected');
 define('REPORT_GENERATOR_REMOVE_SELECTED', 'remove_selected');
@@ -175,10 +176,10 @@ function  report_generator_GetMunicipalities_List($id_county = null) {
             $params['idcounty'] = $id_county;
         }
         /* Execute  */
-        $rdo = $DB->get_records('municipality',$params,'idcounty,municipality','idmuni,municipality');
+        $rdo = $DB->get_records('municipality',$params,'idcounty,municipality','id,idcounty,idmuni,municipality');
         if ($rdo) {
             foreach ($rdo as $muni) {
-                $municipality_lst[$muni->idmuni] = $muni->municipality;
+                $municipality_lst[$muni->idcounty . '_' . $muni->idmuni] = $muni->municipality;
             }//for_rdo
         }//if_rdo
 
@@ -516,17 +517,14 @@ function report_generator_get_company_name($company) {
 
     try {
         /* SQL Instruction   */
-        $sql = " SELECT     name
-             FROM       {report_gen_companydata}
-             WHERE      id = :company ";
+        $sql = " SELECT     GROUP_CONCAT(DISTINCT rgc.name ORDER BY rgc.name SEPARATOR ',') as 'names'
+                 FROM       {report_gen_companydata} rgc
+                 WHERE      rgc.id IN ($company) ";
 
-        /* Research Criteria */
-        $params = array();
-        $params['company']   = $company;
 
         /* Execute */
-        if ($rdo = $DB->get_record_sql($sql,$params)) {
-            return $rdo->name;
+        if ($rdo = $DB->get_record_sql($sql)) {
+            return $rdo->names;
         }else {
             return null;
         }//if_rdo
@@ -588,7 +586,7 @@ function report_generator_get_job_role_list($list = null){
  *
  * @creationDate    12/09/2012
  * @updateDate      08/10/2014
- * @author          eFaktor         (fbv)
+ * @author          eFaktor     (fbv)
  *
  * Description
  * Get the job role's name

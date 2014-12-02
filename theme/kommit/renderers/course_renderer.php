@@ -67,5 +67,49 @@ class theme_kommit_core_course_renderer extends core_course_renderer {
         return $content;
     }
 
+    /**
+     * Returns HTML to display a tree of subcategories and courses in the given category
+     *
+     * @param coursecat_helper $chelper various display options
+     * @param coursecat $coursecat top category (this category's name and description will NOT be added to the tree)
+     * @return string
+     */
+    protected function coursecat_tree(coursecat_helper $chelper, $coursecat) {
+        $categorycontent = $this->coursecat_category_content($chelper, $coursecat, 0);
+        if (empty($categorycontent)) {
+            return '';
+        }
 
+        // Start content generation
+        $content = '';
+        $attributes = $chelper->get_and_erase_attributes('course_category_tree clearfix');
+        $content .= html_writer::start_tag('div', $attributes);
+
+        if ($coursecat->get_children_count()) {
+            $classes = array(
+                'collapseexpand',
+                // start change uh 2014-11-21
+//                'collapse-all',
+                // end change uh
+            );
+            if ($chelper->get_subcat_depth() == 1) {
+                $classes[] = 'disabled';
+            }
+            // Only show the collapse/expand if there are children to expand.
+            $content .= html_writer::start_tag('div', array('class' => 'collapsible-actions'));
+            // start change uh 2014-11-21
+//            $content .= html_writer::link('#', get_string('collapseall'),
+            $content .= html_writer::link('#', get_string('expandall_initial', 'theme_kommit'),
+                    array('class' => implode(' ', $classes)));
+            // end change uh
+            $content .= html_writer::end_tag('div');
+            $this->page->requires->strings_for_js(array('collapseall', 'expandall'), 'moodle');
+        }
+
+        $content .= html_writer::tag('div', $categorycontent, array('class' => 'content'));
+
+        $content .= html_writer::end_tag('div'); // .course_category_tree
+
+        return $content;
+    }
 }

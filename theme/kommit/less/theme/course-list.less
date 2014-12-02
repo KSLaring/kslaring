@@ -3,69 +3,90 @@
 // course list page
 // --------------------------------
 
-#page-course-index-category .coursebox {
-  background: #fff;
-  padding-left: 20px;
-  border: 1px solid #e8e8e8;
-  position: relative;
+#page-course-index {
+    .buttons {
+        input[type="submit"] {
+            margin-top: 1.2em;
+        }
+    }
 }
 
+#page-course-index-category .coursebox {
+    background: #fff;
+    padding-left: 20px;
+    border: 1px solid #e8e8e8;
+    position: relative;
+}
 
 // course category page
 // --------------------------------
 
-.course_category_tree .category > .info {
-  background: #fff;
-  padding-left: 20px;
-  border: 1px solid #e8e8e8;
+.course_category_tree {
+    .collapseexpand {
+        &.disabled:hover,
+        &.disabled {
+            color: @grayLight;
+        }
+    }
+    .category {
+        > .info,
+        > .content {
+            background: #fff;
+            padding-left: 20px;
+            border: 1px solid #e8e8e8;
+        }
+        > .content {
+            margin-top: -3px;
+        }
+    }
 }
 
-.course_category_tree .category > .content {
-  background: #fff;
-  padding-left: 20px;
-  border: 1px solid #e8e8e8;
-  margin-top: -3px;
+a.disabled:hover,
+a.disabled {
+    text-decoration: none;
+    cursor: default;
+    font-style: italic;
+    color: #808080;
 }
 
 .coursebox .panel-heading {
-  font-size: @fontSizeH4;
-  line-height: @fontSizeH4 *1.5;
+    font-size: @fontSizeH4;
+    line-height: @fontSizeH4 *1.5;
 }
 
 // course category picker
 // ----------------------------------
 
 #page-course-index-category .categorypicker {
-  text-align: right;
-  margin: -10px 27px 20px;
+    text-align: right;
+    margin: -10px 27px 20px;
 }
 
-#page-course-index-category .categorypicker   label {
-  display: inline;
-  margin-bottom: 5px;
+#page-course-index-category .categorypicker label {
+    display: inline;
+    margin-bottom: 5px;
 }
 
 #page-course-index-category .generalbox.info {
-  margin:  0;
-  background: white;
-  padding: 0px;
-  color: @kommitGray;
-  p {
-    //margin: 0;
-  }
+    margin: 0;
+    background: white;
+    padding: 0px;
+    color: @kommitGray;
+    p {
+        //margin: 0;
+    }
 }
 
-
 #page-course-index-category .generalbox.info {
-  margin: 0;
-  background: none;
-  padding: 2px;
-  margin-bottom: 15px;
-  border: none;
-  border-radius: 0;
+    margin: 0;
+    background: none;
+    padding: 2px;
+    margin-bottom: 15px;
+    border: none;
+    border-radius: 0;
 
-  img {
+    img {
 
-    margin: 0 !important;
-  }
+        margin: 0 !important;
+    }
 }

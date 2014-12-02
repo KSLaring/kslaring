@@ -31,7 +31,7 @@ $error              = NON_ERROR;
 $per_page           = 4;
 $total_not_imported = 0;
 /* Array of all fields for validation */
-$std_fields = array('company');
+$std_fields = array('company','county','municipality','industry');
 
 @set_time_limit(60*60); // 1 hour should be enough
 raise_memory_limit(MEMORY_HUGE);

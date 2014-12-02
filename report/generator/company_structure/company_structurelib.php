@@ -57,7 +57,7 @@ class company_structure {
      * @throws      Exception
      *
      * @updateDate  08/10/2014
-     * @author      eFaktor     (fbv)
+     * @author          eFaktor     (fbv)
      *
      * Description
      * Get a list of all the companies are connected a specific level.
@@ -72,15 +72,15 @@ class company_structure {
             $params = array();
             $params['level']    = $level;
 
-            /* SQL Instruction   */
+            /* SQL Instruction */
             $sql_Select = " SELECT     DISTINCT rcd.id,
                                        rcd.name
                             FROM       {report_gen_companydata} rcd ";
             /* Join */
             $sql_Join = " ";
             if ($level > 1) {
-                $sql_Join = " JOIN  {report_gen_company_relation} rcr ON    rcr.companyid = rcd.id
-                                                                 AND   rcr.parentid  IN ($parent_id) ";
+                $sql_Join = " JOIN  {report_gen_company_relation} rcr   ON    rcr.companyid = rcd.id
+                                                                        AND   rcr.parentid  IN ($parent_id) ";
             }//if_level
 
             $sql_Where = " WHERE rcd.hierarchylevel = :level ";
@@ -148,6 +148,7 @@ class company_structure {
         }//try_catch
     }//Get_EmployeeLevel
 
+
     /**
      * @static
      * @param       $level
@@ -198,7 +199,7 @@ class company_structure {
      *
      * @creationDate    07/09/2012
      * @updateDate      08/10/2014
-     * @author          eFaktor         (fbv)
+     * @author          eFaktor     (fbv)
      *
      * Description
      * Return if one company already exists to a specific level and parent.
@@ -211,10 +212,11 @@ class company_structure {
             /* Search Criteria */
             $params = array();
             if ($company_info['name']) {
-                $params['company']  = $company_info['name'];
+                $params['company_name']  = $company_info['name'];
             }else {
-                $params['company']  = $company_info['other_company'];
+                $params['company_name']  = $company_info['other_company'];
             }
+
 
             $params['level']    = $level;
             $params['parent']   = $parent;
@@ -230,19 +232,12 @@ class company_structure {
             }//if_level_1
 
             $sql .= " WHERE      rgc.hierarchylevel = :level
-                        AND      rgc.name = :company ";
+                        AND      rgc.name = :company_name ";
 
-            if ($level == 3) {
-                if (isset($company_info['county']) && $company_info['county']) {
-                    $params['county']   = $company_info['county'];
-                    $sql .= " AND rgc.idcounty = :county ";
-                }//if_county
-                if (isset($company_info['municipality_id']) && $company_info['municipality_id']) {
-                    $params['muni']   = $company_info['municipality_id'];
-                    $sql .= " AND rgc.idmuni = :muni ";
-                }//if_muni
-            }//if_level_3
-
+            if (isset($company_info['company']) && $company_info['company']) {
+                $params['company'] = $company_info['company'];
+                $sql .= " AND rgc.id <> :company ";
+            }
             /* Execute */
             if ($rdo = $DB->get_records_sql($sql,$params)) {
                 return true;
@@ -269,15 +264,40 @@ class company_structure {
     public static function Get_CompanyInfo($company_id) {
         /* Variables    */
         global $DB;
+        $company_info = null;
 
         try {
+            /* Search Criteria  */
+            $params = array();
+            $params['company'] = $company_id;
+
+            /* SQL Instruction */
+            $sql = " SELECT    		rc.id,
+                                    rc.name,
+                                    rc.idcounty,
+                                    co.county,
+                                    rc.idmuni,
+                                    mu.municipality,
+                                    rc.industrycode
+                     FROM			{report_gen_companydata}	rc
+                        LEFT JOIN	{counties}				    co		ON co.idcounty  = rc.idcounty
+                        LEFT JOIN	{municipality}			    mu		ON mu.idmuni    = rc.idmuni
+                     WHERE          rc.id = :company ";
+
             /* Execute  */
-            $rdo = $DB->get_record('report_gen_companydata',array('id' => $company_id),'id,name,idcounty,idmuni');
+            $rdo = $DB->get_record_sql($sql,$params);
             if ($rdo) {
-                return $rdo;
-            }else {
-                return null;
+                $company_info = new stdClass();
+                $company_info->id           = $rdo->id;
+                $company_info->name         = $rdo->name;
+                $company_info->idcounty     = $rdo->idcounty;
+                $company_info->county       = $rdo->county;
+                $company_info->idmuni       = $rdo->idmuni;
+                $company_info->municipality = $rdo->municipality;
+                $company_info->industrycode = $rdo->industrycode;
             }//if_rdo
+
+            return $company_info;
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
@@ -366,43 +386,159 @@ class company_structure {
 
     /**
      * @static
-     * @param           $instance
-     * @param           null $parent
-     * @return          bool
+     * @param           $company_id
+     * @return          int
      * @throws          Exception
      *
-     * @creationDate    10/09/2012
-     * @updateDate      08/10/2014
-     * @author          eFaktor         (fbv)
+     * @creationDate    23/10/2014
+     * @author          eFaktor     (fbv)
      *
      * Description
-     * Insert a new company
+     * Count the parents connected with
      */
-    public static function Insert_CompanyLevel($instance,$parent = null) {
+    public static function Company_CountParents($company_id) {
         /* Variables    */
         global $DB;
 
         try {
-            if ($instance->id = $DB->insert_record('report_gen_companydata',$instance)) {
-                if (!is_null($parent)) {
-                    $instance_relation = new stdClass();
-                    $instance_relation->companyid   = $instance->id;
-                    $instance_relation->parentid    = $parent;
-                    $instance_relation->modified    = $instance->modified;
-
-                    $instance_relation->id = $DB->insert_record('report_gen_company_relation',$instance_relation);
-                }//if_parent
-            }//if
-
-            return true;
+            return $DB->count_records('report_gen_company_relation',array('companyid' => $company_id));
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//Insert_CompanyLevel
+    }//Company_CountParents
 
     /**
      * @static
-     * @param           $instance
+     * @param           $company_id
+     * @return          array
+     * @throws          Exception
+     *
+     * @creationDate    23/10/2014
+     * @author          eFaktor         (fbv)
+     *
+     * Description
+     * Get the parent list connected with
+     */
+    public static function Company_GetParentList($company_id) {
+        /* Variables    */
+        global $DB;
+        $parent_lst = array();
+
+        try {
+            /* First Element    */
+            $parent_lst[0] = get_string('select_level_list','report_generator');
+
+            /* Search Criteria  */
+            $params = array();
+            $params['company_id'] = $company_id;
+
+            /* SQL Instruction  */
+            $sql = " SELECT		gr.parentid,
+                                c.name
+                    FROM		{report_gen_company_relation}	gr
+                        JOIN	{report_gen_companydata}		c	ON 	c.id = gr.parentid
+                    WHERE		gr.companyid = :company_id
+                    ORDER BY 	c.name ";
+
+            /* Execute  */
+            $rdo = $DB->get_records_sql($sql,$params);
+            if ($rdo) {
+                foreach ($rdo as $parent) {
+                    $parent_lst[$parent->parentid] = $parent->name;
+                }//for_rdo_parent
+            }//if_rdo
+
+            return $parent_lst;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//Company_GetParentList
+
+    /**
+     * @static
+     * @param           $data
+     * @param           $parents
+     * @param           $level
+     * @throws          Exception
+     *
+     * @creationDate    23/10/2014
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Add a new Company Level. Insert a new one or link.
+     */
+    public static function Add_CompanyLevel($data,$parents,$level) {
+        /* Variables    */
+        $instance = null;
+        $index    = null;
+
+        try {
+            /* Company Info */
+            $instance = new stdClass();
+            $instance->hierarchylevel   = $level;
+            $instance->modified         = time();
+            $instance->idcounty         = $data->county;
+            /* Get Municipality Id */
+            $index = strripos($data->munis,"_");
+            $instance->idmuni           = substr($data->munis,$index+1);
+            $instance->industrycode     = $data->industry_code;
+
+            switch ($level) {
+                case 1:
+                    /* Create a new Company */
+                    $instance->name     = $data->name;
+                    self::Insert_CompanyLevel($instance);
+
+                    break;
+                default:
+                    /* New Company or Link Company  */
+                    if ($data->name) {
+                        /* New Company  */
+                        $instance->name     = $data->name;
+                        self::Insert_CompanyLevel($instance,$parents[$level-1]);
+                    }else {
+                       /* Link Company  */
+                        self::Link_CompanyLevel($data->other_company,$parents[$level-1]);
+                    }//if_else_name
+
+                    break;
+            }//switch
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//Add_CompanyLevel
+
+    /**
+     * @static
+     * @param           $company_id
+     * @param           $parent_id
+     * @throws          Exception
+     *
+     * @creationDate    23/10/2014
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Unlink Company and Parent
+     */
+    public static function Unlink_Company($company_id,$parent_id) {
+        /* Variables    */
+        global $DB;
+
+        try {
+            /* Delete company relation between Company and Parent   */
+            /* Criteria    */
+            $params = array();
+            $params['companyid'] = $company_id;
+            $params['parentid']  = $parent_id;
+            $DB->delete_records('report_gen_company_relation',$params);
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//Unlink_Company
+
+    /**
+     * @static
+     * @param           $data
      * @throws          Exception
      *
      * @creationDate    10/09/2012
@@ -412,11 +548,24 @@ class company_structure {
      * Description
      * Update company data.
      */
-    public static function Update_CompanyLevel($instance) {
+    public static function Update_CompanyLevel($data) {
         /* Variables    */
         global $DB;
+        $instance   = null;
+        $index      = null;
 
         try {
+            /* Company Info */
+            $instance = new stdClass();
+            $instance->id               = $data->company;
+            $instance->name             = $data->name;
+            $instance->modified         = time();
+            $instance->idcounty         = $data->county;
+            /* Get Municipality Id */
+            $index = strripos($data->munis,"_");
+            $instance->idmuni           = substr($data->munis,$index+1);
+            $instance->industrycode     = $data->industry_code;
+
             $DB->update_record('report_gen_companydata',$instance);
         }catch (Exception $ex) {
             throw $ex;
@@ -451,5 +600,78 @@ class company_structure {
             throw $ex;
         }//try_catch
     }//Delete_Company
+
+    /************/
+    /* PRIVATE  */
+    /************/
+
+    /**
+     * @static
+     * @param           $instance
+     * @param           null $parent
+     * @return          bool
+     * @throws          Exception
+     *
+     * @creationDate    10/09/2012
+     * @updateDate      08/10/2014
+     * @author          eFaktor         (fbv)
+     *
+     * Description
+     * Insert a new company
+     */
+    private static function Insert_CompanyLevel($instance,$parent = null) {
+        /* Variables    */
+        global $DB;
+        $company_relation = null;
+
+        try {
+            if ($instance->id = $DB->insert_record('report_gen_companydata',$instance)) {
+                if (!is_null($parent)) {
+                    $company_relation = new stdClass();
+                    $company_relation->companyid   = $instance->id;
+                    $company_relation->parentid    = $parent;
+                    $company_relation->modified    = $instance->modified;
+
+                    $company_relation->id = $DB->insert_record('report_gen_company_relation',$company_relation);
+                }//if_parent
+            }//if
+
+            return true;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//Insert_CompanyLevel
+
+    /**
+     * @static
+     * @param           $company_to_link
+     * @param           $parent
+     * @return          bool
+     * @throws          Exception
+     *
+     * @creationDate    23/10/2014
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Link a company
+     */
+    private static function Link_CompanyLevel($company_to_link,$parent) {
+        /* Variables    */
+        global $DB;
+        $company_relation = null;
+
+        try {
+            $company_relation = new stdClass();
+            $company_relation->companyid = $company_to_link;
+            $company_relation->parentid = $parent;
+            $company_relation->modified = time();
+
+            $company_relation->id = $DB->insert_record('report_gen_company_relation',$company_relation);
+
+            return true;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//Link_CompanyLevel
 }//class_company_structure
 

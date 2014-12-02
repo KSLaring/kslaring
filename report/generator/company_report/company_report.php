@@ -165,7 +165,8 @@ if ($form->is_cancelled()) {
 echo $OUTPUT->header();
 
 if (!empty($out)) {
-    echo $OUTPUT->heading(get_string('company_report','report_generator') . ' - ' . $company_report::get_MyCompany()->name);
+    echo $OUTPUT->heading(get_string('company_report','report_generator'));
+    echo '<h2>' . $company_report::get_MyCompany()->name . '</h2>';
     echo $out;
 }else {
     /* Print tabs at the top */
@@ -174,7 +175,8 @@ if (!empty($out)) {
     require('../tabs.php');
 
     /* Print Title */
-    echo $OUTPUT->heading(get_string('company_report','report_generator') . ' - ' . $company_report::get_MyCompany()->name);
+    echo $OUTPUT->heading(get_string('company_report','report_generator'));
+    echo '<h2>' . $company_report::get_MyCompany()->name . '</h2>';
 
     if ($show_advanced) {
         $out  = html_writer::start_tag('div',array('class' => 'advance_set'));

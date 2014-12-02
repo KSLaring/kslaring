@@ -462,10 +462,6 @@ Courses and categories lists, from Mary Evans
 .coursebox .content .coursefile {
   width: 100%;
 }
-/* Remove course category titles
-----------------------------*/
-/* Remove course heading on course topic view
-----------------------------*/
 .coursebox {
   border: none;
   position: relative;
@@ -604,6 +600,9 @@ Courses and categories lists, from Mary Evans
 }
 .mod_introbox {
   padding: 0;
+}
+#page-mod-certificate-view .reportlink {
+  margin: .2em .5em;
 }
 #page-mod-feedback-view.format-netcourse #page-content #region-main div[role="main"] > h2 a {
   border-bottom: 0;
@@ -1125,42 +1124,42 @@ body {
   margin: 0 0 10.5px 0px;
 }
 .hero-unit {
-  margin-left: 0 auto;
-  margin-right: 0 auto;
-  background-image: url([[pix:theme|banner_image]]);
-  max-height: 420px;
-  min-height: 420px;
-  padding: 0px;
-  margin-bottom: 0px;
-  line-height: 31.5px;
-  color: #ffffff;
-  background-repeat: no-repeat;
-  background-position: center bottom;
-  text-align: center;
   background-color: #f2f2f3;
+  background-image: url([[pix:theme|banner_image]]);
+  background-repeat: no-repeat;
+  background-position: 50% 50%;
+  color: #ffffff;
+  height: 420px;
+  line-height: 31.5px;
+  margin: 0 auto;
+  padding: 0px;
   -webkit-border-radius: 0px;
   -moz-border-radius: 0px;
   border-radius: 0px;
 }
+.hero-unit .editbgimg {
+  background-color: rgba(255, 255, 255, 0.5);
+  padding: .3em .5em;
+}
 .hero-unit h1 {
-  margin-bottom: 0;
+  color: #ffffff;
   font-family: 'clan_otbook', Calibri, Candara, Segoe, "Segoe UI", Optima, Arial, sans-serif;
   font-weight: normal;
-  color: #ffffff;
+  margin-bottom: 0;
 }
 .hero-unit li {
   line-height: 31.5px;
 }
 .hero-unit .texts {
-  font-family: 'clan_otbook', Calibri, Candara, Segoe, "Segoe UI", Optima, Arial, sans-serif;
-  width: 50%;
-  padding: 15px;
-  margin-top: 10%;
-  display: block;
   color: white !important;
-  text-align: left;
+  font-family: 'clan_otbook', Calibri, Candara, Segoe, "Segoe UI", Optima, Arial, sans-serif;
+  display: block;
   line-height: normal;
+  margin-top: 10%;
+  padding: 15px;
+  text-align: left;
   vertical-align: middle;
+  width: 50%;
 }
 .netcourse-header,
 .classroom-header {
@@ -1352,22 +1351,34 @@ div.loginpanel h2 {
   padding: 0em 0em 0.2em 1.6em;
   text-align: center;
 }
+#page-course-index .buttons input[type="submit"] {
+  margin-top: 1.2em;
+}
 #page-course-index-category .coursebox {
   background: #fff;
   padding-left: 20px;
   border: 1px solid #e8e8e8;
   position: relative;
 }
-.course_category_tree .category > .info {
+.course_category_tree .collapseexpand.disabled:hover,
+.course_category_tree .collapseexpand.disabled {
+  color: #cccccc;
+}
+.course_category_tree .category > .info,
+.course_category_tree .category > .content {
   background: #fff;
   padding-left: 20px;
   border: 1px solid #e8e8e8;
 }
 .course_category_tree .category > .content {
-  background: #fff;
-  padding-left: 20px;
-  border: 1px solid #e8e8e8;
   margin-top: -3px;
+}
+a.disabled:hover,
+a.disabled {
+  text-decoration: none;
+  cursor: default;
+  font-style: italic;
+  color: #808080;
 }
 .coursebox .panel-heading {
   font-size: 21.328px;
@@ -1404,42 +1415,158 @@ div.loginpanel h2 {
 #page-enrol-index #region-main.span8 {
   width: 99%;
 }
-.home_page_block_two .manager .userpicture {
-  image-rendering: auto;
-  image-rendering: crisp-edges;
-  image-rendering: pixelated;
-  image-rendering: inherit;
-  float: left;
-  width: 60px;
-  height: 60px;
-  border-radius: 40px;
-  -webkit-border-radius: 40px;
-  -moz-border-radius: 40px;
-  margin: 0 10px 0 0px;
+.table-striped tbody > tr:nth-child(odd) > td,
+.table-striped tbody > tr:nth-child(odd) > th {
+  background-color: #e8edf3;
 }
-.home_page_block_two .manager .user {
-  margin-top: 0px;
-}
-.home_page_block_two .manager .user_picture {
-  float: left;
-  margin: 10px 0;
-}
-.home_page_block_one .buttons {
-  margin: 20px 0;
-}
-.home_page_block_two .manager .user {
-  float: none;
+.kitable {
+  border-collapse: collapse;
+  font-size: 16px;
   width: 100%;
-  /* margin-top: 10px; */
 }
-.home_page_block_two .manager .extra_coordinator {
-  display: block;
+.kitable caption {
+  padding: .3em .5em;
+  text-align: left;
 }
-.home_page_block_two .ratings .content_rating_bar {
-  background: none;
+.kitable th,
+.kitable td {
+  background-color: #ffffff;
+  font-size: inherit;
+  padding: .3em .5em;
+  vertical-align: top;
 }
-.home_page_block_two .rating_bar_block .rating_bar {
-  background: #e8e8e8;
+.kitable1,
+div.editor_atto_content .kitable1 {
+  border-collapse: collapse;
+  font-size: 16px;
+  width: 100%;
+  border: 1px solid #b5c5da;
+  border-top: 0;
+}
+.kitable1 caption,
+div.editor_atto_content .kitable1 caption {
+  padding: .3em .5em;
+  text-align: left;
+}
+.kitable1 th,
+div.editor_atto_content .kitable1 th,
+.kitable1 td,
+div.editor_atto_content .kitable1 td {
+  background-color: #ffffff;
+  font-size: inherit;
+  padding: .3em .5em;
+  vertical-align: top;
+}
+.kitable1 tbody > tr:nth-child(odd) > td,
+div.editor_atto_content .kitable1 tbody > tr:nth-child(odd) > td,
+.kitable1 tbody > tr:nth-child(odd) > th,
+div.editor_atto_content .kitable1 tbody > tr:nth-child(odd) > th {
+  background-color: #e8edf3;
+}
+.kitable1 caption,
+div.editor_atto_content .kitable1 caption {
+  background-color: #003876;
+  color: #ffffff;
+}
+.kitable1 th,
+div.editor_atto_content .kitable1 th,
+.kitable1 td,
+div.editor_atto_content .kitable1 td {
+  background-color: #ffffff;
+}
+.kitable2,
+div.editor_atto_content .kitable2 {
+  border-collapse: collapse;
+  font-size: 16px;
+  width: 100%;
+}
+.kitable2 caption,
+div.editor_atto_content .kitable2 caption {
+  padding: .3em .5em;
+  text-align: left;
+}
+.kitable2 th,
+div.editor_atto_content .kitable2 th,
+.kitable2 td,
+div.editor_atto_content .kitable2 td {
+  background-color: #ffffff;
+  font-size: inherit;
+  padding: .3em .5em;
+  vertical-align: top;
+}
+.kitable2 caption,
+div.editor_atto_content .kitable2 caption {
+  background-color: #b5c5da;
+  border: solid #003876;
+  border-width: 3px 0;
+}
+.kitable2.table-no-lines th,
+div.editor_atto_content .kitable2.table-no-lines th,
+.kitable2.table-no-lines td,
+div.editor_atto_content .kitable2.table-no-lines td {
+  border: 0;
+}
+.kitable2.table-lines,
+div.editor_atto_content .kitable2.table-lines {
+  border-bottom: 3px solid #003876;
+}
+.kitable2.table-lines th,
+div.editor_atto_content .kitable2.table-lines th,
+.kitable2.table-lines td,
+div.editor_atto_content .kitable2.table-lines td {
+  border: 1px solid #b5c5da;
+}
+.kitable3,
+div.editor_atto_content .kitable3 {
+  border-collapse: collapse;
+  font-size: 16px;
+  width: 100%;
+}
+.kitable3 caption,
+div.editor_atto_content .kitable3 caption {
+  padding: .3em .5em;
+  text-align: left;
+}
+.kitable3 th,
+div.editor_atto_content .kitable3 th,
+.kitable3 td,
+div.editor_atto_content .kitable3 td {
+  background-color: #ffffff;
+  font-size: inherit;
+  padding: .3em .5em;
+  vertical-align: top;
+}
+.kitable3 caption,
+div.editor_atto_content .kitable3 caption {
+  display: none;
+}
+.kitable3 th,
+div.editor_atto_content .kitable3 th {
+  background-color: #b5c5da;
+  border: solid #003876;
+  border-width: 3px 0;
+}
+.kitable3 th,
+div.editor_atto_content .kitable3 th,
+.kitable3 td,
+div.editor_atto_content .kitable3 td {
+  border-right: 5px solid #ffffff;
+}
+.kitable3.table-no-lines th,
+div.editor_atto_content .kitable3.table-no-lines th,
+.kitable3.table-no-lines td,
+div.editor_atto_content .kitable3.table-no-lines td {
+  border: 0;
+}
+.kitable3.table-lines,
+div.editor_atto_content .kitable3.table-lines {
+  border-bottom: 3px solid #003876;
+}
+.kitable3.table-lines th,
+div.editor_atto_content .kitable3.table-lines th,
+.kitable3.table-lines td,
+div.editor_atto_content .kitable3.table-lines td {
+  border: 1px solid #b5c5da;
 }
 @media (max-width: 600px) {
   .logo-area {
@@ -1688,12 +1815,6 @@ div.loginpanel h2 {
   .navbar-fixed-top .navbar-inner,
   .navbar-fixed-bottom .navbar-inner {
     padding: 0px;
-  }
-  .home_page_block_one {
-    width: 100%;
-  }
-  .home_page_block_two {
-    width: 100%;
   }
   #page-footer #page-footer-inner .column {
     float: none;

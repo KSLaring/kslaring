@@ -176,6 +176,9 @@ class format_whitepaper extends format_base {
                     'element_type'      => 'hidden',
                     'default'           => 0,
                 ),
+                'pagegraphicstitle' => array(
+                    'type' => PARAM_TEXT,
+                ),
                 'author'        => array(
                     'type'      => PARAM_TEXT,
                 ),
@@ -194,15 +197,22 @@ class format_whitepaper extends format_base {
                     'element_type' => 'select',
                     'element_attributes' => array($availabletypes),
                 ),
+                'pagegraphicstitle' => array(
+                    'label' => get_string('home_graphicstitle', 'local_course_page'),
+                    'element_type' => 'text',
+                    'element_attributes' => array(
+                        0 => 'style="width:95%;"'
+                    )
+                ),
                 'author'        => array(
-                    'label'                 => get_string('home_author','local_course_page'),
+                    'label'                 => get_string('home_author','format_whitepaper'),
                     'element_type'          => 'text',
                     'element_attributes'    => array(
                                                     0 => 'style="width:95%;"'
                                                     )
                 ),
                 'licence'        => array(
-                    'label'                 => get_string('home_licence','local_course_page'),
+                    'label'                 => get_string('home_licence','format_whitepaper'),
                     'element_type'          => 'text',
                     'element_attributes'    => array(
                                                     0 => 'style="width:95%;"'
@@ -587,13 +597,13 @@ class format_whitepaper extends format_base {
                     // Student views an empty course page.
                     return;
                 }
-            } else if (!$cm->uservisible || !$cm->get_url()) {
+            } else if (!$cm->uservisible || !$cm->url) {
                 // Activity is set but not visible to current user or does not have url.
                 // Display course page (either empty or with availability restriction info).
                 return;
             } else {
                 // Everything is set up and accessible, redirect to the activity page!
-                redirect($cm->get_url());
+                redirect($cm->url);
             }
         }
     }

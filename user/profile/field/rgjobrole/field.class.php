@@ -1,222 +1,334 @@
 <?php
+/**
+ * Extra Profile Field Job Role
+ *
+ * Description
+ *
+ * @package         user/profile
+ * @subpackage      field/rgjobrole
+ * @copyright       2014        eFaktor {@link http://www.efaktor.no}
+ *
+ * @creationDate    11/11/2014
+ * @author          eFaktor     (fbv)
+ *
+ */
 
 class profile_field_rgjobrole extends profile_field_base {
-    var $options;
-    var $datakey;
+    public function edit_field_add($m_form) {
+        global $PAGE;
+
+        $m_form->addElement('static', 'rgjobrole-description', '', get_string('profile_intro', 'profilefield_rgjobrole'));
+
+        /* Job Role */
+        $options = self::GetJobRoles();
+        $m_form->addElement('select',$this->inputname,format_string($this->field->name),$options,'disabled');
+
+        /* hidden Level Three  */
+        $m_form->addElement('text','hidden_job_role',null,'style="visibility:hidden;height:0px;"');
+        $m_form->setType('hidden_job_role',PARAM_TEXT);
+        $m_form->setDefault('hidden_job_role',0);
+    }//edit_field_add
 
     /**
-     * @param   int $fieldid
-     * @param   int $userid
+     * @param           stdClass $usernew
+     * @return          mixed|void
      *
-     * @author  eFaktor
+     * @creationDate    12/11/2014
+     * @author          eFaktor     (fbv)
      *
      * Description
-     * Constructor method.
-     * Pulls out the options for the menu from the database and sets the
-     * the corresponding key for the data if it exists
+     * Save the job role/s selected
      */
-    function profile_field_rgjobrole($fieldid=0, $userid=0) {
-        //first call parent constructor
-        $this->profile_field_base($fieldid, $userid);
-
-        /// get the actual companylist for menu
-        $options = $this->get_report_jobroles();
-        $this->options = array();
-
-        $this->options[''] = get_string('choose').'...';
-
-        if ($options) {
-            foreach ($options as $key => $option) {
-                $this->options[$key] = format_string($option); //multilang formatting
-            }
-        }//if_options
+    public function edit_save_data($usernew) {
+        /* Variables    */
+        global $DB;
+        $selectedJobRoles   = null;
+        $jobRole            = array();
+        $jobRoleId          = null;
+        $index              = null;
 
 
-        /// Set the data key
-        if ($this->data !== NULL) {
-            $this->datakey = $this->data;
+        if (!isset($usernew->{$this->inputname})) {
+            // Field not present in form, probably locked and invisible - skip it.
+            return;
         }
-    }
+
+        /* Get the companies selected   */
+        $selectedJobRoles = explode(',',$usernew->hidden_job_role);
+        foreach ($selectedJobRoles as $ref) {
+            $index      = strripos($ref,"#JR");
+            $jobRoleId  = substr($ref,0,$index);
+            $index      = strripos($jobRoleId,"#");
+            $jobRoleId  = substr($jobRoleId,$index+1);
+
+            $jobRole[$jobRoleId] = $jobRoleId;
+        }//for_each_selected
+
+        $data = new stdClass();
+
+        $usernew->{$this->inputname} = implode(',',$jobRole);
+
+        $data->userid  = $usernew->id;
+        $data->fieldid = $this->field->id;
+        $data->data    = $usernew->{$this->inputname};
+
+        if ($dataid = $DB->get_field('user_info_data', 'id', array('userid' => $data->userid, 'fieldid' => $data->fieldid))) {
+            $data->id = $dataid;
+            $DB->update_record('user_info_data', $data);
+        } else {
+            $DB->insert_record('user_info_data', $data);
+        }
+    }//edit_save_data
 
     /**
-     * @param   $mform
+     * @param       mixed       $data
+     * @param       stdClass    $datarecord
+     * @return      mixed
      *
-     * @author  eFaktor
+     * @updateDate  11/11/2014
+     * @author      eFaktor     (fbv)
      *
      * Description
-     * Create the code snippet for this field instance
-     * Overwrites the base class method
+     * The data from the form returns the key. This should be converted to the respective option string to be saved in database
+     * Overwrites base class accessor method
      */
-    function edit_field_add($mform) {
-        $mform->addElement('static', 'rgjobrole-description', '', get_string('profilefieldintrojobrole', 'profilefield_rgjobrole'));
-        $select = &$mform->addElement('select', $this->inputname, format_string($this->field->name), $this->options);
-        $select->setMultiple(true);
-        $select->setSize(6);
+    public function edit_save_data_preprocess($data,$datarecord) {
+        return $data;
     }
-
-    function setOptions($new_options) {
-        $this->options = $new_options;
-    }//setOptions
 
     /**
      * @param       $mform
      *
-     * @updateDate  23/11/2012
+     * @updateDate  23/12/2012
      * @author      eFaktor     (fbv)
      *
      * Description
      * Set the default value for this field instance
      * Overwrites the base class method
      */
-    function edit_field_set_default($mform) {
-        if (FALSE !==array_search($this->field->defaultdata, $this->options)){
-            $defaultkey = (int)array_search($this->field->defaultdata, $this->options);
-        } else {
-            $defaultkey = '';
-        }
-        $mform->setDefault($this->inputname, $defaultkey);
-    }
+    public function edit_field_set_default($mform) {
+        /* Variables    */
+        global $USER;
+        $myJobRoles = null;
+
+        /* Get My Level Three   */
+        $myJobRoles = self::GetMy_JobRoles($this->userid,$this->fieldid);
+
+        /* Set the Company and the rest of the data */
+        if ($myJobRoles) {
+            $mform->getElement($this->inputname)->setMultiple(true);
+            $mform->getElement($this->inputname)->removeAttribute('disabled');
+            $mform->setDefault('hidden_job_role',implode(',',$myJobRoles));
+        }//if_levelThree
+    }//edit_field_set_default
 
     /**
-     * @param       mixed       $data
-     * @param       stdClass    $datarecord
-     * @return      mixed|      string
+     * @return mixed|string
      *
-     * @updateDate  23/11/2012
-     * @author      eFaktor     (fbv)
+     * @creationDate    13/11/2014
+     * @author          eFaktor     (fbv)
      *
      * Description
-     * The data from the form returns the key. This should be converted to the
-     * respective option string to be saved in database
-     * Overwrites base class accessor method
-     */
-    function edit_save_data_preprocess($data, $datarecord) {
-        if (is_array($data)) {
-            $data = implode(',',$data);
-        }
-        return $data;
-    }
-
-    /**
-     * @param   $user
-     *
-     * @author  eFaktor
-     *
-     * Description
-     * When passing the user object to the form class for the edit profile page
-     * we should load the key for the saved data
-     * Overwrites the base class method
-     */
-    function edit_load_user_data($user) {
-        $user->{$this->inputname} = $this->datakey;
-    }
-
-    /**
-     * @param   $mform
-     *
-     * @author  eFaktor
-     *
-     * Description
-     * HardFreeze the field if locked.
-     */
-    function edit_field_set_locked($mform) {
-        if (!$mform->elementExists($this->inputname)) {
-            return;
-        }
-        if ($this->is_locked() and !has_capability('moodle/user:update', CONTEXT_SYSTEM::instance())) {
-            $mform->hardFreeze($this->inputname);
-            $mform->setConstant($this->inputname, $this->datakey);
-        }
-    }
-
-    /**
-     * @return  string
-     *
-     * @author  eFaktor
-     *
-     * Description
-     * Display the data for this field
+     * Display the correct value
      */
     function display_data() {
-        $options = new stdClass();
-        $options->para = false;
-        $id = $this->data;
-        if ($entry = $this->get_report_jobrole_entry($id)) {
-            return $entry;
-        } else {
-            return $id;
-        }
-    }
+       return self::GetName_MyJobRoles($this->userid,$this->fieldid);
+    }//display_data
+
+    /*************/
+    /* PRIVATE  */
+    /************/
 
     /**
-     * @return      array|bool      list of id/name entries
+     * @static
+     * @param           $user_id
+     * @param           $field_id
+     * @return          null
+     * @throws          Exception
      *
-     * @updateDate  12/09/2012
-     * @author      eFaktor     (fbv)
+     * @creationDate    13/14/2014
+     * @author          eFaktor     (fbv)
      *
      * Description
-     * Get the jobrole list from report_gen_jobrole table.
+     * Get the Job Roles Names connected to the user
      */
-    function get_report_jobroles() {
+    private static function GetName_MyJobRoles($user_id,$field_id) {
+        /* Variables    */
         global $DB;
 
-        $job_roles_list = array();
+        try {
+            /* Search Criteria  */
+            $params = array();
+            $params['userid']   = $user_id;
+            $params['fieldid']  = $field_id;
 
-        /* SQL Instruction */
-        $sql = " SELECT     id,
-                            name
-                 FROM       {report_gen_jobrole}
-                 ORDER BY   name ASC ";
+            /* Execute  */
+            $rdo = $DB->get_record('user_info_data',$params,'data');
+            if ($rdo) {
+                if ($rdo->data) {
+                    /* SQL Instruction  */
+                    $sql = " SELECT		GROUP_CONCAT(DISTINCT jr.name ORDER BY jr.name SEPARATOR ',') as 'names'
+                         FROM		{report_gen_jobrole}	jr
+                         WHERE		jr.id IN ($rdo->data) ";
 
-        /* Execute */
-        if ($rdo = $DB->get_records_sql($sql)) {
-            foreach($rdo as $data) {
-                $job_roles_list[$data->id] = $data->name;
-            }//rdo
+                    /* Execute  */
+                    $rdo_name = $DB->get_record_sql($sql);
+                    if ($rdo_name) {
+                        return $rdo_name->names;
+                    }//if_rdo_name
+                }else {
+                    return null;
+                }
+            }//if_rdo
 
-            return $job_roles_list;
-        }else {
-            return false;
-        }//if_else
-    }//get_report_jobroles
+            return null;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//GetName_MyJobRoles
 
     /**
-     * @param       $id         jobrole ids
-     * @return      string      string with jobrole names
+     * @static
+     * @param           $user_id
+     * @param           $field_id
+     * @return          array|int
+     * @throws          Exception
      *
-     * @updateDate  12/09/2012
-     * @author      eFaktor     (fbv)
+     * @creationDate    12/14/2014
+     * @author          eFaktor     (fbv)
      *
      * Description
-     * Get jobrole names as list
+     * Get the Job Roles Connected to the user
      */
-    protected function get_report_jobrole_entry($id) {
+    private static function GetMy_JobRoles($user_id,$field_id) {
+        /* Variables    */
         global $DB;
 
-        $job_roles = array();
-        
-        // avoid error
-        if( $id == 'Array' ) return $id;
+        try {
+            /* Search Criteria  */
+            $params = array();
+            $params['userid']   = $user_id;
+            $params['fieldid']  = $field_id;
 
-        /* SQL Instruction */
-        $sql = "
-        SELECT 
-            id, 
-            name 
-        FROM 
-            {report_gen_jobrole}
-        WHERE 
-            id IN ({$id})
-        ";
+            /* Execute  */
+            $rdo = $DB->get_record('user_info_data',$params,'data');
+            if ($rdo) {
+                if ($rdo->data) {
+                    return self::GetReference_JobRole($rdo->data);
+                }else {
+                    return 0;
+                }
 
-        /* Execute */
-        if ($rdo = $DB->get_records_sql($sql)) {
-            foreach($rdo as $row )
-            {
-                $job_roles[] = $row->name;
-            }//for
-        }
+            }else {
+                return 0;
+            }//if_else
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//GetMy_JobRoles
 
-        return join( ', ', $job_roles );
-    }//get_report_jobrole_entry
-}
+    /**
+     * @static
+     * @param           $jr_lst
+     * @return          array
+     * @throws          Exception
+     *
+     * @creationDate    12/11/2014
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Build the reference of the Job Roles
+     */
+    private static function GetReference_JobRole($jr_lst) {
+        /* Variables    */
+        global $DB;
+        $references_lst = array();
+        $ref            = null;
+
+        try {
+            /* SQL Instruction  */
+            $sql = " SELECT		CONCAT('#',jr.id,'#JR') as 'jr',
+                                CONCAT('#',jr_rel.idcounty,'#C') as 'county',
+                                IF(jr_rel.levelone,CONCAT('I1#',jr_rel.levelone,'#L1'),0) as 'levelone',
+                                IF(jr_rel.leveltwo,CONCAT('I2#',jr_rel.leveltwo,'#L2'),0) as 'leveltwo',
+                                IF(jr_rel.levelthree,GROUP_CONCAT(DISTINCT CONCAT('I3#',jr_rel.levelthree,'#L3') ORDER BY jr_rel.jobroleid SEPARATOR '_'),0) as 'levelthree'
+                     FROM		{report_gen_jobrole}				jr
+                        JOIN	{report_gen_jobrole_relation}		jr_rel	ON jr_rel.jobroleid = jr.id
+                     WHERE		jr.id IN ($jr_lst)
+                     GROUP BY	jr.id
+                     ORDER BY	jr.name ";
+
+            /* Execute  */
+            $rdo = $DB->get_records_sql($sql);
+            if ($rdo) {
+                foreach ($rdo as $instance) {
+                    /* Build the reference  */
+                    $ref = $instance->jr         . '_' .
+                           $instance->county     . '_' .
+                           $instance->levelone   . '_' .
+                           $instance->leveltwo   . '_' .
+                           $instance->levelthree;
+
+                    $references_lst[] = $ref;
+                }//for_each_job_role
+            }//if_rdo
+
+            return $references_lst;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//GetReference_JobRole
+
+    /**
+     * @static
+     * @return          array
+     * @throws          Exception
+     *
+     * @creationDate    12/14/2014
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Get all the job roles availables
+     */
+    private static function GetJobRoles() {
+        /* Variables    */
+        global $DB;
+        $jr_lst     = array();
+        $jr_ref     = null;
+
+        try {
+            $jr_lst[0] = get_string('choose').'...';
+
+            /* SQL Instruction  */
+            $sql = " SELECT		CONCAT('#',jr.id,'#JR') as 'jr',
+                                jr.name,
+                                CONCAT('#',jr_rel.idcounty,'#C') as 'county',
+                                IF(jr_rel.levelone,CONCAT('I1#',jr_rel.levelone,'#L1'),0) as 'levelone',
+                                IF(jr_rel.leveltwo,CONCAT('I2#',jr_rel.leveltwo,'#L2'),0) as 'leveltwo',
+                                IF(jr_rel.levelthree,GROUP_CONCAT(DISTINCT CONCAT('I3#',jr_rel.levelthree,'#L3') ORDER BY jr_rel.jobroleid SEPARATOR '_'),0) as 'levelthree'
+                     FROM		{report_gen_jobrole}				jr
+                        JOIN	{report_gen_jobrole_relation}		jr_rel	ON jr_rel.jobroleid = jr.id
+                     GROUP BY	jr.id
+                     ORDER BY	jr.name  ";
+
+            /* Execute  */
+            $rdo = $DB->get_records_sql($sql);
+            if ($rdo) {
+                foreach ($rdo as $instance) {
+                    /* Build the reference  */
+                    $jr_ref = $instance->jr         . '_' .
+                              $instance->county     . '_' .
+                              $instance->levelone   . '_' .
+                              $instance->leveltwo   . '_' .
+                              $instance->levelthree;
+
+                    $jr_lst[$jr_ref] = $instance->name;
+                }//for_each_job_role
+            }//if_rdo
+
+            return $jr_lst;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//GetJobRoles
+}//profile_field_rgjobrole

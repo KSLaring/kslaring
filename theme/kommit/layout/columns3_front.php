@@ -58,8 +58,9 @@ echo $OUTPUT->doctype() ?>
 
 <?php include 'inc/header.php'; ?>
 
-    <div class="hero-unit">
+    <div class="hero-unit" style="<?php echo $OUTPUT->hero_img(); ?>">
         <div class="container-fluid">
+            <?php echo $OUTPUT->edit_hero_img(); ?>
             <div class="texts">
                 <h1>Ny læringsarena</h1>
 
