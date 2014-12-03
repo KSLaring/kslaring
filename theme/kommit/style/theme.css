@@ -647,6 +647,15 @@ Courses and categories lists, from Mary Evans
   padding-top: .2em;
   padding-bottom: .3em;
 }
+#page-mod-feedback-delete_completed .mform .fitem .felement {
+  margin-left: 165px;
+}
+#page-mod-feedback-edit .mform .fitem div.fitemtitle {
+  width: 235px;
+}
+#page-mod-feedback-edit .mform .fitem .felement {
+  margin-left: 245px;
+}
 a.autolink.glossary {
   color: inherit;
   background: #d9e3ed;
@@ -943,6 +952,13 @@ a.autolink.glossary {
   margin-top: 0;
   padding: 0 .3em .1em;
 }
+#page-mod-simplecertificate-view .nav-tabs {
+  margin-top: 2em;
+}
+#page-mod-simplecertificate-view #region-main .generaltable + div {
+  margin: 0;
+  width: auto !important;
+}
 #page-mod-scorm-view #intro.boxaligncenter {
   margin-left: 0;
 }
@@ -955,15 +971,6 @@ a.autolink.glossary {
 }
 .path-mod-scorm .scorm-center {
   text-align: left;
-}
-#page-mod-feedback-delete_completed .mform .fitem .felement {
-  margin-left: 165px;
-}
-#page-mod-feedback-edit .mform .fitem div.fitemtitle {
-  width: 235px;
-}
-#page-mod-feedback-edit .mform .fitem .felement {
-  margin-left: 245px;
 }
 body {
   padding-top: 0px;

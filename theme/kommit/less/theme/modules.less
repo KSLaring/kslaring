@@ -67,25 +67,25 @@
     padding-right: 5px;
 }
 
+
 // Introduction box on module pages
 // -------------------------------------
-
 .mod_introbox {
     padding: 0;
 }
 
+
 // Certificate Module
 // -------------------------------------
-
 #page-mod-certificate-view {
     .reportlink {
         margin: .2em .5em;
     }
 }
 
+
 // Feedback Module
 // -------------------------------------
-
 #page-mod-feedback-view {
     &.format-netcourse #page-content #region-main div[role="main"] > h2 a {
         border-bottom: 0;
@@ -166,10 +166,30 @@
     }
 }
 
+// Feedback Module button override
+// -------------------------------------
+#page-mod-feedback-delete_completed {
+    .mform .fitem .felement {
+        margin-left: 165px;
+    }
+}
+
+#page-mod-feedback-edit {
+    .mform {
+        .fitem {
+            div.fitemtitle {
+               width: 235px;
+            }
+            .felement {
+                margin-left: 245px;
+            }
+        }
+    }
+}
+
+
 // Glossary Module
 // -------------------------------------
-
-
 a.autolink.glossary {
   color:inherit;
   background: #d9e3ed;
@@ -226,9 +246,9 @@ a.autolink.glossary {
     }
 }
 
+
 // Lesson Module
 // -------------------------------------
-
 #page-mod-lesson-view {
     .boxaligncenter.boxwidthwide {
         margin-left: 0;
@@ -319,14 +339,9 @@ a.autolink.glossary {
   //min-height: initial;
 }*/
 
-// SCORM Module
-// -------------------------------------
-
-
 
 // Quiz Module
 // -------------------------------------
-
 #page-mod-quiz-view {
     #region-main {
         & > div[role="main"] {
@@ -550,9 +565,25 @@ a.autolink.glossary {
 }
 
 
+// Simple Certificate Module
+// -------------------------------------
+#page-mod-simplecertificate-view {
+    .nav-tabs {
+        margin-top: 2em;
+    }
+    #region-main {
+        .generaltable {
+            + div {
+                margin: 0;
+                width: auto !important;
+            }
+        }
+    }
+}
+
+
 // SCORM Module
 // -------------------------------------
-
 #page-mod-scorm-view {
     #intro {
         &.boxaligncenter {
@@ -574,21 +605,4 @@ a.autolink.glossary {
     .scorm-center {
         text-align: left;
     }
-}
-
-// Feedback Module button override
-// -------------------------------------
-
-#page-mod-feedback-delete_completed {
-  .mform .fitem .felement {
-    margin-left: 165px;
-  }
-}
-#page-mod-feedback-edit {
-  .mform .fitem div.fitemtitle {
-    width: 235px;
-  }
- .mform .fitem .felement {
-  margin-left: 245px;
-  }
 }
