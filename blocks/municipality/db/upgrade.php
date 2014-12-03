@@ -16,7 +16,7 @@ function xmldb_block_municipality_upgrade($old_version) {
 
     $db_man = $DB->get_manager();
 
-    if ($old_version < 2014112000) {
+    if ($old_version < 2014120300) {
 
         /* Delete if the table exists   */
         if ($db_man->table_exists('muni_logos')) {
@@ -89,6 +89,197 @@ function xmldb_block_municipality_upgrade($old_version) {
             install_new_Troms();
             install_new_Finnmark();
             install_new_Svalbard();
+        }else {
+            if (!$DB->record_exists('municipality',array('idcounty' => '01','idmuni' => '01','municipality' => 'Østfold Fylkeskommune'))) {
+                $municipality = new stdClass();
+                $municipality->idcounty     = '01';
+                $municipality->idmuni       = '01';
+                $municipality->municipality = 'Østfold Fylkeskommune';
+                $municipality->logo         = 'ostfold_fylkeskommune.png';
+
+                $DB->insert_record('municipality',$municipality);
+            }//01
+
+            if (!$DB->record_exists('municipality',array('idcounty' => '02','idmuni' => '02','municipality' => 'Akershus Fylkeskommune'))) {
+                $municipality = new stdClass();
+                $municipality->idcounty     = '02';
+                $municipality->idmuni       = '02';
+                $municipality->municipality = 'Akershus Fylkeskommune';
+                $municipality->logo         = 'Akershus_fylkeskommune.png';
+
+                $DB->insert_record('municipality',$municipality);
+            }//02
+
+            if (!$DB->record_exists('municipality',array('idcounty' => '03','idmuni' => '03','municipality' => 'Oslo Fylkeskommune'))) {
+                $municipality = new stdClass();
+                $municipality->idcounty     = '03';
+                $municipality->idmuni       = '03';
+                $municipality->municipality = 'Oslo Fylkeskommune';
+                $municipality->logo         = 'oslo_fylkeskommune.png';
+
+                $DB->insert_record('municipality',$municipality);
+            }//03
+
+            if (!$DB->record_exists('municipality',array('idcounty' => '04','idmuni' => '04','municipality' => 'Hedmark Fylkeskommune'))) {
+                $municipality = new stdClass();
+                $municipality->idcounty     = '04';
+                $municipality->idmuni       = '04';
+                $municipality->municipality = 'Hedmark Fylkeskommune';
+                $municipality->logo         = 'hedmark_fylkeskommune.png';
+
+                $DB->insert_record('municipality',$municipality);
+            }//04
+
+            if (!$DB->record_exists('municipality',array('idcounty' => '05','idmuni' => '05','municipality' => 'Oppland Fylkeskommune'))) {
+                $municipality = new stdClass();
+                $municipality->idcounty     = '05';
+                $municipality->idmuni       = '05';
+                $municipality->municipality = 'Oppland Fylkeskommune';
+                $municipality->logo         = 'oppland_fylkeskommune.png';
+
+                $DB->insert_record('municipality',$municipality);
+            }//05
+
+            if (!$DB->record_exists('municipality',array('idcounty' => '06','idmuni' => '06','municipality' => 'Buskerud Fylkeskommune'))) {
+                $municipality = new stdClass();
+                $municipality->idcounty     = '06';
+                $municipality->idmuni       = '06';
+                $municipality->municipality = 'Buskerud Fylkeskommune';
+                $municipality->logo         = 'buskerud_fylkeskommune.png';
+
+                $DB->insert_record('municipality',$municipality);
+            }//06
+
+            if (!$DB->record_exists('municipality',array('idcounty' => '07','idmuni' => '07','municipality' => 'Vestfold Fylkeskommune'))) {
+                $municipality = new stdClass();
+                $municipality->idcounty     = '07';
+                $municipality->idmuni       = '07';
+                $municipality->municipality = 'Vestfold Fylkeskommune';
+                $municipality->logo         = 'vestfold_fylkeskommune.png';
+
+                $DB->insert_record('municipality',$municipality);
+            }//07
+
+            if (!$DB->record_exists('municipality',array('idcounty' => '08','idmuni' => '08','municipality' => 'Telemark Fylkeskommune'))) {
+                $municipality = new stdClass();
+                $municipality->idcounty     = '08';
+                $municipality->idmuni       = '08';
+                $municipality->municipality = 'Telemark Fylkeskommune';
+                $municipality->logo         = 'telemark_fylkeskommune.png';
+
+                $DB->insert_record('municipality',$municipality);
+            }//08
+
+            if (!$DB->record_exists('municipality',array('idcounty' => '09','idmuni' => '09','municipality' => 'Aust-Agder Fylkeskommune'))) {
+                $municipality = new stdClass();
+                $municipality->idcounty     = '09';
+                $municipality->idmuni       = '09';
+                $municipality->municipality = 'Aust-Agder Fylkeskommune';
+                $municipality->logo         = 'aust-agder_fylkeskommune.png';
+
+                $DB->insert_record('municipality',$municipality);
+            }//09
+
+            if (!$DB->record_exists('municipality',array('idcounty' => '10','idmuni' => '10','municipality' => 'Vest-Agder Fylkeskommune'))) {
+                $municipality = new stdClass();
+                $municipality->idcounty     = '10';
+                $municipality->idmuni       = '10';
+                $municipality->municipality = 'Vest-Agder Fylkeskommune';
+                $municipality->logo         = 'vest-agder_fylkeskommune.png';
+
+                $DB->insert_record('municipality',$municipality);
+            }//10
+
+            if (!$DB->record_exists('municipality',array('idcounty' => '11','idmuni' => '11','municipality' => 'Rogaland Fylkeskommune'))) {
+                $municipality = new stdClass();
+                $municipality->idcounty     = '11';
+                $municipality->idmuni       = '11';
+                $municipality->municipality = 'Rogaland Fylkeskommune';
+                $municipality->logo         = 'rogaland_fylkeskommune.png';
+
+                $DB->insert_record('municipality',$municipality);
+            }//11
+
+            if (!$DB->record_exists('municipality',array('idcounty' => '12','idmuni' => '12','municipality' => 'Hordaland Fylkeskommune'))) {
+                $municipality = new stdClass();
+                $municipality->idcounty     = '12';
+                $municipality->idmuni       = '12';
+                $municipality->municipality = 'Hordaland Fylkeskommune';
+                $municipality->logo         = 'hordaland_fylkeskommune.png';
+
+                $DB->insert_record('municipality',$municipality);
+            }//12
+
+            if (!$DB->record_exists('municipality',array('idcounty' => '14','idmuni' => '14','municipality' => 'Sogn og Fjordane Fylkeskommune'))) {
+                $municipality = new stdClass();
+                $municipality->idcounty     = '14';
+                $municipality->idmuni       = '14';
+                $municipality->municipality = 'Sogn og Fjordane Fylkeskommune';
+                $municipality->logo         = 'sogn_og_fjordane_fylkeskommune.png';
+
+                $DB->insert_record('municipality',$municipality);
+            }//14
+
+            if (!$DB->record_exists('municipality',array('idcounty' => '15','idmuni' => '15','municipality' => 'Møre og Romsdal Fylkeskommune'))) {
+                $municipality = new stdClass();
+                $municipality->idcounty     = '15';
+                $municipality->idmuni       = '15';
+                $municipality->municipality = 'Møre og Romsdal Fylkeskommune';
+                $municipality->logo         = 'more_og_romsdal_fylkeskommune.png';
+
+                $DB->insert_record('municipality',$municipality);
+            }//15
+
+            if (!$DB->record_exists('municipality',array('idcounty' => '16','idmuni' => '16','municipality' => 'Sør-Trøndelag Fylkeskommune'))) {
+                $municipality = new stdClass();
+                $municipality->idcounty     = '16';
+                $municipality->idmuni       = '16';
+                $municipality->municipality = 'Sør-Trøndelag Fylkeskommune';
+                $municipality->logo         = 'sor-tronderlag_fylkeskommune.png';
+
+                $DB->insert_record('municipality',$municipality);
+            }//16
+
+            if (!$DB->record_exists('municipality',array('idcounty' => '17','idmuni' => '17','municipality' => 'Nord-Trøndelag Fylkeskommune'))) {
+                $municipality = new stdClass();
+                $municipality->idcounty     = '17';
+                $municipality->idmuni       = '17';
+                $municipality->municipality = 'Nord-Trøndelag Fylkeskommune';
+                $municipality->logo         = 'nord-tronderlag_fylkeskommune.png';
+
+                $DB->insert_record('municipality',$municipality);
+            }//17
+
+            if (!$DB->record_exists('municipality',array('idcounty' => '18','idmuni' => '18','municipality' => 'Nordland Fylkeskommune'))) {
+                $municipality = new stdClass();
+                $municipality->idcounty     = '18';
+                $municipality->idmuni       = '18';
+                $municipality->municipality = 'Nordland Fylkeskommune';
+                $municipality->logo         = 'nordland_fylkeskommune.png';
+
+                $DB->insert_record('municipality',$municipality);
+            }//18
+
+            if (!$DB->record_exists('municipality',array('idcounty' => '19','idmuni' => '19','municipality' => 'Troms Fylkeskommune'))) {
+                $municipality = new stdClass();
+                $municipality->idcounty     = '19';
+                $municipality->idmuni       = '19';
+                $municipality->municipality = 'Troms Fylkeskommune';
+                $municipality->logo         = 'troms_fylkeskommune.png';
+
+                $DB->insert_record('municipality',$municipality);
+            }//19
+
+
+            if (!$DB->record_exists('municipality',array('idcounty' => '20','idmuni' => '20','municipality' => 'Finnmark Fylkeskommune'))) {
+                $municipality = new stdClass();
+                $municipality->idcounty     = '20';
+                $municipality->idmuni       = '20';
+                $municipality->municipality = 'Finnmark Fylkeskommune';
+                $municipality->logo         = 'finnmark_fylkeskommune.png';
+
+                $DB->insert_record('municipality',$municipality);
+            }//20
         }//if_municipality
     }//if_old_version
 

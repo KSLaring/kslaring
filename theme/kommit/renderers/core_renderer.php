@@ -702,15 +702,22 @@ EOT;
             return false;
         }
 
-        if (!$bgimg = $DB->get_record(
-            'background_image',
-            array('sectionid' => $sectionid)
-        )
-        ) {
+        /**
+         * @updateDate  03/14/2014
+         * @author      eFaktor         (fbv)
+         *
+         * Description
+         * Check if the table exists
+         */
+        if ($DB->get_manager()->table_exists('background_image')) {
+            if (!$bgimg = $DB->get_record('background_image',array('sectionid' => $sectionid))) {
             $bgimg = false;
         }
 
         return $bgimg;
+        }else {
+            return false;
+        }//if_table_exist
     }
 
     /**
