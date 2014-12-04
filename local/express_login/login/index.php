@@ -7,8 +7,14 @@ $PAGE->set_url("$CFG->httpswwwroot/login/index.php");
 $PAGE->set_context(CONTEXT_SYSTEM::instance());
 $PAGE->set_pagelayout('login');
 
+if (isset($_POST['UserName'])) {
+    $username = $_POST['UserName'];
+}else {
+    $username = $_SESSION['UserName'];
+    unset($_SESSION['UserName']);
+}
 
-$num_attempts = Express_Link::Validate_UserAttempts(2);
+$num_attempts = Express_Link::Validate_UserAttempts($username);
 if (!$num_attempts) {
     $err_url = new moodle_url('/local/express_login/login/loginError.php',array('er' => ERROR_EXPRESS_LINK_ATTEMPTED_EXCEEDED));
     redirect($err_url);
@@ -21,13 +27,6 @@ $er = optional_param('er',0,PARAM_INT);
 $plugin_info     = get_config('local_express_login');
 $minimum    = array('4','6','8');
 $digits     = $minimum[$plugin_info->minimum_digits];
-
-if (isset($_POST['UserName'])) {
-    $username = $_POST['UserName'];
-}else {
-    $username = $_SESSION['UserName'];
-    unset($_SESSION['UserName']);
-}
 
 echo $OUTPUT->header();
 
