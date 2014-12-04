@@ -51,6 +51,7 @@ class block_courses_site extends block_base {
 
         $this->content = new stdClass;
         $this->content->footer = '';
+        $this->content->text    = '';
 
         if ($PAGE->user_is_editing()) {
 
