@@ -68,7 +68,7 @@ class profile_field_rgcompany extends profile_field_base {
         }
 
         /* Get the companies selected   */
-        $selectedThree = explode(',',$usernew->hidden_level_three);
+        $selectedThree = explode(',',str_replace('#','',$usernew->hidden_level_three));
         foreach ($selectedThree as $ref) {
             $index      = strripos($ref,"_");
             $companyId  = substr($ref,$index+1);

@@ -56,13 +56,16 @@ $user->imagefile = $draftitemid;
 /* Add Form */
 $form = new confirm_profile_form(null,array($my_fields,$user,$filemanageroptions));
 if ($data = $form->get_data()) {
-    foreach ($my_fields as $key=>$field) {
+
+    /* First Normal Fields  */
+    if ($my_fields->normal) {
+        $normal_fields = $my_fields->normal;
+        foreach ($normal_fields as $field) {
         $name = $SESSION->elements[$field->name];
 
         $field->timeupdated = time();
         $field->confirmed   = 1;
 
-        if ($field->type == 'user') {
             if (isset($user->$name)) {
                 switch ($name) {
                     case 'description':
@@ -87,34 +90,21 @@ if ($data = $form->get_data()) {
 
             useredit_update_picture($user,$form,$filemanageroptions);
             ForceProfile::ForceProfile_UpdateUserForceProfile($user_id,$field,$name);
-        }else {
-            /* Extra Profile    */
-            switch ($name) {
-                case 'profile_field_rgcompany':
-                    /* Get Company Id   */
-                    $company_id = 0;
-                    $index      = strpos($data->company_id,'_');
-                    if ($index) {
-                        $company_id = substr($data->company_id,$index+1);
-                    }//if_index
+        }//for_normal_fields
+    }//normal_fields
+    if ($my_fields->profile) {
+        $profile_fields = $my_fields->profile;
+        foreach ($profile_fields as $field) {
+            $name = $SESSION->elements[$field->name];
 
-                    $data->$name   = $company_id;
-
-                    break;
-                case 'profile_field_rgjobrole':
-                    /* Get Job Roles Id */
-                    $data->$name   = $data->jr_id;
-
-                    break;
-                default:
+            $field->timeupdated = time();
+            $field->confirmed   = 1;
                     $field->value       = $data->$name;
 
-                    break;
-            }//switch_name
+            ForceProfile::ForceProfile_UpdateExtraUserForceProfile($user_id,$field,$data,$name);
+        }//for_profile_fields
+    }//profile_fields
 
-            ForceProfile::ForceProfile_UpdateExtraUserForceProfile($user_id,$field,$data->$name,$name);
-        }//if_type
-    }//foreach
 
     unset($SESSION->elements);
     $return = new moodle_url('/user/profile.php',array('id' => $user_id));

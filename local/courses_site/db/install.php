@@ -32,6 +32,8 @@ function xmldb_local_courses_site_install() {
     $table_courses_site->add_field('description',XMLDB_TYPE_TEXT,'big',null,null,null,null);
     /* Picture      */
     $table_courses_site->add_field('picture',XMLDB_TYPE_INTEGER,'10',null, null,null,0);
+    /* picturetitle */
+    $table_courses_site->add_field('picturetitle', XMLDB_TYPE_CHAR, '255', null, null, null, null);
     /* Order        */
     $table_courses_site->add_field('sortorder',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL,null,0);
     /* Timecreated  */
