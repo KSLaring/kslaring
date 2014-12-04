@@ -54,25 +54,22 @@ class block_courses_site extends block_base {
 
         if ($PAGE->user_is_editing()) {
 
-            $this->content->text = html_writer::start_tag('div',
-                array('class' => 'course-content'));
+            $this->content->text = html_writer::start_tag('div',array('class' => 'course-content'));
             if ($lst_courses_site) {
                 $this->content->text .= '<ul class="list">';
                 foreach ($lst_courses_site as $key => $course_site) {
                     /* Edit Option  */
-                    $url_edit = new moodle_url('/local/courses_site/edit_courses_site.php',
-                        array('id' => $course_site->course));
+                    $url_edit = new moodle_url('/local/courses_site/edit_courses_site.php', array('id' => $course_site->course));
                     $edit = html_writer::link($url_edit,
-                        html_writer::empty_tag('img', array('src' => $OUTPUT->pix_url('t/edit'),
-                        'alt' => get_string('edit'), 'class' => 'iconsmall')),
-                        array('title' => get_string('edit')));
+                                              html_writer::empty_tag('img', array('src' => $OUTPUT->pix_url('t/edit'),
+                                                                      'alt' => get_string('edit'), 'class' => 'iconsmall')),
+                                              array('title' => get_string('edit')));
                     /* Delete Option    */
-                    $url_del = new moodle_url('/local/courses_site/delete_courses_site.php',
-                        array('id' => $course_site->course));
+                    $url_del = new moodle_url('/local/courses_site/delete_courses_site.php',array('id' => $course_site->course));
                     $del = html_writer::link($url_del,
-                        html_writer::empty_tag('img', array('src' => $OUTPUT->pix_url('t/delete'),
-                        'alt' => get_string('delete'), 'class' => 'iconsmall')),
-                        array('title' => get_string('delete')));
+                                             html_writer::empty_tag('img', array('src' => $OUTPUT->pix_url('t/delete'),
+                                                                    'alt' => get_string('delete'), 'class' => 'iconsmall')),
+                                             array('title' => get_string('delete')));
 
                     /* Add Course to the List with the edit and delete options */
                     $this->content->text .= '<li class="listentry">';
@@ -85,8 +82,7 @@ class block_courses_site extends block_base {
             /* If it is possible add more courses   */
             if ($count_courses_site < $config->max) {
                 $link = new moodle_url('/local/courses_site/add_courses_site.php');
-                $this->content->footer = $OUTPUT->action_link($link,
-                    get_string('add_course', 'block_courses_site'), null);
+                $this->content->footer = $OUTPUT->action_link($link,get_string('add_course', 'block_courses_site'), null);
             }//if_config_max
             $this->content->text .= html_writer::end_tag('div');
         } else {
@@ -210,25 +206,21 @@ class block_courses_site extends block_base {
         /* Variables    */
         $description = ' ';
         /* Get URL For Course   */
-        $url = new moodle_url('/local/course_page/home_page.php',
-            array('id' => $course_site->course));
+        $url = new moodle_url('/local/course_page/home_page.php',array('id' => $course_site->course));
         $this->content->text .= '<div class="' . $class . '">';
-        /*  Image / Title   */
-        $this->content->text .= '<a class="img-site" href="' . $url . '">';
-        $this->content->text .= '<img src="' . $course_site->picture .
-            '" class="graphic-site"  title="' . $course_site->picturetitle .
-            '" alt="' . $course_site->picturetitle . '"/>';
-        $this->content->text .= '</a>';
-        $this->content->text .= '<a class="title-site" href="' . $url . '">' .
-            $course_site->title . '</a>';
+            /*  Image / Title   */
+            $this->content->text .= '<a class="img-site" href="' . $url . '">';
+                $this->content->text .= '<img src="' . $course_site->picture .'" class="graphic-site"  title="' . $course_site->picturetitle .'" alt="' . $course_site->picturetitle . '"/>';
+            $this->content->text .= '</a>';
+            $this->content->text .= '<a class="title-site" href="' . $url . '">' . $course_site->title . '</a>';
 
-        /* Description      */
-        if (strlen($course_site->description) > 100) {
-            $description = shorten_text($course_site->description, 100);
-        } else {
-            $description = $course_site->description;
-        }
-        $this->content->text .= '<p class="label-header">' . $description . '</p>';
+            /* Description      */
+            if (strlen($course_site->description) > 100) {
+                $description = shorten_text($course_site->description, 100);
+            } else {
+                $description = $course_site->description;
+            }
+            $this->content->text .= '<p class="label-header">' . $description . '</p>';
         $this->content->text .= '</div>';
     }//block_courses_site_AddColumn
 
@@ -289,37 +281,32 @@ class block_courses_site extends block_base {
     function block_courses_site_AddColumnButton($course_site, $class) {
         global $OUTPUT, $CFG;
         /* Get URL For Course   */
-        $url = new moodle_url('/local/course_page/home_page.php',
-            array('id' => $course_site->course));
+        $url = new moodle_url('/local/course_page/home_page.php',array('id' => $course_site->course));
 
         $this->content->text .= '<div class="' . $class . '">';
-        $this->content->text .= '<div class="left">';
-        /* Button */
-        $this->content->text .= '<a href="' . $url . '"><button class="button-site">' .
-            get_string('btn_more', 'local_courses_site') . '</button></a>';
-        $this->content->text .= '</div>'; //left
+            $this->content->text .= '<div class="left">';
+                /* Button */
+                $this->content->text .= '<a href="' . $url . '"><button class="button-site">' . get_string('btn_more', 'local_courses_site') . '</button></a>';
+            $this->content->text .= '</div>'; //left
 
-        $this->content->text .= '<div class="right">';
-        switch ($course_site->type) {
-            case 'netcourse':
-                $url_img = $OUTPUT->pix_url('/i/nettkurs');
-                $this->content->text .= html_writer::empty_tag('img',
-                    array('src' => $url_img, 'alt' => 'nett kurs icon', 'class' => 'icon'));
-                break;
-            case 'classroom':
-                $url_img = $OUTPUT->pix_url('/i/classroom');
-                $this->content->text .= html_writer::empty_tag('img',
-                    array('src' => $url_img, 'alt' => 'classroom icon', 'class' => 'icon'));
-                break;
-            case 'whitepaper':
-                $url_img = $OUTPUT->pix_url('/i/whitepaper');
-                $this->content->text .= html_writer::empty_tag('img',
-                    array('src' => $url_img, 'alt' => 'whitepaper icon', 'class' => 'icon'));
-                break;
-            default:
-                break;
-        }//format_ico
-        $this->content->text .= '</div>'; //right
+            $this->content->text .= '<div class="right">';
+                switch ($course_site->type) {
+                    case 'netcourse':
+                        $url_img = $OUTPUT->pix_url('/i/nettkurs');
+                        $this->content->text .= html_writer::empty_tag('img',array('src' => $url_img, 'alt' => 'nett kurs icon', 'class' => 'icon'));
+                        break;
+                    case 'classroom':
+                        $url_img = $OUTPUT->pix_url('/i/classroom');
+                        $this->content->text .= html_writer::empty_tag('img',array('src' => $url_img, 'alt' => 'classroom icon', 'class' => 'icon'));
+                        break;
+                    case 'whitepaper':
+                        $url_img = $OUTPUT->pix_url('/i/whitepaper');
+                        $this->content->text .= html_writer::empty_tag('img',array('src' => $url_img, 'alt' => 'whitepaper icon', 'class' => 'icon'));
+                        break;
+                    default:
+                        break;
+                }//format_ico
+            $this->content->text .= '</div>'; //right
         $this->content->text .= '</div>';
     }//block_courses_site_AddColumnButton
 }

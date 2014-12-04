@@ -168,8 +168,8 @@ class profile_field_rgjobrole extends profile_field_base {
                 if ($rdo->data) {
                     /* SQL Instruction  */
                     $sql = " SELECT		GROUP_CONCAT(DISTINCT jr.name ORDER BY jr.name SEPARATOR ',') as 'names'
-                         FROM		{report_gen_jobrole}	jr
-                         WHERE		jr.id IN ($rdo->data) ";
+                             FROM		{report_gen_jobrole}	jr
+                             WHERE		jr.id IN ($rdo->data) ";
 
                     /* Execute  */
                     $rdo_name = $DB->get_record_sql($sql);

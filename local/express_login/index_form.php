@@ -1,0 +1,302 @@
+<?php
+/**
+ * Express Login  - Index (Form)
+ *
+ * @package         local
+ * @subpackage      express_login
+ * @copyright       2014    eFaktor {@link http://www.efaktor.no}
+ *
+ * @creationDate    26/11/2014
+ * @author          eFaktor     (fbv)
+ */
+
+require_once($CFG->dirroot.'/lib/formslib.php');
+$PAGE->requires->js('/local/express_login/express/express.js');
+
+
+class express_login_form extends moodleform {
+    function definition() {
+        global $SITE,$USER;
+        $form       = $this->_form;
+
+        $plugin_info  = $this->_customdata;
+
+        /* Header   */
+        $form->addElement('header', 'express_header',get_string('pluginname','local_express_login'));
+        // visible elements
+        $form->addElement('static', 'username', get_string('username'), $USER->username);
+
+        /* PIN Code */
+        $minimum    = array('4','6','8');
+        $digits     = $minimum[$plugin_info->minimum_digits];
+        $form->addElement('static', 'pin_description', '', get_string('pin_code_min','local_express_login',$digits));
+        $form->addElement('passwordunmask', 'pin_code', get_string('pin_code','local_express_login'), ' size="10" maxlength="' . $digits . '"');
+        $form->addHelpButton('pin_code', 'pin_code','local_express_login');
+        $form->setType('pin_code', PARAM_RAW);
+        $form->addRule('pin_code',get_string('required'), 'required', null, 'server');
+
+        /* Security Question    */
+        $form->addElement('text', 'security_phrase', get_string('pin_question','local_express_login'), ' size="25" maxlength="25"');
+        $form->addHelpButton('security_phrase', 'pin_question','local_express_login');
+        $form->setType('security_phrase', PARAM_TEXT);
+        $form->addRule('security_phrase',get_string('required'), 'required', null, 'server');
+
+        $form->addElement('static', 'express_description', '', get_string('title_info', 'local_express_login',$SITE->fullname));
+
+        $this->add_action_buttons(true, get_string('btn_generate_link','local_express_login'));
+
+        $form->addElement('hidden','id');
+        $form->setType('id',PARAM_INT);
+        $form->setDefault('id',$USER->id);
+    }//definition
+
+    function validation($data, $files) {
+        /* Variables    */
+        $pin_not_valid  = null;
+        $err_pin        = null;
+
+        $errors = parent::validation($data, $files);
+
+        $plugin_info  = $this->_customdata;
+
+        /* Check the Password   */
+        /* First the correct number of digits   */
+        $minimum    = array('4','6','8');
+        $digits     = $minimum[$plugin_info->minimum_digits];
+        if (strlen($data['pin_code']) != $digits) {
+            $errors['pin_code'] = get_string('pin_code_min','local_express_login',$digits);
+            return $errors;
+        }elseif (!is_numeric($data['pin_code'])) {
+            $errors['pin_code'] = get_string('pin_numeric_err','local_express_login');
+            return $errors;
+        }else {
+            /* Check if the PIN code is valid   */
+            list($pin_not_valid,$err_pin) = Express_Login::CheckPinCode($data['pin_code'],$plugin_info);
+            if ($pin_not_valid) {
+                $errors['pin_code'] = $err_pin;
+                return $errors;
+            }//if_pin_not_valid
+        }//if_length_pin_code
+
+        /* Check the security phrase */
+        /* Length -- 25 characters   */
+        if (strlen($data['security_phrase']) < 25) {
+            $errors['security_phrase'] = get_string('pin_security_err','local_express_login');
+            return $errors;
+        }//if_security_length
+
+        return $errors;
+    }//validation
+}//express_login_form
+
+class express_login_link_form extends moodleform {
+    function definition() {
+        global $USER,$SITE;
+        $form       = $this->_form;
+
+        /* Header   */
+        $form->addElement('header', 'express_header',get_string('pluginname','local_express_login'));
+        // visible elements
+        $form->addElement('static', 'express-link-description', '',get_string('title_link','local_express_login',$SITE->fullname));
+
+        /* Copy to Clipboard    */
+        $clipboardDiv  = html_writer::start_div('clipboard',array('id' => 'clipboardDiv','style' => 'display: none;'));
+        $clipboardDiv .= get_string('clipboardDiv','local_express_login');
+        $clipboardDiv .= html_writer::end_div();//clipboardDiv
+        $form->addElement('html',$clipboardDiv);
+
+        $form->addElement('html','<div></div>');
+
+        /* Add to Bookmark      */
+        $bookmarkURL  = '<a href="#">' . $SITE->shortname . '</a>';
+        $bookmarkDiv  = html_writer::start_div('clipboard',array('id' => 'bookmarkDiv','style' => 'display: none;'));
+        $bookmarkDiv .= get_string('bookmarkDiv','local_express_login',$bookmarkURL);
+        $bookmarkDiv .= html_writer::end_div();//bookmarkDiv
+        $form->addElement('html',$bookmarkDiv);
+
+        /* BUTTONS  */
+        $express_link = Express_Login::Get_ExpressLink($USER->id);
+        $buttons = array();
+
+        $buttons[] = $form->createElement('button','btn_copy_link',get_string('btn_copy_link','local_express_login'),'data-clipboard-text="' . $express_link . '"');
+        $buttons[] = $form->createElement('cancel');
+
+        $form->addGroup($buttons, 'buttonar', '', array(' '), false);
+        $form->setType('buttonar', PARAM_RAW);
+        $form->closeHeaderBefore('buttonar');
+
+        $form->addElement('hidden','id');
+        $form->setType('id',PARAM_INT);
+        $form->setDefault('id',$USER->id);
+    }//definition
+}//express_login_link_form
+
+class express_login_change_pin_code extends moodleform {
+    function definition() {
+        global $SITE,$USER;
+        $form       = $this->_form;
+
+        list($plugin_info,$exists_express)  = $this->_customdata;
+
+        /* Header   */
+        $form->addElement('header', 'express_header',get_string('header_new_code','local_express_login'));
+        // visible elements
+        $form->addElement('static', 'username', get_string('username'), $USER->username);
+
+        if ($exists_express) {
+            /* Current  PIN Code    */
+            $minimum    = array('4','6','8');
+            $digits     = $minimum[$plugin_info->minimum_digits];
+            $form->addElement('passwordunmask', 'pin_code_current', get_string('pin_old_code','local_express_login'), ' size="10" maxlength="' . $digits . '"');
+            $form->setType('pin_code_current', PARAM_RAW);
+            $form->addRule('pin_code_current',get_string('required'), 'required', null, 'server');
+
+            /* New PIN Code         */
+            $form->addElement('static', 'pin_description', '', get_string('pin_code_min','local_express_login',$digits));
+            $form->addElement('passwordunmask', 'pin_code', get_string('pin_new_code','local_express_login'), ' size="10" maxlength="' . $digits . '"');
+            $form->addHelpButton('pin_code', 'pin_code','local_express_login');
+            $form->setType('pin_code', PARAM_RAW);
+            $form->addRule('pin_code',get_string('required'), 'required', null, 'server');
+
+            /* NEW PIN Code (Again) */
+            $form->addElement('passwordunmask', 'pin_code_again', get_string('pin_new_code_again','local_express_login'), ' size="10" maxlength="' . $digits . '"');
+            $form->addHelpButton('pin_code_again', 'pin_code','local_express_login');
+            $form->setType('pin_code_again', PARAM_RAW);
+            $form->addRule('pin_code_again',get_string('required'), 'required', null, 'server');
+
+            /* Security Question    */
+            $form->addElement('text', 'security_phrase', get_string('pin_question','local_express_login'), ' size="25" maxlength="25"');
+            $form->addHelpButton('security_phrase', 'pin_question','local_express_login');
+            $form->setType('security_phrase', PARAM_TEXT);
+            $form->addRule('security_phrase',get_string('required'), 'required', null, 'server');
+
+            $form->addElement('static', 'express_description', '', get_string('title_change', 'local_express_login',$SITE->fullname));
+
+            $this->add_action_buttons(true, get_string('btn_generate_link','local_express_login'));
+        }else {
+            $a = new stdClass();
+            $a->site    = $SITE->fullname;
+            $url= new moodle_url('/local/express_login/index.php',array('id' => $USER->id));
+            $a->url = html_writer::link($url,get_string('pluginname','local_express_login'));
+            $form->addElement('static', 'express_description', '', get_string('warning_regenerate', 'local_express_login',$a));
+        }
+
+
+        $form->addElement('hidden','id');
+        $form->setType('id',PARAM_INT);
+        $form->setDefault('id',$USER->id);
+    }//definiton
+
+    function validation($data, $files) {
+        /* Variables    */
+        $pin_not_valid  = null;
+        $err_pin        = null;
+
+        $errors = parent::validation($data, $files);
+
+        $plugin_info  = $this->_customdata;
+
+        /* Check the Password   */
+        /* First the correct number of digits   */
+        if (!Express_Login::ValidateExpressLogin_User($data['id'],$data['pin_code_current'])) {
+            $errors['pin_code_current'] = get_string('pin_current_diff_err','local_express_login');
+            return $errors;
+        }else {
+            if ($data['pin_code_current'] == $data['pin_code_again']) {
+                $errors['pin_code'] = get_string('pin_new_not_diff_current','local_express_login');
+                return $errors;
+            }
+
+            if ($data['pin_code'] != $data['pin_code_again']) {
+                $errors['pin_code'] = get_string('pin_new_diff_err','local_express_login');
+                return $errors;
+            }else {
+                $minimum    = array('4','6','8');
+                $digits     = $minimum[$plugin_info->minimum_digits];
+                if (strlen($data['pin_code']) != $digits) {
+                    $errors['pin_code'] = get_string('pin_code_min','local_express_login',$digits);
+                    return $errors;
+                }elseif (!is_numeric($data['pin_code'])) {
+                    $errors['pin_code'] = get_string('pin_numeric_err','local_express_login');
+                    return $errors;
+                }else {
+                    /* Check if the PIN code is valid   */
+                    list($pin_not_valid,$err_pin) = Express_Login::CheckPinCode($data['pin_code'],$plugin_info);
+                    if ($pin_not_valid) {
+                        $errors['pin_code'] = $err_pin;
+                        return $errors;
+                    }//if_pin_not_valid
+                }//if_length_pin_code
+            }//new_code_diff
+        }//if_is_valid_current_code
+
+        /* Check the security phrase */
+        /* Length -- 25 characters   */
+        if (strlen($data['security_phrase']) < 25) {
+            $errors['security_phrase'] = get_string('pin_security_err','local_express_login');
+            return $errors;
+        }//if_security_length
+
+        return $errors;
+    }//validation
+}//express_login_change_pin_code
+
+class express_login_regenerate_link extends moodleform {
+    function definition() {
+        /* Variables    */
+        global $SITE,$USER;
+        $form       = $this->_form;
+
+        $exists_express  = $this->_customdata;
+
+        /* Header   */
+        $form->addElement('header', 'express_header',get_string('pluginname','local_express_login'));
+        // visible elements
+        $form->addElement('static', 'username', get_string('username'), $USER->username);
+
+        if ($exists_express) {
+            /* Security Question    */
+            $form->addElement('static', 'express_remind', '', get_string('regenerate_link', 'local_express_login'));
+            $form->addElement('text', 'security_phrase', get_string('pin_question','local_express_login'), ' size="25" maxlength="25"');
+            $form->addHelpButton('security_phrase', 'pin_question','local_express_login');
+            $form->setType('security_phrase', PARAM_TEXT);
+            $form->addRule('security_phrase',get_string('required'), 'required', null, 'server');
+
+            $form->addElement('static', 'express_description', '', get_string('title_regenerate_link', 'local_express_login'));
+
+            $this->add_action_buttons(true, get_string('btn_generate_link','local_express_login'));
+        }else {
+            $a = new stdClass();
+            $a->site    = $SITE->fullname;
+            $url= new moodle_url('/local/express_login/index.php',array('id' => $USER->id));
+            $a->url = html_writer::link($url,get_string('pluginname','local_express_login'));
+            $form->addElement('static', 'express_description', '', get_string('warning_regenerate', 'local_express_login',$a));
+        }//if_else
+
+        $form->addElement('hidden','id');
+        $form->setType('id',PARAM_INT);
+        $form->setDefault('id',$USER->id);
+    }//definition
+
+    function validation($data, $files) {
+        /* Variables    */
+        $errors = parent::validation($data, $files);
+
+        /* Check the security phrase */
+        /* Length -- 25 characters   */
+        if (strlen($data['security_phrase']) < 25) {
+            $errors['security_phrase'] = get_string('pin_security_err','local_express_login');
+            return $errors;
+        }else {
+            /* Check that it's a new one    */
+            if (!Express_Login::ValidateExpressRemind($data['id'],$data['security_phrase'])) {
+                $errors['security_phrase'] = get_string('err_remind','local_express_login');
+                return $errors;
+            }
+        }//if_security_length
+
+        return $errors;
+    }//validation
+}//express_login_regenerate_link
+
+

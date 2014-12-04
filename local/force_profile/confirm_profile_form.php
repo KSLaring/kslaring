@@ -23,13 +23,19 @@ class confirm_profile_form extends moodleform {
 
         $form->addElement('header', 'confirm',get_string('confirm_header','local_force_profile'));
 
-        foreach ($my_fields as $field) {
-            if ($field->type == 'user') {
+        /* Add the Fields to update */
+        if ($my_fields->normal) {
+            $normal_fields = $my_fields->normal;
+            foreach ($normal_fields as $field) {
                 ForceProfile::ForceProfile_CreateUserElement($form,$field->name,$user,$file_options);
-            }else {
+            }
+        }//normal_fields
+        if ($my_fields->profile) {
+            $profile_fields = $my_fields->profile;
+            foreach ($profile_fields as $field) {
                 ForceProfile::ForceProfile_CreateExtraProfileElement($form,$field->name,$user->id);
-            }//if_else
-        }//for_my_fields
+            }
+        }//profile_fields
 
         $form->addElement('checkbox','confirm_check',null,get_string('confirm_check','local_force_profile'));
         $form->addRule('confirm_check','','required', null, 'server');

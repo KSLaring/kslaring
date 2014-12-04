@@ -37,9 +37,9 @@ class ForceProfile {
 
             /* SQL Instruction */
             $sql = " SELECT		CONCAT(u.lastname, ', ', u.firstname) as 'user'
-                 FROM		{user}	u
-                 WHERE		u.id IN ($users)
-                 ORDER BY	u.lastname, u.firstname ASC ";
+                     FROM		{user}	u
+                     WHERE		u.id IN ($users)
+                     ORDER BY	u.lastname, u.firstname ASC ";
 
             /* Execute  */
             $rdo = $DB->get_records_sql($sql);
@@ -159,9 +159,9 @@ class ForceProfile {
 
             /* SQL Instruction  */
             $sql = " SELECT id
-                 FROM   {user_force_profile}
-                 WHERE  timeupdated is NULL
-                    AND userid = :user_id ";
+                     FROM   {user_force_profile}
+                     WHERE  timeupdated is NULL
+                        AND userid = :user_id ";
 
             /* Execute  */
             $rdo = $DB->get_records_sql($sql,$params);
@@ -189,37 +189,22 @@ class ForceProfile {
      */
     public static function ForceProfile_GetFieldsToUpdate($user_id) {
         /* Variables    */
-        global $DB;
+        $lst_fields = new stdClass();
+        $lst_fields->normal     = null;
+        $lst_fields->profile    = null;
 
         try {
-            /* My Fields    */
-            $lst_fields = array();
-
             /* Search Criteria  */
             $params = array();
             $params['user_id'] = $user_id;
 
-            /* SQL Instruction  */
-            $sql = " SELECT 	id,
-                                type,
-                                field
-                     FROM 	    {user_force_profile}
-                     WHERE	    timeupdated is NULL
-                        AND     userid = :user_id
-                     ORDER BY   type DESC";
+            /* First the fields are not extra profile   */
+            $params['type']     = 'user';
+            $lst_fields->normal = self::ForceProfile_getNormalFields($params);
 
-            /* Execute  */
-            $rdo = $DB->get_records_sql($sql,$params);
-            if ($rdo) {
-                foreach ($rdo as $instance) {
-                    $field = new stdClass();
-                    $field->id   = $instance->id;
-                    $field->type = $instance->type;
-                    $field->name = $instance->field;
-
-                    $lst_fields[$instance->id] = $field;
-                }//for_rdo
-            }//if_rdo
+            /* Finally the fields are extra profile     */
+            $params['type']         = 'extra_profile';
+            $lst_fields->profile    = self::ForceProfile_getExtraProfileFields($params);
 
             return $lst_fields;
         }catch(Exception $ex){
@@ -242,7 +227,7 @@ class ForceProfile {
      */
     public static function ForceProfile_CreateExtraProfileElement(&$form,$field,$user_id) {
         /* Variables    */
-        global $CFG,$SESSION,$PAGE;
+        global $CFG,$SESSION;
 
         try {
             /* Get Info Field --> User */
@@ -252,113 +237,12 @@ class ForceProfile {
             require_once($CFG->dirroot.'/user/profile/lib.php');
             require_once($CFG->dirroot . '/user/profile/field/'.$extra->datatype.'/field.class.php');
 
-            switch ($extra->datatype) {
-                case 'rgcompany':
-                    $PAGE->requires->js('/local/force_profile/js/rgcompany.js');
-                    $form->addElement('header', 'header_company', $field);
-                    $form->setExpanded('header_company',true);
+            $form->addElement('html','<h4>' . $field . '</h4>');
 
-                    /* County   */
-                    $options = self::ForceProfile_GetCountyList();
-                    $form->addElement('select','comp_county',get_string('county','local_force_profile'),$options);
-                    /* Municipality    */
-                    $options    = array();
-                    $options[0] = get_string('sel_municipality','local_force_profile');
-                    $form->addElement('select','comp_munis',get_string('municipality','local_force_profile'),$options);
-
-                    /* Companies    */
-                    $newfield = 'profile_field_'.$extra->datatype;
-                    $formfield = new $newfield($extra->id, $user_id);
-                    $formfield->edit_field_company($form);
-                    $form->setDefault('profile_field_'.$extra->shortname,$extra->data);
-
-                    /* Old Value   */
-                    $company_user = self::ForceProfile_GetCompany_User($user_id);
-                    $form->addElement('text','old_company','','size="65" disabled');
-                    if ($company_user) {
-                        $form->setDefault('old_company',$company_user);
-                    }//if_job_roles
-                    $form->setType('old_company',PARAM_TEXT);
-
-                    /* Hide Municipalities  */
-                    $options = self::ForceProfile_GetMunicipalities_List();
-                    $form->addElement('select','comp_munis_hidden','',$options,'style="visibility:hidden;height:0px;"');
-
-                    /* Hide companies   */
-                    $options = self::ForceProfile_GetCompanies_List();
-                    $form->addElement('select','comp_hidden','',$options,'style="visibility:hidden;height:0px;"');
-
-                    /* Company hidden */
-                    $form->addElement('text','company_id',null,'style="visibility:hidden;height:0px;"');
-                    $form->setType('company_id',PARAM_TEXT);
-
-                    /* Company Old Hidden   */
-                    $form->addElement('hidden','company_old');
-                    if (isset($extra->data) && $extra->data) {
-                        $form->setDefault('company_old',$extra->data);
-                    }else {
-                        $form->setDefault('company_old','0');
-                    }//$extra->data
-                    $form->setType('company_old',PARAM_INT);
-
-                    break;
-                case 'rgjobrole':
-                    $PAGE->requires->js('/local/force_profile/js/rgjobrole.js');
-                    $form->addElement('header', 'job_role', $field);
-                    $form->setExpanded('job_role',true);
-
-                    /* County   */
-                    $options = self::ForceProfile_GetCountyList();
-                    $form->addElement('select','county',get_string('county','local_force_profile'),$options);
-                    /* Municipality    */
-                    $options    = array();
-                    $options[0] = get_string('sel_municipality','local_force_profile');
-                    $form->addElement('select','munis',get_string('municipality','local_force_profile'),$options);
-
-                    /* Job Roles    */
-                    $newfield = 'profile_field_'.$extra->datatype;
-                    $formfield = new $newfield($extra->id, $user_id);
-                    $formfield->edit_field($form);
-                    $form->setDefault('profile_field_'.$extra->shortname,$extra->data);
-
-                    /* Old Values   */
-                    $job_roles = self::ForceProfile_GetJobRoles_User($user_id);
-                    $form->addElement('text','old_jr','','size="65" disabled');
-                    if ($job_roles) {
-                        $form->setDefault('old_jr',implode(', ',$job_roles));
-                    }//if_job_roles
-                    $form->setType('old_jr',PARAM_TEXT);
-
-                    /* Hide Municipalities  */
-                    $options = self::ForceProfile_GetMunicipalities_List();
-                    $form->addElement('select','munis_hidden','',$options,'style="visibility:hidden;height:0px;"');
-
-                    /* Hide Job Roles   */
-                    $options = self::ForceProfile_GetJobRoles_List();
-                    $form->addElement('select','jr_hidden','',$options,'style="visibility:hidden;height:0px;"');
-
-                    /* Job Role hidden Id */
-                    $form->addElement('text','jr_id',null,'style="visibility:hidden;height:0px;"');
-                    $form->setType('jr_id',PARAM_TEXT);
-
-                    /* Job Role Old Hidden   */
-                    $form->addElement('hidden','jr_old');
-                    if (isset($extra->data) && $extra->data) {
-                        $form->setDefault('jr_old',$extra->data);
-                    }else {
-                        $form->setDefault('jr_old','0');
-                    }//$extra->data
-                    $form->setType('jr_old',PARAM_INT);
-
-                    break;
-                default:
-                    $newfield = 'profile_field_'.$extra->datatype;
-                    $formfield = new $newfield($extra->id, $user_id);
-                    $formfield->edit_field($form);
-                    $form->setDefault('profile_field_'.$extra->shortname,$extra->data);
-
-                    break;
-            }//switch_data_type
+            $newfield = 'profile_field_'.$extra->datatype;
+            $formfield = new $newfield($extra->id, $user_id);
+            $formfield->edit_field($form);
+            $form->setDefault('profile_field_'.$extra->shortname,$extra->data);
 
             $SESSION->elements[$field] = 'profile_field_'.$extra->shortname;
         }catch(Exception $ex) {
@@ -385,6 +269,8 @@ class ForceProfile {
         global $SESSION,$OUTPUT;
 
         try {
+            $form->addElement('html','<h4>' . $field . '</h4>');
+
             switch ($field) {
                 case get_string('city'):
                     $form->addElement('text', 'old_city', get_string('city'), 'maxlength="120" size="21" disabled');
@@ -737,7 +623,12 @@ class ForceProfile {
             $extra = self::ForceProfile_GetInfoFieldUser($user_id,$field->name);
             $instance_user = new stdClass();
             $instance_user->id       = $user_id;
-            $instance_user->$name    = $data;
+            $instance_user->$name    = $data->$name;
+            if ($name == 'profile_field_rgcompany') {
+                $instance_user->hidden_level_three = $data->hidden_level_three;
+            }else if ($name == 'profile_field_rgjobrole') {
+                $instance_user->hidden_job_role = $data->hidden_job_role;
+            }
 
             require_once($CFG->dirroot.'/user/profile/lib.php');
             require_once($CFG->dirroot . '/user/profile/field/'.$extra->datatype.'/field.class.php');
@@ -857,12 +748,12 @@ class ForceProfile {
 
             /* SQL Instruction  */
             $sql = " SELECT   id
-                 FROM     {user_force_profile}
-                 WHERE    userid    = :userid
-                    AND   type      = :type
-                    AND   field     = :field
-                    AND   confirmed = :confirmed
-                    AND   timeupdated IS NULL ";
+                     FROM     {user_force_profile}
+                     WHERE    userid    = :userid
+                        AND   type      = :type
+                        AND   field     = :field
+                        AND   confirmed = :confirmed
+                        AND   timeupdated IS NULL ";
 
             /* Execute      */
             $rdo = $DB->get_record_sql($sql,$params);
@@ -920,248 +811,101 @@ class ForceProfile {
         }//try_catch
     }//ForceProfile_GetInfoFieldUser
 
-    /**
-     * @static
-     * @return          array
-     * @throws          Exception
-     *
-     * @creationDate    21/08/2014
-     * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Get all the counties
-     */
-    protected static function ForceProfile_GetCountyList() {
-        /* Variables    */
-        global $DB;
-
-        try {
-            /* Counties List    */
-            $county_lst     = array();
-            $county_lst[0]  = get_string('sel_county','local_force_profile');
-
-            /* Execute  */
-            $rdo = $DB->get_records('counties',null,'county','idcounty,county');
-            if ($rdo) {
-                foreach ($rdo as $county) {
-                    $county_lst[$county->idcounty] = $county->county;
-                }//for_rdo
-            }//if_rdo
-
-            return $county_lst;
-        }catch (Exception $ex) {
-            throw $ex;
-        }//try_catch
-    }//ForceProfile_GetCountyList
-
-    /**
-     * @static
-     * @return          array
-     * @throws          Exception
-     *
-     * @creationDate    21/08/2014
-     * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Get all the municipalities connected with the county
-     */
-    protected static function  ForceProfile_GetMunicipalities_List() {
-        /* Variables    */
-        global $DB;
-
-        try {
-            /* Municipalities List  */
-            $municipality_lst       = array();
-            $municipality_lst[0]    = get_string('sel_municipality','local_force_profile');
-
-            /* Execute  */
-            $rdo = $DB->get_records('municipality',null,'idcounty,municipality','idmuni,municipality');
-            if ($rdo) {
-                foreach ($rdo as $muni) {
-                    $municipality_lst[$muni->idmuni] = $muni->municipality;
-                }//for_rdo
-            }//if_rdo
-
-            return $municipality_lst;
-        }catch (Exception $ex) {
-            throw $ex;
-        }//try_catch
-    }//ForceProfile_GetMunicipalities_List
-
-    /**
-     * @static
-     * @return          array
-     * @throws          Exception
-     *
-     * @creationDate    21/08/2014
-     * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Get all the companies
-     */
-    protected static function ForceProfile_GetCompanies_List() {
-        /* Variables    */
-        global $DB;
-
-        try {
-            /* Company List */
-            $comp_lst       = array();
-            $comp_lst[0]  = get_string('choose').'...';
-
-            /* Search Criteria  */
-            $params                     = array();
-            $params['hierarchylevel']   = 3;
-
-            /* Execute  */
-            $rdo = $DB->get_records('report_gen_companydata',$params,'idcounty,idmuni,name','id,idcounty,idmuni,name');
-            if ($rdo) {
-                foreach ($rdo as $company) {
-                    $comp_lst[$company->idmuni . '_' . $company->id] = $company->name;
-                }//for_rdo
-            }//If_rdo
-
-            return $comp_lst;
-        }catch (Exception $ex) {
-            throw $ex;
-        }//try_catch
-    }//report_generator_GetCompanies_List
-
-    /**
-     * @static
-     * @return          array
-     * @throws          Exception
-     *
-     * @creationDate    21/08/2014
-     * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Get all job roles
-     */
-    protected static function ForceProfile_GetJobRoles_List() {
-        /* Variables    */
-        global $DB;
-
-        try {
-            /* Job Role List    */
-            $jr_lst     = array();
-            $jr_lst[0]  = get_string('choose').'...';
-
-            /* Execute  */
-            $rdo = $DB->get_records('report_gen_jobrole',null,'name','id,idmuni,name');
-            if ($rdo) {
-                foreach ($rdo as $job_role) {
-                    $jr_lst[$job_role->idmuni . '_' . $job_role->id] = $job_role->name;
-                }//for_rdo
-            }//If_rdo
-
-            return $jr_lst;
-        }catch (Exception $ex) {
-            throw $ex;
-        }//try_catch
-    }//ForceProfile_GetJobRoles_List
 
     /*********************/
     /* PRIVATE FUNCTIONS */
     /*********************/
 
     /**
-     * @static
-     * @param           $user_id
-     * @return          array|null
+     * @param           $params
+     * @return          array
      * @throws          Exception
      *
-     * @creationDate    09/10/2014
+     * @creationDate    04/12/2014
      * @author          eFaktor     (fbv)
      *
      * Description
-     * Get the job roles connected with the user
+     * Get the fields to update that are not 'Extra Profile'
      */
-    private static function ForceProfile_GetJobRoles_User($user_id) {
+    private static function ForceProfile_getNormalFields($params) {
         /* Variables    */
         global $DB;
-        $job_roles = null;
+        $lst_fields = array();
 
         try {
-            /* First Get the Job Roles */
-            /* Search Criteria  */
-            $params = array();
-            $params['user_id']  = $user_id;
-            $params['type']     = 'rgjobrole';
-
             /* SQL Instruction  */
-            $sql = " SELECT 	uid.data
-					 FROM		{user_info_data}		uid
-					    JOIN	{user_info_field}		uif		ON 	uif.id 			= uid.fieldid
-																AND	uif.datatype	= :type
-					 WHERE      uid.userid = :user_id ";
+            $sql = " SELECT 	id,
+                                type,
+                                field
+                     FROM 	    {user_force_profile}
+                     WHERE	    timeupdated is NULL
+                        AND     userid = :user_id
+                        AND     type   = :type
+                     ORDER BY   field ";
 
             /* Execute  */
-            $rdo_jr = $DB->get_record_sql($sql,$params);
-            if ($rdo_jr && $rdo_jr->data) {
-                /* Second Get the names connected with */
-                /* SQL Instrunction */
-                $sql = " SELECT		jr.id,
-                                    jr.name
-                         FROM		{report_gen_jobrole}		jr
-                         WHERE		jr.id IN ($rdo_jr->data)
-                         ORDER BY 	jr.name ";
+            $rdo = $DB->get_records_sql($sql,$params);
+            if ($rdo) {
+                foreach ($rdo as $instance) {
+                    $field = new stdClass();
+                    $field->id   = $instance->id;
+                    $field->type = $instance->type;
+                    $field->name = $instance->field;
 
-                /* Execute  */
-                $rdo = $DB->get_records_sql($sql);
-                if ($rdo) {
-                    $job_roles = array();
-                    foreach ($rdo as $jr) {
-                        $job_roles[$jr->id] = $jr->name;
+                    $lst_fields[$instance->id] = $field;
                     }//for_rdo
                 }//if_rdo
-            }//if_rdo
 
-            return $job_roles;
+            return $lst_fields;
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//ForceProfile_GetJobRoles_User
+    }//ForceProfile_getNormalFields
 
     /**
-     * @static
-     * @param           $user_id
-     * @return          null
+     * @param           $params
+     * @return          array
      * @throws          Exception
      *
-     * @creationDate    09/10/2014
+     * @creationDate    04/12/2014
      * @author          eFaktor     (fbv)
      *
      * Description
-     * Get the company connected with the user
+     * Get the fields to update that are exptre profile
      */
-    private static function ForceProfile_GetCompany_User($user_id) {
+    private static function ForceProfile_getExtraProfileFields($params) {
         /* Variables    */
         global $DB;
+        $lst_fields = array();
 
         try {
-            /* Search Criteria  */
-            $params = array();
-            $params['user_id']  = $user_id;
-            $params['type']     = 'rgcompany';
-
             /* SQL Instruction  */
-            $sql = " SELECT 		co.name
-                     FROM			{user_info_data}			uid
-                        JOIN		{user_info_field}			uif		ON 	uif.id 			= uid.fieldid
-                                                                        AND	uif.datatype	= :type
-                        LEFT JOIN 	{report_gen_companydata}	co		ON	co.id			= uid.data
-                     WHERE		uid.userid = :user_id ";
+            $sql = " SELECT     ufp.id,
+                                ufp.type,
+                                ufp.field
+                     FROM 		{user_force_profile}		ufp
+                         JOIN	{user_info_field}			uif		ON uif.name = ufp.field
+                     WHERE		ufp.timeupdated is NULL
+                         AND 	ufp.userid = :user_id
+                         AND    ufp.type   = :type
+                     ORDER BY	uif.categoryid, uif.sortorder ";
 
             /* Execute  */
-            $rdo = $DB->get_record_sql($sql,$params);
+            $rdo = $DB->get_records_sql($sql,$params);
             if ($rdo) {
-                return $rdo->name;
-            }else {
-                return null;
-            }//if_else_rdo
+                foreach ($rdo as $instance) {
+                    $field = new stdClass();
+                    $field->id   = $instance->id;
+                    $field->type = $instance->type;
+                    $field->name = $instance->field;
+
+                    $lst_fields[$instance->id] = $field;
+                }//for_rdo
+            }//if_rdo
+
+            return $lst_fields;
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//ForceProfile_GetCompany_User
-
+    }//ForceProfile_getExtraProfileFields
 }//ForceProfile

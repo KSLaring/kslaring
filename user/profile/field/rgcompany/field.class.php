@@ -180,8 +180,8 @@ class profile_field_rgcompany extends profile_field_base {
                 if ($rdo->data) {
                     /* SQL Instruction  */
                     $sql = " SELECT		GROUP_CONCAT(DISTINCT rgc.name ORDER BY rgc.name SEPARATOR ',') as 'names'
-                         FROM		{report_gen_companydata}	rgc
-                         WHERE		rgc.id IN ($rdo->data) ";
+                             FROM		{report_gen_companydata}	rgc
+                             WHERE		rgc.id IN ($rdo->data) ";
 
                     /* Execute  */
                     $rdo_name = $DB->get_record_sql($sql);

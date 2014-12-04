@@ -226,6 +226,15 @@ if ($frm and isset($frm->username)) {                             // Login WITH 
 
         // Discard any errors before the last redirect.
         unset($SESSION->loginerrormsg);
+        /**
+         * @updateDate  04/12/2014
+         * @author      eFaktor     (fbv)
+         *
+         * Description
+         * Update the express login attempts, if it's necessary
+         */
+        require_once('../local/express_login/login/loginlib.php');
+        Express_Link::Update_Attempts($USER->id);
 
         /**
          * @updateDate  10/11/2014
@@ -257,7 +266,7 @@ if ($frm and isset($frm->username)) {                             // Login WITH 
             }else {
                 // test the session actually works by redirecting to self
                 $SESSION->wantsurl = $urltogo;
-                redirect(new moodle_url(get_login_url(), array('testsession'=>$USER->id)));
+                redirect($CFG->wwwroot);
             }//if_else_UpdateProfile
         }//if_first_access
     } else {
