@@ -17,7 +17,7 @@ function xmldb_local_courses_site_upgrade($oldversion) {
 
     $db_man = $DB->get_manager();
 
-    if ($oldversion < 2014111106) {
+    if ($oldversion < 2014120400) {
         /* New Field -- picturetitle */
         $table = new xmldb_table('block_courses_site');
         $fieldPicTitle = new xmldb_field('picturetitle', XMLDB_TYPE_CHAR, '255', null, null, null, null, 'picture');
@@ -26,7 +26,7 @@ function xmldb_local_courses_site_upgrade($oldversion) {
             $db_man->add_field($table, $fieldPicTitle);
         }//if_not_exists
 
-        upgrade_plugin_savepoint(true, 2014111106, 'local', 'courses_site');
+        upgrade_plugin_savepoint(true, 2014120400, 'local', 'courses_site');
     }//if_oldversion
 
     return true;
