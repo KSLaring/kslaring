@@ -64,18 +64,28 @@ $plugin_info     = get_config('local_express_login');
 $exists_express = Express_Login::Exists_ExpressLogin($user_id);
 if ($exists_express) {
 
-    $form = new express_login_link_form(null,null);
-    if ($form->is_cancelled()) {
-        $_POST = array();
-        redirect($return_url);
-    }elseif ($data_link = $form->get_data()) {
+    $force = Express_Login::Force_NewExpressLogin($plugin_info,$user_id);
+    if ($force) {
+        $url = new moodle_url('/local/express_login/change_express.php',array('id' => $user_id));
+        echo $OUTPUT->header();
+        echo $OUTPUT->notification(get_string('pin_code_expired','local_express_login'), 'notifysuccess');
+        echo $OUTPUT->continue_button($url);
+        echo $OUTPUT->footer();
+        die();
+    }else {
+        $form = new express_login_link_form(null,null);
+        if ($form->is_cancelled()) {
+            $_POST = array();
+            redirect($return_url);
+        }elseif ($data_link = $form->get_data()) {
 
-    }
+        }
 
-    echo $OUTPUT->header();
+        echo $OUTPUT->header();
         echo '<script src="express/ZeroClipboard.js"></script>';
         $form->display();
-    echo $OUTPUT->footer();
+        echo $OUTPUT->footer();
+    }//if_force
 }else {
     $form = new express_login_form(null,$plugin_info);
 

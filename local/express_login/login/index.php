@@ -7,12 +7,27 @@ $PAGE->set_url("$CFG->httpswwwroot/login/index.php");
 $PAGE->set_context(CONTEXT_SYSTEM::instance());
 $PAGE->set_pagelayout('login');
 
+/* USER */
 if (isset($_POST['UserName'])) {
     $username = $_POST['UserName'];
 }else {
     $username = $_SESSION['UserName'];
     unset($_SESSION['UserName']);
-}
+}//if_user
+
+/* MICRO LEARNING */
+if (isset($_POST['micro'])) {
+    $micro = $_POST['micro'];
+}else {
+    $micro = $_SESSION['micro'];
+    unset($_SESSION['micro']);
+}//if_delivery
+
+if (isloggedin()) {
+    $_SESSION['micro']  = $micro;
+    $url                = new moodle_url('/local/express_login/login/login.php');
+    redirect($url);
+}//if_loggedin
 
 $num_attempts = Express_Link::Validate_UserAttempts($username);
 if (!$num_attempts) {
@@ -47,6 +62,7 @@ if (!empty($er)) {
         </div>
         <div class="form-input">
             <div class="form-input"><input type="hidden" id="UserName" maxlength="50" name="UserName" type="text" value="<?php echo $username ?>"></div>
+            <div class="form-input"><input type="hidden" id="micro" name="micro" type="text" value="<?php echo $micro ?>"></div>
         </div>
         <input type="submit" id="loginbtn" value="<?php print_string("login") ?>" />
     </form>

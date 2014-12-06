@@ -30,7 +30,7 @@ if (!$current_page = my_get_page($user_id, MY_PAGE_PUBLIC)) {
 $PAGE->set_context(CONTEXT_USER::instance($user_id));
 $PAGE->set_pagelayout('mypublic');
 $PAGE->set_pagetype('user-profile');
-$PAGE->set_url(new moodle_url('/local/express_login/change_express.php'),array('id' => $user_id));
+$PAGE->set_url(new moodle_url('/local/express_login/change_express.php',array('id' => $user_id)));
 
 // Start setting up the page.
 $PAGE->set_subpage($current_page->id);

@@ -121,7 +121,31 @@ class Express_Link {
         }
     }//Validate_UserAttempts
 
+    /**
+     * @param           $microLearning
+     * @param           $user
+     * @return          bool|moodle_url|null
+     *
+     * @creationDate    06/12/2014
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Check the Micro Learning and get the link to the correct activity
+     */
+    public static function LoginMicroLearning($microLearning,$user) {
+        /* Variables    */
+        $microURL = null;
 
+        try {
+            /* Get the Micro Learning Info  */
+            /* to redirect the user         */
+            $microURL = self::Get_MicroLearningURL($microLearning,$user);
+
+            return $microURL;
+        }catch (Exception $ex) {
+            return false;
+        }//try_catch
+    }//LoginMicroLearning
 
     /***********/
     /* PRIVATE */
@@ -244,4 +268,62 @@ class Express_Link {
             throw $ex;
         }//try_catch
     }//Get_UserAttempts
+
+    /**
+     * @param           $microLearning
+     * @param           $user
+     * @return          moodle_url|null
+     * @throws          Exception
+     *
+     * @creationDate    06/12/2014
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Check the Micro Learning tokens and return the link to the activity
+     */
+    private static function Get_MicroLearningURL($microLearning,$user) {
+        /* Variables    */
+        global $DB;
+        $microURL = null;
+
+        try {
+            /* Search Criteria  */
+            $params = array();
+            $params['user']         = $user;
+            $params['mod_calendar'] = $microLearning[0];
+            $params['mod_activity'] = $microLearning[0];
+            $params['module']       = $microLearning[1];
+
+            /* SQL Instruction  */
+            $sql = " SELECT		    mi_a.activityid,
+                                    mi_a.module
+                     FROM			{microlearning_activities}	    mi_a
+                        JOIN		{microlearning_deliveries}	    mi_d	ON	mi_d.microid		= mi_a.microid
+                                                                            AND mi_d.micromodeid	= mi_a.micromodeid
+                                                                            AND mi_d.userid			= :user
+                                                                            AND	mi_d.sent			= 1
+                        JOIN		{microlearning}				    mi		ON 	mi.id 				= mi_d.microid
+                        JOIN		{course_modules}				cm		ON	cm.course			= mi.courseid
+                                                                            AND	cm.instance			= mi_a.activityid
+                        JOIN		{modules}						m		ON	m.id				= cm.module
+                        LEFT JOIN	{microlearning_calendar_mode}	mi_cm	ON 	mi_cm.microid		= mi.id
+                                                                            AND	mi_cm.id			= mi_d.micromodeid
+                                                                            AND mi_cm.microkey		= :mod_calendar
+                        LEFT JOIN	{microlearning_activity_mode}	mi_am	ON	mi_am.microid		= mi.id
+                                                                            AND	mi_am.id			= mi_d.micromodeid
+                                                                            AND mi_am.microkey		= :mod_activity
+                     WHERE		    mi_a.microkey = :module ";
+
+            /* Execute  */
+            $rdo = $DB->get_record_sql($sql,$params);
+            if ($rdo) {
+                /* Get micro learning URL to redirect the user    */
+                $microURL = new moodle_url('/mod/' . $rdo->module . '/view.php',array('id' => $rdo->activityid));
+            }//if_rdo
+
+            return $microURL;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//Get_MicroLearningURL
 }//Express_Link

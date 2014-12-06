@@ -70,6 +70,31 @@ class Express_Login {
         }//try_catch
     }//Exists_ExpressLogin
 
+    public static function Force_NewExpressLogin($plugin_info,$user) {
+        /* Variables    */
+        $force      = false;
+        $days       = null;
+        $created    = null;
+
+        try {
+            if ($plugin_info->force_token) {
+                /* Expired Days */
+                $days       = $plugin_info->expiry_after/86400;
+                $created    = self::Get_TimeCreatedExpress($user);
+
+                if (time() > ($created+$days)) {
+                    $force = true;
+                }else {
+                    $force = false;
+                }
+            }//if_force
+
+            return $force;
+        }catch (Exception $ex) {
+            return false;
+        }//try_catch
+    }//Force_NewExpressLogin
+
     /**
      * @param           $pin_code
      * @param           $plugin_info
@@ -1037,4 +1062,29 @@ class Express_Login {
             throw $ex;
         }//try_catch
     }//Update_ExpressLink
+
+    /**
+     * @param           $user
+     * @return          mixed
+     * @throws          Exception
+     *
+     * @creationDate    06/12/2014
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Return when the Express Login was created
+     */
+    private static function Get_TimeCreatedExpress($user) {
+        /* Variables    */
+        global $DB;
+
+        try {
+            /* Execute  */
+            $rdo = $DB->get_record('user_express',array('userid' => $user),'timecreated');
+            return $rdo->timecreated;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//Get_TimeCreatedExpress
+
 }//Express_Login

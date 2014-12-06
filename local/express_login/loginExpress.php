@@ -21,7 +21,11 @@ $PAGE->set_url("$CFG->httpswwwroot/login/index.php");
 
 $relative_path = get_file_argument();
 //extract relative path components
-$args = explode('/', ltrim($relative_path, '/'));
+$args   = explode('/', ltrim($relative_path, '/'));
+$micro  = 0;
+if (count($args) == 3) {
+    $micro = $args[1] . '/' . $args[2];
+}
 
 $action = new moodle_url('/local/express_login/login/index.php');
 
@@ -37,6 +41,7 @@ if (!$valid) {
 <form method="post"  name="express" action="<?php echo $action;?>">
     <div class="loginform">
         <div class="form-input"><input type="hidden" id="UserName" maxlength="50" name="UserName" type="text" value="<?php echo $valid ?>"></div>
+        <div class="form-input"><input type="hidden" id="micro" name="micro" type="text" value="<?php echo $micro ?>"></div>
     </div>
 </form>
 </body>

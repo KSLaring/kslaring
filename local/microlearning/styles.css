@@ -1,0 +1,394 @@
+#page-local-microlearning-index label{
+    cursor: auto !important;
+}
+
+.advance_set {
+    position: relative;
+    float: right;
+    margin-top: -40px;
+    margin-right: 0px;
+    font: bold 13px Arial;
+    text-decoration: none;
+    background-color: #edf2fa;
+    color: #004b93;
+    padding: 8px 8px 8px 8px;
+    margin-left: 20px;
+}
+
+.micro_campaign_table,
+.micro_deliveries_table,
+.micro_deliveries_info {
+    width: 98%;
+    display: block;
+    clear: both;
+}
+
+.micro_deliveries_info .micro_info_table {
+    width: 75%;
+    display: inline-block;
+    min-height: 30px;
+}
+
+.micro_info_table .info_one {
+    width: 35%;
+    float: left;
+    font:  bold 13px Arial;
+    text-align: left;
+    text-justify:inter-word;
+    white-space: pre-line;
+    display: inline-block;
+    background-color: #edf2fa;
+    color: #004b93;
+    margin-top: 1px;
+    margin-right: 1px;
+    padding-top: 10px;
+    padding-right: 5px;
+    min-height: 30px;
+}
+
+.micro_info_table .lnk_edit {
+    width: 5%;
+    float: right;
+    display: inline-block;
+    padding-right: 5px;
+}
+
+a.lnk_disabled {
+    pointer-events: none;
+    cursor: default;
+}
+
+.micro_info_table .info_two {
+    width: 22%;
+    float:left;
+    font:  12px Arial;
+    text-align: right;
+    text-justify:inter-word;
+    white-space: pre-line;
+    display: inline-block;
+    background-color: #f2f2f2;
+    margin-top: 1px;
+    margin-right: 1px;
+    padding-top: 10px;
+    padding-right: 5px;
+    min-height: 30px;
+}
+
+.micro_info_table .info_three {
+    width: 5%;
+    font:  12px Arial;
+    text-align: left;
+    text-justify:inter-word;
+    white-space: pre-line;
+    display: inline-block;
+    background-color: #edf2fa;
+    margin-top: 1px;
+    margin-right: 1px;
+    padding-top: 10px;
+    padding-right: 4px;
+    padding-left: 0px;
+    min-height: 30px;
+}
+
+.micro_deliveries_table .lnk_button {
+    margin-right: 40px;
+    margin-bottom: 5px;
+    margin-top: 5px;
+    text-align: center;
+    vertical-align: middle;
+    text-decoration: none;
+    background: #0E7B9E;
+    border: medium none;
+    border-radius: 0px;
+    color: white;
+    /* Top, Right, Bottom, Left */
+    padding: 5px 8px 5px 8px;
+    display:inline-block;
+}
+
+.lnk_button:hover {
+    background: none repeat scroll 0% 0% #00aef0;
+}
+
+.title_campaigns,
+.title_deliveries {
+    text-decoration: none;
+    background-color: #edf2fa;
+    display: inline-block;
+    height: 10px;
+}
+
+.title_deliveries h6 {
+    color: #004b93;
+    /* Top, Right, Bottom, Left */
+    padding: 8px 2px 5px 0px;
+    margin: 0;
+    line-height: 10px;
+    font-weight: bold;
+}
+
+.micro_campaign_table .micro_campaign_table_row,
+.micro_deliveries_table .micro_deliveries_table_row {
+    width: 100%;
+    display: inline-block;
+    height:auto;
+    padding-bottom: 5px;
+}
+
+.title_campaigns h6 {
+    color: #004b93;
+    /* Top, Right, Bottom, Left */
+    padding: 8px 2px 5px 2px;
+    margin: 0;
+    text-transform: uppercase;
+    line-height: 10px;
+    font-weight: bold;
+}
+
+.micro_campaign_table .micro_campaign_table_row .col_one {
+    width: 30%;
+    float: left;
+    font:  13px Arial;
+    text-align: left;
+    text-justify:inter-word;
+    white-space: pre-line;
+    display: inline-block;
+    color: #004b93;
+    margin-top: 5px;
+    margin-right: 10px;
+}
+
+.micro_campaign_table .micro_campaign_table_row .col_two {
+    width:15%;
+    float:left;
+    font:  13px Arial;
+    text-align: left;
+    display: inline-block;
+    color: #004b93;
+    margin-top: 5px;
+    margin-right: 12px;
+}
+
+.micro_campaign_table .micro_campaign_table_row .col_three {
+    width:18%;
+    float:left;
+    font:  13px Arial;
+    text-align: left;
+    display: inline-block;
+    color: #004b93;
+    margin-top: 5px;
+}
+
+.micro_campaign_table .micro_campaign_table_row .lnk_col {
+    padding-right: 15px;
+}
+
+
+.micro_deliveries_table  .micro_deliveries_table_row .col_desc {
+    width: 28%;
+    float: left;
+    font:  13px Arial;
+    text-align: left;
+    display: inline-block;
+    color: #004b93;
+    margin-top: 5px;
+    margin-right: 5px;
+}
+
+.micro_deliveries_table .micro_deliveries_table_row .col_time {
+    width: 9%;
+    float: left;
+    font:  13px Arial;
+    text-align: left;
+    display: inline-block;
+    color: #004b93;
+    margin-top: 5px;
+    margin-right: 5px;
+}
+
+.micro_deliveries_table .micro_deliveries_table_row .col_content_desc {
+    width: 28%;
+    float: left;
+    font:  13px Arial;
+    text-align: left;
+    text-justify:inter-word;
+    white-space: pre-line;
+    display: inline-block;
+    color: #004b93;
+    margin-top: 5px;
+    margin-right: 5px;
+}
+
+.micro_deliveries_table .micro_deliveries_table_row .col_content_time {
+    width: 9%;
+    float: left;
+    font:  13px Arial;
+    text-align: left;
+    text-justify:inter-word;
+    white-space: pre-line;
+    word-wrap: break-word;
+    display: inline-block;
+    color: #004b93;
+    margin-top: 5px;
+    margin-right: 5px;
+}
+
+.r0 {
+    background-color:  white;
+}
+
+.r2 {
+    background-color: #f2f2f2;
+}
+
+.micro_calendar_mode,
+.micro_learning_users {
+    width: 100%;
+    margin-bottom: 50px;
+    margin-top: 5px;
+    display: block;
+    clear:both;
+}
+
+.sel_activities_left,
+.sel_users_left {
+    min-width:35%;
+    float:left;
+    display: inline-block;
+}
+
+.sel_activities_right,
+.sel_users_right {
+    min-width:35%;
+    display: inline-block;
+}
+
+.sel_activities_buttons,
+.sel_users_buttons {
+    min-width:15%;
+    float:left;
+    display: inline-block;
+    margin-right: 20px;
+}
+
+input#id_add_sel,
+input#id_add_all,
+input#id_remove_sel,
+input#id_remove_all {
+    width: 110px;
+}
+
+.sel_activities_left select,
+.sel_users_left select,
+.sel_activities_right select,
+.sel_users_right select {
+    width: 90%;
+}
+
+#fitem_id_sel_activities div.felement.fselect,
+#fitem_id_susers div.felement.fselect,
+#fitem_id_add_activities div.felement.fselect,
+#fitem_id_ausers div.felement.fselect,
+#fitem_id_add_sel div.felement.fsubmit,
+#fitem_id_add_all div.felement.fsubmit,
+#fitem_id_remove_sel div.felement.fsubmit,
+#fitem_id_remove_all div.felement.fsubmit {
+    margin-left: 5px;
+}
+
+#fitem_id_sel_activities div.fitemtitle,
+#fitem_id_susers div.fitemtitle,
+#fitem_id_add_activities div.fitemtitle,
+#fitem_id_ausers div.fitemtitle,
+#fitem_id_add_sel div.fitemtitle,
+#fitem_id_add_all div.fitemtitle,
+#fitem_id_remove_sel div.fitemtitle,
+#fitem_id_remove_all div.fitemtitle {
+    display:none;
+}
+
+#fitem_id_users_txt div.fitemtitle,
+#fitem_id_subject div.fitemtitle,
+#fitem_id_body div.fitemtitle {
+    text-align: left;
+    margin-left: 5px;
+    width: 100px;
+}
+
+#fitem_id_search_sel_act div.fitemtitle,
+#fitem_id_search_sel_users div.fitemtitle,
+#fitem_id_search_add_act div.fitemtitle,
+#fitem_id_search_add_users div.fitemtitle {
+    text-align: left;
+    margin-left: 5px;
+    width: 70px;
+}
+
+#fitem_id_users_txt div.felement.ftextarea,
+#fitem_id_subject div.felement.ftext,
+#fitem_id_search_sel_act div.felement.ftext,
+#fitem_id_search_sel_users div.felement.ftext,
+#fitem_id_search_add_act div.felement.ftext,
+#fitem_id_search_add_users div.felement.ftext,
+#fitem_id_body div.felement.ftextarea {
+    margin-left: 0px;
+}
+
+.micro_calendar_mode .activity_add_controls {
+    width: 15%;
+    float:left;
+    margin-right: 10px;
+}
+
+.micro_calendar_mode .activity_add_controls div {
+    margin-right: 5px;
+    margin-bottom: 10px;
+    margin-left: 10px;
+    margin-top: 0px;
+    width: 90px;
+    background-color: #0e7b9e;
+    height:25px;
+    padding-top: 5px;
+    padding-left: 5px;
+}
+.micro_calendar_mode .activity_add_controls a {
+    cursor:pointer;
+    text-decoration: none;
+    color: white;
+}
+
+
+#fgroup_id_grp_DateToSend .fitemtitle,
+#fgroup_id_grp_XDays .fitemtitle,
+#fgroup_id_grp_SelActivity .fitemtitle,
+#fgroup_id_grp_AfterEnrol .fitemtitle,
+#fgroup_id_grp_AfterCompletion .fitemtitle,
+#fgroup_id_grp_NotDoneAfter .fitemtitle {
+    display: none;
+}
+
+#fgroup_id_grp_DateToSend fieldset.felement.fgroup,
+#fgroup_id_grp_XDays fieldset.felement.fgroup,
+#fgroup_id_grp_AfterEnrol fieldset.felement.fgroup,
+#fgroup_id_grp_AfterCompletion fieldset.felement.fgroup,
+#fgroup_id_grp_NotDoneAfter fieldset.felement.fgroup {
+    margin-left: 5px;
+}
+
+
+#fgroup_id_grp_DateToSend fieldset.felement.fgroup span {
+    margin-right: 25px;
+}
+#fgroup_id_grp_XDays fieldset.felement.fgroup span {
+    margin-right: 10px;
+}
+
+input#id_x_days.input_x_days,
+input#id_x_days_after_enrol.input_x_days,
+input#id_x_days_after_completion.input_x_days,
+input#id_x_days_not_done.input_x_days {
+    margin-bottom: 0px;
+    margin-top: 0px;
+    margin-left: 15px;
+}
+

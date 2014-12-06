@@ -16,44 +16,73 @@ $PAGE->set_url("$CFG->httpswwwroot/login/index.php");
 $PAGE->set_context(CONTEXT_SYSTEM::instance());
 $PAGE->set_pagelayout('login');
 
-/* Get Data */
-$frm    = data_submitted();
-$_POST  = array();
-
 /* Params   */
 $valid      = null;
 $err_code   = null;
 $err_url    = null;
 
-list($valid,$err_code) =  Express_Link::Validate_UserExpress($frm);
+/* Get Data */
+if (isloggedin()) {
+    $login          = true;
+    $microSession   = $_SESSION['micro'];
+    unset($_SESSION['micro']);
+}else {
+    $frm            = data_submitted();
+    $microSession   = $frm->micro;
+    $_POST          = array();
 
-if (!$valid) {
-    $err_url = new moodle_url('/local/express_login/login/loginError.php',array('er' => $err_code));
+    list($valid,$err_code) =  Express_Link::Validate_UserExpress($frm);
 
-    if ($err_code == ERROR_EXPRESS_PIN_NOT_VALID) {
-        Express_Link::Update_Attempts($frm->UserName,1);
-        $num_attempts = Express_Link::Validate_UserAttempts($frm->UserName);
-        if ($num_attempts) {
-            $_SESSION['UserName'] = $frm->UserName;
-            $err_url     = new moodle_url('/local/express_login/login/index.php',array('er'=>1));
-        }else {
-            $err_url->param('er',ERROR_EXPRESS_LINK_ATTEMPTED_EXCEEDED);
-        }//if_else
-    }//if_er_
+    if (!$valid) {
+        $err_url = new moodle_url('/local/express_login/login/loginError.php',array('er' => $err_code));
 
-    redirect($err_url);
-}//if_else_valid
+        if ($err_code == ERROR_EXPRESS_PIN_NOT_VALID) {
+            Express_Link::Update_Attempts($frm->UserName,1);
+            $num_attempts = Express_Link::Validate_UserAttempts($frm->UserName);
+            if ($num_attempts) {
+                $_SESSION['UserName']   = $frm->UserName;
+                $_SESSION['micro']      = $frm->micro;
+                $err_url     = new moodle_url('/local/express_login/login/index.php',array('er'=>1));
+            }else {
+                $err_url->param('er',ERROR_EXPRESS_LINK_ATTEMPTED_EXCEEDED);
+            }//if_else
+        }//if_er_
 
-Express_Link::Update_Attempts($frm->UserName);
-$login = Express_Link::LoginUser($frm->UserName);
+        redirect($err_url);
+    }//if_else_valid
+
+    /* Reset Attempts User  */
+    Express_Link::Update_Attempts($frm->UserName);
+    /* Login User   */
+    $login = Express_Link::LoginUser($frm->UserName);
+}//if_isloggedin
+
 
 if ($login) {
-    redirect($CFG->wwwroot);
-    die();
+    /* REDIRECT TO THE CORRECT PAGE */
+    if ($microSession) {
+        /* Check That the delivery and module exists    */
+        $micro_learning = explode('/', ltrim($microSession, '/'));
+        $microURL = Express_Link::LoginMicroLearning($micro_learning,$USER->id);
+
+        /* Redirect user to the correct activity into the course    */
+        if ($microURL) {
+            redirect($microURL);
+            die();
+        }else {
+            echo $OUTPUT->header();
+            echo $OUTPUT->notification(get_string('err_micro_lnk','local_express_login'), 'notifysuccess');
+            echo $OUTPUT->continue_button($CFG->wwwroot);
+            echo $OUTPUT->footer();
+        }
+    }else {
+        redirect($CFG->wwwroot);
+        die();
+    }//if_delivery_module
 }else {
     echo $OUTPUT->header();
     echo $OUTPUT->notification(get_string('err_generic','local_express_login'), 'notifysuccess');
-    echo $OUTPUT->continue_button($return_url);
+    echo $OUTPUT->continue_button($CFG->wwwroot);
     echo $OUTPUT->footer();
 }
 
