@@ -1,0 +1,10 @@
+{
+  "name": "moodle-atto_kitable-button",
+  "builds": {
+    "moodle-atto_kitable-button": {
+      "jsfiles": [
+        "button.js"
+      ]
+    }
+  }
+}

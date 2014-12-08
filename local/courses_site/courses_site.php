@@ -406,7 +406,7 @@ class courses_site  {
             $course_site->description    = $data->txt_descrip;
             $course_site->picturetitle   = $data->picturetitle;
             $course_site->sortorder      = $data->sort_order;
-            $course_site->timemodified    = time();
+            $course_site->timemodified   = time();
 
             if (isset($data->deletepicture) && $data->deletepicture) {
                 $delete = true;

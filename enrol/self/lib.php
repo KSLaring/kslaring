@@ -244,13 +244,13 @@ class enrol_self_plugin extends enrol_plugin {
              * If there isn't enrolment key, then enrol the user and redirect to the course directly
              */
             if ($instance->password) {
-            $form = new enrol_self_enrol_form(NULL, $instance);
-            $instanceid = optional_param('instance', 0, PARAM_INT);
-            if ($instance->id == $instanceid) {
-                if ($data = $form->get_data()) {
-                    $this->enrol_self($instance, $data);
+                $form = new enrol_self_enrol_form(NULL, $instance);
+                $instanceid = optional_param('instance', 0, PARAM_INT);
+                if ($instance->id == $instanceid) {
+                    if ($data = $form->get_data()) {
+                        $this->enrol_self($instance, $data);
+                    }
                 }
-            }
 
             ob_start();
             $form->display();

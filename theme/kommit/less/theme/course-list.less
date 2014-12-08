@@ -2,7 +2,6 @@
 
 // course list page
 // --------------------------------
-
 #page-course-index {
     .buttons {
         input[type="submit"] {
@@ -11,16 +10,8 @@
     }
 }
 
-#page-course-index-category .coursebox {
-    background: #fff;
-    padding-left: 20px;
-    border: 1px solid #e8e8e8;
-    position: relative;
-}
-
 // course category page
 // --------------------------------
-
 .course_category_tree {
     .collapseexpand {
         &.disabled:hover,
@@ -32,8 +23,8 @@
         > .info,
         > .content {
             background: #fff;
-            padding-left: 20px;
             border: 1px solid #e8e8e8;
+            padding-left: 20px;
         }
         > .content {
             margin-top: -3px;
@@ -49,44 +40,82 @@ a.disabled {
     color: #808080;
 }
 
-.coursebox .panel-heading {
-    font-size: @fontSizeH4;
-    line-height: @fontSizeH4 *1.5;
-}
+// course list styles for renderer
+.coursebox {
+    background: #fff;
+    border: 1px solid #e8e8e8;
+    padding-left: 20px;
+    position: relative;
 
-// course category picker
-// ----------------------------------
+    .summary {
+        min-height: 40px;
+    }
+    .panel-heading {
+        font-size: @fontSizeH4;
+        line-height: @fontSizeH4 * 1.5;
+        margin-bottom: .5em;
+    }
+    .panel-body {
+        padding-bottom: 0;
+        margin-bottom: 0;
 
-#page-course-index-category .categorypicker {
-    text-align: right;
-    margin: -10px 27px 20px;
-}
-
-#page-course-index-category .categorypicker label {
-    display: inline;
-    margin-bottom: 5px;
-}
-
-#page-course-index-category .generalbox.info {
-    margin: 0;
-    background: white;
-    padding: 0px;
-    color: @kommitGray;
-    p {
-        //margin: 0;
+        .coursebtn {
+            clear: both;
+            float: left;
+        }
+    }
+    .courseimage {
+        img {
+            float: left;
+            height: auto;
+            margin: 0 15px 1em 0;
+            max-width: 150px;
+        }
+    }
+    .teachers {
+        margin-left: 0;
+        li {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+    }
+    .coursebtn {
+        a {
+            margin-bottom: 0;
+        }
+    }
+    .boxfooter {
+        clear: both;
+        margin-bottom: 30px;
+    }
+    .enrolmenticons {
+        float: right;
     }
 }
 
-#page-course-index-category .generalbox.info {
-    margin: 0;
-    background: none;
-    padding: 2px;
-    margin-bottom: 15px;
-    border: none;
-    border-radius: 0;
+#page-course-index-category {
+    .categorypicker {
+        margin: -10px 27px 20px;
+        text-align: right;
 
-    img {
+        label {
+            display: inline;
+            margin-bottom: 5px;
+        }
+    }
+    .generalbox {
+        &.info {
+            background: none;
+            color: @kommitGray;
+            border: none;
+            border-radius: 0;
+            margin: 0 0 15px 0;
+            padding: 2px;
 
-        margin: 0 !important;
+            img {
+                margin: 0 !important;
+            }
+        }
     }
 }

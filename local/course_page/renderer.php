@@ -87,8 +87,7 @@ class local_course_page_renderer extends plugin_renderer_base {
 
         $block_one .= html_writer::start_tag('div',array('class' => 'home_page_block_one'));
             /* Add Short Description  */
-            $pagegraphicstitle = !empty($format_options['pagegraphicstitle']) ?
-                $format_options['pagegraphicstitle']->value : '';
+            $pagegraphicstitle = !empty($format_options['pagegraphicstitle']) ? $format_options['pagegraphicstitle']->value : '';
             $block_one .= $this->addSummary_HomePage($course,$format_options['pagegraphics'],$pagegraphicstitle);
             /* Add Home Description / Video */
             $block_one .= $this->addDescription_HomePage($format_options['homesummary'],$format_options['pagevideo']);
@@ -119,9 +118,7 @@ class local_course_page_renderer extends plugin_renderer_base {
         /* Graphics */
         if ($home_graphics->value) {
             $url_img = course_page::getUrlPageGraphicsVideo($home_graphics->value);
-            $img = '<img src="'  . $url_img . '" class="img-responsive"' .
-                ' title="' . $home_graphicstitle . '" alt ="' .
-                $home_graphicstitle . '"></br>';
+            $img = '<img src="'  . $url_img . '" class="img-responsive"' . ' title="' . $home_graphicstitle . '" alt ="' . $home_graphicstitle . '"></br>';
             $out .= $img;
         }//if_graphics
 
@@ -169,9 +166,9 @@ class local_course_page_renderer extends plugin_renderer_base {
             $url_video = course_page::getUrlPageGraphicsVideo($video->value);
             $media_renderer = $this->page->get_renderer('core', 'media');
             $embed_options = array(
-                core_media::OPTION_TRUSTED => true,
-                core_media::OPTION_BLOCK => true,
-            );
+                                   core_media::OPTION_TRUSTED => true,
+                                   core_media::OPTION_BLOCK => true,
+                                  );
             // Media (audio/video) file.
             $code = $media_renderer->embed_url($url_video, '', 0, 0, $embed_options);
             $out .= $code;
@@ -452,7 +449,7 @@ class local_course_page_renderer extends plugin_renderer_base {
                 $out .= '<div class="user_profile chp-content clearfix">';
                 $out .= '<div class="user_picture">' . $OUTPUT->user_picture($user, array('size'=>150)) . '</div>';
                     $out .= '<div class="user"><a href="' . $url_user . '">' . fullname($user) . '</a>';
-                $out .= '<div class="extra_coordinator">' . $user->description . '</div>'  . '</div>';
+                    $out .= '<div class="extra_coordinator">' . $user->description . '</div>'  . '</div>';
                 $out .= '</div>';
 
             }//if_manager
@@ -463,10 +460,10 @@ class local_course_page_renderer extends plugin_renderer_base {
                 $out .= '<div class="label_teacher">' . get_string('home_teachers','local_course_page') . '</div>';
                 $url_user = new moodle_url('/user/profile.php');
                 $out .= '<div class="extra_teacher">';
-                foreach ($lst_teachers as $id => $teacher) {
-                    $url_user->param('id',$id);
-                    $out .= '<a href="' . $url_user . '">' . $teacher . '</a></br>';
-                }//foreach_teacher
+                    foreach ($lst_teachers as $id => $teacher) {
+                        $url_user->param('id',$id);
+                        $out .= '<a href="' . $url_user . '">' . $teacher . '</a></br>';
+                    }//foreach_teacher
                 $out .= '</div>';//extra_teacher
             }//if_teachers
         $out .= html_writer::end_tag('div');//manager
