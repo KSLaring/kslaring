@@ -10,75 +10,75 @@
  * @author          eFaktor     (fbv)
  */
 
-$string['pluginname']           = 'Express Login';
+$string['pluginname']           = 'Hurtigtilgang';
 
-$string['title_info']               = 'Here you can administer your own express login to {$a}. </br> Here you can generate your unique personal link';
-$string['title_link']               = 'Here you can copy your unique personal Express Login link to {$a} to the clipboard and/or add it to the bookmark ';
-$string['title_regenerate_link']    = 'Here you can regenerate your unique personal link.';
-$string['regenerate_link']          = 'To regenerate a new unique personal link, you must enter a new security phrase';
-$string['warning_regenerate']       = 'You have never generated your own express login to {$a->site} before. If it is your first time, click on <strong>{$a->url} </strong>.';
-$string['title_change']             = 'Here you can change your express login to {$a}.';
-$string['header_new_code']          = 'Change Express Login';
+$string['title_info']               = 'Her kan du administrere din egen hurtigtilgang for {$a}. </br> Her kan du generere din egen personlige lenke';
+$string['title_link']               = 'Kopier din unike og personlige hurtigtilgangslenke for {$a} til utklippstavlen og/eller legg den til som et bokmerke';
+$string['title_regenerate_link']    = 'Her kan du generere en ny personlig lenke for hurtigtilgang.';
+$string['regenerate_link']          = 'For å generere en ny personlig lenke, må du skrive inn en ny sikkerhetsfrase';
+$string['warning_regenerate']       = 'Du har aldri opprettet en hurtigtilgang for: {$a->site} før. Hvis dette er din første gang, klikk på <strong>{$a->url} </strong>.';
+$string['title_change']             = 'Her kan du endre hurtigtilgangen din for {$a}.';
+$string['header_new_code']          = 'Endre hurtigtilgang';
 
-$string['pin_code']             = 'My PIN code';
-$string['pin_old_code']         = 'Current PIN code';
-$string['pin_new_code']         = 'New PIN code';
-$string['pin_new_code_again']   = 'New PIN code (again)';
-$string['pin_code_help']        = 'Remind that you must enter a pin code of 4 - 6 - 8 digits.';
-$string['pin_code_min']         = 'The PIN code has to be a number of {$a} digits';
+$string['pin_code']             = 'Min PIN-kode';
+$string['pin_old_code']         = 'Nåværende PIN-kode';
+$string['pin_new_code']         = 'Ny PIN-kode';
+$string['pin_new_code_again']   = 'Gjenta ny PIN-kode';
+$string['pin_code_help']        = 'Påminnelse om at du må skrive inne en PIN-kode med 4, 6 eller 8 sifre.';
+$string['pin_code_min']         = 'PIN-koden må være et nummer med {$a} sifre';
 
-$string['pin_question']         = 'Security phrase';
-$string['pin_new_question']     = 'New Security phrase';
-$string['pin_question_help']    = 'Security phrase. (25 characters)';
-$string['pin_security_err']     = 'The security phrase has to be a string of 25 characters';
-$string['pin_identical_err']    = 'The PIN code is not valid. The digits are identical';
-$string['pin_consecutive_err']  = 'The PIN code contains consecutive digits';
-$string['pin_code_err']         = 'The PIN code is not secure enough';
-$string['pin_percentage_err']   = 'The PIN code is not valid. The digit {$a} is repetitive';
-$string['pin_numeric_err']      = 'The PIN code has to be a numeric string';
-$string['pin_code_expired']     = 'PIN code expired.';
+$string['pin_question']         = 'Sikkerhetsfrase';
+$string['pin_new_question']     = 'Ny sikkerhetsfrase';
+$string['pin_question_help']    = 'Sikkerhetsfrasen må inneholde eksakt 25 tegn';
+$string['pin_security_err']     = 'Sikkerhetsfrasen må inneholde eksakt 25 tegn';
+$string['pin_identical_err']    = 'PIN-koden er ikke gyldig, sifrene er like.';
+$string['pin_consecutive_err']  = 'PIN-koden inneholder sifre i rekkefølge';
+$string['pin_code_err']         = 'PIN-koden er ikke sikker nok';
+$string['pin_percentage_err']   = 'PIN-koden er ikke gyldig. Tallet {$a} repeteres';
+$string['pin_numeric_err']      = 'PIN-koden kan bare inneholde numeriske tegn';
+$string['pin_code_expired']     = 'Utløpt PIN-kode.';
 
-$string['err_generic']          = 'It has been an error during the process. Please, try again or contact with administrator';
-$string['err_micro_lnk']        = 'Micro Learning Link not valid. Please, contact with your instructor';
+$string['err_generic']          = 'Det har skjedd en feil. Vennligst prøv igjen eller kontakt en administrator';
+$string['err_micro_lnk']        = 'Mikrolæringslenken er ugyldig. Vennligst kontakt kurslæreren din';
 
-$string['pin_new_diff_err']         = 'The PIN code are different';
-$string['pin_new_not_diff_current'] = 'The new PIN code and the current are the same';
-$string['pin_current_diff_err']     = 'The current PIN code not valid';
+$string['pin_new_diff_err']         = 'PIN-kodene er forskjellige';
+$string['pin_new_not_diff_current'] = 'Den nye og nåværende PIN-koden er like';
+$string['pin_current_diff_err']     = 'Ikke gyldig nåværende PIN-kode';
 
-$string['err_remind']               = 'Not valid. It is the same that the old one, you must fill a new one';
+$string['err_remind']               = 'Ikke gyldig. Dette er den samme som den gamle, du må lage en ny';
 
-$string['btn_copy_link']        = 'Get Express Login Link';
-$string['btn_save_link']        = 'Save as bookmark';
-$string['btn_generate_link']    = 'Generate Link';
-$string['btn_regenerate_link']  = 'Regenerate Express Link';
-$string['btn_change_pin_code']  = 'Change PIN Code';
+$string['btn_copy_link']        = 'Hent hurtigtilgangslenke';
+$string['btn_save_link']        = 'Lagre som bokmerke';
+$string['btn_generate_link']    = 'Generer lenke';
+$string['btn_regenerate_link']  = 'Generer ny lenke';
+$string['btn_change_pin_code']  = 'Endre PIN-kode';
 
 $string['settings_desc']        = 'Hurtigtilgangsmodulen er en funksjon som gir brukerne direkte innlogging ved kun å taste inn en pin-kode på 4-8 siffer. Hurtigtilgangsmodulen genererer en unik personlig lenke til hver bruker som de kan lagre i nettleserens Favoritter/Bokmerker.
                                    Når en bruker klikker på denne lenken åpnes en dialogboks hvor personlig pin-kode må tastes inn. En har kun tre forsøk før en blir omdirigert til standard innloggingsmetode med brukernavn og passord.
                                    Pinkoden opprettes i din egen brukerprofil og du kan når som helst bytte den ut med en ny. ';
 
-$string['set_activate']         = 'Activate express login';
-$string['set_activate_desc']    = 'Activate express login';
+$string['set_activate']         = 'Aktiver hurtigtilgang';
+$string['set_activate_desc']    = 'Aktiver hurtigtilgang';
 
-$string['set_deny']             = 'Deny identical digits';
-$string['set_deny_desc']        = 'Deny identical digits';
+$string['set_deny']             = 'Forhindre identiske sifre';
+$string['set_deny_desc']        = 'Forhindre identiske sifre';
 
-$string['set_expire']           = 'Expire after';
-$string['set_expire_desc']      = 'Expire after';
+$string['set_expire']           = 'Utløper etter';
+$string['set_expire_desc']      = 'Utløper etter';
 
-$string['set_force']            = 'Force a new express login token';
-$string['set_force_desc']       = 'Force a new express login token';
+$string['set_force']            = 'Tving ny token for hurtigtilgang';
+$string['set_force_desc']       = 'Tving ny token for hurtigtilgang';
 
-$string['set_minimum']          = 'Minimum number of digits';
-$string['set_minimum_dec']      = 'Minimum number of digits';
+$string['set_minimum']          = 'Minste antall sifre';
+$string['set_minimum_dec']      = 'Minste antall sifre';
 
-$string['set_encryption']       = 'Encryption phrase';
-$string['set_encryption_desc']  = 'Encryption phrase (50 characters)';
+$string['set_encryption']       = 'Krypteringsfrase';
+$string['set_encryption_desc']  = 'Krypteringsfrase (25 tegn)';
 
-$string['ERROR_EXPRESS_LINK_NOT_VALID']             = 'The Express Login Link not valid.Please,regenerate it or contact to administrator.';
-$string['ERROR_EXPRESS_LINK_ATTEMPTED_EXCEEDED']    = 'Number of attempts exceeded';
-$string['ERROR_EXPRESS_LINK_USER_NOT_VALID']        = 'The user not valid';
-$string['ERROR_EXPRESS_PIN_NOT_VALID']              = 'PIN code not valid. You have {$a} attempts more';
+$string['ERROR_EXPRESS_LINK_NOT_VALID']             = 'Hurtigtilgangslenke er ugyldig. Vennligst generer en ny lenke eller ta kontakt med en administrator.';
+$string['ERROR_EXPRESS_LINK_ATTEMPTED_EXCEEDED']    = 'Ingen gjenstående forsøk';
+$string['ERROR_EXPRESS_LINK_USER_NOT_VALID']        = 'Ikke gyldig bruker';
+$string['ERROR_EXPRESS_PIN_NOT_VALID']              = 'Ugyldig PIN-kode. Du har igjen {$a} forsøk';
 
-$string['clipboardDiv'] = 'Your Express Login Link has been copied to the clipboard. You only have to do CTR+V to copy where you want.';
-$string['bookmarkDiv']  = 'To add your personal Express Login Link to the bookmark, please drop and drag <strong>{$a}</strong> to the bookmark.';
+$string['clipboardDiv'] = 'Hurtigtilgangslenken din har blitt kopiert til utklippstavlen din. Alt du trenger å gjøre er å trykke på ctrl+v for å lime den inn der du ønsker.';
+$string['bookmarkDiv']  = 'For å legge til hurtigtilgang som et bokmerke, vennligst dra og slipp <strong>{$a}</strong> til bokmerkene.';

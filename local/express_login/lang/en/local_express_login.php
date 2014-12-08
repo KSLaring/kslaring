@@ -75,7 +75,7 @@ $string['set_minimum']          = 'Minimum number of digits';
 $string['set_minimum_dec']      = 'Minimum number of digits';
 
 $string['set_encryption']       = 'Encryption phrase';
-$string['set_encryption_desc']  = 'Encryption phrase (50 characters)';
+$string['set_encryption_desc']  = 'Encryption phrase (25 characters)';
 
 $string['ERROR_EXPRESS_LINK_NOT_VALID']             = 'The Express Login Link not valid.Please,regenerate it or contact to administrator.';
 $string['ERROR_EXPRESS_LINK_ATTEMPTED_EXCEEDED']    = 'Number of attempts exceeded';
