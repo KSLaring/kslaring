@@ -80,7 +80,7 @@ $string['set_encryption_desc']  = 'Encryption phrase (50 characters)';
 $string['ERROR_EXPRESS_LINK_NOT_VALID']             = 'The Express Login Link not valid.Please,regenerate it or contact to administrator.';
 $string['ERROR_EXPRESS_LINK_ATTEMPTED_EXCEEDED']    = 'Number of attempts exceeded';
 $string['ERROR_EXPRESS_LINK_USER_NOT_VALID']        = 'The user not valid';
-$string['ERROR_EXPRESS_PIN_NOT_VALID']              = 'PIN code not valid. You have two attempts more';
+$string['ERROR_EXPRESS_PIN_NOT_VALID']              = 'PIN code not valid. You have {$a} attempts more';
 
 $string['clipboardDiv'] = 'Your Express Login Link has been copied to the clipboard. You only have to do CTR+V to copy where you want.';
 $string['bookmarkDiv']  = 'To add your personal Express Login Link to the bookmark, please drop and drag <strong>{$a}</strong> to the bookmark.';

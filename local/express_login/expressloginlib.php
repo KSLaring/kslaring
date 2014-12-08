@@ -70,6 +70,17 @@ class Express_Login {
         }//try_catch
     }//Exists_ExpressLogin
 
+    /**
+     * @param           $plugin_info
+     * @param           $user
+     * @return          bool
+     *
+     * @creationDate    06/12/2014
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Check if the Express Login has just expired and the user has to create a new one
+     */
     public static function Force_NewExpressLogin($plugin_info,$user) {
         /* Variables    */
         $force      = false;
@@ -84,6 +95,7 @@ class Express_Login {
 
                 if (time() > ($created+$days)) {
                     $force = true;
+                    /* Update the Status of all his/her deliveries to 0 */
                 }else {
                     $force = false;
                 }
@@ -1087,4 +1099,28 @@ class Express_Login {
         }//try_catch
     }//Get_TimeCreatedExpress
 
+    /**
+     * @param           $user_id
+     * @throws          Exception
+     */
+    private static function UpdateStatusDeliveries_ExpressExpired($user_id) {
+        /* Variables    */
+        global $DB;
+
+        try {
+            /* Search Criteria  */
+            $params = array();
+            $params['user'] = $user_id;
+
+            /* SQL Instruction  */
+            $sql = " UPDATE     microlearning_deliveries
+                        SET     sent = 0
+                     WHERE      userid = :user ";
+
+            /* Execute  */
+            $DB->execute($sql,$params);
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//UpdateStatusDeliveries_ExpressExpired
 }//Express_Login

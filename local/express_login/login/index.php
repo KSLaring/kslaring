@@ -29,7 +29,7 @@ if (isloggedin()) {
     redirect($url);
 }//if_loggedin
 
-$num_attempts = Express_Link::Validate_UserAttempts($username);
+list($num_attempts,$attempts) = Express_Link::Validate_UserAttempts($username);
 if (!$num_attempts) {
     $err_url = new moodle_url('/local/express_login/login/loginError.php',array('er' => ERROR_EXPRESS_LINK_ATTEMPTED_EXCEEDED));
     redirect($err_url);
@@ -47,8 +47,8 @@ echo $OUTPUT->header();
 
 if (!empty($er)) {
     echo html_writer::start_tag('div', array('class' => 'loginerrors'));
-    echo html_writer::link('#', get_string('ERROR_EXPRESS_PIN_NOT_VALID','local_express_login'), array('id' => 'loginerrormessage', 'class' => 'accesshide'));
-    echo $OUTPUT->error_text(get_string('ERROR_EXPRESS_PIN_NOT_VALID','local_express_login'));
+    echo html_writer::link('#', get_string('ERROR_EXPRESS_PIN_NOT_VALID','local_express_login',$attempts), array('id' => 'loginerrormessage', 'class' => 'accesshide'));
+    echo $OUTPUT->error_text(get_string('ERROR_EXPRESS_PIN_NOT_VALID','local_express_login',$attempts));
     echo html_writer::end_tag('div');
 }
 ?>

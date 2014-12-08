@@ -112,13 +112,13 @@ class Express_Link {
             $num_attempts = self::Get_UserAttempts($user);
 
             if ($num_attempts < MAX_ATTEMPTS) {
-                return true;
+                return array(true,MAX_ATTEMPTS-$num_attempts);
             }else {
-                return false;
+                return array(false,0);
             }//if_num_attempts
         }catch (Exception $ex) {
             return false;
-        }
+        }//try_catch
     }//Validate_UserAttempts
 
     /**

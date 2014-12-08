@@ -194,7 +194,7 @@ class express_login_change_pin_code extends moodleform {
 
         $errors = parent::validation($data, $files);
 
-        $plugin_info  = $this->_customdata;
+        list($plugin_info,$exists_express)  = $this->_customdata;
 
         /* Check the Password   */
         /* First the correct number of digits   */

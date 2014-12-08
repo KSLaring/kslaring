@@ -38,7 +38,7 @@ if (isloggedin()) {
 
         if ($err_code == ERROR_EXPRESS_PIN_NOT_VALID) {
             Express_Link::Update_Attempts($frm->UserName,1);
-            $num_attempts = Express_Link::Validate_UserAttempts($frm->UserName);
+            list($num_attempts,$attempts) = Express_Link::Validate_UserAttempts($frm->UserName);
             if ($num_attempts) {
                 $_SESSION['UserName']   = $frm->UserName;
                 $_SESSION['micro']      = $frm->micro;
