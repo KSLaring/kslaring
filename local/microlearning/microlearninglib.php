@@ -325,25 +325,36 @@ class Micro_Learning {
      */
     public static function Get_ActivitiesList($course) {
         /* Variables    */
+        global $DB;
         $lst_activities         = null;
         $mod_info               = null;
         $activities             = array();
+        $criterias_toComplete   = null;
+        $toComplete             = null;
 
         try {
             $lst_activities[0]  = get_string('sel_activity','local_microlearning');
 
             /* Get Completion Info  */
-            $mod_info       = get_fast_modinfo($course);
+            $mod_info = get_fast_modinfo($course);
             foreach ($mod_info->get_cms() as $cm) {
-                if ($cm->completion != COMPLETION_TRACKING_NONE) {
-                    $activities[$cm->id] = $cm;
-                }
+                $activities[$cm->id] = $cm;
             }
 
-            /* Get Activities       */
-            foreach ($activities as $activity) {
-                $lst_activities[$activity->id] = $activity->name;
-            }//activities
+            /* Get Criterias to Complete  */
+            $criterias_toComplete = self::GetCriterias_ToComplete($course);
+            if ($criterias_toComplete) {
+                $toComplete = explode(',',$criterias_toComplete);
+
+                /* Get Activities       */
+                foreach ($activities as $activity) {
+                    if (in_array($activity->id,$toComplete)) {
+                        $lst_activities[$activity->id] = $activity->name;
+                    }//if_in_array
+
+                }//activities
+
+            }//if_criterias_toComplete
 
             return $lst_activities;
         }catch (Exception $ex) {
@@ -819,6 +830,45 @@ class Micro_Learning {
     /************/
     /* PRIVATE */
     /************/
+
+    /**
+     * @param           $course_id
+     * @return          bool
+     * @throws          Exception
+     *
+     * @creationDate    09/12/2014
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Get all the activities to complete the course.
+     */
+    private static function GetCriterias_ToComplete($course_id) {
+        /* Variables    */
+        global $DB;
+
+        try {
+            /* Search Criteria  */
+            $params = array();
+            $params['course_id']   = $course_id;
+
+            /* SQL Instruction  */
+            $sql = " SELECT 	GROUP_CONCAT(DISTINCT moduleinstance ORDER BY moduleinstance SEPARATOR ',') as 'criterias'
+                     FROM	  	{course_completion_criteria}
+                     WHERE  	course = :course_id
+                     AND        gradepass IS NULL ";
+
+
+            /* Execute  */
+            $rdo = $DB->get_record_sql($sql,$params);
+            if ($rdo->criterias) {
+                return $rdo->criterias;
+            }else {
+                return false;
+            }//if_rdo
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//local_completion_getCriteriasToComplete
 
     /**
      * @param           $campaign_id
