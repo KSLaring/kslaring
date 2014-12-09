@@ -252,14 +252,14 @@ a.lnk_disabled {
 
 .sel_activities_left,
 .sel_users_left {
-    min-width:35%;
+    width:35%;
     float:left;
     display: inline-block;
 }
 
 .sel_activities_right,
 .sel_users_right {
-    min-width:35%;
+    width:35%;
     display: inline-block;
 }
 
