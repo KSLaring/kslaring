@@ -282,7 +282,7 @@ input#id_remove_all {
 .sel_users_left select,
 .sel_activities_right select,
 .sel_users_right select {
-    width: 85%;
+    width: 90%;
 }
 
 #fitem_id_sel_activities div.felement.fselect,
