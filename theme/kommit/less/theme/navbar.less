@@ -14,9 +14,10 @@
 //    border-left:1px solid @kommitGray;
 //}
 
-.navbar .nav > li > a:hover {
+.navbar .nav > li > a:hover,
+.navbar .nav > li > a:focus {
     background: @kommitGray !important;
-    //border-bottom: 3px solid @kommitBlueLight !important;
+    color: @white;
 }
 
 .navbar .nav .active > a,
@@ -25,8 +26,8 @@
 .navbar .nav li.dropdown.open > .dropdown-toggle,
 .navbar .nav li.dropdown.active > .dropdown-toggle,
 .navbar .nav li.dropdown.open.active > .dropdown-toggle {
-    color: @white;
     background: @kommitGray !important;
+    color: @white;
 }
 
 //.navbar .nav > li > a {

@@ -280,8 +280,10 @@ h6 {
   position: relative;
 }
 /* @group Navbar */
-.navbar .nav > li > a:hover {
+.navbar .nav > li > a:hover,
+.navbar .nav > li > a:focus {
   background: #7e7e7e !important;
+  color: #ffffff;
 }
 .navbar .nav .active > a,
 .navbar .nav .active > a:hover,
@@ -289,8 +291,8 @@ h6 {
 .navbar .nav li.dropdown.open > .dropdown-toggle,
 .navbar .nav li.dropdown.active > .dropdown-toggle,
 .navbar .nav li.dropdown.open.active > .dropdown-toggle {
-  color: #ffffff;
   background: #7e7e7e !important;
+  color: #ffffff;
 }
 /* @group Navbar */
 .navbar {
