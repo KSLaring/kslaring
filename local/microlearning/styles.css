@@ -244,10 +244,16 @@ a.lnk_disabled {
 .micro_calendar_mode,
 .micro_learning_users {
     width: 100%;
-    margin-bottom: 50px;
+    margin-bottom: 20px;
     margin-top: 5px;
-    display: block;
+    display: inline-block;
     clear:both;
+}
+
+.grp_option_calendar{
+    width:90%;
+    float:left;
+    display: inline-block;
 }
 
 .sel_activities_left,
@@ -296,6 +302,9 @@ input#id_remove_all {
     margin-left: 5px;
 }
 
+#fitem_id_date_send div.fitemtitle,
+#fitem_id_act_not_done div.fitemtitle,
+#fitem_id_act_after_completion div.fitemtitle,
 #fitem_id_sel_activities div.fitemtitle,
 #fitem_id_susers div.fitemtitle,
 #fitem_id_add_activities div.fitemtitle,
@@ -324,6 +333,7 @@ input#id_remove_all {
     width: 70px;
 }
 
+#fitem_id_x_days div.felement.ftext,
 #fitem_id_users_txt div.felement.ftextarea,
 #fitem_id_subject div.felement.ftext,
 #fitem_id_search_sel_act div.felement.ftext,
@@ -341,10 +351,8 @@ input#id_remove_all {
 }
 
 .micro_calendar_mode .activity_add_controls div {
-    margin-right: 5px;
-    margin-bottom: 10px;
-    margin-left: 10px;
-    margin-top: 0px;
+    /* Margin: Top Right Bottom Left */
+    margin: 0px 5px 10px 10px;
     width: 90px;
     background-color: #0e7b9e;
     height:25px;
@@ -357,7 +365,6 @@ input#id_remove_all {
     color: white;
 }
 
-
 #fgroup_id_grp_DateToSend .fitemtitle,
 #fgroup_id_grp_XDays .fitemtitle,
 #fgroup_id_grp_SelActivity .fitemtitle,
@@ -367,8 +374,15 @@ input#id_remove_all {
     display: none;
 }
 
-#fgroup_id_grp_DateToSend fieldset.felement.fgroup,
+#fitem_id_date_send fieldset.felement.fdate_selector,
+#fitem_id_date_after fieldset.felement.fdate_selector,
+#fitem_id_act_not_done div.felement.fselect,
+#fitem_id_act_after_completion div.felement.fselect {
+    margin-left: 30px;
+}
+
 #fgroup_id_grp_XDays fieldset.felement.fgroup,
+#fgroup_id_grp_DateToSend .fitemtitle,
 #fgroup_id_grp_AfterEnrol fieldset.felement.fgroup,
 #fgroup_id_grp_AfterCompletion fieldset.felement.fgroup,
 #fgroup_id_grp_NotDoneAfter fieldset.felement.fgroup {
@@ -376,20 +390,56 @@ input#id_remove_all {
 }
 
 
-#fgroup_id_grp_DateToSend fieldset.felement.fgroup span {
-    margin-right: 25px;
+#fgroup_id_grp_XDaysSelector fieldset.felement.fgroup span,
+#fgroup_id_grp_NotDoneAfterDays fieldset.felement.fgroup span {
+    margin-right: 15px;
+    margin-left: 15px;
 }
-#fgroup_id_grp_XDays fieldset.felement.fgroup span {
+#fgroup_id_grp_XDays fieldset.felement.fgroup span,
+#fgroup_id_grp_DateToSend fieldset.felement.fgroup span,
+#fgroup_id_grp_AfterEnrol fieldset.felement.fgroup span, {
     margin-right: 10px;
+}
+
+#fitem_id_date_after div.fitemtitle,
+#fgroup_id_grp_XDaysSelector .fitemtitle,
+#fgroup_id_grp_NotDoneAfterDays .fitemtitle,
+#fitem_id_x_days div.fitemtitle {
+    margin-left: 30px;
+    text-align: left;
+    width: auto;
+    margin-right: 10px;
+}
+
+#fgroup_id_grp_XDaysSelector fieldset.felement.fgroup,
+#fgroup_id_grp_NotDoneAfterDays fieldset.felement.fgroup,
+#fgroup_id_grp_DateToSend fieldset.felement.fgroup {
+    margin-left: 0px;
+}
+
+#region-main div#fitem_id_x_days label,
+#region-main div#fitem_id_date_after label,
+#region-main div#fgroup_id_grp_XDaysSelector label,
+#region-main div#fgroup_id_grp_NotDoneAfterDays label {
+    font-weight: normal;
+}
+#fgroup_id_grp_XDaysSelector label.accesshide,
+#fgroup_id_grp_NotDoneAfterDays label.accesshide,
+#fgroup_id_grp_AfterCompletion label.accesshide,
+#fgroup_id_grp_AfterEnrol label.accesshide {
+    display:none;
 }
 
 input#id_x_days.input_x_days,
 input#id_x_days_after_enrol.input_x_days,
 input#id_x_days_after_completion.input_x_days,
 input#id_x_days_not_done.input_x_days {
-    margin-bottom: 0px;
-    margin-top: 0px;
-    margin-left: 15px;
-    width:25px;
+    /* Margin: Top Right Bottom Left */
+    margin: 0px 10px 0px 10px;
+    width:40px;
 }
-
+div#fgroup_id_grp_XDays,
+div#fgroup_id_grp_AfterCompletion,
+div#fgroup_id_grp_NotDoneAfter {
+    margin-top: 20px;
+}

@@ -38,32 +38,57 @@ class activity_mode_form extends moodleform {
         $form->setExpanded('send_opt',true);
         $form->addElement('html','<div class="micro_calendar_mode">');
             /* After Enrolment  */
-            $objs = array();
-            $objs[0] = $form->createElement('radio', 'sel_opt','',get_string('activity_after_enrol', 'local_microlearning'),ACTIVITY_X_DAYS_AFTER_ENROL);
-            $objs[0]->setValue(ACTIVITY_X_DAYS_AFTER_ENROL);
-            $objs[1] = $form->createElement('text','x_days_after_enrol',null,'size=2 class="input_x_days"');
-            $form->setType('x_days_after_enrol',PARAM_INT);
-            $grp = $form->addElement('group', 'grp_AfterEnrol', null, $objs,null , false);
+            $form->addElement('html','<div class="grp_option_calendar">');
+                $objs = array();
+                $objs[0] = $form->createElement('radio', 'sel_opt','',get_string('activity_after_enrol', 'local_microlearning'),ACTIVITY_X_DAYS_AFTER_ENROL);
+                $objs[0]->setValue(ACTIVITY_X_DAYS_AFTER_ENROL);
+                $objs[1] = $form->createElement('text','x_days_after_enrol',null,'size=2 class="input_x_days"');
+                $form->setType('x_days_after_enrol',PARAM_INT);
+                $grp = $form->addElement('group', 'grp_AfterEnrol', null, $objs,null , false);
+            $form->addElement('html','</div>');//grp_option_calendar
 
-            /* After Completion */
-            $objs = array();
-            $objs[0] = $form->createElement('radio', 'sel_opt','',get_string('activity_after_completion', 'local_microlearning'),ACTIVITY_X_DAYS_AFTER_ACT);
-            $objs[0]->setValue(ACTIVITY_X_DAYS_AFTER_ACT);
-            $objs[1] = $form->createElement('text','x_days_after_completion',null,'size=2 class="input_x_days"');
-            $form->setType('x_days_after_completion',PARAM_INT);
-            $objs[2] = $form->createElement('select','act_after_completion','',$activities);
-            $objs[2]->setValue(0);
-            $grp = $form->addElement('group', 'grp_AfterCompletion', null, $objs,null , false);
+            /* After Completion - Days  */
+            $form->addElement('html','<div class="grp_option_calendar">');
+                $objs = array();
+                $objs[0] = $form->createElement('radio', 'sel_opt',null,get_string('activity_after_completion', 'local_microlearning'),ACTIVITY_X_DAYS_AFTER_ACT);
+                $objs[0]->setValue(ACTIVITY_X_DAYS_AFTER_ACT);
+                $objs[1] = $form->createElement('text','x_days_after_completion',null,'size=2 class="input_x_days"');
+                $objs[1]->setType('x_days_after_completion',PARAM_INT);
+
+                $grp = $form->addElement('group', 'grp_AfterCompletion', null, $objs,null , false);
+            $form->addElement('html','</div>');//grp_option_calendar
+
+            /* After Completion - Activity  */
+            $form->addElement('html','<div class="grp_option_calendar">');
+                $form->addElement('select','act_after_completion',null,$activities);
+                $form->setDefault('act_after_completion',0);
+            $form->addElement('html','</div>');//grp_option_calendar
 
             /* Not Done after Enrolment */
-            $objs = array();
-            $objs[0] = $form->createElement('radio', 'sel_opt','',get_string('activity_not_done', 'local_microlearning'),ACTIVITY_NOT_DONE_AFTER);
-            $objs[0]->setValue(ACTIVITY_NOT_DONE_AFTER);
-            $objs[1] = $form->createElement('text','x_days_not_done',null,'size=2 class="input_x_days"');
-            $form->setType('x_days_not_done',PARAM_INT);
-            $objs[2] = $form->createElement('select','act_not_done','',$activities);
-            $objs[2]->setValue(0);
-            $grp = $form->addElement('group', 'grp_NotDoneAfter', null, $objs,null , false);
+            $form->addElement('html','<div class="grp_option_calendar">');
+                $objs = array();
+                $objs[0] = $form->createElement('radio', 'sel_opt','',get_string('activity_not_done', 'local_microlearning'),ACTIVITY_NOT_DONE_AFTER);
+                $objs[0]->setValue(ACTIVITY_NOT_DONE_AFTER);
+
+                $grp = $form->addElement('group', 'grp_NotDoneAfter', null, $objs,null , false);
+            $form->addElement('html','</div>');//grp_option_calendar
+
+            /* Not Done after Enrolment - Activity  */
+            $form->addElement('html','<div class="grp_option_calendar">');
+                $form->addElement('select','act_not_done',null,$activities);
+                $form->setDefault('act_not_done',0);
+            $form->addElement('html','</div>');//grp_option_calendar
+
+            /* Not Done after Enrolment - Days  */
+            $form->addElement('html','<div class="grp_option_calendar">');
+                $objs = array();
+
+                $objs[0] = $form->createElement('text','x_days_not_done',null,'size=2 class="input_x_days"');
+                $objs[0]->setType('x_days_not_done',PARAM_INT);
+
+                $grp = $form->addElement('group', 'grp_NotDoneAfterDays', get_string('activity_not_done_two','local_microlearning'), $objs,null , false);
+            $form->addElement('html','</div>');//grp_option_calendar
+
         $form->addElement('html','</div>');//micro_calendar_mode
 
         /* Header - eMail Details   */
@@ -89,7 +114,7 @@ class activity_mode_form extends moodleform {
                                 $SESSION->activities[$act] = $add_activities[$act];
                             }
                         }
-                        
+
                         unset($add_activities[$act]);
                     }//for_session_activities
                 }//if_delivery_info_Activities
