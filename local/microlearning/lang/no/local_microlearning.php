@@ -60,7 +60,7 @@ $string['btn_cancel']               = 'Cancel';
 $string['sel_activity']             = 'Select an activity ...';
 
 $string['calendar_sel_date']        = 'Date';
-$string['calendar_not_done']        = 'If the activity is NOT done X days after ';
+$string['calendar_not_done']        = 'Activity NOT done X days after ';
 
 $string['activity_after_enrol']         = 'X days after enrolment';
 $string['activity_after_completion']    = 'X days after completion an activity';
