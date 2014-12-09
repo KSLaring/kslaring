@@ -79,9 +79,12 @@ class calendar_mode_form extends moodleform {
 
                 if (($delivery_info) && (isset($delivery_info->activities)) && ($delivery_info->activities)) {
                     foreach ($delivery_info->activities as $key=>$act) {
-                        if (!array_key_exists($act,$SESSION->activities)) {
+                        if (array_key_exists($act,$add_activities)) {
+                            if (!array_key_exists($act,$SESSION->activities)) {
                                 $SESSION->activities[$act] = $add_activities[$act];
+                            }
                         }
+
                         unset($add_activities[$act]);
                     }//for_session_activities
                 }//if_delivery_info_Activities
