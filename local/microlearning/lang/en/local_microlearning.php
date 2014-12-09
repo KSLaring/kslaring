@@ -59,12 +59,15 @@ $string['btn_cancel']               = 'Cancel';
 
 $string['sel_activity']             = 'Select an activity ...';
 
-$string['calendar_sel_date']        = 'Date';
-$string['calendar_not_done']        = 'Activity NOT done X days after ';
+$string['calendar_sel_date']            = 'Date to send';
+$string['calendar_not_done_one']        = 'If the selected activity ';
+$string['calendar_not_done_two']        = 'is NOT done ';
+$string['calendar_not_done_three']      = ' days after ';
 
-$string['activity_after_enrol']         = 'X days after enrolment';
-$string['activity_after_completion']    = 'X days after completion an activity';
-$string['activity_not_done']            = 'If the activity is NOT done X days after enrolment';
+$string['activity_after_enrol']             = 'X days after enrolment';
+$string['activity_after_completion']        = 'X Days after completed the activity';
+$string['activity_not_done']                = 'If the activity is not done';
+$string['activity_not_done_two']            = 'X days after enrolment';
 
 $string['rpt_campaign']             = 'Campaign';
 $string['rpt_mode']                 = 'Mode';

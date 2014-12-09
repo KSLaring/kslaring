@@ -38,26 +38,47 @@ class calendar_mode_form extends moodleform {
         $form->setExpanded('send_opt',true);
         $form->addElement('html','<div class="micro_calendar_mode">');
             /* Date To Send */
-            $objs = array();
+            $form->addElement('html','<div class="grp_option_calendar">');
+                /* Date To Send */
+                $objs = array();
 
-            $objs[0] = $form->createElement('radio', 'sel_date','',get_string('calendar_sel_date', 'local_microlearning'),CALENDAR_DATE_TO_SEND);
-            $objs[0]->setValue(CALENDAR_DATE_TO_SEND);
-            $objs[1] = $form->createElement('date_selector', 'date_send',null);
-            $objs[1]->setValue(time() + 3600 * 24);
-            $grp = $form->addElement('group', 'grp_DateToSend', null, $objs,null , false);
+                $objs[0] = $form->createElement('radio', 'sel_date','',get_string('calendar_sel_date','local_microlearning'),CALENDAR_DATE_TO_SEND);
+                $objs[0]->setValue(CALENDAR_DATE_TO_SEND);
+                $grp = $form->addElement('group', 'grp_DateToSend', null, $objs,null , false);
+            $form->addElement('html','</div>');//grp_option_calendar
+
+            /* Date To Send - Date Selector */
+            $form->addElement('html','<div class="grp_option_calendar">');
+                $form->addElement('date_selector','date_send',null);
+                $form->setDefault('date_send',time() + 3600 * 24);
+            $form->addElement('html','</div>');//grp_option_calendar
 
             /* X Days   */
-            $objs = array();
-            $objs[0] = $form->createElement('radio', 'sel_date','',get_string('calendar_not_done','local_microlearning'),CALENDAR_X_DAYS);
-            $objs[0]->setValue(CALENDAR_X_DAYS);
+            $form->addElement('html','<div class="grp_option_calendar">');
+                /* X Days   */
+                $objs = array();
+                $objs[0] = $form->createElement('radio', 'sel_date','',get_string('calendar_not_done_one','local_microlearning'),CALENDAR_X_DAYS);
+                $objs[0]->setValue(CALENDAR_X_DAYS);
+                $grp = $form->addElement('group', 'grp_XDays', null, $objs,null , false);
+            $form->addElement('html','</div>');//grp_option_calendar
 
-            $objs[1] = $form->createElement('select','act_not_done','',$activities);
-            $objs[1]->setValue(0);
-            $objs[2] = $form->createElement('text','x_days',null,'size=2 class="input_x_days"');
-            $form->setType('x_days',PARAM_INT);
-            $objs[3] = $form->createElement('date_selector', 'date_after',null);
-            $objs[3]->setValue(time() + 3600 * 24);
-            $grp = $form->addElement('group', 'grp_XDays', null, $objs,null , false);
+            /* X Days - Activity to Select  */
+            $form->addElement('html','<div class="grp_option_calendar">');
+                $form->addElement('select','act_not_done',null,$activities);
+                $form->setDefault('act_not_done',0);
+            $form->addElement('html','</div>');//grp_option_calendar
+
+            /* X Days - Days After Label    */
+            $form->addElement('html','<div class="grp_option_calendar">');
+                $objs = array();
+
+                $objs[0] = $form->createElement('text','x_days',null,'size=2 class="input_x_days"');
+                $objs[0]->setType('x_days',PARAM_INT);
+                $objs[1] = $form->createElement('date_selector', 'date_after',null);
+                $objs[1]->setValue(time() + 3600 * 24);
+                $grp = $form->addElement('group', 'grp_XDaysSelector', get_string('calendar_not_done_two','local_microlearning'), $objs,get_string('calendar_not_done_three','local_microlearning') , false);
+            $form->addElement('html','</div>');//grp_option_calendar
+
         $form->addElement('html','</div>');//micro_calendar_mode
 
 
@@ -187,14 +208,14 @@ class calendar_mode_form extends moodleform {
                         }//if_act_not_done
 
                         if (!$data['x_days']) {
-                            $errors['grp_XDays'] = get_string('required');
+                            $errors['grp_XDaysSelector'] = get_string('required');
                             return $errors;
                         }//if_x_days
 
                         $days       = 60*60*24*$data['x_days'];
                         $date_after = $data['date_after'] + $days;
                         if ($date_after <= $time) {
-                            $errors['grp_XDays'] = get_string('calendar_date_err','local_microlearning');
+                            $errors['grp_XDaysSelector'] = get_string('calendar_date_err','local_microlearning');
                             return $errors;
                         }
 
