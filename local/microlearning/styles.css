@@ -390,5 +390,6 @@ input#id_x_days_not_done.input_x_days {
     margin-bottom: 0px;
     margin-top: 0px;
     margin-left: 15px;
+    width:25px;
 }
 

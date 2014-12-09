@@ -313,7 +313,7 @@ class Micro_Learning {
 
     /**
      * @static
-     * @param           $course_id
+     * @param           $course
      * @return          array|null
      * @throws          Exception
      *
@@ -323,36 +323,27 @@ class Micro_Learning {
      * Description
      * Get all the activities/resources connected with the course
      */
-    public static function Get_ActivitiesList($course_id) {
+    public static function Get_ActivitiesList($course) {
         /* Variables    */
         $lst_activities         = null;
         $mod_info               = null;
-        $modules                = null;
-        $course                 = null;
-        $completion_criteria    = null;
+        $activities             = array();
 
         try {
             $lst_activities[0]  = get_string('sel_activity','local_microlearning');
 
-            /* Get the activities to complete  */
-            $completion_criteria = self::GetCompletionCriteria_Course($course_id);
-            if ($completion_criteria) {
-                /* Get Activities   */
-                $course         = get_course($course_id);
-                $mod_info       = get_fast_modinfo($course);
+            /* Get Completion Info  */
+            $mod_info       = get_fast_modinfo($course);
+            foreach ($mod_info->get_cms() as $cm) {
+                if ($cm->completion != COMPLETION_TRACKING_NONE) {
+                    $activities[$cm->id] = $cm;
+                }
+            }
 
-                if ($mod_info) {
-                    $modules = $mod_info->get_cms();
-                    if ($modules) {
-                        foreach ($modules as $info) {
-                            if (array_key_exists($info->instance,$completion_criteria)) {
-                                $lst_activities[$info->instance] = $info->name;
-                            }//if_Exists
-                        }//for_each_module
-                    }
-                }//if_mod_info
-
-            }//if_completion_criteria
+            /* Get Activities       */
+            foreach ($activities as $activity) {
+                $lst_activities[$activity->id] = $activity->name;
+            }//activities
 
             return $lst_activities;
         }catch (Exception $ex) {
@@ -373,25 +364,25 @@ class Micro_Learning {
      */
     public static function Get_ActivitiesType($course_id) {
         /* Variables    */
-        $activities_type        = array();
+        $activities_type        = null;
         $mod_info               = null;
-        $modules                = null;
-        $course                 = null;
+        $activities             = array();
 
         try {
-            /* Get Activities   */
-            $course         = get_course($course_id);
-            $mod_info       = get_fast_modinfo($course);
+            $lst_activities[0]  = get_string('sel_activity','local_microlearning');
 
-            if ($mod_info) {
-                $modules = $mod_info->get_cms();
-                if ($modules) {
-                    $activities_type = array();
-                    foreach ($modules as $info) {
-                        $activities_type[$info->instance] = $info->modname;
-                    }//for_each_module
+            /* Get Completion Info  */
+            $mod_info = get_fast_modinfo($course_id);
+            foreach ($mod_info->get_cms() as $cm) {
+                if ($cm->completion != COMPLETION_TRACKING_NONE) {
+                    $activities[$cm->id] = $cm;
                 }
-            }//if_mod_info
+            }
+
+            /* Get Activities       */
+            foreach ($activities as $activity) {
+                $activities_type[$activity->id] = $activity->modname;
+            }//activities
 
             return $activities_type;
         }catch (Exception $ex) {
@@ -859,37 +850,6 @@ class Micro_Learning {
             throw $ex;
         }//try_catch
     }//GetUsersCampaign_ToDuplicate
-
-    /**
-     * @param           $course_id
-     * @return          array
-     * @throws          Exception
-     *
-     * @creationDate    25/11/2014
-     * @author          eFaktor         (fbv)
-     *
-     * Description
-     * Get all the activities that have to be completed
-     */
-    private static function GetCompletionCriteria_Course($course_id) {
-        /* Variables    */
-        global $DB;
-        $completion_criteria = array();
-
-        try {
-            /* Execute  */
-            $rdo = $DB->get_records('course_completion_criteria',array('course' => $course_id),'moduleinstance');
-            if ($rdo) {
-                foreach ($rdo as $criteria) {
-                    $completion_criteria[$criteria->moduleinstance] = $criteria->moduleinstance;
-                }//for_each_criteria
-            }//if_rdo
-
-            return $completion_criteria;
-        }catch (Exception $ex) {
-            throw $ex;
-        }//try_catch
-    }//GetCompletionCriteria_Course
 
     /**
      * @param           $value
