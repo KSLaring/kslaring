@@ -252,14 +252,14 @@ a.lnk_disabled {
 
 .sel_activities_left,
 .sel_users_left {
-    width:35%;
+    width:40%;
     float:left;
     display: inline-block;
 }
 
 .sel_activities_right,
 .sel_users_right {
-    width:35%;
+    width:40%;
     display: inline-block;
 }
 
@@ -282,7 +282,7 @@ input#id_remove_all {
 .sel_users_left select,
 .sel_activities_right select,
 .sel_users_right select {
-    width: 90%;
+    width: 85%;
 }
 
 #fitem_id_sel_activities div.felement.fselect,
