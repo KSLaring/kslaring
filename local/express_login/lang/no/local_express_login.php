@@ -27,10 +27,10 @@ $string['pin_new_code_again']   = 'Gjenta ny PIN-kode';
 $string['pin_code_help']        = 'Påminnelse om at du må skrive inne en PIN-kode med 4, 6 eller 8 sifre.';
 $string['pin_code_min']         = 'PIN-koden må være et nummer med {$a} sifre';
 
-$string['pin_question']         = 'Sikkerhetsfrase';
-$string['pin_new_question']     = 'Ny sikkerhetsfrase';
-$string['pin_question_help']    = 'Sikkerhetsfrasen må inneholde eksakt 25 tegn';
-$string['pin_security_err']     = 'Sikkerhetsfrasen må inneholde eksakt 25 tegn';
+$string['pin_question']         = 'Krypteringsnøkkel';
+$string['pin_new_question']     = 'Ny krypteringsnøkkel';
+$string['pin_question_help']    = 'Krypteringsnøkkelen må inneholde eksakt 25 tegn. Den brukes for å generere din unike hurtigtilgangslenke. Du trenger ikke huske krypteringsnøkkelen';
+$string['pin_security_err']     = 'Krypteringsnøkkelen må inneholde eksakt 25 tegn';
 $string['pin_identical_err']    = 'PIN-koden er ikke gyldig, sifrene er like.';
 $string['pin_consecutive_err']  = 'PIN-koden inneholder sifre i rekkefølge';
 $string['pin_code_err']         = 'PIN-koden er ikke sikker nok';
@@ -73,7 +73,7 @@ $string['set_minimum']          = 'Minste antall sifre';
 $string['set_minimum_dec']      = 'Minste antall sifre';
 
 $string['set_encryption']       = 'Krypteringsfrase';
-$string['set_encryption_desc']  = 'Krypteringsfrase (25 tegn)';
+$string['set_encryption_desc']  = 'Krypteringsfrase (50 tegn)';
 
 $string['ERROR_EXPRESS_LINK_NOT_VALID']             = 'Hurtigtilgangslenke er ugyldig. Vennligst generer en ny lenke eller ta kontakt med en administrator.';
 $string['ERROR_EXPRESS_LINK_ATTEMPTED_EXCEEDED']    = 'Ingen gjenstående forsøk';
