@@ -24,7 +24,7 @@ $string['title_campaign']           = 'Existing Campaigns';
 $string['no_campaigns']             = 'There is any campaign';
 
 $string['header_campaign']          = 'New Campaign';
-$string['name_campaign']            = 'Campagin';
+$string['name_campaign']            = 'Campaign';
 $string['campaign_duplicate']       = 'Duplicate from';
 $string['campaign_mode']            = 'Please select a campaign mode';
 $string['campaign_mode_help']       = 'Calendar Mode and Activity Mode';

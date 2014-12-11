@@ -10,93 +10,93 @@
  * @author          eFaktor     (fbv)
  */
 
-$string['pluginname']               = 'Micro Learning';
-$string['microlearning:manage']     = 'Manage Micro Learning';
+$string['pluginname']               = 'Mikrolæring';
+$string['microlearning:manage']     = 'Administrer Mikrolæring';
 
-$string['title_index']              = 'Microlearning';
-$string['title_users']              = 'Selector Users';
-$string['title_calendar']           = 'Calendar';
-$string['title_activity']           = 'Activity';
-$string['title_delivery']           = 'Microlearning - eMails';
-$string['title_duplicate']          = 'Duplicate Campaign';
+$string['title_index']              = 'Mikrolæring';
+$string['title_users']              = 'Brukervelger';
+$string['title_calendar']           = 'Kalender';
+$string['title_activity']           = 'Aktivitet';
+$string['title_delivery']           = 'Mikrolæring - eposter';
+$string['title_duplicate']          = 'Kopier kampanje';
 
-$string['title_campaign']           = 'Existing Campaigns';
-$string['no_campaigns']             = 'There is any campaign';
+$string['title_campaign']           = 'Eksisterende kampanjer';
+$string['no_campaigns']             = 'Ingen kampanjer';
 
-$string['header_campaign']          = 'New Campaign';
-$string['name_campaign']            = 'Campagin';
-$string['campaign_duplicate']       = 'Duplicate from';
-$string['campaign_mode']            = 'Please select a campaign mode';
-$string['campaign_mode_help']       = 'Calendar Mode and Activity Mode';
+$string['header_campaign']          = 'Ny kampanje';
+$string['name_campaign']            = 'Kampanje';
+$string['campaign_duplicate']       = 'Kopier';
+$string['campaign_mode']            = 'Vennligst velg en kampanjetype';
+$string['campaign_mode_help']       = 'Kalender- eller aktivitetstype';
 
-$string['calendar_mode']            = 'Calendar Mode';
-$string['activity_mode']            = 'Activity Mode';
+$string['calendar_mode']            = 'Kalendertype';
+$string['activity_mode']            = 'Aktivitetstype';
 
-$string['header_users_selector']    = 'Users';
+$string['header_users_selector']    = 'Brukere';
 
-$string['btn_submit']               = 'Submit';
-$string['btn_next']                 = 'Next';
-$string['btn_add']                  = 'Add';
-$string['btn_remove']               = 'Remove';
-$string['btn_duplicate']            = 'Duplicate';
-$string['btn_edit_users']           = 'Edit users';
-$string['btn_edit_delivery']        = 'Edit delivery';
+$string['btn_submit']               = 'Send';
+$string['btn_next']                 = 'Neste';
+$string['btn_add']                  = 'Legg til';
+$string['btn_remove']               = 'Fjern';
+$string['btn_duplicate']            = 'Dupliser';
+$string['btn_edit_users']           = 'Rediger brukere';
+$string['btn_edit_delivery']        = 'Rediger oppgave';
 
-$string['btn_new_delivery']         = 'New Delivery';
-$string['btn_campaign_return']      = 'Return to the Campaign main menu';
-$string['btn_course_return']        = 'Return to the Course';
+$string['btn_new_delivery']         = 'Legg til ny oppgave';
+$string['btn_campaign_return']      = 'Tilbake til kampanjemenyen';
+$string['btn_course_return']        = 'Tilbake til kurset';
 
-$string['options_mode']             = 'Send Options';
-$string['email_header']             = 'eMail Detail';
-$string['email_sub']                = 'Subject';
-$string['email_body']               = 'Message';
-$string['activities_header']        = 'Activities';
-$string['activities_desc']          = 'Link to these activities will be added to the email';
-$string['btn_return_campaign']      = 'Save and return to campaign menu';
-$string['btn_return_course']        = 'Save and return to the course';
-$string['btn_save']                 = 'Save';
-$string['btn_cancel']               = 'Cancel';
+$string['options_mode']             = 'Utsendingstidpunkt';
+$string['email_header']             = 'Epost';
+$string['email_sub']                = 'Emne';
+$string['email_body']               = 'Innhold';
+$string['activities_header']        = 'Aktiviteter';
+$string['activities_desc']          = 'Det vil bli lagt til en lenke til disse aktivitetene i eposten.';
+$string['btn_return_campaign']      = 'Lagre og gå tilbake til kampanjemenyen';
+$string['btn_return_course']        = 'Lagre og gå tilbake til kurset';
+$string['btn_save']                 = 'Lagre';
+$string['btn_cancel']               = 'Avbryt';
 
-$string['sel_activity']             = 'Select an activity ...';
+$string['sel_activity']             = 'Velg en aktivitet ...';
 
-$string['calendar_sel_date']            = 'Date to send';
-$string['calendar_not_done_one']        = 'If the selected activity ';
-$string['calendar_not_done_two']        = 'is NOT done ';
-$string['calendar_not_done_three']      = ' days after ';
+$string['calendar_sel_date']            = 'Dato for utsendelse';
+$string['calendar_not_done_one']        = 'Hvis valgte aktivitet ';
+$string['calendar_not_done_two']        = 'ikke er fullført ';
+$string['calendar_not_done_three']      = ' dager etter ';
 
-$string['activity_after_enrol']             = 'X days after enrolment';
-$string['activity_after_completion']        = 'X Days after completed the activity';
-$string['activity_not_done']                = 'If the activity is not done';
-$string['activity_not_done_two']            = 'X days after enrolment';
+$string['activity_after_enrol']             = 'Dager etter kursinnmelding:';
+$string['activity_after_completion']        = 'Dager etter at valgte aktivitet er fullført:';
+$string['activity_not_done']                = 'Hvis valgte aktivitet:';
+$string['activity_not_done_two']            = 'ikke er fullført X dager etter kursinnmelding';
 
-$string['rpt_campaign']             = 'Campaign';
-$string['rpt_mode']                 = 'Mode';
-$string['rpt_type_calendar']        = 'Calendar';
-$string['rpt_type_activity']        = 'Activity';
-$string['rpt_emails']               = 'eMails';
-$string['rpt_act']                  = 'Activities';
-$string['rpt_sent']                 = 'Sent';
+$string['rpt_campaign']             = 'Kampanje';
+$string['rpt_mode']                 = 'Kampanjetype';
+$string['rpt_type_calendar']        = 'Kalender';
+$string['rpt_type_activity']        = 'Aktivitet';
+$string['rpt_emails']               = 'Eposter';
+$string['rpt_act']                  = 'Aktiviteter';
+$string['rpt_sent']                 = 'Sendt';
 
-$string['users_lst']                = 'Users in Campaign';
-$string['act_available']            = 'Available';
-$string['act_selected']             = 'Selected';
-$string['no_selected']              = 'None';
+$string['users_lst']                = 'Brukere i kampanje';
+$string['act_available']            = 'Tilgjengelige';
+$string['act_selected']             = 'Valgte';
+$string['no_selected']              = 'Ingen';
 
-$string['deleted_campaign']         = 'The campaign {$a} has been deleted.';
-$string['error_deleted_campaign']   = 'Error: The campaign {$a} could not be deleted.';
+$string['deleted_campaign']         = 'Kampanjen {$a} ble slettet.';
+$string['error_deleted_campaign']   = 'Feil: Kampanjen {$a} kunne ikke slettes.';
 
-$string['total_users']              = 'Users';
-$string['total_deliveries']         = 'Deliveries';
+$string['total_users']              = 'Brukere';
+$string['total_deliveries']         = 'Aktiviteter';
 $string['rpt_status']               = 'Status';
-$string['rpt_completed']            = 'Completed';
-$string['rpt_activated']            = 'Activated';
-$string['rpt_deactivated']          = 'Deactivated';
-$string['action_activate']          = 'Activate';
-$string['action_deactivate']        = 'Deactivate';
+$string['rpt_completed']            = 'Fullført';
+$string['rpt_activated']            = 'Aktivert';
+$string['rpt_deactivated']          = 'Deaktivert';
+$string['action_activate']          = 'Aktiver';
+$string['action_deactivate']        = 'Deaktiver';
 
-$string['calendar_date_err']        = 'The date has to be greater than current date';
+$string['calendar_date_err']        = 'Datoen må være senere enn dagens dato';
 
-$string['err_generic']          = 'It has been an error during the process. Please, try again or contact with administrator';
+$string['err_generic']          = 'Det har skjedd en feil. Vennligst prøv på nytt eller kontakt en administrator';
 
-$string['cron_activate']    = 'Enabled';
-$string['cron_deactivate']  = 'Disabled';
+$string['cron_activate']    = 'Aktivert';
+$string['cron_deactivate']  = 'Deaktivert';
