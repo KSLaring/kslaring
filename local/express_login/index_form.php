@@ -144,13 +144,9 @@ class express_login_change_pin_code extends moodleform {
         $form->addElement('static', 'username', get_string('username'), $USER->username);
 
         if ($exists_express) {
-            /* Current  PIN Code    */
+            /* First the correct number of digits   */
             $minimum    = array('4','6','8');
             $digits     = $minimum[$plugin_info->minimum_digits];
-            $form->addElement('passwordunmask', 'pin_code_current', get_string('pin_old_code','local_express_login'), ' size="10" maxlength="' . $digits . '"');
-            $form->setType('pin_code_current', PARAM_RAW);
-            $form->addRule('pin_code_current',get_string('required'), 'required', null, 'server');
-
             /* New PIN Code         */
             $form->addElement('static', 'pin_description', '', get_string('pin_code_min','local_express_login',$digits));
             $form->addElement('passwordunmask', 'pin_code', get_string('pin_new_code','local_express_login'), ' size="10" maxlength="' . $digits . '"');
@@ -198,15 +194,10 @@ class express_login_change_pin_code extends moodleform {
 
         /* Check the Password   */
         /* First the correct number of digits   */
-        if (!Express_Login::ValidateExpressLogin_User($data['id'],$data['pin_code_current'])) {
-            $errors['pin_code_current'] = get_string('pin_current_diff_err','local_express_login');
+        if (Express_Login::ValidateExpressLogin_User($data['id'],$data['pin_code'])) {
+            $errors['pin_code'] = get_string('pin_new_not_diff_current','local_express_login');
             return $errors;
         }else {
-            if ($data['pin_code_current'] == $data['pin_code_again']) {
-                $errors['pin_code'] = get_string('pin_new_not_diff_current','local_express_login');
-                return $errors;
-            }
-
             if ($data['pin_code'] != $data['pin_code_again']) {
                 $errors['pin_code'] = get_string('pin_new_diff_err','local_express_login');
                 return $errors;
