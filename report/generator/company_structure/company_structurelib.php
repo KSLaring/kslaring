@@ -19,6 +19,34 @@ class company_structure {
     /*********************/
 
     /**
+     * @param           $company_id
+     * @return          null
+     * @throws          Exception
+     *
+     * @creationDate    11/12/2014
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Get the company name
+     */
+    public static function Get_CompanyName($company_id) {
+        /* Variables    */
+        global $DB;
+
+        try {
+            /* Execute  */
+            $rdo = $DB->get_record('report_gen_companydata',array('id' => $company_id),'name');
+            if ($rdo) {
+                return $rdo->name;
+            }else {
+                return null;
+            }
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//Get_CompanyName
+
+    /**
      * @static
      * @param       array   $data.      Form data.
      * @return      array               Action and level.

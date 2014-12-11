@@ -130,9 +130,10 @@ $string['add_this_company_structure']   = 'Legg til et nivå {$a}-element';
 $string['delete_company_structure']     = 'Slett dataene på dette arbeidsstedet';
 $string['display_company_structure']    = 'Navn på arbeidssted: ';
 
-$string['delete_company_structure_are_you_sure'] = 'Er du sikker på at du vil slette dataene for dette arbeidsstedet?';
+$string['delete_company_structure_are_you_sure']    = 'Er du sikker på at du vil slette {$a} Arbeidssteder?';
 $string['invalid_company_structure_id']          = 'Beklager, en ugyldig arbeidssteds-ID er valgt.';
-$string['error_deleting_company_structure']      = 'Beklager, men arbeidsstedet kunne ikke slettes.';
+$string['error_deleting_company_structure']         = 'Beklager, dette kunne ikke slettes fordi det har tilhørende nivåer som må slettes først.';
+$string['error_deleting_company_employees']         = 'Beklager, dette kunne ikke slettes fordi noen brukere har dette som arbeidssted.';
 
 $string['un_connected_company_data']                = 'Arbeidssteder for  nivå {$a} uten overordnet tilknytning';
 $string['un_connected_company_data_note']           = 'Kommentarer til arbeidssteder uten overordnet tilknytning';

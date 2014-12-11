@@ -124,9 +124,10 @@ $string['edit_this_company_structure'] = 'Edit level {$a} item';
 $string['add_this_company_structure'] = 'Add a level {$a} item';
 $string['delete_company_structure'] = 'Delete this company data.';
 $string['display_company_structure'] = 'Company data name: ';
-$string['delete_company_structure_are_you_sure'] = 'Are you sure you want to delete this company data?';
+$string['delete_company_structure_are_you_sure']    = 'Are you sure you want to delete the {$a} company data?';
 $string['invalid_company_structure_id'] = 'Sorry, an invalid company data id was selected.';
-$string['error_deleting_company_structure'] = 'Sorry, the company data could not be deleted.';
+$string['error_deleting_company_structure']         = 'Sorry, the company data could not be deleted. There are companies below.';
+$string['error_deleting_company_employees']         = 'Sorry, the company data could not be deleted because there are employees connected with.';
 
 $string['un_connected_company_data'] = 'Unconnected company data items for level {$a}';
 $string['un_connected_company_data_note'] = '';
