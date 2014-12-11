@@ -25,6 +25,7 @@ require_once($CFG->libdir . '/adminlib.php');
 /* Params */
 $company_id  = required_param('id',PARAM_INT);
 $level  = optional_param('level', 1, PARAM_INT);
+$confirmed      = optional_param('confirm', false, PARAM_BOOL);
 $return_url = new moodle_url('/report/generator/company_structure/company_structure.php',array('level'=>$level));
 $url            = new moodle_url('/report/generator/company_structure/delete_company_structure.php',array('level' => $level,'id' => $company_id));
 /* Start the page */
@@ -55,25 +56,32 @@ $PAGE->verify_https_required();
 /* Print Header */
 echo $OUTPUT->header();
 
-/* Check If the company can be removed */
-if (company_structure::Company_HasEmployees($company_id)) {
-    /* Not Remove */
-    echo $OUTPUT->notification(get_string('error_deleting_company_structure','report_generator'), 'notifysuccess');
-    echo $OUTPUT->continue_button($return_url);
-}else {
-    /* Remove */
-    if (company_structure::Company_HasChildren($company_id)) {
+if ($confirmed) {
+    /* Check If the company can be removed */
+    if (company_structure::Company_HasEmployees($company_id)) {
         /* Not Remove */
-        echo $OUTPUT->notification(get_string('error_deleting_company_structure','report_generator'), 'notifysuccess');
+        echo $OUTPUT->notification(get_string('error_deleting_company_employees','report_generator'), 'notifysuccess');
         echo $OUTPUT->continue_button($return_url);
     }else {
         /* Remove */
-        if (company_structure::Delete_Company($company_id)) {
-            echo $OUTPUT->notification(get_string('deleted_company_structure','report_generator'), 'notifysuccess');
+        if (company_structure::Company_HasChildren($company_id)) {
+            /* Not Remove */
+            echo $OUTPUT->notification(get_string('error_deleting_company_structure','report_generator'), 'notifysuccess');
             echo $OUTPUT->continue_button($return_url);
-        }
+        }else {
+            /* Remove */
+            if (company_structure::Delete_Company($company_id)) {
+                echo $OUTPUT->notification(get_string('deleted_company_structure','report_generator'), 'notifysuccess');
+                echo $OUTPUT->continue_button($return_url);
+            }
+        }//if_deleted
     }//if_deleted
-}//if_deleted
+}else {
+    /* First Confirm    */
+    $company_name   = company_structure::Get_CompanyName($company_id);
+    $confirm_url    = new moodle_url('/report/generator/company_structure/delete_company_structure.php',array('level' => $level,'id' => $company_id, 'confirm' => true));
+    echo $OUTPUT->confirm(get_string('delete_company_structure_are_you_sure','report_generator',$company_name),$confirm_url,$return_url);
+}//if_confirm_delte_company
 
 /* Print Footer */
 echo $OUTPUT->footer();
