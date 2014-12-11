@@ -1,0 +1,10 @@
+{
+  "name": "moodle-atto_efimage-button",
+  "builds": {
+    "moodle-atto_efimage-button": {
+      "jsfiles": [
+        "button.js"
+      ]
+    }
+  }
+}
