@@ -130,7 +130,7 @@ if ($form->is_cancelled()) {
             }//if_save_return_course
 
             /* Return to the correct place */
-            redirect($url_deliveries);
+            redirect($return_url);
         }else {
             echo $OUTPUT->header();
             echo $OUTPUT->notification(get_string('err_generic','local_microlearning'), 'notifysuccess');
