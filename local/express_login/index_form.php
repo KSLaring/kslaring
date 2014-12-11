@@ -290,4 +290,3 @@ class express_login_regenerate_link extends moodleform {
     }//validation
 }//express_login_regenerate_link
 
-

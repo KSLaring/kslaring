@@ -14,7 +14,7 @@ function local_express_login_extends_settings_navigation($settingsnav, $context)
     global $USER;
 
     $plugin     = get_config('local_express_login');
-    if ($plugin->activate_express) {
+    if (($plugin) && ($plugin->activate_express)) {
         if ($setting_node = $settingsnav->get('usercurrentsettings')) {
             $str_title = get_string('pluginname', 'local_express_login');
             $url = new moodle_url('/local/express_login/index.php',array('id' => $USER->id));

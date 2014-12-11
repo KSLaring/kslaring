@@ -20,8 +20,6 @@ $string['warning_regenerate']       = 'You have never generated your own express
 $string['title_change']             = 'Here you can change your express login to {$a}.';
 $string['header_new_code']          = 'Change Express Login';
 
-
-
 $string['pin_code']             = 'My PIN code';
 $string['pin_old_code']         = 'Current PIN code';
 $string['pin_new_code']         = 'New PIN code';
