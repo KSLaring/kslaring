@@ -57,7 +57,6 @@ if (isloggedin()) {
     $login = Express_Link::LoginUser($frm->UserName);
 }//if_isloggedin
 
-
 if ($login) {
     /* REDIRECT TO THE CORRECT PAGE */
     if ($microSession) {
