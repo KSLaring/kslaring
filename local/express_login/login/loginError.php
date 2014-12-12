@@ -21,7 +21,12 @@ $PAGE->set_context(CONTEXT_SYSTEM::instance());
 $PAGE->set_pagelayout('login');
 
 echo $OUTPUT->header();
+if (isloggedin()) {
+    $return_url = $CFG->wwwroot;
+}else {
 $return_url = new moodle_url('/login/index.php');
+}//if_log_in
+
 switch ($err_code) {
     case ERROR_EXPRESS_LINK_NOT_VALID:
         $message_err = get_string('ERROR_EXPRESS_LINK_NOT_VALID','local_express_login');

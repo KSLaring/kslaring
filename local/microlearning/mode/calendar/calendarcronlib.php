@@ -171,6 +171,7 @@ class Calendar_ModeCron {
                     $info->delivery         = $instance->delivery;
                     $info->subject          = $instance->subject;
                     $info->body             = $instance->body;
+                    $info->activityafter    = $instance->activityafter;
                     /* Info Activities  */
                     $info->activities       = self::GetActivitiesDelivery_ToCron($campaign_id,$instance->delivery);
                     /* Info Users       */

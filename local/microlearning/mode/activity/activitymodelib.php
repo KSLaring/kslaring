@@ -541,7 +541,7 @@ class Activity_Mode {
 
         try {
             $modeActivity = uniqid(mt_rand(),1) . '_' . time() . '_' . uniqid(mt_rand(),1);
-            $modeActivity = Micro_Learning::GenerateHash_MicroLearning($modeActivity);
+            $modeActivity = str_replace('/','.',Micro_Learning::GenerateHash_MicroLearning($modeActivity));
 
             return $modeActivity;
         }catch (Exception $ex) {
@@ -566,7 +566,7 @@ class Activity_Mode {
 
         try {
             $microActivity = time() . '_' . uniqid(mt_rand(),1) . '_' . $modeActivity . '_' . uniqid(mt_rand(),1);
-            $microActivity = Micro_Learning::GenerateHash_MicroLearning($microActivity);
+            $microActivity = str_replace('/','.',Micro_Learning::GenerateHash_MicroLearning($microActivity));
 
             return $microActivity;
         }catch (Exception $ex) {

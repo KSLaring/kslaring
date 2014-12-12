@@ -29,6 +29,14 @@ if (count($args) == 3) {
 
 $action = new moodle_url('/local/express_login/login/index.php');
 
+if (isloggedin()) {
+    $valid = Express_Login::Check_ExpressLink($args[0]);
+    if ($valid != $USER->id) {
+        $action = new moodle_url('/local/express_login/login/loginError.php',array('er' => ERROR_LINK_NOT_VALID));
+        redirect($action);
+    }
+}
+
 $valid = Express_Login::Check_ExpressLink($args[0]);
 if (!$valid) {
     $action = new moodle_url('/local/express_login/login/loginError.php',array('er' => ERROR_LINK_NOT_VALID));
