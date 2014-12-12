@@ -472,7 +472,7 @@ class Calendar_Mode {
 
         try {
             $modeCalendar = uniqid(mt_rand(),1) . '_' . time() . '_' . uniqid(mt_rand(),1);
-            $modeCalendar = Micro_Learning::GenerateHash_MicroLearning($modeCalendar);
+            $modeCalendar = str_replace('/','.',Micro_Learning::GenerateHash_MicroLearning($modeCalendar));
 
             return $modeCalendar;
         }catch (Exception $ex) {
@@ -497,7 +497,7 @@ class Calendar_Mode {
 
         try {
             $microActivity = time() . '_' . uniqid(mt_rand(),1) . '_' . $modeCalendar . '_' . uniqid(mt_rand(),1);
-            $microActivity = Micro_Learning::GenerateHash_MicroLearning($microActivity);
+            $microActivity = str_replace('/','.',Micro_Learning::GenerateHash_MicroLearning($microActivity));
 
             return $microActivity;
         }catch (Exception $ex) {

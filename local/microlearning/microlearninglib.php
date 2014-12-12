@@ -969,7 +969,6 @@ class Micro_Learning {
             }
 
             $salt = str_replace('+', '.', base64_encode($buffer));
-            $salt = str_replace('/', '.', $salt);
 
             $salt = substr($salt, 0, $required_salt_len);
 
