@@ -93,7 +93,7 @@ class Express_Login {
                 $days       = $plugin_info->expiry_after/86400;
                 $created    = self::Get_TimeCreatedExpress($user);
 
-                if (time() > ($created+$days)) {
+                if (time() > ($created+$days*60*60*24)) {
                     $force = true;
                     /* Update the Status of all his/her deliveries to 0 */
                 }else {

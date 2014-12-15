@@ -24,7 +24,7 @@ echo $OUTPUT->header();
 if (isloggedin()) {
     $return_url = $CFG->wwwroot;
 }else {
-$return_url = new moodle_url('/login/index.php');
+    $return_url = new moodle_url('/login/index.php');
 }//if_log_in
 
 switch ($err_code) {
