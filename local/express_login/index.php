@@ -82,7 +82,7 @@ if ($exists_express) {
         }
 
         echo $OUTPUT->header();
-        echo '<script src="express/ZeroClipboard.js"></script>';
+        echo '<script src="../zeroclipboard/dist/ZeroClipboard.js"></script>';
         $form->display();
         echo $OUTPUT->footer();
     }//if_force
@@ -104,7 +104,7 @@ if ($exists_express) {
             }
 
             echo $OUTPUT->header();
-                echo '<script src="express/ZeroClipboard.js"></script>';
+                echo '<script src="../zeroclipboard/dist/ZeroClipboard.js"></script>';
                 $form_link->display();
             echo $OUTPUT->footer();
 
