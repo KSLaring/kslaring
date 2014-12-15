@@ -7,6 +7,7 @@
  */
 
 
+
 var client      = new ZeroClipboard( document.getElementById("id_btn_copy_link") );
 var divClip     = document.getElementById('clipboardDiv');
 var bookmarkDiv = document.getElementById('bookmarkDiv');
