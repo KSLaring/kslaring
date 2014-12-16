@@ -55,39 +55,14 @@ if ($exists_express) {
         echo $OUTPUT->footer();
         die();
     }else {
-        /* Express Link */
-        $express_link = Express_Login::Get_ExpressLink($user_id);
-        /* Add to Bookmark      */
-        $bookmarkURL  = '<a href="#">' . $SITE->shortname . '</a>';
+        $form = new express_login_link_form(null,null);
+        if ($form->is_cancelled()) {
+            $_POST = array();
+            redirect($return_url);
+        }
+
         echo $OUTPUT->header();
-        echo $OUTPUT->heading(get_string('pluginname','local_express_login'));
-        echo html_writer::label(get_string('title_link','local_express_login',$SITE->fullname),null);
-        ?>
-        <html>
-            <body>
-                <div id="clipboardDiv" style="display: none;"><?php echo get_string('clipboardDiv','local_express_login'); ?></div>
-                <div id="bookmarkDiv" style="display: none;"><?php echo get_string('bookmarkDiv','local_express_login',$bookmarkURL); ?></div>
-                <br/>
-                <button id="btn_copy_link" data-clipboard-text="<?php echo $express_link;?>"><?php echo get_string('btn_copy_link','local_express_login'); ?></button>
-                <script type="text/javascript" src="zeroclipboard/ZeroClipboard.js"></script>
-                <script type="text/javascript">
-                    var client      = new ZeroClipboard( document.getElementById("btn_copy_link"));
-                    var divClip     = document.getElementById("clipboardDiv");
-                    var bookmarkDiv = document.getElementById("bookmarkDiv");
-                    client.on( "ready", function( readyEvent ) {
-                        client.on( "aftercopy", function( event ) {
-                            divClip.style.display = 'block';
-                            var urlBook = event.data["text/plain"];
-                            var newContent  = bookmarkDiv.innerHTML.valueOf();
-                            newContent = bookmarkDiv.innerHTML.replace("#",urlBook) + '</br>';
-                            bookmarkDiv.innerHTML = newContent;
-                            bookmarkDiv.style.display = "block";
-                        } );
-                    } );
-                </script>
-            </body>
-        </html>
-        <?php
+        $form->display();
         echo $OUTPUT->footer();
     }//if_force
 }else {
@@ -101,39 +76,14 @@ if ($exists_express) {
         $express_login = Express_Login::Generate_ExpressLink($data,false);
 
         if ($express_login) {
-            /* Express Link */
-            $express_link = Express_Login::Get_ExpressLink($USER->id);
-            /* Add to Bookmark      */
-            $bookmarkURL  = '<a href="#">' . $SITE->shortname . '</a>';
+            $form_link = new express_login_link_form(null,null);
+            if ($form_link->is_cancelled()) {
+                $_POST = array();
+                redirect($return_url);
+            }
+
             echo $OUTPUT->header();
-            echo $OUTPUT->heading(get_string('pluginname','local_express_login'));
-            echo html_writer::label(get_string('title_link','local_express_login',$SITE->fullname),null);
-            ?>
-            <html>
-            <body>
-            <div id="clipboardDiv" style="display: none;"><?php echo get_string('clipboardDiv','local_express_login'); ?></div>
-            <div id="bookmarkDiv" style="display: none;"><?php echo get_string('bookmarkDiv','local_express_login',$bookmarkURL); ?></div>
-            <br/>
-            <button id="btn_copy_link" data-clipboard-text="<?php echo $express_link;?>"><?php echo get_string('btn_copy_link','local_express_login'); ?></button>
-            <script type="text/javascript" src="zeroclipboard/ZeroClipboard.js"></script>
-            <script type="text/javascript">
-                var client      = new ZeroClipboard( document.getElementById("btn_copy_link"));
-                var divClip     = document.getElementById("clipboardDiv");
-                var bookmarkDiv = document.getElementById("bookmarkDiv");
-                client.on( "ready", function( readyEvent ) {
-                    client.on( "aftercopy", function( event ) {
-                        divClip.style.display = 'block';
-                        var urlBook = event.data["text/plain"];
-                        var newContent  = bookmarkDiv.innerHTML.valueOf();
-                        newContent = bookmarkDiv.innerHTML.replace("#",urlBook) + '</br>';
-                        bookmarkDiv.innerHTML = newContent;
-                        bookmarkDiv.style.display = "block";
-                    } );
-                } );
-            </script>
-            </body>
-            </html>
-            <?php
+            $form_link->display();
             echo $OUTPUT->footer();
         }else {
             echo $OUTPUT->header();
@@ -141,11 +91,11 @@ if ($exists_express) {
             echo $OUTPUT->continue_button($return_url);
             echo $OUTPUT->footer();
         }
-    }//if_form
-
+    }else {
     echo $OUTPUT->header();
         $form->display();
     echo $OUTPUT->footer();
+    }//if_form
 }//if_exists
 
 
