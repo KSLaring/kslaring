@@ -135,13 +135,11 @@ if ($exists_express) {
             </html>
             <?php
             echo $OUTPUT->footer();
-            die();
         }else {
             echo $OUTPUT->header();
             echo $OUTPUT->notification(get_string('err_generic','local_express_login'), 'notifysuccess');
             echo $OUTPUT->continue_button($return_url);
             echo $OUTPUT->footer();
-            die();
         }
     }//if_form
 
