@@ -606,9 +606,9 @@ class Express_Login {
         list($pin_valid,$pin_err) = self::Check_ConsecutiveDigits($pin_code);
 
         /* Both parts --> Consecutive   */
-        if (!$pin_valid) {
-            list($pin_valid,$pin_err) = self::Check_HalfConsecutiveDigits($pin_code);
-        }//if_Check_HalfConsecutiveDigits
+        //if (!$pin_valid) {
+            //list($pin_valid,$pin_err) = self::Check_HalfConsecutiveDigits($pin_code);
+        //}//if_Check_HalfConsecutiveDigits
 
         return array($pin_valid,$pin_err);
     }//CheckPinCode_NotConsecutiveDigits
