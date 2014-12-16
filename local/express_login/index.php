@@ -118,49 +118,8 @@ if ($exists_express) {
         /* Generate Express Login */
         $express_login = Express_Login::Generate_ExpressLink($data,false);
 
-        if ($express_login) {
-            /* Express Link */
-            $express_link = Express_Login::Get_ExpressLink($USER->id);
-            /* Add to Bookmark      */
-            $bookmarkURL  = '<a href="#">' . $SITE->shortname . '</a>';
-            echo $OUTPUT->header();
-            echo $OUTPUT->heading(get_string('pluginname','local_express_login'));
-            echo html_writer::label(get_string('title_link','local_express_login',$SITE->fullname),null);
-            ?>
-            <html>
-                <body>
-                    <div id="clipboardDiv" style="display: none;"><?php echo get_string('clipboardDiv','local_express_login'); ?></div>
-                    <div id="bookmarkDiv" style="display: none;"><?php echo get_string('bookmarkDiv','local_express_login',$bookmarkURL); ?></div>
-                    <br/>
-                    <button id="btn_copy_link" data-clipboard-text="<?php echo $express_link;?>"><?php echo get_string('btn_copy_link','local_express_login'); ?></button>
-                    <script type="text/javascript" src="zeroclipboard/ZeroClipboard.js"></script>
-                    <script type="text/javascript">
-                        var client      = new ZeroClipboard( document.getElementById("btn_copy_link"));
-                        var divClip     = document.getElementById("clipboardDiv");
-                        var bookmarkDiv = document.getElementById("bookmarkDiv");
-                        client.on( "ready", function( readyEvent ) {
-                            client.on( "aftercopy", function( event ) {
-                                divClip.style.display = 'block';
-                                var urlBook = event.data["text/plain"];
-                                var newContent  = bookmarkDiv.innerHTML.valueOf();
-                                newContent = bookmarkDiv.innerHTML.replace("#",urlBook) + '</br>';
-                                bookmarkDiv.innerHTML = newContent;
-                                bookmarkDiv.style.display = "block";
-                            } );
-                        } );
-                    </script>
-                </body>
-            </html>
-            <?php
-            echo $OUTPUT->footer();
-            die();
-        }else {
-            echo $OUTPUT->header();
-            echo $OUTPUT->notification(get_string('err_generic','local_express_login'), 'notifysuccess');
-            echo $OUTPUT->continue_button($return_url);
-            echo $OUTPUT->footer();
-            die();
-        }
+        $_POST = array();
+        redirect($return_url);
     }//if_form
 
     echo $OUTPUT->header();
