@@ -97,7 +97,8 @@ if ($exists_express) {
         $_POST = array();
         redirect($return_url);
     }else if ($data = $form->get_data()) {
-        redirect($return_url);
+        echo "Micro Learning";
+        //redirect($return_url);
     }//if_form
 
     echo $OUTPUT->header();
