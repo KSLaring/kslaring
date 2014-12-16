@@ -38,24 +38,6 @@ $PAGE->set_url(new moodle_url('/local/express_login/index.php',array('id' => $us
 $PAGE->set_subpage($current_page->id);
 $PAGE->navbar->add(get_string('pluginname','local_express_login'));
 
-/* Add the blocks that the user can manage  */
-if ($current_user) {
-    $PAGE->set_blocks_editing_capability('moodle/user:manageownblocks');
-} else {
-    $PAGE->set_blocks_editing_capability('moodle/user:manageblocks');
-}
-
-if (!$current_user) {
-    $PAGE->navigation->extend_for_user($USER);
-    if ($node = $PAGE->settingsnav->get('userviewingsettings'.$USER->id)) {
-        $node->forceopen = true;
-    }
-} else if ($node = $PAGE->settingsnav->get('usercurrentsettings', navigation_node::TYPE_CONTAINER)) {
-    $node->forceopen = true;
-}
-if ($node = $PAGE->settingsnav->get('root')) {
-    $node->forceopen = false;
-}
 
 /* Plugins Info */
 $plugin_info     = get_config('local_express_login');
@@ -74,7 +56,7 @@ if ($exists_express) {
         die();
     }else {
         /* Express Link */
-        $express_link = Express_Login::Get_ExpressLink($USER->id);
+        $express_link = Express_Login::Get_ExpressLink($user_id);
         /* Add to Bookmark      */
         $bookmarkURL  = '<a href="#">' . $SITE->shortname . '</a>';
         echo $OUTPUT->header();
@@ -118,8 +100,49 @@ if ($exists_express) {
         /* Generate Express Login */
         $express_login = Express_Login::Generate_ExpressLink($data,false);
 
-        $_POST = array();
-        redirect($return_url);
+        if ($express_login) {
+            /* Express Link */
+            $express_link = Express_Login::Get_ExpressLink($USER->id);
+            /* Add to Bookmark      */
+            $bookmarkURL  = '<a href="#">' . $SITE->shortname . '</a>';
+            echo $OUTPUT->header();
+            echo $OUTPUT->heading(get_string('pluginname','local_express_login'));
+            echo html_writer::label(get_string('title_link','local_express_login',$SITE->fullname),null);
+            ?>
+            <html>
+            <body>
+            <div id="clipboardDiv" style="display: none;"><?php echo get_string('clipboardDiv','local_express_login'); ?></div>
+            <div id="bookmarkDiv" style="display: none;"><?php echo get_string('bookmarkDiv','local_express_login',$bookmarkURL); ?></div>
+            <br/>
+            <button id="btn_copy_link" data-clipboard-text="<?php echo $express_link;?>"><?php echo get_string('btn_copy_link','local_express_login'); ?></button>
+            <script type="text/javascript" src="zeroclipboard/ZeroClipboard.js"></script>
+            <script type="text/javascript">
+                var client      = new ZeroClipboard( document.getElementById("btn_copy_link"));
+                var divClip     = document.getElementById("clipboardDiv");
+                var bookmarkDiv = document.getElementById("bookmarkDiv");
+                client.on( "ready", function( readyEvent ) {
+                    client.on( "aftercopy", function( event ) {
+                        divClip.style.display = 'block';
+                        var urlBook = event.data["text/plain"];
+                        var newContent  = bookmarkDiv.innerHTML.valueOf();
+                        newContent = bookmarkDiv.innerHTML.replace("#",urlBook) + '</br>';
+                        bookmarkDiv.innerHTML = newContent;
+                        bookmarkDiv.style.display = "block";
+                    } );
+                } );
+            </script>
+            </body>
+            </html>
+            <?php
+            echo $OUTPUT->footer();
+            die();
+        }else {
+            echo $OUTPUT->header();
+            echo $OUTPUT->notification(get_string('err_generic','local_express_login'), 'notifysuccess');
+            echo $OUTPUT->continue_button($return_url);
+            echo $OUTPUT->footer();
+            die();
+        }
     }//if_form
 
     echo $OUTPUT->header();
