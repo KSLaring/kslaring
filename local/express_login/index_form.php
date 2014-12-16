@@ -117,7 +117,7 @@ class express_login_link_form extends moodleform {
         $form->closeHeaderBefore('buttonar');
 
         /* Add Script   */
-        $clipBoard_Html  = '<script type="text/javascript" src="./zeroclipboard/ZeroClipboard.js"></script>';
+        $clipBoard_Html  = '<script type="text/javascript" src="zeroclipboard/ZeroClipboard.js"></script>';
         $clipBoard_Html .= '<script type="text/javascript">';
         $clipBoard_Html .= 'var client  = new ZeroClipboard( document.getElementById("id_btn_copy_link") );';
         $clipBoard_Html .= 'var divClip     = document.getElementById("clipboardDiv");';
