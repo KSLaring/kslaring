@@ -77,12 +77,9 @@ if ($exists_express) {
         if ($form->is_cancelled()) {
             $_POST = array();
             redirect($return_url);
-        }elseif ($data_link = $form->get_data()) {
-
-        }
+        }//if_cancel
 
         echo $OUTPUT->header();
-        echo '<script src="../zeroclipboard/dist/ZeroClipboard.js"></script>';
         $form->display();
         echo $OUTPUT->footer();
     }//if_force
@@ -101,11 +98,10 @@ if ($exists_express) {
             if ($form_link->is_cancelled()) {
                 $_POST = array();
                 redirect($return_url);
-            }
+            }//if_cancel
 
             echo $OUTPUT->header();
-                echo '<script src="../zeroclipboard/dist/ZeroClipboard.js"></script>';
-                $form_link->display();
+            $form_link->display();
             echo $OUTPUT->footer();
 
             die();

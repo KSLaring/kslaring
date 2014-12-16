@@ -11,8 +11,6 @@
  */
 
 require_once($CFG->dirroot.'/lib/formslib.php');
-$PAGE->requires->js('/local/express_login/express/express.js');
-
 
 class express_login_form extends moodleform {
     function definition() {
@@ -92,6 +90,7 @@ class express_login_form extends moodleform {
 class express_login_link_form extends moodleform {
     function definition() {
         global $USER,$SITE;
+        $clipBoard_Html = null;
         $form       = $this->_form;
 
         /* Header   */
@@ -99,31 +98,41 @@ class express_login_link_form extends moodleform {
         // visible elements
         $form->addElement('static', 'express-link-description', '',get_string('title_link','local_express_login',$SITE->fullname));
 
-        /* Copy to Clipboard    */
-        $clipboardDiv  = html_writer::start_div('clipboard',array('id' => 'clipboardDiv','style' => 'display: none;'));
-        $clipboardDiv .= get_string('clipboardDiv','local_express_login');
-        $clipboardDiv .= html_writer::end_div();//clipboardDiv
-        $form->addElement('html',$clipboardDiv);
-
-        $form->addElement('html','<div></div>');
-
+        /* Express Link */
+        $express_link = Express_Login::Get_ExpressLink($USER->id);
+        $clipBoard_Html  = '<div id="clipboardDiv" style="display: none;">' . get_string('clipboardDiv','local_express_login') . '</div>';
+        $clipBoard_Html .= '<div></div>';
         /* Add to Bookmark      */
         $bookmarkURL  = '<a href="#">' . $SITE->shortname . '</a>';
-        $bookmarkDiv  = html_writer::start_div('clipboard',array('id' => 'bookmarkDiv','style' => 'display: none;'));
-        $bookmarkDiv .= get_string('bookmarkDiv','local_express_login',$bookmarkURL);
-        $bookmarkDiv .= html_writer::end_div();//bookmarkDiv
-        $form->addElement('html',$bookmarkDiv);
+        $clipBoard_Html .= '<div id="bookmarkDiv" style="display: none;">' . get_string('bookmarkDiv','local_express_login',$bookmarkURL) . '</div>';
+        $form->addElement('html',$clipBoard_Html);
 
         /* BUTTONS  */
-        $express_link = Express_Login::Get_ExpressLink($USER->id);
         $buttons = array();
-
         $buttons[] = $form->createElement('button','btn_copy_link',get_string('btn_copy_link','local_express_login'),'data-clipboard-text="' . $express_link . '"');
         $buttons[] = $form->createElement('cancel');
 
         $form->addGroup($buttons, 'buttonar', '', array(' '), false);
         $form->setType('buttonar', PARAM_RAW);
         $form->closeHeaderBefore('buttonar');
+
+        /* Add Script   */
+        $clipBoard_Html  = '<script type="text/javascript" src="./zeroclipboard/ZeroClipboard.js"></script>';
+        $clipBoard_Html .= '<script type="text/javascript">';
+        $clipBoard_Html .= 'var client  = new ZeroClipboard( document.getElementById("id_btn_copy_link") );';
+        $clipBoard_Html .= 'var divClip     = document.getElementById("clipboardDiv");';
+        $clipBoard_Html .= 'var bookmarkDiv = document.getElementById("bookmarkDiv");';
+        $clipBoard_Html .= 'client.on( "ready", function( readyEvent ) {';
+        $clipBoard_Html .= 'var urlBook     = Y.one("#id_btn_copy_link").getAttribute("data-clipboard-text");';
+        $clipBoard_Html .= 'var newContent  = bookmarkDiv.innerHTML.valueOf();';
+        $clipBoard_Html .= 'client.on( "aftercopy", function( event ) {';
+        $clipBoard_Html .= 'divClip.style.display = "block";';
+        $clipBoard_Html .= 'newContent = bookmarkDiv.innerHTML.replace("#",urlBook);';
+        $clipBoard_Html .= 'bookmarkDiv.innerHTML = newContent;';
+        $clipBoard_Html .= 'bookmarkDiv.style.display = "block";';
+        $clipBoard_Html .= '}); });';
+        $clipBoard_Html .= '</script>';
+        $form->addElement('html',$clipBoard_Html);
 
         $form->addElement('hidden','id');
         $form->setType('id',PARAM_INT);
