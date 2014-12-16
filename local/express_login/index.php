@@ -141,11 +141,11 @@ if ($exists_express) {
             echo $OUTPUT->continue_button($return_url);
             echo $OUTPUT->footer();
         }
-    }//if_form
-
+    }else {
     echo $OUTPUT->header();
         $form->display();
     echo $OUTPUT->footer();
+    }//if_form
 }//if_exists
 
 
