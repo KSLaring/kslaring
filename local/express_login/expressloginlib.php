@@ -165,7 +165,8 @@ class Express_Login {
                 return self::UpdateExpressLogin_User($data);
             }
         }catch (Exception $ex) {
-            return false;
+            throw $ex;
+            //return false;
         }//try_catch
     }//Generate_ExpressLogin
 
