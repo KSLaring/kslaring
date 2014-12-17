@@ -83,10 +83,6 @@ class generator_import_structure_form extends moodleform {
         $form->addElement('select', 'encoding', get_string('encoding', 'report_generator'), $choices);
         $form->setDefault('encoding', 'UTF-8');
 
-        $form->addElement('hidden','level');
-        $form->setDefault('level',$level);
-        $form->setType('level',PARAM_INT);
-
         $this->add_action_buttons(true,get_string('btn_import','report_generator'));
     }//definition
 
