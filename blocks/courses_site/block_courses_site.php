@@ -286,28 +286,28 @@ class block_courses_site extends block_base {
 
         $this->content->text .= '<div class="' . $class . '">';
             $this->content->text .= '<div class="left">';
-                /* Button */
-                $this->content->text .= '<a href="' . $url . '"><button class="button-site">' . get_string('btn_more', 'local_courses_site') . '</button></a>';
+            /* Button */
+            $this->content->text .= '<a href="' . $url . '"><button class="button-site">' . get_string('btn_more', 'local_courses_site') . '</button></a>';
             $this->content->text .= '</div>'; //left
 
             $this->content->text .= '<div class="right">';
-                switch ($course_site->type) {
-                    case 'netcourse':
-                        $url_img = $OUTPUT->pix_url('/i/nettkurs');
-                        $this->content->text .= html_writer::empty_tag('img',array('src' => $url_img, 'alt' => 'nett kurs icon', 'class' => 'icon'));
-                        break;
-                    case 'classroom':
-                        $url_img = $OUTPUT->pix_url('/i/classroom');
-                        $this->content->text .= html_writer::empty_tag('img',array('src' => $url_img, 'alt' => 'classroom icon', 'class' => 'icon'));
-                        break;
-                    case 'whitepaper':
-                        $url_img = $OUTPUT->pix_url('/i/whitepaper');
-                        $this->content->text .= html_writer::empty_tag('img',array('src' => $url_img, 'alt' => 'whitepaper icon', 'class' => 'icon'));
-                        break;
-                    default:
-                        break;
-                }//format_ico
-            $this->content->text .= '</div>'; //right
+            switch ($course_site->type) {
+                case 'netcourse':
+                    $url_img = $OUTPUT->pix_url('i/nettkurs');
+                    $this->content->text .= html_writer::empty_tag('img', array('src' => $url_img, 'alt' => 'nett kurs icon', 'class' => 'icon'));
+                    break;
+                case 'classroom':
+                    $url_img = $OUTPUT->pix_url('i/classroom');
+                    $this->content->text .= html_writer::empty_tag('img', array('src' => $url_img, 'alt' => 'classroom icon', 'class' => 'icon'));
+                    break;
+                case 'whitepaper':
+                    $url_img = $OUTPUT->pix_url('i/whitepaper');
+                    $this->content->text .= html_writer::empty_tag('img', array('src' => $url_img, 'alt' => 'whitepaper icon', 'class' => 'icon'));
+                    break;
+                default:
+                    break;
+            }//format_ico
+        $this->content->text .= '</div>'; //right
         $this->content->text .= '</div>';
     }//block_courses_site_AddColumnButton
 }
