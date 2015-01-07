@@ -126,7 +126,11 @@ class Express_Login {
 
         try {
             /* Check if there are too much identical digits    */
+            if ($plugin_info->deny_identical) {
             list($pin_valid,$pin_err) = self::Check_IdenticalDigits($pin_code,$plugin_info->deny_identical);
+            }else {
+                $pin_valid = false;
+            }
 
             /* Check Consecutive Digits */
             if (!$pin_valid) {
