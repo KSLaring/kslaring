@@ -37,7 +37,11 @@ require_login($course);
 if ($delivery_id) {
     $url->param('cm',$delivery_id);
     $delivery_info = Activity_Mode::GetDeliveryInfo_ActivityMode($campaign_id,$delivery_id);
-}
+}else {
+    $delivery_info = new stdClass();
+    $delivery_info->body            = '';
+    $delivery_info->bodyformat      = FORMAT_HTML;
+}//if_delivery_id
 
 $PAGE->set_url($url);
 $PAGE->set_context($context_course);
@@ -56,13 +60,18 @@ if (!isset($SESSION->removeActivities)) {
     $SESSION->removeActivities = array();
 }
 
-/* Form */
+/* Editor Options */
+$edit_options   = array('maxfiles' => 0, 'maxbytes'=>$CFG->maxbytes, 'trusttext'=>false, 'noclean'=>true, 'context' => $context_course);
+/* Prepare the editor   */
+$delivery_info = file_prepare_standard_editor($delivery_info, 'body', $edit_options,$context_course, 'course', 'activity_mode',0);
+
 /* Get the users            */
 $users_campaign = Micro_Learning::GetUsers_Campaign($campaign_id);
 /* Get Activities Course    */
 $activities = Micro_Learning::Get_ActivitiesList($course_id);
-$form       = new activity_mode_form(null,array($course_id,$mode_learning,$users_campaign,$campaign_id,$delivery_info));
 
+/* Form */
+$form       = new activity_mode_form(null,array($course_id,$mode_learning,$users_campaign,$campaign_id,$delivery_info,$edit_options));
 if ($form->is_cancelled()) {
     unset($SESSION->activities);
 
@@ -76,7 +85,12 @@ if ($form->is_cancelled()) {
         $activity_mode = new stdClass();
         $activity_mode->microid = $campaign_id;
         $activity_mode->subject = $data->subject;
-        $activity_mode->body    = $data->body;
+        /* Get the eMail Body   from the editor */
+        $editor = new stdClass();
+        $editor->body_editor = $data->body_editor;
+        $editor->body = '';
+        $editor = file_postupdate_standard_editor($editor, 'body', $edit_options, $context_course, 'course', 'activity_mode', 0);
+        $activity_mode->body    = $editor->body;
 
         /* Send Options */
         switch ($data->sel_opt) {
@@ -146,7 +160,7 @@ if ($form->is_cancelled()) {
             $SESSION->activities[$value] = $activities[$value];
         }
 
-        $form = new activity_mode_form(null,array($data->id,$mode_learning,$users_campaign,$campaign_id,$delivery_info));
+        $form = new activity_mode_form(null,array($data->id,$mode_learning,$users_campaign,$campaign_id,$delivery_info,$edit_options));
     }//if_add_activities
 
     if (isset($data->remove_sel) && ($data->remove_sel)) {
@@ -154,7 +168,7 @@ if ($form->is_cancelled()) {
         foreach($data->sel_activities as $key=>$value) {
             $SESSION->removeActivities[$value] = $activities[$value];
         }
-        $form = new activity_mode_form(null,array($data->id,$mode_learning,$users_campaign,$campaign_id,$delivery_info));
+        $form = new activity_mode_form(null,array($data->id,$mode_learning,$users_campaign,$campaign_id,$delivery_info,$edit_options));
     }//if_remove_activities
 }//if_form
 

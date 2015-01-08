@@ -318,7 +318,7 @@ input#id_remove_all {
 
 #fitem_id_users_txt div.fitemtitle,
 #fitem_id_subject div.fitemtitle,
-#fitem_id_body div.fitemtitle {
+#fitem_id_body_editor div.fitemtitle {
     text-align: left;
     margin-left: 5px;
     width: 100px;
@@ -339,9 +339,12 @@ input#id_remove_all {
 #fitem_id_search_sel_act div.felement.ftext,
 #fitem_id_search_sel_users div.felement.ftext,
 #fitem_id_search_add_act div.felement.ftext,
-#fitem_id_search_add_users div.felement.ftext,
-#fitem_id_body div.felement.ftextarea {
+#fitem_id_search_add_users div.felement.ftext {
     margin-left: 0px;
+}
+
+#fitem_id_body_editor div.felement.feditor {
+    margin-left: 105px;
 }
 
 .micro_calendar_mode .activity_add_controls {

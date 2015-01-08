@@ -63,8 +63,13 @@ function local_microlearning_cron() {
         $cron_min   = $plugin_info->micro_auto_time_minute;
 
         if (($date_hour >= $cron_hour) && ($date_min >= $cron_min)) {
+            if (isset($plugin_info->lastcron)) {
             $time = time() - (60*60*24);
             if ($plugin_info->lastcron <= $time) {
+                Calendar_ModeCron::cron();
+                Activity_ModeCron::cron();
+            }
+            }else {
                 Calendar_ModeCron::cron();
                 Activity_ModeCron::cron();
             }

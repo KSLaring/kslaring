@@ -361,6 +361,7 @@ class Activity_Mode {
                 $delivery_info->act_not_done            = $rdo->notcomplete;
                 $delivery_info->subject                 = $rdo->subject;
                 $delivery_info->body                    = $rdo->body;
+                $delivery_info->bodyformat              = FORMAT_HTML;
                 $delivery_info->activities              = explode(',',$rdo->activities);
 
                 if ($rdo->afterenrol) {
