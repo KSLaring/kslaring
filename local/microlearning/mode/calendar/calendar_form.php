@@ -17,7 +17,7 @@ class calendar_mode_form extends moodleform {
         global $SESSION,$OUTPUT;
 
         /* Parameters   */
-        list($course_id,$mode,$users_campaign,$campaign,$delivery_info) = $this->_customdata;
+        list($course_id,$mode,$users_campaign,$campaign,$delivery_info,$edit_options) = $this->_customdata;
         /* Form         */
         $form       = $this->_form;
 
@@ -86,8 +86,10 @@ class calendar_mode_form extends moodleform {
         $form->addElement('header','email_header',get_string('email_header','local_microlearning'));
         $form->setExpanded('email_header',true);
         $form->addElement('text','subject',get_string('email_sub','local_microlearning'),'style="width:70%;"');
-        $form->addElement('textarea','body',get_string('email_body','local_microlearning'),'rows=5 cols=10 style="width:70%;overflow-y:scroll"');
         $form->setType('subject',PARAM_TEXT);
+        /* Body --> Editor  */
+        $form->addElement('editor','body_editor', get_string('email_body','local_microlearning'), null, $edit_options);
+        $form->setType('body_editor', PARAM_RAW);
 
         /* Header - Activities  */
         $form->addElement('header','activities_header',get_string('activities_header','local_microlearning'));
@@ -171,7 +173,7 @@ class calendar_mode_form extends moodleform {
         $form->setType('cp',PARAM_INT);
         $form->setDefault('cp',$campaign);
 
-        if ($delivery_info) {
+        if (($delivery_info) && isset($delivery_info->activities)) {
             $form->addElement('hidden','cm');
             $form->setType('cm',PARAM_INT);
             $form->setDefault('cm',$delivery_info->delivery);
@@ -181,6 +183,8 @@ class calendar_mode_form extends moodleform {
 
     function validation($data, $files) {
         $errors = parent::validation($data, $files);
+        /* Parameters   */
+        list($course_id,$mode,$users_campaign,$campaign,$delivery_info,$edit_options) = $this->_customdata;
 
         if ((isset($data['submitbutton']) && $data['submitbutton'])
             ||
@@ -191,11 +195,15 @@ class calendar_mode_form extends moodleform {
                 return $errors;
             }//if_subject
 
-            /* Check Body       */
-            if (!$data['body']) {
-                $errors['body'] = get_string('required');
+            /* Get the eMail Body   from the editor && and check that's not empty */
+            $editor = new stdClass();
+            $editor->body_editor = $data['body_editor'];
+            $editor->body = '';
+            $editor = file_postupdate_standard_editor($editor, 'body', $edit_options, context_course::instance($course_id), 'course', 'calendar_mode', 0);
+            if (!$editor->body) {
+                $errors['body_editor'] = get_string('required');
                 return $errors;
-            }//if_body
+            }
 
             /* SEND OPTIONS */
             if (isset($data['sel_date']) && ($data['sel_date'])) {
