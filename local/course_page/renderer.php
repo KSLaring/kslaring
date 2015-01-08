@@ -385,6 +385,7 @@ class local_course_page_renderer extends plugin_renderer_base {
      */
     protected function addExtra_TypeCourseBlock($course_format) {
         /* Variables    */
+        global $OUTPUT;
         $out     = '';
 
         /* Get Extra Options    */
@@ -394,23 +395,26 @@ class local_course_page_renderer extends plugin_renderer_base {
             $out .= '<div class="extra_home chp-content">';
             switch ($course_format) {
                 case 'netcourse':
-                    $url_img    = $this->getURLIcon('nett_kurs');
+                    $url_img = $OUTPUT->pix_url('i/nettkurs');
                     $alt        = get_string('net_course','local_course_page');
-                    $out .= html_writer::empty_tag('img', array('src'=>$url_img,'alt'=> $alt, 'title' => $alt, 'class'=>'icon'));
+
+                    $out .= html_writer::empty_tag('img', array('src' => $url_img, 'alt' => $alt, 'class' => 'icon'));
                     $out .= get_string('net_course','local_course_page');
 
                     break;
                 case 'classroom':
-                    $url_img    = $this->getURLIcon('classroom');
+                    $url_img = $OUTPUT->pix_url('i/classroom');
                     $alt        = get_string('class_course','local_course_page');
-                    $out .= html_writer::empty_tag('img', array('src'=>$url_img,'alt'=> $alt, 'title' => $alt,'class'=>'icon'));
+
+                    $out .= html_writer::empty_tag('img', array('src' => $url_img, 'alt' => $alt, 'class' => 'icon'));
                     $out .= get_string('class_course','local_course_page');
 
                     break;
                 case 'whitepaper':
-                    $url_img    = $this->getURLIcon('whitepaper');
+                    $url_img = $OUTPUT->pix_url('i/whitepaper');
                     $alt        = get_string('whitepaper','local_course_page');
-                    $out .= html_writer::empty_tag('img', array('src'=>$url_img,'alt'=> $alt, 'title' => $alt,'class'=>'icon'));
+
+                    $out .= html_writer::empty_tag('img', array('src' => $url_img, 'alt' => $alt, 'class' => 'icon'));
 
                     break;
                 default:
