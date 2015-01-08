@@ -17,7 +17,7 @@ function local_express_login_extends_settings_navigation($settingsnav, $context)
     if (($plugin) && ($plugin->activate_express)) {
         if ($setting_node = $settingsnav->get('usercurrentsettings')) {
             $str_title = get_string('pluginname', 'local_express_login');
-            $url = new moodle_url('/local/express_login/index.php',array('id' => $USER->id));
+            $url = new moodle_url('/local/express_login/index.php');
             /* Create Node  */
             $express_node = navigation_node::create($str_title,
                                                     null,
@@ -28,9 +28,9 @@ function local_express_login_extends_settings_navigation($settingsnav, $context)
             /* Generate PIN CODE    */
             $express_node->add($str_title,$url);
             /* Change PIN CODE      */
-            $express_node->add(get_string('btn_change_pin_code','local_express_login'),new moodle_url('/local/express_login/change_express.php',array('id' => $USER->id)));
+            $express_node->add(get_string('btn_change_pin_code','local_express_login'),new moodle_url('/local/express_login/change_express.php'));
             /* Regenerate Express Link  */
-            $express_node->add(get_string('btn_regenerate_link','local_express_login'),new moodle_url('/local/express_login/regenerate_express.php',array('id' => $USER->id)));
+            $express_node->add(get_string('btn_regenerate_link','local_express_login'),new moodle_url('/local/express_login/regenerate_express.php'));
 
             $setting_node->add_node($express_node);
         }//if_usercurrentsettings

@@ -15,46 +15,38 @@ require_once($CFG->dirroot . '/my/lib.php');
 require_once('expressloginlib.php');
 require_once('index_form.php');
 
+require_login();
+
 /* Params   */
-$user_id         = required_param('id',PARAM_INT);
-$current_user    = ($user_id == $USER->id);
+$id              = optional_param('id',0,PARAM_INT);
+$user_id         = $USER->id;
 $current_page    = null;
 $plugin_info     = null;
 $return_url      = new moodle_url('/user/profile.php',array('id' => $user_id));
+
 // Get the profile page.  Should always return something unless the database is broken.
 if (!$current_page = my_get_page($user_id, MY_PAGE_PUBLIC)) {
     print_error('mymoodlesetup');
+}
+
+/* Check the User */
+if ($id && ($user_id != $id)) {
+    $PAGE->set_context(CONTEXT_SYSTEM::instance());
+    echo $OUTPUT->header();
+    echo $OUTPUT->notification(get_string('err_express_access','local_express_login'), 'notifysuccess');
+    echo $OUTPUT->continue_button($return_url);
+    echo $OUTPUT->footer();
+    die();
 }
 
 /* Settings Page    */
 $PAGE->set_context(CONTEXT_USER::instance($user_id));
 $PAGE->set_pagelayout('mypublic');
 $PAGE->set_pagetype('user-profile');
-$PAGE->set_url(new moodle_url('/local/express_login/regenerate_express.php'),array('id' => $user_id));
-
+$PAGE->set_url(new moodle_url('/local/express_login/regenerate_express.php'));
 // Start setting up the page.
 $PAGE->set_subpage($current_page->id);
 $PAGE->navbar->add(get_string('pluginname','local_express_login'));
-//$PAGE->navbar->add(fullname($USER));
-
-/* Add the blocks that the user can manage  */
-if ($current_user) {
-    $PAGE->set_blocks_editing_capability('moodle/user:manageownblocks');
-} else {
-    $PAGE->set_blocks_editing_capability('moodle/user:manageblocks');
-}
-
-if (!$current_user) {
-    $PAGE->navigation->extend_for_user($USER);
-    if ($node = $PAGE->settingsnav->get('userviewingsettings'.$USER->id)) {
-        $node->forceopen = true;
-    }
-} else if ($node = $PAGE->settingsnav->get('usercurrentsettings', navigation_node::TYPE_CONTAINER)) {
-    $node->forceopen = true;
-}
-if ($node = $PAGE->settingsnav->get('root')) {
-    $node->forceopen = false;
-}
 
 /* Add Form */
 $exists_express = Express_Login::Exists_ExpressLogin($user_id);

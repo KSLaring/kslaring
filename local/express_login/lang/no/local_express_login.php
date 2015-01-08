@@ -82,3 +82,5 @@ $string['ERROR_EXPRESS_PIN_NOT_VALID']              = 'Ugyldig PIN-kode. Du har 
 
 $string['clipboardDiv'] = 'Hurtigtilgangslenken din har blitt kopiert til utklippstavlen din. Alt du trenger å gjøre er å trykke på ctrl+v for å lime den inn der du ønsker.';
 $string['bookmarkDiv']  = 'For å legge til hurtigtilgang som et bokmerke, vennligst dra og slipp <strong>{$a}</strong> til bokmerkene.';
+
+$string['err_express_access'] = 'You not have permissions to generate Express Login.';

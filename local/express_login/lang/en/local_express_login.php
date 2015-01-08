@@ -82,3 +82,5 @@ $string['ERROR_EXPRESS_PIN_NOT_VALID']              = 'PIN code not valid. You h
 
 $string['clipboardDiv'] = 'Your Express Login Link has been copied to the clipboard. You only have to do CTR+V to copy where you want.';
 $string['bookmarkDiv']  = 'To add your personal Express Login Link to the bookmark, please drop and drag <strong>{$a}</strong> to the bookmark.';
+
+$string['err_express_access'] = 'You not have permissions to generate Express Login.';
