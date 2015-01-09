@@ -445,7 +445,8 @@ class local_course_page_renderer extends plugin_renderer_base {
         $out .= html_writer::start_tag('div',array('class' => 'manager chp-block clearfix'));
             /* Main Manager */
             if ($manager) {
-                $user = $DB->get_record('user',array('id' => $manager));
+                $user = $DB->get_record('user',array('id' => $manager,'deleted' => 0));
+                if ($user) {
                 $user->description = file_rewrite_pluginfile_urls($user->description, 'pluginfile.php', CONTEXT_USER::instance($user->id)->id, 'user', 'profile', null);
                 $url_user = new moodle_url('/user/profile.php',array('id' => $user->id));
 
@@ -455,7 +456,7 @@ class local_course_page_renderer extends plugin_renderer_base {
                     $out .= '<div class="user"><a href="' . $url_user . '">' . fullname($user) . '</a>';
                     $out .= '<div class="extra_coordinator">' . $user->description . '</div>'  . '</div>';
                 $out .= '</div>';
-
+                }//if_user
             }//if_manager
 
             /* Teachers */
