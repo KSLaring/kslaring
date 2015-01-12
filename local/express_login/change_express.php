@@ -32,7 +32,7 @@ if (!$current_page = my_get_page($user_id, MY_PAGE_PUBLIC)) {
 }
 
 /* Check the User */
-if (!$id && ($user_id != $id)) {
+if ($id && ($user_id != $id)) {
     $PAGE->set_context(CONTEXT_SYSTEM::instance());
     echo $OUTPUT->header();
     echo $OUTPUT->notification(get_string('err_express_access','local_express_login'), 'notifysuccess');
