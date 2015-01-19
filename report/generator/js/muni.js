@@ -28,6 +28,7 @@ YUI().use('node', function(Y) {
     RecuperateCounty = function() {
         var county;
         var muniHidden;
+        var levelHidden;
         var muniRef;
 
         if (Y.one("#id_county").get('value') != 0) {
@@ -44,7 +45,6 @@ YUI().use('node', function(Y) {
                     if (this.get('value') == muniRef) {
                         this.set('selected',true);
                         this.setAttribute('selected');
-                        Y.one('#id_name').set('value',this.get('text'));
                     }else {
                         this.set('selected',false);
                         this.removeAttribute('selected');
@@ -52,6 +52,12 @@ YUI().use('node', function(Y) {
                 });
                 Y.one('#id_hidden_munis').set('value',0);
             }//if_levelThree
+
+            /* Company Name */
+            if (Y.one('#id_hidden_name')) {
+                levelHidden = Y.one('#id_hidden_name').get('value');
+                Y.one('#id_name').set('value',levelHidden);
+            }
         }//if_county
 
         window.onbeforeunload = null;
