@@ -35,7 +35,6 @@ class generator_edit_company_structure_form extends moodleform {
             $this->AddNextLevel($m_form,$company_info,$level,$parents);
         }//if_level
 
-
         /* Company Name */
         $m_form->addElement('text', 'name', get_string('edit_company_level','report_generator'), $text_attr);
         $m_form->setDefault('name',$company_info->name);
@@ -47,13 +46,17 @@ class generator_edit_company_structure_form extends moodleform {
         $m_form->setType('industry_code',PARAM_TEXT);
         $m_form->addRule('industry_code','','required', null, 'server');
 
-
         /* Hidden Munis */
         if ($level == 1) {
             $m_form->addElement('text','hidden_munis',null,'style="visibility:hidden;height:0px;"');
             $m_form->setType('hidden_munis',PARAM_TEXT);
             $m_form->setDefault('hidden_munis',$company_info->idmuni);
         }//if_first_level
+
+        /* Hidden Company   */
+        $m_form->addElement('text','hidden_name',null,'style="visibility:hidden;height:0px;"');
+        $m_form->setType('hidden_name',PARAM_TEXT);
+        $m_form->setDefault('hidden_name',$company_info->name);
 
         $m_form->addElement('hidden','level');
         $m_form->setDefault('level',$level);
