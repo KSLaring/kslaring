@@ -55,11 +55,6 @@ class generator_edit_company_structure_form extends moodleform {
             $m_form->setDefault('hidden_munis',$company_info->idmuni);
         }//if_first_level
 
-        /* Hidden Company Name */
-        $m_form->addElement('text','hidden_name',null,'style="visibility:hidden;height:0px;"');
-        $m_form->setType('hidden_name',PARAM_TEXT);
-        $m_form->setDefault('hidden_name',$company_info->name);
-
         $m_form->addElement('hidden','level');
         $m_form->setDefault('level',$level);
         $m_form->setType('level',PARAM_INT);

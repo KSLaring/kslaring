@@ -29,7 +29,6 @@ YUI().use('node', function(Y) {
         var county;
         var muniHidden;
         var muniRef;
-        var levelHidden;
 
         if (Y.one("#id_county").get('value') != 0) {
             /* County       */
@@ -45,6 +44,7 @@ YUI().use('node', function(Y) {
                     if (this.get('value') == muniRef) {
                         this.set('selected',true);
                         this.setAttribute('selected');
+                        Y.one('#id_name').set('value',this.get('text'));
                     }else {
                         this.set('selected',false);
                         this.removeAttribute('selected');
@@ -52,10 +52,6 @@ YUI().use('node', function(Y) {
                 });
                 Y.one('#id_hidden_munis').set('value',0);
             }//if_levelThree
-
-            /* Company Name */
-            levelHidden = Y.one('#id_hidden_name').get('value');
-            Y.one('#id_name').set('value',levelHidden);
         }//if_county
 
         window.onbeforeunload = null;
@@ -77,11 +73,7 @@ YUI().use('node', function(Y) {
             this.set('selected',false);
             this.removeAttribute('selected');
         });
-
-        if (!Y.one('#id_hidden_name')) {
             Y.one('#id_name').set('value','');
-        }//if_hidden_name
-
     };//DeactivateMunicipality
 
     /* Activate Municipality    */
@@ -110,7 +102,6 @@ YUI().use('node', function(Y) {
     /* Get Name Municipality */
     GetNameMunicipality = function() {
         var muniSel = '';
-        var levelHidden;
 
         /* Get Municipality selected    */
         Y.one("#id_munis").get("options").each( function() {
@@ -120,11 +111,7 @@ YUI().use('node', function(Y) {
         });
 
         /* Save Name        */
-        if (Y.one('#id_hidden_name')) {
-            muniSel = Y.one('#id_hidden_name').get('value');
-        }
         Y.one('#id_name').set('value',muniSel);
-
 
         window.onbeforeunload = null;
     };//GetNameMunicipality
