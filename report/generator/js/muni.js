@@ -79,7 +79,10 @@ YUI().use('node', function(Y) {
             this.set('selected',false);
             this.removeAttribute('selected');
         });
+
+        if (!Y.one('#id_hidden_name')) {
         Y.one('#id_name').set('value','');
+        }
     };//DeactivateMunicipality
 
     /* Activate Municipality    */
@@ -117,6 +120,9 @@ YUI().use('node', function(Y) {
         });
 
         /* Save Name        */
+        if (Y.one('#id_hidden_name')) {
+            muniSel = Y.one('#id_hidden_name').get('value');
+        }
         Y.one('#id_name').set('value',muniSel);
 
         window.onbeforeunload = null;
