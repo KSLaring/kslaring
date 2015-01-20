@@ -466,7 +466,7 @@ function lesson_mediafile_block_contents($cmid, $lesson) {
 
     $bc = new block_contents();
     $bc->title = get_string('linkedmedia', 'lesson');
-    $bc->attributes['class'] = 'mediafile';
+    $bc->attributes['class'] = 'mediafile block';
     $bc->content = $content;
 
     return $bc;
@@ -1240,11 +1240,12 @@ class lesson extends lesson_base {
         global $USER, $DB;
         // clock code
         // get time information for this user
-        if (!$timer = $DB->get_records('lesson_timer', array ("lessonid" => $this->properties->id, "userid" => $USER->id), 'starttime DESC', '*', 0, 1)) {
-            print_error('cannotfindtimer', 'lesson');
-        } else {
-            $timer = current($timer); // this will get the latest start time record
+        $params = array("lessonid" => $this->properties->id, "userid" => $USER->id);
+        if (!$timer = $DB->get_records('lesson_timer', $params, 'starttime DESC', '*', 0, 1)) {
+            $this->start_timer();
+            $timer = $DB->get_records('lesson_timer', $params, 'starttime DESC', '*', 0, 1);
         }
+        $timer = current($timer); // This will get the latest start time record.
 
         if ($restart) {
             if ($continue) {
@@ -1481,15 +1482,15 @@ class lesson extends lesson_base {
                 return LESSON_EOL;
             } else {
                 $clusterendid = $pageid;
-                while ($clusterendid != 0) { // this condition should not be satisfied... should be a cluster page
-                    if ($lessonpages[$clusterendid]->qtype == LESSON_PAGE_CLUSTER) {
+                while ($clusterendid != 0) { // This condition should not be satisfied... should be an end of cluster page.
+                    if ($lessonpages[$clusterendid]->qtype == LESSON_PAGE_ENDOFCLUSTER) {
                         break;
                     }
-                    $clusterendid = $lessonpages[$clusterendid]->prevpageid;
+                    $clusterendid = $lessonpages[$clusterendid]->nextpageid;
                 }
                 $exitjump = $DB->get_field("lesson_answers", "jumpto", array("pageid" => $clusterendid, "lessonid" => $this->properties->id));
                 if ($exitjump == LESSON_NEXTPAGE) {
-                    $exitjump = $lessonpages[$pageid]->nextpageid;
+                    $exitjump = $lessonpages[$clusterendid]->nextpageid;
                 }
                 if ($exitjump == 0) {
                     return LESSON_EOL;
