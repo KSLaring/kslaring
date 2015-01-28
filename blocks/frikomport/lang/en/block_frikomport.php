@@ -30,6 +30,7 @@ $string['pluginname'] = 'Frikomport';
 $string['searchinfrikomport'] = 'Search';
 $string['frikomport:addinstance'] = 'Add a new frikomport block';
 $string['frikomport:myaddinstance'] = 'Add a new frikomport block to My home';
+$string['frikomport:view'] = 'View the frikomport block';
 
 $string['ncourses'] = 'Courselist';
 $string['nnewcourses'] = 'Create new courses';
