@@ -110,6 +110,7 @@ class block_frikomport extends block_base {
      */
     function get_content() {
         global $CFG, $OUTPUT;
+
         // First check if we have already generated, don't waste cycles
         if ($this->contentgenerated === true) {
             return true;
@@ -144,7 +145,10 @@ class block_frikomport extends block_base {
             redirect($url);
         }
 
-        $nodes = $this->build_tree();
+
+        require_once($CFG->dirroot . '/blocks/frikomport/locallib.php');
+        $menumanager = new block_frikomport_menu_manager();
+        $nodes = $menumanager->get_nodes();
 
         $renderer = $this->page->get_renderer('block_frikomport');
         $this->content = new stdClass();
@@ -178,145 +182,5 @@ class block_frikomport extends block_base {
      */
     public function get_aria_role() {
         return 'navigation';
-    }
-
-    /**
-     * Build the navigation tree
-     *
-     * @return navigation_node The navigation tree
-     */
-    protected function build_tree() {
-        $icon = new pix_icon('i/settings', '');
-
-        // Create the root node
-        $params = array(
-            'text' => 'root',
-            'type' => navigation_node::TYPE_ROOTNODE
-        );
-        $nodes = new navigation_node($params);
-
-
-        // Create and add the courselisting link
-        $params = array(
-            'text' => get_string('ncourses', 'block_frikomport'),
-            'icon' => $icon,
-            'type' => navigation_node::NODETYPE_LEAF,
-            'action' => '/course/'
-        );
-        $subnode = new navigation_node($params);
-        $nodes->add_node($subnode);
-
-
-        // Create and add the course creation links in a submenu
-        $params = array(
-            'text' => get_string('nnewcourses', 'block_frikomport'),
-            'type' => navigation_node::NODETYPE_BRANCH,
-        );
-        $groupnode = new navigation_node($params);
-
-        $params = array(
-            'text' => get_string('naddcourse', 'block_frikomport'),
-            'icon' => $icon,
-            'type' => navigation_node::NODETYPE_LEAF,
-            'action' => '/course/edit.php?category=1'
-        );
-        $subnode = new navigation_node($params);
-        $groupnode->add_node($subnode);
-
-        $params = array(
-            'text' => get_string('naddfromtemplate', 'block_frikomport'),
-            'icon' => $icon,
-            'type' => navigation_node::NODETYPE_LEAF,
-//            'action' => '/course/'
-        );
-        $subnode = new navigation_node($params);
-        $groupnode->add_node($subnode);
-
-        $nodes->add_node($groupnode);
-
-
-        // Create and add the organization structure links in a submenu
-        $params = array(
-            'text' => get_string('norgstructure', 'block_frikomport'),
-            'type' => navigation_node::NODETYPE_BRANCH,
-        );
-        $groupnode = new navigation_node($params);
-
-        $params = array(
-            'text' => get_string('nvirksomheter', 'block_frikomport'),
-            'icon' => $icon,
-            'type' => navigation_node::NODETYPE_LEAF,
-//            'action' => '/course/'
-        );
-        $subnode = new navigation_node($params);
-        $groupnode->add_node($subnode);
-
-        $params = array(
-            'text' => get_string('nvirksomhetsrader', 'block_frikomport'),
-            'icon' => $icon,
-            'type' => navigation_node::NODETYPE_LEAF,
-//            'action' => '/course/'
-        );
-        $subnode = new navigation_node($params);
-        $groupnode->add_node($subnode);
-
-        $params = array(
-            'text' => get_string('nlocations', 'block_frikomport'),
-            'icon' => $icon,
-            'type' => navigation_node::NODETYPE_LEAF,
-//            'action' => '/course/'
-        );
-        $subnode = new navigation_node($params);
-        $groupnode->add_node($subnode);
-
-        $nodes->add_node($groupnode);
-
-
-        // Create and add the reports links in a submenu
-        $params = array(
-            'text' => get_string('nreports', 'block_frikomport'),
-            'type' => navigation_node::NODETYPE_BRANCH,
-        );
-        $groupnode = new navigation_node($params);
-
-        $params = array(
-            'text' => get_string('nparticipants', 'block_frikomport'),
-            'icon' => $icon,
-            'type' => navigation_node::NODETYPE_LEAF,
-//            'action' => '/course/'
-        );
-        $subnode = new navigation_node($params);
-        $groupnode->add_node($subnode);
-
-        $params = array(
-            'text' => get_string('nwaitlist', 'block_frikomport'),
-            'icon' => $icon,
-            'type' => navigation_node::NODETYPE_LEAF,
-//            'action' => '/course/'
-        );
-        $subnode = new navigation_node($params);
-        $groupnode->add_node($subnode);
-
-        $params = array(
-            'text' => get_string('ncompcourses', 'block_frikomport'),
-            'icon' => $icon,
-            'type' => navigation_node::NODETYPE_LEAF,
-//            'action' => '/course/'
-        );
-        $subnode = new navigation_node($params);
-        $groupnode->add_node($subnode);
-
-        $params = array(
-            'text' => get_string('nstatistics', 'block_frikomport'),
-            'icon' => $icon,
-            'type' => navigation_node::NODETYPE_LEAF,
-//            'action' => '/course/'
-        );
-        $subnode = new navigation_node($params);
-        $groupnode->add_node($subnode);
-
-        $nodes->add_node($groupnode);
-
-        return $nodes;
     }
 }
