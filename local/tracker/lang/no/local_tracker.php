@@ -70,11 +70,11 @@ $string['report_not_enroled'] = 'Bruker er ikke påmeldt noe kurs.';
 $string['state']    = 'Status';
 $string['finish']   = 'Fullført';
 $string['process']  = 'Pågår';
-$string['return_to_selection'] = 'Gå tilbake til Rapportgenerator';
+$string['return_to_selection'] = 'Gå tilbake til Rapport Competence Manager';
 
 $string['company_structure']    = 'Organisasjonstruktur';
 $string['job_roles']            = 'Jobbroller';
 $string['outcomes']             = 'Godkjenninger';
-$string['report_generator']     = 'Rapportgenerator';
+$string['report_manager']       = 'Rapport Competence Manager';
 $string['outcome_report']       = 'Godkjenningsrapport';
 $string['course_report']        = 'Kursrapport';

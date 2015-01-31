@@ -73,7 +73,7 @@ $string['outcome_area_title'] = 'Standard Outcomes';
 $string['company_structure'] = 'Company structure';
 $string['job_roles'] = 'Job roles';
 $string['outcomes'] = 'Outcomes';
-$string['report_generator'] = 'Report Generator';
+$string['report_manager'] = 'Competence Manager';
 $string['outcome_report'] = 'Outcome report';
 $string['course_report'] = 'Course report';
 
@@ -86,5 +86,5 @@ $string['pdf_email_subject'] = 'Report';
 $string['pdf_email_text'] = '$a->username,
 
 the PDF report has been automatically sent to you on your request.';
-$string['return_to_selection'] = 'Return to Report Generator page';
+$string['return_to_selection'] = 'Return to Report Competence Manager page';
 
