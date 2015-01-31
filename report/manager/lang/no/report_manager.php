@@ -370,7 +370,7 @@ $string['expired_next']     = 'Utløper neste';
 $string['existing_item']    = 'Eksisterende element';
 $string['employee_report_link'] = 'Status på sertifiseringer';
 
-$string['underconstruction'] = 'Beklager, men denne rapporten er for tiden deaktivert. Vi arbeider med å forbedre den.';
+$string['underconstruction'] = 'Beklager, men denne rapporten/block er for tiden deaktivert. Vi arbeider med å forbedre den.';
 $string['county']       = 'County';
 $string['sel_county']   = 'Choose a county...';
 
