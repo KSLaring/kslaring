@@ -36,7 +36,7 @@ class block_tracker extends block_base {
         /* External References  */
         $this->page->requires->js(new moodle_url('/blocks/tracker/js/block_tracker.js'));
         require_once('locallib.php');
-        require_once($CFG->dirroot . '/report/generator/trackerlib.php');
+        require_once($CFG->dirroot . '/report/manager/trackerlib.php');
 
         /* Add title        */
         $this->title = get_string('pluginname', 'block_tracker');

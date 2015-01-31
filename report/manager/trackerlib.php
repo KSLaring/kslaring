@@ -405,8 +405,8 @@ function tracker_get_not_enrolled_course_info_user_outcome($user_id,$outcome_id)
  * Return the buttons that will be shown in Tracker page.
  */
 function tracker_prepare_buttons_output(){
-    $url_send = new moodle_url('/report/generator/tracker/index.php',array('pdf'=>TRACKER_PDF_SEND));
-    $url_dwn = new moodle_url('/report/generator/tracker/index.php',array('pdf'=>TRACKER_PDF_DOWNLOAD));
+    $url_send = new moodle_url('/report/manager/tracker/index.php',array('pdf'=>TRACKER_PDF_SEND));
+    $url_dwn = new moodle_url('/report/manager/tracker/index.php',array('pdf'=>TRACKER_PDF_DOWNLOAD));
     $send_pdf_btn   = html_writer::start_tag('div',array('class' => 'div_button_tracker'));
         $send_pdf_btn .= html_writer::link($url_send,get_string('send_pdf_btn','local_tracker'),array('class' =>"button_tracker"));
         $send_pdf_btn .= html_writer::link($url_dwn,get_string('download_pdf_btn','local_tracker'),array('class' =>"button_tracker"));

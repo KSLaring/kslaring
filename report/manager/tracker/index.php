@@ -26,7 +26,7 @@ $edit           = optional_param('edit', -1, PARAM_BOOL);
 $block_action   = optional_param('blockaction', '', PARAM_ALPHA);
 $pdf            = optional_param('pdf', '', PARAM_ALPHA);
 
-$url = new moodle_url('/report/generator/tracker/index.php');
+$url = new moodle_url('/report/manager/tracker/index.php');
 
 $site_context = CONTEXT_SYSTEM::instance();
 $PAGE->set_context($site_context);
@@ -35,7 +35,7 @@ $PAGE->set_url($url);
 $PAGE->set_title($SITE->fullname);
 $PAGE->set_heading($SITE->fullname);
 $PAGE->set_pagelayout('admin');
-$PAGE->requires->js(new moodle_url('/report/generator/js/tracker.js'));
+$PAGE->requires->js(new moodle_url('/report/manager/js/tracker.js'));
 
 $tracker_user   = tracker_get_info_user_tracker($USER->id);
 $tracker_info   = tracker_get_tracker_page_user_info($tracker_user);

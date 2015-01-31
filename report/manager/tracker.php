@@ -40,7 +40,7 @@ class Tracker {
 
         $this->report_data  = $report_data;
             $this->tracker_user = $tracker_user;
-            $this->url = new moodle_url('/report/generator/tracker/index.php');
+            $this->url = new moodle_url('/report/manager/tracker/index.php');
 
         $this->user_id      = $USER->id;
         $this->data_root    = $CFG->dataroot;
