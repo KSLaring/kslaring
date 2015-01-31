@@ -51,8 +51,8 @@ class block_tracker extends block_base {
         $this->content->footer = '';
 
         /* Get all the information to show */
-        $tracker_user   = tracker_get_info_user_tracker($USER->id);
-        $tracker_info   = tracker_get_tracker_page_user_info($tracker_user);
+        $tracker_user   = null; //tracker_get_info_user_tracker($USER->id);
+        $tracker_info   = null; //tracker_get_tracker_page_user_info($tracker_user);
 
         /* Outcomes */
         $url_img    = new moodle_url('/pix/t/expanded.png');
@@ -155,7 +155,7 @@ class block_tracker extends block_base {
             $this->content->text .= html_writer::end_tag('div');//tracker_list
         }//tracker_info
 
-
+        $this->content->text = '<h3>' . get_string('underconstruction','report_manager') . '</h3>';
         return $this->content;
     }//get_content
 }//class block_tracker
