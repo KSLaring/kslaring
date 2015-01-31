@@ -157,6 +157,9 @@ class CompetenceProfile_Install {
                 }//for_users_to_move
             }//if_users
 
+            $DB->delete_records('user_info_field',array('datatype' => 'rgcompany'));
+            $DB->delete_records('user_info_field',array('datatype' => 'rgjobrole'));
+
             $trans->allow_commit();
         }catch (Exception $ex) {
             $trans->rollback($ex);
