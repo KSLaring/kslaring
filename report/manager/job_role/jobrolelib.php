@@ -601,14 +601,14 @@ class job_role {
             $instance->levelzero    = $levelZero;
             $instance->levelone     = $levelOne;
             $instance->leveltwo     = $levelTwo;
+            $instance->levelthree   = null;
             if ($levelThree) {
                 foreach ($levelThree as $company) {
                     if ($company) {
                         $instance->levelthree    = $company;
-
+                    }
                         /* Insert   */
                         $DB->insert_record('report_gen_jobrole_relation',$instance);
-                    }
                 }//for_company
             }else {
                 $DB->insert_record('report_gen_jobrole_relation',$instance);

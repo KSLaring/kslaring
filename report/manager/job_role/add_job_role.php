@@ -68,7 +68,7 @@ if ($form->is_cancelled()) {
     setcookie('parentLevelZero',0);
     setcookie('parentLevelOne',0);
     setcookie('parentLevelTwo',0);
-    setcookie('parentLevelTree',0);
+    setcookie('parentLevelThree',0);
 
     $_POST = array();
     redirect($return_url);
@@ -81,7 +81,7 @@ if ($form->is_cancelled()) {
     setcookie('parentLevelZero',0);
     setcookie('parentLevelOne',0);
     setcookie('parentLevelTwo',0);
-    setcookie('parentLevelTree',0);
+    setcookie('parentLevelThree',0);
 
     $_POST = array();
     redirect($return_url);
