@@ -44,7 +44,7 @@ class manager_add_company_structure_form extends moodleform {
         $level= $this->_customdata;
 
 
-        $m_form->addElement('header', 'level_' . $level, 'Company Structure - Level ' .$level);
+        $m_form->addElement('header', 'header_level_' . $level, 'Company Structure - Level ' .$level);
         /* Add reference's parents */
         $parents = $SESSION->parents;
         if ($level) {

@@ -135,27 +135,27 @@ class CompetenceProfile_Install {
         $trans = $DB->start_delegated_transaction();
         try {
             /* Get The users to move */
-            $users_to_move = self::GetCompaniesJobRoles_By_User();
-            if ($users_to_move) {
-                foreach ($users_to_move as $user) {
-                    /* Info Competence   */
-                    $competence = new stdClass();
-                    $competence->userid         = $user->id;
-                    $competence->companyid      = $user->companies;
-                    $competence->jobroleid      = $user->jobroles;
-                    $competence->timemodified   = $time;
+            //$users_to_move = self::GetCompaniesJobRoles_By_User();
+            //if ($users_to_move) {
+            //    foreach ($users_to_move as $user) {
+            //        /* Info Competence   */
+            //        $competence = new stdClass();
+            //        $competence->userid         = $user->id;
+            //        $competence->companyid      = $user->companies;
+            //        $competence->jobroleid      = $user->jobroles;
+            //        $competence->timemodified   = $time;
                     /* Insert User Info Competence  */
-                    $competence->id = $DB->insert_record('user_info_competence',$competence);
+            //        $competence->id = $DB->insert_record('user_info_competence',$competence);
 
                     /* Create  User Info Data   */
-                    $info_data = new stdClass();
-                    $info_data->userid  = $user->id;
-                    $info_data->fieldid = $field_id;
-                    $info_data->data    = $competence->id;
-                    /* Insert  User Info Data   */
-                    $info_data->id = $DB->insert_record('user_info_data',$info_data);
-                }//for_users_to_move
-            }//if_users
+            //        $info_data = new stdClass();
+            //        $info_data->userid  = $user->id;
+            //        $info_data->fieldid = $field_id;
+            //        $info_data->data    = $competence->id;
+            //        /* Insert  User Info Data   */
+            //        $info_data->id = $DB->insert_record('user_info_data',$info_data);
+            //    }//for_users_to_move
+            //}//if_users
 
             $DB->delete_records('user_info_field',array('datatype' => 'rgcompany'));
             $DB->delete_records('user_info_field',array('datatype' => 'rgjobrole'));
