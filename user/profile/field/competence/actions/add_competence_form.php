@@ -72,8 +72,8 @@ class competence_add_competence_form extends moodleform {
                                     get_string('select_company_structure_level','report_manager',$level),
                                     $options);
         if ($level == 3) {
-            $select->setMultiple(true);
-            $select->setSize(10);
+            //$select->setMultiple(true);
+            //$select->setSize(10);
             $form->addRule('level_' . $level,'','required', null, 'server');
         }//if_level_three
 
@@ -96,8 +96,6 @@ class competence_add_competence_form extends moodleform {
         /* Level Three  */
         $options[0] = get_string('select_level_list','report_manager');
         if (isset($_COOKIE['parentLevelThree']) && ($_COOKIE['parentLevelThree'])) {
-            /* Generics */
-            Competence::GetJobRoles_Generics($options);
             Competence::GetJobRoles_Hierarchy($options,$_COOKIE['parentLevelZero'],$_COOKIE['parentLevelOne'],$_COOKIE['parentLevelTwo'],$_COOKIE['parentLevelThree']);
         }//if_level_three
 

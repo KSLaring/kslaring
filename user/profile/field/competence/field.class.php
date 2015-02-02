@@ -102,28 +102,33 @@ class profile_field_competence extends profile_field_base {
         /* INCLUDE  */
         require_once('competencelib.php');
 
-        $my_competence = Competence::Get_CompetenceData($this->userid);
+        /* Get My Competence Data   */
+        $my_competence  = Competence::Get_CompetenceData($this->userid);
+        $my_generics    = Competence::GetCompetence_Generics($this->userid);
+
         if ($my_competence) {
             $out .= '<div><ul>';
-                if ($my_competence->companies) {
-                    foreach ($my_competence->companies as $company) {
-                        $out .= '<li>' . '<strong>' .  $company->path  . ':</strong>' . '<p>' . implode(', ',$company->roles) . '</p>' . '</li>';
-                    }//for_companies
-                }//if_companies
-
-                /* Add the Roles that are not connected with any level    */
-                if ($my_competence->generics) {
-                    $out .= '<li><strong>' . get_string('jr_generics','profilefield_competence'). '</strong></li>';
-                    $out .= '<p>' . implode(', ',$my_competence->generics). '</p>';
-                }//if_generics
-            $out .= '</ul></div>';
-
-            $m_form->addElement('html', $out);
+                foreach ($my_competence as $competence) {
+                    $out .= '<li>' . '<strong>' .  $competence->path  . ':</strong>' . '<p>' . implode(', ',$competence->roles) . '</p>' . '</li>';
+                }//for_companies
+           $out .= '</ul></div>';
         }//if_my_competence
+
+        if ($my_generics) {
+            if ($my_generics->roles) {
+                $out .= '<div><ul>';
+                    $out .= '<li><strong>' . get_string('jr_generics','profilefield_competence'). '</strong></li>';
+                    $out .= '<p>' . implode(', ',$my_generics->roles). '</p>';
+                $out .= '</ul></div>';
+            }//if_roles
+        }//if_my_generics
+
+        $m_form->addElement('html', $out);
 
         $out = html_writer::start_tag('div',array('class' => 'buttons'));
             $out .= '<a href="' . $url . '">' . get_string('lnk_update','profilefield_competence') . '</a>';
         $out .= html_writer::end_tag('div'); //buttons
+
         /* Link to Update your companies and Job Roles  */
         $m_form->addElement('html', $out);
 
@@ -140,6 +145,9 @@ class profile_field_competence extends profile_field_base {
      * Display the correct value
      */
     function display_data() {
-        //return self::GetNames_MyLevelThree($this->userid,$this->fieldid);
+        /* Variables    */
+        $url                = new moodle_url('/user/profile/field/competence/competence.php',array('id' => $this->userid));
+
+        return '<a href="' . $url . '">' . get_string('lnk_view','profilefield_competence') . '</a>';;
     }//display_data
 }//profile_field_competence

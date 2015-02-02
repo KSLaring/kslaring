@@ -25,13 +25,14 @@ $string['profile_desc'] = 'Your information about your companies and job roles';
 $string['lnk_update']   = 'Update';
 $string['lnk_edit']     = 'Edit';
 $string['lnk_delete']   = 'Delete';
+$string['lnk_view']     = 'View My competence';
 
 $string['my_companies'] = 'Companies';
 $string['my_job_roles'] = 'Job roles';
 $string['jr_generics']  = 'Roles generics';
 
 $string['lnk_add']      = 'Add New';
-$string['lnk_back']     = 'Back';
+$string['lnk_back']     = 'Back to My profile';
 
 $string['delete_competence']            = 'Delete competence';
 $string['delete_competence_are_sure']   = '<p> You are going to delete from your profile the next: </p>

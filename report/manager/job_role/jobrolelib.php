@@ -607,8 +607,8 @@ class job_role {
                     if ($company) {
                         $instance->levelthree    = $company;
                     }
-                        /* Insert   */
-                        $DB->insert_record('report_gen_jobrole_relation',$instance);
+                    /* Insert   */
+                    $DB->insert_record('report_gen_jobrole_relation',$instance);
                 }//for_company
             }else {
                 $DB->insert_record('report_gen_jobrole_relation',$instance);

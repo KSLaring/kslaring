@@ -285,16 +285,17 @@ class user_filter_profilefield extends user_filter_type {
                 if ($rdo_companies) {
                     /* Get Users Info   */
                     $sql = " SELECT		DISTINCT  uid.userid,
-                                                  uic.companyid
+                                                  GROUP_CONCAT(DISTINCT uicd.companyid ORDER BY uicd.companyid SEPARATOR ',') as 'companies'
                          FROM 		{user_info_data} 	        uid
-                                JOIN	{user_info_competence}	uic		ON uic.id = uid.data
-                             WHERE		uid.fieldid = $profile ";
+                                JOIN	{user_info_competence_data}	uicd		ON uicd.competenceid = uid.data
+                             WHERE		uid.fieldid = $profile
+                             GROUP BY uid.userid ";
 
                     $rdo_users = $DB->get_records_sql($sql);
                     if ($rdo_users) {
                         $companies = explode(',',$rdo_companies->companies);
                         foreach ($rdo_users as $user) {
-                            $comp_user      = explode(',',$user->companyid);
+                            $comp_user      = explode(',',$user->companies);
                             if (array_intersect($comp_user,$companies)) {
                                 $user_companies[] = $user->userid;
                             }
@@ -318,16 +319,17 @@ class user_filter_profilefield extends user_filter_type {
                 if ($rdo_roles) {
                     /* Get Users Info   */
                     $sql = " SELECT		DISTINCT  uid.userid,
-                                                  uic.jobroleid
+                                                  GROUP_CONCAT(DISTINCT uicd.jobroles ORDER BY uicd.jobroles SEPARATOR ',') as 'jobroles'
                          FROM 		{user_info_data} 	        uid
-                                JOIN	{user_info_competence}	uic		ON uic.id = uid.data
-                             WHERE		uid.fieldid = $profile ";
+                                JOIN	{user_info_competence_data}	uicd		ON uicd.competenceid = uid.data
+                             WHERE		uid.fieldid = $profile
+                             GROUP BY uid.userid ";
 
                     $rdo_users = $DB->get_records_sql($sql);
                     if ($rdo_users) {
                         $roles = explode(',',$rdo_roles->jobroles);
                         foreach ($rdo_users as $user) {
-                            $rol_user      = explode(',',$user->jobroleid);
+                            $rol_user      = explode(',',$user->jobroles);
                             if (array_intersect($rol_user,$roles)) {
                                 $users_jr[] = $user->userid;
                             }

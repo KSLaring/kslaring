@@ -165,17 +165,17 @@ class company_structure {
             /* SQL Instruction      */
             $sql = " SELECT	    DISTINCT  	u.id,
                                             CONCAT(u.firstname,', ',u.lastname) as 'name'
-                     FROM		{user}					u
-                        JOIN	{user_info_competence}	uic		ON 		uic.userid = u.id
-                                                                AND		(
-                                                                         (uic.companyid = :parent)
-                                                                         OR
-                                                                         (uic.companyid LIKE '%,"   . $parent . ",%')
-                                                                         OR
-                                                                         (uic.companyid LIKE '%"    . $parent . ",%')
-                                                                         OR
-                                                                         (uic.companyid LIKE '%,"   . $parent . "%')
-                                                                        )
+                     FROM		{user}					    u
+                        JOIN	{user_info_competence_data}	uicd		ON 		uicd.userid = u.id
+                                                                        AND		(
+                                                                                 (uicd.companyid = :parent)
+                                                                                 OR
+                                                                                 (uicd.companyid LIKE '%,"   . $parent . ",%')
+                                                                                 OR
+                                                                                 (uicd.companyid LIKE '%"    . $parent . ",%')
+                                                                                 OR
+                                                                                 (uicd.companyid LIKE '%,"   . $parent . "%')
+                                                                                )
                      WHERE		u.deleted = 0
                      ORDER BY 	u.lastname, u.firstname ";
 
@@ -360,15 +360,15 @@ class company_structure {
             /* Research Criteria */
             $params = array();
             $params['parent']   = $company_id;
-            $params['dtotype']  = 'rgcompany';
 
             /* SQL Instruction   */
-            $sql = " SELECT 	count(distinct u.id) as 'count'
-                     FROM		{user} 			  u
-                        JOIN	{user_info_data}  uid	ON 	u.id 		 	= uid.userid
-                                                        AND uid.data 	 	= :parent
-                        JOIN	{user_info_field} uif	ON	uid.fieldid 	= uif.id
-                                                        AND uif.datatype 	= :dtotype ";
+
+            $sql = " SELECT	    count(distinct u.id) as 'count'
+                     FROM		{user}					    u
+                        JOIN	{user_info_competence_data}	uicd		ON 		uicd.userid = u.id
+                                                                        AND		uicd.companyid = :parent
+
+                     WHERE		u.deleted = 0";
 
             /* Execute */
             if ($rdo = $DB->get_record_sql($sql,$params)) {

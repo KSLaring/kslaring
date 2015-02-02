@@ -43,9 +43,10 @@ if (empty($CFG->loginhttps)) {
 $PAGE->verify_https_required();
 
 /* Get My Competence Data   */
-$my_competence = Competence::Get_CompetenceData($user_id);
+$my_competence  = Competence::Get_CompetenceData($user_id);
+$my_generics    = Competence::GetCompetence_Generics($user_id);
 
 echo $OUTPUT->header();
     /* Display the Competence and the actions */
-    echo Competence::Get_CompetenceTable($my_competence,$user_id);
+    echo Competence::Get_CompetenceTable($my_competence,$my_generics,$user_id);
 echo $OUTPUT->footer();
