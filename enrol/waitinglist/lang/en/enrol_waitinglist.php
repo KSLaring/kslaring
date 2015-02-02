@@ -72,6 +72,6 @@ $string['wscannotenrol'] = 'Waitlinglist instance cannot enrol a user in the cou
 $string['wsnoinstance'] = 'Waitinglist enrolment plugin instance doesn\'t exist or is disabled for the course (id = {$a->courseid})';
 $string['wsusercannotassign'] = 'You don\'t have the permission to assign this role ({$a->roleid}) to this user ({$a->userid}) in this course({$a->courseid}).';
 
-$string['cutoffdate'] = 'Cutoff Date';
+$string['cutoffdate'] = 'Application Deadline';
 $string['maxenrolments'] = 'Max. Enrolments';
 $string['waitlistsize'] = 'Waitlist Size';

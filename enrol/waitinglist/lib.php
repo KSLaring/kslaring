@@ -558,3 +558,72 @@ class enrol_waitinglist_plugin extends enrol_plugin {
         groups_add_member($groupid, $userid);
     }
 }
+
+abstract class waitinglist_enrol_method_base  {
+
+	const METHODTYPE='base';
+	const TABLE='enrol_waitinglist_method';
+	protected $active = false;
+	
+	public $course = 0;
+    public $waitlist = 0;
+	public $maxseats = 0;
+    public $activeseats = 0;
+	public $notificationtypes = 0;
+	
+
+	 /**
+     *  Constructor
+     */
+    public function __construct()
+    {
+      $this->_cache = array();
+    }
+	
+	 /**
+     *  Construct instance from DB record
+     */
+	 public static function get_by_record($record){
+		$wlm = new self();
+		foreach(get_object_vars($record) as $propname=>$propvalue){
+			$wlm->{$propname}=$propvalue;
+		}
+		return $wlm;
+	 }
+	 
+	 /**
+     *  Construct instance from courseid
+     */
+	  public static function get_by_course($courseid){
+		global $DB;
+		$strictness = IGNORE_MISSING;	
+        $record = $DB->get_record(self::TABLE, array('courseid' => $courseid,'type'=>self::METHODTYPE), '*', $strictness);
+        return $record ? self::from_record($record) : null;
+	 }
+	 
+	 /**
+     *  Exists in Couse
+     */
+	  public static function exists_in_course($courseid){
+		global $DB;	
+        $count = $DB->count_records(self::TABLE, array('courseid' => $courseid,'type'=>self::METHODTYPE));
+        return $count ? true : false;
+	 }
+	 
+	 //activation functions
+	 public function is_active(){return $this->active;}
+	 public function activate(){$this->active=true;}
+	 public function deactivate(){$this->active=false;}
+	 
+	 
+	 //Abstract functions
+	 public abstract function has_enrolme_link();
+	 public abstract function show_enrolme_link();
+	 public abstract function can_enrol();
+	 public abstract function has_notifications();
+	 public abstract function show_notifications_settings_link();
+	 public abstract function has_settings();
+	 public abstract function show_settings();
+	 
+
+}
