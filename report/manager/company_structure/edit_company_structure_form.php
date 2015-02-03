@@ -8,8 +8,9 @@ require_once($CFG->libdir.'/formslib.php');
 class manager_edit_company_structure_form extends moodleform {
     function definition() {
         global $SESSION;
-        $county = null;
-        $muni   = null;
+        $parent_info    = null;
+        $attr           = '';
+        $default        = 1;
 
         $m_form = $this->_form;
 
@@ -27,9 +28,9 @@ class manager_edit_company_structure_form extends moodleform {
         $m_form->addElement('header', 'level_' . $level, 'Company Structure - Level ' .$level);
         /* Add Parents */
         for ($i = 0; $i < $level; $i++) {
-            $parent_name = company_structure::Get_Company_ParentName($i,$parents[$i]);
+            $parent_info = company_structure::Get_CompanyInfo($parents[$i]);
             $m_form->addElement('text','parent_' . $i,'Company Parent - Level ' . ($i),'size = 50 readonly');
-            $m_form->setDefault('parent_' . $i,$parent_name);
+            $m_form->setDefault('parent_' . $i,$parent_info->name);
             $m_form->setType('parent_' . $i,PARAM_TEXT);
         }//for
 
@@ -43,6 +44,21 @@ class manager_edit_company_structure_form extends moodleform {
         $m_form->setDefault('industry_code',$company_info->industrycode);
         $m_form->setType('industry_code',PARAM_TEXT);
         $m_form->addRule('industry_code','','required', null, 'server');
+
+        /* Public Check Box     */
+        if ($parent_info) {
+            $attr = 'disabled';
+            $default = $parent_info->public;
+        }else {
+            $default = $company_info->public;
+        }
+        $m_form->addElement('checkbox', 'public','',get_string('public', 'report_manager'),$attr);
+        $m_form->setDefault('public',$default);
+        if ($parent_info) {
+            $m_form->addElement('hidden','public_parent');
+            $m_form->setDefault('public_parent',$parent_info->public);
+            $m_form->setType('public_parent',PARAM_INT);
+        }
 
         $m_form->addElement('hidden','level');
         $m_form->setDefault('level',$level);

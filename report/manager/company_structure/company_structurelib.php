@@ -319,7 +319,8 @@ class company_structure {
             /* SQL Instruction */
             $sql = " SELECT    		rc.id,
                                     rc.name,
-                                    rc.industrycode
+                                    rc.industrycode,
+                                    rc.public
                      FROM			{report_gen_companydata}	rc
                      WHERE          rc.id = :company ";
 
@@ -330,6 +331,7 @@ class company_structure {
                 $company_info->id           = $rdo->id;
                 $company_info->name         = $rdo->name;
                 $company_info->industrycode = $rdo->industrycode;
+                $company_info->public       = $rdo->public;
             }//if_rdo
 
             return $company_info;
@@ -518,10 +520,16 @@ class company_structure {
                 case 0:
                     /* Create a new Company */
                     $instance->name     = $data->name;
+                    if (isset($data->public)) {
+                        $instance->public = $data->public;
+                    }else {
+                        $instance->public = 0;
+                    }//if_public
                     self::Insert_CompanyLevel($instance);
 
                     break;
                 default:
+                    $instance->public = $data->public_parent;
                     /* New Company or Link Company  */
                     if ($data->name) {
                         /* New Company  */
@@ -570,6 +578,7 @@ class company_structure {
     /**
      * @static
      * @param           $data
+     * @param           $level
      * @throws          Exception
      *
      * @creationDate    10/09/2012
@@ -579,12 +588,16 @@ class company_structure {
      * Description
      * Update company data.
      */
-    public static function Update_CompanyLevel($data) {
+    public static function Update_CompanyLevel($data,$level) {
         /* Variables    */
         global $DB;
         $instance   = null;
         $index      = null;
+        $hierarchyLevelZero = null;
+        $toUpdate           = '';
 
+        /* Begin Transaction    */
+        $trans = $DB->start_delegated_transaction();
         try {
             /* Company Info */
             $instance = new stdClass();
@@ -592,9 +605,58 @@ class company_structure {
             $instance->name             = $data->name;
             $instance->modified         = time();
             $instance->industrycode     = $data->industry_code;
+            if ($level == 0) {
+                if (isset($data->public)) {
+                    $instance->public = $data->public;
+                }else {
+                    $instance->public = 0;
+                }//if_public
+            }//if_levelZero
 
+            /* First Update Company Data */
             $DB->update_record('report_gen_companydata',$instance);
+            /* Second Update the status company for the hierarchy of level Zero */
+            if ($level == 0) {
+                /* Get My Hierarchy */
+                $hierarchyLevelZero = self::GetHierarchy_LevelZero($data->company);
+                if ($hierarchyLevelZero) {
+                    $toUpdate = $instance->id;
+
+                    /* Add Level One    */
+                    if ($hierarchyLevelZero->levelOne) {
+                        $toUpdate .= ',' . $hierarchyLevelZero->levelOne;
+                    }//if_levelOne
+
+                    /* Add Level Two    */
+                    if ($hierarchyLevelZero->levelTwo) {
+                        $toUpdate .= $hierarchyLevelZero->levelTwo;
+                    }//if_levelTwo
+
+                    /* Add Level Three  */
+                    if ($hierarchyLevelZero->levelThree) {
+                        $toUpdate .= $hierarchyLevelZero->levelThree;
+                    }//if_levelThree
+
+                    /* Params           */
+                    $params = array();
+                    $params['parent_public'] = $instance->public;
+
+                    /* SQL Instruction  */
+                    $sqlUpdate = " UPDATE {report_gen_companydata}
+                                   SET    public = :parent_public
+                                   WHERE  id IN ($toUpdate) ";
+
+                    /* Execute  */
+                    $DB->execute($sqlUpdate,$params);
+                }//if_hierarchy
+            }//if_levelZero
+
+            /* Commit   */
+            $trans->allow_commit();
         }catch (Exception $ex) {
+            /* Rollback */
+            $trans->rollback($ex);
+
             throw $ex;
         }//try_catch
     }//Update_CompanyLevel
@@ -700,5 +762,54 @@ class company_structure {
             throw $ex;
         }//try_catch
     }//Link_CompanyLevel
+
+    /**
+     * @param           $levelZero
+     * @return          null|stdClass
+     * @throws          Exception
+     *
+     * @creationDate    03/02/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Get all the companies connected with a specific level zero
+     */
+    private static function GetHierarchy_LevelZero($levelZero) {
+        /* Variables    */
+        global $DB;
+        $hierarchyLevelZero   = null;
+
+        try {
+            /* SEARCH Criteria  */
+            $params = array();
+            $params['levelzero'] = $levelZero;
+
+            /* SQL Instruction  */
+            $sql = " SELECT			GROUP_CONCAT(DISTINCT level_one.companyid ORDER BY level_one.companyid SEPARATOR ',') 		as 'level_one',
+                                    GROUP_CONCAT(DISTINCT level_two.companyid ORDER BY level_two.companyid SEPARATOR ',') 		as 'level_two',
+                                    GROUP_CONCAT(DISTINCT level_three.companyid ORDER BY level_three.companyid SEPARATOR ',') 	as 'level_three'
+                     FROM			{report_gen_companydata}			co
+                        LEFT JOIN 	{report_gen_company_relation} 	    level_one 	ON level_one.parentid 	= co.id
+                        LEFT JOIN	{report_gen_company_relation}		level_two	ON level_two.parentid	= level_one.companyid
+                        LEFT JOIN	{report_gen_company_relation}		level_three	ON level_three.parentid = level_two.companyid
+                     WHERE			co.hierarchylevel = 0
+                        AND			co.id             = :levelzero ";
+
+            /* Execute  */
+            $rdo = $DB->get_record_sql($sql,$params);
+            if ($rdo) {
+                /* Hierarchy Level Zero */
+                $hierarchyLevelZero = new stdClass();
+                $hierarchyLevelZero->levelZero  = $levelZero;
+                $hierarchyLevelZero->levelOne   = $rdo->level_one;
+                $hierarchyLevelZero->levelTwo   = $rdo->level_two;
+                $hierarchyLevelZero->levelThree = $rdo->level_three;
+            }//if_rdo
+
+            return $hierarchyLevelZero;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//GetHierarchy_LevelZero
 }//class_company_structure
 

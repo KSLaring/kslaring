@@ -25,14 +25,13 @@ $user_id            = optional_param('id',0,PARAM_INT);
 $competence_data    = optional_param('icd',0,PARAM_INT);
 /* Competence Data      */
 $competence         = optional_param('ic',0,PARAM_INT);
-$generics           = optional_param('ge',0,PARAM_INT);
 $confirmed          = optional_param('confirm', false, PARAM_BOOL);
 
 $my_competence  = null;
 $my_hierarchy   = null;
 $confirmed      = optional_param('confirm', false, PARAM_BOOL);
-$url            = new moodle_url('/user/profile/field/competence/actions/delete_competence.php',array('id' =>$user_id,'icd' => $competence_data,'ic' => $competence, 'ge' => $generics));
-$confirm_url    = new moodle_url('/user/profile/field/competence/actions/delete_competence.php',array('id' =>$user_id,'icd' => $competence_data,'ic' => $competence, 'ge' => $generics, 'confirm' => true));
+$url            = new moodle_url('/user/profile/field/competence/actions/delete_competence.php',array('id' =>$user_id,'icd' => $competence_data,'ic' => $competence));
+$confirm_url    = new moodle_url('/user/profile/field/competence/actions/delete_competence.php',array('id' =>$user_id,'icd' => $competence_data,'ic' => $competence,'confirm' => true));
 $return_url     = new moodle_url('/user/profile/field/competence/competence.php',array('id' =>$user_id));
 
 /* Settings Page    */
@@ -53,12 +52,8 @@ if (empty($CFG->loginhttps)) {
 $PAGE->verify_https_required();
 
 /* Get My Competence    */
-if (!$generics) {
     $my_competence = Competence::Get_CompetenceData($user_id,$competence_data,$competence);
     $my_hierarchy  = $my_competence[$competence_data];
-}else {
-    $my_competence    = Competence::GetCompetence_Generics($user_id);
-}//if_generics
 
 
 /* First Confirm    */
@@ -66,16 +61,11 @@ if (!$confirmed) {
     /* Print Header */
     echo $OUTPUT->header();
 
-    if (!$generics) {
         $a = new stdClass();
         $a->company = $my_hierarchy->path;
         $a->roles   = implode(',',$my_hierarchy->roles);
 
         echo $OUTPUT->confirm(get_string('delete_competence_are_sure','profilefield_competence',$a),$confirm_url,$return_url);
-    }else {
-        echo $OUTPUT->confirm(get_string('delete_generics_are_sure','profilefield_competence',implode(',',$my_competence->roles)),$confirm_url,$return_url);
-    }//if_generics
-
 
     /* Print Footer */
     echo $OUTPUT->footer();

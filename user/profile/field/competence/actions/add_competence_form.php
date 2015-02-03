@@ -93,9 +93,16 @@ class competence_add_competence_form extends moodleform {
         /* Variables    */
         $options = array();
 
-        /* Level Three  */
+        /* Job Roles    */
         $options[0] = get_string('select_level_list','report_manager');
+
+        /* Level Three  */
         if (isset($_COOKIE['parentLevelThree']) && ($_COOKIE['parentLevelThree'])) {
+            /* Add Generics --> Only Public Job Roles   */
+            if (Competence::IsPublic($_COOKIE['parentLevelThree'])) {
+                Competence::GetJobRoles_Generics($options);
+            }//if_isPublic
+
             Competence::GetJobRoles_Hierarchy($options,$_COOKIE['parentLevelZero'],$_COOKIE['parentLevelOne'],$_COOKIE['parentLevelTwo'],$_COOKIE['parentLevelThree']);
         }//if_level_three
 

@@ -104,7 +104,6 @@ class profile_field_competence extends profile_field_base {
 
         /* Get My Competence Data   */
         $my_competence  = Competence::Get_CompetenceData($this->userid);
-        $my_generics    = Competence::GetCompetence_Generics($this->userid);
 
         if ($my_competence) {
             $out .= '<div><ul>';
@@ -113,15 +112,6 @@ class profile_field_competence extends profile_field_base {
                 }//for_companies
            $out .= '</ul></div>';
         }//if_my_competence
-
-        if ($my_generics) {
-            if ($my_generics->roles) {
-                $out .= '<div><ul>';
-                    $out .= '<li><strong>' . get_string('jr_generics','profilefield_competence'). '</strong></li>';
-                    $out .= '<p>' . implode(', ',$my_generics->roles). '</p>';
-                $out .= '</ul></div>';
-            }//if_roles
-        }//if_my_generics
 
         $m_form->addElement('html', $out);
 

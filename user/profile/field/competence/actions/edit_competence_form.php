@@ -30,14 +30,13 @@ class competence_edit_competence_form extends moodleform {
 
         /* Form */
         $form = $this->_form;
-        list($user_id,$competence_data,$competence,$generics) = $this->_customdata;
+        list($user_id,$competence_data,$competence) = $this->_customdata;
 
         /* Description  */
         $form->addElement('html','<h3>'. get_string('edit_competence','profilefield_competence') .'</h3>');
         $form->addElement('static', 'edit-description', '', get_string('edit_competence_desc', 'profilefield_competence'));
 
         /* Get My Competence    */
-        if (!$generics) {
             $my_competence = Competence::Get_CompetenceData($user_id,$competence_data,$competence);
             $my_hierarchy  = $my_competence[$competence_data];
 
@@ -59,21 +58,6 @@ class competence_edit_competence_form extends moodleform {
             $form->addElement('header', 'header_jr', get_string('job_roles', 'report_manager'));
             $form->setExpanded('header_jr',true);
             $this->Add_JobRoleLevel($form,$my_hierarchy);
-        }else {
-            $my_generics    = Competence::GetCompetence_Generics($user_id);
-
-            /* Add Hierarchy Level   */
-            /* Level Zero   */
-            $form->addElement('static', 'level_0', get_string('select_company_structure_level','report_manager',0), get_string('level_generic', 'profilefield_competence'));
-            /* Level One    */
-            $form->addElement('static', 'level_1', get_string('select_company_structure_level','report_manager',1), get_string('level_generic', 'profilefield_competence'));
-            /* Level Two    */
-            $form->addElement('static', 'level_2', get_string('select_company_structure_level','report_manager',2), get_string('level_generic', 'profilefield_competence'));
-            /* Level Three  */
-            $form->addElement('static', 'level_3', get_string('select_company_structure_level','report_manager',3), get_string('level_generic', 'profilefield_competence'));
-
-            $this->Add_JobRolesGenerics($form,$my_generics->roles);
-        }//if_generics
 
         $form->addElement('hidden','id');
         $form->setDefault('id',$user_id);
@@ -88,11 +72,6 @@ class competence_edit_competence_form extends moodleform {
         $form->addElement('hidden','ic');
         $form->setDefault('ic',$competence);
         $form->setType('ic',PARAM_INT);
-
-        /* Generics     */
-        $form->addElement('hidden','ge');
-        $form->setDefault('ge',$generics);
-        $form->setType('ge',PARAM_INT);
 
         $this->add_action_buttons(true, get_string('btn_save', 'profilefield_competence'));
     }
@@ -181,8 +160,14 @@ class competence_edit_competence_form extends moodleform {
         /* Variables    */
         $options = array();
 
-        /* Level Three  */
+        /* Job Roles    */
         $options[0] = get_string('select_level_list','report_manager');
+        /* Add Generics --> Only Public Job Roles   */
+        if (Competence::IsPublic($my_hierarchy->levelThree)) {
+            Competence::GetJobRoles_Generics($options);
+        }//if_isPublic
+
+        /* Level Three  */
         Competence::GetJobRoles_Hierarchy($options,$my_hierarchy->levelZero,$my_hierarchy->levelOne,$my_hierarchy->levelTwo,$my_hierarchy->levelThree);
         $select= &$form->addElement('select','job_roles',
                                     get_string('select_job_role','report_manager'),
@@ -197,34 +182,6 @@ class competence_edit_competence_form extends moodleform {
         $form->disabledIf('job_roles' ,'level_2','eq',0);
         $form->disabledIf('job_roles' ,'level_3','eq',0);
     }//Add_JobRoleLevel
-
-    /**
-     * @param           $form
-     * @param           $my_Roles
-     *
-     * @creationDate    29/01/2015
-     * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Add the job role selector for generics
-     */
-    function Add_JobRolesGenerics(&$form,$my_Roles){
-        /* Variables    */
-        $options = array();
-
-        /* Level Three  */
-        $options[0] = get_string('select_level_list','report_manager');
-        Competence::GetJobRoles_Generics($options);
-
-        $select= &$form->addElement('select','job_roles',
-                                    get_string('select_job_role','report_manager'),
-                                    $options);
-        $select->setMultiple(true);
-        $select->setSize(10);
-        if ($my_Roles) {
-            $form->setDefault('job_roles',array_keys($my_Roles));
-        }
-    }//Add_JobRolesGenerics
 
     function validation($data, $files) {
         $errors = parent::validation($data, $files);

@@ -19,6 +19,34 @@ class Competence {
     /*************/
 
     /**
+     * @param           $company
+     * @return          bool
+     * @throws          Exception
+     *
+     * @creationDate    03/02/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Check if it is a public or private company
+     */
+    public static function IsPublic($company) {
+        /* Variables    */
+        global $DB;
+
+        try {
+            /* Get Public Field */
+            $rdo = $DB->get_record('report_gen_companydata',array('id' => $company),'public');
+            if ($rdo->public) {
+                return true;
+            }else {
+                return false;
+            }//if_else
+        }catch (Exception $ex) {
+           throw $ex;
+        }//try_catch
+    }//IsPublic
+
+    /**
      * @param           $my_companies
      * @return          array
      * @throws          Exception
@@ -48,7 +76,6 @@ class Competence {
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-
     }//GetMyCompanies_By_Level
 
     /**
@@ -189,52 +216,6 @@ class Competence {
             throw $ex;
         }//try_catch
     }//Get_CompetenceData
-
-    /**
-     * @param           $user_id
-     * @return          null|stdClass
-     * @throws          Exception
-     *
-     * @creationDate    02/02/2015
-     * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Get the generics competence connected to the user.
-     */
-
-    public static function GetCompetence_Generics($user_id) {
-        /* Variables    */
-        global $DB;
-        $info_generics  = null;
-
-        try {
-
-            /* Execute  */
-            $rdo = $DB->get_record('user_info_competence_data',array('userid' => $user_id,'companyid' => 0));
-            if ($rdo) {
-                /* Info Generics    */
-                $info_generics = new stdClass();
-                $info_generics->data           = $rdo->id;
-                $info_generics->competence     = $rdo->competenceid;
-                $info_generics->levelThree     = $rdo->companyid;
-                /* Job Roles        */
-                $info_generics->roles          = self::GetJobRoles($rdo->jobroles);
-            }else {
-                $rdo = $DB->get_record('user_info_competence',array('userid' => $user_id));
-                /* Info Generics    */
-                $info_generics = new stdClass();
-                $info_generics->data           = 0;
-                $info_generics->competence     = 0;
-                $info_generics->levelThree     = 0;
-                /* Job Roles        */
-                $info_generics->roles          = null;
-            }
-
-            return $info_generics;
-        }catch (Exception $ex) {
-            throw $ex;
-        }//try_catch
-    }//GetCompetence_Generics
 
     /**
      * @param           $hierarchy
@@ -571,60 +552,20 @@ class Competence {
         /* Variables    */
         global $DB;
         $info_competence_data    = null;
-        $time = time();
 
-        /* Begin Transaction    */
-        $trans = $DB->start_delegated_transaction();
+
         try {
             /* Info Data    */
             $info_competence_data = new stdClass();
+            $info_competence_data->id           = $data->icd;
             $info_competence_data->competenceid = $data->ic;
             $info_competence_data->userid       = $data->id;
             $info_competence_data->jobroles     = implode(',',$data->job_roles);
             $info_competence_data->timemodified = time();
 
-            if ($data->icd) {
-                $info_competence_data->id           = $data->icd;
-
                 /* Update       */
                 $DB->update_record('user_info_competence_data',$info_competence_data);
-            }else {
-                if ($data->ge) {
-                    $info_competence_data->companyid = 0;
-                }
-                if ($data->ic) {
-                    $info_competence = new stdClass();
-                    $info_competence->userid        = $data->id;
-                    $info_competence->timemodified  = $time;
-                    /* Execute  */
-                    $info_competence->id = $DB->insert_record('user_info_competence',$info_competence);
-                    $info_competence_data->competence = $info_competence->id;
-                    /* Update       */
-                    $DB->insert_record('user_info_competence_data',$info_competence_data);
-
-                    /* Get the fieldid of competence profile    */
-                    $field = $DB->get_record('user_info_field',array('datatype' => 'competence'),'id');
-                    $info_data = $DB->get_record('user_info_data',array('fieldid' => $field->id,'userid' => $info_competence->userid));
-                    if (!$info_data) {
-                        $info_data = new stdClass();
-                        $info_data->userid  = $data->id;
-                        $info_data->fieldid = $field->id;
-                        $info_data->data    = $info_competence->id;
-                        /* Execute  */
-                        $DB->insert_record('user_info_data',$info_data);
-                    }//create_new_entrance
-                }else {
-                    $DB->insert_record('user_info_competence_data',$info_competence_data);
-                }
-            }//if_data_icd
-
-            /* Commit   */
-            $trans->allow_commit();
-
         }catch (Exception $ex) {
-            /* Rollback */
-            $trans->rollback($ex);
-
             throw $ex;
         }//try_catch
     }//EditCompetence
@@ -650,6 +591,8 @@ class Competence {
         $companies       = null;
         $job_roles       = null;
 
+        /* Begin Transaction    */
+        $trans = $DB->start_delegated_transaction();
         try {
             $DB->delete_records('user_info_competence_data',array('id' => $competence_data, 'competenceid' => $competence, 'userid' => $user_id));
             /* Check if Delete user_info_competence / user_info_data    */
@@ -663,15 +606,20 @@ class Competence {
                 $DB->delete_records('user_info_data',array('id' => $info_data->id,'fieldid' => $field->id,'userid' => $user_id));
             }//if_!rdo
 
+            /* Commit   */
+            $trans->allow_commit();
+
             return true;
         }catch (Exception $ex) {
+            /* Rollback */
+            $trans->rollback($ex);
+
             throw $ex;
         }//try_Catch
     }//DeleteCompetence
 
     /**
      * @param           $my_competence
-     * @param           $my_generics
      * @param           $user_id
      * @return          string
      * @throws          Exception
@@ -692,11 +640,9 @@ class Competence {
      *                  --> roles.      Array.
      *                                  [id]    --> Job Role Name.
      */
-    public static function Get_CompetenceTable($my_competence,$my_generics,$user_id) {
+    public static function Get_CompetenceTable($my_competence,$user_id) {
         /* Variables    */
         $out                = '';
-        $content_comp       = '';
-        $content_generics   = '';
 
         $return_url     = new moodle_url('/user/profile.php',array('id' =>$user_id));
         $url_add        = new moodle_url('/user/profile/field/competence/actions/add_competence.php',array('id' =>$user_id));
@@ -716,24 +662,11 @@ class Competence {
             $out .= html_writer::end_tag('div'); //btn_actions
 
             /* Get Info Competence to display      */
-            if ($my_competence) {
-                $content_comp     .= self::AddContent_CompetenceTable($my_competence,$user_id);
-            }//if_my_competence
-
             /* HIERARCHY LEVEL - HEADER TABLE   */
             $out .= self::AddHeader_CompetenceTable();
-            /* Content Hierarchy Level          */
-            $out .= $content_comp;
-
-            /* GENERICS */
-            if ($my_generics) {
-                $content_generics .= self::AddContent_GenericsCompetenceTable($user_id,$my_generics);
-            }//if_my_generics
-
-            $out .= '</br>';
-            $out .= self::AddHeader_GenericsCompetenceTable();
-            /* Generics Content     */
-            $out .= $content_generics;
+            if ($my_competence) {
+                $out .= self::AddContent_CompetenceTable($my_competence,$user_id);
+            }//if_my_competence
 
             /* Add the Actions Link */
             $out .= html_writer::start_tag('div',array('class' => 'btn_actions'));
@@ -836,45 +769,6 @@ class Competence {
     }//AddHeader_CompetenceTable
 
     /**
-     * @return              string
-     * @throws              Exception
-     *
-     * @creationDate        28/01/2015
-     * @author              eFaktor     (fbv)
-     *
-     * Description
-     * Add the header of the table for the generics job roles.
-     */
-    private static function AddHeader_GenericsCompetenceTable() {
-        /* Variables    */
-        $header = '';
-
-        try {
-            $header .= html_writer::start_tag('div',array('class' => 'competence_table'));
-                $header .= html_writer::start_div('competence_table_row title_competence');
-                    /* Col Zero -- Toggle   */
-                    $header .= html_writer::start_div('col_zero');
-                    $header .= html_writer::end_div();//col_zero
-                    /* Col One  */
-                    $header .= html_writer::start_div('col_one');
-                    $header .= html_writer::end_div();//col_one
-                    /* Col Two  */
-                    $header .= html_writer::start_div('col_two');
-                        $header .= '<h6>' . get_string('level_generic','profilefield_competence') . '</h6>';
-                    $header .= html_writer::end_div();//col_ttwo
-                    /* Col Three  */
-                    $header .= html_writer::start_div('col_three');
-                    $header .= html_writer::end_div();//col_three
-                $header .= html_writer::end_div();//competence_table_row
-            $header .= html_writer::end_tag('div'); //competence_table
-
-            return $header;
-        }catch (Exception $ex) {
-            throw $ex;
-        }//try_catch
-    }//AddHeader_GenericsCompetenceTable
-
-    /**
      * @param           $my_competence
      * @param           $user_id
      * @return          string
@@ -950,67 +844,4 @@ class Competence {
             throw $ex;
         }//try_catch
     }//AddContent_CompetenceTable
-
-    /**
-     * @param           $user_id
-     * @param           $my_generics
-     * @return          string
-     * @throws          Exception
-     *
-     * @creationDate    28/01/2015
-     * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Display the job roles that are generics
-     */
-    private static function AddContent_GenericsCompetenceTable($user_id,$my_generics) {
-        /* Variables    */
-        global $OUTPUT;
-        $content        = '';
-        $color          = 'r0';
-        $url_deleted    = null;
-        $url_edit       = null;
-        $lnk_class      = 'lnk_col';
-
-        try {
-
-            if (!$my_generics->roles) {
-                $lnk_class = 'lnk_col lnk_disabled';
-            }
-
-            $content .= html_writer::start_tag('div',array('class' => 'competence_table'));
-                $content .= html_writer::start_div('competence_table_row ' . $color);
-                    /* Col Zero -- Toggle   */
-                    $content .= html_writer::start_div('col_zero');
-                    /* Edit Link    */
-                    $url_edit = new moodle_url('/user/profile/field/competence/actions/edit_competence.php',array('id' =>$user_id,'icd' => $my_generics->data,'ic' => $my_generics->competence,'ge' => 1));
-                    $content .= html_writer::link($url_edit,
-                        html_writer::empty_tag('img', array('src'=>$OUTPUT->pix_url('t/edit'),
-                            'alt'=>get_string('btn_edit_users','local_microlearning'),
-                            'class'=>'iconsmall')),
-                        array('title'=>get_string('btn_edit_users','local_microlearning')));
-                    $content .= html_writer::end_div();//col_zero
-                    /* Col One  */
-                    $content .= html_writer::start_div('col_one');
-                    $content .= html_writer::end_div();//col_one
-                    /* Col Two  */
-                    $content .= html_writer::start_div('col_two');
-                        if ($my_generics->roles) {
-                            $content .= implode(',',$my_generics->roles);
-                        }
-                    $content .= html_writer::end_div();//col_ttwo
-                    /* Col Three  */
-                    $content .= html_writer::start_div('col_three');
-                        /* URL Deleted  */
-                        $url_deleted = new moodle_url('/user/profile/field/competence/actions/delete_competence.php',array('id' =>$user_id,'icd' => $my_generics->data,'ic' => $my_generics->competence,'ge' => 1));
-                        $content .= '<a href="' . $url_deleted . '" class="' . $lnk_class . ' ">' . get_string('lnk_delete','profilefield_competence')  . '</a>';
-                    $content .= html_writer::end_div();//col_three
-                    $content .= html_writer::end_div();//competence_table_row
-            $content .= html_writer::end_tag('div'); //competence_table
-
-            return $content;
-        }catch (Exception $ex) {
-            throw $ex;
-        }//try_catch
-    }//AddContent_GenericsCompetenceTable
 }//compentece

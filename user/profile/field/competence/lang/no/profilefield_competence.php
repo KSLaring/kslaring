@@ -39,9 +39,6 @@ $string['delete_competence_are_sure']   = '<p> You are going to delete from your
                                                     <li>{$a->company}:</li>
                                                     <p> {$a->roles}</p>
                                            <p> Are you sure?</p>';
-$string['delete_generics_are_sure']     = '<p> You are going to delete from your profile the next: </p>
-                                                    <p> {$a}</p>
-                                           <p> Are you sure?</p>';
 
 $string['add_competence']    = 'Add new competence';
 $string['add_competence_desc']  = 'Here you can add a new competence profile. You should select one or more companies and job roles, which have to be connected with.';
