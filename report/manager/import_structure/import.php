@@ -97,21 +97,34 @@ if ($form->is_cancelled()) {
         /* Import the new companies */
         $imported       = true;
         $records_file   = Import_Companies::ValidateData($file_columns,$cir,$level);
-        switch ($level) {
+        switch ($data->level) {
             case 1:
                 $level_parent = $data->import_0;
+                $public = $data->public_parent;
+
                 break;
             case 2:
                 $level_parent = $data->import_1;
+                $public = $data->public_parent;
+
                 break;
             case 3:
                 $level_parent = $data->import_2;
+                $public = $data->public_parent;
+
                 break;
             default:
                 $level_parent = null;
+                if (isset($data->public)) {
+                    $public = $data->public;
+                }else {
+                    $public = 0;
+                }//if_public
+
                 break;
         }//switch_level
-        $err_import     = Import_Companies::ImportStructure($records_file,$level,$level_parent);
+
+        $err_import     = Import_Companies::ImportStructure($records_file,$data->level,$level_parent,$public);
         /* Get the companies have not been imported  */
         $total_not_imported = count($records_file->errors);
         if ($total_not_imported) {

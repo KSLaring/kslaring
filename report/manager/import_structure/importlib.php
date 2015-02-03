@@ -13,6 +13,34 @@
  */
 class Import_Companies {
     /**
+     * @param           $company
+     * @return          bool
+     * @throws          Exception
+     *
+     * @creationDate    03/02/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Check if it is a public or private company
+     */
+    public static function IsPublic($company) {
+        /* Variables    */
+        global $DB;
+
+        try {
+            /* Get Public Field */
+            $rdo = $DB->get_record('report_gen_companydata',array('id' => $company),'public');
+            if ($rdo->public) {
+                return true;
+            }else {
+                return false;
+            }//if_else
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//IsPublic
+
+    /**
      * @param           csv_import_reader $cir
      * @param           $stdfields
      * @param           $error
@@ -139,6 +167,7 @@ class Import_Companies {
      * @param           $records_file
      * @param           $level
      * @param           $level_parent
+     * @param           $public
      * @return          bool
      *
      * @creationDate    18/11/2013
@@ -147,7 +176,7 @@ class Import_Companies {
      * Description
      * Import the company structure for a specific level
      */
-    public static function ImportStructure($records_file,$level,$level_parent) {
+    public static function ImportStructure($records_file,$level,$level_parent,$public) {
         global $DB;
 
         /* Import Company Structure */
@@ -166,6 +195,7 @@ class Import_Companies {
                     $company->name              = $record['company'];
                     $company->hierarchylevel    = $level;
                     $company->industrycode      = $record['industry'];
+                    $company->public            = $public;
                     $company->modified          = time();
 
                     $company->id = $DB->insert_record('report_gen_companydata',$company);

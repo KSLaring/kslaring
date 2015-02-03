@@ -25,6 +25,9 @@ $PAGE->requires->js('/report/manager/js/manager.js');
 class manager_import_structure_form extends moodleform {
     function definition() {
         $form = $this->_form;
+        $isPublic   = null;
+        $default    = 1;
+        $attr       = '';
 
         $level = $this->_customdata;
 
@@ -40,9 +43,9 @@ class manager_import_structure_form extends moodleform {
             $form->setDefault('import_level',$_COOKIE['parentImportLevel']);
             $level = $_COOKIE['parentImportLevel'];
         }else {
-            $form->setDefault('import_level',$level);
+            $form->setDefault('import_level',0);
+            $level = 0;
         }
-
 
         switch ($level) {
             case 1:
@@ -104,6 +107,25 @@ class manager_import_structure_form extends moodleform {
                 break;
         }//switch_level
 
+        /* Public Checkbox  */
+        if (isset($_COOKIE['parentImportLevel']) && ($_COOKIE['parentImportLevel']) && ($_COOKIE['parentImportLevel'] != 0)) {
+            if (isset($_COOKIE['parentImportZero']) && ($_COOKIE['parentImportZero']) && ($_COOKIE['parentImportZero'] != 0)) {
+                if (Import_Companies::IsPublic($_COOKIE['parentImportZero'])) {
+                    $default = 1;
+                }else {
+                    $default = 0;
+                }
+            }//if_parentZero
+            $attr = 'disabled';
+        }//if_level
+        $form->addElement('checkbox', 'public','',get_string('public', 'report_manager'),$attr);
+        $form->setDefault('public',$default);
+        /* Public Parent Hide   */
+        if (isset($_COOKIE['parentImportLevel']) && ($_COOKIE['parentImportLevel']) && ($_COOKIE['parentImportLevel'] != 0)) {
+            $form->addElement('hidden','public_parent');
+            $form->setDefault('public_parent',$default);
+            $form->setType('public_parent',PARAM_INT);
+        }
 
         /* Import File */
         $form->addElement('filepicker', 'import_structure', get_string('import_file','report_manager'));
@@ -122,6 +144,10 @@ class manager_import_structure_form extends moodleform {
         $choices = core_text::get_encodings();
         $form->addElement('select', 'encoding', get_string('encoding', 'report_manager'), $choices);
         $form->setDefault('encoding', 'UTF-8');
+
+        $form->addElement('hidden','level');
+        $form->setDefault('level',$level);
+        $form->setType('level',PARAM_INT);
 
         $this->add_action_buttons(true,get_string('btn_import','report_manager'));
     }//definition
