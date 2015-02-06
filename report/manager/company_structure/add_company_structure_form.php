@@ -48,15 +48,17 @@ class manager_add_company_structure_form extends moodleform {
         $level= $this->_customdata;
 
 
-        $m_form->addElement('header', 'header_level_' . $level, 'Company Structure - Level ' .$level);
+        $m_form->addElement('header', 'header_level_' . $level, get_string('company_structure','report_manager') . ' - ' . get_string('company_structure_level','report_manager',$level));
         /* Add reference's parents */
         $parents = $SESSION->parents;
-        if ($level) {
-            $parent_info = company_structure::Get_CompanyInfo($parents[$level-1]);
-            $m_form->addElement('text','parent_' . $level-1,'Company Parent - Level ' . ($level-1),'size = 50 readonly');
-            $m_form->setDefault('parent_' . $level-1,$parent_info->name);
-            $m_form->setType('parent_' . $level-1,PARAM_TEXT);
-        }//if_level
+        /* Add Parents */
+        for ($i = 0; $i < $level; $i++) {
+            $parent_info = company_structure::Get_CompanyInfo($parents[$i]);
+            $m_form->addElement('text','parent_' . $i,get_string('comp_parent','report_manager', $i),'size = 50 readonly');
+            $m_form->setDefault('parent_' . $i,$parent_info->name);
+            $m_form->setType('parent_' . $i,PARAM_TEXT);
+        }//for
+
         /* New Item / Company */
         $m_form->addElement('text', 'name', get_string('add_company_level','report_manager'), $text_attr);
         $m_form->setType('name',PARAM_TEXT);

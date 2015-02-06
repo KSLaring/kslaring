@@ -25,11 +25,11 @@ class manager_edit_company_structure_form extends moodleform {
         $parents = $SESSION->parents;
         $company_info = company_structure::Get_CompanyInfo($parents[$level]);
 
-        $m_form->addElement('header', 'level_' . $level, 'Company Structure - Level ' .$level);
+        $m_form->addElement('header', 'level_' . $level, get_string('company_structure','report_manager') . ' - ' . get_string('company_structure_level','report_manager',$level));
         /* Add Parents */
         for ($i = 0; $i < $level; $i++) {
             $parent_info = company_structure::Get_CompanyInfo($parents[$i]);
-            $m_form->addElement('text','parent_' . $i,'Company Parent - Level ' . ($i),'size = 50 readonly');
+            $m_form->addElement('text','parent_' . $i,get_string('comp_parent','report_manager', $i),'size = 50 readonly');
             $m_form->setDefault('parent_' . $i,$parent_info->name);
             $m_form->setType('parent_' . $i,PARAM_TEXT);
         }//for
