@@ -849,6 +849,7 @@ class core_course_external extends external_api {
 
             // Check if the current user has enought permissions.
             if (!can_delete_course($courseid)) {
+                fix_course_sortorder();
                 throw new moodle_exception('cannotdeletecategorycourse', 'error',
                     '', format_string($course->fullname)." (id: $courseid)");
             }
@@ -857,6 +858,7 @@ class core_course_external extends external_api {
         }
 
         $transaction->allow_commit();
+        fix_course_sortorder();
 
         return null;
     }
@@ -1028,7 +1030,7 @@ class core_course_external extends external_api {
 
         // Check if we need to unzip the file because the backup temp dir does not contains backup files.
         if (!file_exists($backupbasepath . "/moodle_backup.xml")) {
-            $file->extract_to_pathname(get_file_packer(), $backupbasepath);
+            $file->extract_to_pathname(get_file_packer('application/vnd.moodle.backup'), $backupbasepath);
         }
 
         // Create new course.
