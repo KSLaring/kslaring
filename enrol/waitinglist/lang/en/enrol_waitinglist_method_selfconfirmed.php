@@ -15,15 +15,11 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Waitinglist enrolment plugin version specification.
+ * Strings for component 'enrol_waitinglist', language 'en'.
  *
  * @package    enrol_waitinglist
- * @copyright  2015 Justin Hunt {@link http://poodll.com}
+ * @copyright  2015 Justin Hunt  {@link http://poodll.com}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
-defined('MOODLE_INTERNAL') || die();
-
-$plugin->version   = 2015021001;        // The current plugin version (Date: YYYYMMDDXX)
-$plugin->requires  = 2014050800;        // Requires this Moodle version
-$plugin->component = 'enrol_waitinglist';    // Full name of the plugin (used for diagnostics)
+//we should never actually see this. its just for reference
+$string['selfconfirmed_displayname'] = 'Self Confirmed';

@@ -22,6 +22,13 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+ require_once('enrol_waitinglist_method_self.php');
+ require_once('enrol_waitinglist_method_unnamedbulk.php');
+ require_once('enrol_waitinglist_method_namedbulk.php');
+ require_once('enrol_waitinglist_method_selfconfirmed.php');
+ require_once('enrol_waitinglist_method_paypal.php');
+
+ 
 $string['alterstatus'] = 'Alter status';
 $string['altertimeend'] = 'Alter end time';
 $string['altertimestart'] = 'Alter start time';
@@ -75,3 +82,19 @@ $string['wsusercannotassign'] = 'You don\'t have the permission to assign this r
 $string['cutoffdate'] = 'Application Deadline';
 $string['maxenrolments'] = 'Max. Enrolments';
 $string['waitlistsize'] = 'Waitlist Size';
+$string['enrolmethods'] = 'Enrolment Methods';
+$string['managequeue'] = 'Manage Queue';
+$string['managemethods'] = 'Manage Enrolment Methods';
+
+$string['noroomonlist'] = 'No room on the waiting list';
+$string['listisempty'] = 'The waiting list is empty';
+$string['alreadyonlist'] = 'Already on waiting list.';
+$string['yourqueuedetails'] = 'You are number: <strong>{$a->queueno}</strong> of <strong>{$a->queuetotal}</strong> on the waiting list.';
+$string['removeconfirmmessage'] = 'Do you really want to remove this entry from the waiting list?';
+$string['methodheader'] = 'Method';
+$string['seatsheader'] = 'Seats';
+$string['updownheader'] = 'Up/Down';
+$string['waitinglisttask'] = 'Waitinglist Enrolment Task';
+
+
+
