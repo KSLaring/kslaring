@@ -1,7 +1,7 @@
 <?php
 
-$string['report_manager']     = 'Rapport Competence Manager';
-$string['pluginname']           = 'Rapport Competence Manager';
+$string['report_manager']     = 'Rapport kompetansestyring';
+$string['pluginname']           = 'Rapport kompetansestyring';
 $string['company_report']       = 'Arbeidssted';
 $string['company_report_level'] = 'Arbeidsstedsrapport - alle medarbeidere {$a}';
 $string['company_report_note']  = 'Vennligst velg en rapport fra listen';
@@ -13,7 +13,7 @@ $string['course_report_note']               = 'Tilgjengelige kursrapporter:';
 $string['select_course_to_report']          = 'Velg ønsket kurs for rapporten';
 $string['select_report_levels']             = 'Velg nivå for rapporten';
 $string['select_company_structure_level']   = 'Nivå {$a}';
-$string['jr_connected']                     = 'Connected with';
+$string['jr_connected']                     = 'Koblet med';
 $string['select_job_role']                  = 'Velg jobbrolle(r)';
 $string['participant']                      = 'Deltaker';
 $string['select_participant']               = 'Velg deltaker(e)';
@@ -28,16 +28,16 @@ $string['no_data']                      = 'Fant ingen data i utvalget ditt.';
 $string['report_list']                  = '.';
 $string['get_course_user_list']         = 'Hent kursdeltakere';
 
-$string['level0'] = 'Companies - Level 0';
-$string['level1'] = 'Helseregioner';
-$string['level2'] = 'Helseforetak/Kommuner';
-$string['level3'] = 'Arbeidsstedene';
+$string['level0'] = 'Nivå 0';
+$string['level1'] = 'Nivå 1';
+$string['level2'] = 'Nivå 2';
+$string['level3'] = 'Nivå 3';
 
 $string['unit']                         = 'Enhet';
 $string['company']                      = 'Arbeidssted';
-$string['completed']                    = 'Completed';
-$string['progress']                     = 'In Progress';
-$string['not_start']                    = 'Not Enrol';
+$string['completed']                    = 'Fullført';
+$string['progress']                     = 'Pågår';
+$string['not_start']                    = 'Ikke startet';
 $string['expires']                      = 'Utløper';
 $string['username']                     = 'Navn';
 $string['count']                        = 'Antall';
@@ -103,9 +103,9 @@ $string['add_item']                     = 'Legg til element';
 $string['rename_selected']              = 'Endre navn på valgte element';
 $string['delete_selected']              = 'Slett valgte element';
 $string['remove_selected']              = 'Fjern valgte elementer fra listen';
-$string['unlink_selected']              = 'Unlink selected item';
-$string['unlink_title']                 = 'Unlink item';
-$string['unlink_from']                  = 'Unlink item from';
+$string['unlink_selected']              = 'Fjern kobling for valgt element';
+$string['unlink_title']                 = 'Fjern kobling for valgt element';
+$string['unlink_from']                  = 'Fjern kobling for valgt element fra';
 $string['get_level']                    = 'Hent nivå {$a} ';
 $string['get_unconnected']              = 'Vis nivå {$a}-elementer uten overordnet tilknytning';
 $string['company_structure_employees']  = 'Ansatte';
@@ -176,7 +176,7 @@ $string['job_roles_for_outcome']    = 'Koble til jobbrolle(r)';
 
 $string['outcome']                      = 'Godkjenning som';
 $string['outcomes']                     = 'Godkjenninger';
-$string['edit_outcome']                 = 'Edit Outcomes';
+$string['edit_outcome']                 = 'Rediger godkjenninger';
 $string['outcome_note']                 = 'Denne siden vil vise skjemaet for godkjenningsvarighet.';
 $string['expiration_period']            = 'Gyldighetsperiode (Måneder)';
 $string['expiration_period_in_month']   = 'Varighet<br />(i mnd)';
@@ -267,8 +267,8 @@ $string['tracker_start_course'] = 'Start kurset &raquo;';
  * @updateDate  06/09/2012
  * @author      eFaktor     (fbv)
  */
-$string['level_0_btn']      = 'Level 0 buttons. Use this buttons';
-$string['level_0_btn_help'] = 'Level 0. This is the level zero of the company structure.';
+$string['level_0_btn']      = 'Nivå 0-knapp. Bruk denne knappen.';
+$string['level_0_btn_help'] = 'Nivå 0. Dette er nivå 0 i organisasjonsstrukturen.';
 $string['level_1_btn']      = 'Nivå 1-knapp. Bruk denne knappen.';
 $string['level_1_btn_help'] = 'Nivå 1. Dette er arbeidsstedets første nivå.';
 $string['level_2_btn']      = 'Nivå 2-knapp. Bruk denne knappen.';
@@ -371,11 +371,13 @@ $string['existing_item']    = 'Eksisterende element';
 $string['employee_report_link'] = 'Status på sertifiseringer';
 
 $string['underconstruction'] = 'Beklager, men denne rapporten/block er for tiden deaktivert. Vi arbeider med å forbedre den.';
-$string['county']       = 'County';
-$string['sel_county']   = 'Choose a county...';
+$string['county']       = 'Fylke';
+$string['sel_county']   = 'Velg et fylke...';
 
-$string['municipality']     = 'Municipality';
-$string['sel_municipality'] =  'Choose a municipality...';
+$string['municipality']     = 'Kommune';
+$string['sel_municipality'] =  'Velg en kommune...';
 
-$string['industry_code'] = 'Næringskode';
-$string['err_job_role']     = 'This job role already exists.';
+$string['industry_code']    = 'Kommunenummer';
+$string['err_job_role']     = 'Denne jobbrollen eksisterer allerede.';
+
+$string['public']           = 'Offentlig';

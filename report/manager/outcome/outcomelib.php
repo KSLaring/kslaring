@@ -41,9 +41,7 @@ class outcome {
                                   oex.id          as 'expirationid',
                                   oex.expirationperiod
                      FROM         {grade_outcomes}  go
-                        LEFT JOIN (SELECT   GROUP_CONCAT(job.name
-                                                         ORDER BY job.name ASC
-                                                         SEPARATOR ', ') as 'jobrolename',
+                        LEFT JOIN (SELECT   GROUP_CONCAT(CONCAT(job.industrycode,' - ',job.name) ORDER BY job.industrycode,job.name ASC SEPARATOR ', ') as 'jobrolename',
                                             ojrel.outcomeid
                                    FROM     {report_gen_outcome_jobrole} ojrel
                                       JOIN  {report_gen_jobrole}         job    ON  ojrel.jobroleid = job.id

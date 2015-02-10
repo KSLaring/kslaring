@@ -13,10 +13,11 @@
  *
  */
 
-class profile_define_comptence extends profile_define_base {
+class profile_define_competence extends profile_define_base {
     function define_form_specific($form) {
         // Default data.
         $form->addElement('text', 'defaultdata', get_string('profiledefaultdata', 'admin'), 'size="50"');
         $form->setType('defaultdata', PARAM_TEXT);
+
     }//define_form_specific
 }//profile_define_municipality

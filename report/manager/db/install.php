@@ -8,9 +8,11 @@
  * @package         report
  * @subpackage      manager
  * @copyright       2010 eFaktor
- * @updateDate      06/09/2012
+ *
+ * @creationDate        22/01/2015
  * @author          eFaktor     (fbv)
  *
+ * Install Script
  */
 
 defined('MOODLE_INTERNAL') || die();
@@ -146,7 +148,9 @@ class CompetenceManager_Install {
             /* naringskode */
             $table_company_data->add_field('industrycode',XMLDB_TYPE_CHAR,'50',null, XMLDB_NOTNULL,null,null);
             /* hierarchylevel   (Not null - Index)  */
-            $table_company_data->add_field('hierarchylevel',XMLDB_TYPE_INTEGER,'2',null, XMLDB_NOTNULL,null,1);
+            $table_company_data->add_field('hierarchylevel',XMLDB_TYPE_INTEGER,'2',null, XMLDB_NOTNULL,null,null);
+            /* Public           --> Not Null    */
+            $table_company_data->add_field('public',XMLDB_TYPE_INTEGER,'1',null, null,null,null);
             /* modified         (Not null)          */
             $table_company_data->add_field('modified',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL,null,null);
 
@@ -284,27 +288,27 @@ class Kommit_CompetenceManager {
 
         try {
             /* SQL Instruction  */
-            $sql =  " INSERT INTO {report_gen_companydata} (industrycode,name,hierarchylevel,modified) " .
-                    " VALUES ('01','Østfold',0,"             . $time . "), " .
-                    "        ('02','Akershus',0,"            . $time . "), " .
-                    "        ('03','Oslo',0,"                . $time . "), " .
-                    "        ('04','Hedmark',0,"             . $time . "), " .
-                    "        ('05','Oppland',0,"             . $time . "), " .
-                    "        ('06','Buskerud',0,"            . $time . "), " .
-                    "        ('07','Vestfold',0,"            . $time . "), " .
-                    "        ('08','Telemark',0,"            . $time . "), " .
-                    "        ('09','Aust-Agder',0,"          . $time . "), " .
-                    "        ('10','Vest-Agder',0,"          . $time . "), " .
-                    "        ('11','Rogaland',0,"            . $time . "), " .
-                    "        ('12','Hordaland',0,"           . $time . "), " .
-                    "        ('14','Sogn og Fjordane',0,"    . $time . "), " .
-                    "        ('15','Møre og Romsdal',0,"     . $time . "), " .
-                    "        ('16','Sør-Trøndelag',0,"       . $time . "), " .
-                    "        ('17','Nord-Trøndelag',0,"      . $time . "), " .
-                    "        ('18','Nordland',0,"            . $time . "), " .
-                    "        ('19','Troms',0,"               . $time . "), " .
-                    "        ('20','Finnmark',0,"            . $time . "), " .
-                    "        ('21','Svalbard',0,"            . $time . ") ";
+            $sql =  " INSERT INTO {report_gen_companydata} (industrycode,name,hierarchylevel,public,modified) " .
+                    " VALUES ('01','Østfold',0,1,"             . $time . "), " .
+                    "        ('02','Akershus',0,1,"            . $time . "), " .
+                    "        ('03','Oslo',0,1,"                . $time . "), " .
+                    "        ('04','Hedmark',0,1,"             . $time . "), " .
+                    "        ('05','Oppland',0,1,"             . $time . "), " .
+                    "        ('06','Buskerud',0,1,"            . $time . "), " .
+                    "        ('07','Vestfold',0,1,"            . $time . "), " .
+                    "        ('08','Telemark',0,1,"            . $time . "), " .
+                    "        ('09','Aust-Agder',0,1,"          . $time . "), " .
+                    "        ('10','Vest-Agder',0,1,"          . $time . "), " .
+                    "        ('11','Rogaland',0,1,"            . $time . "), " .
+                    "        ('12','Hordaland',0,1,"           . $time . "), " .
+                    "        ('14','Sogn og Fjordane',0,1,"    . $time . "), " .
+                    "        ('15','Møre og Romsdal',0,1,"     . $time . "), " .
+                    "        ('16','Sør-Trøndelag',0,1,"       . $time . "), " .
+                    "        ('17','Nord-Trøndelag',0,1,"      . $time . "), " .
+                    "        ('18','Nordland',0,1,"            . $time . "), " .
+                    "        ('19','Troms',0,1,"               . $time . "), " .
+                    "        ('20','Finnmark',0,1,"            . $time . "), " .
+                    "        ('21','Svalbard',0,1,"            . $time . ") ";
 
             $DB->execute($sql);
         }catch (Exception $ex) {
@@ -320,25 +324,25 @@ class Kommit_CompetenceManager {
         try {
             /* First Level One  */
             /* SQL Instruction */
-            $sql =  " INSERT INTO {report_gen_companydata} (industrycode,name,hierarchylevel,modified) " .
-                    " VALUES ('01','Østfold Fylkeskommune',1,"          . $time . "), " .
-                    "        ('0124','Askim',1,"                        . $time . "), " .
-                    "        ('0125','Eidsberg',1,"                     . $time . "), " .
-                    "        ('0106','Fredrikstad',1,"                  . $time . "), " .
-                    "        ('0101','Halden',1,"                       . $time . "), " .
-                    "        ('0138','Hobøl',1,"                        . $time . "), " .
-                    "        ('0111','Hvaler',1,"                       . $time . "), " .
-                    "        ('0119','Marker',1,"                       . $time . "), " .
-                    "        ('0104','Moss',1,"                         . $time . "), " .
-                    "        ('0128','Rakkestad',1,"                    . $time . "), " .
-                    "        ('0136','Rygge',1,"                        . $time . "), " .
-                    "        ('0121','Rømskog',1,"                      . $time . "), " .
-                    "        ('0135','Råde',1,"                         . $time . "), " .
-                    "        ('0105','Sarpsborg',1,"                    . $time . "), " .
-                    "        ('0127','Skiptvet',1,"                     . $time . "), " .
-                    "        ('0123','Spydeberg',1,"                    . $time . "), " .
-                    "        ('0122','Trøgstad',1,"                     . $time . "), " .
-                    "        ('0137','Våler',1,"                        . $time . ") ";
+            $sql =  " INSERT INTO {report_gen_companydata} (industrycode,name,hierarchylevel,public,modified) " .
+                    " VALUES ('01','Østfold Fylkeskommune',1,1,"          . $time . "), " .
+                    "        ('0124','Askim',1,1,"                        . $time . "), " .
+                    "        ('0125','Eidsberg',1,1,"                     . $time . "), " .
+                    "        ('0106','Fredrikstad',1,1,"                  . $time . "), " .
+                    "        ('0101','Halden',1,1,"                       . $time . "), " .
+                    "        ('0138','Hobøl',1,1,"                        . $time . "), " .
+                    "        ('0111','Hvaler',1,1,"                       . $time . "), " .
+                    "        ('0119','Marker',1,1,"                       . $time . "), " .
+                    "        ('0104','Moss',1,1,"                         . $time . "), " .
+                    "        ('0128','Rakkestad',1,1,"                    . $time . "), " .
+                    "        ('0136','Rygge',1,1,"                        . $time . "), " .
+                    "        ('0121','Rømskog',1,1,"                      . $time . "), " .
+                    "        ('0135','Råde',1,1,"                         . $time . "), " .
+                    "        ('0105','Sarpsborg',1,1,"                    . $time . "), " .
+                    "        ('0127','Skiptvet',1,1,"                     . $time . "), " .
+                    "        ('0123','Spydeberg',1,1,"                    . $time . "), " .
+                    "        ('0122','Trøgstad',1,1,"                     . $time . "), " .
+                    "        ('0137','Våler',1,1,"                        . $time . ") ";
 
             /* Execute  */
             $DB->execute($sql);
@@ -376,30 +380,30 @@ class Kommit_CompetenceManager {
         try {
             /* First Level One  */
             /* SQL Instruction  */
-            $sql =  " INSERT INTO {report_gen_companydata} (industrycode,name,hierarchylevel,modified) " .
-                    " VALUES ('02','Akershus Fylkeskommune',1," . $time . "), " .
-                    "        ('0220','Asker',1,"                . $time . "), " .
-                    "        ('0221','Aurskog-Høland',1,"       . $time . "), " .
-                    "        ('0219','Bærum',1,"                . $time . "), " .
-                    "        ('0237','Eidsvoll',1,"             . $time . "), " .
-                    "        ('0229','Enebakk',1,"              . $time . "), " .
-                    "        ('0227','Fet',1,"                  . $time . "), " .
-                    "        ('0215','Frogn',1,"                . $time . "), " .
-                    "        ('0234','Gjerdrum',1,"             . $time . "), " .
-                    "        ('0239','Hurdal',1,"               . $time . "), " .
-                    "        ('0230','Lørenskog',1,"            . $time . "), " .
-                    "        ('0238','Nannestad',1,"            . $time . "), " .
-                    "        ('0236','Nes',1,"                  . $time . "), " .
-                    "        ('0216','Nesodden',1,"             . $time . "), " .
-                    "        ('0233','Nittedal',1,"             . $time . "), " .
-                    "        ('0217','Oppegård',1,"             . $time . "), " .
-                    "        ('0228','Rælingen',1,"             . $time . "), " .
-                    "        ('0231','Skedsmo',1,"              . $time . "), " .
-                    "        ('0213','Ski',1,"                  . $time . "), " .
-                    "        ('0226','Sørum',1,"                . $time . "), " .
-                    "        ('0235','Ullensaker',1,"           . $time . "), " .
-                    "        ('0211','Vestby',1,"               . $time . "), " .
-                    "        ('0214','Ås',1,"                   . $time . ") ";
+            $sql =  " INSERT INTO {report_gen_companydata} (industrycode,name,hierarchylevel,public,modified) " .
+                    " VALUES ('02','Akershus Fylkeskommune',1,1," . $time . "), " .
+                    "        ('0220','Asker',1,1,"                . $time . "), " .
+                    "        ('0221','Aurskog-Høland',1,1,"       . $time . "), " .
+                    "        ('0219','Bærum',1,1,"                . $time . "), " .
+                    "        ('0237','Eidsvoll',1,1,"             . $time . "), " .
+                    "        ('0229','Enebakk',1,1,"              . $time . "), " .
+                    "        ('0227','Fet',1,1,"                  . $time . "), " .
+                    "        ('0215','Frogn',1,1,"                . $time . "), " .
+                    "        ('0234','Gjerdrum',1,1,"             . $time . "), " .
+                    "        ('0239','Hurdal',1,1,"               . $time . "), " .
+                    "        ('0230','Lørenskog',1,1,"            . $time . "), " .
+                    "        ('0238','Nannestad',1,1,"            . $time . "), " .
+                    "        ('0236','Nes',1,1,"                  . $time . "), " .
+                    "        ('0216','Nesodden',1,1,"             . $time . "), " .
+                    "        ('0233','Nittedal',1,1,"             . $time . "), " .
+                    "        ('0217','Oppegård',1,1,"             . $time . "), " .
+                    "        ('0228','Rælingen',1,1,"             . $time . "), " .
+                    "        ('0231','Skedsmo',1,1,"              . $time . "), " .
+                    "        ('0213','Ski',1,1,"                  . $time . "), " .
+                    "        ('0226','Sørum',1,1,"                . $time . "), " .
+                    "        ('0235','Ullensaker',1,1,"           . $time . "), " .
+                    "        ('0211','Vestby',1,1,"               . $time . "), " .
+                    "        ('0214','Ås',1,1,"                   . $time . ") ";
 
             /* Execute  */
             $DB->execute($sql);
@@ -438,9 +442,9 @@ class Kommit_CompetenceManager {
         try {
             /* First Level One  */
             /* SQL Instruction  */
-            $sql =  " INSERT INTO {report_gen_companydata} (industrycode,name,hierarchylevel,modified) " .
-                " VALUES ('03','Oslo Fylkeskommune',1," . $time . "), " .
-                "        ('0301','Oslo',1,"             . $time . ") ";
+            $sql =  " INSERT INTO {report_gen_companydata} (industrycode,name,hierarchylevel,public,modified) " .
+                    " VALUES ('03','Oslo Fylkeskommune',1,1," . $time . "), " .
+                    "        ('0301','Oslo',1,1,"             . $time . ") ";
             /* Execute  */
             $DB->execute($sql);
 
@@ -478,30 +482,30 @@ class Kommit_CompetenceManager {
         try {
             /* First Level One  */
             /* SQL Instruction  */
-            $sql =  " INSERT INTO {report_gen_companydata} (industrycode,name,hierarchylevel,modified) " .
-                    " VALUES ('04','Hedmark Fylkeskommune',1,"  . $time . "), " .
-                    "        ('0438','Alvdal',1,"               . $time . "), " .
-                    "        ('0420','Eidskog',1,"              . $time . "), " .
-                    "        ('0427','Elverum',1,"              . $time . "), " .
-                    "        ('0434','Engerdal',1,"             . $time . "), " .
-                    "        ('0439','Folldal',1,"              . $time . "), " .
-                    "        ('0423','Grue',1,"                 . $time . "), " .
-                    "        ('0403','Hamar',1,"                . $time . "), " .
-                    "        ('0402','Kongsvinger',1,"          . $time . "), " .
-                    "        ('0415','Løten',1,"                . $time . "), " .
-                    "        ('0418','Nord-Odal',1,"            . $time . "), " .
-                    "        ('0441','Os',1,"                   . $time . "), " .
-                    "        ('0432','Rendalen',1,"             . $time . "), " .
-                    "        ('0412','Ringsaker',1,"            . $time . "), " .
-                    "        ('0417','Stange',1,"               . $time . "), " .
-                    "        ('0430','Stor-Elvdal',1,"          . $time . "), " .
-                    "        ('0419','Sør-Odal',1,"             . $time . "), " .
-                    "        ('0436','Tolga',1,"                . $time . "), " .
-                    "        ('0428','Trysil',1,"               . $time . "), " .
-                    "        ('0437','Tynset',1,"               . $time . "), " .
-                    "        ('0426','Våler',1,"                . $time . "), " .
-                    "        ('0429','Åmot',1,"                 . $time . "), " .
-                    "        ('0425','Åsnes',1,"                . $time . ") ";
+            $sql =  " INSERT INTO {report_gen_companydata} (industrycode,name,hierarchylevel,public,modified) " .
+                    " VALUES ('04','Hedmark Fylkeskommune',1,1,"  . $time . "), " .
+                    "        ('0438','Alvdal',1,1,"               . $time . "), " .
+                    "        ('0420','Eidskog',1,1,"              . $time . "), " .
+                    "        ('0427','Elverum',1,1,"              . $time . "), " .
+                    "        ('0434','Engerdal',1,1,"             . $time . "), " .
+                    "        ('0439','Folldal',1,1,"              . $time . "), " .
+                    "        ('0423','Grue',1,1,"                 . $time . "), " .
+                    "        ('0403','Hamar',1,1,"                . $time . "), " .
+                    "        ('0402','Kongsvinger',1,1,"          . $time . "), " .
+                    "        ('0415','Løten',1,1,"                . $time . "), " .
+                    "        ('0418','Nord-Odal',1,1,"            . $time . "), " .
+                    "        ('0441','Os',1,1,"                   . $time . "), " .
+                    "        ('0432','Rendalen',1,1,"             . $time . "), " .
+                    "        ('0412','Ringsaker',1,1,"            . $time . "), " .
+                    "        ('0417','Stange',1,1,"               . $time . "), " .
+                    "        ('0430','Stor-Elvdal',1,1,"          . $time . "), " .
+                    "        ('0419','Sør-Odal',1,1,"             . $time . "), " .
+                    "        ('0436','Tolga',1,1,"                . $time . "), " .
+                    "        ('0428','Trysil',1,1,"               . $time . "), " .
+                    "        ('0437','Tynset',1,1,"               . $time . "), " .
+                    "        ('0426','Våler',1,1,"                . $time . "), " .
+                    "        ('0429','Åmot',1,1,"                 . $time . "), " .
+                    "        ('0425','Åsnes',1,1,"                . $time . ") ";
             /* Execute  */
             $DB->execute($sql);
 
@@ -539,34 +543,34 @@ class Kommit_CompetenceManager {
         try {
             /* First Level One  */
             /* SQL Instruction  */
-            $sql =  " INSERT INTO {report_gen_companydata} (industrycode,name,hierarchylevel,modified) " .
-                    " VALUES ('05','Oppland Fylkeskommune',1,"  . $time . "), " .
-                    "        ('0511','Dovre',1,"                . $time . "), " .
-                    "        ('0541','Etnedal',1,"              . $time . "), " .
-                    "        ('0522','Gausdal',1,"              . $time . "), " .
-                    "        ('0502','Gjøvik',1,"               . $time . "), " .
-                    "        ('0534','Gran',1,"                 . $time . "), " .
-                    "        ('0532','Jevnaker',1,"             . $time . "), " .
-                    "        ('0512','Lesja',1,"                . $time . "), " .
-                    "        ('0501','Lillehammer',1,"          . $time . "), " .
-                    "        ('0514','Lom',1,"                  . $time . "), " .
-                    "        ('0533','Lunner',1,"               . $time . "), " .
-                    "        ('0542','Nord-Aurdal',1,"          . $time . "), " .
-                    "        ('0516','Nord-Fron',1,"            . $time . "), " .
-                    "        ('0538','Nordre Land',1,"          . $time . "), " .
-                    "        ('0520','Ringebu',1,"              . $time . "), " .
-                    "        ('0517','Sel',1,"                  . $time . "), " .
-                    "        ('0513','Skjåk',1,"                . $time . "), " .
-                    "        ('0536','Søndre Land',1,"          . $time . "), " .
-                    "        ('0540','Sør-Aurdal',1,"           . $time . "), " .
-                    "        ('0519','Sør-Fron',1,"             . $time . "), " .
-                    "        ('0545','Vang',1,"                 . $time . "), " .
-                    "        ('0543','Vestre Slidre',1,"        . $time . "), " .
-                    "        ('0529','Vestre Toten',1,"         . $time . "), " .
-                    "        ('0515','Vågå',1,"                 . $time . "), " .
-                    "        ('0528','Østre Toten',1,"          . $time . "), " .
-                    "        ('0521','Øyer',1,"                 . $time . "), " .
-                    "        ('0544','Øystre Slidre',1,"        . $time . ") ";
+            $sql =  " INSERT INTO {report_gen_companydata} (industrycode,name,hierarchylevel,public,modified) " .
+                    " VALUES ('05','Oppland Fylkeskommune',1,1,"  . $time . "), " .
+                    "        ('0511','Dovre',1,1,"                . $time . "), " .
+                    "        ('0541','Etnedal',1,1,"              . $time . "), " .
+                    "        ('0522','Gausdal',1,1,"              . $time . "), " .
+                    "        ('0502','Gjøvik',1,1,"               . $time . "), " .
+                    "        ('0534','Gran',1,1,"                 . $time . "), " .
+                    "        ('0532','Jevnaker',1,1,"             . $time . "), " .
+                    "        ('0512','Lesja',1,1,"                . $time . "), " .
+                    "        ('0501','Lillehammer',1,1,"          . $time . "), " .
+                    "        ('0514','Lom',1,1,"                  . $time . "), " .
+                    "        ('0533','Lunner',1,1,"               . $time . "), " .
+                    "        ('0542','Nord-Aurdal',1,1,"          . $time . "), " .
+                    "        ('0516','Nord-Fron',1,1,"            . $time . "), " .
+                    "        ('0538','Nordre Land',1,1,"          . $time . "), " .
+                    "        ('0520','Ringebu',1,1,"              . $time . "), " .
+                    "        ('0517','Sel',1,1,"                  . $time . "), " .
+                    "        ('0513','Skjåk',1,1,"                . $time . "), " .
+                    "        ('0536','Søndre Land',1,1,"          . $time . "), " .
+                    "        ('0540','Sør-Aurdal',1,1,"           . $time . "), " .
+                    "        ('0519','Sør-Fron',1,1,"             . $time . "), " .
+                    "        ('0545','Vang',1,1,"                 . $time . "), " .
+                    "        ('0543','Vestre Slidre',1,1,"        . $time . "), " .
+                    "        ('0529','Vestre Toten',1,1,"         . $time . "), " .
+                    "        ('0515','Vågå',1,1,"                 . $time . "), " .
+                    "        ('0528','Østre Toten',1,1,"          . $time . "), " .
+                    "        ('0521','Øyer',1,1,"                 . $time . "), " .
+                    "        ('0544','Øystre Slidre',1,1,"        . $time . ") ";
             /* Execute  */
             $DB->execute($sql);
 
@@ -604,29 +608,29 @@ class Kommit_CompetenceManager {
         try {
             /* First Level One  */
             /* SQL Instruction  */
-            $sql =  " INSERT INTO {report_gen_companydata} (industrycode,name,hierarchylevel,modified) " .
-                    " VALUES ('06','Buskerud Fylkeskommune',1," . $time . "), " .
-                    "        ('0602','Drammen',1,"              . $time . "), " .
-                    "        ('0631','Flesberg',1,"             . $time . "), " .
-                    "        ('0615','Flå',1,"                  . $time . "), " .
-                    "        ('0617','Gol',1,"                  . $time . "), " .
-                    "        ('0618','Hemsedal',1,"             . $time . "), " .
-                    "        ('0620','Hol',1,"                  . $time . "), " .
-                    "        ('0612','Hole',1,"                 . $time . "), " .
-                    "        ('0628','Hurum',1,"                . $time . "), " .
-                    "        ('0604','Kongsberg',1,"            . $time . "), " .
-                    "        ('0622','Krødsherad',1,"           . $time . "), " .
-                    "        ('0626','Lier',1,"                 . $time . "), " .
-                    "        ('0623','Modum',1,"                . $time . "), " .
-                    "        ('0625','Nedre Eiker',1,"          . $time . "), " .
-                    "        ('0616','Nes',1,"                  . $time . "), " .
-                    "        ('0633','Nore og Uvdal',1,"        . $time . "), " .
-                    "        ('0605','Ringerike',1,"            . $time . "), " .
-                    "        ('0632','Rollag',1,"               . $time . "), " .
-                    "        ('0627','Røyken',1,"               . $time . "), " .
-                    "        ('0621','Sigdal',1,"               . $time . "), " .
-                    "        ('0624','Øvre Eiker',1,"           . $time . "), " .
-                    "        ('0619','Ål',1,"                   . $time . ")  ";
+            $sql =  " INSERT INTO {report_gen_companydata} (industrycode,name,hierarchylevel,public,modified) " .
+                    " VALUES ('06','Buskerud Fylkeskommune',1,1," . $time . "), " .
+                    "        ('0602','Drammen',1,1,"              . $time . "), " .
+                    "        ('0631','Flesberg',1,1,"             . $time . "), " .
+                    "        ('0615','Flå',1,1,"                  . $time . "), " .
+                    "        ('0617','Gol',1,1,"                  . $time . "), " .
+                    "        ('0618','Hemsedal',1,1,"             . $time . "), " .
+                    "        ('0620','Hol',1,1,"                  . $time . "), " .
+                    "        ('0612','Hole',1,1,"                 . $time . "), " .
+                    "        ('0628','Hurum',1,1,"                . $time . "), " .
+                    "        ('0604','Kongsberg',1,1,"            . $time . "), " .
+                    "        ('0622','Krødsherad',1,1,"           . $time . "), " .
+                    "        ('0626','Lier',1,1,"                 . $time . "), " .
+                    "        ('0623','Modum',1,1,"                . $time . "), " .
+                    "        ('0625','Nedre Eiker',1,1,"          . $time . "), " .
+                    "        ('0616','Nes',1,1,"                  . $time . "), " .
+                    "        ('0633','Nore og Uvdal',1,1,"        . $time . "), " .
+                    "        ('0605','Ringerike',1,1,"            . $time . "), " .
+                    "        ('0632','Rollag',1,1,"               . $time . "), " .
+                    "        ('0627','Røyken',1,1,"               . $time . "), " .
+                    "        ('0621','Sigdal',1,1,"               . $time . "), " .
+                    "        ('0624','Øvre Eiker',1,1,"           . $time . "), " .
+                    "        ('0619','Ål',1,1,"                   . $time . ")  ";
             /* Execute */
             $DB->execute($sql);
 
@@ -664,22 +668,22 @@ class Kommit_CompetenceManager {
         try {
             /* First Level One  */
             /* SQL Instruction  */
-            $sql =  " INSERT INTO {report_gen_companydata} (industrycode,name,hierarchylevel,modified) " .
-                    " VALUES ('07','Vestfold Fylkeskommune',1," . $time . "), " .
-                    "        ('0719','Andebu',1,"               . $time . "), " .
-                    "        ('0714','Hof',1,"                  . $time . "), " .
-                    "        ('0702','Holmestrand',1,"          . $time . "), " .
-                    "        ('0701','Horten',1,"               . $time . "), " .
-                    "        ('0728','Lardal',1,"               . $time . "), " .
-                    "        ('0709','Larvik',1,"               . $time . "), " .
-                    "        ('0722','Nøtterøy',1,"             . $time . "), " .
-                    "        ('0716','Re',1,"                   . $time . "), " .
-                    "        ('0713','Sande',1,"                . $time . "), " .
-                    "        ('0706','Sandefjord',1,"           . $time . "), " .
-                    "        ('0720','Stokke',1,"               . $time . "), " .
-                    "        ('0711','Svelvik',1,"              . $time . "), " .
-                    "        ('0723','Tjøme',1,"                . $time . "), " .
-                    "        ('0704','Tønsberg',1,"             . $time . ") ";
+            $sql =  " INSERT INTO {report_gen_companydata} (industrycode,name,hierarchylevel,public,modified) " .
+                    " VALUES ('07','Vestfold Fylkeskommune',1,1," . $time . "), " .
+                    "        ('0719','Andebu',1,1,"               . $time . "), " .
+                    "        ('0714','Hof',1,1,"                  . $time . "), " .
+                    "        ('0702','Holmestrand',1,1,"          . $time . "), " .
+                    "        ('0701','Horten',1,1,"               . $time . "), " .
+                    "        ('0728','Lardal',1,1,"               . $time . "), " .
+                    "        ('0709','Larvik',1,1,"               . $time . "), " .
+                    "        ('0722','Nøtterøy',1,1,"             . $time . "), " .
+                    "        ('0716','Re',1,1,"                   . $time . "), " .
+                    "        ('0713','Sande',1,1,"                . $time . "), " .
+                    "        ('0706','Sandefjord',1,1,"           . $time . "), " .
+                    "        ('0720','Stokke',1,1,"               . $time . "), " .
+                    "        ('0711','Svelvik',1,1,"              . $time . "), " .
+                    "        ('0723','Tjøme',1,1,"                . $time . "), " .
+                    "        ('0704','Tønsberg',1,1,"             . $time . ") ";
             /* Execute  */
             $DB->execute($sql);
 
@@ -717,26 +721,26 @@ class Kommit_CompetenceManager {
         try {
             /* First Level One  */
             /* SQL Instruction  */
-            $sql =  " INSERT INTO {report_gen_companydata} (industrycode,name,hierarchylevel,modified) " .
-                    " VALUES ('08','Telemark Fylkeskommune',1," . $time . "), " .
-                    "        ('0814','Bamble',1,"               . $time . "), " .
-                    "        ('0821','Bø',1,"                   . $time . "), " .
-                    "        ('0817','Drangedal',1,"            . $time . "), " .
-                    "        ('0831','Fyresdal',1,"             . $time . "), " .
-                    "        ('0827','Hjartdal',1,"             . $time . "), " .
-                    "        ('0815','Kragerø',1,"              . $time . "), " .
-                    "        ('0829','Kviteseid',1,"            . $time . "), " .
-                    "        ('0830','Nissedal',1,"             . $time . "), " .
-                    "        ('0819','Nome',1,"                 . $time . "), " .
-                    "        ('0807','Notodden',1,"             . $time . "), " .
-                    "        ('0805','Porsgrunn',1,"            . $time . "), " .
-                    "        ('0822','Sauherad',1,"             . $time . "), " .
-                    "        ('0828','Seljord',1,"              . $time . "), " .
-                    "        ('0811','Siljan',1,"               . $time . "), " .
-                    "        ('0806','Skien',1,"                . $time . "), " .
-                    "        ('0826','Tinn',1,"                 . $time . "), " .
-                    "        ('0833','Tokke',1,"                . $time . "), " .
-                    "        ('0834','Vinje',1,"                . $time . ") ";
+            $sql =  " INSERT INTO {report_gen_companydata} (industrycode,name,hierarchylevel,public,modified) " .
+                    " VALUES ('08','Telemark Fylkeskommune',1,1," . $time . "), " .
+                    "        ('0814','Bamble',1,1,"               . $time . "), " .
+                    "        ('0821','Bø',1,1,"                   . $time . "), " .
+                    "        ('0817','Drangedal',1,1,"            . $time . "), " .
+                    "        ('0831','Fyresdal',1,1,"             . $time . "), " .
+                    "        ('0827','Hjartdal',1,1,"             . $time . "), " .
+                    "        ('0815','Kragerø',1,1,"              . $time . "), " .
+                    "        ('0829','Kviteseid',1,1,"            . $time . "), " .
+                    "        ('0830','Nissedal',1,1,"             . $time . "), " .
+                    "        ('0819','Nome',1,1,"                 . $time . "), " .
+                    "        ('0807','Notodden',1,1,"             . $time . "), " .
+                    "        ('0805','Porsgrunn',1,1,"            . $time . "), " .
+                    "        ('0822','Sauherad',1,1,"             . $time . "), " .
+                    "        ('0828','Seljord',1,1,"              . $time . "), " .
+                    "        ('0811','Siljan',1,1,"               . $time . "), " .
+                    "        ('0806','Skien',1,1,"                . $time . "), " .
+                    "        ('0826','Tinn',1,1,"                 . $time . "), " .
+                    "        ('0833','Tokke',1,1,"                . $time . "), " .
+                    "        ('0834','Vinje',1,1,"                . $time . ") ";
             /* Execute  */
             $DB->execute($sql);
 
@@ -776,23 +780,23 @@ class Kommit_CompetenceManager {
         try {
             /* First Level One  */
             /* SQL Instruction  */
-            $sql =  " INSERT INTO {report_gen_companydata} (industrycode,name,hierarchylevel,modified) " .
-                    " VALUES ('09','Aust-Agder Fylkeskommune',1,"   . $time . "), " .
-                    "        ('0906','Arendal',1,"                  . $time . "), " .
-                    "        ('0928','Birkenes',1,"                 . $time . "), " .
-                    "        ('0938','Bygland',1,"                  . $time . "), " .
-                    "        ('0941','Bykle',1,"                    . $time . "), " .
-                    "        ('0937','Evje og Hornnes',1,"          . $time . "), " .
-                    "        ('0919','Froland',1,"                  . $time . "), " .
-                    "        ('0911','Gjerstad',1,"                 . $time . "), " .
-                    "        ('0904','Grimstad',1,"                 . $time . "), " .
-                    "        ('0935','Iveland',1,"                  . $time . "), " .
-                    "        ('0926','Lillesand',1,"                . $time . "), " .
-                    "        ('0901','Risør',1,"                    . $time . "), " .
-                    "        ('0914','Tvedestrand',1,"              . $time . "), " .
-                    "        ('0940','Valle',1,"                    . $time . "), " .
-                    "        ('0912','Vegårshei',1,"                . $time . "), " .
-                    "        ('0929','Åmli',1,"                     . $time . ") ";
+            $sql =  " INSERT INTO {report_gen_companydata} (industrycode,name,hierarchylevel,public,modified) " .
+                    " VALUES ('09','Aust-Agder Fylkeskommune',1,1,"   . $time . "), " .
+                    "        ('0906','Arendal',1,1,"                  . $time . "), " .
+                    "        ('0928','Birkenes',1,1,"                 . $time . "), " .
+                    "        ('0938','Bygland',1,1,"                  . $time . "), " .
+                    "        ('0941','Bykle',1,1,"                    . $time . "), " .
+                    "        ('0937','Evje og Hornnes',1,1,"          . $time . "), " .
+                    "        ('0919','Froland',1,1,"                  . $time . "), " .
+                    "        ('0911','Gjerstad',1,1,"                 . $time . "), " .
+                    "        ('0904','Grimstad',1,1,"                 . $time . "), " .
+                    "        ('0935','Iveland',1,1,"                  . $time . "), " .
+                    "        ('0926','Lillesand',1,1,"                . $time . "), " .
+                    "        ('0901','Risør',1,1,"                    . $time . "), " .
+                    "        ('0914','Tvedestrand',1,1,"              . $time . "), " .
+                    "        ('0940','Valle',1,1,"                    . $time . "), " .
+                    "        ('0912','Vegårshei',1,1,"                . $time . "), " .
+                    "        ('0929','Åmli',1,1,"                     . $time . ") ";
             /* Execute  */
             $DB->execute($sql);
 
@@ -830,23 +834,23 @@ class Kommit_CompetenceManager {
         try {
             /* First Level One  */
             /* SQL Instruction  */
-            $sql =  " INSERT INTO {report_gen_companydata} (industrycode,name,hierarchylevel,modified) " .
-                " VALUES ('10','Vest-Agder Fylkeskommune',1,"   . $time . "), " .
-                "        ('1027','Audnedal',1,"                 . $time . "), " .
-                "        ('1003','Farsund',1,"                  . $time . "), " .
-                "        ('1004','Flekkefjord',1,"              . $time . "), " .
-                "        ('1034','Hægebostad',1,"               . $time . "), " .
-                "        ('1001','Kristiansand',1,"             . $time . "), " .
-                "        ('1037','Kvinesdal',1,"                . $time . "), " .
-                "        ('1029','Lindesnes',1,"                . $time . "), " .
-                "        ('1032','Lyngdal',1,"                  . $time . "), " .
-                "        ('1002','Mandal',1,"                   . $time . "), " .
-                "        ('1021','Marnardal',1,"                . $time . "), " .
-                "        ('1046','Sirdal',1,"                   . $time . "), " .
-                "        ('1017','Songdalen',1,"                . $time . "), " .
-                "        ('1018','Søgne',1,"                    . $time . "), " .
-                "        ('1014','Vennesla',1,"                 . $time . "), " .
-                "        ('1026','Åseral',1,"                   . $time . ") ";
+            $sql =  " INSERT INTO {report_gen_companydata} (industrycode,name,hierarchylevel,public,modified) " .
+                " VALUES ('10','Vest-Agder Fylkeskommune',1,1,"   . $time . "), " .
+                "        ('1027','Audnedal',1,1,"                 . $time . "), " .
+                "        ('1003','Farsund',1,1,"                  . $time . "), " .
+                "        ('1004','Flekkefjord',1,1,"              . $time . "), " .
+                "        ('1034','Hægebostad',1,1,"               . $time . "), " .
+                "        ('1001','Kristiansand',1,1,"             . $time . "), " .
+                "        ('1037','Kvinesdal',1,1,"                . $time . "), " .
+                "        ('1029','Lindesnes',1,1,"                . $time . "), " .
+                "        ('1032','Lyngdal',1,1,"                  . $time . "), " .
+                "        ('1002','Mandal',1,1,"                   . $time . "), " .
+                "        ('1021','Marnardal',1,1,"                . $time . "), " .
+                "        ('1046','Sirdal',1,1,"                   . $time . "), " .
+                "        ('1017','Songdalen',1,1,"                . $time . "), " .
+                "        ('1018','Søgne',1,1,"                    . $time . "), " .
+                "        ('1014','Vennesla',1,1,"                 . $time . "), " .
+                "        ('1026','Åseral',1,1,"                   . $time . ") ";
             /* Execute  */
             $DB->execute($sql);
 
@@ -885,34 +889,34 @@ class Kommit_CompetenceManager {
         try {
             /* First Level One  */
             /* SQL Instruction  */
-            $sql =  " INSERT INTO {report_gen_companydata} (industrycode,name,hierarchylevel,modified) " .
-                " VALUES ('11','Rogaland Fylkeskommune',1," . $time . "), " .
-                "        ('1114','Bjerkreim',1,"            . $time . "), " .
-                "        ('1145','Bokn',1,"                 . $time . "), " .
-                "        ('1101','Eigersund',1,"            . $time . "), " .
-                "        ('1141','Finnøy',1,"               . $time . "), " .
-                "        ('1129','Forsand',1,"              . $time . "), " .
-                "        ('1122','Gjesdal',1,"              . $time . "), " .
-                "        ('1106','Haugesund',1,"            . $time . "), " .
-                "        ('1133','Hjelmeland',1,"           . $time . "), " .
-                "        ('1119','Hå',1,"                   . $time . "), " .
-                "        ('1149','Karmøy',1,"               . $time . "), " .
-                "        ('1120','Klepp',1,"                . $time . "), " .
-                "        ('1144','Kvitsøy',1,"              . $time . "), " .
-                "        ('1112','Lund',1,"                 . $time . "), " .
-                "        ('1127','Randaberg',1,"            . $time . "), " .
-                "        ('1142','Rennesøy',1,"             . $time . "), " .
-                "        ('1102','Sandnes',1,"              . $time . "), " .
-                "        ('1135','Sauda',1,"                . $time . "), " .
-                "        ('1111','Sokndal',1,"              . $time . "), " .
-                "        ('1124','Sola',1,"                 . $time . "), " .
-                "        ('1103','Stavanger',1,"            . $time . "), " .
-                "        ('1130','Strand',1,"               . $time . "), " .
-                "        ('1134','Suldal',1,"               . $time . "), " .
-                "        ('1121','Time',1,"                 . $time . "), " .
-                "        ('1146','Tysvær',1,"               . $time . "), " .
-                "        ('1151','Utsira',1,"               . $time . "), " .
-                "        ('1160','Vindafjord',1,"           . $time . ") ";
+            $sql =  " INSERT INTO {report_gen_companydata} (industrycode,name,hierarchylevel,public,modified) " .
+                " VALUES ('11','Rogaland Fylkeskommune',1,1," . $time . "), " .
+                "        ('1114','Bjerkreim',1,1,"            . $time . "), " .
+                "        ('1145','Bokn',1,1,"                 . $time . "), " .
+                "        ('1101','Eigersund',1,1,"            . $time . "), " .
+                "        ('1141','Finnøy',1,1,"               . $time . "), " .
+                "        ('1129','Forsand',1,1,"              . $time . "), " .
+                "        ('1122','Gjesdal',1,1,"              . $time . "), " .
+                "        ('1106','Haugesund',1,1,"            . $time . "), " .
+                "        ('1133','Hjelmeland',1,1,"           . $time . "), " .
+                "        ('1119','Hå',1,1,"                   . $time . "), " .
+                "        ('1149','Karmøy',1,1,"               . $time . "), " .
+                "        ('1120','Klepp',1,1,"                . $time . "), " .
+                "        ('1144','Kvitsøy',1,1,"              . $time . "), " .
+                "        ('1112','Lund',1,1,"                 . $time . "), " .
+                "        ('1127','Randaberg',1,1,"            . $time . "), " .
+                "        ('1142','Rennesøy',1,1,"             . $time . "), " .
+                "        ('1102','Sandnes',1,1,"              . $time . "), " .
+                "        ('1135','Sauda',1,1,"                . $time . "), " .
+                "        ('1111','Sokndal',1,1,"              . $time . "), " .
+                "        ('1124','Sola',1,1,"                 . $time . "), " .
+                "        ('1103','Stavanger',1,1,"            . $time . "), " .
+                "        ('1130','Strand',1,1,"               . $time . "), " .
+                "        ('1134','Suldal',1,1,"               . $time . "), " .
+                "        ('1121','Time',1,1,"                 . $time . "), " .
+                "        ('1146','Tysvær',1,1,"               . $time . "), " .
+                "        ('1151','Utsira',1,1,"               . $time . "), " .
+                "        ('1160','Vindafjord',1,1,"           . $time . ") ";
             /* Execute  */
             $DB->execute($sql);
 
@@ -950,41 +954,41 @@ class Kommit_CompetenceManager {
         try {
             /* First Level One  */
             /* SQL Instruction  */
-            $sql =  " INSERT INTO {report_gen_companydata} (industrycode,name,hierarchylevel,modified) " .
-                " VALUES ('12','Hordaland Fylkeskommune',1,"    . $time . "), " .
-                "        ('1247','Askøy',1,"                    . $time . "), " .
-                "        ('1244','Austevoll',1,"                . $time . "), " .
-                "        ('1264','Austrheim',1,"                . $time . "), " .
-                "        ('1201','Bergen',1,"                   . $time . "), " .
-                "        ('1219','Bømlo',1,"                    . $time . "), " .
-                "        ('1232','Eidfjord',1,"                 . $time . "), " .
-                "        ('1211','Etne',1,"                     . $time . "), " .
-                "        ('1265','Fedje',1,"                    . $time . "), " .
-                "        ('1222','Fitjar',1,"                   . $time . "), " .
-                "        ('1246','Fjell',1,"                    . $time . "), " .
-                "        ('1241','Fusa',1,"                     . $time . "), " .
-                "        ('1234','Granvin',1,"                  . $time . "), " .
-                "        ('1227','Jondal',1,"                   . $time . "), " .
-                "        ('1238','Kvam',1,"                     . $time . "), " .
-                "        ('1224','Kvinnherad',1,"               . $time . "), " .
-                "        ('1263','Lindås',1,"                   . $time . "), " .
-                "        ('1266','Masfjorden',1,"               . $time . "), " .
-                "        ('1256','Meland',1,"                   . $time . "), " .
-                "        ('1252','Modalen',1,"                  . $time . "), " .
-                "        ('1228','Odda',1,"                     . $time . "), " .
-                "        ('1243','Os',1,"                       . $time . "), " .
-                "        ('1253','Osterøy',1,"                  . $time . "), " .
-                "        ('1260','Radøy',1,"                    . $time . "), " .
-                "        ('1242','Samnanger',1,"                . $time . "), " .
-                "        ('1221','Stord',1,"                    . $time . "), " .
-                "        ('1245','Sund',1,"                     . $time . "), " .
-                "        ('1216','Sveio',1,"                    . $time . "), " .
-                "        ('1223','Tysnes',1,"                   . $time . "), " .
-                "        ('1231','Ullensvang',1,"               . $time . "), " .
-                "        ('1233','Ulvik',1,"                    . $time . "), " .
-                "        ('1251','Vaksdal',1,"                  . $time . "), " .
-                "        ('1235','Voss',1,"                     . $time . "), " .
-                "        ('1259','Øygarden',1,"                 . $time . ") ";
+            $sql =  " INSERT INTO {report_gen_companydata} (industrycode,name,hierarchylevel,public,modified) " .
+                " VALUES ('12','Hordaland Fylkeskommune',1,1,"    . $time . "), " .
+                "        ('1247','Askøy',1,1,"                    . $time . "), " .
+                "        ('1244','Austevoll',1,1,"                . $time . "), " .
+                "        ('1264','Austrheim',1,1,"                . $time . "), " .
+                "        ('1201','Bergen',1,1,"                   . $time . "), " .
+                "        ('1219','Bømlo',1,1,"                    . $time . "), " .
+                "        ('1232','Eidfjord',1,1,"                 . $time . "), " .
+                "        ('1211','Etne',1,1,"                     . $time . "), " .
+                "        ('1265','Fedje',1,1,"                    . $time . "), " .
+                "        ('1222','Fitjar',1,1,"                   . $time . "), " .
+                "        ('1246','Fjell',1,1,"                    . $time . "), " .
+                "        ('1241','Fusa',1,1,"                     . $time . "), " .
+                "        ('1234','Granvin',1,1,"                  . $time . "), " .
+                "        ('1227','Jondal',1,1,"                   . $time . "), " .
+                "        ('1238','Kvam',1,1,"                     . $time . "), " .
+                "        ('1224','Kvinnherad',1,1,"               . $time . "), " .
+                "        ('1263','Lindås',1,1,"                   . $time . "), " .
+                "        ('1266','Masfjorden',1,1,"               . $time . "), " .
+                "        ('1256','Meland',1,1,"                   . $time . "), " .
+                "        ('1252','Modalen',1,1,"                  . $time . "), " .
+                "        ('1228','Odda',1,1,"                     . $time . "), " .
+                "        ('1243','Os',1,1,"                       . $time . "), " .
+                "        ('1253','Osterøy',1,1,"                  . $time . "), " .
+                "        ('1260','Radøy',1,1,"                    . $time . "), " .
+                "        ('1242','Samnanger',1,1,"                . $time . "), " .
+                "        ('1221','Stord',1,1,"                    . $time . "), " .
+                "        ('1245','Sund',1,1,"                     . $time . "), " .
+                "        ('1216','Sveio',1,1,"                    . $time . "), " .
+                "        ('1223','Tysnes',1,1,"                   . $time . "), " .
+                "        ('1231','Ullensvang',1,1,"               . $time . "), " .
+                "        ('1233','Ulvik',1,1,"                    . $time . "), " .
+                "        ('1251','Vaksdal',1,1,"                  . $time . "), " .
+                "        ('1235','Voss',1,1,"                     . $time . "), " .
+                "        ('1259','Øygarden',1,1,"                 . $time . ") ";
             /* Execute  */
             $DB->execute($sql);
 
@@ -1022,34 +1026,34 @@ class Kommit_CompetenceManager {
         try {
             /* First Level One  */
             /* SQL Instruction  */
-            $sql =  " INSERT INTO {report_gen_companydata} (industrycode,name,hierarchylevel,modified) " .
-                " VALUES ('14','Sogn og Fjordane Fylkeskommune',1,"     . $time . "), " .
-                "        ('1428','Askvoll',1,"                          . $time . "), " .
-                "        ('1421','Aurland',1, "                         . $time . "), " .
-                "        ('1418','Balestrand',1,"                       . $time . "), " .
-                "        ('1438','Bremanger',1,"                        . $time . "), " .
-                "        ('1443','Eid',1,"                              . $time . "), " .
-                "        ('1429','Fjaler',1,"                           . $time . "), " .
-                "        ('1401','Flora',1,"                            . $time . "), " .
-                "        ('1432','Førde',1,"                            . $time . "), " .
-                "        ('1430','Gaular',1,"                           . $time . "), " .
-                "        ('1445','Gloppen',1,"                          . $time . "), " .
-                "        ('1411','Gulen',1,"                            . $time . "), " .
-                "        ('1444','Hornindal',1,"                        . $time . "), " .
-                "        ('1413','Hyllestad',1,"                        . $time . "), " .
-                "        ('1416','Høyanger',1,"                         . $time . "), " .
-                "        ('1431','Jølster',1,"                          . $time . "), " .
-                "        ('1419','Leikanger',1,"                        . $time . "), " .
-                "        ('1426','Luster',1,"                           . $time . "), " .
-                "        ('1422','Lærdal',1,"                           . $time . "), " .
-                "        ('1433','Naustdal',1,"                         . $time . "), " .
-                "        ('1441','Selje',1,"                            . $time . "), " .
-                "        ('1420','Sogndal',1,"                          . $time . "), " .
-                "        ('1412','Solund',1,"                           . $time . "), " .
-                "        ('1449','Stryn',1,"                            . $time . "), " .
-                "        ('1417','Vik',1,"                              . $time . "), " .
-                "        ('1439','Vågsøy',1,"                           . $time . "), " .
-                "        ('1424','Årdal',1,"                            . $time . ") ";
+            $sql =  " INSERT INTO {report_gen_companydata} (industrycode,name,hierarchylevel,public,modified) " .
+                " VALUES ('14','Sogn og Fjordane Fylkeskommune',1,1,"     . $time . "), " .
+                "        ('1428','Askvoll',1,1,"                          . $time . "), " .
+                "        ('1421','Aurland',1,1,"                          . $time . "), " .
+                "        ('1418','Balestrand',1,1,"                       . $time . "), " .
+                "        ('1438','Bremanger',1,1,"                        . $time . "), " .
+                "        ('1443','Eid',1,1,"                              . $time . "), " .
+                "        ('1429','Fjaler',1,1,"                           . $time . "), " .
+                "        ('1401','Flora',1,1,"                            . $time . "), " .
+                "        ('1432','Førde',1,1,"                            . $time . "), " .
+                "        ('1430','Gaular',1,1,"                           . $time . "), " .
+                "        ('1445','Gloppen',1,1,"                          . $time . "), " .
+                "        ('1411','Gulen',1,1,"                            . $time . "), " .
+                "        ('1444','Hornindal',1,1,"                        . $time . "), " .
+                "        ('1413','Hyllestad',1,1,"                        . $time . "), " .
+                "        ('1416','Høyanger',1,1,"                         . $time . "), " .
+                "        ('1431','Jølster',1,1,"                          . $time . "), " .
+                "        ('1419','Leikanger',1,1,"                        . $time . "), " .
+                "        ('1426','Luster',1,1,"                           . $time . "), " .
+                "        ('1422','Lærdal',1,1,"                           . $time . "), " .
+                "        ('1433','Naustdal',1,1,"                         . $time . "), " .
+                "        ('1441','Selje',1,1,"                            . $time . "), " .
+                "        ('1420','Sogndal',1,1,"                          . $time . "), " .
+                "        ('1412','Solund',1,1,"                           . $time . "), " .
+                "        ('1449','Stryn',1,1,"                            . $time . "), " .
+                "        ('1417','Vik',1,1,"                              . $time . "), " .
+                "        ('1439','Vågsøy',1,1,"                           . $time . "), " .
+                "        ('1424','Årdal',1,1,"                            . $time . ") ";
             /* Execute */
             $DB->execute($sql);
 
@@ -1087,44 +1091,44 @@ class Kommit_CompetenceManager {
         try {
             /* First Level One  */
             /* SQL Instruction  */
-            $sql =  " INSERT INTO {report_gen_companydata} (industrycode,name,hierarchylevel,modified) " .
-                " VALUES ('15','Møre og Romsdal Fylkeskommune',1,"          . $time . "), " .
-                "        ('1547','Aukra',1,"                                . $time . "), " .
-                "        ('1576','Aure',1,"                                 . $time . "), " .
-                "        ('1554','Averøy',1,"                               . $time . "), " .
-                "        ('1551','Eide',1,"                                 . $time . "), " .
-                "        ('1548','Fræna',1,"                                . $time . "), " .
-                "        ('1532','Giske',1,"                                . $time . "), " .
-                "        ('1557','Gjemnes',1,"                              . $time . "), " .
-                "        ('1571','Halsa',1,"                                . $time . "), " .
-                "        ('1534','Haram',1,"                                . $time . "), " .
-                "        ('1517','Hareid',1,"                               . $time . "), " .
-                "        ('1515','Herøy',1,"                                . $time . "), " .
-                "        ('1505','Kristiansund',1,"                         . $time . "), " .
-                "        ('1545','Midsund',1,"                              . $time . "), " .
-                "        ('1502','Molde',1,"                                . $time . "), " .
-                "        ('1543','Nesset',1,"                               . $time . "), " .
-                "        ('1524','Norddal',1,"                              . $time . "), " .
-                "        ('1539','Rauma',1,"                                . $time . "), " .
-                "        ('1567','Rindal',1,"                               . $time . "), " .
-                "        ('1514','Sande',1,"                                . $time . "), " .
-                "        ('1546','Sandøy',1,"                               . $time . "), " .
-                "        ('1529','Skodje',1,"                               . $time . "), " .
-                "        ('1573','Smøla',1,"                                . $time . "), " .
-                "        ('1526','Stordal',1,"                              . $time . "), " .
-                "        ('1525','Stranda',1,"                              . $time . "), " .
-                "        ('1531','Sula',1,"                                 . $time . "), " .
-                "        ('1563','Sunndal',1,"                              . $time . "), " .
-                "        ('1566','Surnadal',1,"                             . $time . "), " .
-                "        ('1528','Sykkylven',1,"                            . $time . "), " .
-                "        ('1560','Tingvoll',1,"                             . $time . "), " .
-                "        ('1516','Ulstein',1,"                              . $time . "), " .
-                "        ('1511','Vanylven',1,"                             . $time . "), " .
-                "        ('1535','Vestnes',1,"                              . $time . "), " .
-                "        ('1519','Volda',1,"                                . $time . "), " .
-                "        ('1523','Ørskog',1,"                               . $time . "), " .
-                "        ('1520','Ørsta',1,"                                . $time . "), " .
-                "        ('1504','Ålesund',1,"                              . $time . ") ";
+            $sql =  " INSERT INTO {report_gen_companydata} (industrycode,name,hierarchylevel,public,modified) " .
+                " VALUES ('15','Møre og Romsdal Fylkeskommune',1,1,"          . $time . "), " .
+                "        ('1547','Aukra',1,1,"                                . $time . "), " .
+                "        ('1576','Aure',1,1,"                                 . $time . "), " .
+                "        ('1554','Averøy',1,1,"                               . $time . "), " .
+                "        ('1551','Eide',1,1,"                                 . $time . "), " .
+                "        ('1548','Fræna',1,1,"                                . $time . "), " .
+                "        ('1532','Giske',1,1,"                                . $time . "), " .
+                "        ('1557','Gjemnes',1,1,"                              . $time . "), " .
+                "        ('1571','Halsa',1,1,"                                . $time . "), " .
+                "        ('1534','Haram',1,1,"                                . $time . "), " .
+                "        ('1517','Hareid',1,1,"                               . $time . "), " .
+                "        ('1515','Herøy',1,1,"                                . $time . "), " .
+                "        ('1505','Kristiansund',1,1,"                         . $time . "), " .
+                "        ('1545','Midsund',1,1,"                              . $time . "), " .
+                "        ('1502','Molde',1,1,"                                . $time . "), " .
+                "        ('1543','Nesset',1,1,"                               . $time . "), " .
+                "        ('1524','Norddal',1,1,"                              . $time . "), " .
+                "        ('1539','Rauma',1,1,"                                . $time . "), " .
+                "        ('1567','Rindal',1,1,"                               . $time . "), " .
+                "        ('1514','Sande',1,1,"                                . $time . "), " .
+                "        ('1546','Sandøy',1,1,"                               . $time . "), " .
+                "        ('1529','Skodje',1,1,"                               . $time . "), " .
+                "        ('1573','Smøla',1,1,"                                . $time . "), " .
+                "        ('1526','Stordal',1,1,"                              . $time . "), " .
+                "        ('1525','Stranda',1,1,"                              . $time . "), " .
+                "        ('1531','Sula',1,1,"                                 . $time . "), " .
+                "        ('1563','Sunndal',1,1,"                              . $time . "), " .
+                "        ('1566','Surnadal',1,1,"                             . $time . "), " .
+                "        ('1528','Sykkylven',1,1,"                            . $time . "), " .
+                "        ('1560','Tingvoll',1,1,"                             . $time . "), " .
+                "        ('1516','Ulstein',1,1,"                              . $time . "), " .
+                "        ('1511','Vanylven',1,1,"                             . $time . "), " .
+                "        ('1535','Vestnes',1,1,"                              . $time . "), " .
+                "        ('1519','Volda',1,1,"                                . $time . "), " .
+                "        ('1523','Ørskog',1,1,"                               . $time . "), " .
+                "        ('1520','Ørsta',1,1,"                                . $time . "), " .
+                "        ('1504','Ålesund',1,1,"                              . $time . ") ";
             /* Execute  */
             $DB->execute($sql);
 
@@ -1162,33 +1166,33 @@ class Kommit_CompetenceManager {
         try {
             /* First Level One  */
             /* SQL Instruction  */
-            $sql =  " INSERT INTO {report_gen_companydata} (industrycode,name,hierarchylevel,modified) " .
-                " VALUES ('16','Sør-Trøndelag Fylkeskommune',1,"    . $time . "), " .
-                "        ('1622','Agdenes',1,"                      . $time . "), " .
-                "        ('1627','Bjugn',1,"                        . $time . "), " .
-                "        ('1620','Frøya',1,"                        . $time . "), " .
-                "        ('1612','Hemne',1,"                        . $time . "), " .
-                "        ('1617','Hitra',1,"                        . $time . "), " .
-                "        ('1644','Holtålen',1,"                     . $time . "), " .
-                "        ('1662','Klæbu',1,"                        . $time . "), " .
-                "        ('1663','Malvik',1,"                       . $time . "), " .
-                "        ('1636','Meldal',1,"                       . $time . "), " .
-                "        ('1653','Melhus',1,"                       . $time . "), " .
-                "        ('1648','Midtre Gauldal',1,"               . $time . "), " .
-                "        ('1634','Oppdal',1,"                       . $time . "), " .
-                "        ('1638','Orkdal',1,"                       . $time . "), " .
-                "        ('1633','Osen',1,"                         . $time . "), " .
-                "        ('1635','Rennebu',1,"                      . $time . "), " .
-                "        ('1624','Rissa',1,"                        . $time . "), " .
-                "        ('1632','Roan',1,"                         . $time . "), " .
-                "        ('1640','Røros',1,"                        . $time . "), " .
-                "        ('1664','Selbu',1,"                        . $time . "), " .
-                "        ('1657','Skaun',1,"                        . $time . "), " .
-                "        ('1613','Snillfjord',1,"                   . $time . "), " .
-                "        ('1601','Trondheim',1,"                    . $time . "), " .
-                "        ('1665','Tydal',1,"                        . $time . "), " .
-                "        ('1621','Ørland',1,"                       . $time . "), " .
-                "        ('1630','Åfjord',1,"                       . $time . ") ";
+            $sql =  " INSERT INTO {report_gen_companydata} (industrycode,name,hierarchylevel,public,modified) " .
+                " VALUES ('16','Sør-Trøndelag Fylkeskommune',1,1,"    . $time . "), " .
+                "        ('1622','Agdenes',1,1,"                      . $time . "), " .
+                "        ('1627','Bjugn',1,1,"                        . $time . "), " .
+                "        ('1620','Frøya',1,1,"                        . $time . "), " .
+                "        ('1612','Hemne',1,1,"                        . $time . "), " .
+                "        ('1617','Hitra',1,1,"                        . $time . "), " .
+                "        ('1644','Holtålen',1,1,"                     . $time . "), " .
+                "        ('1662','Klæbu',1,1,"                        . $time . "), " .
+                "        ('1663','Malvik',1,1,"                       . $time . "), " .
+                "        ('1636','Meldal',1,1,"                       . $time . "), " .
+                "        ('1653','Melhus',1,1,"                       . $time . "), " .
+                "        ('1648','Midtre Gauldal',1,1,"               . $time . "), " .
+                "        ('1634','Oppdal',1,1,"                       . $time . "), " .
+                "        ('1638','Orkdal',1,1,"                       . $time . "), " .
+                "        ('1633','Osen',1,1,"                         . $time . "), " .
+                "        ('1635','Rennebu',1,1,"                      . $time . "), " .
+                "        ('1624','Rissa',1,1,"                        . $time . "), " .
+                "        ('1632','Roan',1,1,"                         . $time . "), " .
+                "        ('1640','Røros',1,1,"                        . $time . "), " .
+                "        ('1664','Selbu',1,1,"                        . $time . "), " .
+                "        ('1657','Skaun',1,1,"                        . $time . "), " .
+                "        ('1613','Snillfjord',1,1,"                   . $time . "), " .
+                "        ('1601','Trondheim',1,1,"                    . $time . "), " .
+                "        ('1665','Tydal',1,1,"                        . $time . "), " .
+                "        ('1621','Ørland',1,1,"                       . $time . "), " .
+                "        ('1630','Åfjord',1,1,"                       . $time . ") ";
             /* Execute  */
             $DB->execute($sql);
 
@@ -1226,31 +1230,31 @@ class Kommit_CompetenceManager {
         try {
             /* First Level One  */
             /* SQL Instruction  */
-            $sql =  " INSERT INTO {report_gen_companydata} (industrycode,name,hierarchylevel,modified) " .
-                " VALUES ('17','Nord-Trøndelag Fylkeskommune',1,"       . $time . "), " .
-                "        ('1749','Flatanger',1,"                        . $time . "), " .
-                "        ('1748','Fosnes',1,"                           . $time . "), " .
-                "        ('1717','Frosta',1,"                           . $time . "), " .
-                "        ('1742','Grong',1,"                            . $time . "), " .
-                "        ('1743','Høylandet',1,"                        . $time . "), " .
-                "        ('1756','Inderøy',1,"                          . $time . "), " .
-                "        ('1755','Leka',1,"                             . $time . "), " .
-                "        ('1718','Leksvik',1,"                          . $time . "), " .
-                "        ('1719','Levanger',1,"                         . $time . "), " .
-                "        ('1738','Lierne',1,"                           . $time . "), " .
-                "        ('1711','Meråker',1,"                          . $time . "), " .
-                "        ('1725','Namdalseid',1,"                       . $time . "), " .
-                "        ('1703','Namsos',1,"                           . $time . "), " .
-                "        ('1740','Namsskogan',1,"                       . $time . "), " .
-                "        ('1751','Nærøy',1,"                            . $time . "), " .
-                "        ('1744','Overhalla',1,"                        . $time . "), " .
-                "        ('1739','Røyrvik',1,"                          . $time . "), " .
-                "        ('1736','Snåsa',1,"                            . $time . "), " .
-                "        ('1702','Steinkjer',1,"                        . $time . "), " .
-                "        ('1714','Stjørdal',1,"                         . $time . "), " .
-                "        ('1721','Verdal',1,"                           . $time . "), " .
-                "        ('1724','Verran',1,"                           . $time . "), " .
-                "        ('1750','Vikna',1,"                            . $time . ") ";
+            $sql =  " INSERT INTO {report_gen_companydata} (industrycode,name,hierarchylevel,public,modified) " .
+                " VALUES ('17','Nord-Trøndelag Fylkeskommune',1,1,"       . $time . "), " .
+                "        ('1749','Flatanger',1,1,"                        . $time . "), " .
+                "        ('1748','Fosnes',1,1,"                           . $time . "), " .
+                "        ('1717','Frosta',1,1,"                           . $time . "), " .
+                "        ('1742','Grong',1,1,"                            . $time . "), " .
+                "        ('1743','Høylandet',1,1,"                        . $time . "), " .
+                "        ('1756','Inderøy',1,1,"                          . $time . "), " .
+                "        ('1755','Leka',1,1,"                             . $time . "), " .
+                "        ('1718','Leksvik',1,1,"                          . $time . "), " .
+                "        ('1719','Levanger',1,1,"                         . $time . "), " .
+                "        ('1738','Lierne',1,1,"                           . $time . "), " .
+                "        ('1711','Meråker',1,1,"                          . $time . "), " .
+                "        ('1725','Namdalseid',1,1,"                       . $time . "), " .
+                "        ('1703','Namsos',1,1,"                           . $time . "), " .
+                "        ('1740','Namsskogan',1,1,"                       . $time . "), " .
+                "        ('1751','Nærøy',1,1,"                            . $time . "), " .
+                "        ('1744','Overhalla',1,1,"                        . $time . "), " .
+                "        ('1739','Røyrvik',1,1,"                          . $time . "), " .
+                "        ('1736','Snåsa',1,1,"                            . $time . "), " .
+                "        ('1702','Steinkjer',1,1,"                        . $time . "), " .
+                "        ('1714','Stjørdal',1,1,"                         . $time . "), " .
+                "        ('1721','Verdal',1,1,"                           . $time . "), " .
+                "        ('1724','Verran',1,1,"                           . $time . "), " .
+                "        ('1750','Vikna',1,1,"                            . $time . ") ";
             /* Execute  */
             $DB->execute($sql);
 
@@ -1288,52 +1292,52 @@ class Kommit_CompetenceManager {
         try {
             /* First Level One  */
             /* SQL Instruction  */
-            $sql =  " INSERT INTO {report_gen_companydata} (industrycode,name,hierarchylevel,modified) " .
-                " VALUES ('18','Nordland Fylkeskommune',1,"         . $time . "), " .
-                "        ('1820','Alstahaug',1,"                    . $time . "), " .
-                "        ('1871','Andøy',1,"                        . $time . "), " .
-                "        ('1854','Ballangen',1,"                    . $time . "), " .
-                "        ('1839','Beiarn',1,"                       . $time . "), " .
-                "        ('1811','Bindal',1,"                       . $time . "), " .
-                "        ('1804','Bodø',1,"                         . $time . "), " .
-                "        ('1813','Brønnøy',1,"                      . $time . "), " .
-                "        ('1867','Bø',1,"                           . $time . "), " .
-                "        ('1827','Dønna',1,"                        . $time . "), " .
-                "        ('1853','Evenes',1,"                       . $time . "), " .
-                "        ('1841','Fauske',1,"                       . $time . "), " .
-                "        ('1859','Flakstad',1,"                     . $time . "), " .
-                "        ('1838','Gildeskål',1,"                    . $time . "), " .
-                "        ('1825','Grane',1,"                        . $time . "), " .
-                "        ('1866','Hadsel',1,"                       . $time . "), " .
-                "        ('1849','Hamarøy',1,"                      . $time . "), " .
-                "        ('1826','Hattfjelldal',1,"                 . $time . "), " .
-                "        ('1832','Hemnes',1,"                       . $time . "), " .
-                "        ('1818','Herøy',1,"                        . $time . "), " .
-                "        ('1822','Leirfjord',1,"                    . $time . "), " .
-                "        ('1834','Lurøy',1,"                        . $time . "), " .
-                "        ('1851','Lødingen',1,"                     . $time . "), " .
-                "        ('1837','Meløy',1,"                        . $time . "), " .
-                "        ('1874','Moskenes',1,"                     . $time . "), " .
-                "        ('1805','Narvik',1,"                       . $time . "), " .
-                "        ('1828','Nesna',1,"                        . $time . "), " .
-                "        ('1833','Rana',1,"                         . $time . "), " .
-                "        ('1836','Rødøy',1,"                        . $time . "), " .
-                "        ('1856','Røst',1,"                         . $time . "), " .
-                "        ('1840','Saltdal',1,"                      . $time . "), " .
-                "        ('1870','Sortland',1,"                     . $time . "), " .
-                "        ('1848','Steigen',1,"                      . $time . "), " .
-                "        ('1812','Sømna',1,"                        . $time . "), " .
-                "        ('1845','Sørfold',1,"                      . $time . "), " .
-                "        ('1852','Tjeldsund',1,"                    . $time . "), " .
-                "        ('1835','Træna',1,"                        . $time . "), " .
-                "        ('1850','Tysfjord',1,"                     . $time . "), " .
-                "        ('1824','Vefsn',1,"                        . $time . "), " .
-                "        ('1815','Vega',1,"                         . $time . "), " .
-                "        ('1860','Vestvågøy',1,"                    . $time . "), " .
-                "        ('1816','Vevelstad',1,"                    . $time . "), " .
-                "        ('1857','Værøy',1,"                        . $time . "), " .
-                "        ('1865','Vågan',1,"                        . $time . "), " .
-                "        ('1868','Øksnes',1,"                       . $time . ") ";
+            $sql =  " INSERT INTO {report_gen_companydata} (industrycode,name,hierarchylevel,public,modified) " .
+                " VALUES ('18','Nordland Fylkeskommune',1,1,"         . $time . "), " .
+                "        ('1820','Alstahaug',1,1,"                    . $time . "), " .
+                "        ('1871','Andøy',1,1,"                        . $time . "), " .
+                "        ('1854','Ballangen',1,1,"                    . $time . "), " .
+                "        ('1839','Beiarn',1,1,"                       . $time . "), " .
+                "        ('1811','Bindal',1,1,"                       . $time . "), " .
+                "        ('1804','Bodø',1,1,"                         . $time . "), " .
+                "        ('1813','Brønnøy',1,1,"                      . $time . "), " .
+                "        ('1867','Bø',1,1,"                           . $time . "), " .
+                "        ('1827','Dønna',1,1,"                        . $time . "), " .
+                "        ('1853','Evenes',1,1,"                       . $time . "), " .
+                "        ('1841','Fauske',1,1,"                       . $time . "), " .
+                "        ('1859','Flakstad',1,1,"                     . $time . "), " .
+                "        ('1838','Gildeskål',1,1,"                    . $time . "), " .
+                "        ('1825','Grane',1,1,"                        . $time . "), " .
+                "        ('1866','Hadsel',1,1,"                       . $time . "), " .
+                "        ('1849','Hamarøy',1,1,"                      . $time . "), " .
+                "        ('1826','Hattfjelldal',1,1,"                 . $time . "), " .
+                "        ('1832','Hemnes',1,1,"                       . $time . "), " .
+                "        ('1818','Herøy',1,1,"                        . $time . "), " .
+                "        ('1822','Leirfjord',1,1,"                    . $time . "), " .
+                "        ('1834','Lurøy',1,1,"                        . $time . "), " .
+                "        ('1851','Lødingen',1,1,"                     . $time . "), " .
+                "        ('1837','Meløy',1,1,"                        . $time . "), " .
+                "        ('1874','Moskenes',1,1,"                     . $time . "), " .
+                "        ('1805','Narvik',1,1,"                       . $time . "), " .
+                "        ('1828','Nesna',1,1,"                        . $time . "), " .
+                "        ('1833','Rana',1,1,"                         . $time . "), " .
+                "        ('1836','Rødøy',1,1,"                        . $time . "), " .
+                "        ('1856','Røst',1,1,"                         . $time . "), " .
+                "        ('1840','Saltdal',1,1,"                      . $time . "), " .
+                "        ('1870','Sortland',1,1,"                     . $time . "), " .
+                "        ('1848','Steigen',1,1,"                      . $time . "), " .
+                "        ('1812','Sømna',1,1,"                        . $time . "), " .
+                "        ('1845','Sørfold',1,1,"                      . $time . "), " .
+                "        ('1852','Tjeldsund',1,1,"                    . $time . "), " .
+                "        ('1835','Træna',1,1,"                        . $time . "), " .
+                "        ('1850','Tysfjord',1,1,"                     . $time . "), " .
+                "        ('1824','Vefsn',1,1,"                        . $time . "), " .
+                "        ('1815','Vega',1,1,"                         . $time . "), " .
+                "        ('1860','Vestvågøy',1,1,"                    . $time . "), " .
+                "        ('1816','Vevelstad',1,1,"                    . $time . "), " .
+                "        ('1857','Værøy',1,1,"                        . $time . "), " .
+                "        ('1865','Vågan',1,1,"                        . $time . "), " .
+                "        ('1868','Øksnes',1,1,"                       . $time . ") ";
             /* Execute  */
             $DB->execute($sql);
 
@@ -1371,32 +1375,32 @@ class Kommit_CompetenceManager {
         try {
             /* First Level One  */
             /* SQL Instruction  */
-            $sql =  " INSERT INTO {report_gen_companydata} (industrycode,name,hierarchylevel,modified) " .
-                " VALUES ('19','Troms Fylkeskommune',1,"    . $time . "), " .
-                "        ('1933','Balsfjord',1,"            . $time . "), " .
-                "        ('1922','Bardu',1,"                . $time . "), " .
-                "        ('1929','Berg',1,"                 . $time . "), " .
-                "        ('1926','Dyrøy',1,"                . $time . "), " .
-                "        ('1919','Gratangen',1,"            . $time . "), " .
-                "        ('1903','Harstad',1,"              . $time . "), " .
-                "        ('1917','Ibestad',1,"              . $time . "), " .
-                "        ('1936','Karlsøy',1,"              . $time . "), " .
-                "        ('1911','Kvæfjord',1,"             . $time . "), " .
-                "        ('1943','Kvænangen',1,"            . $time . "), " .
-                "        ('1940','Kåfjord',1,"              . $time . "), " .
-                "        ('1920','Lavangen',1,"             . $time . "), " .
-                "        ('1931','Lenvik',1,"               . $time . "), " .
-                "        ('1938','Lyngen',1,"               . $time . "), " .
-                "        ('1924','Målselv',1,"              . $time . "), " .
-                "        ('1942','Nordreisa',1,"            . $time . "), " .
-                "        ('1923','Salangen',1,"             . $time . "), " .
-                "        ('1941','Skjervøy',1,"             . $time . "), " .
-                "        ('1913','Skånland',1,"             . $time . "), " .
-                "        ('1939','Storfjord',1,"            . $time . "), " .
-                "        ('1925','Sørreisa',1,"             . $time . "), " .
-                "        ('1928','Torsken',1,"              . $time . "), " .
-                "        ('1927','Tranøy',1,"               . $time . "), " .
-                "        ('1902','Tromsø',1,"               . $time . ") ";
+            $sql =  " INSERT INTO {report_gen_companydata} (industrycode,name,hierarchylevel,public,modified) " .
+                " VALUES ('19','Troms Fylkeskommune',1,1,"    . $time . "), " .
+                "        ('1933','Balsfjord',1,1,"            . $time . "), " .
+                "        ('1922','Bardu',1,1,"                . $time . "), " .
+                "        ('1929','Berg',1,1,"                 . $time . "), " .
+                "        ('1926','Dyrøy',1,1,"                . $time . "), " .
+                "        ('1919','Gratangen',1,1,"            . $time . "), " .
+                "        ('1903','Harstad',1,1,"              . $time . "), " .
+                "        ('1917','Ibestad',1,1,"              . $time . "), " .
+                "        ('1936','Karlsøy',1,1,"              . $time . "), " .
+                "        ('1911','Kvæfjord',1,1,"             . $time . "), " .
+                "        ('1943','Kvænangen',1,1,"            . $time . "), " .
+                "        ('1940','Kåfjord',1,1,"              . $time . "), " .
+                "        ('1920','Lavangen',1,1,"             . $time . "), " .
+                "        ('1931','Lenvik',1,1,"               . $time . "), " .
+                "        ('1938','Lyngen',1,1,"               . $time . "), " .
+                "        ('1924','Målselv',1,1,"              . $time . "), " .
+                "        ('1942','Nordreisa',1,1,"            . $time . "), " .
+                "        ('1923','Salangen',1,1,"             . $time . "), " .
+                "        ('1941','Skjervøy',1,1,"             . $time . "), " .
+                "        ('1913','Skånland',1,1,"             . $time . "), " .
+                "        ('1939','Storfjord',1,1,"            . $time . "), " .
+                "        ('1925','Sørreisa',1,1,"             . $time . "), " .
+                "        ('1928','Torsken',1,1,"              . $time . "), " .
+                "        ('1927','Tranøy',1,1,"               . $time . "), " .
+                "        ('1902','Tromsø',1,1,"               . $time . ") ";
             /* Execute  */
             $DB->execute($sql);
 
@@ -1434,27 +1438,27 @@ class Kommit_CompetenceManager {
         try {
             /* First Level One  */
             /* SQL Instruction  */
-            $sql =  " INSERT INTO {report_gen_companydata} (industrycode,name,hierarchylevel,modified) " .
-                " VALUES ('20','Finnmark Fylkeskommune',1,"         . $time . "), " .
-                "        ('2012','Alta',1,"                         . $time . "), " .
-                "        ('2024','Berlevåg',1,"                     . $time . "), " .
-                "        ('2028','Båtsfjord',1,"                    . $time . "), " .
-                "        ('2023','Gamvik',1,"                       . $time . "), " .
-                "        ('2004','Hammerfest',1,"                   . $time . "), " .
-                "        ('2015','Hasvik',1,"                       . $time . "), " .
-                "        ('2021','Karasjok',1,"                     . $time . "), " .
-                "        ('2011','Kautokeino',1,"                   . $time . "), " .
-                "        ('2017','Kvalsund',1,"                     . $time . "), " .
-                "        ('2022','Lebesby',1,"                      . $time . "), " .
-                "        ('2014','Loppa',1,"                        . $time . "), " .
-                "        ('2018','Måsøy',1,"                        . $time . "), " .
-                "        ('2027','Nesseby',1,"                      . $time . "), " .
-                "        ('2019','Nordkapp',1,"                     . $time . "), " .
-                "        ('2020','Porsanger',1,"                    . $time . "), " .
-                "        ('2030','Sør-Varanger',1,"                 . $time . "), " .
-                "        ('2025','Tana',1,"                         . $time . "), " .
-                "        ('2003','Vadsø',1,"                        . $time . "), " .
-                "        ('2002','Vardø',1,"                        . $time . ") ";
+            $sql =  " INSERT INTO {report_gen_companydata} (industrycode,name,hierarchylevel,public,modified) " .
+                " VALUES ('20','Finnmark Fylkeskommune',1,1,"         . $time . "), " .
+                "        ('2012','Alta',1,1,"                         . $time . "), " .
+                "        ('2024','Berlevåg',1,1,"                     . $time . "), " .
+                "        ('2028','Båtsfjord',1,1,"                    . $time . "), " .
+                "        ('2023','Gamvik',1,1,"                       . $time . "), " .
+                "        ('2004','Hammerfest',1,1,"                   . $time . "), " .
+                "        ('2015','Hasvik',1,1,"                       . $time . "), " .
+                "        ('2021','Karasjok',1,1,"                     . $time . "), " .
+                "        ('2011','Kautokeino',1,1,"                   . $time . "), " .
+                "        ('2017','Kvalsund',1,1,"                     . $time . "), " .
+                "        ('2022','Lebesby',1,1,"                      . $time . "), " .
+                "        ('2014','Loppa',1,1,"                        . $time . "), " .
+                "        ('2018','Måsøy',1,1,"                        . $time . "), " .
+                "        ('2027','Nesseby',1,1,"                      . $time . "), " .
+                "        ('2019','Nordkapp',1,1,"                     . $time . "), " .
+                "        ('2020','Porsanger',1,1,"                    . $time . "), " .
+                "        ('2030','Sør-Varanger',1,1,"                 . $time . "), " .
+                "        ('2025','Tana',1,1,"                         . $time . "), " .
+                "        ('2003','Vadsø',1,1,"                        . $time . "), " .
+                "        ('2002','Vardø',1,1,"                        . $time . ") ";
             /* Execute  */
             $DB->execute($sql);
 
@@ -1492,7 +1496,7 @@ class Kommit_CompetenceManager {
         try {
             /* First Level One  */
             /* SQL Instruction  */
-            $sql = " INSERT INTO {report_gen_companydata} (industrycode,name,hierarchylevel,modified) VALUES ('2111','Longyearbyen lokalstyre',1," . $time . ")";
+            $sql = " INSERT INTO {report_gen_companydata} (industrycode,name,hierarchylevel,public,modified) VALUES ('2111','Longyearbyen lokalstyre',1,1," . $time . ")";
             /* Execute  */
             $DB->execute($sql);
 

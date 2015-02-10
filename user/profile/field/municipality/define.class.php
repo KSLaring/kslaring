@@ -19,4 +19,5 @@ class profile_define_municipality extends profile_define_base {
         $form->addElement('text', 'defaultdata', get_string('profiledefaultdata', 'admin'), 'size="50"');
         $form->setType('defaultdata', PARAM_TEXT);
     }//define_form_specific
+    
 }//profile_define_municipality

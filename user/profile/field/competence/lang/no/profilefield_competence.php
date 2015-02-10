@@ -16,38 +16,36 @@
  *
  */
 
-$string['pluginname']           = 'Competence User Profile';
-$string['pluginname_help']      = 'Competence User Profile contains information about the companies and job roles connected with.';
+$string['pluginname']           = 'Brukers kompetanseprofil';
+$string['pluginname_help']      = 'Brukerens kompetanseprofil inneholder informasjon om arbeidssted og jobbroller.';
 
-$string['competence_profile']   = 'Competence Profile';
+$string['competence_profile']   = 'Kompetanseprofil';
 
-$string['profile_desc'] = 'Your information about your companies and job roles';
-$string['lnk_update']   = 'Update';
-$string['lnk_edit']     = 'Edit';
-$string['lnk_delete']   = 'Delete';
+$string['profile_desc'] = 'Din informasjon om arbeidssted og jobbroller';
+$string['lnk_update']   = 'Oppdater';
+$string['lnk_edit']     = 'Rediger';
+$string['lnk_delete']   = 'Slett';
+$string['lnk_view']     = 'Vis mine kompetanser';
 
-$string['my_companies'] = 'Companies';
-$string['my_job_roles'] = 'Job roles';
+$string['my_companies'] = 'Arbeidsstedere';
+$string['my_job_roles'] = 'Jobbroller';
 $string['jr_generics']  = 'Roles generics';
 
-$string['lnk_add']      = 'Add New';
-$string['lnk_back']     = 'Back';
+$string['lnk_add']      = 'Opprett ny';
+$string['lnk_back']     = 'Tilbake til Min profil';
 
-$string['delete_competence']            = 'Delete competence';
-$string['delete_competence_are_sure']   = '<p> You are going to delete from your profile the next: </p>
+$string['delete_competence']            = 'Slett kompetanse';
+$string['delete_competence_are_sure']   = '<p> Du kommer til å slette følgende fra din profil: </p>
                                                     <li>{$a->company}:</li>
                                                     <p> {$a->roles}</p>
-                                           <p> Are you sure?</p>';
-$string['delete_generics_are_sure']     = '<p> You are going to delete from your profile the next: </p>
-                                                    <p> {$a}</p>
-                                           <p> Are you sure?</p>';
+                                           <p> Er du sikker?</p>';
 
-$string['add_competence']    = 'Add new competence';
-$string['add_competence_desc']  = 'Here you can add a new competence profile. You should select one or more companies and job roles, which have to be connected with.';
-$string['btn_add']           = 'Add';
+$string['add_competence']    = 'Legg til nytt arbeidssted og jobbrolle';
+$string['add_competence_desc']  = 'Her kan du legge til arbeidssteder og jobbroller som du har.';
+$string['btn_add']           = 'Legg til';
 
-$string['edit_competence']      = 'Edit competence';
-$string['btn_save']             = 'Save';
-$string['edit_competence_desc'] = 'Here you can update your current competence profile.';
+$string['edit_competence']      = 'Rediger kompetanser';
+$string['btn_save']             = 'Lagre';
+$string['edit_competence_desc'] = 'Her kan du oppdatere kompetanseprofilen din.';
 
-$string['level_generic']        = 'Generics';
+$string['level_generic']        = 'Generiske';

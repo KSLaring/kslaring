@@ -31,7 +31,11 @@ $PAGE->requires->js('/report/manager/js/manager.js');
 /* Form to add a new company into one level */
 class manager_add_company_structure_form extends moodleform {
     function definition() {
+        /* Variables    */
         global $SESSION;
+        $parent_info    = null;
+        $attr           = '';
+        $default        = 1;
 
         $m_form = $this->_form;
 
@@ -44,15 +48,17 @@ class manager_add_company_structure_form extends moodleform {
         $level= $this->_customdata;
 
 
-        $m_form->addElement('header', 'level_' . $level, 'Company Structure - Level ' .$level);
+        $m_form->addElement('header', 'header_level_' . $level, get_string('company_structure','report_manager') . ' - ' . get_string('company_structure_level','report_manager',$level));
         /* Add reference's parents */
         $parents = $SESSION->parents;
-        if ($level) {
-            $parent_name = company_structure::Get_Company_ParentName($level-1,$parents[$level-1]);
-            $m_form->addElement('text','parent_' . $level-1,'Company Parent - Level ' . ($level-1),'size = 50 readonly');
-            $m_form->setDefault('parent_' . $level-1,$parent_name);
-            $m_form->setType('parent_' . $level-1,PARAM_TEXT);
-        }//if_level
+        /* Add Parents */
+        for ($i = 0; $i < $level; $i++) {
+            $parent_info = company_structure::Get_CompanyInfo($parents[$i]);
+            $m_form->addElement('text','parent_' . $i,get_string('comp_parent','report_manager', $i),'size = 50 readonly');
+            $m_form->setDefault('parent_' . $i,$parent_info->name);
+            $m_form->setType('parent_' . $i,PARAM_TEXT);
+        }//for
+
         /* New Item / Company */
         $m_form->addElement('text', 'name', get_string('add_company_level','report_manager'), $text_attr);
         $m_form->setType('name',PARAM_TEXT);
@@ -66,6 +72,20 @@ class manager_add_company_structure_form extends moodleform {
         $m_form->addElement('text', 'industry_code', get_string('industry_code','report_manager'), $text_attr);
         $m_form->setType('industry_code',PARAM_TEXT);
         $m_form->addRule('industry_code','','required', null, 'server');
+
+        /* Public Check Box     */
+        if ($parent_info) {
+            $attr = 'disabled';
+            $default = $parent_info->public;
+        }
+        $m_form->addElement('checkbox', 'public','',get_string('public', 'report_manager'),$attr);
+        $m_form->setDefault('public',$default);
+        /* Public Parent Hide   */
+        if ($parent_info) {
+            $m_form->addElement('hidden','public_parent');
+            $m_form->setDefault('public_parent',$parent_info->public);
+            $m_form->setType('public_parent',PARAM_INT);
+        }
 
         $m_form->addElement('hidden','level');
         $m_form->setDefault('level',$level);

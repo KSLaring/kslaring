@@ -20,16 +20,18 @@ require_once($CFG->libdir . '/adminlib.php');
 require_login();
 
 /* PARAMS */
-$user_id        = required_param('id',PARAM_INT);
-$competence_id  = required_param('uc',PARAM_INT);
-$levelThree     = required_param('co',PARAM_INT);
-$confirmed      = optional_param('confirm', false, PARAM_BOOL);
+$user_id            = optional_param('id',0,PARAM_INT);
+/* Competence Date ID   */
+$competence_data    = optional_param('icd',0,PARAM_INT);
+/* Competence Data      */
+$competence         = optional_param('ic',0,PARAM_INT);
+$confirmed          = optional_param('confirm', false, PARAM_BOOL);
 
 $my_competence  = null;
-$to_delete      = null;
+$my_hierarchy   = null;
 $confirmed      = optional_param('confirm', false, PARAM_BOOL);
-$url            = new moodle_url('/user/profile/field/competence/actions/delete_competence.php',array('id' =>$user_id,'uc' => $competence_id, 'co' => $levelThree));
-$confirm_url    = new moodle_url('/user/profile/field/competence/actions/delete_competence.php',array('id' =>$user_id,'uc' => $competence_id, 'co' => $levelThree, 'confirm' => true));
+$url            = new moodle_url('/user/profile/field/competence/actions/delete_competence.php',array('id' =>$user_id,'icd' => $competence_data,'ic' => $competence));
+$confirm_url    = new moodle_url('/user/profile/field/competence/actions/delete_competence.php',array('id' =>$user_id,'icd' => $competence_data,'ic' => $competence,'confirm' => true));
 $return_url     = new moodle_url('/user/profile/field/competence/competence.php',array('id' =>$user_id));
 
 /* Settings Page    */
@@ -49,19 +51,9 @@ if (empty($CFG->loginhttps)) {
 
 $PAGE->verify_https_required();
 
-
-
 /* Get My Competence    */
-$my_competence = Competence::Get_CompetenceData($user_id);
-if ($levelThree) {
-    $to_delete     = $my_competence->companies[$levelThree];
-
-}else {
-    $to_delete              = new stdClass();
-    $to_delete->levelThree  = 0;
-    $to_delete->path        = '';
-    $to_delete->roles       = $my_competence->generics;
-}//if_levelThree
+    $my_competence = Competence::Get_CompetenceData($user_id,$competence_data,$competence);
+    $my_hierarchy  = $my_competence[$competence_data];
 
 
 /* First Confirm    */
@@ -69,19 +61,17 @@ if (!$confirmed) {
     /* Print Header */
     echo $OUTPUT->header();
 
-    if ($levelThree) {
         $a = new stdClass();
-        $a->company = $to_delete->path;
-        $a->roles   = implode(',',$to_delete->roles);
+        $a->company = $my_hierarchy->path;
+        $a->roles   = implode(',',$my_hierarchy->roles);
+
         echo $OUTPUT->confirm(get_string('delete_competence_are_sure','profilefield_competence',$a),$confirm_url,$return_url);
-    }else {
-        echo $OUTPUT->confirm(get_string('delete_generics_are_sure','profilefield_competence',implode(',',$my_competence->generics)),$confirm_url,$return_url);
-    }//if_levelThree
 
     /* Print Footer */
     echo $OUTPUT->footer();
 }else {
-    Competence::DeleteCompetence($user_id,$competence_id,$to_delete);
+    Competence::DeleteCompetence($user_id,$competence_data,$competence);
+
     redirect($return_url);
 }//if_confirm
 

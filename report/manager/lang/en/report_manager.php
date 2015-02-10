@@ -372,3 +372,5 @@ $string['municipality']     = 'Municipality';
 $string['sel_municipality'] =  'Choose a municipality...';
 $string['industry_code']    = 'Industry code';
 $string['err_job_role']     = 'This job role already exists.';
+
+$string['public']           = 'Public';
