@@ -235,7 +235,7 @@ abstract class enrolmethodbase  {
 		$queueentry->customtext2 = '';
 		$queueentry->customtext3 = '';
 		$queueentry->timecreated  = time();
-		$queueentry->queueno = 	1;
+		$queueentry->queueno = 	0;
 		$queueentry->seats = 1;
 		$queueentry->timemodified = $queueentry->timecreated;
 		
