@@ -270,7 +270,9 @@ class enrolmethodself extends \enrol_waitinglist\method\enrolmethodbase{
         }
 
 		//prepare additional fields for our queue DB entry
+		//we need at least one, so we set an empty string for password if necessary
 		$queue_entry = new \stdClass;
+		if(!isset($data->enrolpassword)){$data->enrolpassword='';}
 		$queue_entry->{self::QFIELD_ENROLPASSWORD}=$data->enrolpassword;
 		
 		//add the user to the waitinglist queue 
