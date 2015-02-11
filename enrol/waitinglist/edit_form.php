@@ -50,6 +50,8 @@ class enrol_waitinglist_edit_form extends moodleform {
 		$mform->addRule(ENROL_WAITINGLIST_FIELD_WAITLISTSIZE, null, 'numeric', null, 'client');
 		$mform->setType(ENROL_WAITINGLIST_FIELD_MAXENROLMENTS, PARAM_INT);
 		$mform->setType(ENROL_WAITINGLIST_FIELD_WAITLISTSIZE, PARAM_INT);
+		$mform->setDefault(ENROL_WAITINGLIST_FIELD_MAXENROLMENTS, $plugin->get_config('maxenrolments'));
+		$mform->setDefault(ENROL_WAITINGLIST_FIELD_WAITLISTSIZE, $plugin->get_config('waitlistsize'));
 		
 		
 		
@@ -82,6 +84,21 @@ class enrol_waitinglist_edit_form extends moodleform {
         $mform->addElement('duration', 'expirythreshold', get_string('expirythreshold', 'core_enrol'), array('optional' => false, 'defaultunit' => 86400));
         $mform->addHelpButton('expirythreshold', 'expirythreshold', 'core_enrol');
         $mform->disabledIf('expirythreshold', 'expirynotify', 'eq', 0);
+        
+        $mform->addElement('advcheckbox', ENROL_WAITINGLIST_FIELD_SENDWELCOMEMESSAGE, get_string('sendcoursewelcomemessage', 'enrol_waitinglist'));
+        $mform->addHelpButton(ENROL_WAITINGLIST_FIELD_SENDWELCOMEMESSAGE, 'sendcoursewelcomemessage', 'enrol_waitinglist');
+        $mform->setDefault(ENROL_WAITINGLIST_FIELD_SENDWELCOMEMESSAGE, $plugin->get_config('sendcoursewelcomemessage'));
+
+        $mform->addElement('textarea', ENROL_WAITINGLIST_FIELD_WELCOMEMESSAGE, get_string('customwelcomemessage', 'enrol_waitinglist'), array('cols'=>'60', 'rows'=>'8'));
+        $mform->addHelpButton(ENROL_WAITINGLIST_FIELD_WELCOMEMESSAGE, 'customwelcomemessage', 'enrol_waitinglist');
+
+		$mform->addElement('advcheckbox', ENROL_WAITINGLIST_FIELD_SENDWAITLISTMESSAGE, get_string('sendcoursewaitlistmessage', 'enrol_waitinglist'));
+        $mform->addHelpButton(ENROL_WAITINGLIST_FIELD_SENDWAITLISTMESSAGE, 'sendcoursewaitlistmessage', 'enrol_waitinglist');
+		$mform->setDefault(ENROL_WAITINGLIST_FIELD_SENDWAITLISTMESSAGE, $plugin->get_config('sendcoursewaitlistmessage'));
+		
+		
+        $mform->addElement('textarea', ENROL_WAITINGLIST_FIELD_WAITLISTMESSAGE, get_string('customwaitlistmessage', 'enrol_waitinglist'), array('cols'=>'60', 'rows'=>'8'));
+        $mform->addHelpButton(ENROL_WAITINGLIST_FIELD_WAITLISTMESSAGE, 'customwaitlistmessage', 'enrol_waitinglist');
 
         $mform->addElement('hidden', 'courseid');
         $mform->setType('courseid', PARAM_INT);

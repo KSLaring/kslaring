@@ -27,6 +27,10 @@ defined('MOODLE_INTERNAL') || die();
 define('ENROL_WAITINGLIST_FIELD_CUTOFFDATE', 'customint1');
 define('ENROL_WAITINGLIST_FIELD_MAXENROLMENTS', 'customint2');
 define('ENROL_WAITINGLIST_FIELD_WAITLISTSIZE', 'customint3');
+define('ENROL_WAITINGLIST_FIELD_SENDWELCOMEMESSAGE', 'customint4');
+define('ENROL_WAITINGLIST_FIELD_SENDWAITLISTMESSAGE', 'customint5');
+define('ENROL_WAITINGLIST_FIELD_WELCOMEMESSAGE', 'customtext1');
+define('ENROL_WAITINGLIST_FIELD_WAITLISTMESSAGE', 'customtext2');
 define('ENROL_WAITINGLIST_TABLE_QUEUE', 'enrol_waitinglist_queue');
 define('ENROL_WAITINGLIST_TABLE_METHODS', 'enrol_waitinglist_method');
 
@@ -70,12 +74,12 @@ class enrol_waitinglist_plugin extends enrol_plugin {
      *
      * @return array array of waitlinglist enrolment methods
      */
-	public static function get_methods($course){
+	public static function get_methods($course, $waitinglistid = false){
 		$methods=array();
 		foreach(self::get_method_names() as $methodtype){
 		 $class = '\enrol_waitinglist\method\\' . $methodtype. '\enrolmethod' .$methodtype ;
 		   if (class_exists($class)){
-				$themethod = $class::get_by_course($course->id); 
+				$themethod = $class::get_by_course($course->id, $waitinglistid); 
 				if($themethod){$methods[]=$themethod;}
 		   }
 		}
@@ -179,7 +183,7 @@ class enrol_waitinglist_plugin extends enrol_plugin {
 		$course = get_course($instance->courseid);
 		break;
 	   }
-		$methods = $this->get_methods($course);
+		$methods = $this->get_methods($course, $instance->id);
 		if(!$methods){return array();}
 		foreach($methods as $method){
 			if($method->is_active()){
@@ -206,7 +210,7 @@ class enrol_waitinglist_plugin extends enrol_plugin {
 		}	
 		
 		
-		$methods = $this->get_methods($course);
+		$methods = $this->get_methods($course, $instance->id);
 
 		$hooks = array();
 		foreach($methods as $method){
@@ -233,6 +237,30 @@ class enrol_waitinglist_plugin extends enrol_plugin {
 		return $this->can_self_enrol($instance);
 		
     }
+    
+    
+    /**
+     * Enrol user into course via enrol instance.
+     *
+     * @param stdClass $instance
+     * @param int $userid
+     * @param int $roleid optional role id
+     * @param int $timestart 0 means unknown
+     * @param int $timeend 0 means forever
+     * @param int $status default to ENROL_USER_ACTIVE for new enrolments, no change by default in updates
+     * @param bool $recovergrades restore grade history
+     * @return void
+     */
+    public function enrol_user(stdClass $instance, $userid, $roleid = null, $timestart = 0, $timeend = 0, $status = null, $recovergrades = null) {
+   		global $USER;
+   		
+   		parent::enrol_user($instance,$userid,$roleid,$timestart,$timeend,$status,$recovergrades);
+     	// Send welcome message.
+        if ($instance->{ENROL_WAITINGLIST_FIELD_SENDWELCOMEMESSAGE}) {
+            $this->email_welcome_message($instance, $USER);
+        }
+    }
+    
 	
 	    /**
      * Checks if user can self enrol.
@@ -244,7 +272,7 @@ class enrol_waitinglist_plugin extends enrol_plugin {
      */
     public function can_self_enrol(stdClass $instance, $checkuserenrolment = true) {
        $course = get_course($instance->courseid);
-		$methods = $this->get_methods($course);
+		$methods = $this->get_methods($course,$instance->id);
 		foreach($methods as $method){
 			if ((true === $method->can_self_enrol($instance, false)) && $method->is_active()) {
 				return true;
@@ -315,9 +343,25 @@ class enrol_waitinglist_plugin extends enrol_plugin {
             'enrolperiod'     => $this->get_config('enrolperiod', 0),
             'expirynotify'    => $expirynotify,
             'notifyall'       => $notifyall,
+             ENROL_WAITINGLIST_FIELD_SENDWELCOMEMESSAGE=> $this->get_config('sendcoursewelcomemessage'),
+             ENROL_WAITINGLIST_FIELD_SENDWAITLISTMESSAGE=> $this->get_config('sendcoursewaitlistmessage'),
+             ENROL_WAITINGLIST_FIELD_MAXENROLMENTS> $this->get_config('maxenrolments'),
+             ENROL_WAITINGLIST_FIELD_WAITLISTSIZE=> $this->get_config('waitlistsize'),
             'expirythreshold' => $this->get_config('expirythreshold', 86400),
         );
-        return $this->add_instance($course, $fields);
+        $waitinglistid = $this->add_instance($course, $fields);
+
+        //add an instance of each of the methods, if the waitinglist instance was created ok
+        if($waitinglistid){
+			$methods=array();
+			foreach(self::get_method_names() as $methodtype){
+			 $class = '\enrol_waitinglist\method\\' . $methodtype. '\enrolmethod' .$methodtype ;
+			   if (class_exists($class)){
+					$class::add_default_instance( $waitinglistid,$course->id); 
+			   }
+			}
+		}
+		return $waitinglistid;  
     }
 
     /**
@@ -358,6 +402,7 @@ class enrol_waitinglist_plugin extends enrol_plugin {
 			}
 		}
 	}
+	
 
 
     /**
@@ -580,6 +625,60 @@ class enrol_waitinglist_plugin extends enrol_plugin {
             $this->enrol_user($instance, $userid, null, $data->timestart, $data->timeend, $data->status);
         }
     }
+    
+    /**
+     * Send welcome email to specified user.
+     *
+     * @param stdClass $instance
+     * @param stdClass $user user record
+     * @return void
+     */
+    protected function email_welcome_message($instance, $user) {
+        global $CFG, $DB;
+
+        $course = $DB->get_record('course', array('id'=>$instance->courseid), '*', MUST_EXIST);
+        $context = context_course::instance($course->id);
+
+        $a = new stdClass();
+        $a->coursename = format_string($course->fullname, true, array('context'=>$context));
+        $a->profileurl = "$CFG->wwwroot/user/view.php?id=$user->id&course=$course->id";
+
+        if (trim($instance->{ENROL_WAITINGLIST_FIELD_WELCOMEMESSAGE}) !== '') {
+            $message = $instance->customtext1;
+            $message = str_replace('{$a->coursename}', $a->coursename, $message);
+            $message = str_replace('{$a->profileurl}', $a->profileurl, $message);
+            if (strpos($message, '<') === false) {
+                // Plain text only.
+                $messagetext = $message;
+                $messagehtml = text_to_html($messagetext, null, false, true);
+            } else {
+                // This is most probably the tag/newline soup known as FORMAT_MOODLE.
+                $messagehtml = format_text($message, FORMAT_MOODLE, array('context'=>$context, 'para'=>false, 'newlines'=>true, 'filter'=>true));
+                $messagetext = html_to_text($messagehtml);
+            }
+        } else {
+            $messagetext = get_string('welcometocoursetext', 'enrol_waitinglist', $a);
+            $messagehtml = text_to_html($messagetext, null, false, true);
+        }
+
+        $subject = get_string('welcometocourse', 'enrol_waitinglist', format_string($course->fullname, true, array('context'=>$context)));
+
+        $rusers = array();
+        if (!empty($CFG->coursecontact)) {
+            $croles = explode(',', $CFG->coursecontact);
+            list($sort, $sortparams) = users_order_by_sql('u');
+            $rusers = get_role_users($croles, $context, true, '', 'r.sortorder ASC, ' . $sort, null, '', '', '', '', $sortparams);
+        }
+        if ($rusers) {
+            $contact = reset($rusers);
+        } else {
+            $contact = core_user::get_support_user();
+        }
+
+        // Directly emailing welcome message rather than using messaging.
+        email_to_user($user, $contact, $subject, $messagetext, $messagehtml);
+    }
+
 
     /**
      * Restore role assignment. 

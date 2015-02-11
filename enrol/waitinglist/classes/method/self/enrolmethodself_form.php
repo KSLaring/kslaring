@@ -41,16 +41,15 @@ class enrolmethodself_form extends \moodleform {
         $mform->addElement('text', 'name', get_string('custominstancename', 'enrol'));
         $mform->setType('name', PARAM_TEXT);
 */
-        $options = array(ENROL_INSTANCE_ENABLED  => get_string('yes'),
-                         ENROL_INSTANCE_DISABLED => get_string('no'));
-        $mform->addElement('select', 'status', get_string('status', 'enrol_self'), $options);
-        $mform->addHelpButton('status', 'status', 'enrol_self');
 
+        $mform->addElement('selectyesno', 'status', get_string('enable'));
+        $mform->addHelpButton('status', 'status', 'enrol_self');
+/*
         $options = array(1 => get_string('yes'), 0 => get_string('no'));
         $mform->addElement('select', enrolmethodself::MFIELD_NEWENROLS, get_string('newenrols', 'enrol_self'), $options);
         $mform->addHelpButton(enrolmethodself::MFIELD_NEWENROLS, 'newenrols', 'enrol_self');
         $mform->disabledIf(enrolmethodself::MFIELD_NEWENROLS, 'status', 'eq', ENROL_INSTANCE_DISABLED);
-
+*/
         $mform->addElement('passwordunmask', 'password', get_string('password', 'enrol_self'));
         $mform->addHelpButton('password', 'password', 'enrol_self');
         if (empty($instance->id) and $plugin->get_config('requirepassword','enrol_self')) {
@@ -86,7 +85,7 @@ class enrolmethodself_form extends \moodleform {
         $mform->setDefault('enrolenddate', 0);
         $mform->addHelpButton('enrolenddate', 'enrolenddate', 'enrol_self');
 */
-
+/*
         $options = array(0 => get_string('never'),
                  1800 * 3600 * 24 => get_string('numdays', '', 1800),
                  1000 * 3600 * 24 => get_string('numdays', '', 1000),
@@ -102,7 +101,7 @@ class enrolmethodself_form extends \moodleform {
                  7 * 3600 * 24 => get_string('numdays', '', 7));
         $mform->addElement('select',enrolmethodself::MFIELD_LONGTIMENOSEE, get_string('longtimenosee', 'enrol_self'), $options);
         $mform->addHelpButton(enrolmethodself::MFIELD_LONGTIMENOSEE, 'longtimenosee', 'enrol_self');
-
+*/
         $mform->addElement('text',enrolmethodself::MFIELD_MAXENROLLED, get_string('maxenrolled', 'enrol_self'));
         $mform->addHelpButton(enrolmethodself::MFIELD_MAXENROLLED, 'maxenrolled', 'enrol_self');
         $mform->setType(enrolmethodself::MFIELD_MAXENROLLED, PARAM_INT);
@@ -139,13 +138,17 @@ class enrolmethodself_form extends \moodleform {
             $mform->setType(enrolmethodself::MFIELD_COHORTONLY, PARAM_INT);
             $mform->setConstant(enrolmethodself::MFIELD_COHORTONLY, 0);
         }
-
+        
+        $mform->addElement('advcheckbox','emailalert', get_string('sendcoursewaitlistmessage', 'enrol_waitinglist'));
+        $mform->addHelpButton('emailalert', 'sendcoursewaitlistmessage', 'enrol_waitinglist');
+        
+/*
         $mform->addElement('advcheckbox', enrolmethodself::MFIELD_SENDWELCOMEMESSAGE, get_string('sendcoursewelcomemessage', 'enrol_self'));
         $mform->addHelpButton(enrolmethodself::MFIELD_SENDWELCOMEMESSAGE, 'sendcoursewelcomemessage', 'enrol_self');
 
         $mform->addElement('textarea',enrolmethodself::MFIELD_WELCOMEMESSAGE, get_string('customwelcomemessage', 'enrol_self'), array('cols'=>'60', 'rows'=>'8'));
         $mform->addHelpButton(enrolmethodself::MFIELD_WELCOMEMESSAGE, 'customwelcomemessage', 'enrol_self');
-
+*/
         $mform->addElement('hidden', 'id');
         $mform->setType('id', PARAM_INT);
 		$mform->addElement('hidden', 'methodtype');

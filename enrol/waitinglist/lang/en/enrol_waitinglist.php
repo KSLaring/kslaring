@@ -95,6 +95,37 @@ $string['methodheader'] = 'Method';
 $string['seatsheader'] = 'Seats';
 $string['updownheader'] = 'Up/Down';
 $string['waitinglisttask'] = 'Waitinglist Enrolment Task';
+$string['sendcoursewelcomemessage'] = 'Send email when enroled in course';
+$string['sendcoursewelcomemessage_help'] = 'An email can be sent to the user when they are enroled in the course';
+$string['customwelcomemessage'] = 'Custom welcome message';
+$string['customwelcomemessage_help'] = 'A custom welcome message may be added as plain text or Moodle-auto format, including HTML tags and multi-lang tags.
+
+The following placeholders may be included in the message:
+
+* Course name {$a->coursename}
+* Link to user\'s profile page {$a->profileurl}';
+$string['welcometocourse'] = 'Welcome to {$a}';
+$string['welcometocoursetext'] = 'Welcome to {$a->coursename}!
+
+If you have not done so already, you should edit your profile page so that we can learn more about you:
+
+  {$a->profileurl}';
+$string['customwaitlistmessage'] = 'Custom waitlist message';
+$string['customwaitlistmessage_help'] = 'A custom waiting list notification message may be added as plain text or Moodle-auto format, including HTML tags and multi-lang tags.
+
+The following placeholders may be included in the message:
+
+* Course name {$a->coursename}
+* Waiting list position {$a->queueno}
+* Link to course {$a->courseurl}';
+$string['sendcoursewaitlistmessage'] = 'Send email when added to waitlist';
+$string['sendcoursewaitlistmessage_help'] = 'An email can be sent to the user when they are added to a course waiting list.';
+$string['welcometowaitlist'] = 'Added to Waitlist for: {$a}';
+$string['welcometowaitlisttext'] = 'You are on the {$a->coursename} waiting list!
+
+You are currently number {$a->queueno}.
+
+You can check your position here:  {$a->courseurl}';
 
 
 

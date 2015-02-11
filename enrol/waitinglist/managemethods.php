@@ -28,11 +28,11 @@ require_once($CFG->dirroot . '/enrol/waitinglist/lib.php');
 
 $id         = required_param('id', PARAM_INT); // course id
 $action     = optional_param('action', '', PARAM_ALPHANUMEXT);
-$instanceid = optional_param('instance', 0, PARAM_INT);
 $methodtype = optional_param('methodtype', '', PARAM_TEXT);
 
 
 $course = $DB->get_record('course', array('id'=>$id), '*', MUST_EXIST);
+$waitinglist = $DB->get_record('enrol', array('courseid'=>$course->id, 'enrol'=>'waitinglist'), '*', MUST_EXIST);
 $context = context_course::instance($course->id, MUST_EXIST);
 
 if ($course->id == SITEID) {
@@ -50,7 +50,7 @@ $PAGE->set_title(get_string('managemethods', 'enrol_waitinglist'));
 $PAGE->set_heading($course->fullname);
 
 
-$methods = enrol_waitinglist_plugin::get_methods($course);
+$methods = enrol_waitinglist_plugin::get_methods($course,$waitinglist->id);
 
 if ($canconfig and $action and confirm_sesskey()) {
 

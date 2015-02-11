@@ -25,6 +25,7 @@
 
 require('../../config.php');
 require_once('edit_form.php');
+require_once('lib.php');
 
 $courseid = required_param('courseid', PARAM_INT);
 
@@ -117,7 +118,19 @@ if ($mform->is_cancelled()) {
 			ENROL_WAITINGLIST_FIELD_MAXENROLMENTS=>$data->{ENROL_WAITINGLIST_FIELD_MAXENROLMENTS},
 			ENROL_WAITINGLIST_FIELD_WAITLISTSIZE=>$data->{ENROL_WAITINGLIST_FIELD_WAITLISTSIZE}
 		);
-        $plugin->add_instance($course, $fields);
+       $waitinglistid =  $plugin->add_instance($course, $fields);
+
+       //add default methods
+        //add an instance of each of the methods, if the waitinglist instance was created ok
+        if($waitinglistid){
+			$methods=array();
+			foreach(enrol_waitinglist_plugin::get_method_names() as $methodtype){
+			 $class = '\enrol_waitinglist\method\\' . $methodtype. '\enrolmethod' .$methodtype ;
+			   if (class_exists($class)){
+					$class::add_default_instance( $waitinglistid,$course->id); 
+			   }
+			}
+		}
     }
 
     redirect($return);

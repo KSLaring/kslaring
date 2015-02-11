@@ -55,7 +55,7 @@ abstract class enrolmethodbase  {
      *  Construct instance from DB record
      */
 	 public static function get_by_record($record){
-		$wlm = new self();
+		$wlm = new static();
 		foreach(get_object_vars($record) as $propname=>$propvalue){
 			$wlm->{$propname}=$propvalue;
 		}
@@ -71,25 +71,41 @@ abstract class enrolmethodbase  {
      */
 	  public static function get_by_course($courseid,$waitinglistid=false){
 		global $DB;
-		$strictness = IGNORE_MISSING;	
-        $record = $DB->get_record_sql("SELECT * FROM {".self::TABLE."} WHERE courseid = $courseid AND " .$DB->sql_compare_text('methodtype') . "='". static::METHODTYPE ."'", null, $strictness);
-		
-		if(!$record && $courseid!=SITEID){
-			//waitinglist
-			if(!$waitinglistid){
-				$waitinglist = $DB->get_record('enrol', array('courseid' => $courseid,'enrol'=>'waitinglist'));
-				$waitinglistid = $waitinglist->id;
-			}
-			$rec = new \stdClass();
+		$strictness = IGNORE_MULTIPLE;	
+		$record = $DB->get_record_sql("SELECT * FROM {".self::TABLE."} WHERE courseid = $courseid AND " .$DB->sql_compare_text('methodtype') . "='". static::METHODTYPE ."'", null, $strictness);		
+        if(!$record){
+        	if(!$waitinglistid){
+        		$waitinglist = $DB->get_record('enrol',array('courseid'=>$courseid,'enrol'=>'waitinglist'));
+        		if(!$waitinglist){return null;}
+        	}
+        	$record = static::add_default_instance($courseid,$waitinglist->id);
+        }
+        return $record ? self::get_by_record($record) : null;
+	 }
+	 
+
+	  /**
+     * Add new instance of method with default settings.
+     * @param stdClass $course
+     * @return int id of new instance, null if can not be created
+     */
+    public static function add_default_instance($courseid,$waitinglistid) {
+    	global $DB;
+        	$rec = new \stdClass();
 			$rec->courseid = $courseid;
 			$rec->waitinglistid = $waitinglistid;
 			$rec->methodtype = static::METHODTYPE;
+			$rec->status = false;
+			$rec->emailalert=true;
 			$id = $DB->insert_record(self::TABLE,$rec);
-			$record = $DB->get_record(self::TABLE,array('id'=>$id));
-		}
-		
-		return $record ? static::from_record($record) : null;
-	 }
+			if($id){
+				$rec->id = $id;
+				return $rec;
+			}else{
+				return $id;
+			}
+    }
+
 	 
 	 /**
      *  Exists in Couse
@@ -120,36 +136,7 @@ abstract class enrolmethodbase  {
 	 }
 	 
 	 public function get_type(){return static::METHODTYPE;}
-	 
-	  /**
-     * is user already on list?
-     *
-     * @param int User IDstdClass $instance enrolment instance
-     * 
-     * @return bool|string true if on list, else false if not.
-     */
-	 /*
-	 public function is_already_on_list($userid){
-		global $DB;
-		 $records = $DB->get_record_sql("SELECT * FROM {".static::QTABLE."} WHERE waitinglistid = $this->waitlist AND userid = $userid AND " .$DB->sql_compare_text('methodtype') . "='". static::METHODTYPE ."'");
-		 return $records ? true : false;
-	}
-	*/
-	
-	  /**
-     * count users already on list
-     *
-     * 
-     * @return bool|string true if on list, else false if not.
-     */
-	 /*
-	 public function count_users_on_list(){
-		global $DB;
-		 $records = $DB->get_record_sql("SELECT * FROM {".static::QTABLE."} WHERE waitinglistid = $this->waitlist AND " .$DB->sql_compare_text('methodtype') . "='". static::METHODTYPE ."'");
-		 return $records ? $records.length : false;
-	}
-	*/
-	
+
 
 	
 	/**
@@ -241,7 +228,81 @@ abstract class enrolmethodbase  {
 		
 		$queueman= \enrol_waitinglist\queuemanager::get_by_course($courseid);
 		$queueid = $queueman->add($queueentry);
+		
+		//Send email if we need to
+		       
+		
+        // Send waitlistmessage message.
+        if ($this->emailalert && $waitinglist->{ENROL_WAITINGLIST_FIELD_SENDWAITLISTMESSAGE}) {
+        	$queueentry = $queueman->get_qentry($queueid);
+            $this->email_waitlist_message($waitinglist,$queue_entry,$USER);
+        }
+		
 		return $queueid;
+    }
+    
+    
+    protected function get_email_template($waitinglist) {
+    	if (trim($waitinglist->{ENROL_WAITINGLIST_FIELD_WAITLISTMESSAGE}) !== '') {
+    		$message = $waitinglist->{ENROL_WAITINGLIST_FIELD_WAITLISTMESSAGE};
+    	}else{
+    		$message = get_string('welcometowaitlisttext', 'enrol_waitinglist');
+    	}
+    
+    }
+    
+    
+    /**
+     * Send  email to specified user telling them they are waitlisted
+     *
+     * @param stdClass $instance
+     * @param stdClass $user user record
+     * @return void
+     */
+    protected function email_waitlist_message($waitinglist, $queue_entry, $user) {
+        global $CFG, $DB;
+
+        $course = $DB->get_record('course', array('id'=>$waitinglist->courseid), '*', MUST_EXIST);
+        $context = context_course::instance($course->id);
+
+        $a = new stdClass();
+        $a->coursename = format_string($course->fullname, true, array('context'=>$context));
+        $a->courseurl = $CFG->wwwroot . '/course/view.php?id=' . $waitinglist->courseid;
+        $a->queueno = $queue_entry->queueno;
+
+
+        $message = $this->get_email_template($waitinglist);
+		$message = str_replace('{$a->coursename}', $a->coursename, $message);
+		$message = str_replace('{$a->courseurl}', $a->courseurl, $message);
+		$message = str_replace('{$a->queueno}', $a->queueno, $message);
+		
+		if (strpos($message, '<') === false) {
+			// Plain text only.
+			$messagetext = $message;
+			$messagehtml = text_to_html($messagetext, null, false, true);
+		} else {
+			// This is most probably the tag/newline soup known as FORMAT_MOODLE.
+			$messagehtml = format_text($message, FORMAT_MOODLE, array('context'=>$context, 'para'=>false, 'newlines'=>true, 'filter'=>true));
+			$messagetext = html_to_text($messagehtml);
+		}
+      
+
+        $subject = get_string('welcometowaitlist', 'enrol_waitinglist', format_string($course->fullname, true, array('context'=>$context)));
+
+        $rusers = array();
+        if (!empty($CFG->coursecontact)) {
+            $croles = explode(',', $CFG->coursecontact);
+            list($sort, $sortparams) = users_order_by_sql('u');
+            $rusers = get_role_users($croles, $context, true, '', 'r.sortorder ASC, ' . $sort, null, '', '', '', '', $sortparams);
+        }
+        if ($rusers) {
+            $contact = reset($rusers);
+        } else {
+            $contact = core_user::get_support_user();
+        }
+
+        // Directly emailing welcome message rather than using messaging.
+        email_to_user($user, $contact, $subject, $messagetext, $messagehtml);
     }
 	 
 	 //other functions
@@ -253,7 +314,6 @@ abstract class enrolmethodbase  {
 	 public  function show_notifications_settings_link(){return false;}
 	 public  function has_settings(){return false;}
 	 public  function get_dummy_form_plugin(){return false;}
-	 
 	 public  function show_settings(){return false;}
 	 
 

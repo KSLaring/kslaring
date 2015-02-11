@@ -57,7 +57,7 @@ class queuemanager  {
             $wlm = new static();
 			$wlm->courseid=$courseid;
 			$wlm->waitinglist = $DB->get_record('enrol', array('courseid' => $courseid,'enrol'=>'waitinglist'));
-			$records =  $DB->get_records(self::QTABLE, array('courseid' => $courseid),'queueno ASC');
+			$records =  $DB->get_records(self::QTABLE, array('courseid' => $courseid, 'waitinglistid'=>$wlm->waitinglist->id),'queueno ASC');
 			if($records){
 				$wlm->qentries = $records;
 			}
@@ -82,7 +82,7 @@ class queuemanager  {
 	}
 	
 	/**
-     *  Return a users position on the queue, and the total no on the queue
+     *  Return a particular queue entry
      */
 	public function get_qentry($qentryid){
 		foreach($this->qentries as $qentry){
@@ -133,7 +133,7 @@ class queuemanager  {
      */
 	 public function get_listtotal_by_method($methodtype){
 		global $DB;
-		 $records = $DB->get_records_sql("SELECT * FROM {".static::QTABLE."} WHERE courseid = $this->courseid AND " .$DB->sql_compare_text('methodtype') . "='". $methodtype ."'");
+		 $records = $DB->get_records_sql("SELECT * FROM {".static::QTABLE."} WHERE courseid = $this->courseid AND waitinglistid = $this->waitinglist->id AND " .$DB->sql_compare_text('methodtype') . "='". $methodtype ."'");
 		 return $records ? count($records) : false;
 	}
 
