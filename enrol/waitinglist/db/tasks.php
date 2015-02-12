@@ -6,7 +6,7 @@ $tasks = array(
     array(
 	'classname' => 'enrol_waitinglist\task\waitinglisttask',                                                            
     'blocking' => 0,                                                                                             
-    'minute' => '30',
+    'minute' => '*/5',
 	'hour' => '*',
 	'day' => '*',
 	'dayofweek' => '*',

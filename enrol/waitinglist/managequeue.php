@@ -49,6 +49,8 @@ $PAGE->set_heading($course->fullname);
 
 $queueman= \enrol_waitinglist\queuemanager::get_by_course($course->id);
 
+//init our error flag/message
+$error = false;
 
 if ($canconfig and $action and confirm_sesskey()) {
         switch($action){
@@ -58,6 +60,8 @@ if ($canconfig and $action and confirm_sesskey()) {
 					$ok = $queueman->bump($qentry, $qentry->queueno,$qentry->queueno-1);
 					if($ok){
 						redirect($PAGE->url);
+					}else{
+						$error = get_string('qmovefailed','enrol_waitinglist');
 					}
 				}
 				break;
@@ -68,6 +72,8 @@ if ($canconfig and $action and confirm_sesskey()) {
 					$ok = $queueman->bump($qentry, $qentry->queueno,$qentry->queueno+1);
 					if($ok){
 						redirect($PAGE->url);
+					}else{
+						$error = get_string('qmovefailed','enrol_waitinglist');
 					}
 				}
 				break;
@@ -76,6 +82,8 @@ if ($canconfig and $action and confirm_sesskey()) {
 				$ok = $queueman->remove_entry($qentryid);
 				if($ok){
 					redirect($PAGE->url);
+				}else{
+					$error = get_string('qremovefailed','enrol_waitinglist');
 				}
 				break;
             }	
@@ -85,7 +93,9 @@ if ($canconfig and $action and confirm_sesskey()) {
 
 echo $OUTPUT->header();
 echo $OUTPUT->heading(get_string('managequeue', 'enrol_waitinglist'));
-
+if($error){
+	echo $OUTPUT->heading($error,3);
+}
 echo $OUTPUT->box_start('generalbox boxaligncenter boxwidthnormal');
 
 // display strings

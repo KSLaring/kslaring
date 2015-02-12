@@ -31,6 +31,8 @@
  
 namespace enrol_waitinglist\method\self;
 
+require_once($CFG->dirroot . '/enrol/waitinglist/lib.php');
+
 class enrolmethodself extends \enrol_waitinglist\method\enrolmethodbase{
 
 	const METHODTYPE='self';
@@ -349,6 +351,7 @@ class enrolmethodself extends \enrol_waitinglist\method\enrolmethodbase{
             if ($waitinglist->id == $waitinglistid) {
                 if ($data = $form->get_data()) {
                     $this->enrol_self($waitinglist, $data);
+                    redirect($CFG->wwwroot . '/course/view.php?id=' . $waitinglist->courseid);
                 }
             }
 

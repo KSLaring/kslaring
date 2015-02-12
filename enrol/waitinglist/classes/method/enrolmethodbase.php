@@ -21,6 +21,8 @@
 
 namespace enrol_waitinglist\method;
 
+require_once($CFG->dirroot . '/enrol/waitinglist/lib.php');
+
 /**
  * Waiting List Enrol Method Base Plugin
  *
@@ -228,14 +230,11 @@ abstract class enrolmethodbase  {
 		
 		$queueman= \enrol_waitinglist\queuemanager::get_by_course($courseid);
 		$queueid = $queueman->add($queueentry);
-		
-		//Send email if we need to
-		       
-		
+
         // Send waitlistmessage message.
         if ($this->emailalert && $waitinglist->{ENROL_WAITINGLIST_FIELD_SENDWAITLISTMESSAGE}) {
         	$queueentry = $queueman->get_qentry($queueid);
-            $this->email_waitlist_message($waitinglist,$queue_entry,$USER);
+            $this->email_waitlist_message($waitinglist,$queueentry,$USER);
         }
 		
 		return $queueid;
@@ -263,9 +262,9 @@ abstract class enrolmethodbase  {
         global $CFG, $DB;
 
         $course = $DB->get_record('course', array('id'=>$waitinglist->courseid), '*', MUST_EXIST);
-        $context = context_course::instance($course->id);
+        $context =  \context_course::instance($course->id);
 
-        $a = new stdClass();
+        $a = new  \stdClass();
         $a->coursename = format_string($course->fullname, true, array('context'=>$context));
         $a->courseurl = $CFG->wwwroot . '/course/view.php?id=' . $waitinglist->courseid;
         $a->queueno = $queue_entry->queueno;
@@ -298,7 +297,7 @@ abstract class enrolmethodbase  {
         if ($rusers) {
             $contact = reset($rusers);
         } else {
-            $contact = core_user::get_support_user();
+            $contact =  \core_user::get_support_user();
         }
 
         // Directly emailing welcome message rather than using messaging.

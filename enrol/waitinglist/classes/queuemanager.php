@@ -235,11 +235,12 @@ class queuemanager  {
 	public function reorder(){
 		global $DB;
 		$records =  $DB->get_records(self::QTABLE, array('waitinglistid' => $this->waitinglist->id),'queueno ASC');
-		if(!$records){return;}
-		$queueno = 0;
-		foreach ($records as $record){
-			$queueno++;
-			$DB->set_field(self::QTABLE, 'queueno', $queueno,array('id'=>$record->id));
+		if($records){
+			$queueno = 0;
+			foreach ($records as $record){
+				$queueno++;
+				$DB->set_field(self::QTABLE, 'queueno', $queueno,array('id'=>$record->id));
+			}
 		}
 		return true;
 	}
