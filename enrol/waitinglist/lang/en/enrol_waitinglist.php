@@ -97,6 +97,7 @@ $string['updownheader'] = 'Up/Down';
 $string['qmovefailed'] = 'Queue position change failed!';
 $string['qremovefailed'] = 'Remove from Queue operation failed!';
 $string['waitinglisttask'] = 'Waitinglist Enrolment Task';
+$string['insufficientpermissions'] = 'You do not have the ability to use this waitinglist enrolment method';
 $string['sendcoursewelcomemessage'] = 'Send email when enroled in course';
 $string['sendcoursewelcomemessage_help'] = 'An email can be sent to the user when they are enroled in the course';
 $string['customwelcomemessage'] = 'Custom welcome message';
@@ -119,15 +120,11 @@ The following placeholders may be included in the message:
 
 * Course name {$a->coursename}
 * Waiting list position {$a->queueno}
-* Link to course {$a->courseurl}';
+* Waiting list seats {$a->queueseats}
+* Link to course {$a->courseurl}
+* Link to enrolpage {$a->editenrolurl}';
 $string['sendcoursewaitlistmessage'] = 'Send email when added to waitlist';
 $string['sendcoursewaitlistmessage_help'] = 'An email can be sent to the user when they are added to a course waiting list.';
-$string['welcometowaitlist'] = 'Added to Waitlist for: {$a}';
-$string['welcometowaitlisttext'] = 'You are on the {$a->coursename} waiting list!
-
-You are currently number {$a->queueno}.
-
-You can check your position here:  {$a->courseurl}';
 
 
 

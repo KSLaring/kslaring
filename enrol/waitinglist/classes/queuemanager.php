@@ -70,13 +70,16 @@ class queuemanager  {
      */
 	public function enrol_next($wlinstance){
 		if($this->get_listtotal() > 0){
-			$qitem = $this->remove_first();
-			$wl = enrol_get_plugin('waitinglist');
-			$wl->enrol_user($wlinstance,$qitem->userid);
+			$qitem = $this->peek_first();
 			$methodtype = $qitem->methodtype. '\enrolmethod' . $qitem->methodtype;
-			$themethod =  $methodtype::get_by_course($this->courseid);
-			$themethod->post_enrol_hook($wlinstance, $qitem);
-			return true;
+			if($methodtype::can_enrol_directly()){
+				$qitem = $this->remove_first();
+				$wl = enrol_get_plugin('waitinglist');
+				$wl->enrol_user($wlinstance,$qitem->userid);
+				$themethod =  $methodtype::get_by_course($this->courseid,$wlinstance);
+				$themethod->post_enrol_hook($wlinstance, $qitem);
+				return true;
+			}		
 		}
 		return false;
 	}
@@ -93,21 +96,40 @@ class queuemanager  {
 		return false;
 	}
 	
+		/**
+     *  Return a particular users queue entry
+     */
+	public function get_qentry_by_userid($userid,$methodtype=false){
+		foreach($this->qentries as $qentry){
+			if($qentry->userid == $userid){
+				if($methodtype && $methodtype==$qentry->methodtype){
+					return $qentry;
+				}else{
+				  return $qentry;
+				  //print_r($qentry);
+				  //die;
+				}
+			}
+		}
+		return false;
+	}
+	
 	
 	/**
      *  Return a users position on the queue, and the total no on the queue
      */
-	public function get_user_queue_details(){
+	public function get_user_queue_details($methodtype){
 		global $DB,$USER;
 		
 		$qdetails = new \stdClass;
 		$qdetails->queueno=0;
 		$qdetails->queuetotal=$this->get_listtotal();
-		$details = $DB->get_record(self::QTABLE,array('courseid'=>$this->courseid,'userid'=>$USER->id));
-		if($details){		
-			//this logic will have to cahnge when we consider bulk seats on one entry on queue
-			$qdetails->queueno = $details->queueno;
-			//$qdetails->queuetotal = $DB->count_records(self::QTABLE,array('courseid'=>$courseid));
+		$details = $DB->get_records(self::QTABLE,array('courseid'=>$this->courseid,'userid'=>$USER->id,'waitinglistid'=>$this->waitinglist->id));
+		if(!$details){return $qdetails;}
+		foreach($details as $detail){
+			if($detail->methodtype==$methodtype){
+				$qdetails->queueno = $detail->queueno;
+			}
 		}
 		return $qdetails;
 	}
@@ -119,10 +141,16 @@ class queuemanager  {
      * 
      * @return bool|string true if on list, else false if not.
      */
-	 public function is_on_list($userid){
+	 public function is_on_list($userid,$methodtype){
 		global $DB;
-		 $record = $DB->get_record(static::QTABLE, array('courseid' => $this->courseid,'userid' => $userid));
-		 return $record ? true : false;
+		$details = $DB->get_records(self::QTABLE,array('courseid'=>$this->courseid,'userid'=>$userid,'waitinglistid'=>$this->waitinglist->id));
+		if(!$details){return false;}
+		foreach($details as $detail){
+			if($detail->methodtype==$methodtype){
+				return true;
+			}
+		}
+		return false;
 	}
 	
 	  /**
@@ -152,6 +180,21 @@ class queuemanager  {
 			return $ok;
 	}
 	
+		/**
+     * Adds a user to the waiting list
+     *
+     * @param stdclass queue object (db fields basically for queue table)
+     * @return int the id of the queue item, or false if we somehow failed.
+     */
+	public function update($qentry){
+		global $DB;
+		unset($qentry->queueno);
+		$qentry->courseid=$this->courseid;
+		$qentry->waitinglistid=$this->waitinglist->id;
+		$DB->update_record(self::QTABLE, $qentry);
+		return $qentry->id;
+	}
+	
 	/**
      * Adds a user to the waiting list
      *
@@ -160,12 +203,13 @@ class queuemanager  {
      */
 	public function add($qentry){
 		global $DB;
-		
+		/*
         if ($wle = $DB->get_record('user_enrolments', array('enrolid'=>$this->waitinglist->id, 'userid'=>$qentry->userid))) {
             throw new coding_exception('user is already enrolled in this course');
 		}
-		if ($wle = $DB->get_record(self::QTABLE, array('waitinglistid'=>$this->waitinglist->id, 'userid'=>$qentry->userid))) {
-            throw new coding_exception('user is already on the waiting list for this course');
+		*/
+		if ($this->is_on_list($qentry->userid,$qentry->methodtype)) {
+            throw new \coding_exception('user is already on the waiting list for this course and methodtype');
         } else {
             
             $qentry->id = $DB->insert_record(self::QTABLE, $qentry);
@@ -211,6 +255,18 @@ class queuemanager  {
 		$DB->delete_records(self::QTABLE,array('id'=>$qentry->id));
 		$this->reorder();
 		return $qentry;
+	}
+	
+		/**
+     * Returns the top user off the waiting list, but doesn't remove it
+     *
+     * @return stdclass the top entry on the waiting list
+     */
+	public function peekfirst(){
+		global $DB;
+
+		return $this->qentries[0];
+		//return array_shift(array_values($this->qentries));
 	}
 	
 	/**

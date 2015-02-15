@@ -76,7 +76,7 @@ if ($canconfig and $action and confirm_sesskey()) {
 echo $OUTPUT->header();
 echo $OUTPUT->heading(get_string('managemethods', 'enrol_waitinglist'));
 
-echo $OUTPUT->box_start('generalbox boxaligncenter boxwidthnormal');
+echo $OUTPUT->box_start('generalbox boxalignleft boxwidthwide');
 
 // display strings
 $strenable  = get_string('enable');

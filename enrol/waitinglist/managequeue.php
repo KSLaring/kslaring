@@ -96,7 +96,7 @@ echo $OUTPUT->heading(get_string('managequeue', 'enrol_waitinglist'));
 if($error){
 	echo $OUTPUT->heading($error,3);
 }
-echo $OUTPUT->box_start('generalbox boxaligncenter boxwidthnormal');
+echo $OUTPUT->box_start('generalbox boxalignleft boxwidthwide');
 
 // display strings
 $strup      = get_string('up');
@@ -112,8 +112,8 @@ if($queueman->get_listtotal()==0){
 
 $table = new html_table();
 //$table->head  = array(get_string('name'), get_string('users'), $strup.'/'.$strdown, get_string('edit'));
-$table->head  = array('',get_string('name'),get_string('methodheader','enrol_waitinglist'),get_string('seatsheader','enrol_waitinglist'),get_string('updownheader','enrol_waitinglist'), get_string('remove'));
-$table->align = array('left', 'center', 'center', 'center');
+$table->head  = array('',get_string('name'),get_string('email'),get_string('institution'),get_string('methodheader','enrol_waitinglist'),get_string('seatsheader','enrol_waitinglist'),get_string('updownheader','enrol_waitinglist'), get_string('remove'));
+$table->align = array('left','left','left', 'center', 'center', 'center');
 $table->width = '100%';
 $table->data  = array();
 
@@ -160,7 +160,7 @@ foreach ($queueman->qentries as $qentry) {
 	//	$edit = array('edit','delete');
 	$user = $DB->get_record('user',array('id'=>$qentry->userid));
 	if($user){
-		$table->data[] = array($qentry->queueno,fullname($user), $qentry->methodtype, $qentry->seats, implode('&nbsp;', $updown), implode('&nbsp;', $edit));
+		$table->data[] = array($qentry->queueno,fullname($user),$user->email,$user->institution, $qentry->methodtype, $qentry->seats, implode('&nbsp;', $updown), implode('&nbsp;', $edit));
 	}
 
 }

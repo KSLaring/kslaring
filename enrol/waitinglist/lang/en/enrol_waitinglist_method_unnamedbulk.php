@@ -23,3 +23,29 @@
  */
 
 $string['unnamedbulk_displayname'] = 'Unnamed Bulk';
+$string['welcometowaitlist_unnamedbulk'] = '{$a->queueseats} Seats Added to Waitlist for: {$a->coursename}';
+$string['welcometowaitlisttext_unnamedbulk'] = '{$a->queueseats} Seats Added to Waitlist for: {$a->coursename}
+
+Your reserved seats are at postion: {$a->queueno} on the waitinglist.
+
+You can edit your reservation here:  {$a->editenrolurl}';
+$string['confirmedmessage_unnamedbulk'] = 'Seat allocated for: {$a->coursename}';
+$string['confirmedmessagetext_unnamedbulk'] = 'Seat allocated for: {$a->coursename}
+
+Your reserved seats on the waitinglist for {$a->coursename} have been allocated.
+
+Please enrol the users into the course and adjust your seat reservations accordingly here:  {$a->editenrolurl}';
+$string['customconfirmedmessage'] = 'Reservation confirmed message';
+$string['customconfirmedmessage_help'] = 'A custom confirmation message may be added as plain text or Moodle-auto format, including HTML tags and multi-lang tags.
+
+It will be sent the user responsible for the seat reservations when their vacancies become available on the course.
+
+The following placeholders may be included in the message:
+
+* Course name {$a->coursename}
+* Waiting list position {$a->queueno}
+* Waiting list seats {$a->queueseats}
+* Link to course {$a->courseurl}
+* Link to enrolpage {$a->editenrolurl}';
+$string['reserveseatcount'] = 'Number of seats to reserve';
+$string['reserveseats'] = 'Reserve Seats on Course';

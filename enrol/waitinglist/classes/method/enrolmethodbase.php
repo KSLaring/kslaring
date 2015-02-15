@@ -36,7 +36,7 @@ abstract class enrolmethodbase  {
 
 	const METHODTYPE='base';
 	const TABLE='enrol_waitinglist_method';
-	const QTABLE='enrol_waitinglist_queue';
+	const DATATABLE='enrol_waitinglist_methoddata';
 	
 	public $course = 0;
     public $waitlist = 0;
@@ -109,14 +109,7 @@ abstract class enrolmethodbase  {
     }
 
 	 
-	 /**
-     *  Exists in Couse
-     */
-	  public static function exists_in_course($courseid){
-		global $DB;	
-        $count = $DB->count_records(self::TABLE, array('courseid' => $courseid,'type'=>self::METHODTYPE));
-        return $count ? true : false;
-	 }
+	
 	 
 	 //activation functions
 	 public function is_active(){return $this->status;}
@@ -175,79 +168,67 @@ abstract class enrolmethodbase  {
 	 * @param stdClass $queueentry
      * @return null 
      */
-	public function post_enrol_hook(\stdClass $waitinglist,\stdClass $queueentry){
+	public function do_post_enrol_actions(\stdClass $waitinglist,\stdClass $queueentry){
 		return null;
 	}
+	
+	public abstract function graduate_from_list(\stdClass $waitinglist,\stdClass $queueentry);
 	
 	 /**
      * Enrol user into waitinglist via enrol method
      *
      * @param stdClass $waitinglist
      * @param int $userid
-     * @param int $roleid optional role id
-     * @param int $timestart 0 means unknown
-     * @param int $timeend 0 means forever
-     * @param int $status default to ENROL_USER_ACTIVE for new enrolments, no change by default in updates
-     * @param bool $recovergrades restore grade history
-     * @return void
+     * @param int $seats 
+     * @return int queueid or false if not added to queue (ie enroled directly)
      */
-    public function enrol_user(\stdClass $waitinglist, $userid, $roleid = null, $timestart = 0, $timeend = 0, $status = null, $recovergrades = null) {
+    public function add_to_waitinglist(\stdClass $waitinglist, $queue_entry) {
         global $DB, $USER, $CFG; // CFG necessary!!!
 		
 		//there are spaces on the course, we don't need to use the waitlist
 		//enrol the user directly.
 		$wl = enrol_get_plugin('waitinglist');
-		if($wl->can_enrol_directly($waitinglist)){
-			$wl->enrol_user($waitinglist,$userid,$roleid,$timestart,$timeend,$status,$recovergrades);
-			//upon return (since we pass no queueid) the post enrol hook will be run immediately (see enrolmethodbase.php)
-			return;
-		}
-
-		
-        if ($waitinglist->courseid == SITEID) {
+		if ($waitinglist->courseid == SITEID) {
             throw new coding_exception('invalid attempt to enrol on frontpage waitinglist!');
         }
 
+		//get the queue manager and add the entry to the queue
         $courseid = $waitinglist->courseid;
-		//prepare our queue entry
-		$queueentry = new \stdClass();
-		$queueentry->waitinglistid      = $waitinglist->id;
-		$queueentry->courseid       = $courseid;
-		$queueentry->userid       = $userid;
-		$queueentry->timestart    = $timestart;
-		$queueentry->timeend      = $timeend;
-		$queueentry->methodtype   = static::METHODTYPE;
-		$queueentry->customint1 = 0;
-		$queueentry->customint2 = 0;
-		$queueentry->customint3 = 0;
-		$queueentry->customtext1 = '';
-		$queueentry->customtext2 = '';
-		$queueentry->customtext3 = '';
-		$queueentry->timecreated  = time();
-		$queueentry->queueno = 	0;
-		$queueentry->seats = 1;
-		$queueentry->timemodified = $queueentry->timecreated;
-		
 		$queueman= \enrol_waitinglist\queuemanager::get_by_course($courseid);
-		$queueid = $queueman->add($queueentry);
-
-        // Send waitlistmessage message.
-        if ($this->emailalert && $waitinglist->{ENROL_WAITINGLIST_FIELD_SENDWAITLISTMESSAGE}) {
-        	$queueentry = $queueman->get_qentry($queueid);
-            $this->email_waitlist_message($waitinglist,$queueentry,$USER);
-        }
 		
+		$oldentry = $queueman->get_qentry_by_userid($USER->id,static::METHODTYPE);
+		if(!$oldentry){
+			$queueid = $queueman->add($queue_entry);
+		}else{
+			$queue_entry->id = $oldentry->id;
+			$queueid = $queueman->update($queue_entry);
+		}
+		
+		$queue_entry->id = $queueid;
+		
+		//this part is a bit tricky, it will skip the ad hoc procesising and email if it enrols the user
+		//immediately. NB not unnamedbulk
+		$enroled = false;
+		if($this->can_enrol_directly() && $wl->can_enrol_directly($waitinglist)){
+			$enroled = $this->graduate_from_list($waitinglist,$queue_entry);
+		}
+
+		if (!$enroled && $this->emailalert && $waitinglist->{ENROL_WAITINGLIST_FIELD_SENDWAITLISTMESSAGE}) {
+			$queue_entry = $queueman->get_qentry($queueid);
+			$this->email_waitlist_message($waitinglist,$queue_entry,$USER);
+		}
+
 		return $queueid;
     }
     
     
     protected function get_email_template($waitinglist) {
-    	if (trim($waitinglist->{ENROL_WAITINGLIST_FIELD_WAITLISTMESSAGE}) !== '') {
-    		$message = $waitinglist->{ENROL_WAITINGLIST_FIELD_WAITLISTMESSAGE};
+    	if (trim($this->{static::MFIELD_WAITLISTMESSAGE}) !== '') {
+    		$message = $this->{static::MFIELD_WAITLISTMESSAGE};
     	}else{
-    		$message = get_string('welcometowaitlisttext', 'enrol_waitinglist');
+    		$message = get_string('welcometowaitlisttext_' . static::METHODTYPE, 'enrol_waitinglist');
     	}
-    
+	     return $message;
     }
     
     
@@ -267,13 +248,17 @@ abstract class enrolmethodbase  {
         $a = new  \stdClass();
         $a->coursename = format_string($course->fullname, true, array('context'=>$context));
         $a->courseurl = $CFG->wwwroot . '/course/view.php?id=' . $waitinglist->courseid;
+        $a->editenrolurl = $CFG->wwwroot . '/enrol/index.php?id=' . $waitinglist->courseid;
         $a->queueno = $queue_entry->queueno;
+        $a->queueseats = $queue_entry->seats;
 
 
         $message = $this->get_email_template($waitinglist);
 		$message = str_replace('{$a->coursename}', $a->coursename, $message);
 		$message = str_replace('{$a->courseurl}', $a->courseurl, $message);
+		$message = str_replace('{$a->editenrolurl}', $a->editenrolurl, $message);
 		$message = str_replace('{$a->queueno}', $a->queueno, $message);
+		$message = str_replace('{$a->queueseats}', $a->queueseats, $message);
 		
 		if (strpos($message, '<') === false) {
 			// Plain text only.
@@ -286,7 +271,7 @@ abstract class enrolmethodbase  {
 		}
       
 
-        $subject = get_string('welcometowaitlist', 'enrol_waitinglist', format_string($course->fullname, true, array('context'=>$context)));
+        $subject = get_string('welcometowaitlist_' . static::METHODTYPE, 'enrol_waitinglist', format_string($course->fullname, true, array('context'=>$context)));
 
         $rusers = array();
         if (!empty($CFG->coursecontact)) {
@@ -303,17 +288,17 @@ abstract class enrolmethodbase  {
         // Directly emailing welcome message rather than using messaging.
         email_to_user($user, $contact, $subject, $messagetext, $messagehtml);
     }
+
+	 //some methods such as "unnamed bulk" don't enrol onto course automatically
+	 //others like "self" do. We check for that here
+	 public  function can_enrol_directly(){return false;}
 	 
-	 //other functions
-	 public function has_enrolme_link(){return false;}
-	 public function show_enrolme_link(){return false;}
-	 public  function can_enrol(){return false;}
-	 public  function can_self_enrol(\stdClass $waitinglist, $checkuserenrolment = true){return false;}
+	 public  function can_self_enrol(\stdClass $waitinglist){return false;}
+	 public  function can_enrol(\stdClass $waitinglist, $checkuserenrolment = true){return false;}
 	 public function has_notifications(){return false;}
 	 public  function show_notifications_settings_link(){return false;}
 	 public  function has_settings(){return false;}
 	 public  function get_dummy_form_plugin(){return false;}
-	 public  function show_settings(){return false;}
 	 
 
 }

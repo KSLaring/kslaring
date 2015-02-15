@@ -203,18 +203,12 @@ class enrol_waitinglist_plugin extends enrol_plugin {
      */
     public function enrol_page_hook(stdClass $instance) {
         $course = get_course($instance->courseid);
-		$queueman= \enrol_waitinglist\queuemanager::get_by_course($instance->courseid);
-		$qdetails = $queueman->get_user_queue_details();
-		if($qdetails->queueno > 0){
-			return get_string('yourqueuedetails','enrol_waitinglist', $qdetails);
-		}	
-		
 		
 		$methods = $this->get_methods($course, $instance->id);
 
 		$hooks = array();
 		foreach($methods as $method){
-			if(!$method->is_active()){continue;}
+			if(!$method->is_active() ){continue;}
 			if ($hook = $method->enrol_page_hook($instance)) {
 				$hooks[]= $hook;
 			}
@@ -233,9 +227,11 @@ class enrol_waitinglist_plugin extends enrol_plugin {
      * @param array $instances all enrol instances of this type in one course
      * @return array of pix_icon
      */
-	 public function show_enrolme_link(stdClass $instance) {
-		return $this->can_self_enrol($instance);
-		
+    public function show_enrolme_link(stdClass $instance) {
+        if($instance->status == ENROL_INSTANCE_ENABLED){
+			return $this->can_self_enrol($instance);
+		}
+		return false;
     }
     
     
@@ -253,6 +249,16 @@ class enrol_waitinglist_plugin extends enrol_plugin {
      */
     public function enrol_user(stdClass $instance, $userid, $roleid = null, $timestart = 0, $timeend = 0, $status = null, $recovergrades = null) {
    		global $USER;
+		
+		
+        $timestart = time();
+        if ($waitinglist->enrolperiod) {
+            $timeend = $timestart + $waitinglist->enrolperiod;
+        } else {
+            $timeend = 0;
+        }
+		
+		$roleid = $instance->roleid;
    		
    		parent::enrol_user($instance,$userid,$roleid,$timestart,$timeend,$status,$recovergrades);
      	// Send welcome message.

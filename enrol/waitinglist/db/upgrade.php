@@ -42,8 +42,6 @@ function xmldb_enrol_waitinglist_upgrade($oldversion) {
         // Dataform savepoint reached.
         upgrade_plugin_savepoint(true, 2015021101, 'enrol','waitinglist');
     }
-
-
     return true;
 }
 

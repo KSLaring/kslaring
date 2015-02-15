@@ -97,7 +97,6 @@ if ($mform->is_cancelled()) {
 		$instance->{ENROL_WAITINGLIST_FIELD_WAITLISTSIZE}=$data->{ENROL_WAITINGLIST_FIELD_WAITLISTSIZE};
 		$instance->{ENROL_WAITINGLIST_FIELD_SENDWAITLISTMESSAGE}=$data->{ENROL_WAITINGLIST_FIELD_SENDWAITLISTMESSAGE};
 		$instance->{ENROL_WAITINGLIST_FIELD_SENDWELCOMEMESSAGE}=$data->{ENROL_WAITINGLIST_FIELD_SENDWELCOMEMESSAGE};
-		$instance->{ENROL_WAITINGLIST_FIELD_WAITLISTMESSAGE}=$data->{ENROL_WAITINGLIST_FIELD_WAITLISTMESSAGE};
 		$instance->{ENROL_WAITINGLIST_FIELD_WELCOMEMESSAGE}=$data->{ENROL_WAITINGLIST_FIELD_WELCOMEMESSAGE};
         $instance->timemodified    = time();
 
@@ -123,7 +122,6 @@ if ($mform->is_cancelled()) {
 			ENROL_WAITINGLIST_FIELD_WAITLISTSIZE=>$data->{ENROL_WAITINGLIST_FIELD_WAITLISTSIZE},
 			ENROL_WAITINGLIST_FIELD_SENDWAITLISTMESSAGE=>$data->{ENROL_WAITINGLIST_FIELD_SENDWAITLISTMESSAGE},
 			ENROL_WAITINGLIST_FIELD_SENDWELCOMEMESSAGE=>$data->{ENROL_WAITINGLIST_FIELD_SENDWELCOMEMESSAGE},
-			ENROL_WAITINGLIST_FIELD_WAITLISTMESSAGE=>$data->{ENROL_WAITINGLIST_FIELD_WAITLISTMESSAGE},
 			ENROL_WAITINGLIST_FIELD_WELCOMEMESSAGE=>$data->{ENROL_WAITINGLIST_FIELD_WELCOMEMESSAGE}
 		);
        $waitinglistid =  $plugin->add_instance($course, $fields);
@@ -135,7 +133,7 @@ if ($mform->is_cancelled()) {
 			foreach(enrol_waitinglist_plugin::get_method_names() as $methodtype){
 			 $class = '\enrol_waitinglist\method\\' . $methodtype. '\enrolmethod' .$methodtype ;
 			   if (class_exists($class)){
-					$class::add_default_instance($course->id,$waitinglistid,); 
+					$class::add_default_instance($course->id,$waitinglistid); 
 			   }
 			}
 		}

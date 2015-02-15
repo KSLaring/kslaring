@@ -91,14 +91,11 @@ class enrol_waitinglist_edit_form extends moodleform {
 
         $mform->addElement('textarea', ENROL_WAITINGLIST_FIELD_WELCOMEMESSAGE, get_string('customwelcomemessage', 'enrol_waitinglist'), array('cols'=>'60', 'rows'=>'8'));
         $mform->addHelpButton(ENROL_WAITINGLIST_FIELD_WELCOMEMESSAGE, 'customwelcomemessage', 'enrol_waitinglist');
+		$mform->setDefault(ENROL_WAITINGLIST_FIELD_WELCOMEMESSAGE,get_string('welcometocoursetext','enrol_waitinglist'));
 
 		$mform->addElement('advcheckbox', ENROL_WAITINGLIST_FIELD_SENDWAITLISTMESSAGE, get_string('sendcoursewaitlistmessage', 'enrol_waitinglist'));
         $mform->addHelpButton(ENROL_WAITINGLIST_FIELD_SENDWAITLISTMESSAGE, 'sendcoursewaitlistmessage', 'enrol_waitinglist');
 		$mform->setDefault(ENROL_WAITINGLIST_FIELD_SENDWAITLISTMESSAGE, $plugin->get_config('sendcoursewaitlistmessage'));
-		
-		
-        $mform->addElement('textarea', ENROL_WAITINGLIST_FIELD_WAITLISTMESSAGE, get_string('customwaitlistmessage', 'enrol_waitinglist'), array('cols'=>'60', 'rows'=>'8'));
-        $mform->addHelpButton(ENROL_WAITINGLIST_FIELD_WAITLISTMESSAGE, 'customwaitlistmessage', 'enrol_waitinglist');
 
         $mform->addElement('hidden', 'courseid');
         $mform->setType('courseid', PARAM_INT);

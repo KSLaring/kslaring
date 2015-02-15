@@ -141,6 +141,12 @@ class enrolmethodself_form extends \moodleform {
         
         $mform->addElement('advcheckbox','emailalert', get_string('sendcoursewaitlistmessage', 'enrol_waitinglist'));
         $mform->addHelpButton('emailalert', 'sendcoursewaitlistmessage', 'enrol_waitinglist');
+        		
+		
+        $mform->addElement('textarea', enrolmethodself::MFIELD_WAITLISTMESSAGE, get_string('customwaitlistmessage', 'enrol_waitinglist'), array('cols'=>'60', 'rows'=>'8'));
+        $mform->addHelpButton(enrolmethodself::MFIELD_WAITLISTMESSAGE, 'customwaitlistmessage', 'enrol_waitinglist');
+        $mform->setDefault(enrolmethodself::MFIELD_WAITLISTMESSAGE,get_string('welcometowaitlisttext_self','enrol_waitinglist'));
+
         
 /*
         $mform->addElement('advcheckbox', enrolmethodself::MFIELD_SENDWELCOMEMESSAGE, get_string('sendcoursewelcomemessage', 'enrol_self'));

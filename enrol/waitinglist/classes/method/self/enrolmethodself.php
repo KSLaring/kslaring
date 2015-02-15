@@ -61,42 +61,6 @@ class enrolmethodself extends \enrol_waitinglist\method\enrolmethodbase{
     {
 
     }
-	
-	
-	 /**
-     *  Construct instance from DB record
-     */
-     /*
-	 public static function get_by_record($record){
-		$wlm = new self();
-		foreach(get_object_vars($record) as $propname=>$propvalue){
-			$wlm->{$propname}=$propvalue;
-		}
-		return $wlm;
-	 }
-	 */
-	 
-	 /**
-     *  Construct instance from courseid
-     */
-     /*
-	  public static function get_by_course($courseid,$waitinglistid=false){
-		global $DB;
-
-		$strictness = IGNORE_MULTIPLE;	
-		$record = $DB->get_record_sql("SELECT * FROM {".self::TABLE."} WHERE courseid = $courseid AND " .$DB->sql_compare_text('methodtype') . "='". static::METHODTYPE ."'", null, $strictness);		
-        return $record ? self::get_by_record($record) : null;
-	 }
-	 */
-	 
-	 /**
-     *  Exists in Couse
-     */
-	  public static function exists_in_course($courseid){
-		global $DB;	
-        $count = $DB->count_records(self::TABLE, array('courseid' => $courseid,'type'=>static::METHODTYPE));
-        return $count ? true : false;
-	 }
 	 
 	  /**
      * Add new instance of method with default settings.
@@ -122,14 +86,11 @@ class enrolmethodself extends \enrol_waitinglist\method\enrolmethodbase{
 
 	 
 	 
-	 //Abstract functions
-	 public function has_enrolme_link(){return false;}
-	 public function show_enrolme_link(){return false;}
-	 public  function can_enrol(){return false;}
+	 //settings related functions
 	 public function has_notifications(){return false;}
 	 public  function show_notifications_settings_link(){return false;}
 	 public  function has_settings(){return true;}
-	 public  function show_settings(){return false;}
+
 	 
 	 public function get_dummy_form_plugin(){
 		return enrol_get_plugin('self');
@@ -153,7 +114,7 @@ class enrolmethodself extends \enrol_waitinglist\method\enrolmethodbase{
         foreach ($waitinglists as $waitinglist) {
 
             
-			if ($this->can_self_enrol($waitinglist, false) !== true) {
+			if ($this->can_self_enrol($waitinglist) !== true) {
                 // User can not enrol himself.
                 // Note that we do not check here if user is already enrolled for performance reasons -
                 // such check would execute extra queries for each course in the list of courses and
@@ -176,20 +137,43 @@ class enrolmethodself extends \enrol_waitinglist\method\enrolmethodbase{
         return $icons;
     }
 	
+	 /**
+     * Checks if user can self enrol.
+     * used for displaying icons and links on course list page
+     **
+     */
+	public  function can_self_enrol(\stdClass $waitinglist){
+		//this will be called from course page
+		//we don't check current enrolments from can_enrol
+		//because we try to avoid lots of db calls
+		if($this->can_enrol($waitinglist,false) === true){
+			return true;
+		}
+		return false;
+	
+	}
+	
+	/**
+     * Can we auto take a user from waitlist and put onto course?
+     ** for self .... YES
+     */
+	public function can_enrol_directly(){
+		return true;
+	}
+	
 	
 	  /**
-     * Checks if user can self enrol.
+     * Checks if user can enrol.
      *
      * @param stdClass $waitinglist enrolment instance
-     * @param bool $checkuserenrolment if true will check if user enrolment is inactive.
-     *             used by navigation to improve performance.
+     * @param bool $checkuserenrolment if true will check db and queue for user
      * @return bool|string true if successful, else error message or false.
      */
-    public function can_self_enrol(\stdClass $waitinglist, $checkuserenrolment = true) {
+    public function can_enrol(\stdClass $waitinglist, $checkuserenrolment = true) {
         global $DB, $USER, $CFG;
-	
-		$queueman =  \enrol_waitinglist\queuemanager::get_by_course($waitinglist->courseid);
 
+
+		//checking enroled in course, (db calls)
         if ($checkuserenrolment) {
             if (isguestuser()) {
                 // Can not enrol guest.
@@ -200,15 +184,54 @@ class enrolmethodself extends \enrol_waitinglist\method\enrolmethodbase{
                 return get_string('canntenrol', 'enrol_self');
             }
         }
+        
+        //checking the queue (db calls)
+        //to do: turn queuemanager into a singleton, and remove the checkusenrolment condition
+         if ($checkuserenrolment) {
+         	$queueman =  \enrol_waitinglist\queuemanager::get_by_course($waitinglist->courseid);
+            if($queueman->is_on_list($USER->id,static::METHODTYPE)){
+				return get_string('alreadyonlist', 'enrol_waitinglist');
+        	}
+		
+			//maximum users for this enrolment method
+        	if ($this->{self::MFIELD_MAXENROLLED} > 0) {
+				// Max enrol limit specified.
+				//$count = $this->count_users_on_list();
+				$count = $queueman->get_listtotal_by_method(static::METHODTYPE);
+				if ($count >= $this->{self::MFIELD_MAXENROLLED}) {
+					// Bad luck, no more self enrolments here.
+					return get_string('noroomonlist', 'enrol_waitinglist');
+				}
+        	}
+		
+			//is waiting list is full
+			if ($queueman->is_full()){
+					return  get_string('noroomonlist', 'enrol_waitinglist');
+			}
+        }
+        
+        //checking cohort status (db calls)
+        if($checkuserenrolment){
+			if ($this->{self::MFIELD_COHORTONLY}) {
+				require_once("$CFG->dirroot/cohort/lib.php");
+				if (!cohort_is_member($this->{self::MFIELD_COHORTONLY}, $USER->id)) {
+					$cohort = $DB->get_record('cohort', array('id' => $this->{self::MFIELD_COHORTONLY}));
+					if (!$cohort) {
+						return null;
+					}
+					$a = format_string($cohort->name, true, array('context' => \context::instance_by_id($cohort->contextid)));
+					return markdown_to_html(get_string('cohortnonmemberinfo', 'enrol_self', $a));
+				}
+			}
+        }
 
+		//basic waitinglist and plugin checks (no db calls)
         if (!$this->is_active()) {
             return get_string('canntenrol', 'enrol_self');
         }
-
         if ($waitinglist->enrolstartdate != 0 and $waitinglist->enrolstartdate > time()) {
 			return get_string('canntenrol', 'enrol_self');
         }
-
         if ($waitinglist->enrolenddate != 0 and $waitinglist->enrolenddate < time()) {
 			return get_string('canntenrol', 'enrol_self');
         }
@@ -218,43 +241,6 @@ class enrolmethodself extends \enrol_waitinglist\method\enrolmethodbase{
 			return get_string('canntenrol', 'enrol_self');
         }
 */
-        if ($DB->record_exists('user_enrolments', array('userid' => $USER->id, 'enrolid' => $waitinglist->id))) {
-			return get_string('canntenrol', 'enrol_self');
-        }
-			
-
-		//if ($this->is_already_on_list($USER->id)) {
-		if($queueman->is_on_list($USER->id)){
-			return get_string('alreadyonlist', 'enrol_waitinglist');
-        }
-		
-		//maximum users for this enrolment method
-        if ($this->{self::MFIELD_MAXENROLLED} > 0) {
-            // Max enrol limit specified.
-            //$count = $this->count_users_on_list();
-			$count = $queueman->get_listtotal_by_method(static::METHODTYPE);
-            if ($count >= $this->{self::MFIELD_MAXENROLLED}) {
-                // Bad luck, no more self enrolments here.
-                return get_string('noroomonlist', 'enrol_waitinglist');
-            }
-        }
-		
-		//is waiting list is full
-		if ($queueman->is_full()){
-                return  get_string('noroomonlist', 'enrol_waitinglist');
-        }
-		
-        if ($this->{self::MFIELD_COHORTONLY}) {
-            require_once("$CFG->dirroot/cohort/lib.php");
-            if (!cohort_is_member($this->{self::MFIELD_COHORTONLY}, $USER->id)) {
-                $cohort = $DB->get_record('cohort', array('id' => $this->{self::MFIELD_COHORTONLY}));
-                if (!$cohort) {
-                    return null;
-                }
-                $a = format_string($cohort->name, true, array('context' => \context::instance_by_id($cohort->contextid)));
-                return markdown_to_html(get_string('cohortnonmemberinfo', 'enrol_self', $a));
-            }
-        }
 
         return true;
     }
@@ -275,34 +261,41 @@ class enrolmethodself extends \enrol_waitinglist\method\enrolmethodbase{
             return;
         }
 
-        $timestart = time();
-        if ($waitinglist->enrolperiod) {
-            $timeend = $timestart + $waitinglist->enrolperiod;
-        } else {
-            $timeend = 0;
-        }
 
 		//prepare additional fields for our queue DB entry
 		//we need at least one, so we set an empty string for password if necessary
 		$queue_entry = new \stdClass;
+		$queue_entry->waitinglistid      = $waitinglist->id;
+		$queue_entry->courseid       = $waitinglist->courseid;
+		$queue_entry->userid       = $USER->id;
+		$queue_entry->methodtype   = static::METHODTYPE;
 		if(!isset($data->enrolpassword)){$data->enrolpassword='';}
 		$queue_entry->{self::QFIELD_ENROLPASSWORD}=$data->enrolpassword;
+		$queue_entry->timecreated  = time();
+		$queue_entry->queueno = 	0;
+		$queue_entry->seats = 1;
+		$queue_entry->timemodified = $queue_entry->timecreated;
 		
 		//add the user to the waitinglist queue 
-        $queueid = $this->enrol_user($waitinglist, $USER->id, $waitinglist->roleid, $timestart, $timeend);
-		
-		//if we were not returned a queue id, we were enroled straight on the course. Yoo hoo!
-		//run the post enrol hook manually and return
-		if(!$queueid){
-				$this->post_enrol_hook($waitinglist, $queue_entry);
-				return;
-		//if we have a queue id add the additional fields to db
-		//these will be used for post_enrol_hook when user is really enrolled
-		}else{
-			$queue_entry->id= $queueid;
-			$DB->update_record(self::QTABLE, $queue_entry);
-		}
+        $queueid = $this->add_to_waitinglist($waitinglist, $queue_entry);
+
     }
+	
+	/**
+     * Pop off queue and enrol in course
+     *
+     * @param stdClass $waitinglist
+	 * @param stdClass $queueentry
+     * @return null 
+     */
+	public function graduate_from_list(\stdClass $waitinglist,\stdClass $queue_entry){
+		$queueman= \enrol_waitinglist\queuemanager::get_by_course($waitinglist->courseid);
+		$wl = enrol_get_plugin('waitinglist');
+		$wl->enrol_user($wlinstance,$queue_entry->userid);
+		$this->do_post_enrol_actions($wlinstance, $queue_entry);
+		$queueman->remove_entry($queue_entry->id);
+		return true;
+	}
 	
 	/**
      * After enroling into course and removeing from waiting list. Return here to do any post processing 
@@ -311,7 +304,7 @@ class enrolmethodself extends \enrol_waitinglist\method\enrolmethodbase{
 	 * @param stdClass $queueentry
      * @return null 
      */
-	public function post_enrol_hook(\stdClass $waitinglist,\stdClass $queueentry){
+	public function do_post_enrol_actions(\stdClass $waitinglist,\stdClass $queueentry){
 		global $DB,$CFG;
 		 if ($this->password and $this->{self::MFIELD_GROUPKEY} and $queueentry->{QFIELD_ENROLPASSWORD} !== $this->password) {
             // It must be a group enrolment, let's assign group too.
@@ -341,8 +334,13 @@ class enrolmethodself extends \enrol_waitinglist\method\enrolmethodbase{
     public function enrol_page_hook(\stdClass $waitinglist) {
         global $CFG, $OUTPUT, $USER;
 		
-
-        $enrolstatus = $this->can_self_enrol($waitinglist);
+		$queueman= \enrol_waitinglist\queuemanager::get_by_course($waitinglist->courseid);
+		$qdetails = $queueman->get_user_queue_details(static::METHODTYPE);
+		if($qdetails->queueno > 0){
+			$enrolstatus = get_string('yourqueuedetails','enrol_waitinglist', $qdetails);
+		}else{				
+			$enrolstatus = $this->can_enrol($waitinglist,true);
+		}
 
         // Don't show enrolment instance form, if user can't enrol using it.
         if (true === $enrolstatus) {
