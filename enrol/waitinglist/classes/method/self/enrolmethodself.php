@@ -336,7 +336,7 @@ class enrolmethodself extends \enrol_waitinglist\method\enrolmethodbase{
 		
 		$queueman= \enrol_waitinglist\queuemanager::get_by_course($waitinglist->courseid);
 		$qdetails = $queueman->get_user_queue_details(static::METHODTYPE);
-		if($qdetails->queueno > 0){
+		if($qdetails->queueposition > 0){
 			$enrolstatus = get_string('yourqueuedetails','enrol_waitinglist', $qdetails);
 		}else{				
 			$enrolstatus = $this->can_enrol($waitinglist,true);
@@ -344,7 +344,8 @@ class enrolmethodself extends \enrol_waitinglist\method\enrolmethodbase{
 
         // Don't show enrolment instance form, if user can't enrol using it.
         if (true === $enrolstatus) {
-            $form = new enrolmethodself_enrolform(NULL, array($waitinglist,$this));
+        	$listtotal = $queueman->get_listtotal();
+            $form = new enrolmethodself_enrolform(NULL, array($waitinglist,$this,$listtotal));
             $waitinglistid = optional_param('waitinglist', 0, PARAM_INT);
             if ($waitinglist->id == $waitinglistid) {
                 if ($data = $form->get_data()) {

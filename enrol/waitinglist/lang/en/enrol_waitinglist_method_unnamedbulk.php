@@ -23,6 +23,7 @@
  */
 
 $string['unnamedbulk_displayname'] = 'Unnamed Bulk';
+$string['unnamedbulk_menutitle'] = 'Reserve Seats';
 $string['welcometowaitlist_unnamedbulk'] = '{$a->queueseats} Seats Added to Waitlist for: {$a->coursename}';
 $string['welcometowaitlisttext_unnamedbulk'] = '{$a->queueseats} Seats Added to Waitlist for: {$a->coursename}
 
@@ -49,3 +50,8 @@ The following placeholders may be included in the message:
 * Link to enrolpage {$a->editenrolurl}';
 $string['reserveseatcount'] = 'Number of seats to reserve';
 $string['reserveseats'] = 'Reserve Seats on Course';
+$string['unnamedbulk_enrolformintro'] = 'Use this form to reserve seats on this course. You will be notified by email when your places in the course are assigned to you. After enroling users, please return here then to release the reserved seats.';
+$string['unnamedbulk_enrolformqueuestatus'] = 'You are currently reserving {$a->seats} seats. You have been assigned {$a->assignedseats} seats. 
+
+Your seats are currently at position {$a->queueposition} on the waiting list.';
+$string['unnamedbulk_enrolformqueuestatus_label'] = 'Current Reservation';

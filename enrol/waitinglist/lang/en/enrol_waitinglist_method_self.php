@@ -22,9 +22,14 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 $string['self_displayname'] = 'Self Enrolment';
+$string['self_menutitle'] = 'Enrol Self';
 $string['welcometowaitlist_self'] = 'Added to Waitlist for: {$a}';
 $string['welcometowaitlisttext_self'] = 'You are on the {$a->coursename} waiting list!
 
 You are currently number {$a->queueno}.
 
 You can check your position here:  {$a->courseurl}';
+$string['self_queuewarning_label'] ='This course is presently booked';
+$string['self_queuewarning'] = 'If you proceed you will be placed on a waiting list and will be enrolled automatically and informed by email when a place becomes available.
+
+Number of persons waiting in front of you: {$a}';

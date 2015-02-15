@@ -37,21 +37,32 @@ class enrolmethodunnamedbulk_enrolform extends \moodleform {
      * @return string form identifier
      */
     protected function get_form_identifier() {
-		list( $waitinglist,$method) = $this->_customdata;
+		list( $waitinglist,$method,$queuestatus) = $this->_customdata;
         $formid = $method->id.'_'.get_class($this);
         return $formid;
     }
 
     public function definition() {
         $mform = $this->_form;
-       list( $waitinglist,$method) = $this->_customdata;
+       list( $waitinglist,$method,$queuestatus) = $this->_customdata;
         $this->method = $method;
         $plugin = enrol_get_plugin('waitinglist');
 
         $heading = $plugin->get_instance_name($waitinglist);
-        $mform->addElement('header', 'selfheader', $heading);
+        $mform->addElement('header', 'selfheader', $heading. ' : ' . get_string('unnamedbulk_menutitle','enrol_waitinglist'));
+        
+        $mform->addElement('static','formintro',
+			'',
+			get_string('unnamedbulk_enrolformintro','enrol_waitinglist'));
         
         //add caution for number of seats available, and waiting list size etc
+        if($queuestatus){
+			$mform->addElement('static','aboutqueuestatus',
+			get_string('unnamedbulk_enrolformqueuestatus_label','enrol_waitinglist'),
+			get_string('unnamedbulk_enrolformqueuestatus','enrol_waitinglist',$queuestatus));
+        }
+        
+        //add form input elements
         $mform->addElement('text','seats',  get_string('reserveseatcount', 'enrol_waitinglist'), array('size' => '8'));
 		$mform->addRule('seats', null, 'numeric', null, 'client');
 		$mform->setType('seats', PARAM_INT);
@@ -64,6 +75,9 @@ class enrolmethodunnamedbulk_enrolform extends \moodleform {
 		$mform->addElement('hidden', 'waitinglist');
         $mform->setType('waitinglist', PARAM_INT);
 		$mform->setDefault('waitinglist', $waitinglist->id);
+		$mform->addElement('hidden', 'methodtype');
+        $mform->setType('methodtype', PARAM_TEXT);
+		$mform->setDefault('methodtype', $this->method->get_methodtype());
 		$mform->addElement('hidden', 'datarecordid');
         $mform->setType('datarecordid', PARAM_INT);
 		

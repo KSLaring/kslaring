@@ -21,5 +21,6 @@
  * @copyright  2015 Justin Hunt  {@link http://poodll.com}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-//we should never actually see this. its just for reference
+
 $string['namedbulk_displayname'] = 'Named Bulk';
+$string['namedbulk_menutitle'] = 'Reserve Seats for Users';

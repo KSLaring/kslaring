@@ -23,3 +23,4 @@
  */
 //we should never actually see this. its just for reference
 $string['base_displayname'] = 'Base Plugin';
+$string['base_menutitle'] = 'Base Plugin';

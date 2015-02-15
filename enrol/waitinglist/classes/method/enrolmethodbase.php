@@ -67,7 +67,16 @@ abstract class enrolmethodbase  {
 	public static function get_display_name(){
 		return get_string(static::METHODTYPE . '_displayname', 'enrol_waitinglist');
 	}
+	
+	public static function can_enrol_from_course_admin(){
+		return false;
+	}
 	 
+	
+	public function get_methodtype(){
+		return static::METHODTYPE;
+	}
+	
 	 /**
      *  Construct instance from courseid
      */
@@ -248,8 +257,12 @@ abstract class enrolmethodbase  {
         $a = new  \stdClass();
         $a->coursename = format_string($course->fullname, true, array('context'=>$context));
         $a->courseurl = $CFG->wwwroot . '/course/view.php?id=' . $waitinglist->courseid;
-        $a->editenrolurl = $CFG->wwwroot . '/enrol/index.php?id=' . $waitinglist->courseid;
-        $a->queueno = $queue_entry->queueno;
+        $a->editenrolurl = $CFG->wwwroot . '/enrol/waitinglist/edit_enrolform.php?id=' . 
+        		$waitinglist->courseid . '&methodtype=' . static::METHODTYPE;
+
+		$queueman= \enrol_waitinglist\queuemanager::get_by_course($waitinglist->courseid);
+		$qposition= $queueman->get_listtotal($queue_entry->id);
+        $a->queueno = $qposition;
         $a->queueseats = $queue_entry->seats;
 
 

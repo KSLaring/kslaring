@@ -37,20 +37,25 @@ class enrolmethodself_enrolform extends \moodleform {
      * @return string form identifier
      */
     protected function get_form_identifier() {
-		list( $waitinglist,$method) = $this->_customdata;
+		list( $waitinglist,$method,$listtotal) = $this->_customdata;
         $formid = $method->id.'_'.get_class($this);
         return $formid;
     }
 
     public function definition() {
         $mform = $this->_form;
-       list( $waitinglist,$method) = $this->_customdata;
+       list( $waitinglist,$method,$listtotal) = $this->_customdata;
         $this->method = $method;
         $plugin = enrol_get_plugin('waitinglist');
 
         $heading = $plugin->get_instance_name($waitinglist);
-        $mform->addElement('header', 'selfheader', $heading);
-
+       $mform->addElement('header', 'selfheader', $heading. ' : ' . get_string('self_menutitle','enrol_waitinglist'));
+       
+       //queuewarning
+       if($listtotal>0){
+       	$mform->addElement('static','queuewarning',get_string('self_queuewarning_label','enrol_waitinglist'),get_string('self_queuewarning','enrol_waitinglist',$listtotal));
+       }
+       
         if ($method->password) {
             // Change the id of self enrolment key input as there can be multiple self enrolment methods.
 			//NB actually this probably doesnt apply to waitinglist self enrolment, but just to be safe
@@ -65,6 +70,10 @@ class enrolmethodself_enrolform extends \moodleform {
         $mform->addElement('hidden', 'id');
         $mform->setType('id', PARAM_INT);
         $mform->setDefault('id', $waitinglist->courseid);
+        
+        $mform->addElement('hidden', 'methodtype');
+        $mform->setType('methodtype', PARAM_TEXT);
+		$mform->setDefault('methodtype', $this->method->get_methodtype());
 
         $mform->addElement('hidden', 'waitinglist');
         $mform->setType('waitinglist', PARAM_INT);

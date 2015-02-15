@@ -97,6 +97,7 @@ class enrol_waitinglist_plugin extends enrol_plugin {
      * @param stdClass $instance
      * @return moodle_url;
      */
+  
     public function add_course_navigation($instancesnode, stdClass $instance) {
         if ($instance->enrol !== 'waitinglist') {
              throw new coding_exception('Invalid enrol instance type!');
@@ -105,8 +106,27 @@ class enrol_waitinglist_plugin extends enrol_plugin {
         $context = context_course::instance($instance->courseid);
         if (has_capability('enrol/waitinglist:config', $context)) {
             $managelink = new moodle_url('/enrol/waitinglist/edit.php', array('courseid'=>$instance->courseid));
-            $instancesnode->add($this->get_instance_name($instance), $managelink, navigation_node::TYPE_SETTING);
+            $waitinglistnode = $instancesnode->add($this->get_instance_name($instance), $managelink, navigation_node::TYPE_SETTING);
+        
+        	//add manage links
+        	//methods
+        	$managelink=new moodle_url('/enrol/waitinglist/managemethods.php', array('id'=>$instance->courseid));
+        	$waitinglistnode->add(get_string('managemethods','enrol_waitinglist'), $managelink, navigation_node::TYPE_SETTING);
+        	//queue
+        	$managelink=new moodle_url('/enrol/waitinglist/managequeue.php', array('id'=>$instance->courseid));
+        	$waitinglistnode->add(get_string('managequeue','enrol_waitinglist'), $managelink, navigation_node::TYPE_SETTING);
+ 
         }
+        //add bulk enrol links
+		$course = get_course($instance->courseid);
+		$methods = $this->get_methods($course, $instance->id);
+		$usersnode = $instancesnode->parent;
+		foreach($methods as $method){
+			if($method->can_enrol_from_course_admin()){
+				$managelink=new moodle_url('/enrol/waitinglist/edit_enrolform.php', array('id'=>$instance->courseid, 'methodtype'=>$method->get_methodtype()));
+				$usersnode->add(get_string($method->get_methodtype() . '_menutitle','enrol_waitinglist'), $managelink, navigation_node::TYPE_SETTING);
+			}
+		}
     }
 
     /**

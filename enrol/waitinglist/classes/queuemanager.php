@@ -68,6 +68,7 @@ class queuemanager  {
 	/**
      *  Enrol the next user on the list into the course
      */
+     /*
 	public function enrol_next($wlinstance){
 		if($this->get_listtotal() > 0){
 			$qitem = $this->peek_first();
@@ -83,6 +84,7 @@ class queuemanager  {
 		}
 		return false;
 	}
+	*/
 	
 	/**
      *  Return a particular queue entry
@@ -122,13 +124,14 @@ class queuemanager  {
 		global $DB,$USER;
 		
 		$qdetails = new \stdClass;
-		$qdetails->queueno=0;
+		$qdetails->queueposition=0;
 		$qdetails->queuetotal=$this->get_listtotal();
 		$details = $DB->get_records(self::QTABLE,array('courseid'=>$this->courseid,'userid'=>$USER->id,'waitinglistid'=>$this->waitinglist->id));
 		if(!$details){return $qdetails;}
 		foreach($details as $detail){
 			if($detail->methodtype==$methodtype){
-				$qdetails->queueno = $detail->queueno;
+				$qdetails->queueposition = $this->get_listposition($detail->id);
+				break;
 			}
 		}
 		return $qdetails;
@@ -161,8 +164,8 @@ class queuemanager  {
      */
 	 public function get_listtotal_by_method($methodtype){
 		global $DB;
-		 $records = $DB->get_records_sql("SELECT * FROM {".static::QTABLE."} WHERE courseid = $this->courseid AND waitinglistid = $this->waitinglist->id AND " .$DB->sql_compare_text('methodtype') . "='". $methodtype ."'");
-		 return $records ? count($records) : false;
+		 $record = $DB->get_record_sql("SELECT SUM{seats} as seatcount FROM {".static::QTABLE."} WHERE courseid = $this->courseid AND waitinglistid = $this->waitinglist->id AND " .$DB->sql_compare_text('methodtype') . "='". $methodtype ."'");
+		 return $record ? $record->seatcount : 0;
 	}
 
 	  /**
@@ -257,7 +260,7 @@ class queuemanager  {
 		return $qentry;
 	}
 	
-		/**
+	/**
      * Returns the top user off the waiting list, but doesn't remove it
      *
      * @return stdclass the top entry on the waiting list
@@ -315,7 +318,26 @@ class queuemanager  {
      *
      * @return int  users on the waiting list
      */
-	public function get_listtotal(){
-		return $this->qentries ? count($this->qentries) : 0;
+	public function get_listtotal($until_qentryid=false){
+		$seatcount = 0;
+		if(!$this->qentries){return 0;}
+		foreach($this->qentries as $qentry){
+			if($qentry->id === $until_qentryid){ 
+				$seatcount += 1;
+				break;
+			}
+			$seatcount += $qentry->seats;
+		}
+		return $seatcount;
+	}
+	
+	/**
+     * GEts the total of users on our waiting list
+     *
+     * @return int  users on the waiting list
+     */
+	public function get_listposition($qentry){
+		return $this->get_listtotal($qentry->id);
+		//return $this->qentries ? count($this->qentries) : 0;
 	}
 }

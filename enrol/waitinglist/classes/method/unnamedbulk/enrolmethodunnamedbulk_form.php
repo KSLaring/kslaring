@@ -36,7 +36,7 @@ class enrolmethodunnamedbulk_form extends \moodleform {
 
         list($instance, $plugin, $context) = $this->_customdata;
 
-        $mform->addElement('header', 'header', get_string('pluginname', 'enrol_self'));
+        $mform->addElement('header', 'header', get_string('pluginname', 'enrol_self') . ':' . get_string('unnamedbulk_menutitle','enrol_waitinglist'));
 
         $mform->addElement('selectyesno', 'status', get_string('enable'));
         $mform->addHelpButton('status', 'status', 'enrol_self');

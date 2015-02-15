@@ -47,7 +47,7 @@ class enrolmethodunnamedbulk extends \enrol_waitinglist\method\enrolmethodbase {
 	const MFIELD_SENDCONFIRMMESSAGE = 'customint5';
 	const MFIELD_CONFIRMEDMESSAGE = 'customtext2';
 	//const DFIELD_SEATS = 'customint1';
-	//const QFIELD_SEATS = 'customint1';
+	const QFIELD_ASSIGNEDSEATS = 'customint1';
 	
 	
 	public $course = 0;
@@ -63,6 +63,10 @@ class enrolmethodunnamedbulk extends \enrol_waitinglist\method\enrolmethodbase {
     public function __construct()
     {
     }
+    
+   public static function can_enrol_from_course_admin(){
+		return true;
+	}
 	 
 	  /**
      * Add new instance of method with default settings.
@@ -291,17 +295,26 @@ class enrolmethodunnamedbulk extends \enrol_waitinglist\method\enrolmethodbase {
         global $CFG, $OUTPUT, $USER,$DB;
 		
 		$queueman= \enrol_waitinglist\queuemanager::get_by_course($waitinglist->courseid);
-		$qdetails = $queueman->get_user_queue_details(static::METHODTYPE);
-		if($qdetails->queueno > 0){
+		$qentry = $queueman->get_qentry_by_userid($USER->id,static::METHODTYPE);
+		
+		if($qentry){
 			$enrolstatus =true;
 		}else{				
 			$enrolstatus = $this->can_enrol($waitinglist,true);
 		}
 
         // Don't show enrolment instance form, if user can't enrol using it.
-        if (true === $enrolstatus) {
-
-            $form = new enrolmethodunnamedbulk_enrolform(NULL, array($waitinglist,$this));
+        if (true === $enrolstatus) {	
+			$qstatus = new \stdClass;
+			$qstatus->seats=0;
+			$qstatus->assignedseats=0;
+			$qstatus->queueposition=0;
+			if($qentry){
+				$qstatus->seats = $qentry->seats;
+				$qstatus->assignedseats=$qentry->{static::QFIELD_ASSIGNEDSEATS};
+				$qstatus->queueposition=$queueman->get_listposition($qentry);
+			}
+            $form = new enrolmethodunnamedbulk_enrolform(NULL, array($waitinglist,$this,$qstatus));
 			
             $waitinglistid = optional_param('waitinglist', 0, PARAM_INT);
             if ($waitinglist->id == $waitinglistid) {
@@ -309,16 +322,13 @@ class enrolmethodunnamedbulk extends \enrol_waitinglist\method\enrolmethodbase {
 					 $this->enrol_unnamedbulk($waitinglist, $data);
                     //$this->enrol_self($waitinglist, $data);
 					//add to waiting list or something;
-                     redirect($CFG->wwwroot . '/enrol/index.php?id=' . $waitinglist->courseid);
+                     redirect($CFG->wwwroot . '/enrol/waitinglist/edit_enrolform.php?id=' . $waitinglist->courseid . '&methodtype=' . static::METHODTYPE);
                 }
             }
-			
-			$queueman =  \enrol_waitinglist\queuemanager::get_by_course($waitinglist->courseid);
-			$queue_entry = $queueman->get_qentry_by_userid($USER->id,static::METHODTYPE);
 
-			if($queue_entry){
+			if($qentry){
 				$formdata = new \stdClass;
-				$formdata->seats=$queue_entry->seats;
+				$formdata->seats=$qentry->seats;
 				$form->set_data($formdata);
 			}
 			//begin the output
