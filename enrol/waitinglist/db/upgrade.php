@@ -28,14 +28,33 @@ function xmldb_enrol_waitinglist_upgrade($oldversion) {
     global $CFG, $DB, $OUTPUT;
 
     $dbman = $DB->get_manager();
-/*
-    if ($oldversion < 2012100702) {
-        // Set default expiry threshold to 1 day.
-        $DB->execute("UPDATE {enrol} SET expirythreshold = 86400 WHERE enrol = 'waitinglist' AND expirythreshold = 0");
-        upgrade_plugin_savepoint(true, 2012100702, 'enrol', 'waitinglist');
-    }
-*/
 
+    if ($oldversion < 2015021101) {
+         // Add email alert field 
+        $table = new xmldb_table('enrol_waitinglist_method');
+        $field = new xmldb_field('emailalert', XMLDB_TYPE_INTEGER, '4', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, '0', 'maxseats');
+
+        // Launch add field selection.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Dataform savepoint reached.
+        upgrade_plugin_savepoint(true, 2015021101, 'enrol','waitinglist');
+    }
+     if ($oldversion < 2015021601) {
+         // Add email alert field 
+        $table = new xmldb_table('enrol_waitinglist_queue');
+        $field = new xmldb_field('allocseats', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, '0', 'seats');
+
+        // Launch add field selection.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Dataform savepoint reached.
+        upgrade_plugin_savepoint(true, 2015021601, 'enrol','waitinglist');
+    }
     return true;
 }
 

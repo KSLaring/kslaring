@@ -27,20 +27,36 @@ defined('MOODLE_INTERNAL') || die();
 define('ENROL_WAITINGLIST_FIELD_CUTOFFDATE', 'customint1');
 define('ENROL_WAITINGLIST_FIELD_MAXENROLMENTS', 'customint2');
 define('ENROL_WAITINGLIST_FIELD_WAITLISTSIZE', 'customint3');
+define('ENROL_WAITINGLIST_FIELD_SENDWELCOMEMESSAGE', 'customint4');
+define('ENROL_WAITINGLIST_FIELD_SENDWAITLISTMESSAGE', 'customint5');
+define('ENROL_WAITINGLIST_FIELD_WELCOMEMESSAGE', 'customtext1');
+define('ENROL_WAITINGLIST_FIELD_WAITLISTMESSAGE', 'customtext2');
+define('ENROL_WAITINGLIST_TABLE_QUEUE', 'enrol_waitinglist_queue');
+define('ENROL_WAITINGLIST_TABLE_METHODS', 'enrol_waitinglist_method');
+
 
 class enrol_waitinglist_plugin extends enrol_plugin {
 
     protected $lasternoller = null;
     protected $lasternollerinstanceid = 0;
 
+	
+	public static function get_method_names(){
+		//return array('self','unnamedbulk','namedbulk','selfconfirmation','paypal');
+		return array('self','unnamedbulk');
+	}
+
     public function roles_protected() {
         // Users may tweak the roles later.
         return false;
     }
 
+	/*
+	* We do not allow manual enrolments
+	*/
     public function allow_enrol(stdClass $instance) {
         // Users with enrol cap may unenrol other users waitinglistly waitinglistly.
-        return true;
+        return false;
     }
 
     public function allow_unenrol(stdClass $instance) {
@@ -52,34 +68,25 @@ class enrol_waitinglist_plugin extends enrol_plugin {
         // Users with manage cap may tweak period and status.
         return true;
     }
-
-    /**
-     * Returns link to waitinglist enrol UI if exists.
-     * Does the access control tests automatically.
+	
+	/**
+     * Returns all the waiting list enrolment methods we have
      *
-     * @param stdClass $instance
-     * @return moodle_url
+     * @return array array of waitlinglist enrolment methods
      */
-    public function get_waitinglist_enrol_link($instance) {
-        $name = $this->get_name();
-        if ($instance->enrol !== $name) {
-            throw new coding_exception('invalid enrol instance!');
-        }
+	public static function get_methods($course, $waitinglistid = false){
+		$methods=array();
+		foreach(self::get_method_names() as $methodtype){
+		 $class = '\enrol_waitinglist\method\\' . $methodtype. '\enrolmethod' .$methodtype ;
+		   if (class_exists($class)){
+				$themethod = $class::get_by_course($course->id, $waitinglistid); 
+				if($themethod){$methods[$methodtype]=$themethod;}
+		   }
+		}
+		return $methods;
+	}
 
-        if (!enrol_is_enabled($name)) {
-            return NULL;
-        }
 
-        $context = context_course::instance($instance->courseid, MUST_EXIST);
-
-        if (!has_capability('enrol/waitinglist:enrol', $context)) {
-            // Note: manage capability not used here because it is used for editing
-            // of existing enrolments which is not possible here.
-            return NULL;
-        }
-
-        return new moodle_url('/enrol/waitinglist/manage.php', array('enrolid'=>$instance->id, 'id'=>$instance->courseid));
-    }
 
     /**
      * Returns enrolment instance manage link.
@@ -90,6 +97,7 @@ class enrol_waitinglist_plugin extends enrol_plugin {
      * @param stdClass $instance
      * @return moodle_url;
      */
+  
     public function add_course_navigation($instancesnode, stdClass $instance) {
         if ($instance->enrol !== 'waitinglist') {
              throw new coding_exception('Invalid enrol instance type!');
@@ -98,9 +106,31 @@ class enrol_waitinglist_plugin extends enrol_plugin {
         $context = context_course::instance($instance->courseid);
         if (has_capability('enrol/waitinglist:config', $context)) {
             $managelink = new moodle_url('/enrol/waitinglist/edit.php', array('courseid'=>$instance->courseid));
-            $instancesnode->add($this->get_instance_name($instance), $managelink, navigation_node::TYPE_SETTING);
+            $waitinglistnode = $instancesnode->add($this->get_instance_name($instance), $managelink, navigation_node::TYPE_SETTING);
+        
+        	//add manage links
+        	//methods
+        	$managelink=new moodle_url('/enrol/waitinglist/managemethods.php', array('id'=>$instance->courseid));
+        	$waitinglistnode->add(get_string('managemethods','enrol_waitinglist'), $managelink, navigation_node::TYPE_SETTING);
+        	//queue
+        	$managelink=new moodle_url('/enrol/waitinglist/managequeue.php', array('id'=>$instance->courseid));
+        	$waitinglistnode->add(get_string('managequeue','enrol_waitinglist'), $managelink, navigation_node::TYPE_SETTING);
+ 
         }
-    }
+        //add bulk enrol links to menu if have permission
+		 $context = context_course::instance($instance->courseid);
+		if (has_capability('enrol/waitinglist:canbulkenrol', $context)) {
+			$course = get_course($instance->courseid);
+			$methods = $this->get_methods($course, $instance->id);
+			$usersnode = $instancesnode->parent;
+			foreach($methods as $method){
+				if($method->can_enrol_from_course_admin() && $method->is_active()){
+					$managelink=new moodle_url('/enrol/waitinglist/edit_enrolform.php', array('id'=>$instance->courseid, 'methodtype'=>$method->get_methodtype()));
+					$usersnode->add(get_string($method->get_methodtype() . '_menutitle','enrol_waitinglist'), $managelink, navigation_node::TYPE_SETTING);
+				}//end of if
+			}//end of for each
+		}//end of if has capability
+    }//end of function
 
     /**
      * Returns edit icons for the page with list of instances.
@@ -116,20 +146,168 @@ class enrol_waitinglist_plugin extends enrol_plugin {
         $context = context_course::instance($instance->courseid);
 
         $icons = array();
-
+/*
         if (has_capability('enrol/waitinglist:enrol', $context) or has_capability('enrol/waitinglist:unenrol', $context)) {
             $managelink = new moodle_url("/enrol/waitinglist/manage.php", array('enrolid'=>$instance->id));
             $icons[] = $OUTPUT->action_icon($managelink, new pix_icon('t/enrolusers', get_string('enrolusers', 'enrol_waitinglist'), 'core', array('class'=>'iconsmall')));
         }
-        if (has_capability('enrol/waitinglist:config', $context)) {
+ */
+		if (has_capability('enrol/waitinglist:config', $context)) {
+			//edit settings
             $editlink = new moodle_url("/enrol/waitinglist/edit.php", array('courseid'=>$instance->courseid));
             $icons[] = $OUTPUT->action_icon($editlink, new pix_icon('t/edit', get_string('edit'), 'core',
                     array('class' => 'iconsmall')));
+			//manage queue
+			$queuelink = new moodle_url("/enrol/waitinglist/managequeue.php", array('id'=>$instance->courseid));
+			$icons[] = $OUTPUT->action_icon($queuelink, new pix_icon('t/groupv', get_string('managequeue', 'enrol_waitinglist' ), 'core',
+                    array('class' => 'iconsmall')));
+			//manage subplugins
+			$methodslink = new moodle_url("/enrol/waitinglist/managemethods.php", array('id'=>$instance->courseid));
+			$icons[] = $OUTPUT->action_icon($methodslink, new pix_icon('i/mnethost', get_string('managemethods','enrol_waitinglist'), 'core',
+                    array('class' => 'iconsmall')));
         }
+		
 
         return $icons;
     }
 
+	public function can_enrol_directly($instance){
+		global $DB;
+		//there probably wull be cases where we set the max enrolments to 0, to buffer until a particular start date
+		if ($instance->{ENROL_WAITINGLIST_FIELD_MAXENROLMENTS} > -1) {
+            // Max enrol limit specified.
+            $count = $DB->count_records('user_enrolments', array('enrolid' => $instance->id));
+			$queueman= \enrol_waitinglist\queuemanager::get_by_course($instance->courseid);
+            if ($count < $instance->{ENROL_WAITINGLIST_FIELD_MAXENROLMENTS} && $queueman->get_listtotal() <1) {
+                return true;
+            }else{
+				return false;
+			}
+        }
+		return true;
+	}
+	
+	/**
+     * Returns optional enrolment information icons.
+     *
+     * This is used in course list for quick overview of enrolment options.
+     *
+     * We are not using single instance parameter because sometimes
+     * we might want to prevent icon repetition when multiple instances
+     * of one type exist. One instance may also produce several icons.
+     *
+     * @param array $instances all enrol instances of this type in one course
+     * @return array of pix_icon
+     */
+    public function get_info_icons(array $instances) {
+       $info_icons = array();
+	   if(empty($instances)){return $info_icons;}
+	   foreach($instances as $instance){
+		$course = get_course($instance->courseid);
+		break;
+	   }
+		$methods = $this->get_methods($course, $instance->id);
+		if(!$methods){return array();}
+		foreach($methods as $method){
+			if($method->is_active()){
+				$info_icons = array_merge($info_icons, $method->get_info_icons($instances));
+			}
+		}
+		return $info_icons;
+    }
+
+	
+	  /**
+     * Creates course enrol form, checks if form submitted
+     * and enrols user if necessary. It can also redirect.
+     *
+     * @param stdClass $instance
+     * @return string html text, usually a form in a text box
+     */
+    public function enrol_page_hook(stdClass $instance) {
+        $course = get_course($instance->courseid);
+		
+		$methods = $this->get_methods($course, $instance->id);
+
+		$hooks = array();
+		foreach($methods as $method){
+			if(!$method->is_active() ){continue;}
+			if ($hook = $method->enrol_page_hook($instance)) {
+				$hooks[]= $hook;
+			}
+		}
+		if(empty($hooks)){
+			return null;
+		}else{
+			return implode($hooks);
+		}
+    }
+	
+	
+	/**
+     * Do we show an enrol me link?
+     *
+     * @param array $instances all enrol instances of this type in one course
+     * @return array of pix_icon
+     */
+    public function show_enrolme_link(stdClass $instance) {
+        if($instance->status == ENROL_INSTANCE_ENABLED){
+			return $this->can_self_enrol($instance);
+		}
+		return false;
+    }
+    
+    
+    /**
+     * Enrol user into course via enrol instance.
+     *
+     * @param stdClass $instance
+     * @param int $userid
+     * @param int $roleid optional role id
+     * @param int $timestart 0 means unknown
+     * @param int $timeend 0 means forever
+     * @param int $status default to ENROL_USER_ACTIVE for new enrolments, no change by default in updates
+     * @param bool $recovergrades restore grade history
+     * @return void
+     */
+    public function enrol_user(stdClass $instance, $userid, $roleid = null, $timestart = 0, $timeend = 0, $status = null, $recovergrades = null) {
+   		global $USER;
+		
+        $timestart = time();
+        if ($instance->enrolperiod) {
+            $timeend = $timestart + $instance->enrolperiod;
+        } else {
+            $timeend = 0;
+        }
+		
+		$roleid = $instance->roleid;
+   		
+   		parent::enrol_user($instance,$userid,$roleid,$timestart,$timeend,$status,$recovergrades);
+     	// Send welcome message.
+        if ($instance->{ENROL_WAITINGLIST_FIELD_SENDWELCOMEMESSAGE}) {
+            $this->email_welcome_message($instance, $USER);
+        }
+    }
+    
+	
+	    /**
+     * Checks if user can self enrol.
+     *
+     * @param stdClass $instance enrolment instance
+     * @param bool $checkuserenrolment if true will check if user enrolment is inactive.
+     *             used by navigation to improve performance.
+     * @return bool|string true if successful, else error message or false
+     */
+    public function can_self_enrol(stdClass $instance, $checkuserenrolment = true) {
+       $course = get_course($instance->courseid);
+		$methods = $this->get_methods($course,$instance->id);
+		foreach($methods as $method){
+			if ((true === $method->can_self_enrol($instance, false)) && $method->is_active()) {
+				return true;
+			}
+		}
+        return false;
+    }
     /**
      * Returns link to page which may be used to add new instance of enrolment plugin in course.
      * @param int $courseid
@@ -149,6 +327,29 @@ class enrol_waitinglist_plugin extends enrol_plugin {
         }
 
         return new moodle_url('/enrol/waitinglist/edit.php', array('courseid'=>$courseid));
+    }
+	
+	  /**
+     * Called when user is about to be deleted
+     * @param object $user
+     * @return void
+     */
+    public function user_delete($user) {
+        global $DB;
+
+        $sql = "SELECT e.*
+                  FROM {enrol} e
+                  JOIN {user_enrolments} ue ON (ue.enrolid = e.id)
+                 WHERE e.enrol = :name AND ue.userid = :userid";
+        $params = array('name'=>$this->get_name(), 'userid'=>$user->id);
+
+        $rs = $DB->get_recordset_sql($sql, $params);
+        foreach($rs as $instance) {
+            $this->unenrol_user($instance, $user->id);
+        }
+        $rs->close();
+		//remove from waiting list
+		$DB->delete_records(ENROL_WAITINGLIST_TABLE_QUEUE,array('userid'=>$user->id));
     }
 
     /**
@@ -170,9 +371,25 @@ class enrol_waitinglist_plugin extends enrol_plugin {
             'enrolperiod'     => $this->get_config('enrolperiod', 0),
             'expirynotify'    => $expirynotify,
             'notifyall'       => $notifyall,
+             ENROL_WAITINGLIST_FIELD_SENDWELCOMEMESSAGE=> $this->get_config('sendcoursewelcomemessage'),
+             ENROL_WAITINGLIST_FIELD_SENDWAITLISTMESSAGE=> $this->get_config('sendcoursewaitlistmessage'),
+             ENROL_WAITINGLIST_FIELD_MAXENROLMENTS> $this->get_config('maxenrolments'),
+             ENROL_WAITINGLIST_FIELD_WAITLISTSIZE=> $this->get_config('waitlistsize'),
             'expirythreshold' => $this->get_config('expirythreshold', 86400),
         );
-        return $this->add_instance($course, $fields);
+        $waitinglistid = $this->add_instance($course, $fields);
+
+        //add an instance of each of the methods, if the waitinglist instance was created ok
+        if($waitinglistid){
+			$methods=array();
+			foreach(self::get_method_names() as $methodtype){
+			 $class = '\enrol_waitinglist\method\\' . $methodtype. '\enrolmethod' .$methodtype ;
+			   if (class_exists($class)){
+					$class::add_default_instance( $waitinglistid,$course->id); 
+			   }
+			}
+		}
+		return $waitinglistid;  
     }
 
     /**
@@ -192,104 +409,54 @@ class enrol_waitinglist_plugin extends enrol_plugin {
         return parent::add_instance($course, $fields);
     }
 
-    /**
-     * Returns a button to waitinglistly enrol users through the waitinglist enrolment plugin.
-     *
-     * By default the first waitinglist enrolment plugin instance available in the course is used.
-     * If no waitinglist enrolment instances exist within the course then false is returned.
-     *
-     * This function also adds a quickenrolment JS ui to the page so that users can be enrolled
-     * via AJAX.
-     *
-     * @param course_enrolment_manager $manager
-     * @return enrol_user_button
-     */
-    public function get_waitinglist_enrol_button(course_enrolment_manager $manager) {
-        global $CFG;
-
-        $instance = null;
-        $instances = array();
-        foreach ($manager->get_enrolment_instances() as $tempinstance) {
-            if ($tempinstance->enrol == 'waitinglist') {
-                if ($instance === null) {
-                    $instance = $tempinstance;
-                }
-                $instances[] = array('id' => $tempinstance->id, 'name' => $this->get_instance_name($tempinstance));
-            }
-        }
-        if (empty($instance)) {
-            return false;
-        }
-
-        if (!$waitinglistlink = $this->get_waitinglist_enrol_link($instance)) {
-            return false;
-        }
-
-        $button = new enrol_user_button($waitinglistlink, get_string('enrolusers', 'enrol_waitinglist'), 'get');
-        $button->class .= ' enrol_waitinglist_plugin';
-
-        $startdate = $manager->get_course()->startdate;
-        $startdateoptions = array();
-        $timeformat = get_string('strftimedatefullshort');
-        if ($startdate > 0) {
-            $startdateoptions[2] = get_string('coursestart') . ' (' . userdate($startdate, $timeformat) . ')';
-        }
-        $today = time();
-        $today = make_timestamp(date('Y', $today), date('m', $today), date('d', $today), 0, 0, 0);
-        $startdateoptions[3] = get_string('today') . ' (' . userdate($today, $timeformat) . ')' ;
-        $defaultduration = $instance->enrolperiod > 0 ? $instance->enrolperiod / 86400 : '';
-
-        $modules = array('moodle-enrol_waitinglist-quickenrolment', 'moodle-enrol_waitinglist-quickenrolment-skin');
-        $arguments = array(
-            'instances'           => $instances,
-            'courseid'            => $instance->courseid,
-            'ajaxurl'             => '/enrol/waitinglist/ajax.php',
-            'url'                 => $manager->get_moodlepage()->url->out(false),
-            'optionsStartDate'    => $startdateoptions,
-            'defaultRole'         => $instance->roleid,
-            'defaultDuration'     => $defaultduration,
-            'disableGradeHistory' => $CFG->disablegradehistory,
-            'recoverGradesDefault'=> ''
-        );
-
-        if ($CFG->recovergradesdefault) {
-            $arguments['recoverGradesDefault'] = ' checked="checked"';
-        }
-
-        $function = 'M.enrol_waitinglist.quickenrolment.init';
-        $button->require_yui_module($modules, $function, array($arguments));
-        $button->strings_for_js(array(
-            'ajaxoneuserfound',
-            'ajaxxusersfound',
-            'ajaxnext25',
-            'enrol',
-            'enrolmentoptions',
-            'enrolusers',
-            'errajaxfailedenrol',
-            'errajaxsearch',
-            'none',
-            'usersearch',
-            'unlimitedduration',
-            'startdatetoday',
-            'durationdays',
-            'enrolperiod',
-            'finishenrollingusers',
-            'recovergrades'), 'enrol');
-        $button->strings_for_js('assignroles', 'role');
-        $button->strings_for_js('startingfrom', 'moodle');
-
-        return $button;
-    }
-
-    /**
-     * Enrol cron support.
+	
+	/**
+     * check if there are spaces on the course and enrol if we can
      * @return void
      */
-    public function cron() {
-        $trace = new text_progress_trace();
-        $this->sync($trace, null);
-        $this->send_expiry_notifications($trace);
-    }
+	public function check_and_enrol(progress_trace $trace){
+		global $DB;
+		$trace->output('waitinglist enrolment check for vacant seats');
+		$instances = $DB->get_records('enrol', array( 'enrol'=>'waitinglist'));
+		if (!$instances){
+			$trace->output('No waitinglist enrolment instances, bye bye');
+			 $trace->finished();
+			return;
+		}
+		$wl = enrol_get_plugin('waitinglist');
+		
+		foreach($instances as $instance){
+			$course = get_course($instance->courseid);
+			$methods = $this->get_methods($course, $instance->id);
+			$queueman= \enrol_waitinglist\queuemanager::get_by_course($instance->courseid);
+			$count = $DB->count_records('user_enrolments', array('enrolid' => $instance->id));
+			$trace->output('waitinglist current enrolments: ' . $count);		
+			if($count<$instance->{ENROL_WAITINGLIST_FIELD_MAXENROLMENTS} AND $queueman->get_listtotal() > 0){
+				$allocatedseats=0;
+				$availableseats=$instance->{ENROL_WAITINGLIST_FIELD_MAXENROLMENTS}-$count;
+				$trace->output('waitinglist enrolment availabilities: ' . $availableseats);
+				
+				$qentries = $queueman->get_qentries();
+				foreach($qentries as $qentry){
+					if($qentry->seats > $availableseats - $allocatedseats){
+						$giveseats = $availableseats - $allocatedseats;
+					}else{
+						$giveseats = $qentry->seats;
+					}
+					$remove = $methods[$qentry->methodtype]->graduate_from_list($instance,$qentry,$giveseats);
+					if($remove){$queueman->remove_entry($qentry->id);}
+					$allocatedseats+=$giveseats;
+					if(!($availableseats>$allocatedseats)){break;}
+				}//end of for each
+				$trace->output('waitinglist enrolment allocated seats:' . $allocatedseats);
+			}else{
+				$trace->output('.... no eligible entries on waiting list');
+			}//end of if count
+		}//end of for each instances
+		 $trace->finished();
+	}//end of check and enrol
+	
+
 
     /**
      * Sync all meta course links.
@@ -439,24 +606,6 @@ class enrol_waitinglist_plugin extends enrol_plugin {
         return $actions;
     }
 
-    /**
-     * The waitinglist plugin has several bulk operations that can be performed.
-     * @param course_enrolment_manager $manager
-     * @return array
-     */
-    public function get_bulk_operations(course_enrolment_manager $manager) {
-        global $CFG;
-        require_once($CFG->dirroot.'/enrol/waitinglist/locallib.php');
-        $context = $manager->get_context();
-        $bulkoperations = array();
-        if (has_capability("enrol/waitinglist:manage", $context)) {
-            $bulkoperations['editselectedusers'] = new enrol_waitinglist_editselectedusers_operation($manager, $this);
-        }
-        if (has_capability("enrol/waitinglist:unenrol", $context)) {
-            $bulkoperations['deleteselectedusers'] = new enrol_waitinglist_deleteselectedusers_operation($manager, $this);
-        }
-        return $bulkoperations;
-    }
 
     /**
      * Restore instance and map settings.
@@ -490,8 +639,9 @@ class enrol_waitinglist_plugin extends enrol_plugin {
     public function restore_user_enrolment(restore_enrolments_structure_step $step, $data, $instance, $userid, $oldinstancestatus) {
         global $DB;
 
-        // Note: this is a bit tricky because other types may be converted to waitinglist enrolments,
-        //       and waitinglist is restricted to one enrolment per user.
+        // Note: manual enrolment is a bit tricky because other types may be converted to waitinglist enrolments,
+        //       and waitinglist is restricted to one enrolment per user. Waitinglist is based in manual, so 
+		//		this could be simplified
 
         $ue = $DB->get_record('user_enrolments', array('enrolid'=>$instance->id, 'userid'=>$userid));
         $enrol = false;
@@ -528,15 +678,70 @@ class enrol_waitinglist_plugin extends enrol_plugin {
             $this->enrol_user($instance, $userid, null, $data->timestart, $data->timeend, $data->status);
         }
     }
+    
+    /**
+     * Send welcome email to specified user.
+     *
+     * @param stdClass $instance
+     * @param stdClass $user user record
+     * @return void
+     */
+    protected function email_welcome_message($instance, $user) {
+        global $CFG, $DB;
+
+        $course = $DB->get_record('course', array('id'=>$instance->courseid), '*', MUST_EXIST);
+        $context = context_course::instance($course->id);
+
+        $a = new stdClass();
+        $a->coursename = format_string($course->fullname, true, array('context'=>$context));
+        $a->profileurl = "$CFG->wwwroot/user/view.php?id=$user->id&course=$course->id";
+
+        if (trim($instance->{ENROL_WAITINGLIST_FIELD_WELCOMEMESSAGE}) !== '') {
+            $message = $instance->customtext1;
+            $message = str_replace('{$a->coursename}', $a->coursename, $message);
+            $message = str_replace('{$a->profileurl}', $a->profileurl, $message);
+            if (strpos($message, '<') === false) {
+                // Plain text only.
+                $messagetext = $message;
+                $messagehtml = text_to_html($messagetext, null, false, true);
+            } else {
+                // This is most probably the tag/newline soup known as FORMAT_MOODLE.
+                $messagehtml = format_text($message, FORMAT_MOODLE, array('context'=>$context, 'para'=>false, 'newlines'=>true, 'filter'=>true));
+                $messagetext = html_to_text($messagehtml);
+            }
+        } else {
+            $messagetext = get_string('welcometocoursetext', 'enrol_waitinglist', $a);
+            $messagehtml = text_to_html($messagetext, null, false, true);
+        }
+
+        $subject = get_string('welcometocourse', 'enrol_waitinglist', format_string($course->fullname, true, array('context'=>$context)));
+
+        $rusers = array();
+        if (!empty($CFG->coursecontact)) {
+            $croles = explode(',', $CFG->coursecontact);
+            list($sort, $sortparams) = users_order_by_sql('u');
+            $rusers = get_role_users($croles, $context, true, '', 'r.sortorder ASC, ' . $sort, null, '', '', '', '', $sortparams);
+        }
+        if ($rusers) {
+            $contact = reset($rusers);
+        } else {
+            $contact = core_user::get_support_user();
+        }
+
+        // Directly emailing welcome message rather than using messaging.
+        email_to_user($user, $contact, $subject, $messagetext, $messagehtml);
+    }
+
 
     /**
-     * Restore role assignment.
+     * Restore role assignment. 
      *
      * @param stdClass $instance
      * @param int $roleid
      * @param int $userid
      * @param int $contextid
      */
+	 /* Probably not necessary for waitinglist enrolments */
     public function restore_role_assignment($instance, $roleid, $userid, $contextid) {
         // This is necessary only because we may migrate other types to this instance,
         // we do not use component in waitinglist or self enrol.
@@ -544,11 +749,12 @@ class enrol_waitinglist_plugin extends enrol_plugin {
     }
 
     /**
-     * Restore user group membership.
+     * Restore user group membership. 
      * @param stdClass $instance
      * @param int $groupid
      * @param int $userid
      */
+	  /* Probably not necessary for waitinglist enrolments */
     public function restore_group_member($instance, $groupid, $userid) {
         global $CFG;
         require_once("$CFG->dirroot/group/lib.php");
@@ -557,73 +763,4 @@ class enrol_waitinglist_plugin extends enrol_plugin {
 
         groups_add_member($groupid, $userid);
     }
-}
-
-abstract class waitinglist_enrol_method_base  {
-
-	const METHODTYPE='base';
-	const TABLE='enrol_waitinglist_method';
-	protected $active = false;
-	
-	public $course = 0;
-    public $waitlist = 0;
-	public $maxseats = 0;
-    public $activeseats = 0;
-	public $notificationtypes = 0;
-	
-
-	 /**
-     *  Constructor
-     */
-    public function __construct()
-    {
-      $this->_cache = array();
-    }
-	
-	 /**
-     *  Construct instance from DB record
-     */
-	 public static function get_by_record($record){
-		$wlm = new self();
-		foreach(get_object_vars($record) as $propname=>$propvalue){
-			$wlm->{$propname}=$propvalue;
-		}
-		return $wlm;
-	 }
-	 
-	 /**
-     *  Construct instance from courseid
-     */
-	  public static function get_by_course($courseid){
-		global $DB;
-		$strictness = IGNORE_MISSING;	
-        $record = $DB->get_record(self::TABLE, array('courseid' => $courseid,'type'=>self::METHODTYPE), '*', $strictness);
-        return $record ? self::from_record($record) : null;
-	 }
-	 
-	 /**
-     *  Exists in Couse
-     */
-	  public static function exists_in_course($courseid){
-		global $DB;	
-        $count = $DB->count_records(self::TABLE, array('courseid' => $courseid,'type'=>self::METHODTYPE));
-        return $count ? true : false;
-	 }
-	 
-	 //activation functions
-	 public function is_active(){return $this->active;}
-	 public function activate(){$this->active=true;}
-	 public function deactivate(){$this->active=false;}
-	 
-	 
-	 //Abstract functions
-	 public abstract function has_enrolme_link();
-	 public abstract function show_enrolme_link();
-	 public abstract function can_enrol();
-	 public abstract function has_notifications();
-	 public abstract function show_notifications_settings_link();
-	 public abstract function has_settings();
-	 public abstract function show_settings();
-	 
-
 }

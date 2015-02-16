@@ -75,6 +75,13 @@ if ($ADMIN->fulltree) {
 
     $settings->add(new admin_setting_configduration('enrol_waitinglist/expirythreshold',
         get_string('expirythreshold', 'core_enrol'), get_string('expirythreshold_help', 'core_enrol'), 86400, 86400));
+        
+
+	$settings->add(new admin_setting_configtext('enrol_waitinglist/maxenrolments', get_string('maxenrolments', 'enrol_waitinglist'), '', 50, PARAM_FLOAT, 4));
+	$settings->add(new admin_setting_configtext('enrol_waitinglist/waitlistsize', get_string('waitlistsize', 'enrol_waitinglist'), '', 100, PARAM_FLOAT, 4));
+	$settings->add(new admin_setting_configcheckbox('enrol_waitinglist/sendcoursewelcomemessage', get_string('sendcoursewelcomemessage', 'enrol_waitinglist'), '', 1));
+	$settings->add(new admin_setting_configcheckbox('enrol_waitinglist/sendcoursewaitlistmessage', get_string('sendcoursewaitlistmessage', 'enrol_waitinglist'), '', 1));
+
 		
 	
 }

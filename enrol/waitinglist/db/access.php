@@ -44,6 +44,17 @@ $capabilities = array(
             'editingteacher' => CAP_ALLOW,
         )
     ),
+    
+     /* Bulk enrol anybody. */
+    'enrol/waitinglist:canbulkenrol' => array(
+        'captype' => 'write',
+        'contextlevel' => CONTEXT_COURSE,
+        'archetypes' => array(
+            'manager' => CAP_ALLOW,
+            'editingteacher' => CAP_ALLOW,
+            'teacher' => CAP_ALLOW,
+        )
+    ),
 
     /* Manage enrolments of users. */
     'enrol/waitinglist:manage' => array(

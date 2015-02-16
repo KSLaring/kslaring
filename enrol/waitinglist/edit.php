@@ -25,6 +25,7 @@
 
 require('../../config.php');
 require_once('edit_form.php');
+require_once('lib.php');
 
 $courseid = required_param('courseid', PARAM_INT);
 
@@ -94,6 +95,9 @@ if ($mform->is_cancelled()) {
 		$instance->{ENROL_WAITINGLIST_FIELD_CUTOFFDATE}=$data->{ENROL_WAITINGLIST_FIELD_CUTOFFDATE};
 		$instance->{ENROL_WAITINGLIST_FIELD_MAXENROLMENTS}=$data->{ENROL_WAITINGLIST_FIELD_MAXENROLMENTS};
 		$instance->{ENROL_WAITINGLIST_FIELD_WAITLISTSIZE}=$data->{ENROL_WAITINGLIST_FIELD_WAITLISTSIZE};
+		$instance->{ENROL_WAITINGLIST_FIELD_SENDWAITLISTMESSAGE}=$data->{ENROL_WAITINGLIST_FIELD_SENDWAITLISTMESSAGE};
+		$instance->{ENROL_WAITINGLIST_FIELD_SENDWELCOMEMESSAGE}=$data->{ENROL_WAITINGLIST_FIELD_SENDWELCOMEMESSAGE};
+		$instance->{ENROL_WAITINGLIST_FIELD_WELCOMEMESSAGE}=$data->{ENROL_WAITINGLIST_FIELD_WELCOMEMESSAGE};
         $instance->timemodified    = time();
 
         $DB->update_record('enrol', $instance);
@@ -115,9 +119,24 @@ if ($mform->is_cancelled()) {
             'expirythreshold' => $data->expirythreshold,
 			ENROL_WAITINGLIST_FIELD_CUTOFFDATE=>$data->{ENROL_WAITINGLIST_FIELD_CUTOFFDATE},
 			ENROL_WAITINGLIST_FIELD_MAXENROLMENTS=>$data->{ENROL_WAITINGLIST_FIELD_MAXENROLMENTS},
-			ENROL_WAITINGLIST_FIELD_WAITLISTSIZE=>$data->{ENROL_WAITINGLIST_FIELD_WAITLISTSIZE}
+			ENROL_WAITINGLIST_FIELD_WAITLISTSIZE=>$data->{ENROL_WAITINGLIST_FIELD_WAITLISTSIZE},
+			ENROL_WAITINGLIST_FIELD_SENDWAITLISTMESSAGE=>$data->{ENROL_WAITINGLIST_FIELD_SENDWAITLISTMESSAGE},
+			ENROL_WAITINGLIST_FIELD_SENDWELCOMEMESSAGE=>$data->{ENROL_WAITINGLIST_FIELD_SENDWELCOMEMESSAGE},
+			ENROL_WAITINGLIST_FIELD_WELCOMEMESSAGE=>$data->{ENROL_WAITINGLIST_FIELD_WELCOMEMESSAGE}
 		);
-        $plugin->add_instance($course, $fields);
+       $waitinglistid =  $plugin->add_instance($course, $fields);
+
+       //add default methods
+        //add an instance of each of the methods, if the waitinglist instance was created ok
+        if($waitinglistid){
+			$methods=array();
+			foreach(enrol_waitinglist_plugin::get_method_names() as $methodtype){
+			 $class = '\enrol_waitinglist\method\\' . $methodtype. '\enrolmethod' .$methodtype ;
+			   if (class_exists($class)){
+					$class::add_default_instance($course->id,$waitinglistid); 
+			   }
+			}
+		}
     }
 
     redirect($return);

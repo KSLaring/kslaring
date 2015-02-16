@@ -22,6 +22,13 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+ require_once('enrol_waitinglist_method_self.php');
+ require_once('enrol_waitinglist_method_unnamedbulk.php');
+ require_once('enrol_waitinglist_method_namedbulk.php');
+ require_once('enrol_waitinglist_method_selfconfirmed.php');
+ require_once('enrol_waitinglist_method_paypal.php');
+
+ 
 $string['alterstatus'] = 'Alter status';
 $string['altertimeend'] = 'Alter end time';
 $string['altertimestart'] = 'Alter start time';
@@ -75,3 +82,53 @@ $string['wsusercannotassign'] = 'You don\'t have the permission to assign this r
 $string['cutoffdate'] = 'Application Deadline';
 $string['maxenrolments'] = 'Max. Enrolments';
 $string['waitlistsize'] = 'Waitlist Size';
+$string['enrolmethods'] = 'Enrolment Methods';
+$string['managequeue'] = 'Manage Queue';
+$string['managemethods'] = 'Manage Enrolment Methods';
+$string['nomoreseats'] = 'The requested number of seats are not available';
+$string['canthavemoreseats'] = 'You cannot increase the number of reservations if you are not the last on the waiting list.';
+$string['noroomonlist'] = 'No room on the waiting list';
+$string['listisempty'] = 'The waiting list is empty';
+$string['alreadyonlist'] = 'Already on waiting list.';
+$string['yourqueuedetails'] = 'You are number: <strong>{$a->queueposition}</strong> of <strong>{$a->queuetotal}</strong> on the waiting list.';
+$string['removeconfirmmessage'] = 'Do you really want to remove this entry from the waiting list?';
+$string['methodheader'] = 'Method';
+$string['seatsheader'] = 'Seats';
+$string['allocseatsheader'] = 'Allocated';
+$string['updownheader'] = 'Up/Down';
+$string['qentryupdated'] = 'Waiting list entry updated.';
+$string['qentryremoved'] = 'Waiting list entry removed.';
+$string['qmovefailed'] = 'Queue position change failed!';
+$string['qremovefailed'] = 'Remove from Queue operation failed!';
+$string['waitinglisttask'] = 'Waitinglist Enrolment Task';
+$string['insufficientpermissions'] = 'You do not have the ability to use this waitinglist enrolment method';
+$string['sendcoursewelcomemessage'] = 'Send email when enroled in course';
+$string['sendcoursewelcomemessage_help'] = 'An email can be sent to the user when they are enroled in the course';
+$string['customwelcomemessage'] = 'Custom welcome message';
+$string['customwelcomemessage_help'] = 'A custom welcome message may be added as plain text or Moodle-auto format, including HTML tags and multi-lang tags.
+
+The following placeholders may be included in the message:
+
+* Course name {$a->coursename}
+* Link to user\'s profile page {$a->profileurl}';
+$string['welcometocourse'] = 'Welcome to {$a}';
+$string['welcometocoursetext'] = 'Welcome to {$a->coursename}!
+
+If you have not done so already, you should edit your profile page so that we can learn more about you:
+
+  {$a->profileurl}';
+$string['customwaitlistmessage'] = 'Custom waitlist message';
+$string['customwaitlistmessage_help'] = 'A custom waiting list notification message may be added as plain text or Moodle-auto format, including HTML tags and multi-lang tags.
+
+The following placeholders may be included in the message:
+
+* Course name {$a->coursename}
+* Waiting list position {$a->queueno}
+* Waiting list seats {$a->queueseats}
+* Link to course {$a->courseurl}
+* Link to enrolpage {$a->editenrolurl}';
+$string['sendcoursewaitlistmessage'] = 'Send email when added to waitlist';
+$string['sendcoursewaitlistmessage_help'] = 'An email can be sent to the user when they are added to a course waiting list.';
+
+
+
