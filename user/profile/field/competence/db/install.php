@@ -89,7 +89,7 @@ class CompetenceProfile_Install {
                 $table_competence_data->add_field('timemodified',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, null,null);
 
                 /* Primary Keys         */
-                $table_competence_data->add_key('primary', XMLDB_KEY_PRIMARY, array('id,competenceid,userid'));
+                $table_competence_data->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
                 /* Index / Foreign Key  */
                 $table_competence_data->add_key('competenceid',XMLDB_KEY_FOREIGN,array('competenceid'), 'user_info_competence', array('id'));
                 $table_competence_data->add_key('userid',XMLDB_KEY_FOREIGN,array('userid'), 'user', array('id'));
