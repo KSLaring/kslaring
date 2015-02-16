@@ -24,16 +24,19 @@
 
 $string['unnamedbulk_displayname'] = 'Unnamed Bulk';
 $string['unnamedbulk_menutitle'] = 'Reserve Seats';
-$string['welcometowaitlist_unnamedbulk'] = '{$a->queueseats} Seats Added to Waitlist for: {$a->coursename}';
-$string['welcometowaitlisttext_unnamedbulk'] = '{$a->queueseats} Seats Added to Waitlist for: {$a->coursename}
+$string['waitlistmessagetitle_unnamedbulk'] = 'Seats added to Waitlist for: {$a}';
+$string['waitlistmessagetext_unnamedbulk'] = '{$a->queueseats} Seats Added to Waitlist for: {$a->coursename}
 
 Your reserved seats are at postion: {$a->queueno} on the waitinglist.
 
 You can edit your reservation here:  {$a->editenrolurl}';
-$string['confirmedmessage_unnamedbulk'] = 'Seat allocated for: {$a->coursename}';
-$string['confirmedmessagetext_unnamedbulk'] = 'Seat allocated for: {$a->coursename}
+$string['waitlistmessagetitleconfirmation_unnamedbulk'] = 'Seats confirmed for course: {$a}';
+$string['sendconfirmmessage'] ='Send mail when seats are confirmed';
+$string['sendconfirmmessage_help'] ='When places become available on the course, and they are assigned to queue seats for this method, email the user responsible for the seats';
+$string['confirmedmessage_unnamedbulk'] = 'Seats allocated for: {$a->coursename}';
+$string['confirmedmessagetext_unnamedbulk'] = 'Seats allocated for: {$a->coursename}
 
-Your reserved seats on the waitinglist for {$a->coursename} have been allocated.
+{$a->allocatedseats} of your {$a->queueseats} reserved seats on the waitinglist for {$a->coursename} have been allocated.
 
 Please enrol the users into the course and adjust your seat reservations accordingly here:  {$a->editenrolurl}';
 $string['customconfirmedmessage'] = 'Reservation confirmed message';
@@ -46,11 +49,12 @@ The following placeholders may be included in the message:
 * Course name {$a->coursename}
 * Waiting list position {$a->queueno}
 * Waiting list seats {$a->queueseats}
+* Allocated seats {$a->allocatedseats}
 * Link to course {$a->courseurl}
 * Link to enrolpage {$a->editenrolurl}';
 $string['reserveseatcount'] = 'Number of seats to reserve';
 $string['reserveseats'] = 'Reserve Seats on Course';
-$string['unnamedbulk_enrolformintro'] = 'Use this form to reserve seats on this course. You will be notified by email when your places in the course are assigned to you. After enroling users, please return here then to release the reserved seats.';
+$string['unnamedbulk_enrolformintro'] = 'Use this form to reserve seats on this course. You will be notified by email when your places in the course are assigned to you. After enroling users, please return here to release the reserved seats.';
 $string['unnamedbulk_enrolformqueuestatus'] = 'You are currently reserving {$a->seats} seats. You have been assigned {$a->assignedseats} seats. 
 
 Your seats are currently at position {$a->queueposition} on the waiting list.';

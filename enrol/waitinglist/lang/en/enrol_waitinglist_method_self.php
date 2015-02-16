@@ -23,8 +23,9 @@
  */
 $string['self_displayname'] = 'Self Enrolment';
 $string['self_menutitle'] = 'Enrol Self';
-$string['welcometowaitlist_self'] = 'Added to Waitlist for: {$a}';
-$string['welcometowaitlisttext_self'] = 'You are on the {$a->coursename} waiting list!
+$string['waitlistmessage_self'] = 'Added to Waitlist for: {$a}';
+$string['waitlistmessagetitle_self'] = 'Added to Waitlist for: {$a}';
+$string['waitlistmessagetext_self'] = 'You are on the {$a->coursename} waiting list!
 
 You are currently number {$a->queueno}.
 

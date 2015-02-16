@@ -45,6 +45,6 @@ class waitinglisttask extends \core\task\scheduled_task {
 		$waitinglist = enrol_get_plugin('waitinglist');
         $waitinglist->sync($trace, null);
         $waitinglist->send_expiry_notifications($trace);
-		$waitinglist->check_and_enrol();
+		$waitinglist->check_and_enrol($trace);
 	}
 }

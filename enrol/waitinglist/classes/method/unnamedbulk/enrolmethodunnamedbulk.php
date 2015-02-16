@@ -47,7 +47,7 @@ class enrolmethodunnamedbulk extends \enrol_waitinglist\method\enrolmethodbase {
 	const MFIELD_SENDCONFIRMMESSAGE = 'customint5';
 	const MFIELD_CONFIRMEDMESSAGE = 'customtext2';
 	//const DFIELD_SEATS = 'customint1';
-	const QFIELD_ASSIGNEDSEATS = 'customint1';
+	const QFIELD_ASSIGNEDSEATS = 'allocseats';
 	
 	
 	public $course = 0;
@@ -81,7 +81,8 @@ class enrolmethodunnamedbulk extends \enrol_waitinglist\method\enrolmethodbase {
 			$rec->methodtype = static::METHODTYPE;
 			$rec->status = true;
 			$rec->emailalert=true;
-			$rec->{enrolmethodunnamedbulk::MFIELD_WAITLISTMESSAGE}=get_string('welcometowaitlisttext_unnamedbulk','enrol_waitinglist');
+			$rec->{enrolmethodunnamedbulk::MFIELD_SENDCONFIRMMESSAGE}=true;
+			$rec->{enrolmethodunnamedbulk::MFIELD_WAITLISTMESSAGE}=get_string('waitlistmessagetext_unnamedbulk','enrol_waitinglist');
 			$rec->{enrolmethodunnamedbulk::MFIELD_CONFIRMEDMESSAGE}=get_string('confirmedmessagetext_unnamedbulk','enrol_waitinglist');
 			$id = $DB->insert_record(self::TABLE,$rec);
 			if($id){
@@ -225,6 +226,7 @@ class enrolmethodunnamedbulk extends \enrol_waitinglist\method\enrolmethodbase {
 		$queue_entry->timecreated  = time();
 		$queue_entry->queueno = 	0;
 		$queue_entry->seats = $data->seats;
+		$queue_entry->allocseats = 0;
 		$queue_entry->timemodified = $queue_entry->timecreated;
 		
 		
@@ -232,6 +234,26 @@ class enrolmethodunnamedbulk extends \enrol_waitinglist\method\enrolmethodbase {
 		$queueid = $this->add_to_waitinglist($waitinglist,$queue_entry );
 		
 		return $queueid;
+    }
+    
+    /**
+     * Get the email template to send
+     *
+     * @param stdClass $waitinglist instance data
+     * @param string $message key
+     * @return void
+     */
+    protected function get_email_template($waitinglist,$messagekey='') {
+    	if(empty($messagekey)){
+			if (trim($this->{static::MFIELD_WAITLISTMESSAGE}) !== '') {
+				$message = $this->{static::MFIELD_WAITLISTMESSAGE};
+			}else{
+				$message = get_string('waitlistmessagetext_' . static::METHODTYPE, 'enrol_waitinglist');
+			}
+    	}else{
+    		$message = $this->{static::MFIELD_CONFIRMEDMESSAGE};
+    	}
+	     return $message;
     }
 	
 	/**
@@ -241,13 +263,22 @@ class enrolmethodunnamedbulk extends \enrol_waitinglist\method\enrolmethodbase {
 	 * @param stdClass $queueentry
      * @return null 
      */
-	public function graduate_from_list(\stdClass $waitinglist,\stdClass $queue_entry){
-		$queueman= \enrol_waitinglist\queuemanager::get_by_course($waitinglist->courseid);
+	public function graduate_from_list(\stdClass $waitinglist,\stdClass $queue_entry,$seats){
+		global $DB;
+		$queueman= \enrol_waitinglist\queuemanager::get_by_course($waitinglist->courseid);	
 		$wl = enrol_get_plugin('waitinglist');
-		$wl->enrol_user($wlinstance,$queue_entry->userid);
-		$this->do_post_enrol_actions($wlinstance, $queue_entry);
-		$queueman->remove_entry($queue_entry->id);
-		return true;
+		if($seats != $queue_entry->{static::QFIELD_ASSIGNEDSEATS}){
+			$queue_entry->{static::QFIELD_ASSIGNEDSEATS}=$seats;
+			$queueman->update($queue_entry);
+			if($this->{static::MFIELD_SENDCONFIRMMESSAGE}){
+				$user = $DB->get_record('user',array('id'=>$queue_entry->userid));
+				if($user){
+					$this->email_waitlist_message($waitinglist, $queue_entry,$user, 'confirmation');
+				}
+			}
+		}
+		$removeqitem=false;
+		return $removeqitem;
 	}
 	
 	/**
@@ -260,29 +291,11 @@ class enrolmethodunnamedbulk extends \enrol_waitinglist\method\enrolmethodbase {
 	public function do_post_enrol_actions(\stdClass $waitinglist,\stdClass $queueentry){
 		global $DB,$CFG;
 		//we should never actually enrol anyone from unnamedbulk into course
-		//so we should never really arrive here.
+		//so we should never arrive here.
 		return;
-		
-		/*
-		 if ($this->password and $this->{self::MFIELD_GROUPKEY} and $queueentry->{QFIELD_ENROLPASSWORD} !== $this->password) {
-            // It must be a group enrolment, let's assign group too.
-            $groups = $DB->get_records('groups', array('courseid'=>$waitinglist->courseid), 'id', 'id, enrolmentkey');
-            foreach ($groups as $group) {
-                if (empty($group->enrolmentkey)) {
-                    continue;
-                }
-                if ($group->enrolmentkey ===  $queueentry->{QFIELD_ENROLPASSWORD} ) {
-                    // Add user to group.
-                    require_once($CFG->dirroot.'/group/lib.php');
-                    groups_add_member($group->id, $USER->id);
-                    break;
-                }
-            }
-        }
-        */
 	
 	}
-
+	
 	
 	  /**
      * Creates course enrol form, checks if form submitted
@@ -306,11 +319,15 @@ class enrolmethodunnamedbulk extends \enrol_waitinglist\method\enrolmethodbase {
         // Don't show enrolment instance form, if user can't enrol using it.
         if (true === $enrolstatus) {	
 			$qstatus = new \stdClass;
+			$qstatus->hasentry=false;
 			$qstatus->seats=0;
+			$qstatus->islast=true;
 			$qstatus->assignedseats=0;
 			$qstatus->queueposition=0;
 			if($qentry){
+				$qstatus->hasentry=true;
 				$qstatus->seats = $qentry->seats;
+				$qstatus->islast = $qentry->queueno == $queueman->get_entrycount();
 				$qstatus->assignedseats=$qentry->{static::QFIELD_ASSIGNEDSEATS};
 				$qstatus->queueposition=$queueman->get_listposition($qentry);
 			}
@@ -319,10 +336,20 @@ class enrolmethodunnamedbulk extends \enrol_waitinglist\method\enrolmethodbase {
             $waitinglistid = optional_param('waitinglist', 0, PARAM_INT);
             if ($waitinglist->id == $waitinglistid) {
                 if ($data = $form->get_data()) {
-					 $this->enrol_unnamedbulk($waitinglist, $data);
-                    //$this->enrol_self($waitinglist, $data);
-					//add to waiting list or something;
-                     redirect($CFG->wwwroot . '/enrol/waitinglist/edit_enrolform.php?id=' . $waitinglist->courseid . '&methodtype=' . static::METHODTYPE);
+                	if($qentry && $data->seats==0){
+                		$queueman->remove_entry($qentry->id);
+                		$actiontaken='removed';
+                	}else{
+					 	$this->enrol_unnamedbulk($waitinglist, $data);
+					 	$actiontaken='updated';
+					}
+					
+					//Send the user on somewhere
+					$continueurl = new \moodle_url('/enrol/waitinglist/edit_enrolform.php', 
+											array('id'=>$waitinglist->courseid,'methodtype'=> static::METHODTYPE));
+					$actionreport = get_string('qentry' . $actiontaken, 'enrol_waitinglist');
+					redirect($continueurl,$actionreport,2);
+
                 }
             }
 
@@ -338,73 +365,14 @@ class enrolmethodunnamedbulk extends \enrol_waitinglist\method\enrolmethodbase {
             
             return $OUTPUT->box($output);
         } else {
-			//in this case don't show anything, regular joes don't need to see it
-            //return $OUTPUT->box($enrolstatus);
-        }
-    }
-	 
-	
-	
-    /**
-     * Creates course enrol form, checks if form submitted
-     * and enrols user if necessary. It can also redirect.
-     *
-     * @param stdClass $waitinglist
-     * @return string html text, usually a form in a text box
-     */
-    public function xenrol_page_hook(\stdClass $waitinglist) {
-        global $CFG, $OUTPUT, $USER,$DB;
-		
-		//this is checked in lib.php before calling enrol_page_hook
-		//so we don't need it here
-        //$enrolstatus = $this->can_enrol($waitinglist,true);
-        $enrolstatus  =true;
-
-        // Don't show enrolment instance form, if user can't enrol using it.
-        if (true === $enrolstatus) {
-
-            $form = new enrolmethodunnamedbulk_enrolform(NULL, array($waitinglist,$this));
-			
-            $waitinglistid = optional_param('waitinglist', 0, PARAM_INT);
-            if ($waitinglist->id == $waitinglistid) {
-                if ($data = $form->get_data()) {
-					$data->userid=$USER->id;
-					$data->waitinglistid= $waitinglist->id;
-					$data->courseid= $waitinglist->courseid;
-					$data->methodtype=static::METHODTYPE;
-					if(!$data->datarecordid){
-						$DB->insert_record(self::DATATABLE, $data);
-					}else{
-						$data->id = $data->datarecordid;
-						unset($data->datarecordid);
-						$DB->update_record(self::DATATABLE, $data);
-					}
-                    //$this->enrol_self($waitinglist, $data);
-					//add to waiting list or something;
-                     redirect($CFG->wwwroot . '/enrol/index.php?id=' . $waitinglist->courseid);
-                }
-            }
-			//pick up any existing data we have set
-			$strictness = IGNORE_MULTIPLE;	
-			$formdata = $DB->get_record_sql("SELECT * FROM {".self::DATATABLE."} WHERE courseid = $waitinglist->courseid AND " . 
-				$DB->sql_compare_text('methodtype') . "='". static::METHODTYPE . "' " . 
-				" AND waitinglistid = $waitinglist->id AND userid = $USER->id",null,$strictness);	
-
-			if($formdata){
-				$formdata->datarecordid=$formdata->id;
-				unset($formdata->id);
-				$form->set_data($formdata);
+			//if the user is not a teacher/admin, they will see permissions"errors" on the 
+			//enrol page. But they can't use this method anywy. So we only show "can't bulk enrol" messages
+			//to teacher/admins
+			 $context = \context_course::instance($waitinglist->courseid);
+			if (has_capability('enrol/waitinglist:canbulkenrol', $context)) {
+				return $OUTPUT->box($enrolstatus);
 			}
-			//begin the output
-            ob_start();
-            $form->display();
-            $output = ob_get_clean();
-            
-            return $OUTPUT->box($output);
-        } else {
-            return $OUTPUT->box($enrolstatus);
+
         }
     }
-	 
-
 }

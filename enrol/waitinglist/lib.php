@@ -80,7 +80,7 @@ class enrol_waitinglist_plugin extends enrol_plugin {
 		 $class = '\enrol_waitinglist\method\\' . $methodtype. '\enrolmethod' .$methodtype ;
 		   if (class_exists($class)){
 				$themethod = $class::get_by_course($course->id, $waitinglistid); 
-				if($themethod){$methods[]=$themethod;}
+				if($themethod){$methods[$methodtype]=$themethod;}
 		   }
 		}
 		return $methods;
@@ -117,17 +117,20 @@ class enrol_waitinglist_plugin extends enrol_plugin {
         	$waitinglistnode->add(get_string('managequeue','enrol_waitinglist'), $managelink, navigation_node::TYPE_SETTING);
  
         }
-        //add bulk enrol links
-		$course = get_course($instance->courseid);
-		$methods = $this->get_methods($course, $instance->id);
-		$usersnode = $instancesnode->parent;
-		foreach($methods as $method){
-			if($method->can_enrol_from_course_admin()){
-				$managelink=new moodle_url('/enrol/waitinglist/edit_enrolform.php', array('id'=>$instance->courseid, 'methodtype'=>$method->get_methodtype()));
-				$usersnode->add(get_string($method->get_methodtype() . '_menutitle','enrol_waitinglist'), $managelink, navigation_node::TYPE_SETTING);
-			}
-		}
-    }
+        //add bulk enrol links to menu if have permission
+		 $context = context_course::instance($instance->courseid);
+		if (has_capability('enrol/waitinglist:canbulkenrol', $context)) {
+			$course = get_course($instance->courseid);
+			$methods = $this->get_methods($course, $instance->id);
+			$usersnode = $instancesnode->parent;
+			foreach($methods as $method){
+				if($method->can_enrol_from_course_admin() && $method->is_active()){
+					$managelink=new moodle_url('/enrol/waitinglist/edit_enrolform.php', array('id'=>$instance->courseid, 'methodtype'=>$method->get_methodtype()));
+					$usersnode->add(get_string($method->get_methodtype() . '_menutitle','enrol_waitinglist'), $managelink, navigation_node::TYPE_SETTING);
+				}//end of if
+			}//end of for each
+		}//end of if has capability
+    }//end of function
 
     /**
      * Returns edit icons for the page with list of instances.
@@ -270,10 +273,9 @@ class enrol_waitinglist_plugin extends enrol_plugin {
     public function enrol_user(stdClass $instance, $userid, $roleid = null, $timestart = 0, $timeend = 0, $status = null, $recovergrades = null) {
    		global $USER;
 		
-		
         $timestart = time();
-        if ($waitinglist->enrolperiod) {
-            $timeend = $timestart + $waitinglist->enrolperiod;
+        if ($instance->enrolperiod) {
+            $timeend = $timestart + $instance->enrolperiod;
         } else {
             $timeend = 0;
         }
@@ -412,22 +414,47 @@ class enrol_waitinglist_plugin extends enrol_plugin {
      * check if there are spaces on the course and enrol if we can
      * @return void
      */
-	public function check_and_enrol(){
+	public function check_and_enrol(progress_trace $trace){
 		global $DB;
+		$trace->output('waitinglist enrolment check for vacant seats');
 		$instances = $DB->get_records('enrol', array( 'enrol'=>'waitinglist'));
-		if (!$instances){return;}
-		$wl = enrol_get_plugin('waitinglist');
-		foreach($instances as $instance){
-			$queueman= \enrol_waitinglist\queuemanager::get_by_course($instance->courseid);
-			$count = $DB->count_records('user_enrolments', array('enrolid' => $instance->id));		
-			if($count<$instance->{ENROL_WAITINGLIST_FIELD_MAXENROLMENTS} AND $queueman->get_listtotal() > 0){
-				for ($x=0; $x < ($instance->{ENROL_WAITINGLIST_FIELD_MAXENROLMENTS}-$count);$x++){
-					$ok = $queueman->enrol_next($instance);
-					if(!$ok){break;}
-				}
-			}
+		if (!$instances){
+			$trace->output('No waitinglist enrolment instances, bye bye');
+			 $trace->finished();
+			return;
 		}
-	}
+		$wl = enrol_get_plugin('waitinglist');
+		
+		foreach($instances as $instance){
+			$course = get_course($instance->courseid);
+			$methods = $this->get_methods($course, $instance->id);
+			$queueman= \enrol_waitinglist\queuemanager::get_by_course($instance->courseid);
+			$count = $DB->count_records('user_enrolments', array('enrolid' => $instance->id));
+			$trace->output('waitinglist current enrolments: ' . $count);		
+			if($count<$instance->{ENROL_WAITINGLIST_FIELD_MAXENROLMENTS} AND $queueman->get_listtotal() > 0){
+				$allocatedseats=0;
+				$availableseats=$instance->{ENROL_WAITINGLIST_FIELD_MAXENROLMENTS}-$count;
+				$trace->output('waitinglist enrolment availabilities: ' . $availableseats);
+				
+				$qentries = $queueman->get_qentries();
+				foreach($qentries as $qentry){
+					if($qentry->seats > $availableseats - $allocatedseats){
+						$giveseats = $availableseats - $allocatedseats;
+					}else{
+						$giveseats = $qentry->seats;
+					}
+					$remove = $methods[$qentry->methodtype]->graduate_from_list($instance,$qentry,$giveseats);
+					if($remove){$queueman->remove_entry($qentry->id);}
+					$allocatedseats+=$giveseats;
+					if(!($availableseats>$allocatedseats)){break;}
+				}//end of for each
+				$trace->output('waitinglist enrolment allocated seats:' . $allocatedseats);
+			}else{
+				$trace->output('.... no eligible entries on waiting list');
+			}//end of if count
+		}//end of for each instances
+		 $trace->finished();
+	}//end of check and enrol
 	
 
 

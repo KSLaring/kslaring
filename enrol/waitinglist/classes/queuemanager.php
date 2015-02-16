@@ -65,26 +65,6 @@ class queuemanager  {
 		return $wlm;
 	}
 	
-	/**
-     *  Enrol the next user on the list into the course
-     */
-     /*
-	public function enrol_next($wlinstance){
-		if($this->get_listtotal() > 0){
-			$qitem = $this->peek_first();
-			$methodtype = $qitem->methodtype. '\enrolmethod' . $qitem->methodtype;
-			if($methodtype::can_enrol_directly()){
-				$qitem = $this->remove_first();
-				$wl = enrol_get_plugin('waitinglist');
-				$wl->enrol_user($wlinstance,$qitem->userid);
-				$themethod =  $methodtype::get_by_course($this->courseid,$wlinstance);
-				$themethod->post_enrol_hook($wlinstance, $qitem);
-				return true;
-			}		
-		}
-		return false;
-	}
-	*/
 	
 	/**
      *  Return a particular queue entry
@@ -98,18 +78,23 @@ class queuemanager  {
 		return false;
 	}
 	
+	/**
+     *  Return all queue entries
+     */
+	public function get_qentries(){
+		return $this->qentries;
+	}
+	
 		/**
      *  Return a particular users queue entry
      */
 	public function get_qentry_by_userid($userid,$methodtype=false){
 		foreach($this->qentries as $qentry){
 			if($qentry->userid == $userid){
-				if($methodtype && $methodtype==$qentry->methodtype){
+				if($methodtype===false){
 					return $qentry;
-				}else{
-				  return $qentry;
-				  //print_r($qentry);
-				  //die;
+				}elseif($methodtype==$qentry->methodtype){
+					return $qentry;
 				}
 			}
 		}
@@ -130,7 +115,7 @@ class queuemanager  {
 		if(!$details){return $qdetails;}
 		foreach($details as $detail){
 			if($detail->methodtype==$methodtype){
-				$qdetails->queueposition = $this->get_listposition($detail->id);
+				$qdetails->queueposition = $this->get_listposition($detail);
 				break;
 			}
 		}
@@ -164,7 +149,9 @@ class queuemanager  {
      */
 	 public function get_listtotal_by_method($methodtype){
 		global $DB;
-		 $record = $DB->get_record_sql("SELECT SUM{seats} as seatcount FROM {".static::QTABLE."} WHERE courseid = $this->courseid AND waitinglistid = $this->waitinglist->id AND " .$DB->sql_compare_text('methodtype') . "='". $methodtype ."'");
+		 $record = $DB->get_record_sql("SELECT SUM(seats) as seatcount FROM {".static::QTABLE."} WHERE courseid = " . 
+		 	$this->courseid . "  AND waitinglistid = " . $this->waitinglist->id . 
+		 	" AND " .$DB->sql_compare_text('methodtype') . "='". $methodtype ."'");
 		 return $record ? $record->seatcount : 0;
 	}
 
@@ -195,6 +182,13 @@ class queuemanager  {
 		$qentry->courseid=$this->courseid;
 		$qentry->waitinglistid=$this->waitinglist->id;
 		$DB->update_record(self::QTABLE, $qentry);
+		
+		//refresh our list
+		$records =  $DB->get_records(self::QTABLE, array('courseid' => $this->courseid, 'waitinglistid'=>$this->waitinglist->id),'queueno ASC');
+		if($records){
+			$this->qentries = $records;
+		}
+		
 		return $qentry->id;
 	}
 	
@@ -206,11 +200,7 @@ class queuemanager  {
      */
 	public function add($qentry){
 		global $DB;
-		/*
-        if ($wle = $DB->get_record('user_enrolments', array('enrolid'=>$this->waitinglist->id, 'userid'=>$qentry->userid))) {
-            throw new coding_exception('user is already enrolled in this course');
-		}
-		*/
+		
 		if ($this->is_on_list($qentry->userid,$qentry->methodtype)) {
             throw new \coding_exception('user is already on the waiting list for this course and methodtype');
         } else {
@@ -230,20 +220,7 @@ class queuemanager  {
 			return false;
         }
 
-            // Trigger event.
-			/*
-            $event = \core\event\user_enrolment_created::create(
-                    array(
-                        'objectid' => $ue->id,
-                        'courseid' => $courseid,
-                        'context' => $context,
-                        'relateduserid' => $ue->userid,
-                        'other' => array('enrol' => $name)
-                        )
-                    );
-            $event->trigger();
-			*/
-		
+      
 	}
 	
 	/**
@@ -265,7 +242,7 @@ class queuemanager  {
      *
      * @return stdclass the top entry on the waiting list
      */
-	public function peekfirst(){
+	public function peek_first(){
 		global $DB;
 
 		return $this->qentries[0];
@@ -322,11 +299,12 @@ class queuemanager  {
 		$seatcount = 0;
 		if(!$this->qentries){return 0;}
 		foreach($this->qentries as $qentry){
-			if($qentry->id === $until_qentryid){ 
+			if($qentry->id == $until_qentryid){ 
 				$seatcount += 1;
 				break;
+			}else{
+				$seatcount += $qentry->seats;
 			}
-			$seatcount += $qentry->seats;
 		}
 		return $seatcount;
 	}
@@ -339,5 +317,14 @@ class queuemanager  {
 	public function get_listposition($qentry){
 		return $this->get_listtotal($qentry->id);
 		//return $this->qentries ? count($this->qentries) : 0;
+	}
+	
+	/**
+     * GEts the total queue items on our waiting list
+     *
+     * @return int  users on the waiting list
+     */
+	public function get_entrycount(){
+		return $this->qentries ? count($this->qentries) : 0;
 	}
 }

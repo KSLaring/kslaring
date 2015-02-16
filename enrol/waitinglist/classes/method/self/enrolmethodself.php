@@ -75,6 +75,7 @@ class enrolmethodself extends \enrol_waitinglist\method\enrolmethodbase{
 			$rec->methodtype = static::METHODTYPE;
 			$rec->status = true;
 			$rec->emailalert=true;
+			$rec->{enrolmethodself::MFIELD_WAITLISTMESSAGE}=get_string('waitlistmessagetext_self','enrol_waitinglist');
 			$id = $DB->insert_record(self::TABLE,$rec);
 			if($id){
 				$rec->id = $id;
@@ -274,6 +275,7 @@ class enrolmethodself extends \enrol_waitinglist\method\enrolmethodbase{
 		$queue_entry->timecreated  = time();
 		$queue_entry->queueno = 	0;
 		$queue_entry->seats = 1;
+		$queue_entry->allocseats = 0;
 		$queue_entry->timemodified = $queue_entry->timecreated;
 		
 		//add the user to the waitinglist queue 
@@ -288,13 +290,13 @@ class enrolmethodself extends \enrol_waitinglist\method\enrolmethodbase{
 	 * @param stdClass $queueentry
      * @return null 
      */
-	public function graduate_from_list(\stdClass $waitinglist,\stdClass $queue_entry){
+	public function graduate_from_list(\stdClass $waitinglist,\stdClass $queue_entry, $seats){
 		$queueman= \enrol_waitinglist\queuemanager::get_by_course($waitinglist->courseid);
 		$wl = enrol_get_plugin('waitinglist');
-		$wl->enrol_user($wlinstance,$queue_entry->userid);
-		$this->do_post_enrol_actions($wlinstance, $queue_entry);
-		$queueman->remove_entry($queue_entry->id);
-		return true;
+		$wl->enrol_user($waitinglist,$queue_entry->userid);
+		$this->do_post_enrol_actions($waitinglist, $queue_entry);
+		$removeqitem=true;
+		return $removeqitem;
 	}
 	
 	/**

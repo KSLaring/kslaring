@@ -42,6 +42,19 @@ function xmldb_enrol_waitinglist_upgrade($oldversion) {
         // Dataform savepoint reached.
         upgrade_plugin_savepoint(true, 2015021101, 'enrol','waitinglist');
     }
+     if ($oldversion < 2015021601) {
+         // Add email alert field 
+        $table = new xmldb_table('enrol_waitinglist_queue');
+        $field = new xmldb_field('allocseats', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, '0', 'seats');
+
+        // Launch add field selection.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Dataform savepoint reached.
+        upgrade_plugin_savepoint(true, 2015021601, 'enrol','waitinglist');
+    }
     return true;
 }
 

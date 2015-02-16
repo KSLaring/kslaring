@@ -29,6 +29,8 @@ require_once($CFG->libdir.'/formslib.php');
 
 class enrolmethodunnamedbulk_enrolform extends \moodleform {
     protected $method;
+    protected $waitinglist;
+    protected $queuestatus;
     protected $toomany = false;
 
     /**
@@ -46,6 +48,9 @@ class enrolmethodunnamedbulk_enrolform extends \moodleform {
         $mform = $this->_form;
        list( $waitinglist,$method,$queuestatus) = $this->_customdata;
         $this->method = $method;
+        $this->waitinglist = $waitinglist;
+        $this->queuestatus=$queuestatus;
+        
         $plugin = enrol_get_plugin('waitinglist');
 
         $heading = $plugin->get_instance_name($waitinglist);
@@ -56,7 +61,7 @@ class enrolmethodunnamedbulk_enrolform extends \moodleform {
 			get_string('unnamedbulk_enrolformintro','enrol_waitinglist'));
         
         //add caution for number of seats available, and waiting list size etc
-        if($queuestatus){
+        if($queuestatus->hasentry){
 			$mform->addElement('static','aboutqueuestatus',
 			get_string('unnamedbulk_enrolformqueuestatus_label','enrol_waitinglist'),
 			get_string('unnamedbulk_enrolformqueuestatus','enrol_waitinglist',$queuestatus));
@@ -90,44 +95,20 @@ class enrolmethodunnamedbulk_enrolform extends \moodleform {
 
         $errors = parent::validation($data, $files);
         $method = $this->method;
+        $queuestatus = $this->queuestatus;
+        $waitinglist = $this->waitinglist;
 
         if ($this->toomany) {
             $errors['notice'] = get_string('error');
             return $errors;
         }
-/*
-        if ($method->password) {
-            if ($data['enrolpassword'] !== $method->password) {
-                if ($method->{enrolmethodunnamedbulk::MFIELD_GROUPKEY}) {
-                    $groups = $DB->get_records('groups', array('courseid'=>$method->courseid), 'id ASC', 'id, enrolmentkey');
-                    $found = false;
-                    foreach ($groups as $group) {
-                        if (empty($group->enrolmentkey)) {
-                            continue;
-                        }
-                        if ($group->enrolmentkey === $data['enrolpassword']) {
-                            $found = true;
-                            break;
-                        }
-                    }
-                    if (!$found) {
-                        // We can not hint because there are probably multiple passwords.
-                        $errors['enrolpassword'] = get_string('passwordinvalid', 'enrol_self');
-                    }
 
-                } else {
-                    $plugin = enrol_get_plugin('self');
-                    if ($plugin->get_config('showhint')) {
-                        $hint = core_text::substr($method->password, 0, 1);
-                        $errors['enrolpassword'] = get_string('passwordinvalidhint', 'enrol_self', $hint);
-                    } else {
-                        $errors['enrolpassword'] = get_string('passwordinvalid', 'enrol_self');
-                    }
-                }
-            }
+       if($method->maxseats && $method->maxseats < ($queuestatus->queueposition + $data['seats'])){
+        	$errors['nomoreseats'] = get_string('nomoreseats', 'enrol_waitinglist');
         }
-    */
-
+        if(!$queuestatus->islast && ($queuestatus->seats<$data['seats'])){
+        	$errors['canthavemoreseats'] = get_string('canthavemoreseats', 'enrol_waitinglist');
+        }
         return $errors;
     }
 }

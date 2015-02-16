@@ -56,8 +56,11 @@ class enrolmethodunnamedbulk_form extends \moodleform {
         
         $mform->addElement('textarea',enrolmethodunnamedbulk::MFIELD_WAITLISTMESSAGE, get_string('customwaitlistmessage', 'enrol_waitinglist'), array('cols'=>'60', 'rows'=>'8'));
         $mform->addHelpButton(enrolmethodunnamedbulk::MFIELD_WAITLISTMESSAGE, 'customwaitlistmessage', 'enrol_waitinglist');
-        $mform->setDefault(enrolmethodunnamedbulk::MFIELD_WAITLISTMESSAGE,get_string('welcometowaitlisttext_unnamedbulk','enrol_waitinglist'));
+        $mform->setDefault(enrolmethodunnamedbulk::MFIELD_WAITLISTMESSAGE,get_string('waitlistmessagetext_unnamedbulk','enrol_waitinglist'));
         
+        $mform->addElement('advcheckbox',enrolmethodunnamedbulk::MFIELD_SENDCONFIRMMESSAGE, get_string('sendconfirmmessage', 'enrol_waitinglist'));
+        $mform->addHelpButton(enrolmethodunnamedbulk::MFIELD_SENDCONFIRMMESSAGE, 'sendconfirmmessage', 'enrol_waitinglist');
+        $mform->setDefault(enrolmethodunnamedbulk::MFIELD_SENDCONFIRMMESSAGE, true);
         
         $mform->addElement('textarea',enrolmethodunnamedbulk::MFIELD_CONFIRMEDMESSAGE, get_string('customconfirmedmessage', 'enrol_waitinglist'), array('cols'=>'60', 'rows'=>'8'));
         $mform->addHelpButton(enrolmethodunnamedbulk::MFIELD_CONFIRMEDMESSAGE, 'customconfirmedmessage', 'enrol_waitinglist');

@@ -181,7 +181,7 @@ abstract class enrolmethodbase  {
 		return null;
 	}
 	
-	public abstract function graduate_from_list(\stdClass $waitinglist,\stdClass $queueentry);
+	public abstract function graduate_from_list(\stdClass $waitinglist,\stdClass $queueentry,$seats);
 	
 	 /**
      * Enrol user into waitinglist via enrol method
@@ -230,12 +230,18 @@ abstract class enrolmethodbase  {
 		return $queueid;
     }
     
-    
-    protected function get_email_template($waitinglist) {
+    /**
+     * Get the email template to send
+     *
+     * @param stdClass $waitinglist instance data
+     * @param string $message key
+     * @return void
+     */
+    protected function get_email_template($waitinglist,$messagekey='') {
     	if (trim($this->{static::MFIELD_WAITLISTMESSAGE}) !== '') {
     		$message = $this->{static::MFIELD_WAITLISTMESSAGE};
     	}else{
-    		$message = get_string('welcometowaitlisttext_' . static::METHODTYPE, 'enrol_waitinglist');
+    		$message = get_string('waitlistmessagetext_' . static::METHODTYPE, 'enrol_waitinglist');
     	}
 	     return $message;
     }
@@ -248,7 +254,7 @@ abstract class enrolmethodbase  {
      * @param stdClass $user user record
      * @return void
      */
-    protected function email_waitlist_message($waitinglist, $queue_entry, $user) {
+    protected function email_waitlist_message($waitinglist, $queue_entry, $user, $messagekey='') {
         global $CFG, $DB;
 
         $course = $DB->get_record('course', array('id'=>$waitinglist->courseid), '*', MUST_EXIST);
@@ -261,30 +267,32 @@ abstract class enrolmethodbase  {
         		$waitinglist->courseid . '&methodtype=' . static::METHODTYPE;
 
 		$queueman= \enrol_waitinglist\queuemanager::get_by_course($waitinglist->courseid);
+		
 		$qposition= $queueman->get_listtotal($queue_entry->id);
         $a->queueno = $qposition;
         $a->queueseats = $queue_entry->seats;
+        $a->allocatedseats = $queue_entry->allocseats;
 
 
-        $message = $this->get_email_template($waitinglist);
+        $message = $this->get_email_template($waitinglist,$messagekey);
 		$message = str_replace('{$a->coursename}', $a->coursename, $message);
 		$message = str_replace('{$a->courseurl}', $a->courseurl, $message);
 		$message = str_replace('{$a->editenrolurl}', $a->editenrolurl, $message);
 		$message = str_replace('{$a->queueno}', $a->queueno, $message);
 		$message = str_replace('{$a->queueseats}', $a->queueseats, $message);
+		$message = str_replace('{$a->allocatedseats}', $a->allocatedseats, $message);
 		
 		if (strpos($message, '<') === false) {
 			// Plain text only.
 			$messagetext = $message;
 			$messagehtml = text_to_html($messagetext, null, false, true);
 		} else {
-			// This is most probably the tag/newline soup known as FORMAT_MOODLE.
 			$messagehtml = format_text($message, FORMAT_MOODLE, array('context'=>$context, 'para'=>false, 'newlines'=>true, 'filter'=>true));
 			$messagetext = html_to_text($messagehtml);
 		}
       
 
-        $subject = get_string('welcometowaitlist_' . static::METHODTYPE, 'enrol_waitinglist', format_string($course->fullname, true, array('context'=>$context)));
+        $subject = get_string('waitlistmessagetitle' . $messagekey . '_' . static::METHODTYPE, 'enrol_waitinglist', format_string($course->fullname, true, array('context'=>$context)));
 
         $rusers = array();
         if (!empty($CFG->coursecontact)) {
