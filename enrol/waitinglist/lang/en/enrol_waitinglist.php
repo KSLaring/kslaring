@@ -60,6 +60,7 @@ $string['waitinglist:enrol'] = 'Enrol users';
 $string['waitinglist:manage'] = 'Manage user enrolments';
 $string['waitinglist:unenrol'] = 'Unenrol users from the course';
 $string['waitinglist:unenrolself'] = 'Unenrol self from the course';
+$string['waitinglist:canbulkenrol'] = 'Access bulk enrol item in course->user menu';
 $string['messageprovider:expiry_notification'] = 'Waitinglist enrolment expiry notifications';
 $string['pluginname'] = 'Waitinglist enrolments';
 $string['pluginname_desc'] = 'The waitinglist enrolments plugin maintains a waiting list for enrolments to a course.';
