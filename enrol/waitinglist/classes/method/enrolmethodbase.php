@@ -88,8 +88,11 @@ abstract class enrolmethodbase  {
         	if(!$waitinglistid){
         		$waitinglist = $DB->get_record('enrol',array('courseid'=>$courseid,'enrol'=>'waitinglist'));
         		if(!$waitinglist){return null;}
+        		$record = static::add_default_instance($courseid,$waitinglist->id);
+        	}else{
+        		$record = static::add_default_instance($courseid,$waitinglistid);
         	}
-        	$record = static::add_default_instance($courseid,$waitinglist->id);
+        	
         }
         return $record ? self::get_by_record($record) : null;
 	 }
