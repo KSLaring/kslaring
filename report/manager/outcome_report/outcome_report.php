@@ -37,7 +37,7 @@ $PAGE->set_url($url);
 
 $PAGE->set_title($SITE->fullname);
 $PAGE->set_heading($SITE->fullname);
-$PAGE->navbar->add(get_string('report_manager','local_tracker'),$return_url);
+$PAGE->navbar->add(get_string('report_manager','local_tracker_manager'),$return_url);
 $PAGE->navbar->add(get_string('outcome_report', 'report_manager'),$url);
 
 /* ADD require_capability */

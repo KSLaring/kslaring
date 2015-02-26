@@ -408,8 +408,8 @@ function tracker_prepare_buttons_output(){
     $url_send = new moodle_url('/report/manager/tracker/index.php',array('pdf'=>TRACKER_PDF_SEND));
     $url_dwn = new moodle_url('/report/manager/tracker/index.php',array('pdf'=>TRACKER_PDF_DOWNLOAD));
     $send_pdf_btn   = html_writer::start_tag('div',array('class' => 'div_button_tracker'));
-        $send_pdf_btn .= html_writer::link($url_send,get_string('send_pdf_btn','local_tracker'),array('class' =>"button_tracker"));
-        $send_pdf_btn .= html_writer::link($url_dwn,get_string('download_pdf_btn','local_tracker'),array('class' =>"button_tracker"));
+        $send_pdf_btn .= html_writer::link($url_send,get_string('send_pdf_btn','local_tracker_manager'),array('class' =>"button_tracker"));
+        $send_pdf_btn .= html_writer::link($url_dwn,get_string('download_pdf_btn','local_tracker_manager'),array('class' =>"button_tracker"));
     $send_pdf_btn  .= html_writer::end_tag('div');
 
     return $send_pdf_btn;
@@ -491,7 +491,7 @@ function tracker_print_pdf_tracker_info($tracker_info) {
                 *          4.- Finished
                 */
                 foreach ($outcomes as $jr_name=>$out) {
-                    $str_job_role = get_string('outcome_job_role_tracker','local_tracker',format_string($jr_name));
+                    $str_job_role = get_string('outcome_job_role_tracker','local_tracker_manager',format_string($jr_name));
 
                     $table_tracker = tracker_create_table_tracker_info();
 
@@ -643,9 +643,9 @@ function tracker_getTagHeaderCoursesTable($toggle,$url,$individual=false) {
     /* Variables    */
     $tag_header = '';
     $str_course         = get_string('course');
-    $str_state          = get_string('state','local_tracker');
-    $str_valid          = get_string('outcome_valid_until','local_tracker');
-    $str_completion     = get_string('completion_time','local_tracker');
+    $str_state          = get_string('state','local_tracker_manager');
+    $str_valid          = get_string('outcome_valid_until','local_tracker_manager');
+    $str_completion     = get_string('completion_time','local_tracker_manager');
 
     /* Build Header */
     $tag_header .= html_writer::start_tag('table');
@@ -714,7 +714,7 @@ function tracker_getContentNotCompletedCourses($not_completed,$individual=false)
             $content .= html_writer::end_tag('td');
             /* State Col    */
             $content .= html_writer::start_tag('td',array('class' => 'status'));
-                $content .= get_string('outcome_course_started','local_tracker');
+                $content .= get_string('outcome_course_started','local_tracker_manager');
             $content .= html_writer::end_tag('td');
             /* Completion Col    */
             $content .= html_writer::start_tag('td',array('class' => 'status'));
@@ -728,7 +728,7 @@ function tracker_getContentNotCompletedCourses($not_completed,$individual=false)
             $content .= html_writer::end_tag('td');
             /* Empty Col    */
             $url = new moodle_url('/course/view.php',array('id'=>$id));
-            $str_url = '<a href="'.$url .'">'. get_string('start_course','local_tracker') .'</a>';
+            $str_url = '<a href="'.$url .'">'. get_string('start_course','local_tracker_manager') .'</a>';
             $content .= html_writer::start_tag('td',array('class' => 'start'));
                 $content .= $str_url;
             $content .= html_writer::end_tag('td');
@@ -764,7 +764,7 @@ function tracker_getContentNotEnrolCourses($not_enrol) {
             $content .= html_writer::end_tag('td');
             /* State Col    */
             $content .= html_writer::start_tag('td',array('class' => 'status'));
-                $content .= get_string('outcome_course_not_enrolled','local_tracker');
+                $content .= get_string('outcome_course_not_enrolled','local_tracker_manager');
             $content .= html_writer::end_tag('td');
             /* Completion Col    */
             $content .= html_writer::start_tag('td',array('class' => 'status'));
@@ -776,7 +776,7 @@ function tracker_getContentNotEnrolCourses($not_enrol) {
             $content .= html_writer::end_tag('td');
             /* Empty Col    */
             $url = new moodle_url('/course/view.php',array('id'=>$id));
-            $str_url = '<a href="'.$url .'">'. get_string('start_course','local_tracker') .'</a>';
+            $str_url = '<a href="'.$url .'">'. get_string('start_course','local_tracker_manager') .'</a>';
             $content .= html_writer::start_tag('td',array('class' => 'start'));
                 $content .= $str_url;
             $content .= html_writer::end_tag('td');
@@ -813,7 +813,7 @@ function tracker_getContentExpiredCourses($expired) {
             $content .= html_writer::end_tag('td');
             /* Status Col    */
             $content .= html_writer::start_tag('td',array('class' => 'status'));
-                $content .= get_string('outcome_course_expired','local_tracker');
+                $content .= get_string('outcome_course_expired','local_tracker_manager');
             $content .= html_writer::end_tag('td');
             /* Completion Col    */
             $content .= html_writer::start_tag('td',array('class' => 'status'));
@@ -825,7 +825,7 @@ function tracker_getContentExpiredCourses($expired) {
             $content .= html_writer::end_tag('td');
             /* Start Col    */
             $url = new moodle_url('/course/view.php',array('id'=>$id));
-            $str_url = '<a href="'.$url .'">'. get_string('start_course','local_tracker') .'</a>';
+            $str_url = '<a href="'.$url .'">'. get_string('start_course','local_tracker_manager') .'</a>';
             $content .= html_writer::start_tag('td',array('class' => 'start'));
                 $content .= $str_url;
             $content .= html_writer::end_tag('td');
@@ -863,7 +863,7 @@ function tracker_getContentCompletedCourses($completed,$individual=false) {
             $content .= html_writer::end_tag('td');
             /* Status Col    */
             $content .= html_writer::start_tag('td',array('class' => 'status'));
-                $content .= get_string('outcome_course_finished','local_tracker');
+                $content .= get_string('outcome_course_finished','local_tracker_manager');
             $content .= html_writer::end_tag('td');
             /* Completion Col    */
             $content .= html_writer::start_tag('td',array('class' => 'status'));
@@ -877,7 +877,7 @@ function tracker_getContentCompletedCourses($completed,$individual=false) {
             $content .= html_writer::end_tag('td');
             /* Start Col    */
             $url = new moodle_url('/course/view.php',array('id'=>$id));
-            $str_url = '<a href="'.$url .'">'. get_string('start_course','local_tracker') .'</a>';
+            $str_url = '<a href="'.$url .'">'. get_string('start_course','local_tracker_manager') .'</a>';
             $content .= html_writer::start_tag('td',array('class' => 'start'));
                 $content .= $str_url;
             $content .= html_writer::end_tag('td');
@@ -1004,7 +1004,7 @@ function tracker_print_tables_tracker_info($tracker_info) {
         /* Courses Not Connected */
         /* Title    */
         $toggle_outcome = 'YUI_' . '0';
-        $title = get_string('individual_courses','local_tracker');
+        $title = get_string('individual_courses','local_tracker_manager');
         $out_tracker .= tracker_getTagTitleOutcome($title,$toggle_outcome,$url_img);
         /* Courses */
         /**
@@ -1060,14 +1060,14 @@ function tracker_add_not_completed_table($courses_list, &$table) {
         /* Course Name Col  */
         $row[] = $course->fullname;
         /* State Col        */
-        $row[] = get_string('outcome_course_started','local_tracker');
+        $row[] = get_string('outcome_course_started','local_tracker_manager');
         /* Completion Time  */
         $row[] = '-';
         /* Valid Col        */
         $row[] = '-';
         /* Start Course     */
         $url = new moodle_url('/course/view.php',array('id'=>$id));
-        $str_url = '<a href="'.$url .'">'. get_string('start_course','local_tracker') .'</a>';
+        $str_url = '<a href="'.$url .'">'. get_string('start_course','local_tracker_manager') .'</a>';
         $row[]   = $str_url;
 
        $table->data[] = $row;
@@ -1111,14 +1111,14 @@ function tracker_add_not_enrolled_table($courses_list, &$table) {
         $row[] = $course->fullname;
 
         /* State Col        */
-        $row[] = get_string('outcome_course_not_enrolled','local_tracker');
+        $row[] = get_string('outcome_course_not_enrolled','local_tracker_manager');
         /* Completion Time  */
         $row[] = '-';
         /* Valid Col        */
         $row[] = '-';
         /* Start Course     */
         $url = new moodle_url('/course/view.php',array('id'=>$id));
-        $str_url = '<a href="'.$url .'">'. get_string('start_course','local_tracker') .'</a>';
+        $str_url = '<a href="'.$url .'">'. get_string('start_course','local_tracker_manager') .'</a>';
         $row[]   = $str_url;
 
         $table->data[] = $row;
@@ -1225,14 +1225,14 @@ function tracker_add_expired_table($courses_list, &$table) {
         /* Course Name Col  */
         $row[] = $course->fullname;
         /* State Col        */
-        $row[] = get_string('outcome_course_expired','local_tracker');
+        $row[] = get_string('outcome_course_expired','local_tracker_manager');
         /* Completion Time  */
         $row[] = $course->timecompleted;
         /* Valid Col        */
         $row[] = '-';
         /* Start Course     */
         $url = new moodle_url('/course/view.php',array('id'=>$id));
-        $str_url = '<a href="'.$url .'">'. get_string('start_course','local_tracker') .'</a>';
+        $str_url = '<a href="'.$url .'">'. get_string('start_course','local_tracker_manager') .'</a>';
         $row[]   = $str_url;
 
         $table->data[] = $row;
@@ -1277,7 +1277,7 @@ function tracker_add_finished_table($courses_list, &$table,$individual=false) {
         /* Course Name Col  */
         $row[] = $course->fullname;
         /* State Col        */
-        $row[] = get_string('outcome_course_finished','local_tracker');
+        $row[] = get_string('outcome_course_finished','local_tracker_manager');
         /* Completion Time  */
         $row[] = $course->timecompleted;
         if (!$individual) {
@@ -1288,7 +1288,7 @@ function tracker_add_finished_table($courses_list, &$table,$individual=false) {
         }//if_else_individual
         /* Start Course     */
         $url = new moodle_url('/course/view.php',array('id'=>$id));
-        $str_url = '<a href="'.$url .'">'. get_string('start_course','local_tracker') .'</a>';
+        $str_url = '<a href="'.$url .'">'. get_string('start_course','local_tracker_manager') .'</a>';
         $row[]   = $str_url;
 
         $table->data[] = $row;
@@ -1308,14 +1308,14 @@ function tracker_add_finished_table($courses_list, &$table,$individual=false) {
 function tracker_create_table_tracker_info($individual = false) {
     /* Head     */
     $str_course         = get_string('course');
-    $str_state          = get_string('state','local_tracker');
+    $str_state          = get_string('state','local_tracker_manager');
     if (!$individual) {
-    $str_valid          = get_string('outcome_valid_until','local_tracker');
+    $str_valid          = get_string('outcome_valid_until','local_tracker_manager');
     }else {
         $str_valid = '';
     }//if_individual
 
-    $str_completion     = get_string('completion_time','local_tracker');
+    $str_completion     = get_string('completion_time','local_tracker_manager');
     $str_user           = get_string('user');
 
     /* Create Table */

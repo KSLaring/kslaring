@@ -37,7 +37,7 @@ $PAGE->set_pagelayout('report');
 $PAGE->set_url($url);
 $PAGE->set_title($SITE->fullname);
 $PAGE->set_heading($SITE->fullname);
-$PAGE->navbar->add(get_string('report_manager','local_tracker'),$return);
+$PAGE->navbar->add(get_string('report_manager','local_tracker_manager'),$return);
 $PAGE->navbar->add(get_string('employee_report','report_manager'),$url);
 
 require_capability('report/manager:viewlevel4', $site_context,$USER->id);

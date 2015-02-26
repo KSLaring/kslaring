@@ -9,5 +9,5 @@
 $plugin->version  = 2015012400;  // The current module version (Date: YYYYMMDDXX)
 //$plugin->requires = 2007101506;  // Requires this Moodle version
 //$plugin->cron     = 0;           // Period for cron to check this module (secs)
-$plugin->component = 'local_tracker';
+$plugin->component = 'local_tracker_manager';
 ?>

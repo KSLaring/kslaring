@@ -4,7 +4,7 @@
  * Tracker Block - Main Page
  *
  * @package         block
- * @subpackage      tracker
+ * @subpackage      tracker_manager
  * @copyright       2014 efaktor    {@link http://www.efaktor.no}
  *
  * @creationDate    17/02/2014
@@ -13,9 +13,9 @@
 
 
 
-class block_tracker extends block_base {
+class block_tracker_manager extends block_base {
     function init() {
-        $this->title = get_string('pluginname', 'block_tracker');
+        $this->title = get_string('pluginname', 'block_tracker_manager');
     }//init
 
     function has_config() {
@@ -34,12 +34,12 @@ class block_tracker extends block_base {
         global $USER, $CFG;
 
         /* External References  */
-        $this->page->requires->js(new moodle_url('/blocks/tracker/js/block_tracker.js'));
+        $this->page->requires->js(new moodle_url('/blocks/tracker_manager/js/block_tracker_manager.js'));
         require_once('locallib.php');
         require_once($CFG->dirroot . '/report/manager/trackerlib.php');
 
         /* Add title        */
-        $this->title = get_string('pluginname', 'block_tracker');
+        $this->title = get_string('pluginname', 'block_tracker_manager');
 
         if ($this->content !== NULL) {
             return $this->content;
@@ -65,7 +65,7 @@ class block_tracker extends block_base {
                 foreach ($connected as $name=>$outcomes) {
                     /* Title Outcome    */
                     $id_toggle = 'YUI_' . $toggle_outcome;
-                    $this->content->text .= block_tracker_getTagTitleOutcome($name,$id_toggle,$url_img);
+                    $this->content->text .= block_tracker_manager_getTagTitleOutcome($name,$id_toggle,$url_img);
 
                     $this->content->text .= html_writer::start_tag('div',array('class' => 'tracker_list','id'=> $id_toggle . '_div'));
                     /* JOB ROLES        */
@@ -123,8 +123,8 @@ class block_tracker extends block_base {
 
             /* Title    */
             $toggle_outcome = 'YUI_' . '0';
-            $title = get_string('individual_courses','local_tracker');
-            $this->content->text .= block_tracker_getTagTitleOutcome($title,$toggle_outcome,$url_img);
+            $title = get_string('individual_courses','local_tracker_manager');
+            $this->content->text .= block_tracker_manager_getTagTitleOutcome($title,$toggle_outcome,$url_img);
 
             /* Courses Not Connected    */
             $this->content->text .= html_writer::start_tag('div',array('class' => 'tracker_list','id'=> $toggle_outcome . '_div'));

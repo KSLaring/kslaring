@@ -1779,8 +1779,8 @@ class outcome_report {
         $header_table = null;
 
         $str_course         = get_string('course');
-        $str_state          = get_string('state','local_tracker');
-        $str_completion     = get_string('completion_time','local_tracker');
+        $str_state          = get_string('state','local_tracker_manager');
+        $str_completion     = get_string('completion_time','local_tracker_manager');
 
         $header_table .= html_writer::start_tag('table');
             $header_table .= html_writer::start_tag('tr',array('class' => 'head'));
@@ -1834,10 +1834,10 @@ class outcome_report {
                     $ts = strtotime($expiration  . ' month', $user_info->completed[$id]);
                     if ($ts < time()) {
                         $class = 'expired';
-                        $label = get_string('outcome_course_expired','local_tracker');
+                        $label = get_string('outcome_course_expired','local_tracker_manager');
                     }else {
                         $class = 'completed';
-                        $label = get_string('outcome_course_finished','local_tracker');
+                        $label = get_string('outcome_course_finished','local_tracker_manager');
                     }
                     $content .= html_writer::start_tag('tr',array('class' => $class));
                         /* Button Col   */
@@ -1873,7 +1873,7 @@ class outcome_report {
                         $content .= html_writer::end_tag('td');
                         /* Status Col   */
                         $content .= html_writer::start_tag('td',array('class' => 'status'));
-                            $content .= get_string('outcome_course_started','local_tracker');
+                            $content .= get_string('outcome_course_started','local_tracker_manager');
                         $content .= html_writer::end_tag('td');
 
                         /* Completion Col   */
@@ -1897,7 +1897,7 @@ class outcome_report {
                         $content .= html_writer::end_tag('td');
                         /* Status Col   */
                         $content .= html_writer::start_tag('td',array('class' => 'status'));
-                            $content .= get_string('outcome_course_not_enrolled','local_tracker');
+                            $content .= get_string('outcome_course_not_enrolled','local_tracker_manager');
                         $content .= html_writer::end_tag('td');
 
                         /* Completion Col   */
@@ -2434,8 +2434,8 @@ class outcome_report {
         /* Variables    */
         $str_user           = strtoupper(get_string('user'));
         $str_course         = strtoupper(get_string('course'));
-        $str_state          = strtoupper(get_string('state','local_tracker'));
-        $str_completion     = strtoupper(get_string('completion_time','local_tracker'));
+        $str_state          = strtoupper(get_string('state','local_tracker_manager'));
+        $str_completion     = strtoupper(get_string('completion_time','local_tracker_manager'));
         $col                = 0;
 
         try {
@@ -2493,10 +2493,10 @@ class outcome_report {
                     $ts = strtotime($expiration  . ' month', $user_info->completed[$id]);
                     if ($ts < time()) {
                         $bg_color = '#f2dede';
-                        $label = get_string('outcome_course_expired','local_tracker');
+                        $label = get_string('outcome_course_expired','local_tracker_manager');
                     }else {
                         $bg_color = '#dff0d8';
-                        $label = get_string('outcome_course_finished','local_tracker');
+                        $label = get_string('outcome_course_finished','local_tracker_manager');
                     }
 
                     /* User     */
@@ -2543,7 +2543,7 @@ class outcome_report {
 
                     /* State        */
                     $col = $col + 6;
-                    $my_xls->write($row, $col, get_string('outcome_course_started','local_tracker'),array('size'=>12, 'name'=>'Arial','align'=>'center','v_align'=>'center'));
+                    $my_xls->write($row, $col, get_string('outcome_course_started','local_tracker_manager'),array('size'=>12, 'name'=>'Arial','align'=>'center','v_align'=>'center'));
                     $my_xls->merge_cells($row,$col,$row,$col+2);
                     $my_xls->set_row($row,20);
 
@@ -2574,7 +2574,7 @@ class outcome_report {
 
                     /* State        */
                     $col = $col + 6;
-                    $my_xls->write($row, $col, get_string('outcome_course_not_enrolled','local_tracker'),array('size'=>12, 'name'=>'Arial','bg_color'=>'#fcf8e3','align'=>'center','v_align'=>'center'));
+                    $my_xls->write($row, $col, get_string('outcome_course_not_enrolled','local_tracker_manager'),array('size'=>12, 'name'=>'Arial','bg_color'=>'#fcf8e3','align'=>'center','v_align'=>'center'));
                     $my_xls->merge_cells($row,$col,$row,$col+2);
                     $my_xls->set_row($row,20);
 

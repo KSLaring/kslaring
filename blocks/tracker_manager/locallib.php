@@ -3,7 +3,7 @@
  * Tracker Block - Library Page
  *
  * @package         block
- * @subpackage      tracker
+ * @subpackage      tracker_manager
  * @copyright       2014 efaktor    {@link http://www.efaktor.no}
  *
  * @creationDate    21/02/2014
@@ -22,7 +22,7 @@
  * Description
  * Get the tag for the Outcome title
  */
-function block_tracker_getTagTitleOutcome($outcome,$toggle_outcome,$url) {
+function block_tracker_manager_getTagTitleOutcome($outcome,$toggle_outcome,$url) {
     /* Variables    */
     $tag_header = '';
 

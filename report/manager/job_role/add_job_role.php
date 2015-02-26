@@ -44,7 +44,7 @@ $PAGE->set_url($url);
 $PAGE->set_context($site_context);
 $PAGE->set_title($SITE->fullname);
 $PAGE->set_heading($SITE->fullname);
-$PAGE->navbar->add(get_string('report_manager','local_tracker'),$return);
+$PAGE->navbar->add(get_string('report_manager','local_tracker_manager'),$return);
 $PAGE->navbar->add(get_string('job_roles', 'report_manager'),$return_url);
 $PAGE->navbar->add(get_string('add_job_role', 'report_manager'));
 

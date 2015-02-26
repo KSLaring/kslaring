@@ -461,29 +461,29 @@ function report_manager_EmployeeReport_getBodyContent($expiration,$users_lst,$co
 
                     if ($ts < time()) {
                         $body_content .= html_writer::start_tag('td',array('class' => 'expired'));
-                        $body_content .= '<u>' . get_string('outcome_course_expired','local_tracker') . '</u>';
+                        $body_content .= '<u>' . get_string('outcome_course_expired','local_tracker_manager') . '</u>';
                         $body_content .= html_writer::end_tag('td');
                     }else {
                         $expiration_time = report_manager_get_completed_date_timestamp($completed_time,true);
                         if ($ts < $expiration_time) {
                             $body_content .= html_writer::start_tag('td',array('class' => 'valid'));
-                                $body_content .= '<u>' . get_string('outcome_valid_until','local_tracker') . '</u>: ' . '</br>' . userdate($ts,'%d.%m.%Y',99,false);
+                                $body_content .= '<u>' . get_string('outcome_valid_until','local_tracker_manager') . '</u>: ' . '</br>' . userdate($ts,'%d.%m.%Y',99,false);
                             $body_content .= html_writer::end_tag('td');
                         }else {
                             $body_content .= html_writer::start_tag('td',array('class' => 'completed'));
-                            $body_content .= '<u>' . get_string('outcome_course_finished','local_tracker') . '</u>';
+                            $body_content .= '<u>' . get_string('outcome_course_finished','local_tracker_manager') . '</u>';
                             $body_content .= html_writer::end_tag('td');
                         }//if_valid_finis
                     }
 
                 }else {
                     $body_content .= html_writer::start_tag('td',array('class' => 'not_completed'));
-                    $body_content .= get_string('outcome_course_started','local_tracker');
+                    $body_content .= get_string('outcome_course_started','local_tracker_manager');
                     $body_content .= html_writer::end_tag('td');
                 }//if_else_course_completion
             }else {
                 $body_content .= html_writer::start_tag('td',array('class' => 'not_enroll'));
-                $body_content .= get_string('outcome_course_not_enrolled','local_tracker');
+                $body_content .= get_string('outcome_course_not_enrolled','local_tracker_manager');
                 $body_content .= html_writer::end_tag('td');
             }
 

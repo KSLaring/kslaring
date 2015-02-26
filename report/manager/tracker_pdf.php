@@ -44,7 +44,7 @@ class TRACKER_PDF extends TCPDF {
         //Select FreeSerif normal 8
         $this->SetFont( 'FreeSerif' , '', $this->fs );
         //Print left aligned page number
-        $page = get_string('pdf_page_number','local_tracker',$this->PageNo());
+        $page = get_string('pdf_page_number','local_tracker_manager',$this->PageNo());
         $this->Cell( 0, 10, $page, 0, 0, 'L' );
     }
 

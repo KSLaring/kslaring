@@ -4,7 +4,7 @@
  * Tracker Block - Capabilities
  *
  * @package         block
- * @subpackage      tracker
+ * @subpackage      tracker_manager
  * @copyright       2014 efaktor    {@link http://www.efaktor.no}
  *
  * @creationDate    17/02/2014
@@ -15,7 +15,7 @@ defined('MOODLE_INTERNAL') || die();
 
 $capabilities = array(
 
-    'block/tracker:addinstance' => array(
+    'block/tracker_manager:addinstance' => array(
         'riskbitmask' => RISK_SPAM | RISK_XSS,
 
         'captype' => 'write',
@@ -28,7 +28,7 @@ $capabilities = array(
         'clonepermissionsfrom' => 'moodle/site:manageblocks'
     ),
 
-    'block/tracker:myaddinstance' => array(
+    'block/tracker_manager:myaddinstance' => array(
         'captype' => 'write',
         'contextlevel' => CONTEXT_SYSTEM,CONTEXT_USER,CONTEXT_BLOCK,
         'archetypes' => array(

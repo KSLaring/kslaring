@@ -40,7 +40,7 @@ $PAGE->set_url($url);
 $PAGE->set_context($site_context);
 $PAGE->set_title($SITE->fullname);
 $PAGE->set_heading($SITE->fullname);
-$PAGE->navbar->add(get_string('report_manager','local_tracker'),$return_url);
+$PAGE->navbar->add(get_string('report_manager','local_tracker_manager'),$return_url);
 $PAGE->navbar->add(get_string('outcome', 'report_manager'),$return);
 $PAGE->navbar->add(get_string('edit_outcome', 'report_manager'));
 

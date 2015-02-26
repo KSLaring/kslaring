@@ -68,21 +68,21 @@ class Tracker {
                     $result = $this->create_send_pdf_dialog($result);
                     return $result;
                 }else {
-                    $result = get_string('send_pdf_file_error_dialog_text','local_tracker') . '<br/>';
-                    $result .= '<a href="'.$this->url .'">'. get_string('return_to_selection','local_tracker') .'</a>';
+                    $result = get_string('send_pdf_file_error_dialog_text','local_tracker_manager') . '<br/>';
+                    $result .= '<a href="'.$this->url .'">'. get_string('return_to_selection','local_tracker_manager') .'</a>';
                     return $result;
                 }            }
         }catch(Exception $ex) {
-            $result = get_string('error_creating_pdf','local_tracker') . '<br/>';
-            $result .= '<a href="'.$this->url .'">'. get_string('return_to_selection','local_tracker') .'</a>';
+            $result = get_string('error_creating_pdf','local_tracker_manager') . '<br/>';
+            $result .= '<a href="'.$this->url .'">'. get_string('return_to_selection','local_tracker_manager') .'</a>';
             return $result;
         }//try_create_pdf error_download_pdf
 
         try {
             $this->download_pdf();
         }catch (Exception $ex_1) {
-            $result = get_string('error_creating_pdf','local_tracker');
-            $result .= '<a href="'.$this->url .'">'. get_string('return_to_selection','local_tracker') .'</a>';
+            $result = get_string('error_creating_pdf','local_tracker_manager');
+            $result .= '<a href="'.$this->url .'">'. get_string('return_to_selection','local_tracker_manager') .'</a>';
             return $result;
         }
     }
@@ -100,7 +100,7 @@ class Tracker {
         global $CFG;
 
         try {
-            $str_name = get_string('pdf_filename','local_tracker',$this->file_date());
+            $str_name = get_string('pdf_filename','local_tracker_manager',$this->file_date());
             $this->file_name = clean_filename($str_name);
             $this->path         = 'tracker_reports';
             $file_path = $CFG->dataroot . '/' . $this->path;
@@ -139,19 +139,19 @@ class Tracker {
         if(file_exists($file_path . '/' . $this->file_name)) {
             $info = new stdClass();
             $info->username = fullname($USER);
-            $subject = get_string('pdf_email_subject','local_tracker');
-            $message = get_string('pdf_email_text', 'local_tracker', $info) . "\n";
+            $subject = get_string('pdf_email_subject','local_tracker_manager');
+            $message = get_string('pdf_email_text', 'local_tracker_manager', $info) . "\n";
 
             // Make the HTML version more XHTML happy  (&amp;)
-            $message_html = text_to_html(get_string('pdf_email_text', 'local_tracker',$info));
+            $message_html = text_to_html(get_string('pdf_email_text', 'local_tracker_manager',$info));
             $USER->mailformat = 0;  // Always send HTML version as well
             $attachment = $this->path . '/'. $this->file_name;
             $attach_name = $this->file_name;
 
             return email_to_user($USER, '', $subject, $message, $message_html, $attachment, $attach_name);
         }else {
-            $result = get_string('send_pdf_file_error_dialog_text','local_tracker') . '<br/>';
-            $result .= '<a href="'.$this->url .'">'. get_string('return_to_selection','local_tracker') .'</a>';
+            $result = get_string('send_pdf_file_error_dialog_text','local_tracker_manager') . '<br/>';
+            $result .= '<a href="'.$this->url .'">'. get_string('return_to_selection','local_tracker_manager') .'</a>';
             return $result;
         }
     }//send_email_pdf
@@ -169,20 +169,20 @@ class Tracker {
     public function create_send_pdf_dialog($send_ok){
 
         if ('emailstop' === $send_ok) {
-            $text = get_string('send_pdf_email_stop_dialog_text','local_tracker');
+            $text = get_string('send_pdf_email_stop_dialog_text','local_tracker_manager');
         } else if ('fileerror' === $send_ok) {
-            $text = get_string('send_pdf_file_error_dialog_text','local_tracker');
+            $text = get_string('send_pdf_file_error_dialog_text','local_tracker_manager');
         } else if (true === $send_ok) {
-            $text = get_string('send_pdf_ok_dialog_text','local_tracker');
+            $text = get_string('send_pdf_ok_dialog_text','local_tracker_manager');
         } else {
-            $text = get_string('send_pdf_error_dialog_text', 'local_tracker') . '<br/>';
-            $text .= '<a href="'.$this->url .'">'. get_string('return_to_selection', 'local_tracker') .'</a>';
+            $text = get_string('send_pdf_error_dialog_text', 'local_tracker_manager') . '<br/>';
+            $text .= '<a href="'.$this->url .'">'. get_string('return_to_selection', 'local_tracker_manager') .'</a>';
         }
         return $text;
     }//create_send_pdf_dialog
 
     private function download_pdf() {
-        $str_name = get_string('pdf_filename','local_tracker',$this->file_date());
+        $str_name = get_string('pdf_filename','local_tracker_manager',$this->file_date());
         $filename = clean_filename($str_name);
         $this->pdf->Output($filename, 'D');
     }//download_pdf
@@ -208,7 +208,7 @@ class Tracker {
 
     private function create_title(&$pdf) {
         $pdf->SetFont('FreeSerif', 'N', $this->fs);
-        $pdf->Cell(0,10,get_string('pdf_title','local_tracker'));
+        $pdf->Cell(0,10,get_string('pdf_title','local_tracker_manager'));
         $pdf->Ln($this->lhdist);
     }//create_title
 
@@ -220,21 +220,21 @@ class Tracker {
         $user = $this->get_Tracker_User();
 
         $pdf->SetFont('FreeSerif','B',$this->fs);
-        $pdf->Cell($w,$h,get_string('pdf_date','local_tracker'));
+        $pdf->Cell($w,$h,get_string('pdf_date','local_tracker_manager'));
 
         $pdf->SetFont('FreeSerif','',$this->fs);
         $pdf->Cell(0,$h,trim(userdate(time(),'%Y-%m-%d', 99, true)));
         $pdf->Ln($lh);
 
         $pdf->SetFont('FreeSerif','B',$this->fs);
-        $pdf->Cell($w,$h,get_string('pdf_user','local_tracker'));
+        $pdf->Cell($w,$h,get_string('pdf_user','local_tracker_manager'));
         $pdf->SetFont('FreeSerif','',$this->fs);
         $pdf->Cell(0,$h, $user->fullname);
         $pdf->Ln( $lh );
 
 
         $pdf->SetFont('FreeSerif','B',$this->fs);
-        $pdf->Cell($w,$h,get_string('company','local_tracker'));
+        $pdf->Cell($w,$h,get_string('company','local_tracker_manager'));
         $pdf->SetFont('FreeSerif', '', $this->fs);
         $pdf->Cell(0,$h,$user->company_name);
         $pdf->Ln(2*$h);
@@ -260,7 +260,7 @@ class Tracker {
 
         $pdf->checkPageBreak(30);
         $not_connected = $this->get_report_data('not_connected');
-        $this->create_table_intro($pdf,get_string('individual_courses','local_tracker'),'');
+        $this->create_table_intro($pdf,get_string('individual_courses','local_tracker_manager'),'');
         /* Header   */
         $this->create_table_header($pdf,$not_connected->head);
         /* ROWS     */

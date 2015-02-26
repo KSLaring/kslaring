@@ -207,7 +207,7 @@ class company_report {
 
         try {
             $out_report .= html_writer::start_div('company_rpt_div');
-                $out_report .= html_writer::link($report->return,get_string('return_to_selection','local_tracker'));
+                $out_report .= html_writer::link($report->return,get_string('return_to_selection','local_tracker_manager'));
                     $out_report .= '</br></br>';
                         /* ADD USERS    */
                         if ($report->my_users) {
@@ -262,7 +262,7 @@ class company_report {
                                         $out_report .= '</br></br>';
                                         $out_report .= html_writer::start_tag('div',array('class' => 'outcome_div'));
                                             /* Header Individual    */
-                                            $out_report .= self::company_report_AddHeaderOutcomeIndividual(get_string('individual_courses','local_tracker'));
+                                            $out_report .= self::company_report_AddHeaderOutcomeIndividual(get_string('individual_courses','local_tracker_manager'));
 
                                             /* Table    - Header */
                                             $out_report .= html_writer::start_tag('div',array('class' => 'outcome_list'));
@@ -281,7 +281,7 @@ class company_report {
                             }//users
                         }//if_my_users
                     $out_report .= '</br></br>';
-                $out_report .= html_writer::link($report->return,get_string('return_to_selection','local_tracker'));
+                $out_report .= html_writer::link($report->return,get_string('return_to_selection','local_tracker_manager'));
             $out_report .= html_writer::end_div();//company_rpt_div
 
             return $out_report;
@@ -851,9 +851,9 @@ class company_report {
         $header_table = '';
 
         $str_course         = get_string('course');
-        $str_state          = get_string('state','local_tracker');
-        $str_valid          = get_string('outcome_valid_until','local_tracker');
-        $str_completion     = get_string('completion_time','local_tracker');
+        $str_state          = get_string('state','local_tracker_manager');
+        $str_valid          = get_string('outcome_valid_until','local_tracker_manager');
+        $str_completion     = get_string('completion_time','local_tracker_manager');
 
         $header_table .= html_writer::start_tag('table');
             $header_table .= html_writer::start_tag('tr',array('class' => 'head'));
@@ -933,7 +933,7 @@ class company_report {
                             $content .= html_writer::end_tag('td');
                             /* Status Col   */
                             $content .= html_writer::start_tag('td',array('class' => 'status'));
-                                $content .= get_string('outcome_course_started','local_tracker');
+                                $content .= get_string('outcome_course_started','local_tracker_manager');
                             $content .= html_writer::end_tag('td');
 
                             /* Completion Col   */
@@ -967,7 +967,7 @@ class company_report {
                             $content .= html_writer::end_tag('td');
                             /* Status Col   */
                             $content .= html_writer::start_tag('td',array('class' => 'status'));
-                                $content .= get_string('outcome_course_not_enrolled','local_tracker');
+                                $content .= get_string('outcome_course_not_enrolled','local_tracker_manager');
                             $content .= html_writer::end_tag('td');
 
                             /* Completion Col   */
@@ -985,17 +985,17 @@ class company_report {
 
                 /* Completed        */
                 if ($completed) {
-                    $state = get_string('outcome_course_finished','local_tracker');
+                    $state = get_string('outcome_course_finished','local_tracker_manager');
                     $valid = ' - ';
                     $class = '';
                     foreach ($completed as $course) {
                             $ts = strtotime($expiration  . ' month', $course->completed);
                             if ($ts < time()) {
                                 $class = 'expired';
-                                $state = get_string('outcome_course_expired','local_tracker');
+                                $state = get_string('outcome_course_expired','local_tracker_manager');
                                 $valid = ' - ';
                             }else {
-                                $state = get_string('outcome_course_finished','local_tracker');
+                                $state = get_string('outcome_course_finished','local_tracker_manager');
                                 $valid = userdate($ts,'%d.%m.%Y', 99, false);
                                 $class = 'completed';
                             }//if_ts
@@ -1077,7 +1077,7 @@ class company_report {
                     $content .= html_writer::end_tag('td');
                     /* Status Col   */
                     $content .= html_writer::start_tag('td',array('class' => 'status'));
-                    $content .= get_string('outcome_course_started','local_tracker');
+                    $content .= get_string('outcome_course_started','local_tracker_manager');
                     $content .= html_writer::end_tag('td');
 
                     /* Completion Col   */
@@ -1096,7 +1096,7 @@ class company_report {
 
             /* Completed        */
             if ($completed) {
-                $state = get_string('outcome_course_finished','local_tracker');
+                $state = get_string('outcome_course_finished','local_tracker_manager');
                 $valid = ' - ';
                 $class = '';
                 foreach ($completed as $course) {
@@ -1207,7 +1207,7 @@ class company_report {
         $row = 0;
 
         // Adding the worksheet
-        $my_xls = $export->add_worksheet(get_string('individual_courses','local_tracker'));
+        $my_xls = $export->add_worksheet(get_string('individual_courses','local_tracker_manager'));
         /* Header Table */
         self::company_report_AddExcelHeaderTable($company,null,$row,$my_xls,true);
 
@@ -1286,9 +1286,9 @@ class company_report {
         /* Varaibles    */
         $str_user           = strtoupper(get_string('user'));
         $str_course         = strtoupper(get_string('course'));
-        $str_state          = strtoupper(get_string('state','local_tracker'));
-        $str_valid          = strtoupper(get_string('outcome_valid_until','local_tracker'));
-        $str_completion     = strtoupper(get_string('completion_time','local_tracker'));
+        $str_state          = strtoupper(get_string('state','local_tracker_manager'));
+        $str_valid          = strtoupper(get_string('outcome_valid_until','local_tracker_manager'));
+        $str_completion     = strtoupper(get_string('completion_time','local_tracker_manager'));
 
         try {
             /* Company Name  */
@@ -1382,7 +1382,7 @@ class company_report {
 
                 /* State    */
                 $col = $col + 6;
-                $my_xls->write($row, $col, get_string('outcome_course_started','local_tracker'),array('size'=>12, 'name'=>'Arial','align'=>'center','v_align'=>'center'));
+                $my_xls->write($row, $col, get_string('outcome_course_started','local_tracker_manager'),array('size'=>12, 'name'=>'Arial','align'=>'center','v_align'=>'center'));
                 $my_xls->merge_cells($row,$col,$row,$col+2);
                 $my_xls->set_row($row,20);
 
@@ -1439,7 +1439,7 @@ class company_report {
 
                 /* State    */
                 $col = $col + 6;
-                $my_xls->write($row, $col, get_string('outcome_course_not_enrolled','local_tracker'),array('size'=>12, 'name'=>'Arial','bg_color'=>'#fcf8e3','align'=>'center','v_align'=>'center'));
+                $my_xls->write($row, $col, get_string('outcome_course_not_enrolled','local_tracker_manager'),array('size'=>12, 'name'=>'Arial','bg_color'=>'#fcf8e3','align'=>'center','v_align'=>'center'));
                 $my_xls->merge_cells($row,$col,$row,$col+2);
                 $my_xls->set_row($row,20);
 
@@ -1482,7 +1482,7 @@ class company_report {
      */
     protected static function company_report_AddExcelCompletedTable($completed,$user_name,$expiration,&$row,&$my_xls,$individual = false) {
         try {
-            $state = get_string('outcome_course_finished','local_tracker');
+            $state = get_string('outcome_course_finished','local_tracker_manager');
             $valid = ' - ';
             foreach ($completed as $course) {
                 $col = 0;
@@ -1490,10 +1490,10 @@ class company_report {
                     $ts = strtotime($expiration  . ' month', $course->completed);
                     if ($ts < time()) {
                         $bg_color = '#f2dede';
-                        $state = get_string('outcome_course_expired','local_tracker');
+                        $state = get_string('outcome_course_expired','local_tracker_manager');
                         $valid = ' - ';
                     }else {
-                        $state = get_string('outcome_course_finished','local_tracker');
+                        $state = get_string('outcome_course_finished','local_tracker_manager');
                         $valid = userdate($ts,'%d.%m.%Y', 99, false);
                         $bg_color = '#dff0d8';
                     }//if_ts
