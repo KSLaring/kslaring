@@ -1,5 +1,5 @@
 <?PHP // $Id$ 
-$string['pluginname']   = 'Tracker Manager';
+$string['pluginname']   = 'Min side administrasjon';
 $string['name'] = 'Min side';
 
 $string['blocks_editing_on']    = 'Slå på blokkredigering';
@@ -45,7 +45,7 @@ $string['pdf_email_text']       = '{$a->username},
 
 PDF-rapporten fra Min side er nå sendt til deg slik du ba om.';
 
-$string['outcome_area_title']           = 'Standard jobbrolle';
+$string['outcome_area_title']           = 'Sertifiseringsmål';
 $string['individual_courses']           = 'Enkeltkurs som ikke inngår i en sertifisering:';
 $string['outcome_valid']                = 'Gyldig';
 $string['outcome_not_valid']            = 'Ikke gyldig';
@@ -70,11 +70,11 @@ $string['report_not_enroled'] = 'Bruker er ikke påmeldt noe kurs.';
 $string['state']    = 'Status';
 $string['finish']   = 'Fullført';
 $string['process']  = 'Pågår';
-$string['return_to_selection'] = 'Gå tilbake til Rapport Competence Manager';
+$string['return_to_selection'] = 'Gå tilbake til Min side administrasjon';
 
 $string['company_structure']    = 'Organisasjonstruktur';
 $string['job_roles']            = 'Jobbroller';
 $string['outcomes']             = 'Godkjenninger';
-$string['report_manager']       = 'Rapport Competence Manager';
+$string['report_manager']       = 'Arbeidsstedsrapporter';
 $string['outcome_report']       = 'Godkjenningsrapport';
 $string['course_report']        = 'Kursrapport';
