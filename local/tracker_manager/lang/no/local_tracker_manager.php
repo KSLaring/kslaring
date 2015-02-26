@@ -1,5 +1,5 @@
 <?PHP // $Id$ 
-
+$string['pluginname']   = 'Tracker Manager';
 $string['name'] = 'Min side';
 
 $string['blocks_editing_on']    = 'Slå på blokkredigering';

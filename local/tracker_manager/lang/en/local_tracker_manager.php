@@ -1,6 +1,6 @@
 <?php
 
-$string['pluginname']   = 'Tracker';
+$string['pluginname']   = 'Tracker Manager';
 $string['name']         = 'Tracker';
 
 $string['blocks_editing_on'] = 'Blocks editing on';
