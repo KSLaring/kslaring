@@ -45,6 +45,47 @@ function xmldb_report_manager_upgrade($old_version) {
             CompetenceManager_Update::Update_PrivateCompanies();
         }//if_old_Version
 
+
+
+        if (!$db_man->table_exists('report_gen_outcome_jobrole')) {
+            $table_outcome_job_role = new xmldb_table('report_gen_outcome_jobrole');
+            //Adding fields
+            /* id           (Primary)                   */
+            $table_outcome_job_role->add_field('id',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, XMLDB_SEQUENCE,null);
+            /* outcomeid    (Foreign key - Not null)    */
+            $table_outcome_job_role->add_field('outcomeid',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL,null,null);
+            /* jobroleid    (Foreign key - Not null)    */
+            $table_outcome_job_role->add_field('jobroleid',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL,null,null);
+            /* modified     (Not null)                  */
+            $table_outcome_job_role->add_field('modified',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL,null,null);
+            //Adding Keys
+            $table_outcome_job_role->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+            $table_outcome_job_role->add_key('outcomeid',XMLDB_KEY_FOREIGN,array('outcomeid'), 'grade_outcomes', array('id'));
+            $table_outcome_job_role->add_key('jobroleid',XMLDB_KEY_FOREIGN,array('jobroleid'), 'report_gen_jobrole', array('id'));
+
+            $db_man->create_table($table_outcome_job_role);
+        }//if_table_not_exits
+
+        if (!$db_man->table_exists('report_gen_outcome_exp')) {
+            $table_outcome_expiration = new xmldb_table('report_gen_outcome_exp');
+            //Adding fields
+            /* id               (Primary)                   */
+            $table_outcome_expiration->add_field('id',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, XMLDB_SEQUENCE,null);
+            /* outcomeid        (Foreign key - Not null)    */
+            $table_outcome_expiration->add_field('outcomeid',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL,null,null);
+            /* expirationperiod (Int - Not null - Index)    */
+            $table_outcome_expiration->add_field('expirationperiod',XMLDB_TYPE_INTEGER,'2',null, XMLDB_NOTNULL,null,0);
+            /* modified         (Not null)                  */
+            $table_outcome_expiration->add_field('modified',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL,null,null);
+            //Adding Keys
+            $table_outcome_expiration->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+            $table_outcome_expiration->add_key('outcomeid',XMLDB_KEY_FOREIGN,array('outcomeid'), 'grade_outcomes', array('id'));
+            //Adding Index
+            $table_outcome_expiration->add_index('expirationperiod',XMLDB_INDEX_NOTUNIQUE,array('expirationperiod'));
+            
+            $db_man->create_table($table_outcome_expiration);
+        }//if_table_not_exits
+
         return true;
     }catch (Exception $ex) {
         throw $ex;
