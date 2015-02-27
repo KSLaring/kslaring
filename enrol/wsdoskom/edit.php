@@ -40,7 +40,7 @@ if (!enrol_is_enabled('wsdoskom')) {
 /* Start Page */
 $PAGE->set_url('/enrol/wsdoskom/edit.php', array('courseid'=>$course->id, 'id'=>$instanceid));
 $PAGE->set_pagelayout('admin');
-
+$PAGE->requires->js(new moodle_url('/enrol/wsdoskom/js/doskom.js'));
 $plugin_config  = get_config('enrol_wsdoskom');
 $plugin         = enrol_get_plugin('wsdoskom');
 $company_lst    = null;
@@ -66,13 +66,18 @@ if (!isset($SESSION->Companies)) {
 /* Selected Companies   */
 if (!isset($SESSION->selCompanies)) {
     $SESSION->selCompanies = array();
-    if ($instanceid) {
-        $aux_company = explode(',',$instance->company);
-        foreach ($aux_company as $company) {
-            $SESSION->selCompanies[$company] = $company;
-        }
-    }//if_instance_company
 }//selCompanies
+
+
+if ($instanceid) {
+    $SESSION->selCompanies = array();
+    $aux_company = explode(',',$instance->company);
+    foreach ($aux_company as $company) {
+        $SESSION->selCompanies[$company] = $company;
+    }
+}else {
+    $SESSION->selCompanies = array();
+}//if_instance_company
 
 /* Add all companies    */
 if (!isset($SESSION->addAll)) {
