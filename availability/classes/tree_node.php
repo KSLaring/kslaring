@@ -87,6 +87,9 @@ abstract class tree_node {
      * The default behaviour is simply to return false. If there is a problem
      * with the update, $logger can be used to output a warning.
      *
+     * Note: If you need information about the date offset, call
+     * \core_availability\info::get_restore_date_offset($restoreid).
+     *
      * @param string $restoreid Restore ID
      * @param int $courseid ID of target course
      * @param \base_logger $logger Logger for any warnings
@@ -136,7 +139,8 @@ abstract class tree_node {
 
     /**
      * Tests this condition against a user list. Users who do not meet the
-     * condition will be removed from the list.
+     * condition will be removed from the list, unless they have the ability
+     * to view hidden activities/sections.
      *
      * This function must be implemented if is_applied_to_user_lists returns
      * true. Otherwise it will not be called.
@@ -146,6 +150,10 @@ abstract class tree_node {
      *
      * Within this function, if you need to check capabilities, please use
      * the provided checker which caches results where possible.
+     *
+     * Conditions do not need to check the viewhiddenactivities or
+     * viewhiddensections capabilities. These are handled by
+     * core_availability\info::filter_user_list.
      *
      * @param array $users Array of userid => object
      * @param bool $not True if this condition is applying in negative mode

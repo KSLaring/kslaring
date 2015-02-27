@@ -48,6 +48,13 @@ class core_course_externallib_testcase extends externallib_advanced_testcase {
     }
 
     /**
+     * Tidy up open files that may be left open.
+     */
+    protected function tearDown() {
+        gc_collect_cycles();
+    }
+
+    /**
      * Test create_categories
      */
     public function test_create_categories() {
@@ -328,6 +335,8 @@ class core_course_externallib_testcase extends externallib_advanced_testcase {
 
         // Enable course completion.
         set_config('enablecompletion', 1);
+        // Enable course themes.
+        set_config('allowcoursethemes', 1);
 
         // Set the required capabilities by the external function
         $contextid = context_system::instance()->id;
@@ -408,10 +417,7 @@ class core_course_externallib_testcase extends externallib_advanced_testcase {
                 $this->assertEquals($courseinfo->defaultgroupingid, $course2['defaultgroupingid']);
                 $this->assertEquals($courseinfo->completionnotify, $course2['completionnotify']);
                 $this->assertEquals($courseinfo->lang, $course2['lang']);
-
-                if (!empty($CFG->allowcoursethemes)) {
-                    $this->assertEquals($courseinfo->theme, $course2['forcetheme']);
-                }
+                $this->assertEquals($courseinfo->theme, $course2['forcetheme']);
 
                 // We enabled completion at the beginning of the test.
                 $this->assertEquals($courseinfo->enablecompletion, $course2['enablecompletion']);
@@ -582,7 +588,8 @@ class core_course_externallib_testcase extends externallib_advanced_testcase {
         $label = $this->getDataGenerator()->create_module('label', array('course' => $course->id,
             'intro' => $labeldescription));
         $labelcm = get_coursemodule_from_instance('label', $label->id);
-        $url = $this->getDataGenerator()->create_module('url', array('course' => $course->id));
+        $url = $this->getDataGenerator()->create_module('url', array('course' => $course->id,
+            'name' => 'URL: % & $ ../'));
 
         // Set the required capabilities by the external function.
         $context = context_course::instance($course->id);
@@ -604,12 +611,14 @@ class core_course_externallib_testcase extends externallib_advanced_testcase {
                 $formattedtext = format_text($cm->content, FORMAT_HTML,
                     array('noclean' => true, 'para' => false, 'filter' => false));
                 $this->assertEquals($formattedtext, $module['description']);
+                $this->assertEquals($forumcm->instance, $module['instance']);
                 $testexecuted = $testexecuted + 1;
             } else if ($module['id'] == $labelcm->id and $module['modname'] == 'label') {
                 $cm = $modinfo->cms[$labelcm->id];
                 $formattedtext = format_text($cm->content, FORMAT_HTML,
                     array('noclean' => true, 'para' => false, 'filter' => false));
                 $this->assertEquals($formattedtext, $module['description']);
+                $this->assertEquals($labelcm->instance, $module['instance']);
                 $testexecuted = $testexecuted + 1;
             }
         }
@@ -951,7 +960,7 @@ class core_course_externallib_testcase extends externallib_advanced_testcase {
             core_course_external::delete_modules(array('1337'));
             $this->fail('Exception expected due to missing course module.');
         } catch (dml_missing_record_exception $e) {
-            $this->assertEquals('invalidrecord', $e->errorcode);
+            $this->assertEquals('invalidcoursemodule', $e->errorcode);
         }
 
         // Create two modules.

@@ -109,6 +109,10 @@ class info_module extends info {
         return parent::filter_user_list($filtered);
     }
 
+    protected function get_view_hidden_capability() {
+        return 'moodle/course:viewhiddenactivities';
+    }
+
     /**
      * Checks if an activity is visible to the given user.
      *
@@ -157,7 +161,12 @@ class info_module extends info {
             if (is_object($cmorid)) {
                 $cmorid = $cmorid->id;
             }
-            $cm = $DB->get_record('course_modules', array('id' => $cmorid), '*', MUST_EXIST);
+            $cm = $DB->get_record('course_modules', array('id' => $cmorid));
+            if (!$cm) {
+                // In some error cases, the course module may not exist.
+                debugging('info_module::is_user_visible called with invalid cmid ' . $cmorid, DEBUG_DEVELOPER);
+                return false;
+            }
         }
 
         // Check the groupmembersonly feature.
@@ -187,6 +196,13 @@ class info_module extends info {
         // As a result we cannot take short cuts any longer and must get
         // standard modinfo.
         $modinfo = get_fast_modinfo($cm->course, $userid);
-        return $modinfo->get_cm($cm->id)->uservisible;
+        $cms = $modinfo->get_cms();
+        if (!isset($cms[$cm->id])) {
+            // In some cases this might get called with a cmid that is no longer
+            // available, for example when a module is hidden at system level.
+            debugging('info_module::is_user_visible called with invalid cmid ' . $cm->id, DEBUG_DEVELOPER);
+            return false;
+        }
+        return $cms[$cm->id]->uservisible;
     }
 }

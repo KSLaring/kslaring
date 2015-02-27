@@ -41,8 +41,11 @@ class behat_selectors {
     protected static $allowedtextselectors = array(
         'dialogue' => 'dialogue',
         'block' => 'block',
+        'section' => 'section',
+        'activity' => 'activity',
         'region' => 'region',
         'table_row' => 'table_row',
+        'list_item' => 'list_item',
         'table' => 'table',
         'fieldset' => 'fieldset',
         'css_element' => 'css_element',
@@ -55,8 +58,11 @@ class behat_selectors {
     protected static $allowedselectors = array(
         'dialogue' => 'dialogue',
         'block' => 'block',
+        'section' => 'section',
+        'activity' => 'activity',
         'region' => 'region',
         'table_row' => 'table_row',
+        'list_item' => 'list_item',
         'link' => 'link',
         'button' => 'button',
         'link_or_button' => 'link_or_button',
@@ -101,11 +107,24 @@ XPATH
      descendant::h2[normalize-space(.) = %locator%] or
      @aria-label = %locator%)]
 XPATH
+        , 'section' => <<<XPATH
+//li[contains(concat(' ', normalize-space(@class), ' '), ' section ')][./descendant::*[self::h3]
+    [normalize-space(.) = %locator%][contains(concat(' ', normalize-space(@class), ' '), ' sectionname ') or
+    contains(concat(' ', normalize-space(@class), ' '), ' section-title ')]] |
+//div[contains(concat(' ', normalize-space(@class), ' '), ' sitetopic ')]
+    [./descendant::*[self::h2][normalize-space(.) = %locator%] or %locator% = 'frontpage']
+XPATH
+        , 'activity' => <<<XPATH
+//li[contains(concat(' ', normalize-space(@class), ' '), ' activity ')][normalize-space(.) = %locator% ]
+XPATH
         , 'region' => <<<XPATH
 //*[self::div | self::section | self::aside | self::header | self::footer][./@id = %locator%]
 XPATH
         , 'table_row' => <<<XPATH
 .//tr[contains(normalize-space(.), %locator%)]
+XPATH
+        , 'list_item' => <<<XPATH
+.//li[contains(normalize-space(.), %locator%)]
 XPATH
         , 'filemanager' => <<<XPATH
 //div[contains(concat(' ', normalize-space(@class), ' '), ' ffilemanager ')]

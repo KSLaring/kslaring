@@ -251,7 +251,6 @@ class enrol_self_plugin extends enrol_plugin {
                         $this->enrol_self($instance, $data);
                     }
                 }
-
                 ob_start();
                 $form->display();
                 $output = ob_get_clean();
@@ -261,6 +260,7 @@ class enrol_self_plugin extends enrol_plugin {
                 $url =  new moodle_url('/course/view.php',array('id' => $instance->courseid,'start' => 1));
                 redirect($url);
             }//if_instance
+
         }
 
         return true;
@@ -280,7 +280,7 @@ class enrol_self_plugin extends enrol_plugin {
         if ($checkuserenrolment) {
             if (isguestuser()) {
                 // Can not enrol guest.
-                return get_string('canntenrol', 'enrol_self');
+                return get_string('noguestaccess', 'enrol');
             }
             // Check if user is already enroled.
             if ($DB->get_record('user_enrolments', array('userid' => $USER->id, 'enrolid' => $instance->id))) {

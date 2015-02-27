@@ -49,6 +49,9 @@ abstract class info {
     /** @var tree Availability configuration, decoded from JSON; null if unset */
     protected $availabilitytree;
 
+    /** @var array|null Array of information about current restore if any */
+    protected static $restoreinfo = null;
+
     /**
      * Constructs with item details.
      *
@@ -307,9 +310,12 @@ abstract class info {
      * @param string $restoreid Restore identifier
      * @param int $courseid Target course id
      * @param \base_logger $logger Logger for any warnings
+     * @param int $dateoffset Date offset to be added to any dates (0 = none)
      */
-    public function update_after_restore($restoreid, $courseid, \base_logger $logger) {
+    public function update_after_restore($restoreid, $courseid, \base_logger $logger, $dateoffset) {
         $tree = $this->get_availability_tree();
+        // Set static data for use by get_restore_date_offset function.
+        self::$restoreinfo = array('restoreid' => $restoreid, 'dateoffset' => $dateoffset);
         $changed = $tree->update_after_restore($restoreid, $courseid, $logger,
                 $this->get_thing_name());
         if ($changed) {
@@ -317,6 +323,24 @@ abstract class info {
             $structure = $tree->save();
             $this->set_in_database(json_encode($structure));
         }
+    }
+
+    /**
+     * Gets the date offset (amount by which any date values should be
+     * adjusted) for the current restore.
+     *
+     * @param string $restoreid Restore identifier
+     * @return int Date offset (0 if none)
+     * @throws coding_exception If not in a restore (or not in that restore)
+     */
+    public static function get_restore_date_offset($restoreid) {
+        if (!self::$restoreinfo) {
+            throw new coding_exception('Only valid during restore');
+        }
+        if (self::$restoreinfo['restoreid'] !== $restoreid) {
+            throw new coding_exception('Data not available for that restore id');
+        }
+        return self::$restoreinfo['dateoffset'];
     }
 
     /**
@@ -584,11 +608,33 @@ abstract class info {
         }
         $tree = $this->get_availability_tree();
         $checker = new capability_checker($this->get_context());
+
+        // Filter using availability tree.
         $this->modinfo = get_fast_modinfo($this->get_course());
-        $result = $tree->filter_user_list($users, false, $this, $checker);
+        $filtered = $tree->filter_user_list($users, false, $this, $checker);
         $this->modinfo = null;
+
+        // Include users in the result if they're either in the filtered list,
+        // or they have viewhidden. This logic preserves ordering of the
+        // passed users array.
+        $result = array();
+        $canviewhidden = $checker->get_users_by_capability($this->get_view_hidden_capability());
+        foreach ($users as $userid => $data) {
+            if (array_key_exists($userid, $filtered) || array_key_exists($userid, $canviewhidden)) {
+                $result[$userid] = $users[$userid];
+            }
+        }
+
         return $result;
     }
+
+    /**
+     * Gets the capability used to view hidden activities/sections (as
+     * appropriate).
+     *
+     * @return string Name of capability used to view hidden items of this type
+     */
+    protected abstract function get_view_hidden_capability();
 
     /**
      * Formats the $cm->availableinfo string for display. This includes

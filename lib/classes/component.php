@@ -321,7 +321,7 @@ $cache = '.var_export($cache, true).';
             'cache'       => $CFG->dirroot.'/cache',
             'calendar'    => $CFG->dirroot.'/calendar',
             'cohort'      => $CFG->dirroot.'/cohort',
-            'completion'  => null,
+            'completion'  => $CFG->dirroot.'/completion',
             'countries'   => null,
             'course'      => $CFG->dirroot.'/course',
             'currencies'  => null,
@@ -582,6 +582,7 @@ $cache = '.var_export($cache, true).';
         // Note: Add extra deprecated legacy classes here as necessary.
         self::$classmap['textlib'] = "$CFG->dirroot/lib/classes/text.php";
         self::$classmap['collatorlib'] = "$CFG->dirroot/lib/classes/collator.php";
+        ksort(self::$classmap);
     }
 
 

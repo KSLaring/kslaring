@@ -517,6 +517,11 @@ class block_manager {
             return false;
         }
 
+        // Block regions should not be docked during editing when all the blocks are hidden.
+        if ($this->page->user_is_editing() && $this->page->user_can_edit_blocks()) {
+            return false;
+        }
+
         $this->check_is_loaded();
         $this->ensure_content_created($region, $output);
         if (!$this->region_has_content($region, $output)) {
@@ -524,7 +529,7 @@ class block_manager {
             return false;
         }
         foreach ($this->visibleblockcontent[$region] as $instance) {
-            if (!empty($instance->content) && !get_user_preferences('docked_block_instance_'.$instance->blockinstanceid, 0)) {
+            if (!get_user_preferences('docked_block_instance_'.$instance->blockinstanceid, 0)) {
                 return false;
             }
         }
@@ -1113,7 +1118,7 @@ class block_manager {
         }
 
         // Assign roles icon.
-        if (has_capability('moodle/role:assign', $block->context)) {
+        if ($this->page->pagetype != 'my-index' && has_capability('moodle/role:assign', $block->context)) {
             //TODO: please note it is sloppy to pass urls through page parameters!!
             //      it is shortened because some web servers (e.g. IIS by default) give
             //      a 'security' error if you try to pass a full URL as a GET parameter in another URL.
@@ -1749,6 +1754,30 @@ function matching_page_type_patterns($pagetype) {
         array_pop($bits);
     }
     $patterns[] = '*';
+    return $patterns;
+}
+
+/**
+ * Give an specific pattern, return all the page type patterns that would also match it.
+ *
+ * @param  string $pattern the pattern, e.g. 'mod-forum-*' or 'mod-quiz-view'.
+ * @return array of all the page type patterns matching.
+ */
+function matching_page_type_patterns_from_pattern($pattern) {
+    $patterns = array($pattern);
+    if ($pattern === '*') {
+        return $patterns;
+    }
+
+    // Only keep the part before the star because we will append -* to all the bits.
+    $star = strpos($pattern, '-*');
+    if ($star !== false) {
+        $pattern = substr($pattern, 0, $star);
+    }
+
+    $patterns = array_merge($patterns, matching_page_type_patterns($pattern));
+    $patterns = array_unique($patterns);
+
     return $patterns;
 }
 

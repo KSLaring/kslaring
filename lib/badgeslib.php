@@ -677,7 +677,7 @@ function badges_notify_badge_award(badge $badge, $userid, $issued, $filepathhash
     $params->username = fullname($userto);
     $params->badgelink = $issuedlink;
     $message = badge_message_from_template($badge->message, $params);
-    $plaintext = format_text_email($message, FORMAT_HTML);
+    $plaintext = html_to_text($message);
 
     // Notify recipient.
     $eventdata = new stdClass();
@@ -688,9 +688,9 @@ function badges_notify_badge_award(badge $badge, $userid, $issued, $filepathhash
     $eventdata->notification      = 1;
     $eventdata->subject           = $badge->messagesubject;
     $eventdata->fullmessage       = $plaintext;
-    $eventdata->fullmessageformat = FORMAT_PLAIN;
+    $eventdata->fullmessageformat = FORMAT_HTML;
     $eventdata->fullmessagehtml   = $message;
-    $eventdata->smallmessage      = $plaintext;
+    $eventdata->smallmessage      = '';
 
     // Attach badge image if possible.
     if (!empty($CFG->allowattachments) && $badge->attachment && is_string($filepathhash)) {
@@ -723,10 +723,10 @@ function badges_notify_badge_award(badge $badge, $userid, $issued, $filepathhash
         $eventdata->userto            = $creator;
         $eventdata->notification      = 1;
         $eventdata->subject           = $creatorsubject;
-        $eventdata->fullmessage       = format_text_email($creatormessage, FORMAT_HTML);
-        $eventdata->fullmessageformat = FORMAT_PLAIN;
+        $eventdata->fullmessage       = html_to_text($creatormessage);
+        $eventdata->fullmessageformat = FORMAT_HTML;
         $eventdata->fullmessagehtml   = $creatormessage;
-        $eventdata->smallmessage      = $creatorsubject;
+        $eventdata->smallmessage      = '';
 
         message_send($eventdata);
         $DB->set_field('badge_issued', 'issuernotified', time(), array('badgeid' => $badge->id, 'userid' => $userid));
@@ -843,9 +843,10 @@ function badges_get_badges($type, $courseid = 0, $sort = '', $dir = '', $page = 
  */
 function badges_get_user_badges($userid, $courseid = 0, $page = 0, $perpage = 0, $search = '', $onlypublic = false) {
     global $DB;
-    $badges = array();
 
-    $params[] = $userid;
+    $params = array(
+        'userid' => $userid
+    );
     $sql = 'SELECT
                 bi.uniquehash,
                 bi.dateissued,
@@ -860,18 +861,19 @@ function badges_get_user_badges($userid, $courseid = 0, $page = 0, $perpage = 0,
                 {user} u
             WHERE b.id = bi.badgeid
                 AND u.id = bi.userid
-                AND bi.userid = ?';
+                AND bi.userid = :userid';
 
     if (!empty($search)) {
-        $sql .= ' AND (' . $DB->sql_like('b.name', '?', false) . ') ';
-        $params[] = "%$search%";
+        $sql .= ' AND (' . $DB->sql_like('b.name', ':search', false) . ') ';
+        $params['search'] = '%'.$DB->sql_like_escape($search).'%';
     }
     if ($onlypublic) {
         $sql .= ' AND (bi.visible = 1) ';
     }
 
     if ($courseid != 0) {
-        $sql .= ' AND (b.courseid = ' . $courseid . ') ';
+        $sql .= ' AND (b.courseid = :courseid) ';
+        $params['courseid'] = $courseid;
     }
     $sql .= ' ORDER BY bi.dateissued DESC';
     $badges = $DB->get_records_sql($sql, $params, $page * $perpage, $perpage);
@@ -1124,7 +1126,8 @@ function badges_download($userid) {
     if ($zipper->archive_to_pathname($filelist, $tempzip)) {
         send_temp_file($tempzip, 'badges.zip');
     } else {
-        debugging("Problems with archiving the files.");
+        debugging("Problems with archiving the files.", DEBUG_DEVELOPER);
+        die;
     }
 }
 
