@@ -186,7 +186,7 @@ foreach ($extrafields as $field) {
 
 $fields = array(
     'userdetails' => $userdetails,
-    'lastseen' => get_string('lastaccess'),
+    'lastcourseaccess' => get_string('lastcourseaccess'),
     'role' => get_string('roles', 'role'),
     'group' => get_string('groups', 'group'),
     'enrol' => get_string('enrolmentinstances', 'enrol')
@@ -196,7 +196,7 @@ $fields = array(
 if (!has_capability('moodle/course:viewhiddenuserfields', $context)) {
     $hiddenfields = array_flip(explode(',', $CFG->hiddenuserfields));
     if (isset($hiddenfields['lastaccess'])) {
-        unset($fields['lastseen']);
+        unset($fields['lastcourseaccess']);
     }
     if (isset($hiddenfields['groups'])) {
         unset($fields['group']);
@@ -205,7 +205,7 @@ if (!has_capability('moodle/course:viewhiddenuserfields', $context)) {
 
 $filterform = new enrol_users_filter_form('users.php', array('manager' => $manager, 'id' => $id),
         'get', '', array('id' => 'filterform'));
-$filterform->set_data(array('search' => $search, 'ifilter' => $filter, 'role' => $role));
+$filterform->set_data(array('search' => $search, 'ifilter' => $filter, 'role' => $role, 'filtergroup' => $fgroup));
 
 $table->set_fields($fields, $renderer);
 

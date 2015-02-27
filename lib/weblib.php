@@ -632,6 +632,10 @@ class moodle_url {
             }
         }
 
+        if ($url->anchor !== $this->anchor) {
+            return false;
+        }
+
         return true;
     }
 
@@ -1030,9 +1034,11 @@ function get_file_argument() {
 
     // Then try extract file from the slasharguments.
     if (stripos($_SERVER['SERVER_SOFTWARE'], 'iis') !== false) {
-        // NOTE: ISS tends to convert all file paths to single byte DOS encoding,
+        // NOTE: IIS tends to convert all file paths to single byte DOS encoding,
         //       we can not use other methods because they break unicode chars,
-        //       the only way is to use URL rewriting.
+        //       the only ways are to use URL rewriting
+        //       OR
+        //       to properly set the 'FastCGIUtf8ServerVariables' registry key.
         if (isset($_SERVER['PATH_INFO']) and $_SERVER['PATH_INFO'] !== '') {
             // Check that PATH_INFO works == must not contain the script name.
             if (strpos($_SERVER['PATH_INFO'], $SCRIPT) === false) {
@@ -2220,6 +2226,7 @@ function print_group_picture($group, $courseid, $large=false, $return=false, $li
     }
 
     $grouppictureurl = moodle_url::make_pluginfile_url($context->id, 'group', 'icon', $group->id, '/', $file);
+    $grouppictureurl->param('rev', $group->picture);
     $output .= '<img class="grouppicture" src="'.$grouppictureurl.'"'.
         ' alt="'.s(get_string('group').' '.$group->name).'" title="'.s($group->name).'"/>';
 
@@ -2499,6 +2506,16 @@ function redirect($url, $message='', $delay=-1) {
     do {
         if (defined('DEBUGGING_PRINTED')) {
             // Some debugging already printed, no need to look more.
+            $debugdisableredirect = true;
+            break;
+        }
+
+        if (core_useragent::is_msword()) {
+            // Clicking a URL from MS Word sends a request to the server without cookies. If that
+            // causes a redirect Word will open a browser pointing the new URL. If not, the URL that
+            // was clicked is opened. Because the request from Word is without cookies, it almost
+            // always results in a redirect to the login page, even if the user is logged in in their
+            // browser. This is not what we want, so prevent the redirect for requests from Word.
             $debugdisableredirect = true;
             break;
         }

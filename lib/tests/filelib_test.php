@@ -241,10 +241,20 @@ class core_filelib_testcase extends advanced_testcase {
         $this->assertSame(2, $curl->info['redirect_count']);
         $this->assertSame('done', $contents);
 
+        // This test was failing for people behind Squid proxies. Squid does not
+        // fully support HTTP 1.1, so converts things to HTTP 1.0, where the name
+        // of the status code is different.
+        reset($response);
+        if (key($response) === 'HTTP/1.0') {
+            $responsecode302 = '302 Moved Temporarily';
+        } else {
+            $responsecode302 = '302 Found';
+        }
+
         $curl = new curl();
         $contents = $curl->get("$testurl?redir=3", array(), array('CURLOPT_FOLLOWLOCATION'=>0));
         $response = $curl->getResponse();
-        $this->assertSame('302 Found', reset($response));
+        $this->assertSame($responsecode302, reset($response));
         $this->assertSame(0, $curl->get_errno());
         $this->assertSame(302, $curl->info['http_code']);
         $this->assertSame('', $contents);
@@ -253,7 +263,7 @@ class core_filelib_testcase extends advanced_testcase {
         $curl->emulateredirects = true;
         $contents = $curl->get("$testurl?redir=3", array(), array('CURLOPT_FOLLOWLOCATION'=>0));
         $response = $curl->getResponse();
-        $this->assertSame('302 Found', reset($response));
+        $this->assertSame($responsecode302, reset($response));
         $this->assertSame(0, $curl->get_errno());
         $this->assertSame(302, $curl->info['http_code']);
         $this->assertSame('', $contents);
@@ -492,6 +502,45 @@ class core_filelib_testcase extends advanced_testcase {
         $curl = new curl();
         $contents = $curl->post($testurl, $data);
         $this->assertSame('OK', $contents);
+    }
+
+    public function test_curl_protocols() {
+
+        // HTTP and HTTPS requests were verified in previous requests. Now check
+        // that we can selectively disable some protocols.
+        $curl = new curl();
+
+        // Other protocols than HTTP(S) are disabled by default.
+        $testurl = 'file:///';
+        $curl->get($testurl);
+        $this->assertNotEmpty($curl->error);
+        $this->assertEquals(CURLE_UNSUPPORTED_PROTOCOL, $curl->errno);
+
+        $testurl = 'ftp://nowhere';
+        $curl->get($testurl);
+        $this->assertNotEmpty($curl->error);
+        $this->assertEquals(CURLE_UNSUPPORTED_PROTOCOL, $curl->errno);
+
+        $testurl = 'telnet://somewhere';
+        $curl->get($testurl);
+        $this->assertNotEmpty($curl->error);
+        $this->assertEquals(CURLE_UNSUPPORTED_PROTOCOL, $curl->errno);
+
+        // Protocols are also disabled during redirections.
+        $testurl = $this->getExternalTestFileUrl('/test_redir_proto.php');
+        $curl->get($testurl, array('proto' => 'file'));
+        $this->assertNotEmpty($curl->error);
+        $this->assertEquals(CURLE_UNSUPPORTED_PROTOCOL, $curl->errno);
+
+        $testurl = $this->getExternalTestFileUrl('/test_redir_proto.php');
+        $curl->get($testurl, array('proto' => 'ftp'));
+        $this->assertNotEmpty($curl->error);
+        $this->assertEquals(CURLE_UNSUPPORTED_PROTOCOL, $curl->errno);
+
+        $testurl = $this->getExternalTestFileUrl('/test_redir_proto.php');
+        $curl->get($testurl, array('proto' => 'telnet'));
+        $this->assertNotEmpty($curl->error);
+        $this->assertEquals(CURLE_UNSUPPORTED_PROTOCOL, $curl->errno);
     }
 
     /**

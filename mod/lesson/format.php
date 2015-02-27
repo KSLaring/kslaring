@@ -221,7 +221,7 @@ function lesson_save_question_options($question, $lesson) {
                 $totalfraction = round($totalfraction,2);
                 if ($totalfraction != 1) {
                     $totalfraction = $totalfraction * 100;
-                    $result->notice = get_string("fractionsaddwrong", "quiz", $totalfraction);
+                    $result->notice = get_string("fractionsaddwrong", "qtype_multichoice", $totalfraction);
                     return $result;
                 }
             }
@@ -319,6 +319,20 @@ class qformat_default {
         }
         echo "<strong>$message</strong>\n";
         echo "</div>";
+    }
+
+    /**
+     * Import for questiontype plugins
+     * @param mixed $data The segment of data containing the question
+     * @param object $question processed (so far) by standard import code if appropriate
+     * @param object $extra mixed any additional format specific data that may be passed by the format
+     * @param string $qtypehint hint about a question type from format
+     * @return object question object suitable for save_options() or false if cannot handle
+     */
+    public function try_importing_using_qtypes($data, $question = null, $extra = null,
+            $qtypehint = '') {
+
+        return false;
     }
 
     function importpreprocess() {
@@ -555,7 +569,8 @@ class qformat_default {
     /// this format, this function converts it into a question
     /// object suitable for processing and insertion into Moodle.
 
-        echo "<p>This flash question format has not yet been completed!</p>";
+        // We should never get there unless the qformat plugin is broken.
+        throw new coding_exception('Question format plugin is missing important code: readquestion.');
 
         return null;
     }

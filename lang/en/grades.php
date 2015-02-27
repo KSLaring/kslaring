@@ -309,6 +309,7 @@ $string['gradetype_help'] = 'There are 4 grade types:
 
 Only value and scale grade types may be aggregated. The grade type for an activity-based grade item is set on the activity settings page.';
 $string['gradeview'] = 'View grade';
+$string['gradewasmodifiedduringediting'] = 'The grade entered for {$a->itemname} for {$a->username} was ignored because it was more recently updated by someone else.';
 $string['gradeweighthelp'] = 'Grade weight help';
 $string['groupavg'] = 'Group average';
 $string['hidden'] = 'Hidden';
@@ -544,7 +545,9 @@ $string['recovergradesdefault'] = 'Recover grades default';
 $string['recovergradesdefault_help'] = 'By default recover old grades when re-enrolling a user in a course.';
 $string['regradeanyway'] = 'Regrade anyway';
 $string['removeallcoursegrades'] = 'Delete all grades';
+$string['removeallcoursegrades_help'] = 'If ticked, all grade items which were manually added to the gradebook will be deleted, together with grades and data on overridden, excluded, hidden and locked grades. Only grade items associated with activities will remain.';
 $string['removeallcourseitems'] = 'Delete all items and categories';
+$string['removeallcourseitems_help'] = 'If ticked, all categories and grade items which were manually added to the gradebook will be deleted, together with grades and data on overridden, excluded, hidden and locked grades. Only grade items associated with activities will remain.';
 $string['report'] = 'Report';
 $string['reportdefault'] = 'Report default ({$a})';
 $string['reportplugins'] = 'Report plugins';

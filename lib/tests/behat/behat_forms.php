@@ -156,6 +156,21 @@ class behat_forms extends behat_base {
     }
 
     /**
+     * Sets the specified value to the field with xpath.
+     *
+     * @Given /^I set the field with xpath "(?P<fieldxpath_string>(?:[^"]|\\")*)" to "(?P<field_value_string>(?:[^"]|\\")*)"$/
+     * @throws ElementNotFoundException Thrown by behat_base::find
+     * @param string $field
+     * @param string $value
+     * @return void
+     */
+    public function i_set_the_field_with_xpath_to($fieldxpath, $value) {
+        $fieldNode = $this->find('xpath', $fieldxpath);
+        $field = behat_field_manager::get_form_field($fieldNode, $this->getSession());
+        $field->set_value($value);
+    }
+
+    /**
      * Checks, the field matches the value. More info in http://docs.moodle.org/dev/Acceptance_testing#Providing_values_to_steps.
      *
      * @Then /^the field "(?P<field_string>(?:[^"]|\\")*)" matches value "(?P<field_value_string>(?:[^"]|\\")*)"$/

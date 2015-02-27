@@ -139,6 +139,10 @@ $CFG->admin = 'admin';
 // any existing key.
 //      $CFG->mnetkeylifetime = 28;
 //
+// Not recommended: Set the following to true to allow the use
+// off non-Moodle standard characters in usernames.
+//      $CFG->extendedusernamechars = true;
+//
 // Allow user passwords to be included in backup files. Very dangerous
 // setting as far as it publishes password hashes that can be unencrypted
 // if the backup file is publicy available. Use it only if you can guarantee
@@ -503,7 +507,7 @@ $CFG->admin = 'admin';
 //      Uses lock files stored by default in the dataroot. Whether this
 //      works on clusters depends on the file system used for the dataroot.
 //
-// "\\core\\lock\\db_row_lock_factory" - DB locking based on table rows.
+// "\\core\\lock\\db_record_lock_factory" - DB locking based on table rows.
 //
 // "\\core\\lock\\postgres_lock_factory" - DB locking based on postgres advisory locks.
 //

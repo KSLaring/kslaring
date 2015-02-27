@@ -130,9 +130,8 @@ function message_print_contact_selector($countunreadtotal, $viewing, $user1, $us
         }
     }
 
-    // Only show the search button if we're viewing our own messages.
-    // Search isn't currently able to deal with user A wanting to search user B's messages.
-    if ($showactionlinks) {
+    // Only show the search button if we're viewing our own contacts.
+    if ($viewing == MESSAGE_VIEW_CONTACTS && $user2 == null) {
         echo html_writer::start_tag('form', array('action' => 'index.php','method' => 'GET'));
         echo html_writer::start_tag('fieldset');
         $managebuttonclass = 'visible';
@@ -494,6 +493,7 @@ function message_print_contacts($onlinecontacts, $offlinecontacts, $strangers, $
  * @return void
  */
 function message_print_usergroup_selector($viewing, $courses, $coursecontexts, $countunreadtotal, $countblocked, $strunreadmessages, $user1 = null) {
+    global $PAGE;
     $options = array();
 
     if ($countunreadtotal>0) { //if there are unread messages
@@ -531,15 +531,11 @@ function message_print_usergroup_selector($viewing, $courses, $coursecontexts, $
         $options[MESSAGE_VIEW_BLOCKED] = $str;
     }
 
-    echo html_writer::start_tag('form', array('id' => 'usergroupform','method' => 'get','action' => ''));
-    echo html_writer::start_tag('fieldset');
-    if ( !empty($user1) && !empty($user1->id) ) {
-        echo html_writer::empty_tag('input', array('type' => 'hidden','name' => 'user1','value' => $user1->id));
-    }
-    echo html_writer::label(get_string('messagenavigation', 'message'), 'viewing');
-    echo html_writer::select($options, 'viewing', $viewing, false, array('id' => 'viewing','onchange' => 'this.form.submit()'));
-    echo html_writer::end_tag('fieldset');
-    echo html_writer::end_tag('form');
+    $select = new single_select($PAGE->url, 'viewing', $options, $viewing, false);
+    $select->set_label(get_string('messagenavigation', 'message'));
+
+    $renderer = $PAGE->get_renderer('core');
+    echo $renderer->render($select);
 }
 
 /**

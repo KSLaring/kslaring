@@ -590,6 +590,11 @@ table.mod_index {
 .comment-area textarea {
     width: 100%;
     overflow: auto;
+    &.fullwidth {
+        -webkit-box-sizing: border-box;
+        -moz-box-sizing: border-box;
+        box-sizing: border-box;
+    }
 }
 .comment-area .fd {
     text-align: right;
@@ -1727,7 +1732,7 @@ body#page-lib-editor-tinymce-plugins-moodlemedia-preview {
     left: 20.3em;
     margin: 0;
     padding: 1.6em;
-    background-color: @bodyBackground;
+    background-color: #fff;
     overflow-x: hidden;
     overflow-y: auto;
     line-height: 2em;
@@ -1744,7 +1749,7 @@ body#page-lib-editor-tinymce-plugins-moodlemedia-preview {
     display: block;
 }
 .choosercontainer #chooseform .selected {
-    background-color: @bodyBackground;
+    background-color: #fff;
     .box-shadow(0px 0 10px 0 #ccc);
 }
 .section-modchooser-link img.smallicon {
@@ -2024,7 +2029,8 @@ img#persona_signin {
             padding-left: 4px;
             padding-right: 4px;
 
-            .iconsmall {
+            .iconsmall,
+            .smallicon {
                 margin: 4px 4px 4px 0px;
                 padding: 8px 4px 0px 2px;
                 vertical-align: text-bottom;
@@ -2101,8 +2107,10 @@ img#persona_signin {
         img {
             vertical-align: middle;
         }
-        .iconsmall {
+        .iconsmall,
+        .smallicon {
             margin: 4px 4px 4px -24px;
+            padding: 4px;
         }
         > li {
             display:block;
@@ -2141,9 +2149,13 @@ img#persona_signin {
             text-align: right;
             left: 0;
             right: auto;
-            .iconsmall {
-                margin-right:0;
-                margin-left:8px;
+            a {
+                padding: 2px 28px 2px 1em;
+            }
+            .iconsmall,
+            .smallicon {
+                margin-right: -24px;
+                margin-left: 4px;
             }
 
             /** bottom left of button **/
@@ -2201,4 +2213,12 @@ body.lockscroll {
         margin-left: 0;
         margin-right: 25px;
     }
+}
+dd:before,
+dd:after {
+  display: block;
+  content: " ";
+}
+dd:after {
+  clear: both;
 }
