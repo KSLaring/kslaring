@@ -125,7 +125,7 @@ class WSDOSKOM_Cron {
 
         try {
             /* Plugins Info */
-            $plugin_info     = get_config('local_wsdoskom');
+            $plugin_info     = get_config('local_doskom');
 
             /* Build url end point  */
             $urlWs = $plugin_info->wsdoskom_end_point . '/' . $companyId .'/personalia/no';
@@ -492,7 +492,7 @@ class WSDOSKOM_Cron {
                         /* Update Message Error */
                         $a = new stdClass();
                         $a->username = $userInfo->username;
-                        $userInfo->msgerror = get_string('exists_username','local_wsdoskom',$a);
+                        $userInfo->msgerror = get_string('exists_username','local_doskom',$a);
 
                         $DB->update_record('user_personalia',$userInfo);
                     }//if_else_OtherUser_OldVersion

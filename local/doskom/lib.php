@@ -11,9 +11,9 @@
  *
  */
 
-function local_wsdoskom_cron() {
+function local_doskom_cron() {
     /* Plugins Info */
-    $plugin_info     = get_config('local_wsdoskom');
+    $plugin_info     = get_config('local_doskom');
 
     /* Check if the cron is Activate    */
     if ($plugin_info->wssso_cron_active) {
