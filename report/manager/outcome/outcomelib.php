@@ -120,16 +120,17 @@ class outcome {
             /* SQL Instruction */
             $sql = " SELECT        	jr.id,
                                     jr.name,
+                                    jr.industrycode,
                                     ojr.jobroleid
                      FROM          	{report_gen_jobrole}  		  jr
                         LEFT JOIN	{report_gen_outcome_jobrole}  ojr   ON 	ojr.jobroleid = jr.id
                                                                         AND	ojr.outcomeid = :outcome
-                     ORDER BY jr.name ASC ";
+                     ORDER BY jr.industrycode, jr.name ASC ";
 
             /* Execute */
             if ($rdo = $DB->get_records_sql($sql,$params)) {
                 foreach ($rdo as $field) {
-                    $job_roles_list[$field->id] = $field->name;
+                    $job_roles_list[$field->id] = $field->industrycode . ' - ' . $field->name;
                     if ($field->jobroleid) {
                         $roles_selected[] = $field->id;
                     }
