@@ -41,7 +41,10 @@ function xmldb_report_manager_install() {
         CompetenceManager_Install::CreateJobRole_NewVersion($db_man);
         /* Job Roles Relation */
         CompetenceManager_Install::CreateJobRoleRelation_NewVersion($db_man);
-
+        /* Job Role Outcomes    */
+        CompetenceManager_Install::CreateJobRoleOutcome_Relation($db_man);
+        /* Outcomes Expiration  */
+        CompetenceManager_Install::CreateOutcomesExpiration($db_man);
 
         /* For Kommit   */
         /* Level Zero */
@@ -278,6 +281,77 @@ class CompetenceManager_Install {
             throw $ex;
         }//try_catch
     }//CreateJobRoleRelation_NewVersion
+
+    /**
+     * @param           $db_man
+     * @throws          Exception
+     *
+     * @creationDate    22/01/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Create JobRoles Outcome Relation table
+     */
+    public static function CreateJobRoleOutcome_Relation($db_man) {
+        try {
+            $table_outcome_job_role = new xmldb_table('report_gen_outcome_jobrole');
+            //Adding fields
+            /* id           (Primary)                   */
+            $table_outcome_job_role->add_field('id',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, XMLDB_SEQUENCE,null);
+            /* outcomeid    (Foreign key - Not null)    */
+            $table_outcome_job_role->add_field('outcomeid',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL,null,null);
+            /* jobroleid    (Foreign key - Not null)    */
+            $table_outcome_job_role->add_field('jobroleid',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL,null,null);
+            /* modified     (Not null)                  */
+            $table_outcome_job_role->add_field('modified',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL,null,null);
+            //Adding Keys
+            $table_outcome_job_role->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+            $table_outcome_job_role->add_key('outcomeid',XMLDB_KEY_FOREIGN,array('outcomeid'), 'grade_outcomes', array('id'));
+            $table_outcome_job_role->add_key('jobroleid',XMLDB_KEY_FOREIGN,array('jobroleid'), 'report_gen_jobrole', array('id'));
+
+            if (!$db_man->table_exists('report_gen_outcome_jobrole')) {
+                $db_man->create_table($table_outcome_job_role);
+            }//if_table_not_exits
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//CreateJobRoleOutcome_Relation
+
+    /**
+     * @param           $db_man
+     * @throws          Exception
+     *
+     * @creationDate    22/01/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Create Outcomes Expiration table
+     */
+    public static function CreateOutcomesExpiration($db_man) {
+        try {
+            $table_outcome_expiration = new xmldb_table('report_gen_outcome_exp');
+            //Adding fields
+            /* id               (Primary)                   */
+            $table_outcome_expiration->add_field('id',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, XMLDB_SEQUENCE,null);
+            /* outcomeid        (Foreign key - Not null)    */
+            $table_outcome_expiration->add_field('outcomeid',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL,null,null);
+            /* expirationperiod (Int - Not null - Index)    */
+            $table_outcome_expiration->add_field('expirationperiod',XMLDB_TYPE_INTEGER,'2',null, XMLDB_NOTNULL,null,0);
+            /* modified         (Not null)                  */
+            $table_outcome_expiration->add_field('modified',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL,null,null);
+            //Adding Keys
+            $table_outcome_expiration->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+            $table_outcome_expiration->add_key('outcomeid',XMLDB_KEY_FOREIGN,array('outcomeid'), 'grade_outcomes', array('id'));
+            //Adding Index
+            $table_outcome_expiration->add_index('expirationperiod',XMLDB_INDEX_NOTUNIQUE,array('expirationperiod'));
+
+            if (!$db_man->table_exists('report_gen_outcome_exp')) {
+                $db_man->create_table($table_outcome_expiration);
+            }//if_table_not_exits
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//CreateOutcomesExpiration
 }//CompetenceManager_Install
 
 class Kommit_CompetenceManager {
