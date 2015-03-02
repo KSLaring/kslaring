@@ -55,6 +55,26 @@ if (empty($CFG->loginhttps)) {
     $secure_www_root = str_replace('http:','https:',$CFG->wwwroot);
 }//if_security
 
+/* Available Job Roles  */
+if (!isset($SESSION->jobRoles)) {
+    $SESSION->jobRoles = array();
+}//companies
+
+/* Selected Job Roles   */
+if (!isset($SESSION->selJobRoles)) {
+    $SESSION->selJobRoles = array();
+}//selCompanies
+
+/* Add all Job Roles    */
+if (!isset($SESSION->addAll)) {
+    $SESSION->addAll = false;
+}//id_addAll
+
+/* Remove Job Roles */
+if (!isset($SESSION->removeAll)) {
+    $SESSION->removeAll = false;
+}//if_removeAll
+
 /* Show Form */
 $form = new manager_edit_outcome_form(null,array($outcome_id,$expiration_id));
 
@@ -65,28 +85,79 @@ if ($form->is_cancelled()) {
     setcookie('courseReport',0);
     setcookie('outcomeReport',0);
 
+    /* Clean SESSION    */
+    unset($SESSION->addAll);
+    unset($SESSION->removeAll);
+    unset($SESSION->jobRoles);
+    unset($SESSION->selJobRoles);
+
     $_POST = array();
     redirect($return_url);
 }else if($data = $form->get_data()) {
-    /* Get Data */
-    $outcome = new stdClass();
-    $outcome->outcomeid         = $data->id;
-    $outcome->expirationperiod  = $data->expiration_period;
-    $outcome->modified          = time();
-    $select = REPORT_MANAGER_JOB_ROLE_LIST;
-    $role_list = $data->$select;
+    $SESSION->addAll    = false;
+    $SESSION->removeAll = false;
 
-    if ($expiration_id) {
-        /* Update Outcome */
-        $outcome->id = $data->expid;
-        outcome::Update_Outcome($outcome,$role_list);
-    }else {
-        /* Insert */
-        outcome::Insert_Outcome($outcome,$role_list);
-    }//if_else
+    /* Add All Job Roles    */
+    if (isset($data->add_all) && ($data->add_all)) {
+        $SESSION->addAll        = true;
+        $SESSION->selJobRoles   = array();
+        $SESSION->jobRoles      = array();
 
-    $_POST = array();
-    redirect($return_url);
+        $form = new manager_edit_outcome_form(null,array($outcome_id,$expiration_id));
+    }//add_all_jobroles
+
+    /* Remove All Job Roles */
+    if (isset($data->remove_all) && ($data->remove_all)) {
+        $SESSION->removeAll     = true;
+        $SESSION->selJobRoles   = array();
+        $SESSION->jobRoles      = array();
+
+        $form = new manager_edit_outcome_form(null,array($outcome_id,$expiration_id));
+    }//remove_all_jobroles
+
+    /* Add selected Job Roles       */
+    if (isset($data->add_sel) && ($data->add_sel)) {
+        foreach($data->ajobroles as $key=>$value) {
+            $SESSION->selJobRoles[$value] = $value;
+        }
+        $form = new manager_edit_outcome_form(null,array($outcome_id,$expiration_id));
+    }//if_add_jobroles
+
+    /* Remove selected Job Roles    */
+    if (isset($data->remove_sel) && ($data->remove_sel)) {
+        foreach($data->sjobroles as $key=>$value) {
+            unset($SESSION->selJobRoles[$value]);
+            $SESSION->jobRoles[$value] = $value;
+        }
+        $form = new manager_edit_outcome_form(null,array($outcome_id,$expiration_id));
+    }//if_remove_jobroles
+
+    if ((isset($data->submitbutton) && $data->submitbutton)) {
+        /* Get Data */
+        $outcome = new stdClass();
+        $outcome->outcomeid         = $data->id;
+        $outcome->expirationperiod  = $data->expiration_period;
+        $outcome->modified          = time();
+        $select = REPORT_MANAGER_JOB_ROLE_LIST;
+        $role_list = $SESSION->selJobRoles;
+
+        if ($expiration_id) {
+            /* Update Outcome */
+            $outcome->id = $data->expid;
+            outcome::Update_Outcome($outcome,$role_list);
+        }else {
+            /* Insert */
+            outcome::Insert_Outcome($outcome,$role_list);
+        }//if_else
+
+        unset($SESSION->addAll);
+        unset($SESSION->removeAll);
+        unset($SESSION->jobRoles);
+        unset($SESSION->selJobRoles);
+
+        $_POST = array();
+        redirect($return_url);
+    }//if_submit_button
 }//if_else
 
 $PAGE->verify_https_required();

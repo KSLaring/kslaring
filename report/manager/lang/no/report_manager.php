@@ -381,3 +381,10 @@ $string['industry_code']    = 'Kommunenummer';
 $string['err_job_role']     = 'Denne jobbrollen eksisterer allerede.';
 
 $string['public']           = 'Offentlig';
+
+$string['av_jobroles']          = 'Available Job roles';
+$string['not_sel_jobroles']     = 'None Job roles';
+$string['selected_jobroles']    = 'Selected Job Roles';
+
+$string['add_all']      = 'Add all';
+$string['remove_all']   = 'Remove all';
