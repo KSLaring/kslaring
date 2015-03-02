@@ -43,6 +43,7 @@ $PAGE->set_heading($SITE->fullname);
 $PAGE->navbar->add(get_string('report_manager','local_tracker_manager'),$return_url);
 $PAGE->navbar->add(get_string('outcome', 'report_manager'),$return);
 $PAGE->navbar->add(get_string('edit_outcome', 'report_manager'));
+$PAGE->requires->js('/report/manager/js/outcome.js');
 
 /* ADD require_capability */
 if (!has_capability('report/manager:edit', $site_context)) {
