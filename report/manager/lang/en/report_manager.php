@@ -374,3 +374,10 @@ $string['industry_code']    = 'Industry code';
 $string['err_job_role']     = 'This job role already exists.';
 
 $string['public']           = 'Public';
+
+$string['av_jobroles']          = 'Available Job roles';
+$string['not_sel_jobroles']     = 'None Job roles';
+$string['selected_jobroles']    = 'Selected Job Roles';
+
+$string['add_all']      = 'Add all';
+$string['remove_all']   = 'Remove all';
