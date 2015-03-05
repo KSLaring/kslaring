@@ -117,7 +117,7 @@ class enrol_wsdoskom_edit_form extends moodleform {
                 $m_form->addElement('select','scompanies','',$schoices,'multiple size="15"');
                 $m_form->addElement('text','search_sel_companies',get_string('search'));
                 $m_form->setType('search_sel_companies',PARAM_TEXT);
-            $m_form->addElement('html','</div>');//sel_users_left
+            $m_form->addElement('html','</div>');//sel_companies_left
 
             /* Buttons          */
             $m_form->addElement('html','<div class="sel_companies_buttons">');
@@ -136,15 +136,15 @@ class enrol_wsdoskom_edit_form extends moodleform {
                 /* Remove All Companies  */
                 $remove_all_btn = html_to_text(get_string('remove_all', 'enrol_wsdoskom') . '&nbsp;' . $OUTPUT->rarrow());
                 $m_form->addElement('submit','remove_all',$remove_all_btn);
-            $m_form->addElement('html','</div>');//sel_users_buttons
+            $m_form->addElement('html','</div>');//sel_companies_buttons
 
             /* Company List */
             $m_form->addElement('html','<div class="sel_companies_right">');
                 $m_form->addElement('select','acompanies', '',$achoices,'multiple size="15"');
                 $m_form->addElement('text','search_add_companies',get_string('search'));
                 $m_form->setType('search_add_companies',PARAM_TEXT);
-            $m_form->addElement('html','</div>');//sel_users_right
-        $m_form->addElement('html','</div>');//micro_learning_users
+            $m_form->addElement('html','</div>');//sel_companies_right
+        $m_form->addElement('html','</div>');//wsdoskom_company
 
         $m_form->addElement('hidden', 'id');
         $m_form->setType('id', PARAM_INT);
