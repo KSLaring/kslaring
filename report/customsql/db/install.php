@@ -14,9 +14,24 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-$settings = null;
+/**
+ * Database upgrades.
+ *
+ * @package report
+ * @subpackage customsql
+ * @copyright 2013 The Open University
+ * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 
-$ADMIN->add('reports', new admin_externalpage('report_customsql',
-        get_string('pluginname', 'report_customsql'),
-        new moodle_url('/report/customsql/index.php'),
-        'report/customsql:view'));
+function xmldb_report_customsql_install() {
+    global $CFG, $DB;
+
+    // Create the default 'Miscellaneous' category.
+    $category = new stdClass();
+    $category->name = get_string('defaultcategory', 'report_customsql');
+    if (!$DB->record_exists('report_customsql_categories', array('name' => $category->name))) {
+        $DB->insert_record('report_customsql_categories', $category);
+    }
+
+    return true;
+}

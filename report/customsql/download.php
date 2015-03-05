@@ -35,7 +35,7 @@ if (!$report) {
 }
 
 require_login();
-$context = CONTEXT_SYSTEM::instance();
+$context = context_system::instance();
 if (!empty($report->capability)) {
     require_capability($report->capability, $context);
 }
