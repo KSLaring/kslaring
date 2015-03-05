@@ -18,13 +18,16 @@
  * Custom SQL report.
  *
  * Users with the report/customsql:definequeries capability can enter custom
- * SQL SELECT statements. Other users with the moodle/site:viewreports capability
+ * SQL SELECT statements. If they have report/customsql:managecategories
+ * capability can create custom categories for the sql reports.
+ * Other users with the moodle/site:viewreports capability
  * can see the list of available queries and run them. Reports are displayed as
  * a table. Every data value is a string, and field names come from the database
  * results set.
  *
- * This page shows the list of queries, with edit icons, and an add new button
- * if you have the report/customsql:definequeries capability.
+ * This page shows the list of categorised queries, with edit icons, an add new button
+ * if you have the report/customsql:definequeries capability, and a manage categories button
+ * ff you have report/customsql:managecategories capability
  *
  * @package report_customsql
  * @copyright 2009 The Open University
@@ -36,44 +39,74 @@ require_once(dirname(__FILE__) . '/locallib.php');
 require_once($CFG->libdir . '/adminlib.php');
 
 require_login();
-$context = CONTEXt_SYSTEM::instance();
+$context = context_system::instance();
 require_capability('report/customsql:view', $context);
 
-$manualreports = $DB->get_records('report_customsql_queries', array('runable' => 'manual'),
-                                  'displayname');
-$scheduledreports = $DB->get_records_list('report_customsql_queries', 'runable',
-                                          array('weekly', 'monthly'), 'displayname');
-$dailyreports = $DB->get_records('report_customsql_queries', array('runable' => 'daily'), 'displayname');
+$categories = $DB->get_records('report_customsql_categories', null, 'name ASC');
+$showcat = optional_param('showcat', 0, PARAM_INT);
+$hidecat = optional_param('hidecat', 0, PARAM_INT);
+if (!$showcat && count($categories) == 1) {
+    $showcat = reset($categories)->id;
+}
 
 // Start the page.
 admin_externalpage_setup('report_customsql');
 echo $OUTPUT->header();
 
-if (empty($manualreports) && empty($scheduledreports)) {
-    echo $OUTPUT->heading(get_string('availablereports', 'report_customsql')).
-         html_writer::tag('p', get_string('noreportsavailable', 'report_customsql'));
+foreach ($categories as $category) {
+    // Are we showing this cat? Default is hidden.
+    $show = $category->id == $showcat && $category->id != $hidecat ? 'shown' : 'hidden';
 
-} else {
-    if (!empty($manualreports)) {
-        echo $OUTPUT->heading(get_string('availablereports', 'report_customsql')).
-             html_writer::tag('p', get_string('manualnote', 'report_customsql'));
-        report_customsql_print_reports($manualreports);
+    echo html_writer::start_tag('div', array('class' => 'csql_category csql_category' . $show));
+    if ($category->id == $showcat) {
+        $params = array('hidecat' => $category->id);
+    } else {
+        $params = array('showcat' => $category->id);
     }
-    if (!empty($dailyreports)) {
-        echo $OUTPUT->heading(get_string('dailyqueries', 'report_customsql')).
-        html_writer::tag('p', get_string('dailynote', 'report_customsql'));
-        report_customsql_print_reports($dailyreports);
+    $linkhref = new moodle_url('/report/customsql/index.php', $params);
+    $link = html_writer::link($linkhref, $category->name, array('class' => 'categoryname'));
+
+    $manualreports = report_customsql_get_reports_for($category->id, 'manual');
+    $dailyreports = report_customsql_get_reports_for($category->id, 'daily');
+    $weeklyreports = report_customsql_get_reports_for($category->id, 'weekly');
+    $monthlyreports = report_customsql_get_reports_for($category->id, 'monthly');
+
+    // Category content.
+    $cc = new stdClass();
+    $cc->manual = count($manualreports);
+    $cc->daily = count($dailyreports);
+    $cc->weekly = count($weeklyreports);
+    $cc->monthly = count($monthlyreports);
+    $reportcounts = get_string('categorycontent', 'report_customsql', $cc);
+
+    $reportcounts = html_writer::tag('span', $reportcounts, array('class' => 'reportcounts'));
+    echo $OUTPUT->heading($link . ' ' . $reportcounts);
+
+    echo html_writer::start_tag('div', array('class' => 'csql_category_reports'));
+    if (empty($manualreports) && empty($dailyreports) && empty($weeklyreports) && empty($monthlyreports)) {
+        echo $OUTPUT->heading(get_string('availablereports', 'report_customsql'), 3).
+        html_writer::tag('p', get_string('noreportsavailable', 'report_customsql'));
+    } else {
+        report_customsql_print_reports_for($manualreports, 'manual');
+        report_customsql_print_reports_for($dailyreports, 'daily');
+        report_customsql_print_reports_for($weeklyreports, 'weekly');
+        report_customsql_print_reports_for($monthlyreports, 'monthly');
     }
-    if (!empty($scheduledreports)) {
-        echo $OUTPUT->heading(get_string('scheduledqueries', 'report_customsql')).
-             html_writer::tag('p', get_string('schedulednote', 'report_customsql'));
-        report_customsql_print_reports($scheduledreports);
-    }
+    echo html_writer::end_tag('div');
+    echo html_writer::end_tag('div');
 }
 
 if (has_capability('report/customsql:definequeries', $context)) {
     echo $OUTPUT->single_button(report_customsql_url('edit.php'),
-                                get_string('addreport', 'report_customsql'));
+            get_string('addreport', 'report_customsql'));
 }
+if (has_capability('report/customsql:managecategories', $context)) {
+    echo html_writer::empty_tag('br');
+    echo $OUTPUT->single_button(report_customsql_url('manage.php'),
+            get_string('managecategories', 'report_customsql'));
+}
+
+// Add the reportcategories YUI script to the page.
+$PAGE->requires->yui_module('moodle-report_customsql-reportcategories', 'M.report_customsql.init');
 
 echo $OUTPUT->footer();

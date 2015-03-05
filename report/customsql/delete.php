@@ -33,7 +33,7 @@ if (!$report) {
 }
 
 require_login();
-$context = CONTEXT_SYSTEM::instance();
+$context = context_system::instance();
 require_capability('report/customsql:definequeries', $context);
 
 if (optional_param('confirm', false, PARAM_BOOL)) {
