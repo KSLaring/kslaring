@@ -137,12 +137,44 @@ class auth_plugin_saml extends auth_plugin_base {
 	    $GLOBALS['CFG']->nolastloggedin = true;
     }
 
+    /**
+     * @updateDate      19/02/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Update the functionality for the user have been logged in from other system different that SAML
+     */
     function logoutpage_hook() {
+        global $USER,$SESSION;
+
+        /**
+         * @updateDate      04/12/2013
+         * @author          eFaktor     (fbv)
+         *
+         * Description
+         * Where the user must be redirected when he/she log out;
+         */
+        if (isset($SESSION->LogoutUrl)) {
+            if (!is_siteadmin($USER)) {
+                $LogoutUrl = $SESSION->LogoutUrl;
+                unset($SESSION->LogoutUrl);
+                if (!strpos('http://',$LogoutUrl) && !strpos('https://',$LogoutUrl)) {
+                    $redirect = $LogoutUrl;
+                }else {
+                    $redirect = 'http://' . $SESSION->LogoutUrl;
+                }
+
+                require_logout();
+                redirect($redirect);
+
+            }//if_user_admin
+        }else {
 	    if(isset($this->config->dosinglelogout) && $this->config->dosinglelogout) {
 	        set_moodle_cookie('nobody');
 	        require_logout();
 	        redirect($GLOBALS['CFG']->wwwroot.'/auth/saml/index.php?logout=1');
 	    }
+        }//if_session_back
     }
 
     /**
