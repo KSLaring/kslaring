@@ -70,13 +70,13 @@ if (!isset($SESSION->selCompanies)) {
 
 
 if ($instanceid) {
-    $SESSION->selCompanies = array();
+    if (!isset($SESSION->selCompanies)) {
+        $SESSION->selCompanies = array();
+    }//selCompanies
     $aux_company = explode(',',$instance->company);
     foreach ($aux_company as $company) {
         $SESSION->selCompanies[$company] = $company;
     }
-}else {
-    $SESSION->selCompanies = array();
 }//if_instance_company
 
 /* Add all companies    */
