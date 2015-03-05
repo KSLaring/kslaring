@@ -81,10 +81,10 @@ class report_customsql_test extends advanced_testcase {
     }
 
     public function test_report_customsql_runable_options() {
-        $options =  array('manual' => get_string('manually', 'report_customsql'),
-                            'daily' => get_string('daily', 'report_customsql'),
-                            'weekly' => get_string('automaticallyweekly', 'report_customsql'),
-                            'monthly' => get_string('automaticallymonthly', 'report_customsql'));
+        $options = array('manual'  => get_string('manual', 'report_customsql'),
+                         'daily'   => get_string('automaticallydaily', 'report_customsql'),
+                         'weekly'  => get_string('automaticallyweekly', 'report_customsql'),
+                         'monthly' => get_string('automaticallymonthly', 'report_customsql'));
 
         $this->assertEquals($options, report_customsql_runable_options());
     }
@@ -187,6 +187,13 @@ class report_customsql_test extends advanced_testcase {
         $this->assertTrue(report_customsql_is_daily_report_ready($report, $timenow));
     }
 
+    public function test_report_customsql_is_integer() {
+        $this->assertTrue(report_customsql_is_integer(1));
+        $this->assertTrue(report_customsql_is_integer('1'));
+        $this->assertFalse(report_customsql_is_integer('frog'));
+        $this->assertFalse(report_customsql_is_integer('2013-10-07'));
+    }
+
     /**
      * Create an entry in 'report_customsql_queries' table and return the id
      * @param string $runable
@@ -208,6 +215,7 @@ class report_customsql_test extends advanced_testcase {
         $report->at = $at;
         $report->emailto = $emailto;
         $report->emailwhat = 'emailnumberofrows';
+        $report->categoryid = 1;
 
         return $DB->insert_record('report_customsql_queries', $report);
     }

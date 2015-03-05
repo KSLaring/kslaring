@@ -61,6 +61,9 @@ class report_customsql_edit_form extends moodleform {
             foreach ($this->_customdata as $queryparam => $formparam) {
                 $type = report_customsql_get_element_type($queryparam);
                 $mform->addElement($type, $formparam, $queryparam);
+                if ($type == 'text') {
+                    $mform->setType($formparam, PARAM_RAW);
+                }
                 $hasparameters++;
             }
             $mform->addElement('static', 'spacer', '', '');
@@ -88,19 +91,27 @@ class report_customsql_edit_form extends moodleform {
             $runat[] = $mform->createElement('select', 'runable', null,  report_customsql_runable_options());
         }
         $runat[] = $mform->createElement('select', 'at', null, report_customsql_daily_at_options());
-        $mform->addGroup($runat, 'runablegroup', get_string('runable', 'report_customsql'), get_string('at', 'report_customsql'), false);
+        $mform->addGroup($runat, 'runablegroup', get_string('runable', 'report_customsql'),
+                get_string('at', 'report_customsql'), false);
 
         $mform->addElement('checkbox', 'singlerow', get_string('typeofresult', 'report_customsql'),
                            get_string('onerow', 'report_customsql'));
 
         $mform->addElement('text', 'emailto', get_string('emailto', 'report_customsql'), 'size = 70');
-        $mform->setType('emailto',PARAM_NOTAGS);
         $mform->addElement('select', 'emailwhat', get_string('emailwhat', 'report_customsql'),
                 report_customsql_email_options());
         $mform->disabledIf('singlerow', 'runable', 'eq', 'manual');
         $mform->disabledIf('at', 'runable', 'ne', 'daily');
         $mform->disabledIf('emailto', 'runable', 'eq', 'manual');
         $mform->disabledIf('emailwhat', 'runable', 'eq', 'manual');
+        $mform->setType('emailto', PARAM_RAW);
+
+        // Add new category selection.
+        $categoryoptions = report_customsql_category_options();
+        $mform->addElement('select', 'categoryid', get_string('selectcategory', 'report_customsql'),
+                $categoryoptions);
+        $catdefault = isset($categoryoptions[1]) ? 1 : key($categoryoptions);
+        $mform->setDefault('categoryid', $catdefault);
 
         $this->add_action_buttons();
     }
@@ -169,7 +180,7 @@ class report_customsql_edit_form extends moodleform {
                                                              'report_customsql');
                         }
                     }
-                    // Ckeck the list of users in emailto field.
+                    // Check the list of users in emailto field.
                     if ($data['runable'] !== 'manual') {
                         if ($invaliduser = report_customsql_validate_users($data['emailto'], $data['capability'])) {
                             $errors['emailto'] = $invaliduser;
@@ -186,7 +197,7 @@ class report_customsql_edit_form extends moodleform {
             }
         }
 
-        // Check querylimit in range 1 .. REPORT_CUSTOMSQL_MAX_RECORDS
+        // Check querylimit in range 1 .. REPORT_CUSTOMSQL_MAX_RECORDS.
         if (empty($data['querylimit']) || $data['querylimit'] > REPORT_CUSTOMSQL_MAX_RECORDS) {
             $errors['querylimit'] = get_string('querylimitrange', 'report_customsql', REPORT_CUSTOMSQL_MAX_RECORDS);
         }
