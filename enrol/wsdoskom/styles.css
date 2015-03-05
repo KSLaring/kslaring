@@ -1,0 +1,67 @@
+.wsdoskom_company {
+    width: 100%;
+    margin-bottom: 20px;
+    margin-top: 5px;
+    display: inline-block;
+    clear:both;
+}
+
+.sel_companies_left {
+    width:40%;
+    float:left;
+    display: inline-block;
+}
+
+.sel_companies_right {
+    width:40%;
+    display: inline-block;
+}
+
+.sel_companies_buttons {
+    min-width:15%;
+    float:left;
+    display: inline-block;
+    margin-right: 20px;
+}
+
+.sel_companies_left select,
+.sel_companies_right select {
+    width: 90%;
+}
+
+#fitem_id_scompanies div.felement.fselect,
+#fitem_id_acompanies div.felement.fselect,
+#fitem_id_add_sel div.felement.fsubmit,
+#fitem_id_add_all div.felement.fsubmit,
+#fitem_id_remove_sel div.felement.fsubmit,
+#fitem_id_remove_all div.felement.fsubmit {
+    margin-left: 5px;
+}
+
+#fitem_id_scompanies div.fitemtitle,
+#fitem_id_acompanies div.fitemtitle,
+#fitem_id_add_sel div.fitemtitle,
+#fitem_id_add_all div.fitemtitle,
+#fitem_id_remove_sel div.fitemtitle,
+#fitem_id_remove_all div.fitemtitle {
+    display:none;
+}
+
+#fitem_id_search_sel_companies div.fitemtitle,
+#fitem_id_search_add_companies div.fitemtitle {
+    text-align: left;
+    margin-left: 5px;
+    width: 70px;
+}
+
+#fitem_id_search_sel_companies div.felement.ftext,
+#fitem_id_search_add_companies div.felement.ftext {
+    margin-left: 0px;
+}
+
+input#id_add_sel,
+input#id_add_all,
+input#id_remove_sel,
+input#id_remove_all {
+    width: 110px;
+}
