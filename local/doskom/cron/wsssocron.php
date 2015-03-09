@@ -49,7 +49,7 @@ class WSDOSKOM_Cron {
             /* Save users temporary table      */
             foreach ($companies as $company) {
               if ($company->import) {
-                    self::SaveTemp_UsersToImport_PILOT($company->import,$company->id);
+                    self::SaveTemp_UsersToImport($company->import,$company->id);
                 }//if_companyImport
             }//for_companies
 
