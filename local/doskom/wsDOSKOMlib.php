@@ -83,9 +83,6 @@ class WS_DOSKOM {
         $url = null;
 
         try {
-            /* Check if another uses already exists with the same username */
-            $exists = self::otherUser($userSSO);
-            if (!$exists) {
                 /* Check if the user already exists */
                 $user_id = self::checkUser($userSSO['id'],$userSSO,$result);
                 if ($user_id) {
@@ -109,10 +106,6 @@ class WS_DOSKOM {
                 $url = self::generateResponse($user_id,$userSSO,$result);
 
                 $result['url'] = $url;
-            }else {
-                $result['error']        = 409;
-                $result['msg_error']    = $exists;
-            }//if_exists
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
@@ -366,7 +359,8 @@ class WS_DOSKOM {
             $sql = " SELECT     u.id
                      FROM       {user} u
                      WHERE      u.username  = :username
-                        AND     u.secret   != :secret ";
+                        AND     u.secret    != :secret
+                        AND		u.secret	!= '' ";
 
             /* Execute  */
             $rdo = $DB->get_record_sql($sql,$params);
