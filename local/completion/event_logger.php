@@ -186,22 +186,22 @@ function local_completion_handle_quiz_attempt_submitted($event_data) {
         /* Activity Completion          */
         $event = $DB->get_record('course_modules_completion',array('coursemoduleid' => $event_data->cmid,'userid' => $event_data->userid));
 
-            /* Get Completion Info  */
-            $completion_info = local_completion_getCompletionInfoUser($COURSE->id,$event_data->userid);
-            if ($completion_info) {
-                if ($completion_info->timecompleted) {
-                    $completion_info->timecompleted = 0;
-                    $rdo_update = $DB->update_record('course_completions',$completion_info);
+        /* Get Completion Info  */
+        $completion_info = local_completion_getCompletionInfoUser($COURSE->id,$event_data->userid);
+        if ($completion_info) {
+            if ($completion_info->timecompleted) {
+                $completion_info->timecompleted = 0;
+                $rdo_update = $DB->update_record('course_completions',$completion_info);
 
-                    /* Grade Criteria   */
-                    $completion_criteria = local_completion_getGradeCriteria($COURSE->id);
-                    $criteria_compl = $DB->get_record('course_completion_crit_compl',array('userid' => $event_data->userid,'course' => $COURSE->id,'criteriaid' => $completion_criteria));
-                    if ($criteria_compl) {
-                        /* Delete Grade */
-                        $DB->delete_records('course_completion_crit_compl',array('id' => $criteria_compl->id));
-                    }//if_Grade
-                }//completed
-            }//completion_nfo
+                /* Grade Criteria   */
+                $completion_criteria = local_completion_getGradeCriteria($COURSE->id);
+                $criteria_compl = $DB->get_record('course_completion_crit_compl',array('userid' => $event_data->userid,'course' => $COURSE->id,'criteriaid' => $completion_criteria));
+                if ($criteria_compl) {
+                    /* Delete Grade */
+                    $DB->delete_records('course_completion_crit_compl',array('id' => $criteria_compl->id));
+                }//if_Grade
+            }//completed
+        }//completion_nfo
 
         local_completion_handle_activity_completion_changed($event);
     }catch (Exception $ex) {
