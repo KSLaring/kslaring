@@ -29,6 +29,9 @@ class WSDOSKOM_Cron {
         /* Variables    */
         $companies      = null;
 
+        /* Plugins Info */
+        $plugin_info     = get_config('local_doskom');
+
         try {
             mtrace('Start WSDOSKOM Import Users '. time());
 
@@ -39,17 +42,25 @@ class WSDOSKOM_Cron {
             /*      --> Save Users          */
             /*      --> Status Users        */
             /* Call Web Service and Get the Users to Import */
+            mtrace('Start WSDOSKOM Import Users '. time());
             foreach ($companies as $company) {
-                mtrace('Start WSDOSKOM Import Users '. time());
-                $company->import = self::Call_WS($company->id);
+                if ($plugin_info->wsdoskom_end_point_production) {
+                    $company->import = self::Call_WS($company->id);
+                }else {
+                    $company->import = self::Call_WS_PILOT($company->id);
+                }//if_production
 
                 $companies[$company->id] = $company;
             }//for_companies
 
             /* Save users temporary table      */
             foreach ($companies as $company) {
-              if ($company->import) {
-                    self::SaveTemp_UsersToImport($company->import,$company->id);
+                if ($company->import) {
+                    if ($plugin_info->wsdoskom_end_point_production) {
+                        self::SaveTemp_UsersToImport($company->import,$company->id);
+                    }else {
+                        self::SaveTemp_UsersToImport_PILOT($company->import,$company->id);
+                    }//if_production
                 }//if_companyImport
             }//for_companies
 
@@ -63,7 +74,8 @@ class WSDOSKOM_Cron {
 
             return true;
         }catch (Exception $ex) {
-           return false;
+            mtrace($ex->getTraceAsString());
+            return false;
         }//try_catch
     }//cron
 
@@ -160,6 +172,61 @@ class WSDOSKOM_Cron {
             throw $ex;
         }//try_catch
     }//Call_WS
+
+    /**
+     * @param           $companyId
+     * @return          mixed|null
+     * @throws          Exception
+     *
+     * @creationDate    05/02/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Call the Web Services to get the users
+     */
+    private static function Call_WS_PILOT($companyId) {
+        /* Variables    */
+        $urlWs      = null;
+        $response   = null;
+
+        try {
+            /* Plugins Info */
+            $plugin_info     = get_config('local_doskom');
+
+            /* Build url end point  */
+            $urlWs = $plugin_info->wsdoskom_end_point . '/' . $companyId .'/personalia/no';
+
+            /* Call Web Service     */
+            $ch = curl_init($urlWs);
+            curl_setopt( $ch, CURLOPT_SSL_VERIFYPEER, false );
+            curl_setopt( $ch, CURLOPT_SSL_VERIFYHOST,2 );
+            curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
+            curl_setopt( $ch, CURLOPT_POST, false );
+            curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+                    'DOSSIER_USER: ' . $plugin_info->local_wsdoskom_username,
+                    'DOSSIER_PASSWORD: ' . $plugin_info->local_wsdoskom_password)
+            );
+
+            $response   = curl_exec( $ch );
+            curl_close( $ch );
+
+            /* Format Data  */
+            if ($response === false) {
+                return null;
+            }else {
+                $response = json_decode($response);
+                if (isset($response->status)) {
+                    mtrace($response->msg);
+                    return null;
+                }else {
+                    return $response;
+                }
+            }//if_response
+
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//Call_WS_PILOT
 
     /**
      * @param           $infoImport
@@ -404,8 +471,13 @@ class WSDOSKOM_Cron {
                 foreach($usersToImport as $userInfo) {
                     /* New User */
                     $new_user = new stdClass();
+
                     /* Username     */
-                    $new_user->username     = $userInfo->personssn;
+                    if ($userInfo->personssn) {
+                        $new_user->username     = $userInfo->personssn;
+                    }else {
+                        $new_user->username     = $userInfo->username;
+                    }//if_personssn
                     /* Password     */
                     $new_user->password     = '';
                     /* First name   */
@@ -450,88 +522,42 @@ class WSDOSKOM_Cron {
                     $new_user->mnethostid   = $CFG->mnet_localhost_id;
                     $new_user->auth         = 'saml';
                     $new_user->password     = 'not cached';
+                    $new_user->source       = 'KOMMIT';
 
-                    /* Check if another uses already exists with the same username */
-                    if (!self::Exists_OtherUser($userInfo)) {
-                        /* Check if the user already exists */
-                        /* Check if the user exists with the new version */
-                        $user_id = self::ExistsUser($new_user->secret,$userInfo->username,$userInfo->companyid);
-                        if ($user_id) {
-                            /* Update User  */
-                            $new_user->id = $user_id;
-                            $DB->update_record('user',$new_user);
+                    /* Check if the user already exists */
+                    /* Check if the user exists with the new version */
+                    $user_id = self::ExistsUser($new_user->secret,$new_user->username,$userInfo->companyid);
+                    if ($user_id) {
+                        /* Update User  */
+                        $new_user->id = $user_id;
+                        $DB->update_record('user',$new_user);
 
-                            /* Update Status    */
-                            $userInfo->status = 1;
-                            $DB->update_record('user_personalia',$userInfo);
-                        }else {
-                            /* New User     */
-                            $new_user->id = $DB->insert_record('user',$new_user);
-
-                            /* New User Company Relation    */
-                            $user_company = new stdClass();
-                            $user_company->userid = $new_user->id;
-                            $user_company->companyid = $userInfo->companyid;
-                            $user_company->timecreated = $time;
-                            $DB->insert_record('user_company',$user_company);
-
-                            /* Update Status    */
-                            $userInfo->status = 1;
-                            $DB->update_record('user_personalia',$userInfo);
-                        }//if_else_user_NewVersion
-                    }else {
-                        /* Update Message Error */
-                        $a = new stdClass();
-                        $a->username = $userInfo->username;
-                        $userInfo->msgerror = get_string('exists_username','local_doskom',$a);
-
+                        /* Update Status    */
+                        $userInfo->status = 1;
                         $DB->update_record('user_personalia',$userInfo);
-                    }//if_else_OtherUser_OldVersion
+                    }else {
+                        /* New User     */
+                        $new_user->id = $DB->insert_record('user',$new_user);
+
+                        /* New User Company Relation    */
+                        $user_company = new stdClass();
+                        $user_company->userid = $new_user->id;
+                        $user_company->companyid = $userInfo->companyid;
+                        $user_company->timecreated = $time;
+                        $DB->insert_record('user_company',$user_company);
+
+                        /* Update Status    */
+                        $userInfo->status = 1;
+                        $DB->update_record('user_personalia',$userInfo);
+                    }//if_else_user_NewVersion
                 }//for_users_import
             }//if_UsersToImport
 
         }catch (Exception $ex) {
+            mtrace($ex->getTraceAsString());
             throw $ex;
         }//try_catch
     }//ImportUsers
-
-    /**
-     * @param           $userInfo
-     * @return          bool
-     * @throws          Exception
-     *
-     * @creationDate    05/02/2015
-     * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Check if there is another user with the same username and different user id
-     */
-    private static function Exists_OtherUser($userInfo) {
-        /* Variables    */
-        global $DB;
-
-        try {
-            /* Search Criteria  */
-            $params['username'] = $userInfo->username;
-            $params['secret']   = $userInfo->companyid . '##SEP##' . $userInfo->personid;
-
-            /* SQL Instruction */
-            $sql = " SELECT     u.id
-                     FROM       {user} u
-                     WHERE      u.username  = :username
-                        AND     u.secret   != :secret ";
-
-            /* Execute  */
-            $rdo = $DB->get_record_sql($sql,$params);
-            if ($rdo) {
-                return true;
-            }else {
-                return false;
-            }//if_rdo
-        }catch (Exception $ex) {
-            throw $ex;
-        }//try_catch
-    }//Exists_OtherUser
 
     /**
      * @param               $userID

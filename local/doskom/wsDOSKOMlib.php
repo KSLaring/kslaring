@@ -83,36 +83,29 @@ class WS_DOSKOM {
         $url = null;
 
         try {
-            /* Check if another uses already exists with the same username */
-            $exists = self::otherUser($userSSO);
-            if (!$exists) {
-                /* Check if the user already exists */
-                $user_id = self::checkUser($userSSO['id'],$userSSO,$result);
-                if ($user_id) {
-                    /* Update User  */
-                    self::updateUser($user_id,$userSSO,$result);
-                }else {
-                    /* Create New User  */
-                    $user_id = self::createUser($userSSO,$result);
-                }//if_user_exist
-
-                /* Assign Rol   */
-                self::assignRol($user_id,$userSSO['UserRoles'],$result);
-
-                /* Check if the user has been enrolled or not   */
-                $action = strtolower($userSSO['RedirectPage']);
-                if (($action == ENROL) && ($userSSO['course'])) {
-                    self::assignRolCourse($user_id,$userSSO['companyId'],$userSSO['UserRoles'],$userSSO['course'],$result);
-                }//if_Action_enrol
-
-                /* We need to generate  the URL */
-                $url = self::generateResponse($user_id,$userSSO,$result);
-
-                $result['url'] = $url;
+            /* Check if the user already exists */
+            $user_id = self::checkUser($userSSO['id'],$userSSO,$result);
+            if ($user_id) {
+                /* Update User  */
+                self::updateUser($user_id,$userSSO,$result);
             }else {
-                $result['error']        = 409;
-                $result['msg_error']    = $exists;
-            }//if_exists
+                /* Create New User  */
+                $user_id = self::createUser($userSSO,$result);
+            }//if_user_exist
+
+            /* Assign Rol   */
+            self::assignRol($user_id,$userSSO['UserRoles'],$result);
+
+            /* Check if the user has been enrolled or not   */
+            $action = strtolower($userSSO['RedirectPage']);
+            if (($action == ENROL) && ($userSSO['course'])) {
+                self::assignRolCourse($user_id,$userSSO['companyId'],$userSSO['UserRoles'],$userSSO['course'],$result);
+            }//if_Action_enrol
+
+            /* We need to generate  the URL */
+            $url = self::generateResponse($user_id,$userSSO,$result);
+
+            $result['url'] = $url;
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
@@ -366,7 +359,8 @@ class WS_DOSKOM {
             $sql = " SELECT     u.id
                      FROM       {user} u
                      WHERE      u.username  = :username
-                        AND     u.secret   != :secret ";
+                        AND     u.secret    != :secret
+                        AND		u.secret	!= '' ";
 
             /* Execute  */
             $rdo = $DB->get_record_sql($sql,$params);

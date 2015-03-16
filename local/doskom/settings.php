@@ -29,4 +29,10 @@ if ($hassiteconfig) {
     $settings->add(new admin_setting_configtext('local_doskom/wsdoskom_end_point',get_string('end_point','local_doskom'),'','',PARAM_TEXT,50));
     $settings->add(new admin_setting_configpasswordunmask('local_doskom/local_wsdoskom_username',get_String('username'),'',''));
     $settings->add(new admin_setting_configpasswordunmask('local_doskom/local_wsdoskom_password',get_string('password'),'',''));
+
+
+    /* Production or Pilot Site */
+    $settings->add(new admin_setting_configcheckbox('local_doskom/wsdoskom_end_point_production',
+                                                    get_string('end_point_production','local_doskom'),
+                                                    get_string('end_point_production_desc','local_doskom'),1));
 }//if
