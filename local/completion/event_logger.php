@@ -9,8 +9,10 @@
  * @creationDate    22/04/2014
  * @author          eFaktor     (fbv)
  *
+ * @updateDate      09/02/2015
+ * @author          eFaktor     (fbv)
+ *
  */
-
 require_once($CFG->dirroot . '/completion/cron.php');
 require_once($CFG->dirroot . '/lib/completionlib.php');
 require_once($CFG->dirroot . '/completion/completion_completion.php');
@@ -26,7 +28,6 @@ require_once $CFG->dirroot.'/grade/querylib.php';
 require_once($CFG->libdir.'/clilib.php');
 require_once($CFG->libdir.'/cronlib.php');
 
-
 /**
  * @param           $event_data
  * @throws          Exception
@@ -39,14 +40,11 @@ require_once($CFG->libdir.'/cronlib.php');
  */
 function local_completion_handle_course_completion_updated($event_data) {
     /* Variables    */
-    global $COURSE,$DB,$SESSION;
-    $rdo_update         = null;
+    global $COURSE,$DB;
+    $completed_dependencies = true;
+    $to_completed           = null;
 
     try {
-        if (!isset($SESSION->send)) {
-            $SESSION->send = false;
-        }
-
         local_completion_cron_mark_started($COURSE->id);
 
         $completion_criteria_date = new completion_criteria_date();
@@ -61,37 +59,51 @@ function local_completion_handle_course_completion_updated($event_data) {
         $completion_criteria_grade->cron();
         $completion_criteria_course->cron();
 
+        /* To complete      */
+        $to_completed = local_completion_getCriteriasToComplete($COURSE->id);
+        if ($to_completed) {
+            if ($to_completed->criterias) {
+                /* Get Users Enrolled    */
+                $users_enrol = get_enrolled_users(context_course::instance($COURSE->id));
+                foreach ($users_enrol as $user) {
+                    /* User Completions */
+                    $user_completions = local_completion_getCompletionUser($COURSE->id,$user->id);
 
-        $users_enrol = get_enrolled_users(context_course::instance($COURSE->id));
-        foreach ($users_enrol as $user) {
-            /* To complete      */
-            $to_completed = local_completion_getCriteriasToComplete($COURSE->id);
-            /* User Completions */
-            $user_completions = local_completion_getCompletionUser($COURSE->id,$user->id);
+                    /* Completed Criteria   */
+                    if ($to_completed->criterias == $user_completions) {
+                        /* Info User Completion     */
+                        $completion_info = local_completion_getCompletionInfoUser($COURSE->id,$event_data->userid);
+                        /* Check Completed Dependencies   */
+                        if ($to_completed->dependencies) {
+                            $completed_dependencies = local_completion_CheckCompleted_CoursesDependencies($event_data->userid,$to_completed->dependencies);
+                        }
 
-            if ($to_completed == $user_completions) {
-                /* Info User Completion     */
-                $completion_info = local_completion_getCompletionInfoUser($COURSE->id,$event_data->userid);
-                /* Update Completion Date   */
-                if ($completion_info) {
-                    if ($completion_info->reaggregate) {
-                        $completion_info->timecompleted = $completion_info->reaggregate;
-                        $completion_info->reaggregate = 0;
-                        $rdo_update = $DB->update_record('course_completions',$completion_info);
-                    }//if_completion_reaggregate
-                }//if_completion_info
+                        if ($completion_info) {
+                            if ($completed_dependencies) {
+                                /* Completed    */
+                                if ($completion_info->reaggregate) {
+                                    $completion_info->timecompleted = $completion_info->reaggregate;
+                                    $completion_info->reaggregate = 0;
 
-                /* Call Web Service */
-                if ($rdo_update) {
-                    if (!$SESSION->send) {
-                        local_completion_sendCompletionToDossier($completion_info);
-                        $SESSION->send = true;
-                    }else {
-                        unset($SESSION->send);
-                    }
-                }//if_rdo_update
-            }//if_to_completed
-        }//for_users
+                                    $rdo_update = $DB->update_record('course_completions',$completion_info);
+                                    /* Call Web Service */
+                                    if ($rdo_update) {
+                                        local_completion_sendCompletionToDossier($completion_info);
+                                    }//if_rdo_update
+                                }//if_completion_reaggregate
+                            }else {
+                                /* Not Completed    */
+                                $completion_info->timecompleted = null;
+                                $completion_info->reaggregate   = 0;
+
+                                $rdo_update = $DB->update_record('course_completions',$completion_info);
+                            }//if_dependencies
+                        }//if_completion_info
+                    }//if_criterias
+
+                }//for_users
+            }//if_toCompleted_criterias
+        }//if_toCompleted
     }catch (Exception $ex) {
         throw $ex;
     }//try_catch
@@ -110,55 +122,73 @@ function local_completion_handle_course_completion_updated($event_data) {
 function local_completion_handle_activity_completion_changed($event_data) {
     /* Variables    */
     global $COURSE,$DB,$SESSION;
-    $rdo_update         = null;
+    $completed_dependencies = true;
+    $to_completed           = null;
 
     try {
         if (!isset($SESSION->send)) {
             $SESSION->send = false;
         }
 
-        /* Activities to complete   */
         $to_completed = local_completion_getCriteriasToComplete($COURSE->id);
 
         if ($to_completed) {
-            local_completion_cron_mark_started($COURSE->id);
+            if ($to_completed->criterias) {
+                local_completion_cron_mark_started($COURSE->id);
 
-            /* Get User Completions */
-            $user_completions = local_completion_getCompletionUser($COURSE->id,$event_data->userid);
+                /* User Completions */
+                $user_completions = local_completion_getCompletionUser($COURSE->id,$event_data->userid);
 
-            if ($to_completed == $user_completions) {
-                /* Completion Criteria Date Cron        */
-                local_completion_criteria_date_cron($COURSE->id,$event_data->userid);
-                /* Completion Criteria Activity Cron    */
-                local_completion_criteria_activity_cron($COURSE->id,$event_data->userid);
-                /* Completion Criteria Duration Cron    */
-                local_completion_criteria_duration_cron($COURSE->id,$event_data->userid);
-                /* Completion Criteria Grade Cron       */
-                local_completion_criteria_grade_cron($COURSE->id,$event_data->userid);
-                /* Completion Criteria Course           */
-                local_completion_criteria_course_cron($COURSE->id,$event_data->userid);
+                if ($to_completed->criterias == $user_completions) {
+                    /* Completion Criteria Date Cron        */
+                    local_completion_criteria_date_cron($COURSE->id,$event_data->userid);
+                    /* Completion Criteria Activity Cron    */
+                    local_completion_criteria_activity_cron($COURSE->id,$event_data->userid);
+                    /* Completion Criteria Duration Cron    */
+                    local_completion_criteria_duration_cron($COURSE->id,$event_data->userid);
+                    /* Completion Criteria Grade Cron       */
+                    local_completion_criteria_grade_cron($COURSE->id,$event_data->userid);
+                    /* Completion Criteria Course           */
+                    local_completion_criteria_course_cron($COURSE->id,$event_data->userid);
 
-                /* Update Completion Date   */
-                /* Info User Completion     */
-                $completion_info = local_completion_getCompletionInfoUser($COURSE->id,$event_data->userid);
-                if ($completion_info) {
-                    if ($completion_info->reaggregate) {
-                        $completion_info->timecompleted = $completion_info->reaggregate;
-                        $completion_info->reaggregate = 0;
-                        $rdo_update = $DB->update_record('course_completions',$completion_info);
-                    }//if_completion_reaggregate
-                }//if_completion_info
-
-                /* Call Web Service */
-                if ($rdo_update) {
-                    if (!$SESSION->send) {
-                        local_completion_sendCompletionToDossier($completion_info);
-                        $SESSION->send = true;
-                    }else {
-                        unset($SESSION->send);
+                    /* Get Completion Info  */
+                    $completion_info = local_completion_getCompletionInfoUser($COURSE->id,$event_data->userid);
+                    /* Check Completed Dependencies   */
+                    if ($to_completed->dependencies) {
+                        $completed_dependencies = local_completion_CheckCompleted_CoursesDependencies($event_data->userid,$to_completed->dependencies);
                     }
-                }//if_rdo_update
-            }//to_completed = user_completions
+
+                    if ($completion_info) {
+                        if ($completed_dependencies) {
+                            /* Completed    */
+                            if ($completion_info->reaggregate) {
+                                $completion_info->timecompleted = $completion_info->reaggregate;
+                                $completion_info->reaggregate = 0;
+
+                                $rdo_update = $DB->update_record('course_completions',$completion_info);
+
+                                /* Call Web Service */
+                                if ($rdo_update) {
+                                    if (!$SESSION->send) {
+                                        local_completion_sendCompletionToDossier($completion_info);
+                                        $SESSION->send = true;
+                                    }else {
+                                        unset($SESSION->send);
+                                    }
+                                }//if_rdo_update
+                            }//if_completion_reaggregate
+                        }else {
+                            /* Not Completed    */
+                            $completion_info->timecompleted = null;
+                            $completion_info->reaggregate   = 0;
+
+                            $rdo_update = $DB->update_record('course_completions',$completion_info);
+                        }//if_dependencies
+                    }//if_completion_info
+
+                }//to_completed = user_completions
+            }//if_toCompleted_criterias
+
         }//if_to_compelted
     }catch (Exception $ex) {
         throw $ex;
@@ -179,122 +209,35 @@ function local_completion_handle_quiz_attempt_submitted($event_data) {
     /* Variables    */
     global $DB,$COURSE;
     $completion_info    = null;
-    $expiration_period  = null;
-    $expiration_date    = null;
 
     try {
         /* Activity Completion          */
         $event = $DB->get_record('course_modules_completion',array('coursemoduleid' => $event_data->cmid,'userid' => $event_data->userid));
 
-            /* Get Completion Info  */
-            $completion_info = local_completion_getCompletionInfoUser($COURSE->id,$event_data->userid);
-            if ($completion_info) {
-                if ($completion_info->timecompleted) {
-                    $completion_info->timecompleted = 0;
-                    $rdo_update = $DB->update_record('course_completions',$completion_info);
+        /* Get Completion Info  */
+        $completion_info = local_completion_getCompletionInfoUser($COURSE->id,$event_data->userid);
+        if ($completion_info) {
+            if ($completion_info->timecompleted) {
+                $completion_info->timecompleted = null;
+                $completion_info->reaggregate   = 0;
 
-                    /* Grade Criteria   */
-                    $completion_criteria = local_completion_getGradeCriteria($COURSE->id);
-                    $criteria_compl = $DB->get_record('course_completion_crit_compl',array('userid' => $event_data->userid,'course' => $COURSE->id,'criteriaid' => $completion_criteria));
-                    if ($criteria_compl) {
-                        /* Delete Grade */
-                        $DB->delete_records('course_completion_crit_compl',array('id' => $criteria_compl->id));
-                    }//if_Grade
-                }//completed
-            }//completion_nfo
+                $rdo_update = $DB->update_record('course_completions',$completion_info);
+
+                /* Grade Criteria   */
+                $completion_criteria = local_completion_getGradeCriteria($COURSE->id);
+                $criteria_compl = $DB->get_record('course_completion_crit_compl',array('userid' => $event_data->userid,'course' => $COURSE->id,'criteriaid' => $completion_criteria));
+                if ($criteria_compl) {
+                    /* Delete Grade */
+                    $DB->delete_records('course_completion_crit_compl',array('id' => $criteria_compl->id));
+                }//if_Grade
+            }//completed
+        }//completion_nfo
 
         local_completion_handle_activity_completion_changed($event);
     }catch (Exception $ex) {
         throw $ex;
     }//try_catch
 }//local_completion_handle_quiz_attempt_submitted
-
-/**
- * @param           $user_id
- * @param           $expiration_period
- * @param           $completion_info
- * @throws          Exception
- *
- * @creationDate    10/02/2015
- * @author          eFaktor     (fbv)
- *
- * Description
- * Update the status for the expired courses.
- */
-function local_completion_UpdateStatusCourseExpired($user_id,$expiration_period,&$completion_info) {
-    /* Variables */
-    global $COURSE,$DB;
-    $expiration_date    = null;
-
-    try {
-        if ($completion_info) {
-            if ($completion_info->timecompleted) {
-                /* Check if the course has expired  */
-                $expiration_date = $completion_info->timecompleted;
-                $ts = strtotime($expiration_period  . ' month', $expiration_date);
-                if ($ts < time()) {
-                    $completion_info->timecompleted = 0;
-                    $rdo_update = $DB->update_record('course_completions',$completion_info);
-
-                    /* Grade Criteria   */
-                    $completion_criteria = local_completion_getGradeCriteria($COURSE->id);
-                    $criteria_compl = $DB->get_record('course_completion_crit_compl',array('userid' => $user_id,'course' => $COURSE->id,'criteriaid' => $completion_criteria));
-                    if ($criteria_compl) {
-                        /* Delete Grade */
-                        $DB->delete_records('course_completion_crit_compl',array('id' => $criteria_compl->id));
-                    }//if_Grade
-                }
-            }//completed_expiration_period
-        }//completion_info
-    }catch (Exception $ex) {
-        throw $ex;
-    }//try_catch
-}//local_completion_UpdateStatusCourseExpired
-
-/**
- * @param           $course_id
- * @return          null
- * @throws          Exception
- *
- * @creationDate    09/02/2015
- * @author          eFaktor     (fbv)
- *
- * Description
- * Get the expiration period connected with the course
- */
-function local_completion_getExpirationPeriod($course_id) {
-    /* Variables    */
-    global $DB;
-
-    try {
-        /* First, check if exists the table */
-        if (in_array('report_gen_outcome_exp',$DB->get_tables())) {
-            /* Search Criteria  */
-            $params = array();
-            $params['course'] = $course_id;
-
-            /* SQL Instruction  */
-            $sql = " SELECT		goc.id,
-                                goc.outcomeid,
-                                oex.expirationperiod
-                    FROM		{grade_outcomes_courses}		goc
-                      JOIN	    {report_gen_outcome_exp}		oex		ON oex.outcomeid = goc.outcomeid
-                    WHERE		goc.courseid = :course ";
-
-            /* Execute  */
-            $rdo = $DB->get_record_sql($sql,$params);
-            if ($rdo) {
-                return $rdo->expirationperiod;
-            }else {
-                return null;
-            }//if_rdo
-        }else {
-            return null;
-        }//if_else
-    }catch (Exception $ex) {
-        throw $ex;
-    }//try_catch
-}//local_completion_getExpirationPeriod
 
 /**
  * @param           $course_id
@@ -332,6 +275,7 @@ function local_completion_getGradeCriteria($course_id) {
         throw $ex;
     }//try_catch
 }//local_completion_getGradeCompletion
+
 
 /**
  * @param           $course_id
@@ -883,9 +827,9 @@ function local_completion_getCompletionInfoUser($course_id,$user_id) {
                  WHERE  userid = :user_id
                     AND course = :course_id ";
 
-    /* Execute  */
+        /* Execute  */
         $rdo = $DB->get_record_sql($sql,$params);
-    if ($rdo) {
+        if ($rdo) {
             return $rdo;
         }else {
             return false;
@@ -905,10 +849,16 @@ function local_completion_getCompletionInfoUser($course_id,$user_id) {
  *
  * Description
  * Get all the activities to complete the course.
+ *
+ * ToCompleted
+ *                  - Course
+ *                  - criterias
+ *                  - dependencies
  */
 function local_completion_getCriteriasToComplete($course_id) {
     /* Variables    */
     global $DB;
+    $toCompleted    = null;
 
     try {
         /* Search Criteria  */
@@ -916,7 +866,9 @@ function local_completion_getCriteriasToComplete($course_id) {
         $params['course_id']   = $course_id;
 
         /* SQL Instruction  */
-        $sql = " SELECT 	GROUP_CONCAT(DISTINCT moduleinstance ORDER BY moduleinstance SEPARATOR ',') as 'criterias'
+        $sql = " SELECT 	course,
+                            GROUP_CONCAT(DISTINCT moduleinstance ORDER BY moduleinstance SEPARATOR ',') as 'criterias',
+                            GROUP_CONCAT(DISTINCT courseinstance ORDER BY courseinstance SEPARATOR ',') as 'course_dependencies'
                  FROM	  	{course_completion_criteria}
                  WHERE  	course = :course_id
                  AND        gradepass IS NULL";
@@ -924,11 +876,14 @@ function local_completion_getCriteriasToComplete($course_id) {
 
         /* Execute  */
         $rdo = $DB->get_record_sql($sql,$params);
-        if ($rdo->criterias) {
-            return $rdo->criterias;
-        }else {
-            return false;
-    }//if_rdo
+        if ($rdo) {
+            $toCompleted = new stdClass();
+            $toCompleted->course        = $rdo->course;
+            $toCompleted->criterias     = $rdo->criterias;
+            $toCompleted->dependencies  = $rdo->course_dependencies;
+        }//if_rdo
+
+        return $toCompleted;
     }catch (Exception $ex) {
         throw $ex;
     }//try_catch
@@ -947,7 +902,7 @@ function local_completion_getCriteriasToComplete($course_id) {
  * Get all the activities have been completed by the user
  */
 function local_completion_getCompletionUser($course_id,$user_id) {
-    /* Varaibles    */
+    /* Variables    */
     global $DB;
 
     try {
@@ -978,4 +933,50 @@ function local_completion_getCompletionUser($course_id,$user_id) {
         throw $ex;
     }//try_catch
 }//local_completion_getCompletionUser
+
+/**
+ * @param           $user_id
+ * @param           $dependencies
+ * @return          bool
+ * @throws          Exception
+ *
+ * @creationDate    16/03/2015
+ * @author          eFaktor     (fbv)
+ *
+ * Description
+ * Check if the user has completed the course dependencies
+ */
+function local_completion_CheckCompleted_CoursesDependencies($user_id,$dependencies) {
+    /* Variables    */
+    global $DB;
+
+    try {
+        /* Search Criteria  */
+        $params = array();
+        $params['user_id']      = $user_id;
+
+        /* SQL Instruction  */
+        $sql = " SELECT		id
+                 FROM		{course_completions}
+                 WHERE		course	IN ($dependencies)
+                    AND		userid	= :user_id
+                    AND		(timecompleted IS NULL
+                             OR
+                             timecompleted = 0) ";
+
+        /* Execute  */
+        $rdo = $DB->get_records_sql($sql,$params);
+        if ($rdo) {
+            /* Not Completed    */
+            return false;
+        }else {
+            /* Completed        */
+            return true;
+        }//if_else_rdo
+    }catch (Exception $ex) {
+        throw $ex;
+    }//try_catch
+}//local_completion_CheckCompleted_CoursesDependencies
+
+
 
