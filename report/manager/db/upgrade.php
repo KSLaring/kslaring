@@ -82,7 +82,7 @@ function xmldb_report_manager_upgrade($old_version) {
             $table_outcome_expiration->add_key('outcomeid',XMLDB_KEY_FOREIGN,array('outcomeid'), 'grade_outcomes', array('id'));
             //Adding Index
             $table_outcome_expiration->add_index('expirationperiod',XMLDB_INDEX_NOTUNIQUE,array('expirationperiod'));
-            
+
             $db_man->create_table($table_outcome_expiration);
         }//if_table_not_exits
 

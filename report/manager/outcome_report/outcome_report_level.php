@@ -48,6 +48,12 @@ $PAGE->navbar->add(get_string('level_report','report_manager',$report_level),$ur
 
 /* ADD requiere_capibility */
 switch ($report_level) {
+    case 0:
+        if (!has_capability('report/manager:viewlevel0', $site_context)) {
+            print_error('nopermissions', 'error', '', 'report/manager:viewlevel1');
+        }
+
+        break;
     case 1:
         if (!has_capability('report/manager:viewlevel1', $site_context)) {
             print_error('nopermissions', 'error', '', 'report/manager:viewlevel1');

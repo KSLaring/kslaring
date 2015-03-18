@@ -1,33 +1,35 @@
 <?php
-
 /**
- * Report Cometence Manager - Course report.
+ * Report Competence Manager - Course report.
  *
  * Description
  *
  * @package     report
- * @subpackage  manager
+ * @subpackage  manager/course_report
  * @copyright   2010 eFaktor
  * @licence     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  *
  * @updateDate  06/09/2012
  * @author      eFaktor     (fbv)
  *
+ * @updateDate  17/03/2015
+ * @author      rFaktor     (fbv)
+ *
  */
 
 require_once('../../../config.php');
-require_once( '../locallib.php');
+require_once( 'courserptlib.php');
 require_once($CFG->libdir . '/adminlib.php');
-require_once($CFG->libdir . '/gradelib.php');
+
+require_login();
 
 /* Params */
-require_login();
-$return_url = new moodle_url('/report/manager/index.php');
 $url        = new moodle_url('/report/manager/course_report/course_report.php');
+$return_url = new moodle_url('/report/manager/index.php');
 
-/* Start the page */
 $site_context = CONTEXT_SYSTEM::instance();
-//HTTPS is required in this page when $CFG->loginhttps enabled
+$site = get_site();
+
 $PAGE->https_required();
 $PAGE->set_context($site_context);
 
@@ -48,14 +50,16 @@ if (empty($CFG->loginhttps)) {
     $secure_www_root = str_replace('http:','https:',$CFG->wwwroot);
 }//if_security
 
-$PAGE->verify_https_required();
-
 /* Clean Cookies */
+setcookie('parentLevelZero',0);
 setcookie('parentLevelOne',0);
 setcookie('parentLevelTwo',0);
 setcookie('parentLevelTree',0);
 setcookie('courseReport',0);
 setcookie('outcomeReport',0);
+
+/* Start the page */
+$PAGE->verify_https_required();
 
 /* Print Header */
 echo $OUTPUT->header();
@@ -68,8 +72,7 @@ require('../tabs.php');
 echo $OUTPUT->heading(get_string('course_report', 'report_manager'));
 
 /* Report Levels Links  */
-echo '<h5>' . get_string('underconstruction','report_manager') . '</h5>';
-//report_manager_print_report_page($current_tab,$site_context);
+course_report::GetLevelLink_ReportPage($current_tab,$site_context);
 
-/* Print Footer */
+/* Print Fo>r */
 echo $OUTPUT->footer();

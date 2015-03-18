@@ -29,7 +29,7 @@ $expiration_id = optional_param('expid', 0, PARAM_INT);
 
 $url        = new moodle_url('/report/manager/outcome/edit_outcome.php',array('id' => $outcome_id));
 $return     = new moodle_url('/report/manager/index.php');
-$return_url     = new moodle_url('/report/manager/outcome/outcome.php');
+$return_url = new moodle_url('/report/manager/outcome/outcome.php');
 
 /* Start the page */
 $site_context = CONTEXT_SYSTEM::instance();
