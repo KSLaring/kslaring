@@ -117,6 +117,169 @@ class RGException extends Exception {
 /*******************************/
 
 /**
+ * @param           $company
+ * @return          bool
+ * @throws          Exception
+ *
+ * @creationDate    17/03/2015
+ * @author          eFaktor     (fbv)
+ *
+ * Description
+ * Check if it is a public or private company
+ */
+function report_manager_IsPublic($company) {
+    /* Variables    */
+    global $DB;
+
+    try {
+        /* Get Public Field */
+        $rdo = $DB->get_record('report_gen_companydata',array('id' => $company),'public');
+        if ($rdo->public) {
+            return true;
+        }else {
+            return false;
+        }//if_else
+    }catch (Exception $ex) {
+        throw $ex;
+    }//try_catch
+}//IsPublic
+
+/**
+ * @param           $options
+ * @throws          Exception
+ *
+ * @creationDate    28/01/2015
+ * @author          eFaktor     (fbv)
+ *
+ * Description
+ * Get the list of generics job roles
+ */
+function report_manager_GetJobRoles_Generics(&$options) {
+    /* Variables    */
+    global $DB;
+
+    try {
+        /* SQL Instruction  */
+        $sql = " SELECT		DISTINCT      jr.id,
+                                          jr.name,
+                                          jr.industrycode
+                 FROM		{report_gen_jobrole}				jr
+                    JOIN	{report_gen_jobrole_relation}		jr_rel	ON 	jr_rel.jobroleid = jr.id
+                                                                        AND jr_rel.levelzero IS NULL
+                 ORDER BY jr.industrycode, jr.name ";
+
+        /* Execute  */
+        $rdo = $DB->get_records_sql($sql);
+        if ($rdo) {
+            foreach ($rdo as $instance) {
+                $options[$instance->id] = $instance->industrycode . ' - ' . $instance->name;
+            }//for_each
+        }//if_rdo
+    }catch (Exception $ex) {
+        throw $ex;
+    }//try_catch
+}//GetJobRoles_Generics
+
+/**
+ * @param           $options
+ * @param           $level
+ * @param           $levelZero
+ * @param           $levelOne
+ * @param           $levelTwo
+ * @param           $levelThree
+ * @throws          Exception
+ *
+ * @creationDate    28/01/2015
+ * @author          eFaktor     (fbv)
+ *
+ * Description
+ * Get the job roles connected with the levels
+ */
+function report_manager_GetJobRoles_Hierarchy(&$options,$level,$levelZero,$levelOne=null,$levelTwo=null, $levelThree=null) {
+    /* Variables    */
+    global $DB;
+
+    try {
+        /* SQL Instruction  */
+        $sql = " SELECT		DISTINCT      jr.id,
+                                          jr.name,
+                                          jr.industrycode
+                 FROM		{report_gen_jobrole}				jr
+                    JOIN	{report_gen_jobrole_relation}		jr_rel	ON 	jr_rel.jobroleid = jr.id ";
+
+        switch ($level) {
+            case 0:
+                $sql .= "  AND  jr_rel.levelzero    IN ($levelZero) ";
+
+                break;
+            case 1:
+                $sql .= "   AND  jr_rel.levelzero    IN ($levelZero)
+                            AND jr_rel.levelone     IN ($levelOne)
+                        ";
+
+                break;
+            case 2:
+                $sql .= "  AND  jr_rel.levelzero    IN ($levelZero)
+                           AND  jr_rel.levelone     IN ($levelOne)
+                           AND  jr_rel.leveltwo     IN ($levelTwo)
+                        ";
+                break;
+            case 3:
+                $sql .= "  AND (
+                                (jr_rel.levelzero    IN ($levelZero)
+                                 AND
+                                 jr_rel.levelone     IN ($levelOne)
+                                 AND
+                                 jr_rel.leveltwo     IN ($levelTwo)
+                                 AND
+                                 jr_rel.levelthree   IN ($levelThree)
+                                )
+                                OR
+                                (jr_rel.levelzero    IN ($levelZero)
+                                 AND
+                                 jr_rel.levelone     IN ($levelOne)
+                                 AND
+                                 jr_rel.leveltwo     IN ($levelTwo)
+                                 AND
+                                 jr_rel.levelthree   IS NULL
+                                )
+                                OR
+                                (jr_rel.levelzero    IN ($levelZero)
+                                 AND
+                                 jr_rel.levelone     IN ($levelOne)
+                                 AND
+                                 jr_rel.leveltwo     IS NULL
+                                 AND
+                                 jr_rel.levelthree   IS NULL
+                                )
+                                OR
+                                (jr_rel.levelzero    IN ($levelZero)
+                                 AND
+                                 jr_rel.levelone     IS NULL
+                                 AND
+                                 jr_rel.leveltwo     IS NULL
+                                 AND
+                                 jr_rel.levelthree   IS NULL
+                                )
+                               ) ";
+                break;
+        }//switch_level
+
+        $sql .= " ORDER BY jr.industrycode, jr.name ";
+
+        /* Execute  */
+        $rdo = $DB->get_records_sql($sql);
+        if ($rdo) {
+            foreach ($rdo as $instance) {
+                $options[$instance->id] = $instance->industrycode . ' - ' . $instance->name;
+            }//for_each
+        }//if_rdo
+    }catch (Exception $ex) {
+        throw $ex;
+    }//try_Catch
+}//GetJobRoles_Hierarchy
+
+/**
  * @param           $user_id
  * @return          null
  * @throws          Exception

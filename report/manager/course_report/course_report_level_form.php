@@ -1,4 +1,21 @@
 <?php
+/**
+ * Report Competence Manager - Course report Level.
+ *
+ * Description
+ *
+ * @package     report
+ * @subpackage  manager/course_report
+ * @copyright   2010 eFaktor
+ * @licence     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ *
+ * @updateDate  14/09/2012
+ * @author      eFaktor     (fbv)
+ *
+ * @updateDate  17/03/2015
+ * @author      eFaktor     (fbv)
+ *
+ */
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -6,104 +23,71 @@ require_once('../../../config.php');
 require_once('../locallib.php');
 require_once($CFG->libdir . '/adminlib.php');
 require_once($CFG->libdir.'/formslib.php');
-$PAGE->requires->js('/report/manager/js/libdev.js');
+$PAGE->requires->js('/report/manager/js/manager.js');
 
 /* Course Report Level - Form  */
 class manager_course_report_level_form extends moodleform {
     function definition() {
         /* General Settings */
-        $level_select_attr = array(
-            'class' => REPORT_MANAGER_COMPANY_STRUCTURE_LEVEL,
-            'size' => '5'
-        );
-        $button_array_attr = array(
-            'class' => 'submit-btn'
-        );
+        $level_select_attr = array('class' => REPORT_MANAGER_COMPANY_STRUCTURE_LEVEL,
+                                   'size' => '10'
+                                  );
 
-        $m_form = $this->_form;
-        list($report_level) = $this->_customdata;
+        $form = $this->_form;
+        list($report_level,$my_hierarchy) = $this->_customdata;
 
-        /* Course List */
-        $m_form->addElement('header', 'course', get_string('course'));
-        $m_form->addElement('html', '<div class="level-wrapper">');
-            $m_form->addElement('select',
-                                REPORT_MANAGER_COURSE_LIST,
-                                get_string('select_course_to_report', 'report_manager'),
-                                report_manager_get_course_list(),
-                                'onchange=saveCourse("course_list")');
-        if (isset($_COOKIE['courseReport'])) {
-            $m_form->setDefault(REPORT_MANAGER_COURSE_LIST,$_COOKIE['courseReport']);
-        }//if_cookie
-        $m_form->addElement('html', '</div>');
+        /* Course List  */
+        $form->addElement('header', 'course', get_string('course'));
+        $form->addElement('html', '<div class="level-wrapper">');
+            $options = course_report::Get_CoursesList();
+            $form->addElement('select',REPORT_MANAGER_COURSE_LIST,get_string('select_course_to_report', 'report_manager'),$options);
+            if (isset($_COOKIE['courseReport']) && ($_COOKIE['courseReport'])) {
+                $form->setDefault(REPORT_MANAGER_COURSE_LIST,$_COOKIE['courseReport']);
+            }else {
+                $form->setDefault(REPORT_MANAGER_COURSE_LIST,0);
+            }//if_COKKIE_COURESE
+        $form->addElement('html', '</div>');
 
-        /* Levels */
-        $m_form->addElement('header', 'company', get_string('company', 'report_manager'));
-        $m_form->setExpanded('company',true);
-        for ($i = 1; $i <= $report_level; $i++) {
-            /* Attributes */
-            $name_select = REPORT_MANAGER_COMPANY_STRUCTURE_LEVEL . $i;
-            $title = get_string('select_company_structure_level', 'report_manager', $i);
-            $event = $this->getEvent($i,$report_level);
+        /* Company Hierarchy - Levels */
+        $form->addElement('header', 'company', get_string('company', 'report_manager'));
+        $form->setExpanded('company',true);
+        for ($i = 0; $i <= $report_level; $i++) {
+            $this->AddLevel($form,$i,$my_hierarchy);
+        }//for_levels
 
-            /* List */
-            $options = $this->getCompanies_Level($i);
-
-            /* Select */
-            $m_form->addElement('html', '<div class="level-wrapper">');
-                $select = &$m_form->addElement('select',$name_select, $title,$options,$event);
-                /* Multiple Selection - Level 3 */
-                if ($i == 3) {
-                    $select->setMultiple(true);
-                    $select->setSize(10);
-                    $m_form->addElement('html', '<p class="helptext">' . get_string('help_multi_select', 'report_manager') . '</p>');
-                }
-            $m_form->addElement('html', '</div>');
-
-            /* Default Values */
-            $m_form->setDefault($name_select,$this->getDefault_Value($i));
-
-            /* Disabled Selects */
-            if ($i >1) {
-                $name_parent = REPORT_MANAGER_COMPANY_STRUCTURE_LEVEL . ($i-1);
-                $m_form->disabledIf($name_select,$name_parent,'eq',0);
-            }//if_>_1
-        }//for
-
-        /* Job Role */
-        $m_form->addElement('header', 'job_role', get_string('job_role', 'report_manager'));
-        $m_form->setExpanded('job_role',true);
-        $m_form->addElement('html', '<div class="level-wrapper">');
-            $select =& $m_form->addElement('select',
-                                           REPORT_MANAGER_JOB_ROLE_LIST,
-                                           get_string('select_job_role', 'report_manager'),
-                                           report_manager_get_job_role_list(),
-                                           $level_select_attr);
-
+        /* Job Roles    */
+        $options    = array();
+        $options[0] = get_string('select_level_list','report_manager');
+        $form->addElement('header', 'job_role', get_string('job_role', 'report_manager'));
+        $form->setExpanded('job_role',true);
+        $form->addElement('html', '<div class="level-wrapper">');
+            $select =& $form->addElement('select',REPORT_MANAGER_JOB_ROLE_LIST,get_string('select_job_role', 'report_manager'),$options,$level_select_attr);
             $select->setMultiple(true);
-            $m_form->addElement('html', '<p class="helptext">' . get_string('help_multi_select', 'report_manager') . '</p>');
-        $m_form->addElement('html', '</div>');
+            $form->addElement('html', '<p class="helptext">' . get_string('help_multi_select', 'report_manager') . '</p>');
+            $this->Add_JobRoleLevel($form,$report_level);
+        $form->addElement('html', '</div>');
 
-        /* Reports */
-        $m_form->addElement('header', 'report', get_string('report'));
-        $m_form->setExpanded('report',true);
-        $m_form->addElement('html', '<div class="level-wrapper">');
-            $m_form->addElement('select',
-                                REPORT_MANAGER_COMPLETED_LIST,
-                                get_string('completed_list', 'report_manager'),
-                                report_manager_get_completed_list());
-            $m_form->setDefault(REPORT_MANAGER_COMPLETED_LIST, 4);
+        /* Reports - Screen/Excel   */
+        $form->addElement('header', 'report', get_string('report'));
+        $form->setExpanded('report',true);
+        $form->addElement('html', '<div class="level-wrapper">');
+            /* Completed List   */
+            $options = report_manager_get_completed_list();
+            $form->addElement('select',REPORT_MANAGER_COMPLETED_LIST,get_string('completed_list', 'report_manager'),$options);
+            $form->setDefault(REPORT_MANAGER_COMPLETED_LIST, 4);
 
             /* Format Report */
-            $m_form->addElement('select',
-                                REPORT_MANAGER_REPORT_FORMAT_LIST,
-                                get_string('report_format_list', 'report_manager'),
-                                report_manager_get_report_format_list());
-        $m_form->addElement('html', '</div>');
+            $list = array(
+                          COURSE_REPORT_FORMAT_SCREEN        => get_string('preview', 'report_manager')
+                          //COURSE_REPORT_FORMAT_SCREEN_EXCEL  => get_string('excel', 'report_manager')
+                         );
+            /* Format Report */
+            $form->addElement('select',COURSE_REPORT_FORMAT_LIST,get_string('report_format_list', 'report_manager'),$list);
+        $form->addElement('html', '</div>');
 
-        /* */
-        $m_form->addElement('hidden','rpt');
-        $m_form->setDefault('rpt',$report_level);
-        $m_form->setType('rpt',PARAM_INT);
+        $form->addElement('hidden','rpt');
+        $form->setDefault('rpt',$report_level);
+        $form->setType('rpt',PARAM_INT);
 
         $this->add_action_buttons(true, get_string('create_report', 'report_manager'));
     }//definition
@@ -111,116 +95,278 @@ class manager_course_report_level_form extends moodleform {
     function validation($data, $files) {
         $errors = parent::validation($data, $files);
 
+        list($report_level,$my_hierarchy) = $this->_customdata;
+
         /* Check Course */
         if (!$data[REPORT_MANAGER_COURSE_LIST]) {
             $errors[REPORT_MANAGER_COURSE_LIST] = get_string('missing_course','report_manager');
-        }//if_course_list
+        }//if_outcome_list
 
         /* Check Level Company */
-        if (!$data[REPORT_MANAGER_COMPANY_STRUCTURE_LEVEL . '1']) {
-            $errors[REPORT_MANAGER_COMPANY_STRUCTURE_LEVEL .'1'] = get_string('missing_level','report_manager');
-        }else if ($data['rpt']>1){
-            if (!$data[REPORT_MANAGER_COMPANY_STRUCTURE_LEVEL . '2']) {
-                $errors[REPORT_MANAGER_COMPANY_STRUCTURE_LEVEL .'2'] = get_string('missing_level','report_manager');
-            }
-        }//if_company_level
+        switch ($report_level) {
+            case 0:
+                if (!$data[MANAGER_COURSE_STRUCTURE_LEVEL . '0']) {
+                    $errors[MANAGER_COURSE_STRUCTURE_LEVEL .'0'] = get_string('missing_level','report_manager');
+                }//if_levelZero
+
+                break;
+            case 1:
+                if (!$data[MANAGER_COURSE_STRUCTURE_LEVEL . '0']) {
+                    $errors[MANAGER_COURSE_STRUCTURE_LEVEL .'0'] = get_string('missing_level','report_manager');
+                }//if_levelZero
+
+                if (!$data[MANAGER_COURSE_STRUCTURE_LEVEL . '1']) {
+                    $errors[MANAGER_COURSE_STRUCTURE_LEVEL .'1'] = get_string('missing_level','report_manager');
+                }//if_levelOne
+
+                break;
+            case 2:
+            case 3:
+                if (!$data[MANAGER_COURSE_STRUCTURE_LEVEL . '0']) {
+                    $errors[MANAGER_COURSE_STRUCTURE_LEVEL .'0'] = get_string('missing_level','report_manager');
+                }//if_levelZero
+
+                if (!$data[MANAGER_COURSE_STRUCTURE_LEVEL . '1']) {
+                    $errors[MANAGER_COURSE_STRUCTURE_LEVEL .'1'] = get_string('missing_level','report_manager');
+                }//if_levelOne
+
+                if (!$data[MANAGER_COURSE_STRUCTURE_LEVEL . '2']) {
+                    $errors[MANAGER_COURSE_STRUCTURE_LEVEL .'2'] = get_string('missing_level','report_manager');
+                }//if_levelOne
+                break;
+        }//switch_level
 
         return $errors;
     }//validation
 
     /**
-     * @param           $parent_level       Parent Level
-     * @param           $report_level       Report Level
-     * @return          string
+     * @param           $form
+     * @param           $level
+     * @param           $my_hierarchy
      *
-     * @creationDate    14/09/2012
+     * @creationDate    17/03/2015
      * @author          eFaktor     (fbv)
      *
      * Description
-     * Return the function It must be called with onchange event is triggered
+     * Add Level Company Structure
      */
-    function getEvent($parent_level,$report_level) {
-        $str_event = '';
+    function AddLevel(&$form,$level,$my_hierarchy){
 
-        /* Select Event */
-        switch ($report_level) {
-            case 2:
-                if ($parent_level == 1) {
-                    $str_event .= 'onchange=GetLevelTwo("company_structure_level1");';
-                }
-                break;
-            case 3:
-                switch ($parent_level) {
-                    case 1:
-                        $str_event .= 'onchange=GetLevelTwo("company_structure_level1");';
-                        break;
-                    case 2:
-                        $str_event .= 'onchange=GetLevelTree("company_structure_level2");';
-                        break;
-                }//switch_parent
-                break;
-        }//switch
+        $form->addElement('html', '<div class="level-wrapper">');
+            /* Add Company List */
+            $options = $this->getCompanyList($level,$my_hierarchy);
+            $select = &$form->addElement('select',
+                                         MANAGER_COURSE_STRUCTURE_LEVEL . $level,
+                                         get_string('select_company_structure_level', 'report_manager', $level),
+                                         $options);
+            $this->setLevelDefault($form,$level);
 
-        return $str_event;
-    }//getEvent
+            /* Multiple Selection - Level 3 */
+            if ($level == 3) {
+                $select->setMultiple(true);
+                $select->setSize(10);
+                $form->addElement('html', '<p class="helptext">' . get_string('help_multi_select', 'report_manager') . '</p>');
+            }//if_level_three
+
+        $form->addElement('html', '</div>');
+    }//AddLevel
 
     /**
-     * @param           $level      Level
+     * @param           $level
+     * @param           $my_hierarchy
      * @return          array
      *
-     * @creationDate    14/09/2012
+     * @creationDate    17/03/2015
      * @author          eFaktor     (fbv)
      *
      * Description
-     * Return a list of all companies that are connected with a level.
+     * Get the company List
      */
-    function getCompanies_Level($level) {
-        /* Companies List */
-        $options = array();
+    function getCompanyList($level,$my_hierarchy) {
+        /* Variables    */
+        $levelThree     = null;
+        $levelTwo       = null;
+        $levelOne       = null;
+        $levelZero      = null;
+        $companies_in   = null;
+        $options        = array();
 
-        /* Get parent */
+        /* Get My Companies by Level    */
+        list($levelZero,$levelOne,$levelTwo,$levelThree) = course_report::GetMyCompanies_By_Level($my_hierarchy->competence);
+
         switch ($level) {
-            case 1:
-                $options = report_manager_get_level_list($level);
+            case 0:
+                /* Only My Companies    */
+                if ($levelZero) {
+                    $companies_in = implode(',',$levelZero);
+                }//if_level_zero
+                $options = course_report::GetCompanies_Level($level,$companies_in);
+
                 break;
-            case 2:
-                if (isset($_COOKIE['parentLevelOne'])) {
-                    $options = report_manager_get_level_list($level,$_COOKIE['parentLevelOne']);
+            case 1:
+                /* Only My Companies    */
+                if ($levelOne) {
+                    $companies_in = implode(',',$levelOne);
+                }//if_level_One
+
+                if (isset($_COOKIE['parentLevelZero']) && ($_COOKIE['parentLevelZero'])) {
+                    $options = course_report::GetCompanies_Level($level,$companies_in,$_COOKIE['parentLevelZero']);
                 }else {
                     $options[0] = get_string('select_level_list','report_manager');
                 }//IF_COOKIE
-                break;
-            case 3:
-                if (isset($_COOKIE['parentLevelTwo'])) {
-                    $options = report_manager_get_level_list($level,$_COOKIE['parentLevelTwo']);
-                }//IF_COOKIE
-                break;
-        }//switch
 
-        return $options;
-    }//getParent_Company
-
-
-    function getDefault_Value($level){
-        $str_value = 0;
-
-        /* Get Default Value */
-        switch ($level) {
-            case 1:
-                if (isset($_COOKIE['parentLevelOne']) && isset($_COOKIE['parentLevelOne']) != 0) {
-                    $str_value = $_COOKIE['parentLevelOne'];
-                }
                 break;
             case 2:
-                if (isset($_COOKIE['parentLevelTwo'])) {
-                    $str_value = $_COOKIE['parentLevelTwo'];
-                }
+                /* Only My Companies    */
+                if ($levelTwo) {
+                    $companies_in = implode(',',$levelTwo);
+                }//if_level_Two
+
+                if (isset($_COOKIE['parentLevelOne']) && ($_COOKIE['parentLevelOne'])) {
+                    $options = course_report::GetCompanies_Level($level,$companies_in,$_COOKIE['parentLevelOne']);
+                }else {
+                    $options[0] = get_string('select_level_list','report_manager');
+                }//IF_COOKIE
+
                 break;
             case 3:
-                    $str_value = -1;
+                if ($levelThree) {
+                    $companies_in = implode(',',$levelThree);
+                }//if_level_Two
+
+                if (isset($_COOKIE['parentLevelTwo']) && ($_COOKIE['parentLevelTwo'])) {
+                    $options = course_report::GetCompanies_Level($level,$companies_in,$_COOKIE['parentLevelTwo']);
+                }else {
+                    $options[0] = get_string('select_level_list','report_manager');
+                }//IF_COOKIE
+
+                break;
+        }//level
+
+        return $options;
+    }//getCompanyList
+
+    /**
+     * @param           $form
+     * @param           $level
+     * @return          string
+     *
+     * @creationDate    17/03/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Set the company selected
+     */
+    function setLevelDefault(&$form,$level) {
+        switch ($level) {
+            case 0:
+                if (isset($_COOKIE['parentLevelZero']) && ($_COOKIE['parentLevelZero'])) {
+                    $form->setDefault(MANAGER_COURSE_STRUCTURE_LEVEL . $level,$_COOKIE['parentLevelZero']);
+                }else {
+                    $form->setDefault(MANAGER_COURSE_STRUCTURE_LEVEL . $level,0);
+                }//if_cookie
+
+                break;
+            case 1:
+                if (isset($_COOKIE['parentLevelOne']) && ($_COOKIE['parentLevelOne'])) {
+                    $form->setDefault(MANAGER_COURSE_STRUCTURE_LEVEL . $level,$_COOKIE['parentLevelOne']);
+                }else {
+                    $form->setDefault(MANAGER_COURSE_STRUCTURE_LEVEL . $level,0);
+                }//if_cookie
+
+                break;
+            case 2:
+                if (isset($_COOKIE['parentLevelTwo']) && ($_COOKIE['parentLevelTwo'])) {
+                    $form->setDefault(MANAGER_COURSE_STRUCTURE_LEVEL . $level,$_COOKIE['parentLevelTwo']);
+                }else {
+                    $form->setDefault(MANAGER_COURSE_STRUCTURE_LEVEL . $level,0);
+                }//if_cookie
+
+                break;
+            case 3:
+                if (isset($_COOKIE['parentLevelThree']) && ($_COOKIE['parentLevelThree'])) {
+                    $form->setDefault(MANAGER_COURSE_STRUCTURE_LEVEL . $level,$_COOKIE['parentLevelThree']);
+                }//if_cookie
+
                 break;
         }//switch
 
-        return $str_value;
-    }//setDefault_Value
+        if ($level) {
+            $form->disabledIf(MANAGER_COURSE_STRUCTURE_LEVEL . $level ,MANAGER_COURSE_STRUCTURE_LEVEL . ($level - 1),'eq',0);
+        }//if_elvel
+    }//setLevelDefault
+
+
+    /**
+     * @param           $form
+     * @param           $level
+     *
+     * @creationDate    17/03/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Add the job role selector to the form
+     */
+    function Add_JobRoleLevel(&$form,$level) {
+        /* Variables    */
+        $options = array();
+
+        /* Job Roles    */
+        switch ($level) {
+            case 0:
+                if (isset($_COOKIE['parentLevelZero']) && ($_COOKIE['parentLevelZero'])) {
+                    /* Add Generics --> Only Public Job Roles   */
+                    if (report_manager_IsPublic($_COOKIE['parentLevelZero'])) {
+                        report_manager_GetJobRoles_Generics($options);
+                    }//if_isPublic
+
+                    report_manager_GetJobRoles_Hierarchy($options,$level,$_COOKIE['parentLevelZero']);
+                }//if_level_Zero
+
+                break;
+            case 1:
+                if (isset($_COOKIE['parentLevelOne']) && ($_COOKIE['parentLevelOne'])) {
+                    /* Add Generics --> Only Public Job Roles   */
+                    if (report_manager_IsPublic($_COOKIE['parentLevelOne'])) {
+                        report_manager_GetJobRoles_Generics($options);
+                    }//if_isPublic
+
+                    report_manager_GetJobRoles_Hierarchy($options,$level-1,$_COOKIE['parentLevelZero']);
+                    report_manager_GetJobRoles_Hierarchy($options,$level,$_COOKIE['parentLevelZero'],$_COOKIE['parentLevelOne']);
+                }//if_level_One
+
+                break;
+            case 2:
+                if (isset($_COOKIE['parentLevelTwo']) && ($_COOKIE['parentLevelTwo'])) {
+                    /* Add Generics --> Only Public Job Roles   */
+                    if (report_manager_IsPublic($_COOKIE['parentLevelTwo'])) {
+                        report_manager_GetJobRoles_Generics($options);
+                    }//if_isPublic
+
+                    report_manager_GetJobRoles_Hierarchy($options,$level-2,$_COOKIE['parentLevelZero']);
+                    report_manager_GetJobRoles_Hierarchy($options,$level-1,$_COOKIE['parentLevelZero'],$_COOKIE['parentLevelOne']);
+                    report_manager_GetJobRoles_Hierarchy($options,$level,$_COOKIE['parentLevelZero'],$_COOKIE['parentLevelOne'],$_COOKIE['parentLevelTwo']);
+                }//if_level_Two
+
+                break;
+            case 3:
+                if (isset($_COOKIE['parentLevelThree']) && ($_COOKIE['parentLevelThree'])) {
+                    /* Add Generics --> Only Public Job Roles   */
+                    if (report_manager_IsPublic($_COOKIE['parentLevelThree'])) {
+                        report_manager_GetJobRoles_Generics($options);
+                    }//if_isPublic
+
+                    report_manager_GetJobRoles_Hierarchy($options,$level,$_COOKIE['parentLevelZero'],$_COOKIE['parentLevelOne'],$_COOKIE['parentLevelTwo'],$_COOKIE['parentLevelThree']);
+                }else {
+                    report_manager_GetJobRoles_Hierarchy($options,$level-3,$_COOKIE['parentLevelZero']);
+                    report_manager_GetJobRoles_Hierarchy($options,$level-2,$_COOKIE['parentLevelZero'],$_COOKIE['parentLevelOne']);
+                    report_manager_GetJobRoles_Hierarchy($options,$level-1,$_COOKIE['parentLevelZero'],$_COOKIE['parentLevelOne'],$_COOKIE['parentLevelTwo']);
+                }//if_level_Three
+
+                break;
+        }//switch_level
+
+        $form->getElement(REPORT_MANAGER_JOB_ROLE_LIST)->load($options);
+
+    }//Add_JobRoleLevel
 }//manager_course_report_level_form

@@ -137,8 +137,8 @@
     margin-right: 10px;
     font: bold 13px Arial;
     text-decoration: none;
-  background-color: #edf2fa;
-  color: #004b93;
+    background-color: #edf2fa;
+    color: #004b93;
     padding: 8px 8px 8px 8px;
     margin-left: 20px;
 }
@@ -149,10 +149,10 @@
 }
 .employee_div .header_info h3 {
     height:30px;
-  text-align: left;
+    text-align: left;
     text-transform: uppercase;
-  padding: 10px 0 5px 10px;
-  margin: 0px;
+    padding: 10px 0 5px 10px;
+    margin: 0px;
 }
 .employee_div .employee_content {
     height: auto;
@@ -386,16 +386,42 @@
     margin-top: 0px;
 }
 
-.outcome_detail_rpt h2{
+.outcome_detail_rpt h2,
+.outcome_detail_rpt h3,
+.outcome_detail_rpt h5 {
     margin-bottom: 2px;
     margin-top: 0px;
+    color: #004b93;
 }
 
 .outcome_rpt_div .header_outcome_company_rpt {
-    background: #edf2fa;
-    height: 28px;
+    background: #e3e7ed;
+    height: 30px;
     display:block;
     margin-bottom: 2px;
+}
+
+.outcome_rpt_div .header_outcome_company_rpt_levelZero {
+    background: #c4ccd9;
+    color: #3a3d41;
+    height: 30px;
+    display:block;
+    margin-bottom: 5px;
+}
+
+.toggle_outcome_company_rpt {
+    border: 0;
+    background: none;
+    box-shadow: none;
+    -webkit-box-shadow: none;
+    -moz-box-shadow: none;
+    cursor  : pointer;
+    color   : #ccc;
+    height: 20px;
+    line-height: 10px;
+    /* Top Right Bottom LEft:   */
+    margin: 0px 5px 5px 0px;
+    padding     : 0px;
 }
 
 .outcome_rpt_div .user_div,
@@ -429,33 +455,45 @@
 
 .company_rpt_div .header_user_rpt .header_col_one,
 .outcome_rpt_div .header_outcome_company_rpt .header_col_one,
+.outcome_rpt_div .header_outcome_company_rpt_levelZero .header_col_one,
 .outcome_rpt_div .user_div .user_header .header_col_one,
 .outcome_rpt_div .level_div .header_outcome_company_rpt .header_col_one{
     float:left;
     width:2%;
-    margin-right: 5px;
     height: 20px;
     line-height: 10px;
+    /* Top Right Bottom LEft:   */
+    margin: 0px 5px;
 }
 
 .company_rpt_div .header_user_rpt .header_col_two,
 .outcome_rpt_div .header_outcome_company_rpt .header_col_two,
+.outcome_rpt_div .header_outcome_company_rpt_levelZero .header_col_two,
 .outcome_rpt_div .user_div .user_header .header_col_two,
-.outcome_rpt_div .level_div .header_outcome_company_rpt .header_col_two{
+.outcome_rpt_div .level_div .header_outcome_company_rpt .header_col_two {
     float:left;
     height: 20px;
     line-height: 10px;
 }
 
-.company_rpt_div .header_user_rpt .header_col_two h3,
-.outcome_rpt_div .header_outcome_company_rpt .header_col_two h3 {
+.company_rpt_div .header_user_rpt .header_col_two h4,
+.outcome_rpt_div .header_outcome_company_rpt .header_col_two h4 {
     height: 20px;
     line-height: 10px;
     margin: 8px 0px;
 }
 
-.outcome_rpt_div .user_div .user_header .header_col_two h4,
-.outcome_rpt_div .level_div .header_outcome_company_rpt .header_col_two h4 {
+.outcome_rpt_div .header_outcome_company_rpt_levelZero .header_col_two h4 {
+    height: 20px;
+    line-height: 10px;
+    margin: 8px 0px;
+    color : #3a3d41;
+}
+
+.outcome_rpt_div .user_div .user_header .header_col_two h5,
+.outcome_rpt_div .level_div .header_outcome_company_rpt .header_col_two h5,
+.outcome_rpt_div .header_outcome_company_rpt_levelZero .header_col_two h5,
+.outcome_rpt_div .header_outcome_company_rpt .header_col_two h5 {
     height: 20px;
     line-height: 10px;
     margin: 8px 0px;
@@ -468,10 +506,21 @@
     clear: both;
     display: block;
     padding: 0;
-    margin: 0;
+    margin: 2px;
 }
 
-.outcome_rpt_div .course_list {
+.outcome_rpt_div .level_one_list {
+    width: 100%;
+    height: auto;
+    clear: both;
+    display: block;
+    padding: 0;
+    /* Top Right Bottom LEft:   */
+    margin: 0px 0px 25px 0px;
+}
+
+.outcome_rpt_div .course_list,
+.outcome_rpt_div .company_level {
     width: 100%;
     height: auto;
     clear: both;
@@ -481,7 +530,8 @@
     margin-bottom: 10px;
 }
 
-.outcome_rpt_div .course_list table {
+.outcome_rpt_div .course_list table,
+.outcome_rpt_div .company_level table {
     width: 100%;
     background: white;
     color:  #000;
@@ -494,46 +544,60 @@
     background: #efefef;
 }
 
-.outcome_rpt_div .level_div .course_list tr.head {
+.outcome_rpt_div .company_level tr.head {
+    padding: 0px 0px 0px 0px;
+    margin-bottom: 0px;
+    font:bold 14px Verdana,Verdana Pro,sans-serif;
+    background: #ddd;
+}
+
+.outcome_rpt_div .level_div .course_list tr.head,
+.outcome_rpt_div .level_div .company_level tr.head {
     padding: 0px 0px 0px 0px;
     margin-bottom: 0px;
     font:bold 14px Verdana,Verdana Pro,sans-serif;
     background: white;
 }
 
-.outcome_rpt_div .course_list td.head_first {
+.outcome_rpt_div .course_list td.head_first,
+.outcome_rpt_div .company_level td.head_first {
     width: 2%;
     text-align: left;
     cursor: pointer;
 }
 
-.outcome_rpt_div .course_list td.head_course {
+.outcome_rpt_div .course_list td.head_course,
+.outcome_rpt_div .company_level td.head_company {
     width: 40%;
     text-align: left;
     cursor: pointer;
 }
 
-.outcome_rpt_div .course_list td.head_status {
+.outcome_rpt_div .course_list td.head_status,
+.outcome_rpt_div .company_level td.head_status {
     width: 15%;
     text-align: center;
     cursor: pointer;
 }
 
-.outcome_rpt_div .course_list td.first {
+.outcome_rpt_div .course_list td.first,
+.outcome_rpt_div .company_level td.first {
     width: 2%;
     text-align: left;
     cursor: pointer;
     font:12px Verdana,Verdana Pro,sans-serif;
 }
 
-.outcome_rpt_div .course_list td.course {
+.outcome_rpt_div .course_list td.course,
+.outcome_rpt_div .company_level td.company {
     width: 40%;
     text-align: left;
     cursor: pointer;
     font: 12px Verdana,Verdana Pro,sans-serif;
 }
 
-.outcome_rpt_div .course_list td.status {
+.outcome_rpt_div .course_list td.status,
+.outcome_rpt_div .company_level td.status {
     width: 15%;
     text-align: center;
     cursor: pointer;
@@ -599,6 +663,15 @@
     text-align: left;
     font: 14px Verdana,Verdana Pro,sans-serif;
 }
+
+.r0 {
+    background-color:  white;
+}
+
+.r2 {
+    background-color: #f2f2f2;
+}
+
 .job_roles_selector {
     width: 100%;
     margin-bottom: 20px;

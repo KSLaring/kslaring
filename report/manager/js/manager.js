@@ -21,8 +21,29 @@ YUI().use('node', function(Y) {
     var parentImportOne;
     var parentImportTwo;
     var parentImportLevel;
+    var courseReport;
+    var outcomeReport;
 
-    /* Level Zero   */
+    /* Course Report    */
+    if (Y.one('#id_course_list')) {
+        Y.one('#id_course_list').on('change', function (e) {
+            /* Get the Selected */
+            indexSelected   = this.get('selectedIndex');
+            if (Y.one("#id_course_list").get('options').item(indexSelected).get('value') != 0) {
+                //Getting information of user.
+                courseReport = Y.one("#id_course_list").get('options').item(indexSelected).get('value');
+            }else {
+                courseReport = 0;
+            }
+
+            document.cookie = "courseReport"         + "=" + courseReport;
+
+            window.onbeforeunload = null;
+            window.location = location.href;
+        });
+    }//if_course_report
+
+    /* Level Zero       */
     if (Y.one('#id_level_0')) {
         Y.one('#id_level_0').on('change', function (e) {
             /* Get the Selected */
