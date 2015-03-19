@@ -45,6 +45,8 @@ class enrolmethodunnamedbulk_enrolform extends \moodleform {
     }
 
     public function definition() {
+    	global $CFG;
+    
         $mform = $this->_form;
        list( $waitinglist,$method,$queuestatus) = $this->_customdata;
         $this->method = $method;
@@ -86,7 +88,17 @@ class enrolmethodunnamedbulk_enrolform extends \moodleform {
 		$mform->addElement('hidden', 'datarecordid');
         $mform->setType('datarecordid', PARAM_INT);
 		
-		$this->add_action_buttons(false, get_string('reserveseats', 'enrol_waitinglist'));
+		//add submit + enter course
+		$buttonarray=array();
+		$buttonarray[] = &$mform->createElement('submit', 'submitbutton', get_string('reserveseats', 'enrol_waitinglist'));
+		if($queuestatus->assignedseats>0){
+			$url = $CFG->wwwroot . '/course/view.php?id=' . $waitinglist->courseid;
+			$buttonarray[] = &$mform->createElement('button', 'entercoursebutton', get_string('entercoursenow', 'enrol_waitinglist'),array('class'=>'entercoursenowbutton','onclick'=>'location.href="' . $url .'"'));
+		}
+		$mform->addGroup($buttonarray, 'buttonar', '', array(' '), false);
+		
+		//use this in place of button group, if you don't need the go to course button
+		//$this->add_action_buttons(false, get_string('reserveseats', 'enrol_waitinglist'));
 
     }
 

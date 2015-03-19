@@ -319,9 +319,11 @@ class enrolmethodunnamedbulk extends \enrol_waitinglist\method\enrolmethodbase {
 		$entry = $entryman->get_entry_by_userid($USER->id,static::METHODTYPE);
 		$updatedentry =false;
 		
-		//if we have an unnamedbulk entry, we procees
+		//if we have an unnamedbulk entry, we proceed to show them the edit form
 		if($entry){
 			$enrolstatus =true;
+			
+		//if we don't have an entry we do all the "can_enrol" checks
 		}else{
 			//if user is flagged as cant be a new enrol, then just exit
 			if($flagged){
@@ -330,6 +332,7 @@ class enrolmethodunnamedbulk extends \enrol_waitinglist\method\enrolmethodbase {
 			$enrolstatus = $this->can_enrol($waitinglist,true);
 		}
 		
+		//get waitlist object and  vacancies count
 		 $wl = enrol_get_plugin('waitinglist');
 		 $vacancies = $wl->get_vacancy_count($waitinglist);
 
@@ -409,6 +412,7 @@ class enrolmethodunnamedbulk extends \enrol_waitinglist\method\enrolmethodbase {
                 }
             }
 
+			//prepare our gotocourse button and form data, if required
 			if($entry){
 				$formdata = new \stdClass;
 				$formdata->seats=$entry->seats;
@@ -417,8 +421,7 @@ class enrolmethodunnamedbulk extends \enrol_waitinglist\method\enrolmethodbase {
 			//begin the output
             ob_start();
             $form->display();
-            $output = ob_get_clean();
-       
+            $output = ob_get_clean(); 
             $message =$OUTPUT->box($output);
 			$ret = array(true,$message);
         } else {
