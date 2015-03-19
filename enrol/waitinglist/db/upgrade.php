@@ -43,7 +43,7 @@ function xmldb_enrol_waitinglist_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2015021101, 'enrol','waitinglist');
     }
      if ($oldversion < 2015021601) {
-         // Add email alert field 
+         // Add allocated seats field
         $table = new xmldb_table('enrol_waitinglist_queue');
         $field = new xmldb_field('allocseats', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, '0', 'seats');
 

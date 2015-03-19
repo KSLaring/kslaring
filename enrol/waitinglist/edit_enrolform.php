@@ -30,7 +30,7 @@ $course = $DB->get_record('course', array('id'=>$courseid), '*', MUST_EXIST);
 $context = context_course::instance($course->id, MUST_EXIST);
 
 require_login($course);
-require_capability('enrol/waitinglist:canbulkenrol', $context);
+//require_capability('enrol/waitinglist:canbulkenrol', $context);
 
 $formsurl = new moodle_url('/enrol/waitinglist/edit_enrolform.php', array('id'=>$course->id));
 $instancesurl = new moodle_url('/enrol/instances.php', array('id'=>$course->id));
@@ -44,17 +44,31 @@ if (!enrol_is_enabled('waitinglist')) {
     redirect($instancesurl);
 }
 //get waitlist plugin and data instance
-$wl = enrol_get_plugin('waitinglist');
 $waitinglist = $DB->get_record('enrol', array('courseid' => $courseid,'enrol'=>'waitinglist'));
 if(!$waitinglist){redirect($instancesurl);}
+
+
 //get method instance
 $class = '\enrol_waitinglist\method\\' . $methodtype. '\enrolmethod' .$methodtype ;
 if (!class_exists($class)){redirect($instancesurl);}
 $themethod = $class::get_by_course($course->id, $waitinglist->id); 
 if (!$themethod){redirect($instancesurl);}
 
-if($formhtml = $themethod->enrol_page_hook($waitinglist)){
+$wl = enrol_get_plugin('waitinglist');
+$ret = $wl->can_enrol($waitinglist);
+$flagged= false;
+$warningmessage='';
+if($ret !== true){
+	$warningmessage=$ret;
+	$flagged= true;
+}
+list($ok,$formhtml) = $themethod->enrol_page_hook($waitinglist,$flagged);
+if($ok){
 	echo $OUTPUT->header();
 	echo $formhtml;
 	echo $OUTPUT->footer();
+}else{
+ echo $OUTPUT->header();
+ echo $warningmessage . '<br/>' . $formhtml;
+ echo $OUTPUT->footer();
 }

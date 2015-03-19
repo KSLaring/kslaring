@@ -29,7 +29,7 @@ require_once($CFG->libdir.'/formslib.php');
 
 class enrolmethodself_enrolform extends \moodleform {
     protected $method;
-    protected $toomany = false;
+
 
     /**
      * Overriding this function to get unique form id for multiple self enrolments.
@@ -86,10 +86,6 @@ class enrolmethodself_enrolform extends \moodleform {
         $errors = parent::validation($data, $files);
         $method = $this->method;
 
-        if ($this->toomany) {
-            $errors['notice'] = get_string('error');
-            return $errors;
-        }
 
         if ($method->password) {
             if ($data['enrolpassword'] !== $method->password) {

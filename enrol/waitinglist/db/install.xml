@@ -52,7 +52,9 @@
         <FIELD NAME="methodtype" TYPE="text" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="seats" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="allocseats" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
-		<FIELD NAME="seatsholding" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+		<FIELD NAME="confirmedseats" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+		<FIELD NAME="enroledseats" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+		<FIELD NAME="offqueue" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="customint1" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="customint2" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="customint3" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="3" SEQUENCE="false"/>

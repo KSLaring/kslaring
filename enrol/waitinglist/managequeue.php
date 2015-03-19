@@ -48,6 +48,7 @@ $PAGE->set_title(get_string('managequeue', 'enrol_waitinglist'));
 $PAGE->set_heading($course->fullname);
 
 $queueman= \enrol_waitinglist\queuemanager::get_by_course($course->id);
+$entryman= \enrol_waitinglist\entrymanager::get_by_course($course->id);
 
 //init our error flag/message
 $error = false;
@@ -79,7 +80,12 @@ if ($canconfig and $action and confirm_sesskey()) {
 				break;
 
 			case 'remove':
-				$ok = $queueman->remove_entry($qentryid);
+				$qentry = $queueman->get_qentry($qentryid);
+				if($qentry->allocseats >1){
+					$ok = $entryman->update_seats($qentry->id,$qentry->allocseats);
+				}else{
+					$ok = $queueman->really_remove_entry($qentryid);
+				}
 				if($ok){
 					redirect($PAGE->url);
 				}else{
@@ -107,7 +113,7 @@ $strdisable = get_string('disable');
 $strmanage  = get_string('managequeue', 'enrol_waitinglist');
 
 if($queueman->get_listtotal()==0){
-	echo $OUTPUT->heading(get_string('listisempty', 'enrol_waitinglist'),2);
+	echo $OUTPUT->heading(get_string('waitinglistisempty', 'enrol_waitinglist'),2);
 }
 
 $table = new html_table();
@@ -134,7 +140,7 @@ foreach ($queueman->qentries as $qentry) {
         } else {
             $updown[] = html_writer::empty_tag('img', array('src'=>$OUTPUT->pix_url('spacer'), 'alt'=>'', 'class'=>'iconsmall'));
         }
-        if ($qentry->queueno < $queueman->get_listtotal()) {
+        if ($qentry->queueno < $queueman->get_entrycount()) {
             $aurl = new moodle_url($url, array('action'=>'down','qentryid'=>$qentry->id,'sesskey'=>sesskey(), 'id'=>$course->id));
             $updown[] = $OUTPUT->action_icon($aurl, new pix_icon('t/down', $strdown, 'core', array('class' => 'iconsmall')));
         } else {

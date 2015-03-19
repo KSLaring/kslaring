@@ -72,6 +72,22 @@ abstract class enrolmethodbase  {
 		return false;
 	}
 	 
+		 /**
+     * Checks if user can self enrol.
+     * used for displaying icons and links on course list page
+     **
+     */
+	public  function can_self_enrol(\stdClass $waitinglist){
+		//this will be called from course page
+		//we don't check current enrolments from can_enrol
+		//because we try to avoid lots of db calls
+		if($this->can_enrol($waitinglist,false) === true){
+			return true;
+		}
+		return false;
+	
+	}
+	
 	
 	public function get_methodtype(){
 		return static::METHODTYPE;
@@ -151,10 +167,6 @@ abstract class enrolmethodbase  {
      *
      * This is used in course list for quick overview of enrolment options.
      *
-     * We are not using single instance parameter because sometimes
-     * we might want to prevent icon repetition when multiple instances
-     * of one type exist. One instance may also produce several icons.
-     *
      * @param array $instances all enrol instances of this type in one course
      * @return array of pix_icon
      */
@@ -169,7 +181,7 @@ abstract class enrolmethodbase  {
      * @param stdClass $waitinglist
      * @return null
      */
-    public function enrol_page_hook(\stdClass $waitinglist) {
+    public function enrol_page_hook(\stdClass $waitinglist,$flagged) {
         return null;
     }
 	
@@ -197,8 +209,7 @@ abstract class enrolmethodbase  {
     public function add_to_waitinglist(\stdClass $waitinglist, $queue_entry) {
         global $DB, $USER, $CFG; // CFG necessary!!!
 		
-		//there are spaces on the course, we don't need to use the waitlist
-		//enrol the user directly.
+		//If the waitinglist is not correct, exit
 		$wl = enrol_get_plugin('waitinglist');
 		if ($waitinglist->courseid == SITEID) {
             throw new coding_exception('invalid attempt to enrol on frontpage waitinglist!');
@@ -215,17 +226,30 @@ abstract class enrolmethodbase  {
 			$queue_entry->id = $oldentry->id;
 			$queueid = $queueman->update($queue_entry);
 		}
-		
 		$queue_entry->id = $queueid;
 		
-		//this part is a bit tricky, it will skip the ad hoc procesising and email if it enrols the user
-		//immediately. NB not unnamedbulk
-		$enroled = false;
-		if($this->can_enrol_directly() && $wl->can_enrol_directly($waitinglist)){
-			$enroled = $this->graduate_from_list($waitinglist,$queue_entry);
+		//If waitinglist says there are vacancies
+		//and we are at the top of the waitinglist, enrol/confirm the user immediately.
+		$graduationcomplete = false;
+        $vacancies = $wl->get_vacancy_count($waitinglist);
+		if($vacancies && 
+				$queueman->get_listposition($queue_entry)==1 ){
+			if($queue_entry->seats > $vacancies){
+				$giveseats = $vacancies;
+			}else{
+				$giveseats = $queue_entry->seats;
+			}
+			//move them off the waitinglist, and onto the course or confirmed list
+			//post processing (emails mainly) should happen from the function call.	
+			//graduationcomplete means all seats are allocated and we can remove this entry
+			//from queue		
+			$graduationcomplete = $this->graduate_from_list($waitinglist,$queue_entry,$giveseats);
 		}
 
-		if (!$enroled && $this->emailalert && $waitinglist->{ENROL_WAITINGLIST_FIELD_SENDWAITLISTMESSAGE}) {
+		//if we were not enrolled or not all our seats were granted, AND we are sending email, send email.
+		if ((!$graduationcomplete || $giveseats < $queue_entry->seats) 
+				&& $this->emailalert 
+				&& $waitinglist->{ENROL_WAITINGLIST_FIELD_SENDWAITLISTMESSAGE}) {
 			$queue_entry = $queueman->get_qentry($queueid);
 			$this->email_waitlist_message($waitinglist,$queue_entry,$USER);
 		}
@@ -315,9 +339,7 @@ abstract class enrolmethodbase  {
 
 	 //some methods such as "unnamed bulk" don't enrol onto course automatically
 	 //others like "self" do. We check for that here
-	 public  function can_enrol_directly(){return false;}
-	 
-	 public  function can_self_enrol(\stdClass $waitinglist){return false;}
+	
 	 public  function can_enrol(\stdClass $waitinglist, $checkuserenrolment = true){return false;}
 	 public function has_notifications(){return false;}
 	 public  function show_notifications_settings_link(){return false;}

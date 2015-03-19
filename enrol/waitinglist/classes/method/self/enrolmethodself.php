@@ -76,6 +76,14 @@ class enrolmethodself extends \enrol_waitinglist\method\enrolmethodbase{
 			$rec->status = true;
 			$rec->emailalert=true;
 			$rec->{enrolmethodself::MFIELD_WAITLISTMESSAGE}=get_string('waitlistmessagetext_self','enrol_waitinglist');
+			
+			//first remove any old entries that might still be kicking around from deleted waitinglists
+			$oldrecord = $DB->get_record_sql("SELECT * FROM {".self::TABLE."} WHERE courseid = " . 
+		 		$courseid .  " AND " .$DB->sql_compare_text('methodtype') . "='". static::METHODTYPE ."'");
+			if($oldrecord){
+				$DB->delete_record(self::TABLE, array( 'id'=>$oldrecord->id));
+			}
+			
 			$id = $DB->insert_record(self::TABLE,$rec);
 			if($id){
 				$rec->id = $id;
@@ -89,8 +97,8 @@ class enrolmethodself extends \enrol_waitinglist\method\enrolmethodbase{
 	 
 	 //settings related functions
 	 public function has_notifications(){return false;}
-	 public  function show_notifications_settings_link(){return false;}
-	 public  function has_settings(){return true;}
+	 public function show_notifications_settings_link(){return false;}
+	 public function has_settings(){return true;}
 
 	 
 	 public function get_dummy_form_plugin(){
@@ -106,7 +114,7 @@ class enrolmethodself extends \enrol_waitinglist\method\enrolmethodbase{
      * we might want to prevent icon repetition when multiple instances
      * of one type exist. One waitinglist may also produce several icons.
      *
-     * @param array $waitinglists all enrol instances of this type in one course
+     * @param array $waitinglists all enrol instances of this type in one course. We are likely to have only one. But maintaining original code, just in case.
      * @return array of pix_icon
      */
     public function get_info_icons(array $waitinglists) {
@@ -114,7 +122,6 @@ class enrolmethodself extends \enrol_waitinglist\method\enrolmethodbase{
         $nokey = false;
         foreach ($waitinglists as $waitinglist) {
 
-            
 			if ($this->can_self_enrol($waitinglist) !== true) {
                 // User can not enrol himself.
                 // Note that we do not check here if user is already enrolled for performance reasons -
@@ -138,30 +145,6 @@ class enrolmethodself extends \enrol_waitinglist\method\enrolmethodbase{
         return $icons;
     }
 	
-	 /**
-     * Checks if user can self enrol.
-     * used for displaying icons and links on course list page
-     **
-     */
-	public  function can_self_enrol(\stdClass $waitinglist){
-		//this will be called from course page
-		//we don't check current enrolments from can_enrol
-		//because we try to avoid lots of db calls
-		if($this->can_enrol($waitinglist,false) === true){
-			return true;
-		}
-		return false;
-	
-	}
-	
-	/**
-     * Can we auto take a user from waitlist and put onto course?
-     ** for self .... YES
-     */
-	public function can_enrol_directly(){
-		return true;
-	}
-	
 	
 	  /**
      * Checks if user can enrol.
@@ -172,27 +155,18 @@ class enrolmethodself extends \enrol_waitinglist\method\enrolmethodbase{
      */
     public function can_enrol(\stdClass $waitinglist, $checkuserenrolment = true) {
         global $DB, $USER, $CFG;
-
-
-		//checking enroled in course, (db calls)
-        if ($checkuserenrolment) {
-            if (isguestuser()) {
-                // Can not enrol guest.
-                return get_string('noguestaccess', 'enrol');
-            }
-            // Check if user is already enroled.
-            if ($DB->get_record('user_enrolments', array('userid' => $USER->id, 'enrolid' => $waitinglist->id))) {
-                return get_string('canntenrol', 'enrol_self');
-            }
-        }
+        
+        $entryman =  \enrol_waitinglist\entrymanager::get_by_course($waitinglist->courseid);
+		$entry = $entryman->get_entry_by_userid($USER->id);
+		if($entry && $entry->methodtype!=static::METHODTYPE){
+			return get_string('onlyoneenrolmethodallowed', 'enrol_waitinglist');
+		}
         
         //checking the queue (db calls)
         //to do: turn queuemanager into a singleton, and remove the checkusenrolment condition
          if ($checkuserenrolment) {
          	$queueman =  \enrol_waitinglist\queuemanager::get_by_course($waitinglist->courseid);
-            if($queueman->is_on_list($USER->id,static::METHODTYPE)){
-				return get_string('alreadyonlist', 'enrol_waitinglist');
-        	}
+    
 		
 			//maximum users for this enrolment method
         	if ($this->{self::MFIELD_MAXENROLLED} > 0) {
@@ -204,11 +178,7 @@ class enrolmethodself extends \enrol_waitinglist\method\enrolmethodbase{
 					return get_string('noroomonlist', 'enrol_waitinglist');
 				}
         	}
-		
-			//is waiting list is full
-			if ($queueman->is_full()){
-					return  get_string('noroomonlist', 'enrol_waitinglist');
-			}
+	
         }
         
         //checking cohort status (db calls)
@@ -230,18 +200,7 @@ class enrolmethodself extends \enrol_waitinglist\method\enrolmethodbase{
         if (!$this->is_active()) {
             return get_string('canntenrol', 'enrol_self');
         }
-        if ($waitinglist->enrolstartdate != 0 and $waitinglist->enrolstartdate > time()) {
-			return get_string('canntenrol', 'enrol_self');
-        }
-        if ($waitinglist->enrolenddate != 0 and $waitinglist->enrolenddate < time()) {
-			return get_string('canntenrol', 'enrol_self');
-        }
-/*
-        if (!$this->{self::MFIELD_NEWENROLS}) {
-            // New enrols not allowed.
-			return get_string('canntenrol', 'enrol_self');
-        }
-*/
+
 
         return true;
     }
@@ -262,9 +221,7 @@ class enrolmethodself extends \enrol_waitinglist\method\enrolmethodbase{
             return;
         }
 
-
 		//prepare additional fields for our queue DB entry
-		//we need at least one, so we set an empty string for password if necessary
 		$queue_entry = new \stdClass;
 		$queue_entry->waitinglistid      = $waitinglist->id;
 		$queue_entry->courseid       = $waitinglist->courseid;
@@ -276,12 +233,45 @@ class enrolmethodself extends \enrol_waitinglist\method\enrolmethodbase{
 		$queue_entry->queueno = 	0;
 		$queue_entry->seats = 1;
 		$queue_entry->allocseats = 0;
+		$queue_entry->confirmedseats = 0;
+		$queue_entry->enroledseats = 0;
+		$queue_entry->offqueue = 0;
 		$queue_entry->timemodified = $queue_entry->timecreated;
 		
 		//add the user to the waitinglist queue 
         $queueid = $this->add_to_waitinglist($waitinglist, $queue_entry);
 
     }
+    
+    
+    /**
+     * Pop off queue and enrol in course
+     *
+     * @param stdClass $waitinglist
+	 * @param stdClass $queueentry
+     * @return null 
+     */
+	public function graduate_from_list(\stdClass $waitinglist,\stdClass $queue_entry, $seats){
+		$entryman= \enrol_waitinglist\entrymanager::get_by_course($waitinglist->courseid);
+		$success =false;
+		
+		//if we already have enough of this method type, return false.
+    	if($this->maxseats>0){
+    		$currentcount = $entryman->get_allocated_listtotal_by_method(static::METHODTYPE);
+    		if($currentcount + $giveseats >= $this->maxseats){
+    			$giveseats = $this->maxseats - $currentcount;
+    			if($giveseats<1){return false;}
+    		}
+    	}
+		
+		//do the update
+		$updatedentry = $entryman->confirm_seats($queue_entry, $seats);
+		if($updatedentry){
+			$this->do_post_enrol_actions($waitinglist, $updatedentry);
+			$success =true;
+		}
+		return $success;
+	}
 	
 	/**
      * Pop off queue and enrol in course
@@ -290,7 +280,7 @@ class enrolmethodself extends \enrol_waitinglist\method\enrolmethodbase{
 	 * @param stdClass $queueentry
      * @return null 
      */
-	public function graduate_from_list(\stdClass $waitinglist,\stdClass $queue_entry, $seats){
+	public function xgraduate_from_list(\stdClass $waitinglist,\stdClass $queue_entry, $seats){
 		$queueman= \enrol_waitinglist\queuemanager::get_by_course($waitinglist->courseid);
 		$wl = enrol_get_plugin('waitinglist');
 		$wl->enrol_user($waitinglist,$queue_entry->userid);
@@ -333,14 +323,18 @@ class enrolmethodself extends \enrol_waitinglist\method\enrolmethodbase{
      * @param stdClass $waitinglist
      * @return string html text, usually a form in a text box
      */
-    public function enrol_page_hook(\stdClass $waitinglist) {
+    public function enrol_page_hook(\stdClass $waitinglist, $flagged) {
         global $CFG, $OUTPUT, $USER;
 		
 		$queueman= \enrol_waitinglist\queuemanager::get_by_course($waitinglist->courseid);
 		$qdetails = $queueman->get_user_queue_details(static::METHODTYPE);
 		if($qdetails->queueposition > 0){
 			$enrolstatus = get_string('yourqueuedetails','enrol_waitinglist', $qdetails);
-		}else{				
+		}else{
+			//if user is flagged as cant be a new enrol, then just exit
+			if($flagged){
+				return array(false,'');
+			}				
 			$enrolstatus = $this->can_enrol($waitinglist,true);
 		}
 
@@ -359,9 +353,13 @@ class enrolmethodself extends \enrol_waitinglist\method\enrolmethodbase{
             ob_start();
             $form->display();
             $output = ob_get_clean();
-            return $OUTPUT->box($output);
+    
+            $message =$OUTPUT->box($output);
+			$ret = array(true,$message);
         } else {
-            return $OUTPUT->box($enrolstatus);
+            $message = $OUTPUT->box($enrolstatus);
+			$ret = array(false,$message);
         }
+        return $ret;
     }
 }

@@ -86,7 +86,6 @@ $string['waitlistsize'] = 'Waitlist Size';
 $string['enrolmethods'] = 'Enrolment Methods';
 $string['managequeue'] = 'Manage Queue';
 $string['managemethods'] = 'Manage Enrolment Methods';
-$string['nomoreseats'] = 'The requested number of seats are not available';
 $string['canthavemoreseats'] = 'You cannot increase the number of reservations if you are not the last on the waiting list.';
 $string['noroomonlist'] = 'No room on the waiting list';
 $string['listisempty'] = 'The waiting list is empty';
@@ -130,6 +129,21 @@ The following placeholders may be included in the message:
 * Link to enrolpage {$a->editenrolurl}';
 $string['sendcoursewaitlistmessage'] = 'Send email when added to waitlist';
 $string['sendcoursewaitlistmessage_help'] = 'An email can be sent to the user when they are added to a course waiting list.';
+
+
+$string['manageconfirmed'] = 'Manage Confirmed';
+$string['unconfirmfailed'] = 'Removal from Confirmed list failed!';
+$string['waitinglistisempty'] = 'The Waiting List is Empty';
+$string['confirmedlistisempty'] = 'The Confirmed List is Empty';
+$string['unconfirm'] = 'Unconfirm';
+$string['unconfirmwarning'] = 'Do you really want to return these seats to the waiting list?';
+$string['noroomonlist'] = 'We are very sorry, but the waitinglist is full.';
+$string['enrolmentsnotyet'] = 'Waitinglist Enrolment is not open yet.';
+$string['enrolmentsclosed'] = 'Waitinglist Enrolments have closed.';
+$string['alreadyenroled'] = 'You are already enroled in this course.';
+$string['qentrynothingchanged'] = 'No update to your reservations was required.';
+$string['onlyoneenrolmethodallowed'] = '';//'You can only be on the waitinglist once.'; //strange to show this to user
+$string['nomoreseats'] = 'The requested number of places are not available. There are {$a->available} more waitinglist places available. There are {$a->vacancies} more vacancies on the course currently available.';
 
 
 

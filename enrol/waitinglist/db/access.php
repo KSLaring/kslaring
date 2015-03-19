@@ -46,6 +46,7 @@ $capabilities = array(
     ),
     
      /* Bulk enrol anybody. */
+	 /*
     'enrol/waitinglist:canbulkenrol' => array(
         'captype' => 'write',
         'contextlevel' => CONTEXT_COURSE,
@@ -55,7 +56,7 @@ $capabilities = array(
             'teacher' => CAP_ALLOW,
         )
     ),
-
+*/
     /* Manage enrolments of users. */
     'enrol/waitinglist:manage' => array(
         'captype' => 'write',
@@ -83,5 +84,14 @@ $capabilities = array(
         'archetypes' => array(
         )
     ),
+	
+	 'enrol/waitinglist:canbulkenrol' => array(
+        'riskbitmask' => RISK_SPAM,
+        'captype' => 'write',
+        'contextlevel' => CONTEXT_SYSTEM,
+        'legacy' => array(
+            'user' => CAP_ALLOW
+        )
+    )
 
 );

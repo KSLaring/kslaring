@@ -33,6 +33,7 @@ namespace enrol_waitinglist;
 class queuemanager  {
 
 	const QTABLE='enrol_waitinglist_queue';
+	const OFFQ = 99999;
 	
 	public $qentries = array();
 	public $courseid =0;
@@ -57,12 +58,20 @@ class queuemanager  {
             $wlm = new static();
 			$wlm->courseid=$courseid;
 			$wlm->waitinglist = $DB->get_record('enrol', array('courseid' => $courseid,'enrol'=>'waitinglist'));
-			$records =  $DB->get_records(self::QTABLE, array('courseid' => $courseid, 'waitinglistid'=>$wlm->waitinglist->id),'queueno ASC');
+			$records =  $DB->get_records(self::QTABLE, array('courseid' => $courseid, 'waitinglistid'=>$wlm->waitinglist->id, 'offqueue'=>0),'queueno ASC');
 			if($records){
 				$wlm->qentries = $records;
 			}
       //  }
 		return $wlm;
+	}
+	
+	public static function get_maxq_no($waitinglistid){
+		global $DB;
+		$maxq = $DB->get_record_sql('SELECT MAX(queueno) AS maxq, 1		
+                                     FROM {'. self::QTABLE .'} WHERE offqueue=0 AND waitinglistid=' . $waitinglistid);
+        return $maxq;
+	
 	}
 	
 	
@@ -111,7 +120,7 @@ class queuemanager  {
 		$qdetails = new \stdClass;
 		$qdetails->queueposition=0;
 		$qdetails->queuetotal=$this->get_listtotal();
-		$details = $DB->get_records(self::QTABLE,array('courseid'=>$this->courseid,'userid'=>$USER->id,'waitinglistid'=>$this->waitinglist->id));
+		$details = $DB->get_records(self::QTABLE,array('courseid'=>$this->courseid,'userid'=>$USER->id,'waitinglistid'=>$this->waitinglist->id, 'offqueue'=>0));
 		if(!$details){return $qdetails;}
 		foreach($details as $detail){
 			if($detail->methodtype==$methodtype){
@@ -125,13 +134,13 @@ class queuemanager  {
 		 /**
      * is user already on list?
      *
-     * @param int User IDstdClass $instance enrolment instance
-     * 
+     * @param int User ID
+     * @param string methodtype 
      * @return bool|string true if on list, else false if not.
      */
 	 public function is_on_list($userid,$methodtype){
 		global $DB;
-		$details = $DB->get_records(self::QTABLE,array('courseid'=>$this->courseid,'userid'=>$userid,'waitinglistid'=>$this->waitinglist->id));
+		$details = $DB->get_records(self::QTABLE,array('courseid'=>$this->courseid,'userid'=>$userid,'waitinglistid'=>$this->waitinglist->id, 'offqueue'=>0));
 		if(!$details){return false;}
 		foreach($details as $detail){
 			if($detail->methodtype==$methodtype){
@@ -149,8 +158,8 @@ class queuemanager  {
      */
 	 public function get_listtotal_by_method($methodtype){
 		global $DB;
-		 $record = $DB->get_record_sql("SELECT SUM(seats) as seatcount FROM {".static::QTABLE."} WHERE courseid = " . 
-		 	$this->courseid . "  AND waitinglistid = " . $this->waitinglist->id . 
+		 $record = $DB->get_record_sql("SELECT SUM(seats - allocseats) as seatcount FROM {".static::QTABLE."} WHERE courseid = " . 
+		 	$this->courseid . " AND offqueue = 0  AND waitinglistid = " . $this->waitinglist->id . 
 		 	" AND " .$DB->sql_compare_text('methodtype') . "='". $methodtype ."'");
 		 return $record ? $record->seatcount : 0;
 	}
@@ -184,7 +193,7 @@ class queuemanager  {
 		$DB->update_record(self::QTABLE, $qentry);
 		
 		//refresh our list
-		$records =  $DB->get_records(self::QTABLE, array('courseid' => $this->courseid, 'waitinglistid'=>$this->waitinglist->id),'queueno ASC');
+		$records =  $DB->get_records(self::QTABLE, array('courseid' => $this->courseid, 'waitinglistid'=>$this->waitinglist->id, 'offqueue'=>0),'queueno ASC');
 		if($records){
 			$this->qentries = $records;
 		}
@@ -208,11 +217,10 @@ class queuemanager  {
             $qentry->id = $DB->insert_record(self::QTABLE, $qentry);
             
 			if($qentry->id){
-				$maxq = $DB->get_record_sql('SELECT MAX(queueno) AS maxq, 1		
-                                     FROM {'. self::QTABLE .'} WHERE waitinglistid=' . $this->waitinglist->id);
+				$maxq = self::get_maxq_no($this->waitinglist->id);
 				$queue_entry = new \stdClass;
 				$queue_entry->id= $qentry->id;
-				$queue_entry->queueno =$maxq->maxq +1;
+				$queue_entry->queueno =$maxq +1;
 				$DB->update_record(self::QTABLE, $queue_entry);
 				$this->qentries[] =$qentry;
 				return $qentry->id;
@@ -224,15 +232,15 @@ class queuemanager  {
 	}
 	
 	/**
-     * Takes the top user off the waiting list and returns them
+     * SHOULD NEVER BE USED : OBSELETE
      *
      * @return stdclass the top entry on the waiting list
      */
 	public function remove_first(){
 		global $DB;
-		
 		$qentry = array_shift($this->qentries);
-		$DB->delete_records(self::QTABLE,array('id'=>$qentry->id));
+		$qentry->offqueue=1;
+		$DB->update_record(self::QTABLE,$qentry);
 		$this->reorder();
 		return $qentry;
 	}
@@ -254,9 +262,35 @@ class queuemanager  {
      *
      * @return stdclass the top entry on the waiting list
      */
+	public function really_remove_entry($qentryid){
+		global $DB;
+		
+		$qentry = $this->get_qentry($qentryid);
+		
+		//unenrol user if they exist
+		if($qentry){
+			$wl = enrol_get_plugin('waitinglist');
+			$wl->unenrol_user($this->waitinglist,$qentry->userid);
+		}
+		
+		//delete from DB
+		$ok = $DB->delete_records(self::QTABLE,array('id'=>$qentryid));
+		//reorder and return
+		if($ok){
+			$ok= $this->reorder();
+		}
+		
+		return $ok;
+	}
+	
+	/**
+     * Takes a user off the list
+     *
+     * @return stdclass the top entry on the waiting list
+     */
 	public function remove_entry($qentryid){
 		global $DB;
-		$ok = $DB->delete_records(self::QTABLE,array('id'=>$qentryid));
+		$ok = $DB->set_field(self::QTABLE,'offqueue',1,array('id'=>$qentryid));
 		if($ok){
 			$ok= $this->reorder();
 		}
@@ -270,7 +304,7 @@ class queuemanager  {
      */
 	public function reorder(){
 		global $DB;
-		$records =  $DB->get_records(self::QTABLE, array('waitinglistid' => $this->waitinglist->id),'queueno ASC');
+		$records =  $DB->get_records(self::QTABLE, array('waitinglistid' => $this->waitinglist->id, 'offqueue'=>0),'queueno ASC');
 		if($records){
 			$queueno = 0;
 			foreach ($records as $record){
@@ -287,6 +321,9 @@ class queuemanager  {
      * @return stdclass the top entry on the waiting list
      */
 	public function is_full(){
+		//echo '<br/>listtotal:' . $this->get_listtotal() ;
+		//echo '<br/>waitlistsize:' . $this->waitinglist->{ENROL_WAITINGLIST_FIELD_WAITLISTSIZE};
+		
 		return $this->get_listtotal() >= $this->waitinglist->{ENROL_WAITINGLIST_FIELD_WAITLISTSIZE};
 	}
 	
@@ -303,16 +340,16 @@ class queuemanager  {
 				$seatcount += 1;
 				break;
 			}else{
-				$seatcount += $qentry->seats;
+				$seatcount += $qentry->seats - $qentry->allocseats ;
 			}
 		}
 		return $seatcount;
 	}
 	
 	/**
-     * GEts the total of users on our waiting list
+     * Gets the position on the queue of the passed in entry
      *
-     * @return int  users on the waiting list
+     * @return int queue position
      */
 	public function get_listposition($qentry){
 		return $this->get_listtotal($qentry->id);
@@ -327,4 +364,6 @@ class queuemanager  {
 	public function get_entrycount(){
 		return $this->qentries ? count($this->qentries) : 0;
 	}
+	
+	
 }
