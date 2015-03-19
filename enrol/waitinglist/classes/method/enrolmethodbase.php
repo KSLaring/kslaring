@@ -314,6 +314,7 @@ abstract class enrolmethodbase  {
 		$message = str_replace('{$a->editenrolurl}', $a->editenrolurl, $message);
 		$message = str_replace('{$a->queueno}', $a->queueno, $message);
 		$message = str_replace('{$a->totalseats}', $a->totalseats, $message);
+		$message = str_replace('{$a->queueseats}', $a->totalseats, $message);//legacy
 		$message = str_replace('{$a->waitingseats}', $a->waitingseats, $message);
 		$message = str_replace('{$a->allocatedseats}', $a->allocatedseats, $message);
 		
