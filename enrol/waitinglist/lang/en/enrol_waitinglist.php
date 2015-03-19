@@ -124,7 +124,9 @@ The following placeholders may be included in the message:
 
 * Course name {$a->coursename}
 * Waiting list position {$a->queueno}
-* Waiting list seats {$a->queueseats}
+* Total seats {$a->totalseats}
+* Waiting seats {$a->waitingseats}
+* Allocated seats {$a->allocatedseats}
 * Link to course {$a->courseurl}
 * Link to enrolpage {$a->editenrolurl}';
 $string['sendcoursewaitlistmessage'] = 'Send email when added to waitlist';

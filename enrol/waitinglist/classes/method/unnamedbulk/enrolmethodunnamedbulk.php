@@ -65,8 +65,15 @@ class enrolmethodunnamedbulk extends \enrol_waitinglist\method\enrolmethodbase {
     {
     }
     
+    /**
+     * Show link to enrol form from course->user menu
+     * 
+     * @return boolean true=show | false = hide
+     */
    public static function can_enrol_from_course_admin(){
-		return true;
+		//set this to true to show bulkenrol link under course->user menu
+		//return true;
+		return false;
 	}
 	 
 	  /**
@@ -282,7 +289,7 @@ class enrolmethodunnamedbulk extends \enrol_waitinglist\method\enrolmethodbase {
 			$user = $DB->get_record('user',array('id'=>$queue_entry->userid));
 			if($user){
 				//somehow need to add allocation count here ... or do we?
-				$this->email_waitlist_message($waitinglist, $queue_entry,$user, 'confirmation');
+				$this->email_waitlist_message($waitinglist, $updatedentry,$user, 'confirmation');
 			}
 		}
 		return $success;

@@ -281,7 +281,7 @@ abstract class enrolmethodbase  {
      * @param stdClass $user user record
      * @return void
      */
-    protected function email_waitlist_message($waitinglist, $queue_entry, $user, $messagekey='') {
+    protected function email_waitlist_message($waitinglist, $entry, $user, $messagekey='') {
         global $CFG, $DB;
 
         $course = $DB->get_record('course', array('id'=>$waitinglist->courseid), '*', MUST_EXIST);
@@ -294,11 +294,18 @@ abstract class enrolmethodbase  {
         		$waitinglist->courseid . '&methodtype=' . static::METHODTYPE;
 
 		$queueman= \enrol_waitinglist\queuemanager::get_by_course($waitinglist->courseid);
-		
-		$qposition= $queueman->get_listtotal($queue_entry->id);
+		$entryman= \enrol_waitinglist\entrymanager::get_by_course($waitinglist->courseid);
+		$seatsonqueue = $entry->seats - $entry->allocseats;
+		if($seatsonqueue > 0){
+			$qposition= $queueman->get_listtotal($entry->id);
+		}else{
+			$qposition= 0;
+			$seatsonqueue= 0;
+		}
         $a->queueno = $qposition;
-        $a->queueseats = $queue_entry->seats;
-        $a->allocatedseats = $queue_entry->allocseats;
+        $a->totalseats = $entry->seats;
+        $a->allocatedseats = $entry->allocseats;
+        $a->waitingseats = $seatsonqueue;
 
 
         $message = $this->get_email_template($waitinglist,$messagekey);
@@ -306,7 +313,8 @@ abstract class enrolmethodbase  {
 		$message = str_replace('{$a->courseurl}', $a->courseurl, $message);
 		$message = str_replace('{$a->editenrolurl}', $a->editenrolurl, $message);
 		$message = str_replace('{$a->queueno}', $a->queueno, $message);
-		$message = str_replace('{$a->queueseats}', $a->queueseats, $message);
+		$message = str_replace('{$a->totalseats}', $a->totalseats, $message);
+		$message = str_replace('{$a->waitingseats}', $a->waitingseats, $message);
 		$message = str_replace('{$a->allocatedseats}', $a->allocatedseats, $message);
 		
 		if (strpos($message, '<') === false) {
