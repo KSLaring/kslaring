@@ -66,18 +66,18 @@ function local_completion_handle_course_completion_updated($event_data) {
                 /* Get Users Enrolled    */
                 $users_enrol = get_enrolled_users(context_course::instance($COURSE->id));
                 foreach ($users_enrol as $user) {
+                    /* Check Completed Dependencies   */
+                    if ($to_completed->dependencies) {
+                        $completed_dependencies = local_completion_CheckCompleted_CoursesDependencies($user->id,$to_completed->dependencies);
+                    }//if_dependencies
+
                     /* User Completions */
                     $user_completions = local_completion_getCompletionUser($COURSE->id,$user->id);
 
                     /* Completed Criteria   */
                     if ($to_completed->criterias == $user_completions) {
                         /* Info User Completion     */
-                        $completion_info = local_completion_getCompletionInfoUser($COURSE->id,$event_data->userid);
-                        /* Check Completed Dependencies   */
-                        if ($to_completed->dependencies) {
-                            $completed_dependencies = local_completion_CheckCompleted_CoursesDependencies($event_data->userid,$to_completed->dependencies);
-                        }
-
+                        $completion_info = local_completion_getCompletionInfoUser($COURSE->id,$user->id);
                         if ($completion_info) {
                             if ($completed_dependencies) {
                                 /* Completed    */
@@ -86,6 +86,15 @@ function local_completion_handle_course_completion_updated($event_data) {
                                     $completion_info->reaggregate = 0;
 
                                     $rdo_update = $DB->update_record('course_completions',$completion_info);
+
+                                    /* Update the completion status for that courses that depend on the course just completed   */
+                                    /* First Get the courses    */
+                                    $courses_to_update = local_completion_handle_courses_to_update($COURSE->id,$user->id);
+                                    if ($courses_to_update)   {
+                                        /* Update the courses   */
+                                        local_completion_handle_UpdateExtraCourses($courses_to_update,$user->id);
+                                    }
+
                                     /* Call Web Service */
                                     if ($rdo_update) {
                                         local_completion_sendCompletionToDossier($completion_info);
@@ -97,10 +106,25 @@ function local_completion_handle_course_completion_updated($event_data) {
                                 $completion_info->reaggregate   = 0;
 
                                 $rdo_update = $DB->update_record('course_completions',$completion_info);
+
+                                /* Update the completion status for that courses that depend on the course just completed   */
+                                /* First Get the courses    */
+                                $courses_to_update = local_completion_handle_courses_to_update($COURSE->id,$user->id);
+                                if ($courses_to_update)   {
+                                    /* Update the courses   */
+                                    local_completion_handle_UpdateExtraCourses_NotCompleted($courses_to_update,$user->id);
+                                }
                             }//if_dependencies
                         }//if_completion_info
-                    }//if_criterias
-
+                    }else {
+                        /* Update the completion status for that courses that depend on the course just completed   */
+                        /* First Get the courses    */
+                        $courses_to_update = local_completion_handle_courses_to_update($COURSE->id,$user->id);
+                        if ($courses_to_update)   {
+                            /* Update the courses   */
+                            local_completion_handle_UpdateExtraCourses_NotCompleted($courses_to_update,$user->id);
+                        }//if_courses_to_update
+                    }//if_criterias_completions
                 }//for_users
             }//if_toCompleted_criterias
         }//if_toCompleted
@@ -121,19 +145,20 @@ function local_completion_handle_course_completion_updated($event_data) {
  */
 function local_completion_handle_activity_completion_changed($event_data) {
     /* Variables    */
-    global $COURSE,$DB,$SESSION;
+    global $COURSE,$DB;
     $completed_dependencies = true;
     $to_completed           = null;
 
     try {
-        if (!isset($SESSION->send)) {
-            $SESSION->send = false;
-        }
-
         $to_completed = local_completion_getCriteriasToComplete($COURSE->id);
 
         if ($to_completed) {
             if ($to_completed->criterias) {
+                /* Check Completed Dependencies   */
+                if ($to_completed->dependencies) {
+                    $completed_dependencies = local_completion_CheckCompleted_CoursesDependencies($event_data->userid,$to_completed->dependencies);
+                }//if_dependencies
+
                 local_completion_cron_mark_started($COURSE->id);
 
                 /* User Completions */
@@ -153,11 +178,6 @@ function local_completion_handle_activity_completion_changed($event_data) {
 
                     /* Get Completion Info  */
                     $completion_info = local_completion_getCompletionInfoUser($COURSE->id,$event_data->userid);
-                    /* Check Completed Dependencies   */
-                    if ($to_completed->dependencies) {
-                        $completed_dependencies = local_completion_CheckCompleted_CoursesDependencies($event_data->userid,$to_completed->dependencies);
-                    }
-
                     if ($completion_info) {
                         if ($completed_dependencies) {
                             /* Completed    */
@@ -167,14 +187,16 @@ function local_completion_handle_activity_completion_changed($event_data) {
 
                                 $rdo_update = $DB->update_record('course_completions',$completion_info);
 
+                                /* Update the completion status for that courses that depend on the course just completed   */
+                                /* First Get the courses    */
+                                $courses_to_update = local_completion_handle_courses_to_update($COURSE->id,$event_data->userid);
+                                if ($courses_to_update)   {
+                                    /* Update the courses   */
+                                    local_completion_handle_UpdateExtraCourses($courses_to_update,$event_data->userid);
+                                }
                                 /* Call Web Service */
                                 if ($rdo_update) {
-                                    if (!$SESSION->send) {
-                                        local_completion_sendCompletionToDossier($completion_info);
-                                        $SESSION->send = true;
-                                    }else {
-                                        unset($SESSION->send);
-                                    }
+                                    local_completion_sendCompletionToDossier($completion_info);
                                 }//if_rdo_update
                             }//if_completion_reaggregate
                         }else {
@@ -183,12 +205,26 @@ function local_completion_handle_activity_completion_changed($event_data) {
                             $completion_info->reaggregate   = 0;
 
                             $rdo_update = $DB->update_record('course_completions',$completion_info);
+
+                            /* Update the completion status for that courses that depend on the course just completed   */
+                            /* First Get the courses    */
+                            $courses_to_update = local_completion_handle_courses_to_update($COURSE->id,$event_data->userid);
+                            if ($courses_to_update)   {
+                                /* Update the courses   */
+                                local_completion_handle_UpdateExtraCourses_NotCompleted($courses_to_update,$event_data->userid);
+                            }
                         }//if_dependencies
                     }//if_completion_info
-
+                }else {
+                    /* Update the completion status for that courses that depend on the course just completed   */
+                    /* First Get the courses    */
+                    $courses_to_update = local_completion_handle_courses_to_update($COURSE->id,$event_data->userid);
+                    if ($courses_to_update)   {
+                        /* Update the courses   */
+                        local_completion_handle_UpdateExtraCourses_NotCompleted($courses_to_update,$event_data->userid);
+                    }//if_courses_to_update
                 }//to_completed = user_completions
             }//if_toCompleted_criterias
-
         }//if_to_compelted
     }catch (Exception $ex) {
         throw $ex;
@@ -726,80 +762,6 @@ function local_completion_criteria_course_cron($course_id,$user_id) {
 }//local_completion_criteria_course_cron
 
 /**
- * @param           $completion_info
- * @return          bool
- * @throws          Exception
- *
- * @creationDate    12/08/2014
- * @author          eFaktor     (fbv)
- *
- * Description
- * Call Web Service from Dossier and send all information about completion course.
- */
-function local_completion_sendCompletionToDossier($completion_info) {
-    /* Variables    */
-    global $DB;
-    $accomplishment         = array();
-    $accomplishment_attr    = array();
-    $accomplishment_str     = null;
-    $plugin_info            = null;
-    $urlCompletionEvent     = null;
-
-    try {
-        /* Plugins Info */
-        $plugin_info     = get_config('local_completion');
-
-        /* Check if completion event, real time, is activated   */
-        if ($plugin_info->completion_activate) {
-            /* Prepare the data to send */
-            $accomplishment['accomplishment'] = array();
-
-            /* Create the ID - Something Unique */
-            $accomplishment_attr['accomplishmentId'] = $completion_info->id . '_' . array_sum(str_split($completion_info->timecompleted));
-            /* Get Id User  */
-            $user_id = $DB->get_field('user','secret',array('id' => $completion_info->userid));
-            if (!$user_id) {
-                $user_id = 0;
-            }//if_user_id
-            $accomplishment_attr['userId']           = $user_id;
-            $accomplishment_attr['courseId']         = $completion_info->course;
-            $accomplishment_attr['accomplishedDate'] = userdate($completion_info->timecompleted,'%Y.%m.%d', 99, false);;
-            $accomplishment_attr['addToCv'] = 'true';
-
-            /* Build Url End Point  */
-            $urlCompletionEvent = $plugin_info->completion_end_point;
-
-            /* Prepare the data */
-            $accomplishment['accomplishment']   = $accomplishment_attr;
-            $accomplishment_str                 = json_encode($accomplishment);
-
-            /* Call Web Service */
-            $ch = curl_init($urlCompletionEvent);
-            curl_setopt($ch, CURLOPT_CUSTOMREQUEST,     "POST");
-            curl_setopt($ch, CURLOPT_POST,              true);
-            curl_setopt($ch, CURLOPT_POSTFIELDS,        $accomplishment_str);
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER,    true);
-            curl_setopt($ch, CURLOPT_HTTPHEADER,        array(
-                                                                'User-Agent: Moodle 1.0',
-                                                                'Content-Type: application/json ',
-                                                                'Content-Length: '      . strlen($accomplishment_str),
-                                                                'DOSSIER_USER: '        . $plugin_info->completion_username,
-                                                                'DOSSIER_PASSWORD: '    . $plugin_info->completion_password)
-            );
-
-
-            $response = curl_exec( $ch );
-            curl_close( $ch );
-        }//if_completion_activate
-
-    }catch (Exception $ex) {
-        throw $ex;
-    }//try_catch
-
-    return true;
-}//local_completion_sendCompletionDossier
-
-/**
  * @param           $course_id
  * @param           $user_id
  * @return          bool|mixed
@@ -977,6 +939,316 @@ function local_completion_CheckCompleted_CoursesDependencies($user_id,$dependenc
         throw $ex;
     }//try_catch
 }//local_completion_CheckCompleted_CoursesDependencies
+
+/**
+ * @param           $course_dependency
+ * @param           $user_id
+ * @return          array
+ * @throws          Exception
+ *
+ * @creationDate    20/03/2015
+ * @author          eFaktor     (fbv)
+ *
+ * Description
+ * Get all the courses connected with the course dependency
+ */
+function local_completion_handle_courses_to_update($course_dependency,$user_id) {
+    /* Variables    */
+    global $DB;
+    $courses_to_update  = array();
+    $course_info        = null;
+
+    try {
+        /* Search Criteria  */
+        $params = array();
+        $params['course']       = $course_dependency;
+        $params['dependency']   = $course_dependency;
+        $params['user']         = $user_id;
+
+        /* SQL Instruction  */
+        $sql = " SELECT		ccc.course,
+                            ccc_d.criterias,
+                            ccc_d.course_dependencies
+                 FROM		{course_completion_criteria}	ccc
+                    JOIN	(
+                                SELECT		ccc.course,
+                                            GROUP_CONCAT(DISTINCT ccc.moduleinstance ORDER BY ccc.moduleinstance SEPARATOR ',') as 'criterias',
+                                            GROUP_CONCAT(DISTINCT ccc.courseinstance ORDER BY ccc.courseinstance SEPARATOR ',') as 'course_dependencies'
+                                FROM		{course_completion_criteria}	ccc
+                                    JOIN	{enrol}						    e		ON 	e.courseid 	= ccc.course
+                                    JOIN	{user_enrolments}				ue		ON 	ue.enrolid	= e.id
+                                                                                    AND ue.userid	= :user
+                                WHERE		ccc.gradepass IS NULL
+                                    AND		ccc.course != :course
+                                GROUP BY	ccc.course
+                            ) ccc_d ON ccc_d.course = ccc.course
+                 WHERE		ccc.courseinstance	= :dependency
+                 ORDER BY	ccc.course ";
+
+        /* Execute  */
+        $rdo = $DB->get_records_sql($sql,$params);
+        if ($rdo) {
+            foreach ($rdo as $instance) {
+                /* Course Info  */
+                $course_info = new stdClass();
+                $course_info->id            = $instance->course;
+                $course_info->criterias     = $instance->criterias;
+                $course_info->dependencies  = $instance->course_dependencies;
+
+                $courses_to_update[$instance->course] = $course_info;
+            }//for_rdo_courses
+        }//if_rdo
+
+        return $courses_to_update;
+    }catch (Exception $ex) {
+        throw $ex;
+    }//try_Catch
+}//local_completion_handle_courses_to_update
+
+/**
+ * @param           $courses_lst
+ * @param           $user_id
+ * @throws          Exception
+ *
+ * @creationDate    20/03/2015
+ * @author          eFaktor     (fbv)
+ *
+ * Description
+ * Get all the courses connected with and that they have to be updated as completed.
+ *
+ */
+function local_completion_handle_UpdateExtraCourses($courses_lst,$user_id) {
+    /* Variables    */
+    global $DB;
+    $completion_info        = null;
+    $user_completions       = null;
+    $completed_dependencies = true;
+
+    try {
+        foreach ($courses_lst as $course) {
+            local_completion_cron_mark_started($course->id);
+
+            /* Completion Criteria Date Cron        */
+            local_completion_criteria_date_cron($course->id,$user_id);
+            /* Completion Criteria Activity Cron    */
+            local_completion_criteria_activity_cron($course->id,$user_id);
+            /* Completion Criteria Duration Cron    */
+            local_completion_criteria_duration_cron($course->id,$user_id);
+            /* Completion Criteria Grade Cron       */
+            local_completion_criteria_grade_cron($course->id,$user_id);
+            /* Completion Criteria Course           */
+            local_completion_criteria_course_cron($course->id,$user_id);
+
+            /* Get Completion Info  */
+            $completion_info = local_completion_getCompletionInfoUser($course->id,$user_id);
+
+            if ($course->criterias) {
+                $user_completions = local_completion_getCompletionUser($course->id,$user_id);
+                if ($course->criterias == $user_completions) {
+                    if ($course->dependencies) {
+                        $completed_dependencies = local_completion_CheckCompleted_CoursesDependencies($user_id,$course->dependencies);
+                    }//if_course_dependencies
+
+                    if ($completed_dependencies) {
+                        if ($completion_info) {
+                            $completion_info->timecompleted = time();
+                            $completion_info->reaggregate   = 0;
+
+                            $rdo_update = $DB->update_record('course_completions',$completion_info);
+                        }//if_completion_info
+                    }//if_completed_dependencies
+                }//if_criterias_completions
+            }else {
+                if ($course->dependencies) {
+                    $completed_dependencies = local_completion_CheckCompleted_CoursesDependencies($user_id,$course->dependencies);
+
+                    if ($completed_dependencies) {
+                        if ($completion_info) {
+                            $completion_info->timecompleted = time();
+                            $completion_info->reaggregate   = 0;
+
+                            $rdo_update = $DB->update_record('course_completions',$completion_info);
+                        }//if_completion_info
+                    }//if_completed_dependencies
+                }//if_course_dependencies
+            }//if_criterias
+        }//for_courses
+    }catch (Exception $ex) {
+        throw $ex;
+    }//try_catch
+}//local_completion_handle_UpdateExtraCourses
+
+/**
+ * @param           $courses_lst
+ * @param           $user_id
+ * @throws          Exception
+ *
+ * @creationDate    20/03/2015
+ * @author          eFaktor     (fbv)
+ *
+ * Description
+ * Get all the courses connected with and that they have to be updated as not completed.
+ */
+function local_completion_handle_UpdateExtraCourses_NotCompleted($courses_lst,$user_id) {
+    /* Variables    */
+    global $DB;
+    $completion_info        = null;
+    $user_completions       = null;
+
+    try {
+        foreach ($courses_lst as $course) {
+            /* Get Completion Info  */
+            $completion_info = local_completion_getCompletionInfoUser($course->id,$user_id);
+
+            if ($course->criterias) {
+                $user_completions = local_completion_getCompletionUser($course->id,$user_id);
+                if ($course->criterias == $user_completions) {
+                    if ($completion_info) {
+                        $completion_info->timecompleted = null;
+                        $completion_info->reaggregate   = 0;
+
+                        $rdo_update = $DB->update_record('course_completions',$completion_info);
+
+                        /* Grade Criteria   */
+                        $completion_criteria = local_completion_handle_getCriteriaDependency($course->id);
+                        if ($completion_criteria) {
+                            $criteria_compl = $DB->get_record('course_completion_crit_compl',array('userid' => $user_id,'course' => $course->id,'criteriaid' => $completion_criteria));
+                            if ($criteria_compl) {
+                                /* Delete Grade */
+                                $DB->delete_records('course_completion_crit_compl',array('id' => $criteria_compl->id));
+                            }//if_Grade
+                        }//if_completion_criteria
+                    }//completion_nfo
+                }//if_criterias
+            }else {
+                /* Grade Criteria   */
+                $completion_criteria = local_completion_handle_getCriteriaDependency($course->id);
+                if ($completion_criteria) {
+                    $criteria_compl = $DB->get_record('course_completion_crit_compl',array('userid' => $user_id,'course' => $course->id,'criteriaid' => $completion_criteria));
+                    if ($criteria_compl) {
+                        /* Delete Grade */
+                        $DB->delete_records('course_completion_crit_compl',array('id' => $criteria_compl->id));
+                    }//if_Grade
+                }//if_completion_criteria
+            }//if_criterias
+        }//for_courses
+    }catch (Exception $ex) {
+        throw $ex;
+    }//try_catch
+}//local_completion_handle_UpdateExtraCourses_NotCompleted
+
+/**
+ * @param           $course
+ * @return          null
+ * @throws          Exception
+ *
+ * @creationDate    20/03/2015
+ * @author          eFaktor     (fbv)
+ *
+ * Description
+ * Get the criteria dependency connected with
+ */
+function local_completion_handle_getCriteriaDependency($course) {
+    /* Variables    */
+    global $DB;
+
+    try {
+        /* Search Criteria  */
+        $params = array();
+        $params['course'] = $course;
+
+        /* SQL Instruction  */
+        $sql = " SELECT 	id
+                 FROM 		{course_completion_criteria}
+                 WHERE		course = :course
+                    AND		courseinstance IS NOT NULL ";
+
+        /* Execute  */
+        $rdo = $DB->get_record_sql($sql,$params);
+        if ($rdo) {
+            return $rdo->id;
+        }else {
+            return null;
+        }//if_Rdo
+    }catch (Exception $ex) {
+        throw $ex;
+    }//try_catch
+}//local_completion_handle_getCriteriaDependency
+
+
+/**
+ * @param           $completion_info
+ * @return          bool
+ * @throws          Exception
+ *
+ * @creationDate    12/08/2014
+ * @author          eFaktor     (fbv)
+ *
+ * Description
+ * Call Web Service from Dossier and send all information about completion course.
+ */
+function local_completion_sendCompletionToDossier($completion_info) {
+    /* Variables    */
+    global $DB;
+    $accomplishment         = array();
+    $accomplishment_attr    = array();
+    $accomplishment_str     = null;
+    $plugin_info            = null;
+    $urlCompletionEvent     = null;
+
+    try {
+        /* Plugins Info */
+        $plugin_info     = get_config('local_completion');
+
+        /* Check if completion event, real time, is activated   */
+        if ($plugin_info->completion_activate) {
+            /* Prepare the data to send */
+            $accomplishment['accomplishment'] = array();
+
+            /* Create the ID - Something Unique */
+            $accomplishment_attr['accomplishmentId'] = $completion_info->id . '_' . array_sum(str_split($completion_info->timecompleted));
+            /* Get Id User  */
+            $user_id = $DB->get_field('user','secret',array('id' => $completion_info->userid));
+            if (!$user_id) {
+                $user_id = 0;
+            }//if_user_id
+            $accomplishment_attr['userId']           = $user_id;
+            $accomplishment_attr['courseId']         = $completion_info->course;
+            $accomplishment_attr['accomplishedDate'] = userdate($completion_info->timecompleted,'%Y.%m.%d', 99, false);;
+            $accomplishment_attr['addToCv'] = 'true';
+
+            /* Build Url End Point  */
+            $urlCompletionEvent = $plugin_info->completion_end_point;
+
+            /* Prepare the data */
+            $accomplishment['accomplishment']   = $accomplishment_attr;
+            $accomplishment_str                 = json_encode($accomplishment);
+
+            /* Call Web Service */
+            $ch = curl_init($urlCompletionEvent);
+            curl_setopt($ch, CURLOPT_CUSTOMREQUEST,     "POST");
+            curl_setopt($ch, CURLOPT_POST,              true);
+            curl_setopt($ch, CURLOPT_POSTFIELDS,        $accomplishment_str);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER,    true);
+            curl_setopt($ch, CURLOPT_HTTPHEADER,        array(
+                    'User-Agent: Moodle 1.0',
+                    'Content-Type: application/json ',
+                    'Content-Length: '      . strlen($accomplishment_str),
+                    'DOSSIER_USER: '        . $plugin_info->completion_username,
+                    'DOSSIER_PASSWORD: '    . $plugin_info->completion_password)
+            );
+
+
+            $response = curl_exec( $ch );
+            curl_close( $ch );
+        }//if_completion_activate
+
+    }catch (Exception $ex) {
+        throw $ex;
+    }//try_catch
+
+    return true;
+}//local_completion_sendCompletionDossier
 
 
 
