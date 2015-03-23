@@ -78,8 +78,8 @@ class manager_course_report_level_form extends moodleform {
 
             /* Format Report */
             $list = array(
-                          COURSE_REPORT_FORMAT_SCREEN        => get_string('preview', 'report_manager')
-                          //COURSE_REPORT_FORMAT_SCREEN_EXCEL  => get_string('excel', 'report_manager')
+                          COURSE_REPORT_FORMAT_SCREEN        => get_string('preview', 'report_manager'),
+                          COURSE_REPORT_FORMAT_SCREEN_EXCEL  => get_string('excel', 'report_manager')
                          );
             /* Format Report */
             $form->addElement('select',COURSE_REPORT_FORMAT_LIST,get_string('report_format_list', 'report_manager'),$list);

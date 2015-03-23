@@ -155,7 +155,7 @@ if ($form->is_cancelled()) {
 
                 break;
             case COURSE_REPORT_FORMAT_SCREEN_EXCEL:
-                //course_report::Download_CourseReport($course_report);
+                course_report::Download_CourseReport($course_report);
 
                 break;
             default:

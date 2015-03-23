@@ -556,6 +556,85 @@ class course_report {
         }//try_catch
     }//Print_CourseReport_Screen
 
+    /**
+     * @param            $course_report
+     * @throws           Exception
+     *
+     * @creationDate    19/03/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Print the course report data - Excel Format
+     *
+     * Course Report.
+     *      - id
+     *      - name
+     *      - job_roles.    Array
+     *                      [id]    --> industrycode + name
+     *      - outcomes.     Array
+     *                      [id]
+     *                              --> name
+     *                              --> expiration
+     *      - rpt
+     *      - completed_before
+     *      - levelZero.    Array
+     *                      [id]
+     *                          --> id
+     *                          --> name
+     *                          --> levelOne.   Array
+     *
+     *      - levelOne. Array
+     *                  [id]
+     *                          --> id
+     *                          --> name
+     *                          --> levelTwo.   Array
+     *      - levelTwo. Array
+     *                  [id]
+     *                          --> id
+     *                          --> name
+     *                          --> levelThree. Array
+     *
+     *
+     *      - levelThree.   Array
+     *                      [id]
+     *                          --> id
+     *                          --> name
+     *                          --> completed.      Array
+     *                                              --> name
+     *                                              --> completed
+     *                          --> not_completed.  Array
+     *                                              --> name
+     *                          --> not_enrol.      Array
+     *                                              --> name
+     */
+    public static function Download_CourseReport($course_report) {
+        try {
+            switch ($course_report->rpt) {
+                case 0:
+                    self::Download_CourseReport_LevelZero($course_report);
+
+                    break;
+
+                case 1:
+                    self::Download_CourseReport_LevelOne($course_report);
+
+                    break;
+                case 2:
+                    self::Download_CourseReport_LevelTwo($course_report);
+
+                    break;
+                case 3:
+                    self::Download_CourseReport_LevelThree($course_report);
+
+                    break;
+                default:
+                    break;
+            }//switch_report_level
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//Download_CourseReport
+
     /*********************/
     /* PRIVATE FUNCTIONS */
     /*********************/
@@ -2109,4 +2188,633 @@ class course_report {
 
         return $content;
     }//Add_ContentTable_LevelThree_Screen
+
+    /**
+     * @param           $course_report
+     * @throws          Exception
+     *
+     * @creationDate    19/03/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Download Course Report - Level Zero
+     */
+    private static function Download_CourseReport_LevelZero($course_report) {
+        /* Variables    */
+        global $CFG;
+        $row        = null;
+
+        try {
+            require_once($CFG->dirroot.'/lib/excellib.class.php');
+
+            /* File Name    */
+            $time = userdate(time(),'%d.%m.%Y', 99, false);
+            $file_name = clean_filename($course_report->name . '_' . $time . ".xls");
+
+            /* Get Expiration Period            */
+            $options            = report_manager_get_completed_list();
+            $completed_before   = $options[$course_report->completed_before];
+
+            // Creating a workbook
+            $export = new MoodleExcelWorkbook("-");
+            // Sending HTTP headers
+            $export->send($file_name);
+
+            /* One Sheet By Level twoo  */
+            foreach ($course_report->levelOne as $levelOne) {
+                foreach ($levelOne->levelTwo as $levelTwo) {
+                    $row = 0;
+                    // Adding the worksheet
+                    $my_xls = $export->add_worksheet($levelTwo->name);
+
+                    /* Add Header - Company Course Report  - Level One */
+                    self::AddHeader_CompanySheet($course_report->name,$course_report->outcomes,$course_report->levelZero,$levelOne,$levelTwo,null,$completed_before,$my_xls,$row);
+
+                    /* Ad Level Two */
+                    if ($levelTwo->levelThree) {
+                        /* Add Header Table */
+                        $row++;
+                        self::AddHeader_LevelTwo_TableCourse($my_xls,$row);
+
+                        /* Add Content Table    */
+                        $row++;
+                        foreach ($levelTwo->levelThree as $company) {
+                            self::AddContent_LevelTwo_TableCourse($my_xls,$row,$company);
+
+                            $my_xls->merge_cells($row,0,$row,13);
+                            $row++;
+                        }//for_each_company
+                    }//if_level_three
+                }//for_levelTwo
+            }//for_elvel_one
+
+            $export->close();
+            exit;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//Download_CourseReport_LevelZero
+
+    /**
+     * @param           $course_report
+     * @throws          Exception
+     *
+     * @creationDate    19/03/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Download Course Report - Level One
+     */
+    private static function Download_CourseReport_LevelOne($course_report) {
+        /* Variables    */
+        global $CFG;
+        $levelOne   = null;
+        $row        = null;
+
+        try {
+            require_once($CFG->dirroot.'/lib/excellib.class.php');
+
+            /* File Name    */
+            $time = userdate(time(),'%d.%m.%Y', 99, false);
+            $file_name = clean_filename($course_report->name . '_' . $time . ".xls");
+
+            /* Get Expiration Period            */
+            $options            = report_manager_get_completed_list();
+            $completed_before   = $options[$course_report->completed_before];
+
+            // Creating a workbook
+            $export = new MoodleExcelWorkbook("-");
+            // Sending HTTP headers
+            $export->send($file_name);
+
+            /* One Sheet by Level Two   */
+            $levelOne = array_shift($course_report->levelOne);
+            foreach ($levelOne->levelTwo as $levelTwo) {
+                $row = 0;
+                // Adding the worksheet
+                $my_xls = $export->add_worksheet($levelTwo->name);
+
+                /* Add Header - Company Course Report  - Level One */
+                self::AddHeader_CompanySheet($course_report->name,$course_report->outcomes,$course_report->levelZero,$levelOne,$levelTwo,null,$completed_before,$my_xls,$row);
+
+                /* Ad Level Two */
+                if ($levelTwo->levelThree) {
+                    /* Add Header Table */
+                    $row++;
+                    self::AddHeader_LevelTwo_TableCourse($my_xls,$row);
+
+                    /* Add Content Table    */
+                    $row++;
+                    foreach ($levelTwo->levelThree as $company) {
+                        self::AddContent_LevelTwo_TableCourse($my_xls,$row,$company);
+
+                        $my_xls->merge_cells($row,0,$row,13);
+                        $row++;
+                    }//for_each_company
+                }//if_level_three
+            }//for_levelTwo
+
+            $export->close();
+            exit;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//Download_CourseReport_LevelOne
+
+    /**
+     * @param           $course_report
+     * @throws          Exception
+     *
+     * @creationDate    19/03/2015
+     * @author          eFaktor         (fbv)
+     *
+     * Description
+     * Download Course Report - Level Two
+     */
+    private static function Download_CourseReport_LevelTwo($course_report) {
+        /* Variables    */
+        global $CFG;
+        $levelOne   = null;
+        $levelTwo   = null;
+        $row        = null;
+
+        try {
+            require_once($CFG->dirroot.'/lib/excellib.class.php');
+
+            /* File Name    */
+            $time = userdate(time(),'%d.%m.%Y', 99, false);
+            $file_name = clean_filename($course_report->name . '_' . $time . ".xls");
+
+            /* Get Expiration Period            */
+            $options            = report_manager_get_completed_list();
+            $completed_before   = $options[$course_report->completed_before];
+
+            // Creating a workbook
+            $export = new MoodleExcelWorkbook("-");
+            // Sending HTTP headers
+            $export->send($file_name);
+
+            /* Level One   */
+            $levelOne = array_shift($course_report->levelOne);
+            /* Level Two    */
+            $levelTwo = array_shift($course_report->levelTwo);
+
+            /* One Sheet by Level Two   */
+            $row = 0;
+            // Adding the worksheet
+            $my_xls    = $export->add_worksheet($levelTwo->name);
+
+            /* Add Header - Company Course Report  - Level One */
+            self::AddHeader_CompanySheet($course_report->name,$course_report->outcomes,$course_report->levelZero,$levelOne,$levelTwo,null,$completed_before,$my_xls,$row);
+
+            /* Ad Level Two */
+            if ($levelTwo->levelThree) {
+                /* Add Header Table */
+                $row++;
+                self::AddHeader_LevelTwo_TableCourse($my_xls,$row);
+
+                /* Add Content Table    */
+                $row++;
+                foreach ($levelTwo->levelThree as $company) {
+                    self::AddContent_LevelTwo_TableCourse($my_xls,$row,$company);
+
+                    $my_xls->merge_cells($row,0,$row,13);
+                    $row++;
+                }//for_each_company
+            }//if_level_three
+
+            $export->close();
+            exit;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//Download_CourseReport_LevelTwo
+
+    /**
+     * @param           $course_report
+     * @throws          Exception
+     *
+     * @creationDate    19/03/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Download Course Report - Level Three
+     */
+    private static function Download_CourseReport_LevelThree($course_report) {
+        /* Variables    */
+        global $CFG;
+        $levelOne   = null;
+        $levelTwo   = null;
+        $row        = null;
+
+        try {
+            require_once($CFG->dirroot.'/lib/excellib.class.php');
+
+            /* File Name    */
+            $time = userdate(time(),'%d.%m.%Y', 99, false);
+            $file_name = clean_filename($course_report->name . '_' . $time . ".xls");
+
+            /* Get Expiration Period            */
+            $options            = report_manager_get_completed_list();
+            $completed_before   = $options[$course_report->completed_before];
+
+            // Creating a workbook
+            $export = new MoodleExcelWorkbook("-");
+            // Sending HTTP headers
+            $export->send($file_name);
+
+            /* Level One   */
+            $levelOne = array_shift($course_report->levelOne);
+            /* Level Two    */
+            $levelTwo = array_shift($course_report->levelTwo);
+
+            /* Ad Level Two */
+            if ($course_report->levelThree) {
+                foreach ($course_report->levelThree as $company) {
+                    /* One Sheet by Level Three   */
+                    $row = 0;
+                    // Adding the worksheet
+                    $my_xls    = $export->add_worksheet($company->name);
+
+                    /* Add Header - Company Course Report  - Level One */
+                    self::AddHeader_CompanySheet($course_report->name,$course_report->outcomes,$course_report->levelZero,$levelOne,$levelTwo,$company->name,$completed_before,$my_xls,$row);
+
+                    /* Add Header Table     */
+                    $row++;
+                    self::AddHeader_LevelThree_TableCourse($my_xls,$row);
+                    /* Add Content Table    */
+                    $row++;
+                    self::AddContent_LevelThree_TableCourse($my_xls,$row,$company);
+
+                    $my_xls->merge_cells($row,0,$row,10);
+                }//for_each_company
+            }//if_level_three
+
+            $export->close();
+            exit;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//Download_CourseReport_LevelThree
+
+    /**
+     * @param           $course
+     * @param           $outcomes
+     * @param           $level_zero
+     * @param           $level_one
+     * @param           null $level_two
+     * @param           null $level_three
+     * @param           $completed_before
+     * @param           $my_xls
+     * @param           $row
+     * @throws          Exception
+     *
+     * @creationDate    19/03/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Add the Header of the Company Sheet
+     */
+    private static function AddHeader_CompanySheet($course,$outcomes,$level_zero,$level_one=null,$level_two = null,$level_three = null,$completed_before,&$my_xls,&$row) {
+        /* Variables    */
+        $col = 0;
+        $title_course           = get_string('course');
+        $title_outcomes         = get_string('outcomes', 'report_manager');
+        $str_outcomes           = null;
+        $title_expiration       = get_string('expired_next','report_manager') . ': ' . $completed_before;
+        $title_level_zero       = get_string('company_structure_level', 'report_manager', 0) . ': ' . $level_zero;
+        $title_level_one        = null;
+        if ($level_one) {
+            $title_level_one    = get_string('company_structure_level', 'report_manager', 1) . ': ' . $level_one->name;
+        }
+        $title_level_two        = null;
+        if ($level_two) {
+            $title_level_two    = get_string('company_structure_level', 'report_manager', 2) . ': ' . $level_two->name;
+        }//if_level_two
+
+        try {
+            /* Course Title && Course Name*/
+            /* Course Name  */
+            $my_xls->write($row, $col, $title_course,array('size'=>12, 'name'=>'Arial','bold'=>'1','color' => '#004b93','bg_color'=>'#efefef','text_wrap'=>true,'v_align'=>'center'));
+            $my_xls->merge_cells($row,$col,$row,$col+10);
+            $my_xls->set_row($row,25);
+            $row++;
+            $my_xls->write($row, $col, $course,array('size'=>10, 'name'=>'Arial','bold'=>'1','text_wrap'=>true,'v_align'=>'center'));
+            $my_xls->merge_cells($row,$col,$row,$col+10);
+            $my_xls->set_row($row,25);
+
+            /* Outcome Title && Outcome Names   */
+            $row++;
+            $my_xls->write($row, $col, $title_outcomes,array('size'=>12, 'name'=>'Arial','bold'=>'1','color' => '#004b93','bg_color'=>'#efefef','text_wrap'=>true,'v_align'=>'center'));
+            $my_xls->merge_cells($row,$col,$row,$col+10);
+            $my_xls->set_row($row,25);
+            $row++;
+            if ($outcomes) {
+                foreach ($outcomes as $outcome) {
+                    $str_outcomes[] = $outcome->name;
+                }//for_outcomes
+            }
+            $my_xls->write($row, $col, implode(', ',$str_outcomes),array('size'=>10, 'name'=>'Arial','bold'=>'1','text_wrap'=>true,'v_align'=>'center'));
+            $my_xls->merge_cells($row,$col,$row,$col+10);
+            $my_xls->set_row($row,25);
+
+            /* Level One    */
+            $row++;
+            $col = 0;
+            $my_xls->write($row, $col, $title_level_zero,array('size'=>12, 'name'=>'Arial','bold'=>'1','color' => '#004b93','bg_color'=>'#efefef','text_wrap'=>true,'v_align'=>'center'));
+            $my_xls->merge_cells($row,$col,$row,$col+10);
+            $my_xls->set_row($row,25);
+
+            /* Level One    */
+            $row++;
+            $col = 0;
+            $my_xls->write($row, $col, $title_level_one,array('size'=>12, 'name'=>'Arial','bold'=>'1','color' => '#004b93','bg_color'=>'#efefef','text_wrap'=>true,'v_align'=>'center'));
+            $my_xls->merge_cells($row,$col,$row,$col+10);
+            $my_xls->set_row($row,25);
+
+            /* Level Two    */
+            if ($title_level_two) {
+                $row++;
+                $col = 0;
+                $my_xls->write($row, $col, $title_level_two,array('size'=>12, 'name'=>'Arial','bold'=>'1','color' => '#004b93','bg_color'=>'#efefef','text_wrap'=>true,'v_align'=>'center'));
+                $my_xls->merge_cells($row,$col,$row,$col+10);
+                $my_xls->set_row($row,25);
+            }//if_level_two
+
+            /* Level Three  */
+            if ($level_three) {
+                /* Merge Cells  */
+                $row++;
+                $my_xls->merge_cells($row,$col,$row,$col+10);
+                $row++;
+                $my_xls->merge_cells($row,$col,$row,$col+10);
+
+                $row++;
+                $col = 0;
+                $my_xls->write($row, $col, $level_three,array('size'=>14, 'name'=>'Arial','bold'=>'1','color' => '#004b93','bg_color'=>'#efefef','text_wrap'=>true,'v_align'=>'center'));
+                $my_xls->merge_cells($row,$col,$row,$col+10);
+                $my_xls->set_row($row,25);
+            }
+
+            /* Expiration Time */
+            $row++;
+            $col = 0;
+            $my_xls->write($row, $col, $title_expiration,array('size'=>12, 'name'=>'Arial','bold'=>'1','color' => '#004b93','text_wrap'=>true,'v_align'=>'center'));
+            $my_xls->merge_cells($row,$col,$row,$col+10);
+            $my_xls->set_row($row,25);
+
+            /* Merge Cells  */
+            $row++;
+            $my_xls->merge_cells($row,$col,$row,$col+10);
+            $row++;
+            $my_xls->merge_cells($row,$col,$row,$col+10);
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//AddHeader_CompanySheet
+
+    /**
+     * @param           $my_xls
+     * @param           $row
+     * @throws          Exception
+     *
+     * @creationDate    19/03/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Add the header of the table - Level One && Two
+     */
+    private static function AddHeader_LevelTwo_TableCourse(&$my_xls,$row) {
+        /* Variables    */
+        $str_company        = strtoupper(get_string('company','report_manager'));
+        $str_not_enrol      = strtoupper(get_string('not_start','report_manager'));
+        $str_not_completed  = strtoupper(get_string('progress','report_manager'));
+        $str_completed      = strtoupper(get_string('completed','report_manager'));
+        $str_total          = strtoupper(get_string('count','report_manager'));
+        $col                = 0;
+
+        try {
+            /* Company      */
+            $my_xls->write($row, $col, $str_company,array('size'=>12, 'name'=>'Arial','bold'=>'1','color' => '#004b93','bg_color'=>'#efefef','align'=>'left','v_align'=>'center'));
+            $my_xls->merge_cells($row,$col,$row,$col+5);
+            $my_xls->set_row($row,20);
+
+            /* Not Enrol    */
+            $col = $col + 6;
+            $my_xls->write($row, $col, $str_not_enrol,array('size'=>12, 'name'=>'Arial','bold'=>'1','color' => '#004b93','bg_color'=>'#efefef','align'=>'center','v_align'=>'center'));
+            $my_xls->merge_cells($row,$col,$row,$col+1);
+            $my_xls->set_row($row,20);
+
+            /* In Progress  */
+            $col = $col + 2;
+            $my_xls->write($row, $col, $str_not_completed,array('size'=>12, 'name'=>'Arial','bold'=>'1','color' => '#004b93','bg_color'=>'#efefef','align'=>'center','v_align'=>'center'));
+            $my_xls->merge_cells($row,$col,$row,$col+1);
+            $my_xls->set_row($row,20);
+
+            /* Completed    */
+            $col = $col + 2;
+            $my_xls->write($row, $col, $str_completed,array('size'=>12, 'name'=>'Arial','bold'=>'1','color' => '#004b93','bg_color'=>'#efefef','align'=>'center','v_align'=>'center'));
+            $my_xls->merge_cells($row,$col,$row,$col+1);
+            $my_xls->set_row($row,20);
+
+            /* Total        */
+            $col = $col + 2;
+            $my_xls->write($row, $col, $str_total,array('size'=>12, 'name'=>'Arial','bold'=>'1','color' => '#004b93','bg_color'=>'#efefef','align'=>'center','v_align'=>'center'));
+            $my_xls->merge_cells($row,$col,$row,$col+1);
+            $my_xls->set_row($row,20);
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//AddHeader_LevelTwo_TableCourse
+
+    /**
+     * @param           $my_xls
+     * @param           $row
+     * @param           $company_info
+     * @throws          Exception
+     *
+     * @creationDate    19/03/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Add the content of the table - Level One && Two
+     */
+    private static function AddContent_LevelTwo_TableCourse(&$my_xls,&$row,$company_info) {
+        /* Variables    */
+        $col    = 0;
+        $total  = 0;
+
+        try {
+            /* Company      */
+            $my_xls->write($row, $col, $company_info->name,array('size'=>12, 'name'=>'Arial','align'=>'left','v_align'=>'center'));
+            $my_xls->merge_cells($row,$col,$row,$col+5);
+            $my_xls->set_row($row,20);
+
+            /* Not Enrol    */
+            $col = $col + 6;
+            $my_xls->write($row, $col, count($company_info->not_enrol),array('size'=>12, 'name'=>'Arial','align'=>'center','v_align'=>'center'));
+            $my_xls->merge_cells($row,$col,$row,$col+1);
+            $my_xls->set_row($row,20);
+
+            /* In Progress  */
+            $col = $col + 2;
+            $my_xls->write($row, $col, count($company_info->not_completed),array('size'=>12, 'name'=>'Arial','align'=>'center','v_align'=>'center'));
+            $my_xls->merge_cells($row,$col,$row,$col+1);
+            $my_xls->set_row($row,20);
+
+            /* Completed    */
+            $col = $col + 2;
+            $my_xls->write($row, $col, count($company_info->completed),array('size'=>12, 'name'=>'Arial','align'=>'center','v_align'=>'center'));
+            $my_xls->merge_cells($row,$col,$row,$col+1);
+            $my_xls->set_row($row,20);
+
+            /* Total        */
+            $col = $col + 2;
+            $total = count($company_info->completed) + count($company_info->not_completed) + count($company_info->not_enrol);
+            $my_xls->write($row, $col, $total,array('size'=>12, 'name'=>'Arial','align'=>'center','v_align'=>'center'));
+            $my_xls->merge_cells($row,$col,$row,$col+1);
+            $my_xls->set_row($row,20);
+
+            $row++;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//AddContent_LevelTwo_TableCourse
+
+    /**
+     * @param           $my_xls
+     * @param           $row
+     * @throws          Exception
+     *
+     * @creationDate    19/03/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Add the header of the table - Level Three
+     */
+    private static function AddHeader_LevelThree_TableCourse(&$my_xls,$row) {
+        /* Variables    */
+        $str_user           = strtoupper(get_string('user'));
+        $str_state          = strtoupper(get_string('state','local_tracker_manager'));
+        $str_completion     = strtoupper(get_string('completion_time','local_tracker_manager'));
+        $col                = 0;
+
+        try {
+            /* User         */
+            $my_xls->write($row, $col, $str_user,array('size'=>12, 'name'=>'Arial','bold'=>'1','color' => '#004b93','bg_color'=>'#efefef','align'=>'left','v_align'=>'center'));
+            $my_xls->merge_cells($row,$col,$row,$col+5);
+            $my_xls->set_row($row,20);
+
+            /* State        */
+            $col = $col + 6;
+            $my_xls->write($row, $col, $str_state,array('size'=>12, 'name'=>'Arial','bold'=>'1','color' => '#004b93','bg_color'=>'#efefef','align'=>'center','v_align'=>'center'));
+            $my_xls->merge_cells($row,$col,$row,$col+2);
+            $my_xls->set_row($row,20);
+
+            /* Completion   */
+            $col = $col + 3;
+            $my_xls->write($row, $col, $str_completion,array('size'=>12, 'name'=>'Arial','bold'=>'1','color' => '#004b93','bg_color'=>'#efefef','align'=>'center','v_align'=>'center'));
+            $my_xls->merge_cells($row,$col,$row,$col+2);
+            $my_xls->set_row($row,20);
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//AddHeader_LevelThree_TableCourse
+
+    /**
+     * @param           $my_xls
+     * @param           $row
+     * @param           $company_info
+     * @throws          Exception
+     *
+     * @creationDate    19/03/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Add the content of the table - Level Three
+     */
+    private static function AddContent_LevelThree_TableCourse(&$my_xls,&$row,$company_info) {
+        /* Variables    */
+        $col = null;
+
+        try {
+            /* Completed        */
+            if ($company_info->completed) {
+                foreach ($company_info->completed as $user) {
+                    $col = 0;
+
+                    /* User     */
+                    $my_xls->write($row, $col, $user->name,array('size'=>12, 'name'=>'Arial','bg_color'=>'#dff0d8','align'=>'left','v_align'=>'center'));
+                    $my_xls->merge_cells($row,$col,$row,$col+5);
+                    $my_xls->set_row($row,20);
+
+                    /* State        */
+                    $col = $col + 6;
+                    $my_xls->write($row, $col, get_string('outcome_course_finished','local_tracker_manager'),array('size'=>12, 'name'=>'Arial','bg_color'=>'#dff0d8','align'=>'center','v_align'=>'center'));
+                    $my_xls->merge_cells($row,$col,$row,$col+2);
+                    $my_xls->set_row($row,20);
+
+                    /* Completion   */
+                    $col = $col + 3;
+                    $my_xls->write($row, $col, userdate($user->completed,'%d.%m.%Y', 99, false),array('size'=>12, 'name'=>'Arial','bg_color'=>'#dff0d8','align'=>'center','v_align'=>'center'));
+                    $my_xls->merge_cells($row,$col,$row,$col+2);
+                    $my_xls->set_row($row,20);
+
+                    $row++;
+                }//courses_completed
+            }//if_completed
+
+            /* In Progress      */
+            if ($company_info->not_completed) {
+                foreach ($company_info->not_completed as $user) {
+                    $col = 0;
+                    /* User     */
+                    $my_xls->write($row, $col, $user->name,array('size'=>12, 'name'=>'Arial','align'=>'left','v_align'=>'center'));
+                    $my_xls->merge_cells($row,$col,$row,$col+5);
+                    $my_xls->set_row($row,20);
+
+                    /* State        */
+                    $col = $col + 6;
+                    $my_xls->write($row, $col, get_string('outcome_course_started','local_tracker_manager'),array('size'=>12, 'name'=>'Arial','align'=>'center','v_align'=>'center'));
+                    $my_xls->merge_cells($row,$col,$row,$col+2);
+                    $my_xls->set_row($row,20);
+
+                    /* Completion   */
+                    $col = $col + 3;
+                    $my_xls->write($row, $col, ' - ',array('size'=>12, 'name'=>'Arial','align'=>'center','v_align'=>'center'));
+                    $my_xls->merge_cells($row,$col,$row,$col+2);
+                    $my_xls->set_row($row,20);
+
+                    $row++;
+                }//courses_completed
+            }//if_not_completed
+
+            /* Not Enrol        */
+            if ($company_info->not_enrol) {
+                foreach ($company_info->not_enrol as $user) {
+                    $col = 0;
+                    /* User     */
+                    $my_xls->write($row, $col, $user->name,array('size'=>12, 'name'=>'Arial','bg_color'=>'#fcf8e3','align'=>'left','v_align'=>'center'));
+                    $my_xls->merge_cells($row,$col,$row,$col+5);
+                    $my_xls->set_row($row,20);
+
+                    /* State        */
+                    $col = $col + 6;
+                    $my_xls->write($row, $col, get_string('outcome_course_not_enrolled','local_tracker_manager'),array('size'=>12, 'name'=>'Arial','bg_color'=>'#fcf8e3','align'=>'center','v_align'=>'center'));
+                    $my_xls->merge_cells($row,$col,$row,$col+2);
+                    $my_xls->set_row($row,20);
+
+                    /* Completion   */
+                    $col = $col + 3;
+                    $my_xls->write($row, $col, ' - ',array('size'=>12, 'name'=>'Arial','bg_color'=>'#fcf8e3','align'=>'center','v_align'=>'center'));
+                    $my_xls->merge_cells($row,$col,$row,$col+2);
+                    $my_xls->set_row($row,20);
+
+                    $row++;
+                }//not_enrol
+            }//if_not_enrol
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//AddContent_LevelThree_TableCourse
 }//course_report
