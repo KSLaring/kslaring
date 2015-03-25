@@ -176,7 +176,7 @@ if (!empty($out)) {
     echo $OUTPUT->heading($out);
 }else {
     /* Print tabs at the top */
-    $current_tab = 'course_report';
+    $current_tab = 'course_report_level';
     $show_roles = 1;
     require('../tabs.php');
 

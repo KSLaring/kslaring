@@ -24,6 +24,7 @@ $active_two = NULL;
 $tabs       = array();
 $top_row    = array();
 
+
 /* Create Tabs */
 $top_row[] = new tabobject('company_report',
                            new moodle_url($CFG->wwwroot. '/report/manager/index.php'),
@@ -35,22 +36,24 @@ if (has_capability('report/manager:viewlevel3', $site_context)) {
                                 get_string('outcome_report','report_manager'));
 
 
-    if ($current_tab == 'outcome_report') {
+    if ($current_tab == 'outcome_report_level') {
         $second_row = array();
         $second_row[] = new tabobject('levels',
                                       new moodle_url($CFG->wwwroot.'/report/manager/outcome_report/outcome_report.php'),
                                       get_string('select_report_levels','report_manager'));
+        $current_tab = 'outcome_report';
     }
 
     $top_row[] = new tabobject('course_report',
                                new moodle_url($CFG->wwwroot.'/report/manager/course_report/course_report.php'),
                                get_string('course_report','report_manager'));
 
-    if ($current_tab == 'course_report') {
+    if ($current_tab == 'course_report_level') {
         $second_row = array();
         $second_row[] = new tabobject('levels',
                                       new moodle_url($CFG->wwwroot.'/report/manager/course_report/course_report.php'),
                                       get_string('select_report_levels','report_manager'));
+        $current_tab = 'course_report';
 
     }
 }//if_level3

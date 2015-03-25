@@ -42,7 +42,7 @@ class manager_edit_job_role_form extends moodleform {
             $m_form->setDefault('job_role_name',$jr_info->name);
         }//if_jobRole
         $m_form->setType('job_role_name',PARAM_TEXT);
-        $m_form->addRule('job_role_name','','required', null, 'server');
+        $m_form->addRule('job_role_name','required','required', null, 'client');
 
         /* Add Industry Code (Required) */
         $m_form->addElement('text', 'industry_code', get_string('industry_code','report_manager'), $text_attr);
@@ -52,8 +52,7 @@ class manager_edit_job_role_form extends moodleform {
             $m_form->setDefault('industry_code',$jr_info->industry_code);
         }//if_industrycode
         $m_form->setType('industry_code',PARAM_TEXT);
-        $m_form->addRule('industry_code','','required', null, 'server');
-
+        $m_form->addRule('industry_code', 'required', 'required', null, 'client');
         /* Companies Levels Connected With  */
         $m_form->addElement('header', 'levels_connected', get_string('jr_connected', 'report_manager'));
         $m_form->setExpanded('levels_connected',true);
@@ -86,6 +85,7 @@ class manager_edit_job_role_form extends moodleform {
         $m_form->setDefault('id',$jr_info->id);
 
         $this->add_action_buttons(true);
+        $this->set_data($jr_info->id);
     }//definition
 
     /**

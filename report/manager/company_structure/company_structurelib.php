@@ -471,17 +471,18 @@ class company_structure {
 
             /* SQL Instruction  */
             $sql = " SELECT		gr.parentid,
-                                c.name
+                                c.name,
+                                c.industrycode
                     FROM		{report_gen_company_relation}	gr
                         JOIN	{report_gen_companydata}		c	ON 	c.id = gr.parentid
                     WHERE		gr.companyid = :company_id
-                    ORDER BY 	c.name ";
+                    ORDER BY 	c.industrycode, c.name ";
 
             /* Execute  */
             $rdo = $DB->get_records_sql($sql,$params);
             if ($rdo) {
                 foreach ($rdo as $parent) {
-                    $parent_lst[$parent->parentid] = $parent->name;
+                    $parent_lst[$parent->parentid] = $parent->industrycode . ' - ' . $parent->name;
                 }//for_rdo_parent
             }//if_rdo
 

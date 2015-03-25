@@ -1427,7 +1427,7 @@ class course_report {
                     /* Expiration Before    */
                     $options = report_manager_get_completed_list();
                     $out_report .= html_writer::start_div('expiration');
-                        $out_report .= get_string('expired_next','report_manager') . ': ' .  $options[$course_report->completed_before];
+                        $out_report .= str_replace(' ...',' : ',get_string('completed_list','report_manager')) .  $options[$course_report->completed_before];
                     $out_report .= html_writer::end_div();//expiration
                 $out_report .= html_writer::end_div();//outcome_detail_rpt
 
@@ -1568,7 +1568,7 @@ class course_report {
                     /* Expiration Before    */
                     $options = report_manager_get_completed_list();
                     $out_report .= html_writer::start_div('expiration');
-                        $out_report .= get_string('expired_next','report_manager') . ': ' .  $options[$course_report->completed_before];
+                        $out_report .= str_replace(' ...',' : ',get_string('completed_list','report_manager')) .  $options[$course_report->completed_before];
                     $out_report .= html_writer::end_div();//expiration
                 $out_report .= html_writer::end_div();//outcome_detail_rpt
 
@@ -1710,7 +1710,7 @@ class course_report {
                     /* Expiration Before    */
                     $options = report_manager_get_completed_list();
                     $out_report .= html_writer::start_div('expiration');
-                        $out_report .= get_string('expired_next','report_manager') . ': ' .  $options[$course_report->completed_before];
+                        $out_report .= str_replace(' ...',' : ',get_string('completed_list','report_manager')) .  $options[$course_report->completed_before];
                     $out_report .= html_writer::end_div();//expiration
                 $out_report .= html_writer::end_div();//outcome_detail_rpt
 
@@ -1842,7 +1842,7 @@ class course_report {
                     /* Expiration Before    */
                     $options = report_manager_get_completed_list();
                     $out_report .= html_writer::start_div('expiration');
-                        $out_report .= get_string('expired_next','report_manager') . ': ' .  $options[$course_report->completed_before];
+                        $out_report .= str_replace(' ...',' : ',get_string('completed_list','report_manager')) .  $options[$course_report->completed_before];
                     $out_report .= html_writer::end_div();//expiration
                 $out_report .= html_writer::end_div();//outcome_detail_rpt
 
@@ -2481,7 +2481,7 @@ class course_report {
         $title_course           = get_string('course');
         $title_outcomes         = get_string('outcomes', 'report_manager');
         $str_outcomes           = null;
-        $title_expiration       = get_string('expired_next','report_manager') . ': ' . $completed_before;
+        $title_expiration       = str_replace(' ...',' : ',get_string('completed_list','report_manager')) . $completed_before;
         $title_level_zero       = get_string('company_structure_level', 'report_manager', 0) . ': ' . $level_zero;
         $title_level_one        = null;
         if ($level_one) {

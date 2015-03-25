@@ -38,13 +38,12 @@ class manager_import_structure_form extends moodleform {
         $options = Import_Companies::GetLevel_To_Import();
         $url = new moodle_url('/report/manager/import_structure/import.php');
         $form->addElement('select', 'import_level',get_string('level_to_import','report_manager'),$options);
-        $form->addRule('import_level', null, 'required');
+        $form->addRule('import_level', null, 'required', null, 'client');
         if (isset($_COOKIE['parentImportLevel']) && ($_COOKIE['parentImportLevel'])) {
             $form->setDefault('import_level',$_COOKIE['parentImportLevel']);
             $level = $_COOKIE['parentImportLevel'];
         }else {
             $form->setDefault('import_level',0);
-            $level = 0;
         }
 
         switch ($level) {
@@ -129,7 +128,7 @@ class manager_import_structure_form extends moodleform {
 
         /* Import File */
         $form->addElement('filepicker', 'import_structure', get_string('import_file','report_manager'));
-        $form->addRule('import_structure', null, 'required');
+        $form->addRule('import_structure', null, 'required',null,'client');
 
         $choices = csv_import_reader::get_delimiter_list();
         $form->addElement('select', 'delimiter_name', get_string('csvdelimiter', 'report_manager'), $choices);
@@ -150,6 +149,7 @@ class manager_import_structure_form extends moodleform {
         $form->setType('level',PARAM_INT);
 
         $this->add_action_buttons(true,get_string('btn_import','report_manager'));
+        $this->set_data($level);
     }//definition
 
     /**
@@ -166,37 +166,8 @@ class manager_import_structure_form extends moodleform {
      */
     function Add_SelectParentImport($level,$parent,$options,&$form) {
         $form->addElement('select', $parent,get_string('comp_parent','report_manager',$level),$options);
-        $form->addRule($parent, null, 'required');
+        $form->addRule($parent, null, 'required', null, 'client');
+        $form->addRule($parent, 'required', 'nonzero', null, 'client');
     }//Add_CallParentImport
 
-    function validation($data, $files) {
-        $errors = parent::validation($data, $files);
-
-        $level = $this->_customdata;
-
-        if ($level) {
-            if (isset($data['import_0'])) {
-                if (!$data['import_0']) {
-                    $errors['import_0'] = get_string('required','report_manager');
-                    return $errors;
-                }
-            }//if_parent
-
-            if (isset($data['import_1'])) {
-                if (!$data['import_1']) {
-                    $errors['import_1'] = get_string('required','report_manager');
-                    return $errors;
-                }
-            }//if_parent
-
-            if (isset($data['import_2'])) {
-                if (!$data['import_2']) {
-                    $errors['import_2'] = get_string('required','report_manager');
-                    return $errors;
-                }
-            }//if_parent
-        }//if_level
-
-        return $errors;
-    }//validation
 }//manager_import_structure_form
