@@ -24,7 +24,7 @@ require_once('add_company_structure_form.php');
 require_once($CFG->libdir . '/adminlib.php');
 
 /* Params */
-$level      = optional_param('level', 1, PARAM_INT);
+$level      = required_param('level', PARAM_INT);
 $return_url = new moodle_url('/report/manager/company_structure/company_structure.php',array('level'=>$level));
 $url        = new moodle_url('/report/manager/company_structure/add_company_structure.php',array('level' => $level));
 

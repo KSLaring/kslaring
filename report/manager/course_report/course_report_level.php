@@ -155,7 +155,7 @@ if ($form->is_cancelled()) {
 
                 break;
             case COURSE_REPORT_FORMAT_SCREEN_EXCEL:
-                //course_report::Download_CourseReport($course_report);
+                course_report::Download_CourseReport($course_report);
 
                 break;
             default:
@@ -176,7 +176,7 @@ if (!empty($out)) {
     echo $OUTPUT->heading($out);
 }else {
     /* Print tabs at the top */
-    $current_tab = 'course_report';
+    $current_tab = 'course_report_level';
     $show_roles = 1;
     require('../tabs.php');
 

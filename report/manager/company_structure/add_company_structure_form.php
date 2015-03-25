@@ -64,14 +64,16 @@ class manager_add_company_structure_form extends moodleform {
         $m_form->setType('name',PARAM_TEXT);
 
         /* Link Other Company   */
-        if ($level) {
+        if ($level > 0) {
             $this->Link_OtherCompany($level,$parents,$m_form);
+        }else {
+            $m_form->addRule('name','required','required', null, 'client');
         }//if_level
 
         /* Industry Code        */
         $m_form->addElement('text', 'industry_code', get_string('industry_code','report_manager'), $text_attr);
         $m_form->setType('industry_code',PARAM_TEXT);
-        $m_form->addRule('industry_code','','required', null, 'server');
+        $m_form->addRule('industry_code','required','required', null, 'client');
 
         /* Public Check Box     */
         if ($parent_info) {
@@ -172,7 +174,7 @@ class manager_add_company_structure_form extends moodleform {
         $bln_exist = false;
 
         if (empty($data['name'])) {
-            if (!$data['other_company']) {
+            if (isset($data['other_company']) && !$data['other_company']) {
                 $errors['name'] = get_string('missing_name','report_manager');
             }//other_company
         }else {

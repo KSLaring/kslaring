@@ -19,7 +19,7 @@ require_once($CFG->libdir.'/csvlib.class.php');
 require_once('import_form.php');
 
 /* PARAMS   */
-$level              = optional_param('level',0,PARAM_INT);
+$level              = required_param('level',PARAM_INT);
 $return             = new moodle_url('/report/manager/index.php');
 $return_url         = new moodle_url('/report/manager/company_structure/company_structure.php',array('level'=>$level));
 $return_err         = new moodle_url('/report/manager/import_structure/import.php',array('level'=>$level));
