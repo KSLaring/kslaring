@@ -938,6 +938,30 @@ a.autolink.glossary {
 .path-mod-scorm .scorm-center {
   text-align: left;
 }
+/* set up the keyframes */
+@-webkit-keyframes nodeInserted {
+  from {
+    opacity: 0.99;
+  }
+  to {
+    opacity: 1;
+  }
+}
+/* force a repaint with a super short duration */
+#scorm_content > iframe {
+  -webkit-animation-duration: 0.001s;
+  -webkit-animation-name: nodeInserted;
+}
+.yui3-skin-sam .yui3-moodle-local_lightbox-lightbox.yui3-panel .yui3-widget-bd {
+  height: 100% !important;
+}
+#page-mod-scorm-player.format-netcourse #page-content {
+  border: 0;
+  padding: 0;
+}
+#page-mod-scorm-player.format-netcourse #scormtop {
+  display: none;
+}
 body {
   padding-top: 0px;
   background: #f2f2f3;
