@@ -41,4 +41,11 @@ $handlers = array(
         'schedule'          => 'instant',
         'internal' => 1,
     ),
+
+    'course_completion_updated' => array(
+        'handlerfile' => '/local/completion/event_logger.php',
+        'handlerfunction' => 'local_completion_handle_course_completion_updated',
+        'schedule' => 'instant',
+        'internal' => 1,
+    ),
 );

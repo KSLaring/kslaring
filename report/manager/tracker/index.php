@@ -62,6 +62,8 @@ $url        = new moodle_url('/report/manager/job_role/job_role.php');
 $out .= '<li>' . '<a href="' . $url . '">' . get_string('job_roles','report_manager'). '</a>'. '</li>';
 $url        = new moodle_url('/report/manager/outcome/outcome.php');
 $out .= '<li>' . '<a href="' . $url . '">' . get_string('outcomes','report_manager'). '</a>'. '</li>';
+$url        = new moodle_url('/report/manager/course_report/course_report.php');
+$out .= '<li>' . '<a href="' . $url . '">' . get_string('course_report','report_manager'). '</a>'. '</li>';
 
 echo $OUTPUT->header();
 echo $OUTPUT->heading($out);

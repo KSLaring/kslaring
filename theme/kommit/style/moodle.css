@@ -587,6 +587,11 @@ table.mod_index {
   width: 100%;
   overflow: auto;
 }
+.comment-area textarea.fullwidth {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
 .comment-area .fd {
   text-align: right;
 }
@@ -1776,7 +1781,7 @@ body#page-lib-editor-tinymce-plugins-moodlemedia-preview {
   left: 20.3em;
   margin: 0;
   padding: 1.6em;
-  background-color: #ffffff;
+  background-color: #fff;
   overflow-x: hidden;
   overflow-y: auto;
   line-height: 2em;
@@ -1793,7 +1798,7 @@ body#page-lib-editor-tinymce-plugins-moodlemedia-preview {
   display: block;
 }
 .choosercontainer #chooseform .selected {
-  background-color: #ffffff;
+  background-color: #fff;
   -webkit-box-shadow: 0px 0 10px 0 #cccccc;
   -moz-box-shadow: 0px 0 10px 0 #cccccc;
   box-shadow: 0px 0 10px 0 #cccccc;
@@ -2190,7 +2195,8 @@ img#persona_signin {
   padding-left: 4px;
   padding-right: 4px;
 }
-.jsenabled .moodle-actionmenu[data-enhance] .toggle-display.textmenu .iconsmall {
+.jsenabled .moodle-actionmenu[data-enhance] .toggle-display.textmenu .iconsmall,
+.jsenabled .moodle-actionmenu[data-enhance] .toggle-display.textmenu .smallicon {
   margin: 4px 4px 4px 0px;
   padding: 8px 4px 0px 2px;
   vertical-align: text-bottom;
@@ -2271,8 +2277,10 @@ img#persona_signin {
 .moodle-actionmenu[data-enhanced].show .menu img {
   vertical-align: middle;
 }
-.moodle-actionmenu[data-enhanced].show .menu .iconsmall {
+.moodle-actionmenu[data-enhanced].show .menu .iconsmall,
+.moodle-actionmenu[data-enhanced].show .menu .smallicon {
   margin: 4px 4px 4px -24px;
+  padding: 4px;
 }
 .moodle-actionmenu[data-enhanced].show .menu > li {
   display: block;
@@ -2359,9 +2367,13 @@ img#persona_signin {
   /** top left of button **/
   /** top right of button **/
 }
-.dir-rtl .moodle-actionmenu[data-enhanced].show .menu .iconsmall {
-  margin-right: 0;
-  margin-left: 8px;
+.dir-rtl .moodle-actionmenu[data-enhanced].show .menu a {
+  padding: 2px 28px 2px 1em;
+}
+.dir-rtl .moodle-actionmenu[data-enhanced].show .menu .iconsmall,
+.dir-rtl .moodle-actionmenu[data-enhanced].show .menu .smallicon {
+  margin-right: -24px;
+  margin-left: 4px;
 }
 .dir-rtl .moodle-actionmenu[data-enhanced].show .menu.align-tl-bl {
   left: auto;
@@ -2453,6 +2465,14 @@ body.lockscroll {
   margin-left: 0;
   margin-right: 25px;
 }
+dd:before,
+dd:after {
+  display: block;
+  content: " ";
+}
+dd:after {
+  clear: both;
+}
 /* admin.less */
 .formtable tbody th {
   font-weight: normal;
@@ -2465,6 +2485,9 @@ body.lockscroll {
 }
 .path-admin .admintable .leftalign {
   text-align: left;
+}
+.dir-rtl.path-admin .admintable .leftalign {
+  text-align: right;
 }
 .environmenttable p.warn {
   background-color: #fcf8e3;
@@ -4465,14 +4488,15 @@ span.editinstructions {
   display: inline-block;
   display: initial;
 }
-#course-category-listings .item-actions img {
+#course-category-listings .item-actions > a img,
+#course-category-listings .item-actions .menubar img {
   margin: 0 4px;
   height: 12px;
   padding: 0;
   vertical-align: inherit;
 }
-#course-category-listings .item-actions.show .menu a {
-  padding: 4px 1em 4px 4px;
+#course-category-listings .item-actions.show .menu li {
+  line-height: 20px;
 }
 #course-category-listings .item-actions.show .menu img {
   width: 12px;
@@ -4686,6 +4710,10 @@ span.editinstructions {
 }
 .dir-rtl #course-category-listings #category-listing .course-count {
   margin-left: 2rem;
+}
+.dir-rtl #course-category-listings #category-listing .course-count .smallicon {
+  margin-left: 0px;
+  margin-right: 4px;
 }
 .dir-rtl #course-category-listings #category-listing .bulk-action-checkbox {
   margin-left: -3px;
@@ -5580,6 +5608,9 @@ a.ygtvspacer:hover {
   display: none;
 }
 .fp-select .fp-dimensions.fp-unknown {
+  display: none;
+}
+.fp-select .fp-size.fp-unknown {
   display: none;
 }
 .filemanager-loading {
@@ -6555,6 +6586,7 @@ body.path-question-type .fitem_fgroup .accesshide {
 .formulation input[type="text"],
 .formulation select {
   width: auto;
+  vertical-align: baseline;
 }
 .path-mod-quiz input[size] {
   width: auto;
@@ -12933,7 +12965,8 @@ form {
 .mform fieldset.error {
   border: 1px solid #b94a48;
 }
-.mform span.error {
+.mform span.error,
+#adminsettings span.error {
   display: inline-block;
   border: 1px solid #eed3d7;
   border-radius: 4px;
@@ -12964,6 +12997,7 @@ form {
 .mform .fitem .fitemtitle div {
   display: inline;
 }
+#adminsettings .error,
 .loginpanel .error,
 .mform .error {
   color: #b94a48;
@@ -16024,6 +16058,92 @@ input[type="reset"][disabled] {
   }
   .path-mod-forum .forumheaderlist .discussion .replies .unread a {
     padding: 0;
+  }
+  .navbar .nav-collapse.active {
+    border-top: 1px solid #d4d4d4;
+  }
+  .navbar .nav-collapse.active.pull-left,
+  .navbar .nav-collapse.active.pull-right {
+    float: none;
+  }
+  .navbar .nav-collapse.active > .nav {
+    margin: 0;
+  }
+  .navbar .nav-collapse.active > .nav > li > a {
+    padding-left: 20px;
+    border-radius: 0px;
+  }
+  .navbar .nav-collapse.active > .nav .dropdown-menu {
+    margin: 0px 0px 0px 15px;
+  }
+  .navbar .nav-collapse.active > .nav .dropdown-menu li > a {
+    border-radius: 0px;
+  }
+  .navbar .nav-collapse.active .nav .dropdown-submenu .dropdown-toggle:after,
+  .navbar .nav-collapse.active .nav .dropdown-menu .dropdown-submenu .dropdown-toggle:after {
+    float: none;
+    display: inline-block;
+    width: 0;
+    height: 0;
+    vertical-align: top;
+    border-top: 4px solid #000000;
+    border-right: 4px solid transparent;
+    border-left: 4px solid transparent;
+    content: "";
+    border-top-color: #d4d4d4;
+    margin-left: 4px;
+    margin-top: 8px;
+  }
+  .navbar .nav-collapse.active .nav .dropdown-submenu.open > a,
+  .navbar .nav-collapse.active .nav .dropdown-menu .dropdown-submenu.open > a {
+    background-color: #f2f2f2;
+  }
+  .navbar .nav-collapse.active .nav .dropdown-submenu:hover .dropdown-menu,
+  .navbar .nav-collapse.active .nav .dropdown-menu .dropdown-submenu:hover .dropdown-menu {
+    display: none;
+  }
+  .navbar .nav-collapse.active .nav .dropdown-submenu:hover.open > a,
+  .navbar .nav-collapse.active .nav .dropdown-menu .dropdown-submenu:hover.open > a {
+    background: #f2f2f2;
+  }
+  .navbar .nav-collapse.active .nav .dropdown-submenu:hover.open > .dropdown-menu,
+  .navbar .nav-collapse.active .nav .dropdown-menu .dropdown-submenu:hover.open > .dropdown-menu,
+  .navbar .nav-collapse.active .nav .dropdown-submenu:hover.open .open > .dropdown-menu,
+  .navbar .nav-collapse.active .nav .dropdown-menu .dropdown-submenu:hover.open .open > .dropdown-menu {
+    display: block;
+  }
+  .navbar.navbar-inverse .nav-collapse.active {
+    border-top-color: #252525;
+  }
+  .navbar.navbar-inverse .nav-collapse.active .nav .dropdown-submenu .dropdown-toggle:after,
+  .navbar.navbar-inverse .nav-collapse.active .nav .dropdown-menu .dropdown-submenu .dropdown-toggle:after {
+    border-top-color: #252525;
+  }
+  .navbar.navbar-inverse .nav-collapse.active .nav .dropdown-submenu.open > a,
+  .navbar.navbar-inverse .nav-collapse.active .nav .dropdown-menu .dropdown-submenu.open > a {
+    background-color: #111111;
+  }
+  .navbar.navbar-inverse .nav-collapse.active .nav .dropdown-submenu:hover.open > a,
+  .navbar.navbar-inverse .nav-collapse.active .nav .dropdown-menu .dropdown-submenu:hover.open > a {
+    background: #111111;
+  }
+  .dir-rtl .navbar .nav-collapse.active > .nav {
+    margin: 0;
+  }
+  .dir-rtl .navbar .nav-collapse.active > .nav > li > a {
+    padding-left: 0px;
+    padding-right: 20px;
+  }
+  .dir-rtl .navbar .nav-collapse.active > .nav .dropdown-menu {
+    margin: 0px 15px 0px 0px;
+  }
+  .dir-rtl .navbar .nav-collapse.active .dropdown-menu > li > a {
+    padding: 9px 15px;
+  }
+  .dir-rtl .navbar .nav-collapse.active .nav .dropdown-submenu .dropdown-toggle:after,
+  .dir-rtl .navbar .nav-collapse.active .nav .dropdown-menu .dropdown-submenu .dropdown-toggle:after {
+    margin-left: 0px;
+    margin-right: 4px;
   }
 }
 @media (max-width: 767px) {

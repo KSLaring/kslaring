@@ -142,7 +142,7 @@ if (!empty($out)) {
     echo $OUTPUT->heading($out);
 }else {
     /* Print tabs at the top */
-    $current_tab = 'outcome_report';
+    $current_tab = 'outcome_report_level';
     $show_roles = 1;
     require('../tabs.php');
 

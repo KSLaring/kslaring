@@ -38,12 +38,13 @@ class manager_edit_company_structure_form extends moodleform {
         $m_form->addElement('text', 'name', get_string('edit_company_level','report_manager'), $text_attr);
         $m_form->setDefault('name',$company_info->name);
         $m_form->setType('name',PARAM_TEXT);
+        $m_form->addRule('name','required','required', null, 'client');
 
         /* Industry Code        */
         $m_form->addElement('text', 'industry_code', get_string('industry_code','report_manager'), $text_attr);
         $m_form->setDefault('industry_code',$company_info->industrycode);
         $m_form->setType('industry_code',PARAM_TEXT);
-        $m_form->addRule('industry_code','','required', null, 'server');
+        $m_form->addRule('industry_code','required','required', null, 'client');
 
         /* Public Check Box     */
         if ($parent_info) {

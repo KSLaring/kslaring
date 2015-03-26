@@ -46,6 +46,8 @@ class manager_course_report_level_form extends moodleform {
             }else {
                 $form->setDefault(REPORT_MANAGER_COURSE_LIST,0);
             }//if_COKKIE_COURESE
+            $form->addRule(REPORT_MANAGER_COURSE_LIST, 'required', 'required', 'nonzero', 'client');
+            $form->addRule(REPORT_MANAGER_COURSE_LIST, 'required', 'nonzero', null, 'client');
         $form->addElement('html', '</div>');
 
         /* Company Hierarchy - Levels */
@@ -78,8 +80,8 @@ class manager_course_report_level_form extends moodleform {
 
             /* Format Report */
             $list = array(
-                          COURSE_REPORT_FORMAT_SCREEN        => get_string('preview', 'report_manager')
-                          //COURSE_REPORT_FORMAT_SCREEN_EXCEL  => get_string('excel', 'report_manager')
+                          COURSE_REPORT_FORMAT_SCREEN        => get_string('preview', 'report_manager'),
+                          COURSE_REPORT_FORMAT_SCREEN_EXCEL  => get_string('excel', 'report_manager')
                          );
             /* Format Report */
             $form->addElement('select',COURSE_REPORT_FORMAT_LIST,get_string('report_format_list', 'report_manager'),$list);
@@ -91,53 +93,6 @@ class manager_course_report_level_form extends moodleform {
 
         $this->add_action_buttons(true, get_string('create_report', 'report_manager'));
     }//definition
-
-    function validation($data, $files) {
-        $errors = parent::validation($data, $files);
-
-        list($report_level,$my_hierarchy) = $this->_customdata;
-
-        /* Check Course */
-        if (!$data[REPORT_MANAGER_COURSE_LIST]) {
-            $errors[REPORT_MANAGER_COURSE_LIST] = get_string('missing_course','report_manager');
-        }//if_outcome_list
-
-        /* Check Level Company */
-        switch ($report_level) {
-            case 0:
-                if (!$data[MANAGER_COURSE_STRUCTURE_LEVEL . '0']) {
-                    $errors[MANAGER_COURSE_STRUCTURE_LEVEL .'0'] = get_string('missing_level','report_manager');
-                }//if_levelZero
-
-                break;
-            case 1:
-                if (!$data[MANAGER_COURSE_STRUCTURE_LEVEL . '0']) {
-                    $errors[MANAGER_COURSE_STRUCTURE_LEVEL .'0'] = get_string('missing_level','report_manager');
-                }//if_levelZero
-
-                if (!$data[MANAGER_COURSE_STRUCTURE_LEVEL . '1']) {
-                    $errors[MANAGER_COURSE_STRUCTURE_LEVEL .'1'] = get_string('missing_level','report_manager');
-                }//if_levelOne
-
-                break;
-            case 2:
-            case 3:
-                if (!$data[MANAGER_COURSE_STRUCTURE_LEVEL . '0']) {
-                    $errors[MANAGER_COURSE_STRUCTURE_LEVEL .'0'] = get_string('missing_level','report_manager');
-                }//if_levelZero
-
-                if (!$data[MANAGER_COURSE_STRUCTURE_LEVEL . '1']) {
-                    $errors[MANAGER_COURSE_STRUCTURE_LEVEL .'1'] = get_string('missing_level','report_manager');
-                }//if_levelOne
-
-                if (!$data[MANAGER_COURSE_STRUCTURE_LEVEL . '2']) {
-                    $errors[MANAGER_COURSE_STRUCTURE_LEVEL .'2'] = get_string('missing_level','report_manager');
-                }//if_levelOne
-                break;
-        }//switch_level
-
-        return $errors;
-    }//validation
 
     /**
      * @param           $form
@@ -166,6 +121,9 @@ class manager_course_report_level_form extends moodleform {
                 $select->setMultiple(true);
                 $select->setSize(10);
                 $form->addElement('html', '<p class="helptext">' . get_string('help_multi_select', 'report_manager') . '</p>');
+            }else {
+                $form->addRule(MANAGER_COURSE_STRUCTURE_LEVEL . $level, null, 'required', null, 'client');
+                $form->addRule(MANAGER_COURSE_STRUCTURE_LEVEL . $level, 'required', 'nonzero', null, 'client');
             }//if_level_three
 
         $form->addElement('html', '</div>');

@@ -67,13 +67,11 @@
     padding-right: 5px;
 }
 
-
 // Introduction box on module pages
 // -------------------------------------
 .mod_introbox {
     padding: 0;
 }
-
 
 // Certificate Module
 // -------------------------------------
@@ -82,7 +80,6 @@
         margin: .2em .5em;
     }
 }
-
 
 // Feedback Module
 // -------------------------------------
@@ -97,18 +94,18 @@
         margin-left: 0;
     }
     // When the buttons in all activities are left aligned remove the comments
-//    .continuebutton {
-//        input[type="submit"] {
-//            margin-left: 0;
-//        }
-//    }
+    //    .continuebutton {
+    //        input[type="submit"] {
+    //            margin-left: 0;
+    //        }
+    //    }
     .feedback_form {
         // When the buttons in all activities are left aligned remove the comments
-//        input[name="gopreviouspage"],
-//        input[name="gonextpage"] {
-//            margin-left: 0;
-//            margin-right: 1em;
-//        }
+        //        input[name="gopreviouspage"],
+        //        input[name="gonextpage"] {
+        //            margin-left: 0;
+        //            margin-right: 1em;
+        //        }
         .mform {
             .fdescription.required {
                 margin-left: auto;
@@ -178,7 +175,7 @@
     .mform {
         .fitem {
             div.fitemtitle {
-               width: 235px;
+                width: 235px;
             }
             .felement {
                 margin-left: 245px;
@@ -187,12 +184,11 @@
     }
 }
 
-
 // Glossary Module
 // -------------------------------------
 a.autolink.glossary {
-  color:inherit;
-  background: #d9e3ed;
+    color: inherit;
+    background: #d9e3ed;
 }
 
 .path-mod-glossary {
@@ -245,7 +241,6 @@ a.autolink.glossary {
         }
     }
 }
-
 
 // Lesson Module
 // -------------------------------------
@@ -310,7 +305,7 @@ a.autolink.glossary {
             }
         }
         .singlebutton {
-            form  {
+            form {
                 input[type=submit] {
                     margin: 0;
                 }
@@ -338,7 +333,6 @@ a.autolink.glossary {
 #page-mod-lesson-view .contents {
   //min-height: initial;
 }*/
-
 
 // Quiz Module
 // -------------------------------------
@@ -564,7 +558,6 @@ a.autolink.glossary {
     }
 }
 
-
 // Simple Certificate Module
 // -------------------------------------
 #page-mod-simplecertificate-view {
@@ -580,7 +573,6 @@ a.autolink.glossary {
         }
     }
 }
-
 
 // SCORM Module
 // -------------------------------------
@@ -604,5 +596,37 @@ a.autolink.glossary {
 .path-mod-scorm {
     .scorm-center {
         text-align: left;
+    }
+}
+
+/* set up the keyframes */
+@-webkit-keyframes nodeInserted {
+    from {
+        opacity: 0.99;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+/* force a repaint with a super short duration */
+#scorm_content > iframe {
+    -webkit-animation-duration: 0.001s;
+    -webkit-animation-name: nodeInserted;
+}
+
+.yui3-skin-sam .yui3-moodle-local_lightbox-lightbox.yui3-panel .yui3-widget-bd {
+    height: 100% !important;
+}
+
+#page-mod-scorm-player {
+    &.format-netcourse {
+        #page-content {
+            border: 0;
+            padding: 0;
+        }
+        #scormtop {
+            display: none;
+        }
     }
 }
