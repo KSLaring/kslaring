@@ -236,8 +236,9 @@ class entrymanager  {
 		global $DB;
 		
 		//get the entry
+return 'paygreen:' . $entryid . ':' . $seats;	
 		$entry = $this->get_entry($entryid);
-		
+return 'purple:' . $entryid . ':' . $seats;		
 		//always the chief user is enrolled, so lets do that
 		if($entry->allocseats==0 && $entry->enroledseats==0){
 			 $wl = enrol_get_plugin('waitinglist');

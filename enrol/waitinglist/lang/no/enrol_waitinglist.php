@@ -130,22 +130,4 @@ $string['sendcoursewaitlistmessage'] = 'Send epost når brukeren blir lagt til i
 $string['sendcoursewaitlistmessage_help'] = 'Du kan sende en epost til brukeren når de legges til på kursets venteliste.';
 
 
-$string['manageconfirmed'] = 'Bekreftede påmeldinger';
-$string['unconfirmfailed'] = 'Annulering av bekreftet påmelding mislykkes!';
-$string['waitinglistisempty'] = 'Ventelisten er tom';
-$string['confirmedlistisempty'] = 'Listen over bekreftede påmeldinger er tom';
-$string['unconfirm'] = 'Annulér';
-$string['unconfirmwarning'] = 'Ønsker du å tilbakeføre disse plassene til ventelisten?';
-$string['noroomonlist'] = 'Vi beklager, men ventelisten er full.';
-$string['enrolmentsnotyet'] = 'Påmelding med venteliste har ikke åpnet ennå.';
-$string['enrolmentsclosed'] = 'Påmelding med venteliste er nå stengt.';
-$string['alreadyenroled'] = 'Du er allerede påmeldt i dette kurset.';
-$string['qentrynothingchanged'] = 'Det trengs ingen oppdateringer av dine reservasjoner.';
-$string['onlyoneenrolmethodallowed'] = '';//'You can only be on the waitinglist once.'; //strange to show this to user
-$string['nomoreseats'] = 'Ditt ønskede antall plasser er ikke tilgjengelig. Det er {$a->available} flere plasser tilgjengelig på ventelisten. Det er {$a->vacancies} flere ledige plasser på det gjeldende kurset.';
-$string['entercoursenow'] = 'Gå til kurset nå';
-
-
-
-
 

@@ -27,7 +27,7 @@ $string['unnamedbulk_menutitle'] = 'Reserver kursplasser';
 $string['waitlistmessagetitle_unnamedbulk'] = 'Kursplasser er lagt til i ventelisten for: {$a}';
 $string['waitlistmessagetext_unnamedbulk'] = '{$a->queueseats} kursplasser er lagt til i ventelisten for: {$a->coursename}
 
-Dine reserverte kursplasser er i øyeblikket nummer {$a->queueno} på listen.
+Dine reserverte kursplasser er i øyeblikket nummer {$a->queueno} på ventelisten.
 
 Du kan når som helst redigere reservasjonen din her: {$a->editenrolurl}';
 $string['waitlistmessagetitleconfirmation_unnamedbulk'] = 'Bekreftede kursplasser for kurset: {$a}';
@@ -55,7 +55,7 @@ Følgende plassholdere kan brukes i meldingen:
 $string['reserveseatcount'] = 'Ønsket antall kursplasser';
 $string['reserveseats'] = 'Reservere kursplasser på kurset';
 $string['unnamedbulk_enrolformintro'] = 'Bruk dette skjemaet til å reservere kursplasser på dette kurset. Du vil bli varslet straks plassene er bekreftet. Når du har meldt inn brukerne kan du gå tilbake her for å justere ned antall kursplasser.';
-$string['unnamedbulk_enrolformqueuestatus'] = 'Du har søkt om å reservere {$a->seats} kursplasser og er tildelt {$a->assignedseats} kursplasser. Du har {$a->waitingseats} som foreløpig er plassert på ventelisten.
+$string['unnamedbulk_enrolformqueuestatus'] = 'Du har søkt om å reservere {$a->seats} kursplasser og er tildelt {$a->assignedseats} kursplasser. 
 
 Din søknad er i øyeblikket nummer {$a->queueposition} på listen.';
 $string['unnamedbulk_enrolformqueuestatus_label'] = 'Gjeldende reservasjon';

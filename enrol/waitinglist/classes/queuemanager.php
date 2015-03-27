@@ -68,8 +68,13 @@ class queuemanager  {
 	
 	public static function get_maxq_no($waitinglistid){
 		global $DB;
-		$maxq = $DB->get_record_sql('SELECT MAX(queueno) AS maxq, 1		
+		$ret = $DB->get_record_sql('SELECT MAX(queueno) AS maxq, 1		
                                      FROM {'. self::QTABLE .'} WHERE offqueue=0 AND waitinglistid=' . $waitinglistid);
+        if(empty($ret->maxq)){
+        	$maxq=0;
+        }else{
+        	$maxq=$ret->maxq;
+        }
         return $maxq;
 	
 	}

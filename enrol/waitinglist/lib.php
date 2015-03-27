@@ -502,9 +502,10 @@ class enrol_waitinglist_plugin extends enrol_plugin {
 			$queueman= \enrol_waitinglist\queuemanager::get_by_course($instance->courseid);
 			$availableseats = $this->get_vacancy_count($instance);
 			$trace->output('waitinglist enrolment availabilities: ' . $availableseats);	
-			if($availableseats > 0 AND $queueman->get_listtotal() > 0){
+			if($availableseats > 0 AND $queueman->get_listtotal() > 0){	
 				$allocatedseats=0;
 				$qentries = $queueman->get_qentries();
+		
 				foreach($qentries as $qentry){
 					$neededseats = $qentry->seats - $qentry->allocseats;
 					if($neededseats > $availableseats - $allocatedseats){
@@ -514,8 +515,7 @@ class enrol_waitinglist_plugin extends enrol_plugin {
 					}
 					
 					//call into the enrolment method and give it the seats
-					$success = $methods[$qentry->methodtype]->graduate_from_list($instance,$qentry,$giveseats);
-					
+					$success = $methods[$qentry->methodtype]->graduate_from_list($instance,$qentry,$giveseats);					
 					$allocatedseats+=$giveseats;
 					if(!($availableseats>$allocatedseats)){break;}
 				}//end of for each

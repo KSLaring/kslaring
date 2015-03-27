@@ -263,9 +263,10 @@ class enrolmethodself extends \enrol_waitinglist\method\enrolmethodbase{
     			if($giveseats<1){return false;}
     		}
     	}
-		
+    	
 		//do the update
-		$updatedentry = $entryman->confirm_seats($queue_entry, $seats);
+		$updatedentry = $entryman->confirm_seats($queue_entry->id, $seats);
+
 		if($updatedentry){
 			$this->do_post_enrol_actions($waitinglist, $updatedentry);
 			$success =true;
