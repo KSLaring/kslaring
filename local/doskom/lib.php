@@ -16,7 +16,7 @@ function local_doskom_cron() {
     $plugin_info     = get_config('local_doskom');
 
     /* Check if the cron is Activate    */
-    if ($plugin_info->wssso_cron_active) {
+    if ($plugin_info->wsdoskom_cron_active) {
         require_once('cron/wsssocron.php');
 
         $date_hour  = date('H',time());
