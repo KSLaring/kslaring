@@ -132,6 +132,11 @@ foreach ($queueman->qentries as $qentry) {
 
     $updown = array();
     $edit = array();
+    
+    //if all the seats are allocated, we do not need to show them
+    if($qentry->allocseats >= $qentry->seats){
+    	continue;
+    }
 
     if ($canconfig) {
         if ($qentry->queueno > 1) {
