@@ -236,9 +236,7 @@ class entrymanager  {
 		global $DB;
 		
 		//get the entry
-return 'paygreen:' . $entryid . ':' . $seats;	
-		$entry = $this->get_entry($entryid);
-return 'purple:' . $entryid . ':' . $seats;		
+		$entry = $this->get_entry($entryid);	
 		//always the chief user is enrolled, so lets do that
 		if($entry->allocseats==0 && $entry->enroledseats==0){
 			 $wl = enrol_get_plugin('waitinglist');
@@ -252,10 +250,12 @@ return 'purple:' . $entryid . ':' . $seats;
 		if($seats > 0){
 			$entry->confirmedseats+=$seats;
 			$entry->allocseats+=$seats;
-			if($entry->allocseats >= $entry->seats){
-				$entry->offqueue=1;
-				$entry->queueno=queuemanager::OFFQ;
-			}
+		}
+		
+		//lets make sure we take entry off list
+		if($entry->allocseats >= $entry->seats){
+			$entry->offqueue=1;
+			$entry->queueno=queuemanager::OFFQ;
 		}
 		
 		//update the DB and return

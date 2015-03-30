@@ -90,7 +90,7 @@ $string['canthavemoreseats'] = 'Du kan ikke øke antall reservasjoner hvis du ik
 $string['noroomonlist'] = 'Ingen plasser på ventelisten';
 $string['listisempty'] = 'Ventelisten er tom';
 $string['alreadyonlist'] = 'Allerede på ventelisten.';
-$string['yourqueuedetails'] = 'Du blir først lagt inn i ventelisten for deretter å tildeles en ledig plass. Du er nummer: <strong>{$a->queueposition}</strong> av <strong>{$a->queuetotal}</strong> på ventelisten.';
+$string['yourqueuedetails'] = 'Du er nummer: <strong>{$a->queueposition}</strong> av <strong>{$a->queuetotal}</strong> på ventelisten.';
 $string['removeconfirmmessage'] = 'Vil du virkelig slette denne søknaden fra ventelisten?';
 $string['methodheader'] = 'Metode';
 $string['seatsheader'] = 'Plasser';
@@ -129,17 +129,5 @@ Følgende plassholdere kan legges inn i meldingen:
 $string['sendcoursewaitlistmessage'] = 'Send epost når brukeren blir lagt til i ventelisten';
 $string['sendcoursewaitlistmessage_help'] = 'Du kan sende en epost til brukeren når de legges til på kursets venteliste.';
 
-$string['manageconfirmed'] = 'Bekreftede påmeldinger';
-$string['unconfirmfailed'] = 'Fjerning fra bekreftede påmeldinger mislykkes!';
-$string['waitinglistisempty'] = 'Ventelisten er tom';
-$string['confirmedlistisempty'] = 'Listen med bekreftede påmeldinger er tom';
-$string['unconfirm'] = 'Fjern bekreftelse';
-$string['unconfirmwarning'] = 'Ønsker du virkelig å returnere disse kursplassene til ventelisten?';
-$string['noroomonlist'] = 'Vi beklager, men ventelisten er full.';
-$string['enrolmentsnotyet'] = 'Påmelding med venteliste er ikke åpnet ennå.';
-$string['enrolmentsclosed'] = 'Påmelding med venteliste er nå stengt.';
-$string['alreadyenroled'] = 'Du er allerede påmeldt dette kurset.';
-$string['qentrynothingchanged'] = 'Det trengs ingen oppdatering av dine påmeldinger.';
-$string['onlyoneenrolmethodallowed'] = '';//'You can only be on the waitinglist once.'; //strange to show this to user
-$string['nomoreseats'] = 'Det ønskede antall kursplasser er ikke tilgjengelig, men det er fortsatt {$a->available} ledige plasser på ventelisten.';
-$string['entercoursenow'] = 'Fortsett til kurset';
+
+
