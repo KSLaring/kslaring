@@ -30,7 +30,7 @@ $string['waitlistmessagetext_unnamedbulk'] = '{$a->queueseats} kursplasser er la
 Dine reserverte kursplasser er i øyeblikket nummer {$a->queueno} på ventelisten.
 
 Du kan når som helst redigere reservasjonen din her: {$a->editenrolurl}';
-$string['waitlistmessagetitleconfirmation_unnamedbulk'] = 'Bekreftede kursplasser for kurset: {$a}';
+$string['waitlistmessagetitleconfirmation_unnamedbulk'] = 'Bekreftede bulk kursplasser for kurset: {$a}';
 $string['sendconfirmmessage'] ='Send epost når kursplassene er bekreftet';
 $string['sendconfirmmessage_help'] ='Når kursplasser blir ledige i kurset, og de er lagt til i køen for denne påmeldingsmetoden, og de har tilgang til å reservere kursplasser med denne metoden, send en epost til vedkommende som har reservert kursplassene på seg.';
 $string['confirmedmessage_unnamedbulk'] = 'Kursplasser reservert for: {$a->coursename}';
@@ -49,7 +49,7 @@ Følgende plassholdere kan brukes i meldingen:
 * Kursets navn {$a->coursename}
 * Plasseringen på ventelisten {$a->queueno}
 * Antall plasser i ventelisten {$a->queueseats}
-* Bekreftede plasser {$a->allocatedseats}
+* Bekreftede bulk kursplasser {$a->allocatedseats}
 * Link til kurset {$a->courseurl}
 * Link til påmeldingssiden {$a->editenrolurl}';
 $string['reserveseatcount'] = 'Ønsket antall kursplasser';
