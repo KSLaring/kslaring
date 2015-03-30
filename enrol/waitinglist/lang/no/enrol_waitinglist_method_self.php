@@ -25,7 +25,7 @@ $string['self_displayname'] = 'Egenpåmelding';
 $string['self_menutitle'] = 'Egenpåmelding';
 $string['waitlistmessage_self'] = 'Lagt til venteliste for: {$a}';
 $string['waitlistmessagetitle_self'] = 'Lagt til venteliste for: {$a}';
-$string['waitlistmessagetext_self'] = 'Du er nå lagt til i ventelisten for kurset: {$a->coursename}!
+$string['waitlistmessagetext_self'] = 'Du er nå lagt til i ventelisten for kurset: {$a->coursename}. Du vil automatisk rykke fram i køen straks det er ledige  plasser og vi sender deg en epost om det.
 
 I øyeblikket er du nummer {$a->queueno} på ventelisten.
 
