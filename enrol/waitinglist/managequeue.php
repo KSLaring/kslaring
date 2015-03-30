@@ -166,7 +166,7 @@ foreach ($queueman->qentries as $qentry) {
 	//	$edit = array('edit','delete');
 	$user = $DB->get_record('user',array('id'=>$qentry->userid));
 	if($user){
-		$table->data[] = array($qentry->queueno,fullname($user),$user->email,$user->institution, $qentry->methodtype, $qentry->seats,$qentry->allocseats, implode('&nbsp;', $updown), implode('&nbsp;', $edit));
+		$table->data[] = array($qentry->queueno,fullname($user),$user->email,$user->institution, get_string($qentry->methodtype .'_displayname','enrol_waitinglist'), $qentry->seats,$qentry->allocseats, implode('&nbsp;', $updown), implode('&nbsp;', $edit));
 	}
 
 }

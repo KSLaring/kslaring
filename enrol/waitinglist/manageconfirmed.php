@@ -126,7 +126,7 @@ foreach ($centries as $centry) {
 	//	$edit = array('edit','delete');
 	$user = $DB->get_record('user',array('id'=>$centry->userid));
 	if($user){
-		$table->data[] = array(fullname($user),$user->email,$user->institution, $centry->methodtype, $centry->confirmedseats, implode('&nbsp;', $edit));
+		$table->data[] = array(fullname($user),$user->email,$user->institution, get_string($centry->methodtype .'_displayname','enrol_waitinglist'), $centry->confirmedseats, implode('&nbsp;', $edit));
 	}
 
 }
