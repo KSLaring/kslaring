@@ -1,80 +1,36 @@
 <?php
 /**
- * Library code for the Outcome Report Competence Manageer.
+ * Library code for the Outcome Report Competence Manager.
  *
- * @package     report
- * @subpackage  manager/outcome_report
- * @copyright   2010 eFaktor
- * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package         report
+ * @subpackage      manager/outcome_report
+ * @copyright       2010 eFaktor
+ * @license         http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  *
- * @updateDate  09/09/2014
- * @author      eFaktor     (fbv)
+ * @creationDate    26/03/2015
+ * @author          eFaktor     (fbv)
+ *
+ * Description
+ * Library for the Outcome Report
  *
  */
 
 define('OUTCOME_REPORT_FORMAT_SCREEN', 0);
 define('OUTCOME_REPORT_FORMAT_SCREEN_EXCEL', 1);
 define('OUTCOME_REPORT_FORMAT_LIST', 'report_format_list');
+define('MANAGER_OUTCOME_STRUCTURE_LEVEL','level_');
 
 class outcome_report {
-
-    /* PUBLIC FUNCTIONS     */
-    public static function GetLevelLink_ReportPage($tab,$site_context) {
-        /* Variables    */
-        global $OUTPUT;
-
-        /* Create links - It's depend on View permissions */
-        $out = '<ul class="unlist report-selection">' . "\n";
-        if (has_capability('report/manager:viewlevel1', $site_context)) {
-            $out .= self::Get_FirstLevelLink($tab);
-        }else if(has_capability('report/manager:viewlevel2', $site_context)) {
-            $out .= self::Get_SecondLevelLink($tab);
-        }else if (has_capability('report/manager:viewlevel3', $site_context)) {
-            $out .= self::Get_ThirdLevelLink($tab);
-        }//if_capabitity
-        $out .= '</ul>' . "\n";
-
-        /* Draw Links */
-        echo $OUTPUT->heading($out);
-    }//GetLevelLink_ReportPage
-
-    /**
-     * @static
-     * @param           $user_id
-     * @param           $site_context
-     * @return          stdClass
-     * @throws          Exception
-     *
-     * @creationDate    10/09/2014
-     * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Get my hierarchy level
-     */
-    public static function get_MyHierarchyLevel($user_id,$site_context) {
-        /* Variables    */
-        $my_hierarchy               = new stdClass();
-        $my_hierarchy->my_company   = null;
-        $my_hierarchy->level_two    = null;
-        $my_hierarchy->level_one    = null;
-        $my_hierarchy->my_level     = self::Get_MyLevelView($user_id,$site_context);
-
-        try {
-            $my_hierarchy->my_company = self::Get_MyCompany($user_id);
-            self::Get_MyHierarchy($my_hierarchy);
-
-            return $my_hierarchy;
-        }catch (Exception $ex) {
-            throw $ex;
-        }//try_catch
-    }//get_MyHierarchyLevel
+    /********************/
+    /* PUBLIC FUNCTIONS */
+    /********************/
 
     /**
      * @static
      * @return          array
      * @throws          Exception
      *
-     * @creationDate    10/09/2014
+     * @creationDate    26/03/2015
      * @author          eFaktor     (fbv)
      *
      * Description
@@ -107,1024 +63,18 @@ class outcome_report {
     }//Get_OutcomesList
 
     /**
-     * @static
-     * @return          array
-     * @throws          Exception
-     *
-     * @creationDate    10/09/2014
-     * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Get the Job Roles List
-     */
-    public static function Get_JobRolesList() {
-        /* Variables    */
-        global $DB;
-        $job_roles_lst = array();
-
-        try {
-            /* SQL Instruction  */
-            $sql = " SELECT     DISTINCT id,
-                                name
-                     FROM       {report_gen_jobrole}
-                     ORDER BY   name ASC ";
-
-            /* Execute  */
-            $rdo = $DB->get_records_sql($sql);
-            if ($rdo) {
-                foreach ($rdo as $job_role) {
-                    $job_roles_lst[$job_role->id] = $job_role->name;
-                }//for_rdo_job_role
-            }//if_rdo
-            return $job_roles_lst;
-        }catch (Exception $ex) {
-            throw $ex;
-        }//try_catch
-    }//Get_JobRolesList
-
-    /**
-     * @static
-     * @param           $level
-     * @param           null $companies_in
-     * @param           null $lst_parent
-     * @return          array
-     * @throws          Exception
-     *
-     * @creationDate    10/09/2014
-     * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Get the companies connected with the level
-     */
-    public static function Get_CompaniesLevel($level,$companies_in=null,$lst_parent=null) {
-        /* Variables    */
-        global $DB;
-        $lst_companies = array();
-
-        try {
-            $lst_companies[0] = get_string('select_level_list','report_manager');
-
-            /* Search Criteria */
-            $params = array();
-            $params['level']    = $level;
-
-            /* SQL Instruction   */
-            $sql    = " SELECT     DISTINCT rcd.id,
-                                   rcd.name
-                        FROM       {report_gen_companydata} rcd ";
-
-            if ($level > 1) {
-                $sql .= " JOIN  {report_gen_company_relation} rcr ON    rcr.companyid = rcd.id
-                                                                  AND   rcr.parentid  IN ($lst_parent) ";
-            }//if_level
-
-            $sql .= " WHERE rcd.hierarchylevel = :level ";
-
-            if ($companies_in) {
-                $sql .= " AND rcd.id IN ($companies_in) ";
-            }//if_companies_in
-
-            $sql .= " ORDER BY rcd.name ASC ";
-
-            /* Execute  */
-            $rdo = $DB->get_records_sql($sql,$params);
-            if ($rdo) {
-                foreach ($rdo as $company) {
-                    $lst_companies[$company->id] = $company->name;
-                }//for_rdo_company
-            }//if_rdo
-
-            return $lst_companies;
-        }catch (Exception $ex) {
-            throw $ex;
-        }//try_catch
-    }//Get_CompaniesLevel
-
-    /**
-     * @static
-     * @param               $data_form
-     * @return              null|stdClass
-     * @throws              Exception
-     *
-     * @creationDate    18/09/2014
-     * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Get Outcome Report Information.
-     */
-    public static function Get_OutcomeReportLevel($data_form) {
-        /* Variables    */
-        global $SESSION;
-        $companies_report   = null;
-        $outcome_report     = null;
-        $outcome_id         = null;
-        $job_role_list      = null;
-
-        try {
-            /* Outcome Report - Basic Information */
-            $outcome_id     = $data_form[REPORT_MANAGER_OUTCOME_LIST];
-            $outcome_report = self::Get_OutcomeBasicInfo($outcome_id);
-
-            if ($outcome_report) {
-                $outcome_report->rpt                = $data_form['rpt'];
-                $outcome_report->completed_before   = $data_form[REPORT_MANAGER_COMPLETED_LIST];
-
-                /* Check if there are courses connected with */
-                if ($outcome_report->courses) {
-                    /* All job roles  selected */
-                    if (!empty($data_form[REPORT_MANAGER_JOB_ROLE_LIST])) {
-                        $list = join(',',$data_form[REPORT_MANAGER_JOB_ROLE_LIST]);
-                        $outcome_report->job_roles = self::Outcome_JobRole_List($outcome_id,$list);
-                    }else {
-                        $outcome_report->job_roles = self::Outcome_JobRole_List($outcome_id);
-                    }//if_else
-
-                    /* Check if there are job_roles */
-                    if ($outcome_report->job_roles) {
-                        /* Level One */
-                        $outcome_report->level_one = report_manager_get_company_name($data_form[REPORT_MANAGER_COMPANY_STRUCTURE_LEVEL .'1']);
-
-                        /* Check Level  */
-                        switch ($data_form['rpt']) {
-                            case 1:
-                                /* Level One    */
-                                $SESSION->job_roles = array_keys($outcome_report->job_roles);
-                                setcookie('parentLevelOne',$data_form[REPORT_MANAGER_COMPANY_STRUCTURE_LEVEL .'1']);
-                                $level_two = self::Get_CompaniesLevel(2,null,$data_form[REPORT_MANAGER_COMPANY_STRUCTURE_LEVEL .'1']);
-                                $output = array_slice($level_two, 0, 1);
-                                $level_two = array_diff($level_two,$output);
-
-                                /* Level Two  */
-                                if ($level_two) {
-                                    self::Get_CompanyReportInfo_LevelOne($outcome_report,$level_two);
-                                }else {
-                                    $outcome_report = null;
-                                }//if_level_two_companies
-
-
-                                break;
-                            case 2:
-                                /* Get companies selected */
-                                $companies_report = self::Get_CompanyReportList($data_form);
-                                if ($companies_report) {
-                                    /* Level Two    */
-                                    $SESSION->job_roles = array_keys($outcome_report->job_roles);
-                                    setcookie('parentLevelTwo',$data_form[REPORT_MANAGER_COMPANY_STRUCTURE_LEVEL .'2']);
-                                    $outcome_report->level_two = report_manager_get_company_name($data_form[REPORT_MANAGER_COMPANY_STRUCTURE_LEVEL .'2']);
-                                    self::Get_CompanyReportInfo_LevelTwo($outcome_report,$companies_report);
-                                }else {
-                                    $outcome_report = null;
-                                }//if_companies_report
-
-                                break;
-                            case 3:
-                                /* Get companies selected */
-                                $companies_report = self::Get_CompanyReportList($data_form);
-                                if ($companies_report) {
-                                    /* Level Three  */
-                                    $outcome_report->level_two = report_manager_get_company_name($data_form[REPORT_MANAGER_COMPANY_STRUCTURE_LEVEL .'2']);
-                                    self::Get_CompanyReportInfo_LevelThree($outcome_report,$companies_report);
-                                }else {
-                                    $outcome_report = null;
-                                }//if_companies_report
-
-                                break;
-                            default:
-                                break;
-                        }//switch_report_level
-                    }else {
-                        $outcome_report = null;
-                    }//if_job_roles
-                }else {
-                    $outcome_report = null;
-                }//if_outcome_courses
-            }//if_outcome_report
-
-            return $outcome_report;
-        }catch (Exception $ex) {
-            throw $ex;
-        }//try_catch
-    }//Get_OutcomeReportLevel
-
-
-    /**
-     * @static
-     * @param           $outcome_report
-     * @return          string
-     * @throws          Exception
-     *
-     * @creationDate    11/09/2014
-     * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Print the outcome report data - Format Screen
-     */
-    public static function Print_OutcomeReport_Screen($outcome_report) {
-        /* Variables    */
-        $out_report         = '';
-
-        try {
-            switch ($outcome_report->rpt) {
-                case 1:
-                    $out_report = self::Print_OutcomeReport_Screen_LevelOne($outcome_report);
-
-                    break;
-                case 2:
-                    $out_report = self::Print_OutcomeReport_Screen_LevelTwo($outcome_report);
-
-                    break;
-                case 3:
-                    $out_report = self::Print_OutcomeReport_Screen_LevelThree($outcome_report);
-
-                    break;
-                default:
-                    break;
-            }//switch_my_level
-
-            return $out_report;
-        }catch (Exception $ex) {
-            throw $ex;
-        }//try_catch
-    }//Print_OutcomeReport_Screen
-
-    /**
-     * @static
-     * @param           $outcome_report
-     * @throws          Exception
-     *
-     * @creationDate    17/09/2014
-     * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Download Outcome Report - Excel
-     */
-    public static function Download_OutcomeReport($outcome_report) {
-        try {
-            switch ($outcome_report->rpt) {
-                case 1:
-                    self::Download_OutcomeReport_LevelOne($outcome_report);
-
-                    break;
-                case 2:
-                    self::Download_OutcomeReport_LevelTwo($outcome_report);
-
-                    break;
-                case 3:
-                    self::Download_OutcomeReport_LevelThree($outcome_report);
-
-                    break;
-                default:
-                    break;
-            }//switch_report_level
-        }catch (Exception $ex) {
-            throw $ex;
-        }//try_catch
-    }//Download_OutcomeReport
-
-
-    /* *******************  */
-    /* PROTECTED FUNCTIONS  */
-    /* *******************  */
-
-
-    /* *****************    */
-    /* PRIVATE FUNCTIONS    */
-    /* *****************    */
-
-    /**
-     * @static
-     * @param           $data_form
-     * @return          array|bool
-     *
-     * @creationDate    10/09/2014
-     * @author          eFaktor     (fbV)
-     *
-     * Description
-     * Get the companies to show in the report
-     */
-    private static function Get_CompanyReportList($data_form) {
-        /* Variables */
-        $company_list = array();
-
-        /* Get companies selected */
-        $report_level = $data_form['rpt'];
-        switch ($report_level) {
-            case 1:
-                $parent_list = self::Get_CompaniesLevel(2,null,$data_form[REPORT_MANAGER_COMPANY_STRUCTURE_LEVEL .'1']);
-                if (!$parent_list) {
-                    return false;
-                }//if_empty
-                $parent_list = join(',',array_keys($parent_list));
-                $company_list = self::Get_CompaniesLevel(3,null,$parent_list);
-
-                $output = array_slice($company_list, 0, 1);
-                $company_list = array_diff($company_list,$output);
-
-                break;
-            case 2:
-                $company_list = self::Get_CompaniesLevel(3,null,$data_form[REPORT_MANAGER_COMPANY_STRUCTURE_LEVEL .'2']);
-                $output = array_slice($company_list, 0, 1);
-                $company_list = array_diff($company_list,$output);
-
-                if (!$company_list) {
-                    return false;
-                }//if_empty
-                break;
-            case 3:
-                $company_list = self::Get_CompaniesLevel(3,null,$data_form[REPORT_MANAGER_COMPANY_STRUCTURE_LEVEL .'2']);
-                if (!empty($data_form[REPORT_MANAGER_COMPANY_STRUCTURE_LEVEL .'3'])) {
-                    $company_keys   = array_keys($company_list);
-                    $companies      = array_intersect($data_form[REPORT_MANAGER_COMPANY_STRUCTURE_LEVEL .'3'],$company_keys);
-                    $companies      = array_fill_keys($companies,null);
-                    $company_list   = array_intersect_key($company_list,$companies);
-                }
-                if (!$company_list){
-                    return false;
-                }//if_empty
-                break;
-        }//switch report_level
-
-        return $company_list;
-    }//Get_CompanyReportList
-
-    /**
-     * @static
-     * @param           $outcome_id
-     * @return          null|stdClass
-     * @throws          Exception
-     *
-     * @creationDate    18/09/2014
-     * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Get the main information connected with outcome
-     */
-    private static function Get_OutcomeBasicInfo($outcome_id) {
-        /* Variables    */
-        $outcome_report = null;
-
-        try {
-            /* Outcome Report   */
-            $outcome_report = new stdClass();
-            $outcome_report->id             = $outcome_id;
-            $outcome_report->name           = null;
-            $outcome_report->description    = null;
-            $outcome_report->expiration     = 0;
-            $outcome_report->courses        = null;
-            $outcome_report->job_roles      = null;
-            $outcome_report->level_one      = null;
-            $outcome_report->level_two      = null;
-            $outcome_report->level_three    = array();
-
-            /* Outcome Name && Description && Expiration Period  */
-            self::Get_OutcomeDetails($outcome_id,$outcome_report);
-            /* Courses Connected    */
-            $outcome_report->courses = self::Get_CoursesOutcome($outcome_id);
-
-            return $outcome_report;
-        }catch (Exception $ex) {
-            throw $ex;
-        }//try_catch
-    }//Get_OutcomeBasicInfo
-
-    /**
-     * @static
-     * @param           $outcome_id
-     * @param           $outcome_report
-     * @throws          Exception
-     *
-     * @creationDate    11/09/2014
-     * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Get Outcome details. Name and Expiration period
-     */
-    private static function Get_OutcomeDetails($outcome_id,&$outcome_report) {
-        /* Variables    */
-        global $DB;
-
-        try {
-            /* Search Criteria  */
-            $params = array();
-            $params['outcome'] =  $outcome_id;
-
-            /* SQL Instruction  */
-            $sql = " SELECT		o.fullname,
-                                o.description,
-                                oe.expirationperiod
-                     FROM			{grade_outcomes}			o
-                        LEFT JOIN	{report_gen_outcome_exp}	oe	ON oe.outcomeid = o.id
-                     WHERE	o.id = :outcome ";
-
-            /* Execute  */
-            $rdo = $DB->get_record_sql($sql,$params);
-            if ($rdo) {
-                $outcome_report->name           = $rdo->fullname;
-                $outcome_report->description    = $rdo->description;
-                $outcome_report->expiration     = $rdo->expirationperiod;
-            }//if_rdo
-        }catch (Exception $ex) {
-            throw $ex;
-        }//try_catch
-    }//Get_OutcomeDetails
-
-    /**
-     * @static
-     * @param           $outcome_id
-     * @return          array
-     * @throws          Exception
-     *
-     * @creationDate    10/09/2014
-     * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Get Courses connected with outcome
-     */
-    private static function Get_CoursesOutcome($outcome_id) {
-        /* Variables    */
-        global $DB;
-        $courses_lst = array();
-
-        try {
-            /* Search Criteria  */
-            $params = array();
-            $params['outcome']  = $outcome_id;
-
-            /* SQL Instruction  */
-            $sql = " SELECT	DISTINCT	c.id,
-                                        c.fullname
-                     FROM		{course}			        c
-                        JOIN	{grade_outcomes_courses}	gc 	ON 	gc.courseid   = c.id
-                                                                AND gc.outcomeid  = :outcome
-                     WHERE		c.visible = 1
-                     ORDER BY 	c.fullname ";
-
-            /* Execute  */
-            $rdo = $DB->get_records_sql($sql,$params);
-            if ($rdo) {
-                foreach ($rdo as $course) {
-                    $courses_lst[$course->id] = $course->fullname;
-                }//for_Rdo_course
-            }//if_rdo
-
-            return $courses_lst;
-        }catch (Exception $ex) {
-            throw $ex;
-        }//try_catch
-    }//Get_CoursesOutcome
-
-    /**
-     * @static
-     * @param           $outcome_report
-     * @param           $company_list
-     * @throws          Exception
-     *
-     * @creationDate    18/09/2014
-     * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Get the outcome report data. Structure Level Two
-     * Outcome Report  (Object)
-     *                          --> name.       Outcome Name.
-     *                          --> expiration. Expiration time for the outcome.
-     *                          --> job_roles. Job Roles Connected with. Array
-     *                          --> courses.    Array.
-     *                                  -> Name course
-     *                                  -> Id.
-     *                          --> level_one.  Company name. Level One
-     *                          --> level_two.  Company name. Level Two
-     *                          --> level_three. Array. Companies Level Three
-     *                                  --> Name Company
-     *                                  --> completed.      Array. Total users completed by course
-     *                                  --> not_completed.  Array. Total users not completed by course
-     *                                  --> not_enrol.      Array. Total users not enrol by course.
-     */
-    private static function Get_CompanyReportInfo_LevelTwo(&$outcome_report,$company_list) {
-        /* Variables    */
-        $courses_keys   = null;
-        $job_keys       = null;
-
-        try {
-            /* Courses Keys */
-            $courses_keys = implode(',',array_keys($outcome_report->courses));
-            /* Job Roles    */
-            $job_keys = implode(',',array_keys($outcome_report->job_roles));
-
-            /* Get Information Level Three    */
-            if ($company_list) {
-                foreach ($company_list as $id=>$company) {
-                    /* Company Info */
-                    $company_info = new stdClass();
-                    $company_info->name             = $company;
-                    $company_info->total            = self::Get_TotalUsers_JR_Company($id,$job_keys);
-                    if ($company_info->total) {
-                        $company_info->completed            = self::Get_TotalUsers_Completed($id,$job_keys,$courses_keys);
-                        $company_info->not_completed        = self::Get_TotalUsers_NotCompleted($id,$job_keys,$courses_keys);
-                        $company_info->not_enrol            = self::Get_TotalUsers_NotEnrol($outcome_report->courses,$company_info->completed,$company_info->not_completed,$company_info->total);
-                        $outcome_report->level_three[$id]   = $company_info;
-                    }
-                }//for_company
-            }//if_company_list
-
-        }catch (Exception $ex) {
-            throw $ex;
-        }//try_catch
-    }//Get_CompanyReportInfo_LevelTwo
-
-    /**
-     * @static
-     * @param           $outcome_report
-     * @param           $parent_lst
-     * @throws          Exception
-     *
-     * @creationDate    19/09/2014
-     * @author          eFaktor         (fbv)
-     *
-     * Description
-     * Get Outcome Report. Level One
-     * Outcome Report (Object)
-     *                          --> name.       Outcome Name.
-     *                          --> expiration. Expiration time for the outcome.
-     *                          --> job_roles. Job Roles Connected with. Array
-     *                          --> courses.    Array.
-     *                                  -> Name course
-     *                                  -> Id.
-     *                          --> level_one.  Company name. Level One
-     *                          --> level_two.  Level Two
-     *                                  --> Name Company.
-     *                                  --> level_three. Array. Companies Level Three
-     *                                      --> Name Company
-     *                                      --> completed.      Array. Total users completed by course
-     *                                      --> not_completed.  Array. Total users not completed by course
-     *                                      --> not_enrol.      Array. Total users not enrol by course.
-     */
-    private static function Get_CompanyReportInfo_LevelOne(&$outcome_report,$parent_lst) {
-        /* Variables    */
-        $level_two      = null;
-        $level_three    = null;
-        $company_list   = null;
-
-        try {
-            /* Get Information Level Two    */
-            $outcome_report->level_two = array();
-            foreach ($parent_lst as $id=>$company) {
-                $company_list   = self::Get_CompaniesLevel(3,null,$id);
-                $output         = array_slice($company_list, 0, 1);
-                $company_list   = array_diff($company_list,$output);
-
-                if ($company_list) {
-                    $level_two = new stdClass();
-                    $level_two->name        = report_manager_get_company_name($id);
-                    /* Add Level Three  */
-                    self::Get_CompanyReportInfo_LevelTwo($outcome_report,$company_list);
-                    if ($outcome_report->level_three) {
-                        $level_two->level_three = $outcome_report->level_three;
-                        /* Add Level Two    */
-                        $outcome_report->level_two[$id] = $level_two;
-                    }//if_level_three
-                    $outcome_report->level_three = array();
-                }//if_company_list
-
-            }//for_level_two
-        }catch (Exception $ex) {
-            throw $ex;
-        }//try_catch
-    }//Get_CompanyReportInfo_LevelOne
-
-    /**
-     * @static
-     * @param           $company_id
-     * @param           $job_roles
-     * @return          int
-     * @throws          Exception
-     *
-     * @creationDate    19/09/2014
-     * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Get how many users there are connected with job roles for a specific company
-     */
-    private static function Get_TotalUsers_JR_Company($company_id,$job_roles) {
-        /* Variables    */
-        global $DB;
-
-        try {
-            /* Search Criteria  */
-            $params = array();
-            $params['rgcompany'] = 'rgcompany';
-            $params['rgjobrole'] = 'rgjobrole';
-            $params['company']   = $company_id;
-
-            /* SQL Instruction  */
-            $sql = " SELECT		count(u.id) as 'total'
-                     FROM		{user}	u
-                        JOIN	{user_info_data}		uid		ON 	uid.userid 		= u.id
-                                                                AND uid.data		= :company
-                        JOIN	{user_info_field}		uif		ON 	uif.id 			= uid.fieldid
-                                                                AND	uif.datatype 	= :rgcompany
-                        JOIN	{user_info_data}		uid_jr	ON 	uid_jr.userid 	= u.id
-                                                                AND uid_jr.data		IN  ($job_roles)
-                        JOIN	{user_info_field}		uif_jr	ON 	uif_jr.id 		= uid_jr.fieldid
-                                                                AND	uif_jr.datatype = :rgjobrole
-                     WHERE 	u.deleted = 0 ";
-
-            /* Execute */
-            $rdo = $DB->get_record_sql($sql,$params);
-            if ($rdo) {
-                return $rdo->total;
-            }else {
-                return 0;
-            }//if_else
-        }catch (Exception $ex) {
-            throw $ex;
-        }//try_catch
-    }//Get_TotalUsers_Company
-
-    /**
-     * @static
-     * @param           $company_id
-     * @param           $job_roles
-     * @param           $courses
-     * @return          array|null
-     * @throws          Exception
-     *
-     * @creationDate    18/09/2014
-     * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Get total users have been completed each course
-     */
-    private static function Get_TotalUsers_Completed($company_id,$job_roles,$courses) {
-        /* Variables */
-        global $DB;
-        $lst_completed = null;
-
-        try {
-            /* Search Criteria  */
-            $params = array();
-            $params['rgcompany'] = 'rgcompany';
-            $params['rgjobrole'] = 'rgjobrole';
-            $params['company']   = $company_id;
-
-            /* SQL Instruction  */
-            $sql = " SELECT     cc.course,
-                                count(cc.userid) as 'total_completed'
-                     FROM       {course_completions} 	cc
-                        JOIN	{user}				u		ON 	u.id 			    = cc.userid
-                                                                AND	u.deleted		= 0
-                        JOIN	{user_info_data}		uid		ON 	uid.userid 		= u.id
-                                                                AND uid.data		= :company
-                        JOIN	{user_info_field}		uif		ON 	uif.id 			= uid.fieldid
-                                                                AND	uif.datatype 	= :rgcompany
-                        JOIN	{user_info_data}		uid_jr	ON 	uid_jr.userid 	= u.id
-                                                                AND uid_jr.data		IN  ($job_roles)
-                        JOIN	{user_info_field}		uif_jr	ON 	uif_jr.id 		= uid_jr.fieldid
-                                                                AND	uif_jr.datatype = :rgjobrole
-                     WHERE      cc.course IN ($courses)
-                        AND    	cc.timecompleted IS NOT NULL
-                     GROUP BY cc.course ";
-
-            /* Execute  */
-            $rdo = $DB->get_records_sql($sql,$params);
-            if ($rdo) {
-                foreach ($rdo as $course) {
-                    $lst_completed[$course->course] = $course->total_completed;
-                }//for_courses
-            }//if_rdo
-
-            return $lst_completed;
-        }catch (Exception $ex) {
-            throw $ex;
-        }//try_catch
-    }//Get_TotalUsers_Completed
-
-    /**
-     * @static
-     * @param           $company_id
-     * @param           $job_roles
-     * @param           $courses
-     * @return          array|null
-     * @throws          Exception
-     *
-     * @creationDate    18/09/2014
-     * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Get total users haven't been completed each course
-     */
-    private static function Get_TotalUsers_NotCompleted($company_id,$job_roles,$courses) {
-        /* Variables */
-        global $DB;
-        $lst_not_completed = null;
-
-        try {
-            /* Search Criteria  */
-            $params = array();
-            $params['rgcompany'] = 'rgcompany';
-            $params['rgjobrole'] = 'rgjobrole';
-            $params['company']   = $company_id;
-
-            /* SQL Instruction  */
-            $sql = " SELECT     cc.course,
-                                count(cc.userid) as 'total_not_completed'
-                     FROM       {course_completions} 	cc
-                        JOIN	{user}				u		ON 	u.id 			    = cc.userid
-                                                                AND	u.deleted		= 0
-                        JOIN	{user_info_data}		uid		ON 	uid.userid 		= u.id
-                                                                AND uid.data		= :company
-                        JOIN	{user_info_field}		uif		ON 	uif.id 			= uid.fieldid
-                                                                AND	uif.datatype 	= :rgcompany
-                        JOIN	{user_info_data}		uid_jr	ON 	uid_jr.userid 	= u.id
-                                                                AND uid_jr.data		IN  ($job_roles)
-                        JOIN	{user_info_field}		uif_jr	ON 	uif_jr.id 		= uid_jr.fieldid
-                                                                AND	uif_jr.datatype = :rgjobrole
-                     WHERE      cc.course IN ($courses)
-                        AND    	cc.timecompleted IS NULL
-                     GROUP BY cc.course ";
-
-            /* Execute  */
-            $rdo = $DB->get_records_sql($sql,$params);
-            if ($rdo) {
-                foreach ($rdo as $course) {
-                    $lst_not_completed[$course->course] = $course->total_not_completed;
-                }//for_courses
-            }//if_rdo
-
-            return $lst_not_completed;
-        }catch (Exception $ex) {
-            throw $ex;
-        }//try_catch
-    }//Get_TotalUsers_NotCompleted
-
-    /**
-     * @static
-     * @param           $courses
-     * @param           $completed
-     * @param           $not_completed
-     * @param           $total
-     * @return          array|null
-     * @throws          Exception
-     *
-     * @creationDate    18/09/2014
-     * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Get total users are still not enrolled
-     */
-    private static function Get_TotalUsers_NotEnrol($courses,&$completed,&$not_completed,$total) {
-        /* Variables */
-        $lst_not_enrol          = null;
-
-        try {
-            foreach ($courses as $id=>$course) {
-                $lst_not_enrol[$id] = $total;
-
-                /* Subtract Total Completed    */
-                if ($completed && array_key_exists($id,$completed)) {
-                    $lst_not_enrol[$id] = $lst_not_enrol[$id] - $completed[$id];
-                }else {
-                    $completed[$id] = 0;
-                }//completed
-
-                /* Subtract Total Not Completed */
-                if ($not_completed && array_key_exists($id,$not_completed)) {
-                    $lst_not_enrol[$id] = $lst_not_enrol[$id] - $not_completed[$id];
-                }else {
-                    $not_completed[$id] = 0;
-                }//not_completed
-            }//for_courses
-
-            return $lst_not_enrol;
-        }catch (Exception $ex) {
-            throw $ex;
-        }//try_catch
-    }//Get_TotalUsers_NotEnrol
-
-    /**
-     * @static
-     * @param           $outcome_report
-     * @param           $company_list
-     * @return          stdClass
-     * @throws          Exception
-     *
-     * @creationDate    10/09/2014
-     * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Get the outcome report data. Structure Level three
-     * Outcome Report  (Object)
-     *                          --> name.       Outcome Name.
-     *                          --> expiration. Expiration time for the outcome.
-     *                          --> job_roles. Job Roles Connected with. Array
-     *                          --> courses.    Array.
-     *                                  -> Name course
-     *                                  -> Id.
-     *                          --> level_one.  Company name. Level One
-     *                          --> level_two.  Company name. Level Two
-     *                          --> level_three. Array. Companies Level Three
-     *                                  --> Name Company
-     *                                  --> Users. Array. Employees for this company
-     *                                      --> name.           Name of user.
-     *                                      --> job_roles.      Job roles connected with user.
-     *                                      --> completed.      Array. Courses completed
-     *                                      --> not_completed.  Array. Courses not completed yet.
-     *                                      --> not_enrol.      Array. Courses not enrolled.
-     */
-    private static function Get_CompanyReportInfo_LevelThree(&$outcome_report,$company_list) {
-        /* Variables    */
-        global $DB;
-        $courses_keys   = null;
-        $job_keys       = null;
-
-
-        try {
-            /* Courses Keys */
-            $courses_keys = implode(',',array_keys($outcome_report->courses));
-
-            /* Search Criteria  */
-            $params = array();
-            $params['rgcompany'] = 'rgcompany';
-            $params['rgjobrole'] = 'rgjobrole';
-            $job_keys = implode(',',array_keys($outcome_report->job_roles));
-
-            foreach ($company_list as $id=>$company) {
-                /* Company Info */
-                $company_info = new stdClass();
-                $company_info->name     = $company;
-                $company_info->users    = array();
-
-                $params['company'] = $id;
-
-                /* SQL Instruction  */
-                $sql = " SELECT   	DISTINCT 	u.id,
-                                                CONCAT(u.firstname, ' ', u.lastname) as name,
-                                                uid_jr.data as 'job_roles'
-                         FROM	 	{user}			u
-                            JOIN	{user_info_data}	uid			ON 	uid.userid 		= u.id
-                                                                    AND uid.data		= :company
-                            JOIN	{user_info_field}	uif			ON 	uif.id 			= uid.fieldid
-                                                                    AND	uif.datatype 	= :rgcompany
-                            JOIN	{user_info_data}	uid_jr		ON 	uid_jr.userid 	= u.id
-                                                                    AND uid_jr.data		IN  ($job_keys)
-                            JOIN	{user_info_field}	uif_jr		ON 	uif_jr.id 		= uid_jr.fieldid
-                                                                    AND	uif_jr.datatype = :rgjobrole
-                         WHERE 		u.deleted = 0
-                         ORDER BY 	u.firstname, u.lastname ASC ";
-
-                /* Execute  */
-                $rdo = $DB->get_records_sql($sql,$params);
-                if ($rdo) {
-                    foreach ($rdo as $user) {
-                        /* User Info    */
-                        $user_info = new stdClass();
-                        $user_info->name            = $user->name;
-                        $user_info->job_roles       = self::get_JobRoleNames_List($user->job_roles);
-
-                        $user_info->completed       = self::Get_CoursesCompleted($user->id,$courses_keys);
-                        $user_info->not_completed   = self::Get_CoursesNotCompleted($user->id,$courses_keys);
-                        $user_info->not_enrol       = self::Get_CoursesNotEnrol($courses_keys,$user_info->completed ,$user_info->not_completed );
-
-                        $company_info->users[$user->id] = $user_info;
-                    }//for_rdo_user
-                }//if_rdo
-
-                $outcome_report->level_three[$id] = $company_info;
-            }//for_Each company
-        }catch (Exception $ex) {
-            throw $ex;
-        }//try_catch
-    }//Get_CompanyReportInfo_LevelThree
-
-    /**
-     * @static
-     * @param           $user_id
-     * @param           $courses_lst
-     * @return          array|null
-     * @throws          Exception
-     *
-     * @creationDate    10/09/2014
-     * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Get the courses have been completed by user
-     */
-    private static function Get_CoursesCompleted($user_id,$courses_lst) {
-        /* Variables    */
-        global $DB;
-        $completed = array();
-
-        try {
-            /* SQL Instruction  */
-            $sql = " SELECT     DISTINCT    course,
-                                            timecompleted
-                     FROM       {course_completions}
-                     WHERE      course IN ($courses_lst)
-                        AND     timecompleted IS NOT NULL
-                        AND     userid = :userid ";
-
-            /* Execute  */
-            $rdo = $DB->get_records_sql($sql,array('userid' => $user_id));
-            if ($rdo) {
-                foreach ($rdo as $course) {
-                    $completed[$course->course] = $course->timecompleted;
-                }//for_rdo_course
-            }//if_rdo
-
-            return $completed;
-        }catch (Exception   $ex) {
-            throw $ex;
-        }//try_catch
-    }//Get_CoursesCompleted
-
-    /**
-     * @static
-     * @param           $user_id
-     * @param           $courses_lst
-     * @return          array|null
-     * @throws          Exception
-     *
-     * @creationDate    10/09/2014
-     * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Get the courses haven't been completed by user yet.
-     */
-    private static function Get_CoursesNotCompleted($user_id,$courses_lst) {
-        /* Variables    */
-        global $DB;
-        $not_completed = null;
-
-        try {
-            /* SQL Instruction  */
-            $sql = " SELECT     DISTINCT    course
-                     FROM       {course_completions}
-                     WHERE      course IN ($courses_lst)
-                        AND     timecompleted IS NULL
-                        AND     userid = :userid ";
-
-            /* Execute  */
-            $rdo = $DB->get_records_sql($sql,array('userid' => $user_id));
-            if ($rdo) {
-                foreach ($rdo as $course) {
-                    $not_completed[$course->course] = $course->course;
-                }//for_rdo_course
-            }//if_rdo
-
-            return $not_completed;
-        }catch (Exception   $ex) {
-            throw $ex;
-        }//try_catch
-    }//Get_CoursesNotCompleted
-
-    /**
-     * @static
-     * @param           $courses
-     * @param           $completed
-     * @param           $not_completed
-     * @return          array|null
-     *
-     * @creationDate    10/09/2014
-     * @author          eFaktor     (fbv)
-     *
-     * Description
-     * get the courses not enrolled
-     */
-    private static function Get_CoursesNotEnrol($courses,$completed,$not_completed) {
-        /* Variables    */
-        $enrol          = array();
-        $not_enrol      = null;
-        $lst_courses    = explode(',',$courses);
-
-        if ($not_completed) {
-            $enrol = array_merge(array_keys($not_completed));
-        }//if_not_completed
-
-        if ($completed) {
-            if ($enrol) {
-                $enrol = array_merge($enrol,array_keys($completed));
-            }else {
-                $enrol = array_merge(array_keys($completed));
-            }//if_enrol
-        }//if_completed
-
-        $not_enrol = array_diff($lst_courses,$enrol);
-
-        return $not_enrol;
-    }//Get_CoursesNotEnrol
-
-    /**
      * @param           $outcome_id
      * @param           null $list
      * @return          array
-     * @throws          moodle_exception
+     * @throws          Exception
      *
-     * @updateDate      21/09/2012
+     * @updateDate      26/03/2015
      * @author          eFaktor     (fbv)
      *
      * Description
      * Return all job roles connected with a specific outcome.
      */
-    private static function Outcome_JobRole_List($outcome_id, $list = null) {
+    public static function Outcome_JobRole_List($outcome_id, $list = null) {
         global $DB;
 
         /* Job Roles & Course */
@@ -1151,358 +101,1256 @@ class outcome_report {
             $rdo = $DB->get_records_sql($sql,$params);
             if ($rdo) {
                 foreach ($rdo as $job_role) {
-                    $report_info = new stdClass();
-                    $report_info->job_role          = $job_role->name;
-
-                    $job_role_list[$job_role->id] = $report_info;
+                    $job_role_list[$job_role->id] = $job_role->name;
                 }//
             }//if_rdo
 
             return $job_role_list;
         }catch (Exception $ex) {
-            throw new moodle_exception($ex->getMessage());
-        }
+            throw $ex;
+        }//try_catch
     }//Outcome_JobRole_List
 
+
     /**
-     * @static
-     * @param           $job_role_lst
-     * @return          null
+     * @param           $data_form
+     * @param           $my_hierarchy
+     * @return          null|stdClass
      * @throws          Exception
      *
-     * @creationDate    10/09/2014
+     * @creationDate    26/03/2015
      * @author          eFaktor     (fbv)
      *
      * Description
-     * Get the names of the job roles
+     * Get the outcome report information to display
+     *
+     *
+     * Outcome Report
+     *          - id.
+     *          - name
+     *          - description
+     *          - expiration
+     *          - courses.      Array
+     *                              --> [id]     --> name
+     *          - job_roles     Array
+     *                              --> [id]    --> name
+     *          - levelZero.    Array
+     *                              [id]
+     *                                      - id
+     *                                      - name
+     *                                      - levelOne.     Array.
+     *          - levelOne.     Array
+     *                              [id]
+     *                                      - id
+     *                                      - name
+     *                                      - levelTwo.     Array
+     *          - levelTwo.     Array
+     *                              [id]
+     *                                      - id
+     *                                      - name
+     *                                      - levelThree.   Array
+     *          - levelThree.   Array
+     *                              [id]
+     *                                      - id
+     *                                      - name
+     *                                      - courses.      Array
+     *                                                          [id]
+     *                                                              - name
+     *                                                              - completed.        Array
+     *                                                                                      [id]
+     *                                                                                          - name
+     *                                                                                          - completed
+     *                                                              - not_completed.    Array
+     *                                                                                      [id]
+     *                                                                                          - name
+     *                                                              - not_enrol.        Array
+     *                                                                                      [id]
+     *                                                                                          - name
+     *
      */
-    private static function get_JobRoleNames_List($job_role_lst){
+    public static function Get_OutcomeReportLevel($data_form,$my_hierarchy) {
         /* Variables    */
-        global $DB;
+        global $SESSION;
+        $companies_report   = null;
+        $outcome_report     = null;
+        $outcome_id         = null;
+        $job_role_list      = null;
+        $levelZero          = null;
+        $levelOne           = null;
+        $levelTwo           = null;
+        $levelThree         = null;
+        $inZero             = null;
+        $inOne              = null;
+        $inTwo              = null;
+        $inThree            = null;
 
         try {
-            /* SQL Instruction  */
-            $sql = " SELECT	GROUP_CONCAT(DISTINCT name ORDER BY name SEPARATOR ',') as 'names'
-                     FROM 	{report_gen_jobrole}
-                     WHERE	id IN ($job_role_lst) ";
+            /* Outcome Report - Basic Information */
+            $outcome_id     = $data_form[REPORT_MANAGER_OUTCOME_LIST];
+            $outcome_report = self::Get_OutcomeBasicInfo($outcome_id);
 
-            /* Execute  */
-            $rdo = $DB->get_record_sql($sql);
-            if ($rdo) {
-                return $rdo->names;
-            }else {
-                return null;
-            }
+            if ($outcome_report) {
+                $outcome_report->rpt                = $data_form['rpt'];
+                $outcome_report->completed_before   = $data_form[REPORT_MANAGER_COMPLETED_LIST];
+
+                /* Get My Companies by Level    */
+                list($inZero,$inOne,$inTwo,$inThree) = CompetenceManager::GetMyCompanies_By_Level($my_hierarchy->competence);
+                $inZero     = implode(',',$inZero);
+                $inOne      = implode(',',$inOne);
+                $inTwo      = implode(',',$inTwo);
+                $inThree    = implode(',',$inThree);
+
+                /* Job Roles Selected   */
+                $outcome_report->job_roles = self::Get_JobRolesOutcome_Report($outcome_id,$data_form);
+                /* Save Job Roles Selected  */
+                $SESSION->job_roles = array_keys($outcome_report->job_roles);
+
+                /* Check if there are job_roles */
+                if ($outcome_report->job_roles) {
+                    /* Get information to display by level          */
+                    /* Level zero    - That's common for all levels  */
+                    $outcome_report->levelZero = CompetenceManager::GetCompany_Name($data_form[MANAGER_OUTCOME_STRUCTURE_LEVEL .'0']);
+                    setcookie('parentLevelZero',$data_form[MANAGER_OUTCOME_STRUCTURE_LEVEL .'0']);
+
+                    /* Check Level  */
+                    switch ($data_form['rpt']) {
+                        case 0:
+                            /* Level Zero    */
+                            /* Get info connected with Level Zero */
+                            $levelOne   = CompetenceManager::GetCompanies_LevelList(1,$data_form[MANAGER_OUTCOME_STRUCTURE_LEVEL .'0'],$inOne);
+                            unset($levelOne[0]);
+                            if ($levelOne) {
+                                self::Get_CompanyReportInfo_LevelOne($outcome_report,$levelOne,$inTwo,$inThree);
+                                if (!$outcome_report->levelOne) {
+                                    $outcome_report = null;
+                                }
+                            }else {
+                                $outcome_report = null;
+                            }//if_levelZero_Companies
+
+                            break;
+                        case 1:
+                            /* Level One    */
+                            $levelOne = new stdClass();
+                            $levelOne->id           = $data_form[MANAGER_OUTCOME_STRUCTURE_LEVEL .'1'];
+                            $levelOne->name         = CompetenceManager::GetCompany_Name($data_form[MANAGER_OUTCOME_STRUCTURE_LEVEL .'1']);
+                            $levelOne->levelTwo     = null;
+
+                            /* GEt info connected with Level One */
+                            $levelTwo   = CompetenceManager::GetCompanies_LevelList(2,$data_form[MANAGER_OUTCOME_STRUCTURE_LEVEL .'1'],$inTwo);
+                            unset($levelTwo[0]);
+                            if ($levelTwo) {
+                                $levelOne->levelTwo      = self::Get_CompanyReportInfo_LevelTwo($outcome_report,$levelTwo,$inThree);
+                                if ($levelOne->levelTwo) {
+                                    $outcome_report->levelOne[$levelOne->id]  = $levelOne;
+                                }else {
+                                    $outcome_report = null;
+                                }
+                            }else {
+                                $outcome_report = null;
+                            }//if_level_two_companies
+
+                            break;
+                        case 2:
+                            /* Level One    */
+                            $levelOne = new stdClass();
+                            $levelOne->id                               = $data_form[MANAGER_OUTCOME_STRUCTURE_LEVEL .'1'];
+                            $levelOne->name                             = CompetenceManager::GetCompany_Name($data_form[MANAGER_OUTCOME_STRUCTURE_LEVEL .'1']);
+                            $levelOne->levelTwo                         = null;
+                            $outcome_report->levelOne[$levelOne->id]    = $levelOne;
+
+                            /* Level Two    */
+                            $levelTwo = new stdClass();
+                            $levelTwo->id           = $data_form[MANAGER_OUTCOME_STRUCTURE_LEVEL .'2'];
+                            $levelTwo->name         = CompetenceManager::GetCompany_Name($data_form[MANAGER_OUTCOME_STRUCTURE_LEVEL .'2']);
+                            $levelTwo->levelThree   = null;
+
+                            /* GEt info connected with Level Two */
+                            $levelThree     = CompetenceManager::GetCompanies_LevelList(3,$data_form[MANAGER_OUTCOME_STRUCTURE_LEVEL .'2'],$inThree);
+                            unset($levelThree[0]);
+                            if ($levelThree) {
+                                $levelTwo->levelThree      = self::Get_CompanyReportInfo_LevelThree($outcome_report,$levelThree);
+                                if ($levelTwo->levelThree) {
+                                    $outcome_report->levelTwo[$levelTwo->id] = $levelTwo;
+                                }else {
+                                    $outcome_report = null;
+                                }
+                            }else {
+                                $outcome_report = null;
+                            }//if_level_two_companies
+
+                            break;
+                        case 3:
+                            /* Level One    */
+                            $levelOne = new stdClass();
+                            $levelOne->id                               = $data_form[MANAGER_OUTCOME_STRUCTURE_LEVEL .'1'];
+                            $levelOne->name                             = CompetenceManager::GetCompany_Name($data_form[MANAGER_OUTCOME_STRUCTURE_LEVEL .'1']);
+                            $levelOne->levelTwo                         = null;
+                            $outcome_report->levelOne[$levelOne->id]    = $levelOne;
+
+                            /* Level Two    */
+                            $levelTwo = new stdClass();
+                            $levelTwo->id                               = $data_form[MANAGER_OUTCOME_STRUCTURE_LEVEL .'2'];
+                            $levelTwo->name                             = CompetenceManager::GetCompany_Name($data_form[MANAGER_OUTCOME_STRUCTURE_LEVEL .'2']);
+                            $levelTwo->levelThree                       = null;
+                            $outcome_report->levelTwo[$levelTwo->id]    = $levelTwo;
+
+                            /* Get Info connected with the level three  */
+                            $levelThree = CompetenceManager::GetCompanies_LevelList(3,$data_form[MANAGER_OUTCOME_STRUCTURE_LEVEL .'2'],$inThree);
+                            unset($levelThree[0]);
+                            if (!empty($data_form[MANAGER_OUTCOME_STRUCTURE_LEVEL .'3'])) {
+                                $company_keys   = array_keys($levelThree);
+                                $companies      = array_intersect($data_form[MANAGER_OUTCOME_STRUCTURE_LEVEL .'3'],$company_keys);
+                                $companies      = array_fill_keys($companies,null);
+                                $levelThree     = array_intersect_key($levelThree,$companies);
+                            }
+
+                            /* Level Three  */
+                            if ($levelThree) {
+                                $outcome_report->levelThree      = self::Get_CompanyReportInfo_LevelThree($outcome_report,$levelThree);
+                                if (!$outcome_report->levelThree) {
+                                    $outcome_report = null;
+                                }
+                            }else {
+                                $outcome_report = null;
+                            }//if_levelThree
+
+                            break;
+                        default:
+                            $outcome_report = null;
+
+                            break;
+                    }//switch_level
+                }//if_job_roles
+            }//if_outcome_report
+
+            return $outcome_report;
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//get_JobRoleNames_List
+    }//Get_OutcomeReportLevel
 
 
     /**
-     * @static
-     * @param           $user_id
-     * @param           $site_context
-     * @return          int
-     *
-     * @creationDate    10/09/2014
-     * @author          eFaktor     (fbV)
-     *
-     * Description
-     * Get the report/manager view permissions
-     */
-    private static function Get_MyLevelView($user_id,$site_context) {
-        /* Variables    */
-        $my_level = 0;
-
-        if (has_capability('report/manager:viewlevel1', $site_context,$user_id) &&
-            has_capability('report/manager:viewlevel2', $site_context,$user_id) &&
-            has_capability('report/manager:viewlevel3', $site_context,$user_id)) {
-
-            $my_level = 1;
-        }else {
-            if (!has_capability('report/manager:viewlevel1', $site_context,$user_id) &&
-                has_capability('report/manager:viewlevel2', $site_context,$user_id) &&
-                has_capability('report/manager:viewlevel3', $site_context,$user_id)) {
-
-                $my_level = 2;
-            }else {
-                if (!has_capability('report/manager:viewlevel1', $site_context,$user_id) &&
-                    !has_capability('report/manager:viewlevel2', $site_context,$user_id) &&
-                    has_capability('report/manager:viewlevel3', $site_context,$user_id)) {
-
-                    $my_level = 3;
-                }
-            }//level_Three
-        }//level_One
-
-        return $my_level;
-    }//Get_MyLevelView
-
-    /**
-     * @static
-     * @param           $user_id
-     * @return          null
+     * @param           $outcome_report
+     * @param           $completed_option
+     * @return          string
      * @throws          Exception
      *
-     * @creationDate    10/09/2014
+     * @creationDate    30/03/2015
      * @author          eFaktor     (fbv)
      *
      * Description
-     * Get the company connected with user
+     * Print the outcome report data - Format Screen
+     *
+     * Outcome Report
+     *          - id.
+     *          - name
+     *          - description
+     *          - expiration
+     *          - courses.      Array
+     *                              --> [id]     --> name
+     *          - job_roles     Array
+     *                              --> [id]    --> name
+     *          - levelZero.    Array
+     *                              [id]
+     *                                      - id
+     *                                      - name
+     *                                      - levelOne.     Array.
+     *          - levelOne.     Array
+     *                              [id]
+     *                                      - id
+     *                                      - name
+     *                                      - levelTwo.     Array
+     *          - levelTwo.     Array
+     *                              [id]
+     *                                      - id
+     *                                      - name
+     *                                      - levelThree.   Array
+     *          - levelThree.   Array
+     *                              [id]
+     *                                      - id
+     *                                      - name
+     *                                      - courses.      Array
+     *                                                          [id]
+     *                                                              - name
+     *                                                              - completed.        Array
+     *                                                                                      [id]
+     *                                                                                          - name
+     *                                                                                          - completed
+     *                                                              - not_completed.    Array
+     *                                                                                      [id]
+     *                                                                                          - name
+     *                                                              - not_enrol.        Array
+     *                                                                                      [id]
+     *                                                                                          - name
      */
-    private static function Get_MyCompany($user_id) {
+    public static function Print_OutcomeReport_Screen($outcome_report,$completed_option) {
         /* Variables    */
-        global $DB;
-
-        /* Search Criteria  */
-        $params = array();
-        $params['user_id']  = $user_id;
-        $params['rg']       = 'rgcompany';
+        $out_report         = '';
 
         try {
+            switch ($outcome_report->rpt) {
+                case 0:
+                    $out_report = self::Print_OutcomeReport_Screen_LevelZero($outcome_report,$completed_option);
+
+                    break;
+                case 1:
+                    $out_report = self::Print_OutcomeReport_Screen_LevelOne($outcome_report,$completed_option);
+
+                    break;
+                case 2:
+                    $out_report = self::Print_OutcomeReport_Screen_LevelTwo($outcome_report,$completed_option);
+
+                    break;
+                case 3:
+                    $out_report = self::Print_OutcomeReport_Screen_LevelThree($outcome_report);
+
+                    break;
+                default:
+                    break;
+            }//switch_my_level
+
+            return $out_report;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//Print_OutcomeReport_Screen
+
+    /**
+     * @param           $outcome_report
+     * @throws          Exception
+     *
+     * @creationDate    30/03/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Print the outcome report data - Format Excel
+     *
+     * Outcome Report
+     *          - id.
+     *          - name
+     *          - description
+     *          - expiration
+     *          - courses.      Array
+     *                              --> [id]     --> name
+     *          - job_roles     Array
+     *                              --> [id]    --> name
+     *          - levelZero.    Array
+     *                              [id]
+     *                                      - id
+     *                                      - name
+     *                                      - levelOne.     Array.
+     *          - levelOne.     Array
+     *                              [id]
+     *                                      - id
+     *                                      - name
+     *                                      - levelTwo.     Array
+     *          - levelTwo.     Array
+     *                              [id]
+     *                                      - id
+     *                                      - name
+     *                                      - levelThree.   Array
+     *          - levelThree.   Array
+     *                              [id]
+     *                                      - id
+     *                                      - name
+     *                                      - courses.      Array
+     *                                                          [id]
+     *                                                              - name
+     *                                                              - completed.        Array
+     *                                                                                      [id]
+     *                                                                                          - name
+     *                                                                                          - completed
+     *                                                              - not_completed.    Array
+     *                                                                                      [id]
+     *                                                                                          - name
+     *                                                              - not_enrol.        Array
+     *                                                                                      [id]
+     *                                                                                          - name
+     */
+    public static function Download_OutcomeReport($outcome_report) {
+        try {
+            switch ($outcome_report->rpt) {
+                case 0:
+                    self::Download_OutcomeReport_LevelZero($outcome_report);
+
+                    break;
+                case 1:
+                    self::Download_OutcomeReport_LevelOne($outcome_report);
+
+                    break;
+                case 2:
+                    self::Download_OutcomeReport_LevelTwo($outcome_report);
+
+                    break;
+                case 3:
+                    self::Download_OutcomeReport_LevelThree($outcome_report);
+
+                    break;
+                default:
+                    break;
+            }//switch_report_level
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//Download_OutcomeReport
+
+
+    /*********************/
+    /* PRIVATE FUNCTIONS */
+    /*********************/
+
+    /**
+     * @param           $outcome_id
+     * @return          null|stdClass
+     * @throws          Exception
+     *
+     * @creationDate    26/03/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Get the information connected to the outcome
+     *
+     * Outcome Report
+     *          - id.
+     *          - name
+     *          - description
+     *          - expiration
+     *          - course.       Array
+     *                  -> [id] --> name
+     *          - job_roles
+     *          - levelZero
+     *          - levelOne
+     *          - levelTwo
+     *          - levelThree
+     */
+    private static function Get_OutcomeBasicInfo($outcome_id) {
+        /* Variables    */
+        global $DB;
+        $outcome_report  = null;
+
+        try {
+            /* Search Criteria  */
+            $params = array();
+            $params['outcome'] =  $outcome_id;
+
             /* SQL Instruction  */
-            $sql = " SELECT		uid.data
-                     FROM		{user_info_data}	uid
-	                    JOIN	{user_info_field}	uif		ON		uid.fieldid 	= uif.id
-											                AND 	uif.datatype 	= :rg
-                     WHERE		uid.userid = :user_id ";
+            $sql = " SELECT		    o.id,
+                                    o.fullname,
+                                    o.description,
+                                    IF(oe.expirationperiod,oe.expirationperiod,0) as 'expiration',
+                                    GROUP_CONCAT(DISTINCT oc.courseid ORDER BY oc.courseid SEPARATOR ',') as 'coursesid'
+                     FROM			{grade_outcomes}			    o
+                        JOIN		{grade_outcomes_courses}	    oc	ON  oc.outcomeid    = o.id
+                        LEFT JOIN	{report_gen_outcome_exp}	    oe	ON  oe.outcomeid    = oc.outcomeid
+                     WHERE			o.id = :outcome ";
 
             /* Execute  */
             $rdo = $DB->get_record_sql($sql,$params);
             if ($rdo) {
-                return $rdo->data;
-            }else {
-                return null;
-            }//if_else_rdo
+                /* Outcome Report   */
+                $outcome_report = new stdClass();
+                $outcome_report->id             = $rdo->id;
+                $outcome_report->name           = $rdo->fullname;
+                $outcome_report->description    = $rdo->description;
+                $outcome_report->expiration     = $rdo->expiration;
+                $outcome_report->courses        = self::Get_CourseDetail($rdo->coursesid);
+                $outcome_report->job_roles      = null;
+                $outcome_report->levelZero      = null;
+                $outcome_report->levelOne       = null;
+                $outcome_report->levelTwo       = null;
+                $outcome_report->levelThree     = null;
+            }//if_rdo
+
+            return $outcome_report;
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//Get_MyCompany
+    }//Get_OutcomeBasicInfo
 
     /**
-     * @static
-     * @param           $my_hierarchy
-     * @throws          Exception
-     *
-     * @creationDate    10/09/2014
-     * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Get my hierarchy level of my company
-     */
-    private static function Get_MyHierarchy(&$my_hierarchy) {
-        /* Variables    */
-
-        try {
-            /* Level Two  */
-            $level_two = self::Get_ParentsCompany($my_hierarchy->my_company,2);
-            if ($level_two) {
-                $my_hierarchy->level_two = implode(',',$level_two);
-                foreach ($level_two as $company) {
-                    /* Level One    */
-                    $level_one = self::Get_ParentsCompany($company,1);
-
-                    if ($level_one) {
-                        if ($my_hierarchy->level_one) {
-                            $my_hierarchy->level_one .= ',' . implode(',',$level_one);
-                        }else {
-                            $my_hierarchy->level_one = implode(',',$level_one);
-                        }//$my_hierarchy->level_one
-                    }//if_level_one
-                }
-            }//level_two
-        }catch (Exception $ex) {
-            throw $ex;
-        }//try_catch
-    }//Get_MyHierarchy
-
-    /**
-     * @static
-     * @param           $company
-     * @param           $level
+     * @param           $courses
      * @return          array
      * @throws          Exception
      *
-     * @creationDate    10/09/2014
+     * @creationDate    26/03/2015
      * @author          eFaktor     (fbv)
      *
      * Description
-     * Get the parent companies for a specific company
+     * Get the detail of the courses
      */
-    private static function Get_ParentsCompany($company,$level) {
+    private static function Get_CourseDetail($courses) {
         /* Variables    */
         global $DB;
-        $lst_companies = array();
+        $courses_lst    = array();
+        $course_info    = null;
+
+        try {
+            /* SQL Instruction  */
+            $sql = " SELECT		c.id,
+                                c.fullname
+                     FROM		{course}			        c
+                     WHERE		c.visible = 1
+                        AND     c.id IN ($courses)
+                     ORDER BY 	c.fullname ";
+
+            /* Execute  */
+            $rdo = $DB->get_records_sql($sql);
+            if ($rdo) {
+                foreach ($rdo as $course) {
+                    $courses_lst[$course->id] = $course->fullname;
+                }//for_Rdo_course
+            }//if_rdo
+
+            return $courses_lst;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//Get_CourseDetail
+
+    /**
+     * @param           $outcome_id
+     * @param           $data_form
+     * @return          array
+     * @throws          Exception
+     *
+     * @creationDate    30/03/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Get the job roles connected to the outcome and the company level
+     */
+    private static function Get_JobRolesOutcome_Report($outcome_id,$data_form) {
+        /* Variables    */
+        $job_roles  = null;
+        $levelZero  = null;
+        $levelOne   = null;
+        $levelTwo   = null;
+        $levelThree = null;
+        $jr_level   = array();
+
+        try {
+            if (!empty($data_form[REPORT_MANAGER_JOB_ROLE_LIST])) {
+                $list = join(',',$data_form[REPORT_MANAGER_JOB_ROLE_LIST]);
+                $job_roles = self::Outcome_JobRole_List($outcome_id,$list);
+            }else {
+                /* Job Roles - Outcome          */
+                $job_roles = self::Outcome_JobRole_List($outcome_id);
+
+                /* Job Roles - Outcome Level    */
+                switch ($data_form['rpt']) {
+                    case 0:
+                        /* Get Level        */
+                        $levelZero = $data_form[MANAGER_OUTCOME_STRUCTURE_LEVEL .'0'];
+                        /* Get Job Roles    */
+                        CompetenceManager::GetJobRoles_Hierarchy($jr_level,0,$levelZero);
+                        $job_roles = array_intersect_key($job_roles,$jr_level);
+
+                        break;
+                    case 1:
+                        /* Get Level        */
+                        $levelZero = $data_form[MANAGER_OUTCOME_STRUCTURE_LEVEL .'0'];
+                        $levelOne  = $data_form[MANAGER_OUTCOME_STRUCTURE_LEVEL .'1'];
+                        /* Get Job Roles    */
+                        CompetenceManager::GetJobRoles_Hierarchy($jr_level,0,$levelZero);
+                        CompetenceManager::GetJobRoles_Hierarchy($jr_level,1,$levelZero,$levelOne);
+                        $job_roles = array_intersect_key($job_roles,$jr_level);
+
+                        break;
+                    case 2:
+                        /* Get Level        */
+                        $levelZero = $data_form[MANAGER_OUTCOME_STRUCTURE_LEVEL .'0'];
+                        $levelOne  = $data_form[MANAGER_OUTCOME_STRUCTURE_LEVEL .'1'];
+                        $levelTwo  = $data_form[MANAGER_OUTCOME_STRUCTURE_LEVEL .'2'];
+                        /* Get Job Roles    */
+                        CompetenceManager::GetJobRoles_Hierarchy($jr_level,0,$levelZero);
+                        CompetenceManager::GetJobRoles_Hierarchy($jr_level,1,$levelZero,$levelOne);
+                        CompetenceManager::GetJobRoles_Hierarchy($jr_level,2,$levelZero,$levelOne,$levelTwo);
+                        $job_roles = array_intersect_key($job_roles,$jr_level);
+
+                        break;
+                    case 3:
+                        /* Get Level        */
+                        $levelZero  = $data_form[MANAGER_OUTCOME_STRUCTURE_LEVEL .'0'];
+                        $levelOne   = $data_form[MANAGER_OUTCOME_STRUCTURE_LEVEL .'1'];
+                        $levelTwo   = $data_form[MANAGER_OUTCOME_STRUCTURE_LEVEL .'2'];
+                        /* Get Job Roles    */
+                        if (isset($data_form[MANAGER_OUTCOME_STRUCTURE_LEVEL .'3']) && ($data_form[MANAGER_OUTCOME_STRUCTURE_LEVEL .'3'])) {
+                            $levelThree = implode(',',$data_form[MANAGER_OUTCOME_STRUCTURE_LEVEL .'3']);
+
+                            /* Get Job Roles    */
+                            CompetenceManager::GetJobRoles_Hierarchy($jr_level,1,$levelZero,$levelOne,$levelTwo,$levelThree);
+                        }else {
+                            CompetenceManager::GetJobRoles_Hierarchy($jr_level,0,$levelZero);
+                            CompetenceManager::GetJobRoles_Hierarchy($jr_level,1,$levelZero,$levelOne);
+                            CompetenceManager::GetJobRoles_Hierarchy($jr_level,2,$levelZero,$levelOne,$levelTwo);
+                        }//if_levelThree
+
+                        $job_roles = array_intersect_key($job_roles,$jr_level);
+
+                        break;
+                }//switch_level
+            }//if_else
+
+            return $job_roles;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//Get_JobRolesOutcome_Report
+
+    /**
+     * @param           $outcome_report
+     * @param           $parent_lst
+     * @param           $inTwo
+     * @param           $inThree
+     * @throws          Exception
+     *
+     * @creationDate    27/03/2015
+     * @author          eFaktor         (fbv)
+     *
+     * Description
+     * Get the information connected to the level one
+     *
+     * Level One
+     *          [id]
+     *              --> id
+     *              --> name
+     *              --> levelTwo.   Array
+     *                                  [id]
+     *                                      --> id
+     *                                      --> name
+     *                                      --> levelThree.     Array
+     *                                                              [id]
+     *                                                                  --> id
+     *                                                                  --> name
+     *                                                                  --> courses.    Array
+     *                                                                                       [id]
+     *                                                                                              --> name
+     *                                                                                              --> completed.      Array
+     *                                                                                              --> not_completed.  Array
+     *                                                                                              --> not_enrol.      Array
+     */
+    private static function Get_CompanyReportInfo_LevelOne(&$outcome_report,$parent_lst,$inTwo,$inThree) {
+        /* Variables    */
+        $levelTwo      = null;
+        $company_list  = null;
+
+        try {
+            /* Get Information Level One    */
+            foreach ($parent_lst as $id=>$company) {
+                /* Get Level Two connected with   */
+                $company_list   = CompetenceManager::GetCompanies_LevelList(2,$id,$inTwo);
+                unset($company_list[0]);
+
+                /* Level Two */
+                if ($company_list) {
+                    /* Get Info Level Two  */
+                    $levelTwo = self::Get_CompanyReportInfo_LevelTwo($outcome_report,$company_list,$inThree);
+                    if ($levelTwo) {
+                        /* Level One Info   */
+                        $companyInfo = new stdClass();
+                        $companyInfo->name      = $company;
+                        $companyInfo->id        = $id;
+                        $companyInfo->levelTwo  = $levelTwo;
+
+                        $outcome_report->levelOne[$id] = $companyInfo;
+                    }//if_levelTwo
+                }//if_company_list
+            }//for_companies_level_One
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//Get_CompanyReportInfo_LevelOne
+
+
+    /**
+     * @param           $outcome_report
+     * @param           $parent_lst
+     * @param           $inThree
+     * @return          array
+     * @throws          Exception
+     *
+     * @creationDate    27/03/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Get the information connected to the level two
+     *
+     * Level Two
+     *          [id]
+     *                  --> id
+     *                  --> name
+     *                  --> levelThree.     Array
+     *                                          [id]
+     *                                              --> id
+     *                                              --> name
+     *                                              --> courses.    Array
+     *                                                                  [id]
+     *                                                                      --> name
+     *                                                                      --> completed
+     *                                                                      --> not_completed
+     *                                                                      --> not_enrol
+     */
+    private static function Get_CompanyReportInfo_LevelTwo($outcome_report,$parent_lst,$inThree) {
+        /* Variables    */
+        $levelTwo      = array();
+        $companyInfo   = null;
+        $levelThree    = null;
+        $company_list  = null;
+
+        try {
+            /* Get Information Level Two    */
+            foreach ($parent_lst as $id=>$company) {
+                /* Get Level Three connected with   */
+                $company_list   = CompetenceManager::GetCompanies_LevelList(3,$id,$inThree);
+                unset($company_list[0]);
+
+                /* Level Three */
+                if ($company_list) {
+                    /* Get Info Level Three  */
+                    $levelThree = self::Get_CompanyReportInfo_LevelThree($outcome_report,$company_list);
+                    if ($levelThree) {
+                        /* Level two Info   */
+                        $companyInfo = new stdClass();
+                        $companyInfo->name       = $company;
+                        $companyInfo->id         = $id;
+                        $companyInfo->levelThree = $levelThree;
+
+                        $levelTwo[$id] = $companyInfo;
+                    }//if_levelTwo
+                }//if_company_list
+            }//for_companies_level_Two
+
+            return $levelTwo;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//Get_CompanyReportInfo_LevelTwo
+
+
+    /**
+     * @param           $outcome_report
+     * @param           $company_list
+     * @return          array
+     * @throws          Exception
+     *
+     * @creationDate    27/03/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Get the information connected to the level three
+     *
+     * Level Three
+     *          [id]
+     *                  --> id
+     *                  --> name
+     *                  --> courses.    Array
+     *                                      [id]
+     *                                          --> name
+     *                                          --> completed.      Array
+     *                                                                  [id]
+     *                                                                      --> name
+     *                                                                      --> completed
+     *                                          --> not_completed.  Array
+     *                                                                  [id]
+     *                                                                      --> name
+     *                                          --> not_enrol.      Array
+     *                                                                  [id]
+     *                                                                      --> name
+     */
+    private static function Get_CompanyReportInfo_LevelThree($outcome_report,$company_list) {
+        /* Variables    */
+        $levelThree     = array();
+        $course_info    = null;
+        $users          = 0;
+
+        try {
+            /* Get Information Level Three  */
+            if ($company_list) {
+                foreach ($company_list as $id=>$company) {
+                    /* Company Info */
+                    $company_info = new stdClass();
+                    $company_info->name       = $company;
+                    $company_info->id         = $id;
+                    $company_info->courses    = array();
+
+                    /* Get Info Courses     */
+                    foreach ($outcome_report->courses as $id_course=>$course) {
+                        /* Course info  */
+                        $course_info = new stdClass();
+                        $course_info->name          = $course;
+                        /* Users Completed      */
+                        $course_info->completed     = self::GetUsers_Completed($id,$id_course,$outcome_report->job_roles);
+                        /* Users Not Completed  */
+                        $course_info->not_completed = self::GetUsers_NotCompleted($id,$id_course,$outcome_report->job_roles);
+                        /* Users Not Enrolled       */
+                        if (($course_info->completed) && ($course_info->not_completed)) {
+                            $users = implode(',',array_keys($course_info->completed)) . ',' . implode(',',array_keys($course_info->not_completed));
+                        }else {
+                            if ($course_info->completed) {
+                                $users = implode(',',array_keys($course_info->completed));
+                            }else {
+                                $users = implode(',',array_keys($course_info->not_completed));
+                            }//if_completed
+                        }//if_completed_not_completed
+                        $course_info->not_enrol     = self::GetUsers_NotEnrol($id,$users,$outcome_report->job_roles);
+
+                        /* Add Course Info  */
+                        if ($course_info->completed || $course_info->not_completed || $course_info->not_enrol) {
+                            $company_info->courses[$id_course] = $course_info;;
+                        }//if_uses
+                    }//for_courses
+
+                    /* Add Level Three  */
+                    if ($company_info->courses) {
+                        $levelThree[$id] = $company_info;
+                    }//if_courses
+                }//for_company
+            }//if_company_list
+
+            return $levelThree;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//Get_CompanyReportInfo_LevelThree
+
+
+    /**
+     * @param           $company
+     * @param           $course
+     * @param           $job_roles
+     * @return          array
+     * @throws          Exception
+     *
+     * @creationDate    27/03/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Get all the users connected to the company and course, that have completed the course
+     *
+     * Users Completed
+     *              --> [id]
+     *                      --> name
+     *                      --> completed
+     */
+    private static function GetUsers_Completed($company,$course,$job_roles) {
+        /* Variables    */
+        global $DB;
+        $users_completed    = array();
+        $job_keys           = array_flip(array_keys($job_roles));
+        $jr_users           = null;
 
         try {
             /* Search Criteria  */
-            $params             = array();
-            $params['level']    = $level;
-            $params['company']  = $company;
+            $params = array();
+            $params['company']   = $company;
+            $params['course']    = $course;
 
             /* SQL Instruction  */
-            $sql = " SELECT     DISTINCT co.id
-                     FROM       {report_gen_company_relation}   cr
-                        JOIN    {report_gen_companydata}        co  ON    co.id             = cr.parentid
-                                                                    AND   co.hierarchylevel = :level
-                     WHERE      cr.companyid = :company ";
+            $sql = " SELECT   	DISTINCT 	u.id,
+                                            CONCAT(u.firstname, ' ', u.lastname) as 'name',
+                                            uic.jobroles,
+                                            cc.timecompleted
+                     FROM	 	{user}						  u
+                        JOIN	{user_info_competence_data}	  uic			ON		uic.userid		  = u.id
+                                                                            AND		uic.companyid	  = :company
+                        JOIN	{course_completions}			cc			ON		cc.userid		  = uic.userid
+                                                                            AND		cc.course		  = :course
+                                                                            AND     cc.timecompleted  IS  NOT NULL
+                                                                            AND     cc.timecompleted  != 0
+                     WHERE 		u.deleted = 0
+                     ORDER BY 	u.firstname, u.lastname ASC ";
 
             /* Execute  */
             $rdo = $DB->get_records_sql($sql,$params);
             if ($rdo) {
-                foreach ($rdo as $company) {
-                    $lst_companies[$company->id] = $company->id;
-                }//for_rdo
-            }//if_rdo
+                foreach ($rdo as $instance) {
+                    $jr_users = array_flip(explode(',',$instance->jobroles));
+                    if (array_intersect_key($job_keys,$jr_users)) {
+                        /* User Info    */
+                        $user_info              = new stdClass();
+                        $user_info->name        = $instance->name;
+                        $user_info->completed   = $instance->timecompleted;
 
-            return $lst_companies;
+                        $users_completed[$instance->id] = $user_info;
+                    }//if_job_role
+                }//for_each
+            }//if_Rdo
+
+            return $users_completed;
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//Get_ParentsCompany
-
+    }//GetUsers_Completed
 
     /**
-     * @static
-     * @param           $tab
-     * @return          string
+     * @param           $company
+     * @param           $course
+     * @param           $job_roles
+     * @return          array
+     * @throws          Exception
      *
-     * @creationDate    09/09/2014
+     * @creationDate    27/03/2015
      * @author          eFaktor     (fbv)
      *
      * Description
-     * Build the report link to the third level.
+     * Get all the users connected to the company and the course, that have not completed the course yet
+     *
+     *
+     * User Not Completed
+     *                  --> [id]    --> name
      */
-    private static function Get_ThirdLevelLink($tab) {
-        $url_level_3 = new moodle_url('/report/manager/' . $tab .'/' . $tab .'_level.php',array('rpt'=>3));
+    private static function GetUsers_NotCompleted($company,$course,$job_roles) {
+        /* Variables    */
+        global $DB;
+        $users_not_completed    = array();
+        $job_keys               = array_flip(array_keys($job_roles));
+        $jr_users               = null;
 
-        $out = '<li class="last">' . "\n";
-        $out .= '<a href="'.$url_level_3 .'">'. get_string('level_report','report_manager',3) .'</a>';
-        $out .= '</li>' . "\n";
+        try {
+            /* Search Criteria  */
+            $params = array();
+            $params['company']   = $company;
+            $params['course']    = $course;
 
-        return $out;
-    }//Get_ThirdLevelLink
+            /* SQL Instruction  */
+            $sql = " SELECT   	DISTINCT 	u.id,
+                                            CONCAT(u.firstname, ' ', u.lastname) as 'name',
+                                            uic.jobroles,
+                                            cc.timecompleted
+                     FROM	 	{user}						  u
+                        JOIN	{user_info_competence_data}	  uic			ON		uic.userid		  = u.id
+                                                                            AND		uic.companyid	  = :company
+                        JOIN	{course_completions}			cc			ON		cc.userid		  = uic.userid
+                                                                            AND		cc.course		  = :course
+                                                                            AND     cc.timecompleted  IS NULL
+                                                                            OR      cc.timecompleted  = 0
+                     WHERE 		u.deleted = 0
+                     ORDER BY 	u.firstname, u.lastname ASC ";
+
+            /* Execute  */
+            $rdo = $DB->get_records_sql($sql,$params);
+            if ($rdo) {
+                foreach ($rdo as $instance) {
+                    $jr_users = array_flip(explode(',',$instance->jobroles));
+                    if (array_intersect_key($job_keys,$jr_users)) {
+                        /* User Info    */
+                        $user_info          = new stdClass();
+                        $user_info->name    = $instance->name;
+
+                        $users_not_completed[$instance->id] = $user_info;
+                    }//if_job_role
+                }//for_each
+            }//if_Rdo
+
+            return $users_not_completed;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//GetUsers_NotCompleted
 
     /**
-     * @static
-     * @param           $tab
-     * @return          string
+     * @param           $company
+     * @param           $users
+     * @param           $job_roles
+     * @return          array
+     * @throws          Exception
      *
-     * @creationDate    09/09/2014
+     * @creationDate    27/03/2015
      * @author          eFaktor     (fbv)
      *
      * Description
-     * Build the report link to the second level.
+     * Get all the users connected to the company and not enrolled
+     *
+     * Users Not Enrol
+     *              --> [id]    --> name
      */
-    private static function Get_SecondLevelLink($tab) {
-        $url_level_2 = new moodle_url('/report/manager/' . $tab .'/' . $tab .'_level.php',array('rpt'=>2));
+    private static function GetUsers_NotEnrol($company,$users,$job_roles) {
+        /* Variables    */
+        global $DB;
+        $users_not_enrol    = array();
+        $job_keys           = array_flip(array_keys($job_roles));
+        $jr_users           = null;
 
-        $out  = '<li>' . "\n";
-        $out .= '<a href="'.$url_level_2 .'">'. get_string('level_report','report_manager',2) .'</a>';
-        $out .= '</li>' . "\n";
-        $out .= self::Get_ThirdLevelLink($tab);
+        try {
+            /* Search Criteria  */
+            $params = array();
+            $params['company']   = $company;
 
-        return $out;
-    }//Get_SecondLevelLink
+            /* SQL Instruction  */
+            $sql = " SELECT   	DISTINCT 	u.id,
+                                            CONCAT(u.firstname, ' ', u.lastname) as 'name',
+                                            uic.jobroles
+                     FROM	 	{user}						  u
+                        JOIN	{user_info_competence_data}	  uic			ON		uic.userid		  = u.id
+                                                                            AND		uic.companyid	  = :company
+                     WHERE 		u.deleted = 0
+                        AND     u.id NOT IN ($users)
+                     ORDER BY 	u.firstname, u.lastname ASC ";
+
+            /* Execute  */
+            $rdo = $DB->get_records_sql($sql,$params);
+            if ($rdo) {
+                foreach ($rdo as $instance) {
+                    $jr_users = array_flip(explode(',',$instance->jobroles));
+                    if (array_intersect_key($job_keys,$jr_users)) {
+                        /* User Info    */
+                        $user_info          = new stdClass();
+                        $user_info->name    = $instance->name;
+
+                        $users_not_enrol[$instance->id] = $user_info;
+                    }//if_job_role
+                }//for_each
+            }//if_Rdo
+
+            return $users_not_enrol;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//GetUsers_NotEnrol
 
     /**
-     * @static
-     * @param           $tab
-     * @return          string
-     *
-     * @creationDate    09/09/2014
-     * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Build the report link to the first level.
-     */
-    private static function Get_FirstLevelLink($tab) {
-        $url_level_1 = new moodle_url('/report/manager/' . $tab .'/' . $tab .'_level.php',array('rpt'=>1));
-
-        $out = '<li class="first">' . "\n";
-        $out .= '<a href="'.$url_level_1 .'">'. get_string('level_report','report_manager',1) .'</a>';
-        $out .= '</li>' . "\n";
-        $out .= self::Get_SecondLevelLink($tab);
-
-        return $out;
-    }//Get_FirstLevelLink
-
-    /**
-     * @static
      * @param           $outcome_report
+     * @param           $completed_option
      * @return          string
      * @throws          Exception
      *
-     * @creationDate    19/09/2014
+     * @creationDate    30/03/2015
      * @author          eFaktor     (fbv)
      *
      * Description
-     * Get Outcome Report - Level One - Format Screen
+     * Get Outcome report - Level Zero - Format Screen
      */
-    private static function Print_OutcomeReport_Screen_LevelOne($outcome_report) {
+    private static function Print_OutcomeReport_Screen_LevelZero($outcome_report,$completed_option) {
         /* Variables    */
         $out_report         = '';
         $url_img            = null;
         $id_toggle          = null;
-        $id_toggle_level    = null;
+        $id_toggleOne       = null;
+        $id_toggleTwo       = null;
         $return_url         = null;
+        $levelOne           = null;
+        $levelTwo           = null;
+        $levelThree         = null;
 
         try {
+            /* Url To Back  */
             $return_url     = new moodle_url('/report/manager/outcome_report/outcome_report_level.php',array('rpt' => $outcome_report->rpt));
-            $out_report .= html_writer::start_div('outcome_rpt_div');
-                $out_report .= html_writer::start_div('outcome_detail_rpt');
-                    /* Name Outcome         */
-                    $out_report .= '<h2>';
-                        $out_report .= get_string('outcome', 'report_manager') . ' "' . $outcome_report->name . '"';
-                    $out_report .= '</h2>';
-                    /* Outcome Description  */
-                    if ($outcome_report->description) {
-                        $out_report .= '<h6>' . format_text($outcome_report->description) . '</h6>';
-                    }//outcome_report_description
 
-                    /* Companies Levels */
+            /* Outcome Report   */
+            $out_report .= html_writer::start_div('outcome_rpt_div');
+                /* Outcome Report Header    */
+                $out_report .= html_writer::start_div('outcome_detail_rpt');
+                    /* Outcome Title */
+                    $out_report .= '<h3>';
+                        $out_report .= get_string('outcome', 'report_manager') . ' "' . $outcome_report->name . '"';
+                    $out_report .= '</h3>';
+                    /* Outcome Description  */
+                    $out_report .= '<h6>';
+                        $out_report .= $outcome_report->description;
+                    $out_report .= '</h6>';
+
+                    /* Job Roles    */
+                    $out_report .= '<h5>';
+                        $out_report .= get_string('job_roles', 'report_manager');
+                    $out_report .= '</h5>';
+                    if ($outcome_report->job_roles) {
+                        $out_report .= '<h6>';
+                            $out_report .= implode(', ',$outcome_report->job_roles);
+                        $out_report .= '</h6>';
+                    }//if_job_roles
+
+                    /* Company Levels   */
+                    $out_report .= '</br>';
                     $out_report .= '<ul class="level-list unlist">';
-                        /* Level One Company    */
+                        /* Level Zero       */
                         $out_report .= '<li>';
-                            $out_report .= '<h2>'. get_string('company_structure_level', 'report_manager', 1) . ': ' . $outcome_report->level_one . '</h2';
+                            $out_report .= '<h3>'. get_string('company_structure_level', 'report_manager', 0) . ': ' . $outcome_report->levelZero . '</h3>';
                         $out_report .= '</li>';
                     $out_report .= '</ul>';
 
                     /* Expiration Before    */
-                    $options = report_manager_get_completed_list();
+                    $options = CompetenceManager::GetCompletedList();
                     $out_report .= html_writer::start_div('expiration');
-                        $out_report .= get_string('expired_next','report_manager') . ': ' .  $options[$outcome_report->completed_before];
+                        $out_report .= str_replace(' ...',' : ',get_string('completed_list','report_manager')) .  $options[$outcome_report->completed_before];
                     $out_report .= html_writer::end_div();//expiration
                 $out_report .= html_writer::end_div();//outcome_detail_rpt
 
+                /* Return To Selection Page */
                 $out_report .= html_writer::link($return_url,get_string('outcome_return_to_selection','report_manager'),array('class' => 'link_return'));
 
-                /* Level Two    */
-                foreach ($outcome_report->level_two as $id=>$level_two) {
-                    if ($level_two->level_three) {
-                        /* Toggle   */
-                        $url_img  = new moodle_url('/pix/t/expanded.png');
-                        $id_toggle = 'YUI_' . $id;
-                        $out_report .= self::Add_CompanyHeader_Screen($level_two->name,$id_toggle,$url_img);
-                        $out_report .= html_writer::start_tag('div',array('class' => 'level_two_list','id'=> $id_toggle . '_div'));
-                            foreach ($level_two->level_three as $id_three=>$level_three) {
-                                $id_toggle_level = $id_toggle . '_' . $id_three;
-                                $out_report .= html_writer::start_tag('div',array('class' => 'level_div'));
-                                    $out_report .= self::Add_CompanyHeader_Screen($level_three->name,$id_toggle_level,$url_img,$id_three,$id);
+                /* Report Info */
+                /* Level One  */
+                $levelOne = $outcome_report->levelOne;
+                if ($levelOne) {
+                    /* Toggle   */
+                    $url_img  = new moodle_url('/pix/t/expanded.png');
+                    foreach ($levelOne as $idOne=>$one) {
+                        /* Level Two    */
+                        $levelTwo = $one->levelTwo;
+                        if ($levelTwo) {
+                            $id_toggle   = 'YUI_' . $idOne;
+                            $out_report .= self::Add_CompanyHeader_LevelZero_Screen($one->name,$id_toggle,$url_img);
+                            $out_report .= html_writer::start_tag('div',array('class' => 'level_one_list','id'=> $id_toggle . '_div'));
+                            /* Level Two List   */
+                            foreach ($levelTwo as $idTwo=>$companyTwo) {
+                                if ($companyTwo->levelThree) {
+                                    /* Toggle */
+                                    $id_toggleOne = $id_toggle . '_' . $idTwo;
+                                    $out_report .= self::Add_CompanyHeader_LevelOne_Screen($companyTwo->name,$id_toggleOne,$url_img);
 
-                                    /* Courses List */
-                                    $out_report .= html_writer::start_tag('div',array('class' => 'course_list','id'=> $id_toggle_level . '_div'));
-                                        $out_report .= self::Add_HeaderCourseTable_LevelTwo_Screen();
-                                        $out_report .= self::Add_ContentCourseTable_LevelTwo_Screen($outcome_report->courses,$level_three);
-                                    $out_report .= html_writer::end_tag('div');//courses_list
-                                $out_report .= html_writer::end_tag('div');//level_div
-                            }//for_level_three
-                        $out_report .= html_writer::end_tag('div');//level_two_list
-                    }//if_level_three
-                }//for_level_two
+                                    /* Level Two List   */
+                                    $levelThree = $companyTwo->levelThree;
+                                    $out_report .= html_writer::start_tag('div',array('class' => 'level_two_list','id'=> $id_toggleOne . '_div'));
+                                    foreach ($levelThree as $id_Three=>$company) {
+                                        if ($company->courses) {
+                                            /* Toggle   */
+                                            $id_toggleThree = $id_toggleOne . '_'. $id_Three;
+                                            /* Header Company   - Level Three   */
+                                            $url_levelThree = new moodle_url('/report/manager/outcome_report/outcome_report_level.php',array('rpt' => '3','co' => $id_Three,'lt' => $idTwo,'lo'=>$idOne,'opt' => $completed_option));
+                                            $out_report .= self::Add_CompanyHeader_Screen($company->name,$id_toggleThree,$url_img,$url_levelThree);
+
+                                            /* Info company - Courses */
+                                            $out_report .= html_writer::start_tag('div',array('class' => 'course_list','id'=> $id_toggleThree . '_div'));
+                                                $out_report .= self::Add_HeaderCourseTable_LevelTwo_Screen();
+                                                $out_report .= self::Add_ContentCourseTable_LevelTwo_Screen($company->courses);
+                                            $out_report .= html_writer::end_tag('div');//courses_list
+                                        }//if_courses
+                                    }//for_levelThree
+                                    $out_report .= html_writer::end_tag('div');//level_two_list
+                                }//if_levelThree
+                            }//for_level_two
+                            $out_report .= html_writer::end_tag('div');//level_one_list
+                        }//if_levelTwo
+                    }//for_levelOne
+                }//if_levelOne
             $out_report .= html_writer::end_div();//outcome_rpt_div
 
+            /* Return To Selection Page */
+            $out_report .= html_writer::link($return_url,get_string('outcome_return_to_selection','report_manager'),array('class' => 'link_return'));
+
+            return $out_report;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//Print_OutcomeReport_Screen_LevelZero
+
+    /**
+     * @param           $outcome_report
+     * @param           $completed_option
+     * @return          string
+     * @throws          Exception
+     *
+     * @creationDate    30/03/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Get Outcome report - Level One - Format Screen
+     */
+    private static function Print_OutcomeReport_Screen_LevelOne($outcome_report,$completed_option) {
+        /* Variables    */
+        $out_report         = '';
+        $url_img            = null;
+        $id_toggle          = null;
+        $id_toggleThree     = null;
+        $return_url         = null;
+        $levelOne           = null;
+        $levelTwo           = null;
+        $levelThree         = null;
+
+        try {
+            /* Url To Back  */
+            $return_url     = new moodle_url('/report/manager/outcome_report/outcome_report_level.php',array('rpt' => $outcome_report->rpt));
+
+            /* Outcome Report   */
+            $out_report .= html_writer::start_div('outcome_rpt_div');
+                /* Outcome Report Header    */
+                $out_report .= html_writer::start_div('outcome_detail_rpt');
+                    /* Outcome Title */
+                    $out_report .= '<h3>';
+                        $out_report .= get_string('outcome', 'report_manager') . ' "' . $outcome_report->name . '"';
+                    $out_report .= '</h3>';
+                    /* Outcome Description  */
+                    $out_report .= '<h6>';
+                        $out_report .= $outcome_report->description;
+                    $out_report .= '</h6>';
+
+                    /* Job Roles    */
+                    $out_report .= '<h5>';
+                        $out_report .= get_string('job_roles', 'report_manager');
+                    $out_report .= '</h5>';
+                    if ($outcome_report->job_roles) {
+                        $out_report .= '<h6>';
+                            $out_report .= implode(', ',$outcome_report->job_roles);
+                        $out_report .= '</h6>';
+                    }//if_job_roles
+
+                    /* Company Levels   */
+                    $out_report .= '</br>';
+                    $out_report .= '<ul class="level-list unlist">';
+                        /* Level Zero       */
+                        $out_report .= '<li>';
+                            $out_report .= '<h3>'. get_string('company_structure_level', 'report_manager', 0) . ': ' . $outcome_report->levelZero . '</h3>';
+                        $out_report .= '</li>';
+                        /* Level One        */
+                        $levelOne = array_shift($outcome_report->levelOne);
+                        $out_report .= '<li>';
+                            $out_report .= '<h3>'. get_string('company_structure_level', 'report_manager', 1) . ': ' . $levelOne->name . '</h3>';
+                        $out_report .= '</li>';
+                    $out_report .= '</ul>';
+
+                    /* Expiration Before    */
+                    $options = CompetenceManager::GetCompletedList();
+                    $out_report .= html_writer::start_div('expiration');
+                        $out_report .= str_replace(' ...',' : ',get_string('completed_list','report_manager')) .  $options[$outcome_report->completed_before];
+                    $out_report .= html_writer::end_div();//expiration
+                $out_report .= html_writer::end_div();//outcome_detail_rpt
+
+                /* Return To Selection Page */
+                $out_report .= html_writer::link($return_url,get_string('outcome_return_to_selection','report_manager'),array('class' => 'link_return'));
+
+                /* Report Info  */
+                /* Level One  */
+                if ($levelOne) {
+                    /* Level Two    */
+                    $levelTwo = $levelOne->levelTwo;
+                    if ($levelTwo) {
+                        foreach ($levelTwo as $id_Two=>$companyTwo) {
+                            /* Level Three  */
+                            $levelThree = $companyTwo->levelThree;
+                            if ($levelThree) {
+                                /* Toggle   */
+                                $url_img  = new moodle_url('/pix/t/expanded.png');
+                                $id_toggle = 'YUI_' . $id_Two;
+                                /* Header Company - Level Two   */
+                                $out_report .= self::Add_CompanyHeader_LevelZero_Screen($companyTwo->name,$id_toggle,$url_img);
+
+                                /* Level Two List   */
+                                $out_report .= html_writer::start_tag('div',array('class' => 'level_two_list','id'=> $id_toggle . '_div'));
+                                    foreach ($levelThree as $id_Three=>$company) {
+                                        if ($company->courses) {
+                                            /* Toggle   */
+                                            $id_toggleThree = $id_toggle . '_'. $id_Three;
+                                            /* Header Company   - Level Three   */
+                                            $url_levelThree = new moodle_url('/report/manager/outcome_report/outcome_report_level.php',array('rpt' => '3','co' => $id_Three,'lt' => $id_Two,'lo'=>$levelOne->id,'opt' => $completed_option));
+                                            $out_report .= self::Add_CompanyHeader_Screen($company->name,$id_toggleThree,$url_img,$url_levelThree);
+
+                                            /* Info company - Courses */
+                                            $out_report .= html_writer::start_tag('div',array('class' => 'course_list','id'=> $id_toggleThree . '_div'));
+                                                $out_report .= self::Add_HeaderCourseTable_LevelTwo_Screen();
+                                                $out_report .= self::Add_ContentCourseTable_LevelTwo_Screen($company->courses);
+                                            $out_report .= html_writer::end_tag('div');//courses_list
+                                        }//if_courses
+                                    }//for_levelThree
+                                $out_report .= html_writer::end_tag('div');//level_two_list
+                            }//if_levelThree
+                        }//for_levelTwo
+                    }//if_levelTwo
+                }//if_levelOne
+            $out_report .= html_writer::end_div();//outcome_rpt_div
+
+            /* Return To Selection Page */
             $out_report .= html_writer::link($return_url,get_string('outcome_return_to_selection','report_manager'),array('class' => 'link_return'));
 
             return $out_report;
@@ -1512,73 +1360,114 @@ class outcome_report {
     }//Print_OutcomeReport_Screen_LevelOne
 
     /**
-     * @static
      * @param           $outcome_report
+     * @param           $completed_option
      * @return          string
      * @throws          Exception
      *
-     * @creationDate    18/09/2014
+     * @creationDate    30/03/2015
      * @author          eFaktor     (fbv)
      *
      * Description
      * Get Outcome Report - Level Two - Format Screen
      */
-    private static function Print_OutcomeReport_Screen_LevelTwo($outcome_report) {
+    private static function Print_OutcomeReport_Screen_LevelTwo($outcome_report,$completed_option) {
         /* Variables    */
         $out_report         = '';
         $url_img            = null;
         $id_toggle          = null;
         $return_url         = null;
-
+        $levelOne           = null;
+        $levelTwo           = null;
+        $levelThree         = null;
+        $url_levelThree     = null;
 
         try {
+            /* Url To Back  */
             $return_url     = new moodle_url('/report/manager/outcome_report/outcome_report_level.php',array('rpt' => $outcome_report->rpt));
-            $out_report .= html_writer::start_div('outcome_rpt_div');
-                $out_report .= html_writer::start_div('outcome_detail_rpt');
-                    /* Name Outcome         */
-                    $out_report .= '<h2>';
-                        $out_report .= get_string('outcome', 'report_manager') . ' "' . $outcome_report->name . '"';
-                    $out_report .= '</h2>';
-                    /* Outcome Description  */
-                    if ($outcome_report->description) {
-                        $out_report .= '<h6>' . format_text($outcome_report->description) . '</h6>';
-                    }//outcome_report_description
 
-                    /* Companies Levels */
+            /* Outcome Report   */
+            $out_report .= html_writer::start_div('outcome_rpt_div');
+                /* Outcome Report Header    */
+                $out_report .= html_writer::start_div('outcome_detail_rpt');
+                    /* Outcome Title */
+                    $out_report .= '<h3>';
+                        $out_report .= get_string('outcome', 'report_manager') . ' "' . $outcome_report->name . '"';
+                    $out_report .= '</h3>';
+                    /* Outcome Description  */
+                    $out_report .= '<h6>';
+                        $out_report .= $outcome_report->description;
+                    $out_report .= '</h6>';
+
+                    /* Job Roles    */
+                    $out_report .= '<h5>';
+                        $out_report .= get_string('job_roles', 'report_manager');
+                    $out_report .= '</h5>';
+                    if ($outcome_report->job_roles) {
+                        $out_report .= '<h6>';
+                            $out_report .= implode(', ',$outcome_report->job_roles);
+                        $out_report .= '</h6>';
+                    }//if_job_roles
+
+                    /* Company Levels   */
+                    $out_report .= '</br>';
                     $out_report .= '<ul class="level-list unlist">';
-                        /* Level One Company    */
+                        /* Level Zero       */
                         $out_report .= '<li>';
-                            $out_report .= '<h2>'. get_string('company_structure_level', 'report_manager', 1) . ': ' . $outcome_report->level_one . '</h2';
+                            $out_report .= '<h3>'. get_string('company_structure_level', 'report_manager', 0) . ': ' . $outcome_report->levelZero . '</h3>';
                         $out_report .= '</li>';
-                        /* Level Two Company    */
-                        if ($outcome_report->rpt > 1) {
+                        /* Level One        */
+                        $levelOne = array_shift($outcome_report->levelOne);
+                        $out_report .= '<li>';
+                            $out_report .= '<h3>'. get_string('company_structure_level', 'report_manager', 1) . ': ' . $levelOne->name . '</h3>';
+                        $out_report .= '</li>';
+                        /* Level Two    */
+                        $levelTwo = array_shift($outcome_report->levelTwo);
+                        if ($levelTwo) {
                             $out_report .= '<li>';
-                                $out_report .= '<h2>' . get_string('company_structure_level', 'report_manager', 2) . ': ' . $outcome_report->level_two . '</h2>';
+                                $out_report .= '<h3>'. get_string('company_structure_level', 'report_manager', 2) . ': ' . $levelTwo->name . '</h3>';
                             $out_report .= '</li>';
-                        }//if_level_2
+                        }//if_level_two
                     $out_report .= '</ul>';
 
                     /* Expiration Before    */
-                    $options = report_manager_get_completed_list();
+                    $options = CompetenceManager::GetCompletedList();
                     $out_report .= html_writer::start_div('expiration');
-                        $out_report .= get_string('expired_next','report_manager') . ': ' .  $options[$outcome_report->completed_before];
+                        $out_report .= str_replace(' ...',' : ',get_string('completed_list','report_manager')) .  $options[$outcome_report->completed_before];
                     $out_report .= html_writer::end_div();//expiration
                 $out_report .= html_writer::end_div();//outcome_detail_rpt
 
+                /* Return To Selection Page */
                 $out_report .= html_writer::link($return_url,get_string('outcome_return_to_selection','report_manager'),array('class' => 'link_return'));
 
-                /* Level Three Companies    */
-                foreach ($outcome_report->level_three as $id=>$company_info) {
-                    /* Toggle   */
-                    $url_img  = new moodle_url('/pix/t/expanded.png');
-                    $id_toggle = 'YUI_' . $id;
-                    $out_report .= self::Add_CompanyHeader_Screen($company_info->name,$id_toggle,$url_img,$id);
-                    $out_report .= html_writer::start_tag('div',array('class' => 'course_list','id'=> $id_toggle . '_div'));
-                        $out_report .= self::Add_HeaderCourseTable_LevelTwo_Screen();
-                        $out_report .= self::Add_ContentCourseTable_LevelTwo_Screen($outcome_report->courses,$company_info);
-                    $out_report .= html_writer::end_tag('div');//course_list
-                }//for_companies
+                /* Report Info  */
+                /* Level Two  */
+                if ($levelTwo) {
+                    /* Level Three  */
+                    $levelThree = $levelTwo->levelThree;
+                    if ($levelThree) {
+                        foreach ($levelThree as $id=>$company) {
+                            if ($company->courses) {
+                                /* Toggle   */
+                                $url_img  = new moodle_url('/pix/t/expanded.png');
+                                $id_toggle = 'YUI_' . $id;
+                                /* Header Company   - Level Three   */
+                                $url_levelThree = new moodle_url('/report/manager/outcome_report/outcome_report_level.php',array('rpt' => '3','co' => $id,'lt' => $levelTwo->id,'lo'=>$levelOne->id,'opt' => $completed_option));
+                                $out_report .= self::Add_CompanyHeader_Screen($company->name,$id_toggle,$url_img,$url_levelThree);
+
+                                /* Info company - Courses */
+                                $out_report .= html_writer::start_tag('div',array('class' => 'course_list','id'=> $id_toggle . '_div'));
+                                    $out_report .= self::Add_HeaderCourseTable_LevelTwo_Screen();
+                                    $out_report .= self::Add_ContentCourseTable_LevelTwo_Screen($company->courses);
+                                $out_report .= html_writer::end_tag('div');//courses_list
+                            }//if_courses
+
+                        }//for_level_three
+                    }//if_level_three
+                }//if_level_two
             $out_report .= html_writer::end_div();//outcome_rpt_div
+
+            /* Return To Selection Page */
             $out_report .= html_writer::link($return_url,get_string('outcome_return_to_selection','report_manager'),array('class' => 'link_return'));
 
             return $out_report;
@@ -1588,12 +1477,11 @@ class outcome_report {
     }//Print_OutcomeReport_Screen_LevelTwo
 
     /**
-     * @static
      * @param           $outcome_report
      * @return          string
      * @throws          Exception
      *
-     * @creationDate    17/09/2014
+     * @creationDate    30/03/2015
      * @author          eFaktor     (fbv)
      *
      * Description
@@ -1604,72 +1492,109 @@ class outcome_report {
         $out_report         = '';
         $url_img            = null;
         $id_toggle          = null;
-        $id_toggle_user     = null;
+        $id_toggle_course   = null;
         $return_url         = null;
+        $levelOne           = null;
+        $levelTwo           = null;
+        $levelThree         = null;
+        $courses            = null;
 
         try {
+            /* Url To Back  */
             $return_url     = new moodle_url('/report/manager/outcome_report/outcome_report_level.php',array('rpt' => $outcome_report->rpt));
-            $out_report .= html_writer::start_div('outcome_rpt_div');
-                $out_report .= html_writer::start_div('outcome_detail_rpt');
-                    /* Name Outcome         */
-                    $out_report .= '<h2>';
-                        $out_report .= get_string('outcome', 'report_manager') . ' "' . $outcome_report->name . '"';
-                    $out_report .= '</h2>';
-                    /* Outcome Description  */
-                    if ($outcome_report->description) {
-                        $out_report .= '<h6>' . format_text($outcome_report->description) . '</h6>';
-                    }//outcome_report_description
 
-                    /* Companies Levels */
+            /* Outcome Report   */
+            $out_report .= html_writer::start_div('outcome_rpt_div');
+                /* Outcome Report Header    */
+                $out_report .= html_writer::start_div('outcome_detail_rpt');
+                    /* Outcome Title */
+                    $out_report .= '<h3>';
+                        $out_report .= get_string('outcome', 'report_manager') . ' "' . $outcome_report->name . '"';
+                    $out_report .= '</h3>';
+                    /* Outcome Description  */
+                    $out_report .= '<h6>';
+                        $out_report .= $outcome_report->description;
+                    $out_report .= '</h6>';
+
+                    /* Job Roles    */
+                    $out_report .= '<h5>';
+                        $out_report .= get_string('job_roles', 'report_manager');
+                    $out_report .= '</h5>';
+                    if ($outcome_report->job_roles) {
+                        $out_report .= '<h6>';
+                            $out_report .= implode(', ',$outcome_report->job_roles);
+                        $out_report .= '</h6>';
+                    }//if_job_roles
+
+                    /* Company Levels   */
+                    $out_report .= '</br>';
                     $out_report .= '<ul class="level-list unlist">';
-                        /* Level One Company    */
+                        /* Level Zero       */
                         $out_report .= '<li>';
-                            $out_report .= '<h2>'. get_string('company_structure_level', 'report_manager', 1) . ': ' . $outcome_report->level_one . '</h2';
+                            $out_report .= '<h3>'. get_string('company_structure_level', 'report_manager', 0) . ': ' . $outcome_report->levelZero . '</h3>';
                         $out_report .= '</li>';
-                        /* Level Two Company    */
-                        if ($outcome_report->rpt > 1) {
+                        /* Level One        */
+                        $levelOne = array_shift($outcome_report->levelOne);
+                        $out_report .= '<li>';
+                            $out_report .= '<h3>'. get_string('company_structure_level', 'report_manager', 1) . ': ' . $levelOne->name . '</h3>';
+                        $out_report .= '</li>';
+                        /* Level Two    */
+                        $levelTwo = array_shift($outcome_report->levelTwo);
+                        if ($levelTwo) {
                             $out_report .= '<li>';
-                                $out_report .= '<h2>' . get_string('company_structure_level', 'report_manager', 2) . ': ' . $outcome_report->level_two . '</h2>';
+                                $out_report .= '<h3>'. get_string('company_structure_level', 'report_manager', 2) . ': ' . $levelTwo->name . '</h3>';
                             $out_report .= '</li>';
-                        }//if_level_2
+                        }//if_level_two
                     $out_report .= '</ul>';
 
                     /* Expiration Before    */
-                    $options = report_manager_get_completed_list();
+                    $options = CompetenceManager::GetCompletedList();
                     $out_report .= html_writer::start_div('expiration');
-                        $out_report .= get_string('expired_next','report_manager') . ': ' .  $options[$outcome_report->completed_before];
+                        $out_report .= str_replace(' ...',' : ',get_string('completed_list','report_manager')) .  $options[$outcome_report->completed_before];
                     $out_report .= html_writer::end_div();//expiration
                 $out_report .= html_writer::end_div();//outcome_detail_rpt
 
+                /* Return To Selection Page */
                 $out_report .= html_writer::link($return_url,get_string('outcome_return_to_selection','report_manager'),array('class' => 'link_return'));
 
-                /* Level Three Companies    */
-                foreach ($outcome_report->level_three as $id=>$company_info) {
-                    if ($company_info->users) {
-                        /* Toggle   */
-                        $url_img  = new moodle_url('/pix/t/expanded.png');
-                        $id_toggle = 'YUI_' . $id;
-                        $out_report .= self::Add_CompanyHeader_Screen($company_info->name,$id_toggle,$url_img);
-                        $out_report .= html_writer::start_tag('div',array('class' => 'user_list','id'=> $id_toggle . '_div'));
-                            /* Users    */
-                            foreach ($company_info->users as $id_user=>$user) {
-                                if ($user->completed || $user->not_completed || $user->not_enrol) {
-                                    $id_toggle_user = $id_toggle . '_' . $id_user;
-                                    $out_report .= html_writer::start_tag('div',array('class' => 'user_div'));
-                                        $out_report .= self::Add_UserHeader_Screen($user->name,$user->job_roles,$id_toggle_user,$url_img);
+                /* Report Info  */
+                /* Level Three  */
+                if ($levelTwo) {
+                    $levelThree = $outcome_report->levelThree;
+                    if ($levelThree) {
+                        foreach ($levelThree as $id=>$company) {
+                            /* Company  Info    */
+                            if ($company->courses) {
+                                /* Toggle   */
+                                $url_img  = new moodle_url('/pix/t/expanded.png');
+                                $id_toggle = 'YUI_' . $id;
 
-                                        /* Courses  */
-                                        $out_report .= html_writer::start_tag('div',array('class' => 'outcome_course_list','id' => $id_toggle_user . '_div'));
-                                            $out_report .= self::Add_HeaderCourseTable_Screen();
-                                            $out_report .= self::Add_ContentCourseTable_Screen($outcome_report->courses,$user,$outcome_report->expiration);
-                                        $out_report .= html_writer::end_tag('div');//courses_list
-                                    $out_report .= html_writer::end_tag('div');//user_div
-                                }//if
-                            }//users
-                        $out_report .= html_writer::end_tag('div');//user_list
-                    }//if_users
-                }//for_company
+                                /* Header Company  - Level Two  */
+                                $out_report .= self::Add_CompanyHeader_Screen($company->name,$id_toggle,$url_img);
+
+                                /* Info company - Users */
+                                $out_report .= html_writer::start_tag('div',array('class' => 'course_list','id'=> $id_toggle . '_div'));
+                                    $courses = $company->courses;
+                                    foreach ($courses as $id_course=>$course) {
+                                        $id_toggle_course = $id_toggle . '_'. $id_course;
+                                        /* Header Table     */
+                                        $out_report .= self::Add_CourseHeader_Screen($course->name,$id_toggle_course,$url_img);
+                                        /* Users            */
+                                        $out_report .= html_writer::start_tag('div',array('class' => 'user_list','id'=> $id_toggle_course . '_div'));
+                                            /* Header Table     */
+                                            $out_report .= self::Add_HeaderTable_LevelThree_Screen();
+                                            /* Content Table    */
+                                            $out_report .= self::Add_ContentTable_LevelThree_Screen($course,$outcome_report->expiration);
+                                        $out_report .= html_writer::end_tag('div');//user_list
+                                    }//for_courses
+                                $out_report .= html_writer::end_tag('div');//courses_list
+                            }//if_courses
+                        }//for_level_three
+                    }//if_level_three
+                }//if_level_two
             $out_report .= html_writer::end_div();//outcome_rpt_div
+
+            /* Return To Selection Page */
             $out_report .= html_writer::link($return_url,get_string('outcome_return_to_selection','report_manager'),array('class' => 'link_return'));
 
             return $out_report;
@@ -1678,46 +1603,33 @@ class outcome_report {
         }//try_catch
     }//Print_OutcomeReport_Screen_LevelThree
 
+
     /**
-     * @static
      * @param           $company
      * @param           $toogle
      * @param           $img
-     * @param           $level_three
-     * @param           $level_two
-     * @return          null|string
+     * @return          string
      *
-     * @creationDate    17/09/2014
+     * @creationDate    30/03/2015
      * @author          eFaktor     (fbv)
      *
      * Description
-     * Add the company Header
+     * Add the header for the level Zero
      */
-    private static function Add_CompanyHeader_Screen($company,$toogle,$img,$level_three=null,$level_two=null) {
+    private static function Add_CompanyHeader_LevelZero_Screen($company,$toogle,$img) {
         /* Variables    */
         $header_company     = null;
-        $url_level_three    = null;
         $title_company      = null;
 
-        $header_company .= html_writer::start_div('header_outcome_company_rpt');
+        $header_company .= html_writer::start_div('header_outcome_company_rpt_levelZero');
             /* Col One  */
             $header_company .= html_writer::start_div('header_col_one');
-                $header_company .= '<button class="toggle" type="image" id="' . $toogle . '"><img id="' . $toogle . '_img' . '" src="' . $img . '">' . '</button>';
+                $header_company .= '<button class="toggle_outcome_company_rpt" type="image" id="' . $toogle . '"><img id="' . $toogle . '_img' . '" src="' . $img . '">' . '</button>';
             $header_company .= html_writer::end_div('');//header_col_one
+
             /* Col Two  */
             $header_company .= html_writer::start_div('header_col_two');
-                if ($level_two) {
-                    setcookie('parentLevelTwo',$level_two);
-                    $title_company = '<h4>' . $company . '</h4>';
-                }else {
-                    $title_company = '<h3>' . $company . '</h3>';
-                }//if_level_two
-
-                if ($level_three) {
-                    $url_level_three = new moodle_url('/report/manager/outcome_report/outcome_report_level.php',array('rpt' => '3','co' => $level_three));
-                    $title_company = '<a href="' . $url_level_three . '">' . $title_company . '</a>';
-                }//if_company_id
-                $header_company .= $title_company;
+                $header_company .= '<h4>' . $company . '</h4>';
             $header_company .= html_writer::end_div('');//header_col_two
         $header_company .= html_writer::end_div('');//header_outcome_company_rpt
 
@@ -1725,202 +1637,115 @@ class outcome_report {
     }//Add_CompanyHeader_Screen
 
     /**
-     * @static
-     * @param           $user_name
-     * @param           $job_roles
+     * @param           $company
      * @param           $toogle
      * @param           $img
-     * @return          null|string
+     * @return          string
      *
-     * @creationDate    17/09/2014
+     * @creationDate    30/03/2015
      * @author          eFaktor     (fbv)
      *
      * Description
-     * Add the Users header
+     * Add the header for the level One
      */
-    private static function Add_UserHeader_Screen($user_name,$job_roles,$toogle,$img) {
+    private static function Add_CompanyHeader_LevelOne_Screen($company,$toogle,$img) {
         /* Variables    */
-        $header_user = null;
+        $header_company     = null;
+        $title_company      = null;
 
-        $header_user .= html_writer::start_div('user_header');
+        $header_company .= html_writer::start_div('header_outcome_company_rpt_levelOne');
             /* Col One  */
-            $header_user .= html_writer::start_div('header_col_one');
-                $header_user .= '<button class="toggle" type="image" id="' . $toogle . '"><img id="' . $toogle . '_img' . '" src="' . $img . '">' . '</button>';
-            $header_user .= html_writer::end_div('');//header_col_one
+            $header_company .= html_writer::start_div('header_col_one');
+                $header_company .= '<button class="toggle_outcome_company_rpt" type="image" id="' . $toogle . '"><img id="' . $toogle . '_img' . '" src="' . $img . '">' . '</button>';
+            $header_company .= html_writer::end_div('');//header_col_one
+
             /* Col Two  */
-            $header_user .= html_writer::start_div('header_col_two');
-                $header_user .= '<h4>'. $user_name . '</h4>';
-            $header_user .= html_writer::end_div('');//header_col_two
-        $header_user .= html_writer::end_div('');//user_header
+            $header_company .= html_writer::start_div('header_col_two');
+                $header_company .= '<h4>' . $company . '</h4>';
+            $header_company .= html_writer::end_div('');//header_col_two
+        $header_company .= html_writer::end_div('');//header_outcome_company_rpt
 
-        /* Add the job roles connected with */
-        if ($job_roles) {
-            $header_user .= html_writer::start_div('job_header');
-                /* Col One  */
-                $header_user .= '<h5>' . $job_roles . '</h5>';
-            $header_user .= html_writer::end_div('');//user_jr_header
-        }//if_job_roles
-
-        return $header_user;
-    }//Add_UserHeader_Screen
+        return $header_company;
+    }//Add_CompanyHeader_Screen
 
     /**
-     * @static
-     * @return          null|string
+     * @param           $company
+     * @param           $toogle
+     * @param           $img
+     * @param       null $url_levelThree
+     * @return          string
      *
-     * @creationDate    17/09/2014
+     * @creationDate    30/03/2015
      * @author          eFaktor     (fbv)
      *
      * Description
-     * Add the header of the Courses table
+     * Add the company header
      */
-    private static function Add_HeaderCourseTable_Screen() {
+    private static function Add_CompanyHeader_Screen($company,$toogle,$img,$url_levelThree = null) {
         /* Variables    */
-        $header_table = null;
+        $header_company     = null;
+        $title_company      = null;
 
-        $str_course         = get_string('course');
-        $str_state          = get_string('state','local_tracker_manager');
-        $str_completion     = get_string('completion_time','local_tracker_manager');
+        $header_company .= html_writer::start_div('header_outcome_company_rpt');
+            /* Col One  */
+            $header_company .= html_writer::start_div('header_col_one');
+                $header_company .= '<button class="toggle_outcome_company_rpt" type="image" id="' . $toogle . '"><img id="' . $toogle . '_img' . '" src="' . $img . '">' . '</button>';
+            $header_company .= html_writer::end_div('');//header_col_one
 
-        $header_table .= html_writer::start_tag('table');
-            $header_table .= html_writer::start_tag('tr',array('class' => 'head'));
-                /* Empty Col   */
-                $header_table .= html_writer::start_tag('td',array('class' => 'head_first'));
-                $header_table .= html_writer::end_tag('td');
+            /* Col Two  */
+            $header_company .= html_writer::start_div('header_col_two');
+                if ($url_levelThree) {
+                    $header_company .= '<a href="' . $url_levelThree . '">' . '<h5>' . $company . '</h5>' . '</a>';
+                }else {
+                    $header_company .= '<h5>' . $company . '</h5>';
+                }//if_levelThree
 
-                /* Course Col   */
-                $header_table .= html_writer::start_tag('td',array('class' => 'head_course'));
-                    $header_table .= $str_course;
-                $header_table .= html_writer::end_tag('td');
+            $header_company .= html_writer::end_div('');//header_col_two
+        $header_company .= html_writer::end_div('');//header_outcome_company_rpt
 
-                /* Status Col   */
-                $header_table .= html_writer::start_tag('td',array('class' => 'head_status'));
-                    $header_table .= $str_state;
-                $header_table .= html_writer::end_tag('td');
-
-                /* Completion Col   */
-                $header_table .= html_writer::start_tag('td',array('class' => 'head_status'));
-                    $header_table .= $str_completion;
-                $header_table .= html_writer::end_tag('td');
-            $header_table .= html_writer::end_tag('tr');
-        $header_table .= html_writer::end_tag('table');
-
-        return $header_table;
-    }//Add_HeaderCourseTable_Screen
+        return $header_company;
+    }//Add_CompanyHeader_Screen
 
     /**
-     * @static
-     * @param           $courses_lst
-     * @param           $user_info
-     * @param           $expiration
-     * @return          null|string
+     * @param           $course
+     * @param           $toogle
+     * @param           $img
+     * @return          string
      *
-     * @creationDate    17/09/2014
+     * @creationDate    30/03/2015
      * @author          eFaktor     (fbv)
      *
      * Description
-     * Add the content to the Course table
+     * Add the course header
      */
-    private static function Add_ContentCourseTable_Screen($courses_lst,$user_info,$expiration) {
+    private static function Add_CourseHeader_Screen($course,$toogle,$img) {
         /* Variables    */
-        $content    = null;
-        $class      = null;
-        $label      = null;
+        $header_course     = null;
+        $title_company     = null;
 
-        $content .= html_writer::start_tag('table');
-            /* Completed    */
-            if ($user_info->completed) {
-                foreach ($user_info->completed as $id=>$completed) {
-                    $ts = strtotime($expiration  . ' month', $user_info->completed[$id]);
-                    if ($ts < time()) {
-                        $class = 'expired';
-                        $label = get_string('outcome_course_expired','local_tracker_manager');
-                    }else {
-                        $class = 'completed';
-                        $label = get_string('outcome_course_finished','local_tracker_manager');
-                    }
-                    $content .= html_writer::start_tag('tr',array('class' => $class));
-                        /* Button Col   */
-                        $content .= html_writer::start_tag('td',array('class' => 'first'));
-                        $content .= html_writer::end_tag('td');
-                        /* Course Col   */
-                        $content .= html_writer::start_tag('td',array('class' => 'course'));
-                            $content .= $courses_lst[$id];
-                        $content .= html_writer::end_tag('td');
-                        /* Status Col   */
-                        $content .= html_writer::start_tag('td',array('class' => 'status'));
-                            $content .= $label;
-                        $content .= html_writer::end_tag('td');
+        $header_course .= html_writer::start_div('header_outcome_company_rpt_levelCourse');
+            /* Col One  */
+            $header_course .= html_writer::start_div('header_col_one');
+                $header_course .= '<button class="toggle_outcome_company_rpt" type="image" id="' . $toogle . '"><img id="' . $toogle . '_img' . '" src="' . $img . '">' . '</button>';
+            $header_course .= html_writer::end_div('');//header_col_one
 
-                        /* Completion Col   */
-                        $content .= html_writer::start_tag('td',array('class' => 'status'));
-                            $content .= userdate($user_info->completed[$id],'%d.%m.%Y', 99, false);;
-                        $content .= html_writer::end_tag('td');
-                    $content .= html_writer::end_tag('tr');
-                }//for_completed
-            }//if_completed
+            /* Col Two  */
+            $header_course .= html_writer::start_div('header_col_two');
+                $header_course .= '<h5>' . $course . '</h5>';
+            $header_course .= html_writer::end_div('');//header_col_two
+        $header_course .= html_writer::end_div('');//header_outcome_company_rpt
 
-            /* In progress  */
-            if ($user_info->not_completed) {
-                foreach ($user_info->not_completed as $id=>$not_completed) {
-                    $content .= html_writer::start_tag('tr');
-                    /* Button Col   */
-                    $content .= html_writer::start_tag('td',array('class' => 'first'));
-                        $content .= html_writer::end_tag('td');
-                        /* Course Col   */
-                        $content .= html_writer::start_tag('td',array('class' => 'course'));
-                            $content .= $courses_lst[$id];
-                        $content .= html_writer::end_tag('td');
-                        /* Status Col   */
-                        $content .= html_writer::start_tag('td',array('class' => 'status'));
-                            $content .= get_string('outcome_course_started','local_tracker_manager');
-                        $content .= html_writer::end_tag('td');
-
-                        /* Completion Col   */
-                        $content .= html_writer::start_tag('td',array('class' => 'status'));
-                            $content .= '-';
-                        $content .= html_writer::end_tag('td');
-                    $content .= html_writer::end_tag('tr');
-                }//for_not_completed
-            }//if_not_completed
-
-            /* Not Enrol    */
-            if ($user_info->not_enrol) {
-                foreach ($user_info->not_enrol as $id=>$not_enrol) {
-                    $content .= html_writer::start_tag('tr',array('class' => 'not_enroll'));
-                        /* Button Col   */
-                        $content .= html_writer::start_tag('td',array('class' => 'first'));
-                        $content .= html_writer::end_tag('td');
-                        /* Course Col   */
-                        $content .= html_writer::start_tag('td',array('class' => 'course'));
-                            $content .= $courses_lst[$not_enrol];
-                        $content .= html_writer::end_tag('td');
-                        /* Status Col   */
-                        $content .= html_writer::start_tag('td',array('class' => 'status'));
-                            $content .= get_string('outcome_course_not_enrolled','local_tracker_manager');
-                        $content .= html_writer::end_tag('td');
-
-                        /* Completion Col   */
-                        $content .= html_writer::start_tag('td',array('class' => 'status'));
-                            $content .= '-';
-                        $content .= html_writer::end_tag('td');
-                    $content .= html_writer::end_tag('tr');
-                }//for_completed
-            }//if_not_enrol
-        $content .= html_writer::end_tag('table');
-
-        return $content;
-    }//Add_ContentCourseTable_Screen
+        return $header_course;
+    }//Add_CompanyHeader_Screen
 
     /**
-     * @static
-     * @return          null|string
+     * @return          string
      *
-     * @creationDate    18/09/2014
+     * @creationDate    30/03/2015
      * @author          eFaktor     (fbv)
      *
      * Description
-     * Add the header of the table - Level Two
+     * Add the header table for the level Two
      */
     private static function Add_HeaderCourseTable_LevelTwo_Screen() {
         /* Variables    */
@@ -1964,18 +1789,16 @@ class outcome_report {
     }//Add_HeaderCourseTable_LevelTwo_Screen
 
     /**
-     * @static
      * @param           $courses_lst
-     * @param           $company_info
-     * @return          null|string
+     * @return          string
      *
-     * @creationDate    18/09/2014
+     * @creationDate    30/03/2015
      * @author          eFaktor     (fbv)
      *
      * Description
-     * Add the content of the table - Level two
+     * Add the content for the level Two
      */
-    private static function Add_ContentCourseTable_LevelTwo_Screen($courses_lst,$company_info) {
+    private static function Add_ContentCourseTable_LevelTwo_Screen($courses_lst) {
         /* Variables    */
         $content    = null;
 
@@ -1987,23 +1810,23 @@ class outcome_report {
                     $content .= html_writer::end_tag('td');
                     /* Course           */
                     $content .= html_writer::start_tag('td',array('class' => 'course'));
-                        $content .= $course;
+                        $content .= $course->name;
                     $content .= html_writer::end_tag('td');
                     /* Not Enrol        */
                     $content .= html_writer::start_tag('td',array('class' => 'status'));
-                        $content .= $company_info->not_enrol[$id];
+                        $content .= count($course->not_enrol);
                     $content .= html_writer::end_tag('td');
                     /* Not Completed    */
                     $content .= html_writer::start_tag('td',array('class' => 'status'));
-                        $content .= $company_info->not_completed[$id];
+                        $content .= count($course->not_completed);
                     $content .= html_writer::end_tag('td');
                     /* Completed        */
                     $content .= html_writer::start_tag('td',array('class' => 'status'));
-                        $content .= $company_info->completed[$id];
+                        $content .= count($course->completed);
                     $content .= html_writer::end_tag('td');
                     /* Total            */
                     $content .= html_writer::start_tag('td',array('class' => 'status'));
-                        $content .= $company_info->total;
+                        $content .= count($course->not_enrol) + count($course->not_completed) + count($course->completed);
                     $content .= html_writer::end_tag('td');
                 $content .= html_writer::end_tag('tr');
             }
@@ -2012,22 +1835,172 @@ class outcome_report {
         return $content;
     }//Add_ContentCourseTable_LevelTwo_Screen
 
-
     /**
-     * @static
-     * @param           $outcome_report
-     * @throws          Exception
+     * @return          string
      *
-     * @creationDate    19/09/2014
+     * @creationDate    30/03/2015
      * @author          eFaktor     (fbv)
      *
      * Description
-     * Download Outcome Report - Level One
+     * Add the header for the level three
      */
-    private static function Download_OutcomeReport_LevelOne($outcome_report) {
+    private static function Add_HeaderTable_LevelThree_Screen() {
+        /* Variables    */
+        $header_table = null;
+
+        $str_user           = get_string('user');
+        $str_state          = get_string('state','local_tracker_manager');
+        $str_completion     = get_string('completion_time','local_tracker_manager');
+
+        $header_table .= html_writer::start_tag('table');
+            $header_table .= html_writer::start_tag('tr',array('class' => 'head'));
+                /* Empty Col   */
+                $header_table .= html_writer::start_tag('td',array('class' => 'head_first'));
+                $header_table .= html_writer::end_tag('td');
+
+                /* Course Col   */
+                $header_table .= html_writer::start_tag('td',array('class' => 'head_course'));
+                    $header_table .= $str_user;
+                $header_table .= html_writer::end_tag('td');
+
+                /* Status Col   */
+                $header_table .= html_writer::start_tag('td',array('class' => 'head_status'));
+                    $header_table .= $str_state;
+                $header_table .= html_writer::end_tag('td');
+
+                /* Completion Col   */
+                $header_table .= html_writer::start_tag('td',array('class' => 'head_status'));
+                    $header_table .= $str_completion;
+                $header_table .= html_writer::end_tag('td');
+            $header_table .= html_writer::end_tag('tr');
+        $header_table .= html_writer::end_tag('table');
+
+        return $header_table;
+    }//Add_HeaderTable_LevelThree_Screen
+
+    /**
+     * @param           $course_info
+     * @param           $expiration
+     * @return          string
+     *
+     * @creationDate    30/03/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Add the content for the level three
+     */
+    private static function Add_ContentTable_LevelThree_Screen($course_info,$expiration) {
+        /* Variables    */
+        $content        = null;
+        $class          = null;
+        $label          = null;
+        $completed      = null;
+        $not_completed  = null;
+        $not_enrol      = null;
+
+        $content .= html_writer::start_tag('table');
+        /* Completed    */
+        $completed = $course_info->completed;
+        if ($completed) {
+            foreach ($completed as $user) {
+                $ts = strtotime($expiration  . ' month', $user->completed);
+                if ($ts < time()) {
+                    $class = 'expired';
+                    $label = get_string('outcome_course_expired','local_tracker_manager');
+                }else {
+                    $class = 'completed';
+                    $label = get_string('outcome_course_finished','local_tracker_manager');
+                }
+
+                $content .= html_writer::start_tag('tr',array('class' => $class));
+                    /* Empty Col   */
+                    $content .= html_writer::start_tag('td',array('class' => 'first'));
+                    $content .= html_writer::end_tag('td');
+                    /* User Col   */
+                    $content .= html_writer::start_tag('td',array('class' => 'course'));
+                        $content .= $user->name;
+                    $content .= html_writer::end_tag('td');
+                    /* Status Col   */
+                    $content .= html_writer::start_tag('td',array('class' => 'status'));
+                        $content .= $label;
+                    $content .= html_writer::end_tag('td');
+
+                    /* Completion Col   */
+                    $content .= html_writer::start_tag('td',array('class' => 'status'));
+                        $content .= userdate($user->completed,'%d.%m.%Y', 99, false);
+                    $content .= html_writer::end_tag('td');
+                $content .= html_writer::end_tag('tr');
+            }//for_completed
+        }//if_completed
+
+        /* Not Completed - In progress  */
+        $not_completed = $course_info->not_completed;
+        if ($not_completed) {
+            foreach ($not_completed as $user) {
+                $content .= html_writer::start_tag('tr');
+                    /* Empty Col   */
+                    $content .= html_writer::start_tag('td',array('class' => 'first'));
+                    $content .= html_writer::end_tag('td');
+                    /* User Col   */
+                    $content .= html_writer::start_tag('td',array('class' => 'course'));
+                        $content .= $user->name;
+                    $content .= html_writer::end_tag('td');
+                    /* Status Col   */
+                    $content .= html_writer::start_tag('td',array('class' => 'status'));
+                        $content .= get_string('outcome_course_started','local_tracker_manager');
+                    $content .= html_writer::end_tag('td');
+
+                    /* Completion Col   */
+                    $content .= html_writer::start_tag('td',array('class' => 'status'));
+                        $content .= '-';
+                    $content .= html_writer::end_tag('td');
+                $content .= html_writer::end_tag('tr');
+            }//for_not_enrol
+        }//if_not_completed
+
+        /* Not Enrol    */
+        $not_enrol = $course_info->not_enrol;
+        if ($not_enrol) {
+            foreach ($not_enrol as $user) {
+                $content .= html_writer::start_tag('tr',array('class' => 'not_enroll'));
+                    /* Empty Col   */
+                    $content .= html_writer::start_tag('td',array('class' => 'first'));
+                    $content .= html_writer::end_tag('td');
+                    /* User Col   */
+                    $content .= html_writer::start_tag('td',array('class' => 'course'));
+                        $content .= $user->name;
+                    $content .= html_writer::end_tag('td');
+                    /* Status Col   */
+                    $content .= html_writer::start_tag('td',array('class' => 'status'));
+                        $content .= get_string('outcome_course_not_enrolled','local_tracker_manager');
+                    $content .= html_writer::end_tag('td');
+
+                    /* Completion Col   */
+                    $content .= html_writer::start_tag('td',array('class' => 'status'));
+                        $content .= '-';
+                    $content .= html_writer::end_tag('td');
+                $content .= html_writer::end_tag('tr');
+            }//for_not_enrol
+        }//if_not_enrol
+        $content .= html_writer::end_tag('table');
+
+        return $content;
+    }//Add_ContentTable_LevelThree_Screen
+
+    /**
+     * @param           $outcome_report
+     * @throws          Exception
+     *
+     * @creationDate    30/03/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Download Outcome Report - Level Zero
+     */
+    private static function Download_OutcomeReport_LevelZero($outcome_report) {
         /* Variables    */
         global $CFG;
-        $row = 0;
+        $row        = null;
 
         try {
             require_once($CFG->dirroot.'/lib/excellib.class.php');
@@ -2036,44 +2009,111 @@ class outcome_report {
             $time = userdate(time(),'%d.%m.%Y', 99, false);
             $file_name = clean_filename($outcome_report->name . '_' . $time . ".xls");
 
+            /* Get Expiration Period            */
+            $options            = CompetenceManager::GetCompletedList();
+            $completed_before   = $options[$outcome_report->completed_before];
+
             // Creating a workbook
             $export = new MoodleExcelWorkbook("-");
             // Sending HTTP headers
             $export->send($file_name);
 
-            /* Get Info Basic   -- Header Sheet */
-            $out_name   = $outcome_report->name;
-            $out_desc   = $outcome_report->description;
-            $level_one  = $outcome_report->level_one;
-            /* Get Expiration Period            */
-            $options            = report_manager_get_completed_list();
-            $completed_before   = $options[$outcome_report->completed_before];
-
-            /* Level Two -- New Sheet   */
-            foreach ($outcome_report->level_two as $level_two) {
-                $row = 0;
-
-                if ($level_two->level_three) {
+            /* One Sheet By Level twoo  */
+            foreach ($outcome_report->levelOne as $levelOne) {
+                foreach ($levelOne->levelTwo as $levelTwo) {
+                    $row = 0;
                     // Adding the worksheet
-                    $my_xls = $export->add_worksheet($level_two->name);
+                    $my_xls = $export->add_worksheet($levelTwo->name);
 
                     /* Add Header - Company Outcome Report  - Level One */
-                    self::AddHeader_CompanySheet($outcome_report->name,$outcome_report->description,$outcome_report->level_one,null,null,$completed_before,$my_xls,$row);
+                    self::AddHeader_CompanySheet($outcome_report->name,$outcome_report->description,$outcome_report->job_roles,$outcome_report->levelZero,$levelOne,$levelTwo,null,$completed_before,$my_xls,$row);
+                    /* Ad Level Two */
+                    if ($levelTwo->levelThree) {
+                        /* Add Header Table */
+                        $row++;
+                        self::AddHeader_LevelTwo_TableCourse($my_xls,$row);
+
+                        /* Add Content Table    */
+                        $row++;
+                        foreach ($levelTwo->levelThree as $company) {
+                            if ($company->courses) {
+                                self::AddContent_LevelTwo_TableCourse($my_xls,$row,$company);
+
+                                $my_xls->merge_cells($row,0,$row,13);
+                                $row++;
+                            }//if_courses
+                        }//for_each_company
+                    }//if_level_three
+                }//for_levelTwo
+            }//for_elvel_one
+
+            $export->close();
+            exit;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//Download_OutcomeReport_LevelZero
+
+    /**
+     * @param           $outcome_report
+     * @throws          Exception
+     *
+     * @creationDate    30/03/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Download Outcome Report - Level One
+     */
+    private static function Download_OutcomeReport_LevelOne($outcome_report) {
+        /* Variables    */
+        global $CFG;
+        $levelOne   = null;
+        $row        = null;
+
+        try {
+            require_once($CFG->dirroot.'/lib/excellib.class.php');
+
+            /* File Name    */
+            $time = userdate(time(),'%d.%m.%Y', 99, false);
+            $file_name = clean_filename($outcome_report->name . '_' . $time . ".xls");
+
+            /* Get Expiration Period            */
+            $options            = CompetenceManager::GetCompletedList();
+            $completed_before   = $options[$outcome_report->completed_before];
+
+            // Creating a workbook
+            $export = new MoodleExcelWorkbook("-");
+            // Sending HTTP headers
+            $export->send($file_name);
+
+            /* One Sheet by Level Two   */
+            $levelOne = array_shift($outcome_report->levelOne);
+            foreach ($levelOne->levelTwo as $levelTwo) {
+                $row = 0;
+                // Adding the worksheet
+                $my_xls = $export->add_worksheet($levelTwo->name);
+
+                /* Add Header - Company Outcome Report  - Level One */
+                self::AddHeader_CompanySheet($outcome_report->name,$outcome_report->description,$outcome_report->job_roles,$outcome_report->levelZero,$levelOne,$levelTwo,null,$completed_before,$my_xls,$row);
+
+                /* Ad Level Two */
+                if ($levelTwo->levelThree) {
                     /* Add Header Table */
                     $row++;
                     self::AddHeader_LevelTwo_TableCourse($my_xls,$row);
 
                     /* Add Content Table    */
                     $row++;
-                    foreach ($level_two->level_three as $company) {
-                        self::AddContent_LevelTwo_TableCourse($my_xls,$row,$company,$outcome_report->courses);
+                    foreach ($levelTwo->levelThree as $company) {
+                        if ($company->courses) {
+                            self::AddContent_LevelTwo_TableCourse($my_xls,$row,$company);
 
-                        $my_xls->merge_cells($row,0,$row,19);
-                        $row ++;
+                            $my_xls->merge_cells($row,0,$row,13);
+                            $row++;
+                        }//if_courses
                     }//for_each_company
                 }//if_level_three
-
-            }//for_level_Two
+            }//for_levelTwo
 
             $export->close();
             exit;
@@ -2083,20 +2123,21 @@ class outcome_report {
     }//Download_OutcomeReport_LevelOne
 
     /**
-     * @static
      * @param           $outcome_report
      * @throws          Exception
      *
-     * @creationDate    19/09/2014
+     * @creationDate    30/03/2015
      * @author          eFaktor     (fbv)
      *
      * Description
-     * Download Outcome Report - Level Two
+     * Download Course Report - Level Two
      */
     private static function Download_OutcomeReport_LevelTwo($outcome_report) {
         /* Variables    */
         global $CFG;
-        $row = 0;
+        $levelOne   = null;
+        $levelTwo   = null;
+        $row        = null;
 
         try {
             require_once($CFG->dirroot.'/lib/excellib.class.php');
@@ -2105,32 +2146,45 @@ class outcome_report {
             $time = userdate(time(),'%d.%m.%Y', 99, false);
             $file_name = clean_filename($outcome_report->name . '_' . $time . ".xls");
 
+            /* Get Expiration Period            */
+            $options            = CompetenceManager::GetCompletedList();
+            $completed_before   = $options[$outcome_report->completed_before];
+
             // Creating a workbook
             $export = new MoodleExcelWorkbook("-");
             // Sending HTTP headers
             $export->send($file_name);
 
-            /* Get Expiration Period    */
-            $options            = report_manager_get_completed_list();
-            $completed_before   = $options[$outcome_report->completed_before];
+            /* Level One   */
+            $levelOne = array_shift($outcome_report->levelOne);
+            /* Level Two    */
+            $levelTwo = array_shift($outcome_report->levelTwo);
 
+            /* One Sheet by Level Two   */
+            $row = 0;
             // Adding the worksheet
-            $my_xls = $export->add_worksheet($outcome_report->name);
+            $my_xls    = $export->add_worksheet($levelTwo->name);
 
-            /* Add Header   - Outcome Report    */
-            self::AddHeader_CompanySheet($outcome_report->name,$outcome_report->description,$outcome_report->level_one,$outcome_report->level_two,null,$completed_before,$my_xls,$row);
-            /* Add Header Table */
-            $row++;
-            self::AddHeader_LevelTwo_TableCourse($my_xls,$row);
+            /* Add Header - Company Outcome Report  - Level One */
+            self::AddHeader_CompanySheet($outcome_report->name,$outcome_report->description,$outcome_report->job_roles,$outcome_report->levelZero,$levelOne,$levelTwo,null,$completed_before,$my_xls,$row);
 
-            /* Add Content Table    */
-            $row++;
-            foreach ($outcome_report->level_three as $company) {
-                self::AddContent_LevelTwo_TableCourse($my_xls,$row,$company,$outcome_report->courses);
+            /* Ad Level Two */
+            if ($levelTwo->levelThree) {
+                /* Add Header Table */
+                $row++;
+                self::AddHeader_LevelTwo_TableCourse($my_xls,$row);
 
-                $my_xls->merge_cells($row,0,$row,19);
-                $row ++;
-            }//for_each_company
+                /* Add Content Table    */
+                $row++;
+                foreach ($levelTwo->levelThree as $company) {
+                    if ($company->courses) {
+                        self::AddContent_LevelTwo_TableCourse($my_xls,$row,$company);
+
+                        $my_xls->merge_cells($row,0,$row,13);
+                        $row++;
+                    }//if_courses
+                }//for_each_company
+            }//if_level_three
 
             $export->close();
             exit;
@@ -2140,16 +2194,193 @@ class outcome_report {
     }//Download_OutcomeReport_LevelTwo
 
     /**
-     * @static
+     * @param           $outcome_report
+     * @throws          Exception
+     *
+     * @creationDate    30/03/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Download Outcome Report - Level Three
+     */
+    private static function Download_OutcomeReport_LevelThree($outcome_report) {
+        /* Variables    */
+        global $CFG;
+        $levelOne   = null;
+        $levelTwo   = null;
+        $row        = null;
+
+        try {
+            require_once($CFG->dirroot.'/lib/excellib.class.php');
+
+            /* File Name    */
+            $time = userdate(time(),'%d.%m.%Y', 99, false);
+            $file_name = clean_filename($outcome_report->name . '_' . $time . ".xls");
+
+            /* Get Expiration Period            */
+            $options            = CompetenceManager::GetCompletedList();
+            $completed_before   = $options[$outcome_report->completed_before];
+
+            // Creating a workbook
+            $export = new MoodleExcelWorkbook("-");
+            // Sending HTTP headers
+            $export->send($file_name);
+
+            /* Level One   */
+            $levelOne = array_shift($outcome_report->levelOne);
+            /* Level Two    */
+            $levelTwo = array_shift($outcome_report->levelTwo);
+
+            /* Ad Level Two */
+            if ($outcome_report->levelThree) {
+                foreach ($outcome_report->levelThree as $company) {
+                    /* One Sheet by Level Three   */
+                    $row = 0;
+                    // Adding the worksheet
+                    $my_xls    = $export->add_worksheet($company->name);
+
+                    /* Add Header - Company Outcome Report  - Level One */
+                    self::AddHeader_CompanySheet($outcome_report->name,$outcome_report->description,$outcome_report->job_roles,$outcome_report->levelZero,$levelOne,$levelTwo,$company->name,$completed_before,$my_xls,$row);
+
+                    /* Add Header Table     */
+                    $row++;
+                    self::AddHeader_LevelThree_TableCourse($my_xls,$row);
+                    ///* Add Content Table    */
+                    $row++;
+                    self::AddContent_LevelThree_TableCourse($my_xls,$row,$company,$outcome_report->expiration);
+
+                    $my_xls->merge_cells($row,0,$row,16);
+                }//for_each_company
+            }//if_level_three
+
+            $export->close();
+            exit;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//Download_OutcomeReport_LevelThree
+
+    /**
+     * @param           $out_name
+     * @param           $out_desc
+     * @param           $job_roles
+     * @param           $levelZero
+     * @param       null $levelOne
+     * @param       null $levelTwo
+     * @param       null $levelThree
+     * @param           $completed_before
      * @param           $my_xls
      * @param           $row
      * @throws          Exception
      *
-     * @creationDate    19/09/2014
+     * @creationDate    30/03/2015
      * @author          eFaktor     (fbv)
      *
      * Description
-     * Add the header of the table - Level Two
+     * Add the Company Header
+     */
+    private static function AddHeader_CompanySheet($out_name,$out_desc,$job_roles,$levelZero,$levelOne=null,$levelTwo=null,$levelThree=null,$completed_before,&$my_xls,&$row) {
+        /* Variables    */
+        $col = 0;
+        $title_out          = get_string('outcome', 'report_manager')  . ' - ' . $out_name;
+        $title_jr           = get_string('job_roles', 'report_manager');
+        $title_expiration       = str_replace(' ...',' : ',get_string('completed_list','report_manager')) . $completed_before;
+        $title_level_zero       = get_string('company_structure_level', 'report_manager', 0) . ': ' . $levelZero;
+        $title_level_one        = null;
+        if ($levelOne) {
+            $title_level_one    = get_string('company_structure_level', 'report_manager', 1) . ': ' . $levelOne->name;
+        }
+        $title_level_two        = null;
+        if ($levelTwo) {
+            $title_level_two    = get_string('company_structure_level', 'report_manager', 2) . ': ' . $levelTwo->name;
+        }//if_level_two
+
+        try {
+            /* Outcome Name && Description  */
+            $my_xls->write($row, $col, $title_out,array('size'=>12, 'name'=>'Arial','bold'=>'1','color' => '#004b93','bg_color'=>'#efefef','text_wrap'=>true,'v_align'=>'center'));
+            $my_xls->merge_cells($row,$col,$row,$col+10);
+            $my_xls->set_row($row,25);
+            $row++;
+            $my_xls->write($row, $col, $out_desc,array('size'=>10, 'name'=>'Arial','bold'=>'1','text_wrap'=>true,'v_align'=>'center'));
+            $my_xls->merge_cells($row,$col,$row,$col+10);
+            $my_xls->set_row($row,25);
+
+            /* Job Roles    */
+            $row++;
+            $col = 0;
+            $my_xls->write($row, $col, $title_jr,array('size'=>12, 'name'=>'Arial','bold'=>'1','color' => '#004b93','bg_color'=>'#efefef','text_wrap'=>true,'v_align'=>'center'));
+            $my_xls->merge_cells($row,$col,$row,$col+10);
+            $my_xls->set_row($row,25);
+            $row++;
+            $my_xls->write($row, $col, implode(', ',$job_roles),array('size'=>10, 'name'=>'Arial','bold'=>'1','text_wrap'=>true,'v_align'=>'center'));
+            $my_xls->merge_cells($row,$col,$row,$col+10);
+            $my_xls->set_row($row,25);
+
+            /* Level Zero    */
+            $row++;
+            $col = 0;
+            $my_xls->write($row, $col, $title_level_zero,array('size'=>12, 'name'=>'Arial','bold'=>'1','color' => '#004b93','bg_color'=>'#efefef','text_wrap'=>true,'v_align'=>'center'));
+            $my_xls->merge_cells($row,$col,$row,$col+10);
+            $my_xls->set_row($row,25);
+
+            /* Level One    */
+            $row++;
+            $col = 0;
+            $my_xls->write($row, $col, $title_level_one,array('size'=>12, 'name'=>'Arial','bold'=>'1','color' => '#004b93','bg_color'=>'#efefef','text_wrap'=>true,'v_align'=>'center'));
+            $my_xls->merge_cells($row,$col,$row,$col+10);
+            $my_xls->set_row($row,25);
+
+            /* Level Two    */
+            if ($title_level_two) {
+                $row++;
+                $col = 0;
+                $my_xls->write($row, $col, $title_level_two,array('size'=>12, 'name'=>'Arial','bold'=>'1','color' => '#004b93','bg_color'=>'#efefef','text_wrap'=>true,'v_align'=>'center'));
+                $my_xls->merge_cells($row,$col,$row,$col+10);
+                $my_xls->set_row($row,25);
+            }//if_level_two
+
+            /* Level Three  */
+            if ($levelThree) {
+                /* Merge Cells  */
+                $row++;
+                $my_xls->merge_cells($row,$col,$row,$col+10);
+                $row++;
+                $my_xls->merge_cells($row,$col,$row,$col+10);
+
+                $row++;
+                $col = 0;
+                $my_xls->write($row, $col, $levelThree,array('size'=>14, 'name'=>'Arial','bold'=>'1','color' => '#004b93','bg_color'=>'#efefef','text_wrap'=>true,'v_align'=>'center'));
+                $my_xls->merge_cells($row,$col,$row,$col+10);
+                $my_xls->set_row($row,25);
+            }
+
+            /* Expiration Time */
+            $row++;
+            $col = 0;
+            $my_xls->write($row, $col, $title_expiration,array('size'=>12, 'name'=>'Arial','bold'=>'1','color' => '#004b93','text_wrap'=>true,'v_align'=>'center'));
+            $my_xls->merge_cells($row,$col,$row,$col+10);
+            $my_xls->set_row($row,25);
+
+            /* Merge Cells  */
+            $row++;
+            $my_xls->merge_cells($row,$col,$row,$col+10);
+            $row++;
+            $my_xls->merge_cells($row,$col,$row,$col+10);
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//AddHeader_CompanySheet
+
+    /**
+     * @param           $my_xls
+     * @param           $row
+     * @throws          Exception
+     *
+     * @creationDate    30/03/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Add the header table for the levels zero, one and two
      */
     private static function AddHeader_LevelTwo_TableCourse(&$my_xls,$row) {
         /* Variables    */
@@ -2202,25 +2433,24 @@ class outcome_report {
     }//AddHeader_LevelTwo_TableCourse
 
     /**
-     * @static
      * @param           $my_xls
      * @param           $row
      * @param           $company_info
-     * @param           $courses_lst
      * @throws          Exception
      *
-     * @creationDate    19/09/2014
+     * @creationDate    30/03/2015
      * @author          eFaktor     (fbv)
      *
      * Description
-     * Add the content of the table - Level Two
+     * Add the content of the table for the levels zero, one and two
      */
-    private static function AddContent_LevelTwo_TableCourse(&$my_xls,&$row,$company_info,$courses_lst) {
+    private static function AddContent_LevelTwo_TableCourse(&$my_xls,&$row,$company_info) {
         /* Variables    */
         $col    = 0;
+        $total  = 0;
 
         try {
-            foreach ($courses_lst as $id=>$course) {
+            foreach ($company_info->courses as $id=>$course) {
                 /* Company      */
                 $my_xls->write($row, $col, $company_info->name,array('size'=>12, 'name'=>'Arial','align'=>'left','v_align'=>'center'));
                 $my_xls->merge_cells($row,$col,$row,$col+5);
@@ -2228,31 +2458,32 @@ class outcome_report {
 
                 /* Courses      */
                 $col = $col + 6;
-                $my_xls->write($row, $col, $course,array('size'=>12, 'name'=>'Arial','align'=>'left','v_align'=>'center'));
+                $my_xls->write($row, $col, $course->name,array('size'=>12, 'name'=>'Arial','align'=>'left','v_align'=>'center'));
                 $my_xls->merge_cells($row,$col,$row,$col+5);
                 $my_xls->set_row($row,20);
 
                 /* Not Enrol    */
                 $col = $col + 6;
-                $my_xls->write($row, $col, $company_info->not_enrol[$id],array('size'=>12, 'name'=>'Arial','align'=>'center','v_align'=>'center'));
+                $my_xls->write($row, $col, count($course->not_enrol),array('size'=>12, 'name'=>'Arial','align'=>'center','v_align'=>'center'));
                 $my_xls->merge_cells($row,$col,$row,$col+1);
                 $my_xls->set_row($row,20);
 
                 /* In Progress  */
                 $col = $col + 2;
-                $my_xls->write($row, $col, $company_info->not_completed[$id],array('size'=>12, 'name'=>'Arial','align'=>'center','v_align'=>'center'));
+                $my_xls->write($row, $col, count($course->not_completed),array('size'=>12, 'name'=>'Arial','align'=>'center','v_align'=>'center'));
                 $my_xls->merge_cells($row,$col,$row,$col+1);
                 $my_xls->set_row($row,20);
 
                 /* Completed    */
                 $col = $col + 2;
-                $my_xls->write($row, $col, $company_info->completed[$id],array('size'=>12, 'name'=>'Arial','align'=>'center','v_align'=>'center'));
+                $my_xls->write($row, $col, count($course->completed),array('size'=>12, 'name'=>'Arial','align'=>'center','v_align'=>'center'));
                 $my_xls->merge_cells($row,$col,$row,$col+1);
                 $my_xls->set_row($row,20);
 
                 /* Total        */
                 $col = $col + 2;
-                $my_xls->write($row, $col, $company_info->total,array('size'=>12, 'name'=>'Arial','align'=>'center','v_align'=>'center'));
+                $total = count($course->not_enrol) + count($course->not_completed) + count($course->completed);
+                $my_xls->write($row, $col, $total,array('size'=>12, 'name'=>'Arial','align'=>'center','v_align'=>'center'));
                 $my_xls->merge_cells($row,$col,$row,$col+1);
                 $my_xls->set_row($row,20);
 
@@ -2265,188 +2496,33 @@ class outcome_report {
     }//AddContent_LevelTwo_TableCourse
 
     /**
-     * @static
-     * @param           $outcome_report
-     * @throws          Exception
-     *
-     * @creationDate    17/09/2014
-     * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Download Outcome Report - Excel - Level Three
-     */
-    private static function Download_OutcomeReport_LevelThree($outcome_report) {
-        /* Variables    */
-        global $CFG;
-
-        try {
-            require_once($CFG->dirroot.'/lib/excellib.class.php');
-
-            /* File Name    */
-            $time = userdate(time(),'%d.%m.%Y', 99, false);
-            $file_name = clean_filename($outcome_report->name . '_' . $time . ".xls");
-
-            // Creating a workbook
-            $export = new MoodleExcelWorkbook("-");
-            // Sending HTTP headers
-            $export->send($file_name);
-
-            /* Company --> New Sheet    */
-            $out_name   = $outcome_report->name;
-            $out_desc   = $outcome_report->description;
-            $level_one  = $outcome_report->level_one;
-            $level_two  = $outcome_report->level_two;
-            $courses    = $outcome_report->courses;
-            /* Get Expiration Period    */
-            $options            = report_manager_get_completed_list();
-            $completed_before   = $options[$outcome_report->completed_before];
-            foreach ($outcome_report->level_three as $company) {
-                $row = 0;
-
-                // Adding the worksheet
-                $my_xls = $export->add_worksheet($company->name);
-
-                /* Add Header - Company Outcome Report  */
-                self::AddHeader_CompanySheet($out_name,$out_desc,$level_one,$level_two,$company->name,$completed_before,$my_xls,$row);
-                /* Add Header Table                     */
-                $row++;
-                self::AddHeader_TableCourse($my_xls,$row);
-                /* Add Content Table                    */
-                if ($company->users) {
-                    $row++;
-                    foreach ($company->users as $user_info) {
-                        self::AddContent_TableCourse($my_xls,$row,$user_info,$courses,$outcome_report->expiration);
-
-                        $my_xls->merge_cells($row,0,$row,14);
-                        $row ++;
-                    }//for_users
-                }//if_company_users
-            }//for_Each_company
-
-            $export->close();
-            exit;
-        }catch (Exception $ex) {
-            throw $ex;
-        }//try_catch
-    }//Download_OutcomeReport_LevelThree
-
-    /**
-     * @static
-     * @param           $out_name
-     * @param           $out_desc
-     * @param           $level_one
-     * @param           $level_two
-     * @param           $level_three
-     * @param           $completed_before
      * @param           $my_xls
      * @param           $row
      * @throws          Exception
      *
-     * @creationDate    17/09/2014
+     * @creationDate    30/03/2015
      * @author          eFaktor     (fbv)
      *
      * Description
-     * Add the Header of the Company Sheet
+     * Add the header of the table for the level three
      */
-    private static function AddHeader_CompanySheet($out_name,$out_desc,$level_one,$level_two=null,$level_three=null,$completed_before,&$my_xls,&$row) {
+    private static function AddHeader_LevelThree_TableCourse(&$my_xls,$row) {
         /* Variables    */
-        $title_out          = get_string('outcome', 'report_manager')  . ' - ' . $out_name;
-        $title_level_one    = get_string('company_structure_level', 'report_manager', 1) . ': ' . $level_one;
-        $title_level_two    = null;
-        if ($level_two) {
-            $title_level_two    = get_string('company_structure_level', 'report_manager', 2) . ': ' . $level_two;
-        }//if_level_two
-
-        $title_expiration   = get_string('expired_next','report_manager') . ': ' . $completed_before;
-        $col = 0;
-
-        try {
-            /* Outcome Name && Description  */
-            $my_xls->write($row, $col, $title_out,array('size'=>12, 'name'=>'Arial','bold'=>'1','color' => '#004b93','bg_color'=>'#efefef','text_wrap'=>true,'v_align'=>'center'));
-            $my_xls->merge_cells($row,$col,$row,$col+10);
-            $my_xls->set_row($row,25);
-            $row++;
-            $my_xls->write($row, $col, $out_desc,array('size'=>10, 'name'=>'Arial','bold'=>'1','text_wrap'=>true,'v_align'=>'center'));
-            $my_xls->merge_cells($row,$col,$row,$col+10);
-            $my_xls->set_row($row,25);
-
-            /* Level One */
-            $row++;
-            $col = 0;
-            $my_xls->write($row, $col, $title_level_one,array('size'=>12, 'name'=>'Arial','bold'=>'1','color' => '#004b93','bg_color'=>'#efefef','text_wrap'=>true,'v_align'=>'center'));
-            $my_xls->merge_cells($row,$col,$row,$col+10);
-            $my_xls->set_row($row,25);
-
-            /* Level Two    */
-            if ($title_level_two) {
-                $row++;
-                $col = 0;
-                $my_xls->write($row, $col, $title_level_two,array('size'=>12, 'name'=>'Arial','bold'=>'1','color' => '#004b93','bg_color'=>'#efefef','text_wrap'=>true,'v_align'=>'center'));
-                $my_xls->merge_cells($row,$col,$row,$col+10);
-                $my_xls->set_row($row,25);
-            }
-
-            /* Level Three  */
-            if ($level_three) {
-                /* Merge Cells  */
-                $row++;
-                $my_xls->merge_cells($row,$col,$row,$col+10);
-                $row++;
-                $my_xls->merge_cells($row,$col,$row,$col+10);
-
-                $row++;
-                $col = 0;
-                $my_xls->write($row, $col, $level_three,array('size'=>14, 'name'=>'Arial','bold'=>'1','color' => '#004b93','bg_color'=>'#efefef','text_wrap'=>true,'v_align'=>'center'));
-                $my_xls->merge_cells($row,$col,$row,$col+10);
-                $my_xls->set_row($row,25);
-            }
-
-            /* Expiration Time */
-            $row++;
-            $col = 0;
-            $my_xls->write($row, $col, $title_expiration,array('size'=>12, 'name'=>'Arial','bold'=>'1','color' => '#004b93','text_wrap'=>true,'v_align'=>'center'));
-            $my_xls->merge_cells($row,$col,$row,$col+10);
-            $my_xls->set_row($row,25);
-
-            /* Merge Cells  */
-            $row++;
-            $my_xls->merge_cells($row,$col,$row,$col+10);
-            $row++;
-            $my_xls->merge_cells($row,$col,$row,$col+10);
-        }catch (Exception $ex) {
-            throw $ex;
-        }//try_catch
-    }//AddHeader_CompanySheet
-
-    /**
-     * @static
-     * @param           $my_xls
-     * @param           $row
-     * @throws          Exception
-     *
-     * @creationDate    17/09/2014
-     * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Add the header of the table
-     */
-    private static function AddHeader_TableCourse(&$my_xls,$row) {
-        /* Variables    */
-        $str_user           = strtoupper(get_string('user'));
         $str_course         = strtoupper(get_string('course'));
+        $str_user           = strtoupper(get_string('user'));
         $str_state          = strtoupper(get_string('state','local_tracker_manager'));
         $str_completion     = strtoupper(get_string('completion_time','local_tracker_manager'));
         $col                = 0;
 
         try {
-            /* User         */
-            $my_xls->write($row, $col, $str_user,array('size'=>12, 'name'=>'Arial','bold'=>'1','color' => '#004b93','bg_color'=>'#efefef','align'=>'left','v_align'=>'center'));
-            $my_xls->merge_cells($row,$col,$row,$col+2);
+            /* Course       */
+            $my_xls->write($row, $col, $str_course,array('size'=>12, 'name'=>'Arial','bold'=>'1','color' => '#004b93','bg_color'=>'#efefef','align'=>'left','v_align'=>'center'));
+            $my_xls->merge_cells($row,$col,$row,$col+5);
             $my_xls->set_row($row,20);
 
-            /* Course       */
-            $col = $col + 3;
-            $my_xls->write($row, $col, $str_course,array('size'=>12, 'name'=>'Arial','bold'=>'1','color' => '#004b93','bg_color'=>'#efefef','align'=>'left','v_align'=>'center'));
+            /* User         */
+            $col = $col + 6;
+            $my_xls->write($row, $col, $str_user,array('size'=>12, 'name'=>'Arial','bold'=>'1','color' => '#004b93','bg_color'=>'#efefef','align'=>'left','v_align'=>'center'));
             $my_xls->merge_cells($row,$col,$row,$col+5);
             $my_xls->set_row($row,20);
 
@@ -2464,131 +2540,135 @@ class outcome_report {
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//AddHeader_TableCourse
+    }//AddHeader_LevelThree_TableCourse
 
     /**
-     * @static
      * @param           $my_xls
      * @param           $row
-     * @param           $user_info
-     * @param           $courses
+     * @param           $company_info
      * @param           $expiration
      * @throws          Exception
      *
-     * @creationDate    17/09/2014
+     * @creationDate    300/03/2015
      * @author          eFaktor     (fbv)
      *
      * Description
-     * Add the content of the table
+     * Add the content of the table for the level three
      */
-    private static function AddContent_TableCourse(&$my_xls,&$row,$user_info,$courses,$expiration) {
+    private static function AddContent_LevelThree_TableCourse(&$my_xls,&$row,$company_info,$expiration) {
         /* Variables    */
-        $col = null;
+        $col        = null;
+        $courses    = null;
 
         try {
-            /* Completed        */
-            if ($user_info->completed) {
-                foreach ($user_info->completed as $id=>$completed) {
-                    $col = 0;
-                    $ts = strtotime($expiration  . ' month', $user_info->completed[$id]);
-                    if ($ts < time()) {
-                        $bg_color = '#f2dede';
-                        $label = get_string('outcome_course_expired','local_tracker_manager');
-                    }else {
-                        $bg_color = '#dff0d8';
-                        $label = get_string('outcome_course_finished','local_tracker_manager');
-                    }
+            $courses = $company_info->courses;
+            if ($courses) {
+                foreach ($courses as $course) {
+                    /* Completed    */
+                    if ($course->completed) {
+                        foreach ($course->completed as $id=>$user_info) {
+                            $col = 0;
+                            $ts = strtotime($expiration  . ' month', $user_info->completed);
+                            if ($ts < time()) {
+                                $bg_color = '#f2dede';
+                                $label = get_string('outcome_course_expired','local_tracker_manager');
+                            }else {
+                                $bg_color = '#dff0d8';
+                                $label = get_string('outcome_course_finished','local_tracker_manager');
+                            }
 
-                    /* User     */
-                    $my_xls->write($row, $col, $user_info->name,array('size'=>12, 'name'=>'Arial','bg_color'=>$bg_color,'align'=>'left','v_align'=>'center'));
-                    $my_xls->merge_cells($row,$col,$row,$col+2);
-                    $my_xls->set_row($row,20);
+                            /* Course  */
+                            $my_xls->write($row, $col, $course->name,array('size'=>12, 'name'=>'Arial','bg_color'=>$bg_color,'align'=>'left','v_align'=>'center'));
+                            $my_xls->merge_cells($row,$col,$row,$col+5);
+                            $my_xls->set_row($row,20);
 
-                    /* Course  */
-                    $col = $col + 3;
-                    $my_xls->write($row, $col, $courses[$id],array('size'=>12, 'name'=>'Arial','bg_color'=>$bg_color,'align'=>'left','v_align'=>'center'));
-                    $my_xls->merge_cells($row,$col,$row,$col+5);
-                    $my_xls->set_row($row,20);
+                            /* User     */
+                            $col = $col + 6;
+                            $my_xls->write($row, $col, $user_info->name,array('size'=>12, 'name'=>'Arial','bg_color'=>$bg_color,'align'=>'left','v_align'=>'center'));
+                            $my_xls->merge_cells($row,$col,$row,$col+5);
+                            $my_xls->set_row($row,20);
 
-                    /* State        */
-                    $col = $col + 6;
-                    $my_xls->write($row, $col, $label,array('size'=>12, 'name'=>'Arial','bg_color'=>$bg_color,'align'=>'center','v_align'=>'center'));
-                    $my_xls->merge_cells($row,$col,$row,$col+2);
-                    $my_xls->set_row($row,20);
+                            /* State        */
+                            $col = $col + 6;
+                            $my_xls->write($row, $col, $label,array('size'=>12, 'name'=>'Arial','bg_color'=>$bg_color,'align'=>'center','v_align'=>'center'));
+                            $my_xls->merge_cells($row,$col,$row,$col+2);
+                            $my_xls->set_row($row,20);
 
-                    /* Completion   */
-                    $col = $col + 3;
-                    $my_xls->write($row, $col, userdate($user_info->completed[$id],'%d.%m.%Y', 99, false),array('size'=>12, 'name'=>'Arial','bg_color'=>$bg_color,'align'=>'center','v_align'=>'center'));
-                    $my_xls->merge_cells($row,$col,$row,$col+2);
-                    $my_xls->set_row($row,20);
+                            /* Completion   */
+                            $col = $col + 3;
+                            $my_xls->write($row, $col, userdate($user_info->completed,'%d.%m.%Y', 99, false),array('size'=>12, 'name'=>'Arial','bg_color'=>$bg_color,'align'=>'center','v_align'=>'center'));
+                            $my_xls->merge_cells($row,$col,$row,$col+2);
+                            $my_xls->set_row($row,20);
 
-                    $row++;
-                }//courses_completed
-            }//if_completed
+                            $row++;
+                        }//courses_completed
+                    }//if_completed
 
-            /* In Progress      */
-            if ($user_info->not_completed) {
-                foreach ($user_info->not_completed as $id=>$not_completed) {
-                    $col = 0;
-                    /* User     */
-                    $my_xls->write($row, $col, $user_info->name,array('size'=>12, 'name'=>'Arial','align'=>'left','v_align'=>'center'));
-                    $my_xls->merge_cells($row,$col,$row,$col+2);
-                    $my_xls->set_row($row,20);
+                    /* In Progress  */
+                    if ($course->not_completed) {
+                        foreach ($course->not_completed as $user_info) {
+                            $col = 0;
+                            /* Course  */
+                            $my_xls->write($row, $col, $course->name,array('size'=>12, 'name'=>'Arial','align'=>'left','v_align'=>'center'));
+                            $my_xls->merge_cells($row,$col,$row,$col+5);
+                            $my_xls->set_row($row,20);
 
-                    /* Course  */
-                    $col = $col + 3;
-                    $my_xls->write($row, $col, $courses[$id],array('size'=>12, 'name'=>'Arial','align'=>'left','v_align'=>'center'));
-                    $my_xls->merge_cells($row,$col,$row,$col+5);
-                    $my_xls->set_row($row,20);
+                            /* User     */
+                            $col = $col + 6;
+                            $my_xls->write($row, $col, $user_info->name,array('size'=>12, 'name'=>'Arial','align'=>'left','v_align'=>'center'));
+                            $my_xls->merge_cells($row,$col,$row,$col+5);
+                            $my_xls->set_row($row,20);
 
-                    /* State        */
-                    $col = $col + 6;
-                    $my_xls->write($row, $col, get_string('outcome_course_started','local_tracker_manager'),array('size'=>12, 'name'=>'Arial','align'=>'center','v_align'=>'center'));
-                    $my_xls->merge_cells($row,$col,$row,$col+2);
-                    $my_xls->set_row($row,20);
+                            /* State        */
+                            $col = $col + 6;
+                            $my_xls->write($row, $col, get_string('outcome_course_started','local_tracker_manager'),array('size'=>12, 'name'=>'Arial','align'=>'center','v_align'=>'center'));
+                            $my_xls->merge_cells($row,$col,$row,$col+2);
+                            $my_xls->set_row($row,20);
 
-                    /* Completion   */
-                    $col = $col + 3;
-                    $my_xls->write($row, $col, ' - ',array('size'=>12, 'name'=>'Arial','align'=>'center','v_align'=>'center'));
-                    $my_xls->merge_cells($row,$col,$row,$col+2);
-                    $my_xls->set_row($row,20);
+                            /* Completion   */
+                            $col = $col + 3;
+                            $my_xls->write($row, $col, ' - ',array('size'=>12, 'name'=>'Arial','align'=>'center','v_align'=>'center'));
+                            $my_xls->merge_cells($row,$col,$row,$col+2);
+                            $my_xls->set_row($row,20);
 
-                    $row++;
-                }//courses_completed
-            }//if_not_completed
+                            $row++;
+                        }//courses_not_completed
+                    }//if_not_completed
 
-            /* Not Enrol        */
-            if ($user_info->not_enrol) {
-                foreach ($user_info->not_enrol as $id=>$not_enrol) {
-                    $col = 0;
-                    /* User     */
-                    $my_xls->write($row, $col, $user_info->name,array('size'=>12, 'name'=>'Arial','bg_color'=>'#fcf8e3','align'=>'left','v_align'=>'center'));
-                    $my_xls->merge_cells($row,$col,$row,$col+2);
-                    $my_xls->set_row($row,20);
+                    /* Not Enrol    */
+                    if ($course->not_enrol) {
+                        foreach ($course->not_enrol as $user_info) {
+                            $col = 0;
+                            /* Course  */
+                            $my_xls->write($row, $col, $course->name,array('size'=>12, 'name'=>'Arial','bg_color'=>'#fcf8e3','align'=>'left','v_align'=>'center'));
+                            $my_xls->merge_cells($row,$col,$row,$col+5);
+                            $my_xls->set_row($row,20);
 
-                    /* Course  */
-                    $col = $col + 3;
-                    $my_xls->write($row, $col, $courses[$not_enrol],array('size'=>12, 'name'=>'Arial','bg_color'=>'#fcf8e3','align'=>'left','v_align'=>'center'));
-                    $my_xls->merge_cells($row,$col,$row,$col+5);
-                    $my_xls->set_row($row,20);
+                            /* User     */
+                            $col = $col + 6;
+                            $my_xls->write($row, $col, $user_info->name,array('size'=>12, 'name'=>'Arial','bg_color'=>'#fcf8e3','align'=>'left','v_align'=>'center'));
+                            $my_xls->merge_cells($row,$col,$row,$col+5);
+                            $my_xls->set_row($row,20);
 
-                    /* State        */
-                    $col = $col + 6;
-                    $my_xls->write($row, $col, get_string('outcome_course_not_enrolled','local_tracker_manager'),array('size'=>12, 'name'=>'Arial','bg_color'=>'#fcf8e3','align'=>'center','v_align'=>'center'));
-                    $my_xls->merge_cells($row,$col,$row,$col+2);
-                    $my_xls->set_row($row,20);
+                            /* State        */
+                            $col = $col + 6;
+                            $my_xls->write($row, $col, get_string('outcome_course_not_enrolled','local_tracker_manager'),array('size'=>12, 'name'=>'Arial','bg_color'=>'#fcf8e3','align'=>'center','v_align'=>'center'));
+                            $my_xls->merge_cells($row,$col,$row,$col+2);
+                            $my_xls->set_row($row,20);
 
-                    /* Completion   */
-                    $col = $col + 3;
-                    $my_xls->write($row, $col, ' - ',array('size'=>12, 'name'=>'Arial','bg_color'=>'#fcf8e3','align'=>'center','v_align'=>'center'));
-                    $my_xls->merge_cells($row,$col,$row,$col+2);
-                    $my_xls->set_row($row,20);
+                            /* Completion   */
+                            $col = $col + 3;
+                            $my_xls->write($row, $col, ' - ',array('size'=>12, 'name'=>'Arial','bg_color'=>'#fcf8e3','align'=>'center','v_align'=>'center'));
+                            $my_xls->merge_cells($row,$col,$row,$col+2);
+                            $my_xls->set_row($row,20);
 
-                    $row++;
-                }//not_enrol
-            }//if_not_enrol
+                            $row++;
+                        }//not_enrol
+                    }//if_not_enrol
+                }//if_courses
+            }//if_courses
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }///AddContent_TableCourse
+    }//AddContent_LevelThree_TableCourse
 }//outcome_report

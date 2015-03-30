@@ -81,60 +81,6 @@ class company_structure {
 
     /**
      * @static
-     * @param       $level          Hierarchy level of the company
-     * @param       int $parent_id  Company's parent
-     * @return      array           Company list
-     * @throws      Exception
-     *
-     * @updateDate  08/10/2014
-     * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Get a list of all the companies are connected a specific level.
-     */
-    public static function Get_Companies_LevelList($level, $parent_id = 0) {
-        /* Variables */
-        global $DB;
-        $levels = array();
-
-        try {
-            /* Research Criteria */
-            $params = array();
-            $params['level']    = $level;
-
-            /* SQL Instruction */
-            $sql_Select = " SELECT     DISTINCT rcd.id,
-                                       rcd.name,
-                                       rcd.industrycode
-                            FROM       {report_gen_companydata} rcd ";
-            /* Join */
-            $sql_Join = " ";
-            if ($parent_id) {
-                $sql_Join = " JOIN  {report_gen_company_relation} rcr   ON    rcr.companyid = rcd.id
-                                                                        AND   rcr.parentid  IN ($parent_id) ";
-            }//if_level
-
-            $sql_Where = " WHERE rcd.hierarchylevel = :level ";
-            $sql_Order = " ORDER BY rcd.industrycode, rcd.name ASC ";
-
-            /* SQL */
-            $sql = $sql_Select . $sql_Join . $sql_Where . $sql_Order;
-
-            $levels[0] = get_string('select_level_list','report_manager');
-            if ($rdo = $DB->get_records_sql($sql,$params)) {
-                foreach ($rdo as $field) {
-                    $levels[$field->id] = $field->industrycode . ' - '. $field->name;
-                }//foreach
-            }//if_rdo
-
-            return $levels;
-        }catch (Exception $ex) {
-            throw $ex;
-        }//try_catch
-    }//Get_Companies_LevelList
-
-    /**
-     * @static
      * @param       $parent
      * @return      array
      * @throws      Exception

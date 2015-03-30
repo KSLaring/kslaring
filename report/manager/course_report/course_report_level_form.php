@@ -4,23 +4,20 @@
  *
  * Description
  *
- * @package     report
- * @subpackage  manager/course_report
- * @copyright   2010 eFaktor
- * @licence     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package         report
+ * @subpackage      manager/course_report
+ * @copyright       2010 eFaktor
+ * @licence         http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  *
- * @updateDate  14/09/2012
- * @author      eFaktor     (fbv)
  *
- * @updateDate  17/03/2015
- * @author      eFaktor     (fbv)
+ * @creationDate    17/03/2015
+ * @author          eFaktor     (fbv)
  *
  */
 
 defined('MOODLE_INTERNAL') || die();
 
 require_once('../../../config.php');
-require_once('../locallib.php');
 require_once($CFG->libdir . '/adminlib.php');
 require_once($CFG->libdir.'/formslib.php');
 $PAGE->requires->js('/report/manager/js/manager.js');
@@ -74,7 +71,7 @@ class manager_course_report_level_form extends moodleform {
         $form->setExpanded('report',true);
         $form->addElement('html', '<div class="level-wrapper">');
             /* Completed List   */
-            $options = report_manager_get_completed_list();
+            $options = CompetenceManager::GetCompletedList();
             $form->addElement('select',REPORT_MANAGER_COMPLETED_LIST,get_string('completed_list', 'report_manager'),$options);
             $form->setDefault(REPORT_MANAGER_COMPLETED_LIST, 4);
 
@@ -150,7 +147,7 @@ class manager_course_report_level_form extends moodleform {
         $options        = array();
 
         /* Get My Companies by Level    */
-        list($levelZero,$levelOne,$levelTwo,$levelThree) = course_report::GetMyCompanies_By_Level($my_hierarchy->competence);
+        list($levelZero,$levelOne,$levelTwo,$levelThree) = CompetenceManager::GetMyCompanies_By_Level($my_hierarchy->competence);
 
         switch ($level) {
             case 0:
@@ -158,7 +155,7 @@ class manager_course_report_level_form extends moodleform {
                 if ($levelZero) {
                     $companies_in = implode(',',$levelZero);
                 }//if_level_zero
-                $options = course_report::GetCompanies_Level($level,$companies_in);
+                $options = CompetenceManager::GetCompanies_LevelList($level,null,$companies_in);
 
                 break;
             case 1:
@@ -168,7 +165,7 @@ class manager_course_report_level_form extends moodleform {
                 }//if_level_One
 
                 if (isset($_COOKIE['parentLevelZero']) && ($_COOKIE['parentLevelZero'])) {
-                    $options = course_report::GetCompanies_Level($level,$companies_in,$_COOKIE['parentLevelZero']);
+                    $options = CompetenceManager::GetCompanies_LevelList($level,$_COOKIE['parentLevelZero'],$companies_in);
                 }else {
                     $options[0] = get_string('select_level_list','report_manager');
                 }//IF_COOKIE
@@ -181,7 +178,7 @@ class manager_course_report_level_form extends moodleform {
                 }//if_level_Two
 
                 if (isset($_COOKIE['parentLevelOne']) && ($_COOKIE['parentLevelOne'])) {
-                    $options = course_report::GetCompanies_Level($level,$companies_in,$_COOKIE['parentLevelOne']);
+                    $options = CompetenceManager::GetCompanies_LevelList($level,$_COOKIE['parentLevelOne'],$companies_in);
                 }else {
                     $options[0] = get_string('select_level_list','report_manager');
                 }//IF_COOKIE
@@ -193,7 +190,7 @@ class manager_course_report_level_form extends moodleform {
                 }//if_level_Two
 
                 if (isset($_COOKIE['parentLevelTwo']) && ($_COOKIE['parentLevelTwo'])) {
-                    $options = course_report::GetCompanies_Level($level,$companies_in,$_COOKIE['parentLevelTwo']);
+                    $options = CompetenceManager::GetCompanies_LevelList($level,$_COOKIE['parentLevelTwo'],$companies_in);
                 }else {
                     $options[0] = get_string('select_level_list','report_manager');
                 }//IF_COOKIE
@@ -274,51 +271,51 @@ class manager_course_report_level_form extends moodleform {
             case 0:
                 if (isset($_COOKIE['parentLevelZero']) && ($_COOKIE['parentLevelZero'])) {
                     /* Add Generics --> Only Public Job Roles   */
-                    if (report_manager_IsPublic($_COOKIE['parentLevelZero'])) {
-                        report_manager_GetJobRoles_Generics($options);
+                    if (CompetenceManager::IsPublic($_COOKIE['parentLevelZero'])) {
+                        CompetenceManager::GetJobRoles_Generics($options);
                     }//if_isPublic
 
-                    report_manager_GetJobRoles_Hierarchy($options,$level,$_COOKIE['parentLevelZero']);
+                    CompetenceManager::GetJobRoles_Hierarchy($options,$level,$_COOKIE['parentLevelZero']);
                 }//if_level_Zero
 
                 break;
             case 1:
                 if (isset($_COOKIE['parentLevelOne']) && ($_COOKIE['parentLevelOne'])) {
                     /* Add Generics --> Only Public Job Roles   */
-                    if (report_manager_IsPublic($_COOKIE['parentLevelOne'])) {
-                        report_manager_GetJobRoles_Generics($options);
+                    if (CompetenceManager::IsPublic($_COOKIE['parentLevelOne'])) {
+                        CompetenceManager::GetJobRoles_Generics($options);
                     }//if_isPublic
 
-                    report_manager_GetJobRoles_Hierarchy($options,$level-1,$_COOKIE['parentLevelZero']);
-                    report_manager_GetJobRoles_Hierarchy($options,$level,$_COOKIE['parentLevelZero'],$_COOKIE['parentLevelOne']);
+                    CompetenceManager::GetJobRoles_Hierarchy($options,$level-1,$_COOKIE['parentLevelZero']);
+                    CompetenceManager::GetJobRoles_Hierarchy($options,$level,$_COOKIE['parentLevelZero'],$_COOKIE['parentLevelOne']);
                 }//if_level_One
 
                 break;
             case 2:
                 if (isset($_COOKIE['parentLevelTwo']) && ($_COOKIE['parentLevelTwo'])) {
                     /* Add Generics --> Only Public Job Roles   */
-                    if (report_manager_IsPublic($_COOKIE['parentLevelTwo'])) {
-                        report_manager_GetJobRoles_Generics($options);
+                    if (CompetenceManager::IsPublic($_COOKIE['parentLevelTwo'])) {
+                        CompetenceManager::GetJobRoles_Generics($options);
                     }//if_isPublic
 
-                    report_manager_GetJobRoles_Hierarchy($options,$level-2,$_COOKIE['parentLevelZero']);
-                    report_manager_GetJobRoles_Hierarchy($options,$level-1,$_COOKIE['parentLevelZero'],$_COOKIE['parentLevelOne']);
-                    report_manager_GetJobRoles_Hierarchy($options,$level,$_COOKIE['parentLevelZero'],$_COOKIE['parentLevelOne'],$_COOKIE['parentLevelTwo']);
+                    CompetenceManager::GetJobRoles_Hierarchy($options,$level-2,$_COOKIE['parentLevelZero']);
+                    CompetenceManager::GetJobRoles_Hierarchy($options,$level-1,$_COOKIE['parentLevelZero'],$_COOKIE['parentLevelOne']);
+                    CompetenceManager::GetJobRoles_Hierarchy($options,$level,$_COOKIE['parentLevelZero'],$_COOKIE['parentLevelOne'],$_COOKIE['parentLevelTwo']);
                 }//if_level_Two
 
                 break;
             case 3:
                 if (isset($_COOKIE['parentLevelThree']) && ($_COOKIE['parentLevelThree'])) {
                     /* Add Generics --> Only Public Job Roles   */
-                    if (report_manager_IsPublic($_COOKIE['parentLevelThree'])) {
-                        report_manager_GetJobRoles_Generics($options);
+                    if (CompetenceManager::IsPublic($_COOKIE['parentLevelThree'])) {
+                        CompetenceManager::GetJobRoles_Generics($options);
                     }//if_isPublic
 
-                    report_manager_GetJobRoles_Hierarchy($options,$level,$_COOKIE['parentLevelZero'],$_COOKIE['parentLevelOne'],$_COOKIE['parentLevelTwo'],$_COOKIE['parentLevelThree']);
+                    CompetenceManager::GetJobRoles_Hierarchy($options,$level,$_COOKIE['parentLevelZero'],$_COOKIE['parentLevelOne'],$_COOKIE['parentLevelTwo'],$_COOKIE['parentLevelThree']);
                 }else {
-                    report_manager_GetJobRoles_Hierarchy($options,$level-3,$_COOKIE['parentLevelZero']);
-                    report_manager_GetJobRoles_Hierarchy($options,$level-2,$_COOKIE['parentLevelZero'],$_COOKIE['parentLevelOne']);
-                    report_manager_GetJobRoles_Hierarchy($options,$level-1,$_COOKIE['parentLevelZero'],$_COOKIE['parentLevelOne'],$_COOKIE['parentLevelTwo']);
+                    CompetenceManager::GetJobRoles_Hierarchy($options,$level-3,$_COOKIE['parentLevelZero']);
+                    CompetenceManager::GetJobRoles_Hierarchy($options,$level-2,$_COOKIE['parentLevelZero'],$_COOKIE['parentLevelOne']);
+                    CompetenceManager::GetJobRoles_Hierarchy($options,$level-1,$_COOKIE['parentLevelZero'],$_COOKIE['parentLevelOne'],$_COOKIE['parentLevelTwo']);
                 }//if_level_Three
 
                 break;

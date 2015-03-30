@@ -11,7 +11,7 @@
  * @author          eFaktor     (fbv)
  *
  * Description
- * Level Five
+ * Library for the Course Report
  *
  */
 
@@ -26,97 +26,6 @@ class course_report {
     /* PUBLIC FUNCTIONS */
     /********************/
 
-    /**
-     * @param           $tab
-     * @param           $site_context
-     *
-     * @creationDate    17/03/2015
-     * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Get the Level links to the main page
-     */
-    public static function GetLevelLink_ReportPage($tab,$site_context) {
-        /* Variables    */
-        global $OUTPUT;
-
-        /* Create links - It's depend on View permissions */
-        $out = '<ul class="unlist report-selection">' . "\n";
-            if (has_capability('report/manager:viewlevel0', $site_context)) {
-                $out .= self::Get_ZeroLevelLink($tab);
-            }else if (has_capability('report/manager:viewlevel1', $site_context)) {
-                $out .= self::Get_FirstLevelLink($tab);
-            }else if(has_capability('report/manager:viewlevel2', $site_context)) {
-                $out .= self::Get_SecondLevelLink($tab);
-            }else if (has_capability('report/manager:viewlevel3', $site_context)) {
-                $out .= self::Get_ThirdLevelLink($tab);
-            }//if_capabitity
-        $out .= '</ul>' . "\n";
-
-        /* Draw Links */
-        echo $out;
-    }//GetLevelLink_ReportPage
-
-    /**
-     * @static
-     * @param           $user_id
-     * @param           $site_context
-     * @return          stdClass
-     * @throws          Exception
-     *
-     * @creationDate    17/03/2015
-     * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Get my hierarchy level
-     */
-    public static function get_MyHierarchyLevel($user_id,$site_context) {
-        /* Variables    */
-        $my_hierarchy   = null;
-
-        try {
-            /* Build my hierarchy   */
-            $my_hierarchy               = new stdClass();
-            $my_hierarchy->competence   = self::Get_MyCompetence($user_id);
-            $my_hierarchy->my_level     = self::Get_MyLevelView($user_id,$site_context);
-
-            return $my_hierarchy;
-        }catch (Exception $ex) {
-            throw $ex;
-        }//try_catch
-    }//get_MyHierarchyLevel
-
-    /**
-     * @param           $my_companies
-     * @return          array
-     * @throws          Exception
-     *
-     * @creationDate    17/03/2015
-     * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Get companies split by level
-     */
-    public static function GetMyCompanies_By_Level($my_companies) {
-        /* Variables    */
-        $levelThree = null;
-        $levelTwo   = null;
-        $levelOne   = null;
-        $levelZero  = null;
-
-        try {
-            foreach ($my_companies as $company) {
-                $levelZero[$company->levelZero]     = $company->levelZero;
-                $levelOne[$company->levelOne]       = $company->levelOne;
-                $levelTwo[$company->levelTwo]       = $company->levelTwo;
-                $levelThree[$company->levelThree]   = $company->levelThree;
-            }
-
-            return array($levelZero,$levelOne,$levelTwo,$levelThree);
-        }catch (Exception $ex) {
-            throw $ex;
-        }//try_catch
-    }//GetMyCompanies_By_Level
 
     /**
      * @return          array
@@ -150,109 +59,6 @@ class course_report {
             throw $ex;
         }//try_catch
     }//Get_CoursesList
-
-    /**
-     * @static
-     * @param           $jr_lst
-     * @return          array
-     * @throws          Exception
-     *
-     * @creationDate    17/03/2015
-     * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Get the Job Roles List
-     */
-    public static function Get_JobRolesList($jr_lst = null) {
-        /* Variables    */
-        global $DB;
-        $job_roles_lst = array();
-
-        try {
-            /* SQL Instruction  */
-            $sql = " SELECT     DISTINCT id,
-                                         name,
-                                         industrycode
-                     FROM       {report_gen_jobrole} ";
-
-            /* Search Criteria  */
-            if ($jr_lst) {
-                $sql .= " WHERE id IN ($jr_lst) ";
-            }//if_jr_lst
-
-            /* ORDER    */
-            $sql .= " ORDER BY   industrycode, name ASC ";
-
-            /* Execute  */
-            $rdo = $DB->get_records_sql($sql);
-            if ($rdo) {
-                foreach ($rdo as $job_role) {
-                    $job_roles_lst[$job_role->id] = $job_role->industrycode . ' - '. $job_role->name;
-                }//for_rdo_job_role
-            }//if_rdo
-            return $job_roles_lst;
-        }catch (Exception $ex) {
-            throw $ex;
-        }//try_catch
-    }//Get_JobRolesList
-
-    /**
-     * @param           $level
-     * @param           $companies_in
-     * @param           int $parent_id
-     * @return          array
-     * @throws          Exception
-     *
-     * @creationDate    17/03/2015
-     * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Get the companies connected with a specific level and parent
-     */
-    public static function GetCompanies_Level($level,$companies_in=null,$parent_id = 0) {
-        /* Variables    */
-        global $DB;
-        $companies = array();
-
-        try {
-            /* Research Criteria */
-            $params = array();
-            $params['level']    = $level;
-
-            /* SQL Instruction */
-            $sql = " SELECT     DISTINCT rcd.id,
-                                       rcd.name,
-                                       rcd.industrycode
-                            FROM       {report_gen_companydata} rcd ";
-            /* Join */
-            if ($parent_id) {
-                $sql .= " JOIN  {report_gen_company_relation} rcr   ON    rcr.companyid = rcd.id
-                                                                     AND   rcr.parentid  IN ($parent_id) ";
-            }//if_level
-
-            $sql  .= " WHERE rcd.hierarchylevel = :level ";
-            if ($companies_in) {
-                $sql .= " AND rcd.id IN ($companies_in) ";
-            }//if_companies_in
-
-            /* Order */
-            $sql .= " ORDER BY rcd.industrycode, rcd.name ASC ";
-
-
-            $companies[0] = get_string('select_level_list','report_manager');
-            /* Execute  */
-            $rdo = $DB->get_records_sql($sql,$params);
-            if ($rdo) {
-                foreach ($rdo as $instance) {
-                    $companies[$instance->id] = $instance->industrycode . ' - '. $instance->name;
-                }//foreach
-            }//if_rdo
-
-            return $companies;
-        }catch (Exception $ex) {
-            throw $ex;
-        }//try_catch
-    }//GetCompanies_Level
 
     /**
      * @param               $data_form
@@ -335,25 +141,20 @@ class course_report {
                 $course_report->completed_before   = $data_form[REPORT_MANAGER_COMPLETED_LIST];
 
                 /* Get My Companies by Level    */
-                list($inZero,$inOne,$inTwo,$inThree) = self::GetMyCompanies_By_Level($my_hierarchy->competence);
+                list($inZero,$inOne,$inTwo,$inThree) = CompetenceManager::GetMyCompanies_By_Level($my_hierarchy->competence);
                 $inZero     = implode(',',$inZero);
                 $inOne      = implode(',',$inOne);
                 $inTwo      = implode(',',$inTwo);
                 $inThree    = implode(',',$inThree);
 
                 /* Job Roles Selected   */
-                if (!empty($data_form[REPORT_MANAGER_JOB_ROLE_LIST])) {
-                    $list = join(',',$data_form[REPORT_MANAGER_JOB_ROLE_LIST]);
-                    $course_report->job_roles = self::Get_JobRolesList($list);
-                }else {
-                    $course_report->job_roles = self::Get_JobRolesList();
-                }//if_else
+                $course_report->job_roles = self::Get_JobRolesCourse_Report($data_form);
                 /* Save Job Roles Selected  */
                 $SESSION->job_roles = array_keys($course_report->job_roles);
 
                 /* Get information to display by level          */
                 /* Level zero    - That's common for all levels  */
-                $course_report->levelZero = report_manager_get_company_name($data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'0']);
+                $course_report->levelZero = CompetenceManager::GetCompany_Name($data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'0']);
                 setcookie('parentLevelZero',$data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'0']);
 
                 /* Check Level  */
@@ -361,7 +162,7 @@ class course_report {
                     case 0:
                         /* Level Zero    */
                         /* Get info connected with Level Zero */
-                        $levelOne   = self::GetCompanies_Level(1,$inOne,$data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'0']);
+                        $levelOne   = CompetenceManager::GetCompanies_LevelList(1,$data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'0'],$inOne);
                         unset($levelOne[0]);
                         if ($levelOne) {
                             self::Get_CompanyReportInfo_LevelOne($course_report,$levelOne,$inTwo,$inThree);
@@ -377,11 +178,11 @@ class course_report {
                         /* Level One    */
                         $levelOne = new stdClass();
                         $levelOne->id           = $data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'1'];
-                        $levelOne->name         = report_manager_get_company_name($data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'1']);
+                        $levelOne->name         = CompetenceManager::GetCompany_Name($data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'1']);
                         $levelOne->levelTwo     = null;
 
                         /* GEt info connected with Level One */
-                        $levelTwo   = self::GetCompanies_Level(2,$inTwo,$data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'1']);
+                        $levelTwo   = CompetenceManager::GetCompanies_LevelList(2,$data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'1'],$inTwo);
                         unset($levelTwo[0]);
                         if ($levelTwo) {
                             $levelOne->levelTwo      = self::Get_CompanyReportInfo_LevelTwo($course_report,$levelTwo,$inThree);
@@ -399,18 +200,18 @@ class course_report {
                         /* Level One    */
                         $levelOne = new stdClass();
                         $levelOne->id                               = $data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'1'];
-                        $levelOne->name                             = report_manager_get_company_name($data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'1']);
+                        $levelOne->name                             = CompetenceManager::GetCompany_Name($data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'1']);
                         $levelOne->levelTwo                         = null;
                         $course_report->levelOne[$levelOne->id]     = $levelOne;
 
                         /* Level Two    */
                         $levelTwo = new stdClass();
                         $levelTwo->id           = $data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'2'];
-                        $levelTwo->name         = report_manager_get_company_name($data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'2']);
+                        $levelTwo->name         = CompetenceManager::GetCompany_Name($data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'2']);
                         $levelTwo->levelThree   = null;
 
                         /* GEt info connected with Level Two */
-                        $levelThree     = self::GetCompanies_Level(3,$inThree,$data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'2']);
+                        $levelThree     = CompetenceManager::GetCompanies_LevelList(3,$data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'2'],$inThree);
                         unset($levelThree[0]);
                         if ($levelThree) {
                             $levelTwo->levelThree      = self::Get_CompanyReportInfo_LevelThree($course_report,$levelThree);
@@ -428,19 +229,19 @@ class course_report {
                         /* Level One    */
                         $levelOne = new stdClass();
                         $levelOne->id                               = $data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'1'];
-                        $levelOne->name                             = report_manager_get_company_name($data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'1']);
+                        $levelOne->name                             = CompetenceManager::GetCompany_Name($data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'1']);
                         $levelOne->levelTwo                         = null;
                         $course_report->levelOne[$levelOne->id]     = $levelOne;
 
                         /* Level Two    */
                         $levelTwo = new stdClass();
                         $levelTwo->id                               = $data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'2'];
-                        $levelTwo->name                             = report_manager_get_company_name($data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'2']);
+                        $levelTwo->name                             = CompetenceManager::GetCompany_Name($data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'2']);
                         $levelTwo->levelThree                       = null;
                         $course_report->levelTwo[$levelTwo->id]     = $levelTwo;
 
                         /* Get Info connected with the level three  */
-                        $levelThree = self::GetCompanies_Level(3,$inThree,$data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'2']);
+                        $levelThree = CompetenceManager::GetCompanies_LevelList(3,$data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'2'],$inThree);
                         unset($levelThree[0]);
                         if (!empty($data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'3'])) {
                             $company_keys   = array_keys($levelThree);
@@ -458,6 +259,10 @@ class course_report {
                         }else {
                             $course_report = null;
                         }//if_levelThree
+
+                        break;
+                    default:
+                        $course_report = null;
 
                         break;
                 }//switch_level
@@ -639,239 +444,6 @@ class course_report {
     /* PRIVATE FUNCTIONS */
     /*********************/
 
-    /**
-     * @param           $tab
-     * @return          string
-     *
-     * @creationDate    17/03/2015
-     * @author          eFktor      (fbv)
-     *
-     * Description
-     * Add links to level Zero
-     */
-    private static function Get_ZeroLevelLink($tab) {
-        /* Variables    */
-        $out        = null;
-        $url_zero   = new moodle_url('/report/manager/' . $tab .'/' . $tab .'_level.php',array('rpt'=>0));
-
-        $out  = '<li>' . "\n";
-        $out .= '<a href="'.$url_zero .'">'. get_string('level_report','report_manager',0) .'</a>';
-        $out .= '</li>' . "\n";
-        $out .= self::Get_FirstLevelLink($tab);
-
-        return $out;
-    }//Get_ZeroLevelLink
-
-    /**
-     * @param           $tab
-     * @return          string
-     *
-     * @creationDate    17/03/2015
-     * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Add the links to level one
-     */
-    private static function Get_FirstLevelLink($tab) {
-        /* Variables    */
-        $out            = null;
-        $url_first      = new moodle_url('/report/manager/' . $tab .'/' . $tab .'_level.php',array('rpt'=>1));
-
-        $out  = '<li>' . "\n";
-        $out .= '<a href="'.$url_first .'">'. get_string('level_report','report_manager',1) .'</a>';
-        $out .= '</li>' . "\n";
-        $out .= self::Get_SecondLevelLink($tab);
-
-        return $out;
-    }//Get_FirstLevelLink
-
-    /**
-     * @param           $tab
-     * @return          string
-     *
-     * @creationDate    17/03/2015
-     * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Add links to level two
-     */
-    private static function Get_SecondLevelLink($tab) {
-        /* Variables    */
-        $out                = null;
-        $url_second         = new moodle_url('/report/manager/' . $tab .'/' . $tab .'_level.php',array('rpt'=>2));
-
-        $out  = '<li>' . "\n";
-        $out .= '<a href="'.$url_second .'">'. get_string('level_report','report_manager',2) .'</a>';
-        $out .= '</li>' . "\n";
-        $out .= self::Get_ThirdLevelLink($tab);
-
-        return $out;
-    }//Get_SecondLevelLink
-
-    /**
-     * @param           $tab
-     * @return          string
-     *
-     * @creationDate    17/03/2015
-     * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Add link to the third level
-     */
-    private static function Get_ThirdLevelLink($tab) {
-        /* Variables    */
-        $out            = null;
-        $url_third      = new moodle_url('/report/manager/' . $tab .'/' . $tab .'_level.php',array('rpt'=>3));
-
-        $out = '<li class="last">' . "\n";
-        $out .= '<a href="'.$url_third .'">'. get_string('level_report','report_manager',3) .'</a>';
-        $out .= '</li>' . "\n";
-
-        return $out;
-    }//Get_ThirdLevelLink
-
-    /**
-     * @static
-     * @param           $user_id
-     * @param           $site_context
-     * @return          int
-     *
-     * @creationDate    17/03/2015
-     * @author          eFaktor     (fbV)
-     *
-     * Description
-     * Get the report/manager view permissions to see the reports
-     */
-    private static function Get_MyLevelView($user_id,$site_context) {
-        /* Variables    */
-        $my_level = 4;
-
-        /* Level Zero   */
-        if (has_capability('report/manager:viewlevel0', $site_context,$user_id) &&
-            has_capability('report/manager:viewlevel1', $site_context,$user_id) &&
-            has_capability('report/manager:viewlevel2', $site_context,$user_id) &&
-            has_capability('report/manager:viewlevel3', $site_context,$user_id) &&
-            has_capability('report/manager:viewlevel4', $site_context,$user_id)) {
-            $my_level = 0;
-        }else {
-            /* Level One    */
-            if (!has_capability('report/manager:viewlevel0', $site_context,$user_id) &&
-                has_capability('report/manager:viewlevel1', $site_context,$user_id) &&
-                has_capability('report/manager:viewlevel2', $site_context,$user_id) &&
-                has_capability('report/manager:viewlevel3', $site_context,$user_id) &&
-                has_capability('report/manager:viewlevel4', $site_context,$user_id)) {
-                $my_level = 1;
-            }else {
-                /* Level Two    */
-                if (!has_capability('report/manager:viewlevel0', $site_context,$user_id) &&
-                    !has_capability('report/manager:viewlevel1', $site_context,$user_id) &&
-                    has_capability('report/manager:viewlevel2', $site_context,$user_id) &&
-                    has_capability('report/manager:viewlevel3', $site_context,$user_id) &&
-                    has_capability('report/manager:viewlevel4', $site_context,$user_id)) {
-                    $my_level = 2;
-                }else {
-                    /* Level Third  */
-                    if (!has_capability('report/manager:viewlevel0', $site_context,$user_id) &&
-                        !has_capability('report/manager:viewlevel1', $site_context,$user_id) &&
-                        !has_capability('report/manager:viewlevel2', $site_context,$user_id) &&
-                        has_capability('report/manager:viewlevel3', $site_context,$user_id) &&
-                        has_capability('report/manager:viewlevel4', $site_context,$user_id)) {
-                        $my_level = 3;
-                    }else {
-                        /* Level Four   */
-                        if (!has_capability('report/manager:viewlevel0', $site_context,$user_id) &&
-                            !has_capability('report/manager:viewlevel1', $site_context,$user_id) &&
-                            !has_capability('report/manager:viewlevel2', $site_context,$user_id) &&
-                            !has_capability('report/manager:viewlevel3', $site_context,$user_id) &&
-                            has_capability('report/manager:viewlevel4', $site_context,$user_id)) {
-                            $my_level = 4;
-                        }//if_level_four
-                    }//if_level_third
-                }//if_level_two
-            }//if_level_one
-        }//if_else_level_zero
-
-        return $my_level;
-    }//Get_MyLevelView
-
-    /**
-     * @static
-     * @param           $user_id
-     * @return          null
-     * @throws          Exception
-     *
-     * @creationDate    13/03/2015
-     * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Get competence data connected with the user
-     */
-    private static function Get_MyCompetence($user_id) {
-        /* Variables    */
-        global $DB;
-        $my_competence      = array();
-        $info_hierarchy     = null;
-
-
-        try {
-            /* Search Criteria  */
-            $params = array();
-            $params['user_id']  = $user_id;
-
-            /* SQL Instruction  */
-            $sql = " SELECT		uicd.companyid 		as 'levelthree',
-                                level_two.parentid 	as 'leveltwo',
-                                level_one.parentid 	as 'levelone',
-                                level_zero.parentid as 'levelzero',
-                                uicd.jobroles
-                     FROM		{user_info_competence_data} 	uicd
-                        JOIN	(
-                                    SELECT		cr.companyid,
-                                                cr.parentid
-                                    FROM		{report_gen_companydata}			co
-                                        JOIN	{report_gen_company_relation}		cr	ON cr.parentid = co.id
-                                    WHERE		co.hierarchylevel = 2
-                                ) level_two ON level_two.companyid = uicd.companyid
-                        JOIN	(
-                                    SELECT		cr.companyid,
-                                                cr.parentid
-                                    FROM		{report_gen_companydata}			co
-                                        JOIN	{report_gen_company_relation}		cr	ON cr.parentid = co.id
-                                    WHERE		co.hierarchylevel = 1
-                                ) level_one	ON level_one.companyid = level_two.parentid
-                        JOIN	(
-                                    SELECT		cr.companyid,
-                                                cr.parentid
-                                    FROM		{report_gen_companydata}			co
-                                        JOIN	{report_gen_company_relation}		cr	ON cr.parentid = co.id
-                                    WHERE		co.hierarchylevel = 0
-
-                                ) level_zero ON level_zero.companyid = level_one.parentid
-                     WHERE		uicd.userid = :user_id ";
-
-            /* Execute  */
-            $rdo = $DB->get_records_sql($sql,$params);
-            if ($rdo) {
-                foreach ($rdo as $instance) {
-                    /* Hierarchy Info   */
-                    $info_hierarchy = new stdClass();
-                    $info_hierarchy->levelThree     = $instance->levelthree;
-                    $info_hierarchy->levelTwo       = $instance->leveltwo;
-                    $info_hierarchy->levelOne       = $instance->levelone;
-                    $info_hierarchy->levelZero      = $instance->levelzero;
-                    /* Job Roles        */
-                    $info_hierarchy->roles          = $instance->jobroles;
-
-                    /* Add  */
-                    $my_competence[$instance->levelthree] = $info_hierarchy;
-                }//for_companies
-            }//if_rdo
-
-            return $my_competence;
-        }catch (Exception $ex) {
-            throw $ex;
-        }//try_catch
-    }//Get_MyCompetence
 
     /**
      * @param           $course_id
@@ -941,7 +513,7 @@ class course_report {
      * Get the detail of the outcomes list
      */
     private static function Get_OutcomeDetail($outcomes) {
-        /* Varaibles    */
+        /* Variables    */
         global $DB;
         $outcomes_lst = array();
         $outcome_info = null;
@@ -974,6 +546,95 @@ class course_report {
             throw $ex;
         }//try_catch
     }//Get_OutcomeDetail
+
+    /**
+     * @param           $data_form
+     * @return          array
+     * @throws          Exception
+     *
+     * @creationDate    30/03/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Get Job roles connected to the level
+     */
+    private static function Get_JobRolesCourse_Report($data_form) {
+        /* Variables    */
+        $job_roles  = null;
+        $levelZero  = null;
+        $levelOne   = null;
+        $levelTwo   = null;
+        $levelThree = null;
+        $jr_level   = array();
+
+        try {
+            if (!empty($data_form[REPORT_MANAGER_JOB_ROLE_LIST])) {
+                $list = join(',',$data_form[REPORT_MANAGER_JOB_ROLE_LIST]);
+                $job_roles = CompetenceManager::Get_JobRolesList($list);
+            }else {
+                /* Job Roles - Outcome          */
+                $job_roles = CompetenceManager::Get_JobRolesList();
+
+                /* Job Roles - Company Level    */
+                switch ($data_form['rpt']) {
+                    case 0:
+                        /* Get Level        */
+                        $levelZero = $data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'0'];
+                        /* Get Job Roles    */
+                        CompetenceManager::GetJobRoles_Hierarchy($jr_level,0,$levelZero);
+                        $job_roles = array_intersect_key($job_roles,$jr_level);
+
+                        break;
+                    case 1:
+                        /* Get Level        */
+                        $levelZero = $data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'0'];
+                        $levelOne  = $data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'1'];
+                        /* Get Job Roles    */
+                        CompetenceManager::GetJobRoles_Hierarchy($jr_level,0,$levelZero);
+                        CompetenceManager::GetJobRoles_Hierarchy($jr_level,1,$levelZero,$levelOne);
+                        $job_roles = array_intersect_key($job_roles,$jr_level);
+
+                        break;
+                    case 2:
+                        /* Get Level        */
+                        $levelZero = $data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'0'];
+                        $levelOne  = $data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'1'];
+                        $levelTwo  = $data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'2'];
+                        /* Get Job Roles    */
+                        CompetenceManager::GetJobRoles_Hierarchy($jr_level,0,$levelZero);
+                        CompetenceManager::GetJobRoles_Hierarchy($jr_level,1,$levelZero,$levelOne);
+                        CompetenceManager::GetJobRoles_Hierarchy($jr_level,2,$levelZero,$levelOne,$levelTwo);
+                        $job_roles = array_intersect_key($job_roles,$jr_level);
+
+                        break;
+                    case 3:
+                        /* Get Level        */
+                        $levelZero  = $data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'0'];
+                        $levelOne   = $data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'1'];
+                        $levelTwo   = $data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'2'];
+                        /* Get Job Roles    */
+                        if (isset($data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'3']) && ($data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'3'])) {
+                            $levelThree = implode(',',$data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'3']);
+
+                            /* Get Job Roles    */
+                            CompetenceManager::GetJobRoles_Hierarchy($jr_level,1,$levelZero,$levelOne,$levelTwo,$levelThree);
+                        }else {
+                            CompetenceManager::GetJobRoles_Hierarchy($jr_level,0,$levelZero);
+                            CompetenceManager::GetJobRoles_Hierarchy($jr_level,1,$levelZero,$levelOne);
+                            CompetenceManager::GetJobRoles_Hierarchy($jr_level,2,$levelZero,$levelOne,$levelTwo);
+                        }//if_levelThree
+
+                        $job_roles = array_intersect_key($job_roles,$jr_level);
+
+                        break;
+                }//switch_level
+            }//if_else
+
+            return $job_roles;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//Get_JobRolesCourse_Report
 
     /**
      * @param           $course_report
@@ -1013,7 +674,7 @@ class course_report {
             /* Get Information Level One    */
             foreach ($parent_lst as $id=>$company) {
                 /* Get Level Two connected with   */
-                $company_list   = self::GetCompanies_Level(2,$inTwo,$id);
+                $company_list   = CompetenceManager::GetCompanies_LevelList(2,$id,$inTwo);
                 $output         = array_slice($company_list, 0, 1);
                 $company_list   = array_diff($company_list,$output);
 
@@ -1073,7 +734,7 @@ class course_report {
             /* Get Information Level Two    */
             foreach ($parent_lst as $id=>$company) {
                 /* Get Level Three connected with   */
-                $company_list   = self::GetCompanies_Level(3,$inThree,$id);
+                $company_list   = CompetenceManager::GetCompanies_LevelList(3,$id,$inThree);
                 $output         = array_slice($company_list, 0, 1);
                 $company_list   = array_diff($company_list,$output);
 
@@ -1122,7 +783,7 @@ class course_report {
     private static function Get_CompanyReportInfo_LevelThree($course_report,$company_list) {
         /* Variables    */
         $levelThree     = array();
-        $users          = '';
+        $users          = 0;
         $completed      = null;
         $not_completed  = null;
 
@@ -1139,11 +800,15 @@ class course_report {
                     /* Users Not Completed      */
                     $company_info->not_completed    = self::GetUsers_NotCompleted($course_report->id,$course_report->job_roles,$id);
                     /* Users Not Enrolled       */
-                    $users  .=  implode(',',array_keys($company_info->completed));
-                    $users  .=  implode(',',array_keys($company_info->not_completed));
-                    if (!$users) {
-                        $users = 0;
-                    }//if_users
+                    if (($company_info->completed) && ($company_info->not_completed)) {
+                        $users = implode(',',array_keys($company_info->completed)) . ',' . implode(',',array_keys($company_info->not_completed));
+                    }else {
+                        if ($company_info->completed) {
+                            $users = implode(',',array_keys($company_info->completed));
+                        }else {
+                            $users = implode(',',array_keys($company_info->not_completed));
+                        }//if_completed
+                    }//if_completed_not_completed
                     $company_info->not_enrol        = self::GetUsers_NotEnrol($users,$course_report->job_roles,$id);
 
                     /* Add Level Three  */
@@ -1425,7 +1090,7 @@ class course_report {
                     $out_report .= '</ul>';
 
                     /* Expiration Before    */
-                    $options = report_manager_get_completed_list();
+                    $options = CompetenceManager::GetCompletedList();
                     $out_report .= html_writer::start_div('expiration');
                         $out_report .= str_replace(' ...',' : ',get_string('completed_list','report_manager')) .  $options[$course_report->completed_before];
                     $out_report .= html_writer::end_div();//expiration
@@ -1566,7 +1231,7 @@ class course_report {
                     $out_report .= '</ul>';
 
                     /* Expiration Before    */
-                    $options = report_manager_get_completed_list();
+                    $options = CompetenceManager::GetCompletedList();
                     $out_report .= html_writer::start_div('expiration');
                         $out_report .= str_replace(' ...',' : ',get_string('completed_list','report_manager')) .  $options[$course_report->completed_before];
                     $out_report .= html_writer::end_div();//expiration
@@ -1587,7 +1252,10 @@ class course_report {
                                 /* Toggle   */
                                 $url_img  = new moodle_url('/pix/t/expanded.png');
                                 $id_toggle = 'YUI_' . $id;
+                                /* Header Company  - Level Two */
                                 $out_report .= self::Add_CompanyHeader_Screen($level->name,$id_toggle,$url_img);
+
+                                /* Level Two List   */
                                 $out_report .= html_writer::start_tag('div',array('class' => 'level_two_list','id'=> $id_toggle . '_div'));
                                     $out_report .= html_writer::start_tag('div',array('class' => 'company_level'));
                                     /* Header Table     */
@@ -1596,6 +1264,8 @@ class course_report {
                                     $out_report .= html_writer::start_tag('table');
                                     foreach ($levelThree as $id_three=>$company) {
                                         $url_level_three = new moodle_url('/report/manager/course_report/course_report_level.php',array('rpt' => '3','co' => $id_three,'lt' => $level->id,'lo'=>$levelOne->id,'opt' => $completed_option));
+
+                                        /* Company Header   */
                                         $out_report .= self::Add_ContentTable_LevelTwo_Screen($url_level_three,$company,$color);
 
                                         /* Change Color */
@@ -1708,7 +1378,7 @@ class course_report {
                     $out_report .= '</ul>';
 
                     /* Expiration Before    */
-                    $options = report_manager_get_completed_list();
+                    $options = CompetenceManager::GetCompletedList();
                     $out_report .= html_writer::start_div('expiration');
                         $out_report .= str_replace(' ...',' : ',get_string('completed_list','report_manager')) .  $options[$course_report->completed_before];
                     $out_report .= html_writer::end_div();//expiration
@@ -1840,7 +1510,7 @@ class course_report {
                     $out_report .= '</ul>';
 
                     /* Expiration Before    */
-                    $options = report_manager_get_completed_list();
+                    $options = CompetenceManager::GetCompletedList();
                     $out_report .= html_writer::start_div('expiration');
                         $out_report .= str_replace(' ...',' : ',get_string('completed_list','report_manager')) .  $options[$course_report->completed_before];
                     $out_report .= html_writer::end_div();//expiration
@@ -1896,7 +1566,6 @@ class course_report {
     private static function Add_CompanyHeader_LevelZero_Screen($company,$toogle,$img) {
         /* Variables    */
         $header_company     = null;
-        $url_level_three    = null;
         $title_company      = null;
 
         $header_company .= html_writer::start_div('header_outcome_company_rpt_levelZero');
@@ -1907,8 +1576,7 @@ class course_report {
 
             /* Col Two  */
             $header_company .= html_writer::start_div('header_col_two');
-                $title_company = '<h4>' . $company . '</h4>';
-                $header_company .= $title_company;
+                $header_company .= '<h4>' . $company . '</h4>';
             $header_company .= html_writer::end_div('');//header_col_two
         $header_company .= html_writer::end_div('');//header_outcome_company_rpt
 
@@ -1925,12 +1593,11 @@ class course_report {
      * @author          eFaktor     (fbv)
      *
      * Description
-     * Add header for leves one, tow and three
+     * Add header for level one, two and three
      */
     private static function Add_CompanyHeader_Screen($company,$toogle,$img) {
         /* Variables    */
         $header_company     = null;
-        $url_level_three    = null;
         $title_company      = null;
 
         $header_company .= html_writer::start_div('header_outcome_company_rpt');
@@ -1941,8 +1608,7 @@ class course_report {
 
             /* Col Two  */
             $header_company .= html_writer::start_div('header_col_two');
-                $title_company = '<h5>' . $company . '</h5>';
-                $header_company .= $title_company;
+                $header_company .= '<h5>' . $company . '</h5>';
             $header_company .= html_writer::end_div('');//header_col_two
         $header_company .= html_writer::end_div('');//header_outcome_company_rpt
 
@@ -2022,7 +1688,6 @@ class course_report {
             $content .= html_writer::end_tag('td');
             /* Company          */
             $content .= html_writer::start_tag('td',array('class' => 'company'));
-
                 $content .= '<a href="' . $url_level_three . '">' . $company_info->name . '</a>';
             $content .= html_writer::end_tag('td');
             /* Not Enrol        */
@@ -2212,7 +1877,7 @@ class course_report {
             $file_name = clean_filename($course_report->name . '_' . $time . ".xls");
 
             /* Get Expiration Period            */
-            $options            = report_manager_get_completed_list();
+            $options            = CompetenceManager::GetCompletedList();
             $completed_before   = $options[$course_report->completed_before];
 
             // Creating a workbook
@@ -2279,7 +1944,7 @@ class course_report {
             $file_name = clean_filename($course_report->name . '_' . $time . ".xls");
 
             /* Get Expiration Period            */
-            $options            = report_manager_get_completed_list();
+            $options            = CompetenceManager::GetCompletedList();
             $completed_before   = $options[$course_report->completed_before];
 
             // Creating a workbook
@@ -2346,7 +2011,7 @@ class course_report {
             $file_name = clean_filename($course_report->name . '_' . $time . ".xls");
 
             /* Get Expiration Period            */
-            $options            = report_manager_get_completed_list();
+            $options            = CompetenceManager::GetCompletedList();
             $completed_before   = $options[$course_report->completed_before];
 
             // Creating a workbook
@@ -2415,7 +2080,7 @@ class course_report {
             $file_name = clean_filename($course_report->name . '_' . $time . ".xls");
 
             /* Get Expiration Period            */
-            $options            = report_manager_get_completed_list();
+            $options            = CompetenceManager::GetCompletedList();
             $completed_before   = $options[$course_report->completed_before];
 
             // Creating a workbook
@@ -2518,7 +2183,7 @@ class course_report {
             $my_xls->merge_cells($row,$col,$row,$col+10);
             $my_xls->set_row($row,25);
 
-            /* Level One    */
+            /* Level Zero    */
             $row++;
             $col = 0;
             $my_xls->write($row, $col, $title_level_zero,array('size'=>12, 'name'=>'Arial','bold'=>'1','color' => '#004b93','bg_color'=>'#efefef','text_wrap'=>true,'v_align'=>'center'));

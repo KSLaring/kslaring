@@ -24,6 +24,26 @@ YUI().use('node', function(Y) {
     var courseReport;
     var outcomeReport;
 
+
+    /* Outcome Report    */
+    if (Y.one('#id_outcome_list')) {
+        Y.one('#id_outcome_list').on('change', function (e) {
+            /* Get the Selected */
+            indexSelected   = this.get('selectedIndex');
+            if (Y.one("#id_outcome_list").get('options').item(indexSelected).get('value') != 0) {
+                //Getting information of user.
+                outcomeReport = Y.one("#id_outcome_list").get('options').item(indexSelected).get('value');
+            }else {
+                outcomeReport = 0;
+            }
+
+            document.cookie = "outcomeReport"         + "=" + outcomeReport;
+
+            window.onbeforeunload = null;
+            window.location = location.href;
+        });
+    }//if_course_report
+
     /* Course Report    */
     if (Y.one('#id_course_list')) {
         Y.one('#id_course_list').on('change', function (e) {

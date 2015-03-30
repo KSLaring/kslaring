@@ -409,6 +409,22 @@
     margin-bottom: 5px;
 }
 
+.outcome_rpt_div .header_outcome_company_rpt_levelOne {
+    background: #ede9e3;
+    color: #3a3d41;
+    height: 30px;
+    display:block;
+    margin-bottom: 5px;
+}
+
+.outcome_rpt_div .header_outcome_company_rpt_levelCourse {
+    background: white;
+    color: #3a3d41;
+    height: 30px;
+    display:block;
+    margin-bottom: 5px;
+}
+
 .toggle_outcome_company_rpt {
     border: 0;
     background: none;
@@ -456,6 +472,8 @@
 .company_rpt_div .header_user_rpt .header_col_one,
 .outcome_rpt_div .header_outcome_company_rpt .header_col_one,
 .outcome_rpt_div .header_outcome_company_rpt_levelZero .header_col_one,
+.outcome_rpt_div .header_outcome_company_rpt_levelOne .header_col_one,
+.outcome_rpt_div .header_outcome_company_rpt_levelCourse .header_col_one,
 .outcome_rpt_div .user_div .user_header .header_col_one,
 .outcome_rpt_div .level_div .header_outcome_company_rpt .header_col_one{
     float:left;
@@ -469,6 +487,8 @@
 .company_rpt_div .header_user_rpt .header_col_two,
 .outcome_rpt_div .header_outcome_company_rpt .header_col_two,
 .outcome_rpt_div .header_outcome_company_rpt_levelZero .header_col_two,
+.outcome_rpt_div .header_outcome_company_rpt_levelOne .header_col_two,
+.outcome_rpt_div .header_outcome_company_rpt_levelCourse .header_col_two,
 .outcome_rpt_div .user_div .user_header .header_col_two,
 .outcome_rpt_div .level_div .header_outcome_company_rpt .header_col_two {
     float:left;
@@ -483,7 +503,9 @@
     margin: 8px 0px;
 }
 
-.outcome_rpt_div .header_outcome_company_rpt_levelZero .header_col_two h4 {
+.outcome_rpt_div .header_outcome_company_rpt_levelZero .header_col_two h4,
+.outcome_rpt_div .header_outcome_company_rpt_levelOne .header_col_two h4,
+.outcome_rpt_div .header_outcome_company_rpt_levelCourse .header_col_two h4 {
     height: 20px;
     line-height: 10px;
     margin: 8px 0px;
@@ -493,6 +515,8 @@
 .outcome_rpt_div .user_div .user_header .header_col_two h5,
 .outcome_rpt_div .level_div .header_outcome_company_rpt .header_col_two h5,
 .outcome_rpt_div .header_outcome_company_rpt_levelZero .header_col_two h5,
+.outcome_rpt_div .header_outcome_company_rpt_levelOne .header_col_two h5,
+.outcome_rpt_div .header_outcome_company_rpt_levelCourse .header_col_two h5,
 .outcome_rpt_div .header_outcome_company_rpt .header_col_two h5 {
     height: 20px;
     line-height: 10px;

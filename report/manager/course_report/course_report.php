@@ -19,6 +19,7 @@
 
 require_once('../../../config.php');
 require_once( 'courserptlib.php');
+require_once( '../managerlib.php');
 require_once($CFG->libdir . '/adminlib.php');
 
 require_login();
@@ -54,7 +55,7 @@ if (empty($CFG->loginhttps)) {
 setcookie('parentLevelZero',0);
 setcookie('parentLevelOne',0);
 setcookie('parentLevelTwo',0);
-setcookie('parentLevelTree',0);
+setcookie('parentLevelThree',0);
 setcookie('courseReport',0);
 setcookie('outcomeReport',0);
 
@@ -72,7 +73,7 @@ require('../tabs.php');
 echo $OUTPUT->heading(get_string('course_report', 'report_manager'));
 
 /* Report Levels Links  */
-course_report::GetLevelLink_ReportPage($current_tab,$site_context);
+CompetenceManager::GetLevelLink_ReportPage($current_tab,$site_context);
 
 /* Print Fo>r */
 echo $OUTPUT->footer();

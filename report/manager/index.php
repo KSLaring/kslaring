@@ -51,7 +51,7 @@ if (empty($CFG->loginhttps)) {
 /* Clean Cookies */
 setcookie('parentLevelOne',0);
 setcookie('parentLevelTwo',0);
-setcookie('parentLevelTree',0);
+setcookie('parentLevelThree',0);
 setcookie('courseReport',0);
 setcookie('outcomeReport',0);
 

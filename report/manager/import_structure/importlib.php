@@ -12,33 +12,9 @@
  *
  */
 class Import_Companies {
-    /**
-     * @param           $company
-     * @return          bool
-     * @throws          Exception
-     *
-     * @creationDate    03/02/2015
-     * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Check if it is a public or private company
-     */
-    public static function IsPublic($company) {
-        /* Variables    */
-        global $DB;
-
-        try {
-            /* Get Public Field */
-            $rdo = $DB->get_record('report_gen_companydata',array('id' => $company),'public');
-            if ($rdo->public) {
-                return true;
-            }else {
-                return false;
-            }//if_else
-        }catch (Exception $ex) {
-            throw $ex;
-        }//try_catch
-    }//IsPublic
+    /********************/
+    /* PUBLIC FUNCTIONS */
+    /********************/
 
     /**
      * @param           csv_import_reader $cir

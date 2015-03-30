@@ -29,62 +29,6 @@ class job_role {
 
     /**
      * @static
-     * @param           $level
-     * @param           $parent_id
-     * @return          array
-     * @throws          Exception
-     *
-     * @creationDate    05/11/2014
-     * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Get the company list connected with one level
-     */
-    public static function Get_CompanyList($level,$parent_id = 0) {
-        /* Variables */
-        global $DB;
-        $levels = array();
-
-        try {
-            /* Research Criteria */
-            $params = array();
-            $params['level']    = $level;
-
-            /* SQL Instruction */
-            $sql_Select = " SELECT     DISTINCT rcd.id,
-                                       rcd.name,
-                                       rcd.industrycode
-                            FROM       {report_gen_companydata} rcd ";
-            /* Join */
-            $sql_Join = " ";
-            if ($parent_id) {
-                $sql_Join = " JOIN  {report_gen_company_relation} rcr   ON    rcr.companyid = rcd.id
-                                                                        AND   rcr.parentid  IN ($parent_id) ";
-            }//if_level
-
-            $sql_Where = " WHERE rcd.hierarchylevel = :level ";
-            $sql_Order = " ORDER BY rcd.industrycode, rcd.name ASC ";
-
-            /* SQL */
-            $sql = $sql_Select . $sql_Join . $sql_Where . $sql_Order;
-
-            $levels[0] = get_string('select_level_list','report_manager');
-            if ($rdo = $DB->get_records_sql($sql,$params)) {
-                foreach ($rdo as $field) {
-                    $levels[$field->id] = $field->industrycode . ' - '. $field->name;
-                }//foreach
-            }//if_rdo
-
-            return $levels;
-        }catch (Exception $ex) {
-            throw $ex;
-        }//try_catch
-    }//Get_CompanyList
-
-
-
-    /**
-     * @static
      * @return      array       List of all job roles and their outcomes connected with them.
      * @throws      Exception
      *

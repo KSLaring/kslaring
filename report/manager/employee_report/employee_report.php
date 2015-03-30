@@ -53,7 +53,7 @@ $PAGE->verify_https_required();
 /* SHOW Form     */
 setcookie('parentLevelOne',0);
 setcookie('parentLevelTwo',0);
-setcookie('parentLevelTree',0);
+setcookie('parentLevelThree',0);
 setcookie('courseReport',0);
 setcookie('outcomeReport',0);
 setcookie('employeeReport',0);
