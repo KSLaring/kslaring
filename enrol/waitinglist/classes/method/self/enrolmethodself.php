@@ -274,22 +274,7 @@ class enrolmethodself extends \enrol_waitinglist\method\enrolmethodbase{
 		return $success;
 	}
 	
-	/**
-     * Pop off queue and enrol in course
-     *
-     * @param stdClass $waitinglist
-	 * @param stdClass $queueentry
-     * @return null 
-     */
-	public function xgraduate_from_list(\stdClass $waitinglist,\stdClass $queue_entry, $seats){
-		$queueman= \enrol_waitinglist\queuemanager::get_by_course($waitinglist->courseid);
-		$wl = enrol_get_plugin('waitinglist');
-		$wl->enrol_user($waitinglist,$queue_entry->userid);
-		$this->do_post_enrol_actions($waitinglist, $queue_entry);
-		$removeqitem=true;
-		return $removeqitem;
-	}
-	
+
 	/**
      * After enroling into course and removeing from waiting list. Return here to do any post processing 
      *
@@ -329,7 +314,7 @@ class enrolmethodself extends \enrol_waitinglist\method\enrolmethodbase{
 		
 		$queueman= \enrol_waitinglist\queuemanager::get_by_course($waitinglist->courseid);
 		$qdetails = $queueman->get_user_queue_details(static::METHODTYPE);
-		if($qdetails->queueposition > 0){
+		if($qdetails->queueposition > 0 && $qdetails->offqueue == 0){
 			$enrolstatus = get_string('yourqueuedetails','enrol_waitinglist', $qdetails);
 		}else{
 			//if user is flagged as cant be a new enrol, then just exit

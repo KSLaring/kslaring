@@ -218,11 +218,19 @@ abstract class enrolmethodbase  {
 		//get the queue manager and add the entry to the queue
         $courseid = $waitinglist->courseid;
 		$queueman= \enrol_waitinglist\queuemanager::get_by_course($courseid);
+		$entryman= \enrol_waitinglist\entrymanager::get_by_course($waitinglist->courseid);
 		
+		//if we don't have an old entry in the table, add a new one
 		$oldentry = $queueman->get_qentry_by_userid($USER->id,static::METHODTYPE);
 		if(!$oldentry){
-			$queueid = $queueman->add($queue_entry);
-		}else{
+			$oldentry = $entryman->get_entry_by_userid($USER->id,static::METHODTYPE);
+			if(!$oldentry){
+				$queueid = $queueman->add($queue_entry);
+			}
+		}
+		
+		//if we did have an old entry, we sure dont want two, so we just update it
+		if($oldentry){
 			$queue_entry->id = $oldentry->id;
 			$queueid = $queueman->update($queue_entry);
 		}

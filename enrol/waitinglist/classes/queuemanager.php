@@ -124,9 +124,11 @@ class queuemanager  {
 		
 		$qdetails = new \stdClass;
 		$qdetails->queueposition=0;
+		$qdetails->offqueue=1;
 		$qdetails->queuetotal=$this->get_listtotal();
 		$details = $DB->get_records(self::QTABLE,array('courseid'=>$this->courseid,'userid'=>$USER->id,'waitinglistid'=>$this->waitinglist->id, 'offqueue'=>0));
 		if(!$details){return $qdetails;}
+		$qdetails->offqueue=0;
 		foreach($details as $detail){
 			if($detail->methodtype==$methodtype){
 				$qdetails->queueposition = $this->get_listposition($detail);
@@ -323,7 +325,7 @@ class queuemanager  {
 	/**
      * Checks if our waiting list is full
      *
-     * @return stdclass the top entry on the waiting list
+     * @return boolean true=list is full | false = not full yet
      */
 	public function is_full(){
 		//echo '<br/>listtotal:' . $this->get_listtotal() ;

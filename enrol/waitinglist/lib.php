@@ -539,7 +539,9 @@ class enrol_waitinglist_plugin extends enrol_plugin {
 		$count = $DB->count_records('user_enrolments', array('enrolid' => $instance->id));
 		$entryman= \enrol_waitinglist\entrymanager::get_by_course($instance->courseid);
 		$confirmedlistcount = $entryman->get_confirmed_listtotal();
-		return $instance->{ENROL_WAITINGLIST_FIELD_MAXENROLMENTS} - $count - $confirmedlistcount;
+		$vacancies = $instance->{ENROL_WAITINGLIST_FIELD_MAXENROLMENTS} - $count - $confirmedlistcount;
+		if($vacancies < 0){$vacancies=0;}
+		return $vacancies;
 	}
 	
 
