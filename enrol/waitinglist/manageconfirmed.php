@@ -89,7 +89,7 @@ if($entryman->get_confirmed_listtotal()==0){
 
 $table = new html_table();
 //$table->head  = array(get_string('name'), get_string('users'), $strup.'/'.$strdown, get_string('edit'));
-$table->head  = array(get_string('name'),get_string('email'),get_string('institution'),get_string('methodheader','enrol_waitinglist'),get_string('seatsheader','enrol_waitinglist'), get_string('unconfirm','enrol_waitinglist'));
+$table->head  = array(get_string('name'),get_string('email'),get_string('institution'),get_string('methodheader','enrol_waitinglist'),get_string('requestedseatsheader','enrol_waitinglist'),get_string('confirmedseatsheader','enrol_waitinglist'), get_string('unconfirm','enrol_waitinglist'));
 $table->align = array('left','left','center','center', 'center', 'center');
 $table->width = '100%';
 $table->data  = array();
@@ -126,7 +126,7 @@ foreach ($centries as $centry) {
 	//	$edit = array('edit','delete');
 	$user = $DB->get_record('user',array('id'=>$centry->userid));
 	if($user){
-		$table->data[] = array(fullname($user),$user->email,$user->institution, get_string($centry->methodtype .'_displayname','enrol_waitinglist'), $centry->confirmedseats, implode('&nbsp;', $edit));
+		$table->data[] = array(fullname($user),$user->email,$user->institution, get_string($centry->methodtype .'_displayname','enrol_waitinglist'), $centry->seats, $centry->confirmedseats . '(+1)', implode('&nbsp;', $edit));
 	}
 
 }
