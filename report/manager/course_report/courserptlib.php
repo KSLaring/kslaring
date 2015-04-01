@@ -992,9 +992,15 @@ class course_report {
                      FROM	 	{user}						  u
                         JOIN	{user_info_competence_data}	  uic			ON		uic.userid		  = u.id
                                                                             AND		uic.companyid	  = :company
-                     WHERE 		u.deleted = 0
-                        AND     u.id NOT IN ($users)
-                     ORDER BY 	u.firstname, u.lastname ASC ";
+                     WHERE 		u.deleted = 0 ";
+
+            /* Users    */
+            if ($users) {
+                $sql .= " AND     u.id NOT IN ($users) ";
+            }//if_users
+
+            /* Order    */
+            $sql .= " ORDER BY 	u.firstname, u.lastname ASC ";
 
             /* Execute  */
             $rdo = $DB->get_records_sql($sql,$params);

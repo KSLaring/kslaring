@@ -72,7 +72,7 @@ class manager_outcome_report_level_form extends moodleform {
         $form->addElement('html', '<div class="level-wrapper">');
             /* Completed List   */
             $options = CompetenceManager::GetCompletedList();
-            $form->addElement('select',REPORT_MANAGER_COMPLETED_LIST,get_string('completed_list', 'report_manager'),$options);
+            $form->addElement('select',REPORT_MANAGER_COMPLETED_LIST,get_string('expired_next', 'report_manager'),$options);
             $form->setDefault(REPORT_MANAGER_COMPLETED_LIST, 4);
 
             /* Format Report */
