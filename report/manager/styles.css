@@ -234,12 +234,6 @@
     text-align: left;
   border-bottom: 1px solid #f3f3f3;
 }
-.header_tracker h3 {
-    text-align: left;
-    line-height: 20px;
-    color:  #757474;
-    padding: 0px;
-}
 
 .tracker_list {
     width: 100%;
@@ -247,86 +241,145 @@
     clear: both;
     display: block;
     padding: 0;
-    margin: 0;
+    margin-top: 0;
 }
-.job_list {
-    clear: both;
-  width: 100%;
-  display: block;
-}
-.job_list .header_job {
-    margin-bottom: 0px;
-    padding: 0px 10px 0 10px;
-}
-.job_list .header_job table {
-    width: 100%;
-}
-.job_list .header_job thead.head_role {
-    background: #efefef;
-    line-height: 24px;
-    color:  #757474;
-}
-.job_list .body_job {
+
+.tracker_list .course_list  {
     width: 100%;
     height: auto;
-    margin-bottom: 5px;
+    clear: both;
     display: block;
+    padding: 0;
 }
-.job_list .body_job table {
+
+.toggle_header_tracker {
+    border: 0;
+    background: none;
+    box-shadow: none;
+    -webkit-box-shadow: none;
+    -moz-box-shadow: none;
+    cursor  : pointer;
+    height: 20px;
+    line-height: 10px;
+    /* Top Right Bottom LEft:   */
+    margin: 0px 15px 15px 0px;
+    padding     : 0px;
+}
+
+.header_tracker {
     width: 100%;
-    font-size: 15px;
-    font-weight: normal;
+    clear: both;
+    display:block;
+    background: #C4CCD9;
+    padding-top: 0.01em;
+    padding-bottom: 0.01em;
+    text-indent: 1px;
 }
-.job_list .body_job .expired {
-  background: #f2dede;
+
+.header_tracker h3,
+.header_tracker h4,
+.header_tracker h5 {
+    /* Top Right Bottom LEft:   */
+    margin: 5px 0px 5px 0px;
+    color : #3a3d41;
 }
-.job_list .body_job .completed {
-  background: #dff0d8;
+
+.header_outcome_tracker {
+    width: 100%;
+    clear: both;
+    display:block;
+    margin-bottom: 1px;
 }
-.job_list .body_job .not_enroll {
-  background: #fcf8e3;
+
+.header_outcome_tracker .header_outcome_company_rpt {
+    background: #E3E7ED;
+    height: 30px;
+    display:block;
+    height: 30px;
 }
-.job_list .first {
-    max-width: 7px;
-    min-width: 7px;
+
+.header_outcome_tracker .header_outcome_company_rpt .header_col_one {
+    float:left;
+    width:2%;
+    margin: 0px 2px 0px 0px;
+    padding     : 0px;
+    height: 20px;
+}
+
+.header_outcome_tracker .header_outcome_company_rpt .header_col_two {
+    float:left;
+    margin: 0px 0px 0px 0px;
+    padding     : 0px;
+    height: 20px;
+}
+
+.header_outcome_tracker .header_outcome_company_rpt .header_col_two h4,
+.header_outcome_tracker .header_outcome_company_rpt .header_col_two h5,
+.header_outcome_tracker .header_outcome_company_rpt .header_col_two h6 {
+    margin: 5px 0px 0px 0px;
+    color:  #000;
+}
+
+.tracker_list .course_list table {
+    width: 100%;
+    background: white;
+    color:  #000;
+    margin-bottom: 2px;
+}
+
+.tracker_list .course_list tr.head {
+    padding: 0px 0px 0px 0px;
+    margin-bottom: 0px;
+    font:bold 14px Verdana,Verdana Pro,sans-serif;
+    background: #efefef;
+}
+
+.tracker_list .course_list td.head_first {
+    width: 2%;
     text-align: left;
-    cursor: pointer;
 }
-.job_list .course {
-    max-width: 125px;
-    min-width: 125px;
+
+.tracker_list .course_list td.head_course {
+    width: 30%;
     text-align: left;
 }
-.job_list .user_comp {
-    max-width: 90px;
-    min-width: 90px;
-    text-align: left;
-}
-.job_list .status {
-    max-width: 85px;
-    min-width: 85px;
+
+.tracker_list .course_list td.head_status  {
+    width: 20%;
     text-align: center;
 }
-.job_list .start {
-    max-width: 20px;
-    min-width: 20px;
+
+.tracker_list .course_list td.head_start  {
+    width: 10%;
     text-align: left;
 }
-.job_list.header_job thead.head_role th {
-  font-weight: normal;
-  padding: 0px 0 0px 2px;
+
+.tracker_list .course_list td.first {
+    width: 2%;
+    text-align: left;
+    font:12px Verdana,Verdana Pro,sans-serif;
 }
-.job_list.header_job thead.head {
-  background: white;
-  color: #000;
-  padding: 0px 0px 0px 0px;
-  margin-bottom: 0px;
-  font-size: 14px;
+
+.tracker_list .course_list td.course {
+    width: 30%;
+    text-align: left;
+    font: 12px Verdana,Verdana Pro,sans-serif;
 }
-.swicth_img {
-    height: 16px;
-    width: 16px;
+
+.tracker_list .course_list td.status {
+    width: 20%;
+    text-align: center;
+    font: 12px Verdana,Verdana Pro,sans-serif;
 }
+
+.tracker_list .course_list td.start {
+    width: 10%;
+    text-align: left;
+    font: 12px Verdana,Verdana Pro,sans-serif;
+}
+
+
+
 .toggle {
     border: 0;
     background: none;
@@ -353,8 +406,7 @@
 .div_button_tracker {
     position: relative;
     float: right;
-    margin-top: -40px;
-    margin-right: 10px;
+    margin-top: -50px;
 }
 .advance_set {
     position: relative;

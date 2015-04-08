@@ -149,6 +149,7 @@ class course_report {
 
                 /* Job Roles Selected   */
                 $course_report->job_roles = self::Get_JobRolesCourse_Report($data_form);
+
                 /* Save Job Roles Selected  */
                 $SESSION->job_roles = array_keys($course_report->job_roles);
 
@@ -574,63 +575,63 @@ class course_report {
             }else {
                 /* Job Roles - Outcome          */
                 $job_roles = CompetenceManager::Get_JobRolesList();
+            }//if_else
 
-                /* Job Roles - Company Level    */
-                switch ($data_form['rpt']) {
-                    case 0:
-                        /* Get Level        */
-                        $levelZero = $data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'0'];
-                        /* Get Job Roles    */
-                        CompetenceManager::GetJobRoles_Hierarchy($jr_level,0,$levelZero);
-                        $job_roles = array_intersect_key($job_roles,$jr_level);
+            /* Job Roles - Company Level    */
+            switch ($data_form['rpt']) {
+                case 0:
+                    /* Get Level        */
+                    $levelZero = $data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'0'];
+                    /* Get Job Roles    */
+                    CompetenceManager::GetJobRoles_Hierarchy($jr_level,0,$levelZero);
 
-                        break;
-                    case 1:
-                        /* Get Level        */
-                        $levelZero = $data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'0'];
-                        $levelOne  = $data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'1'];
-                        /* Get Job Roles    */
-                        CompetenceManager::GetJobRoles_Hierarchy($jr_level,0,$levelZero);
-                        CompetenceManager::GetJobRoles_Hierarchy($jr_level,1,$levelZero,$levelOne);
-                        $job_roles = array_intersect_key($job_roles,$jr_level);
+                    break;
+                case 1:
+                    /* Get Level        */
+                    $levelZero = $data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'0'];
+                    $levelOne  = $data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'1'];
+                    /* Get Job Roles    */
+                    CompetenceManager::GetJobRoles_Hierarchy($jr_level,0,$levelZero);
+                    CompetenceManager::GetJobRoles_Hierarchy($jr_level,1,$levelZero,$levelOne);
 
-                        break;
-                    case 2:
-                        /* Get Level        */
-                        $levelZero = $data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'0'];
-                        $levelOne  = $data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'1'];
-                        $levelTwo  = $data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'2'];
+                    break;
+                case 2:
+                    /* Get Level        */
+                    $levelZero = $data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'0'];
+                    $levelOne  = $data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'1'];
+                    $levelTwo  = $data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'2'];
+                    /* Get Job Roles    */
+                    CompetenceManager::GetJobRoles_Hierarchy($jr_level,0,$levelZero);
+                    CompetenceManager::GetJobRoles_Hierarchy($jr_level,1,$levelZero,$levelOne);
+                    CompetenceManager::GetJobRoles_Hierarchy($jr_level,2,$levelZero,$levelOne,$levelTwo);
+
+                    break;
+                case 3:
+                    /* Get Level        */
+                    $levelZero  = $data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'0'];
+                    $levelOne   = $data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'1'];
+                    $levelTwo   = $data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'2'];
+                    /* Get Job Roles    */
+                    if (isset($data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'3']) && ($data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'3'])) {
+                        $levelThree = implode(',',$data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'3']);
+
                         /* Get Job Roles    */
+                        CompetenceManager::GetJobRoles_Hierarchy($jr_level,3,$levelZero,$levelOne,$levelTwo,$levelThree);
+                    }else {
                         CompetenceManager::GetJobRoles_Hierarchy($jr_level,0,$levelZero);
                         CompetenceManager::GetJobRoles_Hierarchy($jr_level,1,$levelZero,$levelOne);
                         CompetenceManager::GetJobRoles_Hierarchy($jr_level,2,$levelZero,$levelOne,$levelTwo);
-                        $job_roles = array_intersect_key($job_roles,$jr_level);
+                    }//if_levelThree
 
-                        break;
-                    case 3:
-                        /* Get Level        */
-                        $levelZero  = $data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'0'];
-                        $levelOne   = $data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'1'];
-                        $levelTwo   = $data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'2'];
-                        /* Get Job Roles    */
-                        if (isset($data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'3']) && ($data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'3'])) {
-                            $levelThree = implode(',',$data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'3']);
+                    break;
+            }//switch_level
 
-                            /* Get Job Roles    */
-                            CompetenceManager::GetJobRoles_Hierarchy($jr_level,1,$levelZero,$levelOne,$levelTwo,$levelThree);
-                        }else {
-                            CompetenceManager::GetJobRoles_Hierarchy($jr_level,0,$levelZero);
-                            CompetenceManager::GetJobRoles_Hierarchy($jr_level,1,$levelZero,$levelOne);
-                            CompetenceManager::GetJobRoles_Hierarchy($jr_level,2,$levelZero,$levelOne,$levelTwo);
-                        }//if_levelThree
-
-                        $job_roles = array_intersect_key($job_roles,$jr_level);
-
-                        break;
-                }//switch_level
-            }//if_else
-
-            return $job_roles;
+            if (array_intersect_key($job_roles,$jr_level)) {
+                $job_roles = array_intersect_key($job_roles,$jr_level);
+                return $job_roles;
+            }else {
+                return $jr_level;
+            }//if_intersect
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
