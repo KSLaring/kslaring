@@ -145,6 +145,12 @@ $string['qentrynothingchanged'] = 'Det trengs ingen oppdatering av reservasjonen
 $string['onlyoneenrolmethodallowed'] = '';//'You can only be on the waitinglist once.'; //strange to show this to user
 $string['nomoreseats'] = 'Det ønskede antall kursplasser er ikke tilgjengelig. Det er {$a->available} ledige plasser på ventelisten.';
 $string['entercoursenow'] = 'Gå til kurset';
+$string['exportexcel'] = 'Eksport til Excel';
+$string['nodataavailable'] = 'Ingen informasjon å vise her';
+$string['returntoreports'] = 'Gå tilbake til rapporter';
+$string['exportprint'] = 'Utskriftsvennling versjon';
+$string['manageconfirmedheading']='Bekreftede plasser i kurset: {$a}'; 
+$string['totalcell']='Totalt: {$a}'; 
 
 
 
