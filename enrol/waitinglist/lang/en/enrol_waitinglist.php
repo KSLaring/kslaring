@@ -149,5 +149,12 @@ $string['qentrynothingchanged'] = 'No update to your reservations was required.'
 $string['onlyoneenrolmethodallowed'] = '';//'You can only be on the waitinglist once.'; //strange to show this to user
 $string['nomoreseats'] = 'The requested number of places are not available. There are {$a->available} more waitinglist places available. There are {$a->vacancies} more vacancies on the course currently available.';
 $string['entercoursenow'] = 'Enter Course Now';
+$string['exportexcel'] = 'Export as Excel';
+$string['nodataavailable'] = 'No data available for display';
+$string['returntoreports'] = 'Return to Reports';
+$string['exportprint'] = 'Print Friendly Version';
+$string['manageconfirmedheading']='Confirmed Seats in Course: {$a}'; 
+$string['totalcell']='Total: {$a}'; 
+
 
 

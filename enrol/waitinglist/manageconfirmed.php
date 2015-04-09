@@ -27,11 +27,8 @@ require('../../config.php');
 $id         = required_param('id', PARAM_INT); // course id
 $action     = optional_param('action', '', PARAM_ALPHANUMEXT);
 $centryid = optional_param('centryid', 0, PARAM_INT);
-$confirm    = optional_param('confirm', 0, PARAM_BOOL);
-$confirm2   = optional_param('confirm2', 0, PARAM_BOOL);
-
+$format = optional_param('format', 'display', PARAM_TEXT);
 $course = $DB->get_record('course', array('id'=>$id), '*', MUST_EXIST);
-
 $context = context_course::instance($course->id, MUST_EXIST);
 
 if ($course->id == SITEID) {
@@ -43,7 +40,11 @@ require_capability('moodle/course:enrolreview', $context);
 $canconfig = has_capability('moodle/course:enrolconfig', $context);
 
 $PAGE->set_url('/enrol/waitinglist/manageconfirmed.php', array('id'=>$course->id));
-$PAGE->set_pagelayout('admin');
+if($format=='print'){
+ 	$PAGE->set_pagelayout('print');
+}else{
+	$PAGE->set_pagelayout('admin');
+}
 $PAGE->set_title(get_string('manageconfirmed', 'enrol_waitinglist'));
 $PAGE->set_heading($course->fullname);
 
@@ -54,7 +55,6 @@ $error = false;
 
 if ($canconfig and $action and confirm_sesskey()) {
         switch($action){
-
 			case 'unconfirm':
 				$ok = $entryman->unconfirm_entry($centryid);
 				if($ok){
@@ -66,74 +66,91 @@ if ($canconfig and $action and confirm_sesskey()) {
             }	
 	}
 
-            
-
-echo $OUTPUT->header();
-echo $OUTPUT->heading(get_string('manageconfirmed', 'enrol_waitinglist'));
-if($error){
-	echo $OUTPUT->heading($error,3);
-}
-echo $OUTPUT->box_start('generalbox boxalignleft boxwidthwide');
-
-// display strings
-$strup      = get_string('up');
-$strdown    = get_string('down');
-$strdelete  = get_string('delete');
-$strenable  = get_string('enable');
-$strdisable = get_string('disable');
-$strmanage  = get_string('manageconfirmed', 'enrol_waitinglist');
-
-if($entryman->get_confirmed_listtotal()==0){
-	echo $OUTPUT->heading(get_string('confirmedlistisempty', 'enrol_waitinglist'),2);
-}
-
-$table = new html_table();
-//$table->head  = array(get_string('name'), get_string('users'), $strup.'/'.$strdown, get_string('edit'));
-$table->head  = array(get_string('name'),get_string('email'),get_string('institution'),get_string('methodheader','enrol_waitinglist'),get_string('requestedseatsheader','enrol_waitinglist'),get_string('confirmedseatsheader','enrol_waitinglist'), get_string('unconfirm','enrol_waitinglist'));
-$table->align = array('left','left','center','center', 'center', 'center');
-$table->width = '100%';
-$table->data  = array();
-
 // iterate through enrol plugins and add to the display table
-$updowncount = 1;
-//$icount = count($instances);
-$url = '/enrol/waitinglist/manageconfirmed.php';
-
 $centries =$entryman->get_confirmed_entries();
+$url = '/enrol/waitinglist/manageconfirmed.php';
+$totalseats = 0;
+$rows = array();
 foreach ($centries as $centry) {
 
-    $updown = array();
-    $edit = array();
+    $actions = array();
 
     if ($canconfig) {
-
-
 			// edit links
 			$aurl = new moodle_url($url, array('action'=>'unconfirm','centryid'=>$centry->id,'sesskey'=>sesskey(), 'id'=>$course->id));
-			/*
-			$deleteicon= new moodle_action_icon($aurl, new pix_icon('t/delete', $strdelete, 'core', array('class' => 'iconsmall')));
-			$deleteicon->add_confirm_action('really delete');
-			$edit[] = $OUTPUT->action_icon(deleteicon);
-			*/
-			$deletebutton= new single_button($aurl, get_string('unconfirm','enrol_waitinglist'));
-			$deletebutton->add_confirm_action(get_string('unconfirmwarning','enrol_waitinglist'));
-			$edit[] = $OUTPUT->render($deletebutton);
+			$unconfirmbutton= new single_button($aurl, get_string('unconfirm','enrol_waitinglist'));
+			$unconfirmbutton->add_confirm_action(get_string('unconfirmwarning','enrol_waitinglist'));
+			$actions[] = $OUTPUT->render($unconfirmbutton);
     }
 
-
 	// add a row to the table
-	//	$updown = array('up','down');
-	//	$edit = array('edit','delete');
 	$user = $DB->get_record('user',array('id'=>$centry->userid));
 	if($user){
-		$table->data[] = array(fullname($user),$user->email,$user->institution, get_string($centry->methodtype .'_displayname','enrol_waitinglist'), $centry->seats, $centry->confirmedseats . '(+1)', implode('&nbsp;', $edit));
+		$newrow= array('user'=>fullname($user),
+			'email'=>$user->email,
+			'institution'=>$user->institution, 
+			'methodtype'=>get_string($centry->methodtype .'_displayname','enrol_waitinglist'),
+			'seats'=>$centry->seats, 
+			'confirmedseats'=>$centry->confirmedseats + 1);
+		if($format == 'display'){
+			$newrow['actions']=implode('&nbsp;', $actions);
+		}
+		$rows[] = $newrow;
+		$totalseats = $totalseats + $centry->confirmedseats + 1;
 	}
-
 }
 
-echo html_writer::table($table);
+//setup the headrow
+$headrow = array(get_string('name'),get_string('email'),get_string('institution'),
+	get_string('methodheader','enrol_waitinglist'),get_string('requestedseatsheader','enrol_waitinglist'),
+	get_string('confirmedseatsheader','enrol_waitinglist'));
+$lastrow=array('','','','','',get_string('totalcell','enrol_waitinglist',$totalseats)); 
+if($format != 'csv' && $format !='print'){
+			$headrow[]=get_string('unconfirm','enrol_waitinglist');
+			$lastrow[]='';
+}
+
+//Prepare the heading for the report
+$reporttitle = get_string('manageconfirmedheading', 'enrol_waitinglist', $course->fullname);
+//if we are printing this, the date is necessary
+if($format=='print'){$reporttitle .=  ' (' . date("Y-m-d",time()). ')';}
+$tableheading="";
 
 
-echo $OUTPUT->box_end();
+//prepare our renderer
+$renderer = $PAGE->get_renderer('enrol_waitinglist');
 
-echo $OUTPUT->footer();
+//if this a CSV export, don't print any html
+//quit after exports
+if($format== 'csv'){
+	$renderer->render_table_csv($reporttitle, 'manageconfirmed', $headrow, $rows);
+	exit;
+}
+
+//Start printing html
+echo $renderer->header();
+echo $renderer->heading($reporttitle,3);
+
+if($error){
+	echo $renderer->heading($error,3);
+}
+echo $renderer->box_start('generalbox boxalignleft boxwidthwide');
+
+//is the list empty? If so report that.
+if($entryman->get_confirmed_listtotal()==0){
+	echo $renderer->heading(get_string('confirmedlistisempty', 'enrol_waitinglist'),2);
+}
+
+//we could use these .. maybe
+//$aligns = array('left','left','center','center', 'center', 'center');
+
+switch($format){
+	case 'print':
+		echo $renderer->render_table_html($tableheading, 'manageconfirmed', $headrow,$lastrow ,$rows);
+		exit;
+	default:
+		echo $renderer->render_table_html($tableheading, 'manageconfirmed', $headrow,$lastrow, $rows);
+		echo $renderer->show_reports_footer($course->id,'manageconfirmed');
+}
+echo $renderer->box_end();
+echo $renderer->footer();
