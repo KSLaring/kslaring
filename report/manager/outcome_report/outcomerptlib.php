@@ -2672,7 +2672,10 @@ class outcome_report {
                             $row++;
                         }//not_enrol
                     }//if_not_enrol
-                }//if_courses
+
+                    $my_xls->merge_cells($row,0,$row,16);
+                    $row ++;
+                }//for_courses
             }//if_courses
         }catch (Exception $ex) {
             throw $ex;

@@ -16,6 +16,7 @@ class company_report_filtering {
     var $_fields;
     var $_addform;
     var $_activeform;
+    var $_my_companies;
 
     /**
      * Contructor
@@ -89,6 +90,12 @@ class company_report_filtering {
         // now the active filters
     }//constructor_company_report_filtering
 
+    function set_MyCompanies($my_companies) {
+        if ($my_companies) {
+            $this->_my_companies = $my_companies;
+        }
+    }//set_MyCompanies
+
     /**
      * Creates known user filter if present
      * @param string $fieldname
@@ -115,6 +122,8 @@ class company_report_filtering {
      */
     function get_sql_filter($extra='', array $params=null) {
         global $SESSION,$USER;
+        $my_users    = null;
+        $sql_allowed = '';
 
         $sqls = array();
         if ($extra != '') {
@@ -137,25 +146,22 @@ class company_report_filtering {
         }
 
         /* Remove  users fron not my company */
-        $my_company = report_manager_getCompanyUser($USER->id);
-        /* Users not allowed to see */
-        $not_allowed = company_report::company_report_UsersNotMyCompanies($my_company);
+        /* Users  allowed to see          */
+        $my_users = CompetenceManager::GetUsers_MyCompanies($this->_my_companies,$USER->id);
 
         if (empty($sqls)) {
-            $sql_not_allowed = '';
-            if ($not_allowed) {
-                $sql_not_allowed .= " AND id NOT IN ($not_allowed)";
+            if ($my_users) {
+                $sql_allowed .= " AND id IN ($my_users)";
             }
 
-            return array($sql_not_allowed, array());
+            return array($sql_allowed, array());
         } else {
-            $sql_not_allowed = '';
-            if ($not_allowed) {
-                $sql_not_allowed .= " AND id NOT IN ($not_allowed)";
+            if ($my_users) {
+                $sql_allowed .= " AND id IN ($my_users)";
             }
 
             $sqls = implode(' AND ', $sqls);
-            $sqls .= $sql_not_allowed;
+            $sqls .= $sql_allowed;
 
             return array($sqls, $params);
         }

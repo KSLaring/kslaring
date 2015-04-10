@@ -1,96 +1,10 @@
-.company_rpt_div {
-    margin-top: 1em;
-    margin-bottom: 1.5em;
-    clear: both;
-    width:100%;
-}
-
-.header_user_rpt {
-    background: #edf2fa;
-    height: 25px;
-    clear:both;
-}
-
-.company_rpt_div .header_user_rpt {
-    background: #edf2fa;
-    height: 28px;
-    display:block;
-    margin-bottom: 2px;
-}
-
-.header_user_rpt h3 {
-    text-align: left;
-    /* color:  #757474; */
-    /* font:bold 18px Verdana,Verdana Pro,sans-serif; */
-    margin      : 0px;
-    /* padding     : 5px; */
-}
-
-.header_col_one {
-    float:left;
-    width:2%;
-    margin-right: 5px;
-}
-.header_col_two {
-    float:left;
-}
-
 .line_rpt {
     border: 0;
     border-top: 1px solid #CCCCCC;
     width: 99.5%;
-    margin-bottom: 25px;
-    text-indent: 10px;
-}
-
-.company_list {
-    width: 100%;
-    height: auto;
-    clear: both;
-    display: block;
-    padding: 0;
-    margin: 0;
-}
-
-.outcome_div {
-    clear: both;
+    margin-top: 25px;
     margin-bottom: 15px;
-    margin-left: 1em;
-    display: block;
-}
-
-.outcome_list {
-    clear: both;
-}
-
-.outcome_list table {
-    width: 100%;
-}
-
-.outcome_list tr.head {
-    background: white;
-    color:  #000;
-    padding: 0px 0px 0px 0px;
-    margin-bottom: 0px;
-    font:bold 14px Verdana,Verdana Pro,sans-serif;
-}
-
-.outcome_list td.first {
-    width: 5%;
-    text-align: left;
-    cursor: pointer;
-}
-
-.outcome_list td.course {
-    width: 35%;
-    text-align: left;
-    cursor: pointer;
-}
-
-.outcome_list td.status {
-    width: 15%;
-    text-align: center;
-    cursor: pointer;
+    text-indent: 10px;
 }
 
 .completed {
@@ -101,26 +15,6 @@
 }
 .not_enroll {
     background: #fcf8e3;
-}
-
-.outcome_header  {
-    height: 25px;
-    background: #efefef;
-}
-
-.outcome_header h3 {
-    text-align: left;
-    color:  #757474;
-    font:bold 12px Verdana,Verdana Pro,sans-serif;
-    margin      : 0px;
-    padding     : 5px;
-}
-
-.jr_header {
-    text-align: left;
-    height: 20px;
-    font:bold 11px Verdana,Verdana Pro,sans-serif;
-    margin      : 0px;
 }
 
 .employee_div {
@@ -422,17 +316,174 @@
 }
 
 .outcome_rpt_div {
-    margin-top: 1em;
+    margin-top: 0px;
     margin-bottom: 1.5em;
     clear: both;
     width:100%;
 }
 
-.outcome_detail_rpt {
+.company_rpt_div  {
+    margin-top: 0px;
+    margin-bottom: 1.5em;
+    clear: both;
+    width:100%;
+}
+
+.company_rpt_div .col_one {
+    float:left;
+    width:2%;
+}
+
+.company_rpt_div .col_two {
+    float:left;
+    width: 98%;
+}
+
+.company_rpt_div .user_list {
+    width: 100%;
+    height: auto;
+    clear: both;
+    display: block;
+    padding: 0;
+    margin-top: 2px;
+    margin-bottom: 10px;
+}
+
+.company_rpt_div .user_list .course_list {
+    width: 100%;
+    height: auto;
+    clear: both;
+    display: block;
+    padding: 0;
+    margin-bottom: 10px;
+}
+
+.company_rpt_div .user_list .course_list table {
+    float:left;
+    width: 98%;
+    margin-left: 2%;
+    color:  #000;
+}
+
+.company_rpt_div .user_list .course_list_content table {
+    float:left;
+    width: 98%;
+    margin-left: 2%;
+    color:  #000;
+    margin-bottom: 10px;
+}
+
+.company_rpt_div .header_user_rpt {
+    background: #c4ccd9;
+    height: 25px;
+    display:block;
+    margin-bottom: 1px;
+}
+
+.company_rpt_div .header_user_job_roles_rpt {
+    background: #edeff3;
+    height: 25px;
+    display:block;
+    margin-bottom: 1px;
+}
+
+.company_rpt_div .user_list .header_individual_outcome_rpt {
+    height: 25px;
+    display:block;
+}
+
+.company_rpt_div .header_user_rpt .col_one,
+.company_rpt_div .header_user_job_roles_rpt .col_one,
+.company_rpt_div .user_list .header_individual_outcome_rpt .col_one {
+    height: 25px;
+    line-height: 10px;
+    /* Top Right Bottom LEft:   */
+    margin: 0px;
+}
+
+.company_rpt_div .header_user_rpt .col_two,
+.company_rpt_div .header_user_job_roles_rpt .col_two {
+    height: 25px;
+    line-height: 10px;
+    /* Top Right Bottom LEft:   */
+    margin: 0px;
+    text-indent: 2px;
+}
+
+.company_rpt_div .user_list .header_individual_outcome_rpt .col_two {
+    height: 25px;
+    line-height: 10px;
+    /* Top Right Bottom LEft:   */
+    margin: 0px;
+    text-indent: 2px;
+    background: #ece8e1;
+}
+
+.company_rpt_div .header_user_rpt .col_two h5,
+.company_rpt_div .header_user_job_roles_rpt .col_two h6,
+.company_rpt_div .user_list .header_individual_outcome_rpt .col_two h5 {
+    /* Top Right Bottom LEft:   */
+    margin: 1px 0px;
+    padding: 0px;
+    text-indent: 2px;
+    color:#3a3d41;
+}
+
+.company_rpt_div  .user_list .course_list tr.head,
+.company_rpt_div  .user_list .course_list_content tr.head {
+    padding: 0px 0px 0px 0px;
+    margin-bottom: 0px;
+    font:bold 14px Verdana,Verdana Pro,sans-serif;
+    background: white;
+}
+
+.company_rpt_div  .user_list .course_list td.head_first,
+.company_rpt_div  .user_list .course_list_content td.head_first {
+    width: 2%;
+    text-align: left;
+}
+
+.company_rpt_div  .user_list .course_list td.head_course,
+.company_rpt_div  .user_list .course_list_content td.head_course {
+    width: 35%;
+    text-align: left;
+}
+
+.company_rpt_div  .user_list .course_list td.head_status,
+.company_rpt_div  .user_list .course_list_content td.head_status
+{
+    width: 18%;
+    text-align: center;
+}
+
+.company_rpt_div .user_list .course_list td.first,
+.company_rpt_div .user_list .course_list_content td.first{
+    width: 2%;
+    text-align: left;
+    font:12px Verdana,Verdana Pro,sans-serif;
+}
+
+.company_rpt_div  .user_list .course_list td.course,
+.company_rpt_div  .user_list .course_list_content td.course {
+    width: 35%;
+    text-align: left;
+    font: 12px Verdana,Verdana Pro,sans-serif;
+}
+
+.company_rpt_div  .user_list .course_list td.status,
+.company_rpt_div  .user_list .course_list_content td.status {
+    width: 18%;
+    text-align: center;
+    font: 12px Verdana,Verdana Pro,sans-serif;
+}
+
+.outcome_detail_rpt,
+.company_detail_rpt {
     margin-bottom: 5px;
 }
 
-.outcome_detail_rpt h6{
+.outcome_detail_rpt h6,
+.company_detail_rpt h3 {
     color: rgba(94, 83, 83, 0.86);
     margin-bottom: 0px;
     margin-top: 0px;
@@ -492,42 +543,10 @@
     padding     : 0px;
 }
 
-.outcome_rpt_div .user_div,
-.outcome_rpt_div .level_div {
-    clear: both;
-    margin-bottom: 15px;
-    margin-left: 1em;
-    display: block;
-}
-
-.outcome_rpt_div .user_div .user_header,
-.outcome_rpt_div .level_div .header_outcome_company_rpt {
-    height: 25px;
-    background: #efefef;
-    margin-top: 0px;
-    margin-bottom: 2px;
-}
-
-.outcome_rpt_div .user_div .job_header  {
-    height: 15px;
-    margin-top: 0px;
-    clear: both;
-    text-align: left;
-    margin-bottom: 15px;
-}
-
-.outcome_rpt_div .user_div .job_header h5{
-    margin: 0px;
-    color:  #000;
-}
-
-.company_rpt_div .header_user_rpt .header_col_one,
 .outcome_rpt_div .header_outcome_company_rpt .header_col_one,
 .outcome_rpt_div .header_outcome_company_rpt_levelZero .header_col_one,
 .outcome_rpt_div .header_outcome_company_rpt_levelOne .header_col_one,
-.outcome_rpt_div .header_outcome_company_rpt_levelCourse .header_col_one,
-.outcome_rpt_div .user_div .user_header .header_col_one,
-.outcome_rpt_div .level_div .header_outcome_company_rpt .header_col_one{
+.outcome_rpt_div .header_outcome_company_rpt_levelCourse .header_col_one {
     float:left;
     width:2%;
     height: 20px;
@@ -536,19 +555,15 @@
     margin: 0px 5px;
 }
 
-.company_rpt_div .header_user_rpt .header_col_two,
 .outcome_rpt_div .header_outcome_company_rpt .header_col_two,
 .outcome_rpt_div .header_outcome_company_rpt_levelZero .header_col_two,
 .outcome_rpt_div .header_outcome_company_rpt_levelOne .header_col_two,
-.outcome_rpt_div .header_outcome_company_rpt_levelCourse .header_col_two,
-.outcome_rpt_div .user_div .user_header .header_col_two,
-.outcome_rpt_div .level_div .header_outcome_company_rpt .header_col_two {
+.outcome_rpt_div .header_outcome_company_rpt_levelCourse .header_col_two {
     float:left;
     height: 20px;
     line-height: 10px;
 }
 
-.company_rpt_div .header_user_rpt .header_col_two h4,
 .outcome_rpt_div .header_outcome_company_rpt .header_col_two h4 {
     height: 20px;
     line-height: 10px;
@@ -564,8 +579,6 @@
     color : #3a3d41;
 }
 
-.outcome_rpt_div .user_div .user_header .header_col_two h5,
-.outcome_rpt_div .level_div .header_outcome_company_rpt .header_col_two h5,
 .outcome_rpt_div .header_outcome_company_rpt_levelZero .header_col_two h5,
 .outcome_rpt_div .header_outcome_company_rpt_levelOne .header_col_two h5,
 .outcome_rpt_div .header_outcome_company_rpt_levelCourse .header_col_two h5,
@@ -574,6 +587,7 @@
     line-height: 10px;
     margin: 8px 0px;
 }
+
 
 .outcome_rpt_div .user_list,
 .outcome_rpt_div .level_two_list {
@@ -606,6 +620,7 @@
     margin-bottom: 10px;
 }
 
+
 .outcome_rpt_div .course_list table,
 .outcome_rpt_div .company_level table {
     width: 100%;
@@ -625,14 +640,6 @@
     margin-bottom: 0px;
     font:bold 14px Verdana,Verdana Pro,sans-serif;
     background: #ddd;
-}
-
-.outcome_rpt_div .level_div .course_list tr.head,
-.outcome_rpt_div .level_div .company_level tr.head {
-    padding: 0px 0px 0px 0px;
-    margin-bottom: 0px;
-    font:bold 14px Verdana,Verdana Pro,sans-serif;
-    background: white;
 }
 
 .outcome_rpt_div .course_list td.head_first,
@@ -680,60 +687,6 @@
     font: 12px Verdana,Verdana Pro,sans-serif;
 }
 
-.outcome_course_list {
-    clear: both;
-}
-
-.outcome_course_list table {
-    width: 100%;
-    background: white;
-    color:  #000;
-}
-
-.outcome_course_list tr.head {
-    padding: 0px 0px 0px 0px;
-    margin-bottom: 0px;
-    font:bold 14px Verdana,Verdana Pro,sans-serif;
-}
-
-.outcome_course_list td.head_first {
-    width: 2%;
-    text-align: left;
-    cursor: pointer;
-}
-
-.outcome_course_list td.head_course {
-    width: 40%;
-    text-align: left;
-    cursor: pointer;
-}
-
-.outcome_course_list td.head_status {
-    width: 20%;
-    text-align: center;
-    cursor: pointer;
-}
-
-.outcome_course_list td.first {
-    width: 2%;
-    text-align: left;
-    cursor: pointer;
-    font:12px Verdana,Verdana Pro,sans-serif;
-}
-
-.outcome_course_list td.course {
-    width: 40%;
-    text-align: left;
-    cursor: pointer;
-    font: 12px Verdana,Verdana Pro,sans-serif;
-}
-
-.outcome_course_list td.status {
-    width: 20%;
-    text-align: center;
-    cursor: pointer;
-    font: 12px Verdana,Verdana Pro,sans-serif;
-}
 
 .link_return {
     text-align: left;

@@ -505,6 +505,35 @@ class CompetenceManager {
         }//try_catch
     }//GetCompany_Name
 
+    public static function GetUsers_MyCompanies($my_companies,$user_id) {
+        /* Variables    */
+        global $DB;
+        $my_users = null;
+
+        try {
+            /* Search Criteria  */
+            $params = array();
+            $params['user'] = $user_id;
+
+            /* SQL Instruction  */
+            $sql = " SELECT     DISTINCT	u.id
+                     FROM		{user}						u
+                        JOIN	{user_info_competence_data}	uicd	ON 	uicd.userid = u.id
+                                                                    AND uicd.companyid  IN ($my_companies)
+                     WHERE		u.id != :user
+                        AND		u.deleted = 0 ";
+
+            /* Execute  */
+            $rdo = $DB->get_records_sql($sql,$params);
+            if ($rdo) {
+                $my_users = implode(',',array_keys($rdo));
+            }//if_rdo
+
+            return $my_users;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//GetUsers_MyCompanies
 
     /*********************/
     /* PRIVATE FUNCTIONS */

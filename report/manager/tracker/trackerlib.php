@@ -171,6 +171,16 @@ class TrackerManager {
         }//try_catch
     }//Print_TrackerInfo
 
+    /**
+     * @param           $trackerUser
+     * @throws          Exception
+     *
+     * @creationDate    08/04/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Download the Tracker report - Excel Format
+     */
     public static function Download_TrackerReport($trackerUser) {
         /* Variables    */
         global $CFG;
@@ -714,7 +724,7 @@ class TrackerManager {
                     }//for_each_outcome
                 }//if_outcomes
 
-                $out_tracker .= '<hr style="border: 0; border-top: 1px solid #CCCCCC;width: 99.5%; margin-bottom: 25px;">';
+                $out_tracker .= '<hr class="line_rpt">';
             }//for_each_competence
 
             return $out_tracker;
@@ -980,7 +990,7 @@ class TrackerManager {
                 $individualToogle .= '_table';
                 $out_tracker .= html_writer::start_tag('div',array('class' => 'course_list'));
                     /* Header Table     */
-                    $out_tracker .= self::AddHeader_IndividualCoursesTable($individualToogle,$url_img,true);
+                    $out_tracker .= self::AddHeader_IndividualCoursesTable($individualToogle,$url_img);
                     /* Content Table    */
                     $out_tracker .= html_writer::start_tag('div',array('class' => 'course_list', 'id' => $individualToogle . '_div'));
                             $out_tracker .= self::AddContent_IndividualCoursesTable($completed,$not_completed);
