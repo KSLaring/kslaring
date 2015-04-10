@@ -31,7 +31,6 @@ $capabilities = array(
         'captype' => 'write',
         'contextlevel' => CONTEXT_SYSTEM,
         'archetypes' => array(
-            'editingteacher' => CAP_ALLOW,
             'manager' => CAP_ALLOW
         ),
 
@@ -44,7 +43,6 @@ $capabilities = array(
         'captype' => 'write',
         'contextlevel' => CONTEXT_BLOCK,
         'archetypes' => array(
-            'editingteacher' => CAP_ALLOW,
             'manager' => CAP_ALLOW
         ),
 
@@ -57,7 +55,6 @@ $capabilities = array(
         'captype' => 'view',
         'contextlevel' => CONTEXT_BLOCK,
         'archetypes' => array(
-            'editingteacher' => CAP_ALLOW,
             'manager' => CAP_ALLOW
         ),
 
