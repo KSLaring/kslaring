@@ -100,6 +100,17 @@ class enrolmethodself extends \enrol_waitinglist\method\enrolmethodbase{
 	 public function show_notifications_settings_link(){return false;}
 	 public function has_settings(){return true;}
 
+	/**
+     * Returns maximum enrolable via this enrolment method
+	 * Though it is inconsistent, currently a value of 0 = unlimited
+	 * This is different to the waitinglist itself, where the value 0 = 0.
+	 * A value of 0 here effectively means "as many as the waitinglist method allows."
+     *
+     * @return int max enrolable
+     */
+	public function get_max_can_enrol(){
+		return $this->{self::MFIELD_MAXENROLLED};
+	}
 	 
 	 public function get_dummy_form_plugin(){
 		return enrol_get_plugin('self');
@@ -165,13 +176,14 @@ class enrolmethodself extends \enrol_waitinglist\method\enrolmethodbase{
         //checking the queue (db calls)
         //to do: turn queuemanager into a singleton, and remove the checkusenrolment condition
          if ($checkuserenrolment) {
+         	//$entryman =  \enrol_waitinglist\entrymanager::get_by_course($waitinglist->courseid);
          	$queueman =  \enrol_waitinglist\queuemanager::get_by_course($waitinglist->courseid);
     
 		
 			//maximum users for this enrolment method
-        	if ($this->{self::MFIELD_MAXENROLLED} > 0) {
+        	if ($this->{self::MFIELD_MAXENROLLED} > 0 && false) {
 				// Max enrol limit specified.
-				//$count = $this->count_users_on_list();
+				//$count = $entryman->get_allocated_listtotal_by_method(static::METHODTYPE);
 				$count = $queueman->get_listtotal_by_method(static::METHODTYPE);
 				if ($count >= $this->{self::MFIELD_MAXENROLLED}) {
 					// Bad luck, no more self enrolments here.
@@ -212,7 +224,7 @@ class enrolmethodself extends \enrol_waitinglist\method\enrolmethodbase{
      * @param stdClass $data data needed for enrolment.
      * @return bool|array true if enroled else eddor code and messege
      */
-    public function enrol_self(\stdClass $waitinglist, $data = null) {
+    public function waitlistrequest_self(\stdClass $waitinglist, $data = null) {
         global $DB, $USER, $CFG;
 		
 		
@@ -330,8 +342,9 @@ class enrolmethodself extends \enrol_waitinglist\method\enrolmethodbase{
             $form = new enrolmethodself_enrolform(NULL, array($waitinglist,$this,$listtotal));
             $waitinglistid = optional_param('waitinglist', 0, PARAM_INT);
             if ($waitinglist->id == $waitinglistid) {
+            	//if this is an enrol form submission, process it
                 if ($data = $form->get_data()) {
-                    $this->enrol_self($waitinglist, $data);
+                    $this->waitlistrequest_self($waitinglist, $data);
                     redirect($CFG->wwwroot . '/course/view.php?id=' . $waitinglist->courseid);
                 }
             }

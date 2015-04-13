@@ -268,6 +268,19 @@ class entrymanager  {
 	}
 	
 	/**
+     * Remove this entry from DB. Calling function should handle housekeeping
+     * associated with this
+     *
+     * @param int entryid
+     * @return true if successful, false if not
+    */
+	public function remove_entry_from_db($entryid){
+		global $DB;
+		$ret = $DB->delete_records(self::CTABLE,array('id'=>$entryid));
+		return $ret;
+	}
+	
+	/**
      * When the user changes thenumber of seats, deal with it. 
      * adjust queue/confirmations etc
      *
@@ -286,7 +299,9 @@ class entrymanager  {
 		
 		//if seats set to zero, we remove the entry, unenrol the user, slap hands and return
 		if($newseatcount==0){
-			 $DB->delete_records(self::CTABLE,array('id'=>$entryid));
+			$this->remove_entry_from_db($entryid);
+			 //$DB->delete_records(self::CTABLE,array('id'=>$entryid));
+			 
 			 $wl = enrol_get_plugin('waitinglist');
 			 $wl->unenrol_user($this->waitinglist,$entry->userid);
 			 return true;

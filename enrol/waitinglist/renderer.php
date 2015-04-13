@@ -50,22 +50,39 @@ class enrol_waitinglist_renderer extends plugin_renderer_base {
 	}
 	
 	public function render_exportbuttons_html($courseid,$reportname){
+		global $USER;
 		//convert formdata to array
 		$formdata = array();
 		$formdata['id']=$courseid;
 		$formdata['report']=$reportname;
 		
+		
+		//inline print
+		/*
 		$formdata['format']='print';
 		$print = new single_button(
 			new moodle_url('/enrol/waitinglist/' . $reportname . '.php',$formdata),
 			get_string('exportprint','enrol_waitinglist'), 'get');
+		*/
 		
+		//popup print
+		$formdata['format']='print';
+		$formdata['sesskey']=$USER->sesskey;
+		$link = new moodle_url('/enrol/waitinglist/' . $reportname . '.php',$formdata);
+		$popupparams = array('height'=>800,'width'=>1050);
+		$popupaction = new popup_action('click', $link,'popup',$popupparams);
+		$button = html_writer::tag('button',get_string('exportprint','enrol_waitinglist'));
+		$printpopup = $this->output->action_link($link,$button  , 
+			$popupaction, array('class'=>'enrol_waitinglist_actionbutton'));
+		
+		
+		//CSV export
 		$formdata['format']='csv';
 		$excel = new single_button(
 			new moodle_url('/enrol/waitinglist/' . $reportname . '.php',$formdata), 
 			get_string('exportexcel','enrol_waitinglist'), 'get');
 
-		return html_writer::div( $this->render($excel) . $this->render($print),'enrol_waitinglist_actionbuttons');
+		return html_writer::div( $this->render($excel)  . $printpopup ,'enrol_waitinglist_actionbuttons');
 	}
 	
 	public function render_continuebuttons_html($courseid){
@@ -164,7 +181,18 @@ class enrol_waitinglist_renderer extends plugin_renderer_base {
 		
 	}
 	
-	function show_reports_footer($courseid,$reportname){
+	function render_report_footer(){
+		//get current day, month and year for current user
+		$date = usergetdate(time());
+		list($min,$h,$d, $mon, $y) = array($date['minutes'],$date['hours'],$date['mday'], $date['mon'], $date['year']);
+		//Print formatted date in user time
+		$datestring = userdate(make_timestamp($y,$mon,$d,$h,$min));
+		$fulltext = get_string('printdate','enrol_waitinglist',$datestring);
+		return html_writer::div($fulltext,'enrol_waitinglist_printdate');
+		
+	}
+	
+	function show_reports_options($courseid,$reportname){
 		// print's a popup link to your custom page
 		//$link = new moodle_url('/enrol/waitinglist/' . $reportname . '.php',array('id'=>$courseid));
 		//$ret =  html_writer::link($link, get_string('returntoreports','enrol_waitinglist'));

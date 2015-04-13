@@ -43,13 +43,14 @@ class enrol_waitinglist_edit_form extends moodleform {
         $mform->setDefault('status', $plugin->get_config('status'));
 		
 		//waitlist required fields
-		$mform->addElement('date_selector', ENROL_WAITINGLIST_FIELD_CUTOFFDATE, get_string('cutoffdate', 'enrol_waitinglist'));	
+		$mform->addElement('date_selector', ENROL_WAITINGLIST_FIELD_CUTOFFDATE, get_string('cutoffdate', 'enrol_waitinglist'),array('optional' => true));	
 		$mform->addElement('text',ENROL_WAITINGLIST_FIELD_MAXENROLMENTS,  get_string('maxenrolments', 'enrol_waitinglist'), array('size' => '8'));
 		$mform->addElement('text', ENROL_WAITINGLIST_FIELD_WAITLISTSIZE,  get_string('waitlistsize', 'enrol_waitinglist'), array('size' => '8'));
 		$mform->addRule(ENROL_WAITINGLIST_FIELD_MAXENROLMENTS, null, 'numeric', null, 'client');
 		$mform->addRule(ENROL_WAITINGLIST_FIELD_WAITLISTSIZE, null, 'numeric', null, 'client');
 		$mform->setType(ENROL_WAITINGLIST_FIELD_MAXENROLMENTS, PARAM_INT);
 		$mform->setType(ENROL_WAITINGLIST_FIELD_WAITLISTSIZE, PARAM_INT);
+		$mform->setDefault(ENROL_WAITINGLIST_FIELD_CUTOFFDATE, 0);
 		$mform->setDefault(ENROL_WAITINGLIST_FIELD_MAXENROLMENTS, $plugin->get_config('maxenrolments'));
 		$mform->setDefault(ENROL_WAITINGLIST_FIELD_WAITLISTSIZE, $plugin->get_config('waitlistsize'));
 		

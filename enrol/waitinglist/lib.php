@@ -222,7 +222,8 @@ class enrol_waitinglist_plugin extends enrol_plugin {
 
 	
     /**
-     * Checks if user can enrol.
+     * Checks if user can enrol. This is a general check
+     * specific checks are done by the enrolment method according to its rules
      *
      * @param stdClass $waitinglist enrolment instance
      * @return bool|string true if successful, else error message or false.
@@ -241,22 +242,37 @@ class enrol_waitinglist_plugin extends enrol_plugin {
 				return  get_string('noroomonlist', 'enrol_waitinglist');
 		}
 
-        if ($instance->enrolstartdate != 0 and $instance->enrolstartdate > time()) {
+		$rightnow = time();
+		//We have not implemented an enrolment period on the UI
+		//and we used a custom field for the cut off date, so these are never used.
+		/*
+        if ($instance->enrolstartdate != 0 and $instance->enrolstartdate > $rightnow) {
 			return get_string('enrolmentsnotyet', 'enrol_waitinglist');
         }
-        if ($instance->enrolenddate != 0 and $instance->enrolenddate < time()) {
+        if ($instance->enrolenddate != 0 and $instance->enrolenddate < $rightnow) {
+			return get_string('enrolmentsclosed', 'enrol_waitinglist');
+        }
+        */
+        
+        //we did implement a cut off date
+        if ($instance->{ENROL_WAITINGLIST_FIELD_CUTOFFDATE} && $instance->{ENROL_WAITINGLIST_FIELD_CUTOFFDATE} < $rightnow) {
 			return get_string('enrolmentsclosed', 'enrol_waitinglist');
         }
         
+        //check if already enroled
         $enrolled = $DB->record_exists('user_enrolments', array('enrolid' => $instance->id, 'userid'=>$USER->id));
         if($enrolled){
         	return get_string('alreadyenroled', 'enrol_waitinglist');
         }
         
+        //We dont perform this check here.This is because the enrolment method should do this and return some sort of
+        //status report or edit form to display.
+        /*
         $waiting = $DB->record_exists('enrol_waitinglist_queue', array('waitinglistid' => $instance->id, 'userid'=>$USER->id));
         if($waiting){
-        	//return get_string('alreadyonlist', 'enrol_waitinglist');
+        	return get_string('alreadyonlist', 'enrol_waitinglist');
         }
+        */
         
         
         return true;
@@ -277,7 +293,7 @@ class enrol_waitinglist_plugin extends enrol_plugin {
         
          //basic checks for can user be a fresh new enrol
          //even if they fail we need to go to method checks
-         //if user is on waitinglist, we may need to show a status or edit form
+         //because if user is on waitinglist, we may need to show a status or edit form
         $ret = $this->can_enrol($instance);
         $flagged= false;
         if($ret !== true){
@@ -285,7 +301,7 @@ class enrol_waitinglist_plugin extends enrol_plugin {
         	$flagged= true;
         }
        
-		
+		//Loop through the methods and get the enrol methods enrol form, edit form or status
 		$methods = $this->get_methods($course, $instance->id);
 		foreach($methods as $method){
 			if(!$method->is_active() ){continue;}
@@ -299,7 +315,9 @@ class enrol_waitinglist_plugin extends enrol_plugin {
 		}
 		
 		
-		
+		//return our results to show on page
+		//if we have one can, we show it.
+		// if we have no cans, we show the cants 
 		if(!empty($can_html)){
 			return implode($can_html);
 		}elseif(!empty($cant_html)){
@@ -439,7 +457,7 @@ class enrol_waitinglist_plugin extends enrol_plugin {
             'notifyall'       => $notifyall,
              ENROL_WAITINGLIST_FIELD_SENDWELCOMEMESSAGE=> $this->get_config('sendcoursewelcomemessage'),
              ENROL_WAITINGLIST_FIELD_SENDWAITLISTMESSAGE=> $this->get_config('sendcoursewaitlistmessage'),
-             ENROL_WAITINGLIST_FIELD_MAXENROLMENTS> $this->get_config('maxenrolments'),
+             ENROL_WAITINGLIST_FIELD_MAXENROLMENTS=> $this->get_config('maxenrolments'),
              ENROL_WAITINGLIST_FIELD_WAITLISTSIZE=> $this->get_config('waitlistsize'),
             'expirythreshold' => $this->get_config('expirythreshold', 86400),
         );
@@ -500,6 +518,7 @@ class enrol_waitinglist_plugin extends enrol_plugin {
 			$course = get_course($instance->courseid);
 			$methods = $this->get_methods($course, $instance->id);
 			$queueman= \enrol_waitinglist\queuemanager::get_by_course($instance->courseid);
+			$entryman= \enrol_waitinglist\entrymanager::get_by_course($instance->courseid);
 			$availableseats = $this->get_vacancy_count($instance);
 			$trace->output('waitinglist enrolment availabilities: ' . $availableseats);	
 			if($availableseats > 0 AND $queueman->get_listtotal() > 0){	
@@ -512,6 +531,16 @@ class enrol_waitinglist_plugin extends enrol_plugin {
 						$giveseats = $availableseats - $allocatedseats;
 					}else{
 						$giveseats = $neededseats;
+					}
+					
+					//adjust seats according to max allowed by this enrolment method
+					$method_enrolable = $methods[$qentry->methodtype]->get_max_can_enrol();
+					if($method_enrolable){
+						$method_enroled = $entryman->get_allocated_listtotal_by_method($qentry->methodtype);
+						$remaining_can_enrol = $method_enrolable - $method_enroled ;
+						if($giveseats > $remaining_can_enrol){
+							$giveseats = $remaining_can_enrol;
+						}
 					}
 					
 					//call into the enrolment method and give it the seats
@@ -544,10 +573,59 @@ class enrol_waitinglist_plugin extends enrol_plugin {
 		return $vacancies;
 	}
 	
+	
+	/**
+     * Handle users who are enroled. Called from observer class.
+     * currently we dont do anything here. But it seems one day we might
+     *
+     * @param int $courseid
+     * @param int $userid
+     * @return boolean true = successful
+     */
+	public function handle_enrol($courseid,$userid){
+		return true;
+	}
+	
+	 /**
+     * Handle users who are unenroled. Called from observer class
+     *
+     * @param int $courseid
+     * @param int $userid
+     * @return boolean true = successful
+     */
+	public function handle_unenrol($courseid,$userid){
+		global $DB;
+		$entryman =  \enrol_waitinglist\entrymanager::get_by_course($courseid);
+		$entry = $entryman->get_entry_by_userid($userid);
+		
+		//We might get here without an entry
+		//if the user was unenroled via seats modifcation in the entry manager
+		//in that case, and unforeseen proces flows, just return
+		if(!$entry){return true;}
+		
+		//remove entry from list altogether
+		$entryman->remove_entry_from_db($entry->id);
+		return true;
+		
+	}
+	
+	/**
+     * Remove entries from DB when a course is deleted. Called from observer class
+     *
+     * @param int $courseid
+     * @param int $userid
+     * @return boolean true = successful
+     */
+	public function handle_coursedeleted($courseid){
+		global $DB;
+		$DB->delete_records(ENROL_WAITINGLIST_TABLE_QUEUE,array('courseid'=>$courseid));
+		$DB->delete_records(ENROL_WAITINGLIST_TABLE_METHODS,array('courseid'=>$courseid));
+		return true;
+	}
 
 
     /**
-     * Sync all meta course links.
+     * Sync course enrolment expiry info with enrolments
      *
      * @param progress_trace $trace
      * @param int $courseid one course, empty mean all

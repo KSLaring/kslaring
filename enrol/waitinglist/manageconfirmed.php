@@ -41,7 +41,8 @@ $canconfig = has_capability('moodle/course:enrolconfig', $context);
 
 $PAGE->set_url('/enrol/waitinglist/manageconfirmed.php', array('id'=>$course->id));
 if($format=='print'){
- 	$PAGE->set_pagelayout('print');
+ 	//$PAGE->set_pagelayout('print');
+ 	$PAGE->set_pagelayout('popup');
 }else{
 	$PAGE->set_pagelayout('admin');
 }
@@ -112,8 +113,6 @@ if($format != 'csv' && $format !='print'){
 
 //Prepare the heading for the report
 $reporttitle = get_string('manageconfirmedheading', 'enrol_waitinglist', $course->fullname);
-//if we are printing this, the date is necessary
-if($format=='print'){$reporttitle .=  ' (' . date("Y-m-d",time()). ')';}
 $tableheading="";
 
 
@@ -147,10 +146,11 @@ if($entryman->get_confirmed_listtotal()==0){
 switch($format){
 	case 'print':
 		echo $renderer->render_table_html($tableheading, 'manageconfirmed', $headrow,$lastrow ,$rows);
+		echo $renderer->render_report_footer();
 		exit;
 	default:
 		echo $renderer->render_table_html($tableheading, 'manageconfirmed', $headrow,$lastrow, $rows);
-		echo $renderer->show_reports_footer($course->id,'manageconfirmed');
+		echo $renderer->show_reports_options($course->id,'manageconfirmed');
 }
 echo $renderer->box_end();
 echo $renderer->footer();

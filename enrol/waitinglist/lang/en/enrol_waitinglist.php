@@ -154,7 +154,8 @@ $string['nodataavailable'] = 'No data available for display';
 $string['returntoreports'] = 'Return to Reports';
 $string['exportprint'] = 'Print Friendly Version';
 $string['manageconfirmedheading']='Confirmed Seats in Course: {$a}'; 
-$string['totalcell']='Total: {$a}'; 
+$string['totalcell']='Total: {$a}';
+$string['printdate']='Print Date: {$a}'; 
 
 
 

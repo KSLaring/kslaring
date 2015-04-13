@@ -199,7 +199,7 @@ abstract class enrolmethodbase  {
 	public abstract function graduate_from_list(\stdClass $waitinglist,\stdClass $queueentry,$seats);
 	
 	 /**
-     * Enrol user into waitinglist via enrol method
+     * Add user onto waitinglist via enrol method
      *
      * @param stdClass $waitinglist
      * @param int $userid
@@ -240,6 +240,9 @@ abstract class enrolmethodbase  {
 		//and we are at the top of the waitinglist, enrol/confirm the user immediately.
 		$graduationcomplete = false;
         $vacancies = $wl->get_vacancy_count($waitinglist);
+        //there is a wee issue here.
+        //if the top entry is blocking (its method is maxed out) it will prevent 
+        //immediate enrolments here. But cron will still enrol them
 		if($vacancies && 
 				$queueman->get_listposition($queue_entry)==1 ){
 			if($queue_entry->seats > $vacancies){
@@ -247,11 +250,25 @@ abstract class enrolmethodbase  {
 			}else{
 				$giveseats = $queue_entry->seats;
 			}
+			
+			//adjust seats according to max allowed by this enrolment method
+			$method_enrolable = $this->get_max_can_enrol();
+			if($method_enrolable){
+				$method_enroled = $entryman->get_allocated_listtotal_by_method(static::METHODTYPE);
+				$remaining_can_enrol = $method_enrolable - $method_enroled ;
+				
+				if($giveseats > $remaining_can_enrol){
+					$giveseats = $remaining_can_enrol;
+				}
+			}
+			
 			//move them off the waitinglist, and onto the course or confirmed list
 			//post processing (emails mainly) should happen from the function call.	
 			//graduationcomplete means all seats are allocated and we can remove this entry
-			//from queue		
-			$graduationcomplete = $this->graduate_from_list($waitinglist,$queue_entry,$giveseats);
+			//from queue
+			if($giveseats){		
+				$graduationcomplete = $this->graduate_from_list($waitinglist,$queue_entry,$giveseats);
+			}
 		}
 
 		//if we were not enrolled or not all our seats were granted, AND we are sending email, send email.
@@ -353,6 +370,18 @@ abstract class enrolmethodbase  {
         // Directly emailing welcome message rather than using messaging.
         email_to_user($user, $contact, $subject, $messagetext, $messagehtml);
     }
+    
+    /**
+     * Returns maximum enrolable via this enrolment method
+	 * Though it is inconsistent, currently a value of 0 = unlimited
+	 * This is different to the waitinglist itself, where the value 0 = 0.
+	 * A value of 0 here effectively means "as many as the waitinglist method allows."
+     *
+     * @return int max enrolable
+     */
+	public function get_max_can_enrol(){
+		return 0;
+	}
 
 	 //some methods such as "unnamed bulk" don't enrol onto course automatically
 	 //others like "self" do. We check for that here
