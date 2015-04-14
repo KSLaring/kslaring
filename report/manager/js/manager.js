@@ -40,7 +40,7 @@ YUI().use('node', function(Y) {
             document.cookie = "outcomeReport"         + "=" + outcomeReport;
 
             window.onbeforeunload = null;
-            window.location = location.href;
+            window.location.reload();
         });
     }//if_course_report
 
@@ -59,7 +59,7 @@ YUI().use('node', function(Y) {
             document.cookie = "courseReport"         + "=" + courseReport;
 
             window.onbeforeunload = null;
-            window.location = location.href;
+            window.location.reload();
         });
     }//if_course_report
 
@@ -87,7 +87,7 @@ YUI().use('node', function(Y) {
             document.cookie = "parentLevelThree"        + "=0";
 
             window.onbeforeunload = null;
-            window.location = location.href;
+            window.location.reload();
         });
     }//if_level_0
 
@@ -109,7 +109,7 @@ YUI().use('node', function(Y) {
             document.cookie = "parentLevelThree"    + "=0";
 
             window.onbeforeunload = null;
-            window.location = location.href;
+            window.location.reload();
         });
     }//if_level_1
 
@@ -130,7 +130,7 @@ YUI().use('node', function(Y) {
             document.cookie = "parentLevelThree"    + "=0";
 
             window.onbeforeunload = null;
-            window.location = location.href;
+            window.location.reload();
         });
     }//if_level_2
 
@@ -154,7 +154,7 @@ YUI().use('node', function(Y) {
             document.cookie = "parentLevelThree"     + "=" + LevelThree;
 
             window.onbeforeunload = null;
-            window.location = location.href;
+            window.location.reload();
         });
     }//if_level_3
 
@@ -177,7 +177,7 @@ YUI().use('node', function(Y) {
             document.cookie = "parentImportTwo"         + "=0";
 
             window.onbeforeunload = null;
-            window.location = location.href;
+            window.location.reload();
         });
     }//if_Import_Level
 
@@ -199,7 +199,7 @@ YUI().use('node', function(Y) {
             document.cookie = "parentImportTwo"         + "=0";
 
             window.onbeforeunload = null;
-            window.location = location.href;
+            window.location.reload();
         });
     }//if_import_0
 
@@ -220,7 +220,7 @@ YUI().use('node', function(Y) {
             document.cookie = "parentImportTwo"         + "=0";
 
             window.onbeforeunload = null;
-            window.location = location.href;
+            window.location.reload();
         });
     }//if_import_1
 
@@ -240,7 +240,7 @@ YUI().use('node', function(Y) {
             document.cookie = "parentImportTwo"         + "=" + parentImportTwo;
 
             window.onbeforeunload = null;
-            window.location = location.href;
+            window.location.reload();
         });
     }//if_import_2
 
