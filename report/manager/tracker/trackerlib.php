@@ -279,7 +279,11 @@ class TrackerManager {
                     $info->job_roles    = $instance->jobroles;
                     $info->outcomes     = self::GetInfoOutcomes_JobRoles($info->job_roles);
 
-                    $myCompetence[$instance->companyid] = $info;
+                    /* Add the company */
+                    if ($info->outcomes) {
+                        $myCompetence[$instance->companyid] = $info;
+                    }//if_outcomes
+
                 }//for_instance_competence
             }//if_rdo
 
