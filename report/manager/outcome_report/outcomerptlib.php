@@ -588,21 +588,23 @@ class outcome_report {
         $course_info    = null;
 
         try {
-            /* SQL Instruction  */
-            $sql = " SELECT		c.id,
-                                c.fullname
-                     FROM		{course}			        c
-                     WHERE		c.visible = 1
-                        AND     c.id IN ($courses)
-                     ORDER BY 	c.fullname ";
+            if ($courses) {
+                /* SQL Instruction  */
+                $sql = " SELECT		c.id,
+                                    c.fullname
+                         FROM		{course}			        c
+                         WHERE		c.visible = 1
+                            AND     c.id IN ($courses)
+                         ORDER BY 	c.fullname ";
 
-            /* Execute  */
-            $rdo = $DB->get_records_sql($sql);
-            if ($rdo) {
-                foreach ($rdo as $course) {
-                    $courses_lst[$course->id] = $course->fullname;
-                }//for_Rdo_course
-            }//if_rdo
+                /* Execute  */
+                $rdo = $DB->get_records_sql($sql);
+                if ($rdo) {
+                    foreach ($rdo as $course) {
+                        $courses_lst[$course->id] = $course->fullname;
+                    }//for_Rdo_course
+                }//if_rdo
+            }//if_courses
 
             return $courses_lst;
         }catch (Exception $ex) {
