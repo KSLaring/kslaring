@@ -1180,7 +1180,7 @@ class outcome_report {
                     /* Expiration Before    */
                     $options = CompetenceManager::GetCompletedList();
                     $out_report .= html_writer::start_div('expiration');
-                        $out_report .= str_replace(' ...',' : ',get_string('completed_list','report_manager')) .  $options[$outcome_report->completed_before];
+                        $out_report .= get_string('expired_next', 'report_manager') .  $options[$outcome_report->completed_before];
                     $out_report .= html_writer::end_div();//expiration
                 $out_report .= html_writer::end_div();//outcome_detail_rpt
 
@@ -1310,7 +1310,7 @@ class outcome_report {
                     /* Expiration Before    */
                     $options = CompetenceManager::GetCompletedList();
                     $out_report .= html_writer::start_div('expiration');
-                        $out_report .= str_replace(' ...',' : ',get_string('completed_list','report_manager')) .  $options[$outcome_report->completed_before];
+                        $out_report .= get_string('expired_next', 'report_manager') .  $options[$outcome_report->completed_before];
                     $out_report .= html_writer::end_div();//expiration
                 $out_report .= html_writer::end_div();//outcome_detail_rpt
 
@@ -1440,7 +1440,7 @@ class outcome_report {
                     /* Expiration Before    */
                     $options = CompetenceManager::GetCompletedList();
                     $out_report .= html_writer::start_div('expiration');
-                        $out_report .= str_replace(' ...',' : ',get_string('completed_list','report_manager')) .  $options[$outcome_report->completed_before];
+                        $out_report .= get_string('expired_next', 'report_manager') .  $options[$outcome_report->completed_before];
                     $out_report .= html_writer::end_div();//expiration
                 $out_report .= html_writer::end_div();//outcome_detail_rpt
 
@@ -1557,7 +1557,7 @@ class outcome_report {
                     /* Expiration Before    */
                     $options = CompetenceManager::GetCompletedList();
                     $out_report .= html_writer::start_div('expiration');
-                        $out_report .= str_replace(' ...',' : ',get_string('completed_list','report_manager')) .  $options[$outcome_report->completed_before];
+                        $out_report .= get_string('expired_next', 'report_manager') .  $options[$outcome_report->completed_before];
                     $out_report .= html_writer::end_div();//expiration
                 $out_report .= html_writer::end_div();//outcome_detail_rpt
 
@@ -2291,7 +2291,7 @@ class outcome_report {
         $col = 0;
         $title_out              = get_string('outcome', 'report_manager')  . ' - ' . $out_name;
         $title_jr               = get_string('job_roles', 'report_manager');
-        $title_expiration       = str_replace(' ...',' : ',get_string('completed_list','report_manager')) . $completed_before;
+        $title_expiration       = get_string('expired_next', 'report_manager') . $completed_before;
         $title_level_zero       = get_string('company_structure_level', 'report_manager', 0) . ': ' . $levelZero;
         $title_level_one        = null;
         if ($levelOne) {
