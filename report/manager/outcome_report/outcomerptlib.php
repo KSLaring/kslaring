@@ -322,6 +322,8 @@ class outcome_report {
 
                             break;
                     }//switch_level
+                }else {
+                    $outcome_report = null;
                 }//if_job_roles
             }//if_outcome_report
 
