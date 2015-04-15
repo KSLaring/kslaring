@@ -1,13 +1,13 @@
 <?php
 
 /**
- * Tracker Block - Capabilities
+ * Tracker Manager Block - Capabilities
  *
  * @package         block
  * @subpackage      tracker_manager
  * @copyright       2014 efaktor    {@link http://www.efaktor.no}
  *
- * @creationDate    17/02/2014
+ * @creationDate    15/024/2015
  * @author          efaktor     (fbv)
  */
 
@@ -19,7 +19,7 @@ $capabilities = array(
         'riskbitmask' => RISK_SPAM | RISK_XSS,
 
         'captype' => 'write',
-        'contextlevel' => CONTEXT_BLOCK,CONTEXT_SYSTEM,
+        'contextlevel' => CONTEXT_BLOCK,
         'archetypes' => array(
             'editingteacher' => CAP_ALLOW,
             'manager' => CAP_ALLOW
@@ -30,7 +30,7 @@ $capabilities = array(
 
     'block/tracker_manager:myaddinstance' => array(
         'captype' => 'write',
-        'contextlevel' => CONTEXT_SYSTEM,CONTEXT_USER,CONTEXT_BLOCK,
+        'contextlevel' => CONTEXT_SYSTEM,
         'archetypes' => array(
             'user' => CAP_ALLOW
         ),

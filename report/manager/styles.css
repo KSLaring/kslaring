@@ -216,6 +216,8 @@
     margin: 0px 2px 0px 0px;
     padding     : 0px;
     height: 20px;
+    text-justify: inter-word;
+    word-wrap: break-word;
 }
 
 .header_outcome_tracker .header_outcome_company_rpt .header_col_two {
@@ -223,6 +225,8 @@
     margin: 0px 0px 0px 0px;
     padding     : 0px;
     height: 20px;
+    text-justify: inter-word;
+    word-wrap: break-word;
 }
 
 .header_outcome_tracker .header_outcome_company_rpt .header_col_two h4,
@@ -358,11 +362,15 @@
 .company_rpt_div .col_one {
     float:left;
     width:2%;
+    text-justify: inter-word;
+    word-wrap: break-word;
 }
 
 .company_rpt_div .col_two {
     float:left;
     width: 98%;
+    text-justify: inter-word;
+    word-wrap: break-word;
 }
 
 .company_rpt_div .user_list {
@@ -425,6 +433,8 @@
     line-height: 10px;
     /* Top Right Bottom LEft:   */
     margin: 0px;
+    text-justify: inter-word;
+    word-wrap: break-word;
 }
 
 .company_rpt_div .header_user_rpt .col_two,
@@ -434,6 +444,8 @@
     /* Top Right Bottom LEft:   */
     margin: 0px;
     text-indent: 2px;
+    text-justify: inter-word;
+    word-wrap: break-word;
 }
 
 .company_rpt_div .user_list .header_individual_outcome_rpt .col_two {
@@ -443,6 +455,8 @@
     margin: 0px;
     text-indent: 2px;
     background: #ece8e1;
+    text-justify: inter-word;
+    word-wrap: break-word;
 }
 
 .company_rpt_div .header_user_rpt .col_two h5,
@@ -579,6 +593,8 @@
     line-height: 10px;
     /* Top Right Bottom LEft:   */
     margin: 0px 5px;
+    text-justify: inter-word;
+    word-wrap: break-word;
 }
 
 .outcome_rpt_div .header_outcome_company_rpt .header_col_two,
@@ -588,6 +604,8 @@
     float:left;
     height: 20px;
     line-height: 10px;
+    text-justify: inter-word;
+    word-wrap: break-word;
 }
 
 .outcome_rpt_div .header_outcome_company_rpt .header_col_two h4 {

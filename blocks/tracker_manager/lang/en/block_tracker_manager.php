@@ -1,13 +1,13 @@
 <?php
 
 /**
- * Tracker Block - Language Strings (English)
+ * Tracker Manager Block - Language Strings (English)
  *
  * @package         block
  * @subpackage      tracker_manager
  * @copyright       2014 efaktor    {@link http://www.efaktor.no}
  *
- * @creationDate    17/02/2014
+ * @creationDate    15/04/2015
  * @author          efaktor     (fbv)
  */
 

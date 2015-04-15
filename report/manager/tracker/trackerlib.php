@@ -172,6 +172,132 @@ class TrackerManager {
     }//Print_TrackerInfo
 
     /**
+     * @param           $tracker_competence
+     * @return          string
+     * @throws          Exception
+     *
+     * @creationDate    07/04/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Print the tracker connected to the outcomes
+     *
+     * Tracker Competence
+     *
+     *          --> levelThree
+     *          --> name
+     *          --> industrycode
+     *          --> job_roles
+     *          --> outcomes.       Array
+     *                                  [id]
+     *                                      --> name
+     *                                      --> expiration
+     *                                      --> courses
+     *                                      --> completed.      Array
+     *                                                              --> id
+     *                                                              --> name
+     *                                                              --> completed
+     *                                      --> not_completed.  Array
+     *                                                              --> id
+     *                                                              --> name
+     *                                                              --> completed
+     *                                      --> not_enrol.      Array
+     *                                                              --> id
+     *                                                              --> name
+     */
+    public static function Print_OutcomeTracker($tracker_competence) {
+        /* Variables    */
+        $out_tracker        = '';
+        $outcomeToogle      = null;
+        $companyToggle      = null;
+        $url_img            = new moodle_url('/pix/t/expanded.png');
+        $title              = null;
+
+        try {
+            foreach ($tracker_competence as $competence) {
+                /* Header Company   */
+                $companyToggle = 'YUI_' . $competence->levelThree;
+                $out_tracker .= html_writer::start_tag('div',array('class' => 'header_tracker'));
+                    $out_tracker .= '<h5>'. $competence->name . '</h5>';
+                $out_tracker .= html_writer::end_tag('div');
+
+                /* Tracker Info */
+                /* Add Outcome Tracker Info */
+                if ($competence->outcomes) {
+                    foreach ($competence->outcomes as $id=>$outcome) {
+                        /* Tracker Info */
+                        $outcomeToogle = $companyToggle . '_' . $id;
+                        $out_tracker .= html_writer::start_tag('div',array('class' => 'tracker_list'));
+                            $out_tracker .= html_writer::start_tag('div',array('class' => 'header_outcome_tracker'));
+                                $out_tracker .= self::PrintHeader_OutcomeTracker($outcome->name,$outcomeToogle,$url_img);
+                            $out_tracker .= html_writer::end_tag('div');//header_outcome_tracker
+
+                            $out_tracker .= html_writer::start_tag('div',array('class' => 'course_list','id' => $outcomeToogle . '_div'));
+                                /* Header Table     */
+                                $outcomeToogle .= '_table';
+                                $out_tracker .= self::AddHeader_CoursesTable($outcomeToogle,$url_img,false);
+                                /* Content Table    */
+                                $out_tracker .= self::AddContent_CoursesTable($outcome);
+                            $out_tracker .= html_writer::end_tag('div');//course_list
+                        $out_tracker .= html_writer::end_tag('div');//tracker_list
+                    }//for_each_outcome
+                }//if_outcomes
+
+                $out_tracker .= '<hr class="line_rpt">';
+            }//for_each_competence
+
+            return $out_tracker;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//Print_OutcomeTracker
+
+    /**
+     * @param           $completed
+     * @param           $not_completed
+     * @return          string
+     * @throws          Exception
+     *
+     * @creationDate    07/04/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Print the tracker connected to the individual courses - Screen Format
+     */
+    public static function Print_IndividualTracker($completed,$not_completed) {
+        /* Variables    */
+        $out_tracker = '';
+        $individualToogle   = 'YUI_' . '0';
+        $url_img            = new moodle_url('/pix/t/expanded.png');
+        $title              = get_string('individual_courses','local_tracker_manager');
+
+        try {
+            /* Title    */
+            $out_tracker .= html_writer::start_tag('div',array('class' => 'header_tracker'));
+                $out_tracker .= '<h5>'. $title . '</h5>';
+            $out_tracker .= html_writer::end_tag('div');
+
+            /* Tracker Info */
+            $out_tracker .= html_writer::start_tag('div',array('class' => 'tracker_list'));
+                /* Individual Courses   */
+                $individualToogle .= '_table';
+                $out_tracker .= html_writer::start_tag('div',array('class' => 'course_list'));
+                    /* Header Table     */
+                    $out_tracker .= self::AddHeader_IndividualCoursesTable($individualToogle,$url_img);
+                    /* Content Table    */
+                    $out_tracker .= html_writer::start_tag('div',array('class' => 'course_list', 'id' => $individualToogle . '_div'));
+                        $out_tracker .= self::AddContent_IndividualCoursesTable($completed,$not_completed);
+                    $out_tracker .= html_writer::end_tag('div');//course_list
+                $out_tracker .= html_writer::end_tag('div');//course_list
+            $out_tracker .= html_writer::end_tag('div');//tracker_list
+
+            return $out_tracker;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//Print_IndividualTracker
+
+    /**
      * @param           $trackerUser
      * @throws          Exception
      *
@@ -657,87 +783,6 @@ class TrackerManager {
     }//Get_OutputButtons
 
     /**
-     * @param           $tracker_competence
-     * @return          string
-     * @throws          Exception
-     *
-     * @creationDate    07/04/2015
-     * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Print the tracker connected to the outcomes
-     *
-     * Tracker Competence
-     *
-     *          --> levelThree
-     *          --> name
-     *          --> industrycode
-     *          --> job_roles
-     *          --> outcomes.       Array
-     *                                  [id]
-     *                                      --> name
-     *                                      --> expiration
-     *                                      --> courses
-     *                                      --> completed.      Array
-     *                                                              --> id
-     *                                                              --> name
-     *                                                              --> completed
-     *                                      --> not_completed.  Array
-     *                                                              --> id
-     *                                                              --> name
-     *                                                              --> completed
-     *                                      --> not_enrol.      Array
-     *                                                              --> id
-     *                                                              --> name
-     */
-    private static function Print_OutcomeTracker($tracker_competence) {
-        /* Variables    */
-        $out_tracker        = '';
-        $outcomeToogle      = null;
-        $companyToggle      = null;
-        $url_img            = new moodle_url('/pix/t/expanded.png');
-        $title              = null;
-
-        try {
-            foreach ($tracker_competence as $competence) {
-                /* Header Company   */
-                $companyToggle = 'YUI_' . $competence->levelThree;
-                $out_tracker .= html_writer::start_tag('div',array('class' => 'header_tracker'));
-                    $out_tracker .= '<h5>'. $competence->name . '</h5>';
-                $out_tracker .= html_writer::end_tag('div');
-
-                /* Tracker Info */
-                /* Add Outcome Tracker Info */
-                if ($competence->outcomes) {
-                    foreach ($competence->outcomes as $id=>$outcome) {
-                        /* Tracker Info */
-                        $outcomeToogle = $companyToggle . '_' . $id;
-                        $out_tracker .= html_writer::start_tag('div',array('class' => 'tracker_list'));
-                            $out_tracker .= html_writer::start_tag('div',array('class' => 'header_outcome_tracker'));
-                                $out_tracker .= self::PrintHeader_OutcomeTracker($outcome->name,$outcomeToogle,$url_img);
-                            $out_tracker .= html_writer::end_tag('div');//header_outcome_tracker
-
-                            $out_tracker .= html_writer::start_tag('div',array('class' => 'course_list','id' => $outcomeToogle . '_div'));
-                                /* Header Table     */
-                                $outcomeToogle .= '_table';
-                                $out_tracker .= self::AddHeader_CoursesTable($outcomeToogle,$url_img,false);
-                                /* Content Table    */
-                                $out_tracker .= self::AddContent_CoursesTable($outcome);
-                            $out_tracker .= html_writer::end_tag('div');//course_list
-                        $out_tracker .= html_writer::end_tag('div');//tracker_list
-                    }//for_each_outcome
-                }//if_outcomes
-
-                $out_tracker .= '<hr class="line_rpt">';
-            }//for_each_competence
-
-            return $out_tracker;
-        }catch (Exception $ex) {
-            throw $ex;
-        }//try_catch
-    }//Print_OutcomeTracker
-
-    /**
      * @param           $outcome
      * @param           $toogle
      * @param           $img
@@ -962,51 +1007,6 @@ class TrackerManager {
             throw $ex;
         }//try_catch
     }//AddContent_CoursesTable
-
-    /**
-     * @param           $completed
-     * @param           $not_completed
-     * @return          string
-     * @throws          Exception
-     *
-     * @creationDate    07/04/2015
-     * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Print the tracker connected to the individual courses - Screen Format
-     */
-    private static function Print_IndividualTracker($completed,$not_completed) {
-        /* Variables    */
-        $out_tracker = '';
-        $individualToogle   = 'YUI_' . '0';
-        $url_img            = new moodle_url('/pix/t/expanded.png');
-        $title              = get_string('individual_courses','local_tracker_manager');
-
-        try {
-            /* Title    */
-            $out_tracker .= html_writer::start_tag('div',array('class' => 'header_tracker'));
-                $out_tracker .= '<h5>'. $title . '</h5>';
-            $out_tracker .= html_writer::end_tag('div');
-
-            /* Tracker Info */
-            $out_tracker .= html_writer::start_tag('div',array('class' => 'tracker_list'));
-                /* Individual Courses   */
-                $individualToogle .= '_table';
-                $out_tracker .= html_writer::start_tag('div',array('class' => 'course_list'));
-                    /* Header Table     */
-                    $out_tracker .= self::AddHeader_IndividualCoursesTable($individualToogle,$url_img);
-                    /* Content Table    */
-                    $out_tracker .= html_writer::start_tag('div',array('class' => 'course_list', 'id' => $individualToogle . '_div'));
-                            $out_tracker .= self::AddContent_IndividualCoursesTable($completed,$not_completed);
-                    $out_tracker .= html_writer::end_tag('div');
-                $out_tracker .= html_writer::end_tag('div');//course_list
-            $out_tracker .= html_writer::end_tag('div');//tracker_list
-
-            return $out_tracker;
-        }catch (Exception $ex) {
-            throw $ex;
-        }//try_catch
-    }//Print_IndividualTracker
 
     /**
      * @param           $toggle
