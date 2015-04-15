@@ -169,11 +169,11 @@ class auth_plugin_saml extends auth_plugin_base {
 
             }//if_user_admin
         }else {
-	    if(isset($this->config->dosinglelogout) && $this->config->dosinglelogout) {
-	        set_moodle_cookie('nobody');
-	        require_logout();
-	        redirect($GLOBALS['CFG']->wwwroot.'/auth/saml/index.php?logout=1');
-	    }
+            if(isset($this->config->dosinglelogout) && $this->config->dosinglelogout) {
+                set_moodle_cookie('nobody');
+                require_logout();
+                redirect($GLOBALS['CFG']->wwwroot.'/auth/saml/index.php?logout=1');
+            }
         }//if_session_back
     }
 

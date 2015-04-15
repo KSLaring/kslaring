@@ -39,11 +39,23 @@ if ($login) {
     $redirect = $CFG->wwwroot.'/';
 }
 
+/**
+ * @updateDate  15/04/2015
+ * @author      eFaktor     (fbv)
+ *
+ * Description
+ * Check Log out process for Guest users
+ */
 if (!isloggedin()) {
     // no confirmation, user has already logged out
     require_logout();
     redirect($redirect);
 
+} else if (isguestuser($USER)) {
+    $redirect = $CFG->wwwroot.'/';
+
+    require_logout();
+    redirect($redirect);
 } else if (!confirm_sesskey($sesskey)) {
     $PAGE->set_title($SITE->fullname);
     $PAGE->set_heading($SITE->fullname);
