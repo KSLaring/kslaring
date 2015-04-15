@@ -187,10 +187,12 @@ class course_report {
                             if ($levelOne->levelTwo) {
                                 $course_report->levelOne[$levelOne->id]  = $levelOne;
                             }else {
-                                $course_report->levelOne[$levelOne->id] = null;
+                                $levelOne->levelTwo = null;
+                                $course_report->levelOne[$levelOne->id] = $levelOne;
                             }
                         }else {
-                            $course_report->levelOne[$levelOne->id] = null;
+                            $levelOne->levelTwo = null;
+                            $course_report->levelOne[$levelOne->id] = $levelOne;
                         }//if_level_two_companies
 
                         break;
@@ -216,10 +218,12 @@ class course_report {
                             if ($levelTwo->levelThree) {
                                 $course_report->levelTwo[$levelTwo->id] = $levelTwo;
                             }else {
-                                $course_report->levelTwo[$levelTwo->id] = null;
+                                $levelTwo->levelThree = null;
+                                $course_report->levelTwo[$levelTwo->id] = $levelTwo;
                             }
                         }else {
-                            $course_report->levelTwo[$levelTwo->id] = null;
+                            $levelTwo->levelThree = null;
+                            $course_report->levelTwo[$levelTwo->id] = $levelTwo;
                         }//if_level_two_companies
 
                         break;

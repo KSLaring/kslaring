@@ -243,10 +243,11 @@ class outcome_report {
                                     $outcome_report->levelOne[$levelOne->id]  = $levelOne;
                                 }else {
                                     $levelOne->levelTwo = null;
-                                    $outcome_report->levelOne[$levelOne->id]  = null;
+                                    $outcome_report->levelOne[$levelOne->id]  = $levelOne;
                                 }
                             }else {
-                                $outcome_report->levelOne[$levelOne->id] = null;
+                                $levelOne->levelTwo = null;
+                                $outcome_report->levelOne[$levelOne->id] = $levelOne;
                             }//if_level_two_companies
 
                             break;
@@ -270,12 +271,15 @@ class outcome_report {
                             if ($levelThree) {
                                 $levelTwo->levelThree      = self::Get_CompanyReportInfo_LevelThree($outcome_report,$levelThree);
                                 if ($levelTwo->levelThree) {
+
                                     $outcome_report->levelTwo[$levelTwo->id] = $levelTwo;
                                 }else {
-                                    $outcome_report->levelTwo[$levelTwo->id] = null;
+                                    $levelTwo->levelThree = null;
+                                    $outcome_report->levelTwo[$levelTwo->id] = $levelTwo;
                                 }
                             }else {
-                                $outcome_report->levelTwo[$levelTwo->id] = null;
+                                $levelTwo->levelThree = null;
+                                $outcome_report->levelTwo[$levelTwo->id] = $levelTwo;
                             }//if_level_two_companies
 
                             break;
