@@ -164,7 +164,7 @@ if ($form->is_cancelled()) {
     }else {
         /* Non Data */
         $return  = '<a href="'.$url .'">'. get_string('course_return_to_selection','report_manager') .'</a>';
-        $out     = get_string('no_data', 'report_manager');
+        $out     = '</h3>' . get_string('no_data', 'report_manager') . '</h3>';
         $out    .=  '<br/>' . $return;
     }//if_outcome_report
 }//if_form
