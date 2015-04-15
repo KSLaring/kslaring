@@ -71,6 +71,9 @@ $url_employee   = new moodle_url($CFG->wwwroot.'/report/manager/employee_report/
 echo '<p class="note">' . get_string('company_report_note', 'report_manager') . '</p>';
 echo '<ul class="unlist report-selection">' . "\n";
     echo '<li class="first last">' . "\n";
+        echo '<a href="' . $url_employee . '">' . get_string('employee_report_link', 'report_manager') . '</a>';
+    echo '</li>' . "\n";
+    echo '<li class="first last">' . "\n";
         echo '<a href="' . $url_company . '">' . get_string('company_report_link', 'report_manager') . '</a>';
         echo '</li>' . "\n";
 echo '</ul>' . "\n" . "</br>";

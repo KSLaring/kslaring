@@ -5,26 +5,30 @@
  *
  * Description
  *
- * @package     report
- * @subpackage  manager/company_report/
- * @copyright   2014 eFaktor
- * @licence     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package         report
+ * @subpackage      manager/employee_report/
+ * @copyright       2014 eFaktor
+ * @licence         http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  *
- * @updateDate  21/02/2014
- * @author      eFaktor     (fbv)
+ * @creationDate    14/04/2015
+ * @author          eFaktor     (fbv)
  *
  */
 
 require_once('../../../config.php');
-require_once( '../locallib.php');
+require_once( '../managerlib.php');
 require_once($CFG->libdir . '/adminlib.php');
 require_once('employee_report_form.php');
 require_once( 'employeelib.php');
 
 
 /* Params */
-$url        = new moodle_url('/report/manager/employee_report/employee_report.php');
-$return     = new moodle_url('/report/manager/index.php');
+$url                = new moodle_url('/report/manager/employee_report/employee_report.php');
+$return             = new moodle_url('/report/manager/index.php');
+$my_hierarchy       = null;
+$employeeTracker    = null;
+$company            = null;
+$out                = '';
 
 require_login();
 
@@ -50,60 +54,45 @@ if (empty($CFG->loginhttps)) {
 
 $PAGE->verify_https_required();
 
-/* SHOW Form     */
-setcookie('parentLevelOne',0);
-setcookie('parentLevelTwo',0);
-setcookie('parentLevelThree',0);
-setcookie('courseReport',0);
-setcookie('outcomeReport',0);
-setcookie('employeeReport',0);
+/* My Hierarchy */
+$my_hierarchy = CompetenceManager::get_MyHierarchyLevel($USER->id,$site_context);
 
-$form = new manager_employee_report_form(null);
+/* Show Form    */
+$form = new manager_employee_report_form(null,$my_hierarchy);
 if ($form->is_cancelled()) {
+    /* Clean Cookies     */
+    setcookie('parentLevelZero',0);
+    setcookie('parentLevelOne',0);
+    setcookie('parentLevelTwo',0);
+    setcookie('parentLevelThree',0);
+    setcookie('courseReport',0);
+    setcookie('outcomeReport',0);
+
     $_POST = array();
     redirect($return);
 }else if($data = $form->get_data()) {
     /* Get Data */
     $data_form = (Array)$data;
 
-    $company_id = report_manager_getCompanyUser($USER->id);
-    $outcome_id = $data_form[REPORT_MANAGER_OUTCOME_LIST];
-    /* Get Expiration Time */
-    $options = report_manager_get_completed_list();
-    $completed_time = $data_form[REPORT_MANAGER_COMPLETED_LIST];
+    /* Get Company Tracker Info */
+    $company        = $data_form[EMPLOYEE_REPORT_STRUCTURE_LEVEL . '3'];
 
-    /* Employee Report Info */
-    $employee_rpt = report_manager_EmployeeReport_getInfo($company_id,$outcome_id);
-
-    /* Get the report to display    */
-    $out  = '<a href="'.$url .'">'. get_string('employee_return_to_selection','report_manager') .'</a></br>';
-    $out .= html_writer::start_tag('div',array('class' => 'employee_div'));
-        $out .= html_writer::start_tag('div',array('class' => 'expiration'));
-        $out .= get_string('expired_next','report_manager') . ': ' . $options[$data_form[REPORT_MANAGER_COMPLETED_LIST]];
-        $out .= html_writer::end_tag('div'); //div_expiration
-
-        $out .= report_manager_EmployeeReport_getTagTitleOutcome($employee_rpt->outcome);
-        if ($employee_rpt->courses_id) {
-            $courses = explode(',',$employee_rpt->courses);
-            $out .= report_manager_EmployeeReport_geContentReport($courses,$employee_rpt->expiration,$employee_rpt->users,$completed_time);
-        }else {
-            $out .= get_string('no_data', 'report_manager');
-        }//if_courses
-    $out .= html_writer::end_tag('div');
-
-    $out .= '<a href="'.$url .'">'. get_string('employee_return_to_selection','report_manager') .'</a>';
-}//if_else_form
+    /* Get Employee Tracker */
+    $employeeTracker = EmployeeReport::Get_EmployeeTracker($my_hierarchy->competence[$company],$data_form[REPORT_MANAGER_OUTCOME_LIST ]);
+    /* Print Report         */
+    $out = EmployeeReport::Print_EmployeeTracker($employeeTracker,$data_form[REPORT_MANAGER_COMPLETED_LIST]);
+}//if_form
 
 /* Print Header */
 echo $OUTPUT->header();
 /* Print tabs at the top */
 $current_tab = 'employee_report';
 
-if (isset($out)) {
-    echo $OUTPUT->heading(get_string('employee_report','report_manager'));
+if (!empty($out)) {
     echo $out;
 }else {
     require('../tabs.php');
+
     $form->display();
 }//if_out
 

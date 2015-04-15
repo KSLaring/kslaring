@@ -5,7 +5,7 @@
  * Description
  *
  * @package         report
- * @subpackage      manager/course_report
+ * @subpackage      manager/company_report
  * @copyright       2010 eFaktor
  * @licence         http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  *
@@ -53,6 +53,17 @@ class manager_company_report_form extends moodleform {
         $form->setDefault('advanced',$advanced);
     }//definition
 
+    /**
+     * @param           $form
+     * @param           $level
+     * @param           $my_hierarchy
+     *
+     * @creationDate    08/04/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Add Level Company Structure
+     */
     function AddLevel(&$form,$level,$my_hierarchy){
         $form->addElement('html', '<div class="level-wrapper">');
             /* Add Company List */
@@ -68,6 +79,18 @@ class manager_company_report_form extends moodleform {
         $form->addElement('html', '</div>');
     }//AddLevel
 
+    /**
+     * @param           $level
+     * @param           $my_hierarchy
+     * @return          array
+     *
+     * @creationDate    08/04/2015
+     * @author          eFaktor         (fbv)
+     *
+     * Description
+     * Get the company list connected with the level
+     *
+     */
     function getCompanyList($level,$my_hierarchy) {
         /* Variables    */
         $levelThree     = null;
@@ -132,6 +155,16 @@ class manager_company_report_form extends moodleform {
         return $options;
     }//getCompanyList
 
+    /**
+     * @param           $form
+     * @param           $level
+     *
+     * @creationDate    08/04/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Set the company selected
+     */
     function setLevelDefault(&$form,$level) {
         switch ($level) {
             case 0:
@@ -168,6 +201,6 @@ class manager_company_report_form extends moodleform {
 
         if ($level) {
             $form->disabledIf(COMPANY_REPORT_STRUCTURE_LEVEL . $level ,COMPANY_REPORT_STRUCTURE_LEVEL . ($level - 1),'eq',0);
-        }//if_elvel
+        }//if_level
     }//setLevelDefault
 }//manager_company_report_form

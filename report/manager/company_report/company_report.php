@@ -27,6 +27,7 @@ $show_advanced  = optional_param('advanced',0,PARAM_INT);
 $format         = optional_param('format','',PARAM_ALPHA);
 $return_url     = new moodle_url('/report/manager/index.php');
 $url            = new moodle_url('/report/manager/company_report/company_report.php',array('advanced' => $show_advanced));
+$my_hierarchy   = null;
 $companyTracker = null;
 $company        = null;
 $users_lst      = null;
@@ -162,7 +163,7 @@ echo $OUTPUT->header();
 
 if (!empty($out)) {
     /* Print Title */
-    echo $OUTPUT->heading($out);
+    echo $out;
 }else {
     /* Print tabs at the top */
     $current_tab = 'company_report';

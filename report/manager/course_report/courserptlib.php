@@ -1112,24 +1112,29 @@ class course_report {
                 if ($levelOne) {
                     /* Toggle   */
                     $url_img  = new moodle_url('/pix/t/expanded.png');
-                    foreach ($levelOne as $idOne=>$one) {
-                        $levelTwo = $one->levelTwo;
-                        if ($levelTwo) {
-                            $id_toggle_one   = 'YUI_' . $idOne;
-                            $out_report .= self::Add_CompanyHeader_LevelZero_Screen($one->name,$id_toggle_one,$url_img);
-                            $out_report .= html_writer::start_tag('div',array('class' => 'level_one_list','id'=> $id_toggle_one . '_div'));
-                                foreach ($levelTwo as $id=>$level) {
-                                    $color = 'r0';
-                                    $levelThree = $level->levelThree;
-                                    if ($levelThree) {
-                                        $id_toggle = 'YUI_' . $id;
-                                        $out_report .= self::Add_CompanyHeader_Screen($level->name,$id_toggle,$url_img);
-                                        $out_report .= html_writer::start_tag('div',array('class' => 'level_two_list','id'=> $id_toggle . '_div'));
-                                            $out_report .= html_writer::start_tag('div',array('class' => 'company_level'));
-                                                /* Header Table     */
-                                                $out_report .= self::Add_HeaderTable_LevelTwo_Screen();
-                                                /* Content Table    */
-                                                $out_report .= html_writer::start_tag('table');
+                    $out_report .= html_writer::start_tag('div',array('class' => 'outcome_content'));
+                        foreach ($levelOne as $idOne=>$one) {
+                            $levelTwo = $one->levelTwo;
+                            if ($levelTwo) {
+                                $id_toggle_one   = 'YUI_' . $idOne;
+                                /* Header Level One    */
+                                $out_report .= self::Add_CompanyHeader_LevelZero_Screen($one->name,$id_toggle_one,$url_img);
+                                /* Content Level One   */
+                                $out_report .= html_writer::start_tag('div',array('class' => 'level_one_list','id'=> $id_toggle_one . '_div'));
+                                    foreach ($levelTwo as $id=>$level) {
+                                        $color = 'r0';
+                                        $levelThree = $level->levelThree;
+                                        if ($levelThree) {
+                                            $id_toggle = 'YUI_' . $id;
+                                            /* Header Level Two     */
+                                            $out_report .= self::Add_CompanyHeader_Screen($level->name,$id_toggle,$url_img);
+                                            /* Content Level Two    */
+                                            $out_report .= html_writer::start_tag('div',array('class' => 'level_two_list','id'=> $id_toggle . '_div'));
+                                                $out_report .= html_writer::start_tag('div',array('class' => 'company_level'));
+                                                    /* Header Table     */
+                                                    $out_report .= self::Add_HeaderTable_LevelTwo_Screen();
+                                                    /* Content Table    */
+                                                    $out_report .= html_writer::start_tag('table');
                                                     foreach ($levelThree as $id_three=>$company) {
                                                         $url_level_three = new moodle_url('/report/manager/course_report/course_report_level.php',array('rpt' => '3','co' => $id_three,'lt' => $level->id,'lo'=>$idOne, 'opt' => $completed_option));
                                                         $out_report .= self::Add_ContentTable_LevelTwo_Screen($url_level_three,$company,$color);
@@ -1141,19 +1146,22 @@ class course_report {
                                                             $color = 'r0';
                                                         }
                                                     }//for_level_Three
-                                                $out_report .= html_writer::end_tag('table');
-                                            $out_report .= html_writer::end_tag('div');//course_list
-                                        $out_report .= html_writer::end_tag('div');//level_two_list
-                                    }//if_level_three
-                                }//for_level_two
-                            $out_report .= html_writer::end_tag('div');//level_one_list
-                        }//if_levelTwo
-                    }//for_levelOne
+                                                    $out_report .= html_writer::end_tag('table');
+                                                $out_report .= html_writer::end_tag('div');//course_list
+                                            $out_report .= html_writer::end_tag('div');//level_two_list
+                                        }//if_level_three
+                                    }//for_level_two
+                                $out_report .= html_writer::end_tag('div');//level_one_list
+                            }//if_levelTwo
+                        }//for_levelOne
+                    $out_report .= html_writer::end_tag('div');//outcome_content
                 }//if_levelOne
             $out_report .= html_writer::end_div();//outcome_rpt_div
 
             /* Return selection page    */
             $out_report .= html_writer::link($return_url,get_string('course_return_to_selection','report_manager'),array('class' => 'link_return'));
+
+            $out_report .= '<hr class="line_rpt_lnk">';
 
             return $out_report;
         }catch (Exception $ex) {
@@ -1252,47 +1260,51 @@ class course_report {
                 if ($levelOne) {
                     $levelTwo = $levelOne->levelTwo;
                     if ($levelTwo) {
-                        foreach ($levelTwo as $id=>$level) {
-                            $color = 'r0';
-                            $levelThree = $level->levelThree;
-                            if ($levelThree) {
-                                /* Toggle   */
-                                $url_img  = new moodle_url('/pix/t/expanded.png');
-                                $id_toggle = 'YUI_' . $id;
-                                /* Header Company  - Level Two */
-                                $out_report .= self::Add_CompanyHeader_Screen($level->name,$id_toggle,$url_img);
+                        $out_report .= html_writer::start_tag('div',array('class' => 'outcome_content'));
+                            foreach ($levelTwo as $id=>$level) {
+                                $color = 'r0';
+                                $levelThree = $level->levelThree;
+                                if ($levelThree) {
+                                    /* Toggle   */
+                                    $url_img  = new moodle_url('/pix/t/expanded.png');
+                                    $id_toggle = 'YUI_' . $id;
+                                    /* Header Company  - Level Two */
+                                    $out_report .= self::Add_CompanyHeader_Screen($level->name,$id_toggle,$url_img);
 
-                                /* Level Two List   */
-                                $out_report .= html_writer::start_tag('div',array('class' => 'level_two_list','id'=> $id_toggle . '_div'));
-                                    $out_report .= html_writer::start_tag('div',array('class' => 'company_level'));
-                                    /* Header Table     */
-                                    $out_report .= self::Add_HeaderTable_LevelTwo_Screen();
-                                    /* Content Table    */
-                                    $out_report .= html_writer::start_tag('table');
-                                    foreach ($levelThree as $id_three=>$company) {
-                                        $url_level_three = new moodle_url('/report/manager/course_report/course_report_level.php',array('rpt' => '3','co' => $id_three,'lt' => $level->id,'lo'=>$levelOne->id,'opt' => $completed_option));
+                                    /* Level Two List   */
+                                    $out_report .= html_writer::start_tag('div',array('class' => 'level_two_list','id'=> $id_toggle . '_div'));
+                                        $out_report .= html_writer::start_tag('div',array('class' => 'company_level'));
+                                            /* Header Table     */
+                                            $out_report .= self::Add_HeaderTable_LevelTwo_Screen();
+                                            /* Content Table    */
+                                            $out_report .= html_writer::start_tag('table');
+                                            foreach ($levelThree as $id_three=>$company) {
+                                                $url_level_three = new moodle_url('/report/manager/course_report/course_report_level.php',array('rpt' => '3','co' => $id_three,'lt' => $level->id,'lo'=>$levelOne->id,'opt' => $completed_option));
 
-                                        /* Company Header   */
-                                        $out_report .= self::Add_ContentTable_LevelTwo_Screen($url_level_three,$company,$color);
+                                                /* Company Header   */
+                                                $out_report .= self::Add_ContentTable_LevelTwo_Screen($url_level_three,$company,$color);
 
-                                        /* Change Color */
-                                        if ($color == 'r0') {
-                                            $color = 'r2';
-                                        }else {
-                                            $color = 'r0';
-                                        }
-                                    }//for_level_Three
-                                    $out_report .= html_writer::end_tag('table');
-                                    $out_report .= html_writer::end_tag('div');//course_list
-                                $out_report .= html_writer::end_tag('div');//level_two_list
-                            }//if_level_three
-                        }//for_level_two
+                                                /* Change Color */
+                                                if ($color == 'r0') {
+                                                    $color = 'r2';
+                                                }else {
+                                                    $color = 'r0';
+                                                }
+                                            }//for_level_Three
+                                            $out_report .= html_writer::end_tag('table');
+                                        $out_report .= html_writer::end_tag('div');//course_list
+                                    $out_report .= html_writer::end_tag('div');//level_two_list
+                                }//if_level_three
+                            }//for_level_two
+                        $out_report .= html_writer::end_tag('div');//outcome_content
                     }//if_levelTwo
                 }//if_levelOne
             $out_report .= html_writer::end_div();//outcome_rpt_div
 
             /* Return selection page    */
             $out_report .= html_writer::link($return_url,get_string('course_return_to_selection','report_manager'),array('class' => 'link_return'));
+
+            $out_report .= '<hr class="line_rpt_lnk">';
 
             return $out_report;
         }catch (Exception $ex) {
@@ -1400,32 +1412,34 @@ class course_report {
                     $levelThree = $levelTwo->levelThree;
                     if ($levelThree) {
                         $color = 'r0';
-                        $out_report .= html_writer::start_tag('div');
+                        $out_report .= html_writer::start_tag('div',array('class' => 'outcome_content'));
                             $out_report .= html_writer::start_tag('div',array('class' => 'company_level'));
                                 /* Header Table     */
                                 $out_report .= self::Add_HeaderTable_LevelTwo_Screen();
                                 /* Content Table    */
                                 $out_report .= html_writer::start_tag('table');
-                                    foreach ($levelThree as $id_three=>$company) {
-                                        $url_level_three = new moodle_url('/report/manager/course_report/course_report_level.php',array('rpt' => '3','co' => $id_three,'lt' => $levelTwo->id,'lo'=>$levelOne->id,'opt' => $completed_option));
-                                        $out_report .= self::Add_ContentTable_LevelTwo_Screen($url_level_three,$company,$color);
+                                foreach ($levelThree as $id_three=>$company) {
+                                    $url_level_three = new moodle_url('/report/manager/course_report/course_report_level.php',array('rpt' => '3','co' => $id_three,'lt' => $levelTwo->id,'lo'=>$levelOne->id,'opt' => $completed_option));
+                                    $out_report .= self::Add_ContentTable_LevelTwo_Screen($url_level_three,$company,$color);
 
-                                        /* Change Color */
-                                        if ($color == 'r0') {
-                                            $color = 'r2';
-                                        }else {
-                                            $color = 'r0';
-                                        }
-                                    }//for_level_Three
+                                    /* Change Color */
+                                    if ($color == 'r0') {
+                                        $color = 'r2';
+                                    }else {
+                                        $color = 'r0';
+                                    }
+                                }//for_level_Three
                                 $out_report .= html_writer::end_tag('table');
                             $out_report .= html_writer::end_tag('div');//course_list
-                        $out_report .= html_writer::end_tag('div');//level_two_list
+                        $out_report .= html_writer::end_tag('div');//outcome_content
                     }//if_level_three
                 }//if_level_two
             $out_report .= html_writer::end_div();//outcome_rpt_div
 
             /* Return selection page    */
             $out_report .= html_writer::link($return_url,get_string('course_return_to_selection','report_manager'),array('class' => 'link_return'));
+
+            $out_report .= '<hr class="line_rpt_lnk">';
 
             return $out_report;
         }catch (Exception $ex) {
@@ -1531,26 +1545,30 @@ class course_report {
                 if ($levelTwo) {
                     $levelThree = $course_report->levelThree;
                     if ($levelThree) {
-                        foreach ($levelThree as $id=>$company) {
-                            /* Toggle   */
-                            $url_img  = new moodle_url('/pix/t/expanded.png');
-                            $id_toggle = 'YUI_' . $id;
-                            $out_report .= self::Add_CompanyHeader_Screen($company->name,$id_toggle,$url_img);
+                        $out_report .= html_writer::start_tag('div',array('class' => 'outcome_content'));
+                            foreach ($levelThree as $id=>$company) {
+                                /* Toggle   */
+                                $url_img  = new moodle_url('/pix/t/expanded.png');
+                                $id_toggle = 'YUI_' . $id;
+                                $out_report .= self::Add_CompanyHeader_Screen($company->name,$id_toggle,$url_img);
 
-                            /* Info company - Users */
-                            $out_report .= html_writer::start_tag('div',array('class' => 'course_list','id'=> $id_toggle . '_div'));
-                                /* Header Table     */
-                                $out_report .= self::Add_HeaderTable_LevelThree_Screen();
-                                /* Content Table    */
-                                $out_report .= self::Add_ContentTable_LevelThree_Screen($company);
-                            $out_report .= html_writer::end_tag('div');//courses_list
-                        }//for_level_three
+                                /* Info company - Users */
+                                $out_report .= html_writer::start_tag('div',array('class' => 'course_list','id'=> $id_toggle . '_div'));
+                                    /* Header Table     */
+                                    $out_report .= self::Add_HeaderTable_LevelThree_Screen();
+                                    /* Content Table    */
+                                    $out_report .= self::Add_ContentTable_LevelThree_Screen($company);
+                                $out_report .= html_writer::end_tag('div');//courses_list
+                            }//for_level_three
+                        $out_report .= html_writer::end_tag('div');//outcome_content
                     }//if_level_three
                 }//if_level_two
             $out_report .= html_writer::end_div();//outcome_rpt_div
 
             /* Return selection page    */
             $out_report .= html_writer::link($return_url,get_string('course_return_to_selection','report_manager'),array('class' => 'link_return'));
+
+            $out_report .= '<hr class="line_rpt_lnk">';
 
             return $out_report;
         }catch (Exception $ex) {

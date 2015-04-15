@@ -362,13 +362,14 @@ $string['status']           = 'Status';
 $string['csv_line']         = 'Linje';
 $string['err_company']      = 'Dette arbeidsstedet eksisterer fra før.';
 
-$string['btn_search']                   = 'Søk...';
-$string['employee_report']              = 'Ansatt-rapport';
-$string['employee_return_to_selection'] = 'Gå tilbake til rapportmenyen';
-$string['sel_job_role']                 = "Velg en jobbrolle...";
-$string['expired_next']     = 'Utløper neste';
-$string['existing_item']    = 'Eksisterende element';
-$string['employee_report_link'] = 'Status på sertifiseringer';
+$string['btn_search']                           = 'Søk...';
+$string['employee_report']                      = 'Ansatt-rapport';
+$string['employee_return_to_selection']         = 'Gå tilbake til rapportmenyen';
+$string['sel_job_role']                         = "Velg en jobbrolle...";
+$string['expired_next']                         = 'Utløper neste';
+$string['existing_item']                        = 'Eksisterende element';
+$string['employee_report_link']                 = 'Status på sertifiseringer';
+$string['company_overview_return_selection']    = 'Return to company overview report selection page';
 
 $string['underconstruction'] = 'Beklager, men denne rapporten/block er for tiden deaktivert. Vi arbeider med å forbedre den.';
 $string['county']       = 'Fylke';

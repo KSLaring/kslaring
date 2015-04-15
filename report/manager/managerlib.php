@@ -197,6 +197,84 @@ class CompetenceManager {
     }//GetCompletedList
 
     /**
+     * @param           $index
+     * @param           bool $future
+     * @return          int
+     * @throws          Exception
+     *
+     * @creationDate    14/04/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Calculate the completion date
+     */
+    public static function Get_CompletedDate_Timestamp($index, $future = false) {
+        /* Variables    */
+        $today = strtotime("today", usertime( time() ));
+        $future = $future ? 1 : -1;
+        $ts = 0;
+
+        try {
+            switch($index) {
+                case 0:
+                    $ts = strtotime('today', $today);
+                    break;
+
+                case 1:
+                    $ts = strtotime(1 * $future . ' week', $today);
+                    break;
+
+                case 2:
+                    $ts = strtotime(2 * $future . ' weeks', $today);
+                    break;
+
+                case 3:
+                    $ts = strtotime(3 * $future . ' weeks', $today);
+                    break;
+
+                case 4:
+                    $ts = strtotime(1 * $future . ' month', $today);
+                    break;
+
+                case 5:
+                    $ts = strtotime(2 * $future . ' month', $today);
+                    break;
+
+                case 6:
+                    $ts = strtotime(3 * $future . ' month', $today);
+                    break;
+
+                case 7:
+                    $ts = strtotime(4 * $future . ' month', $today);
+                    break;
+
+                case 8:
+                    $ts = strtotime(5 * $future . ' month', $today);
+                    break;
+
+                case 9:
+                    $ts = strtotime(6 * $future . ' month', $today);
+                    break;
+
+                case 10:
+                    $ts = strtotime(1 * $future . ' year', $today);
+                    break;
+
+                case 11:
+                    $ts = strtotime(2 * $future . ' years', $today);
+                    break;
+
+                default:
+                    $ts = 0;
+            }//switch_index
+
+            return $ts;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//Get_CompletedDate_Timestamp
+
+    /**
      * @param           $company
      * @return          bool
      * @throws          Exception
@@ -505,6 +583,18 @@ class CompetenceManager {
         }//try_catch
     }//GetCompany_Name
 
+    /**
+     * @param           $my_companies
+     * @param           $user_id
+     * @return          null|string
+     * @throws          Exception
+     *
+     * @creationDate    08/04/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Get all the users connected with my companies
+     */
     public static function GetUsers_MyCompanies($my_companies,$user_id) {
         /* Variables    */
         global $DB;

@@ -155,7 +155,7 @@ if ($form->is_cancelled()) {
 echo $OUTPUT->header();
 
 if (!empty($out)) {
-    echo $OUTPUT->heading($out);
+    echo $out;
 }else {
     /* Print tabs at the top */
     $current_tab = 'outcome_report_level';

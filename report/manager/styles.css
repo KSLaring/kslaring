@@ -7,6 +7,15 @@
     text-indent: 10px;
 }
 
+.line_rpt_lnk {
+    border: 0;
+    border-top: none;
+    width: 99.5%;
+    margin-top: 15px;
+    margin-bottom: 15px;
+    text-indent: 10px;
+}
+
 .completed {
     background: #dff0d8;
 }
@@ -23,7 +32,26 @@
     clear: both;
     width:100%;
 }
-.employee_div .expiration,
+
+.employee_detail_rpt {
+    margin-bottom: 25px;
+}
+
+.employee_detail_rpt h2,
+.employee_detail_rpt h3,
+.employee_detail_rpt h4 {
+    margin-bottom: 2px;
+    margin-top: 0px;
+    color: #004b93;
+}
+
+.employee_detail_rpt h5 {
+    color: rgba(94, 83, 83, 0.86);
+    margin-bottom: 0px;
+    margin-top: 0px;
+}
+
+.employee_detail_rpt .expiration,
 .outcome_detail_rpt .expiration {
     position: relative;
     float: right;
@@ -36,21 +64,11 @@
     padding: 8px 8px 8px 8px;
     margin-left: 20px;
 }
-.employee_div .header_info {
-    height:50px;
-    margin-top:0px;
-    width:100%;
-}
-.employee_div .header_info h3 {
-    height:30px;
-    text-align: left;
-    text-transform: uppercase;
-    padding: 10px 0 5px 10px;
-    margin: 0px;
-}
+
 .employee_div .employee_content {
     height: auto;
-    margin-bottom: 5px;
+    margin-bottom: 15px;
+    margin-top: 15px;
     width:100%;
 }
 .employee_div .employee_content table tr:nth-child(odd) {
@@ -64,7 +82,7 @@
   height: 60px;
 }
 .employee_div .employee_content thead.head_employee {
-  background-color: #f9f9f9;
+  background-color: #e7eaef;
 }
 .employee_div .employee_content div.rotate {
   width: 70px;
@@ -89,44 +107,44 @@
 }
 .employee_div .employee_content th.col_head {
   height: 150px;
-  background-color: #f9f9f9;
-  border-bottom: 1px solid #f3f3f3;
+  background-color: #e7eaef;
+  border-bottom: 1px solid #cfd2d7;
 }
 .employee_div .employee_content th.user_head {
-  background-color: #f9f9f9;
-    text-align: left;
-  border-bottom: 1px solid #f3f3f3;
+  background-color: #e7eaef;
+  text-align: left;
+  border-bottom: 1px solid #cfd2d7;
 }
 .employee_div .employee_content td.completed {
     text-align: center;
     background: #dff0d8;
-  border-bottom: 1px solid #f3f3f3;
+    border-bottom: 1px solid #cfd2d7;
 }
 .employee_div .employee_content td.valid {
     text-align: center;
-  background: #dff0d8;
-  border-bottom: 1px solid #f3f3f3;
+    background: #dff0d8;
+    border-bottom: 1px solid #cfd2d7;
 }
 .employee_div .employee_content td.expired {
     text-align: center;
-  text-decoration: none;
+    text-decoration: none;
     background: #f2dede;
-  border-bottom: 1px solid #f3f3f3;
+    border-bottom: 1px solid #cfd2d7;
 }
 .employee_div .employee_content td.not_completed {
     text-align: center;
-  background: #FCFCED;
-  border-bottom: 1px solid #f3f3f3;
+    background: #FCFCED;
+    border-bottom: 1px solid #cfd2d7;
 }
 .employee_div .employee_content td.not_enroll {
     text-align: center;
-  border-bottom: 1px solid #f3f3f3;
+    border-bottom: 1px solid #cfd2d7;
 }
 .employee_div .employee_content td.user {
   width: 90px;
   color: #004b93;
-    text-align: left;
-  border-bottom: 1px solid #f3f3f3;
+  text-align: left;
+  border-bottom: 1px solid #cfd2d7;
 }
 
 .tracker_list {
@@ -329,6 +347,14 @@
     width:100%;
 }
 
+.outcome_rpt_div .outcome_content,
+.company_rpt_div .company_content {
+    height: auto;
+    margin-bottom: 15px;
+    margin-top: 15px;
+    width:100%;
+}
+
 .company_rpt_div .col_one {
     float:left;
     width:2%;
@@ -482,8 +508,7 @@
     margin-bottom: 5px;
 }
 
-.outcome_detail_rpt h6,
-.company_detail_rpt h3 {
+.outcome_detail_rpt h6 {
     color: rgba(94, 83, 83, 0.86);
     margin-bottom: 0px;
     margin-top: 0px;
@@ -491,7 +516,8 @@
 
 .outcome_detail_rpt h2,
 .outcome_detail_rpt h3,
-.outcome_detail_rpt h5 {
+.outcome_detail_rpt h5,
+.company_detail_rpt h3 {
     margin-bottom: 2px;
     margin-top: 0px;
     color: #004b93;
