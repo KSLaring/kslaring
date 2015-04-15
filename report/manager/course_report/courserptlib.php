@@ -2141,7 +2141,7 @@ class course_report {
 
             // Creating a workbook
             $export = new MoodleExcelWorkbook("-");
-            // Sending HTTP headers
+            //Sending HTTP headers
             $export->send($file_name);
 
             /* Level One   */
@@ -2241,9 +2241,10 @@ class course_report {
             if ($outcomes) {
                 foreach ($outcomes as $outcome) {
                     $str_outcomes[] = $outcome->name;
+                    $str_outcomes = implode(', ',$str_outcomes);
                 }//for_outcomes
             }
-            $my_xls->write($row, $col, implode(', ',$str_outcomes),array('size'=>10, 'name'=>'Arial','bold'=>'1','text_wrap'=>true,'v_align'=>'center'));
+            $my_xls->write($row, $col, $str_outcomes,array('size'=>10, 'name'=>'Arial','bold'=>'1','text_wrap'=>true,'v_align'=>'center'));
             $my_xls->merge_cells($row,$col,$row,$col+10);
             $my_xls->set_row($row,25);
 

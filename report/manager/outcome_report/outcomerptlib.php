@@ -2351,6 +2351,7 @@ class outcome_report {
         $col = 0;
         $title_out              = get_string('outcome', 'report_manager')  . ' - ' . $out_name;
         $title_jr               = get_string('job_roles', 'report_manager');
+        $str_job_roles          = null;
         $title_expiration       = get_string('expired_next', 'report_manager') . $completed_before;
         $title_level_zero       = get_string('company_structure_level', 'report_manager', 0) . ': ' . $levelZero;
         $title_level_one        = null;
@@ -2379,7 +2380,8 @@ class outcome_report {
             $my_xls->merge_cells($row,$col,$row,$col+10);
             $my_xls->set_row($row,25);
             $row++;
-            $my_xls->write($row, $col, implode(', ',$job_roles),array('size'=>10, 'name'=>'Arial','bold'=>'1','text_wrap'=>true,'v_align'=>'center'));
+            $str_job_roles = implode(', ',$job_roles);
+            $my_xls->write($row, $col, $str_job_roles ,array('size'=>10, 'name'=>'Arial','bold'=>'1','text_wrap'=>true,'v_align'=>'center'));
             $my_xls->merge_cells($row,$col,$row,$col+10);
             $my_xls->set_row($row,25);
 
