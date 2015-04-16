@@ -383,9 +383,9 @@ $string['err_job_role']     = 'Denne jobbrollen eksisterer allerede.';
 
 $string['public']           = 'Offentlig';
 
-$string['av_jobroles']          = 'Available Job roles';
-$string['not_sel_jobroles']     = 'None Job roles';
-$string['selected_jobroles']    = 'Selected Job Roles';
+$string['av_jobroles']          = 'Tilgjengelige jobbroller';
+$string['not_sel_jobroles']     = 'Ingen jobbroller';
+$string['selected_jobroles']    = 'Valgte jobbroller';
 
-$string['add_all']      = 'Add all';
-$string['remove_all']   = 'Remove all';
+$string['add_all']      = 'Legg til alle';
+$string['remove_all']   = 'Fjern alle';
