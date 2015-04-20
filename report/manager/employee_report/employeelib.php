@@ -78,12 +78,12 @@ class EmployeeReport {
      *              --> id
      *              --> name
      *              --> courses.    Array
-     *      --> job_roles.
      *      --> outcome.
      *              --> id
      *              --> name
      *              --> description
      *              --> expiration
+     *              --> job_roles
      *              --> course.     Array
      *                          --> id
      *                          --> name
@@ -99,24 +99,17 @@ class EmployeeReport {
             /* My Users     */
             $my_users = CompetenceManager::GetUsers_MyCompanies($company->levelThree,$USER->id);
 
-            /* Job Roles connected to the level Three    */
-            if (CompetenceManager::IsPublic($company->levelThree)) {
-                CompetenceManager::GetJobRoles_Generics($job_roles);
-            }//if_isPublic
-            CompetenceManager::GetJobRoles_Hierarchy($job_roles,$company->levelZero,$company->levelOne,$company->levelTwo,$company->levelThree);
-
 
             /* Employee Tracker */
             $employeeTracker = new stdClass();
             $employeeTracker->levelThree         = $company->levelThree;
             $employeeTracker->name               = CompetenceManager::GetCompany_Name($company->levelThree);
             $employeeTracker->users              = null;
-            $employeeTracker->job_roles          = $job_roles;
             $employeeTracker->outcome            = self::Get_DetailOutcome($outcome);
 
             /* Outcome --> Info Users   */
             if ($employeeTracker->outcome && $my_users) {
-                $employeeTracker->users = self::GetUsers_EmployeeTracker($company->levelThree,$my_users,$employeeTracker->outcome->courses,$job_roles);
+                $employeeTracker->users = self::GetUsers_EmployeeTracker($company->levelThree,$my_users,$employeeTracker->outcome->courses,$employeeTracker->outcome->job_roles);
             }//if_outcome
 
             return $employeeTracker;
@@ -145,10 +138,10 @@ class EmployeeReport {
      *              --> id
      *              --> name
      *              --> courses. Array
-     *      --> job_roles.
      *      --> outcome.
      *              --> id
      *              --> name
+     *              --> job_roles
      *              --> expiration
      *              --> course.     Array
      *                          --> id
@@ -287,6 +280,7 @@ class EmployeeReport {
      *          --> name
      *          --> description
      *          --> expiration
+     *          --> job_roles
      *          --> courses.    Array
      *                      --> id
      *                      --> name
@@ -306,12 +300,14 @@ class EmployeeReport {
                                     go.fullname,
                                     go.description,
                                     GROUP_CONCAT(DISTINCT c.id ORDER BY c.fullname SEPARATOR ',') as 'courses',
+                                    GROUP_CONCAT(DISTINCT roj.jobroleid ORDER BY roj.jobroleid SEPARATOR ',') as 'jobroles',
                                     oe.expirationperiod
                      FROM		   	{grade_outcomes}			    go
                         JOIN	    {grade_outcomes_courses}	    goc	    ON 		goc.outcomeid 	= go.id
                         JOIN	    {course}					    c	    ON		c.id 			= goc.courseid
                                                                             AND		c.visible 		= 1
                         JOIN 		{report_gen_outcome_exp}	    oe	    ON		oe.outcomeid	= go.id
+                        JOIN 		{report_gen_outcome_jobrole}	roj		ON 		roj.outcomeid  	= go.id
                      WHERE		go.id = :outcome
                      GROUP BY	go.id ";
 
@@ -326,6 +322,7 @@ class EmployeeReport {
                     $outcomeInfo->description   = $rdo->description;
                     $outcomeInfo->expiration    = $rdo->expirationperiod;
                     $outcomeInfo->courses       = self::Get_InfoCourses($rdo->courses);
+                    $outcomeInfo->job_roles     = $rdo->jobroles;
                 }//if_courses
             }//if_rdo
 
@@ -410,7 +407,7 @@ class EmployeeReport {
         $users              = array();
         $info               = null;
         $courses            = implode(',',array_keys($outcomeCourses));
-        $job_keys           = array_flip(array_keys($job_roles));
+        $job_keys           = array_flip(explode(',',$job_roles));
         $jr_users           = null;
         $completed          = null;
         $not_completed      = null;
