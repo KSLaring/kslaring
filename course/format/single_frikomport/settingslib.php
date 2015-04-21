@@ -30,7 +30,7 @@
 defined('MOODLE_INTERNAL') || die;
 
 
-class format_singlea_frikomport_admin_setting_activitytype extends admin_setting_configselect {
+class format_single_frikomport_admin_setting_activitytype extends admin_setting_configselect {
     /**
      * This function may be used in ancestors for lazy loading of choices
      *
