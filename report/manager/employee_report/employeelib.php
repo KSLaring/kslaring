@@ -176,7 +176,7 @@ class EmployeeReport {
                     /* Expiration Before    */
                     $options = CompetenceManager::GetCompletedList();
                     $out_report .= html_writer::start_div('expiration');
-                        $out_report .= get_string('expired_next', 'report_manager') .  $options[$completed_list];
+                        $out_report .= get_string('expired_next', 'report_manager') . ': ' .  $options[$completed_list];
                     $out_report .= html_writer::end_div();//expiration
                 $out_report .= html_writer::end_tag('div');//employee_detail_rpt
 

@@ -217,8 +217,14 @@ class TrackerManager {
             foreach ($tracker_competence as $competence) {
                 /* Header Company   */
                 $companyToggle = 'YUI_' . $competence->levelThree;
+                /* Company Name */
                 $out_tracker .= html_writer::start_tag('div',array('class' => 'header_tracker'));
                     $out_tracker .= '<h5>'. $competence->name . '</h5>';
+                $out_tracker .= html_writer::end_tag('div');
+
+                /* Job Roles    */
+                $out_tracker .= html_writer::start_tag('div',array('class' => 'header_tracker_jr'));
+                    $out_tracker .= '<h6>' . self::Get_JobRolesNames($competence->job_roles) . '</h6>';
                 $out_tracker .= html_writer::end_tag('div');
 
                 /* Tracker Info */
@@ -763,6 +769,51 @@ class TrackerManager {
             throw $ex;
         }//try_Catch
     }//GetTrackerNotConnected
+
+    /**
+     * @param           $job_roles
+     * @return          null|string
+     * @throws          Exception
+     *
+     * @creationDate    21/04/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Get the job roles names
+     */
+    private static function Get_JobRolesNames($job_roles) {
+        /* Variables    */
+        global $DB;
+        $jr_names = null;
+
+        try {
+            if ($job_roles) {
+                /* SQL Instruction  */
+                $sql = " SELECT		id,
+                                    CONCAT(industrycode,' - ',name) as 'name'
+                         FROM		{report_gen_jobrole}
+                         WHERE		id IN ($job_roles)
+                         ORDER BY	industrycode, name ";
+
+                /* Execute  */
+                $rdo = $DB->get_records_sql($sql);
+                if ($rdo) {
+                    foreach ($rdo as $instance) {
+                        if ($jr_names) {
+                            $jr_names .= ', ' . $instance->name;
+                        }else {
+                            $jr_names = $instance->name;
+                        }//if_jr_names
+
+                    }//for_each_job_role
+                }//if_rdo
+            }//if_job_roles
+
+            return $jr_names;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//Get_JobRolesNames
 
     /**
      * @return          string

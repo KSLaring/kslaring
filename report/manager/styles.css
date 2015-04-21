@@ -188,9 +188,20 @@
     text-indent: 1px;
 }
 
+.header_tracker_jr {
+    width: 100%;
+    clear: both;
+    display:block;
+    background: #edf2fa;
+    padding-top: 0.01em;
+    padding-bottom: 0.01em;
+    text-indent: 1px;
+}
+
 .header_tracker h3,
 .header_tracker h4,
-.header_tracker h5 {
+.header_tracker h5,
+.header_tracker_jr h6 {
     /* Top Right Bottom LEft:   */
     margin: 5px 0px 5px 0px;
     color : #3a3d41;
