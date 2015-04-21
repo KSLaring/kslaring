@@ -31,7 +31,7 @@ defined('MOODLE_INTERNAL') || die;
 require_once($CFG->dirroot. '/course/format/single_frikomport/settingslib.php');
 
 if ($ADMIN->fulltree) {
-    $settings->add(new format_singleactivity_admin_setting_activitytype('format_single_frikomport/activitytype',
+    $settings->add(new format_single_frikomport_admin_setting_activitytype('format_single_frikomport/activitytype',
             new lang_string('defactivitytype', 'format_single_frikomport'),
             new lang_string('defactivitytypedesc', 'format_single_frikomport'),
             'forum', null));
