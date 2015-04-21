@@ -127,7 +127,7 @@ class block_courses_site extends block_base {
      * Get the information connected with the course that has to be displayed
      */
     function block_courses_site_GetInfoDisplay($lst_courses_site) {
-        /* Varaibles    */
+        /* Variables    */
         $lst_info = array();
         foreach ($lst_courses_site as $key => $course_site) {
             $lst_info[] = $info_display = courses_site::courses_site_GetInfoBlock($course_site);
@@ -205,7 +205,8 @@ class block_courses_site extends block_base {
 
     function block_courses_site_AddColumnHeader($course_site, $class) {
         /* Variables    */
-        $description = ' ';
+        $description = null;
+
         /* Get URL For Course   */
         $url = new moodle_url('/local/course_page/home_page.php',array('id' => $course_site->course));
         $this->content->text .= '<div class="' . $class . '">';
@@ -226,7 +227,7 @@ class block_courses_site extends block_base {
     }//block_courses_site_AddColumn
 
     function block_courses_site_AddColumnExtra($course_site, $class) {
-        /* Varaibles    */
+        /* Variables    */
         $pre = '';
         $str_format = 'format_' . $course_site->type;
 
@@ -279,6 +280,22 @@ class block_courses_site extends block_base {
         $this->content->text .= '</div>';//class
     }//block_courses_site_AddColumnExtra
 
+    /**
+     * @param           $course_site
+     * @param           $class
+     *
+     * @creationDate    22/05/2014
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Add the column button
+     *
+     * @updateDate      21/04/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Add the frikomport formats
+     */
     function block_courses_site_AddColumnButton($course_site, $class) {
         global $OUTPUT, $CFG;
         /* Get URL For Course   */
@@ -296,13 +313,22 @@ class block_courses_site extends block_base {
                     $url_img = $OUTPUT->pix_url('i/nettkurs');
                     $this->content->text .= html_writer::empty_tag('img', array('src' => $url_img, 'alt' => 'nett kurs icon', 'class' => 'icon'));
                     break;
+                case 'elearning_frikomport':
+                    $url_img = $OUTPUT->pix_url('i/nettkurs');
+                    $this->content->text .= html_writer::empty_tag('img', array('src' => $url_img, 'alt' => 'eLearning kurs icon', 'class' => 'icon'));
+                    break;
                 case 'classroom':
+                case 'classroom_frikomport':
                     $url_img = $OUTPUT->pix_url('i/classroom');
                     $this->content->text .= html_writer::empty_tag('img', array('src' => $url_img, 'alt' => 'classroom icon', 'class' => 'icon'));
                     break;
                 case 'whitepaper':
                     $url_img = $OUTPUT->pix_url('i/whitepaper');
                     $this->content->text .= html_writer::empty_tag('img', array('src' => $url_img, 'alt' => 'whitepaper icon', 'class' => 'icon'));
+                    break;
+                case 'single_frikomport':
+                    $url_img = $OUTPUT->pix_url('i/whitepaper');
+                    $this->content->text .= html_writer::empty_tag('img', array('src' => $url_img, 'alt' => 'single activity icon', 'class' => 'icon'));
                     break;
                 default:
                     break;

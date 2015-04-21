@@ -15,25 +15,24 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Main class for the Whitepaper course format
+ * Single Frikomport Format - Library
  *
  * Description
  *
- * @package         course
- * @subpackage      format/whitepaper
- * @copyright       2014        eFaktor {@link http://www.efaktor.no}
+ * @package             course
+ * @subpackage          format/single_frikomport
+ * @copyright           2010 eFaktor
  *
- * @updateDate      14/05/2014
- * @author          eFaktor
+ * @creationDate        20/04/2015
+ * @author              eFaktor     (fbv)
  *
  */
-
 defined('MOODLE_INTERNAL') || die();
 require_once($CFG->dirroot. '/course/format/lib.php');
 require_once($CFG->dirroot . '/local/course_page/locallib.php');
 
 
-class format_whitepaper extends format_base {
+class format_single_frikomport extends format_base {
     /** @var cm_info the current activity. Use get_activity() to retrieve it. */
     private $activity = false;
 
@@ -53,12 +52,12 @@ class format_whitepaper extends format_base {
             $sectionnum = $section->section;
         }
         if ($sectionnum == 1) {
-            return new moodle_url('/course/view.php', array('id' => $this->courseid, 'section' => 1,'start' => 1));
+            return new moodle_url('/course/view.php', array('id' => $this->courseid, 'section' => 1));
         }
         if (!empty($options['navigation']) && $section !== null) {
             return null;
         }
-        return new moodle_url('/course/view.php', array('id' => $this->courseid,'start' => 1));
+        return new moodle_url('/course/view.php', array('id' => $this->courseid));
     }
 
     /**
@@ -70,18 +69,19 @@ class format_whitepaper extends format_base {
     public function extend_course_navigation($navigation, navigation_node $node) {
         // Display orphaned activities for the users who can see them.
         $context = context_course::instance($this->courseid);
-        if (has_all_capabilities(array('moodle/course:viewhiddensections',
-                'moodle/course:viewhiddenactivities'), $context)) {
+        if (has_capability('moodle/course:viewhiddensections', $context)) {
             $modinfo = get_fast_modinfo($this->courseid);
             if (!empty($modinfo->sections[1])) {
                 $section1 = $modinfo->get_section_info(1);
                 // Show orphaned activities.
-                $orphanednode = $node->add(get_string('orphaned', 'format_whitepaper'),
+                $orphanednode = $node->add(get_string('orphaned', 'format_single_frikomport'),
                         $this->get_view_url(1), navigation_node::TYPE_SECTION, null, $section1->id);
                 $orphanednode->nodetype = navigation_node::NODETYPE_BRANCH;
                 $orphanednode->add_class('orphaned');
                 foreach ($modinfo->sections[1] as $cmid) {
-                    $this->navigation_add_activity($orphanednode, $modinfo->cms[$cmid]);
+                    if (has_capability('moodle/course:viewhiddenactivities', context_module::instance($cmid))) {
+                        $this->navigation_add_activity($orphanednode, $modinfo->cms[$cmid]);
+                    }
                 }
             }
         }
@@ -138,21 +138,21 @@ class format_whitepaper extends format_base {
     /**
      * Definitions of the additional options that this course format uses for course
      *
-     * Whitepaper course format uses one option 'activitytype'
+     * Single_frikomport course format uses one option 'activitytype'
      *
-     * @param           bool    $foreditform
-     * @return                  array
+     * @param       bool $foreditform
+     * @return           array
      *
-     * @updateDate      14/05/2014
+     * @updateDate      21/04/2015
      * @author          eFaktor     (fbv)
      *
      * Description
-     * Add the Home PAge Generator fields
+     * Add Home Page Course fields
      */
     public function course_format_options($foreditform = false) {
         static $courseformatoptions = false;
         if ($courseformatoptions === false) {
-            $config = get_config('format_whitepaper');
+            $config = get_config('format_single_frikomport');
             $courseformatoptions = array(
                 'activitytype' => array(
                     'default' => $config->activitytype,
@@ -197,9 +197,9 @@ class format_whitepaper extends format_base {
             $availabletypes = $this->get_supported_activities();
             $courseformatoptionsedit = array(
                 'activitytype' => array(
-                    'label' => new lang_string('activitytype', 'format_whitepaper'),
+                    'label' => new lang_string('activitytype', 'format_single_frikomport'),
                     'help' => 'activitytype',
-                    'help_component' => 'format_whitepaper',
+                    'help_component' => 'format_single_frikomport',
                     'element_type' => 'select',
                     'element_attributes' => array($availabletypes),
                 ),
@@ -214,17 +214,16 @@ class format_whitepaper extends format_base {
                     'label'                 => get_string('home_author','format_whitepaper'),
                     'element_type'          => 'text',
                     'element_attributes'    => array(
-                                                    0 => 'style="width:95%;"'
-                                                    )
+                        0 => 'style="width:95%;"'
+                    )
                 ),
                 'licence'        => array(
                     'label'                 => get_string('home_licence','format_whitepaper'),
                     'element_type'          => 'text',
                     'element_attributes'    => array(
-                                                    0 => 'style="width:95%;"'
-                                                    )
+                        0 => 'style="width:95%;"'
+                    )
                 ),
-
             );
             $courseformatoptions = array_merge_recursive($courseformatoptions, $courseformatoptionsedit);
         }
@@ -236,13 +235,14 @@ class format_whitepaper extends format_base {
      *
      * This function is called from {@link course_edit_form::definition_after_data()}
      *
-     * Format singleactivity adds a warning when format of the course is about to be changed.
+     * Format single_frikomport adds a warning when format of the course is about to be changed.
+     *
      *
      * @param           MoodleQuickForm $mform
      * @param           bool            $forsection
      * @return          array
      *
-     * @updateDate      27/05/2014
+     * @updateDate      21/04/2015
      * @author          eFaktor     (fbv)
      *
      * Description
@@ -297,82 +297,14 @@ class format_whitepaper extends format_base {
         }//for
 
         if (!$forsection && ($course = $PAGE->course) && !empty($course->format) &&
-            $course->format !== 'site' && $course->format !== 'whitepaper') {
+            $course->format !== 'site' && $course->format !== 'single_frikomport') {
             // This is the existing course in other format, display a warning.
             $element = $mform->addElement('static', '', '',
-                html_writer::tag('span', get_string('warningchangeformat', 'format_whitepaper'),
+                html_writer::tag('span', get_string('warningchangeformat', 'format_single_frikomport'),
                     array('class' => 'error')));
             array_unshift($elements, $element);
         }
         return $elements;
-    }
-
-    /**
-     * @param       array|stdClass $data
-     * @param       null $oldcourse
-     * @return      bool
-     *
-     * @updateDate  27/05/2014
-     * @author      eFaktor     (fbv)
-     *
-     * Description
-     * Update the course format options.
-     */
-    public function update_course_format_options($data, $oldcourse = null) {
-        global $delete;
-
-        $data = (array)$data;
-        $options = $this->course_format_options();
-        foreach ($options as $key => $unused) {
-            switch ($key) {
-                case 'homepage':
-                    if (isset($data['homepage']) && $data['homepage']) {
-                        $data[$key] = 1;
-                    }else {
-                        $data[$key] = 0;
-                    }//if_homepage
-
-                    break;
-                case 'homesummary':
-                    if (isset($data['homesummary_editor']) && ($data['homesummary_editor'])) {
-                        $data[$key] = course_page::getHomeSummaryEditor($data['homesummary_editor']);
-                    }//homesummary_editor
-
-                    break;
-                case 'pagegraphics':
-                    if (isset($data['deletepicture']) && ($data['deletepicture'])) {
-                        $delete = true;
-                    }else {
-                        $delete = false;
-                    }//if_delete
-                    if (isset($data['pagegraphics']) && isset($data['pagegraphics_filemanager'])) {
-                        $graphic_id = course_page::getHomeGraphicsVideo($data['pagegraphics'],'pagegraphics',$data['pagegraphics_filemanager'],$delete);
-                        if ($graphic_id) {
-                            $data[$key] = $graphic_id;
-                        }//if_graphic_id
-                    }//pagegraphics_filemanager
-
-                    break;
-                case 'pagevideo':
-                    if (isset($data['deletevideo']) && ($data['deletevideo'])) {
-                        $delete = true;
-                    }else {
-                        $delete = false;
-                    }//if_delete
-                    if (isset($data['pagevideo']) && isset($data['pagevideo_filemanager'])) {
-                        $video_id = course_page::getHomeGraphicsVideo($data['pagevideo'],'pagevideo',$data['pagevideo_filemanager'],$delete);
-                        if ($video_id) {
-                            $data[$key] = $video_id;
-                        }//if_graphic_id
-                    }//if_page_video_pagevideo_filemanager
-
-                    break;
-                default:
-                    break;
-            }//switch_key
-        }//for_options
-
-        return $this->update_format_options($data);
     }
 
     /**
@@ -547,15 +479,10 @@ class format_whitepaper extends format_base {
      * @param moodle_page $page instance of page calling set_course
      */
     public function page_set_course(moodle_page $page) {
-        global $PAGE, $USER;
+        global $PAGE;
         $page->add_body_class('format-'. $this->get_format());
         if ($PAGE == $page && $page->has_set_url() &&
                 $page->url->compare(new moodle_url('/course/view.php'), URL_MATCH_BASE)) {
-            // If user is editing return to show the course
-            if (!empty($USER->editing) && $USER->editing) {
-                return;
-            }
-
             $edit = optional_param('edit', -1, PARAM_BOOL);
             if (($edit == 0 || $edit == 1) && confirm_sesskey()) {
                 // This is a request to turn editing mode on or off, do not redirect here, /course/view.php will do redirection.
@@ -572,7 +499,7 @@ class format_whitepaper extends format_base {
                 if (has_capability('moodle/course:update', context_course::instance($this->courseid))) {
                     // Teacher is redirected to edit course page.
                     $url = new moodle_url('/course/edit.php', array('id' => $this->courseid));
-                    redirect($url, get_string('erroractivitytype', 'format_whitepaper'));
+                    redirect($url, get_string('erroractivitytype', 'format_single_frikomport'));
                 } else {
                     // Student sees an empty course page.
                     return;

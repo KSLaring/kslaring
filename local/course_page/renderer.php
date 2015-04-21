@@ -231,6 +231,12 @@ class local_course_page_renderer extends plugin_renderer_base {
      *
      * Description
      * Add Prerequisites Block
+     *
+     * @updateDate      21/04/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Add the frikomport formats
      */
     protected function addExtra_PrerequisitesBlock($course,$format_options,&$manager) {
         /* Variables */
@@ -252,6 +258,8 @@ class local_course_page_renderer extends plugin_renderer_base {
             switch ($course->format) {
                 case 'netcourse':
                 case 'classroom':
+                case 'elearning_frikomport':
+                case 'classroom_frikomport':
                     foreach ($format_options as $option) {
                         if ($option->name == 'prerequisities') {
                             if ($option->value) {
@@ -274,6 +282,7 @@ class local_course_page_renderer extends plugin_renderer_base {
 
                     break;
                 case 'whitepaper':
+                case 'single_frikomport':
                     foreach ($format_options as $option) {
                         if ($option->name == 'author') {
                             if ($option->value) {
@@ -313,6 +322,12 @@ class local_course_page_renderer extends plugin_renderer_base {
      *
      * Description
      * Add Duration Block
+     *
+     * @updateDate      21/04/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Add the frikomport formats
      */
     protected function addExtra_DurationBlock($course_format,$format_options) {
         /* Variables */
@@ -322,6 +337,7 @@ class local_course_page_renderer extends plugin_renderer_base {
         $out .= html_writer::start_tag('div',array('class' => 'extra chp-block'));
             switch ($course_format) {
                 case 'netcourse':
+                case 'elearning_frikomport':
                     foreach ($format_options as $option) {
                         if ($option->name == 'length') {
                             if ($option->value) {
@@ -340,6 +356,7 @@ class local_course_page_renderer extends plugin_renderer_base {
 
                     break;
                 case 'classroom':
+                case 'classroom_frikomport':
                     foreach ($format_options as $option) {
                         if ($option->name == 'location') {
                             if ($option->value) {
@@ -382,6 +399,12 @@ class local_course_page_renderer extends plugin_renderer_base {
      *
      * Description
      * Add Course Type Block
+     *
+     * @updateDate      21/04/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Add the frikomport formats
      */
     protected function addExtra_TypeCourseBlock($course_format) {
         /* Variables    */
@@ -402,7 +425,16 @@ class local_course_page_renderer extends plugin_renderer_base {
                     $out .= get_string('net_course','local_course_page');
 
                     break;
+                case 'elearning_frikomport';
+                    $url_img = $OUTPUT->pix_url('i/nettkurs');
+                    $alt        = get_string('elearning','local_course_page');
+
+                    $out .= html_writer::empty_tag('img', array('src' => $url_img, 'alt' => $alt, 'class' => 'icon'));
+                    $out .= get_string('elearning','local_course_page');
+
+                    break;
                 case 'classroom':
+                case 'classroom_frikomport':
                     $url_img = $OUTPUT->pix_url('i/classroom');
                     $alt        = get_string('class_course','local_course_page');
 
@@ -413,6 +445,13 @@ class local_course_page_renderer extends plugin_renderer_base {
                 case 'whitepaper':
                     $url_img = $OUTPUT->pix_url('i/whitepaper');
                     $alt        = get_string('whitepaper','local_course_page');
+
+                    $out .= html_writer::empty_tag('img', array('src' => $url_img, 'alt' => $alt, 'class' => 'icon'));
+
+                    break;
+                case 'single_frikomport':
+                    $url_img = $OUTPUT->pix_url('i/whitepaper');
+                    $alt        = get_string('single','local_course_page');
 
                     $out .= html_writer::empty_tag('img', array('src' => $url_img, 'alt' => $alt, 'class' => 'icon'));
 
