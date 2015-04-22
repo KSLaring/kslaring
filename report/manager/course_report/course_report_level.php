@@ -23,7 +23,7 @@ require_once( '../managerlib.php');
 require_once('course_report_level_form.php');
 
 /* Params */
-$report_level           = required_param('rpt', PARAM_INT);
+$report_level           = optional_param('rpt',0,PARAM_INT);
 $company_id             = optional_param('co',0,PARAM_INT);
 $parentTwo              = optional_param('lt',0,PARAM_INT);
 $parentOne              = optional_param('lo',0,PARAM_INT);
