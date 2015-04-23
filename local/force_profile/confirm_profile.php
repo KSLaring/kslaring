@@ -11,6 +11,11 @@
  * @updateDate      21/08/2014
  * @author          eFaktor     (fbv)
  *
+ * @updateDate      23/04/2015
+ * @author          eFaktor     (fbv)
+ *
+ * Description
+ * Add the correct identifier for the profile fields, instead of the language string
  */
 
 require_once('../../config.php');
@@ -30,6 +35,11 @@ $url        = new moodle_url('/local/force_profile/confirm_profile.php',array('i
 if (!isset($SESSION->elements)) {
     $SESSION->elements = array();
 }
+
+if (!isset($SESSION->force_profile)) {
+    $SESSION->force_profile = true;
+}
+
 $user_context = context_user::instance($user_id);
 
 $PAGE->set_url($url);
@@ -56,42 +66,46 @@ $user->imagefile = $draftitemid;
 /* Add Form */
 $form = new confirm_profile_form(null,array($my_fields,$user,$filemanageroptions));
 if ($data = $form->get_data()) {
-
     /* First Normal Fields  */
     if ($my_fields->normal) {
         $normal_fields = $my_fields->normal;
         foreach ($normal_fields as $field) {
-        $name = $SESSION->elements[$field->name];
+            $name = $field->name;
 
-        $field->timeupdated = time();
-        $field->confirmed   = 1;
+            $field->timeupdated = time();
+            $field->confirmed   = 1;
 
-            if (isset($user->$name)) {
-                switch ($name) {
-                    case 'description':
-                        $editor             = $data->$name;
-                        $field->value       = $editor['text'];
-                        $field->old_value   = $user->$name;
+            switch ($name) {
+                case DESCRIPTION:
+                    $editor             = $data->$name;
+                    $field->value       = $editor['text'];
+                    $field->old_value   = $user->$name;
 
-                        break;
-                    case 'imagefile':
-                        $field->old_value   = $user->picture;
-                        $user->imagefile    = $data->imagefile;
-                        $field->value       = $data->$name;
+                    break;
+                case PICTURE:
+                    $field->old_value   = $user->picture;
+                    $user->imagefile    = $data->imagefile;
+                    $field->value       = $data->$name;
 
-                        break;
-                    default:
-                        $field->value       = $data->$name;
-                        $field->old_value   = $user->$name;
+                    break;
+                case INTEREST:
+                    $field->old_value   = tag_get_tags_csv('user', $user_id);
+                    $field->value       = $data->$name;
 
-                        break;
-                }//switch_name
-            }//if_name
+                    break;
+                default:
+                    $field->value       = $data->$name;
+                    $field->old_value   = $user->$name;
+
+                    break;
+            }//switch_name
 
             useredit_update_picture($user,$form,$filemanageroptions);
             ForceProfile::ForceProfile_UpdateUserForceProfile($user_id,$field,$name);
         }//for_normal_fields
     }//normal_fields
+
+    /* Extra Fields Profile */
     if ($my_fields->profile) {
         $profile_fields = $my_fields->profile;
         foreach ($profile_fields as $field) {
@@ -99,16 +113,25 @@ if ($data = $form->get_data()) {
 
             $field->timeupdated = time();
             $field->confirmed   = 1;
-                    $field->value       = $data->$name;
+            $field->value       = $data->$name;
 
             ForceProfile::ForceProfile_UpdateExtraUserForceProfile($user_id,$field,$data,$name);
         }//for_profile_fields
     }//profile_fields
 
 
-    unset($SESSION->elements);
-    $return = new moodle_url('/user/profile.php',array('id' => $user_id));
-    redirect($return);
+    /* Check that the user has updated all fields*/
+    if (!ForceProfile::ForceProfile_HasToUpdateProfile($user_id)) {
+        unset($SESSION->elements);
+        unset($SESSION->force_profile);
+        unset($SESSION->time);
+
+        $return = new moodle_url('/user/profile.php',array('id' => $user_id));
+        redirect($return);
+    }else {
+        redirect($url);
+    }//if_else
+
 }//if_form_get_data
 
 echo $OUTPUT->header();

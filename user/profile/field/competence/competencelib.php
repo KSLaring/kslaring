@@ -563,8 +563,8 @@ class Competence {
             $info_competence_data->jobroles     = implode(',',$data->job_roles);
             $info_competence_data->timemodified = time();
 
-                /* Update       */
-                $DB->update_record('user_info_competence_data',$info_competence_data);
+            /* Update       */
+            $DB->update_record('user_info_competence_data',$info_competence_data);
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
@@ -630,7 +630,7 @@ class Competence {
      * Description
      * Get the table with the competence data connected with the user
      *          - Competence Data
-     *                  --> data.     Id Info Competence Data
+     *                  --> data.               Id Info Competence Data
      *                  --> competence.         Id Info Competence
      *                  --> levelThree
      *                  --> levelTwo
@@ -639,15 +639,27 @@ class Competence {
      *                  --> path
      *                  --> roles.      Array.
      *                                  [id]    --> Job Role Name.
+     *
+     * @updateDate      23/04/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Synchronize with Force Profile Plugin
      */
     public static function Get_CompetenceTable($my_competence,$user_id) {
         /* Variables    */
-        $out                = '';
+        global          $SESSION;
+        $out            = '';
 
         $return_url     = new moodle_url('/user/profile.php',array('id' =>$user_id));
         $url_add        = new moodle_url('/user/profile/field/competence/actions/add_competence.php',array('id' =>$user_id));
 
         try {
+            /* Synchronize with Force Profile Plugin    */
+            if (isset($SESSION->force_profile) && ($SESSION->force_profile)) {
+                $return_url = new moodle_url('/local/force_profile/confirm_profile.php',array('id'=>$user_id));
+            }//force_profile
+
             /* Title    */
             $out .= html_writer::start_tag('div');
                 $out .= '<h3>' . get_string('pluginname','profilefield_competence'). '</h3>';

@@ -18,31 +18,83 @@ class FirstAccess {
      * @static
      * @param           $user_id
      * @return          bool
+     * @throws          Exception
      *
      * @creationDate    10/11/2014
      * @author          eFaktor     (fbv)
      *
      * Description
      * Check if the user has to update his/her profile
+     *
+     * @updateDate      14/04/2015
+     * @author          eFaktor         (fbv)
+     *
+     * Description
+     * Exclude the DOSKOM users
      */
     public static function HasToUpdate_Profile($user_id) {
-        /* Check First Access   */
-        if (self::IsFirstAccess($user_id)) {
-            return true;
-        }else {
-            /* Check User Extra Profile Fields - Obligatory   */
-            if (self::ExtraProfileFields_Completed($user_id)) {
-                /* Check User Profile Completed */
-                if (self::ProfileFields_Completed($user_id)) {
-                    return false;
-                }else {
+        try {
+            /* Exclude DOSKOM Users */
+            if (self::IsDoskomUser($user_id)) {
+                return false;
+            }else {
+                /* Check First Access   */
+                if (self::IsFirstAccess($user_id)) {
                     return true;
+                }else {
+                    /* Check User Extra Profile Fields - Obligatory   */
+                    if (self::ExtraProfileFields_Completed($user_id)) {
+                        /* Check User Profile Completed */
+                        if (self::ProfileFields_Completed($user_id)) {
+                            return false;
+                        }else {
+                            return true;
+                        }
+                    }else {
+                        return true;
+                    }///if_profile
+                }//if_first_access
+            }//if_doskom_user
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//HasToUpdate_Profile
+
+    /*********************/
+    /* PRIVATE FUNCTIONS */
+    /*********************/
+
+    /**
+     * @param           $user_id
+     * @return          bool
+     * @throws          Exception
+     *
+     * @creationDate    14/04/2015
+     * @author          eFaktor         (fbv)
+     *
+     * Description
+     * Check if the user comes from DOSKOM
+     */
+    private static function IsDoskomUser($user_id) {
+        /* Variables    */
+        global $DB;
+
+        try {
+            /* Execute  */
+            $rdo = $DB->get_record('user',array('id' => $user_id),'source');
+            if ($rdo) {
+                if (strtoupper($rdo->source == 'KOMMIT')) {
+                    return true;
+                }else {
+                    return false;
                 }
             }else {
-                return true;
-            }///if_profile
-        }//if_first_access
-    }//HasToUpdate_Profile
+                return false;
+            }//if_else
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//IsDoskomUser
 
     /**
      * @static
