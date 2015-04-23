@@ -218,8 +218,9 @@ class ForceProfile {
             /* SQL Instruction  */
             $sql = " SELECT id
                      FROM   {user_force_profile}
-                     WHERE  timeupdated is NULL
-                        OR  timeupdated = 0
+                     WHERE  (timeupdated is NULL
+                             OR
+                             timeupdated = 0)
                         AND userid = :user_id ";
 
             /* Execute  */
@@ -918,8 +919,9 @@ class ForceProfile {
                         AND   type      = :type
                         AND   field     = :field
                         AND   confirmed = :confirmed
-                        AND   timeupdated IS NULL
-                        OR    timeupdated = 0 ";
+                        AND   (timeupdated IS NULL
+                               OR
+                               timeupdated = 0) ";
 
             /* Execute      */
             $rdo = $DB->get_record_sql($sql,$params);
@@ -1010,8 +1012,9 @@ class ForceProfile {
                                 type,
                                 field
                      FROM 	    {user_force_profile}
-                     WHERE	    timeupdated is NULL
-                        OR      timeupdated = 0
+                     WHERE	    (timeupdated is NULL
+                                 OR
+                                 timeupdated = 0)
                         AND     userid = :user_id
                         AND     type   = :type
                      ORDER BY   field ";
@@ -1066,8 +1069,9 @@ class ForceProfile {
                                 uif.datatype
                      FROM 		{user_force_profile}		ufp
                          JOIN	{user_info_field}			uif		ON uif.name = ufp.field
-                     WHERE		ufp.timeupdated is NULL
-                         OR     timeupdated = 0
+                     WHERE		(ufp.timeupdated is NULL
+                                 OR
+                                 ufp.timeupdated = 0)
                          AND 	ufp.userid = :user_id
                          AND    ufp.type   = :type
                      ORDER BY	uif.categoryid, uif.sortorder ";
