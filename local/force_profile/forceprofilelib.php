@@ -11,7 +11,38 @@
  * @updateDate      21/08/2014
  * @author          eFaktor     (fbv)
  *
+ * @updateDate      23/04/2015
+ * @author          eFaktor     (fbv)
+ *
+ * Description
+ * Add the correct identifier for the profiles fields, instead of the language string
+ *
  */
+
+define('CITY','city');
+define('COUNTRY','country');
+define('LANGUAGE','lang');
+define('DESCRIPTION','description');
+define('PICTURE','picture');
+define('ALT','imagealt');
+define('FIRST_PHONETIC','firstnamephonetic');
+define('LAST_PHONETIC','lastnamephonetic');
+define('MIDDLE_NAME','middlename');
+define('ALTERNATE_NAME','alternatename');
+define('INTEREST','interests');
+define('WEBPAGE','url');
+define('ICQ_NUMBER','icq');
+define('SKYPE','skype');
+define('AIM','aim');
+define('YAHOO','yahoo');
+define('MSN','msn');
+define('IDNUMBER','idnumber');
+define('INSTITUTION','institution');
+define('DEPARTMENT','department');
+define('PHONE','phone1');
+define('PHONE_TWO','phone2');
+define('ADDRESS','address');
+
 
 class ForceProfile {
 
@@ -65,42 +96,69 @@ class ForceProfile {
      * Description
      * Get the list of profile's fields.
      */
+    /**
+     * @return          array
+     * @throws          Exception
+     *
+     * @creationDate    21/08/2014
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Get the list of profile's fields.
+     *
+     * @updateDate      23/04/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Add a key for each field instead of the language string.
+     */
     public static function ForceProfile_GetChoicesProfile() {
-        $profiles = array(get_string('city'),
-                          get_string('country'),
-                          get_string('preferredlanguage'),
-                          get_string('userdescription'),
-                          get_string('currentpicture'),
-                          get_string('imagealt'));
+        /* Variables    */
+        $profile    = array();
+        $extra      = array();
 
-        /* Alternative Names */
-        array_push($profiles,get_string('firstnamephonetic'));
-        array_push($profiles,get_string('lastnamephonetic'));
-        array_push($profiles,get_string('middlename'));
-        array_push($profiles,get_string('alternatename'));
+        try {
+            /* Standard */
+            $profile[CITY]              = get_string('city');
+            $profile[COUNTRY]           = get_string('country');
+            $profile[LANGUAGE]          = get_string('preferredlanguage');
+            $profile[DESCRIPTION]       = get_string('userdescription');
+            $profile[PICTURE]           = get_string('currentpicture');
+            $profile[ALT]               = get_string('imagealt');
 
-        /* Interest */
-        array_push($profiles,get_string('interestslist'));
+            /* Alternative Names */
+            $profile[FIRST_PHONETIC]    = get_string('firstnamephonetic');
+            $profile[LAST_PHONETIC]     = get_string('lastnamephonetic');
+            $profile[MIDDLE_NAME]       = get_string('middlename');
+            $profile[ALTERNATE_NAME]    = get_string('alternatename');
 
-        /* Optional */
-        array_push($profiles,get_string('webpage'));
-        array_push($profiles,get_string('icqnumber'));
-        array_push($profiles,get_string('skypeid'));
-        array_push($profiles,get_string('aimid'));
-        array_push($profiles,get_string('yahooid'));
-        array_push($profiles,get_string('msnid'));
-        array_push($profiles,get_string('idnumber'));
-        array_push($profiles,get_string('institution'));
-        array_push($profiles,get_string('department'));
-        array_push($profiles,get_string('phone'));
-        array_push($profiles,get_string('phone2'));
-        array_push($profiles,get_string('address'));
+            /* Interest */
+            $profile[INTEREST]          = get_string('interestslist');
 
-        /* EXTRA PROFILE    */
-        $extra = self::ForceProfile_GetExtraProfile();
-        $profiles = $profiles + $extra;
+            /* Optional */
+            $profile[WEBPAGE]           = get_string('webpage');
+            $profile[ICQ_NUMBER]        = get_string('icqnumber');
+            $profile[SKYPE]             = get_string('skypeid');
+            $profile[AIM]               = get_string('aimid');
+            $profile[YAHOO]             = get_string('yahooid');
+            $profile[MSN]               = get_string('msnid');
+            $profile[IDNUMBER]          = get_string('idnumber');
+            $profile[INSTITUTION]       = get_string('institution');
+            $profile[DEPARTMENT]        = get_string('department');
+            $profile[PHONE]             = get_string('phone');
+            $profile[PHONE_TWO]         = get_string('phone2');
+            $profile[ADDRESS]           = get_string('address');
 
-        return $profiles;
+            /* EXTRA PROFILE    */
+            $extra      = self::ForceProfile_GetExtraProfile();
+            $profile    = $profile + $extra;
+
+            return $profile;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+
+
     }//ForceProfile_GetChoicesProfile
 
     /**
@@ -161,6 +219,7 @@ class ForceProfile {
             $sql = " SELECT id
                      FROM   {user_force_profile}
                      WHERE  timeupdated is NULL
+                        OR  timeupdated = 0
                         AND userid = :user_id ";
 
             /* Execute  */
@@ -263,16 +322,25 @@ class ForceProfile {
      *
      * Description
      * Add an element to the form. Profile Field
+     *
+     * @updateDate      23/04/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Profile fields use the correct identifier instead of the language string
      */
     public static function ForceProfile_CreateUserElement(&$form,$field,$user,$file_options) {
         /* Variables        */
-        global $SESSION,$OUTPUT;
+        global $OUTPUT;
 
         try {
-            $form->addElement('html','<h4>' . $field . '</h4>');
 
             switch ($field) {
-                case get_string('city'):
+                case CITY:
+                    /* Header   */
+                    $form->addElement('html','<h4>' . get_string('city') . '</h4>');
+
+                    /* Add Element  */
                     $form->addElement('text', 'old_city', get_string('city'), 'maxlength="120" size="21" disabled');
                     $form->setType('old_city', PARAM_TEXT);
                     $form->setDefault('old_city',$user->city);
@@ -280,11 +348,14 @@ class ForceProfile {
                     $form->addElement('text', 'city', null, 'maxlength="120" size="21" ');
                     $form->setType('city', PARAM_TEXT);
                     $form->addRule('city','','required', null, 'server');
-                    $SESSION->elements[$field] = 'city';
 
                     break;
 
-                case get_string('country'):
+                case COUNTRY:
+                    /* Header   */
+                    $form->addElement('html','<h4>' . get_string('country') . '</h4>');
+
+                    /* Add Element  */
                     $choices = get_string_manager()->get_list_of_countries();
                     $choices= array(''=>get_string('selectacountry').'...') + $choices;
                     $form->addElement('select', 'country', get_string('selectacountry'), $choices);
@@ -292,47 +363,60 @@ class ForceProfile {
                         $form->setDefault('country', $user->country);
                     }
                     $form->addRule('country','','required', null, 'server');
-                    $SESSION->elements[$field] = 'country';
 
                     break;
 
-                case get_string('preferredlanguage'):
+                case LANGUAGE:
+                    /* Header   */
+                    $form->addElement('html','<h4>' . get_string('preferredlanguage') . '</h4>');
+
+                    /* Add Element  */
                     $form->addElement('select', 'lang', get_string('preferredlanguage'), get_string_manager()->get_list_of_translations());
                     $form->setDefault('lang', $user->lang);
-                    $SESSION->elements[$field] = 'lang';
 
                     break;
 
-                case get_string('userdescription'):
+                case DESCRIPTION:
+                    /* Header   */
+                    $form->addElement('html','<h4>' . get_string('userdescription') . '</h4>');
+
+                    /* Add Element  */
                     $form->addElement('editor', 'description', get_string('userdescription'),null);
                     $form->setType('description', PARAM_CLEANHTML);
                     $form->addHelpButton('description', 'userdescription');
                     $form->addRule('description','','required', null, 'server');
-                    $SESSION->elements[$field] = 'description';
 
                     break;
 
-                case get_string('currentpicture'):
+                case PICTURE:
+                    /* Header   */
+                    $form->addElement('html','<h4>' . get_string('currentpicture') . '</h4>');
+
                     if (!empty($user->picture)) {
                         $image_value = $OUTPUT->user_picture($user, array('courseid' => SITEID, 'size'=>64));
                     }else {
                         $image_value = get_string('none');
                     }//if_else
 
+                    /* Add Element  */
                     $form->addElement('static', 'currentpicture', get_string('currentpicture'));
                     $form->setDefault('currentpicture',$image_value);
 
                     $form->addElement('checkbox', 'deletepicture', get_string('delete'));
                     $form->setDefault('deletepicture', 0);
-                    $SESSION->elements[$field] = 'deletepicture';
+                    //$SESSION->elements[$field] = 'deletepicture';
 
                     $form->addElement('filemanager', 'imagefile', get_string('newpicture'), '',$file_options);
                     $form->addHelpButton('imagefile', 'newpicture');
-                    $SESSION->elements[$field] = 'imagefile';
+                    //$SESSION->elements[$field] = 'imagefile';
 
                     break;
 
-                case get_string('imagealt'):
+                case ALT:
+                    /* Header   */
+                    $form->addElement('html','<h4>' . get_string('imagealt') . '</h4>');
+
+                    /* Add Element  */
                     $form->addElement('text', 'old_imagealt', get_string('imagealt'), 'maxlength="100" size="30" disabled');
                     $form->setType('old_imagealt', PARAM_TEXT);
                     $form->setDefault('old_imagealt', $user->imagealt);
@@ -340,11 +424,14 @@ class ForceProfile {
                     $form->addElement('text', 'imagealt', null, 'maxlength="100" size="30"');
                     $form->setType('imagealt', PARAM_TEXT);
                     $form->addRule('imagealt','','required', null, 'server');
-                    $SESSION->elements[$field] = 'imagealt';
 
                     break;
 
-                case get_string('firstnamephonetic'):
+                case FIRST_PHONETIC:
+                    /* Header   */
+                    $form->addElement('html','<h4>' . get_string('firstnamephonetic') . '</h4>');
+
+                    /* Add Element  */
                     $form->addElement('text', 'old_firstnamephonetic', get_string('firstnamephonetic'), 'maxlength="100" size="30" disabled');
                     $form->setType('old_firstnamephonetic', PARAM_NOTAGS);
                     $form->setDefault('old_firstnamephonetic',$user->firstnamephonetic);
@@ -352,11 +439,14 @@ class ForceProfile {
                     $form->addElement('text', 'firstnamephonetic', null, 'maxlength="100" size="30"');
                     $form->setType('firstnamephonetic', PARAM_NOTAGS);
                     $form->addRule('firstnamephonetic','','required', null, 'server');
-                    $SESSION->elements[$field] = 'firstnamephonetic';
 
                     break;
 
-                case get_string('lastnamephonetic'):
+                case LAST_PHONETIC:
+                    /* Header   */
+                    $form->addElement('html','<h4>' . get_string('lastnamephonetic') . '</h4>');
+
+                    /* Add Element  */
                     $form->addElement('text', 'old_lastnamephonetic', get_string('lastnamephonetic'), 'maxlength="100" size="30" disabled');
                     $form->setType('old_lastnamephonetic', PARAM_NOTAGS);
                     $form->setDefault('old_lastnamephonetic',$user->lastnamephonetic);
@@ -364,11 +454,14 @@ class ForceProfile {
                     $form->addElement('text', 'lastnamephonetic', null, 'maxlength="100" size="30"');
                     $form->setType('lastnamephonetic', PARAM_NOTAGS);
                     $form->addRule('lastnamephonetic','','required', null, 'server');
-                    $SESSION->elements[$field] = 'lastnamephonetic';
 
                     break;
 
-                case get_string('middlename'):
+                case MIDDLE_NAME:
+                    /* Header   */
+                    $form->addElement('html','<h4>' . get_string('middlename') . '</h4>');
+
+                    /* Add Element  */
                     $form->addElement('text', 'old_middlename', get_string('middlename'), 'maxlength="100" size="30" disabled');
                     $form->setType('old_middlename', PARAM_NOTAGS);
                     $form->setDefault('old_middlename',$user->middlename);
@@ -376,11 +469,14 @@ class ForceProfile {
                     $form->addElement('text', 'middlename',null , 'maxlength="100" size="30"');
                     $form->setType('middlename', PARAM_NOTAGS);
                     $form->addRule('middlename','','required', null, 'server');
-                    $SESSION->elements[$field] = 'middlename';
 
                     break;
 
-                case get_string('alternatename'):
+                case ALTERNATE_NAME:
+                    /* Header   */
+                    $form->addElement('html','<h4>' . get_string('alternatename') . '</h4>');
+
+                    /* Add Element  */
                     $form->addElement('text', 'old_alternatename', get_string('alternatename'), 'maxlength="100" size="30" disabled');
                     $form->setType('old_alternatename', PARAM_NOTAGS);
                     $form->setDefault('old_alternatename',$user->alternatename);
@@ -388,20 +484,26 @@ class ForceProfile {
                     $form->addElement('text', 'alternatename',null , 'maxlength="100" size="30"');
                     $form->setType('alternatename', PARAM_NOTAGS);
                     $form->addRule('alternatename','','required', null, 'server');
-                    $SESSION->elements[$field] = 'alternatename';
 
                     break;
 
-                case get_string('interestslist'):
+                case INTEREST:
+                    /* Header   */
+                    $form->addElement('html','<h4>' . get_string('interestslist') . '</h4>');
+
+                    /* Add Element  */
                     $form->addElement('tags', 'interests', get_string('interestslist'), array('display' => 'noofficial'));
                     $form->setDefault('interests',tag_get_tags_array('user', $user->id));
                     $form->addHelpButton('interests', 'interestslist');
                     $form->addRule('interests','','required', null, 'server');
-                    $SESSION->elements[$field] = 'interests';
 
                     break;
 
-                case get_string('webpage'):
+                case WEBPAGE:
+                    /* Header   */
+                    $form->addElement('html','<h4>' . get_string('webpage') . '</h4>');
+
+                    /* Add Element  */
                     $form->addElement('text', 'old_url', get_string('webpage'), 'maxlength="255" size="50" disabled');
                     $form->setType('old_url', PARAM_URL);
                     $form->setDefault('old_url',$user->url);
@@ -409,11 +511,15 @@ class ForceProfile {
                     $form->addElement('text', 'url', null, 'maxlength="255" size="50"');
                     $form->setType('url', PARAM_URL);
                     $form->addRule('url','','required', null, 'server');
-                    $SESSION->elements[$field] = 'url';
+
 
                     break;
 
-                case get_string('icqnumber'):
+                case ICQ_NUMBER:
+                    /* Header   */
+                    $form->addElement('html','<h4>' . get_string('icqnumber') . '</h4>');
+
+                    /* Add Element  */
                     $form->addElement('text', 'old_icq', get_string('icqnumber'), 'maxlength="15" size="25" disabled');
                     $form->setType('old_icq', PARAM_NOTAGS);
                     $form->setDefault('old_icq',$user->icq);
@@ -421,11 +527,14 @@ class ForceProfile {
                     $form->addElement('text', 'icq', null, 'maxlength="15" size="25"');
                     $form->setType('icq', PARAM_NOTAGS);
                     $form->addRule('icq','','required', null, 'server');
-                    $SESSION->elements[$field] = 'icq';
 
                     break;
 
-                case get_string('skypeid'):
+                case SKYPE:
+                    /* Header   */
+                    $form->addElement('html','<h4>' . get_string('skypeid') . '</h4>');
+
+                    /* Add Element  */
                     $form->addElement('text', 'old_skype', get_string('skypeid'), 'maxlength="50" size="25" disabled');
                     $form->setType('old_skype', PARAM_NOTAGS);
                     $form->setDefault('old_skype',$user->skype);
@@ -433,11 +542,14 @@ class ForceProfile {
                     $form->addElement('text', 'skype', null, 'maxlength="50" size="25"');
                     $form->setType('skype', PARAM_NOTAGS);
                     $form->addRule('skype','','required', null, 'server');
-                    $SESSION->elements[$field] = 'skype';
 
                     break;
 
-                case get_string('aimid'):
+                case AIM:
+                    /* Header   */
+                    $form->addElement('html','<h4>' . get_string('aimid') . '</h4>');
+
+                    /* Add Element  */
                     $form->addElement('text', 'old_aim', get_string('aimid'), 'maxlength="50" size="25" disabled');
                     $form->setType('old_aim', PARAM_NOTAGS);
                     $form->setDefault('old_aim',$user->aim);
@@ -445,11 +557,14 @@ class ForceProfile {
                     $form->addElement('text', 'aim', null, 'maxlength="50" size="25"');
                     $form->setType('aim', PARAM_NOTAGS);
                     $form->addRule('aim','','required', null, 'server');
-                    $SESSION->elements[$field] = 'aim';
 
                     break;
 
-                case get_string('yahooid'):
+                case YAHOO:
+                    /* Header   */
+                    $form->addElement('html','<h4>' . get_string('yahooid') . '</h4>');
+
+                    /* Add Element  */
                     $form->addElement('text', 'old_yahoo', get_string('yahooid'), 'maxlength="50" size="25" disabled');
                     $form->setType('old_yahoo', PARAM_NOTAGS);
                     $form->setDefault('old_yahoo',$user->yahoo);
@@ -457,11 +572,14 @@ class ForceProfile {
                     $form->addElement('text', 'yahoo', null, 'maxlength="50" size="25"');
                     $form->setType('yahoo', PARAM_NOTAGS);
                     $form->addRule('yahoo','','required', null, 'server');
-                    $SESSION->elements[$field] = 'yahoo';
 
                     break;
 
-                case get_string('msnid'):
+                case MSN:
+                    /* Header   */
+                    $form->addElement('html','<h4>' . get_string('msnid') . '</h4>');
+
+                    /* Add Element  */
                     $form->addElement('text', 'old_msn', get_string('msnid'), 'maxlength="50" size="25" disabled');
                     $form->setType('old_msn', PARAM_NOTAGS);
                     $form->setDefault('old_msn',$user->msn);
@@ -469,11 +587,14 @@ class ForceProfile {
                     $form->addElement('text', 'msn', null, 'maxlength="50" size="25"');
                     $form->setType('msn', PARAM_NOTAGS);
                     $form->addRule('msn','','required', null, 'server');
-                    $SESSION->elements[$field] = 'msn';
 
                     break;
 
-                case get_string('idnumber'):
+                case IDNUMBER:
+                    /* Header   */
+                    $form->addElement('html','<h4>' . get_string('idnumber') . '</h4>');
+
+                    /* Add Element  */
                     $form->addElement('text', 'old_idnumber', get_string('idnumber'), 'maxlength="255" size="25" disabled');
                     $form->setType('old_idnumber', PARAM_NOTAGS);
                     $form->setDefault('old_idnumber',$user->idnumber);
@@ -481,11 +602,14 @@ class ForceProfile {
                     $form->addElement('text', 'idnumber', null , 'maxlength="255" size="25"');
                     $form->setType('idnumber', PARAM_NOTAGS);
                     $form->addRule('idnumber','','required', null, 'server');
-                    $SESSION->elements[$field] = 'idnumber';
 
                     break;
 
-                case get_string('institution'):
+                case INSTITUTION:
+                    /* Header   */
+                    $form->addElement('html','<h4>' . get_string('institution') . '</h4>');
+
+                    /* Add Element  */
                     $form->addElement('text', 'old_institution', get_string('institution'), 'maxlength="255" size="25" disabled');
                     $form->setType('old_institution', PARAM_TEXT);
                     $form->setDefault('old_institution',$user->institution);
@@ -493,11 +617,14 @@ class ForceProfile {
                     $form->addElement('text', 'institution', null, 'maxlength="255" size="25" ');
                     $form->setType('institution', PARAM_TEXT);
                     $form->addRule('institution','','required', null, 'server');
-                    $SESSION->elements[$field] = 'institution';
 
                     break;
 
-                case get_string('department'):
+                case DEPARTMENT:
+                    /* Header   */
+                    $form->addElement('html','<h4>' . get_string('department') . '</h4>');
+
+                    /* Add Element  */
                     $form->addElement('text', 'old_department', get_string('department'), 'maxlength="255" size="25" disabled');
                     $form->setType('old_department', PARAM_TEXT);
                     $form->setDefault('old_department',$user->department);
@@ -505,11 +632,14 @@ class ForceProfile {
                     $form->addElement('text', 'department', null, 'maxlength="255" size="25"');
                     $form->setType('department', PARAM_TEXT);
                     $form->addRule('department','','required', null, 'server');
-                    $SESSION->elements[$field] = 'department';
 
                     break;
 
-                case get_string('phone'):
+                case PHONE:
+                    /* Header   */
+                    $form->addElement('html','<h4>' . get_string('phone') . '</h4>');
+
+                    /* Add Element  */
                     $form->addElement('text', 'old_phone1', get_string('phone'), 'maxlength="20" size="25" disabled');
                     $form->setType('old_phone1', PARAM_NOTAGS);
                     $form->setDefault('old_phone1',$user->phone1);
@@ -517,11 +647,14 @@ class ForceProfile {
                     $form->addElement('text', 'phone1', null, 'maxlength="20" size="25"');
                     $form->setType('phone1', PARAM_NOTAGS);
                     $form->addRule('phone1','','required', null, 'server');
-                    $SESSION->elements[$field] = 'phone1';
 
                     break;
 
-                case get_string('phone2'):
+                case PHONE_TWO:
+                    /* Header   */
+                    $form->addElement('html','<h4>' . get_string('phone2') . '</h4>');
+
+                    /* Add Element  */
                     $form->addElement('text', 'old_phone2', get_string('phone2'), 'maxlength="20" size="25" disabled');
                     $form->setType('old_phone2', PARAM_NOTAGS);
                     $form->setDefault('old_phone2',$user->phone2);
@@ -529,11 +662,14 @@ class ForceProfile {
                     $form->addElement('text', 'phone2', null, 'maxlength="20" size="25"');
                     $form->setType('phone2', PARAM_NOTAGS);
                     $form->addRule('phone2','','required', null, 'server');
-                    $SESSION->elements[$field] = 'phone2';
 
                     break;
 
-                case get_string('address'):
+                case ADDRESS:
+                    /* Header   */
+                    $form->addElement('html','<h4>' . get_string('address') . '</h4>');
+
+                    /* Add Element  */
                     $form->addElement('text', 'old_address', get_string('address'), 'maxlength="255" size="25" disabled');
                     $form->setType('old_address', PARAM_TEXT);
                     $form->setDefault('old_address',$user->address);
@@ -541,7 +677,6 @@ class ForceProfile {
                     $form->addElement('text', 'address', null, 'maxlength="255" size="25"');
                     $form->setType('address', PARAM_TEXT);
                     $form->addRule('address','','required', null, 'server');
-                    $SESSION->elements[$field] = 'address';
 
                     break;
 
@@ -567,6 +702,12 @@ class ForceProfile {
      *
      * Description
      * Update the profile field connected with the user. 'user' table
+     *
+     * @updateDate      23/04/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Add params to tag_set
      */
     public static function ForceProfile_UpdateUserForceProfile($user_id,$field,$name){
         /* Variables    */
@@ -582,9 +723,9 @@ class ForceProfile {
             $instance_user->timemodified    = time();
 
             if ($name == 'interests') {
-                $field->old_value = tag_get_tags_csv('user', $user_id);
-                tag_set('user', $user_id, $field->value);
+                tag_set('user', $user_id, $field->value,'core',CONTEXT_USER::instance($user_id)->id);
             }
+
             $DB->update_record('user',$instance_user);
 
             /* User Force Profile Table */
@@ -614,9 +755,16 @@ class ForceProfile {
      *
      * Description
      * Update the extra profile field connected with the user.
+     *
+     * @updateDate      23/04/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Update to the Competence Manager Level Five
      */
     public static function ForceProfile_UpdateExtraUserForceProfile($user_id,$field,$data,$name) {
-        global $DB,$CFG;
+        /* Variables    */
+        global $DB,$CFG,$SESSION;
 
         try {
             /* Get Info Field --> User */
@@ -624,21 +772,23 @@ class ForceProfile {
             $instance_user = new stdClass();
             $instance_user->id       = $user_id;
             $instance_user->$name    = $data->$name;
-            if ($name == 'profile_field_rgcompany') {
-                $instance_user->hidden_level_three = $data->hidden_level_three;
-            }else if ($name == 'profile_field_rgjobrole') {
-                $instance_user->hidden_job_role = $data->hidden_job_role;
-            }
 
-            require_once($CFG->dirroot.'/user/profile/lib.php');
-            require_once($CFG->dirroot . '/user/profile/field/'.$extra->datatype.'/field.class.php');
-            $newfield = 'profile_field_'.$extra->datatype;
-            $formfield = new $newfield($extra->id, $user_id);
-            $formfield->edit_save_data($instance_user);
+            if ($field->datatype != 'competence') {
+                require_once($CFG->dirroot.'/user/profile/lib.php');
+                require_once($CFG->dirroot . '/user/profile/field/'.$extra->datatype.'/field.class.php');
+                $newfield = 'profile_field_'.$extra->datatype;
+                $formfield = new $newfield($extra->id, $user_id);
+                $formfield->edit_save_data($instance_user);
 
-            /* User Force Profile Table */
-            $field->old_value   = $extra->data;
-            $DB->update_record('user_force_profile',$field);
+                /* User Force Profile Table */
+                $field->old_value   = $extra->data;
+                $DB->update_record('user_force_profile',$field);
+            }else {
+                if ($rdo = $DB->get_records('user_info_competence_data',array('userid' => $user_id))) {
+                    $DB->update_record('user_force_profile',$field);
+                }
+            }//if_datatype
+
         }catch(Exception $ex) {
             throw $ex;
         }//try_catch
@@ -689,6 +839,12 @@ class ForceProfile {
      *
      * Description
      * Add a new record into 'user_force_profile'. Each record means the fields the user has to update.
+     *
+     * @updateDate      23/04/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Add the correct identifier for the profile field, instead of the name.
      */
     protected static function ForceProfile_InsertUserForceProfile($user_id) {
         /* Variables    */
@@ -702,12 +858,15 @@ class ForceProfile {
                 /* New Instance */
                 $instance = new stdClass();
                 $instance->userid       = $user_id;
+
                 if (in_array($value,$extra)) {
-                    $instance->type = 'extra_profile';
+                    $instance->type     = 'extra_profile';
+                    $instance->field    = $value;
                 }else {
-                    $instance->type = 'user';
+                    $instance->type     = 'user';
+                    $instance->field    = $key;
                 }
-                $instance->field        = $value;
+
                 $instance->timecreated  = time();
                 $instance->confirmed    = 0;
 
@@ -733,6 +892,12 @@ class ForceProfile {
      *
      * Description
      * Check if just exist the entry for the field.
+     *
+     * @updateDate      23/04/2015
+     * @author          eFaktor         (fbv)
+     *
+     * Description
+     * timeupdated can be null or 0
      */
     protected static function ForceProfile_CheckField($instance) {
         /* Variables    */
@@ -753,7 +918,8 @@ class ForceProfile {
                         AND   type      = :type
                         AND   field     = :field
                         AND   confirmed = :confirmed
-                        AND   timeupdated IS NULL ";
+                        AND   timeupdated IS NULL
+                        OR    timeupdated = 0 ";
 
             /* Execute      */
             $rdo = $DB->get_record_sql($sql,$params);
@@ -826,6 +992,12 @@ class ForceProfile {
      *
      * Description
      * Get the fields to update that are not 'Extra Profile'
+     *
+     * @updateDate      23/04/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Timeupdated can be zero or null
      */
     private static function ForceProfile_getNormalFields($params) {
         /* Variables    */
@@ -839,6 +1011,7 @@ class ForceProfile {
                                 field
                      FROM 	    {user_force_profile}
                      WHERE	    timeupdated is NULL
+                        OR      timeupdated = 0
                         AND     userid = :user_id
                         AND     type   = :type
                      ORDER BY   field ";
@@ -871,7 +1044,14 @@ class ForceProfile {
      * @author          eFaktor     (fbv)
      *
      * Description
-     * Get the fields to update that are exptre profile
+     * Get the extra user profile to update
+     *
+     * @updateDate      23/04/2014
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Timeupdated can be zero or null
+     * Add datatype
      */
     private static function ForceProfile_getExtraProfileFields($params) {
         /* Variables    */
@@ -882,10 +1062,12 @@ class ForceProfile {
             /* SQL Instruction  */
             $sql = " SELECT     ufp.id,
                                 ufp.type,
-                                ufp.field
+                                ufp.field,
+                                uif.datatype
                      FROM 		{user_force_profile}		ufp
                          JOIN	{user_info_field}			uif		ON uif.name = ufp.field
                      WHERE		ufp.timeupdated is NULL
+                         OR     timeupdated = 0
                          AND 	ufp.userid = :user_id
                          AND    ufp.type   = :type
                      ORDER BY	uif.categoryid, uif.sortorder ";
@@ -894,10 +1076,11 @@ class ForceProfile {
             $rdo = $DB->get_records_sql($sql,$params);
             if ($rdo) {
                 foreach ($rdo as $instance) {
-                    $field = new stdClass();
-                    $field->id   = $instance->id;
-                    $field->type = $instance->type;
-                    $field->name = $instance->field;
+                    $field              = new stdClass();
+                    $field->id          = $instance->id;
+                    $field->type        = $instance->type;
+                    $field->name        = $instance->field;
+                    $field->datatype    = $instance->datatype;
 
                     $lst_fields[$instance->id] = $field;
                 }//for_rdo
