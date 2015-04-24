@@ -162,28 +162,36 @@ class ForceProfile {
     }//ForceProfile_GetChoicesProfile
 
     /**
-     * @static
-     * @throws          Exception
+     * @param               $msg
+     * @throws              Exception
      *
-     * @creationDate    21/08/2014
-     * @author          eFaktor     (fbv)
+     * @creationDate        21/08/2015
+     * @author              eFaktor     (fbv)
      *
      * Description
      * Send a notification eMail to the user
+     *
+     * @updateDate          24/04/2015
+     * @author              eFaktor     (fbv)
+     *
+     * Description
+     * Add the content of the eMail
      */
-    public static function ForceProfile_SendNotification(){
+    public static function ForceProfile_SendNotification($msg){
         /* Variables    */
         global $SESSION,$SITE,$CFG;
 
         try {
             /* Send a mail  */
             $a = new stdClass();
-            $a->site        = $SITE->shortname;
+            $a->Site        = $SITE->shortname;
             foreach($SESSION->bulk_users as $user_id) {
                 $a->url = $CFG->wwwroot . '/local/force_profile/confirm_profile.php?id=' . $user_id;
-                $user = get_complete_user_data('id',$user_id);
+                $user   = get_complete_user_data('id',$user_id);
+                /* Content eMail    */
                 $subject    = (string)new lang_string('application_subject','local_force_profile',$a,$user->lang);
-                $body       = (string)new lang_string('application_body','local_force_profile',$a,$user->lang);
+                $body       = $msg . '</br></br>';
+                $body      .= (string)new lang_string('application_body','local_force_profile',$a,$user->lang);
                 if (email_to_user($user, $SITE->shortname, $subject, $body,$body)) {
                     self::ForceProfile_InsertUserForceProfile($user_id);
                 }//if_email
