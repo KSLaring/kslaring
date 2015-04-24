@@ -78,7 +78,11 @@ if ($form_msg->is_cancelled()) {
     redirect($return);
 }else if ($data = $form_msg->get_data()){
     if (isset($SESSION->fields)) {
-        ForceProfile::ForceProfile_SendNotification();
+        $msg            = null;
+        $editor         = $data->msg_body;
+        $msg            = $editor['text'];
+
+        ForceProfile::ForceProfile_SendNotification($msg);
         echo $OUTPUT->header();
         echo $OUTPUT->heading(get_string('force_header', 'local_force_profile'));
         echo $OUTPUT->notification(get_string('exit_notification','local_force_profile'), 'notifysuccess');
