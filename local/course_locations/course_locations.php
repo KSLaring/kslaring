@@ -81,7 +81,7 @@ echo "<li><u>levelOne</u>.      Level One. Municipality List. Municipality Ids s
       If the user has only permission to see some municipalities, then it will be a list of Id municipalities separated by comma. </li>";
 
 echo "<strong>Get_Companies(in=null,parent=null)</strong>.Function to get the companies." . '</br>';
-echo "<li><u>$in</u>.       Companies that belong that list.</li>";
-echo "<li><u>$parent</u>.   Companies connected with</li>";
+echo "<li><u>in</u>.       Companies that belong that list.</li>";
+echo "<li><u>parent</u>.   Companies connected with</li>";
 
 echo $OUTPUT->footer();
