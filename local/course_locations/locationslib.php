@@ -55,12 +55,10 @@ class CourseLocations {
             /* Get My Competence Locations  */
             if ($myJobRoles) {
                 /* SQL Instruction  */
-                $sql = " SELECT		levelzero,
+                $sql = " SELECT		IF(levelzero,levelzero,0) as 'levelzero',
                                     GROUP_CONCAT(DISTINCT IF(levelone,levelone,0) ORDER BY levelone SEPARATOR ',') 	as 'levelone'
                          FROM 		{report_gen_jobrole_relation}
-                         WHERE		leveltwo 	IS NULL
-                            AND		levelthree 	IS NULL
-                            AND		jobroleid 	IN ($myJobRoles)
+                         WHERE		jobroleid 	IN ($myJobRoles)
                          GROUP BY 	levelzero ";
 
                 /* Execute  */
@@ -85,6 +83,12 @@ class CourseLocations {
                     }//for_rdo_levelZero
                 }//if_rdo
             }//if_MyJobRoles
+
+            /* The User can see all counties/Municipalities */
+            if (array_key_exists(0,$myCompetence)) {
+                $aux            = array_shift($myCompetence);
+                $myCompetence   = $aux;
+            }
 
             return $myCompetence;
         }catch (Exception $ex) {
