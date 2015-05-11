@@ -1029,10 +1029,16 @@ function clean_param($param, $type) {
             // Allow http absolute, root relative and relative URLs within wwwroot.
             $param = clean_param($param, PARAM_URL);
             if (!empty($param)) {
+
+                // Simulate the HTTPS version of the site.
+                $httpswwwroot = str_replace('http://', 'https://', $CFG->wwwroot);
+
                 if (preg_match(':^/:', $param)) {
                     // Root-relative, ok!
-                } else if (preg_match('/^'.preg_quote($CFG->wwwroot, '/').'/i', $param)) {
+                } else if (preg_match('/^' . preg_quote($CFG->wwwroot, '/') . '/i', $param)) {
                     // Absolute, and matches our wwwroot.
+                } else if (!empty($CFG->loginhttps) && preg_match('/^' . preg_quote($httpswwwroot, '/') . '/i', $param)) {
+                    // Absolute, and matches our httpswwwroot.
                 } else {
                     // Relative - let's make sure there are no tricks.
                     if (validateUrlSyntax('/' . $param, 's-u-P-a-p-f+q?r?')) {
@@ -1099,7 +1105,7 @@ function clean_param($param, $type) {
             // Remove some nasties.
             $param = preg_replace('~[[:cntrl:]]|[<>`]~u', '', $param);
             // Convert many whitespace chars into one.
-            $param = preg_replace('/\s+/', ' ', $param);
+            $param = preg_replace('/\s+/u', ' ', $param);
             $param = core_text::substr(trim($param), 0, TAG_MAX_LENGTH);
             return $param;
 
@@ -2850,10 +2856,6 @@ function require_login($courseorid = null, $autologinguest = true, $cm = null, $
                 $modinfo = get_fast_modinfo($course);
                 $cm = $modinfo->get_cm($cm->id);
             }
-            $PAGE->set_cm($cm, $course); // Set's up global $COURSE.
-            $PAGE->set_pagelayout('incourse');
-        } else {
-            $PAGE->set_course($course); // Set's up global $COURSE.
         }
     } else {
         // Do not touch global $COURSE via $PAGE->set_course(),
@@ -2957,6 +2959,13 @@ function require_login($courseorid = null, $autologinguest = true, $cm = null, $
 
     // Do not bother admins with any formalities.
     if (is_siteadmin()) {
+        // Set the global $COURSE.
+        if ($cm) {
+            $PAGE->set_cm($cm, $course);
+            $PAGE->set_pagelayout('incourse');
+        } else if (!empty($courseorid)) {
+            $PAGE->set_course($course);
+        }
         // Set accesstime or the user will appear offline which messes up messaging.
         user_accesstime_log($course->id);
         return;
@@ -3014,6 +3023,7 @@ function require_login($courseorid = null, $autologinguest = true, $cm = null, $
                 if ($preventredirect) {
                     throw new require_login_exception('Course is hidden');
                 }
+                $PAGE->set_context(null);
                 // We need to override the navigation URL as the course won't have been added to the navigation and thus
                 // the navigation will mess up when trying to find it.
                 navigation_node::override_active_url(new moodle_url('/'));
@@ -3034,6 +3044,7 @@ function require_login($courseorid = null, $autologinguest = true, $cm = null, $
                 if ($preventredirect) {
                     throw new require_login_exception('Invalid course login-as access');
                 }
+                $PAGE->set_context(null);
                 echo $OUTPUT->header();
                 notice(get_string('studentnotallowed', '', fullname($USER, true)), $CFG->wwwroot .'/');
             }
@@ -3133,6 +3144,15 @@ function require_login($courseorid = null, $autologinguest = true, $cm = null, $
             }
             redirect($CFG->wwwroot .'/enrol/index.php?id='. $course->id);
         }
+    }
+
+    // Set the global $COURSE.
+    // TODO MDL-49434: setting current course/cm should be after the check $cm->uservisible .
+    if ($cm) {
+        $PAGE->set_cm($cm, $course);
+        $PAGE->set_pagelayout('incourse');
+    } else if (!empty($courseorid)) {
+        $PAGE->set_course($course);
     }
 
     // Check visibility of activity to current user; includes visible flag, groupmembersonly, conditional availability, etc.
