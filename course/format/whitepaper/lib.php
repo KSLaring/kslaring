@@ -138,10 +138,16 @@ class format_whitepaper extends format_base {
     /**
      * Definitions of the additional options that this course format uses for course
      *
-     * Singleactivity course format uses one option 'activitytype'
+     * Whitepaper course format uses one option 'activitytype'
      *
      * @param bool $foreditform
-     * @return array of options
+     * @return                  array
+     *
+     * @updateDate      14/05/2014
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Add the Home PAge Generator fields
      */
     public function course_format_options($foreditform = false) {
         static $courseformatoptions = false;
@@ -232,11 +238,6 @@ class format_whitepaper extends format_base {
      *
      * Format singleactivity adds a warning when format of the course is about to be changed.
      *
-     * @param MoodleQuickForm $mform form the elements are added to
-     * @param bool $forsection 'true' if this is a section edit form, 'false' if this is course edit form
-     * @return array array of references to the added form elements
-     */
-    /**
      * @param           MoodleQuickForm $mform
      * @param           bool            $forsection
      * @return          array

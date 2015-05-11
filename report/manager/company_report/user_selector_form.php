@@ -1,11 +1,11 @@
 <?php
 /**
- * Report generator - Company Report - Users Selector Form .
+ * Company Manager - Company Report - Users Selector Form .
  *
  * Description
  *
  * @package     report
- * @subpackage  generator/company_report/
+ * @subpackage  manager/company_report/
  * @copyright   2014 eFaktor
  * @licence     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  *
@@ -16,7 +16,7 @@
 
 require_once($CFG->libdir.'/formslib.php');
 
-class generator_company_user_selector_form extends moodleform {
+class manager_company_user_selector_form extends moodleform {
     function definition() {
         $m_form = $this->_form;
 
@@ -83,5 +83,5 @@ class generator_company_user_selector_form extends moodleform {
         $m_form->addElement('hidden','advanced');
         $m_form->setType('advanced',PARAM_INT);
         $m_form->setDefault('advanced',1);
-    }//generator_company_user_selector_form
-}//generator_company_user_selector_form
+    }//definition
+}//manager_company_user_selector_form

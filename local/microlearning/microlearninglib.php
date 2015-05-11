@@ -479,7 +479,7 @@ class Micro_Learning {
             $params['course']   = $course;
 
             /* SQL Instruction  */
-            $sql = " UPDATE	mdl_microlearning
+            $sql = " UPDATE	{microlearning}
                         SET	activate = !activate
                      WHERE	id 			= :campaign
                         AND	courseid 	= :course ";

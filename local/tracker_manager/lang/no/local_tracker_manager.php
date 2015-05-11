@@ -15,7 +15,7 @@ $string['start_course']     = 'Start';
 $string['active_courses']   = 'Aktive kurs';
 $string['finished_courses'] = 'Fullførte kurs';
 
-$string['download_pdf_btn']         = 'Last ned denne rapporten som PDF';
+$string['download_pdf_btn']         = 'Last ned denne rapporten';
 $string['send_pdf_btn']             = 'Send denne rapporten som PDF-vedlegg';
 $string['send_pdf_dialog_title']    = 'Rapporten er sendt';
 $string['send_pdf_ok_dialog_text']  = 'Denne rapporten er sendt til e-postadressen din';

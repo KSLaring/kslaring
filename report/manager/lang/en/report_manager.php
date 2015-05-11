@@ -356,13 +356,14 @@ $string['status']           = 'Status';
 $string['csv_line']         = 'Line';
 $string['err_company']      = 'This company already exists.';
 
-$string['btn_search']                   = 'Search';
-$string['employee_report']              = 'Employee report';
-$string['employee_return_to_selection'] = 'Return to employee report selection page';
-$string['sel_job_role']                 = "Choose one role...";
-$string['expired_next']                 = 'Expire next';
-$string['existing_item']                = 'Existing Item';
-$string['employee_report_link']         = 'Company overview report';
+$string['btn_search']                           = 'Search';
+$string['employee_report']                      = 'Employee report';
+$string['employee_return_to_selection']         = 'Return to employee report selection page';
+$string['sel_job_role']                         = "Choose one role...";
+$string['expired_next']                         = 'Expire next';
+$string['existing_item']                        = 'Existing Item';
+$string['employee_report_link']                 = 'Company overview report';
+$string['company_overview_return_selection']    = 'Return to company overview report selection page';
 
 $string['underconstruction']    = 'Sorry, this report/block is not available. We are working on it.';
 $string['county']               = 'County';
@@ -381,3 +382,4 @@ $string['selected_jobroles']    = 'Selected Job Roles';
 
 $string['add_all']      = 'Add all';
 $string['remove_all']   = 'Remove all';
+

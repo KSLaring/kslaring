@@ -18,7 +18,7 @@
  */
 
 require_once('../../../config.php');
-require_once('../locallib.php');
+require_once('../managerlib.php');
 require_once('company_structurelib.php');
 require_once('add_company_structure_form.php');
 require_once($CFG->libdir . '/adminlib.php');

@@ -36,7 +36,6 @@ class manager_import_structure_form extends moodleform {
 
         /* Level to Import  */
         $options = Import_Companies::GetLevel_To_Import();
-        $url = new moodle_url('/report/manager/import_structure/import.php');
         $form->addElement('select', 'import_level',get_string('level_to_import','report_manager'),$options);
         $form->addRule('import_level', null, 'required', null, 'client');
         if (isset($_COOKIE['parentImportLevel']) && ($_COOKIE['parentImportLevel'])) {
@@ -109,7 +108,7 @@ class manager_import_structure_form extends moodleform {
         /* Public Checkbox  */
         if (isset($_COOKIE['parentImportLevel']) && ($_COOKIE['parentImportLevel']) && ($_COOKIE['parentImportLevel'] != 0)) {
             if (isset($_COOKIE['parentImportZero']) && ($_COOKIE['parentImportZero']) && ($_COOKIE['parentImportZero'] != 0)) {
-                if (Import_Companies::IsPublic($_COOKIE['parentImportZero'])) {
+                if (CompetenceManager::IsPublic($_COOKIE['parentImportZero'])) {
                     $default = 1;
                 }else {
                     $default = 0;

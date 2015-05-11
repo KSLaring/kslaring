@@ -1,22 +1,21 @@
 <?php
 
 /**
- * Tracker - Module
+ * Report Competence Manager - Tracker Module
  *
  * Description
  *
- * @package         local
+ * @package         report/manager
  * @subpackage      tracker
  * @copyright       2010 eFaktor
  * @licence         http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  *
- * @updateDate      08/10/2012
+ * @creationDate    01/04/2015
  * @author          eFaktor     (fbv)
  *
  */
-
 require_once('../../../config.php');
-require_once('../trackerlib.php');
+require_once('trackerlib.php');
 require_once($CFG->libdir . '/adminlib.php');
 
 require_login();
@@ -37,33 +36,18 @@ $PAGE->set_heading($SITE->fullname);
 $PAGE->set_pagelayout('admin');
 $PAGE->requires->js(new moodle_url('/report/manager/js/tracker.js'));
 
-//$tracker_user   = tracker_get_info_user_tracker($USER->id);
-//$tracker_info   = tracker_get_tracker_page_user_info($tracker_user);
+/* Get Tracker User */
+$trackerUser = TrackerManager::GetUserTracker($USER->id);
 
-//$out = tracker_print_tables_tracker_info($tracker_info);
-
-//switch ($pdf) {
-//    case TRACKER_PDF_DOWNLOAD:
-//        $out = tracker_download_pdf_tracker($tracker_info,$tracker_user);
-//        break;
-//    case TRACKER_PDF_SEND:
-//        $out = tracker_download_pdf_tracker($tracker_info,$tracker_user,true);
-//        break;
-//    default:
-//
-//        break;
-//}//switch_pdf
-
-$out = '<h4>' . get_string('underconstruction','report_manager') . '</h4>';
-$out .= '<h5>' . 'Actions availables:' . '</h5>';
-$url            = new moodle_url('/report/manager/company_structure/company_structure.php');
-$out .= '<li>' . '<a href="' . $url . '">' . get_string('company_structure','report_manager'). '</a>'. '</li>';
-$url        = new moodle_url('/report/manager/job_role/job_role.php');
-$out .= '<li>' . '<a href="' . $url . '">' . get_string('job_roles','report_manager'). '</a>'. '</li>';
-$url        = new moodle_url('/report/manager/outcome/outcome.php');
-$out .= '<li>' . '<a href="' . $url . '">' . get_string('outcomes','report_manager'). '</a>'. '</li>';
-$url        = new moodle_url('/report/manager/course_report/course_report.php');
-$out .= '<li>' . '<a href="' . $url . '">' . get_string('course_report','report_manager'). '</a>'. '</li>';
+switch ($pdf) {
+    case TRACKER_PDF_DOWNLOAD:
+        TrackerManager::Download_TrackerReport($trackerUser);
+        break;
+    default:
+        /* Print Tracker User   */
+        $out = TrackerManager::Print_TrackerInfo($trackerUser);
+        break;
+}//switch_pdf
 
 echo $OUTPUT->header();
 echo $OUTPUT->heading($out);

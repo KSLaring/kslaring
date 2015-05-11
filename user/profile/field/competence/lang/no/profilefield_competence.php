@@ -22,14 +22,14 @@ $string['pluginname_help']      = 'Brukerens kompetanseprofil inneholder informa
 $string['competence_profile']   = 'Kompetanseprofil';
 
 $string['profile_desc'] = 'Din informasjon om arbeidssted og jobbroller';
-$string['lnk_update']   = 'Oppdater';
+$string['lnk_update']   = 'Oppdater mine arbeidssteder og jobbroller';
 $string['lnk_edit']     = 'Rediger';
 $string['lnk_delete']   = 'Slett';
 $string['lnk_view']     = 'Vis mine kompetanser';
 
-$string['my_companies'] = 'Arbeidsstedere';
+$string['my_companies'] = 'Arbeidssteder';
 $string['my_job_roles'] = 'Jobbroller';
-$string['jr_generics']  = 'Roles generics';
+$string['jr_generics']  = 'Generiske jobbroller';
 
 $string['lnk_add']      = 'Opprett ny';
 $string['lnk_back']     = 'Tilbake til Min profil';

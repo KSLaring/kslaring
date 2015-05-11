@@ -16,7 +16,7 @@ $string['start_course'] = 'Start';
 $string['active_courses'] = 'Active Courses';
 $string['finished_courses'] = 'Finished Courses';
 
-$string['download_pdf_btn'] = 'Download this report as PDF';
+$string['download_pdf_btn'] = 'Download this report';
 $string['send_pdf_btn'] = 'Email this report as PDF';
 $string['send_pdf_dialog_title'] = 'Report sent';
 $string['send_pdf_ok_dialog_text'] = 'This report has been sent to your email address.';

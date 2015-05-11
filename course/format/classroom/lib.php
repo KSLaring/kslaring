@@ -416,9 +416,15 @@ class format_classroom extends format_base {
      * - numsections
      * - hiddensections
      *
-     * @param bool $foreditform
      *
-     * @return array of options
+     * @param bool $foreditform
+     * @return                      array
+     *
+     * @updateDate      14/05/2014
+     * @author          eFaktor
+     *
+     * Description
+     * Add the Home Page Generator Fields
      */
     public function course_format_options($foreditform = false) {
         /**
@@ -584,25 +590,6 @@ class format_classroom extends format_base {
                     'element_type' => 'select',
                     'element_attributes' => array($lst_manager)
                 )
-                /**
-                 * @updateDate  08/05/2014
-                 * @author      eFaktor     (fbv)
-                 *
-                 * Description
-                 * It is not available for this format
-                 */
-                //'coursedisplay' => array(
-                //    'label' => new lang_string('coursedisplay'),
-                //    'element_type' => 'select',
-                //    'element_attributes' => array(
-                //        array(
-                //            COURSE_DISPLAY_SINGLEPAGE => new lang_string('coursedisplay_single'),
-                //            COURSE_DISPLAY_MULTIPAGE => new lang_string('coursedisplay_multi')
-                //        )
-                //    ),
-                //    'help' => 'coursedisplay',
-                //    'help_component' => 'moodle',
-                //),
             );
             $courseformatoptions = array_merge_recursive($courseformatoptions,
                 $courseformatoptionsedit);
@@ -616,16 +603,11 @@ class format_classroom extends format_base {
      *
      * This function is called from {@link course_edit_form::definition_after_data()}.
      *
+     *
      * @param MoodleQuickForm $mform      form the elements are added to.
      * @param bool            $forsection 'true' if this is a section edit form, 'false' if this is course edit form.
      *
      * @return array array of references to the added form elements.
-     */
-    /**
-     * @param           MoodleQuickForm $mform
-     * @param           bool            $forsection
-     *
-     * @return          array
      *
      * @updateDate      27/05/2014
      * @author          eFaktor     (fbv)
@@ -712,17 +694,12 @@ class format_classroom extends format_base {
      * If previous course format did not have 'numsections' option, we populate it with
      * thecurrent number of sections
      *
-     * @param stdClass|array $data      return value from {@link moodleform::get_data()} or array with data
-     * @param stdClass       $oldcourse if this function is called from {@link update_course()}
+     *
+     * @param       array|stdClass  $data           return value from {@link moodleform::get_data()} or array with data
+     * @param       null            $oldcourse      if this function is called from {@link update_course()}
      *                                  this object contains information about the course before update
      *
      * @return bool whether there were any changes to the options values
-     */
-    /**
-     * @param       array|stdClass $data
-     * @param       null           $oldcourse
-     *
-     * @return      bool
      *
      * @updateDate  27/05/2014
      * @author      eFaktor     (fbv)
@@ -790,8 +767,7 @@ class format_classroom extends format_base {
                     break;
                 default:
                     break;
-            }
-            //switch_key
+            }//switch_key
 
             if (!array_key_exists($key, $data)) {
                 if (array_key_exists($key, $oldcourse)) {
@@ -806,15 +782,10 @@ class format_classroom extends format_base {
                         // If there are no sections, or just default 0-section,
                         // 'numsections' will be set to default
                         $data['numsections'] = $maxsection;
-                    }
-                    //if_maxsection
-                }
-                //if_array_key
-            }
-            //if_array_key
-        }
-
-        //for_options
+                    }//if_maxsection
+                }//if_array_key
+            }//if_array_key
+        }//for_options
 
         return $this->update_format_options($data);
     }

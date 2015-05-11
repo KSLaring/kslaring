@@ -122,12 +122,12 @@ class manager_add_job_role_form extends moodleform {
 
         switch ($level) {
             case 0:
-                $options = job_role::Get_CompanyList($level);
+                $options = CompetenceManager::GetCompanies_LevelList($level);
 
                 break;
             case 1:
                 if (isset($_COOKIE['parentLevelZero']) && ($_COOKIE['parentLevelZero'])) {
-                    $options = job_role::Get_CompanyList(1,$_COOKIE['parentLevelZero']);
+                    $options = CompetenceManager::GetCompanies_LevelList($level,$_COOKIE['parentLevelZero']);
                 }else {
                     $options[0] = get_string('select_level_list','report_manager');
                 }//IF_COOKIE
@@ -135,7 +135,7 @@ class manager_add_job_role_form extends moodleform {
                 break;
             case 2:
                 if (isset($_COOKIE['parentLevelOne']) && ($_COOKIE['parentLevelOne'])) {
-                    $options = job_role::Get_CompanyList(2,$_COOKIE['parentLevelOne']);
+                    $options = CompetenceManager::GetCompanies_LevelList($level,$_COOKIE['parentLevelOne']);
                 }else {
                     $options[0] = get_string('select_level_list','report_manager');
                 }//IF_COOKIE
@@ -143,7 +143,7 @@ class manager_add_job_role_form extends moodleform {
                 break;
             case 3:
                 if (isset($_COOKIE['parentLevelTwo']) && ($_COOKIE['parentLevelTwo'])) {
-                    $options = job_role::Get_CompanyList(3,$_COOKIE['parentLevelTwo']);
+                    $options = CompetenceManager::GetCompanies_LevelList($level,$_COOKIE['parentLevelTwo']);
                 }else {
                     $options[0] = get_string('select_level_list','report_manager');
                 }//IF_COOKIE

@@ -18,19 +18,19 @@
  */
 
 require_once('../../../config.php');
-require_once( '../locallib.php');
 require_once( 'courserptlib.php');
+require_once( '../managerlib.php');
 require_once('course_report_level_form.php');
 
 /* Params */
-$report_level           = required_param('rpt', PARAM_INT);
+$report_level           = optional_param('rpt',0,PARAM_INT);
 $company_id             = optional_param('co',0,PARAM_INT);
 $parentTwo              = optional_param('lt',0,PARAM_INT);
 $parentOne              = optional_param('lo',0,PARAM_INT);
 $completed_option       = optional_param('opt',0,PARAM_INT);
-$return_url     = new moodle_url('/report/manager/course_report/course_report.php',array('rpt' => $report_level));
-$url            = new moodle_url('/report/manager/course_report/course_report_level.php',array('rpt' => $report_level));
-$course_report  = null;
+$return_url             = new moodle_url('/report/manager/course_report/course_report.php',array('rpt' => $report_level));
+$url                    = new moodle_url('/report/manager/course_report/course_report_level.php',array('rpt' => $report_level));
+$course_report          = null;
 
 /* Context */
 $site_context = CONTEXT_SYSTEM::instance();
@@ -98,7 +98,7 @@ if (empty($CFG->loginhttps)) {
 $PAGE->verify_https_required();
 
 /* My Hierarchy */
-$my_hierarchy = course_report::get_MyHierarchyLevel($USER->id,$site_context);
+$my_hierarchy = CompetenceManager::get_MyHierarchyLevel($USER->id,$site_context);
 
 /* Show Form */
 if ($company_id) {
@@ -128,7 +128,7 @@ if ($form->is_cancelled()) {
     setcookie('parentLevelZero',0);
     setcookie('parentLevelOne',0);
     setcookie('parentLevelTwo',0);
-    setcookie('parentLevelTree',0);
+    setcookie('parentLevelThree',0);
     setcookie('courseReport',0);
     setcookie('outcomeReport',0);
 
@@ -164,7 +164,7 @@ if ($form->is_cancelled()) {
     }else {
         /* Non Data */
         $return  = '<a href="'.$url .'">'. get_string('course_return_to_selection','report_manager') .'</a>';
-        $out     = get_string('no_data', 'report_manager');
+        $out     = '</h3>' . get_string('no_data', 'report_manager') . '</h3>';
         $out    .=  '<br/>' . $return;
     }//if_outcome_report
 }//if_form

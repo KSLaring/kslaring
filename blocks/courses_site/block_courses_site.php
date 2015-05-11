@@ -127,7 +127,7 @@ class block_courses_site extends block_base {
      * Get the information connected with the course that has to be displayed
      */
     function block_courses_site_GetInfoDisplay($lst_courses_site) {
-        /* Varaibles    */
+        /* Variables    */
         $lst_info = array();
         foreach ($lst_courses_site as $key => $course_site) {
             $lst_info[] = $info_display = courses_site::courses_site_GetInfoBlock($course_site);
@@ -205,7 +205,8 @@ class block_courses_site extends block_base {
 
     function block_courses_site_AddColumnHeader($course_site, $class) {
         /* Variables    */
-        $description = ' ';
+        $description = null;
+
         /* Get URL For Course   */
         $url = new moodle_url('/local/course_page/home_page.php',array('id' => $course_site->course));
         $this->content->text .= '<div class="' . $class . '">';
@@ -226,7 +227,7 @@ class block_courses_site extends block_base {
     }//block_courses_site_AddColumn
 
     function block_courses_site_AddColumnExtra($course_site, $class) {
-        /* Varaibles    */
+        /* Variables    */
         $pre = '';
         $str_format = 'format_' . $course_site->type;
 

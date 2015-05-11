@@ -106,58 +106,58 @@ class manager_add_company_structure_form extends moodleform {
 
         /* Level Parent Zero   */
         $company_parent = array_flip($parents);
-        $companies  = company_structure::Get_Companies_LevelList(0);
+        $companies  = CompetenceManager::GetCompanies_LevelList(0);
         $companies  = array_diff_key($companies,$company_parent);
 
         switch ($level) {
             case 1:
                 /* My Companies             */
-                $my_companies = company_structure::Get_Companies_LevelList($level,$parents[$level-1]);
+                $my_companies = CompetenceManager::GetCompanies_LevelList($level,$parents[$level-1]);
                 unset($my_companies[0]);
 
                 /* Add Companies to Link    */
                 $parent_lst = implode(',',array_keys($companies));
-                $options = company_structure::Get_Companies_LevelList($level,$parent_lst);
+                $options = CompetenceManager::GetCompanies_LevelList($level,$parent_lst);
                 $options = array_diff_key($options,$my_companies);
                 $form->addElement('select','other_company',get_string('existing_item','report_manager'),$options);
 
                 break;
             case 2:
                 /* My Companies             */
-                $my_companies = company_structure::Get_Companies_LevelList($level,$parents[$level-1]);
+                $my_companies = CompetenceManager::GetCompanies_LevelList($level,$parents[$level-1]);
                 unset($my_companies[0]);
 
                 /* Level One    */
                 $company_parent = array_flip($parents);
                 $parent_lst = implode(',',array_keys($companies));
-                $companies  = company_structure::Get_Companies_LevelList(1,$parent_lst);
+                $companies  = CompetenceManager::GetCompanies_LevelList(1,$parent_lst);
                 $companies  = array_diff_key($companies,$company_parent);
 
                 /* Add Companies to Link    */
                 $parent_lst = implode(',',array_keys($companies));
-                $options    = company_structure::Get_Companies_LevelList($level,$parent_lst);
+                $options    = CompetenceManager::GetCompanies_LevelList($level,$parent_lst);
                 $options    = array_diff_key($options,$my_companies);
                 $form->addElement('select','other_company',get_string('existing_item','report_manager'),$options);
 
                 break;
             case 3:
                 /* My Companies             */
-                $my_companies = company_structure::Get_Companies_LevelList($level,$parents[$level-1]);
+                $my_companies = CompetenceManager::GetCompanies_LevelList($level,$parents[$level-1]);
                 unset($my_companies[0]);
 
                 /* Level One    */
                 $parent_lst = implode(',',array_keys($companies));
-                $companies  = company_structure::Get_Companies_LevelList(1,$parent_lst);
+                $companies  = CompetenceManager::GetCompanies_LevelList(1,$parent_lst);
                 $companies  = array_diff_key($companies,$company_parent);
 
                 /* Level Two    */
                 $parent_lst = implode(',',array_keys($companies));
-                $companies  = company_structure::Get_Companies_LevelList(2,$parent_lst);
+                $companies  = CompetenceManager::GetCompanies_LevelList(2,$parent_lst);
                 $companies  = array_diff_key($companies,$company_parent);
 
                 /* Add Companies to Link    */
                 $parent_lst = implode(',',array_keys($companies));
-                $options    = company_structure::Get_Companies_LevelList($level,$parent_lst);
+                $options    = CompetenceManager::GetCompanies_LevelList($level,$parent_lst);
                 $options    = array_diff_key($options,$my_companies);
                 $form->addElement('select','other_company',get_string('existing_item','report_manager'),$options);
 

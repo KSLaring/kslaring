@@ -5,18 +5,19 @@
  *
  * Description
  *
- * @package     report
- * @subpackage  manager/outcome_report/
- * @copyright   2010 eFaktor
- * @licence     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package         report
+ * @subpackage      manager/outcome_report/
+ * @copyright       2010 eFaktor
+ * @licence         http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  *
- * @updateDate  06/09/2012
- * @author      eFaktor     (fbv)
+ * @creationDate    26/03/2015
+ * @author          eFaktor     (fbv)
  *
  */
 
 require_once('../../../config.php');
 require_once( 'outcomerptlib.php');
+require_once( '../managerlib.php');
 require_once('outcome_report_level_form.php');
 require_once($CFG->libdir . '/adminlib.php');
 
@@ -50,9 +51,10 @@ if (empty($CFG->loginhttps)) {
 }//if_security
 
 /* Clean Cookies */
+setcookie('parentLevelZero',0);
 setcookie('parentLevelOne',0);
 setcookie('parentLevelTwo',0);
-setcookie('parentLevelTree',0);
+setcookie('parentLevelThree',0);
 setcookie('courseReport',0);
 setcookie('outcomeReport',0);
 
@@ -70,9 +72,7 @@ require('../tabs.php');
 echo $OUTPUT->heading(get_string('outcome_report', 'report_manager'));
 
 /* Report Levels Links  */
-//outcome_report::GetLevelLink_ReportPage($current_tab,$site_context);
+CompetenceManager::GetLevelLink_ReportPage($current_tab,$site_context);
 
-echo '<h5>' . get_string('underconstruction','report_manager') . '</h5>';
-
-/* Print Fo>r */
+/* Print Foot */
 echo $OUTPUT->footer();

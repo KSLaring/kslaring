@@ -29,7 +29,7 @@ $return_url = new moodle_url('/report/manager/index.php');
 setcookie('parentLevelZero',0);
 setcookie('parentLevelOne',0);
 setcookie('parentLevelTwo',0);
-setcookie('parentLevelTree',0);
+setcookie('parentLevelThree',0);
 $_POST = array();
 
 /* Start the page */

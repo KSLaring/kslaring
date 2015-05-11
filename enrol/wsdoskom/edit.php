@@ -71,11 +71,13 @@ if (!isset($SESSION->selCompanies)) {
 
 if ($instanceid) {
     if (!isset($SESSION->selCompanies)) {
-    $SESSION->selCompanies = array();
+        $SESSION->selCompanies = array();
     }//selCompanies
-    $aux_company = explode(',',$instance->company);
-    foreach ($aux_company as $company) {
-        $SESSION->selCompanies[$company] = $company;
+    if ($instance->company) {
+        $aux_company = explode(',',$instance->company);
+        foreach ($aux_company as $company) {
+            $SESSION->selCompanies[$company] = $company;
+        }
     }
 }//if_instance_company
 

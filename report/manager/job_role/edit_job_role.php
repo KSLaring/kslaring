@@ -25,6 +25,7 @@
 
 require_once('../../../config.php');
 require_once( 'jobrolelib.php');
+require_once('../managerlib.php');
 require_once('edit_job_role_form.php');
 require_once($CFG->libdir . '/adminlib.php');
 

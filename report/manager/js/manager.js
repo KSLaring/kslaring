@@ -24,6 +24,26 @@ YUI().use('node', function(Y) {
     var courseReport;
     var outcomeReport;
 
+
+    /* Outcome Report    */
+    if (Y.one('#id_outcome_list')) {
+        Y.one('#id_outcome_list').on('change', function (e) {
+            /* Get the Selected */
+            indexSelected   = this.get('selectedIndex');
+            if (Y.one("#id_outcome_list").get('options').item(indexSelected).get('value') != 0) {
+                //Getting information of user.
+                outcomeReport = Y.one("#id_outcome_list").get('options').item(indexSelected).get('value');
+            }else {
+                outcomeReport = 0;
+            }
+
+            document.cookie = "outcomeReport"         + "=" + outcomeReport;
+
+            window.onbeforeunload = null;
+            window.location.reload();
+        });
+    }//if_course_report
+
     /* Course Report    */
     if (Y.one('#id_course_list')) {
         Y.one('#id_course_list').on('change', function (e) {
@@ -39,7 +59,7 @@ YUI().use('node', function(Y) {
             document.cookie = "courseReport"         + "=" + courseReport;
 
             window.onbeforeunload = null;
-            window.location = location.href;
+            window.location.reload();
         });
     }//if_course_report
 
@@ -67,7 +87,7 @@ YUI().use('node', function(Y) {
             document.cookie = "parentLevelThree"        + "=0";
 
             window.onbeforeunload = null;
-            window.location = location.href;
+            window.location.reload();
         });
     }//if_level_0
 
@@ -89,7 +109,7 @@ YUI().use('node', function(Y) {
             document.cookie = "parentLevelThree"    + "=0";
 
             window.onbeforeunload = null;
-            window.location = location.href;
+            window.location.reload();
         });
     }//if_level_1
 
@@ -110,7 +130,7 @@ YUI().use('node', function(Y) {
             document.cookie = "parentLevelThree"    + "=0";
 
             window.onbeforeunload = null;
-            window.location = location.href;
+            window.location.reload();
         });
     }//if_level_2
 
@@ -134,7 +154,7 @@ YUI().use('node', function(Y) {
             document.cookie = "parentLevelThree"     + "=" + LevelThree;
 
             window.onbeforeunload = null;
-            window.location = location.href;
+            window.location.reload();
         });
     }//if_level_3
 
@@ -157,7 +177,7 @@ YUI().use('node', function(Y) {
             document.cookie = "parentImportTwo"         + "=0";
 
             window.onbeforeunload = null;
-            window.location = location.href;
+            window.location.reload();
         });
     }//if_Import_Level
 
@@ -179,7 +199,7 @@ YUI().use('node', function(Y) {
             document.cookie = "parentImportTwo"         + "=0";
 
             window.onbeforeunload = null;
-            window.location = location.href;
+            window.location.reload();
         });
     }//if_import_0
 
@@ -200,7 +220,7 @@ YUI().use('node', function(Y) {
             document.cookie = "parentImportTwo"         + "=0";
 
             window.onbeforeunload = null;
-            window.location = location.href;
+            window.location.reload();
         });
     }//if_import_1
 
@@ -220,7 +240,7 @@ YUI().use('node', function(Y) {
             document.cookie = "parentImportTwo"         + "=" + parentImportTwo;
 
             window.onbeforeunload = null;
-            window.location = location.href;
+            window.location.reload();
         });
     }//if_import_2
 

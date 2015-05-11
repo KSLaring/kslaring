@@ -362,13 +362,14 @@ $string['status']           = 'Status';
 $string['csv_line']         = 'Linje';
 $string['err_company']      = 'Dette arbeidsstedet eksisterer fra før.';
 
-$string['btn_search']                   = 'Søk...';
-$string['employee_report']              = 'Ansatt-rapport';
-$string['employee_return_to_selection'] = 'Gå tilbake til rapportmenyen';
-$string['sel_job_role']                 = "Velg en jobbrolle...";
-$string['expired_next']     = 'Utløper neste';
-$string['existing_item']    = 'Eksisterende element';
-$string['employee_report_link'] = 'Status på sertifiseringer';
+$string['btn_search']                           = 'Søk...';
+$string['employee_report']                      = 'Ansatt-rapport';
+$string['employee_return_to_selection']         = 'Gå tilbake til rapportmenyen';
+$string['sel_job_role']                         = "Velg en jobbrolle...";
+$string['expired_next']                         = 'Utløper neste';
+$string['existing_item']                        = 'Eksisterende element';
+$string['employee_report_link']                 = 'Status på sertifiseringer';
+$string['company_overview_return_selection']    = 'Return to company overview report selection page';
 
 $string['underconstruction'] = 'Beklager, men denne rapporten/block er for tiden deaktivert. Vi arbeider med å forbedre den.';
 $string['county']       = 'Fylke';
@@ -382,9 +383,9 @@ $string['err_job_role']     = 'Denne jobbrollen eksisterer allerede.';
 
 $string['public']           = 'Offentlig';
 
-$string['av_jobroles']          = 'Available Job roles';
-$string['not_sel_jobroles']     = 'None Job roles';
-$string['selected_jobroles']    = 'Selected Job Roles';
+$string['av_jobroles']          = 'Tilgjengelige jobbroller';
+$string['not_sel_jobroles']     = 'Ingen jobbroller';
+$string['selected_jobroles']    = 'Valgte jobbroller';
 
-$string['add_all']      = 'Add all';
-$string['remove_all']   = 'Remove all';
+$string['add_all']      = 'Legg til alle';
+$string['remove_all']   = 'Fjern alle';

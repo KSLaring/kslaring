@@ -18,7 +18,6 @@
  */
 
 require_once('../../../config.php');
-require_once('../locallib.php');
 require_once( 'outcomelib.php');
 require_once('edit_outcome_form.php');
 require_once($CFG->libdir . '/adminlib.php');
@@ -82,7 +81,7 @@ $form = new manager_edit_outcome_form(null,array($outcome_id,$expiration_id));
 if ($form->is_cancelled()) {
     setcookie('parentLevelOne',0);
     setcookie('parentLevelTwo',0);
-    setcookie('parentLevelTree',0);
+    setcookie('parentLevelThree',0);
     setcookie('courseReport',0);
     setcookie('outcomeReport',0);
 
@@ -139,7 +138,6 @@ if ($form->is_cancelled()) {
         $outcome->outcomeid         = $data->id;
         $outcome->expirationperiod  = $data->expiration_period;
         $outcome->modified          = time();
-        $select = REPORT_MANAGER_JOB_ROLE_LIST;
         $role_list = $SESSION->selJobRoles;
 
         if ($expiration_id) {

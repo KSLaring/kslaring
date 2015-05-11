@@ -13,7 +13,7 @@
 
 require_once('../../../config.php');
 require_once('importlib.php');
-require_once('../locallib.php');
+require_once('../managerlib.php');
 require_once($CFG->libdir . '/adminlib.php');
 require_once($CFG->libdir.'/csvlib.class.php');
 require_once('import_form.php');

@@ -122,12 +122,12 @@ class manager_company_structure_form extends moodleform {
 
         switch ($level) {
             case 0:
-                $options = company_structure::Get_Companies_LevelList($level);
+                $options = CompetenceManager::GetCompanies_LevelList($level);
 
                 break;
             case 1:
                 if (isset($_COOKIE['parentLevelZero']) && ($_COOKIE['parentLevelZero'])) {
-                    $options = company_structure::Get_Companies_LevelList(1,$_COOKIE['parentLevelZero']);
+                    $options = CompetenceManager::GetCompanies_LevelList($level,$_COOKIE['parentLevelZero']);
                 }else {
                     $options[0] = get_string('select_level_list','report_manager');
                 }//IF_COOKIE
@@ -135,7 +135,7 @@ class manager_company_structure_form extends moodleform {
                 break;
             case 2:
                 if (isset($_COOKIE['parentLevelOne']) && ($_COOKIE['parentLevelOne'])) {
-                    $options = company_structure::Get_Companies_LevelList(2,$_COOKIE['parentLevelOne']);
+                    $options = CompetenceManager::GetCompanies_LevelList($level,$_COOKIE['parentLevelOne']);
                 }else {
                     $options[0] = get_string('select_level_list','report_manager');
                 }//IF_COOKIE
@@ -143,7 +143,7 @@ class manager_company_structure_form extends moodleform {
                 break;
             case 3:
                 if (isset($_COOKIE['parentLevelTwo']) && ($_COOKIE['parentLevelTwo'])) {
-                    $options = company_structure::Get_Companies_LevelList(3,$_COOKIE['parentLevelTwo']);
+                    $options = CompetenceManager::GetCompanies_LevelList($level,$_COOKIE['parentLevelTwo']);
                 }else {
                     $options[0] = get_string('select_level_list','report_manager');
                 }//IF_COOKIE
