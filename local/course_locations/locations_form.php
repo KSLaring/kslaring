@@ -326,10 +326,12 @@ function GetMunicipalities($myCompetence) {
     $municipalities = array();
 
     if (isset($_COOKIE['parentCounty']) && ($_COOKIE['parentCounty'])) {
-        $levelZero = $myCompetence[$_COOKIE['parentCounty']];
-        if ($levelZero->levelOne) {
-            $levelOne  = $levelZero->levelOne;
-        }//if_levelOne
+        if (array_key_exists($_COOKIE['parentCounty'],$myCompetence)) {
+            $levelZero = $myCompetence[$_COOKIE['parentCounty']];
+            if ($levelZero->levelOne) {
+                $levelOne  = $levelZero->levelOne;
+            }//if_levelOne
+        }
         $municipalities = CourseLocations::Get_Companies($levelOne,$_COOKIE['parentCounty']);
     }else {
         $municipalities[0] = get_string('select_level_list','local_course_locations');
