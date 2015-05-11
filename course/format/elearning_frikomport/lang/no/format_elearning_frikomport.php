@@ -16,12 +16,12 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Classroom Frikomport Format - Language File
+ * eLearning Frikomport Format - Language File
  *
  * Description
  *
  * @package             course/format
- * @subpackage          classroom_frikomport/lang
+ * @subpackage          elearning_frikomport/lang
  * @copyright           2010 eFaktor
  *
  * @creationDate        20/04/2015
@@ -31,7 +31,7 @@
 
 $string['currentsection'] = 'This topic';
 $string['sectionname'] = 'Topic';
-$string['pluginname'] = 'Classroom Frikomport format';
+$string['pluginname'] = 'eLearning Frikomport format';
 $string['section0name'] = 'General';
 $string['page-course-view-topics'] = 'Any course main page in topics format';
 $string['page-course-view-topics-x'] = 'Any course page in topics format';
@@ -40,8 +40,6 @@ $string['showfromothers'] = 'Show topic';
 
 $string['home_prerequisities']      = 'Prerequisites';
 $string['home_producedby']          = 'Produced by';
-$string['home_location']            = 'Course location';
-$string['home_sector']              = 'Course sectors';
 $string['home_length']              = 'Estimated time spent';
 $string['home_effort']              = 'Estimated Effort';
 $string['home_manager']             = 'Course Manager';

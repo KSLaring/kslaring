@@ -57,11 +57,19 @@ class block_frikomport_menu_manager {
         $this->nodes = new navigation_node($item);
 
         // Create and add the course listing link
+        /**
+         * @updateDate      07/05/2015
+         * @author          eFaktor         (fbv)
+         *
+         * Description
+         * Change Action link to Course Locations List
+         */
         $item = array(
             'text' => get_string('ncourses', 'block_frikomport'),
             'icon' => $settingsicon,
             'type' => navigation_node::NODETYPE_LEAF,
-            'action' => '/course/management.php'
+            //'action' => '/course/management.php'
+            'action' => new moodle_url('/local/course_locations/course_locations.php')
         );
         $subnode = new navigation_node($item);
         $this->nodes->add_node($subnode);
@@ -86,29 +94,64 @@ class block_frikomport_menu_manager {
         );
         $this->add_tree_section($branch);
 
-        // Create and add the organization structure links in a submenu
+        /**
+         * @updateDate      27/04/2015
+         * @author          eFaktor         (fbv)
+         *
+         * Description
+         * Remove sub-menu for Organization Structure
+         * Add sub-menu for locations
+         */
+        $lst_action = '#';
+        $new_action = '#';
+        if (get_config('course_locations')) {
+            $lst_action = new moodle_url('/local/course_locations/index.php');
+            $new_action = new moodle_url('/local/course_locations/add_location.php');
+        }//if_course_locations
+
         $branch = array(
             array(
-                'text' => get_string('norgstructure', 'block_frikomport'),
-                'type' => navigation_node::NODETYPE_BRANCH
+                'text'      => get_string('nlocations', 'block_frikomport'),
+                'type'      => navigation_node::NODETYPE_BRANCH
             ),
             array(
-                'text' => get_string('nvirksomheter', 'block_frikomport'),
-                'icon' => $settingsicon,
-                'type' => navigation_node::NODETYPE_LEAF,
+                'text'      => get_string('lst_locations', 'block_frikomport'),
+                'icon'      => $settingsicon,
+                'type'      => navigation_node::NODETYPE_LEAF,
+                'action'    => $lst_action
             ),
             array(
-                'text' => get_string('nvirksomhetsrader', 'block_frikomport'),
-                'icon' => $settingsicon,
-                'type' => navigation_node::NODETYPE_LEAF,
-            ),
-            array(
-                'text' => get_string('nlocations', 'block_frikomport'),
-                'icon' => $settingsicon,
-                'type' => navigation_node::NODETYPE_LEAF,
+                'text'      => get_string('new_location', 'block_frikomport'),
+                'icon'      => $settingsicon,
+                'type'      => navigation_node::NODETYPE_LEAF,
+                'action'    => $new_action
             )
         );
         $this->add_tree_section($branch);
+
+        // Create and add the organization structure links in a submenu
+        //$branch = array(
+        //    array(
+        //        'text' => get_string('norgstructure', 'block_frikomport'),
+        //        'type' => navigation_node::NODETYPE_BRANCH
+        //    ),
+        //    array(
+        //        'text' => get_string('nvirksomheter', 'block_frikomport'),
+        //        'icon' => $settingsicon,
+        //        'type' => navigation_node::NODETYPE_LEAF,
+        //    ),
+        //    array(
+        //        'text' => get_string('nvirksomhetsrader', 'block_frikomport'),
+        //        'icon' => $settingsicon,
+        //        'type' => navigation_node::NODETYPE_LEAF,
+        //    ),
+        //    array(
+        //        'text' => get_string('nlocations', 'block_frikomport'),
+        //        'icon' => $settingsicon,
+        //        'type' => navigation_node::NODETYPE_LEAF,
+        //    )
+        //);
+        //$this->add_tree_section($branch);
 
         // Create and add the reports links in a submenu
         $branch = array(

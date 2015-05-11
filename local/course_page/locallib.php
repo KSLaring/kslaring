@@ -928,51 +928,71 @@ class course_page  {
      *
      * Description
      * Print the options/fields connected with the course format. Only for the Course Home Page
+     *
+     * @updateDate      08/05/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Add Course Location and Course Sector
      */
     public static function printFormatOptions(&$form,$option,$value,$format) {
         /* Variables*/
-        $str_format = null;;
-
+        global  $USER;
+        $str_format     = null;;
+        $lstManager     = null;
+        $lstLocations   = null;
+        $lstSectors     = null;
 
         try {
             $str_format = 'format_' . $format;
                 switch ($option) {
                     case 'prerequisities':
-                    $form->addElement('textarea','prerequisities',get_string('home_prerequisities',$str_format),'rows="5" style="width:95%;"');
+                        $form->addElement('textarea','prerequisities',get_string('home_prerequisities',$str_format),'rows="5" style="width:95%;"');
                         $form->setDefault('prerequisities',$value);
                         break;
                     case 'producedby':
-                    $form->addElement('text','producedby',get_string('home_producedby',$str_format),'style="width:95%;"');
+                        $form->addElement('text','producedby',get_string('home_producedby',$str_format),'style="width:95%;"');
                         $form->setDefault('producedby',$value);
                         $form->setType('producedby',PARAM_TEXT);
                         break;
                     case 'location':
-                    $form->addElement('text','location',get_string('home_location',$str_format),'style="width:95%;"');
+                        $form->addElement('text','location',get_string('home_location',$str_format),'style="width:95%;"');
                         $form->setDefault('location',$value);
                         $form->setType('location',PARAM_TEXT);
                         break;
+                    case 'course_location':
+                        $lstLocations = course_page::Get_CourseLocationsList($USER->id);
+                        $form->addElement('select','course_location',get_string('home_location',$str_format),$lstLocations);
+                        $form->setDefault('course_location',$value);
+                        break;
+                    case 'course_sector':
+                        $lstLocations   = course_page::Get_CourseLocationsList($USER->id);
+                        $lstSectors     = course_page::Get_SectorsLocationsList(implode(',',array_keys($lstLocations)));;
+                        $form->addElement('select','course_sector',get_string('home_sector',$str_format),$lstSectors,'multiple');
+                        $form->setDefault('course_sector',$value);
+                        break;
                     case 'length':
-                    $form->addElement('text','length',get_string('home_length',$str_format),'style="width:95%;"');
+                        $form->addElement('text','length',get_string('home_length',$str_format),'style="width:95%;"');
                         $form->setDefault('length',$value);
                         $form->setType('length',PARAM_TEXT);
                         break;
                     case 'effort':
-                    $form->addElement('text','effort',get_string('home_effort',$str_format),'style="width:95%;"');
+                        $form->addElement('text','effort',get_string('home_effort',$str_format),'style="width:95%;"');
                         $form->setDefault('effort',$value);
                         $form->setType('effort',PARAM_TEXT);
                         break;
                     case 'manager':
                         $lst_manager = self::getCourseManager();
-                    $form->addElement('select','manager',get_string('home_manager',$str_format),$lst_manager);
+                        $form->addElement('select','manager',get_string('home_manager',$str_format),$lst_manager);
                         $form->setDefault('manager',$value);
                         break;
                     case 'author':
-                    $form->addElement('text','author',get_string('home_author',$str_format),'style="width:95%;"');
+                        $form->addElement('text','author',get_string('home_author',$str_format),'style="width:95%;"');
                         $form->setDefault('author',$value);
                         $form->setType('author',PARAM_TEXT);
                         break;
                     case 'licence':
-                    $form->addElement('text','licence',get_string('home_licence',$str_format),'style="width:95%;"');
+                        $form->addElement('text','licence',get_string('home_licence',$str_format),'style="width:95%;"');
                         $form->setDefault('licence',$value);
                         $form->setType('licence',PARAM_TEXT);
                         break;
@@ -1201,6 +1221,164 @@ class course_page  {
             }
         }
     }//filePluginfile_HomePage
+
+    /**
+     * @param           $userId
+     * @return          array
+     * @throws          Exception
+     *
+     * @creationDate    08/05/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Get the locations that can be added to the course
+     */
+    public static function Get_CourseLocationsList($userId) {
+        /* Variables    */
+        global $DB,$CFG;
+        $myJobRoles         = null;
+        $courseLocations    = array();
+
+        try {
+            /* Course Locations List    */
+            $courseLocations[0] = get_string('sel_location','local_course_locations');
+            /* Get Job Roles connected with user    */
+            require_once($CFG->dirroot . '/local/course_locations/locationslib.php');
+            $myJobRoles = CourseLocations::Get_MyJobRoles($userId);
+
+            /* SQL Instruction  */
+            $sql = " SELECT			cl.id,
+                                    cl.name
+                     FROM			{course_locations}	cl
+                        JOIN		(
+                                        SELECT		DISTINCT levelone
+                                        FROM 		{report_gen_jobrole_relation}
+                                        WHERE		leveltwo 	IS NULL
+                                            AND		levelthree 	IS NULL
+                                            AND		jobroleid 	IN ($myJobRoles)
+                                    ) lo ON lo.levelone = cl.levelone
+                     ORDER BY	cl.name ";
+
+            /* Execute  */
+            $rdo = $DB->get_records_sql($sql);
+            if ($rdo) {
+                foreach ($rdo as $instance) {
+                    $courseLocations[$instance->id] = $instance->name;
+                }//for_location
+            }//if_rdo
+
+            return $courseLocations;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//Get_MyCourseLocations
+
+    /**
+     * @param           $locations
+     * @return          array
+     * @throws          Exception
+     *
+     * @creationDate    08/05/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Get the sectors that can be added to the course
+     */
+    public static function Get_SectorsLocationsList($locations) {
+        /* Variables    */
+        global $DB;
+        $sectors = array();
+
+        try {
+            /* Sectors List     */
+            $sectors[0] = get_string('sel_sector','local_course_locations');
+
+            /* SQL Instruction  */
+            $sql = " SELECT		DISTINCT 	rgc.id,
+                                            rgc.name,
+                                            rgc.industrycode
+                    FROM		{report_gen_companydata}		rgc
+                        JOIN	{report_gen_company_relation}	rg_cr	ON rg_cr.companyid 	= rgc.id
+                        JOIN	{course_locations}			    cl		ON cl.levelone 		= rg_cr.parentid
+                                                                        AND cl.id IN ($locations)
+                    ORDER BY	rgc.industrycode, rgc.name ";
+
+            /* Execute  */
+            $rdo = $DB->get_records_sql($sql);
+            if ($rdo) {
+                foreach ($rdo as $instance) {
+                    $sectors[$instance->id] = $instance->industrycode . ' - ' . $instance->name;
+                }//for_Each
+            }//if_rdo
+
+            return $sectors;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//Get_SectorsLocationsList
+
+    /**
+     * @param           $locationId
+     * @return          null
+     * @throws          Exception
+     *
+     * @creationDate    11/05/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Get the location name
+     */
+    public static function Get_LocationName($locationId) {
+        /* Variables    */
+        global $DB;
+
+        try {
+            /* Execute  */
+            $rdo = $DB->get_record('course_locations',array('id' => $locationId),'name');
+            if ($rdo) {
+                return $rdo->name;
+            }else {
+                return null;
+            }//if_rdo
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//Get_LocationName
+
+
+    /**
+     * @param           $sectorsLst
+     * @return          null
+     * @throws          Exception
+     *
+     * @creationDate    11/05/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Get the sectors name. List Format
+     */
+    public static function Get_SectorsName($sectorsLst) {
+        /* Variables    */
+        global $DB;
+        $sectorsName = null;
+
+        try {
+            /* SQL Instruction  */
+            $sql = " SELECT		GROUP_CONCAT(DISTINCT CONCAT(rgc.industrycode,' - ', rgc.name) ORDER BY rgc.industrycode, rgc.name SEPARATOR ', ') as 'sectors'
+                     FROM		{report_gen_companydata}	rgc
+                     WHERE      rgc.id IN ($sectorsLst) ";
+
+            /* Execute*/
+            $rdo = $DB->get_record_sql($sql);
+            if ($rdo) {
+                $sectorsName = $rdo->sectors;
+            }//if_rdo
+
+            return $sectorsName;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//Get_SectorsName
 
     /* PRIVATE          */
 }//course_page

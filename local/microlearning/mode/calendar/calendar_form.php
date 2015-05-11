@@ -15,7 +15,7 @@ require_once($CFG->dirroot.'/lib/formslib.php');
 class calendar_mode_form extends moodleform {
     function definition() {
         global $SESSION,$OUTPUT;
-
+        $lst_users = null;
         /* Parameters   */
         list($course_id,$mode,$users_campaign,$campaign,$delivery_info,$edit_options) = $this->_customdata;
         /* Form         */
@@ -27,7 +27,10 @@ class calendar_mode_form extends moodleform {
         $add_activities = array_diff($activities,$output);
 
         /* Header Users Campaign */
-        $lst_users      = implode('<br/>',$users_campaign);
+        if ($users_campaign) {
+            $lst_users      = implode('<br/>',$users_campaign);
+        }
+
         $form->addElement('header', 'users_lst',get_string('users_lst','local_microlearning'));
         $form->setExpanded('users_lst',true);
         $form->addElement('textarea','users_txt',get_string('users'),'rows="5" disabled style="width:70%;overflow-y:scroll"');

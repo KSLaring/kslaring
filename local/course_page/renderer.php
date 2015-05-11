@@ -328,11 +328,19 @@ class local_course_page_renderer extends plugin_renderer_base {
      *
      * Description
      * Add the frikomport formats
+     *
+     * @updateDate      11/05/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Course Location / Course Sectors
      */
     protected function addExtra_DurationBlock($course_format,$format_options) {
         /* Variables */
         $out = '';
-        $str_format = 'format_' . $course_format;
+        $strLocationName    = null;
+        $sectorsName        = null;
+        $str_format         = 'format_' . $course_format;
 
         $out .= html_writer::start_tag('div',array('class' => 'extra chp-block'));
             switch ($course_format) {
@@ -364,6 +372,22 @@ class local_course_page_renderer extends plugin_renderer_base {
                                 $out .= '<div class="extra_home chp-content">' . $option->value . '</div>';
                             }//if_value
                         }//if_location
+
+                        if ($option->name == 'course_location') {
+                            if ($option->value) {
+                                $strLocationName = course_page::Get_LocationName($option->value);
+                                $out .= '<h5 class="title_home chp-title">' . get_string('home_location',$str_format) . '</h5>';
+                                $out .= '<div class="extra_home chp-content">' . $strLocationName . '</div>';
+                            }//if_value
+                        }//if_course_location
+
+                        if ($option->name == 'course_sector') {
+                            if ($option->value) {
+                                $sectorsName = course_page::Get_SectorsName($option->value);
+                                $out .= '<h5 class="title_home chp-title">' . get_string('home_sector',$str_format) . '</h5>';
+                                $out .= '<div class="extra_home chp-content">' . $sectorsName . '</div>';
+                            }//if_value
+                        }//if_course_sector
 
                         if ($option->name == 'length') {
                             if ($option->value) {

@@ -329,35 +329,35 @@ class format_elearning_frikomport extends format_base {
                     )
                 ),
                 'prerequisities' => array(
-                    'label' => get_string('home_prerequisities', 'format_netcourse'),
+                    'label' => get_string('home_prerequisities', 'format_elearning_frikomport'),
                     'element_type' => 'textarea',
                     'element_attributes' => array(
                         0 => 'rows="5" style="width:95%;"'
                     )
                 ),
                 'producedby' => array(
-                    'label' => get_string('home_producedby', 'format_netcourse'),
+                    'label' => get_string('home_producedby', 'format_elearning_frikomport'),
                     'element_type' => 'text',
                     'element_attributes' => array(
                         0 => 'style="width:95%;"'
                     )
                 ),
                 'length' => array(
-                    'label' => get_string('home_length', 'format_netcourse'),
+                    'label' => get_string('home_length', 'format_elearning_frikomport'),
                     'element_type' => 'text',
                     'element_attributes' => array(
                         0 => 'style="width:95%;"'
                     )
                 ),
                 'effort' => array(
-                    'label' => get_string('home_effort', 'format_netcourse'),
+                    'label' => get_string('home_effort', 'format_elearning_frikomport'),
                     'element_type' => 'text',
                     'element_attributes' => array(
                         0 => 'style="width:95%;"'
                     )
                 ),
                 'manager' => array(
-                    'label' => get_string('home_manager', 'format_netcourse'),
+                    'label' => get_string('home_manager', 'format_elearning_frikomport'),
                     'element_type' => 'select',
                     'element_attributes' => array($lst_manager)
                 )

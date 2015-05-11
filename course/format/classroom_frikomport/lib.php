@@ -196,6 +196,30 @@ class format_classroom_frikomport extends format_base {
      * Add Home Page Course fields
      */
     public function course_format_options($foreditform = false) {
+        /* Variables    */
+        global $USER;
+        $lstManager     = null;
+        $lstLocations   = null;
+        $lstSectors     = null;
+
+        /**
+         * @updateDate  08/05/2015
+         * @author      eFaktor     (fbv)
+         *
+         * Description
+         * Get the available locations for the course
+         */
+        $lstLocations = course_page::Get_CourseLocationsList($USER->id);
+
+        /**
+         * @updateDate  08/05/2015
+         * @author      eFaktor     (fbv)
+         *
+         * Description
+         * Get the sectors connected with locations
+         */
+        $lstSectors = course_page::Get_SectorsLocationsList(implode(',',array_keys($lstLocations)));
+
         /**
          * @updateDate  21/04/2015
          * @author      eFaktor     (fbv)
@@ -203,7 +227,7 @@ class format_classroom_frikomport extends format_base {
          * Description
          * Get the users are candidates to be course manager
          */
-        $lst_manager = course_page::getCourseManager();
+        $lstManager = course_page::getCourseManager();
 
         static $courseformatoptions = false;
         if ($courseformatoptions === false) {
@@ -261,8 +285,12 @@ class format_classroom_frikomport extends format_base {
                 'producedby' => array(
                     'type' => PARAM_TEXT,
                 ),
-                'location' => array(
-                    'type' => PARAM_TEXT,
+                'course_location' => array(
+                    'default' => 0,
+                    'type' => PARAM_INT,
+                ),
+                'course_sector' => array(
+                    'default' => 0,
                 ),
                 'length' => array(
                     'type' => PARAM_TEXT,
@@ -331,44 +359,47 @@ class format_classroom_frikomport extends format_base {
                     )
                 ),
                 'prerequisities' => array(
-                    'label' => get_string('home_prerequisities', 'format_classroom'),
+                    'label' => get_string('home_prerequisities', 'format_classroom_frikomport'),
                     'element_type' => 'textarea',
                     'element_attributes' => array(
                         0 => 'rows="5" style="width:95%;"'
                     )
                 ),
                 'producedby' => array(
-                    'label' => get_string('home_producedby', 'format_classroom'),
+                    'label' => get_string('home_producedby', 'format_classroom_frikomport'),
                     'element_type' => 'text',
                     'element_attributes' => array(
                         0 => 'style="width:95%;"'
                     )
                 ),
-                'location' => array(
-                    'label' => get_string('home_location', 'format_classroom'),
-                    'element_type' => 'text',
-                    'element_attributes' => array(
-                        0 => 'style="width:95%;"'
-                    )
+                'course_location' => array(
+                    'label' => get_string('home_location', 'format_classroom_frikomport'),
+                    'element_type' => 'select',
+                    'element_attributes' => array($lstLocations)
+                ),
+                'course_sector' => array(
+                    'label' => get_string('home_sector', 'format_classroom_frikomport'),
+                    'element_type' => 'select',
+                    'element_attributes' => array($lstSectors,'1' => 'multiple')
                 ),
                 'length' => array(
-                    'label' => get_string('home_length', 'format_classroom'),
+                    'label' => get_string('home_length', 'format_classroom_frikomport'),
                     'element_type' => 'text',
                     'element_attributes' => array(
                         0 => 'style="width:95%;"'
                     )
                 ),
                 'effort' => array(
-                    'label' => get_string('home_effort', 'format_classroom'),
+                    'label' => get_string('home_effort', 'format_classroom_frikomport'),
                     'element_type' => 'text',
                     'element_attributes' => array(
                         0 => 'style="width:95%;"'
                     )
                 ),
                 'manager' => array(
-                    'label' => get_string('home_manager', 'format_classroom'),
+                    'label' => get_string('home_manager', 'format_classroom_frikomport'),
                     'element_type' => 'select',
-                    'element_attributes' => array($lst_manager)
+                    'element_attributes' => array($lstManager)
                 )
             );
             $courseformatoptions = array_merge_recursive($courseformatoptions, $courseformatoptionsedit);
