@@ -159,8 +159,7 @@
 .tracker_list .course_list  {
     width: 100%;
     height: auto;
-    clear: both;
-    display: block;
+    display: inline-block;
     padding: 0;
 }
 
@@ -254,7 +253,6 @@
     margin-bottom: 2px;
     text-justify: inter-word;
     word-wrap: break-word;
-    word-break: break-all;
 }
 
 .tracker_list .course_list tr.head {
@@ -313,6 +311,7 @@
     width: 10%;
     text-align: left;
     font: 12px Verdana,Verdana Pro,sans-serif;
+    margin-right: 4px;
 }
 
 
