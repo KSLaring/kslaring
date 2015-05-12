@@ -2,8 +2,8 @@
     border: 0;
     border-top: 1px solid #CCCCCC;
     width: 99.5%;
-    margin-top: 25px;
-    margin-bottom: 15px;
+    margin-top: 5px;
+    margin-bottom: 5px;
     text-indent: 10px;
 }
 
@@ -159,8 +159,7 @@
 .tracker_list .course_list  {
     width: 100%;
     height: auto;
-    clear: both;
-    display: block;
+    display: inline-block;
     padding: 0;
 }
 
@@ -313,6 +312,7 @@
     width: 10%;
     text-align: left;
     font: 12px Verdana,Verdana Pro,sans-serif;
+    margin-right: 4px;
 }
 
 
@@ -362,6 +362,7 @@
     margin-top: 0px;
     margin-bottom: 1.5em;
     clear: both;
+    display: block;
     width:100%;
 }
 
@@ -369,6 +370,7 @@
     margin-top: 0px;
     margin-bottom: 1.5em;
     clear: both;
+    display: block;
     width:100%;
 }
 
@@ -397,8 +399,6 @@
 .company_rpt_div .user_list {
     width: 100%;
     height: auto;
-    clear: both;
-    display: block;
     padding: 0;
     margin-top: 2px;
     margin-bottom: 10px;
@@ -407,8 +407,6 @@
 .company_rpt_div .user_list .course_list {
     width: 100%;
     height: auto;
-    clear: both;
-    display: block;
     padding: 0;
     margin-bottom: 10px;
 }
@@ -660,8 +658,6 @@
 .outcome_rpt_div .level_two_list {
     width: 100%;
     height: auto;
-    clear: both;
-    display: block;
     padding: 0;
     margin: 2px;
 }
@@ -669,8 +665,6 @@
 .outcome_rpt_div .level_one_list {
     width: 100%;
     height: auto;
-    clear: both;
-    display: block;
     padding: 0;
     /* Top Right Bottom LEft:   */
     margin: 0px 0px 25px 0px;
@@ -680,8 +674,7 @@
 .outcome_rpt_div .company_level {
     width: 100%;
     height: auto;
-    clear: both;
-    display: block;
+    display: inline-block;
     padding: 0;
     margin-top: 2px;
     margin-bottom: 10px;
@@ -695,6 +688,8 @@
     width: 100%;
     background: white;
     color:  #000;
+    text-justify: inter-word;
+    word-wrap: break-word;
 }
 
 .outcome_rpt_div .course_list tr.head {

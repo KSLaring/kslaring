@@ -1179,7 +1179,6 @@ class outcome_report {
                             $out_report .= '<h3>'. get_string('company_structure_level', 'report_manager', 0) . ': ' . $outcome_report->levelZero . '</h3>';
                         $out_report .= '</li>';
                     $out_report .= '</ul>';
-
                     /* Expiration Before    */
                     $options = CompetenceManager::GetCompletedList();
                     $out_report .= html_writer::start_div('expiration');
@@ -1228,8 +1227,10 @@ class outcome_report {
 
                                                         /* Info company - Courses */
                                                         $out_report .= html_writer::start_tag('div',array('class' => 'course_list','id'=> $id_toggleThree . '_div'));
-                                                            $out_report .= self::Add_HeaderCourseTable_LevelTwo_Screen();
-                                                            $out_report .= self::Add_ContentCourseTable_LevelTwo_Screen($company->courses);
+                                                            $out_report .= html_writer::start_tag('table');
+                                                                $out_report .= self::Add_HeaderCourseTable_LevelTwo_Screen();
+                                                                $out_report .= self::Add_ContentCourseTable_LevelTwo_Screen($company->courses);
+                                                            $out_report .= html_writer::end_tag('table');
                                                         $out_report .= html_writer::end_tag('div');//courses_list
                                                     }//if_courses
                                             }//for_levelThree
@@ -1360,8 +1361,10 @@ class outcome_report {
 
                                             /* Info company - Courses */
                                             $out_report .= html_writer::start_tag('div',array('class' => 'course_list','id'=> $id_toggleThree . '_div'));
-                                                $out_report .= self::Add_HeaderCourseTable_LevelTwo_Screen();
-                                                $out_report .= self::Add_ContentCourseTable_LevelTwo_Screen($company->courses);
+                                                $out_report .= html_writer::start_tag('table');
+                                                    $out_report .= self::Add_HeaderCourseTable_LevelTwo_Screen();
+                                                    $out_report .= self::Add_ContentCourseTable_LevelTwo_Screen($company->courses);
+                                                $out_report .= html_writer::end_tag('table');
                                             $out_report .= html_writer::end_tag('div');//courses_list
                                         }//if_courses
                                     }//for_levelThree
@@ -1485,8 +1488,10 @@ class outcome_report {
 
                                     /* Info company - Courses */
                                     $out_report .= html_writer::start_tag('div',array('class' => 'course_list','id'=> $id_toggle . '_div'));
-                                        $out_report .= self::Add_HeaderCourseTable_LevelTwo_Screen();
-                                        $out_report .= self::Add_ContentCourseTable_LevelTwo_Screen($company->courses);
+                                        $out_report .= html_writer::start_tag('table');
+                                            $out_report .= self::Add_HeaderCourseTable_LevelTwo_Screen();
+                                            $out_report .= self::Add_ContentCourseTable_LevelTwo_Screen($company->courses);
+                                        $out_report .= html_writer::end_tag('table');
                                     $out_report .= html_writer::end_tag('div');//courses_list
                                 }//if_courses
                             }//for_level_three
@@ -1615,10 +1620,12 @@ class outcome_report {
                                         $out_report .= self::Add_CourseHeader_Screen($course->name,$id_toggle_course,$url_img);
                                         /* Users            */
                                         $out_report .= html_writer::start_tag('div',array('class' => 'user_list','id'=> $id_toggle_course . '_div'));
-                                            /* Header Table     */
-                                            $out_report .= self::Add_HeaderTable_LevelThree_Screen();
-                                            /* Content Table    */
-                                            $out_report .= self::Add_ContentTable_LevelThree_Screen($course,$outcome_report->expiration);
+                                            $out_report .= html_writer::start_tag('table');
+                                                /* Header Table     */
+                                                $out_report .= self::Add_HeaderTable_LevelThree_Screen();
+                                                /* Content Table    */
+                                                $out_report .= self::Add_ContentTable_LevelThree_Screen($course,$outcome_report->expiration);
+                                            $out_report .= html_writer::end_tag('table');
                                         $out_report .= html_writer::end_tag('div');//user_list
                                     }//for_courses
                                 $out_report .= html_writer::end_tag('div');//courses_list
@@ -1793,33 +1800,31 @@ class outcome_report {
         $str_completed      = get_string('completed','report_manager');
         $str_total          = get_string('count','report_manager');
 
-        $header_table .= html_writer::start_tag('table');
-            $header_table .= html_writer::start_tag('tr',array('class' => 'head'));
-                /* Empty Col   */
-                $header_table .= html_writer::start_tag('td',array('class' => 'head_first'));
-                $header_table .= html_writer::end_tag('td');
-                /* Course           */
-                $header_table .= html_writer::start_tag('td',array('class' => 'head_course'));
-                    $header_table .= $str_course;
-                $header_table .= html_writer::end_tag('td');
-                /* Not Enrol        */
-                $header_table .= html_writer::start_tag('td',array('class' => 'head_status'));
-                    $header_table .= $str_not_enrol;
-                $header_table .= html_writer::end_tag('td');
-                /* Not Completed    */
-                $header_table .= html_writer::start_tag('td',array('class' => 'head_status'));
-                    $header_table .= $str_not_completed;
-                $header_table .= html_writer::end_tag('td');
-                /* Completed        */
-                $header_table .= html_writer::start_tag('td',array('class' => 'head_status'));
-                    $header_table .= $str_completed;
-                $header_table .= html_writer::end_tag('td');
-                /* Total            */
-                $header_table .= html_writer::start_tag('td',array('class' => 'head_status'));
-                    $header_table .= $str_total;
-                $header_table .= html_writer::end_tag('td');
-            $header_table .= html_writer::end_tag('tr');
-        $header_table .= html_writer::end_tag('table');
+        $header_table .= html_writer::start_tag('tr',array('class' => 'head'));
+            /* Empty Col   */
+            $header_table .= html_writer::start_tag('td',array('class' => 'head_first'));
+            $header_table .= html_writer::end_tag('td');
+            /* Course           */
+            $header_table .= html_writer::start_tag('td',array('class' => 'head_course'));
+                $header_table .= $str_course;
+            $header_table .= html_writer::end_tag('td');
+            /* Not Enrol        */
+            $header_table .= html_writer::start_tag('td',array('class' => 'head_status'));
+                $header_table .= $str_not_enrol;
+            $header_table .= html_writer::end_tag('td');
+            /* Not Completed    */
+            $header_table .= html_writer::start_tag('td',array('class' => 'head_status'));
+                $header_table .= $str_not_completed;
+            $header_table .= html_writer::end_tag('td');
+            /* Completed        */
+            $header_table .= html_writer::start_tag('td',array('class' => 'head_status'));
+                $header_table .= $str_completed;
+            $header_table .= html_writer::end_tag('td');
+            /* Total            */
+            $header_table .= html_writer::start_tag('td',array('class' => 'head_status'));
+                $header_table .= $str_total;
+            $header_table .= html_writer::end_tag('td');
+        $header_table .= html_writer::end_tag('tr');
 
         return $header_table;
     }//Add_HeaderCourseTable_LevelTwo_Screen
@@ -1838,35 +1843,33 @@ class outcome_report {
         /* Variables    */
         $content    = null;
 
-        $content .= html_writer::start_tag('table');
-            foreach ($courses_lst as $id=>$course) {
-                $content .= html_writer::start_tag('tr');
-                    /* Empty Col   */
-                    $content .= html_writer::start_tag('td',array('class' => 'first'));
-                    $content .= html_writer::end_tag('td');
-                    /* Course           */
-                    $content .= html_writer::start_tag('td',array('class' => 'course'));
-                        $content .= $course->name;
-                    $content .= html_writer::end_tag('td');
-                    /* Not Enrol        */
-                    $content .= html_writer::start_tag('td',array('class' => 'status'));
-                        $content .= count($course->not_enrol);
-                    $content .= html_writer::end_tag('td');
-                    /* Not Completed    */
-                    $content .= html_writer::start_tag('td',array('class' => 'status'));
-                        $content .= count($course->not_completed);
-                    $content .= html_writer::end_tag('td');
-                    /* Completed        */
-                    $content .= html_writer::start_tag('td',array('class' => 'status'));
-                        $content .= count($course->completed);
-                    $content .= html_writer::end_tag('td');
-                    /* Total            */
-                    $content .= html_writer::start_tag('td',array('class' => 'status'));
-                        $content .= count($course->not_enrol) + count($course->not_completed) + count($course->completed);
-                    $content .= html_writer::end_tag('td');
-                $content .= html_writer::end_tag('tr');
-            }
-        $content .= html_writer::end_tag('table');
+        foreach ($courses_lst as $id=>$course) {
+            $content .= html_writer::start_tag('tr');
+                /* Empty Col   */
+                $content .= html_writer::start_tag('td',array('class' => 'first'));
+                $content .= html_writer::end_tag('td');
+                /* Course           */
+                $content .= html_writer::start_tag('td',array('class' => 'course'));
+                    $content .= $course->name;
+                $content .= html_writer::end_tag('td');
+                /* Not Enrol        */
+                $content .= html_writer::start_tag('td',array('class' => 'status'));
+                    $content .= count($course->not_enrol);
+                $content .= html_writer::end_tag('td');
+                /* Not Completed    */
+                $content .= html_writer::start_tag('td',array('class' => 'status'));
+                    $content .= count($course->not_completed);
+                $content .= html_writer::end_tag('td');
+                /* Completed        */
+                $content .= html_writer::start_tag('td',array('class' => 'status'));
+                    $content .= count($course->completed);
+                $content .= html_writer::end_tag('td');
+                /* Total            */
+                $content .= html_writer::start_tag('td',array('class' => 'status'));
+                    $content .= count($course->not_enrol) + count($course->not_completed) + count($course->completed);
+                $content .= html_writer::end_tag('td');
+            $content .= html_writer::end_tag('tr');
+        }
 
         return $content;
     }//Add_ContentCourseTable_LevelTwo_Screen
@@ -1888,28 +1891,26 @@ class outcome_report {
         $str_state          = get_string('state','local_tracker_manager');
         $str_completion     = get_string('completion_time','local_tracker_manager');
 
-        $header_table .= html_writer::start_tag('table');
-            $header_table .= html_writer::start_tag('tr',array('class' => 'head'));
-                /* Empty Col   */
-                $header_table .= html_writer::start_tag('td',array('class' => 'head_first'));
-                $header_table .= html_writer::end_tag('td');
+        $header_table .= html_writer::start_tag('tr',array('class' => 'head'));
+            /* Empty Col   */
+            $header_table .= html_writer::start_tag('td',array('class' => 'head_first'));
+            $header_table .= html_writer::end_tag('td');
 
-                /* Course Col   */
-                $header_table .= html_writer::start_tag('td',array('class' => 'head_course'));
-                    $header_table .= $str_user;
-                $header_table .= html_writer::end_tag('td');
+            /* Course Col   */
+            $header_table .= html_writer::start_tag('td',array('class' => 'head_course'));
+                $header_table .= $str_user;
+            $header_table .= html_writer::end_tag('td');
 
-                /* Status Col   */
-                $header_table .= html_writer::start_tag('td',array('class' => 'head_status'));
-                    $header_table .= $str_state;
-                $header_table .= html_writer::end_tag('td');
+            /* Status Col   */
+            $header_table .= html_writer::start_tag('td',array('class' => 'head_status'));
+                $header_table .= $str_state;
+            $header_table .= html_writer::end_tag('td');
 
-                /* Completion Col   */
-                $header_table .= html_writer::start_tag('td',array('class' => 'head_status'));
-                    $header_table .= $str_completion;
-                $header_table .= html_writer::end_tag('td');
-            $header_table .= html_writer::end_tag('tr');
-        $header_table .= html_writer::end_tag('table');
+            /* Completion Col   */
+            $header_table .= html_writer::start_tag('td',array('class' => 'head_status'));
+                $header_table .= $str_completion;
+            $header_table .= html_writer::end_tag('td');
+        $header_table .= html_writer::end_tag('tr');
 
         return $header_table;
     }//Add_HeaderTable_LevelThree_Screen
@@ -1934,7 +1935,6 @@ class outcome_report {
         $not_completed  = null;
         $not_enrol      = null;
 
-        $content .= html_writer::start_tag('table');
         /* Completed    */
         $completed = $course_info->completed;
         if ($completed) {
@@ -2018,7 +2018,6 @@ class outcome_report {
                 $content .= html_writer::end_tag('tr');
             }//for_not_enrol
         }//if_not_enrol
-        $content .= html_writer::end_tag('table');
 
         return $content;
     }//Add_ContentTable_LevelThree_Screen
