@@ -712,7 +712,7 @@
 
 .outcome_rpt_div .course_list td.head_course,
 .outcome_rpt_div .company_level td.head_company {
-    width: 40%;
+    width: 35%;
     text-align: left;
     cursor: pointer;
 }
@@ -734,7 +734,7 @@
 
 .outcome_rpt_div .course_list td.course,
 .outcome_rpt_div .company_level td.company {
-    width: 40%;
+    width: 35%;
     text-align: left;
     cursor: pointer;
     font: 12px Verdana,Verdana Pro,sans-serif;
