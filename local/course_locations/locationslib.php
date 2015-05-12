@@ -86,8 +86,9 @@ class CourseLocations {
 
             /* The User can see all counties/Municipalities */
             if (array_key_exists(0,$myCompetence)) {
-                $aux            = array_shift($myCompetence);
-                $myCompetence   = $aux;
+                $aux                = $myCompetence[0];
+                $myCompetence       = array();
+                $myCompetence[0]    = $aux;
             }
 
             return $myCompetence;
