@@ -32,8 +32,8 @@ $string['municipality']             = 'Municipalities';
 $string['counties']                 = 'Counties';
 $string['sectors']                  = 'Sectors';
 $string['select_level_list']        = 'Select Item';
-$string['activate']                 = 'Activate';
-$string['deactivate']               = 'Deactivate';
+$string['activate']                 = 'Activated';
+$string['deactivate']               = 'Deactivated';
 
 $string['location_county']      = 'County';
 $string['location_muni']        = 'Municipality';
