@@ -253,6 +253,7 @@
     margin-bottom: 2px;
     text-justify: inter-word;
     word-wrap: break-word;
+    word-break: break-all;
 }
 
 .tracker_list .course_list tr.head {
