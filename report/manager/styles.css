@@ -254,6 +254,7 @@
     margin-bottom: 2px;
     text-justify: inter-word;
     word-wrap: break-word;
+    word-break: break-all;
 }
 
 .tracker_list .course_list tr.head {
@@ -266,39 +267,46 @@
 .tracker_list .course_list td.head_first {
     width: 2%;
     text-align: left;
+    margin-right: 4px;
 }
 
 .tracker_list .course_list td.head_course {
     width: 30%;
     text-align: left;
+    margin-right: 4px;
 }
 
 .tracker_list .course_list td.head_status  {
     width: 20%;
     text-align: center;
+    margin-right: 4px;
 }
 
 .tracker_list .course_list td.head_start  {
     width: 10%;
     text-align: left;
+    margin-right: 4px;
 }
 
 .tracker_list .course_list td.first {
     width: 2%;
     text-align: left;
     font:12px Verdana,Verdana Pro,sans-serif;
+    margin-right: 4px;
 }
 
 .tracker_list .course_list td.course {
     width: 30%;
     text-align: left;
     font: 12px Verdana,Verdana Pro,sans-serif;
+    margin-right: 4px;
 }
 
 .tracker_list .course_list td.status {
     width: 20%;
     text-align: center;
     font: 12px Verdana,Verdana Pro,sans-serif;
+    margin-right: 4px;
 }
 
 .tracker_list .course_list td.start {
