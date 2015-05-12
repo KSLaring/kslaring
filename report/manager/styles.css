@@ -358,12 +358,11 @@
     margin-left: 20px;
 }
 
-.outcome_rpt_div {
+.outcome_rpt_div  {
     margin-top: 0px;
     margin-bottom: 1.5em;
-    clear: both;
-    display: block;
     width:100%;
+    display: block;
 }
 
 .company_rpt_div  {
@@ -659,7 +658,6 @@
     width: 100%;
     height: auto;
     padding: 0;
-    margin: 2px;
 }
 
 .outcome_rpt_div .level_one_list {
@@ -674,7 +672,6 @@
 .outcome_rpt_div .company_level {
     width: 100%;
     height: auto;
-    display: inline-block;
     padding: 0;
     margin-top: 2px;
     margin-bottom: 10px;
