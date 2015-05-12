@@ -715,6 +715,8 @@
     width: 40%;
     text-align: left;
     cursor: pointer;
+    word-break: break-all;
+    padding-bottom: 10px;
 }
 
 .outcome_rpt_div .course_list td.head_status,
