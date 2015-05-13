@@ -1246,26 +1246,29 @@ class course_page  {
             require_once($CFG->dirroot . '/local/course_locations/locationslib.php');
             $myJobRoles = CourseLocations::Get_MyJobRoles($userId);
 
-            /* SQL Instruction  */
-            $sql = " SELECT			cl.id,
-                                    cl.name
-                     FROM			{course_locations}	cl
-                        JOIN		(
-                                        SELECT		DISTINCT levelone
-                                        FROM 		{report_gen_jobrole_relation}
-                                        WHERE		leveltwo 	IS NULL
-                                            AND		levelthree 	IS NULL
-                                            AND		jobroleid 	IN ($myJobRoles)
-                                    ) lo ON lo.levelone = cl.levelone
-                     ORDER BY	cl.name ";
+            if ($myJobRoles) {
+                /* SQL Instruction  */
+                $sql = " SELECT			cl.id,
+                                        cl.name
+                         FROM			{course_locations}	cl
+                            JOIN		(
+                                            SELECT		DISTINCT levelone
+                                            FROM 		{report_gen_jobrole_relation}
+                                            WHERE		leveltwo 	IS NULL
+                                                AND		levelthree 	IS NULL
+                                                AND		jobroleid 	IN ($myJobRoles)
+                                        ) lo ON lo.levelone = cl.levelone
+                         ORDER BY	cl.name ";
 
-            /* Execute  */
-            $rdo = $DB->get_records_sql($sql);
-            if ($rdo) {
-                foreach ($rdo as $instance) {
-                    $courseLocations[$instance->id] = $instance->name;
-                }//for_location
-            }//if_rdo
+                /* Execute  */
+                $rdo = $DB->get_records_sql($sql);
+                if ($rdo) {
+                    foreach ($rdo as $instance) {
+                        $courseLocations[$instance->id] = $instance->name;
+                    }//for_location
+                }//if_rdo
+            }//if_myJobRole
+
 
             return $courseLocations;
         }catch (Exception $ex) {
@@ -1293,23 +1296,26 @@ class course_page  {
             /* Sectors List     */
             $sectors[0] = get_string('sel_sector','local_course_locations');
 
-            /* SQL Instruction  */
-            $sql = " SELECT		DISTINCT 	rgc.id,
-                                            rgc.name,
-                                            rgc.industrycode
-                    FROM		{report_gen_companydata}		rgc
-                        JOIN	{report_gen_company_relation}	rg_cr	ON rg_cr.companyid 	= rgc.id
-                        JOIN	{course_locations}			    cl		ON cl.levelone 		= rg_cr.parentid
-                                                                        AND cl.id IN ($locations)
-                    ORDER BY	rgc.industrycode, rgc.name ";
+            if ($locations) {
+                /* SQL Instruction  */
+                $sql = " SELECT		DISTINCT 	rgc.id,
+                                                rgc.name,
+                                                rgc.industrycode
+                         FROM		{report_gen_companydata}		rgc
+                            JOIN	{report_gen_company_relation}	rg_cr	ON rg_cr.companyid 	= rgc.id
+                            JOIN	{course_locations}			    cl		ON cl.levelone 		= rg_cr.parentid
+                                                                            AND cl.id IN ($locations)
+                         ORDER BY	rgc.industrycode, rgc.name ";
 
-            /* Execute  */
-            $rdo = $DB->get_records_sql($sql);
-            if ($rdo) {
-                foreach ($rdo as $instance) {
-                    $sectors[$instance->id] = $instance->industrycode . ' - ' . $instance->name;
-                }//for_Each
-            }//if_rdo
+                /* Execute  */
+                $rdo = $DB->get_records_sql($sql);
+                if ($rdo) {
+                    foreach ($rdo as $instance) {
+                        $sectors[$instance->id] = $instance->industrycode . ' - ' . $instance->name;
+                    }//for_Each
+                }//if_rdo
+            }//if_locations
+
 
             return $sectors;
         }catch (Exception $ex) {
