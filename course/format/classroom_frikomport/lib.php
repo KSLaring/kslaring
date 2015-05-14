@@ -572,7 +572,10 @@ class format_classroom_frikomport extends format_base {
 
                     break;
                 case 'course_sector':
-                    $data['course_sector'] = implode(',',$data['course_sector']);
+                    if ($data['course_sector'] && isset($data['course_sector'])) {
+                        $data['course_sector'] = implode(',',$data['course_sector']);
+                    }
+
                 default:
                     break;
             }//switch_key
