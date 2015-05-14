@@ -571,6 +571,8 @@ class format_classroom_frikomport extends format_base {
                     //if_page_video_pagevideo_filemanager
 
                     break;
+                case 'course_sector':
+                    $data['course_sector'] = implode(',',$data['course_sector']);
                 default:
                     break;
             }//switch_key

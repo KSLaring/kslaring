@@ -848,6 +848,12 @@ class course_page  {
      *
      * Description
      * Update all the information connected with the Course Home Page
+     *
+     * @updateDate      14/05/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Course Sector
      */
     public static function UpdateCourseHomePage($data,$course) {
         global $DB;
@@ -901,7 +907,13 @@ class course_page  {
                         }//if_video_id
 
                         break;
+                    case 'course_sector':
+                        if (isset($data->$field)) {
+                            $option->value = implode(',',$data->$field);
+                            $DB->update_record('course_format_options',$option);
+                        }//if_data_field
 
+                        break;
                     default:
                         if (isset($data->$field)) {
                             $option->value = $data->$field;
