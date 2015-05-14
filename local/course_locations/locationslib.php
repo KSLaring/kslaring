@@ -34,17 +34,16 @@ class CourseLocations {
      * Description
      * Get the competence locations for the user
      *
-     * My Competence. Array
-     *
-     *          [id].   Level Zero Info Class
-     *                              --> id.         Level Zero Id. County Id
-     *                              --> levelOne.   Level One List. Municipalities List connected wit
+     * My Competence. Object
+     *          --> jobRoles
+     *          --> levelZero.      Counties split by coma.
+     *          --> levelOne.       Municipalities split by comma.
      */
     public static function Get_MyCompetence($user_id) {
         /* Variables    */
         global $DB;
         $myJobRoles     = null;
-        $myCompetence   = array();
+        $myCompetence   = null;
         $levelZero      = null;
         $levelOne       = null;
 
@@ -55,41 +54,45 @@ class CourseLocations {
             /* Get My Competence Locations  */
             if ($myJobRoles) {
                 /* SQL Instruction  */
-                $sql = " SELECT		IF(levelzero,levelzero,0) as 'levelzero',
+                $sql = " SELECT     GROUP_CONCAT(DISTINCT IF(levelzero,levelzero,0) ORDER BY levelone SEPARATOR ',') 	as 'levelzero',
                                     GROUP_CONCAT(DISTINCT IF(levelone,levelone,0) ORDER BY levelone SEPARATOR ',') 	as 'levelone'
-                         FROM 		{report_gen_jobrole_relation}
+                         FROM	    {report_gen_jobrole_relation}
                          WHERE		jobroleid 	IN ($myJobRoles)
-                         GROUP BY 	levelzero ";
+                            AND		(
+                                     levelzero IS NULL
+                                     OR
+                                     (levelzero IS NOT NULL AND  levelone IS NULL)
+                                     OR
+                                     (levelzero IS NOT NULL AND  levelone IS NOT NULL AND leveltwo IS NULL)
+                                    ) ";
 
                 /* Execute  */
-                $rdo = $DB->get_records_sql($sql);
+                $rdo = $DB->get_record_sql($sql);
                 if ($rdo) {
-                    foreach ($rdo as $instance) {
+                    $myCompetence = new stdClass();
+                    $myCompetence->jobRoles     = $myJobRoles;
+                    $myCompetence->levelZero    = null;
+                    $myCompetence->levelOne     = null;
+
+                    /* Level Zero    */
+                    $levelZero = explode(',',$rdo->levelzero);
+                    $levelZero = array_flip($levelZero);
+                    if (array_key_exists(0,$levelZero)) {
+                        $myCompetence->levelZero = 0;
+                    }else {
+                        $myCompetence->levelZero = $rdo->levelzero;
+
                         /* Level One    */
-                        $levelOne = explode(',',$instance->levelone);
+                        $levelOne = explode(',',$rdo->levelone);
                         $levelOne = array_flip($levelOne);
-
-                        /* Level Zero   */
-                        $levelZero      = new stdClass();
-                        $levelZero->id  = $instance->levelzero;
                         if (array_key_exists(0,$levelOne)) {
-                            $levelZero->levelOne = 0;
+                            $myCompetence->levelOne = 0;
                         }else {
-                            $levelZero->levelOne = $instance->levelone;
+                            $myCompetence->levelOne = $rdo->levelone;
                         }//if_all_levelOne
-
-                        /* My Competence    */
-                        $myCompetence[$instance->levelzero] = $levelZero;
-                    }//for_rdo_levelZero
+                    }//if_all_levelOne
                 }//if_rdo
             }//if_MyJobRoles
-
-            /* The User can see all counties/Municipalities */
-            if (array_key_exists(0,$myCompetence)) {
-                $aux                = $myCompetence[0];
-                $myCompetence       = array();
-                $myCompetence[0]    = $aux;
-            }
 
             return $myCompetence;
         }catch (Exception $ex) {

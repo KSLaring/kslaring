@@ -71,14 +71,15 @@ echo "<li><u>county</u>.         County name</li>";
 echo "<li><u>municipality</u>.   Municipality name</li>";
 echo "<li><u>sectors</u>.        All sectors name,connected with the course, separated by coma.</li>";
 echo "<li><u>location</u>.       Location name.</li>";
+echo "</br></br>";
 
 
 echo "<strong>Get_MyCompetence(userId)</strong>.Function to get the municipalities, ordered by county, that the user is able to see. ." . '</br>';
-echo "Return Array. Each element of array is an object. It contains the next information : " . "</br>";
-echo "<li><u>id</u>.            Level Zero Id. County Id. </li>";
-echo "<li><u>levelOne</u>.      Level One. Municipality List. Municipality Ids separated by comma.
-      If the user has permission to see all the municipalities, that belong to the county, then the value is 0.
-      If the user has only permission to see some municipalities, then it will be a list of Id municipalities separated by comma. </li>";
+echo "Return Object. </br>";
+echo "MyCompetence->jobRoles.   Job roles connected with the user" . "</br>";
+echo "MyCompetence->levelZero.  Counties/Level Zero where user has permissions. " . "</br>";
+echo "MyCompetence->levelOne.   Municipalities/level One. Where user has permissions. " . "</br>";
+echo "</br></br>";
 
 echo "<strong>Get_Companies(in=null,parent=null)</strong>.Function to get the companies." . '</br>';
 echo "<li><u>in</u>.       Companies that belong that list.</li>";

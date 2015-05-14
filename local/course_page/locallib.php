@@ -1236,29 +1236,45 @@ class course_page  {
     public static function Get_CourseLocationsList($userId) {
         /* Variables    */
         global $DB,$CFG;
-        $myJobRoles         = null;
+        $myCompetence       = null;
+        $sqlWhere           = null;
         $courseLocations    = array();
 
         try {
             /* Course Locations List    */
             $courseLocations[0] = get_string('sel_location','local_course_locations');
-            /* Get Job Roles connected with user    */
+            /* Get Competence connected with user    */
             require_once($CFG->dirroot . '/local/course_locations/locationslib.php');
-            $myJobRoles = CourseLocations::Get_MyJobRoles($userId);
+            $myCompetence = CourseLocations::Get_MyCompetence($userId);
 
-            if ($myJobRoles) {
-                /* SQL Instruction  */
-                $sql = " SELECT			cl.id,
-                                        cl.name
-                         FROM			{course_locations}	cl
-                            JOIN		(
-                                            SELECT		DISTINCT levelone
-                                            FROM 		{report_gen_jobrole_relation}
-                                            WHERE		leveltwo 	IS NULL
-                                                AND		levelthree 	IS NULL
-                                                AND		jobroleid 	IN ($myJobRoles)
-                                        ) lo ON lo.levelone = cl.levelone
-                         ORDER BY	cl.name ";
+            /* SQL Instruction  */
+            /* All Locations    */
+            $sql = " SELECT			cl.id,
+                                    cl.name
+                     FROM			{course_locations}	cl ";
+            if ($myCompetence) {
+                if ($myCompetence->levelZero) {
+                    /* Locations Connected with level zero  */
+                    if ($sqlWhere) {
+                        $sqlWhere  = " WHERE cl.levelzero IN ($myCompetence->levelZero) ";
+                    }else {
+                        $sqlWhere .= " AND cl.levelzero IN ($myCompetence->levelZero) ";
+                    }//if_sqlWhere
+
+                    /* Locations Level One  */
+                    if ($myCompetence->levelOne) {
+                        if ($sqlWhere) {
+                            $sqlWhere  = " WHERE cl.levelone IN ($myCompetence->levelOne) ";
+                        }else {
+                            $sqlWhere .= " AND cl.levelone IN ($myCompetence->levelOne) ";
+                        }//if_sqlWhere
+                    }//if_levelOne
+                }//if_levelZero
+
+                /* Add Criteria */
+                $sql .= $sqlWhere;
+                /* ADD Order    */
+                $sql .= " ORDER BY cl.name ";
 
                 /* Execute  */
                 $rdo = $DB->get_records_sql($sql);
@@ -1267,8 +1283,7 @@ class course_page  {
                         $courseLocations[$instance->id] = $instance->name;
                     }//for_location
                 }//if_rdo
-            }//if_myJobRole
-
+            }//if_myCompetence
 
             return $courseLocations;
         }catch (Exception $ex) {

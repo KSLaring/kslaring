@@ -27,8 +27,8 @@ class locations_search_form extends moodleform {
     function definition (){
         /* Variables    */
         $levelZero      = null;
-        $counties       = null;
-        $municipalities = null;
+        $counties       = array();
+        $municipalities = array();
 
         /* Form         */
         $form               = $this->_form;
@@ -37,8 +37,11 @@ class locations_search_form extends moodleform {
         list($myCompetence) = $this->_customdata;
 
         /* Counties                 */
-        $levelZero = implode(',',array_keys($myCompetence));
-        $counties = CourseLocations::Get_Companies($levelZero);
+        if ($myCompetence) {
+            $counties   = CourseLocations::Get_Companies($myCompetence->levelZero);
+        }else {
+            $counties[0] = get_string('select_level_list','local_course_locations');
+        }//if_myCompetence
         $form->addElement('select',COURSE_LOCATION_COUNTY,get_string('counties', 'local_course_locations'),$counties);
         if (isset($_COOKIE['parentCounty'])) {
             $form->setDefault(COURSE_LOCATION_COUNTY,$_COOKIE['parentCounty']);
@@ -49,7 +52,11 @@ class locations_search_form extends moodleform {
         $form->addRule(COURSE_LOCATION_COUNTY, 'required', 'nonzero', null, 'client');
 
         /* Municipalities          */
-        $municipalities = GetMunicipalities($myCompetence);
+        if ($myCompetence) {
+            $municipalities = GetMunicipalities($myCompetence->levelOne);
+        }else {
+            $municipalities[0] = get_string('select_level_list','local_course_locations');
+        }//if_myCompetence
         $form->addElement('select',COURSE_LOCATION_MUNICIPALITY,get_string('municipality', 'local_course_locations'),$municipalities);
         if (isset($_COOKIE['parentMunicipality']) && ($_COOKIE['parentMunicipality'])) {
             $form->setDefault(COURSE_LOCATION_MUNICIPALITY ,$_COOKIE['parentMunicipality']);
@@ -83,8 +90,8 @@ class add_location_form extends moodleform {
     function definition() {
         /* Variables    */
         $levelZero      = null;
-        $counties       = null;
-        $municipalities = null;
+        $counties       = array();
+        $municipalities = array();
 
         /* Form         */
         $form               = $this->_form;
@@ -96,8 +103,11 @@ class add_location_form extends moodleform {
         $form->addElement('header', 'header_location', get_string('location', 'local_course_locations'));
         $form->setExpanded('header_location',true);
         /* Counties                 */
-        $levelZero = implode(',',array_keys($myCompetence));
-        $counties = CourseLocations::Get_Companies($levelZero);
+        if ($myCompetence) {
+            $counties   = CourseLocations::Get_Companies($myCompetence->levelZero);
+        }else {
+            $counties[0] = get_string('select_level_list','local_course_locations');
+        }//if_myCompetence
         $form->addElement('select',COURSE_LOCATION_COUNTY,get_string('counties', 'local_course_locations'),$counties);
         if (isset($_COOKIE['parentCounty'])) {
             $form->setDefault(COURSE_LOCATION_COUNTY,$_COOKIE['parentCounty']);
@@ -109,7 +119,11 @@ class add_location_form extends moodleform {
         $form->addRule(COURSE_LOCATION_COUNTY, 'required', 'nonzero', null, 'client');
 
         /* Municipalities          */
-        $municipalities = GetMunicipalities($myCompetence);
+        if ($myCompetence) {
+            $municipalities = GetMunicipalities($myCompetence->levelOne);
+        }else {
+            $municipalities[0] = get_string('select_level_list','local_course_locations');
+        }//if_myCompetence
         $form->addElement('select',COURSE_LOCATION_MUNICIPALITY,get_string('municipality', 'local_course_locations'),$municipalities);
         if (isset($_COOKIE['parentMunicipality']) && ($_COOKIE['parentMunicipality'])) {
             $form->setDefault(COURSE_LOCATION_MUNICIPALITY ,$_COOKIE['parentMunicipality']);
@@ -310,7 +324,7 @@ class edit_location_form extends moodleform {
 
 
 /**
- * @param           $myCompetence
+ * @param           $levelOne
  * @return          array
  *
  * @creationDate    28/04/2015
@@ -319,19 +333,11 @@ class edit_location_form extends moodleform {
  * Description
  * Get the municipalities connected with the county
  */
-function GetMunicipalities($myCompetence) {
+function GetMunicipalities($levelOne) {
     /* Variables    */
-    $levelZero      = null;
-    $levelOne       = null;
     $municipalities = array();
 
     if (isset($_COOKIE['parentCounty']) && ($_COOKIE['parentCounty'])) {
-        if (array_key_exists($_COOKIE['parentCounty'],$myCompetence)) {
-            $levelZero = $myCompetence[$_COOKIE['parentCounty']];
-            if ($levelZero->levelOne) {
-                $levelOne  = $levelZero->levelOne;
-            }//if_levelOne
-        }
         $municipalities = CourseLocations::Get_Companies($levelOne,$_COOKIE['parentCounty']);
     }else {
         $municipalities[0] = get_string('select_level_list','local_course_locations');
