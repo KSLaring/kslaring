@@ -34,7 +34,7 @@
  */
 class block_frikomport_edit_form extends block_edit_form {
     protected function specific_definition($mform) {
-        $mform->addElement('header', 'configheader', get_string('blockfrikomport', 'block'));
+        $mform->addElement('header', 'configheader', get_string('pluginname', 'block'));
 
         $yesnooptions = array('yes' => get_string('yes'), 'no' => get_string('no'));
 
