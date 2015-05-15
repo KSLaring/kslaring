@@ -29,6 +29,7 @@ class locations_search_form extends moodleform {
         $levelZero      = null;
         $counties       = array();
         $municipalities = array();
+        $keys           = null;
 
         /* Form         */
         $form               = $this->_form;
@@ -43,10 +44,17 @@ class locations_search_form extends moodleform {
             $counties[0] = get_string('select_level_list','local_course_locations');
         }//if_myCompetence
         $form->addElement('select',COURSE_LOCATION_COUNTY,get_string('counties', 'local_course_locations'),$counties);
-        if (isset($_COOKIE['parentCounty'])) {
+        if (isset($_COOKIE['parentCounty']) && ($_COOKIE['parentCounty'])) {
             $form->setDefault(COURSE_LOCATION_COUNTY,$_COOKIE['parentCounty']);
         }else {
-            $form->setDefault(COURSE_LOCATION_COUNTY,0);
+            /* If there is only one county, it should be selected by default    */
+            if (count($counties) == 2) {
+                $keys = array_keys($counties);
+                $form->setDefault(COURSE_LOCATION_COUNTY,$keys[1]);
+                setcookie('parentCounty',$keys[1]);
+            }else {
+                $form->setDefault(COURSE_LOCATION_COUNTY,0);
+            }
         }//if_cookie
         $form->addRule(COURSE_LOCATION_COUNTY, 'required', 'required', 'nonzero', 'client');
         $form->addRule(COURSE_LOCATION_COUNTY, 'required', 'nonzero', null, 'client');
@@ -61,7 +69,13 @@ class locations_search_form extends moodleform {
         if (isset($_COOKIE['parentMunicipality']) && ($_COOKIE['parentMunicipality'])) {
             $form->setDefault(COURSE_LOCATION_MUNICIPALITY ,$_COOKIE['parentMunicipality']);
         }else {
-            $form->setDefault(COURSE_LOCATION_MUNICIPALITY ,0);
+            /* If there is only one municipality, it should be selected by default  */
+            if (count($municipalities) == 2) {
+                $keys = array_keys($municipalities);
+                $form->setDefault(COURSE_LOCATION_MUNICIPALITY,$keys[1]);
+            }else {
+                $form->setDefault(COURSE_LOCATION_MUNICIPALITY ,0);
+            }
         }//if_cookie
         $form->disabledIf(COURSE_LOCATION_MUNICIPALITY ,COURSE_LOCATION_COUNTY,'eq',0);
 
@@ -73,7 +87,7 @@ class locations_search_form extends moodleform {
         }
 
 
-        $this->add_action_buttons(true, get_string('search'));
+        $this->add_action_buttons(false, get_string('search'));
     }//definition
 }//locations_search_form
 

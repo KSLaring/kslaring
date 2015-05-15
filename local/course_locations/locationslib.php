@@ -57,40 +57,35 @@ class CourseLocations {
                 $sql = " SELECT     GROUP_CONCAT(DISTINCT IF(levelzero,levelzero,0) ORDER BY levelone SEPARATOR ',') 	as 'levelzero',
                                     GROUP_CONCAT(DISTINCT IF(levelone,levelone,0) ORDER BY levelone SEPARATOR ',') 	as 'levelone'
                          FROM	    {report_gen_jobrole_relation}
-                         WHERE		jobroleid 	IN ($myJobRoles)
-                            AND		(
-                                     levelzero IS NULL
-                                     OR
-                                     (levelzero IS NOT NULL AND  levelone IS NULL)
-                                     OR
-                                     (levelzero IS NOT NULL AND  levelone IS NOT NULL AND leveltwo IS NULL)
-                                    ) ";
+                         WHERE		jobroleid 	IN ($myJobRoles) ";
 
                 /* Execute  */
                 $rdo = $DB->get_record_sql($sql);
                 if ($rdo) {
-                    $myCompetence = new stdClass();
-                    $myCompetence->jobRoles     = $myJobRoles;
-                    $myCompetence->levelZero    = null;
-                    $myCompetence->levelOne     = null;
+                    if (isset($rdo->levelzero)) {
+                        $myCompetence = new stdClass();
+                        $myCompetence->jobRoles     = $myJobRoles;
+                        $myCompetence->levelZero    = null;
+                        $myCompetence->levelOne     = null;
 
-                    /* Level Zero    */
-                    $levelZero = explode(',',$rdo->levelzero);
-                    $levelZero = array_flip($levelZero);
-                    if (array_key_exists(0,$levelZero)) {
-                        $myCompetence->levelZero = 0;
-                    }else {
-                        $myCompetence->levelZero = $rdo->levelzero;
-
-                        /* Level One    */
-                        $levelOne = explode(',',$rdo->levelone);
-                        $levelOne = array_flip($levelOne);
-                        if (array_key_exists(0,$levelOne)) {
-                            $myCompetence->levelOne = 0;
+                        /* Level Zero    */
+                        $levelZero = explode(',',$rdo->levelzero);
+                        $levelZero = array_flip($levelZero);
+                        if (array_key_exists(0,$levelZero)) {
+                            $myCompetence->levelZero = 0;
                         }else {
-                            $myCompetence->levelOne = $rdo->levelone;
+                            $myCompetence->levelZero = $rdo->levelzero;
+
+                            /* Level One    */
+                            $levelOne = explode(',',$rdo->levelone);
+                            $levelOne = array_flip($levelOne);
+                            if (array_key_exists(0,$levelOne)) {
+                                $myCompetence->levelOne = 0;
+                            }else {
+                                $myCompetence->levelOne = $rdo->levelone;
+                            }//if_all_levelOne
                         }//if_all_levelOne
-                    }//if_all_levelOne
+                    }
                 }//if_rdo
             }//if_MyJobRoles
 
