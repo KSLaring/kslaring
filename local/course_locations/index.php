@@ -54,16 +54,7 @@ $myCompetence = CourseLocations::Get_MyCompetence($USER->id);
 
 /* Form */
 $form = new locations_search_form(null,array($myCompetence));
-if ($form->is_cancelled()) {
-    /* Clean Cookies    */
-    setcookie('parentCounty',0);
-    setcookie('parentMunicipality',0);
-    setcookie('parentSector',0);
-    setcookie('parentActivate',1);
-
-    $_POST = array();
-    redirect($url);
-}else if($data = $form->get_data()) {
+if($data = $form->get_data()) {
     /* Get Data */
     $dataForm = (Array)$data;
 
@@ -76,12 +67,6 @@ if ($form->is_cancelled()) {
     }else {
         $SESSION->act = 0;
     }//if_checkbox_Activate
-
-    /* Clean Cookies    */
-    setcookie('parentCounty',0);
-    setcookie('parentMunicipality',0);
-    setcookie('parentSector',0);
-    setcookie('parentActivate',1);
 
     redirect($url_view);
 }//if_cancel
