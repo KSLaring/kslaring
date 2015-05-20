@@ -1,0 +1,114 @@
+<?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+//namespace local_friadmin;
+
+defined('MOODLE_INTERNAL') || die;
+
+require_once($CFG->dirroot . '/lib/formslib.php');
+
+use \stdClass;
+
+/**
+ * The form for the local_friadmin course_list selection area
+ *
+ * @package         local
+ * @subpackage      friadmin
+ * @copyright       2015 eFaktor
+ * @author          Urs Hunkler {@link urs.hunkler@unodo.de}
+ * @license         http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+class local_friadmin_courselist_filter_form extends \moodleform {
+    function definition() {
+        $mform = $this->_form;
+        $customdata = $this->_customdata;
+
+        // The first form row
+        $elementgroup = array();
+
+        $options = array('0' => get_string('selmunicipality', 'local_friadmin'));
+        $options = array_merge($options, $customdata['municipality']);
+        $elementgroup[] = $mform->createElement('select', 'selmunicipality', '', $options);
+        $mform->setDefault('selmunicipality', '0');
+
+        $options = array('0' => get_string('selsector', 'local_friadmin'));
+        $options = array_merge($options, $customdata['sector']);
+        $elementgroup[] = $mform->createElement('select', 'selsector', '', $options);
+        $mform->setDefault('selsector', '0');
+
+        $options = array('0' => get_string('sellocation', 'local_friadmin'));
+        $options = array_merge($options, $customdata['location']);
+        $elementgroup[] = $mform->createElement('select', 'sellocation', '', $options);
+        $mform->setDefault('sellocation', '0');
+
+        $mform->addGroup($elementgroup, 'selectrowone', get_string('location', 'local_friadmin'),
+            '<span class="group-spacer"> </span>', false);
+
+
+        // The second form row
+        $elementgroup = array();
+
+        $options = array(
+            'startyear' => date('Y', $customdata['from']),
+            'stopyear' => date('Y', $customdata['to']),
+            'optional' => true
+        );
+        $elementgroup[] = $mform->createElement('date_selector', 'seltimefrom',
+            '', $options);
+        $mform->setDefault('seltimefrom', $customdata['from']);
+
+        $elementgroup[] = $mform->createElement('date_selector', 'seltimeto',
+            '', $options);
+        $mform->setDefault('seltimeto', $customdata['to']);
+
+        $mform->addGroup($elementgroup, 'selectrowtwo', get_string('fromto', 'local_friadmin'),
+            '<span class="group-spacer"> </span>', false);
+
+
+        // The third form row
+        $elementgroup = array();
+
+        $defaultText = get_string('selname', 'local_friadmin');
+        $attributes = array(
+            'placeholder' => $defaultText
+        );
+        $textinput = $mform->createElement('text', 'selname',
+            get_string('selname', 'local_friadmin'), $attributes);
+        $textinput->setHiddenLabel(false);
+        $mform->setType('selname', PARAM_TEXT);
+        $elementgroup[] = $textinput;
+
+        $elementgroup[] = $mform->createElement('submit', 'submitbutton',
+            get_string('selsubmit', 'local_friadmin'));
+
+        $mform->addGroup($elementgroup, 'selectrowthree', get_string('coursename', 'local_friadmin'),
+            '<span class="group-spacer"> </span>', false);
+    }
+
+    /**
+     * Set the default form values
+     *
+     * The associative $defaults: array 'elementname' => 'defaultvalue'
+     *
+     * @param Array $defaults The default values
+     */
+    public function set_defaults($defaults = array()) {
+        $mform = $this->_form;
+        foreach ($defaults as $elementname => $defaultvalue) {
+            $mform->setDefault($elementname, $defaultvalue);
+        }
+    }
+}

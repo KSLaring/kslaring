@@ -1,0 +1,58 @@
+#mform-coursefilter {
+  margin-bottom: 1.5em;
+}
+#mform-coursefilter .fitem_fgroup .fitemtitle {
+  margin-right: 1em;
+  text-align: left;
+  width: 13%;
+}
+#mform-coursefilter .fitem_fgroup .felement {
+  margin-left: 0;
+}
+#mform-coursefilter .fitem_fgroup .fgroup select {
+  max-width: 30%;
+}
+#mform-coursefilter .fitem_fgroup.femptylabel .fitemtitle {
+  display: none;
+}
+#mform-coursefilter .fitem_fgroup.femptylabel .felement {
+  margin-left: 0;
+}
+#mform-coursefilter .fitem_fgroup.femptylabel .fgroup select {
+  max-width: 30%;
+}
+#mform-coursefilter .fitem_fgroup .group-spacer {
+  padding: 0 1.5%;
+}
+#mform-coursefilter .fdate_selector {
+  white-space: nowrap;
+}
+#mform-coursefilter input[type="submit"] {
+  float: right;
+  margin: 0;
+}
+#mform-coursefilter input[type="text"] {
+  margin: 0;
+}
+body #region-main #mform-coursefilter:not(.unresponsive) .femptylabel .fgroup {
+  width: 100%;
+}
+body #region-main #mform-coursefilter:not(.unresponsive) .femptylabel .fitemtitle {
+  display: none;
+}
+#page-local-friadmin-courselist div#dateselector-calendar-panel {
+  z-index: 5100;
+}
+#page-local-friadmin-courselist table.flexible thead th {
+  white-space: pre;
+}
+#page-local-friadmin-courselist table.flexible tbody tr:hover > td {
+  background-color: #fafafa;
+}
+#page-local-friadmin-courselist table.flexible .nowrap {
+  white-space: nowrap;
+}
+#page-local-friadmin-coursedetail .coursedetail-linklist li {
+  display: inline-block;
+  margin: .3em 0;
+}

@@ -1,0 +1,177 @@
+<?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+//namespace local_friadmin;
+
+defined('MOODLE_INTERNAL') || die;
+
+//use renderable;
+//use renderer_base;
+//use stdClass;
+
+/**
+ * Class containing data for the local_friadmin course_list table
+ *
+ * @package         local
+ * @subpackage      friadmin
+ * @copyright       2015 eFaktor
+ * @author          Urs Hunkler {@link urs.hunkler@unodo.de}
+ * @license         http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+class local_friadmin_courselist_table extends local_friadmin_widget implements renderable {
+
+    // The table column names
+    protected $colnames = array("name", "date", "seats", "deadline", "length",
+        "municipality", "sector", "location");
+
+    // The table column titles
+    protected $colheaders = array();
+
+    // The related filter data returned from the form
+    protected $filterdata = null;
+
+    /**
+     * Construct the courselist_page renderable.
+     */
+    public function __construct($baseurl, $filterdata = null) {
+        // Create the data object and set the first values
+        parent::__construct();
+
+        $this->data->baseurl = $baseurl;
+        $this->filterdata = $filterdata;
+
+        // Create the table column titles
+        foreach ($this->colnames as $name) {
+            $this->colheaders[] = get_string('course_' . $name, 'local_friadmin');
+        }
+    }
+
+    /**
+     * Create the Moodle flexitable with the saved data
+     *
+     * @return String $out The rendered Moodle flexitable
+     */
+    public function get_table_html() {
+        global $CFG;
+        require_once($CFG->libdir . '/tablelib.php');
+
+        $out = '';
+
+        $table = new flexible_table('courselist');
+
+        $table->define_columns($this->colnames);
+        $table->define_headers($this->colheaders);
+        $table->define_baseurl($this->data->baseurl);
+
+        $table->set_attribute('cellspacing', '0');
+        $table->set_attribute('id', 'courselist');
+        $table->set_attribute('class', 'generaltable');
+
+        $table->sortable(true, 'name', SORT_ASC);
+        $table->collapsible(true);
+
+        $table->setup();
+
+        // Get the data for the table rows,
+        // format the date columns and add the course edit link behind the course name
+        $table_model = new local_friadmin_courselist_table_datalist_model($this->filterdata,
+            $table->get_sql_sort('courselist'));
+
+        if ($result = $table_model->data) {
+            $result = $this->format_date($result, array('date', 'deadline'));
+            $result = $this->add_course_link_and_edit_icon($result);
+
+            ob_start();
+            $table->format_and_add_array_of_rows($result);
+            $out = ob_get_clean();
+        }
+
+        return $out;
+    }
+
+    /**
+     * Add the link to the course detail page to the course name
+     * and an edit icon with a link to the course settings page.
+     *
+     * @param Object $data The table data
+     *
+     * @return Object The modified table data
+     */
+    protected function add_course_link_and_edit_icon($data) {
+        global $OUTPUT;
+
+        $result = array();
+
+        foreach ($data as $row) {
+            if (is_array($row)) {
+                $isarray = true;
+                $row = (object)$row;
+            } else {
+                $isarray = false;
+            }
+
+            $icon = $OUTPUT->pix_icon('t/edit', '');
+            $link = html_writer::link(
+                new moodle_url('/course/edit.php?id=' . $row->courseid), $icon);
+            $namelink = html_writer::link(
+                new moodle_url('/local/friadmin/coursedetail.php?id=' .
+                    $row->courseid), $row->name);
+            $row->name = $namelink . ' ' . $link;
+
+            if ($isarray) {
+                $result[] = (array)$row;
+            } else {
+                $result[] = $row;
+            }
+        }
+
+        return $result;
+    }
+
+    /**
+     * Format the date fields from UNIX timestamp to userdate.
+     *
+     * @param Array $data The table data
+     * @param Array $fields The fields containing dates
+     *
+     * @return Array The modified table data
+     */
+    protected function format_date($data, $fields) {
+        $result = array();
+
+        foreach ($data as $row) {
+            if (is_array($row)) {
+                $isarray = true;
+                $row = (object)$row;
+            } else {
+                $isarray = false;
+            }
+
+            foreach ($fields as $field) {
+                $row->$field = '<span class="nowrap">' .
+                    userdate($row->$field, '%Y-%m-%d', 99, false) . '</span>';
+            }
+
+            if ($isarray) {
+                $result[] = (array)$row;
+            } else {
+                $result[] = $row;
+            }
+        }
+
+        return $result;
+    }
+}
