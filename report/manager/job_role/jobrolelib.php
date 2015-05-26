@@ -166,7 +166,7 @@ class job_role {
                 foreach ($rdo as $field) {
                     $out_job_roles[$field->id] = $field->fullname;
                     if ($field->outcomeid) {
-                        $out_selected[] = $field->id;
+                        $out_selected[$field->outcomeid] = $field->outcomeid;
                     }//if_selected
                 }//for
             }//if_rdo
