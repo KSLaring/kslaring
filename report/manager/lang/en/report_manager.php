@@ -129,6 +129,7 @@ $string['add_this_company_structure']               = 'Add a level {$a} item';
 $string['delete_company_structure']                 = 'Delete this company data.';
 $string['display_company_structure']                = 'Company data name: ';
 $string['delete_company_structure_are_you_sure']    = 'Are you sure you want to delete the {$a} company data?';
+$string['delete_job_role_sure']                     = 'Are you sure that you want to delete <strong>{$a}</strong> job role?';
 $string['invalid_company_structure_id'] = 'Sorry, an invalid company data id was selected.';
 $string['error_deleting_company_structure']         = 'Sorry, the company data could not be deleted. There are companies below.';
 $string['error_deleting_company_employees']         = 'Sorry, the company data could not be deleted because there are employees connected with.';
