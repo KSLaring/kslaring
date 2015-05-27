@@ -134,6 +134,7 @@ $string['delete_company_structure']     = 'Slett dataene på dette arbeidsstedet
 $string['display_company_structure']    = 'Navn på arbeidssted: ';
 
 $string['delete_company_structure_are_you_sure']    = 'Er du sikker på at du vil slette {$a} Arbeidssteder?';
+$string['delete_job_role_sure']                     = 'Are you sure that you want to delete <strong>{$a}</strong> job role?';
 $string['invalid_company_structure_id']          = 'Beklager, en ugyldig arbeidssteds-ID er valgt.';
 $string['error_deleting_company_structure']         = 'Beklager, dette kunne ikke slettes fordi det har tilhørende nivåer som må slettes først.';
 $string['error_deleting_company_employees']         = 'Beklager, dette kunne ikke slettes fordi noen brukere har dette som arbeidssted.';

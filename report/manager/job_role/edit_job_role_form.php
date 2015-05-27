@@ -69,7 +69,7 @@ class manager_edit_job_role_form extends moodleform {
         $m_form->addElement('header', 'outcomes', get_string('related_outcomes', 'report_manager'));
         $m_form->setExpanded('outcomes',true);
         $m_form->addElement('html', '<div class="level-wrapper">');
-            list($out_job_roles,$out_selected) = job_role::Get_Outcomes_ConnectedJobRole();
+            list($out_job_roles,$out_selected) = job_role::Get_Outcomes_ConnectedJobRole($jr_info->id);
             $select = $m_form->addElement('select',
                                           REPORT_JR_MANAGER_OUTCOME_LIST,
                                           get_string('outcome_list', 'report_manager'),

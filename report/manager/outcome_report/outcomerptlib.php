@@ -171,7 +171,6 @@ class outcome_report {
      */
     public static function Get_OutcomeReportLevel($data_form,$my_hierarchy) {
         /* Variables    */
-        global $SESSION;
         $companies_report   = null;
         $outcome_report     = null;
         $outcome_id         = null;
@@ -203,14 +202,12 @@ class outcome_report {
 
                 /* Job Roles Selected   */
                 $outcome_report->job_roles = self::Get_JobRolesOutcome_Report($outcome_id,$data_form);
-                /* Save Job Roles Selected  */
-                $SESSION->job_roles = array_keys($outcome_report->job_roles);
 
                 /* Check if there are job_roles */
                 if ($outcome_report->job_roles) {
                     /* Get information to display by level          */
                     /* Level zero    - That's common for all levels  */
-                    $outcome_report->levelZero = CompetenceManager::GetCompany_Name($data_form[MANAGER_OUTCOME_STRUCTURE_LEVEL .'0']);
+                    $outcome_report->levelZero = $data_form[MANAGER_OUTCOME_STRUCTURE_LEVEL .'0'];
                     setcookie('parentLevelZero',$data_form[MANAGER_OUTCOME_STRUCTURE_LEVEL .'0']);
 
                     /* Check Level  */
@@ -627,6 +624,7 @@ class outcome_report {
      */
     private static function Get_JobRolesOutcome_Report($outcome_id,$data_form) {
         /* Variables    */
+        global $SESSION;
         $job_roles  = null;
         $levelZero  = null;
         $levelOne   = null;
@@ -642,6 +640,9 @@ class outcome_report {
                 /* Job Roles - Outcome          */
                 $job_roles = self::Outcome_JobRole_List($outcome_id);
             }//if_else
+
+            /* Save Job Roles Selected  */
+            $SESSION->job_roles = array_keys($job_roles);
 
             /* Job Roles - Outcome Level    */
             switch ($data_form['rpt']) {
@@ -1176,7 +1177,7 @@ class outcome_report {
                     $out_report .= '<ul class="level-list unlist">';
                         /* Level Zero       */
                         $out_report .= '<li>';
-                            $out_report .= '<h3>'. get_string('company_structure_level', 'report_manager', 0) . ': ' . $outcome_report->levelZero . '</h3>';
+                            $out_report .= '<h3>'. get_string('company_structure_level', 'report_manager', 0) . ': ' . CompetenceManager::GetCompany_Name($outcome_report->levelZero) . '</h3>';
                         $out_report .= '</li>';
                     $out_report .= '</ul>';
                     /* Expiration Before    */
@@ -1222,7 +1223,8 @@ class outcome_report {
                                                         /* Toggle   */
                                                         $id_toggleThree = $id_toggleOne . '_'. $id_Three;
                                                         /* Header Company   - Level Three   */
-                                                        $url_levelThree = new moodle_url('/report/manager/outcome_report/outcome_report_level.php',array('rpt' => '3','co' => $id_Three,'lt' => $idTwo,'lo'=>$idOne,'opt' => $completed_option));
+                                                        $url_levelThree = new moodle_url('/report/manager/outcome_report/outcome_report_level.php',
+                                                                                         array('rpt' => '3','co' => $id_Three,'lt' => $idTwo,'lo'=>$idOne,'opt' => $completed_option));
                                                         $out_report .= self::Add_CompanyHeader_Screen($company->name,$id_toggleThree,$url_img,$url_levelThree);
 
                                                         /* Info company - Courses */
@@ -1311,7 +1313,7 @@ class outcome_report {
                     $out_report .= '<ul class="level-list unlist">';
                         /* Level Zero       */
                         $out_report .= '<li>';
-                            $out_report .= '<h3>'. get_string('company_structure_level', 'report_manager', 0) . ': ' . $outcome_report->levelZero . '</h3>';
+                            $out_report .= '<h3>'. get_string('company_structure_level', 'report_manager', 0) . ': ' . CompetenceManager::GetCompany_Name($outcome_report->levelZero) . '</h3>';
                         $out_report .= '</li>';
                         /* Level One        */
                         $levelOne = array_shift($outcome_report->levelOne);
@@ -1356,7 +1358,8 @@ class outcome_report {
                                             /* Toggle   */
                                             $id_toggleThree = $id_toggle . '_'. $id_Three;
                                             /* Header Company   - Level Three   */
-                                            $url_levelThree = new moodle_url('/report/manager/outcome_report/outcome_report_level.php',array('rpt' => '3','co' => $id_Three,'lt' => $id_Two,'lo'=>$levelOne->id,'opt' => $completed_option));
+                                            $url_levelThree = new moodle_url('/report/manager/outcome_report/outcome_report_level.php',
+                                                                             array('rpt' => '3','co' => $id_Three,'lt' => $id_Two,'lo'=>$levelOne->id,'opt' => $completed_option));
                                             $out_report .= self::Add_CompanyHeader_Screen($company->name,$id_toggleThree,$url_img,$url_levelThree);
 
                                             /* Info company - Courses */
@@ -1441,7 +1444,7 @@ class outcome_report {
                     $out_report .= '<ul class="level-list unlist">';
                         /* Level Zero       */
                         $out_report .= '<li>';
-                            $out_report .= '<h3>'. get_string('company_structure_level', 'report_manager', 0) . ': ' . $outcome_report->levelZero . '</h3>';
+                            $out_report .= '<h3>'. get_string('company_structure_level', 'report_manager', 0) . ': ' . CompetenceManager::GetCompany_Name($outcome_report->levelZero) . '</h3>';
                         $out_report .= '</li>';
                         /* Level One        */
                         $levelOne = array_shift($outcome_report->levelOne);
@@ -1483,7 +1486,8 @@ class outcome_report {
                                     $url_img  = new moodle_url('/pix/t/expanded.png');
                                     $id_toggle = 'YUI_' . $id;
                                     /* Header Company   - Level Three   */
-                                    $url_levelThree = new moodle_url('/report/manager/outcome_report/outcome_report_level.php',array('rpt' => '3','co' => $id,'lt' => $levelTwo->id,'lo'=>$levelOne->id,'opt' => $completed_option));
+                                    $url_levelThree = new moodle_url('/report/manager/outcome_report/outcome_report_level.php',
+                                                                     array('rpt' => '3','co' => $id,'lt' => $levelTwo->id,'lo'=>$levelOne->id,'opt' => $completed_option));
                                     $out_report .= self::Add_CompanyHeader_Screen($company->name,$id_toggle,$url_img,$url_levelThree);
 
                                     /* Info company - Courses */
@@ -1566,7 +1570,7 @@ class outcome_report {
                     $out_report .= '<ul class="level-list unlist">';
                         /* Level Zero       */
                         $out_report .= '<li>';
-                            $out_report .= '<h3>'. get_string('company_structure_level', 'report_manager', 0) . ': ' . $outcome_report->levelZero . '</h3>';
+                            $out_report .= '<h3>'. get_string('company_structure_level', 'report_manager', 0) . ': ' . CompetenceManager::GetCompany_Name($outcome_report->levelZero) . '</h3>';
                         $out_report .= '</li>';
                         /* Level One        */
                         $levelOne = array_shift($outcome_report->levelOne);
