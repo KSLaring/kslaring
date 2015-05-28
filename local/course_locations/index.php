@@ -48,8 +48,6 @@ if (isset($SESSION->act)) {
 /* Clean Cookies    */
 setcookie('dir','ASC');
 setcookie('field','');
-setcookie('parentCounty',0);
-setcookie('parentMunicipality',0);
 
 /* Get My Competence Locations  */
 $myCompetence = CourseLocations::Get_MyCompetence($USER->id);
