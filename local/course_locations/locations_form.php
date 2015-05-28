@@ -39,7 +39,7 @@ class locations_search_form extends moodleform {
 
         /* Counties                 */
         if ($myCompetence) {
-            $counties   = CourseLocations::Get_Companies($myCompetence->levelZero);
+            $counties   = CourseLocations::Get_Companies(0,$myCompetence->levelZero);
         }else {
             $counties[0] = get_string('select_level_list','local_course_locations');
         }//if_myCompetence
@@ -51,6 +51,7 @@ class locations_search_form extends moodleform {
             if (count($counties) == 2) {
                 $keys = array_keys($counties);
                 $form->setDefault(COURSE_LOCATION_COUNTY,$keys[1]);
+                $levelZero = $keys[1];
                 setcookie('parentCounty',$keys[1]);
             }else {
                 $form->setDefault(COURSE_LOCATION_COUNTY,0);
@@ -61,7 +62,7 @@ class locations_search_form extends moodleform {
 
         /* Municipalities          */
         if ($myCompetence) {
-            $municipalities = GetMunicipalities($myCompetence->levelOne);
+            $municipalities = GetMunicipalities($myCompetence->levelOne,$levelZero);
         }else {
             $municipalities[0] = get_string('select_level_list','local_course_locations');
         }//if_myCompetence
@@ -118,7 +119,7 @@ class add_location_form extends moodleform {
         $form->setExpanded('header_location',true);
         /* Counties                 */
         if ($myCompetence) {
-            $counties   = CourseLocations::Get_Companies($myCompetence->levelZero);
+            $counties   = CourseLocations::Get_Companies(0,$myCompetence->levelZero);
         }else {
             $counties[0] = get_string('select_level_list','local_course_locations');
         }//if_myCompetence
@@ -339,6 +340,7 @@ class edit_location_form extends moodleform {
 
 /**
  * @param           $levelOne
+ * @param           $levelZero
  * @return          array
  *
  * @creationDate    28/04/2015
@@ -347,14 +349,18 @@ class edit_location_form extends moodleform {
  * Description
  * Get the municipalities connected with the county
  */
-function GetMunicipalities($levelOne) {
+function GetMunicipalities($levelOne,$levelZero=null) {
     /* Variables    */
     $municipalities = array();
 
     if (isset($_COOKIE['parentCounty']) && ($_COOKIE['parentCounty'])) {
-        $municipalities = CourseLocations::Get_Companies($levelOne,$_COOKIE['parentCounty']);
+        $municipalities = CourseLocations::Get_Companies(1,$levelOne,$_COOKIE['parentCounty']);
     }else {
-        $municipalities[0] = get_string('select_level_list','local_course_locations');
+        if ($levelZero) {
+            $municipalities = CourseLocations::Get_Companies(1,$levelOne,$levelZero);
+        }else {
+            $municipalities[0] = get_string('select_level_list','local_course_locations');
+        }
     }//IF_COOKIE
 
     return $municipalities;
