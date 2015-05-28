@@ -1894,6 +1894,7 @@ class outcome_report {
         $str_user           = get_string('user');
         $str_state          = get_string('state','local_tracker_manager');
         $str_completion     = get_string('completion_time','local_tracker_manager');
+        $str_valid          = get_string('outcome_valid_until','local_tracker_manager');
 
         $header_table .= html_writer::start_tag('tr',array('class' => 'head'));
             /* Empty Col   */
@@ -1913,6 +1914,11 @@ class outcome_report {
             /* Completion Col   */
             $header_table .= html_writer::start_tag('td',array('class' => 'head_status'));
                 $header_table .= $str_completion;
+            $header_table .= html_writer::end_tag('td');
+
+            /* Valid Until   */
+            $header_table .= html_writer::start_tag('td',array('class' => 'head_status'));
+                $header_table .= $str_valid;
             $header_table .= html_writer::end_tag('td');
         $header_table .= html_writer::end_tag('tr');
 
@@ -1938,11 +1944,14 @@ class outcome_report {
         $completed      = null;
         $not_completed  = null;
         $not_enrol      = null;
+        $expired    = false;
 
         /* Completed    */
         $completed = $course_info->completed;
         if ($completed) {
             foreach ($completed as $user) {
+                $expired    = false;
+
                 $ts = strtotime($expiration  . ' month', $user->completed);
                 if ($ts < time()) {
                     $class = 'expired';
@@ -1969,6 +1978,15 @@ class outcome_report {
                     $content .= html_writer::start_tag('td',array('class' => 'status'));
                         $content .= userdate($user->completed,'%d.%m.%Y', 99, false);
                     $content .= html_writer::end_tag('td');
+
+                    /* Valid Until  */
+                    $content .= html_writer::start_tag('td',array('class' => 'status'));
+                    if ($expired) {
+                        $content .= userdate($ts,'%d.%m.%Y', 99, false);
+                    }else {
+                        $content .= '-';
+                    }//if_Expired
+                    $content .= html_writer::end_tag('td');
                 $content .= html_writer::end_tag('tr');
             }//for_completed
         }//if_completed
@@ -1994,6 +2012,11 @@ class outcome_report {
                     $content .= html_writer::start_tag('td',array('class' => 'status'));
                         $content .= '-';
                     $content .= html_writer::end_tag('td');
+
+                    /* Valid Until  */
+                    $content .= html_writer::start_tag('td',array('class' => 'status'));
+                        $content .= '-';
+                    $content .= html_writer::end_tag('td');
                 $content .= html_writer::end_tag('tr');
             }//for_not_enrol
         }//if_not_completed
@@ -2016,6 +2039,11 @@ class outcome_report {
                     $content .= html_writer::end_tag('td');
 
                     /* Completion Col   */
+                    $content .= html_writer::start_tag('td',array('class' => 'status'));
+                        $content .= '-';
+                    $content .= html_writer::end_tag('td');
+
+                    /* Valid Until  */
                     $content .= html_writer::start_tag('td',array('class' => 'status'));
                         $content .= '-';
                     $content .= html_writer::end_tag('td');
