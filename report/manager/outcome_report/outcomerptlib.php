@@ -879,6 +879,7 @@ class outcome_report {
                     $company_info->name       = $company;
                     $company_info->id         = $id;
                     $company_info->courses    = array();
+                    $course_info              = null;
 
                     /* Get Info Courses     */
                     foreach ($outcome_report->courses as $id_course=>$course) {
@@ -960,8 +961,12 @@ class outcome_report {
                      FROM	 	{user}						  u
                         JOIN	{user_info_competence_data}	  uic			ON		uic.userid		  = u.id
                                                                             AND		uic.companyid	  = :company
-                        JOIN	{course_completions}			cc			ON		cc.userid		  = uic.userid
-                                                                            AND		cc.course		  = :course
+                     	JOIN	{user_enrolments}		      ue			ON 		ue.userid 		  = uic.userid
+	                    JOIN	{enrol}						  e				ON		e.id 			  = ue.enrolid
+	                                                                        AND     e.courseid        = :course
+															                AND		e.status		  = 0
+                        JOIN	{course_completions}			cc			ON		cc.userid		  = ue.userid
+                                                                            AND		cc.course		  = e.courseid
                                                                             AND     cc.timecompleted  IS  NOT NULL
                                                                             AND     cc.timecompleted  != 0
                      WHERE 		u.deleted = 0
@@ -1027,10 +1032,15 @@ class outcome_report {
                      FROM	 	{user}						  u
                         JOIN	{user_info_competence_data}	  uic			ON		uic.userid		  = u.id
                                                                             AND		uic.companyid	  = :company
-                        JOIN	{course_completions}			cc			ON		cc.userid		  = uic.userid
-                                                                            AND		cc.course		  = :course
-                                                                            AND     cc.timecompleted  IS NULL
-                                                                            OR      cc.timecompleted  = 0
+                     	JOIN	{user_enrolments}		      ue			ON 		ue.userid 		  = uic.userid
+	                    JOIN	{enrol}						  e				ON		e.id 			  = ue.enrolid
+	                                                                        AND     e.courseid        = :course
+															                AND		e.status		  = 0
+                        JOIN	{course_completions}			cc			ON		cc.userid		  = ue.userid
+                                                                            AND		cc.course		  = e.courseid
+                                                                            AND     (cc.timecompleted  IS NULL
+                                                                                    OR
+                                                                                    cc.timecompleted  = 0)
                      WHERE 		u.deleted = 0
                      ORDER BY 	u.firstname, u.lastname ASC ";
 
