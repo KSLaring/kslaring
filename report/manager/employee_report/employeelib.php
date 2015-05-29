@@ -505,10 +505,6 @@ class EmployeeReport {
                      FROM		{course}				c
                         JOIN	{course_completions}	cc	ON	    cc.course = c.id
                                                             AND     cc.userid = :user
-                     	JOIN	{user_enrolments}	    ue	ON 		ue.userid 		  = cc.userid
-	                    JOIN	{enrol}					e	ON		e.id 			  = ue.enrolid
-	                                                        AND     e.courseid        = c.id
-															AND		e.status		  = 0
                      WHERE		c.id IN ($courses)
                      ORDER BY	c.fullname ";
 
