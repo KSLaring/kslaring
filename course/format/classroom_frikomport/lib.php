@@ -573,7 +573,9 @@ class format_classroom_frikomport extends format_base {
                     break;
                 case 'course_sector':
                     if (isset($data['course_sector'])) {
-                        $data['course_sector'] = implode(',',$data['course_sector']);
+                        if (is_array($data['course_sector'])) {
+                            $data['course_sector'] = implode(',',$data['course_sector']);
+                        }
                     }
 
                     break;
