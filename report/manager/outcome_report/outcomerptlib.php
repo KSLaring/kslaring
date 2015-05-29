@@ -1946,13 +1946,11 @@ class outcome_report {
         $completed      = null;
         $not_completed  = null;
         $not_enrol      = null;
-        $expired    = false;
 
         /* Completed    */
         $completed = $course_info->completed;
         if ($completed) {
             foreach ($completed as $user) {
-                $expired    = false;
 
                 $ts = strtotime($expiration  . ' month', $user->completed);
                 if ($ts < time()) {
@@ -1983,11 +1981,7 @@ class outcome_report {
 
                     /* Valid Until  */
                     $content .= html_writer::start_tag('td',array('class' => 'status'));
-                    if ($expired) {
                         $content .= userdate($ts,'%d.%m.%Y', 99, false);
-                    }else {
-                        $content .= '-';
-                    }//if_Expired
                     $content .= html_writer::end_tag('td');
                 $content .= html_writer::end_tag('tr');
             }//for_completed
