@@ -110,7 +110,7 @@ class company_structure {
 
             /* SQL Instruction      */
             $sql = " SELECT	    DISTINCT  	u.id,
-                                            CONCAT(u.firstname,', ',u.lastname) as 'name'
+                                            CONCAT(u.firstname,' ',u.lastname) as 'name'
                      FROM		{user}					    u
                         JOIN	{user_info_competence_data}	uicd		ON 		uicd.userid = u.id
                                                                         AND		(
