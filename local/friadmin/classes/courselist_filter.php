@@ -52,7 +52,8 @@ class local_friadmin_courselist_filter extends local_friadmin_widget implements 
         // Create the data object and set the first values
         parent::__construct();
 
-        $customdata = $this->get_fixture('friadmin_coursefilter');
+//        $customdata = $this->get_fixture('friadmin_coursefilter');
+        $customdata = $this->get_user_locationdata();
 
         $mform = new local_friadmin_courselist_filter_form(null, $customdata, 'post', '',
             array('id' => 'mform-coursefilter'));
@@ -94,5 +95,212 @@ class local_friadmin_courselist_filter extends local_friadmin_widget implements 
      */
     public function set_defaults($defaults = array()) {
         $this->mform->set_defaults($defaults);
+    }
+
+    /**
+     * Get the user related location data
+     *
+     * @param Int $userid The user id
+     *
+     * @return Array $result The user location data
+     */
+    public function get_user_locationdata($userid = null) {
+        global $CFG, $DB;
+
+        $result = array(
+            'municipality' => array(),
+            'sector' => array(),
+            'location' => array(),
+            'from' => null,
+            'to' => null
+        );
+
+        if (is_null($userid)) {
+            global $USER;
+
+            $userid = $USER->id;
+        }
+
+        // Get the competence related municipalities
+        // The $leveloneobjs array contains objects with
+        // id, name and industrycode properties.
+        $leveloneobjs = $this->get_levelone_municipalities($userid);
+
+        // Get the categories for which the user has admin rights
+        $catadmin = $this->get_categories_admin();
+
+        // Use only municipalities where the user has admin rights on the categories
+        // and with equal category and municipality names
+        $leveloneobjsfiltered = array();
+        foreach ($leveloneobjs as $obj) {
+            foreach ($catadmin as $catname) {
+                if ($obj->name === $catname) {
+                    $result['municipality'][$catname] = $catname;
+                    $leveloneobjsfiltered[] = $obj;
+                }
+            }
+        }
+
+        // Get the sectors for the relevant municipalities via inustrycodes
+        $leveltwoobjs = $this->get_leveltwo_sectors($leveloneobjsfiltered);
+        foreach ($leveltwoobjs as $obj) {
+            if (!in_array($obj->name, $result['sector'])) {
+                $result['sector'][$obj->name] = $obj->name;
+            }
+        }
+
+        // Get the locations for the relevant municipalities via levelone ids
+        $locationsobjs = $this->get_locations($leveloneobjsfiltered);
+        foreach ($locationsobjs as $obj) {
+            if (!in_array($obj->name, $result['location'])) {
+                $result['location'][$obj->name] = $obj->name;
+            }
+        }
+
+        return $result;
+    }
+
+    /**
+     * Get course categories where the user is admin
+     *
+     * @param Int $userid The user id
+     *
+     * @return mixed Array|null Null or array with the category names
+     */
+    protected function get_categories_admin() {
+        global $CFG, $DB;
+        $result = null;
+
+        // Get the course categories where the user is admin
+        require_once $CFG->dirroot . '/lib/coursecatlib.php';
+        $courecats = $DB->get_records('course_categories', array('parent' => 0));
+        $coursecat_names = array();
+        foreach ($courecats as $courecat) {
+            $coursecat_obj = coursecat::get($courecat->id);
+            if ($coursecat_obj->has_manage_capability()) {
+                $coursecat_names[] = $courecat->name;
+            }
+        }
+
+        if (!empty($coursecat_names)) {
+            $result = $coursecat_names;
+        }
+
+        return $result;
+    }
+
+    /**
+     * Get the levelone locations with id, name and industrycode
+     *
+     * @param Int $userid The user id
+     *
+     * @return mixed Array|null The levelone locations
+     */
+    protected function get_levelone_municipalities($userid) {
+        global $CFG, $DB;
+        $ids = array();
+        $leveloneobjs = null;
+
+        // Get the user competences
+        require_once $CFG->dirroot . '/user/profile/field/competence/competencelib.php';
+        $competences = Competence::Get_CompetenceData($userid);
+
+        // Get the levleone ids
+        foreach ($competences as $comp) {
+            if (!in_array($comp->levelOne, $ids)) {
+                $ids[] = $comp->levelOne;
+            }
+        }
+
+        // Get the levelone ids, names and industrycodes with given ids
+        if (!empty($ids)) {
+            $sql = "
+                SELECT
+                  id,
+                  name,
+                  industrycode
+                FROM {report_gen_companydata}
+                WHERE id
+            ";
+            list($in, $params) = $DB->get_in_or_equal($ids);
+
+            $leveloneobjs = $DB->get_records_sql($sql . $in, $params);
+        }
+
+        return $leveloneobjs;
+    }
+
+    /**
+     * Get the sectors with id, name and industrycode
+     *
+     * @param Object $leveloneobjsfiltered The array of objects with the municipalities
+     *
+     * @return mixed Array|null The array with the sector objects
+     */
+    protected function get_leveltwo_sectors($leveloneobjsfiltered) {
+        global $DB;
+        $industrycodes = array();
+        $leveltwoobjs = null;
+
+        // Get the industriecodes
+        foreach ($leveloneobjsfiltered as $obj) {
+            if (!in_array($obj->industrycode, $industrycodes)) {
+                $industrycodes[] = $obj->industrycode;
+            }
+        }
+
+        // Get the leveltwo ids, names and industrycodes with given industrycodes
+        if (!empty($industrycodes)) {
+            $sql = "
+                SELECT
+                  id,
+                  name,
+                  industrycode
+                FROM {report_gen_companydata}
+                WHERE hierarchylevel = 2
+                  AND industrycode
+            ";
+            list($in, $params) = $DB->get_in_or_equal($industrycodes);
+
+            $leveltwoobjs = $DB->get_records_sql($sql . $in, $params);
+        }
+
+        return $leveltwoobjs;
+    }
+
+    /**
+     * Get the locations with id, name
+     *
+     * @param Object $leveloneobjsfiltered The array of objects with the municipalities
+     *
+     * @return mixed Array|null The array with the sector objects
+     */
+    protected function get_locations($leveloneobjsfiltered) {
+        global $DB;
+        $ids = array();
+        $locations = null;
+
+        // Get the municipality ids
+        foreach ($leveloneobjsfiltered as $obj) {
+            if (!in_array($obj->id, $ids)) {
+                $ids[] = $obj->id;
+            }
+        }
+
+        // Get the location ids and names with given municipality ids
+        if (!empty($ids)) {
+            $sql = "
+                SELECT
+                  id,
+                  name
+                FROM {course_locations}
+                WHERE levelone
+            ";
+            list($in, $params) = $DB->get_in_or_equal($ids);
+
+            $locations = $DB->get_records_sql($sql . $in, $params);
+        }
+
+        return $locations;
     }
 }

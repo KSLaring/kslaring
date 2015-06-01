@@ -61,11 +61,14 @@ class local_friadmin_courselist_filter_form extends \moodleform {
         // The second form row
         $elementgroup = array();
 
-        $options = array(
-            'startyear' => date('Y', $customdata['from']),
-            'stopyear' => date('Y', $customdata['to']),
-            'optional' => true
-        );
+        $options = array('optional' => true);
+        if (!empty($customdata['from'])) {
+            $options['startyear'] = date('Y', $customdata['from']);
+        }
+        if (!empty($customdata['to'])) {
+            $options['stopyear'] = date('Y', $customdata['to']);
+        }
+
         $elementgroup[] = $mform->createElement('date_selector', 'seltimefrom',
             '', $options);
         $mform->setDefault('seltimefrom', $customdata['from']);

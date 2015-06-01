@@ -35,7 +35,7 @@ class local_friadmin_courselist_table extends local_friadmin_widget implements r
 
     // The table column names
     protected $colnames = array("name", "date", "seats", "deadline", "length",
-        "municipality", "sector", "location");
+        "municipality", "sector", "location", "edit");
 
     // The table column titles
     protected $colheaders = array();
@@ -81,13 +81,15 @@ class local_friadmin_courselist_table extends local_friadmin_widget implements r
         $table->set_attribute('class', 'generaltable');
 
         $table->sortable(true, 'name', SORT_ASC);
-        $table->collapsible(true);
+        $table->collapsible(false);
 
         $table->setup();
 
         // Get the data for the table rows,
         // format the date columns and add the course edit link behind the course name
-        $table_model = new local_friadmin_courselist_table_datalist_model($this->filterdata,
+//        $table_model = new local_friadmin_courselist_table_datalist_model($this->filterdata,
+//            $table->get_sql_sort('courselist'));
+        $table_model = new local_friadmin_courselist_table_sql_model($this->filterdata,
             $table->get_sql_sort('courselist'));
 
         if ($result = $table_model->data) {
@@ -123,13 +125,15 @@ class local_friadmin_courselist_table extends local_friadmin_widget implements r
                 $isarray = false;
             }
 
-            $icon = $OUTPUT->pix_icon('t/edit', '');
-            $link = html_writer::link(
-                new moodle_url('/course/edit.php?id=' . $row->courseid), $icon);
             $namelink = html_writer::link(
                 new moodle_url('/local/friadmin/coursedetail.php?id=' .
                     $row->courseid), $row->name);
-            $row->name = $namelink . ' ' . $link;
+            $row->name = $namelink;
+
+            $icon = $OUTPUT->pix_icon('t/edit', '');
+            $link = html_writer::link(
+                new moodle_url('/course/edit.php?id=' . $row->courseid), $icon);
+            $row->edit = $link;
 
             if ($isarray) {
                 $result[] = (array)$row;
@@ -161,8 +165,12 @@ class local_friadmin_courselist_table extends local_friadmin_widget implements r
             }
 
             foreach ($fields as $field) {
-                $row->$field = '<span class="nowrap">' .
-                    userdate($row->$field, '%Y-%m-%d', 99, false) . '</span>';
+                if (0 == $row->$field) {
+                    $row->$field = '-';
+                } else {
+                    $row->$field = '<span class="nowrap">' .
+                        userdate($row->$field, '%Y-%m-%d', 99, false) . '</span>';
+                }
             }
 
             if ($isarray) {

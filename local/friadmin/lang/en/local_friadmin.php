@@ -2,7 +2,7 @@
 
 $string['pluginname'] = 'Friadmin';
 
-$string['courselist_title'] = 'Available courses';
+$string['courselist_title'] = 'Friadmin available courses';
 $string['coursetable_title'] = 'Course table';
 $string['course_courseid'] = 'Course ID';
 $string['course_name'] = 'Course name';
@@ -21,8 +21,9 @@ $string['course_teacher'] = 'Teacher';
 $string['course_priceinternal'] = 'Price internal';
 $string['course_priceexternal'] = 'Price external';
 $string['course_link'] = 'Link';
+$string['course_edit'] = 'Edit';
 
-$string['coursedetail_title'] = 'Course details';
+$string['coursedetail_title'] = 'Friadmin course details';
 $string['coursedetail_back'] = 'Back to courselist';
 $string['coursedetail_users'] = 'View enrolled users';
 $string['coursedetail_waitlist'] = 'View wait list';

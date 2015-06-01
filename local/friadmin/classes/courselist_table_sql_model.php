@@ -41,8 +41,59 @@ class local_friadmin_courselist_table_sql_model extends local_friadmin_widget {
 
     // The query SQL
     protected $sql = "
-      SELECT *
-      FROM {friadmin_courselist_dev}
+      SELECT
+        c.id        courseid,
+        c.fullname  name,
+        c.startdate date,
+        '-'         seats,
+        e.deadline  deadline,
+        cln.length  length,
+        rgcmu.name  municipality,
+        rgcse.name  sector,
+        cl.name     location
+      FROM {course} c
+      # Get the deadline from enrol
+        JOIN (
+               SELECT
+                 e.courseid,
+                 IFNULL(MAX(e.customint1), 0) AS deadline
+               FROM {enrol} e
+               WHERE e.status = 0
+               GROUP BY e.courseid
+             ) e ON e.courseid = c.id
+      # Get the length
+        JOIN (
+               SELECT
+                 cfo.courseid,
+                 cfo.value AS 'length'
+               FROM {course_format_options} cfo
+               WHERE cfo.name = 'length'
+             ) cln ON cln.courseid = c.id
+      # Get the course location
+        JOIN (
+               SELECT
+                 cfo.courseid,
+                 cfo.value AS 'location'
+               FROM {course_format_options} cfo
+               WHERE cfo.name = 'course_location'
+             ) clo ON clo.courseid = c.id
+      # Get the course location name
+        JOIN {course_locations} cl
+          ON clo.location = cl.id
+      # Get the course sector
+        JOIN (
+               SELECT
+                 cfo.courseid,
+                 cfo.value AS 'sector'
+               FROM {course_format_options} cfo
+               WHERE cfo.name = 'course_sector'
+             ) cse ON cse.courseid = c.id
+      # Get the course sector name
+        JOIN {report_gen_companydata} rgcse
+          ON rgcse.id = cse.sector
+      # Get the municipality
+        JOIN {report_gen_companydata} rgcmu
+          ON rgcmu.id = cl.levelone
     ";
 
     /**
@@ -89,30 +140,30 @@ class local_friadmin_courselist_table_sql_model extends local_friadmin_widget {
             return array($sql, $params);
         }
 
-        $sql .= " WHERE id != 0";
+        $sql .= " WHERE c.id != 0";
 
         if (!empty($fromform->selmunicipality)) {
-            $sql .= ' AND municipality = :selmunicipality';
+            $sql .= ' AND rgcmu.name = :selmunicipality';
             $params['selmunicipality'] = $fromform->selmunicipality;
         }
         if (!empty($fromform->selsector)) {
-            $sql .= ' AND sector = :selsector';
+            $sql .= ' AND rgcse.name = :selsector';
             $params['selsector'] = $fromform->selsector;
         }
         if (!empty($fromform->sellocation)) {
-            $sql .= ' AND location = :sellocation';
+            $sql .= ' AND cl.name = :sellocation';
             $params['sellocation'] = $fromform->sellocation;
         }
         if (!empty($fromform->selname)) {
-            $sql .= ' AND ' . $DB->sql_like('name', ':selname', false, false);
+            $sql .= ' AND ' . $DB->sql_like('c.fullname', ':selname', false, false);
             $params['selname'] = "%" . $fromform->selname . "%";
         }
         if (!empty($fromform->seltimefrom)) {
-            $sql .= ' AND date >= :seltimefrom';
+            $sql .= ' AND c.startdate >= :seltimefrom';
             $params['seltimefrom'] = $fromform->seltimefrom;
         }
         if (!empty($fromform->seltimeto)) {
-            $sql .= ' AND date <= :seltimeto';
+            $sql .= ' AND c.startdate <= :seltimeto';
             $params['seltimeto'] = $fromform->seltimeto;
         }
 
