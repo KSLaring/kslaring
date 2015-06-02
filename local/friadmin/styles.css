@@ -52,6 +52,10 @@ body #region-main #mform-coursefilter:not(.unresponsive) .femptylabel .fitemtitl
 #page-local-friadmin-courselist table.flexible .nowrap {
   white-space: nowrap;
 }
+#page-local-friadmin-coursedetail #coursedetails .header {
+  font-weight: bold;
+  text-align: right;
+}
 #page-local-friadmin-coursedetail .coursedetail-linklist li {
   display: inline-block;
   margin: .3em 0;

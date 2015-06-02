@@ -68,12 +68,16 @@ class local_friadmin_coursedetail_table extends local_friadmin_widget implements
 
         // Get the data for the table rows,
         // format the date columns
-        $table_model = new local_friadmin_coursedetail_table_datalist_model($this->courseid);
+//        $table_model = new local_friadmin_coursedetail_table_datalist_model($this->courseid);
+        $table_model = new local_friadmin_coursedetail_table_sql_model($this->courseid);
 
-        if ($result = $table_model->data) {
+        $result = $table_model->data[0];
+        if ($result) {
             $result = $this->format_date($result, array('date', 'deadline'));
-            $result = $this->remove_id($result);
             $result = $this->add_courselink($result);
+            $result = $this->set_responsiblename($result);
+            $result = $this->set_course_contacts($result);
+            $result = $this->remove_id($result);
             $result = $this->row_to_columns($result);
 
             $table->data = $result;
@@ -86,35 +90,18 @@ class local_friadmin_coursedetail_table extends local_friadmin_widget implements
     /**
      * Format the date fields from UNIX timestamp to userdate.
      *
-     * @param Array $data The table data
+     * @param Array $data   The table data
      * @param Array $fields The fields containing dates
      *
      * @return Array The modified table data
      */
     protected function format_date($data, $fields) {
-        $result = array();
-
-        foreach ($data as $row) {
-            if (is_array($row)) {
-                $isarray = true;
-                $row = (object)$row;
-            } else {
-                $isarray = false;
-            }
-
-            foreach ($fields as $field) {
-                $row->$field = '<span class="nowrap">' .
-                    userdate($row->$field, '%Y-%m-%d', 99, false) . '</span>';
-            }
-
-            if ($isarray) {
-                $result[] = (array)$row;
-            } else {
-                $result[] = $row;
-            }
+        foreach ($fields as $field) {
+            $data[$field] = '<span class="nowrap">' .
+                userdate($data[$field], '%Y-%m-%d', 99, false) . '</span>';
         }
 
-        return $result;
+        return $data;
     }
 
     /**
@@ -126,7 +113,7 @@ class local_friadmin_coursedetail_table extends local_friadmin_widget implements
      */
     protected function remove_id($data) {
 
-        unset($data[0]['courseid']);
+        unset($data['courseid']);
 
         return $data;
     }
@@ -141,7 +128,60 @@ class local_friadmin_coursedetail_table extends local_friadmin_widget implements
     protected function add_courselink($data) {
         $url = new moodle_url('/course/view.php?id=' . $this->courseid);
 
-        $data[0]['link'] = '<a href="'.$url.'">'.$url.'</a>';
+        $data['link'] = '<a href="' . $url . '">' . $url . '</a>';
+
+        return $data;
+    }
+
+    /**
+     * Get the manager = responsible user name
+     * if the responsible field holds a number
+     *
+     * @param Array $data The table data
+     *
+     * @return Array The modified table data
+     */
+    protected function set_responsiblename($data) {
+
+        if (is_numeric($data['responsible'])) {
+            global $DB;
+
+            if ($user = $DB->get_record('user', array('id' => $data['responsible']))) {
+                $data['responsible'] = fullname($user);
+            }
+        };
+
+        return $data;
+    }
+
+    /**
+     * Get the manager = responsible user name
+     * if the responsible field holds a number
+     *
+     * @param Array $data The table data
+     *
+     * @return Array The modified table data
+     */
+    protected function set_course_contacts($data) {
+
+        if ($data['teacher'] === '-') {
+            global $CFG, $DB;
+
+            $course = $DB->get_record('course', array('id' => $this->courseid));
+            if ($course instanceof stdClass) {
+                require_once($CFG->libdir . '/coursecatlib.php');
+                $course = new course_in_list($course);
+            }
+
+            if ($course->has_course_contacts()) {
+                $teachers = '';
+                foreach ($course->get_course_contacts() as $userid => $coursecontact) {
+//                    $teachers .= $coursecontact['rolename'] . ': ';
+                    $teachers .= $coursecontact['username'] . ' ';
+                }
+                $data['teacher'] = $teachers;
+            }
+        };
 
         return $data;
     }
@@ -156,8 +196,8 @@ class local_friadmin_coursedetail_table extends local_friadmin_widget implements
     protected function row_to_columns($data) {
         $result = array();
 
-        foreach ($data[0] as $key => $field) {
-            $result[] = array(get_string('course_'.$key, 'local_friadmin'), $field);
+        foreach ($data as $key => $field) {
+            $result[] = array(get_string('course_' . $key, 'local_friadmin'), $field);
         }
 
         return $result;

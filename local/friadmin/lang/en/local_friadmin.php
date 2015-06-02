@@ -21,7 +21,7 @@ $string['course_teacher'] = 'Teacher';
 $string['course_priceinternal'] = 'Price internal';
 $string['course_priceexternal'] = 'Price external';
 $string['course_link'] = 'Link';
-$string['course_edit'] = 'Edit';
+$string['course_edit'] = '';
 
 $string['coursedetail_title'] = 'Friadmin course details';
 $string['coursedetail_back'] = 'Back to courselist';
@@ -40,3 +40,6 @@ $string['selsector'] = 'All sectors';
 $string['sellocation'] = 'All locations';
 $string['selname'] = 'Course name';
 $string['selsubmit'] = 'Search';
+
+$string['edit'] = 'Edit course';
+$string['show'] = 'Show details';
