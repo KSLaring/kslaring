@@ -100,11 +100,11 @@ class local_friadmin_courselist_table extends local_friadmin_widget implements r
         if ($result = $table_model->data) {
             $result = $this->format_date($result, array('date', 'deadline'));
             $result = $this->add_course_link_and_edit_icon($result);
-
-            ob_start();
-            $table->format_and_add_array_of_rows($result);
-            $out = ob_get_clean();
         }
+
+        ob_start();
+        $table->format_and_add_array_of_rows($result);
+        $out = ob_get_clean();
 
         return $out;
     }

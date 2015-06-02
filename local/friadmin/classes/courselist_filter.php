@@ -138,8 +138,8 @@ class local_friadmin_courselist_filter extends local_friadmin_widget implements 
         // Get the categories for which the user has admin rights
         $catadmin = $this->get_categories_admin();
 
-        // Use only municipalities where the user has admin rights on the categories
-        // and with equal category and municipality names
+        // Use only municipalities where the user has admin rights on the course categories
+        // and where the municipality name is contained in the category name
         $leveloneobjsfiltered = array();
         foreach ($leveloneobjs as $obj) {
             foreach ($catadmin as $catname) {
