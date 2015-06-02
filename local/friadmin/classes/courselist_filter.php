@@ -143,8 +143,8 @@ class local_friadmin_courselist_filter extends local_friadmin_widget implements 
         $leveloneobjsfiltered = array();
         foreach ($leveloneobjs as $obj) {
             foreach ($catadmin as $catname) {
-                if ($obj->name === $catname) {
-                    $result['municipality'][$catname] = $catname;
+                if (strpos($catname, $obj->name) !== false) {
+                    $result['municipality'][$obj->name] = $obj->name;
                     $this->userleveloneids[] = $obj->id;
                     $leveloneobjsfiltered[] = $obj;
                 }
@@ -185,7 +185,7 @@ class local_friadmin_courselist_filter extends local_friadmin_widget implements 
 
         // Get the course categories where the user is admin
         require_once $CFG->dirroot . '/lib/coursecatlib.php';
-        $courecats = $DB->get_records('course_categories', array('parent' => 0));
+        $courecats = $DB->get_records('course_categories');
         $coursecat_names = array();
         foreach ($courecats as $courecat) {
             $coursecat_obj = coursecat::get($courecat->id);
