@@ -99,7 +99,7 @@ class local_friadmin_courselist_table extends local_friadmin_widget implements r
 
         if ($result = $table_model->data) {
             $result = $this->format_date($result, array('date', 'deadline'));
-            $result = $this->add_course_link_and_edit_icon($result);
+            $result = $this->add_course_link_and_icons($result);
         }
 
         ob_start();
@@ -117,7 +117,7 @@ class local_friadmin_courselist_table extends local_friadmin_widget implements r
      *
      * @return Object The modified table data
      */
-    protected function add_course_link_and_edit_icon($data) {
+    protected function add_course_link_and_icons($data) {
         global $OUTPUT;
 
         $result = array();
@@ -135,10 +135,15 @@ class local_friadmin_courselist_table extends local_friadmin_widget implements r
                     $row->courseid), $row->name);
             $row->name = $namelink;
 
-            $icon = $OUTPUT->pix_icon('t/edit', '');
+            $icon = $OUTPUT->pix_icon('t/edit', get_string('edit', 'local_friadmin'));
             $link = html_writer::link(
                 new moodle_url('/course/edit.php?id=' . $row->courseid), $icon);
-            $row->edit = $link;
+            $icon = $OUTPUT->pix_icon('t/viewdetails', get_string('show', 'local_friadmin'));
+            $detailslink = html_writer::link(
+                new moodle_url('/local/friadmin/coursedetail.php?id=' . $row->courseid),
+                $icon);
+
+            $row->edit = $link . ' ' . $detailslink;
 
             if ($isarray) {
                 $result[] = (array)$row;
