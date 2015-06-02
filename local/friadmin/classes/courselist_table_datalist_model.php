@@ -35,7 +35,7 @@ class local_friadmin_courselist_table_datalist_model extends local_efaktor_model
 
     // The user municipality list
     protected $userleveloneids = null;
-    
+
     /**
      * Construct the courselist_page renderable.
      */

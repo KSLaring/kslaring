@@ -121,7 +121,7 @@ class local_friadmin_courselist_table_sql_model extends local_friadmin_widget {
 
         $result = array();
 
-        if (!is_null($this->userleveloneids)) {
+        if (!empty($this->userleveloneids)) {
             list($sql, $params) = $this->add_filters($this->sql,
                 $this->userleveloneids, $this->filterdata);
 
