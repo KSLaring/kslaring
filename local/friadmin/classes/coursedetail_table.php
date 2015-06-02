@@ -97,8 +97,12 @@ class local_friadmin_coursedetail_table extends local_friadmin_widget implements
      */
     protected function format_date($data, $fields) {
         foreach ($fields as $field) {
-            $data[$field] = '<span class="nowrap">' .
-                userdate($data[$field], '%Y-%m-%d', 99, false) . '</span>';
+            if (0 == $data[$field]) {
+                $data[$field] = '-';
+            } else {
+                $data[$field] = '<span class="nowrap">' .
+                    userdate($data[$field], '%Y-%m-%d', 99, false) . '</span>';
+            }
         }
 
         return $data;
