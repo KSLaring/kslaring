@@ -33,6 +33,9 @@ defined('MOODLE_INTERNAL') || die;
  */
 class local_friadmin_courselist_table_sql_model extends local_friadmin_widget {
 
+    // The user municipality list
+    protected $userleveloneids = null;
+
     // The related filter data returned from the form
     protected $filterdata = null;
 
@@ -99,10 +102,11 @@ class local_friadmin_courselist_table_sql_model extends local_friadmin_widget {
     /**
      * Construct the courselist_page renderable.
      */
-    public function __construct($filterdata, $sort) {
+    public function __construct($userleveloneids, $filterdata, $sort) {
         // Create the data object and set the first values
         parent::__construct();
 
+        $this->userleveloneids = $userleveloneids;
         $this->filterdata = $filterdata;
         $this->sort = $sort;
 
@@ -115,13 +119,20 @@ class local_friadmin_courselist_table_sql_model extends local_friadmin_widget {
     protected function get_data_from_db() {
         global $DB;
 
-        list($sql, $params) = $this->add_filters($this->sql, $this->filterdata);
+        $result = array();
 
-        if ($this->sort) {
-            $sql .= ' ORDER BY ' . $this->sort;
+        if (!is_null($this->userleveloneids)) {
+            list($sql, $params) = $this->add_filters($this->sql,
+                $this->userleveloneids, $this->filterdata);
+
+            if ($this->sort) {
+                $sql .= ' ORDER BY ' . $this->sort;
+            }
+
+            $result = $DB->get_records_sql($sql, $params);
         }
 
-        $this->data = $DB->get_records_sql($sql, $params);
+        $this->data = $result;
     }
 
     /**
@@ -131,16 +142,20 @@ class local_friadmin_courselist_table_sql_model extends local_friadmin_widget {
      *
      * @return Array An array with the extended SQL and the parameters
      */
-    protected function add_filters($sql, $fromform = null) {
+    protected function add_filters($sql, $userleveloneids, $fromform = null) {
         global $DB;
 
         $params = array();
 
+        $sql .= " WHERE rgcmu.id ";
+
+        list ($in, $params) = $DB->get_in_or_equal($userleveloneids, SQL_PARAMS_NAMED, 'userleveloneids');
+
+        $sql .= $in;
+
         if (is_null($fromform)) {
             return array($sql, $params);
         }
-
-        $sql .= " WHERE c.id != 0";
 
         if (!empty($fromform->selmunicipality)) {
             $sql .= ' AND rgcmu.name = :selmunicipality';

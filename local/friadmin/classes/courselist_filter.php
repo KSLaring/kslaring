@@ -33,6 +33,8 @@ defined('MOODLE_INTERNAL') || die;
  */
 class local_friadmin_courselist_filter extends local_friadmin_widget implements renderable {
 
+    protected $userleveloneids = array();
+
     // The Moodle form
     protected $mform = null;
 
@@ -70,6 +72,13 @@ class local_friadmin_courselist_filter extends local_friadmin_widget implements 
 //            local_logger\console::log($SESSION->friadmin_courselist_filtering,
 //                "Filter - SESSION friadmin_courselist_filtering");
         }
+    }
+
+    /**
+     * Get the returned form data, if any
+     */
+    public function get_userleveloneids() {
+        return $this->userleveloneids;
     }
 
     /**
@@ -136,24 +145,27 @@ class local_friadmin_courselist_filter extends local_friadmin_widget implements 
             foreach ($catadmin as $catname) {
                 if ($obj->name === $catname) {
                     $result['municipality'][$catname] = $catname;
+                    $this->userleveloneids[] = $obj->id;
                     $leveloneobjsfiltered[] = $obj;
                 }
             }
         }
 
-        // Get the sectors for the relevant municipalities via inustrycodes
-        $leveltwoobjs = $this->get_leveltwo_sectors($leveloneobjsfiltered);
-        foreach ($leveltwoobjs as $obj) {
-            if (!in_array($obj->name, $result['sector'])) {
-                $result['sector'][$obj->name] = $obj->name;
+        if (!empty($leveloneobjsfiltered)) {
+            // Get the sectors for the relevant municipalities via inustrycodes
+            $leveltwoobjs = $this->get_leveltwo_sectors($leveloneobjsfiltered);
+            foreach ($leveltwoobjs as $obj) {
+                if (!in_array($obj->name, $result['sector'])) {
+                    $result['sector'][$obj->name] = $obj->name;
+                }
             }
-        }
 
-        // Get the locations for the relevant municipalities via levelone ids
-        $locationsobjs = $this->get_locations($leveloneobjsfiltered);
-        foreach ($locationsobjs as $obj) {
-            if (!in_array($obj->name, $result['location'])) {
-                $result['location'][$obj->name] = $obj->name;
+            // Get the locations for the relevant municipalities via levelone ids
+            $locationsobjs = $this->get_locations($leveloneobjsfiltered);
+            foreach ($locationsobjs as $obj) {
+                if (!in_array($obj->name, $result['location'])) {
+                    $result['location'][$obj->name] = $obj->name;
+                }
             }
         }
 

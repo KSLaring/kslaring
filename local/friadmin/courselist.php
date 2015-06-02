@@ -40,7 +40,8 @@ $output = $PAGE->get_renderer('local_friadmin');
 // Prepare the renderables for the page and the page areas
 $page = new local_friadmin_courselist_page();
 $filter = new local_friadmin_courselist_filter();
-$table = new local_friadmin_courselist_table($page->data->url, $filter->fromform);
+$table = new local_friadmin_courselist_table($page->data->url,
+    $filter->userleveloneids, $filter->fromform);
 
 $friadmin->set_courselist_references($page, $filter, $table, $output);
 

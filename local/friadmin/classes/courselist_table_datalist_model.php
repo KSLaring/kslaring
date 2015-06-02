@@ -33,15 +33,19 @@ defined('MOODLE_INTERNAL') || die;
  */
 class local_friadmin_courselist_table_datalist_model extends local_efaktor_model {
 
+    // The user municipality list
+    protected $userleveloneids = null;
+    
     /**
      * Construct the courselist_page renderable.
      */
-    public function __construct($filterdata, $sort) {
+    public function __construct($userleveloneids, $filterdata, $sort) {
         global $CFG;
 
         // Create the data object and set the first values
         parent::__construct();
 
+        $this->userleveloneids = $userleveloneids;
         $this->filterdata = $filterdata;
         $this->sort = $sort;
 

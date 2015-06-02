@@ -40,17 +40,21 @@ class local_friadmin_courselist_table extends local_friadmin_widget implements r
     // The table column titles
     protected $colheaders = array();
 
+    // The user municipality list
+    protected $userleveloneids = null;
+
     // The related filter data returned from the form
     protected $filterdata = null;
 
     /**
      * Construct the courselist_page renderable.
      */
-    public function __construct($baseurl, $filterdata = null) {
+    public function __construct($baseurl, $userleveloneids = null, $filterdata = null) {
         // Create the data object and set the first values
         parent::__construct();
 
         $this->data->baseurl = $baseurl;
+        $this->userleveloneids = $userleveloneids;
         $this->filterdata = $filterdata;
 
         // Create the table column titles
@@ -89,7 +93,8 @@ class local_friadmin_courselist_table extends local_friadmin_widget implements r
         // format the date columns and add the course edit link behind the course name
 //        $table_model = new local_friadmin_courselist_table_datalist_model($this->filterdata,
 //            $table->get_sql_sort('courselist'));
-        $table_model = new local_friadmin_courselist_table_sql_model($this->filterdata,
+        $table_model = new local_friadmin_courselist_table_sql_model($this->userleveloneids,
+            $this->filterdata,
             $table->get_sql_sort('courselist'));
 
         if ($result = $table_model->data) {
