@@ -55,21 +55,28 @@ class local_friadmin_coursedetail_linklist extends local_friadmin_widget impleme
         $str_email = get_string('coursedetail_email', 'local_friadmin');
 
         $url_back = new moodle_url('/local/friadmin/courselist.php');
-        $url_users = new moodle_url('/enrol/users.php?id='.$courseid);
-        $url_waitlist = '#';
-        $url_settings = new moodle_url('/course/edit.php?id='.$courseid);
-        $url_go = new moodle_url('/course/view.php?id='.$courseid);
+        $url_users = new moodle_url('/enrol/users.php?id=' . $courseid);
+        $url_waitlist = new moodle_url('/enrol/waitinglist/managequeue.php?id=' . $courseid);
+        $url_settings = new moodle_url('/course/edit.php?id=' . $courseid);
+        $url_go = new moodle_url('/course/view.php?id=' . $courseid);
         $url_duplicate = '#';
         $url_email = '#';
 
+        $disabled_waitlist = '';
+        $queueman = \enrol_waitinglist\queuemanager::get_by_course($courseid);
+        if ($queueman->get_listtotal() == 0) {
+            $disabled_waitlist = ' disabled';
+            $url_waitlist = '#';
+        }
+
         $list = '<ul class="unlist coursedetail-linklist">
-            <li><a class="btn" href="'.$url_back.'">'.$str_back.'</a></li>
-            <li><a class="btn" href="'.$url_users.'">'.$str_users.'</a></li>
-            <li><a class="btn disabled" href="'.$url_waitlist.'">'.$str_waitlist.'</a></li>
-            <li><a class="btn" href="'.$url_settings.'">'.$str_settings.'</a></li>
-            <li><a class="btn" href="'.$url_go.'">'.$str_go.'</a></li>
-            <li><a class="btn disabled" href="'.$url_duplicate.'">'.$str_duplicate.'</a></li>
-            <li><a class="btn disabled" href="'.$url_email.'">'.$str_email.'</a></li>
+            <li><a class="btn" href="' . $url_back . '">' . $str_back . '</a></li>
+            <li><a class="btn" href="' . $url_users . '">' . $str_users . '</a></li>
+            <li><a class="btn' . $disabled_waitlist . '" href="' . $url_waitlist . '">' . $str_waitlist . '</a></li>
+            <li><a class="btn" href="' . $url_settings . '">' . $str_settings . '</a></li>
+            <li><a class="btn" href="' . $url_go . '">' . $str_go . '</a></li>
+            <li><a class="btn disabled" href="' . $url_duplicate . '">' . $str_duplicate . '</a></li>
+            <li><a class="btn disabled" href="' . $url_email . '">' . $str_email . '</a></li>
         </ul>';
 
         $this->data->content = $list;
