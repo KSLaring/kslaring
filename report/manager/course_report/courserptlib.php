@@ -862,7 +862,6 @@ class course_report {
                      FROM	 	{user}						  u
                         JOIN	{user_info_competence_data}	  uic			ON		uic.userid		  = u.id
                                                                             AND		uic.companyid	  = :company
-															                AND		e.status		  = 0
                         JOIN	{course_completions}			cc			ON		cc.userid		  = uic.userid
                                                                             AND		cc.course		  = :course
                                                                             AND     cc.timecompleted  IS  NOT NULL
