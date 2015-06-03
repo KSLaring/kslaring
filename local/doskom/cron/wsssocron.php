@@ -44,24 +44,15 @@ class WSDOSKOM_Cron {
             /* Call Web Service and Get the Users to Import */
             mtrace('Start WSDOSKOM Import Users '. time());
             foreach ($companies as $company) {
-                if ($plugin_info->wsdoskom_end_point_production) {
-                    $company->import = self::Call_WS($company->id);
-                }else {
-                    $company->import = self::Call_WS_PILOT($company->id);
-                }//if_production
-
+                $company->import = self::Call_WS($company->id);
                 $companies[$company->id] = $company;
             }//for_companies
 
             /* Save users temporary table      */
             foreach ($companies as $company) {
               if ($company->import) {
-                    if ($plugin_info->wsdoskom_end_point_production) {
-                        self::SaveTemp_UsersToImport($company->import,$company->id);
-                    }else {
-                        self::SaveTemp_UsersToImport_PILOT($company->import,$company->id);
-                    }//if_production
-                }//if_companyImport
+                self::SaveTemp_UsersToImport($company->import,$company->id);
+              }//if_companyImport
             }//for_companies
 
             /* Import Users */
@@ -149,60 +140,8 @@ class WSDOSKOM_Cron {
             curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
             curl_setopt( $ch, CURLOPT_POST, false );
             curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-                    'DOSSIER_USER: ' . $plugin_info->local_wsdoskom_username,
-                    'DOSSIER_PASSWORD: ' . $plugin_info->local_wsdoskom_password)
-            );
-
-            $response   = curl_exec( $ch );
-            curl_close( $ch );
-
-            /* Format Data  */
-            if ($response === false) {
-                return null;
-            }else {
-                $xml = @new SimpleXMLElement( $response );
-                if (!$xml) {
-                    return null;
-                }else {
-                    return $xml;
-                }
-            }//if_response
-
-        }catch (Exception $ex) {
-            throw $ex;
-        }//try_catch
-    }//Call_WS
-
-    /**
-     * @param           $companyId
-     * @return          mixed|null
-     * @throws          Exception
-     *
-     * @creationDate    05/02/2015
-     * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Call the Web Services to get the users
-     */
-    private static function Call_WS_PILOT($companyId) {
-        /* Variables    */
-        $urlWs      = null;
-        $response   = null;
-
-        try {
-            /* Plugins Info */
-            $plugin_info     = get_config('local_doskom');
-
-            /* Build url end point  */
-            $urlWs = $plugin_info->wsdoskom_end_point . '/' . $companyId .'/personalia/no';
-
-            /* Call Web Service     */
-            $ch = curl_init($urlWs);
-            curl_setopt( $ch, CURLOPT_SSL_VERIFYPEER, false );
-            curl_setopt( $ch, CURLOPT_SSL_VERIFYHOST,2 );
-            curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
-            curl_setopt( $ch, CURLOPT_POST, false );
-            curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+                    'User-Agent: Moodle 1.0',
+                    'Content-Type: application/json ',
                     'DOSSIER_USER: ' . $plugin_info->local_wsdoskom_username,
                     'DOSSIER_PASSWORD: ' . $plugin_info->local_wsdoskom_password)
             );
@@ -240,105 +179,6 @@ class WSDOSKOM_Cron {
      * Save the users to import in a temporary table
      */
     private static function SaveTemp_UsersToImport($infoImport,$companyId) {
-        /* Variables    */
-        global $DB;
-        $userInfo       = null;
-        $fieldEntries   = null;
-        $fieldEntry     = null;
-
-        /* Begin Transaction    */
-        $trans = $DB->start_delegated_transaction();
-        try {
-            foreach ($infoImport->children() as $child) {
-                /* Get User Info    */
-                $userInfo               = new stdClass();
-                $userInfo->companyid    = $companyId;
-                $userInfo->status       = 0;
-
-                foreach($child as $key => $value) {
-                    if ($key == 'fieldEntry') {
-                        $attributes = $value->attributes();
-                        switch (strtolower(trim($attributes['name']))) {
-                            case 'personid':
-                                $userInfo->personid = trim($value);
-
-                                break;
-                            case 'personextid':
-                                $userInfo->personextid = trim($value);
-
-                                break;
-                            case 'employmentid':
-                                $userInfo->employmentid = trim($value);
-
-                                break;
-                            case 'employmentextid':
-                                $userInfo->employmentextid = trim($value);
-
-                                break;
-                            case 'username':
-                                $userInfo->username = trim($value);
-
-                                break;
-                            case 'userextname':
-                                $userInfo->userextname = trim($value);
-
-                                break;
-                            case 'firstname':
-                                $userInfo->firstname = trim($value);
-
-                                break;
-                            case 'lastname':
-                                $userInfo->lastname = trim($value);
-
-                                break;
-                            case 'personssn':
-                                $userInfo->personssn = trim($value);
-
-                                break;
-                            case 'email':
-                                $userInfo->email = trim($value);
-
-                                break;
-                            case 'city':
-                                $userInfo->city = trim($value);
-
-                                break;
-                            case 'country':
-                                $userInfo->country = trim($value);
-
-                                break;
-                            case 'divisionname':
-                                $userInfo->divisionname = trim($value);
-
-                                break;
-                            case 'divisionextid':
-                                $userInfo->divisionextid = trim($value);
-
-                                break;
-                        }//switch_name
-                    }//if_fieldEntry
-                }//child
-
-                if (isset($userInfo->personid)) {
-                        /* Save Temporary Table */
-                    $secret = $userInfo->companyid . '##SEP##' . $userInfo->personid;
-                    if (!$DB->get_record('user',array('secret' => $secret))) {
-                        $DB->insert_record('user_personalia',$userInfo);
-                    }
-                }
-            }//for_xml
-
-            /* Commit   */
-            $trans->allow_commit();
-        }catch (Exception $ex) {
-            /* Rollback */
-            $trans->rollback($ex);
-
-            throw $ex;
-        }//try_catch
-    }//SaveTemp_UsersToImport
-
-    private static function SaveTemp_UsersToImport_PILOT($infoImport,$companyId) {
         /* Variables    */
         global $DB;
         $userInfo       = null;
@@ -397,7 +237,7 @@ class WSDOSKOM_Cron {
 
                                     break;
                                 case 'mobilephone':
-                                    $userInfo->mobilephone = trim($entry->value);
+                                    //$userInfo->mobilephone = trim($entry->value);
 
                                     break;
                                 case 'email':
@@ -446,6 +286,7 @@ class WSDOSKOM_Cron {
             throw $ex;
         }//try_catch
     }//SaveTemp_UsersToImport_PILOT
+
 
     /**
      * @throws          Exception
@@ -507,7 +348,7 @@ class WSDOSKOM_Cron {
                     }//if_personalNumber
                     /* Mobile/Phone */
                     if ($userInfo->mobilephone) {
-                        $new_user->phone1   = $userInfo->mobilephone;
+                        //$new_user->phone1   = $userInfo->mobilephone;
                     }//if_mobilePhone
                     /* Workplace    */
                     if ($userInfo->divisionname) {
