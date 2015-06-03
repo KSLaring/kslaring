@@ -62,6 +62,8 @@ class local_friadmin_coursedetail_linklist extends local_friadmin_widget impleme
         $url_duplicate = '#';
         $url_email = '#';
 
+        // Check if there are users in the course waitlist,
+        // set the waitlist button to disabled if not.
         $disabled_waitlist = '';
         $queueman = \enrol_waitinglist\queuemanager::get_by_course($courseid);
         if ($queueman->get_listtotal() == 0) {
