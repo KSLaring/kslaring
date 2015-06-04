@@ -32,6 +32,9 @@ $string['coursedetail_go'] = 'Go to the course';
 $string['coursedetail_duplicate'] = 'Duplicate';
 $string['coursedetail_email'] = 'Send email';
 
+$string['coursetemplate_title'] = 'Friadmin add from template';
+$string['coursetemplate_subtitle'] = 'Create a course from a course template.';
+
 $string['location'] = 'Location: ';
 $string['fromto'] = 'From - to: ';
 $string['coursename'] = 'Course name: ';
@@ -39,7 +42,10 @@ $string['selmunicipality'] = 'All municipalities';
 $string['selsector'] = 'All sectors';
 $string['sellocation'] = 'All locations';
 $string['selname'] = 'Course name';
+$string['selcategory'] = 'Target category';
+$string['seltemplate'] = 'Course template';
 $string['selsubmit'] = 'Search';
+$string['selsubmitcreate'] = 'Create course';
 
 $string['edit'] = 'Edit course';
 $string['show'] = 'Show details';

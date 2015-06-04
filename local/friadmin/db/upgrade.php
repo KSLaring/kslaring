@@ -52,7 +52,7 @@ function xmldb_local_friadmin_upgrade($oldversion) {
 
     $dbman = $DB->get_manager();
 
-    if ($oldversion < 2015052000) {
+    if ($oldversion < 2015060400) {
         $blocks = null;
         $instanceBlock = null;
 
@@ -94,8 +94,19 @@ function xmldb_local_friadmin_upgrade($oldversion) {
         /* Execute  */
         $DB->insert_record('block_instances', $instanceBlock);
 
+        /* local-friadmin-coursetemplate */
+        $instanceBlock = new stdClass();
+        $instanceBlock->blockname = 'frikomport';
+        $instanceBlock->parentcontextid = 1;
+        $instanceBlock->showinsubcontexts = 0;
+        $instanceBlock->pagetypepattern = 'local-friadmin-coursetemplate';
+        $instanceBlock->defaultregion = 'side-pre';
+        $instanceBlock->defaultweight = 0;
+        /* Execute  */
+        $DB->insert_record('block_instances', $instanceBlock);
+
         // Plugin savepoint reached.
-        upgrade_plugin_savepoint(true, 2015052000, 'local', 'friadmin');
+        upgrade_plugin_savepoint(true, 2015060400, 'local', 'friadmin');
     }
 
     return true;

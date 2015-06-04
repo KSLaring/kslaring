@@ -42,6 +42,9 @@ class friadmin {
     // The linklist renderable
     protected $linklist = null;
 
+    // The create course renderable
+    protected $create = null;
+
     // The page renderable
     protected $page = null;
 
@@ -95,6 +98,16 @@ class friadmin {
     }
 
     /*
+     *
+     */
+    public function set_coursetemplate_references($page, $create,
+        \local_friadmin_renderer $output) {
+        $this->page = $page;
+        $this->create = $create;
+        $this->output = $output;
+    }
+
+    /*
      * Set up the page
      */
     public function setup_courselist_page() {
@@ -130,6 +143,22 @@ class friadmin {
     }
 
     /*
+     * Set up the page
+     */
+    public function setup_coursetemplate_page() {
+        global $PAGE;
+
+        $data = $this->page->data;
+
+        $PAGE->set_url($data->url);
+        $PAGE->set_docs_path('');
+        $PAGE->set_title($data->title);
+
+        $PAGE->navbar->add(get_string('pluginname', 'local_friadmin'));
+        $PAGE->navbar->add($data->title);
+    }
+
+    /*
      * Display the course list
      */
     public function display_courselist_page() {
@@ -158,6 +187,20 @@ class friadmin {
         echo $output->footer();
     }
 
+    /*
+     * Display the coursetemplate page
+     */
+    public function display_coursetemplate_page() {
+        $output = $this->output;
+
+        $this->create->render();
+        $this->page->data->create = $this->create;
+
+        echo $output->header();
+        echo $output->render($this->page);
+        echo $output->footer();
+    }
+
     /**
      * Page getter
      */
@@ -166,10 +209,17 @@ class friadmin {
     }
 
     /**
-     * Table getter
+     * Filter getter
      */
     protected function get_filter() {
         return $this->filter;
+    }
+
+    /**
+     * Select getter
+     */
+    protected function get_select() {
+        return $this->select;
     }
 
     /**
