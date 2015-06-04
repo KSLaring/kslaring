@@ -89,6 +89,7 @@ class block_frikomport_menu_manager {
                 'text' => get_string('naddfromtemplate', 'block_frikomport'),
                 'icon' => $settingsicon,
                 'type' => navigation_node::NODETYPE_LEAF,
+                'action' => '/local/friadmin/coursetemplate.php'
             )
         );
         $this->add_tree_section($branch);
