@@ -49,6 +49,7 @@ class local_friadmin_coursedetail_linklist extends local_friadmin_widget impleme
         $str_back = get_string('coursedetail_back', 'local_friadmin');
         $str_users = get_string('coursedetail_users', 'local_friadmin');
         $str_waitlist = get_string('coursedetail_waitlist', 'local_friadmin');
+        $str_confirmed = get_string('coursedetail_confirmed', 'local_friadmin');
         $str_settings = get_string('coursedetail_settings', 'local_friadmin');
         $str_go = get_string('coursedetail_go', 'local_friadmin');
         $str_duplicate = get_string('coursedetail_duplicate', 'local_friadmin');
@@ -57,10 +58,21 @@ class local_friadmin_coursedetail_linklist extends local_friadmin_widget impleme
         $url_back = new moodle_url('/local/friadmin/courselist.php');
         $url_users = new moodle_url('/enrol/users.php?id=' . $courseid);
         $url_waitlist = new moodle_url('/enrol/waitinglist/managequeue.php?id=' . $courseid);
+        $url_confirmed = new moodle_url('/enrol/waitinglist/manageconfirmed.php?id=' . $courseid);
         $url_settings = new moodle_url('/course/edit.php?id=' . $courseid);
         $url_go = new moodle_url('/course/view.php?id=' . $courseid);
         $url_duplicate = '#';
         $url_email = '#';
+
+
+        // Check if there are confirmed users,
+        // set the confirmed button to disabled if not.
+        $disabled_confirmed = '';
+        $confirmedman = \enrol_waitinglist\entrymanager::get_by_course($courseid);
+        if ($confirmedman->get_confirmed_listtotal() == 0) {
+            $disabled_confirmed = ' disabled';
+            $url_confirmed = '#';
+        }
 
         // Check if there are users in the course waitlist,
         // set the waitlist button to disabled if not.
@@ -71,16 +83,24 @@ class local_friadmin_coursedetail_linklist extends local_friadmin_widget impleme
             $url_waitlist = '#';
         }
 
-        $list = '<ul class="unlist coursedetail-linklist">
+        $list1 = '<ul class="unlist coursedetail-linklist">
             <li><a class="btn" href="' . $url_back . '">' . $str_back . '</a></li>
-            <li><a class="btn" href="' . $url_users . '">' . $str_users . '</a></li>
-            <li><a class="btn' . $disabled_waitlist . '" href="' . $url_waitlist . '">' . $str_waitlist . '</a></li>
-            <li><a class="btn" href="' . $url_settings . '">' . $str_settings . '</a></li>
             <li><a class="btn" href="' . $url_go . '">' . $str_go . '</a></li>
-            <li><a class="btn disabled" href="' . $url_duplicate . '">' . $str_duplicate . '</a></li>
+            <li><a class="btn" href="' . $url_settings . '">' . $str_settings . '</a></li>
+        </ul>';
+
+        $list2 = '<ul class="unlist coursedetail-linklist">
+            <li><a class="btn" href="' . $url_users . '">' . $str_users . '</a></li>
+            <li><a class="btn' . $disabled_confirmed . '" href="' . $url_confirmed . '">' .
+                $str_confirmed . '</a></li>
+            <li><a class="btn' . $disabled_waitlist . '" href="' . $url_waitlist . '">' .
+                $str_waitlist . '</a></li>
+        </ul>';
+
+        $list3 = '<ul class="unlist coursedetail-linklist">
             <li><a class="btn disabled" href="' . $url_email . '">' . $str_email . '</a></li>
         </ul>';
 
-        $this->data->content = $list;
+        $this->data->content = $list1 . $list2 . $list3;
     }
 }

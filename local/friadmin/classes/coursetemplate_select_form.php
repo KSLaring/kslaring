@@ -36,27 +36,41 @@ class local_friadmin_coursetemplate_select_form extends \moodleform {
         $mform = $this->_form;
         $customdata = $this->_customdata;
 
-        $defaultText = get_string('selname', 'local_friadmin');
+        $defaultText = get_string('fullnamecourse');
         $attributes = array(
             'placeholder' => $defaultText
         );
-        $mform->addElement('text', 'selname',
-            get_string('selname', 'local_friadmin'), $attributes);
-        $mform->setType('selname', PARAM_TEXT);
+        $mform->addElement('text', 'selfullname', $defaultText, $attributes);
+        $mform->addRule('selfullname', get_string('missingfullname'),
+            'required', null, 'client');
+        $mform->setType('selfullname', PARAM_TEXT);
 
-        $options = array('0' => get_string('selcategory', 'local_friadmin'));
-        $options = array_merge($options, $customdata['categories']);
+        $defaultText = get_string('shortnamecourse');
+        $attributes = array(
+            'placeholder' => $defaultText
+        );
+        $mform->addElement('text', 'selshortname', $defaultText, $attributes);
+        $mform->addRule('selshortname', get_string('missingshortname'),
+            'required', null, 'client');
+        $mform->setType('selshortname', PARAM_TEXT);
+
+        $options = array('' => get_string('selcategory', 'local_friadmin'));
+        $options = $options + $customdata['categories'];
         $mform->addElement('select', 'selcategory',
             get_string('selcategory', 'local_friadmin'), $options);
-        $mform->setDefault('selcategory', '0');
+        $mform->addRule('selcategory', get_string('missingselcategory', 'local_friadmin'),
+            'required', null, 'client');
+        $mform->setDefault('selcategory', '');
 
-        $options = array('0' => get_string('seltemplate', 'local_friadmin'));
-        $options = array_merge($options, $customdata['templates']);
+        $options = array('' => get_string('seltemplate', 'local_friadmin'));
+        $options = $options + $customdata['templates'];
         $mform->addElement('select', 'seltemplate',
             get_string('seltemplate', 'local_friadmin'), $options);
-        $mform->setDefault('seltemplate', '0');
+        $mform->addRule('seltemplate', get_string('missingseltemplate', 'local_friadmin'),
+            'required', null, 'client');
+        $mform->setDefault('seltemplate', '');
 
-        $mform->addElement('submit', 'submitbutton',
+        $mform->addElement('submit', 'submitcreate',
             get_string('selsubmitcreate', 'local_friadmin'));
     }
 
@@ -72,5 +86,27 @@ class local_friadmin_coursetemplate_select_form extends \moodleform {
         foreach ($defaults as $elementname => $defaultvalue) {
             $mform->setDefault($elementname, $defaultvalue);
         }
+    }
+
+    /**
+     * Validation.
+     *
+     * @param array $data
+     * @param array $files
+     * @return array the errors that were found
+     */
+    function validation($data, $files) {
+        global $DB;
+
+        $errors = parent::validation($data, $files);
+
+        // Add field validation check for duplicate shortname.
+        if ($course = $DB->get_record('course', array('shortname' => $data['selshortname']), '*', IGNORE_MULTIPLE)) {
+            if (empty($data['id']) || $course->id != $data['id']) {
+                $errors['selshortname'] = get_string('shortnametaken', '', $course->fullname);
+            }
+        }
+
+        return $errors;
     }
 }

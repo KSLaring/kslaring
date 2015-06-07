@@ -18,6 +18,8 @@
 
 defined('MOODLE_INTERNAL') || die;
 
+require_once($CFG->dirroot . '/enrol/waitinglist/lib.php');
+
 //use renderable;
 //use renderer_base;
 //use stdClass;
@@ -74,9 +76,11 @@ class local_friadmin_coursedetail_table extends local_friadmin_widget implements
         $result = $table_model->data[0];
         if ($result) {
             $result = $this->format_date($result, array('date', 'deadline'));
-            $result = $this->add_courselink($result);
+            // remove the link field, we have the link button
+            // $result = $this->add_courselink($result);
             $result = $this->set_responsiblename($result);
             $result = $this->set_course_contacts($result);
+            $result = $this->set_availseats($result);
             $result = $this->remove_id($result);
             $result = $this->row_to_columns($result);
 
@@ -186,6 +190,27 @@ class local_friadmin_coursedetail_table extends local_friadmin_widget implements
                 $data['teacher'] = $teachers;
             }
         };
+
+        return $data;
+    }
+
+    /**
+     * Add the the available seats for the courses.
+     *
+     * @param Object $data The table data
+     *
+     * @return Object The modified table data
+     */
+    protected function set_availseats($data) {
+        global $DB;
+
+        $instance = $DB->get_record('enrol',
+            array('courseid' => $data['courseid'], 'enrol' => 'waitinglist'));
+
+        if ($instance) {
+            $enrol_waitinglist_plugin = new enrol_waitinglist_plugin();
+            $data['seats'] = $enrol_waitinglist_plugin->get_vacancy_count($instance);
+        }
 
         return $data;
     }

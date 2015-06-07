@@ -26,7 +26,8 @@ $string['course_edit'] = '';
 $string['coursedetail_title'] = 'Friadmin course details';
 $string['coursedetail_back'] = 'Back to courselist';
 $string['coursedetail_users'] = 'View enrolled users';
-$string['coursedetail_waitlist'] = 'View wait list';
+$string['coursedetail_waitlist'] = 'Manage queue';
+$string['coursedetail_confirmed'] = 'Manage confirmed';
 $string['coursedetail_settings'] = 'Edit course settings';
 $string['coursedetail_go'] = 'Go to the course';
 $string['coursedetail_duplicate'] = 'Duplicate';
@@ -34,16 +35,22 @@ $string['coursedetail_email'] = 'Send email';
 
 $string['coursetemplate_title'] = 'Friadmin add from template';
 $string['coursetemplate_subtitle'] = 'Create a course from a course template.';
+$string['coursetemplate_cat'] = 'Course template category';
+$string['coursetemplate_cat_desc'] = 'Please select the course category where all
+template courses are stored.';
+$string['coursetemplate_cat_select'] = 'Select course template category ...';
 
 $string['location'] = 'Location: ';
 $string['fromto'] = 'From - to: ';
 $string['coursename'] = 'Course name: ';
-$string['selmunicipality'] = 'All municipalities';
+$string['selmunicipality'] = 'My municipalities';
 $string['selsector'] = 'All sectors';
 $string['sellocation'] = 'All locations';
 $string['selname'] = 'Course name';
 $string['selcategory'] = 'Target category';
+$string['missingselcategory'] = 'Missing target category';
 $string['seltemplate'] = 'Course template';
+$string['missingseltemplate'] = 'Missing course template';
 $string['selsubmit'] = 'Search';
 $string['selsubmitcreate'] = 'Create course';
 

@@ -40,17 +40,17 @@ class local_friadmin_courselist_filter_form extends \moodleform {
         $elementgroup = array();
 
         $options = array('0' => get_string('selmunicipality', 'local_friadmin'));
-        $options = array_merge($options, $customdata['municipality']);
+        $options = $options + $customdata['municipality'];
         $elementgroup[] = $mform->createElement('select', 'selmunicipality', '', $options);
         $mform->setDefault('selmunicipality', '0');
 
         $options = array('0' => get_string('selsector', 'local_friadmin'));
-        $options = array_merge($options, $customdata['sector']);
+        $options = $options + $customdata['sector'];
         $elementgroup[] = $mform->createElement('select', 'selsector', '', $options);
         $mform->setDefault('selsector', '0');
 
         $options = array('0' => get_string('sellocation', 'local_friadmin'));
-        $options = array_merge($options, $customdata['location']);
+        $options = $options + $customdata['location'];
         $elementgroup[] = $mform->createElement('select', 'sellocation', '', $options);
         $mform->setDefault('sellocation', '0');
 

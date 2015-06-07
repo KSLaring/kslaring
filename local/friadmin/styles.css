@@ -60,7 +60,7 @@ body #region-main #mform-coursefilter:not(.unresponsive) .femptylabel .fitemtitl
   display: inline-block;
   margin: .3em 0;
 }
-#page-local-friadmin-coursetemplate .form-feedback h4,
-#page-local-friadmin-coursetemplate .form-feedback pre {
+#page-local-friadmin-coursetemplate .form-data h4,
+#page-local-friadmin-coursetemplate .form-data pre {
   color: #ccc;
 }

@@ -34,7 +34,7 @@ defined('MOODLE_INTERNAL') || die;
 class local_friadmin_coursetemplate_select extends local_friadmin_widget implements renderable {
 
     // The form feeback - for debugging
-    protected $feedback = null;
+    protected $formdatadump = null;
 
     // The Moodle form
     protected $mform = null;
@@ -51,6 +51,7 @@ class local_friadmin_coursetemplate_select extends local_friadmin_widget impleme
         parent::__construct();
 
         $customdata = $this->get_fixture('friadmin_coursetemplate_select');
+//        $customdata = $this->get_popup_data();
 
         $mform = new local_friadmin_coursetemplate_select_form(null, $customdata, 'post',
             '', array('id' => 'mform-coursetemplate-select'));
@@ -61,8 +62,8 @@ class local_friadmin_coursetemplate_select extends local_friadmin_widget impleme
             $this->fromform = $fromform;
 //            local_logger\console::log($fromform, "Filter - Fromform");
 
-            $this->feedback = '<div class="form-feedback"><h4>Form feedback</h4><pre>'
-                . var_export($fromform, true) . '</pre></div>';
+            $this->formdatadump = '<div class="form-data"><h4>Form data</h4><pre>' .
+                var_export($fromform, true) . '</pre></div>';
         }
     }
 
@@ -74,10 +75,10 @@ class local_friadmin_coursetemplate_select extends local_friadmin_widget impleme
     }
 
     /**
-     * Get the form feedback
+     * Get the form formdatadump
      */
-    public function get_feedback() {
-        return $this->feedback;
+    public function get_formdatadump() {
+        return $this->formdatadump;
     }
 
     /**
@@ -85,7 +86,7 @@ class local_friadmin_coursetemplate_select extends local_friadmin_widget impleme
      */
     public function render() {
         $this->data->content = $this->mform->render();
-        $this->data->content .= $this->feedback;
+        $this->data->content .= $this->formdatadump;
     }
 
     /**
@@ -97,5 +98,22 @@ class local_friadmin_coursetemplate_select extends local_friadmin_widget impleme
      */
     public function set_defaults($defaults = array()) {
         $this->mform->set_defaults($defaults);
+    }
+
+    /**
+     * Get the user managed category and the template list
+     *
+     * @return Array An array with the two popup lists
+     */
+    protected function get_popup_data() {
+
+        $result = array(
+            'categories' => array(),
+            'templates' => array()
+        );
+
+        $plugin_info = get_config('local_friadmin');
+
+        $templatecategoryid = $plugin_info->template_category;
     }
 }
