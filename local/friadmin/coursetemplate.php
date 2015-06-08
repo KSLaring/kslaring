@@ -39,9 +39,10 @@ $output = $PAGE->get_renderer('local_friadmin');
 
 // Prepare the renderables for the page and the page areas
 $page = new local_friadmin_coursetemplate_page();
-$create = new local_friadmin_coursetemplate_select();
+$select = new local_friadmin_coursetemplate_select();
+$linklist = new local_friadmin_coursetemplate_linklist();
 
-$friadmin->set_coursetemplate_references($page, $create, $output);
+$friadmin->set_coursetemplate_references($page, $select, $linklist, $output);
 
 $friadmin->setup_coursetemplate_page();
 $friadmin->display_coursetemplate_page();

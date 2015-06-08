@@ -83,13 +83,13 @@ class local_friadmin_coursedetail_linklist extends local_friadmin_widget impleme
             $url_waitlist = '#';
         }
 
-        $list1 = '<ul class="unlist coursedetail-linklist">
+        $list1 = '<ul class="unlist buttons-linklist">
             <li><a class="btn" href="' . $url_back . '">' . $str_back . '</a></li>
             <li><a class="btn" href="' . $url_go . '">' . $str_go . '</a></li>
             <li><a class="btn" href="' . $url_settings . '">' . $str_settings . '</a></li>
         </ul>';
 
-        $list2 = '<ul class="unlist coursedetail-linklist">
+        $list2 = '<ul class="unlist buttons-linklist">
             <li><a class="btn" href="' . $url_users . '">' . $str_users . '</a></li>
             <li><a class="btn' . $disabled_confirmed . '" href="' . $url_confirmed . '">' .
                 $str_confirmed . '</a></li>
@@ -97,7 +97,7 @@ class local_friadmin_coursedetail_linklist extends local_friadmin_widget impleme
                 $str_waitlist . '</a></li>
         </ul>';
 
-        $list3 = '<ul class="unlist coursedetail-linklist">
+        $list3 = '<ul class="unlist buttons-linklist">
             <li><a class="btn disabled" href="' . $url_email . '">' . $str_email . '</a></li>
         </ul>';
 

@@ -25,11 +25,11 @@ $string['course_edit'] = '';
 
 $string['coursedetail_title'] = 'Friadmin course details';
 $string['coursedetail_back'] = 'Back to courselist';
-$string['coursedetail_users'] = 'View enrolled users';
+$string['coursedetail_users'] = 'Enrolled users';
 $string['coursedetail_waitlist'] = 'Manage queue';
 $string['coursedetail_confirmed'] = 'Manage confirmed';
-$string['coursedetail_settings'] = 'Edit course settings';
-$string['coursedetail_go'] = 'Go to the course';
+$string['coursedetail_settings'] = 'Course settings';
+$string['coursedetail_go'] = 'Open course';
 $string['coursedetail_duplicate'] = 'Duplicate';
 $string['coursedetail_email'] = 'Send email';
 
@@ -39,6 +39,14 @@ $string['coursetemplate_cat'] = 'Course template category';
 $string['coursetemplate_cat_desc'] = 'Please select the course category where all
 template courses are stored.';
 $string['coursetemplate_cat_select'] = 'Select course template category ...';
+$string['coursetemplate_go'] = 'Open course';
+$string['coursetemplate_another'] = 'Create another course';
+$string['coursetemplate_settings'] = 'Course settings';
+$string['coursetemplate_overview'] = 'Course overview';
+$string['coursetemplate_result'] = 'The course has been created -
+id: <strong>{$a->id}</strong>, shortname: "<strong>{$a->shortname}</strong>",
+fullname: "<strong>{$a->fullname}</strong>".';
+$string['coursetemplate_error'] = 'Course could not be created.';
 
 $string['location'] = 'Location: ';
 $string['fromto'] = 'From - to: ';

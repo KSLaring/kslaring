@@ -86,7 +86,12 @@ class local_friadmin_renderer extends plugin_renderer_base {
 
         $out .= $OUTPUT->heading($page->data->title, 2);
         $out .= $OUTPUT->heading($page->data->subtitle, 3);
-        $out .= $this->render($page->data->create);
+        $out .= $this->render($page->data->select);
+
+        // Buttons are only shown on the result page
+        if (!is_null($page->data->linklist)) {
+            $out .= $this->render($page->data->linklist);
+        }
 
         return $out;
     }
@@ -154,5 +159,18 @@ class local_friadmin_renderer extends plugin_renderer_base {
         local_friadmin_coursetemplate_select $select) {
 
         return $select->data->content;
+    }
+
+    /**
+     * Render the coursetemplate linklist.
+     *
+     * @param local_friadmin_coursetemplate_linklist $linklist The linklist renderable
+     *
+     * @return string html for the page
+     */
+    public function render_local_friadmin_coursetemplate_linklist(
+        local_friadmin_coursetemplate_linklist $linklist) {
+
+        return $linklist->data->content;
     }
 }

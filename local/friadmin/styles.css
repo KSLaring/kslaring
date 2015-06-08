@@ -56,11 +56,18 @@ body #region-main #mform-coursefilter:not(.unresponsive) .femptylabel .fitemtitl
   font-weight: bold;
   text-align: right;
 }
-#page-local-friadmin-coursedetail .coursedetail-linklist li {
+#page-local-friadmin-coursedetail #coursedetails .c1 {
+  width: 83%;
+}
+#page-local-friadmin-coursedetail .buttons-linklist li {
   display: inline-block;
   margin: .3em 0;
 }
 #page-local-friadmin-coursetemplate .form-data h4,
 #page-local-friadmin-coursetemplate .form-data pre {
   color: #ccc;
+}
+#page-local-friadmin-coursetemplate .buttons-linklist li {
+  display: inline-block;
+  margin: .3em 0;
 }

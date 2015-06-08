@@ -43,7 +43,7 @@ class friadmin {
     protected $linklist = null;
 
     // The create course renderable
-    protected $create = null;
+    protected $select = null;
 
     // The page renderable
     protected $page = null;
@@ -100,10 +100,11 @@ class friadmin {
     /*
      *
      */
-    public function set_coursetemplate_references($page, $create,
+    public function set_coursetemplate_references($page, $select, $linklist,
         \local_friadmin_renderer $output) {
         $this->page = $page;
-        $this->create = $create;
+        $this->select = $select;
+        $this->linklist = $linklist;
         $this->output = $output;
     }
 
@@ -193,8 +194,16 @@ class friadmin {
     public function display_coursetemplate_page() {
         $output = $this->output;
 
-        $this->create->render();
-        $this->page->data->create = $this->create;
+        $this->select->render();
+        $this->page->data->select = $this->select;
+
+        // Buttons are only shown on the result page
+        if (!is_null($this->select->newcourseid)) {
+            $this->linklist->create_linklist($this->select->newcourseid);
+            $this->page->data->linklist = $this->linklist;
+        } else {
+            $this->page->data->linklist = null;
+        }
 
         echo $output->header();
         echo $output->render($this->page);
