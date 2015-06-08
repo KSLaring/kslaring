@@ -221,6 +221,7 @@ class local_friadmin_coursetemplate_select extends local_friadmin_widget impleme
         $content = 'shortname,fullname,category,templatecourse' . "\n" .
             $this->fromform->selshortname . ',' . $this->fromform->selfullname .
             ',' . $this->fromform->selcategory . ',' . $this->fromform->seltemplate;
+
         $importid = csv_import_reader::get_new_iid('uploadcourse');
         $cir = new csv_import_reader($importid, 'uploadcourse');
         $readcount = $cir->load_csv_content($content, $options['encoding'], $options['delimiter']);
