@@ -145,7 +145,7 @@ class CompanyReport {
             if (CompetenceManager::IsPublic($company->levelThree)) {
                 CompetenceManager::GetJobRoles_Generics($job_roles);
             }//if_isPublic
-            CompetenceManager::GetJobRoles_Hierarchy($job_roles,$company->levelZero,$company->levelOne,$company->levelTwo,$company->levelThree);
+            CompetenceManager::GetJobRoles_Hierarchy($job_roles,3,$company->levelZero,$company->levelOne,$company->levelTwo,$company->levelThree);
 
             /* Outcome Courses  */
             if ($job_roles) {
@@ -406,7 +406,7 @@ class CompanyReport {
                         JOIN	    {grade_outcomes_courses}	    goc	    ON 		goc.outcomeid 	= go.id
                         JOIN	    {course}					    c	    ON		c.id 			= goc.courseid
                                                                             AND		c.visible 		= 1
-                        JOIN 		{report_gen_outcome_exp}	    oe	    ON		oe.outcomeid	= go.id
+                        LEFT JOIN 	{report_gen_outcome_exp}	    oe	    ON		oe.outcomeid	= go.id
                         JOIN		{report_gen_outcome_jobrole}	jro		ON		jro.outcomeid	= go.id
                                                                             AND		jro.jobroleid   IN ($job_roles)
                      GROUP BY	go.id
@@ -719,8 +719,8 @@ class CompanyReport {
                                 c.fullname,
                                 IF (cc.timecompleted,cc.timecompleted,0) as 'completed'
                      FROM		{course}				c
-                        JOIN	{course_completions}	cc	ON	cc.course = c.id
-                                                            AND cc.userid = :user
+                        JOIN	{course_completions}	cc	ON	    cc.course   = c.id
+                                                            AND     cc.userid   = :user
                      WHERE		c.id IN ($courses)
                      ORDER BY	c.fullname ";
 
@@ -839,8 +839,8 @@ class CompanyReport {
                                 c.fullname,
                                 IF (cc.timecompleted,cc.timecompleted,0) as 'completed'
                      FROM		{course}				c
-                        JOIN	{course_completions}	cc	ON	cc.course = c.id
-                                                            AND cc.userid = :user
+                        JOIN	{course_completions}	cc	ON	    cc.course   = c.id
+                                                            AND     cc.userid   = :user
                      WHERE		c.id NOT IN ($courses)
                      ORDER BY	c.fullname ";
 

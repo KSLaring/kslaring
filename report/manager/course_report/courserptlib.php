@@ -115,7 +115,6 @@ class course_report {
      */
     public static function Get_CourseReportLevel($data_form,$my_hierarchy) {
         /* Variables    */
-        global $SESSION;
         $companies_report   = null;
         $course_report      = null;
         $course_id          = null;
@@ -150,12 +149,9 @@ class course_report {
                 /* Job Roles Selected   */
                 $course_report->job_roles = self::Get_JobRolesCourse_Report($data_form);
 
-                /* Save Job Roles Selected  */
-                $SESSION->job_roles = array_keys($course_report->job_roles);
-
                 /* Get information to display by level          */
                 /* Level zero    - That's common for all levels  */
-                $course_report->levelZero = CompetenceManager::GetCompany_Name($data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'0']);
+                $course_report->levelZero = $data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'0'];
                 setcookie('parentLevelZero',$data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'0']);
 
                 /* Check Level  */
@@ -559,6 +555,7 @@ class course_report {
      */
     private static function Get_JobRolesCourse_Report($data_form) {
         /* Variables    */
+        global $SESSION;
         $job_roles  = null;
         $levelZero  = null;
         $levelOne   = null;
@@ -570,9 +567,12 @@ class course_report {
             if (!empty($data_form[REPORT_MANAGER_JOB_ROLE_LIST])) {
                 $list = join(',',$data_form[REPORT_MANAGER_JOB_ROLE_LIST]);
                 $job_roles = CompetenceManager::Get_JobRolesList($list);
+                /* Save Job Roles Selected  */
+                $SESSION->job_roles = array_keys($job_roles);
             }else {
                 /* Job Roles - Outcome          */
                 $job_roles = CompetenceManager::Get_JobRolesList();
+                $SESSION->job_roles = null;
             }//if_else
 
             /* Job Roles - Company Level    */
@@ -930,8 +930,9 @@ class course_report {
                                                                             AND		uic.companyid	  = :company
                         JOIN	{course_completions}			cc			ON		cc.userid		  = uic.userid
                                                                             AND		cc.course		  = :course
-                                                                            AND     cc.timecompleted  IS NULL
-                                                                            OR      cc.timecompleted  = 0
+                                                                            AND     (cc.timecompleted  IS NULL
+                                                                                    OR
+                                                                                    cc.timecompleted  = 0)
                      WHERE 		u.deleted = 0
                      ORDER BY 	u.firstname, u.lastname ASC ";
 
@@ -1090,7 +1091,7 @@ class course_report {
                     $out_report .= '<ul class="level-list unlist">';
                         /* Level Zero       */
                         $out_report .= '<li>';
-                            $out_report .= '<h3>'. get_string('company_structure_level', 'report_manager', 0) . ': ' . $course_report->levelZero . '</h3>';
+                            $out_report .= '<h3>'. get_string('company_structure_level', 'report_manager', 0) . ': ' . CompetenceManager::GetCompany_Name($course_report->levelZero)  . '</h3>';
                         $out_report .= '</li>';
                     $out_report .= '</ul>';
 
@@ -1137,7 +1138,8 @@ class course_report {
                                                     /* Content Table    */
                                                     $out_report .= html_writer::start_tag('table');
                                                         foreach ($levelThree as $id_three=>$company) {
-                                                            $url_level_three = new moodle_url('/report/manager/course_report/course_report_level.php',array('rpt' => '3','co' => $id_three,'lt' => $level->id,'lo'=>$idOne, 'opt' => $completed_option));
+                                                            $url_level_three = new moodle_url('/report/manager/course_report/course_report_level.php',
+                                                                                              array('rpt' => '3','co' => $id_three,'lt' => $level->id,'lo'=>$idOne,'opt' => $completed_option));
                                                             $out_report .= self::Add_ContentTable_LevelTwo_Screen($url_level_three,$company,$color);
 
                                                             /* Change Color */
@@ -1238,7 +1240,7 @@ class course_report {
                     $out_report .= '<ul class="level-list unlist">';
                         /* Level Zero       */
                         $out_report .= '<li>';
-                            $out_report .= '<h3>'. get_string('company_structure_level', 'report_manager', 0) . ': ' . $course_report->levelZero . '</h3>';
+                            $out_report .= '<h3>'. get_string('company_structure_level', 'report_manager', 0) . ': ' . CompetenceManager::GetCompany_Name($course_report->levelZero) . '</h3>';
                         $out_report .= '</li>';
                         /* Level One        */
                         $levelOne = array_shift($course_report->levelOne);
@@ -1284,7 +1286,8 @@ class course_report {
                                         /* Content Table    */
                                         $out_report .= html_writer::start_tag('table');
                                             foreach ($levelThree as $id_three=>$company) {
-                                                $url_level_three = new moodle_url('/report/manager/course_report/course_report_level.php',array('rpt' => '3','co' => $id_three,'lt' => $level->id,'lo'=>$levelOne->id,'opt' => $completed_option));
+                                                $url_level_three = new moodle_url('/report/manager/course_report/course_report_level.php',
+                                                                                  array('rpt' => '3','co' => $id_three,'lt' => $level->id,'lo'=>$levelOne->id,'opt' => $completed_option));
 
                                                 /* Company Header   */
                                                 $out_report .= self::Add_ContentTable_LevelTwo_Screen($url_level_three,$company,$color);
@@ -1384,7 +1387,7 @@ class course_report {
                     $out_report .= '<ul class="level-list unlist">';
                         /* Level Zero       */
                         $out_report .= '<li>';
-                            $out_report .= '<h3>'. get_string('company_structure_level', 'report_manager', 0) . ': ' . $course_report->levelZero . '</h3>';
+                            $out_report .= '<h3>'. get_string('company_structure_level', 'report_manager', 0) . ': ' . CompetenceManager::GetCompany_Name($course_report->levelZero) . '</h3>';
                         $out_report .= '</li>';
                         /* Level One        */
                         $levelOne = array_shift($course_report->levelOne);
@@ -1426,7 +1429,8 @@ class course_report {
                             /* Content Table    */
                             $out_report .= html_writer::start_tag('table');
                                 foreach ($levelThree as $id_three=>$company) {
-                                    $url_level_three = new moodle_url('/report/manager/course_report/course_report_level.php',array('rpt' => '3','co' => $id_three,'lt' => $levelTwo->id,'lo'=>$levelOne->id,'opt' => $completed_option));
+                                    $url_level_three = new moodle_url('/report/manager/course_report/course_report_level.php',
+                                                                      array('rpt' => '3','co' => $id_three,'lt' => $levelTwo->id,'lo'=>$levelOne->id,'opt' => $completed_option));
                                     $out_report .= self::Add_ContentTable_LevelTwo_Screen($url_level_three,$company,$color);
 
                                     /* Change Color */
@@ -1520,7 +1524,7 @@ class course_report {
                     $out_report .= '<ul class="level-list unlist">';
                         /* Level Zero       */
                         $out_report .= '<li>';
-                            $out_report .= '<h3>'. get_string('company_structure_level', 'report_manager', 0) . ': ' . $course_report->levelZero . '</h3>';
+                            $out_report .= '<h3>'. get_string('company_structure_level', 'report_manager', 0) . ': ' . CompetenceManager::GetCompany_Name($course_report->levelZero) . '</h3>';
                         $out_report .= '</li>';
                         /* Level One        */
                         $levelOne = array_shift($course_report->levelOne);

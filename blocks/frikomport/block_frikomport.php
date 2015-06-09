@@ -58,7 +58,7 @@ class block_frikomport extends block_base {
      * @return bool Returns true
      */
     function instance_allow_multiple() {
-        return false;
+        return true;
     }
 
     /**

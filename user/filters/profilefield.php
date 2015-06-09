@@ -357,7 +357,7 @@ class user_filter_profilefield extends user_filter_type {
 
                 return array("id $op ($sql)", $params);
             default:
-        return array("id $op (SELECT userid FROM {user_info_data} $where)", $params);
+                return array("id $op (SELECT userid FROM {user_info_data} $where)", $params);
         }//switch
 
     }

@@ -55,8 +55,6 @@
 .outcome_detail_rpt .expiration {
     position: relative;
     float: right;
-    margin-top: -40px;
-    margin-right: 10px;
     font: bold 13px Arial;
     text-decoration: none;
     background-color: #edf2fa;

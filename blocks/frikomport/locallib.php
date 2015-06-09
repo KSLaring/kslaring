@@ -58,18 +58,17 @@ class block_frikomport_menu_manager {
 
         // Create and add the course listing link
         /**
-         * @updateDate      07/05/2015
-         * @author          eFaktor         (fbv)
+         * @updateDate      2015-05-11
+         * @author          eFaktor         (uh)
          *
          * Description
-         * Change Action link to Course Locations List
+         * Change Action link to course list
          */
         $item = array(
             'text' => get_string('ncourses', 'block_frikomport'),
             'icon' => $settingsicon,
             'type' => navigation_node::NODETYPE_LEAF,
-            //'action' => '/course/management.php'
-            'action' => new moodle_url('/local/course_locations/course_locations.php')
+            'action' => '/local/friadmin/courselist.php'
         );
         $subnode = new navigation_node($item);
         $this->nodes->add_node($subnode);
@@ -90,6 +89,7 @@ class block_frikomport_menu_manager {
                 'text' => get_string('naddfromtemplate', 'block_frikomport'),
                 'icon' => $settingsicon,
                 'type' => navigation_node::NODETYPE_LEAF,
+                'action' => '/local/friadmin/coursetemplate.php'
             )
         );
         $this->add_tree_section($branch);

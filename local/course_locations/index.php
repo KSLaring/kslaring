@@ -60,7 +60,12 @@ if($data = $form->get_data()) {
 
     /* Get the filter - Search Criteria */
     $SESSION->county   = $dataForm[COURSE_LOCATION_COUNTY];
-    $SESSION->muni     = $dataForm[COURSE_LOCATION_MUNICIPALITY];
+    if (isset($dataForm[COURSE_LOCATION_MUNICIPALITY]) && $dataForm[COURSE_LOCATION_MUNICIPALITY]) {
+        $SESSION->muni     = $dataForm[COURSE_LOCATION_MUNICIPALITY];
+    }else {
+        $SESSION->muni = 0;
+    }
+
 
     if (isset($dataForm['activate']) && ($dataForm['activate'])) {
         $SESSION->act = 1;

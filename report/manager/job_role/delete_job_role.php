@@ -22,10 +22,16 @@ require_once( 'jobrolelib.php');
 require_once($CFG->libdir . '/adminlib.php');
 
 /* Params */
-$job_role_id  = required_param('id',PARAM_INT);
-$return_url = new moodle_url('/report/manager/job_role/job_role.php');
+$job_role_id    = required_param('id',PARAM_INT);
+$confirmed      = optional_param('confirm', false, PARAM_BOOL);
+
+$return_url     = new moodle_url('/report/manager/job_role/job_role.php');
 $return         = new moodle_url('/report/manager/index.php');
-$url            = new moodle_url('/report/manager/job_role/delete_job_role.php');
+$url            = new moodle_url('/report/manager/job_role/delete_job_role.php',array('id' => $job_role_id));
+$confirmUrl     = new moodle_url('/report/manager/job_role/delete_job_role.php',array('id' => $job_role_id,'confirm'=>true));
+
+$jobRoleInfo    = null;
+$jobName        = null;
 
 /* Start the page */
 $site_context = CONTEXT_SYSTEM::instance();
@@ -55,18 +61,25 @@ $PAGE->verify_https_required();
 /* Print Header */
 echo $OUTPUT->header();
 
-/* Check if the job role can be removed */
-$user_connected = job_role::Users_Connected_JobRole($job_role_id,REPORT_MANAGER_JOB_ROLE_FIELD);
-if (!$user_connected) {
-    /* Remove */
-    job_role::Delete_JobRole($job_role_id);
-    echo $OUTPUT->notification(get_string('deleted_job_role','report_manager'), 'notifysuccess');
-    echo $OUTPUT->continue_button($return_url);
+if ($confirmed) {
+    /* Check if the job role can be removed */
+    $user_connected = job_role::Users_Connected_JobRole($job_role_id,REPORT_MANAGER_JOB_ROLE_FIELD);
+    if (!$user_connected) {
+        /* Remove */
+        job_role::Delete_JobRole($job_role_id);
+        echo $OUTPUT->notification(get_string('deleted_job_role','report_manager'), 'notifysuccess');
+        echo $OUTPUT->continue_button($return_url);
+    }else {
+        /* Not Remove */
+        echo $OUTPUT->notification(get_string('error_deleting_job_role','report_manager'), 'notifysuccess');
+        echo $OUTPUT->continue_button($return_url);
+    }//if_else
 }else {
-    /* Not Remove */
-    echo $OUTPUT->notification(get_string('error_deleting_job_role','report_manager'), 'notifysuccess');
-    echo $OUTPUT->continue_button($return_url);
-}//if_else
+    /* First Confirm    */
+    $jobRoleInfo    = job_role::JobRole_Info($job_role_id);
+    $jobName        = $jobRoleInfo->industry_code . ' - '. $jobRoleInfo->name;
+    echo $OUTPUT->confirm(get_string('delete_job_role_sure','report_manager',$jobName),$confirmUrl,$return_url);
+}//if_confirm_delte_company
 
 /* Print Footer */
 echo $OUTPUT->footer();

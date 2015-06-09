@@ -171,7 +171,6 @@ class outcome_report {
      */
     public static function Get_OutcomeReportLevel($data_form,$my_hierarchy) {
         /* Variables    */
-        global $SESSION;
         $companies_report   = null;
         $outcome_report     = null;
         $outcome_id         = null;
@@ -203,14 +202,12 @@ class outcome_report {
 
                 /* Job Roles Selected   */
                 $outcome_report->job_roles = self::Get_JobRolesOutcome_Report($outcome_id,$data_form);
-                /* Save Job Roles Selected  */
-                $SESSION->job_roles = array_keys($outcome_report->job_roles);
 
                 /* Check if there are job_roles */
                 if ($outcome_report->job_roles) {
                     /* Get information to display by level          */
                     /* Level zero    - That's common for all levels  */
-                    $outcome_report->levelZero = CompetenceManager::GetCompany_Name($data_form[MANAGER_OUTCOME_STRUCTURE_LEVEL .'0']);
+                    $outcome_report->levelZero = $data_form[MANAGER_OUTCOME_STRUCTURE_LEVEL .'0'];
                     setcookie('parentLevelZero',$data_form[MANAGER_OUTCOME_STRUCTURE_LEVEL .'0']);
 
                     /* Check Level  */
@@ -627,6 +624,7 @@ class outcome_report {
      */
     private static function Get_JobRolesOutcome_Report($outcome_id,$data_form) {
         /* Variables    */
+        global $SESSION;
         $job_roles  = null;
         $levelZero  = null;
         $levelOne   = null;
@@ -642,6 +640,9 @@ class outcome_report {
                 /* Job Roles - Outcome          */
                 $job_roles = self::Outcome_JobRole_List($outcome_id);
             }//if_else
+
+            /* Save Job Roles Selected  */
+            $SESSION->job_roles = array_keys($job_roles);
 
             /* Job Roles - Outcome Level    */
             switch ($data_form['rpt']) {
@@ -878,6 +879,7 @@ class outcome_report {
                     $company_info->name       = $company;
                     $company_info->id         = $id;
                     $company_info->courses    = array();
+                    $course_info              = null;
 
                     /* Get Info Courses     */
                     foreach ($outcome_report->courses as $id_course=>$course) {
@@ -1028,8 +1030,9 @@ class outcome_report {
                                                                             AND		uic.companyid	  = :company
                         JOIN	{course_completions}			cc			ON		cc.userid		  = uic.userid
                                                                             AND		cc.course		  = :course
-                                                                            AND     cc.timecompleted  IS NULL
-                                                                            OR      cc.timecompleted  = 0
+                                                                            AND     (cc.timecompleted  IS NULL
+                                                                                    OR
+                                                                                    cc.timecompleted  = 0)
                      WHERE 		u.deleted = 0
                      ORDER BY 	u.firstname, u.lastname ASC ";
 
@@ -1176,7 +1179,7 @@ class outcome_report {
                     $out_report .= '<ul class="level-list unlist">';
                         /* Level Zero       */
                         $out_report .= '<li>';
-                            $out_report .= '<h3>'. get_string('company_structure_level', 'report_manager', 0) . ': ' . $outcome_report->levelZero . '</h3>';
+                            $out_report .= '<h3>'. get_string('company_structure_level', 'report_manager', 0) . ': ' . CompetenceManager::GetCompany_Name($outcome_report->levelZero) . '</h3>';
                         $out_report .= '</li>';
                     $out_report .= '</ul>';
                     /* Expiration Before    */
@@ -1222,7 +1225,8 @@ class outcome_report {
                                                         /* Toggle   */
                                                         $id_toggleThree = $id_toggleOne . '_'. $id_Three;
                                                         /* Header Company   - Level Three   */
-                                                        $url_levelThree = new moodle_url('/report/manager/outcome_report/outcome_report_level.php',array('rpt' => '3','co' => $id_Three,'lt' => $idTwo,'lo'=>$idOne,'opt' => $completed_option));
+                                                        $url_levelThree = new moodle_url('/report/manager/outcome_report/outcome_report_level.php',
+                                                                                         array('rpt' => '3','co' => $id_Three,'lt' => $idTwo,'lo'=>$idOne,'opt' => $completed_option));
                                                         $out_report .= self::Add_CompanyHeader_Screen($company->name,$id_toggleThree,$url_img,$url_levelThree);
 
                                                         /* Info company - Courses */
@@ -1311,7 +1315,7 @@ class outcome_report {
                     $out_report .= '<ul class="level-list unlist">';
                         /* Level Zero       */
                         $out_report .= '<li>';
-                            $out_report .= '<h3>'. get_string('company_structure_level', 'report_manager', 0) . ': ' . $outcome_report->levelZero . '</h3>';
+                            $out_report .= '<h3>'. get_string('company_structure_level', 'report_manager', 0) . ': ' . CompetenceManager::GetCompany_Name($outcome_report->levelZero) . '</h3>';
                         $out_report .= '</li>';
                         /* Level One        */
                         $levelOne = array_shift($outcome_report->levelOne);
@@ -1356,7 +1360,8 @@ class outcome_report {
                                             /* Toggle   */
                                             $id_toggleThree = $id_toggle . '_'. $id_Three;
                                             /* Header Company   - Level Three   */
-                                            $url_levelThree = new moodle_url('/report/manager/outcome_report/outcome_report_level.php',array('rpt' => '3','co' => $id_Three,'lt' => $id_Two,'lo'=>$levelOne->id,'opt' => $completed_option));
+                                            $url_levelThree = new moodle_url('/report/manager/outcome_report/outcome_report_level.php',
+                                                                             array('rpt' => '3','co' => $id_Three,'lt' => $id_Two,'lo'=>$levelOne->id,'opt' => $completed_option));
                                             $out_report .= self::Add_CompanyHeader_Screen($company->name,$id_toggleThree,$url_img,$url_levelThree);
 
                                             /* Info company - Courses */
@@ -1441,7 +1446,7 @@ class outcome_report {
                     $out_report .= '<ul class="level-list unlist">';
                         /* Level Zero       */
                         $out_report .= '<li>';
-                            $out_report .= '<h3>'. get_string('company_structure_level', 'report_manager', 0) . ': ' . $outcome_report->levelZero . '</h3>';
+                            $out_report .= '<h3>'. get_string('company_structure_level', 'report_manager', 0) . ': ' . CompetenceManager::GetCompany_Name($outcome_report->levelZero) . '</h3>';
                         $out_report .= '</li>';
                         /* Level One        */
                         $levelOne = array_shift($outcome_report->levelOne);
@@ -1483,7 +1488,8 @@ class outcome_report {
                                     $url_img  = new moodle_url('/pix/t/expanded.png');
                                     $id_toggle = 'YUI_' . $id;
                                     /* Header Company   - Level Three   */
-                                    $url_levelThree = new moodle_url('/report/manager/outcome_report/outcome_report_level.php',array('rpt' => '3','co' => $id,'lt' => $levelTwo->id,'lo'=>$levelOne->id,'opt' => $completed_option));
+                                    $url_levelThree = new moodle_url('/report/manager/outcome_report/outcome_report_level.php',
+                                                                     array('rpt' => '3','co' => $id,'lt' => $levelTwo->id,'lo'=>$levelOne->id,'opt' => $completed_option));
                                     $out_report .= self::Add_CompanyHeader_Screen($company->name,$id_toggle,$url_img,$url_levelThree);
 
                                     /* Info company - Courses */
@@ -1566,7 +1572,7 @@ class outcome_report {
                     $out_report .= '<ul class="level-list unlist">';
                         /* Level Zero       */
                         $out_report .= '<li>';
-                            $out_report .= '<h3>'. get_string('company_structure_level', 'report_manager', 0) . ': ' . $outcome_report->levelZero . '</h3>';
+                            $out_report .= '<h3>'. get_string('company_structure_level', 'report_manager', 0) . ': ' . CompetenceManager::GetCompany_Name($outcome_report->levelZero) . '</h3>';
                         $out_report .= '</li>';
                         /* Level One        */
                         $levelOne = array_shift($outcome_report->levelOne);
@@ -1890,6 +1896,7 @@ class outcome_report {
         $str_user           = get_string('user');
         $str_state          = get_string('state','local_tracker_manager');
         $str_completion     = get_string('completion_time','local_tracker_manager');
+        $str_valid          = get_string('outcome_valid_until','local_tracker_manager');
 
         $header_table .= html_writer::start_tag('tr',array('class' => 'head'));
             /* Empty Col   */
@@ -1909,6 +1916,11 @@ class outcome_report {
             /* Completion Col   */
             $header_table .= html_writer::start_tag('td',array('class' => 'head_status'));
                 $header_table .= $str_completion;
+            $header_table .= html_writer::end_tag('td');
+
+            /* Valid Until   */
+            $header_table .= html_writer::start_tag('td',array('class' => 'head_status'));
+                $header_table .= $str_valid;
             $header_table .= html_writer::end_tag('td');
         $header_table .= html_writer::end_tag('tr');
 
@@ -1939,6 +1951,7 @@ class outcome_report {
         $completed = $course_info->completed;
         if ($completed) {
             foreach ($completed as $user) {
+
                 $ts = strtotime($expiration  . ' month', $user->completed);
                 if ($ts < time()) {
                     $class = 'expired';
@@ -1965,6 +1978,11 @@ class outcome_report {
                     $content .= html_writer::start_tag('td',array('class' => 'status'));
                         $content .= userdate($user->completed,'%d.%m.%Y', 99, false);
                     $content .= html_writer::end_tag('td');
+
+                    /* Valid Until  */
+                    $content .= html_writer::start_tag('td',array('class' => 'status'));
+                        $content .= userdate($ts,'%d.%m.%Y', 99, false);
+                    $content .= html_writer::end_tag('td');
                 $content .= html_writer::end_tag('tr');
             }//for_completed
         }//if_completed
@@ -1990,6 +2008,11 @@ class outcome_report {
                     $content .= html_writer::start_tag('td',array('class' => 'status'));
                         $content .= '-';
                     $content .= html_writer::end_tag('td');
+
+                    /* Valid Until  */
+                    $content .= html_writer::start_tag('td',array('class' => 'status'));
+                        $content .= '-';
+                    $content .= html_writer::end_tag('td');
                 $content .= html_writer::end_tag('tr');
             }//for_not_enrol
         }//if_not_completed
@@ -2012,6 +2035,11 @@ class outcome_report {
                     $content .= html_writer::end_tag('td');
 
                     /* Completion Col   */
+                    $content .= html_writer::start_tag('td',array('class' => 'status'));
+                        $content .= '-';
+                    $content .= html_writer::end_tag('td');
+
+                    /* Valid Until  */
                     $content .= html_writer::start_tag('td',array('class' => 'status'));
                         $content .= '-';
                     $content .= html_writer::end_tag('td');

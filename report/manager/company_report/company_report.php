@@ -58,7 +58,7 @@ $PAGE->verify_https_required();
 $PAGE->set_title($SITE->fullname);
 $PAGE->set_heading($SITE->fullname);
 $PAGE->navbar->add(get_string('report_manager','local_tracker_manager'),$return_url);
-$PAGE->navbar->add(get_string('company_report','report_manager'),$url);
+$PAGE->navbar->add(get_string('company_report_link','report_manager'),$url);
 
 /* My Hierarchy */
 $my_hierarchy = CompetenceManager::get_MyHierarchyLevel($USER->id,$site_context);
@@ -169,9 +169,6 @@ if (!empty($out)) {
     $current_tab = 'company_report';
     $show_roles = 1;
     require('../tabs.php');
-
-    /* Print Title */
-    echo $OUTPUT->heading(get_string('company_report','report_manager'));
 
     if ($show_advanced) {
         $out  = html_writer::start_tag('div',array('class' => 'advance_set'));

@@ -116,6 +116,6 @@ $THEME->layouts = array(
 // to place the 'Linked media' fake block away from the left column below the content.
 // This change can only be done in the theme config.
 global $cm;
-if ($cm && $cm->modname === 'lesson') {
+if ($cm && property_exists($cm, 'modname') && $cm->modname === 'lesson') {
     $THEME->layouts['incourse']['defaultregion'] = 'content-bottom';
 }

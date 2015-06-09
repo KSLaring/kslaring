@@ -134,6 +134,7 @@ class CourseLocations {
     }//Get_MyJobRoles
 
     /**
+     * @param               $level
      * @param       null    $in
      * @param       null    $parent
      * @return              array
@@ -145,12 +146,16 @@ class CourseLocations {
      * Description
      * Get the companies
      */
-    public static function Get_Companies($in=null,$parent=null) {
+    public static function Get_Companies($level,$in=null,$parent=null) {
         /* Variables    */
         global $DB;
         $companies  = array();
 
         try {
+            /* Search Criteria  */
+            $params          = array();
+            $params['level'] = $level;
+
             /* List Companies   */
             $companies[0] = get_string('select_level_list','local_course_locations');
 
@@ -166,14 +171,17 @@ class CourseLocations {
                                                                     AND   rcr.parentid  IN ($parent) ";
             }//if_level
 
+            /* Level        */
+            $sql .= " WHERE rcd.hierarchylevel = :level ";
+
             /* Companies In */
             if ($in) {
-                $sql .= " WHERE     rcd.id IN ($in) ";
+                $sql .= " AND     rcd.id IN ($in) ";
             }//if_companies_in
 
 
             /* Execute  */
-            $rdo = $DB->get_records_sql($sql);
+            $rdo = $DB->get_records_sql($sql,$params);
             if ($rdo) {
                 foreach ($rdo as $instance) {
                     $companies[$instance->id] = $instance->industrycode . ' - '. $instance->name;
