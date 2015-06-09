@@ -164,14 +164,16 @@ class local_course_page_renderer extends plugin_renderer_base {
         /* Graphics */
         if ($video->value) {
             $url_video = course_page::getUrlPageGraphicsVideo($video->value);
-            $media_renderer = $this->page->get_renderer('core', 'media');
-            $embed_options = array(
-                                   core_media::OPTION_TRUSTED => true,
-                                   core_media::OPTION_BLOCK => true,
-                                  );
-            // Media (audio/video) file.
-            $code = $media_renderer->embed_url($url_video, '', 0, 0, $embed_options);
-            $out .= $code;
+            if ($url_video) {
+                $media_renderer = $this->page->get_renderer('core', 'media');
+                $embed_options = array(
+                    core_media::OPTION_TRUSTED => true,
+                    core_media::OPTION_BLOCK => true,
+                );
+                // Media (audio/video) file.
+                $code = $media_renderer->embed_url($url_video, '', 0, 0, $embed_options);
+                $out .= $code;
+            }//if_url_video
         }//if_value
 
         return $out;
