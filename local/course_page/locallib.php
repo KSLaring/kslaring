@@ -1081,7 +1081,9 @@ class course_page  {
                 if ($file_editor->pagevideo) {
                     $fs = get_file_storage();
                     $file = $fs->get_file_by_id($file_editor->pagevideo);
-                    $form->setDefault('current_video',$file->get_filename());
+                    if ($file) {
+                        $form->setDefault('current_video',$file->get_filename());
+                    }
                 }//if_video
 
                 $page_video = $form->createElement('filemanager', 'pagevideo_filemanager', get_string('home_video','local_course_page'), null, $file_options);
