@@ -301,7 +301,15 @@ class resettable_assign extends assign {
         $this->course = $course;
 
         // Ensure that $this->coursemodule is a cm_info object (or null).
-        $this->coursemodule = cm_info::create($coursemodule);
+        //--this for Moodle 2.8 but not for Moodle 2.7
+        // $this->coursemodule = cm_info::create($coursemodule);
+        if($coursemodule instanceof cm_info){ 
+        	$this->coursemodule = $coursemodule;
+        }else{
+       		$modinfo = get_fast_modinfo($course);
+	   		$this->coursemodule = $modinfo->get_cm($coursemodule->id);
+	    }
+       
 
         // Temporary cache only lives for a single request - used to reduce db lookups.
         $this->cache = array();
