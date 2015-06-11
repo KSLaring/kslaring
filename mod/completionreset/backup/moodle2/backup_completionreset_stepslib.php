@@ -36,15 +36,22 @@ class backup_completionreset_activity_structure_step extends backup_activity_str
     protected function define_structure() {
 
         // To know if we are including userinfo
-        $userinfo = $this->get_setting_value('userinfo');
+        //$userinfo = $this->get_setting_value('userinfo');
 
         // Define each element separated
         $completionreset = new backup_nested_element('completionreset', array('id'), array(
             'name','timemodified'));
+            
+        //activities
+        $completionreset_activities = new backup_nested_element('completionreset_activities', array('id'), array(
+            'activities','timemodified'));
+        
+        // Build the tree.
+        $completionreset->add_child($completionreset_activities);
 
         // Define sources
         $completionreset->set_source_table('completionreset', array('id' => backup::VAR_ACTIVITYID));
-
+		$completionreset_activities->set_source_table('completionreset_activities',array());
         // Return the root element (completionreset), wrapped into standard activity structure
         return $this->prepare_activity_structure($completionreset);
     }

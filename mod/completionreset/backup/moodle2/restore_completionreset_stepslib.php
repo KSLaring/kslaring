@@ -34,7 +34,10 @@ class restore_completionreset_activity_structure_step extends restore_activity_s
     protected function define_structure() {
 
         $paths = array();
-        $paths[] = new restore_path_element('completionreset', '/activity/completionreset');
+        $completionreset = new restore_path_element('completionreset', '/activity/completionreset');
+        $paths[] = $completionreset; 
+        $completionreset_activities = new restore_path_element('completionreset_activities', '/activity/completionreset/completionreset_activities');
+        $paths[] = $completionreset_activities;
 
         // Return the paths wrapped into standard activity structure
         return $this->prepare_activity_structure($paths);
@@ -51,6 +54,36 @@ class restore_completionreset_activity_structure_step extends restore_activity_s
         $newitemid = $DB->insert_record('completionreset', $data);
         // immediately after inserting "activity" record, call this
         $this->apply_activity_instance($newitemid);
+    }
+    
+    protected function process_completionreset_activities($data) {
+        global $DB;
+
+        $data = (object)$data;
+        $oldid = $data->id;
+        $data->course = $this->get_courseid();
+
+        // insert the completionreset record
+        if($DB->record_exists('completionreset_activities', array('course'=>$data->course))){
+    		//we only have one activities entry per course
+    		//if it exists just exit
+        	return;
+        }
+        
+        //this is the part I am not so sure what to do
+        if($data->activities && !empty($data->activities)){
+        	$oldcmids = explode(',',$data->activities);
+        	$newcmids = array();
+        	foreach($oldcmids as $oldcmid){
+        		//HERE WE NEED TO DO SOME LOOK UP FOR THE NEW CMID
+        		$newcmids[] = $oldcmid;
+        	}
+        	$data->activities = implode(',',$newcmids);
+        }
+        
+        $newitemid = $DB->insert_record('completionreset_activities', $data);
+        // immediately after inserting "activity" record, call this
+       // $this->apply_activity_instance($newitemid);
     }
 
 }

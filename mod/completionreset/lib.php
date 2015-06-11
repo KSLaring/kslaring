@@ -38,6 +38,7 @@ define('MOD_COMPLETIONRESET_LISTSIZE',10);
 function completionreset_supports($feature) {
     switch($feature) {
         case FEATURE_MOD_ARCHETYPE:           return MOD_ARCHETYPE_RESOURCE;
+        case FEATURE_BACKUP_MOODLE2:          return true;
         case FEATURE_GROUPS:                  return false;
         case FEATURE_GROUPINGS:               return false;
         case FEATURE_GROUPMEMBERSONLY:        return false;
@@ -45,7 +46,6 @@ function completionreset_supports($feature) {
         case FEATURE_COMPLETION_TRACKS_VIEWS: return false;
         case FEATURE_GRADE_HAS_GRADE:         return false;
         case FEATURE_GRADE_OUTCOMES:          return false;
-        case FEATURE_BACKUP_MOODLE2:          return false;
         case FEATURE_SHOW_DESCRIPTION:        return false;
         default: return null;
     }
