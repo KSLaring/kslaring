@@ -67,6 +67,7 @@ class mod_completionreset_helper{
 		//fetch activity list
 		$allactivities = self::get_all_activities($course);
 		
+		
 		//course modules completion table
 		$cmids = array();
 		foreach($allactivities->chosencms as $cm){
@@ -99,40 +100,75 @@ class mod_completionreset_helper{
 						array('course'=>$course->id,'userid'=>$USER->id,'criteriaid'=>$rec->id));
 			}
 		}
-		
-		//delete from gradebook
-		$itemids = array();
-		foreach($allactivities->chosencms as $cm){
-			$rec = $DB->get_record('grade_items',
-						array('courseid'=>$course->id,'itemmodule'=>$cm->modname,'iteminstance'=>$cm->instance));
-			if($rec){
-				$itemids[]=$rec->id;
-			}
-		}
-		if(!empty($itemids)){
-			$DB->delete_records_select('grade_grades','userid=:userid AND itemid IN (:itemids)',
-						array('userid'=>$USER->id,'itemids'=>implode(',',$itemids)));
-		}
-		
-		//delete all history
-		if(!empty($itemids)){
-			$DB->delete_records_select('grade_grades_history','userid=:userid AND itemid IN (:itemids)',
-						array('userid'=>$USER->id,'itemids'=>implode(',',$itemids)));
-		}
-		
+
 		//per activity type reset
 		foreach($allactivities->chosencms as $cm){
 			switch($cm->modname){
 				case 'lesson': self::clear_lesson($cm); break;
 				case 'quiz': self::clear_quiz($cm); break;
 				case 'scorm': self::clear_scorm($cm); break;
-				case 'assign': self::clear_assign($cm); break;
+				case 'assign': self::clear_assign($cm);  break;
 				default: //do nothing
 			}
 		}
 		
+		//delete all grades from gradebook
+		//this caused a lot of trouble initially, so delegated grade deletion in most cases to the
+		//per activity reset above.  But assign would not delete and it left a 0% in teh gradebook
+		//so kills the gradebook entry for all the selected activities. The per activity reset still
+		//deletes its grades. 
+		self::force_gradebook_clear($allactivities);
+
 		//finally clear the completion cache, so that on page refresh, the changes are updated
 		self::clear_completion_cache($course->id);
+	}
+	
+	//This will clear the gradebook for a single activity, 
+	static function force_gradebook_item_clear($cm){
+		global $USER,$CFG,$DB;
+
+		$rec = $DB->get_record('grade_items',
+					array('courseid'=>$cm->course,'itemmodule'=>$cm->modname,'iteminstance'=>$cm->instance));
+		if(!$rec){return;}
+		$itemid = $rec->id;
+
+		$DB->delete_records_select('grade_grades','userid= :userid AND itemid = :itemid',
+					array('userid'=>$USER->id,'itemid'=>$itemid));
+
+		
+		//delete all history
+		$DB->delete_records_select('grade_grades_history','userid= :userid AND itemid = :itemid',
+					array('userid'=>$USER->id,'itemid'=>$itemid));
+
+	}
+	
+	//This will clear the gradebook for all activities. 
+	static function force_gradebook_clear($allactivities){
+		global $USER,$CFG,$DB;
+
+		//delete from gradebook
+		//this was the older logic, replaced in favor of a moodle function call 
+		//per activity to be reset
+		$itemids = array();
+		foreach($allactivities->chosencms as $cm){
+			$rec = $DB->get_record('grade_items',
+						array('courseid'=>$cm->course,'itemmodule'=>$cm->modname,'iteminstance'=>$cm->instance));
+			if($rec){
+				$itemids[]=$rec->id;
+			}
+		}
+		
+		$itemids_string = implode(',',$itemids);
+		if(!empty($itemids)){
+			$DB->delete_records_select('grade_grades','userid = :userid AND itemid IN ('.$itemids_string .')',
+						array('userid'=>$USER->id));
+		}
+		
+		//delete all history
+		if(!empty($itemids)){
+			$DB->delete_records_select('grade_grades_history','userid = :userid AND itemid IN ('.$itemids_string .')',
+						array('userid'=>$USER->id));
+		}
 	}
 	
 	//clear the completion cache,
@@ -154,6 +190,10 @@ class mod_completionreset_helper{
         $DB->delete_records('lesson_grades', array('lessonid'=>$cm->instance,'userid'=>$USER->id));
         $DB->delete_records('lesson_attempts', array('lessonid'=>$cm->instance,'userid'=>$USER->id));
         $DB->delete_records('lesson_branch', array('lessonid'=>$cm->instance,'userid'=>$USER->id));
+        //update gradebook ---- this doesn't work
+        //the assignment dont make this easy
+        $lesson = $DB->get_record('lesson',array('id'=>$cm->instance));
+        lesson_update_grades($lesson, $USER->id);
 	}
 	
 	//Reset a quiz
@@ -175,21 +215,37 @@ class mod_completionreset_helper{
 		// Remove all grades from gradebook.
 		$DB->delete_records_select('quiz_grades',
 				'quiz = :quizid AND userid = :userid', array('quizid'=>$cm->instance,'userid'=>$USER->id));
+				
+		//update gradebook
+        $quiz = $DB->get_record('quiz',array('id'=>$cm->instance));
+        quiz_update_grades($quiz, $USER->id);
 	}
 	
 	//Reset a scorm
 	static function clear_scorm($cm){
-		global $DB,$USER;
+		global $DB,$CFG,$USER;
 		//echo 'clearing scorm: ' . $cm->name;
+		$scorm = $DB->get_record('scorm',array('id'=>$cm->instance));
+		$attempts = $DB->get_records('scorm_scoes_track', array('userid' => $USER->id, 'scormid' => $scorm->id));
+		if($attempts){
+			require_once("$CFG->dirroot/mod/scorm/locallib.php");
+			foreach($attempts as $attempt){
+				scorm_delete_attempt($USER->id, $scorm, $attempt->attempt);
+			}
+		}
+
+		//This was the older SQL based method. Did not seem to delete eveything. Safer to lean on Scorm mod
+		/*
         $DB->delete_records_select('scorm_scoes_track', "scormid=:scormid AND userid=:userid", 
         		array('scormid'=>$cm->instance,'userid'=>$USER->id));
+        */
 	
 	}
 	
 	//Reset an assignmnet
 	static function clear_assign($cm){
 		   global $CFG, $DB, $USER;
-		   //	echo 'clearing assign: ' . $cm->name;
+		   // echo 'clearing assign: ' . $cm->name;
 			$course = $DB->get_record('course', array('id'=>$cm->course), '*', MUST_EXIST);
             $context = context_module::instance($cm->id);
             $assignment = new resettable_assign($context, $cm, $course);
@@ -362,6 +418,10 @@ class resettable_assign extends assign {
 		$DB->delete_records('assign_grades', array('assignment'=>$instance->id,'userid'=>$userid));
 		//this is not done by assign module on course reset, so don't do it here. But it might be necessary
 		//$DB->delete_records('assign_user_mapping', array('assignment'=>$this->id,'userid'=>$userid));
+		
+		//update gradebook
+		$instance->cmidnumber =  $this->coursemodule->id; 
+        assign_update_grades($instance, $userid);
     }
 
 }
