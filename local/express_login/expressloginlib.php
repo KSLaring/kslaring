@@ -861,7 +861,48 @@ class Express_Login {
     }//GenerateHash
 
     /**
-     * @param           $data
+     * @param           $userId
+     * @return          bool|string
+     * @throws          Exception
+     *
+     * @creationDate    11/06/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Generate an internal security phrase
+     */
+    private static function generateSecurityPhrase($userId) {
+        /* Variables        */
+        global $DB;
+        /* Ticket User      */
+        $ticket = null;
+        /* Token            */
+        $token  = null;
+        /* Remind   */
+        $remind = null;
+
+        try {
+            /* Ticket - Something long and Unique   */
+            $token  = uniqid(mt_rand(),1);
+            $ticket = random_string() . $userId . '_' . time() . '_' . $token . random_string();
+            $remind = self::GenerateHash($ticket);
+
+            /* Check if justs exist for other user  */
+            while ($DB->record_exists('user_express',array('userid' => $userId,'remind' => $remind))) {
+                /* Ticket - Something long and Unique   */
+                $token  = uniqid(mt_rand(),1);
+                $ticket = random_string() . $userId . '_' . time() . '_' . $token . random_string();
+                $remind = self::GenerateHash($ticket);
+            }//while
+
+            return $remind;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//generateSecurityPhrase
+
+    /**
+     * @param           $securityPhrase
      * @return          bool|string
      * @throws          Exception
      *
@@ -871,7 +912,7 @@ class Express_Login {
      * Description
      * Generate the token
      */
-    private static function Generate_ExpressToken($data) {
+    private static function Generate_ExpressToken($securityPhrase) {
         /* Variables    */
         $token              = '';
         $first_part         = null;
@@ -881,9 +922,9 @@ class Express_Login {
 
         try {
             /* Split the string in three parts    */
-            $first_part     = substr($data->security_phrase,0,10);
-            $second_part    = substr($data->security_phrase,10,20);
-            $third_part     = substr($data->security_phrase,20);
+            $first_part     = substr($securityPhrase,0,10);
+            $second_part    = substr($securityPhrase,10,20);
+            $third_part     = substr($securityPhrase,20);
 
             for ($i=1;$i<=3;$i++) {
                 $rand = mt_rand(1,6);
@@ -980,6 +1021,12 @@ class Express_Login {
      *
      * Description
      * Create a new Express Login for the user
+     *
+     * @updateDate      11/06/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Security Phrase will be something internal
      */
     private static function CreateExpressLogin_user($data) {
         /* Variables    */
@@ -991,8 +1038,8 @@ class Express_Login {
             $express_info = new stdClass();
             $express_info->userid       = $data->id;
             $express_info->express      = self::GenerateHash($data->pin_code);
-            $express_info->remind       = self::GenerateHash($data->security_phrase);
-            $express_info->token        = self::Generate_ExpressToken($data);
+            $express_info->remind       = self::generateSecurityPhrase($data->id);
+            $express_info->token        = self::Generate_ExpressToken($express_info->remind);
             $express_info->attempt      = 0;
             $express_info->timecreated  = time();
 
@@ -1015,6 +1062,12 @@ class Express_Login {
      *
      * Description
      * update the current Express Login for the new one
+     *
+     * @updateDate      11/06/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Security phrase will be something internal
      */
     private static function UpdateExpressLogin_User($data) {
         /* Variables    */
@@ -1029,8 +1082,8 @@ class Express_Login {
             $express_info->id           = $rdo->id;
             $express_info->userid       = $data->id;
             $express_info->express      = self::GenerateHash($data->pin_code);
-            $express_info->remind       = self::GenerateHash($data->security_phrase);
-            $express_info->token        = self::Generate_ExpressToken($data);
+            $express_info->remind       = self::generateSecurityPhrase($data->id);
+            $express_info->token        = self::Generate_ExpressToken($express_info->remind);
             $express_info->attempt      = 0;
             $express_info->timemodified  = time();
 
@@ -1053,6 +1106,12 @@ class Express_Login {
      *
      * Description
      * Update the Express Link
+     *
+     * @updateDate      11/06/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Security Phrase will be something internal
      */
     private static function Update_ExpressLink($data) {
         /* Variables    */
@@ -1066,8 +1125,8 @@ class Express_Login {
             $express_info = new stdClass();
             $express_info->id           = $rdo->id;
             $express_info->userid       = $data->id;
-            $express_info->remind       = self::GenerateHash($data->security_phrase);
-            $express_info->token        = self::Generate_ExpressToken($data);
+            $express_info->remind       = self::generateSecurityPhrase($data->id);
+            $express_info->token        = self::Generate_ExpressToken($express_info->remind);
             $express_info->attempt      = 0;
             $express_info->timemodified  = time();
 
@@ -1118,7 +1177,7 @@ class Express_Login {
             $params['user'] = $user_id;
 
             /* SQL Instruction  */
-            $sql = " UPDATE     microlearning_deliveries
+            $sql = " UPDATE     {microlearning_deliveries}
                         SET     sent = 0
                      WHERE      userid = :user ";
 

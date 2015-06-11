@@ -8,6 +8,12 @@
  *
  * @creationDate    26/11/2014
  * @author          eFaktor     (fbv)
+ *
+ * @updateDate      11/06/2015
+ * @author          eFaktor     (fbv)
+ *
+ * Description
+ * Remove Security Phrase. It will be something internal
  */
 
 require_once($CFG->dirroot.'/lib/formslib.php');
@@ -32,12 +38,6 @@ class express_login_form extends moodleform {
         $form->addHelpButton('pin_code', 'pin_code','local_express_login');
         $form->setType('pin_code', PARAM_RAW);
         $form->addRule('pin_code',get_string('required'), 'required', null, 'server');
-
-        /* Security Question    */
-        $form->addElement('text', 'security_phrase', get_string('pin_question','local_express_login'), ' size="25" maxlength="25"');
-        $form->addHelpButton('security_phrase', 'pin_question','local_express_login');
-        $form->setType('security_phrase', PARAM_TEXT);
-        $form->addRule('security_phrase',get_string('required'), 'required', null, 'server');
 
         $form->addElement('static', 'express_description', '', get_string('title_info', 'local_express_login',$SITE->fullname));
 
@@ -75,13 +75,6 @@ class express_login_form extends moodleform {
                 return $errors;
             }//if_pin_not_valid
         }//if_length_pin_code
-
-        /* Check the security phrase */
-        /* Length -- 25 characters   */
-        if (strlen($data['security_phrase']) < 25) {
-            $errors['security_phrase'] = get_string('pin_security_err','local_express_login');
-            return $errors;
-        }//if_security_length
 
         return $errors;
     }//validation
@@ -169,12 +162,6 @@ class express_login_change_pin_code extends moodleform {
             $form->setType('pin_code_again', PARAM_RAW);
             $form->addRule('pin_code_again',get_string('required'), 'required', null, 'server');
 
-            /* Security Question    */
-            $form->addElement('text', 'security_phrase', get_string('pin_question','local_express_login'), ' size="25" maxlength="25"');
-            $form->addHelpButton('security_phrase', 'pin_question','local_express_login');
-            $form->setType('security_phrase', PARAM_TEXT);
-            $form->addRule('security_phrase',get_string('required'), 'required', null, 'server');
-
             $form->addElement('static', 'express_description', '', get_string('title_change', 'local_express_login',$SITE->fullname));
 
             $this->add_action_buttons(true, get_string('btn_generate_link','local_express_login'));
@@ -230,13 +217,6 @@ class express_login_change_pin_code extends moodleform {
             }//new_code_diff
         }//if_is_valid_current_code
 
-        /* Check the security phrase */
-        /* Length -- 25 characters   */
-        if (strlen($data['security_phrase']) < 25) {
-            $errors['security_phrase'] = get_string('pin_security_err','local_express_login');
-            return $errors;
-        }//if_security_length
-
         return $errors;
     }//validation
 }//express_login_change_pin_code
@@ -257,10 +237,6 @@ class express_login_regenerate_link extends moodleform {
         if ($exists_express) {
             /* Security Question    */
             $form->addElement('static', 'express_remind', '', get_string('regenerate_link', 'local_express_login'));
-            $form->addElement('text', 'security_phrase', get_string('pin_question','local_express_login'), ' size="25" maxlength="25"');
-            $form->addHelpButton('security_phrase', 'pin_question','local_express_login');
-            $form->setType('security_phrase', PARAM_TEXT);
-            $form->addRule('security_phrase',get_string('required'), 'required', null, 'server');
 
             $form->addElement('static', 'express_description', '', get_string('title_regenerate_link', 'local_express_login'));
 
@@ -277,25 +253,5 @@ class express_login_regenerate_link extends moodleform {
         $form->setType('id',PARAM_INT);
         $form->setDefault('id',$USER->id);
     }//definition
-
-    function validation($data, $files) {
-        /* Variables    */
-        $errors = parent::validation($data, $files);
-
-        /* Check the security phrase */
-        /* Length -- 25 characters   */
-        if (strlen($data['security_phrase']) < 25) {
-            $errors['security_phrase'] = get_string('pin_security_err','local_express_login');
-            return $errors;
-        }else {
-            /* Check that it's a new one    */
-            if (!Express_Login::ValidateExpressRemind($data['id'],$data['security_phrase'])) {
-                $errors['security_phrase'] = get_string('err_remind','local_express_login');
-                return $errors;
-            }
-        }//if_security_length
-
-        return $errors;
-    }//validation
 }//express_login_regenerate_link
 
