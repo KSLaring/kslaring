@@ -13,6 +13,12 @@
  * @creationDate    14/04/2015
  * @author          eFaktor     (fbv)
  *
+ * @updateDate      15/06/2015
+ * @author          eFaktor     (fbv)
+ *
+ * Description
+ * Companies connected with my level and/or competence
+ *
  */
 
 require_once('../../../config.php');
@@ -78,7 +84,7 @@ if ($form->is_cancelled()) {
     $company        = $data_form[EMPLOYEE_REPORT_STRUCTURE_LEVEL . '3'];
 
     /* Get Employee Tracker */
-    $employeeTracker = EmployeeReport::Get_EmployeeTracker($my_hierarchy->competence[$company],$data_form[REPORT_MANAGER_OUTCOME_LIST ]);
+    $employeeTracker = EmployeeReport::Get_EmployeeTracker($company,$data_form[REPORT_MANAGER_OUTCOME_LIST ]);
     /* Print Report         */
     $out = EmployeeReport::Print_EmployeeTracker($employeeTracker,$data_form[REPORT_MANAGER_COMPLETED_LIST]);
 }//if_form

@@ -147,7 +147,7 @@ class manager_course_report_level_form extends moodleform {
         $options        = array();
 
         /* Get My Companies by Level    */
-        list($levelZero,$levelOne,$levelTwo,$levelThree) = CompetenceManager::GetMyCompanies_By_Level($my_hierarchy->competence);
+        list($levelZero,$levelOne,$levelTwo,$levelThree) = CompetenceManager::GetMyCompanies_By_Level($my_hierarchy->competence,$my_hierarchy->my_level);
 
         switch ($level) {
             case 0:

@@ -140,7 +140,7 @@ class course_report {
                 $course_report->completed_before   = $data_form[REPORT_MANAGER_COMPLETED_LIST];
 
                 /* Get My Companies by Level    */
-                list($inZero,$inOne,$inTwo,$inThree) = CompetenceManager::GetMyCompanies_By_Level($my_hierarchy->competence);
+                list($inZero,$inOne,$inTwo,$inThree) = CompetenceManager::GetMyCompanies_By_Level($my_hierarchy->competence,$my_hierarchy->my_level);
                 $inZero     = implode(',',$inZero);
                 $inOne      = implode(',',$inOne);
                 $inTwo      = implode(',',$inTwo);

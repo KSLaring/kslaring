@@ -130,6 +130,7 @@ class CompetenceManager {
 
     /**
      * @param           $my_companies
+     * @param           $my_level
      * @return          array
      * @throws          Exception
      *
@@ -138,13 +139,19 @@ class CompetenceManager {
      *
      * Description
      * Get companies split by level
+     *
+     * @updateDate      15/06/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Get the companies connected with my level and/or my competence
      */
-    public static function GetMyCompanies_By_Level($my_companies) {
+    public static function GetMyCompanies_By_Level($my_companies,$my_level) {
         /* Variables    */
-        $levelThree = null;
-        $levelTwo   = null;
-        $levelOne   = null;
-        $levelZero  = null;
+        $levelThree = array();
+        $levelTwo   = array();
+        $levelOne   = array();
+        $levelZero  = array();
 
         try {
             foreach ($my_companies as $company) {
@@ -154,6 +161,34 @@ class CompetenceManager {
                 $levelThree[$company->levelThree]   = $company->levelThree;
             }
 
+            switch ($my_level) {
+                case 0:
+                    $levelZero  = array();
+                    $levelOne   = array();
+                    $levelTwo   = array();
+                    $levelThree = array();
+
+                    break;
+                case 1:
+                    $levelOne   = array();
+                    $levelTwo   = array();
+                    $levelThree = array();
+
+                    break;
+                case 2:
+                    $levelTwo   = array();
+                    $levelThree = array();
+
+                    break;
+                case 3:
+                    $levelThree = array();
+
+                    break;
+                case 4:
+                    break;
+                default:
+                    break;
+            }
             return array($levelZero,$levelOne,$levelTwo,$levelThree);
         }catch (Exception $ex) {
             throw $ex;

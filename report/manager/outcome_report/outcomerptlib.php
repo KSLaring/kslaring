@@ -168,6 +168,13 @@ class outcome_report {
      *                                                                                      [id]
      *                                                                                          - name
      *
+     *
+     * @updateDate      16/06/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Companies connected with my level and/or my competence
+     *
      */
     public static function Get_OutcomeReportLevel($data_form,$my_hierarchy) {
         /* Variables    */
@@ -194,7 +201,7 @@ class outcome_report {
                 $outcome_report->completed_before   = $data_form[REPORT_MANAGER_COMPLETED_LIST];
 
                 /* Get My Companies by Level    */
-                list($inZero,$inOne,$inTwo,$inThree) = CompetenceManager::GetMyCompanies_By_Level($my_hierarchy->competence);
+                list($inZero,$inOne,$inTwo,$inThree) = CompetenceManager::GetMyCompanies_By_Level($my_hierarchy->competence,$my_hierarchy->my_level);
                 $inZero     = implode(',',$inZero);
                 $inOne      = implode(',',$inOne);
                 $inTwo      = implode(',',$inTwo);

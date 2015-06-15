@@ -85,6 +85,93 @@ class CompanyReport {
     }//AddAll_SelectionFilter
 
     /**
+     * @param           $my_companies
+     * @param           $my_level
+     * @return          array
+     * @throws          Exception
+     *
+     * @creationDate    15/06/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Get my real companies depending on my level
+     */
+    public static function Get_MyCompanies($my_companies,$my_level) {
+        /* Variables    */
+        $myCompanies = array();
+        $levelThree = array();
+        $levelTwo   = array();
+        $levelOne   = array();
+        $levelZero  = array();
+
+        try {
+            foreach ($my_companies as $company) {
+                $levelZero[$company->levelZero]     = $company->levelZero;
+                $levelOne[$company->levelOne]       = $company->levelOne;
+                $levelTwo[$company->levelTwo]       = $company->levelTwo;
+                $levelThree[$company->levelThree]   = $company->levelThree;
+            }
+
+
+            switch ($my_level) {
+                case 0:
+                    /* Level Three  */
+                    $myCompanies = CompetenceManager::GetCompanies_LevelList(3);
+                    unset($myCompanies[0]);
+
+                    break;
+                case 1:
+                    /* Level Zero   */
+                    $parents = implode(',',array_keys($levelZero));
+                    /* Level One    */
+                    $levelOne = CompetenceManager::GetCompanies_LevelList(1,$parents);
+                    unset($levelOne[0]);
+                    $levelOne = implode(',',array_keys($levelOne));
+                    /* Level Two    */
+                    $levelTwo = CompetenceManager::GetCompanies_LevelList(2,$levelOne);
+                    unset($levelTwo[0]);
+                    $parents = implode(',',array_keys($levelTwo));
+
+                    /* Level Three  */
+                    $myCompanies = CompetenceManager::GetCompanies_LevelList(3,$parents);
+                    unset($myCompanies[0]);
+
+                    break;
+                case 2:
+                    /* Level One    */
+                    $parents = implode(',',array_keys($levelOne));
+                    /* Level Two    */
+                    $levelTwo = CompetenceManager::GetCompanies_LevelList(2,$parents);
+                    unset($levelTwo[0]);
+                    $parents = implode(',',array_keys($levelTwo));
+
+                    /* Level Three  */
+                    $myCompanies = CompetenceManager::GetCompanies_LevelList(3,$parents);
+                    unset($myCompanies[0]);
+
+                    break;
+                case 3:
+                    /* Level Two   */
+                    $parents = implode(',',array_keys($levelTwo));
+
+                    /* Level Three  */
+                    $myCompanies = CompetenceManager::GetCompanies_LevelList(3,$parents);
+                    unset($myCompanies[0]);
+
+                    break;
+                case 4:
+                    $myCompanies = array_keys($levelThree);
+
+                    break;
+            }//my_level
+
+            return $myCompanies;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//Get_MyCompanies
+
+    /**
      * @param           $company
      * @param           $users_selected
      * @return          stdClass

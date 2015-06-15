@@ -13,6 +13,12 @@
  * @creationDate    26/03/2015
  * @author          eFaktor     (fbv)
  *
+ * @updateDate      15/06/2015
+ * @author          eFaktor     (fbv)
+ *
+ * Description
+ * Companies connected with my level and/or my competence
+ *
  *
  */
 
@@ -146,7 +152,7 @@ class manager_outcome_report_level_form extends moodleform {
         $options        = array();
 
         /* Get My Companies by Level    */
-        list($levelZero,$levelOne,$levelTwo,$levelThree) = CompetenceManager::GetMyCompanies_By_Level($my_hierarchy->competence);
+        list($levelZero,$levelOne,$levelTwo,$levelThree) = CompetenceManager::GetMyCompanies_By_Level($my_hierarchy->competence,$my_hierarchy->my_level);
 
         switch ($level) {
             case 0:
