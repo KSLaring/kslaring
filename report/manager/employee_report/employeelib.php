@@ -21,7 +21,10 @@ class EmployeeReport {
     /********************/
 
     /**
-     * @param           $company
+     * @param           $levelZero
+     * @param           $levelOne
+     * @param           $levelTwo
+     * @param           $levelThree
      * @return          array|null
      * @throws          Exception
      *
@@ -30,8 +33,15 @@ class EmployeeReport {
      *
      * Description
      * Get the outcomes connected to the company and the report
+     *
+     *
+     * @updateDate      15/06/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Send the correct parameters
      */
-    public static function GetOutcomes_EmployeeReport($company) {
+    public static function GetOutcomes_EmployeeReport($levelZero,$levelOne,$levelTwo,$levelThree) {
         /* Variables    */
         $outcomes   = null;
         $jr_keys    = null;
@@ -40,10 +50,10 @@ class EmployeeReport {
         try {
 
             /* Job Roles connected to the level Three    */
-            if (CompetenceManager::IsPublic($company->levelThree)) {
+            if (CompetenceManager::IsPublic($levelThree)) {
                 CompetenceManager::GetJobRoles_Generics($job_roles);
             }//if_isPublic
-            CompetenceManager::GetJobRoles_Hierarchy($job_roles,3,$company->levelZero,$company->levelOne,$company->levelTwo,$company->levelThree);
+            CompetenceManager::GetJobRoles_Hierarchy($job_roles,3,$levelZero,$levelOne,$levelTwo,$levelThree);
 
             /* Outcome Courses  */
             if ($job_roles) {
@@ -97,19 +107,19 @@ class EmployeeReport {
 
         try {
             /* My Users     */
-            $my_users = CompetenceManager::GetUsers_MyCompanies($company->levelThree,$USER->id);
+            $my_users = CompetenceManager::GetUsers_MyCompanies($company,$USER->id);
 
 
             /* Employee Tracker */
             $employeeTracker = new stdClass();
-            $employeeTracker->levelThree         = $company->levelThree;
-            $employeeTracker->name               = CompetenceManager::GetCompany_Name($company->levelThree);
+            $employeeTracker->levelThree         = $company;
+            $employeeTracker->name               = CompetenceManager::GetCompany_Name($company);
             $employeeTracker->users              = null;
             $employeeTracker->outcome            = self::Get_DetailOutcome($outcome);
 
             /* Outcome --> Info Users   */
             if ($employeeTracker->outcome && $my_users) {
-                $employeeTracker->users = self::GetUsers_EmployeeTracker($company->levelThree,$my_users,$employeeTracker->outcome->courses,$employeeTracker->outcome->job_roles);
+                $employeeTracker->users = self::GetUsers_EmployeeTracker($company,$my_users,$employeeTracker->outcome->courses,$employeeTracker->outcome->job_roles);
             }//if_outcome
 
             return $employeeTracker;

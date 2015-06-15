@@ -40,7 +40,7 @@ class manager_employee_report_form extends moodleform {
 
         $form->addElement('html', '<div class="level-wrapper">');
             if (isset($_COOKIE['parentLevelThree']) && ($_COOKIE['parentLevelThree'])) {
-                $outcome_lst = EmployeeReport::GetOutcomes_EmployeeReport($my_hierarchy->competence[$_COOKIE['parentLevelThree']]);
+                $outcome_lst = EmployeeReport::GetOutcomes_EmployeeReport($_COOKIE['parentLevelZero'],$_COOKIE['parentLevelOne'],$_COOKIE['parentLevelTwo'],$_COOKIE['parentLevelThree']);
             }else {
                 $outcome_lst    = array();
                 $outcome_lst[0] = get_string('select') . '...';
@@ -100,6 +100,12 @@ class manager_employee_report_form extends moodleform {
      *
      * Description
      * Get the company list connected to the level
+     *
+     * @updateDate      15/06/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Companies connected with my level and/or my competence
      */
     function getCompanyList($level,$my_hierarchy) {
         /* Variables    */
@@ -111,7 +117,7 @@ class manager_employee_report_form extends moodleform {
         $options        = array();
 
         /* Get My Companies by Level    */
-        list($levelZero,$levelOne,$levelTwo,$levelThree) = CompetenceManager::GetMyCompanies_By_Level($my_hierarchy->competence);
+        list($levelZero,$levelOne,$levelTwo,$levelThree) = CompetenceManager::GetMyCompanies_By_Level($my_hierarchy->competence,$my_hierarchy->my_level);
 
         switch ($level) {
             case 0:

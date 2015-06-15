@@ -12,6 +12,12 @@
  * @updateDate  08/04/2015
  * @author      eFaktor     (fbv)
  *
+ * @updateDate  15/06/2015
+ * @author      eFaktor     (fbv)
+ *
+ * Description
+ * Only the companies connected with my level
+ *
  */
 
 require_once('../../../config.php');
@@ -28,6 +34,7 @@ $format         = optional_param('format','',PARAM_ALPHA);
 $return_url     = new moodle_url('/report/manager/index.php');
 $url            = new moodle_url('/report/manager/company_report/company_report.php',array('advanced' => $show_advanced));
 $my_hierarchy   = null;
+$myCompanies    = null;
 $companyTracker = null;
 $company        = null;
 $users_lst      = null;
@@ -67,7 +74,8 @@ $my_hierarchy = CompetenceManager::get_MyHierarchyLevel($USER->id,$site_context)
 $user_filter = new company_report_filtering(null,$url,null);
 /* Set My Companies         */
 if ($my_hierarchy->competence) {
-    $user_filter->set_MyCompanies(implode(',',array_keys($my_hierarchy->competence)));
+    $myCompanies = CompanyReport::Get_MyCompanies($my_hierarchy->competence,$my_hierarchy->my_level);
+    $user_filter->set_MyCompanies(implode(',',array_keys($myCompanies)));
 }else {
     $user_filter->set_MyCompanies(null);
 }
@@ -143,8 +151,13 @@ if ($form->is_cancelled()) {
     $users_lst = $SESSION->bulk_users;
 
     /* Get Company Tracker Info */
-    $company        = $data_form[COMPANY_REPORT_STRUCTURE_LEVEL . '3'];
-    $companyTracker = CompanyReport::Get_CompanyTracker($my_hierarchy->competence[$company],$users_lst);
+    $company = new stdClass();
+    $company->levelZero     = $_COOKIE['parentLevelZero'];
+    $company->levelOne      = $_COOKIE['parentLevelOne'];
+    $company->levelTwo      = $_COOKIE['parentLevelTwo'];
+    $company->levelThree    = $data_form[COMPANY_REPORT_STRUCTURE_LEVEL . '3'];
+
+    $companyTracker = CompanyReport::Get_CompanyTracker($company,$users_lst);
 
     switch ($data_form[COMPANY_REPORT_FORMAT_LIST]) {
         case COMPANY_REPORT_FORMAT_SCREEN:

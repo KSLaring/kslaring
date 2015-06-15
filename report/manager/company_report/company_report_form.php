@@ -90,6 +90,12 @@ class manager_company_report_form extends moodleform {
      * Description
      * Get the company list connected with the level
      *
+     * @updateDate      15/06/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Companies connected with my level and/or competence
+     *
      */
     function getCompanyList($level,$my_hierarchy) {
         /* Variables    */
@@ -101,7 +107,7 @@ class manager_company_report_form extends moodleform {
         $options        = array();
 
         /* Get My Companies by Level    */
-        list($levelZero,$levelOne,$levelTwo,$levelThree) = CompetenceManager::GetMyCompanies_By_Level($my_hierarchy->competence);
+        list($levelZero,$levelOne,$levelTwo,$levelThree) = CompetenceManager::GetMyCompanies_By_Level($my_hierarchy->competence,$my_hierarchy->my_level);
 
         switch ($level) {
             case 0:
