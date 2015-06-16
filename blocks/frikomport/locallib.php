@@ -105,8 +105,8 @@ class block_frikomport_menu_manager {
         $lst_action = '#';
         $new_action = '#';
         if (get_config('course_locations')) {
-            $lst_action = new moodle_url('/local/course_locations/index.php');
-            $new_action = new moodle_url('/local/course_locations/add_location.php');
+            $lst_action = new moodle_url('/local/friadmin/course_locations/index.php');
+            $new_action = new moodle_url('/local/friadmin/course_locations/add_location.php');
         }//if_course_locations
 
         $branch = array(

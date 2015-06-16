@@ -45,69 +45,218 @@
  * @license         http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+/**
+ * @updateDate      16/06/2015
+ * @author          eFaktor     (fbv)
+ *
+ * Description
+ * Integrate the Course Location plugin
+ */
 defined('MOODLE_INTERNAL') || die;
 
 function xmldb_local_friadmin_upgrade($oldversion) {
+    /* Variables    */
     global $CFG, $DB;
 
     $dbman = $DB->get_manager();
 
-    if ($oldversion < 2015060400) {
-        $blocks = null;
-        $instanceBlock = null;
-
-        /* Get the instance for the Frikomport Block for all friadmin pages*/
-        $sql = " SELECT		*
-                     FROM		{block_instances}
-                     WHERE		blockname 			= 'frikomport'
-                        AND		pagetypepattern		LIKE '%local-friadmin%' ";
-        /* Execute  */
-        $blocks = $DB->get_records_sql($sql);
-
-        if ($blocks) {
-            // Loop through and remove them from all pages
-            foreach ($blocks as $block) {
-                blocks_delete_instance($block);
-            }
-        }//deleted
-
-        /* Create Instance Block Frikomport --> local friadmin plugin */
-        /* local-friadmin-courselist */
-        $instanceBlock = new stdClass();
-        $instanceBlock->blockname = 'frikomport';
-        $instanceBlock->parentcontextid = 1;
-        $instanceBlock->showinsubcontexts = 0;
-        $instanceBlock->pagetypepattern = 'local-friadmin-courselist';
-        $instanceBlock->defaultregion = 'side-pre';
-        $instanceBlock->defaultweight = 0;
-        /* Execute  */
-        $DB->insert_record('block_instances', $instanceBlock);
-
-        /* local-friadmin-coursedetail */
-        $instanceBlock = new stdClass();
-        $instanceBlock->blockname = 'frikomport';
-        $instanceBlock->parentcontextid = 1;
-        $instanceBlock->showinsubcontexts = 0;
-        $instanceBlock->pagetypepattern = 'local-friadmin-coursedetail';
-        $instanceBlock->defaultregion = 'side-pre';
-        $instanceBlock->defaultweight = 0;
-        /* Execute  */
-        $DB->insert_record('block_instances', $instanceBlock);
-
-        /* local-friadmin-coursetemplate */
-        $instanceBlock = new stdClass();
-        $instanceBlock->blockname = 'frikomport';
-        $instanceBlock->parentcontextid = 1;
-        $instanceBlock->showinsubcontexts = 0;
-        $instanceBlock->pagetypepattern = 'local-friadmin-coursetemplate';
-        $instanceBlock->defaultregion = 'side-pre';
-        $instanceBlock->defaultweight = 0;
-        /* Execute  */
-        $DB->insert_record('block_instances', $instanceBlock);
-
-        // Plugin savepoint reached.
-        upgrade_plugin_savepoint(true, 2015060400, 'local', 'friadmin');
-    }
+    if ($oldversion < 2015061604) {
+        /* Add Instance FriAdmin - Frikomport Block */
+        /* Add Instance Course Locations - Frikomport Block */
+        /* Add Instance Frikomport Block  - Course Edit and Index */
+        FriAdmin_UpdateHandler::AddInstance_FrikomportBlock();
+    }//if_odlversion
 
     return true;
 }
+
+/**
+ * Class FriAdmin_Handler
+ *
+ * @creationDate    16/06/2015
+ * @author          eFktor      (fbv)
+ *
+ * Description
+ * To manage all the actions during the installation
+ */
+class FriAdmin_UpdateHandler {
+    /* ******************/
+    /* PUBLIC FUNCTIONS */
+    /* ******************/
+
+    /**
+     * @throws          Exception
+     *
+     * @updateDate      16/06/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Create Instance block Firkomport --  Fridadmin  Plugin
+     * Create Instance block Firkomport --  Fridadmin - Course Locations Plugin
+     * Create Instance Frikomport Block  - Course Edit and Index
+     */
+    public static function AddInstance_FrikomportBlock() {
+        /* Variables    */
+        global $DB;
+        $blocks             = null;
+        $instanceBlock      = null;
+
+        try {
+            /* Get Instance Frikomport Block    */
+            $sql = " SELECT		*
+                     FROM		{block_instances}
+                     WHERE		blockname 			= 'frikomport'
+                        AND		pagetypepattern		LIKE '%local-friadmin%' ";
+            /* Execute  */
+            $blocks = $DB->get_records_sql($sql);
+            if ($blocks) {
+                // Loop through and remove them from the My Moodle page.
+                foreach ($blocks as $block) {
+                    blocks_delete_instance($block);
+                }
+            }//deleted
+
+            /* Create Instance Block Frikomport --> local friadmin plugin */
+            /* local-friadmin-courselist */
+            $instanceBlock = new stdClass();
+            $instanceBlock->blockname           = 'frikomport';
+            $instanceBlock->parentcontextid     = 1;
+            $instanceBlock->showinsubcontexts   = 0;
+            $instanceBlock->pagetypepattern     = 'local-friadmin-courselist';
+            $instanceBlock->defaultregion       = 'side-pre';
+            $instanceBlock->defaultweight       = 0;
+            /* Execute  */
+            $DB->insert_record('block_instances',$instanceBlock);
+
+            /* local-friadmin-coursedetail */
+            $instanceBlock = new stdClass();
+            $instanceBlock->blockname           = 'frikomport';
+            $instanceBlock->parentcontextid     = 1;
+            $instanceBlock->showinsubcontexts   = 0;
+            $instanceBlock->pagetypepattern     = 'local-friadmin-coursedetail';
+            $instanceBlock->defaultregion       = 'side-pre';
+            $instanceBlock->defaultweight       = 0;
+            /* Execute  */
+            $DB->insert_record('block_instances',$instanceBlock);
+
+            /* Create Instance Block Frikomport --> Course Locations Plugin */
+            /* local-course_locations-index             */
+            $instanceBlock = new stdClass();
+            $instanceBlock->blockname           = 'frikomport';
+            $instanceBlock->parentcontextid     = 1;
+            $instanceBlock->showinsubcontexts   = 0;
+            $instanceBlock->pagetypepattern     = 'local-friadmin-course_locations-index';
+            $instanceBlock->defaultregion       = 'side-pre';
+            $instanceBlock->defaultweight       = 0;
+            /* Execute  */
+            $DB->insert_record('block_instances',$instanceBlock);
+
+            /* local-course_locations-course_locations  */
+            $instanceBlock = new stdClass();
+            $instanceBlock->blockname           = 'frikomport';
+            $instanceBlock->parentcontextid     = 1;
+            $instanceBlock->showinsubcontexts   = 0;
+            $instanceBlock->pagetypepattern     = 'local-friadmin-course_locations-course_locations';
+            $instanceBlock->defaultregion       = 'side-pre';
+            $instanceBlock->defaultweight       = 0;
+            /* Execute  */
+            $DB->insert_record('block_instances',$instanceBlock);
+
+            /* local-course_locations-locations         */
+            $instanceBlock = new stdClass();
+            $instanceBlock->blockname           = 'frikomport';
+            $instanceBlock->parentcontextid     = 1;
+            $instanceBlock->showinsubcontexts   = 0;
+            $instanceBlock->pagetypepattern     = 'local-friadmin-course_locations-locations ';
+            $instanceBlock->defaultregion       = 'side-pre';
+            $instanceBlock->defaultweight       = 0;
+            /* Execute  */
+            $DB->insert_record('block_instances',$instanceBlock);
+
+            /* local-course_locations-view              */
+            $instanceBlock = new stdClass();
+            $instanceBlock->blockname           = 'frikomport';
+            $instanceBlock->parentcontextid     = 1;
+            $instanceBlock->showinsubcontexts   = 0;
+            $instanceBlock->pagetypepattern     = 'local-friadmin-course_locations-view ';
+            $instanceBlock->defaultregion       = 'side-pre';
+            $instanceBlock->defaultweight       = 0;
+            /* Execute  */
+            $DB->insert_record('block_instances',$instanceBlock);
+
+            /* local-course_locations-add_location      */
+            $instanceBlock = new stdClass();
+            $instanceBlock->blockname           = 'frikomport';
+            $instanceBlock->parentcontextid     = 1;
+            $instanceBlock->showinsubcontexts   = 0;
+            $instanceBlock->pagetypepattern     = 'local-friadmin-course_locations-add_location ';
+            $instanceBlock->defaultregion       = 'side-pre';
+            $instanceBlock->defaultweight       = 0;
+            /* Execute  */
+            $DB->insert_record('block_instances',$instanceBlock);
+
+            /* local-course_locations-edit_location     */
+            $instanceBlock = new stdClass();
+            $instanceBlock->blockname           = 'frikomport';
+            $instanceBlock->parentcontextid     = 1;
+            $instanceBlock->showinsubcontexts   = 0;
+            $instanceBlock->pagetypepattern     = 'local-friadmin-course_locations-edit_location ';
+            $instanceBlock->defaultregion       = 'side-pre';
+            $instanceBlock->defaultweight       = 0;
+            /* Execute  */
+            $DB->insert_record('block_instances',$instanceBlock);
+
+            /* local-course_locations-delete_location   */
+            $instanceBlock = new stdClass();
+            $instanceBlock->blockname           = 'frikomport';
+            $instanceBlock->parentcontextid     = 1;
+            $instanceBlock->showinsubcontexts   = 0;
+            $instanceBlock->pagetypepattern     = 'local-friadmin-course_locations-delete_location ';
+            $instanceBlock->defaultregion       = 'side-pre';
+            $instanceBlock->defaultweight       = 0;
+            /* Execute  */
+            $DB->insert_record('block_instances',$instanceBlock);
+
+            /* Get Instance Frikomport Block  - Course Edit and Index  */
+            $sql = " SELECT		*
+                     FROM		{block_instances}
+                     WHERE		blockname 			= 'frikomport'
+                        AND		(pagetypepattern		LIKE '%course-edit%'
+                                 OR
+                                 pagetypepattern		LIKE '%course-index%'
+                                )";
+            /* Execute  */
+            $blocks = $DB->get_records_sql($sql);
+            if ($blocks) {
+                // Loop through and remove them from the My Moodle page.
+                foreach ($blocks as $block) {
+                    blocks_delete_instance($block);
+                }
+            }//deleted
+
+            /* Course Edit  */
+            $instanceBlock = new stdClass();
+            $instanceBlock->blockname           = 'frikomport';
+            $instanceBlock->parentcontextid     = 3;
+            $instanceBlock->showinsubcontexts   = 0;
+            $instanceBlock->pagetypepattern     = 'course-edit ';
+            $instanceBlock->defaultregion       = 'side-pre';
+            $instanceBlock->defaultweight       = 0;
+            /* Execute  */
+            $DB->insert_record('block_instances',$instanceBlock);
+
+            /* Course Index  */
+            $instanceBlock = new stdClass();
+            $instanceBlock->blockname           = 'frikomport';
+            $instanceBlock->parentcontextid     = 1;
+            $instanceBlock->showinsubcontexts   = 0;
+            $instanceBlock->pagetypepattern     = 'course-index ';
+            $instanceBlock->defaultregion       = 'side-pre';
+            $instanceBlock->defaultweight       = 0;
+            /* Execute  */
+            $DB->insert_record('block_instances',$instanceBlock);
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//AddInstance_FrikomportBlock
+}//FriAdmin_UpdateHandler

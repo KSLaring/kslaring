@@ -24,8 +24,15 @@
  * @author          Urs Hunkler {@link urs.hunkler@unodo.de}
  * @license         http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+/**
+ * @updateDate      16/06/2015
+ * @author          eFaktor     (fbv)
+ *
+ * Description
+ * Integrate the Course Loction plugin
+ */
 defined('MOODLE_INTERNAL') || die;
 
-$plugin->version = 2015060800;         /* The current plugin version (Date: YYYYMMDDXX)  */
-$plugin->requires = 2014051205;        /* Requires this Moodle version                   */
-$plugin->component = 'local_friadmin'; /* Full name of the plugin (used for diagnostics) */
+$plugin->version    = 2015061604;         /* The current plugin version (Date: YYYYMMDDXX)  */
+$plugin->requires   = 2014051205;        /* Requires this Moodle version                   */
+$plugin->component  = 'local_friadmin'; /* Full name of the plugin (used for diagnostics) */

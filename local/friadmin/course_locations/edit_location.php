@@ -3,14 +3,21 @@
  * Course Locations - Edit Location
  *
  * @package             local
- * @subpackage          course_locations
+ * @subpackage          friadmin/course_locations
  * @copyright           2014        eFaktor {@link http://www.efaktor.no}
  *
  * @creationDate        04/05/2015
  * @author              eFaktor     (fbv)
  *
+ * @updateDate          16/06/2015
+ * @author              eFaktor     (fbv)
+ *
+ * Description
+ * Integrate into friadmin plugin
+ *
  */
-require_once('../../config.php');
+
+require_once('../../../config.php');
 require_once('locationslib.php');
 require_once('locations_form.php');
 
@@ -21,23 +28,23 @@ $locationId     = optional_param('id',0,PARAM_INT);
 $page           = optional_param('page', 0, PARAM_INT);
 $perpage        = optional_param('perpage', 20, PARAM_INT);        // how many per page
 $sort           = optional_param('sort','ASC',PARAM_TEXT);
-$url            = new moodle_url('/local/course_locations/edit_location.php',array('id' => $locationId));
-$return         = new moodle_url('/local/course_locations/locations.php',array('page' => $page, 'perpage' => $perpage, 'sort' => $sort));
-$index_url      = new moodle_url('/local/course_locations/index.php');
+$url            = new moodle_url('/local/friadmin/course_locations/edit_location.php',array('id' => $locationId));
+$return         = new moodle_url('/local/friadmin/course_locations/locations.php',array('page' => $page, 'perpage' => $perpage, 'sort' => $sort));
+$index_url      = new moodle_url('/local/friadmin/course_locations/index.php');
 $context        = context_system::instance();
 $location       = null;
 $edit_options   = null;
 
-require_capability('local/course_locations:manage',$context);
+require_capability('local/friadmin:course_locations_manage',$context);
 
 $PAGE->set_url($url);
 $PAGE->set_context($context);
 $PAGE->set_pagelayout('admin');
 $PAGE->set_title($SITE->fullname);
 $PAGE->set_heading($SITE->fullname);
-$PAGE->navbar->add(get_string('pluginname','local_course_locations'),$index_url);
-$PAGE->navbar->add(get_string('lst_locations','local_course_locations'),$return);
-$PAGE->navbar->add(get_string('edit_location','local_course_locations'),$url);
+$PAGE->navbar->add(get_string('plugin_course_locations','local_friadmin'),$index_url);
+$PAGE->navbar->add(get_string('lst_locations','local_friadmin'),$return);
+$PAGE->navbar->add(get_string('edit_location','local_friadmin'),$url);
 
 /* Get Location */
 $location   = CourseLocations::Get_LocationDetail($locationId);

@@ -3,15 +3,20 @@
  * Course Locations - Locations List
  *
  * @package             local
- * @subpackage          course_locations
+ * @subpackage          friadmin/course_locations
  * @copyright           2014        eFaktor {@link http://www.efaktor.no}
  *
  * @creationDate        27/04/2015
  * @author              eFaktor     (fbv)
  *
+ * @updateDate          16/06/2015
+ * @author              eFaktor     (fbv)
+ *
+ * Description
+ * Integrate into Friadmin plugin
+ *
  */
-
-require_once('../../config.php');
+require_once('../../../config.php');
 require_once('locationslib.php');
 
 require_login();
@@ -22,8 +27,8 @@ $perpage        = optional_param('perpage', 20, PARAM_INT);        // how many p
 $sort           = optional_param('sort','ASC',PARAM_TEXT);
 $act            = optional_param('act',0,PARAM_INT);
 $locationId     = optional_param('id',0,PARAM_INT);
-$url            = new moodle_url('/local/course_locations/locations.php',array('page' => $page, 'perpage' => $perpage));
-$return_url     = new moodle_url('/local/course_locations/index.php');
+$url            = new moodle_url('/local/friadmin/course_locations/locations.php',array('page' => $page, 'perpage' => $perpage));
+$return_url     = new moodle_url('/local/friadmin/course_locations/index.php');
 $context        = context_system::instance();
 $filter         = array();
 $county         = null;
@@ -31,16 +36,16 @@ $locations      = null;
 $totalLocations = 0;
 $fieldSort      = null;
 
-require_capability('local/course_locations:manage',$context);
+require_capability('local/friadmin:course_locations_manage',$context);
 
 $PAGE->set_url($url);
 $PAGE->set_context($context);
 $PAGE->set_pagelayout('report');
 $PAGE->set_title($SITE->fullname);
 $PAGE->set_heading($SITE->fullname);
-$PAGE->navbar->add(get_string('pluginname','local_course_locations'));
-$PAGE->navbar->add(get_string('lst_locations','local_course_locations'),$return_url);
-$PAGE->requires->js('/local/course_locations/js/locations.js');
+$PAGE->navbar->add(get_string('plugin_course_locations','local_friadmin'));
+$PAGE->navbar->add(get_string('lst_locations','local_friadmin'),$return_url);
+$PAGE->requires->js('/local/friadmin/course_locations/js/locations.js');
 
 /* Filter   */
 $filter['county']   = $SESSION->county;
@@ -51,7 +56,7 @@ $filter['activate'] = $SESSION->act;
 if ($act) {
     /* Change Status */
     CourseLocations::ChangeStatus_Location($locationId);
-    $url            = new moodle_url('/local/course_locations/locations.php',array('page' => $page, 'perpage' => $perpage,'sort' => $sort,'act' => 0));
+    $url            = new moodle_url('/local/friadmin/course_locations/locations.php',array('page' => $page, 'perpage' => $perpage,'sort' => $sort,'act' => 0));
     redirect($url);
 }else {
     /* Get Total Locations  */
@@ -90,5 +95,3 @@ if ($act) {
     /* Footer   */
     echo $OUTPUT->footer();
 }//if_Act
-
-

@@ -1,6 +1,6 @@
 <?php
 /**
- * Local Fridadmin  - Language Settings (English)
+ * Local Fridadmin  - Language Settings (Norwegian)
  *
  * @package         local
  * @subpackage      fridamin/lang
@@ -14,7 +14,6 @@
  * Description
  * Integrate 'Course Locations' plugin into FriAdmin plugin
  */
-
 
 $string['pluginname']       = 'Friadmin';
 
@@ -144,5 +143,3 @@ $string['delete_location_are_you_sure']     = '<p>Are you sure you want to delet
 
 $string['btn_save']     = 'Save';
 $string['lnk_back']     = 'Back';
-
-

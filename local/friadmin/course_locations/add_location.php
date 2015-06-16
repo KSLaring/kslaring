@@ -3,37 +3,43 @@
  * Course Locations - Add Location
  *
  * @package             local
- * @subpackage          course_locations
+ * @subpackage          friadmin/course_locations
  * @copyright           2014        eFaktor {@link http://www.efaktor.no}
  *
  * @creationDate        27/04/2015
  * @author              eFaktor     (fbv)
  *
+ * @updateDate          16/06/2015
+ * @author              eFaktor     (fbv)
+ *
+ * Description
+ * Integrate into friadmin plugin
+ *
  */
 
-require_once('../../config.php');
+require_once('../../../config.php');
 require_once('locationslib.php');
 require_once('locations_form.php');
 
 require_login();
 
 /* PARAMS   */
-$url            = new moodle_url('/local/course_locations/add_location.php');
-$return_url     = new moodle_url('/local/course_locations/index.php');
+$url            = new moodle_url('/local/friadmin/course_locations/add_location.php');
+$return_url     = new moodle_url('/local/friadmin/course_locations/index.php');
 $context        = context_system::instance();
 $edit_options   = null;
 $myCompetence   = null;
 $strTitle       = null;
 
-require_capability('local/course_locations:manage',$context);
+require_capability('local/friadmin:course_locations_manage',$context);
 
 $PAGE->set_url($url);
 $PAGE->set_context($context);
 $PAGE->set_pagelayout('admin');
 $PAGE->set_title($SITE->fullname);
 $PAGE->set_heading($SITE->fullname);
-$PAGE->navbar->add(get_string('pluginname','local_course_locations'),$return_url);
-$PAGE->navbar->add(get_string('new_location','local_course_locations'),$url);
+$PAGE->navbar->add(get_string('plugin_course_locations','local_friadmin'),$return_url);
+$PAGE->navbar->add(get_string('new_location','local_friadmin'),$url);
 
 /* Get My Competence Locations  */
 $myCompetence = CourseLocations::Get_MyCompetence($USER->id);

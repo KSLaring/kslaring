@@ -1,37 +1,42 @@
 <?php
 /**
- * Course Locations
+ * Course Locations - Index
  *
  * @package         local
- * @subpackage      course_locations
+ * @subpackage      friadmin/course_locations
  * @copyright       2014        eFaktor {@link http://www.efaktor.no}
  *
- * @updateDate      27/04/2015
+ * @creationDate    27/04/2015
  * @author          eFaktor     (fbv)
  *
+ * @updateDate      16/06/2015
+ * @author          eFaktor     (fbv)
+ *
+ * Description
+ * Integrate into Friadmin Plugin
+ *
  */
-
-require_once('../../config.php');
+require_once('../../../config.php');
 require_once('locationslib.php');
 require_once('locations_form.php');
 
 require_login();
 
 /* PARAMS   */
-$url            = new moodle_url('/local/course_locations/index.php');
-$url_view       = new moodle_url('/local/course_locations/locations.php');
+$url            = new moodle_url('/local/friadmin/course_locations/index.php');
+$url_view       = new moodle_url('/local/friadmin/course_locations/locations.php');
 $context        = context_system::instance();
 $myCompetence   = null;
 
-require_capability('local/course_locations:manage',$context);
+require_capability('local/friadmin:course_locations_manage',$context);
 
 $PAGE->set_url($url);
 $PAGE->set_context($context);
 $PAGE->set_pagelayout('admin');
 $PAGE->set_title($SITE->fullname);
 $PAGE->set_heading($SITE->fullname);
-$PAGE->navbar->add(get_string('pluginname','local_course_locations'));
-$PAGE->navbar->add(get_string('lst_locations','local_course_locations'),$url);
+$PAGE->navbar->add(get_string('plugin_course_locations','local_friadmin'));
+$PAGE->navbar->add(get_string('lst_locations','local_friadmin'),$url);
 
 if (isset($SESSION->county)) {
     $SESSION->county = null;
@@ -80,7 +85,7 @@ if($data = $form->get_data()) {
 echo $OUTPUT->header();
 
 /* Table with locations */
-echo $OUTPUT->heading(get_string('filter','local_course_locations'));
+echo $OUTPUT->heading(get_string('filter','local_friadmin'));
 
 $form->display();
 

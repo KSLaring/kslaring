@@ -3,14 +3,19 @@
  * Course Locations - Library
  *
  * @package         local
- * @subpackage      course_locations
+ * @subpackage      friadmin/course_locations
  * @copyright       2014        eFaktor {@link http://www.efaktor.no}
  *
- * @updateDate      28/04/2015
+ * @creationDate    28/04/2015
  * @author          eFaktor     (fbv)
  *
+ * @updateDate      16706/2915
+ * @author          eFaktor     (fbv)
+ *
+ * Description
+ * Integrate into Friadmin Plugin
+ *
  */
-
 define('COURSE_LOCATION_COUNTY','county');
 define('COURSE_LOCATION_MUNICIPALITY','municipality');
 define('COURSE_LOCATION_SECTOR','sector');
@@ -157,7 +162,7 @@ class CourseLocations {
             $params['level'] = $level;
 
             /* List Companies   */
-            $companies[0] = get_string('select_level_list','local_course_locations');
+            $companies[0] = get_string('select_level_list','local_friadmin');
 
             /* SQL Instruction  */
             $sql = " SELECT     DISTINCT  rcd.id,
@@ -273,7 +278,7 @@ class CourseLocations {
         $strContact = null;
 
         try {
-             /* SQL Instruction */
+            /* SQL Instruction */
             $sql = " SELECT		cl.id,
                                 levelone.name 	as 'levelone',
                                 cl.name,
@@ -326,11 +331,11 @@ class CourseLocations {
                     $strAddress    .= "</br>";
                     $strAddress    .= $instance->postcode . ' ' . $instance->city;
                     /* Detail   */
-                    $strDetail      = get_string('location_floor','local_course_locations') . ': ' . $instance->floor;
+                    $strDetail      = get_string('location_floor','local_friadmin') . ': ' . $instance->floor;
                     $strDetail     .= "</br>";
-                    $strDetail     .=  get_string('location_room','local_course_locations') . ': ' . $instance->room;
+                    $strDetail     .=  get_string('location_room','local_friadmin') . ': ' . $instance->room;
                     $strDetail     .= "</br>";
-                    $strDetail     .=  get_string('location_seats','local_course_locations') . ': ' . $instance->seats;
+                    $strDetail     .=  get_string('location_seats','local_friadmin') . ': ' . $instance->seats;
                     /* Contact  */
                     $strContact     = $instance->contact;
                     $strContact    .= "</br>";
@@ -348,9 +353,9 @@ class CourseLocations {
                     $info->contact      = $strContact;
                     $info->activate     = $instance->activate;
                     if ($instance->activate) {
-                        $instance->status = get_string('activate','local_course_locations');
+                        $instance->status = get_string('activate','local_friadmin');
                     }else {
-                        $instance->status = get_string('deactivate','local_course_locations');
+                        $instance->status = get_string('deactivate','local_friadmin');
                     }//if_Activate
 
                     /* Add Location */
@@ -409,29 +414,29 @@ class CourseLocations {
                                 mu.name as 'municipality',
                                 cse.sectors
                      FROM		{course}					c
-                        JOIN		(
-                                        SELECT		cfo.courseid,
-                                                    cfo.value as 'length'
-                                        FROM 		{course_format_options}	cfo
-                                        WHERE		cfo.format 	LIKE '%frikomport%'
-                                            AND		cfo.name 	= 'length'
-                                    ) cle ON cle.courseid = c.id
-                        JOIN		(
-                                        SELECT		cfo.courseid,
-                                                    cfo.value as 'location'
-                                        FROM 		{course_format_options}	cfo
-                                        WHERE		cfo.name 	= 'course_location'
-                                    ) cfl ON cfl.courseid = c.id
-                        JOIN		{course_locations}			    cl 			ON	cl.id 		= cfl.location
-                        JOIN		{report_gen_companydata}		co			ON  co.id    	= cl.levelzero
-                        JOIN		{report_gen_companydata}		mu			ON  mu.id 		= cl.levelone
-                        JOIN		(
-                                        SELECT		cfo.courseid,
-                                                    cfo.value as 'sectors'
-                                        FROM 		{course_format_options}	cfo
-                                        WHERE		cfo.name 	= 'course_sector'
-                                    ) cse ON cse.courseid = c.id
-                     ";
+                         JOIN	(
+                                 SELECT		cfo.courseid,
+                                            cfo.value as 'length'
+                                 FROM 		{course_format_options}	cfo
+                                 WHERE		cfo.format 	LIKE '%frikomport%'
+                                    AND		cfo.name 	= 'length'
+                                ) cle ON cle.courseid = c.id
+                         JOIN	(
+                                 SELECT		cfo.courseid,
+                                            cfo.value as 'location'
+                                 FROM 		{course_format_options}	cfo
+                                 WHERE		cfo.name 	= 'course_location'
+                                ) cfl ON cfl.courseid = c.id
+                         JOIN	{course_locations}			    cl 			ON	cl.id 		= cfl.location
+                         JOIN	{report_gen_companydata}		co			ON  co.id    	= cl.levelzero
+                         JOIN	{report_gen_companydata}		mu			ON  mu.id 		= cl.levelone
+                         JOIN	(
+                                 SELECT		cfo.courseid,
+                                            cfo.value as 'sectors'
+                                 FROM 		{course_format_options}	cfo
+                                 WHERE		cfo.name 	= 'course_sector'
+                                ) cse ON cse.courseid = c.id
+                      ";
 
             /* Add Search Criteria  */
             /* County       */
@@ -456,14 +461,14 @@ class CourseLocations {
             if ($filter['sector']) {
                 if ($sqlWhere) {
                     $sqlWhere = " WHERE     cse.sectors 	LIKE '"     . $filter['sector'] . ",%'" .
-                                    " OR    cse.sectors  	LIKE '%,"   . $filter['sector'] . "' " .
-                                    " OR    cse.sectors 	LIKE '%,"   . $filter['sector'] . ",%'" .
-                                    " OR    cse.sectors 	= :sector ";
+                        " OR    cse.sectors  	LIKE '%,"   . $filter['sector'] . "' " .
+                        " OR    cse.sectors 	LIKE '%,"   . $filter['sector'] . ",%'" .
+                        " OR    cse.sectors 	= :sector ";
                 }else {
                     $sqlWhere = " AND       cse.sectors 	LIKE '"     . $filter['sector'] . ",%'" .
-                                    " OR    cse.sectors  	LIKE '%,"   . $filter['sector'] . "' " .
-                                    " OR    cse.sectors 	LIKE '%,"   . $filter['sector'] . ",%'" .
-                                    " OR    cse.sectors 	= :sector ";
+                        " OR    cse.sectors  	LIKE '%,"   . $filter['sector'] . "' " .
+                        " OR    cse.sectors 	LIKE '%,"   . $filter['sector'] . ",%'" .
+                        " OR    cse.sectors 	= :sector ";
                 }//if_else
             }//if_filterSector
 
@@ -813,10 +818,17 @@ class CourseLocations {
         try {
             /* Search Criteria  */
             $params = array();
-            $params['locationid'] = $locationId;
+            $params['name']     = 'course_location';
+            $params['location'] = $locationId;
+
+            /* SQL Instruction  */
+            $sql = " SELECT		cfo.courseid
+                    FROM		{course_format_options} cfo
+                    WHERE		cfo.name	= :name
+                      AND       cfo.value   = :location";
 
             /* Execute  */
-            $rdo = $DB->get_records('course_locations_sector',$params);
+            $rdo = $DB->get_records_sql($sql,$params);
             if ($rdo) {
                 return true;
             }else {
@@ -856,7 +868,6 @@ class CourseLocations {
         }//try_catch
     }//Delete_Location
 
-
     /**
      * @param           $county
      * @param           $locations
@@ -894,9 +905,9 @@ class CourseLocations {
 
         try {
             /* Url  */
-            $url            = new moodle_url('/local/course_locations/locations.php',array('page' => $page, 'perpage' => $perpage,'sort' =>$sort));
+            $url            = new moodle_url('/local/friadmin/course_locations/locations.php',array('page' => $page, 'perpage' => $perpage,'sort' =>$sort));
             /* Url To Back  */
-            $urlReturn     = new moodle_url('/local/course_locations/index.php');
+            $urlReturn     = new moodle_url('/local/friadmin/course_locations/index.php');
 
             /* Locations Report */
             $out_report .= html_writer::start_div('locations_rpt_div');
@@ -904,13 +915,13 @@ class CourseLocations {
                 $out_report .= html_writer::start_div('header_location');
                     /* Title    */
                     $out_report .= '<h3>';
-                        $out_report .= get_string('exist_locations', 'local_course_locations') . ' - ' . $county;
+                        $out_report .= get_string('exist_locations', 'local_friadmin') . ' - ' . $county;
                     $out_report .= '</h3>';
                 $out_report .= html_writer::end_div();//header_location
 
                 if (!$locations) {
                     $out_report .= '<h3>';
-                        $out_report .= get_string('no_data', 'local_course_locations');
+                        $out_report .= get_string('no_data', 'local_friadmin');
                     $out_report .= '</h3>';
                 }else {
                     /* Paging Bar  */
@@ -935,7 +946,7 @@ class CourseLocations {
             $out_report .= '<hr class="line_rpt_lnk">';
 
             /* Return To Selection Page */
-            $out_report .= html_writer::link($urlReturn,get_string('return_to_selection','local_course_locations'),array('class' => 'link_return'));
+            $out_report .= html_writer::link($urlReturn,get_string('return_to_selection','local_friadmin'),array('class' => 'link_return'));
             $out_report .= '<hr class="line_rpt_lnk">';
 
             return $out_report;
@@ -966,9 +977,9 @@ class CourseLocations {
 
         try {
             /* Return  */
-            $urlReturn     = new moodle_url('/local/course_locations/locations.php',array('page' => $page, 'perpage' => $perpage,'sort' => $sort));
+            $urlReturn     = new moodle_url('/local/friadmin/course_locations/locations.php',array('page' => $page, 'perpage' => $perpage,'sort' => $sort));
             /* Edit     */
-            $urlEdit = new moodle_url('/local/course_locations/edit_location.php',array('page' => $page, 'perpage' => $perpage,'sort' => $sort,'id' => $location->id));
+            $urlEdit = new moodle_url('/local/friadmin/course_locations/edit_location.php',array('page' => $page, 'perpage' => $perpage,'sort' => $sort,'id' => $location->id));
 
             /* Location Detail Panel    */
             $out_report .= html_writer::start_div('locations_rpt_div');
@@ -990,10 +1001,11 @@ class CourseLocations {
 
                 /* Return To Selection Page */
                 $out_report .= html_writer::start_tag('div',array('class' => 'location_advance_set'));
-                    $out_report .= html_writer::link($urlReturn,get_string('lnk_back','local_course_locations'));
-                $out_report .= html_writer::end_tag('div'); //div_expiration
+                    $out_report .= html_writer::link($urlReturn,get_string('lnk_back','local_friadmin'));
+                $out_report .= html_writer::end_tag('div'); //div_location_advance_set
+                /* Edit option */
                 $out_report .= html_writer::start_tag('div',array('class' => 'location_advance_set'));
-                    $out_report .= html_writer::link($urlEdit,get_string('edit','local_course_locations'));
+                    $out_report .= html_writer::link($urlEdit,get_string('edit','local_friadmin'));
                 $out_report .= html_writer::end_tag('div'); //div_expiration
             $out_report .= html_writer::end_div();//locations_rpt_div
 
@@ -1058,11 +1070,11 @@ class CourseLocations {
     private static function AddHeader_TableLocations($sort,$fieldSort) {
         /* Variables    */
         $header             = '';
-        $strName            = get_string('location_name','local_course_locations');
-        $strMuni            = get_string('location_muni','local_course_locations');
-        $strAddress         = get_string('location_address','local_course_locations');
-        $strDetail          = get_string('location_detail','local_course_locations');
-        $strContact         = get_string('location_contact_inf','local_course_locations');
+        $strName            = get_string('location_name','local_friadmin');
+        $strMuni            = get_string('location_muni','local_friadmin');
+        $strAddress         = get_string('location_address','local_friadmin');
+        $strDetail          = get_string('location_detail','local_friadmin');
+        $strContact         = get_string('location_contact_inf','local_friadmin');
         $dir                = null;
         $sortImg            = null;
         $sortAsc            = new moodle_url('/pix/t/sort_asc.png');
@@ -1274,10 +1286,10 @@ class CourseLocations {
 
         try {
             /* Build URL    */
-            $urlView = new moodle_url('/local/course_locations/view.php',array('page' => $page, 'perpage' => $perpage,'sort' => $sort,'id' => $locationId));
+            $urlView = new moodle_url('/local/friadmin/course_locations/view.php',array('page' => $page, 'perpage' => $perpage,'sort' => $sort,'id' => $locationId));
 
             /* Build Action Link    */
-            $strAlt = get_string('view_location','local_course_locations');
+            $strAlt = get_string('view_location','local_friadmin');
             $outLnk .= html_writer::start_div('lnk_edit');
                 $outLnk .= html_writer::link($urlView,
                                              html_writer::empty_tag('img', array('src'=>$OUTPUT->pix_url('t/viewdetails'),'alt'=>$strAlt,'class'=>'iconsmall')),
@@ -1315,14 +1327,14 @@ class CourseLocations {
 
         try {
             /* Build URL    */
-            $urlAct = new moodle_url('/local/course_locations/locations.php',array('page' => $page, 'perpage' => $perpage, 'sort' => $sort,'act' => 1,'id' => $locationId));
+            $urlAct = new moodle_url('/local/friadmin/course_locations/locations.php',array('page' => $page, 'perpage' => $perpage, 'sort' => $sort,'act' => 1,'id' => $locationId));
 
             /* Get PIX      */
             if ($activate) {
-                $strAlt = get_string('deactivate','local_course_locations');
+                $strAlt = get_string('deactivate','local_friadmin');
                 $srcAct = $OUTPUT->pix_url('t/hide');
             }else {
-                $strAlt = get_string('activate','local_course_locations');
+                $strAlt = get_string('activate','local_friadmin');
                 $srcAct = $OUTPUT->pix_url('t/show');
             }//if_activate
 
@@ -1362,10 +1374,10 @@ class CourseLocations {
 
         try {
             /* Build URL    */
-            $urlEdit = new moodle_url('/local/course_locations/edit_location.php',array('page' => $page, 'perpage' => $perpage,'sort' => $sort,'id' => $locationId));
+            $urlEdit = new moodle_url('/local/friadmin/course_locations/edit_location.php',array('page' => $page, 'perpage' => $perpage,'sort' => $sort,'id' => $locationId));
 
             /* Build Action Link    */
-            $strAlt = get_string('edit_location','local_course_locations');
+            $strAlt = get_string('edit_location','local_friadmin');
             $outLnk .= html_writer::start_div('lnk_edit');
                 $outLnk .= html_writer::link($urlEdit,
                                              html_writer::empty_tag('img', array('src'=>$OUTPUT->pix_url('t/edit'),'alt'=>$strAlt,'class'=>'iconsmall')),
@@ -1402,10 +1414,10 @@ class CourseLocations {
 
         try {
             /* Build URL */
-            $urlDelete = new moodle_url('/local/course_locations/delete_location.php',array('page' => $page, 'perpage' => $perpage, 'sort' => $sort,'id' => $locationId));
+            $urlDelete = new moodle_url('/local/friadmin/course_locations/delete_location.php',array('page' => $page, 'perpage' => $perpage, 'sort' => $sort,'id' => $locationId));
 
             /* Build Action Link    */
-            $strAlt = get_string('del_location','local_course_locations');
+            $strAlt = get_string('del_location','local_friadmin');
             $outLnk .= html_writer::start_div('lnk_edit');
                 $outLnk .= html_writer::link($urlDelete,
                                              html_writer::empty_tag('img', array('src'=>$OUTPUT->pix_url('t/delete'),'alt'=>$strAlt,'class'=>'iconsmall')),
@@ -1432,13 +1444,13 @@ class CourseLocations {
     private static function Add_ContentDetail($location) {
         /* Variables    */
         $content = '';
-        $strDetail          = get_string('location_detail','local_course_locations');
+        $strDetail          = get_string('location_detail','local_friadmin');
         $infoDetail         = null;
         $strCourses         = get_string('courses');
-        $strComments        = get_string('location_comments','local_course_locations');
-        $strAddress         = get_string('location_address','local_course_locations');
+        $strComments        = get_string('location_comments','local_friadmin');
+        $strAddress         = get_string('location_address','local_friadmin');
         $infoAddress        = null;
-        $strContact         = get_string('location_contact_inf','local_course_locations');
+        $strContact         = get_string('location_contact_inf','local_friadmin');
         $infoContact        = null;
         $coursesLink        = null;
 
@@ -1449,11 +1461,11 @@ class CourseLocations {
                     /* Content      */
                     $content .= html_writer::start_tag('dl', array('class' => 'list'));
                         /* Detail */
-                        $infoDetail      = get_string('location_floor','local_course_locations') . ': ' . $location->floor;
+                        $infoDetail      = get_string('location_floor','local_friadmin') . ': ' . $location->floor;
                         $infoDetail     .= "</br>";
-                        $infoDetail     .=  get_string('location_room','local_course_locations') . ': ' . $location->room;
+                        $infoDetail     .=  get_string('location_room','local_friadmin') . ': ' . $location->room;
                         $infoDetail     .= "</br>";
-                        $infoDetail     .=  get_string('location_seats','local_course_locations') . ': ' . $location->seats;
+                        $infoDetail     .=  get_string('location_seats','local_friadmin') . ': ' . $location->seats;
                         $content .= html_writer::tag('dt', $strDetail);
                         $content .= html_writer::tag('dd', $infoDetail);
 

@@ -2,11 +2,14 @@
  * Course Locations - Java Script
  *
  * @package         local
- * @subpackage      course_locations
+ * @subpackage      friadmin/course_locations/js
  * @copyright       2014        eFaktor {@link http://www.efaktor.no}
  *
- * @updateDate      28/04/2015
+ * @updateDate      16/06/2015
  * @author          eFaktor     (fbv)
+ *
+ * Description
+ * Integrate into Friadmin plugin
  *
  */
 YUI().use('node', function(Y) {

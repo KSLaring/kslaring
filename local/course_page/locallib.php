@@ -1256,9 +1256,9 @@ class course_page  {
 
         try {
             /* Course Locations List    */
-            $courseLocations[0] = get_string('sel_location','local_course_locations');
+            $courseLocations[0] = get_string('sel_location','local_friadmin');
             /* Get Competence connected with user    */
-            require_once($CFG->dirroot . '/local/course_locations/locationslib.php');
+            require_once($CFG->dirroot . '/local/friadmin/course_locations/locationslib.php');
             $myCompetence = CourseLocations::Get_MyCompetence($userId);
 
             /* SQL Instruction  */
@@ -1323,7 +1323,7 @@ class course_page  {
 
         try {
             /* Sectors List     */
-            $sectors[0] = get_string('sel_sector','local_course_locations');
+            $sectors[0] = get_string('sel_sector','local_friadmin');
 
             if ($locations) {
                 /* SQL Instruction  */
