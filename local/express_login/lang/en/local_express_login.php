@@ -92,3 +92,5 @@ $string['cron_deactivate']          = 'Disabled';
 $string['express_subject']        = '{$a}: Express Login Auto Generated';
 $string['express_body']           = '<p>Dear {$a->name},</p><p>We would like to inform you that your <strong>Express Login</strong> has been generated automatically. Your <strong>pin code</strong> is: <strong>{$a->express}</strong></p>
                                     <p>You can get your <strong>Express Login Link</strong> in <strong>My profile settings->Express Login-><u>Express Login</u></strong>.</p>';
+
+$string['micro_message']          = '<p>We would like to inform you, that you have changed your <strong>Express Login</strong>.So, you get your <strong>Microlearning</strong> with the new <strong>Express Login</strong>.</p>';

@@ -1090,6 +1090,9 @@ class Express_Login {
             /* Save Express Login   */
             $DB->update_record('user_express',$express_info);
 
+            /* Update the Microlearning deliveries with the old express login */
+            self::UpdateDeliveries_MicroLearning($data->id);
+
             return true;
         }catch (Exception $ex) {
             throw $ex;
@@ -1133,11 +1136,62 @@ class Express_Login {
             /* Save Express Login   */
             $DB->update_record('user_express',$express_info);
 
+            /* Update the Microlearning deliveries with the old express login */
+            self::UpdateDeliveries_MicroLearning($data->id);
+
             return true;
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
     }//Update_ExpressLink
+
+    /**
+     * @param           $userId
+     * @throws          Exception
+     *
+     * @creationDate    16/06/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Update all the deliveries set with the old express login to the status not sent.
+     */
+    private static function UpdateDeliveries_MicroLearning($userId) {
+        /* Variables    */
+        global $DB;
+        $dbMan          = null;
+        $time           = null;
+
+        try {
+            /* First, it checks if the table exists */
+            $dbMan = $DB->get_manager();
+            if ($dbMan->table_exists('microlearning_deliveries')) {
+                /* Search Criteria  */
+                $params = array();
+                $params['userid']   = $userId;
+                $params['sent']     = 1;
+
+                /* Execute  */
+                $rdo = $DB->get_records('microlearning_deliveries',$params,'id','id,sent,message,timemodified');
+                if ($rdo) {
+                    /* Time modified    */
+                    $time = time();
+
+                    /* Update deliveries    */
+                    foreach ($rdo as $instance) {
+                        /* Update Delivery to not sent  */
+                        $instance->sent = 0;
+                        $instance->timemodified = $time;
+                        $instance->message = get_string('micro_message','local_express_login');
+
+                        /* Execute  */
+                        $DB->update_record('microlearning_deliveries',$instance);
+                    }//for_each_delivery
+                }//if_Rdo
+            }//if_table_exists
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//UpdateDeliveries_MicroLearning
 
     /**
      * @param           $user
