@@ -84,3 +84,11 @@ $string['clipboardDiv'] = 'Your Express Login Link has been copied to the clipbo
 $string['bookmarkDiv']  = 'To add your personal Express Login Link to the bookmark, please drop and drag <strong>{$a}</strong> to the bookmark.';
 
 $string['err_express_access'] = 'You not have permissions to generate Express Login.';
+
+$string['cron_settings']            = 'Cron settings';
+$string['cron_activate']            = 'Enabled';
+$string['cron_deactivate']          = 'Disabled';
+
+$string['express_subject']        = '{$a}: Express Login Auto Generated';
+$string['express_body']           = '<p>Dear {$a->name},</p><p>We would like to inform you that your <strong>Express Login</strong> has been generated automatically. Your <strong>pin code</strong> is: <strong>{$a->express}</strong></p>
+                                    <p>You can get your <strong>Express Login Link</strong> in <strong>My profile settings->Express Login-><u>Express Login</u></strong>.</p>';

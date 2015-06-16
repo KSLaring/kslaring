@@ -36,3 +36,51 @@ function local_express_login_extends_settings_navigation($settingsnav, $context)
         }//if_usercurrentsettings
     }//if_activate
 }//local_express_login_extends_settings_navigation
+
+/**
+ * @creationDate    15/06/2015
+ * @author          eFaktor     (fbv)
+ *
+ * Description
+ * Trigger the cron
+ */
+function local_express_login_cron() {
+    /* Variables    */
+    $pluginInfo     = null;
+    $dateHour       = null;
+    $dateMin        = null;
+    $cronHour       = null;
+    $cronMin        = null;
+    $time           = null;
+
+    try {
+        /* Plugin Info */
+        $pluginInfo     = get_config('local_express_login');
+
+        /* Trigger the Cron */
+        if ($pluginInfo->express_cron_active) {
+            require_once('cron/expresscron.php');
+
+            /* Check if has to be triggered */
+            $dateHour  = date('H',time());
+            $dateMin   = date('i',time());
+            $cronHour  = $pluginInfo->express_auto_time;
+            $cronMin   = $pluginInfo->express_auto_time_minute;
+
+            if (($dateHour >= $cronHour) && ($dateMin >= $cronMin)) {
+                if (isset($pluginInfo->lastcron)) {
+                    $time = time() - (60*60*24);
+                    if ($pluginInfo->lastcron <= $time){
+                        Express_Cron::cron();;
+                    }
+                }else {
+                    Express_Cron::cron();;
+                }
+            }
+        }else {
+            mtrace("Cron Express Login Deactivated");
+        }//if_Activate
+    }catch (Exception $ex) {
+        throw  $ex;
+    }//try_catch
+}//local_express_login_cron

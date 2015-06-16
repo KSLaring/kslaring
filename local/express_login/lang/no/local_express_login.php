@@ -84,3 +84,11 @@ $string['clipboardDiv'] = 'Hurtigtilgangslenken din har blitt kopiert til utklip
 $string['bookmarkDiv']  = 'For å legge til hurtigtilgang som et bokmerke, vennligst dra og slipp <strong>{$a}</strong> til bokmerkene.';
 
 $string['err_express_access'] = 'You not have permissions to generate Express Login.';
+
+$string['cron_settings']            = 'Cron settings';
+$string['cron_activate']            = 'Enabled';
+$string['cron_deactivate']          = 'Disabled';
+
+$string['express_subject']        = '{$a}: Express Login Auto Generated';
+$string['express_body']           = '<p>Dear {$a->name},</p><p>We would like to inform you that your <strong>Express Login</strong> has been generated automatically. Your <strong>pin code</strong> is: <strong>{$a->express}</strong></p>
+                                    <p>You can get your <strong>Express Login Link</strong> in <strong>My profile settings->Express Login-><u>Express Login</u></strong>.</p>';
