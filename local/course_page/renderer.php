@@ -336,6 +336,12 @@ class local_course_page_renderer extends plugin_renderer_base {
      *
      * Description
      * Course Location / Course Sectors
+     *
+     * @updateDate      17/06/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Course Location -- Classroom format
      */
     protected function addExtra_DurationBlock($course_format,$format_options) {
         /* Variables */
@@ -343,6 +349,10 @@ class local_course_page_renderer extends plugin_renderer_base {
         $strLocationName    = null;
         $sectorsName        = null;
         $str_format         = 'format_' . $course_format;
+        $outLocation        = null;
+        $outSector          = null;
+        $outLength          = null;
+        $outEffort          = null;
 
         $out .= html_writer::start_tag('div',array('class' => 'extra chp-block'));
             switch ($course_format) {
@@ -368,44 +378,38 @@ class local_course_page_renderer extends plugin_renderer_base {
                 case 'classroom':
                 case 'classroom_frikomport':
                     foreach ($format_options as $option) {
-                        if ($option->name == 'location') {
-                            if ($option->value) {
-                                $out .= '<h5 class="title_home chp-title">' . get_string('home_location',$str_format) . '</h5>';
-                                $out .= '<div class="extra_home chp-content">' . $option->value . '</div>';
-                            }//if_value
-                        }//if_location
-
                         if ($option->name == 'course_location') {
                             if ($option->value) {
                                 $strLocationName = course_page::Get_LocationName($option->value);
-                                $out .= '<h5 class="title_home chp-title">' . get_string('home_location',$str_format) . '</h5>';
-                                $out .= '<div class="extra_home chp-content">' . $strLocationName . '</div>';
+                                $outLocation  = '<h5 class="title_home chp-title">' . get_string('home_title_location',$str_format) . '</h5>';
+                                $outLocation .= '<div class="extra_home chp-content">' . $strLocationName . '</div>';
                             }//if_value
                         }//if_course_location
 
                         if ($option->name == 'course_sector') {
                             if ($option->value) {
                                 $sectorsName = course_page::Get_SectorsName($option->value);
-                                $out .= '<h5 class="title_home chp-title">' . get_string('home_sector',$str_format) . '</h5>';
-                                $out .= '<div class="extra_home chp-content">' . $sectorsName . '</div>';
+                                $outSector   = '<h5 class="title_home chp-title">' . get_string('home_title_sector',$str_format) . '</h5>';
+                                $outSector  .= '<div class="extra_home chp-content">' . $sectorsName . '</div>';
                             }//if_value
                         }//if_course_sector
 
                         if ($option->name == 'length') {
                             if ($option->value) {
-                                $out .= '<h5 class="title_home chp-title">' . get_string('home_length',$str_format) . '</h5>';
-                                $out .=  '<div class="extra_home chp-content">' . $option->value . '</div>';
+                                $outLength  = '<h5 class="title_home chp-title">' . get_string('home_length',$str_format) . '</h5>';
+                                $outLength .=  '<div class="extra_home chp-content">' . $option->value . '</div>';
                             }//if_value
                         }//if_length
 
                         if ($option->name == 'effort') {
                             if ($option->value) {
-                                $out .= '<h5 class="title_home chp-title">' . get_string('home_effort',$str_format) . '</h5>';
-                                $out .= '<div class="extra_home chp-content">' . $option->value . '</div>';
+                                $outEffort  = '<h5 class="title_home chp-title">' . get_string('home_effort',$str_format) . '</h5>';
+                                $outEffort .= '<div class="extra_home chp-content">' . $option->value . '</div>';
                             }//if_value
                         }//if_effort
                     }//for_format_options
 
+                    $out .= $outLocation . $outSector . $outLength . $outEffort;
                     break;
                 default:
                     break;
