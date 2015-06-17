@@ -15,28 +15,28 @@
  * Description
  * Add new strings for location menu
  */
-$string['enabledock']               = 'Allow the user to dock this block';
-$string['pluginname']               = 'Frikomport';
-$string['searchinfrikomport']       = 'Search';
-$string['frikomport:addinstance']   = 'Add a new frikomport block';
-$string['frikomport:myaddinstance'] = 'Add a new frikomport block to My home';
-$string['frikomport:view'] = 'View the frikomport block';
+$string['enabledock']               = 'Tillat brukeren å flytte denne blokken til sidestolpen';
+$string['pluginname']               = 'Friadmin';
+$string['searchinfrikomport']       = 'Søk';
+$string['frikomport:addinstance']   = 'Legg til en ny Friadmin-blokk';
+$string['frikomport:myaddinstance'] = 'Legg til en ny Friadmin-blokk til Min startside';
+$string['frikomport:view'] = 'Vis Friadmin-blokken';
 
-$string['ncourses']                 = 'Course list';
-$string['nnewcourses']              = 'Create new courses';
-$string['naddcourse']               = 'Add a new course';
-$string['naddfromtemplate']         = 'Add from template';
+$string['ncourses']                 = 'Kursoversikt';
+$string['nnewcourses']              = 'Opprett nytt kurs';
+$string['naddcourse']               = 'Opprett nytt kurs';
+$string['naddfromtemplate']         = 'Opprett fra en kursmal';
 
-$string['norgstructure']            = 'Organization structure';
+$string['norgstructure']            = 'Organisasjonsstruktur';
 $string['nvirksomheter']            = 'Virksomheter';
 $string['nvirksomhetsrader']        = 'Virksomhetsområder';
 
-$string['nlocations']       = 'Locations';
-$string['lst_locations']    = 'Browse list of locations';
-$string['new_location']     = 'New Location';
+$string['nlocations']       = 'Kurssteder';
+$string['lst_locations']    = 'Vis liste over kurssteder';
+$string['new_location']     = 'Nytt kurssted';
 
-$string['nreports']         = 'Reports';
-$string['nparticipants']    = 'Participants list';
-$string['nwaitlist']        = 'Wait list';
-$string['ncompcourses']     = 'Completed courses';
-$string['nstatistics']      = 'Statistics';
+$string['nreports']         = 'Rapporter';
+$string['nparticipants']    = 'Deltakerliste';
+$string['nwaitlist']        = 'Venteliste';
+$string['ncompcourses']     = 'Fullførte kurs';
+$string['nstatistics']      = 'Statistikk';
