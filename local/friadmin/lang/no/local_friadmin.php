@@ -14,7 +14,6 @@
  * Description
  * Integrate 'Course Locations' plugin into FriAdmin plugin
  */
-
 $string['pluginname']       = 'Friadmin';
 
 $string['courselist_title']     = 'Friadmin tilgjengelige kurs';
@@ -143,3 +142,5 @@ $string['delete_location_are_you_sure']     = '<p>Er du sikker på at du vil sle
 
 $string['btn_save']     = 'Lagre';
 $string['lnk_back']     = 'Tilbake';
+
+
