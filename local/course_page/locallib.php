@@ -967,11 +967,6 @@ class course_page  {
                         $form->setDefault('producedby',$value);
                         $form->setType('producedby',PARAM_TEXT);
                         break;
-                    case 'location':
-                        $form->addElement('text','location',get_string('home_location',$str_format),'style="width:95%;"');
-                        $form->setDefault('location',$value);
-                        $form->setType('location',PARAM_TEXT);
-                        break;
                     case 'course_location':
                         $lstLocations = course_page::Get_CourseLocationsList($USER->id);
                         $form->addElement('select','course_location',get_string('home_location',$str_format),$lstLocations);

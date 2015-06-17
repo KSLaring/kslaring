@@ -425,8 +425,21 @@ class format_classroom extends format_base {
      *
      * Description
      * Add the Home Page Generator Fields
+     *
+     * @updateDate      17/06/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Add Course Locations - New Version
+     * Add Course Sectors
      */
     public function course_format_options($foreditform = false) {
+        /* Variables    */
+        global $USER;
+        $lstManager     = null;
+        $lstLocations   = null;
+        $lstSectors     = null;
+
         /**
          * @updateDate  14/05/2014
          * @author      eFaktor     (fbv)
@@ -434,7 +447,26 @@ class format_classroom extends format_base {
          * Description
          * Get the users are candidates to be course manager
          */
-        $lst_manager = course_page::getCourseManager();
+        $lstManager = course_page::getCourseManager();
+
+        /**
+         * @updateDate  08/05/2015
+         * @author      eFaktor     (fbv)
+         *
+         * Description
+         * Get the available locations for the course
+         */
+        $lstLocations = course_page::Get_CourseLocationsList($USER->id);
+
+        /**
+         * @updateDate  08/05/2015
+         * @author      eFaktor     (fbv)
+         *
+         * Description
+         * Get the sectors connected with locations
+         */
+        $lstSectors = course_page::Get_SectorsLocationsList(implode(',',array_keys($lstLocations)));
+
         static $courseformatoptions = false;
         if ($courseformatoptions === false) {
             $courseconfig = get_config('moodlecourse');
@@ -493,8 +525,12 @@ class format_classroom extends format_base {
                 'producedby' => array(
                     'type' => PARAM_TEXT,
                 ),
-                'location' => array(
-                    'type' => PARAM_TEXT,
+                'course_location' => array(
+                    'type' => PARAM_INT,
+                    'default' => 0,
+                ),
+                'course_sector' => array(
+                    'default' => 0,
                 ),
                 'length' => array(
                     'type' => PARAM_TEXT,
@@ -564,12 +600,15 @@ class format_classroom extends format_base {
                         0 => 'style="width:95%;"'
                     )
                 ),
-                'location' => array(
+                'course_location' => array(
                     'label' => get_string('home_location', 'format_classroom'),
-                    'element_type' => 'text',
-                    'element_attributes' => array(
-                        0 => 'style="width:95%;"'
-                    )
+                    'element_type' => 'select',
+                    'element_attributes' => array($lstLocations)
+                ),
+                'course_sector' => array(
+                    'label' => get_string('home_sector', 'format_classroom'),
+                    'element_type' => 'select',
+                    'element_attributes' => array($lstSectors,'1' => 'multiple')
                 ),
                 'length' => array(
                     'label' => get_string('home_length', 'format_classroom'),
@@ -588,7 +627,7 @@ class format_classroom extends format_base {
                 'manager' => array(
                     'label' => get_string('home_manager', 'format_classroom'),
                     'element_type' => 'select',
-                    'element_attributes' => array($lst_manager)
+                    'element_attributes' => array($lstManager)
                 )
             );
             $courseformatoptions = array_merge_recursive($courseformatoptions,
@@ -706,6 +745,12 @@ class format_classroom extends format_base {
      *
      * Description
      * Update the course format options.
+     *
+     * @updateDate  17/06/2015
+     * @author      eFaktor     (fbv)
+     *
+     * Description
+     * Integrate course sector
      */
     public function update_course_format_options($data, $oldcourse = null) {
         global $DB, $delete;
@@ -763,6 +808,14 @@ class format_classroom extends format_base {
                         //if_graphic_id
                     }
                     //if_page_video_pagevideo_filemanager
+
+                    break;
+                case 'course_sector':
+                    if (isset($data['course_sector'])) {
+                        if (is_array($data['course_sector'])) {
+                            $data['course_sector'] = implode(',',$data['course_sector']);
+                        }
+                    }
 
                     break;
                 default:
