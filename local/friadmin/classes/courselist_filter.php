@@ -203,7 +203,7 @@ class local_friadmin_courselist_filter extends local_friadmin_widget implements 
             $leveltwoobjs = local_friadmin_helper::get_leveltwo_sectors($leveloneobjsfiltered);
 
             foreach ($leveltwoobjs as $obj) {
-                if (!in_array($obj->name, $result['sector'])) {
+                if (!in_array($obj->id, $result['sector'])) {
                     $result['sector'][$obj->id] = $obj->name;
                 }
             }
@@ -211,7 +211,7 @@ class local_friadmin_courselist_filter extends local_friadmin_widget implements 
             // Get the locations for the relevant municipalities via levelone ids
             $locationsobjs = $this->get_locations($leveloneobjsfiltered);
             foreach ($locationsobjs as $obj) {
-                if (!in_array($obj->name, $result['location'])) {
+                if (!in_array($obj->id, $result['location'])) {
                     $result['location'][$obj->id] = $obj->name;
                 }
             }
