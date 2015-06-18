@@ -114,6 +114,17 @@ class FriAdmin_Handler {
             /* Execute  */
             $DB->insert_record('block_instances',$instanceBlock);
 
+            /* local-friadmin-coursedetail */
+            $instanceBlock = new stdClass();
+            $instanceBlock->blockname           = 'frikomport';
+            $instanceBlock->parentcontextid     = 1;
+            $instanceBlock->showinsubcontexts   = 0;
+            $instanceBlock->pagetypepattern     = 'local-friadmin-coursetemplate';
+            $instanceBlock->defaultregion       = 'side-pre';
+            $instanceBlock->defaultweight       = 0;
+            /* Execute  */
+            $DB->insert_record('block_instances',$instanceBlock);
+
             /* Create Instance Block Frikomport --> Course Locations Plugin */
             /* local-course_locations-index             */
             $instanceBlock = new stdClass();

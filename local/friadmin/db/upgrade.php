@@ -60,11 +60,14 @@ function xmldb_local_friadmin_upgrade($oldversion) {
 
     $dbman = $DB->get_manager();
 
-    if ($oldversion < 2015061604) {
+    if ($oldversion < 2015061800) {
         /* Add Instance FriAdmin - Frikomport Block */
         /* Add Instance Course Locations - Frikomport Block */
         /* Add Instance Frikomport Block  - Course Edit and Index */
         FriAdmin_UpdateHandler::AddInstance_FrikomportBlock();
+
+        // Plugin savepoint reached.
+        upgrade_plugin_savepoint(true, 2015061800, 'local', 'friadmin');
     }//if_odlversion
 
     return true;
@@ -139,6 +142,17 @@ class FriAdmin_UpdateHandler {
             /* Execute  */
             $DB->insert_record('block_instances',$instanceBlock);
 
+            /* local-friadmin-coursedetail */
+            $instanceBlock = new stdClass();
+            $instanceBlock->blockname           = 'frikomport';
+            $instanceBlock->parentcontextid     = 1;
+            $instanceBlock->showinsubcontexts   = 0;
+            $instanceBlock->pagetypepattern     = 'local-friadmin-coursetemplate';
+            $instanceBlock->defaultregion       = 'side-pre';
+            $instanceBlock->defaultweight       = 0;
+            /* Execute  */
+            $DB->insert_record('block_instances',$instanceBlock);
+
             /* Create Instance Block Frikomport --> Course Locations Plugin */
             /* local-course_locations-index             */
             $instanceBlock = new stdClass();
@@ -167,7 +181,7 @@ class FriAdmin_UpdateHandler {
             $instanceBlock->blockname           = 'frikomport';
             $instanceBlock->parentcontextid     = 1;
             $instanceBlock->showinsubcontexts   = 0;
-            $instanceBlock->pagetypepattern     = 'local-friadmin-course_locations-locations ';
+            $instanceBlock->pagetypepattern     = 'local-friadmin-course_locations-locations';
             $instanceBlock->defaultregion       = 'side-pre';
             $instanceBlock->defaultweight       = 0;
             /* Execute  */
@@ -178,7 +192,7 @@ class FriAdmin_UpdateHandler {
             $instanceBlock->blockname           = 'frikomport';
             $instanceBlock->parentcontextid     = 1;
             $instanceBlock->showinsubcontexts   = 0;
-            $instanceBlock->pagetypepattern     = 'local-friadmin-course_locations-view ';
+            $instanceBlock->pagetypepattern     = 'local-friadmin-course_locations-view';
             $instanceBlock->defaultregion       = 'side-pre';
             $instanceBlock->defaultweight       = 0;
             /* Execute  */
@@ -189,7 +203,7 @@ class FriAdmin_UpdateHandler {
             $instanceBlock->blockname           = 'frikomport';
             $instanceBlock->parentcontextid     = 1;
             $instanceBlock->showinsubcontexts   = 0;
-            $instanceBlock->pagetypepattern     = 'local-friadmin-course_locations-add_location ';
+            $instanceBlock->pagetypepattern     = 'local-friadmin-course_locations-add_location';
             $instanceBlock->defaultregion       = 'side-pre';
             $instanceBlock->defaultweight       = 0;
             /* Execute  */
@@ -200,7 +214,7 @@ class FriAdmin_UpdateHandler {
             $instanceBlock->blockname           = 'frikomport';
             $instanceBlock->parentcontextid     = 1;
             $instanceBlock->showinsubcontexts   = 0;
-            $instanceBlock->pagetypepattern     = 'local-friadmin-course_locations-edit_location ';
+            $instanceBlock->pagetypepattern     = 'local-friadmin-course_locations-edit_location';
             $instanceBlock->defaultregion       = 'side-pre';
             $instanceBlock->defaultweight       = 0;
             /* Execute  */
@@ -211,7 +225,7 @@ class FriAdmin_UpdateHandler {
             $instanceBlock->blockname           = 'frikomport';
             $instanceBlock->parentcontextid     = 1;
             $instanceBlock->showinsubcontexts   = 0;
-            $instanceBlock->pagetypepattern     = 'local-friadmin-course_locations-delete_location ';
+            $instanceBlock->pagetypepattern     = 'local-friadmin-course_locations-delete_location';
             $instanceBlock->defaultregion       = 'side-pre';
             $instanceBlock->defaultweight       = 0;
             /* Execute  */
@@ -239,7 +253,7 @@ class FriAdmin_UpdateHandler {
             $instanceBlock->blockname           = 'frikomport';
             $instanceBlock->parentcontextid     = 3;
             $instanceBlock->showinsubcontexts   = 0;
-            $instanceBlock->pagetypepattern     = 'course-edit ';
+            $instanceBlock->pagetypepattern     = 'course-edit';
             $instanceBlock->defaultregion       = 'side-pre';
             $instanceBlock->defaultweight       = 0;
             /* Execute  */
@@ -250,7 +264,7 @@ class FriAdmin_UpdateHandler {
             $instanceBlock->blockname           = 'frikomport';
             $instanceBlock->parentcontextid     = 1;
             $instanceBlock->showinsubcontexts   = 0;
-            $instanceBlock->pagetypepattern     = 'course-index ';
+            $instanceBlock->pagetypepattern     = 'course-index';
             $instanceBlock->defaultregion       = 'side-pre';
             $instanceBlock->defaultweight       = 0;
             /* Execute  */
