@@ -32,6 +32,10 @@ $PAGE->set_pagelayout('standard');
 echo $OUTPUT->header();
 echo $OUTPUT->heading(get_string('welcome_title','local_first_access'));
 
+$user = get_complete_user_data('id',$user_id);
+if (($user->firstname) && ($user->lastname) && ($user->email) && ($user->city)) {
+    $url_profile = new moodle_url('/user/edit.php',array('id' => $user_id));
+}
 echo html_writer::start_div();
     echo "</br>";
     echo get_string('welcome_message','local_first_access');
