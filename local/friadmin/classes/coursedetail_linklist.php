@@ -69,19 +69,44 @@ class local_friadmin_coursedetail_linklist extends local_friadmin_widget impleme
         // set the confirmed button to disabled if not.
         $disabled_confirmed = '';
         $confirmedman = \enrol_waitinglist\entrymanager::get_by_course($courseid);
-        if ($confirmedman->get_confirmed_listtotal() == 0) {
+        /**
+         * @updateDate  17/06/2015
+         * @author      eFaktor     (fbv)
+         *
+         * Description
+         * Check if the result is null or not
+         */
+        if ($confirmedman) {
+            if ($confirmedman->get_confirmed_listtotal() == 0) {
+                $disabled_confirmed = ' disabled';
+                $url_confirmed = '#';
+            }
+        }else {
             $disabled_confirmed = ' disabled';
             $url_confirmed = '#';
-        }
+        }//if_confirmedman
+
 
         // Check if there are users in the course waitlist,
         // set the waitlist button to disabled if not.
         $disabled_waitlist = '';
         $queueman = \enrol_waitinglist\queuemanager::get_by_course($courseid);
-        if ($queueman->get_listtotal() == 0) {
+        /**
+         * @updateDate  17/06/2015
+         * @author      eFaktor     (fbv)
+         *
+         * Description
+         * Check if the result is null or not
+         */
+        if ($queueman) {
+            if ($queueman->get_listtotal() == 0) {
+                $disabled_waitlist = ' disabled';
+                $url_waitlist = '#';
+            }
+        }else {
             $disabled_waitlist = ' disabled';
             $url_waitlist = '#';
-        }
+        }//if_queueman
 
         $list1 = '<ul class="unlist buttons-linklist">
             <li><a class="btn" href="' . $url_back . '">' . $str_back . '</a></li>

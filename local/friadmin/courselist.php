@@ -40,8 +40,14 @@ $output = $PAGE->get_renderer('local_friadmin');
 // Prepare the renderables for the page and the page areas
 $page = new local_friadmin_courselist_page();
 $filter = new local_friadmin_courselist_filter();
-$table = new local_friadmin_courselist_table($page->data->url,
-    $filter->userleveloneids, $filter->fromform);
+/**
+ * @updateDate  17/06/2015
+ * @author      eFaktor     (fbv)
+ *
+ * Description
+ * Add the user categories
+ */
+$table = new local_friadmin_courselist_table($page->data->url,$filter->get_userleveloneids(),$filter->get_myCategories(),$filter->get_fromform());
 
 $friadmin->set_courselist_references($page, $filter, $table, $output);
 

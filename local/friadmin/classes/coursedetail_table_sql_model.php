@@ -36,8 +36,61 @@ class local_friadmin_coursedetail_table_sql_model extends local_friadmin_widget 
     // The related filter data returned from the form
     protected $filterdata = null;
 
+    /**
+     * @var         string
+     *
+     * @updateDate  18/06/2015
+     * @author      eFaktor     (fbv)
+     *
+     * Description
+     * Rebuild the query
+     */
+    protected $sql = " SELECT	c.id        as 'courseid',
+                                c.fullname  as 'name',
+                                c.summary   as 'summary',
+                                '-'         as 'targetgroup',
+                                c.startdate as 'date',
+                                '-'         as 'time',
+                                cln.value  	as 'length',
+                                rgcmu.name  as 'municipality',
+                                rgcse.name  as 'sector',
+                                cl.name     as 'location',
+                                cmn.value 	as 'responsible',
+                                '-'         as 'teacher',
+                                '-'         as 'priceinternal',
+                                '-'         as 'priceexternal',
+                                '-'         as 'seats',
+                                e.deadline  as 'deadline'
+                       FROM 	{course} c
+                          # Get the deadline from enrol
+                          JOIN (
+                                 SELECT	e.courseid,
+                                        IFNULL(MAX(e.customint1), 0) AS deadline
+                                 FROM 	{enrol} e
+                                 WHERE 	e.status = 0
+                                 GROUP BY e.courseid
+                               ) e ON e.courseid = c.id
+                          # Get the length
+                          JOIN 	{course_format_options}	    cln 	ON 	cln.courseid 	= c.id
+                                                                    AND	cln.name 		= 'length'
+                          # Get the manager id = responsible
+                          JOIN 	{course_format_options}	    cmn		ON 	cmn.courseid	= c.id
+                                                                    AND cmn.name		= 'manager'
+                          # Get the course location
+                          JOIN 	{course_format_options}	    clo		ON  clo.courseid	= c.id
+                                                                    AND	clo.name 		= 'course_location'
+                          # Get the course location name
+                          JOIN 	{course_locations} 		    cl		ON 	cl.id 			= clo.value
+                          # Get the course sector
+                          JOIN 	{course_format_options}	    cse		ON 	cse.courseid 	= c.id
+                                                                    AND	cse.name		= 'course_sector'
+                          # Get the course sector name
+                          JOIN 	{report_gen_companydata} 	rgcse	ON 	rgcse.id 		= cse.value
+                          # Get the municipality
+                          JOIN 	{report_gen_companydata} 	rgcmu 	ON 	rgcmu.id 		= cl.levelone ";
+
     // The query SQL
-    protected $sql = "
+    protected $sql_old = "
       SELECT
           c.id        courseid,
           c.fullname  name,

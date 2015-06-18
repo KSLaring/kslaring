@@ -50,20 +50,42 @@ class queuemanager  {
 	 /**
      *  Construct instance from DB record
      */
-	 public static function get_by_course($courseid){
-		global $DB;
-		
-	//	static $wlm = null;
-   //     if (null === $wlm) {
-            $wlm = new static();
-			$wlm->courseid=$courseid;
-			$wlm->waitinglist = $DB->get_record('enrol', array('courseid' => $courseid,'enrol'=>'waitinglist'));
-			$records =  $DB->get_records(self::QTABLE, array('courseid' => $courseid, 'waitinglistid'=>$wlm->waitinglist->id, 'offqueue'=>0),'queueno ASC');
-			if($records){
-				$wlm->qentries = $records;
-			}
-      //  }
-		return $wlm;
+    /**
+     * @param       $courseid
+     * @return      null|static
+     * @throws      \Exception
+     *
+     * @updateDate  17/06/2015
+     * @author      eFaktor     (fbv)
+     *
+     * Description
+     * It there is none enrolment mwthod return null
+     */
+    public static function get_by_course($courseid){
+        /* Variables   */
+        global $DB;
+        $wlm = null;
+
+        try {
+            /* Execute  */
+            $rdo = $DB->get_record('enrol', array('courseid' => $courseid,'enrol'=>'waitinglist'));
+            if ($rdo) {
+                //	static $wlm = null;
+                //     if (null === $wlm) {
+                $wlm = new static();
+                $wlm->courseid=$courseid;
+                $wlm->waitinglist = $DB->get_record('enrol', array('courseid' => $courseid,'enrol'=>'waitinglist'));
+                $records =  $DB->get_records(self::QTABLE, array('courseid' => $courseid, 'waitinglistid'=>$wlm->waitinglist->id, 'offqueue'=>0),'queueno ASC');
+                if($records){
+                    $wlm->qentries = $records;
+                }
+                //  }
+            }//if_rdo
+
+            return $wlm;
+        }catch (\Exception $ex) {
+            throw $ex;
+        }//try_catch
 	}
 	
 	public static function get_maxq_no($waitinglistid){

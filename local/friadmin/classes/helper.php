@@ -35,9 +35,6 @@ require_once($CFG->dirroot . '/user/profile/field/competence/competencelib.php')
  */
 class local_friadmin_helper {
 
-//    public function __construct() {
-//    }
-
     /**
      * Get course categories where the user is admin
      *
@@ -67,6 +64,62 @@ class local_friadmin_helper {
         return $result;
     }
 
+    /**
+     * @return          null
+     * @throws          Exception
+     *
+     * @creationDate    17/06/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Get all categories where the users ir a super user
+     */
+    public static function getMyCategories() {
+        /* Variables    */
+        global $DB,$USER;
+        $myCategories   = null;
+        $categoriesLst  = null;
+        $contextCat     = null;
+
+        try {
+            /* Get all the categories   */
+            $categoriesLst = $DB->get_records('course_categories');
+
+            /* Search Criteria  */
+            $params = array();
+            $params['archetype']    = 'manager';
+            $params['context']      = null;
+            $params['user']         = $USER->id;
+
+            /* SQL Instruction  */
+            $sql = " SELECT		ra.id
+                     FROM		{role_assignments}	ra
+                        JOIN	{role}				r		ON 		r.id			= ra.roleid
+                                                            AND		r.archetype		= :archetype
+                     WHERE		ra.userid 		= :user
+                        AND		ra.contextid 	= :context ";
+
+            /* For each Category checks if the user has permissions */
+            foreach ($categoriesLst as $category) {
+                /* Get Context Category */
+                $contextCat = CONTEXT_COURSECAT::instance($category->id);
+
+                /* Execute   */
+                $params['context'] = $contextCat->id;
+                $rdo = $DB->get_record_sql($sql,$params);
+                if ($rdo) {
+                    /* Add Category */
+                    $myCategories[$category->id] = $category->name;
+                    /* If there are subcategories connected with, the user will also have permissions for them  */
+                    self::getSubcategories($category->id,$myCategories);
+                }//if_Rdo
+            }//for_Each_Category
+
+            return $myCategories;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//getMyCategories
 
     /**
      * Get the levelone locations with id, name and industrycode
@@ -75,7 +128,7 @@ class local_friadmin_helper {
      *
      * @return mixed Array|null The levelone locations
      */
-    public static function get_levelone_municipalities($userid) {
+    public static function get_levelone_municipalities_old($userid) {
         global $DB;
         $ids = array();
         $leveloneobjs = null;
@@ -115,7 +168,7 @@ class local_friadmin_helper {
      *
      * @return mixed Array|null The array with the sector objects
      */
-    public static function get_leveltwo_sectors($leveloneobjsfiltered) {
+    public static function get_leveltwo_sectors_old($leveloneobjsfiltered) {
         global $DB;
         $industrycodes = array();
         $leveltwoobjs = null;
@@ -145,4 +198,148 @@ class local_friadmin_helper {
 
         return $leveltwoobjs;
     }
+
+    /**
+     * Get the levelone locations with id, name and industrycode
+     *
+     * @param Int $userid The user id
+     *
+     * @return mixed Array|null The levelone locations
+     */
+    /**
+     * @param           $userid
+     * @return          array|null
+     * @throws          Exception
+     *
+     * @updateDate      18/06/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Add comments, exception ...
+     */
+    public static function get_levelone_municipalities($userid) {
+        /* Variables    */
+        global $DB;
+        $ids            = array();
+        $leveloneobjs   = null;
+        $competences    = null;
+
+        try {
+            /* Get user competence  */
+            $competences = Competence::Get_CompetenceData($userid);
+
+            /* Get Level One connected with user    */
+            if ($competences) {
+                foreach ($competences as $comp) {
+                    if (!in_array($comp->levelOne, $ids)) {
+                        $ids[] = $comp->levelOne;
+                    }
+                }
+
+                /* Get the levelone ids, names and industrycodes with given ids */
+                if (!empty($ids)) {
+                    /* SQL Instruction  */
+                    $sql = " SELECT id,
+                                    name,
+                                    industrycode
+                             FROM   {report_gen_companydata}
+                             WHERE  id ";
+
+                    /* Add search criteria  */
+                    list($in, $params) = $DB->get_in_or_equal($ids);
+
+                    /* Execute  */
+                    $leveloneobjs = $DB->get_records_sql($sql . $in, $params);
+                }//if_ids
+            }//if_competences
+
+            return $leveloneobjs;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//get_levelone_municipalities
+
+    /**
+     * @param           $leveloneobjsfiltered
+     * @return          array|null
+     * @throws          Exception
+     *
+     * @updateDate      17/06/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Get all sectors connected with level one
+     */
+    public static function get_leveltwo_sectors($leveloneobjsfiltered) {
+        /* Variables    */
+        global $DB;
+        $levelOne       = array();
+        $levelSectors   = null;
+        $parents        = null;
+
+        try {
+            if ($leveloneobjsfiltered) {
+                /* Get Level One */
+                foreach ($leveloneobjsfiltered as $obj) {
+                    $levelOne[$obj->id] = $obj->id;
+                }//for_level_one_filtered
+
+                /* Get all sectors connected with level one */
+                $parents = implode(',',$levelOne);
+                /* SQL Instruction  */
+                $sql = "  SELECT    rc.id,
+                                    rc.name,
+                                    rc.industrycode
+                          FROM      {report_gen_companydata}        rc
+                              JOIN  {report_gen_company_relation}   rcr ON    rcr.companyid = rc.id
+                                                                    AND   rcr.parentid  IN ($parents)
+                          WHERE     rc.hierarchylevel = 2
+                              AND   rcr.parentid ";
+
+                /* Execute  */
+                $levelSectors = $DB->get_records_sql($sql);
+            }//if_level_one_filteres
+
+            return $levelSectors;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//get_leveltwo_sectors
+
+    /*********************/
+    /* PRIVATE FUNCTIONS */
+    /*********************/
+
+    /**
+     * @param           $categoryId
+     * @param           $myCategories
+     * @throws          Exception
+     *
+     * @creationDate    18/06/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Get and add the subcategories connected with to my categories list
+     */
+    private static function getSubcategories($categoryId,&$myCategories) {
+        /* Variables    */
+        global $DB;
+
+        try {
+            /* Search Criteria  */
+            $params = array();
+            $params['parent'] = $categoryId;
+
+            /* Execute  */
+            $rdo = $DB->get_records('course_categories',$params);
+            if ($rdo) {
+                /* Add subcategories to my categories list  */
+                foreach ($rdo as $instance) {
+                    $myCategories[$instance->id] = $instance->name;
+                }//for_rdo
+            }//if_rdo
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//getSubcategories
 }

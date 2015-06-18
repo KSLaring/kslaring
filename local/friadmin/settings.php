@@ -33,7 +33,14 @@ if ($hassiteconfig) {
 
     // Template directory
     $options = array('0' => get_string('coursetemplate_cat_select', 'local_friadmin'));
-    $catlist = local_friadmin_helper::get_categories_admin();
+    /**
+     * @updateDate  17/06/2015
+     * @author      eFaktor     (fbv)
+     *
+     * Description
+     * Get the categories where the user has permissions as super user
+     */
+    $catlist = local_friadmin_helper::getMyCategories();
 
     if (!is_null($catlist)) {
         asort($catlist);

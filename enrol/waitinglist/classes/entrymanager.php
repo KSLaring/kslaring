@@ -48,22 +48,44 @@ class entrymanager  {
 	 /**
      *  Construct instance from DB record
      */
-	 public static function get_by_course($courseid){
-		global $DB;
-		
-	//	static $wlm = null;
-   //     if (null === $wlm) {
-            $wlm = new static();
-			$wlm->courseid=$courseid;
-			$wlm->waitinglist = $DB->get_record('enrol', array('courseid' => $courseid,'enrol'=>'waitinglist'));
-			/*
-			$records =  $DB->get_records_select(self::CTABLE, "courseid = $courseid AND waitinglistid = $wlm->waitinglist->id AND allocseats > 0"),'id ASC');
-			if($records){
-				$wlm->centries = $records;
-			}
-			*/
-      //  }
-		return $wlm;
+    /**
+     * @param           $courseid
+     * @return          null|static
+     * @throws          \Exception
+     *
+     * @updateDate      17/06/2015
+     * @author          eFakor      (fbv)
+     *
+     * Description
+     * If there is none enrolment method return null
+     */
+    public static function get_by_course($courseid){
+        /* Variables    */
+        global $DB;
+        $wlm = null;
+
+         try {
+             /* Execute */
+             $rdo = $DB->get_record('enrol', array('courseid' => $courseid,'enrol'=>'waitinglist'));
+             if ($rdo) {
+                 //	static $wlm = null;
+                 //     if (null === $wlm) {
+                 $wlm = new static();
+                 $wlm->courseid=$courseid;
+                 $wlm->waitinglist = $DB->get_record('enrol', array('courseid' => $courseid,'enrol'=>'waitinglist'));
+                 /*
+                 $records =  $DB->get_records_select(self::CTABLE, "courseid = $courseid AND waitinglistid = $wlm->waitinglist->id AND allocseats > 0"),'id ASC');
+                 if($records){
+                     $wlm->centries = $records;
+                 }
+                 */
+                 //  }
+             }//if_rdo
+
+             return $wlm;
+         }catch (\Exception $ex) {
+             throw $ex;
+         }//try_catch
 	}
 	
 	

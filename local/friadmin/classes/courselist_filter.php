@@ -33,7 +33,18 @@ defined('MOODLE_INTERNAL') || die;
  */
 class local_friadmin_courselist_filter extends local_friadmin_widget implements renderable {
 
-    protected $userleveloneids = array();
+    /* Level One    */
+    protected $userleveloneids  = array();
+    /**
+     * @var         array
+     *
+     * @updateDate  17/06/2015
+     * @author      eFaktor     (fbv)
+     *
+     * Description
+     * Categories connected with user
+     */
+    protected  $myCategories    = array();
 
     // The Moodle form
     protected $mform = null;
@@ -80,6 +91,19 @@ class local_friadmin_courselist_filter extends local_friadmin_widget implements 
     public function get_userleveloneids() {
         return $this->userleveloneids;
     }
+
+    /**
+     * @return          array
+     *
+     * @creationDate    17/06/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Return all categories connected with user
+     */
+    public function get_myCategories() {
+        return $this->myCategories;
+    }//get_myCategories
 
     /**
      * Get the returned form data, if any
@@ -135,21 +159,44 @@ class local_friadmin_courselist_filter extends local_friadmin_widget implements 
         // id, name and industrycode properties.
         $leveloneobjs = local_friadmin_helper::get_levelone_municipalities($userid);
 
+        /**
+         * @updateDate  17/06/2015
+         * @author      eFaktor     (fbv)
+         *
+         * Description
+         * Get all my municipalities
+         */
+        $leveloneobjsfiltered = array();
+        foreach ($leveloneobjs as $obj) {
+            $result['municipality'][$obj->id] = $obj->name;
+            $this->userleveloneids[] = $obj->id;
+            $leveloneobjsfiltered[] = $obj;
+        }
+
+        /**
+         * @updateDate  17/06/2015
+         * @author      eFaktor     (fbv)
+         *
+         * Description
+         * Get all categories where the user is a super user
+         */
+        $this->myCategories = local_friadmin_helper::getMyCategories();
+
         // Get the categories for which the user has admin rights
-        $catadmin = local_friadmin_helper::get_categories_admin();
+        //$catadmin = local_friadmin_helper::get_categories_admin();
 
         // Use only municipalities where the user has admin rights on the course categories
         // and where the municipality name is contained in the category name
-        $leveloneobjsfiltered = array();
-        foreach ($leveloneobjs as $obj) {
-            foreach ($catadmin as $catname) {
-                if (strpos($catname, $obj->name) !== false) {
-                    $result['municipality'][$obj->name] = $obj->name;
-                    $this->userleveloneids[] = $obj->id;
-                    $leveloneobjsfiltered[] = $obj;
-                }
-            }
-        }
+        //$leveloneobjsfiltered = array();
+        //foreach ($leveloneobjs as $obj) {
+        //    foreach ($catadmin as $catname) {
+        //        //if (strpos($catname, $obj->name) !== false) {
+        //            $result['municipality'][$obj->name] = $obj->name;
+        //            $this->userleveloneids[] = $obj->id;
+        //            $leveloneobjsfiltered[] = $obj;
+        //}
+        //    }
+        //}
 
         if (!empty($leveloneobjsfiltered)) {
             // Get the sectors for the relevant municipalities via inustrycodes
@@ -157,7 +204,7 @@ class local_friadmin_courselist_filter extends local_friadmin_widget implements 
 
             foreach ($leveltwoobjs as $obj) {
                 if (!in_array($obj->name, $result['sector'])) {
-                    $result['sector'][$obj->name] = $obj->name;
+                    $result['sector'][$obj->id] = $obj->name;
                 }
             }
 
@@ -165,7 +212,7 @@ class local_friadmin_courselist_filter extends local_friadmin_widget implements 
             $locationsobjs = $this->get_locations($leveloneobjsfiltered);
             foreach ($locationsobjs as $obj) {
                 if (!in_array($obj->name, $result['location'])) {
-                    $result['location'][$obj->name] = $obj->name;
+                    $result['location'][$obj->id] = $obj->name;
                 }
             }
         }
@@ -180,7 +227,7 @@ class local_friadmin_courselist_filter extends local_friadmin_widget implements 
      *
      * @return mixed Array|null The array with the sector objects
      */
-    protected function get_locations($leveloneobjsfiltered) {
+    protected function get_locations_old($leveloneobjsfiltered) {
         global $DB;
         $ids = array();
         $locations = null;
@@ -208,4 +255,59 @@ class local_friadmin_courselist_filter extends local_friadmin_widget implements 
 
         return $locations;
     }
+
+    /**
+     * Get the locations with id, name
+     *
+     * @param Object $leveloneobjsfiltered The array of objects with the municipalities
+     *
+     * @return mixed Array|null The array with the sector objects
+     */
+    /**
+     * @param        $leveloneobjsfiltered
+     * @return       array|null
+     * @throws       Exception
+     *
+     * @updateDate  18/06/2015
+     * @author      eFaktor     (fbv)
+     *
+     * Description
+     * Add comments, exception...
+     */
+    protected function get_locations($leveloneobjsfiltered) {
+       /* Variables */
+        global $DB;
+        $ids        = array();
+        $locations  = null;
+
+        try {
+            if ($leveloneobjsfiltered) {
+                /* Get the municipality ids */
+                foreach ($leveloneobjsfiltered as $obj) {
+                    if (!in_array($obj->id, $ids)) {
+                        $ids[] = $obj->id;
+                    }
+                }
+
+                /* Get the location ids and names with given municipality ids */
+                if (!empty($ids)) {
+                    /* SQL Instruction  */
+                    $sql = "  SELECT    id,
+                                        name
+                              FROM      {course_locations}
+                              WHERE     levelone ";
+
+                    /* Get search criteria  */
+                    list($in, $params) = $DB->get_in_or_equal($ids);
+
+                    /* Execute  */
+                    $locations = $DB->get_records_sql($sql . $in, $params);
+                }//if_Empty
+            }//if_leveloneobjsfiltered
+
+            return $locations;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//get_locations
 }
