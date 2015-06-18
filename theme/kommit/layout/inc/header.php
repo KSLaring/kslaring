@@ -45,13 +45,6 @@ if ($loggedin) {
             }
             ?>
         </div>
-
-        <!--Put where you want the entrypoint-->
-        <div id="ed24DivOnline" style="display:none;cursor:pointer;"></div>
-        <div id="ed24DivOffline" style="display:none;cursor:pointer;"></div>
-        <div id="ed24DivBusy" style="display:none;cursor:pointer;"></div>
-
-
     </div>
 </div>
 
