@@ -82,7 +82,7 @@ class local_friadmin_coursedetail_linklist extends local_friadmin_widget impleme
         $course = get_course($courseid);
         $completion = new completion_info($course);
 
-        if (!$completion->has_criteria()) {
+        if (!$completion->is_enabled() || !$completion->has_criteria()) {
             $disabled_completion = ' disabled';
             $url_completion = '#';
         }
