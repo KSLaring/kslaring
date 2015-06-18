@@ -105,7 +105,7 @@ class local_friadmin_coursedetail_table extends local_friadmin_widget implements
                 $data[$field] = '-';
             } else {
                 $data[$field] = '<span class="nowrap">' .
-                    userdate($data[$field], '%Y-%m-%d', 99, false) . '</span>';
+                    userdate($data[$field], '%d.%m.%Y', 99, false) . '</span>';
             }
         }
 
