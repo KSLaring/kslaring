@@ -46,6 +46,8 @@ class local_friadmin_coursedetail_linklist extends local_friadmin_widget impleme
      * Create the linklist
      */
     protected function create_linklist($courseid) {
+        global $CFG, $DB;
+
         $str_back = get_string('coursedetail_back', 'local_friadmin');
         $str_go = get_string('coursedetail_go', 'local_friadmin');
         $str_settings = get_string('coursedetail_settings', 'local_friadmin');
@@ -70,6 +72,20 @@ class local_friadmin_coursedetail_linklist extends local_friadmin_widget impleme
         $url_duplicate = '#';
         $url_email = '#';
 
+        // Check if the course has completion criteria set
+        // to avoid errors on the report page
+        $disabled_completion = '';
+        require_once("{$CFG->libdir}/completionlib.php");
+        require_once("{$CFG->libdir}/datalib.php");
+
+        // Get criteria for course
+        $course = get_course($courseid);
+        $completion = new completion_info($course);
+
+        if (!$completion->has_criteria()) {
+            $disabled_completion = ' disabled';
+            $url_completion = '#';
+        }
 
         // Check if there are confirmed users,
         // set the confirmed button to disabled if not.
@@ -118,7 +134,8 @@ class local_friadmin_coursedetail_linklist extends local_friadmin_widget impleme
             <li><a class="btn" href="' . $url_back . '">' . $str_back . '</a></li>
             <li><a class="btn" href="' . $url_go . '">' . $str_go . '</a></li>
             <li><a class="btn" href="' . $url_settings . '">' . $str_settings . '</a></li>
-            <li><a class="btn" href="' . $url_completion . '">' . $str_completion . '</a></li>
+            <li><a class="btn' . $disabled_completion . '" href="' . $url_completion . '">' .
+                $str_completion . '</a></li>
             <li><a class="btn" href="' . $url_statistics . '">' . $str_statistics . '</a></li>
         </ul>';
 
