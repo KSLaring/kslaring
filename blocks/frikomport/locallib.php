@@ -128,59 +128,6 @@ class block_frikomport_menu_manager {
             )
         );
         $this->add_tree_section($branch);
-
-        // Create and add the organization structure links in a submenu
-        //$branch = array(
-        //    array(
-        //        'text' => get_string('norgstructure', 'block_frikomport'),
-        //        'type' => navigation_node::NODETYPE_BRANCH
-        //    ),
-        //    array(
-        //        'text' => get_string('nvirksomheter', 'block_frikomport'),
-        //        'icon' => $settingsicon,
-        //        'type' => navigation_node::NODETYPE_LEAF,
-        //    ),
-        //    array(
-        //        'text' => get_string('nvirksomhetsrader', 'block_frikomport'),
-        //        'icon' => $settingsicon,
-        //        'type' => navigation_node::NODETYPE_LEAF,
-        //    ),
-        //    array(
-        //        'text' => get_string('nlocations', 'block_frikomport'),
-        //        'icon' => $settingsicon,
-        //        'type' => navigation_node::NODETYPE_LEAF,
-        //    )
-        //);
-        //$this->add_tree_section($branch);
-
-        // Create and add the reports links in a submenu
-        $branch = array(
-            array(
-                'text' => get_string('nreports', 'block_frikomport'),
-                'type' => navigation_node::NODETYPE_BRANCH,
-            ),
-            array(
-                'text' => get_string('nparticipants', 'block_frikomport'),
-                'icon' => $settingsicon,
-                'type' => navigation_node::NODETYPE_LEAF,
-            ),
-            array(
-                'text' => get_string('nwaitlist', 'block_frikomport'),
-                'icon' => $settingsicon,
-                'type' => navigation_node::NODETYPE_LEAF,
-            ),
-            array(
-                'text' => get_string('ncompcourses', 'block_frikomport'),
-                'icon' => $settingsicon,
-                'type' => navigation_node::NODETYPE_LEAF,
-            ),
-            array(
-                'text' => get_string('nstatistics', 'block_frikomport'),
-                'icon' => $settingsicon,
-                'type' => navigation_node::NODETYPE_LEAF,
-            )
-        );
-        $this->add_tree_section($branch);
     }
 
     /**
