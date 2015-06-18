@@ -20,7 +20,7 @@ require_once('locallib.php');
 $user_id        = required_param('id',PARAM_INT);
 $context        = context_system::instance();
 $url            = new moodle_url('/local/first_access/index.php',array('id'=>$user_id));
-$url_profile    = new moodle_url('/user/edit.php',array('id' => $user_id));
+$url_profile    = new moodle_url('/local/first_access/first_access.php',array('id' => $user_id));
 $user_context = context_user::instance($user_id);
 
 $PAGE->set_url($url);
