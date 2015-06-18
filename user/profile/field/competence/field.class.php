@@ -140,4 +140,17 @@ class profile_field_competence extends profile_field_base {
 
         return '<a href="' . $url . '">' . get_string('lnk_view','profilefield_competence') . '</a>';;
     }//display_data
+
+    /**
+     * @return      bool
+     *
+     * @updateDate  18/06/2015
+     * @author      eFaktor     (fbv)
+     *
+     * Description
+     * Allways return false, so the link to edit it will be always visible
+     */
+    function is_empty() {
+        return false;
+    }
 }//profile_field_competence
