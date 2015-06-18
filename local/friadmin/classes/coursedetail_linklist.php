@@ -47,20 +47,26 @@ class local_friadmin_coursedetail_linklist extends local_friadmin_widget impleme
      */
     protected function create_linklist($courseid) {
         $str_back = get_string('coursedetail_back', 'local_friadmin');
-        $str_users = get_string('coursedetail_users', 'local_friadmin');
-        $str_waitlist = get_string('coursedetail_waitlist', 'local_friadmin');
-        $str_confirmed = get_string('coursedetail_confirmed', 'local_friadmin');
-        $str_settings = get_string('coursedetail_settings', 'local_friadmin');
         $str_go = get_string('coursedetail_go', 'local_friadmin');
+        $str_settings = get_string('coursedetail_settings', 'local_friadmin');
+        $str_completion = get_string('coursedetail_completion', 'local_friadmin');
+        $str_statistics = get_string('coursedetail_statistics', 'local_friadmin');
+        $str_users = get_string('coursedetail_users', 'local_friadmin');
+        $str_confirmed = get_string('coursedetail_confirmed', 'local_friadmin');
+        $str_waitlist = get_string('coursedetail_waitlist', 'local_friadmin');
+        $str_participantlist = get_string('coursedetail_participantlist', 'local_friadmin');
         $str_duplicate = get_string('coursedetail_duplicate', 'local_friadmin');
         $str_email = get_string('coursedetail_email', 'local_friadmin');
 
         $url_back = new moodle_url('/local/friadmin/courselist.php');
-        $url_users = new moodle_url('/enrol/users.php?id=' . $courseid);
-        $url_waitlist = new moodle_url('/enrol/waitinglist/managequeue.php?id=' . $courseid);
-        $url_confirmed = new moodle_url('/enrol/waitinglist/manageconfirmed.php?id=' . $courseid);
-        $url_settings = new moodle_url('/course/edit.php?id=' . $courseid);
         $url_go = new moodle_url('/course/view.php?id=' . $courseid);
+        $url_settings = new moodle_url('/course/edit.php?id=' . $courseid);
+        $url_completion = new moodle_url('/report/completion/index.php?course=' . $courseid);
+        $url_statistics = new moodle_url('/report/overviewstats/index.php?course=' . $courseid);
+        $url_users = new moodle_url('/enrol/users.php?id=' . $courseid);
+        $url_confirmed = new moodle_url('/enrol/waitinglist/manageconfirmed.php?id=' . $courseid);
+        $url_waitlist = new moodle_url('/enrol/waitinglist/managequeue.php?id=' . $courseid);
+        $url_participantlist = new moodle_url('/grade/export/xls/index.php?id=' . $courseid);
         $url_duplicate = '#';
         $url_email = '#';
 
@@ -81,7 +87,7 @@ class local_friadmin_coursedetail_linklist extends local_friadmin_widget impleme
                 $disabled_confirmed = ' disabled';
                 $url_confirmed = '#';
             }
-        }else {
+        } else {
             $disabled_confirmed = ' disabled';
             $url_confirmed = '#';
         }//if_confirmedman
@@ -103,7 +109,7 @@ class local_friadmin_coursedetail_linklist extends local_friadmin_widget impleme
                 $disabled_waitlist = ' disabled';
                 $url_waitlist = '#';
             }
-        }else {
+        } else {
             $disabled_waitlist = ' disabled';
             $url_waitlist = '#';
         }//if_queueman
@@ -112,6 +118,8 @@ class local_friadmin_coursedetail_linklist extends local_friadmin_widget impleme
             <li><a class="btn" href="' . $url_back . '">' . $str_back . '</a></li>
             <li><a class="btn" href="' . $url_go . '">' . $str_go . '</a></li>
             <li><a class="btn" href="' . $url_settings . '">' . $str_settings . '</a></li>
+            <li><a class="btn" href="' . $url_completion . '">' . $str_completion . '</a></li>
+            <li><a class="btn" href="' . $url_statistics . '">' . $str_statistics . '</a></li>
         </ul>';
 
         $list2 = '<ul class="unlist buttons-linklist">
@@ -120,6 +128,7 @@ class local_friadmin_coursedetail_linklist extends local_friadmin_widget impleme
                 $str_confirmed . '</a></li>
             <li><a class="btn' . $disabled_waitlist . '" href="' . $url_waitlist . '">' .
                 $str_waitlist . '</a></li>
+            <li><a class="btn" href="' . $url_participantlist . '">' . $str_participantlist . '</a></li>
         </ul>';
 
         $list3 = '<ul class="unlist buttons-linklist">
