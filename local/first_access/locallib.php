@@ -60,6 +60,59 @@ class FirstAccess {
         }//try_catch
     }//HasToUpdate_Profile
 
+    /**
+     * @return          mixed
+     * @throws          Exception
+     *
+     * @creationDate    18/06/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Get the structure for the municipality extra user profile
+     */
+    public static function GetMunicipalityProfile() {
+        /* Variables    */
+        global $DB;
+        $muniProfile = null;
+
+        try {
+            /* Search Criteria  */
+            $params = array();
+            $params['datatype'] = 'municipality';
+
+            /* Execute  */
+            $muniProfile = $DB->get_record('user_info_field',$params);
+
+            return $muniProfile;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//GetMunicipalityProfile
+
+    public static function Update_UserProfile($data) {
+        /* Variables    */
+        global $DB;
+        $userInfo    = null;
+
+        try {
+            /* Info to Update   */
+            $userInfo = new stdClass();
+            $userInfo->id           = $data->id;
+            $userInfo->firstname    = $data->firstname;
+            $userInfo->lastname     = $data->lastname;
+            $userInfo->email        = $data->email;
+            $userInfo->city         = $data->city;
+            if (isset($data->country) && ($data->country)) {
+                $userInfo->country      = $data->country;
+            }//if_data_country
+
+            /* Execute  */
+            $DB->update_record('user',$userInfo);
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//Update_UserProfile
+
     /*********************/
     /* PRIVATE FUNCTIONS */
     /*********************/
