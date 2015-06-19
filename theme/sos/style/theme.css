@@ -441,12 +441,17 @@ a {
   font-size: 1em;
   width: 90%;
 }
+#page-footer .sitelink img {
+  margin-top: .3em;
+  width: 35%;
+}
 #page-footer .validators,
 #page-footer .purgecaches,
 #page-footer .performanceinfo {
   text-align: left;
 }
-#page-admin-plugins #region-main div[role="main"] {
+.path-admin #region-main div[role="main"],
+.pagelayout-report #region-main div[role="main"] {
   display: inline-table;
 }
 .navbar-fixed-top .navbar-inner,
