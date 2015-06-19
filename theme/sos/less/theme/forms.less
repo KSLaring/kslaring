@@ -1,0 +1,72 @@
+fieldset {
+    min-width: 1%;
+}
+
+input,
+textarea,
+.uneditable-input {
+    width: 180px; // plus 12px padding and 2px border
+}
+
+.settingsform {
+    h2 {
+        .sosHeadline(.5em);
+    }
+}
+
+.mform {
+    fieldset {
+        &.collapsible {
+            legend {
+                a {
+                    &.fheader {
+                        margin-left: -16px;
+                    }
+                }
+            }
+        }
+    }
+}
+
+.form-item .form-setting .form-password .unmask,
+.form-item .form-setting .form-defaultinfo {
+    .forceLineWrap;
+}
+
+.form-item {
+    .form-setting {
+        .form-password .unmask,
+        .form-defaultinfo {
+            .forceLineWrap;
+        }
+    }
+    .form-description,
+    .form-description p {
+        .forceLineWrap;
+    }
+}
+
+textarea[cols],
+input[size] {
+    width: 90%;
+}
+
+select,
+textarea,
+input[type="text"],
+input[type="password"],
+input[type="datetime"],
+input[type="datetime-local"],
+input[type="date"],
+input[type="month"],
+input[type="time"],
+input[type="week"],
+input[type="number"],
+input[type="email"],
+input[type="url"],
+input[type="search"],
+input[type="tel"],
+input[type="color"] {
+    .rounded-corners(0);
+    max-width: 100%;
+}

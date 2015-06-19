@@ -1,0 +1,49 @@
+@import "inc/variables.less";
+@import "inc/text.inc.less";
+@import "inc/mixins.less";
+
+// Nav Bar
+// --------------------------------------------------
+
+.navbar-fixed-top,
+.navbar-static-top {
+    .navbar-inner {
+        background-image: none;
+        background-color: @bright;
+        .reset-filter();
+
+        a {
+            color: @sosRed;
+
+            &.brand {
+                width: 80px;
+                margin-left: 0;
+            }
+        }
+    }
+}
+
+.navbar .navbar-inner a
+.navbar .btn-navbar {
+    color: @bright;
+    text-shadow: none;
+    background-color: @sosRed;
+    background-image: none;
+
+    background-repeat: repeat-x;
+    border-color: @sosRed;
+
+    -webkit-box-shadow: none;
+    -moz-box-shadow: none;
+    box-shadow: none;
+}
+
+.navbar .btn-navbar:hover,
+.navbar .btn-navbar:focus,
+.navbar .btn-navbar:active,
+.navbar .btn-navbar.active,
+.navbar .btn-navbar.disabled,
+.navbar .btn-navbar[disabled] {
+    color: @bright;
+    background-color: lighten(@sosRed, 10%);
+}

@@ -1,0 +1,138 @@
+@import "inc/variables.less";
+@import "inc/text.inc.less";
+@import "inc/mixins.less";
+
+// Body
+// --------------------------------------------------
+.container-fluid {
+    max-width: @maxPageWidth;
+}
+
+body {
+    background-color: @sosGreyLighter;
+}
+
+a {
+    color: @linkColor;
+}
+
+// Page Header
+// --------------------------------------------------
+#page-site-index
+#page-header {
+    margin-bottom: 15px;
+}
+
+#page-header {
+    background-color: @bright;
+    background-image: none;
+    border-bottom: 1px solid #d1d1d1;
+}
+
+#banner {
+    background-image: url(~"[[pix:theme|sos_logo_v2]]");
+    background-position: 10px 50%;
+    background-repeat: no-repeat;
+    height: 80px;
+    max-width: @maxPageWidth;
+    overflow: hidden;
+}
+
+// Breadcrumb
+// --------------------------------------------------
+#page-navbar {
+    background-image: none;
+    border-bottom: 1px solid #EFEFEF;
+    height: 40px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    width: 100%;
+
+    .page-navbar-inner {
+        margin: 0 auto;
+        max-width: @maxPageWidth;
+        overflow: hidden;
+        position: relative;
+    }
+}
+
+.breadcrumb {
+    background-color: transparent;
+    color: @sosRed;
+
+    a {
+        color: @sosRed;
+    }
+}
+
+.breadcrumb-button {
+    .singlebutton {
+        input[type="submit"] {
+            margin: 0;
+        }
+    }
+}
+
+// Footer
+// --------------------------------------------------
+#page-footer {
+    background-color: @sosRed;
+    border-top: 20px solid @sosRedLight;
+    color: @bright;
+    padding-bottom: 2.5em;
+    text-align: left;
+    width: 100%;
+
+    p {
+        color: @bright;
+    }
+    .logininfo, a {
+        color: @bright;
+    }
+    #page-footer-inner {
+        margin: 0 auto;
+        //min-height: 8em;
+        padding: 0 2%;
+        max-width: @maxPageWidth;
+        position: relative;
+    }
+    .column0 {
+        width: 30%;
+        float: left;
+        min-width: 120px;
+        padding: 20px;
+    }
+    .column1 {
+        padding-top: 10px;
+        font-size: 0.8em;
+        text-align: left;
+        width: 50%;
+        float: left;
+        min-width: 150px;
+    }
+    .column4 {
+        padding-top: 10px;
+        width: 25%;
+        float: right;
+        min-width: 150px;
+
+    }
+    h4 {
+        text-align: left;
+        font-size: 1em;
+        width: 90%;
+    }
+    .validators,
+    .purgecaches,
+    .performanceinfo {
+        text-align: left;
+    }
+}
+
+#page-admin-plugins {
+    #region-main {
+        div[role="main"] {
+            display: inline-table;
+        }
+    }
+}

@@ -1,0 +1,100 @@
+@import "variables.less";
+
+body, h1, h2, h3, h4, h5, h6, p, ul, ol, dl, input, textarea {
+    font-family: @ff;
+    color: @text-color;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    color: @h-color;
+    font-family: @fh;
+    font-weight: bold;
+    margin: 0 0 0.5em 0;
+    padding: 0;
+}
+
+p {
+    margin: 0 0 1em 0;
+    padding: 0;
+}
+
+th, td {
+    padding: .3em;
+    text-align: left;
+}
+
+ul, ol {
+    margin: 0 0 1.5em 1.5em;
+}
+
+ul {
+    list-style-type: disc;
+}
+
+ol {
+    list-style-type: decimal;
+    margin-left: 2em;
+}
+
+dl {
+    margin: 0 0 1.5em 0;
+}
+
+dl dt {
+    font-weight: bold;
+}
+
+dl dd {
+    margin-left: 1.5em;
+}
+
+abbr,
+acronym {
+    border-bottom: 1px dotted #000;
+}
+
+address {
+    margin-top: 1.5em;
+    font-style: italic;
+}
+
+del {
+    color: @text-color-dark;
+}
+
+blockquote {
+    margin: 1.5em;
+    padding-left: 1em;
+}
+
+strong {
+    font-weight: bold;
+}
+
+em,
+dfn {
+    font-style: italic;
+}
+
+dfn {
+    font-weight: bold;
+}
+
+tt {
+    font: 1em monospace;
+    display: block;
+    margin: 1.5em 0;
+    line-height: 1.5;
+}
+
+::-moz-selection {
+    background: @text-selection;
+    color: black;
+    text-shadow: none;
+}
+
+::selection {
+    background: @text-selection;
+    color: black;
+    text-shadow: none;
+}
