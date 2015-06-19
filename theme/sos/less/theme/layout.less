@@ -42,10 +42,11 @@ a {
 // --------------------------------------------------
 #page-navbar {
     background-image: none;
-    border-bottom: 1px solid #EFEFEF;
-    height: 40px;
+    border-bottom: 0;
+    height: auto;
+    min-height: 40px;
     margin-top: 5px;
-    margin-bottom: 5px;
+    margin-bottom: 0;
     width: 100%;
 
     .page-navbar-inner {
@@ -54,6 +55,15 @@ a {
         overflow: hidden;
         position: relative;
     }
+}
+
+.navbar nav .btn-navbar:hover,
+.navbar nav .btn-navbar:focus,
+.navbar nav .btn-navbar:active,
+.navbar nav .btn-navbar.active,
+.navbar nav .btn-navbar.disabled,
+.navbar nav .btn-navbar[disabled] {
+    background-color: @sosGreyLighter;
 }
 
 .breadcrumb {

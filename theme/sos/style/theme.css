@@ -114,7 +114,7 @@ tt {
 }
 @media (min-width: 768px) and (max-width: 960px) {
   body {
-    padding-top: 0px;
+    padding-top: 0;
   }
   .navbar-fixed-top {
     margin-bottom: 0px;
@@ -122,13 +122,17 @@ tt {
   #banner {
     margin-left: 20px;
   }
+  #page {
+    padding-right: 0;
+    padding-left: 0;
+  }
 }
 @media (min-width: 960px) {
   body {
     padding-top: 40px;
   }
   .navbar-fixed-top {
-    margin-bottom: 0px;
+    margin-bottom: 0;
   }
   #banner {
     margin: 0 auto;
@@ -136,7 +140,7 @@ tt {
 }
 @media (max-width: 480px) {
   body {
-    padding-top: 0px;
+    padding-top: 0;
   }
   #banner {
     margin-left: 20px;
@@ -165,15 +169,15 @@ tt {
     margin-left: 20px;
   }
   .navbar-fixed-top {
-    margin-bottom: 0px;
+    margin-bottom: 0;
   }
 }
 @media (min-width: 960px) and (max-width: 978px) {
   body {
-    padding-top: 0px;
+    padding-top: 0;
   }
   .navbar-fixed-top {
-    margin-bottom: 0px;
+    margin-bottom: 0;
   }
   #banner {
     margin-left: 20px;
@@ -373,10 +377,11 @@ a {
 }
 #page-navbar {
   background-image: none;
-  border-bottom: 1px solid #EFEFEF;
-  height: 40px;
+  border-bottom: 0;
+  height: auto;
+  min-height: 40px;
   margin-top: 5px;
-  margin-bottom: 5px;
+  margin-bottom: 0;
   width: 100%;
 }
 #page-navbar .page-navbar-inner {
@@ -384,6 +389,14 @@ a {
   max-width: 961px;
   overflow: hidden;
   position: relative;
+}
+.navbar nav .btn-navbar:hover,
+.navbar nav .btn-navbar:focus,
+.navbar nav .btn-navbar:active,
+.navbar nav .btn-navbar.active,
+.navbar nav .btn-navbar.disabled,
+.navbar nav .btn-navbar[disabled] {
+  background-color: #edeceb;
 }
 .breadcrumb {
   background-color: transparent;
