@@ -13,6 +13,11 @@
                 <div class="col2"><a href="https://twitter.com/KSKommIT" target=_blank" alt="twitter icon"><i class="fa fa-twitter
                 fa-2x" id="icon_twitter" aria-hidden="true"></i></a></div>
             </div>
+                    <!--Put where you want the entrypoint-->
+            <div id="ed24DivOnline" style="display:none;cursor:pointer;"></div>
+            <div id="ed24DivOffline" style="display:none;cursor:pointer;"></div>
+            <div id="ed24DivBusy" style="display:none;cursor:pointer;"></div>
+
         </div>
     </div>
 </footer>
