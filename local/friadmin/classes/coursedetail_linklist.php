@@ -57,7 +57,6 @@ class local_friadmin_coursedetail_linklist extends local_friadmin_widget impleme
         $str_confirmed = get_string('coursedetail_confirmed', 'local_friadmin');
         $str_waitlist = get_string('coursedetail_waitlist', 'local_friadmin');
         $str_participantlist = get_string('coursedetail_participantlist', 'local_friadmin');
-        $str_duplicate = get_string('coursedetail_duplicate', 'local_friadmin');
         $str_email = get_string('coursedetail_email', 'local_friadmin');
 
         $url_back = new moodle_url('/local/friadmin/courselist.php');
@@ -69,73 +68,30 @@ class local_friadmin_coursedetail_linklist extends local_friadmin_widget impleme
         $url_confirmed = new moodle_url('/enrol/waitinglist/manageconfirmed.php?id=' . $courseid);
         $url_waitlist = new moodle_url('/enrol/waitinglist/managequeue.php?id=' . $courseid);
         $url_participantlist = new moodle_url('/grade/export/xls/index.php?id=' . $courseid);
-        $url_duplicate = '#';
         $url_email = '#';
 
         // Check if the course has completion criteria set
-        // to avoid errors on the report page
-        $disabled_completion = '';
-        require_once("{$CFG->libdir}/completionlib.php");
-        require_once("{$CFG->libdir}/datalib.php");
+        list ($disabled_completion, $url_completion) =
+            $this->check_completioncriteria($courseid, $url_completion);
 
-        // Get criteria for course
-        $course = get_course($courseid);
-        $completion = new completion_info($course);
+        // Check if there are confirmed users
+        list ($disabled_confirmed, $url_confirmed) =
+            $this->check_confirmedusers($courseid, $url_confirmed);
 
-        if (!$completion->is_enabled() || !$completion->has_criteria()) {
-            $disabled_completion = ' disabled';
-            $url_completion = '#';
-        }
+        // Check if there are users in the course waitlist
+        list ($disabled_waitlist, $url_waitlist) =
+            $this->check_usersinwaitlist($courseid, $url_waitlist);
 
-        // Check if there are confirmed users,
-        // set the confirmed button to disabled if not.
-        $disabled_confirmed = '';
-        $confirmedman = \enrol_waitinglist\entrymanager::get_by_course($courseid);
-        /**
-         * @updateDate  17/06/2015
-         * @author      eFaktor     (fbv)
-         *
-         * Description
-         * Check if the result is null or not
-         */
-        if ($confirmedman) {
-            if ($confirmedman->get_confirmed_listtotal() == 0) {
-                $disabled_confirmed = ' disabled';
-                $url_confirmed = '#';
-            }
-        } else {
-            $disabled_confirmed = ' disabled';
-            $url_confirmed = '#';
-        }//if_confirmedman
-
-
-        // Check if there are users in the course waitlist,
-        // set the waitlist button to disabled if not.
-        $disabled_waitlist = '';
-        $queueman = \enrol_waitinglist\queuemanager::get_by_course($courseid);
-        /**
-         * @updateDate  17/06/2015
-         * @author      eFaktor     (fbv)
-         *
-         * Description
-         * Check if the result is null or not
-         */
-        if ($queueman) {
-            if ($queueman->get_listtotal() == 0) {
-                $disabled_waitlist = ' disabled';
-                $url_waitlist = '#';
-            }
-        } else {
-            $disabled_waitlist = ' disabled';
-            $url_waitlist = '#';
-        }//if_queueman
+        // Check if there is a forum with forcesubscribe activated
+        list ($disabled_email, $url_email) =
+            $this->check_forcesubscribeforum($courseid, $url_email);
 
         $list1 = '<ul class="unlist buttons-linklist">
             <li><a class="btn" href="' . $url_back . '">' . $str_back . '</a></li>
             <li><a class="btn" href="' . $url_go . '">' . $str_go . '</a></li>
             <li><a class="btn" href="' . $url_settings . '">' . $str_settings . '</a></li>
             <li><a class="btn' . $disabled_completion . '" href="' . $url_completion . '">' .
-                $str_completion . '</a></li>
+            $str_completion . '</a></li>
             <li><a class="btn" href="' . $url_statistics . '">' . $str_statistics . '</a></li>
         </ul>';
 
@@ -149,9 +105,153 @@ class local_friadmin_coursedetail_linklist extends local_friadmin_widget impleme
         </ul>';
 
         $list3 = '<ul class="unlist buttons-linklist">
-            <li><a class="btn disabled" href="' . $url_email . '">' . $str_email . '</a></li>
+            <li><a class="btn' . $disabled_email . '" href="' . $url_email . '">' .
+                $str_email . '</a></li>
         </ul>';
 
         $this->data->content = $list1 . $list2 . $list3;
+    }
+
+    /**
+     * Check if the course has completion criteria set
+     * to avoid errors on the report page
+     *
+     * @param Int    $courseid The course id
+     * @param String $url      The url
+     *
+     * @return array
+     */
+    protected function check_completioncriteria($courseid, $url) {
+        global $CFG;
+        $disabled = '';
+
+        require_once("{$CFG->libdir}/completionlib.php");
+        require_once("{$CFG->libdir}/datalib.php");
+
+        // Get criteria for course
+        $course = get_course($courseid);
+        $completion = new completion_info($course);
+
+        if (!$completion->is_enabled() || !$completion->has_criteria()) {
+            $disabled = ' disabled';
+            $url = '#'; // Remove url
+        }
+
+        return array($disabled, $url);
+    }
+
+    /**
+     * Check if there are confirmed users,
+     * set the confirmed button to disabled if not.
+     *
+     * @param Int    $courseid
+     * @param String $url
+     *
+     * @return array
+     * @throws Exception
+     */
+    protected function check_confirmedusers($courseid, $url) {
+        $disabled = '';
+        $confirmedman = \enrol_waitinglist\entrymanager::get_by_course($courseid);
+
+        /**
+         * @updateDate  17/06/2015
+         * @author      eFaktor     (fbv)
+         *
+         * Description
+         * Check if the result is null or not
+         */
+        if (!is_null($confirmedman)) {
+            if ($confirmedman->get_confirmed_listtotal() == 0) {
+                $disabled = ' disabled';
+                $url = '#';
+            }
+        } else {
+            $disabled = ' disabled';
+            $url = '#';
+        }//if_confirmedman
+
+        return array($disabled, $url);
+    }
+
+    /**
+     * Check if there are users in the course waitlist,
+     * set the waitlist button to disabled if not.
+     *
+     * @param Int    $courseid
+     * @param String $url
+     *
+     * @return array
+     * @throws Exception
+     */
+    protected function check_usersinwaitlist($courseid, $url) {
+        $disabled = '';
+        $queueman = \enrol_waitinglist\queuemanager::get_by_course($courseid);
+
+        /**
+         * @updateDate  17/06/2015
+         * @author      eFaktor     (fbv)
+         *
+         * Description
+         * Check if the result is null or not
+         */
+        if (!is_null($queueman)) {
+            if ($queueman->get_listtotal() == 0) {
+                $disabled = ' disabled';
+                $url = '#';
+            }
+        } else {
+            $disabled = ' disabled';
+            $url = '#';
+        }//if_queueman
+
+        return array($disabled, $url);
+    }
+
+    /**
+     * Check if there is a forum with forcesubscribe activated,
+     * set the link url if there is a forum or
+     * set the waitlist button to disabled if not.
+     *
+     * @param Int    $courseid
+     * @param String $url
+     *
+     * @return array
+     * @throws Exception
+     */
+    protected function check_forcesubscribeforum($courseid, $url) {
+        global $DB;
+        $disabled = ' disabled';
+
+        // Select all forums in the course with the given id
+        // that have the forcesubscribe option activated
+        $sql = "SELECT
+          f.id,
+          f.name,
+          f.forcesubscribe
+        FROM {forum} f
+          JOIN {course_modules} cm
+            ON f.id = cm.instance
+          JOIN {modules} m
+            ON m.id = cm.module
+        WHERE m.name = 'forum'
+              AND f.forcesubscribe = 1
+              AND cm.course = :courseid
+        ";
+
+        $params = array(
+            'courseid' => $courseid
+        );
+
+        if ($forums = $DB->get_records_sql($sql, $params)) {
+            // Continue with the only/first forum found
+            $forum = array_shift($forums);
+            if (!empty($forum)) {
+                $disabled = '';
+                $url = new moodle_url('/mod/forum/post.php?forum=' . $forum->id);
+            }
+        }
+
+        return array($disabled, $url);
     }
 }
