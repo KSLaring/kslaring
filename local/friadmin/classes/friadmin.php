@@ -95,7 +95,12 @@ class friadmin {
         $this->context = context_system::instance();
         $PAGE->set_context($this->context);
         $PAGE->set_pagelayout('standard');
-        $this->superuser = self::CheckCapability_FriAdmin();
+        if (has_capability('block/frikomport:view', $this->context)) {
+            $this->superuser = true;
+        }else {
+            $this->superuser = self::CheckCapability_FriAdmin();
+        }
+
 
         //require_capability('block/frikomport:view', $this->context);
     }
