@@ -236,6 +236,17 @@ class local_friadmin_courselist_table extends local_friadmin_widget implements r
      *
      * @return Array The modified table data
      */
+    /**
+     * @param       $data
+     * @param       $fields
+     * @return      array
+     *
+     * @updateDate  22/06/2015
+     * @author      eFaktor     (fbv)
+     *
+     * Description
+     * Format date
+     */
     protected function format_date($data, $fields) {
         $result = array();
 
@@ -248,11 +259,11 @@ class local_friadmin_courselist_table extends local_friadmin_widget implements r
             }
 
             foreach ($fields as $field) {
-                if ($row->$field) {
-                    $row->$field = '-';
-                } else {
+                if (isset($row->$field) && ($row->$field)) {
                     $row->$field = '<span class="nowrap">' .
                         userdate($row->$field, '%d.%m.%Y', 99, false) . '</span>';
+                } else {
+                    $row->$field = '-';
                 }
             }
 

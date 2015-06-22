@@ -99,13 +99,21 @@ class local_friadmin_coursedetail_table extends local_friadmin_widget implements
      *
      * @return Array The modified table data
      */
+    /**
+     * @param       $data
+     * @param       $fields
+     * @return      mixed
+     *
+     * @updateDate  22/06/2015
+     * @author      eFaktor     (fbv)
+     */
     protected function format_date($data, $fields) {
         foreach ($fields as $field) {
-            if ($data[$field]) {
-                $data[$field] = '-';
-            } else {
+            if (isset($data[$field]) && $data[$field]) {
                 $data[$field] = '<span class="nowrap">' .
                     userdate($data[$field], '%d.%m.%Y', 99, false) . '</span>';
+            } else {
+                $data[$field] = '-';
             }
         }
 
