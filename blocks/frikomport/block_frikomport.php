@@ -138,10 +138,12 @@ class block_frikomport extends block_base {
          * Description
          * Check if the user is super user
          */
-        if (!self::CheckCapability_FriAdmin()) {
-            $this->content = new stdClass();
-            $this->content->text = '';
-            return false;
+        if (!has_capability('block/frikomport:view', context_block::instance($this->instance->id))) {
+            if (!self::CheckCapability_FriAdmin()) {
+                $this->content = new stdClass();
+                $this->content->text = '';
+                return false;
+            }
         }
 
         block_frikomport::$navcount++;
