@@ -94,6 +94,17 @@ class local_friadmin_courselist_filter_form extends \moodleform {
         $mform->setType('selname', PARAM_TEXT);
         $elementgroup[] = $textinput;
 
+        /**
+         * @updateDate  22/06/2015
+         * @author      eFaktor     (fbv)
+         *
+         * Description
+         * Add checkbox -- Only Classroom Courses
+         */
+        $classRoom = $mform->createElement('checkbox','classroom','',get_string('only_classroom','local_friadmin'));
+        $elementgroup[] = $classRoom;
+        $mform->setDefault('classroom', $customdata['classroom']);
+
         $elementgroup[] = $mform->createElement('submit', 'submitbutton',
             get_string('selsubmit', 'local_friadmin'));
 

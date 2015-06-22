@@ -146,4 +146,6 @@ $string['delete_location_are_you_sure'] = '<p>Er du sikker på at du vil slette 
 $string['btn_save'] = 'Lagre';
 $string['lnk_back'] = 'Tilbake';
 
+$string['only_classroom'] = 'Show only classroom courses';
+
 

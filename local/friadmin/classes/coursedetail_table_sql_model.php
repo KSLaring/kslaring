@@ -44,6 +44,12 @@ class local_friadmin_coursedetail_table_sql_model extends local_friadmin_widget 
      *
      * Description
      * Rebuild the query
+     *
+     * @updateDate  22/06/2015
+     * @author      eFaktor     (fbv)
+     *
+     * Description
+     * Add LEFT
      */
     protected $sql = " SELECT	c.id        as 'courseid',
                                 c.fullname  as 'name',
@@ -71,95 +77,23 @@ class local_friadmin_coursedetail_table_sql_model extends local_friadmin_widget 
                                  GROUP BY e.courseid
                                ) e ON e.courseid = c.id
                           # Get the length
-                          JOIN 	{course_format_options}	    cln 	ON 	cln.courseid 	= c.id
-                                                                    AND	cln.name 		= 'length'
+                          LEFT JOIN {course_format_options}	    cln 	ON 	cln.courseid 	= c.id
+                                                                        AND	cln.name 		= 'length'
                           # Get the manager id = responsible
-                          JOIN 	{course_format_options}	    cmn		ON 	cmn.courseid	= c.id
-                                                                    AND cmn.name		= 'manager'
+                          LEFT JOIN {course_format_options}	    cmn		ON 	cmn.courseid	= c.id
+                                                                        AND cmn.name		= 'manager'
                           # Get the course location
-                          JOIN 	{course_format_options}	    clo		ON  clo.courseid	= c.id
-                                                                    AND	clo.name 		= 'course_location'
+                          LEFT JOIN {course_format_options}	    clo		ON  clo.courseid	= c.id
+                                                                        AND	clo.name 		= 'course_location'
                           # Get the course location name
-                          JOIN 	{course_locations} 		    cl		ON 	cl.id 			= clo.value
+                          LEFT JOIN {course_locations} 		    cl		ON 	cl.id 			= clo.value
                           # Get the course sector
-                          JOIN 	{course_format_options}	    cse		ON 	cse.courseid 	= c.id
-                                                                    AND	cse.name		= 'course_sector'
+                          LEFT JOIN {course_format_options}	    cse		ON 	cse.courseid 	= c.id
+                                                                        AND	cse.name		= 'course_sector'
                           # Get the course sector name
-                          JOIN 	{report_gen_companydata} 	rgcse	ON 	rgcse.id 		= cse.value
+                          LEFT JOIN {report_gen_companydata} 	rgcse	ON 	rgcse.id 		= cse.value
                           # Get the municipality
-                          JOIN 	{report_gen_companydata} 	rgcmu 	ON 	rgcmu.id 		= cl.levelone ";
-
-    // The query SQL
-    protected $sql_old = "
-      SELECT
-          c.id        courseid,
-          c.fullname  name,
-          c.summary   summary,
-          '-'         targetgroup,
-          c.startdate date,
-          '-'         time,
-          cln.length  length,
-          rgcmu.name  municipality,
-          rgcse.name  sector,
-          cl.name     location,
-          cmn.manager responsible,
-          '-'         teacher,
-          '-'         priceinternal,
-          '-'         priceexternal,
-          '-'         seats,
-          e.deadline  deadline
-      FROM {course} c
-      # Get the deadline from enrol
-        JOIN (
-               SELECT
-                 e.courseid,
-                 IFNULL(MAX(e.customint1), 0) AS deadline
-               FROM {enrol} e
-               WHERE e.status = 0
-               GROUP BY e.courseid
-             ) e ON e.courseid = c.id
-      # Get the length
-        JOIN (
-               SELECT
-                 cfo.courseid,
-                 cfo.value AS 'length'
-               FROM {course_format_options} cfo
-               WHERE cfo.name = 'length'
-             ) cln ON cln.courseid = c.id
-        # Get the manager id = responsible
-          JOIN (
-                 SELECT
-                   cfo.courseid,
-                   cfo.value AS 'manager'
-                 FROM {course_format_options} cfo
-                 WHERE cfo.name = 'manager'
-               ) cmn ON cmn.courseid = c.id
-      # Get the course location
-        JOIN (
-               SELECT
-                 cfo.courseid,
-                 cfo.value AS 'location'
-               FROM {course_format_options} cfo
-               WHERE cfo.name = 'course_location'
-             ) clo ON clo.courseid = c.id
-      # Get the course location name
-        JOIN {course_locations} cl
-          ON clo.location = cl.id
-      # Get the course sector
-        JOIN (
-               SELECT
-                 cfo.courseid,
-                 cfo.value AS 'sector'
-               FROM {course_format_options} cfo
-               WHERE cfo.name = 'course_sector'
-             ) cse ON cse.courseid = c.id
-      # Get the course sector name
-        JOIN {report_gen_companydata} rgcse
-          ON rgcse.id = cse.sector
-      # Get the municipality
-        JOIN {report_gen_companydata} rgcmu
-          ON rgcmu.id = cl.levelone
-    ";
+                          LEFT JOIN {report_gen_companydata} 	rgcmu 	ON 	rgcmu.id 		= cl.levelone ";
 
     /**
      * Construct the coursedetail_page renderable.
@@ -178,18 +112,44 @@ class local_friadmin_coursedetail_table_sql_model extends local_friadmin_widget 
     /**
      * Get the data from the DB and save it in the $data property
      */
+    /**
+     * @throws      Exception
+     *
+     * @updateDate  22/06/2015
+     * @author      eFaktor     (fbv)
+     *
+     * Description
+     * Add comments, exception
+     * Add teachers
+     */
     protected function get_data_from_db() {
+        /* Variables    */
         global $DB;
+        $result     = array();
+        $teachers   = null;
 
-        $result = array();
+        try {
+            /* Add Filter   */
+            $sql = $this->add_filters($this->sql);
 
-        $sql = $this->add_filters($this->sql);
+            /* Execute  */
+            $result = $DB->get_record_sql($sql);
 
-        $result = $DB->get_record_sql($sql);
+            /* Add Teachers */
+            if ($result) {
+                $teachers = self::getTeachers_Course($result->courseid);
+                /* Add the teachers */
+                if ($teachers) {
+                    $result->teacher = implode(', ',$teachers);
+                }
+            }//if_result
 
-        // Save an array with an associative data array to make the sql model
-        // and the fixture model compatible
-        $this->data = array((array)$result);
+            // Save an array with an associative data array to make the sql model
+            // and the fixture model compatible
+            $this->data = array((array)$result);
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
     }
 
     /**
@@ -199,16 +159,86 @@ class local_friadmin_coursedetail_table_sql_model extends local_friadmin_widget 
      *
      * @return Array An array with the extended SQL and the parameters
      */
+    /**
+     * @param       $sql
+     * @return      string
+     * @throws      Exception
+     *
+     * @updateDate  22/06/2015
+     * @author      eFaktor     (fbv)
+     *
+     * Description
+     * Add Exception and comments
+     */
     protected function add_filters($sql) {
+        /* Variables    */
+        $courseContext  = null;
 
-        if (is_null($this->filterdata)) {
+        try {
+            /* Filter Data  - Course Id */
+            if (isset($this->filterdata->selcourseid) && ($this->filterdata->selcourseid)) {
+                /* Course Id Criteria   */
+                $sql .= " WHERE c.id = " . $this->filterdata->selcourseid;
+            }//course_id
+
             return $sql;
-        }
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_Catch
+    }//add_filters
 
-        if (!empty($this->filterdata->selcourseid)) {
-            $sql .= " WHERE c.id = " . $this->filterdata->selcourseid;
-        }
+    /*********************/
+    /* PRIVATE FUNCTIONS */
+    /*********************/
 
-        return $sql;
-    }
+    /**
+     * @param           $courseId
+     * @return          array
+     * @throws          Exception
+     *
+     * @creationDate    22/06/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Get the teachers connected with
+     */
+    private function getTeachers_Course($courseId) {
+        /* Variables    */
+        global $DB;
+        $teachers   = array();
+        $context    = null;
+        $params     = null;
+
+        try {
+            /* Context Course   */
+            $context = CONTEXT_COURSE::instance($courseId);
+
+            /* Search Criteria  */
+            $params = array();
+            $params['context'] = $context->id;
+
+
+            /* SQL Instruction  */
+            $sql = " SELECT 	DISTINCT 	u.id,
+                                            CONCAT(u.firstname, ' ' , u.lastname) as 'name'
+                     FROM		{user}				u
+                        JOIN	{role_assignments}	ra	ON 	ra.userid 		= u.id
+                                                        AND	ra.contextid    = :context
+                        JOIN	{role}				r	ON	r.id 			= ra.roleid
+                                                        AND	r.archetype 	IN ('teacher','editingteacher')
+                     WHERE      u.deleted = 0";
+
+            /* Execute  */
+            $rdo = $DB->get_records_sql($sql,$params);
+            if ($rdo) {
+                foreach ($rdo as $instance) {
+                    $teachers[$instance->id] = $instance->name;
+                }//for_rdo_teaches
+            }//if_rdo
+
+            return $teachers;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//getTeachers_Course
 }

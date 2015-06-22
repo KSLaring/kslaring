@@ -226,7 +226,17 @@ class local_friadmin_coursedetail_table extends local_friadmin_widget implements
         $result = array();
 
         foreach ($data as $key => $field) {
-            $result[] = array(get_string('course_' . $key, 'local_friadmin'), $field);
+            /**
+             * @updateDate  22/06/2015
+             * @author      eFaktor     (fbv)
+             *
+             * Description
+             * Temporay
+             */
+            if (($key != 'time') && ($key != 'priceinternal') && ($key != 'priceexternal')) {
+                $result[] = array(get_string('course_' . $key, 'local_friadmin'), $field);
+            }
+
         }
 
         return $result;

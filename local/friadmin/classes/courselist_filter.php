@@ -68,8 +68,7 @@ class local_friadmin_courselist_filter extends local_friadmin_widget implements 
 //        $customdata = $this->get_fixture('friadmin_coursefilter');
         $customdata = $this->get_user_locationdata();
 
-        $mform = new local_friadmin_courselist_filter_form(null, $customdata, 'post', '',
-            array('id' => 'mform-coursefilter'));
+        $mform = new local_friadmin_courselist_filter_form(null, $customdata, 'post', '',array('id' => 'mform-coursefilter'));
 
         $this->mform = $mform;
 
@@ -137,6 +136,16 @@ class local_friadmin_courselist_filter extends local_friadmin_widget implements 
      *
      * @return Array $result The user location data
      */
+    /**
+     * @param       null $userid
+     * @return           array
+     *
+     * @updateDate  22/06/2015
+     * @author      eFaktor     (fbv)
+     *
+     * Description
+     * Add a new parameter in the filter -- classroom format
+     */
     public function get_user_locationdata($userid = null) {
         global $CFG, $DB;
 
@@ -145,7 +154,8 @@ class local_friadmin_courselist_filter extends local_friadmin_widget implements 
             'sector' => array(),
             'location' => array(),
             'from' => null,
-            'to' => null
+            'to' => null,
+            'classroom' => null,
         );
 
         if (is_null($userid)) {
@@ -182,21 +192,6 @@ class local_friadmin_courselist_filter extends local_friadmin_widget implements 
          */
         $this->myCategories = local_friadmin_helper::getMyCategories();
 
-        // Get the categories for which the user has admin rights
-        //$catadmin = local_friadmin_helper::get_categories_admin();
-
-        // Use only municipalities where the user has admin rights on the course categories
-        // and where the municipality name is contained in the category name
-        //$leveloneobjsfiltered = array();
-        //foreach ($leveloneobjs as $obj) {
-        //    foreach ($catadmin as $catname) {
-        //        //if (strpos($catname, $obj->name) !== false) {
-        //            $result['municipality'][$obj->name] = $obj->name;
-        //            $this->userleveloneids[] = $obj->id;
-        //            $leveloneobjsfiltered[] = $obj;
-        //}
-        //    }
-        //}
 
         if (!empty($leveloneobjsfiltered)) {
             // Get the sectors for the relevant municipalities via inustrycodes
@@ -218,42 +213,6 @@ class local_friadmin_courselist_filter extends local_friadmin_widget implements 
         }
 
         return $result;
-    }
-
-    /**
-     * Get the locations with id, name
-     *
-     * @param Object $leveloneobjsfiltered The array of objects with the municipalities
-     *
-     * @return mixed Array|null The array with the sector objects
-     */
-    protected function get_locations_old($leveloneobjsfiltered) {
-        global $DB;
-        $ids = array();
-        $locations = null;
-
-        // Get the municipality ids
-        foreach ($leveloneobjsfiltered as $obj) {
-            if (!in_array($obj->id, $ids)) {
-                $ids[] = $obj->id;
-            }
-        }
-
-        // Get the location ids and names with given municipality ids
-        if (!empty($ids)) {
-            $sql = "
-                SELECT
-                  id,
-                  name
-                FROM {course_locations}
-                WHERE levelone
-            ";
-            list($in, $params) = $DB->get_in_or_equal($ids);
-
-            $locations = $DB->get_records_sql($sql . $in, $params);
-        }
-
-        return $locations;
     }
 
     /**

@@ -148,4 +148,5 @@ $string['delete_location_are_you_sure'] = '<p>Are you sure you want to delete th
 $string['btn_save'] = 'Save';
 $string['lnk_back'] = 'Back';
 
+$string['only_classroom'] = 'Show only classroom courses';
 

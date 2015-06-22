@@ -61,6 +61,12 @@ class local_friadmin_courselist_table_sql_model extends local_friadmin_widget {
      *
      * Description
      * Rewrite sql to get all the courses connected with user
+     *
+     * @updateDate  22/06/2015
+     * @author      eFaktor     (fbv)
+     *
+     * Description
+     * Add LEFT
      */
     protected $sql = " SELECT	c.id        	as 'courseid',
                                 c.fullname  	as 'name',
@@ -81,77 +87,21 @@ class local_friadmin_courselist_table_sql_model extends local_friadmin_widget {
                                     GROUP BY e.courseid
                                  ) e ON e.courseid = c.id
                            # Get the length
-                           JOIN {course_format_options} 	cln 	ON 	cln.courseid 	= c.id
-                                                                    AND	cln.name 		= 'length'
+                           LEFT JOIN {course_format_options} 	cln   ON 	cln.courseid 	= c.id
+                                                                      AND	cln.name 		= 'length'
                            # Get the course location
-                           JOIN {course_format_options}		clo		ON	clo.courseid 	= c.id
-                                                                    AND	clo.name		= 'course_location'
+                           LEFT JOIN {course_format_options}	clo	  ON	clo.courseid 	= c.id
+                                                                      AND	clo.name		= 'course_location'
                            # Get the course location name
-                           JOIN {course_locations} 			cl		ON 	cl.id 			= clo.value
+                           LEFT JOIN {course_locations} 		cl	  ON 	cl.id 			= clo.value
                            # Get the course sector
-                           JOIN {course_format_options}		cse		ON	cse.courseid	= c.id
-                                                                    AND	cse.name		= 'course_sector'
+                           LEFT JOIN {course_format_options}	cse	  ON	cse.courseid	= c.id
+                                                                      AND	cse.name		= 'course_sector'
                            # Get the course sector name
-                           JOIN {report_gen_companydata} 	rgcse	ON 	rgcse.id 		= cse.value
+                           LEFT JOIN {report_gen_companydata} 	rgcse ON 	rgcse.id 		= cse.value
                            # Get the municipality
-                           JOIN {report_gen_companydata} 	rgcmu	ON 	rgcmu.id 		= cl.levelone ";
+                           LEFT JOIN {report_gen_companydata} 	rgcmu ON 	rgcmu.id 		= cl.levelone ";
 
-    // The query SQL
-    protected $sql_old = "
-      SELECT
-        c.id        courseid,
-        c.fullname  name,
-        c.startdate date,
-        '-'         seats,
-        e.deadline  deadline,
-        cln.length  length,
-        rgcmu.name  municipality,
-        rgcse.name  sector,
-        cl.name     location
-      FROM {course} c
-      # Get the deadline from enrol
-        JOIN (
-               SELECT
-                 e.courseid,
-                 IFNULL(MAX(e.customint1), 0) AS deadline
-               FROM {enrol} e
-               WHERE e.status = 0
-               GROUP BY e.courseid
-             ) e ON e.courseid = c.id
-      # Get the length
-        JOIN (
-               SELECT
-                 cfo.courseid,
-                 cfo.value AS 'length'
-               FROM {course_format_options} cfo
-               WHERE cfo.name = 'length'
-             ) cln ON cln.courseid = c.id
-      # Get the course location
-        JOIN (
-               SELECT
-                 cfo.courseid,
-                 cfo.value AS 'location'
-               FROM {course_format_options} cfo
-               WHERE cfo.name = 'course_location'
-             ) clo ON clo.courseid = c.id
-      # Get the course location name
-        JOIN {course_locations} cl
-          ON clo.location = cl.id
-      # Get the course sector
-        JOIN (
-               SELECT
-                 cfo.courseid,
-                 cfo.value AS 'sector'
-               FROM {course_format_options} cfo
-               WHERE cfo.name = 'course_sector'
-             ) cse ON cse.courseid = c.id
-      # Get the course sector name
-        JOIN {report_gen_companydata} rgcse
-          ON rgcse.id = cse.sector
-      # Get the municipality
-        JOIN {report_gen_companydata} rgcmu
-          ON rgcmu.id = cl.levelone
-    ";
 
     /**
      * Construct the courselist_page renderable.
@@ -181,6 +131,160 @@ class local_friadmin_courselist_table_sql_model extends local_friadmin_widget {
     }
 
     /**
+     * @throws      Exception
+     *
+     * @updateDate  22/06/2015
+     * @author      eFaktor     (fbv)
+     *
+     * Description
+     * Rebuild the logical to get the data from DB and to add the filter criteria
+     */
+    protected function get_data_from_db() {
+        /* Variables    */
+        global $DB;
+        $params     = array();
+        $result     = null;
+        $sqlWhere   = null;
+
+        try {
+            /* Add Filter   */
+            list($sqlWhere,$params) = self::AddCriteria_Filter();
+            if ($sqlWhere) {
+                $this->sql .= $sqlWhere;
+            }//if_sqlWhere
+
+            /* Add Sort */
+            if ($this->sort) {
+                $this->sql .= ' ORDER BY ' . $this->sort;
+            }//if_sort
+
+            /* Execute  */
+            $result = $DB->get_records_sql($this->sql,$params);
+
+            $this->data = $result;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//get_data_from_db
+
+    /**
+     * @return          array
+     * @throws          Exception
+     *
+     * @creationDate    22/06/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Get the filter criteria
+     */
+    private function AddCriteria_Filter() {
+        /* Variables    */
+        global $DB;
+        $params         = array();
+        $categories     = null;
+        $sqlWhere       = null;
+        $filterData     = null;
+
+        try {
+            /* Categories   */
+            if ($this->myCategories) {
+                $categories = implode(',',array_keys($this->myCategories));
+                if (!$sqlWhere) {
+                    $sqlWhere = " WHERE ";
+                }else {
+                    $sqlWhere .= " AND ";
+                }//if_selWhere
+                $sqlWhere .= " c.category IN ($categories) ";
+            }//if_Categories
+
+            /* Get filter criteria from the form*/
+            $filterData = $this->filterdata;
+            if ($filterData) {
+                /* Add Only Classroom Courses   */
+                if (isset($filterData->classroom) && ($filterData->classroom)) {
+                    if (!$sqlWhere) {
+                        $sqlWhere = " WHERE ";
+                    }else {
+                        $sqlWhere .= " AND ";
+                    }//if_selWhere
+                    $sqlWhere .= " C.format like '%classroom%' ";
+
+                    /* Municipality Filter  */
+                    if (isset($filterData->selmunicipality) && ($filterData->selmunicipality)) {
+                        if (!$sqlWhere) {
+                            $sqlWhere = " WHERE ";
+                        }else {
+                            $sqlWhere .= " AND ";
+                        }//if_selWhere
+                        $sqlWhere .= " rgcmu.id = :selmunicipality ";
+                        $params['selmunicipality'] = $filterData->selmunicipality;
+                    }//if_selmunicipality
+
+                    /* Location Filter      */
+                    if (isset($filterData->sellocation) && ($filterData->sellocation)) {
+                        if (!$sqlWhere) {
+                            $sqlWhere = " WHERE ";
+                        }else {
+                            $sqlWhere .= " AND ";
+                        }//if_selWhere
+                        $sqlWhere .= " cl.id = :sellocation ";
+                        $params['sellocation'] = $filterData->sellocation;
+                    }//if_location
+
+                    /* Sector Filter        */
+                    if (isset($filterData->selsector) && ($filterData->selsector)) {
+                        if (!$sqlWhere) {
+                            $sqlWhere = " WHERE ";
+                        }else {
+                            $sqlWhere .= " AND ";
+                        }//if_selWhere
+                        $sqlWhere .= " rgcse.id = :selsector ";
+                        $params['selsector'] = $filterData->selsector;
+                    }//if_sector
+
+                    /* From Time Filter     */
+                    if (isset($filterData->seltimefrom) && ($filterData->seltimefrom)) {
+                        if (!$sqlWhere) {
+                            $sqlWhere = " WHERE ";
+                        }else {
+                            $sqlWhere .= " AND ";
+                        }//if_selWhere
+                        $sqlWhere .= " c.startdate >= :seltimefrom ";
+                        $params['seltimefrom'] = $filterData->seltimefrom;
+                    }//if_seltimeFrom
+
+                    /* To Time Filter       */
+                    if (isset($filterData->seltimeto) && ($filterData->seltimeto)) {
+                        if (!$sqlWhere) {
+                            $sqlWhere = " WHERE ";
+                        }else {
+                            $sqlWhere .= " AND ";
+                        }//if_selWhere
+                        $sqlWhere .= " c.startdate <= :seltimeto ";
+                        $params['seltimeto'] = $filterData->seltimeto;
+                    }//if_seltimeto
+
+                    /* Course Name Filter   */
+                    if (isset($filterData->selname) && ($filterData->selname)) {
+                        if (!$sqlWhere) {
+                            $sqlWhere = " WHERE ";
+                        }else {
+                            $sqlWhere .= " AND ";
+                        }//if_selWhere
+                        $sqlWhere .= $DB->sql_like('c.fullname', ':selname', false, false);
+                        $params['selname'] = "%" . $filterData->selname . "%";
+                    }//if_selName
+                }//if_classroom
+            }//if_filterData
+
+
+            return array($sqlWhere,$params);
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//AddCategories_Filter
+
+    /**
      * Get the data from the DB and save it in the $data property
      */
     /**
@@ -190,7 +294,7 @@ class local_friadmin_courselist_table_sql_model extends local_friadmin_widget {
      * Description
      * Add the user categories parameter
      */
-    protected function get_data_from_db() {
+    protected function get_data_from_db_old() {
         /* Variables    */
         global $DB;
         $result     = array();
@@ -227,7 +331,7 @@ class local_friadmin_courselist_table_sql_model extends local_friadmin_widget {
      * @return Array An array with the extended SQL and the parameters
      */
 
-    protected function add_filters($sql, $userleveloneids,$fromform = null) {
+    protected function add_filters_old($sql, $userleveloneids,$fromform = null) {
         /* Variables    */
         global $DB;
         $params     = array();
@@ -244,7 +348,6 @@ class local_friadmin_courselist_table_sql_model extends local_friadmin_widget {
             }
 
             if (!empty($fromform->selmunicipality)) {
-                echo " SEL Municipality " . $fromform->selmunicipality . "</br>";
                 $sql .= ' AND rgcmu.id = :selmunicipality';
                 $params['selmunicipality'] = $fromform->selmunicipality;
             }
