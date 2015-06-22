@@ -53,7 +53,7 @@ $capabilities = array(
         'riskbitmask' => RISK_SPAM | RISK_XSS,
 
         'captype' => 'view',
-        'contextlevel' => CONTEXT_BLOCK,
+        'contextlevel' => CONTEXT_BLOCK,CONTEXT_COURSECAT,
         'archetypes' => array(
             'manager' => CAP_ALLOW
         ),

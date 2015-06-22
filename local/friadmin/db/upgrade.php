@@ -60,14 +60,14 @@ function xmldb_local_friadmin_upgrade($oldversion) {
 
     $dbman = $DB->get_manager();
 
-    if ($oldversion < 2015061800) {
+    if ($oldversion < 2015062204) {
         /* Add Instance FriAdmin - Frikomport Block */
         /* Add Instance Course Locations - Frikomport Block */
         /* Add Instance Frikomport Block  - Course Edit and Index */
         FriAdmin_UpdateHandler::AddInstance_FrikomportBlock();
 
         // Plugin savepoint reached.
-        upgrade_plugin_savepoint(true, 2015061800, 'local', 'friadmin');
+        upgrade_plugin_savepoint(true, 2015062204, 'local', 'friadmin');
     }//if_odlversion
 
     return true;
@@ -265,6 +265,31 @@ class FriAdmin_UpdateHandler {
             $instanceBlock->parentcontextid     = 1;
             $instanceBlock->showinsubcontexts   = 0;
             $instanceBlock->pagetypepattern     = 'course-index';
+            $instanceBlock->defaultregion       = 'side-pre';
+            $instanceBlock->defaultweight       = 0;
+            /* Execute  */
+            $DB->insert_record('block_instances',$instanceBlock);
+
+            /* Get Instance Frikomport Block - My Page  */
+            $sql = " SELECT		*
+                     FROM		{block_instances}
+                     WHERE		blockname 			= 'frikomport'
+                        AND		pagetypepattern		LIKE '%my-index%' ";
+            /* Execute  */
+            $blocks = $DB->get_records_sql($sql);
+            if ($blocks) {
+                // Loop through and remove them from the My Moodle page.
+                foreach ($blocks as $block) {
+                    blocks_delete_instance($block);
+                }
+            }//deleted
+
+            /* My Index (My Page)   */
+            $instanceBlock = new stdClass();
+            $instanceBlock->blockname           = 'frikomport';
+            $instanceBlock->parentcontextid     = 1;
+            $instanceBlock->showinsubcontexts   = 1;
+            $instanceBlock->pagetypepattern     = 'my-index';
             $instanceBlock->defaultregion       = 'side-pre';
             $instanceBlock->defaultweight       = 0;
             /* Execute  */

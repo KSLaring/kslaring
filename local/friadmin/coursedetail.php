@@ -35,6 +35,17 @@ $friadmin = new local_friadmin\friadmin();
 // Basic page init - set context and pagelayout
 $friadmin->init_page();
 
+/**
+ * @updateDate  22/06/2015
+ * @author      eFaktor     (fbv)
+ *
+ * Description
+ * Check if the user is super user
+ */
+if (!$friadmin->__get('superuser')) {
+    print_error('nopermissions', 'error', '', 'block/frikomport:view');
+}//if_superuser
+
 // In Moodle 2.7 renderers and renderables can't be loaded via namespaces
 // Get the renderer for this plugin
 $output = $PAGE->get_renderer('local_friadmin');

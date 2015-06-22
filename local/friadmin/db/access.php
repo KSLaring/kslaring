@@ -24,7 +24,7 @@ $capabilities = array(
         'riskbitmask' => RISK_XSS,
 
         'captype' => 'write',
-        'contextlevel' => CONTEXT_SYSTEM,CONTEXT_COURSE,
+        'contextlevel' => CONTEXT_SYSTEM,CONTEXT_COURSE,CONTEXT_COURSECAT,
         'archetypes' => array(
             'coursecreator'  => CAP_ALLOW,
             'manager' => CAP_ALLOW

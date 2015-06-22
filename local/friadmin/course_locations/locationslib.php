@@ -29,6 +29,48 @@ class CourseLocations {
     /********************/
 
     /**
+     * @return          bool
+     * @throws          Exception
+     *
+     * @updateDate      22/06/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Check if the user is a super user
+     */
+    public static function CheckCapability_FriAdmin() {
+        /* Variables    */
+        global $DB, $USER;
+
+        try {
+            /* Search Criteria  */
+            $params = array();
+            $params['user']         = $USER->id;
+            $params['level']        = CONTEXT_COURSECAT;
+            $params['archetype']    = 'manager';
+
+            /* SQL Instruction  */
+            $sql = " SELECT		ra.id
+                     FROM		{role_assignments}	ra
+                        JOIN	{role}				r		ON 		r.id			= ra.roleid
+                                                            AND		r.archetype		= :archetype
+                        JOIN	{context}		    ct		ON		ct.id			= ra.contextid
+                                                            AND		ct.contextlevel	= :level
+                     WHERE		ra.userid 		= :user ";
+
+            /* Execute  */
+            $rdo = $DB->get_records_sql($sql,$params);
+            if ($rdo) {
+                return true;
+            }else {
+                return false;
+            }//if_Rdo
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//CheckCapability_FriAdmin
+
+    /**
      * @param           $user_id
      * @return          array
      * @throws          Exception

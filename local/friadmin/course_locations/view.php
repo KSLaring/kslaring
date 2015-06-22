@@ -32,7 +32,16 @@ $index_url      = new moodle_url('/local/friadmin/course_locations/index.php');
 $context        = context_system::instance();
 $location       = null;
 
-require_capability('local/friadmin:course_locations_manage',$context);
+/**
+ * @updateDate  22/06/2015
+ * @author      eFaktor     (fbv)
+ *
+ * Description
+ * Check if the user is super user
+ */
+if (!CourseLocations::CheckCapability_FriAdmin()) {
+    print_error('nopermissions', 'error', '', 'block/frikomport:view');
+}//if_superuser
 
 $PAGE->set_url($url);
 $PAGE->set_context($context);

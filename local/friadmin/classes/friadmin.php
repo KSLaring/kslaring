@@ -30,6 +30,12 @@ use stdClass;
  * @copyright       2015 eFaktor
  * @author          Urs Hunkler {@link urs.hunkler@unodo.de}
  * @license         http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ *
+ * @updateDate      22/06/2015
+ * @author          eFaktor     (fbv)
+ *
+ * Description
+ * Change the logical to check if the user is superuser or not
  */
 class friadmin {
 
@@ -49,6 +55,17 @@ class friadmin {
     protected $page = null;
 
     /**
+     * @var         null
+     *
+     * @updateDate  22/06/2015
+     * @author      eFaktor     (fbv)
+     *
+     * Description
+     * New attribute to check idf the user is super user
+     */
+    protected $superuser    = null;
+
+    /**
      * The renderer
      * @var \core_renderer|\local_friadmin_renderer $output
      */
@@ -65,14 +82,22 @@ class friadmin {
      *
      * Set the required information: context and pagelayout
      */
+    /**
+     * @updateDate  22/06/2015
+     * @author      eFaktor     (fbv)
+     *
+     * Description
+     * change the logical to check if the user is superuser or not
+     */
     public function init_page() {
         global $PAGE;
 
         $this->context = context_system::instance();
         $PAGE->set_context($this->context);
         $PAGE->set_pagelayout('standard');
+        $this->superuser = self::CheckCapability_FriAdmin();
 
-        require_capability('block/frikomport:view', $this->context);
+        //require_capability('block/frikomport:view', $this->context);
     }
 
     /*
@@ -245,6 +270,10 @@ class friadmin {
         return $this->output;
     }
 
+    protected  function get_superuser() {
+        return $this->superuser;
+    }//get_superuser
+
     /**
      * Magic property method
      *
@@ -291,4 +320,46 @@ class friadmin {
         }
         return !empty($this->properties->{$key});
     }
+
+    /**
+     * @return          bool
+     * @throws          \Exception
+     *
+     * @updateDate      22/06/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Check if the user is a super user
+     */
+    private static function CheckCapability_FriAdmin() {
+        /* Variables    */
+        global $DB, $USER;
+
+        try {
+            /* Search Criteria  */
+            $params = array();
+            $params['user']         = $USER->id;
+            $params['level']        = CONTEXT_COURSECAT;
+            $params['archetype']    = 'manager';
+
+            /* SQL Instruction  */
+            $sql = " SELECT		ra.id
+                     FROM		{role_assignments}	ra
+                        JOIN	{role}				r		ON 		r.id			= ra.roleid
+                                                            AND		r.archetype		= :archetype
+                        JOIN	{context}		    ct		ON		ct.id			= ra.contextid
+                                                            AND		ct.contextlevel	= :level
+                     WHERE		ra.userid 		= :user ";
+
+            /* Execute  */
+            $rdo = $DB->get_records_sql($sql,$params);
+            if ($rdo) {
+                return true;
+            }else {
+                return false;
+            }//if_Rdo
+        }catch (\Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//CheckCapability_FriAdmin
 }

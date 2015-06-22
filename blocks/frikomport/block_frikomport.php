@@ -108,6 +108,15 @@ class block_frikomport extends block_base {
     /**
      * Gets the content for this block by grabbing it from $this->page
      */
+    /**
+     * @return      bool|stdObject
+     *
+     * @updateDate  22/06/2015
+     * @author      eFaktor     (fbv)
+     *
+     * Description
+     * Change the logical to check if the user is super user
+     */
     function get_content() {
         global $CFG, $OUTPUT;
 
@@ -116,7 +125,20 @@ class block_frikomport extends block_base {
             return true;
         }
 
-        if (!has_capability('block/frikomport:view', context_block::instance($this->instance->id))) {
+        //if (!has_capability('block/frikomport:view', context_block::instance($this->instance->id))) {
+        //    $this->content = new stdClass();
+        //    $this->content->text = '';
+        //    return false;
+        //}
+
+        /**
+         * @updateDate  22/06/2015
+         * @author      eFaktor     (fbv)
+         *
+         * Description
+         * Check if the user is super user
+         */
+        if (!self::CheckCapability_FriAdmin()) {
             $this->content = new stdClass();
             $this->content->text = '';
             return false;
@@ -183,4 +205,50 @@ class block_frikomport extends block_base {
     public function get_aria_role() {
         return 'navigation';
     }
+
+    /*********************/
+    /* PRIVATE FUNCTIONS */
+    /*********************/
+
+    /**
+     * @return          bool
+     * @throws          Exception
+     *
+     * @updateDate      22/06/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Check if the user is a super user
+     */
+    private static function CheckCapability_FriAdmin() {
+        /* Variables    */
+        global $DB, $USER;
+
+        try {
+            /* Search Criteria  */
+            $params = array();
+            $params['user']         = $USER->id;
+            $params['level']        = CONTEXT_COURSECAT;
+            $params['archetype']    = 'manager';
+
+            /* SQL Instruction  */
+            $sql = " SELECT		ra.id
+                     FROM		{role_assignments}	ra
+                        JOIN	{role}				r		ON 		r.id			= ra.roleid
+                                                            AND		r.archetype		= :archetype
+                        JOIN	{context}		    ct		ON		ct.id			= ra.contextid
+                                                            AND		ct.contextlevel	= :level
+                     WHERE		ra.userid 		= :user ";
+
+            /* Execute  */
+            $rdo = $DB->get_records_sql($sql,$params);
+            if ($rdo) {
+                return true;
+            }else {
+                return false;
+            }//if_Rdo
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//CheckCapability_FriAdmin
 }
