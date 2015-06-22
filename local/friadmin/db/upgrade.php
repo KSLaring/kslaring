@@ -60,14 +60,14 @@ function xmldb_local_friadmin_upgrade($oldversion) {
 
     $dbman = $DB->get_manager();
 
-    if ($oldversion < 2015062204) {
+    if ($oldversion < 2015062206) {
         /* Add Instance FriAdmin - Frikomport Block */
         /* Add Instance Course Locations - Frikomport Block */
         /* Add Instance Frikomport Block  - Course Edit and Index */
         FriAdmin_UpdateHandler::AddInstance_FrikomportBlock();
 
         // Plugin savepoint reached.
-        upgrade_plugin_savepoint(true, 2015062204, 'local', 'friadmin');
+        upgrade_plugin_savepoint(true, 2015062206, 'local', 'friadmin');
     }//if_odlversion
 
     return true;
@@ -127,7 +127,7 @@ class FriAdmin_UpdateHandler {
             $instanceBlock->showinsubcontexts   = 0;
             $instanceBlock->pagetypepattern     = 'local-friadmin-courselist';
             $instanceBlock->defaultregion       = 'side-pre';
-            $instanceBlock->defaultweight       = 0;
+            $instanceBlock->defaultweight       = -10;
             /* Execute  */
             $DB->insert_record('block_instances',$instanceBlock);
 
@@ -138,7 +138,7 @@ class FriAdmin_UpdateHandler {
             $instanceBlock->showinsubcontexts   = 0;
             $instanceBlock->pagetypepattern     = 'local-friadmin-coursedetail';
             $instanceBlock->defaultregion       = 'side-pre';
-            $instanceBlock->defaultweight       = 0;
+            $instanceBlock->defaultweight       = -10;
             /* Execute  */
             $DB->insert_record('block_instances',$instanceBlock);
 
@@ -149,7 +149,7 @@ class FriAdmin_UpdateHandler {
             $instanceBlock->showinsubcontexts   = 0;
             $instanceBlock->pagetypepattern     = 'local-friadmin-coursetemplate';
             $instanceBlock->defaultregion       = 'side-pre';
-            $instanceBlock->defaultweight       = 0;
+            $instanceBlock->defaultweight       = -10;
             /* Execute  */
             $DB->insert_record('block_instances',$instanceBlock);
 
@@ -161,7 +161,7 @@ class FriAdmin_UpdateHandler {
             $instanceBlock->showinsubcontexts   = 0;
             $instanceBlock->pagetypepattern     = 'local-friadmin-course_locations-index';
             $instanceBlock->defaultregion       = 'side-pre';
-            $instanceBlock->defaultweight       = 0;
+            $instanceBlock->defaultweight       = -10;
             /* Execute  */
             $DB->insert_record('block_instances',$instanceBlock);
 
@@ -172,7 +172,7 @@ class FriAdmin_UpdateHandler {
             $instanceBlock->showinsubcontexts   = 0;
             $instanceBlock->pagetypepattern     = 'local-friadmin-course_locations-course_locations';
             $instanceBlock->defaultregion       = 'side-pre';
-            $instanceBlock->defaultweight       = 0;
+            $instanceBlock->defaultweight       = -10;
             /* Execute  */
             $DB->insert_record('block_instances',$instanceBlock);
 
@@ -183,7 +183,7 @@ class FriAdmin_UpdateHandler {
             $instanceBlock->showinsubcontexts   = 0;
             $instanceBlock->pagetypepattern     = 'local-friadmin-course_locations-locations';
             $instanceBlock->defaultregion       = 'side-pre';
-            $instanceBlock->defaultweight       = 0;
+            $instanceBlock->defaultweight       = -10;
             /* Execute  */
             $DB->insert_record('block_instances',$instanceBlock);
 
@@ -194,7 +194,7 @@ class FriAdmin_UpdateHandler {
             $instanceBlock->showinsubcontexts   = 0;
             $instanceBlock->pagetypepattern     = 'local-friadmin-course_locations-view';
             $instanceBlock->defaultregion       = 'side-pre';
-            $instanceBlock->defaultweight       = 0;
+            $instanceBlock->defaultweight       = -10;
             /* Execute  */
             $DB->insert_record('block_instances',$instanceBlock);
 
@@ -205,7 +205,7 @@ class FriAdmin_UpdateHandler {
             $instanceBlock->showinsubcontexts   = 0;
             $instanceBlock->pagetypepattern     = 'local-friadmin-course_locations-add_location';
             $instanceBlock->defaultregion       = 'side-pre';
-            $instanceBlock->defaultweight       = 0;
+            $instanceBlock->defaultweight       = -10;
             /* Execute  */
             $DB->insert_record('block_instances',$instanceBlock);
 
@@ -216,7 +216,7 @@ class FriAdmin_UpdateHandler {
             $instanceBlock->showinsubcontexts   = 0;
             $instanceBlock->pagetypepattern     = 'local-friadmin-course_locations-edit_location';
             $instanceBlock->defaultregion       = 'side-pre';
-            $instanceBlock->defaultweight       = 0;
+            $instanceBlock->defaultweight       = -10;
             /* Execute  */
             $DB->insert_record('block_instances',$instanceBlock);
 
@@ -227,7 +227,7 @@ class FriAdmin_UpdateHandler {
             $instanceBlock->showinsubcontexts   = 0;
             $instanceBlock->pagetypepattern     = 'local-friadmin-course_locations-delete_location';
             $instanceBlock->defaultregion       = 'side-pre';
-            $instanceBlock->defaultweight       = 0;
+            $instanceBlock->defaultweight       = -10;
             /* Execute  */
             $DB->insert_record('block_instances',$instanceBlock);
 
@@ -255,7 +255,7 @@ class FriAdmin_UpdateHandler {
             $instanceBlock->showinsubcontexts   = 0;
             $instanceBlock->pagetypepattern     = 'course-edit';
             $instanceBlock->defaultregion       = 'side-pre';
-            $instanceBlock->defaultweight       = 0;
+            $instanceBlock->defaultweight       = -10;
             /* Execute  */
             $DB->insert_record('block_instances',$instanceBlock);
 
@@ -266,7 +266,7 @@ class FriAdmin_UpdateHandler {
             $instanceBlock->showinsubcontexts   = 0;
             $instanceBlock->pagetypepattern     = 'course-index';
             $instanceBlock->defaultregion       = 'side-pre';
-            $instanceBlock->defaultweight       = 0;
+            $instanceBlock->defaultweight       = -10;
             /* Execute  */
             $DB->insert_record('block_instances',$instanceBlock);
 
@@ -291,7 +291,7 @@ class FriAdmin_UpdateHandler {
             $instanceBlock->showinsubcontexts   = 1;
             $instanceBlock->pagetypepattern     = 'my-index';
             $instanceBlock->defaultregion       = 'side-pre';
-            $instanceBlock->defaultweight       = 0;
+            $instanceBlock->defaultweight       = -10;
             /* Execute  */
             $DB->insert_record('block_instances',$instanceBlock);
         }catch (Exception $ex) {
