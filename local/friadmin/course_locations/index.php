@@ -35,9 +35,11 @@ $myCompetence   = null;
  * Description
  * Check if the user is super user
  */
-if (!CourseLocations::CheckCapability_FriAdmin()) {
-    print_error('nopermissions', 'error', '', 'block/frikomport:view');
-}//if_superuser
+if (!has_capability('local/friadmin:course_locations_manage',$context)) {
+    if (!CourseLocations::CheckCapability_FriAdmin()) {
+        print_error('nopermissions', 'error', '', 'block/frikomport:view');
+    }//if_superuser
+}
 
 $PAGE->set_url($url);
 $PAGE->set_context($context);
