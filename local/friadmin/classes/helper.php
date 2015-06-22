@@ -73,6 +73,12 @@ class local_friadmin_helper {
      *
      * Description
      * Get all categories where the users ir a super user
+     *
+     * @updateDate      22/06/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Admin site can see everything
      */
     public static function getMyCategories() {
         /* Variables    */
@@ -106,16 +112,29 @@ class local_friadmin_helper {
             foreach ($categoriesLst as $category) {
                 /* Get Context Category */
                 $contextCat = CONTEXT_COURSECAT::instance($category->id);
-
-                /* Execute   */
-                $params['context'] = $contextCat->id;
-                $rdo = $DB->get_record_sql($sql,$params);
-                if ($rdo) {
+                /**
+                 * @updateDate      22/06/2015
+                 * @author          eFaktor     (fbv)
+                 *
+                 * Description
+                 * Admin site can see everything
+                 */
+                if (!has_capability('moodle/category:manage', $contextCat)) {
+                    /* Execute   */
+                    $params['context'] = $contextCat->id;
+                    $rdo = $DB->get_record_sql($sql,$params);
+                    if ($rdo) {
+                        /* Add Category */
+                        $myCategories[$category->id] = $category->name;
+                        /* If there are subcategories connected with, the user will also have permissions for them  */
+                        self::getSubcategories($category->id,$myCategories);
+                    }//if_Rdo
+                }else {
                     /* Add Category */
                     $myCategories[$category->id] = $category->name;
                     /* If there are subcategories connected with, the user will also have permissions for them  */
                     self::getSubcategories($category->id,$myCategories);
-                }//if_Rdo
+                }
             }//for_Each_Category
 
             return $myCategories;
