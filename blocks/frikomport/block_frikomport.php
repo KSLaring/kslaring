@@ -180,13 +180,20 @@ class block_frikomport extends block_base {
 
         // only do search if you have moodle/site:config
         if (!empty($this->content->text)) {
-            if (has_capability('block/frikomport:view', context_block::instance($this->instance->id))) {
-                $this->content->footer =
-                    $renderer->search_form(new moodle_url("/blocks/frikomport/search.php"),
-                        optional_param('frikomquery', '', PARAM_RAW));
-            } else {
-                $this->content->footer = '';
-            }
+            /**
+             * @updateDate  22/06/2015
+             * @author      eFaktor     (fbv)
+             *
+             * Description
+             * What is the purpose?
+             */
+            //if (has_capability('block/frikomport:view', context_block::instance($this->instance->id))) {
+            //    $this->content->footer =
+            //        $renderer->search_form(new moodle_url("/blocks/frikomport/search.php"),
+            //            optional_param('frikomquery', '', PARAM_RAW));
+            //} else {
+            //    $this->content->footer = '';
+            //}
 
             if (!empty($this->config->enabledock) && $this->config->enabledock == 'yes') {
                 user_preference_allow_ajax_update('nav_in_tab_panel_frikomportnav' .
