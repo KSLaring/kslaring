@@ -101,7 +101,7 @@ class local_friadmin_coursedetail_table extends local_friadmin_widget implements
      */
     protected function format_date($data, $fields) {
         foreach ($fields as $field) {
-            if (0 == $data[$field]) {
+            if ($data[$field]) {
                 $data[$field] = '-';
             } else {
                 $data[$field] = '<span class="nowrap">' .

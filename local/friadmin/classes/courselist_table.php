@@ -248,7 +248,7 @@ class local_friadmin_courselist_table extends local_friadmin_widget implements r
             }
 
             foreach ($fields as $field) {
-                if (0 == $row->$field) {
+                if ($row->$field) {
                     $row->$field = '-';
                 } else {
                     $row->$field = '<span class="nowrap">' .
