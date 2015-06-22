@@ -73,6 +73,7 @@ class local_friadmin_courselist_filter extends local_friadmin_widget implements 
         $this->mform = $mform;
 
         if ($fromform = $mform->get_data()) {
+
             $this->fromform = $fromform;
             $SESSION->friadmin_courselist_filtering = $fromform;
 //            local_logger\console::log($fromform, "Filter - Fromform");
@@ -155,7 +156,7 @@ class local_friadmin_courselist_filter extends local_friadmin_widget implements 
             'location' => array(),
             'from' => null,
             'to' => null,
-            'classroom' => null,
+            'classroom' => true,
         );
 
         if (is_null($userid)) {

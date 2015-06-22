@@ -207,7 +207,7 @@ class local_friadmin_courselist_table_sql_model extends local_friadmin_widget {
                     }else {
                         $sqlWhere .= " AND ";
                     }//if_selWhere
-                    $sqlWhere .= " C.format like '%classroom%' ";
+                    $sqlWhere .= " c.format like '%classroom%' ";
 
                     /* Municipality Filter  */
                     if (isset($filterData->selmunicipality) && ($filterData->selmunicipality)) {
