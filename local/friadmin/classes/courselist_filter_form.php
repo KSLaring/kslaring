@@ -104,16 +104,7 @@ class local_friadmin_courselist_filter_form extends \moodleform {
          */
         $classRoom = $mform->createElement('checkbox','classroom','',get_string('only_classroom','local_friadmin'));
         $elementgroup[] = $classRoom;
-        if (isset($SESSION->friadmin_courselist_filtering) && ($SESSION->friadmin_courselist_filtering)) {
-            $filterData = $SESSION->friadmin_courselist_filtering;
-            if (isset($filterData->classroom) && ($filterData->classroom)) {
-               $mform->setDefault('classroom', $filterData->classroom);
-           }
-
-        }else {
-            $mform->setDefault('classroom', $customdata['classroom']);
-        }
-
+        $mform->setDefault('classroom', $customdata['classroom']);
 
         $elementgroup[] = $mform->createElement('submit', 'submitbutton',
             get_string('selsubmit', 'local_friadmin'));

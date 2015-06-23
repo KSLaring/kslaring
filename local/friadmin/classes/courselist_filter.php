@@ -55,34 +55,43 @@ class local_friadmin_courselist_filter extends local_friadmin_widget implements 
     /**
      * Construct the courselist_page renderable.
      */
+    /**
+     * @updateDate  23/06/205
+     * @author      eFaktor     (fbv)
+     *
+     * Description
+     * Remove SESSION variable
+     * Clean code
+     */
     public function __construct() {
-        global $SESSION;
-
-        if (!isset($SESSION->friadmin_courselist_filtering)) {
-            $SESSION->friadmin_courselist_filtering = array();
-        }
-
         // Create the data object and set the first values
         parent::__construct();
 
-//        $customdata = $this->get_fixture('friadmin_coursefilter');
-        $customdata = $this->get_user_locationdata();
+        /**
+         * @updateDate  23/06/2015
+         * @author      eFaktor     (fbv)
+         *
+         * Description
+         * Clean code.
+         * Get values filter but default and set up
+         */
+        $customdata     = $this->get_user_locationdata();
+        $this->fromform = $customdata;
 
         $mform = new local_friadmin_courselist_filter_form(null, $customdata, 'post', '',array('id' => 'mform-coursefilter'));
 
+        /**
+         * @updateDate  23/06/2015
+         * @author      eFaktor     (fbv)
+         *
+         * Description
+         * Remove SESSION variable
+         */
         $this->mform = $mform;
-
         if ($fromform = $mform->get_data()) {
+            $this->fromform  = (Array)$fromform;
+        }//if_form_data
 
-            $this->fromform = $fromform;
-            $SESSION->friadmin_courselist_filtering = $fromform;
-//            local_logger\console::log($fromform, "Filter - Fromform");
-        } else if (!empty($SESSION->friadmin_courselist_filtering)) {
-            $this->fromform = $SESSION->friadmin_courselist_filtering;
-            $mform->set_defaults($SESSION->friadmin_courselist_filtering);
-//            local_logger\console::log($SESSION->friadmin_courselist_filtering,
-//                "Filter - SESSION friadmin_courselist_filtering");
-        }
     }
 
     /**
@@ -148,16 +157,14 @@ class local_friadmin_courselist_filter extends local_friadmin_widget implements 
      * Add a new parameter in the filter -- classroom format
      */
     public function get_user_locationdata($userid = null) {
-        global $CFG, $DB;
-
-        $result = array(
-            'municipality' => array(),
-            'sector' => array(),
-            'location' => array(),
-            'from' => null,
-            'to' => null,
-            'classroom' => true,
-        );
+        /* Variables    */
+        $result = array('municipality' => array(),
+                        'sector' => array(),
+                        'location' => array(),
+                        'from' => null,
+                        'to' => null,
+                        'classroom' => true,
+                        );
 
         if (is_null($userid)) {
             global $USER;
