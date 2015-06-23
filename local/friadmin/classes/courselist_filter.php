@@ -60,12 +60,15 @@ class local_friadmin_courselist_filter extends local_friadmin_widget implements 
      * @author      eFaktor     (fbv)
      *
      * Description
-     * Remove SESSION variable
      * Clean code
+     * Rebuild logical with SESSION variable for the filter
      */
     public function __construct() {
+        /* Variables    */
+        global $SESSION;
         // Create the data object and set the first values
         parent::__construct();
+
 
         /**
          * @updateDate  23/06/2015
@@ -77,6 +80,9 @@ class local_friadmin_courselist_filter extends local_friadmin_widget implements 
          */
         $customdata     = $this->get_user_locationdata();
         $this->fromform = $customdata;
+        if (!isset($SESSION->filterData)) {
+            $SESSION->filterData = array();
+        }//if_filterData_SESSION
 
         $mform = new local_friadmin_courselist_filter_form(null, $customdata, 'post', '',array('id' => 'mform-coursefilter'));
 
@@ -85,13 +91,19 @@ class local_friadmin_courselist_filter extends local_friadmin_widget implements 
          * @author      eFaktor     (fbv)
          *
          * Description
-         * Remove SESSION variable
+         * Add check classroom checkbox
          */
         $this->mform = $mform;
         if ($fromform = $mform->get_data()) {
-            $this->fromform  = (Array)$fromform;
+            $SESSION->filterData    = (Array)$fromform;
+            $this->fromform         = $SESSION->filterData;
+        }else if($SESSION->filterData) {
+            if (!isset($SESSION->filterData['classroom'])) {
+                $SESSION->filterData['classroom'] = false;
+            }
+            $this->fromform = $SESSION->filterData;
+            $mform->set_defaults($SESSION->filterData);
         }//if_form_data
-
     }
 
     /**
