@@ -24,7 +24,15 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-define('ENROL_WAITINGLIST_FIELD_CUTOFFDATE', 'customint1');
+/**
+ * @updateDate  23/06/2015
+ * @author      eFaktor     (fbv)
+ *
+ * Description
+ * CUT OFF DATE --> enrolenddate --> That is used by moodle
+ */
+define('ENROL_WAITINGLIST_FIELD_CUTOFFDATE_OLD', 'customint1');
+define('ENROL_WAITINGLIST_FIELD_CUTOFFDATE', 'enrolenddate');
 define('ENROL_WAITINGLIST_FIELD_MAXENROLMENTS', 'customint2');
 //define('ENROL_WAITINGLIST_FIELD_WAITLISTSIZE', 'customint3');
 define('ENROL_WAITINGLIST_FIELD_WAITLISTSIZE', 'customint6');

@@ -67,6 +67,12 @@ class local_friadmin_courselist_table_sql_model extends local_friadmin_widget {
      *
      * Description
      * Add LEFT
+     *
+     * @updateDate  23/06/2015
+     * @author      eFaktor     (fbv)
+     *
+     * Description
+     * Replace customint1 by enrolenddate
      */
     protected $sql = " SELECT	c.id        	as 'courseid',
                                 c.fullname  	as 'name',
@@ -81,7 +87,7 @@ class local_friadmin_courselist_table_sql_model extends local_friadmin_widget {
                            # Get the deadline from enrol
                            JOIN (
                                     SELECT	e.courseid,
-                                            IFNULL(MAX(e.customint1), 0) AS deadline
+                                            IFNULL(MAX(e.enrolenddate), 0) AS deadline
                                     FROM 	{enrol} e
                                     WHERE 	e.status = 0
                                     GROUP BY e.courseid
