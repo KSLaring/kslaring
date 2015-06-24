@@ -41,12 +41,12 @@ $string['coursedetail_title'] = 'Friadmin kursdetaljer';
 $string['coursedetail_back'] = 'Tilbake til kursoversikten';
 $string['coursedetail_go'] = 'Gå til kurset';
 $string['coursedetail_settings'] = 'Kursinnstillinger';
-$string['coursedetail_completion'] = 'Course completions';
-$string['coursedetail_statistics'] = 'Overview statistics';
+$string['coursedetail_completion'] = 'Kursfullføringer';
+$string['coursedetail_statistics'] = 'Statistikk';
 $string['coursedetail_users'] = 'Påmeldte kursdeltakere';
 $string['coursedetail_confirmed'] = 'Administrere bekreftede';
 $string['coursedetail_waitlist'] = 'Administrere venteliste';
-$string['coursedetail_participantlist'] = 'Downlaod participant list';
+$string['coursedetail_participantlist'] = 'Last ned deltakerliste';
 $string['coursedetail_duplicate'] = 'Dupliser';
 $string['coursedetail_email'] = 'Send epost';
 
@@ -146,6 +146,6 @@ $string['delete_location_are_you_sure'] = '<p>Er du sikker på at du vil slette 
 $string['btn_save'] = 'Lagre';
 $string['lnk_back'] = 'Tilbake';
 
-$string['only_classroom'] = 'Show only classroom courses';
+$string['only_classroom'] = 'Vis bare klasseromskurs';
 
 
