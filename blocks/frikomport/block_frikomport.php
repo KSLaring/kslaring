@@ -245,6 +245,7 @@ class block_frikomport extends block_base {
                      FROM		{role_assignments}	ra
                         JOIN	{role}				r		ON 		r.id			= ra.roleid
                                                             AND		r.archetype		= :archetype
+                                                            AND     r.shortname     = r.archetype
                         JOIN	{context}		    ct		ON		ct.id			= ra.contextid
                                                             AND		ct.contextlevel	= :level
                      WHERE		ra.userid 		= :user ";

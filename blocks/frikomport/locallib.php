@@ -79,11 +79,19 @@ class block_frikomport_menu_manager {
                 'text' => get_string('nnewcourses', 'block_frikomport'),
                 'type' => navigation_node::NODETYPE_BRANCH
             ),
+            /**
+             * @updateDate  24/06/2015
+             * @author      eFaktor     (fbv)
+             *
+             * Description
+             * Add a new course --> First the user has to select the category where the course belong
+             * Action --> local/friadmin/newcourse.php
+             */
             array(
                 'text' => get_string('naddcourse', 'block_frikomport'),
                 'icon' => $settingsicon,
                 'type' => navigation_node::NODETYPE_LEAF,
-                'action' => '/course/edit.php?category=1'
+                'action' => '/local/friadmin/newcourse.php'
             ),
             array(
                 'text' => get_string('naddfromtemplate', 'block_frikomport'),

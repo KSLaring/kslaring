@@ -26,9 +26,7 @@ function xmldb_local_friadmin_install() {
 
 
     try {
-        /* Add Instance FriAdmin - Frikomport Block */
-        /* Add Instance Course Locations - Frikomport Block */
-        /* Add Instance Frikomport Block  - Course Edit and Index  */
+        /* The block has to be visible in all site */
         FriAdmin_Handler::AddInstance_FrikomportBlock();
 
         /* Course Locations Table           */
@@ -62,6 +60,51 @@ class FriAdmin_Handler {
     /**
      * @throws          Exception
      *
+     * @updateDate      24/06/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * The block has to be visible in all site
+     */
+    public static function AddInstance_FrikomportBlock() {
+        /* Variables    */
+        global $DB;
+        $blocks             = null;
+        $instanceBlock      = null;
+
+        try {
+            /* Get Instance Frikomport Block    */
+            $sql = " SELECT		*
+                     FROM		{block_instances}
+                     WHERE		blockname 			= 'frikomport' ";
+
+            /* Execute  */
+            $blocks = $DB->get_records_sql($sql);
+            if ($blocks) {
+                // Loop through and remove them from the My Moodle page.
+                foreach ($blocks as $block) {
+                    blocks_delete_instance($block);
+                }
+            }//deleted
+
+            /* Block has to be visible in all site    */
+            $instanceBlock = new stdClass();
+            $instanceBlock->blockname           = 'frikomport';
+            $instanceBlock->parentcontextid     = 1;
+            $instanceBlock->showinsubcontexts   = 1;
+            $instanceBlock->pagetypepattern     = '*';
+            $instanceBlock->defaultregion       = 'side-pre';
+            $instanceBlock->defaultweight       = 0;
+            /* Execute  */
+            $DB->insert_record('block_instances',$instanceBlock);
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//AddInstance_FrikomportBlock
+
+    /**
+     * @throws          Exception
+     *
      * @updateDate      16/06/2015
      * @author          eFaktor     (fbv)
      *
@@ -70,7 +113,7 @@ class FriAdmin_Handler {
      * Create Instance block Firkomport --  Fridadmin - Course Locations Plugin
      * Create Instance Frikomport Block  - Course Edit and Index
      */
-    public static function AddInstance_FrikomportBlock() {
+    public static function AddInstance_FrikomportBlock_old() {
         /* Variables    */
         global $DB;
         $blocks             = null;
@@ -120,6 +163,17 @@ class FriAdmin_Handler {
             $instanceBlock->parentcontextid     = 1;
             $instanceBlock->showinsubcontexts   = 0;
             $instanceBlock->pagetypepattern     = 'local-friadmin-coursetemplate';
+            $instanceBlock->defaultregion       = 'side-pre';
+            $instanceBlock->defaultweight       = -10;
+            /* Execute  */
+            $DB->insert_record('block_instances',$instanceBlock);
+
+            /* local-friadmin-newcourse */
+            $instanceBlock = new stdClass();
+            $instanceBlock->blockname           = 'frikomport';
+            $instanceBlock->parentcontextid     = 1;
+            $instanceBlock->showinsubcontexts   = 0;
+            $instanceBlock->pagetypepattern     = 'local-friadmin-newcourse';
             $instanceBlock->defaultregion       = 'side-pre';
             $instanceBlock->defaultweight       = -10;
             /* Execute  */

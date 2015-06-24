@@ -241,7 +241,7 @@ class local_friadmin_coursedetail_table extends local_friadmin_widget implements
              * Description
              * Temporay
              */
-            if (($key != 'time') && ($key != 'priceinternal') && ($key != 'priceexternal')) {
+            if (($key != 'time') && ($key != 'priceinternal') && ($key != 'priceexternal') && ($key != 'targetgroup')) {
                 $result[] = array(get_string('course_' . $key, 'local_friadmin'), $field);
             }
 
