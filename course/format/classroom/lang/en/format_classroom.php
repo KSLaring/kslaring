@@ -24,25 +24,25 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-$string['currentsection'] = 'This topic';
-$string['sectionname'] = 'Topic';
-$string['pluginname'] = 'Classroom format';
+$string['currentsection']       = 'This topic';
+$string['sectionname']          = 'Topic';
+$string['pluginname']           = 'Classroom format';
 
-$string['section0name'] = 'General';
-$string['page-course-view-classroom'] = 'Any course main page in classroom format';
+$string['section0name']                 = 'General';
+$string['page-course-view-classroom']   = 'Any course main page in classroom format';
 $string['page-course-view-classroom-x'] = 'Any course page in classroom format';
 
-$string['hidefromothers'] = 'Hide topic';
-$string['showfromothers'] = 'Show topic';
-$string['course'] = 'Course';
-$string['description'] = 'Description';
-$string['forums'] = 'Forum';
-$string['progress'] = 'Progress';
-$string['coursehomepage'] = 'Course homepage';
-$string['mymoodle'] = 'My';
-$string['lessonlastpageon'] = 'Please select the next activity in the navigation menu.';
-$string['lessonlastpageoff'] = 'You finished this lesson. Please select the next activity in the navigation menu.';
-$string['feedbacklastpage'] = 'You finished the feedback. Please select the next activity in the navigation menu.';
+$string['hidefromothers']       = 'Hide topic';
+$string['showfromothers']       = 'Show topic';
+$string['course']               = 'Course';
+$string['description']          = 'Description';
+$string['forums']               = 'Forum';
+$string['progress']             = 'Progress';
+$string['coursehomepage']       = 'Course homepage';
+$string['mymoodle']             = 'My';
+$string['lessonlastpageon']     = 'Please select the next activity in the navigation menu.';
+$string['lessonlastpageoff']    = 'You finished this lesson. Please select the next activity in the navigation menu.';
+$string['feedbacklastpage']     = 'You finished the feedback. Please select the next activity in the navigation menu.';
 
 $string['home_prerequisities']      = 'Prerequisites';
 $string['home_producedby']          = 'Produced by';
@@ -53,3 +53,8 @@ $string['home_title_sector']        = 'Sectors';
 $string['home_length']              = 'Estimated time spent';
 $string['home_effort']              = 'Estimated Effort';
 $string['home_manager']             = 'Course Manager';
+$string['home_time_from_to']        = 'Time from - to';
+$string['home_time_from_to_help']   = 'You can enter more one lecture separated by comma';
+$string['home_price_internal']      = 'Price internal';
+$string['home_price_external']      = 'Price external';
+$string['home_price']               = 'Price';

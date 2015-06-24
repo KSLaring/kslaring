@@ -41,23 +41,46 @@ class local_friadmin_coursetemplate_linklist extends local_friadmin_widget imple
     }
 
     /**
+     * @param           $courseId
+     * @throws          Exception
+     *
+     * @creationDate
+     * @author          Urs Hunkler {@link urs.hunkler@unodo.de}
+     *
+     * Description
      * Create the linklist
      */
-    public function create_linklist($courseid) {
-        $str_another = get_string('coursetemplate_another', 'local_friadmin');
-        $str_settings = get_string('coursetemplate_settings', 'local_friadmin');
-        $str_go = get_string('coursetemplate_go', 'local_friadmin');
+    public function create_linklist($courseId) {
+        /* Variables    */
+        $str_another    = null;
+        $url_another    = null;
+        $str_settings   = null;
+        $url_settings   = null;
+        $str_go         = null;
+        $url_go         = null;
+        $list1          = null;
 
-        $url_another = new moodle_url('/local/friadmin/coursetemplate.php');
-        $url_settings = new moodle_url('/course/edit.php?id=' . $courseid);
-        $url_go = new moodle_url('/course/view.php?id=' . $courseid);
+        try {
+            /* Set Up strings   */
+            $str_another    = get_string('coursetemplate_another', 'local_friadmin');
+            $str_settings   = get_string('coursetemplate_settings', 'local_friadmin');
+            $str_go         = get_string('coursetemplate_go', 'local_friadmin');
 
-        $list1 = '<ul class="unlist buttons-linklist">
-            <li><a class="btn" href="' . $url_another . '">' . $str_another . '</a></li>
-            <li><a class="btn" href="' . $url_go . '">' . $str_go . '</a></li>
-            <li><a class="btn" href="' . $url_settings . '">' . $str_settings . '</a></li>
-        </ul>';
+            /* Set up Url       */
+            $url_another    = new moodle_url('/local/friadmin/coursetemplate.php');
+            $url_settings   = new moodle_url('/course/edit.php',array('id' => $courseId));
+            $url_go         = new moodle_url('/course/view.php',array('id' => $courseId));
 
-        $this->data->content = $list1;
-    }
+            /* Set Up List 1    */
+            $list1 = '<ul class="unlist buttons-linklist">
+                        <li><a class="btn" href="' . $url_another . '">' . $str_another . '</a></li>
+                        <li><a class="btn" href="' . $url_go . '">' . $str_go . '</a></li>
+                        <li><a class="btn" href="' . $url_settings . '">' . $str_settings . '</a></li>
+                      </ul>';
+
+            $this->data->content = $list1;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//create_linklist
 }

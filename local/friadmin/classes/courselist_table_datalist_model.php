@@ -37,57 +37,75 @@ class local_friadmin_courselist_table_datalist_model extends local_efaktor_model
     protected $userleveloneids = null;
 
     /**
+     * @param           $userleveloneids
+     * @param           $filterdata
+     * @param           $sort
+     * @throws          Exception
+     *
+     * @creationDate
+     * @author          Urs Hunkler {@link urs.hunkler@unodo.de}
+     *
+     * Description
      * Construct the courselist_page renderable.
      */
     public function __construct($userleveloneids, $filterdata, $sort) {
-        global $CFG;
+        /* Variables    */
 
-        // Create the data object and set the first values
-        parent::__construct();
+        try {
+            // Create the data object and set the first values
+            parent::__construct();
 
-        $this->userleveloneids = $userleveloneids;
-        $this->filterdata = $filterdata;
-        $this->sort = $sort;
+            /* Set the data */
+            $this->userleveloneids  = $userleveloneids;
+            $this->filterdata       = $filterdata;
+            $this->sort             = $sort;
 
-        $this->fields = array('courseid', 'name', 'date', 'seats', 'deadline', 'length',
-            'municipality', 'sector', 'location');
-        $this->set_fixture_data(
-            $CFG->dirroot . '/local/friadmin/fixtures/friadmin_courselist.json',
-            'data', $this->fields);
-    }
+            /* Set up the fields    */
+            $this->fields = array('courseid', 'name', 'date', 'seats', 'deadline', 'length','municipality', 'sector', 'location');
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//constructor
 
     /**
+     * @return          Bool
+     * @throws          Exception
+     *
+     * @creationDate
+     * @author          Urs Hunkler {@link urs.hunkler@unodo.de}
+     *
+     * Description
      * Add datalist filters
-     *
-     * @param Object $fromform The form result
-     *
-     * @return Bool
      */
     protected function add_datalist_filters() {
+        /* Variables    */
+        try {
+            if (is_null($this->filterdata)) {
+                return false;
+            }
 
-        if (is_null($this->filterdata)) {
-            return false;
-        }
+            if (!empty($this->filterdata->selmunicipality)) {
+                $this->datalist->where('municipality', $this->filterdata->selmunicipality);
+            }
+            if (!empty($this->filterdata->selsector)) {
+                $this->datalist->where('sector', $this->filterdata->selsector);
+            }
+            if (!empty($this->filterdata->sellocation)) {
+                $this->datalist->where('location', $this->filterdata->sellocation);
+            }
+            if (!empty($this->filterdata->selname)) {
+                $this->datalist->where('name', '.*' . $this->filterdata->selname . '.*');
+            }
+            if (!empty($this->filterdata->seltimefrom)) {
+                $this->datalist->where('date', '>= ' . $this->filterdata->seltimefrom);
+            }
+            if (!empty($this->filterdata->seltimeto)) {
+                $this->datalist->where('date', '<= ' . $this->filterdata->seltimeto);
+            }
 
-        if (!empty($this->filterdata->selmunicipality)) {
-            $this->datalist->where('municipality', $this->filterdata->selmunicipality);
-        }
-        if (!empty($this->filterdata->selsector)) {
-            $this->datalist->where('sector', $this->filterdata->selsector);
-        }
-        if (!empty($this->filterdata->sellocation)) {
-            $this->datalist->where('location', $this->filterdata->sellocation);
-        }
-        if (!empty($this->filterdata->selname)) {
-            $this->datalist->where('name', '.*' . $this->filterdata->selname . '.*');
-        }
-        if (!empty($this->filterdata->seltimefrom)) {
-            $this->datalist->where('date', '>= ' . $this->filterdata->seltimefrom);
-        }
-        if (!empty($this->filterdata->seltimeto)) {
-            $this->datalist->where('date', '<= ' . $this->filterdata->seltimeto);
-        }
-
-        return true;
+            return true;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
     }
 }

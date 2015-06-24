@@ -108,15 +108,18 @@ class local_friadmin_courselist_table_sql_model extends local_friadmin_widget {
                            # Get the municipality
                            LEFT JOIN {report_gen_companydata} 	rgcmu ON 	rgcmu.id 		= cl.levelone ";
 
-
-    /**
-     * Construct the courselist_page renderable.
-     */
     /**
      * @param           $userleveloneids
      * @param   null    $usercategories
      * @param           $filterdata
      * @param           $sort
+     * @throws          Exception
+     *
+     * @creationDate
+     * @author          Urs Hunkler {@link urs.hunkler@unodo.de}
+     *
+     * Description
+     * Construct the courselist_page renderable.
      *
      * @updateDate      17/06/2015
      * @author          eFaktor     (fbv)
@@ -125,16 +128,24 @@ class local_friadmin_courselist_table_sql_model extends local_friadmin_widget {
      * Add the users categories parameter
      */
     public function __construct($userleveloneids, $usercategories = null,$filterdata, $sort) {
-        // Create the data object and set the first values
-        parent::__construct();
+        /* Variables    */
 
-        $this->userleveloneids  = $userleveloneids;
-        $this->filterdata       = $filterdata;
-        $this->sort             = $sort;
-        $this->myCategories     = $usercategories;
+        try {
+            // Create the data object and set the first values
+            parent::__construct();
 
-        $this->get_data_from_db();
-    }
+            /* Set up the data  */
+            $this->userleveloneids  = $userleveloneids;
+            $this->filterdata       = $filterdata;
+            $this->sort             = $sort;
+            $this->myCategories     = $usercategories;
+
+            /* Get courses list */
+            $this->get_data_from_db();
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//constructor
 
     /**
      * @throws      Exception
@@ -148,7 +159,7 @@ class local_friadmin_courselist_table_sql_model extends local_friadmin_widget {
     protected function get_data_from_db() {
         /* Variables    */
         global $DB;
-        $params     = array();
+        $params     = null;
         $result     = null;
         $sqlWhere   = null;
 
@@ -295,98 +306,4 @@ class local_friadmin_courselist_table_sql_model extends local_friadmin_widget {
             throw $ex;
         }//try_catch
     }//AddCategories_Filter
-
-    /**
-     * Get the data from the DB and save it in the $data property
-     */
-    /**
-     * @updateDate  17/06/2015
-     * @author      eFaktor     (fbv)
-     *
-     * Description
-     * Add the user categories parameter
-     */
-    protected function get_data_from_db_old() {
-        /* Variables    */
-        global $DB;
-        $result     = array();
-        $categories = null;
-
-        try {
-            if (!empty($this->userleveloneids)) {
-                list($sql, $params) = $this->add_filters($this->sql,$this->userleveloneids,$this->filterdata);
-
-                /* Add Categories   */
-                if ($this->myCategories) {
-                    $categories = implode(',',array_keys($this->myCategories));
-                    $sql .= " AND c.category IN ($categories) ";
-                }//if_Categories
-
-                /* Add Sort */
-                if ($this->sort) {
-                    $sql .= ' ORDER BY ' . $this->sort;
-                }//if_sort
-                $result = $DB->get_records_sql($sql,$params);
-            }//if_empty
-
-            $this->data = $result;
-        }catch (Exception $ex) {
-            throw $ex;
-        }//try_catch
-    }
-
-    /**
-     * Add filters.
-     *
-     * @param String $sql The SQL query
-     *
-     * @return Array An array with the extended SQL and the parameters
-     */
-
-    protected function add_filters_old($sql, $userleveloneids,$fromform = null) {
-        /* Variables    */
-        global $DB;
-        $params     = array();
-
-        try {
-            $sql .= " WHERE rgcmu.id ";
-
-            list ($in, $params) = $DB->get_in_or_equal($userleveloneids, SQL_PARAMS_NAMED, 'userleveloneids');
-
-            $sql .= $in;
-
-            if (is_null($fromform)) {
-                return array($sql, $params);
-            }
-
-            if (!empty($fromform->selmunicipality)) {
-                $sql .= ' AND rgcmu.id = :selmunicipality';
-                $params['selmunicipality'] = $fromform->selmunicipality;
-            }
-            if (!empty($fromform->selsector)) {
-                $sql .= ' AND rgcse.id = :selsector';
-                $params['selsector'] = $fromform->selsector;
-            }
-            if (!empty($fromform->sellocation)) {
-                $sql .= ' AND cl.id = :sellocation';
-                $params['sellocation'] = $fromform->sellocation;
-            }
-            if (!empty($fromform->selname)) {
-                $sql .= ' AND ' . $DB->sql_like('c.fullname', ':selname', false, false);
-                $params['selname'] = "%" . $fromform->selname . "%";
-            }
-            if (!empty($fromform->seltimefrom)) {
-                $sql .= ' AND c.startdate >= :seltimefrom';
-                $params['seltimefrom'] = $fromform->seltimefrom;
-            }
-            if (!empty($fromform->seltimeto)) {
-                $sql .= ' AND c.startdate <= :seltimeto';
-                $params['seltimeto'] = $fromform->seltimeto;
-            }
-
-            return array($sql, $params);
-        }catch (Exception $ex) {
-            throw $ex;
-        }//try_catch
-    }
 }

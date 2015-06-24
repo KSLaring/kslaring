@@ -36,41 +36,67 @@ class local_friadmin_coursedetail_table_datalist_model extends local_efaktor_mod
     /**
      * Construct the coursedetail_page renderable.
      */
-    public function __construct($courseid) {
+    /**
+     * @param       $courseId
+     * @throws      Exception
+     * @updateDate  24/06/2015
+     * @author      eFaktor     (fbv)
+     *
+     * Description
+     * Add Comments
+     * Add Exception
+     * Clean Code
+     */
+    public function __construct($courseId) {
+        /* Variables    */
         global $CFG;
+        $filterData = null;
 
-        // Create the data object and set the first values
-        parent::__construct();
+        try {
+            // Create the data object and set the first values
+            parent::__construct();
 
-        $filterdata = new \stdClass();
-        $filterdata->selcourseid = $courseid;
-        $this->filterdata = $filterdata;
+            /* Create Filter structure  */
+            $filterData = new \stdClass();
+            $filterData->selcourseid    = $courseId;
 
-        $this->fields = array('courseid', 'name', 'summary', 'targetgroup', 'date',
-            'time', 'length', 'municipality', 'sector', 'location', 'responsible',
-            'teacher', 'priceinternal', 'priceexternal', 'seats', 'deadline');
-        $this->set_fixture_data(
-            $CFG->dirroot . '/local/friadmin/fixtures/friadmin_courselist.json',
-            'data', $this->fields);
-    }
+            /* Add Filter structure     */
+            $this->filterdata           = $filterData;
+
+            /* Add Fields   */
+            $this->fields = array('courseid', 'name', 'summary', 'targetgroup', 'date',
+                                  'time', 'length', 'municipality', 'sector', 'location', 'responsible',
+                                  'teacher', 'priceinternal', 'priceexternal', 'seats', 'deadline');
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_Catch
+    }//constructor
 
     /**
+     * @return          Bool
+     * @throws          Exception
+     *
+     * @creationDate
+     * @author          Urs Hunkler {@link urs.hunkler@unodo.de}
+     *
+     * Description
      * Add datalist filters
-     *
-     * @param Object $fromform The form result
-     *
-     * @return Bool
      */
     protected function add_datalist_filters() {
+        /* Variables    */
 
-        if (is_null($this->filterdata)) {
-            return false;
-        }
+        try {
+            if (is_null($this->filterdata)) {
+                return false;
+            }
 
-        if (!empty($this->filterdata->selcourseid)) {
-            $this->datalist->where('courseid', '== ' . $this->filterdata->selcourseid);
-        }
+            if (!empty($this->filterdata->selcourseid)) {
+                $this->datalist->where('courseid', '== ' . $this->filterdata->selcourseid);
+            }
 
-        return true;
-    }
+            return true;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//add_datalist_filters
 }

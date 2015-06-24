@@ -56,21 +56,23 @@ class local_friadmin_coursedetail_table_sql_model extends local_friadmin_widget 
      *
      * Description
      * Replace customint1 by enrolenddate
+     * Add 'Time From To'
+     *
      */
     protected $sql = " SELECT	c.id        as 'courseid',
                                 c.fullname  as 'name',
                                 c.summary   as 'summary',
                                 '-'         as 'targetgroup',
                                 c.startdate as 'date',
-                                '-'         as 'time',
+                                cft.value   as 'time',
                                 cln.value  	as 'length',
                                 rgcmu.name  as 'municipality',
                                 rgcse.name  as 'sector',
                                 cl.name     as 'location',
                                 cmn.value 	as 'responsible',
                                 '-'         as 'teacher',
-                                '-'         as 'priceinternal',
-                                '-'         as 'priceexternal',
+                                cpi.value   as 'priceinternal',
+                                cpe.value   as 'priceexternal',
                                 '-'         as 'seats',
                                 e.deadline  as 'deadline'
                        FROM 	{course} c
@@ -82,6 +84,15 @@ class local_friadmin_coursedetail_table_sql_model extends local_friadmin_widget 
                                  WHERE 	e.status = 0
                                  GROUP BY e.courseid
                                ) e ON e.courseid = c.id
+                          # Get Price Internal
+                          LEFT JOIN {course_format_options}		cpi		ON	cpi.courseid	= c.id
+                                                                        AND cpi.name		= 'price_int'
+                          # Get Price External
+                          LEFT JOIN {course_format_options}		cpe		ON	cpe.courseid	= c.id
+                                                                        AND cpe.name		= 'price_ext'
+                          # Get the Time From - To
+                          LEFT JOIN {course_format_options}	    cft		ON	cft.courseid	= c.id
+													                    AND cft.name		= 'time'
                           # Get the length
                           LEFT JOIN {course_format_options}	    cln 	ON 	cln.courseid 	= c.id
                                                                         AND	cln.name 		= 'length'
@@ -102,18 +113,40 @@ class local_friadmin_coursedetail_table_sql_model extends local_friadmin_widget 
                           LEFT JOIN {report_gen_companydata} 	rgcmu 	ON 	rgcmu.id 		= cl.levelone ";
 
     /**
+     * @param           $courseId
+     * @throws          Exception
+     *
+     * @creationDate
+     * @author          Urs Hunkler {@link urs.hunkler@unodo.de}
+     *
+     * Description
      * Construct the coursedetail_page renderable.
+     *
+     * @updateDate      26/06/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Add exception,comments..
      */
-    public function __construct($courseid) {
-        // Create the data object and set the first values
-        parent::__construct();
+    public function __construct($courseId) {
+        /* Variables    */
+        $filterData = null;
 
-        $filterdata = new \stdClass();
-        $filterdata->selcourseid = $courseid;
-        $this->filterdata = $filterdata;
+        try {
+            // Create the data object and set the first values
+            parent::__construct();
 
-        $this->get_data_from_db();
-    }
+            /* Filter Data Structure    */
+            $filterData = new \stdClass();
+            $filterData->selcourseid    = $courseId;
+            $this->filterdata           = $filterData;
+
+            /* Get the course detail    */
+            $this->get_data_from_db();
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//constructor
 
     /**
      * Get the data from the DB and save it in the $data property
@@ -141,13 +174,22 @@ class local_friadmin_coursedetail_table_sql_model extends local_friadmin_widget 
             /* Execute  */
             $result = $DB->get_record_sql($sql);
 
-            /* Add Teachers */
+            /* Format Time From - To    */
+            /* Teachers                 */
             if ($result) {
+                /* Format for Time From - To    */
+                if ($result->time) {
+                    $result->time = str_replace(',','</br>',$result->time);
+                }else {
+                    $result->time = '-';
+                }//if_time
+
+                /* Add Teachers */
                 $teachers = self::getTeachers_Course($result->courseid);
                 /* Add the teachers */
                 if ($teachers) {
                     $result->teacher = implode(', ',$teachers);
-                }
+                }//if_teachers
             }//if_result
 
             // Save an array with an associative data array to make the sql model

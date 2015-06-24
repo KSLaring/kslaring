@@ -24,25 +24,25 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-$string['currentsection'] = 'Dette emnet';
-$string['sectionname'] = 'Emne';
-$string['pluginname'] = 'Klasseromsformat';
-$string['section0name'] = 'Generelt';
+$string['currentsection']   = 'Dette emnet';
+$string['sectionname']      = 'Emne';
+$string['pluginname']       = 'Klasseromsformat';
+$string['section0name']     = 'Generelt';
 
-$string['page-course-view-classroom'] = 'En kursforside i klasseromsformat';
+$string['page-course-view-classroom']   = 'En kursforside i klasseromsformat';
 $string['page-course-view-classroom-x'] = 'En kursside i klasseromsformat';
 
-$string['hidefromothers'] = 'Skjul emnet';
-$string['showfromothers'] = 'Vis emnet';
-$string['course'] = 'Innhold';
-$string['description'] = 'Introduksjon';
-$string['forums'] = 'Oppslagstavle';
-$string['progress'] = 'Min progresjon';
-$string['coursehomepage'] = 'Kurs startside';
-$string['mymoodle'] = 'Min startside';
-$string['lessonlastpageon'] = 'Vennligst velg neste aktivitet fra navigasjonsmenyen til venstre.';
-$string['lessonlastpageoff'] = 'Du er ferdig med denne leksjonen. Vennligst velg neste aktivitet i navigasjonsmenyen til venstre.';
-$string['feedbacklastpage'] = 'Du er ferdig med feedbacken. Vennligst velg neste aktivitet i menyen til venstre.';
+$string['hidefromothers']           = 'Skjul emnet';
+$string['showfromothers']           = 'Vis emnet';
+$string['course']                   = 'Innhold';
+$string['description']              = 'Introduksjon';
+$string['forums']                   = 'Oppslagstavle';
+$string['progress']                 = 'Min progresjon';
+$string['coursehomepage']           = 'Kurs startside';
+$string['mymoodle']                 = 'Min startside';
+$string['lessonlastpageon']         = 'Vennligst velg neste aktivitet fra navigasjonsmenyen til venstre.';
+$string['lessonlastpageoff']        = 'Du er ferdig med denne leksjonen. Vennligst velg neste aktivitet i navigasjonsmenyen til venstre.';
+$string['feedbacklastpage']         = 'Du er ferdig med feedbacken. Vennligst velg neste aktivitet i menyen til venstre.';
 
 $string['home_prerequisities']      = 'Forutsetninger';
 $string['home_producedby']          = 'Produsert av';
@@ -54,3 +54,8 @@ $string['home_title_sector']        = 'Sectors';
 $string['home_length']              = 'Tidsbruk';
 $string['home_effort']              = 'Beregnet arbeidsmengde';
 $string['home_manager']             = 'Kursansvarlig';
+$string['home_time_from_to']        = 'Tid fra - til';
+$string['home_time_from_to_help']   = 'Du kan legge til flere kursholdere ved å bruke komma som separator';
+$string['home_price_internal']      = 'Internpris';
+$string['home_price_external']      = 'Eksternpris';
+$string['home_price']               = 'Pris';

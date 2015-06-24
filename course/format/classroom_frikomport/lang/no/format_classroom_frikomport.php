@@ -29,14 +29,14 @@
  *
  */
 
-$string['currentsection'] = 'This topic';
-$string['sectionname'] = 'Topic';
-$string['pluginname'] = 'Classroom Frikomport format';
-$string['section0name'] = 'General';
-$string['page-course-view-topics'] = 'Any course main page in topics format';
-$string['page-course-view-topics-x'] = 'Any course page in topics format';
-$string['hidefromothers'] = 'Hide topic';
-$string['showfromothers'] = 'Show topic';
+$string['currentsection']               = 'This topic';
+$string['sectionname']                  = 'Topic';
+$string['pluginname']                   = 'Classroom Frikomport format';
+$string['section0name']                 = 'General';
+$string['page-course-view-topics']      = 'Any course main page in topics format';
+$string['page-course-view-topics-x']    = 'Any course page in topics format';
+$string['hidefromothers']               = 'Hide topic';
+$string['showfromothers']               = 'Show topic';
 
 $string['home_prerequisities']      = 'Prerequisites';
 $string['home_producedby']          = 'Produced by';
@@ -47,3 +47,8 @@ $string['home_title_sector']        = 'Sectors';
 $string['home_length']              = 'Estimated time spent';
 $string['home_effort']              = 'Estimated Effort';
 $string['home_manager']             = 'Course Manager';
+$string['home_time_from_to']        = 'Tid fra - til';
+$string['home_time_from_to_help']   = 'Du kan legge til flere kursholdere ved å bruke komma som separator';
+$string['home_price_internal']      = 'Internpris';
+$string['home_price_external']      = 'Eksternpris';
+$string['home_price']               = 'Pris';

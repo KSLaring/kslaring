@@ -35,34 +35,6 @@ require_once($CFG->dirroot . '/user/profile/field/competence/competencelib.php')
  */
 class local_friadmin_helper {
 
-    /**
-     * Get course categories where the user is admin
-     *
-     * @param Int $userid The user id
-     *
-     * @return mixed Array|null Null or array with the category names
-     */
-    public static function get_categories_admin() {
-        global $DB;
-        $result = null;
-
-        // Get the course categories where the user is admin
-        $courecats = $DB->get_records('course_categories');
-        $coursecat_names = array();
-        foreach ($courecats as $courecat) {
-            $coursecat_obj = coursecat::get($courecat->id);
-            if ($coursecat_obj->has_manage_capability()) {
-//                $coursecat_names[] = $courecat->name;
-                $coursecat_names[$courecat->id] = $courecat->name;
-            }
-        }
-
-        if (!empty($coursecat_names)) {
-            $result = $coursecat_names;
-        }
-
-        return $result;
-    }
 
     /**
      * @return          null

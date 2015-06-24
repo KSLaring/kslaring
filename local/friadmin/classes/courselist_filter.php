@@ -152,15 +152,15 @@ class local_friadmin_courselist_filter extends local_friadmin_widget implements 
     }
 
     /**
-     * Get the user related location data
-     *
-     * @param Int $userid The user id
-     *
-     * @return Array $result The user location data
-     */
-    /**
-     * @param       null $userid
+     * @param       null $userId
      * @return           array
+     * @throws           Exception
+     *
+     * @creationDate
+     * @author          Urs Hunkler {@link urs.hunkler@unodo.de}
+     *
+     * Description
+     * Get the user related location data
      *
      * @updateDate  22/06/2015
      * @author      eFaktor     (fbv)
@@ -168,72 +168,77 @@ class local_friadmin_courselist_filter extends local_friadmin_widget implements 
      * Description
      * Add a new parameter in the filter -- classroom format
      */
-    public function get_user_locationdata($userid = null) {
+    public function get_user_locationdata($userId = null) {
         /* Variables    */
-        $result = array('municipality' => array(),
-                        'sector' => array(),
-                        'location' => array(),
-                        'from' => null,
-                        'to' => null,
-                        'classroom' => true,
-                        );
+        global $USER;
+        $result                 = null;
+        $leveloneobjs           = null;
+        $leveloneobjsfiltered   = array();
+        try {
+            /* Result Structure */
+            $result = array('municipality' => array(),
+                            'sector' => array(),
+                            'location' => array(),
+                            'from' => null,
+                            'to' => null,
+                            'classroom' => true,
+            );
 
-        if (is_null($userid)) {
-            global $USER;
+            if (is_null($userId)) {
+                $userId = $USER->id;
+            }//id_userid
 
-            $userid = $USER->id;
-        }
+            // Get the competence related municipalities
+            // The $leveloneobjs array contains objects with
+            // id, name and industrycode properties.
+            $leveloneobjs = local_friadmin_helper::get_levelone_municipalities($userId);
 
-        // Get the competence related municipalities
-        // The $leveloneobjs array contains objects with
-        // id, name and industrycode properties.
-        $leveloneobjs = local_friadmin_helper::get_levelone_municipalities($userid);
+            /**
+             * @updateDate  17/06/2015
+             * @author      eFaktor     (fbv)
+             *
+             * Description
+             * Get all my municipalities
+             */
+            foreach ($leveloneobjs as $obj) {
+                $result['municipality'][$obj->id] = $obj->name;
+                $this->userleveloneids[] = $obj->id;
+                $leveloneobjsfiltered[] = $obj;
+            }//for_levelone_obj
 
-        /**
-         * @updateDate  17/06/2015
-         * @author      eFaktor     (fbv)
-         *
-         * Description
-         * Get all my municipalities
-         */
-        $leveloneobjsfiltered = array();
-        foreach ($leveloneobjs as $obj) {
-            $result['municipality'][$obj->id] = $obj->name;
-            $this->userleveloneids[] = $obj->id;
-            $leveloneobjsfiltered[] = $obj;
-        }
+            /**
+             * @updateDate  17/06/2015
+             * @author      eFaktor     (fbv)
+             *
+             * Description
+             * Get all categories where the user is a super user
+             */
+            $this->myCategories = local_friadmin_helper::getMyCategories();
 
-        /**
-         * @updateDate  17/06/2015
-         * @author      eFaktor     (fbv)
-         *
-         * Description
-         * Get all categories where the user is a super user
-         */
-        $this->myCategories = local_friadmin_helper::getMyCategories();
+            if (!empty($leveloneobjsfiltered)) {
+                // Get the sectors for the relevant municipalities via inustrycodes
+                $leveltwoobjs = local_friadmin_helper::get_leveltwo_sectors($leveloneobjsfiltered);
 
-
-        if (!empty($leveloneobjsfiltered)) {
-            // Get the sectors for the relevant municipalities via inustrycodes
-            $leveltwoobjs = local_friadmin_helper::get_leveltwo_sectors($leveloneobjsfiltered);
-
-            foreach ($leveltwoobjs as $obj) {
-                if (!in_array($obj->id, $result['sector'])) {
-                    $result['sector'][$obj->id] = $obj->name;
+                foreach ($leveltwoobjs as $obj) {
+                    if (!in_array($obj->id, $result['sector'])) {
+                        $result['sector'][$obj->id] = $obj->name;
+                    }
                 }
-            }
 
-            // Get the locations for the relevant municipalities via levelone ids
-            $locationsobjs = $this->get_locations($leveloneobjsfiltered);
-            foreach ($locationsobjs as $obj) {
-                if (!in_array($obj->id, $result['location'])) {
-                    $result['location'][$obj->id] = $obj->name;
+                // Get the locations for the relevant municipalities via levelone ids
+                $locationsobjs = $this->get_locations($leveloneobjsfiltered);
+                foreach ($locationsobjs as $obj) {
+                    if (!in_array($obj->id, $result['location'])) {
+                        $result['location'][$obj->id] = $obj->name;
+                    }
                 }
-            }
-        }
+            }//obj_filteref
 
-        return $result;
-    }
+            return $result;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//get_user_locationdata
 
     /**
      * Get the locations with id, name

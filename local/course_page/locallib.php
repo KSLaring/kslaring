@@ -978,6 +978,10 @@ class course_page  {
                         $form->addElement('select','course_sector',get_string('home_sector',$str_format),$lstSectors,'multiple');
                         $form->setDefault('course_sector',$value);
                         break;
+                    case 'time':
+                        $form->addElement('textarea','time',get_string('home_time_from_to',$str_format),'rows="5" style="width:95%;"');
+                        $form->setDefault('time',$value);
+                        break;
                     case 'length':
                         $form->addElement('text','length',get_string('home_length',$str_format),'style="width:95%;"');
                         $form->setDefault('length',$value);
@@ -992,6 +996,16 @@ class course_page  {
                         $lst_manager = self::getCourseManager();
                         $form->addElement('select','manager',get_string('home_manager',$str_format),$lst_manager);
                         $form->setDefault('manager',$value);
+                        break;
+                    case 'price_int':
+                        $form->addElement('text','price_int',get_string('home_price_internal',$str_format),'style="width:95%;"');
+                        $form->setDefault('price_int',$value);
+                        $form->setType('price_int',PARAM_TEXT);
+                        break;
+                    case 'price_ext':
+                        $form->addElement('text','price_ext',get_string('home_price_external',$str_format),'style="width:95%;"');
+                        $form->setDefault('price_ext',$value);
+                        $form->setType('price_ext',PARAM_TEXT);
                         break;
                     case 'author':
                         $form->addElement('text','author',get_string('home_author',$str_format),'style="width:95%;"');

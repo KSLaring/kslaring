@@ -194,6 +194,12 @@ class format_classroom_frikomport extends format_base {
      *
      * Description
      * Add Home Page Course fields
+     *
+     * @updateDate  24/06/2015
+     * @author      eFaktor     (fbv)
+     *
+     * Description
+     * Add an extra field. Time from to
      */
     public function course_format_options($foreditform = false) {
         /* Variables    */
@@ -292,6 +298,9 @@ class format_classroom_frikomport extends format_base {
                 'course_sector' => array(
                     'default' => 0,
                 ),
+                'time'      => array(
+                    'type'      => PARAM_TEXT,
+                ),
                 'length' => array(
                     'type' => PARAM_TEXT,
                 ),
@@ -301,6 +310,12 @@ class format_classroom_frikomport extends format_base {
                 'manager' => array(
                     'default' => 0,
                     'type' => PARAM_INT,
+                ),
+                'price_int' => array(
+                    'type'      => PARAM_TEXT,
+                ),
+                'price_ext' => array(
+                    'type'      => PARAM_TEXT,
                 )
             );
         }
@@ -382,6 +397,13 @@ class format_classroom_frikomport extends format_base {
                     'element_type' => 'select',
                     'element_attributes' => array($lstSectors,'1' => 'multiple')
                 ),
+                'time'          => array(
+                    'label'                 => get_string('home_time_from_to','format_classroom_frikomport'),
+                    'help'                  => 'home_time_from_to',
+                    'help_component'        => 'format_classroom_frikomport',
+                    'element_type'          => 'textarea',
+                    'element_attributes'    => array(0 => 'rows="4" style="width:50%;"'),
+                ),
                 'length' => array(
                     'label' => get_string('home_length', 'format_classroom_frikomport'),
                     'element_type' => 'text',
@@ -400,6 +422,14 @@ class format_classroom_frikomport extends format_base {
                     'label' => get_string('home_manager', 'format_classroom_frikomport'),
                     'element_type' => 'select',
                     'element_attributes' => array($lstManager)
+                ),
+                'price_int'         => array(
+                    'label'         => get_string('home_price_internal','format_classroom_frikomport'),
+                    'element_type'  => 'text',
+                ),
+                'price_ext'         => array(
+                    'label'         => get_string('home_price_external','format_classroom_frikomport'),
+                    'element_type'  => 'text',
                 )
             );
             $courseformatoptions = array_merge_recursive($courseformatoptions, $courseformatoptionsedit);
