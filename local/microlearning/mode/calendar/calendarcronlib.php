@@ -68,6 +68,10 @@ class Calendar_ModeCron {
         global $DB;
         $campaigns_cron = array();
         $to_sent        = time();
+        $params         = null;
+        $sql            = null;
+        $rdo            = null;
+        $info           = null;
 
         try {
             /* Search Criteria  */
@@ -141,7 +145,11 @@ class Calendar_ModeCron {
     private static function GetDeliveriesCampaign_ToCron($campaign_id,$deliveries_lst,$course_id,$to_sent) {
         /* Variables    */
         global $DB;
-        $deliveries_cron = array();
+        $deliveries_cron    = array();
+        $params             = null;
+        $sql                = null;
+        $rdo                = null;
+        $info               = null;
 
         try {
             /* Search Criteria  */
@@ -202,7 +210,11 @@ class Calendar_ModeCron {
     private static function GetActivitiesDelivery_ToCron($campaign_id,$delivery_id) {
         /* Variables    */
         global $DB;
-        $activities_cron = array();
+        $activities_cron    = array();
+        $params             = null;
+        $sql                = null;
+        $rdo                = null;
+        $info               = null;
 
         try {
             /* Search Criteria  */
@@ -245,8 +257,12 @@ class Calendar_ModeCron {
     private static function GetUsersDelivery_ToCron($campaign_id,$delivery_info,$course_id,$to_sent) {
         /* Variables    */
         global $DB,$CFG;
-        $users_cron = array();
-        $act_completed = null;
+        $users_cron     = array();
+        $act_completed  = null;
+        $params         = null;
+        $sql            = null;
+        $rdo            = null;
+        $info           = null;
 
         try {
             /* Search Criteria  */
@@ -436,7 +452,9 @@ class Calendar_ModeCron {
         /* Variables    */
         global $DB;
         /* Users to update their status*/
-        $users_lst = null;
+        $users_lst      = null;
+        $calendar_mode  = null;
+        $delivery_user  = null;
 
         $transaction = $DB->start_delegated_transaction();
         try {

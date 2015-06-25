@@ -354,8 +354,6 @@ class local_course_page_renderer extends plugin_renderer_base {
         $outTime            = null;
         $outLength          = null;
         $outEffort          = null;
-        $outPriceInt        = null;
-        $outPriceExt        = null;
 
         $out .= html_writer::start_tag('div',array('class' => 'extra chp-block'));
             switch ($course_format) {
@@ -417,23 +415,9 @@ class local_course_page_renderer extends plugin_renderer_base {
                                 $outEffort .= '<div class="extra_home chp-content">' . $option->value . '</div>';
                             }//if_value
                         }//if_effort
-
-                        if ($option->name == 'price_int') {
-                            if ($option->value) {
-                                $outPriceInt  = '<h5 class="title_home chp-title">' . get_string('home_price_internal',$str_format) . '</h5>';
-                                $outPriceInt .= '<div class="extra_home chp-content">' . $option->value . '</div>';
-                            }//if_option_value
-                        }//if_price_int
-
-                        if ($option->name == 'price_ext') {
-                            if ($option->value) {
-                                $outPriceExt  = '<h5 class="title_home chp-title">' . get_string('home_price',$str_format) . '</h5>';
-                                $outPriceExt .= '<div class="extra_home chp-content">' . $option->value . '</div>';
-                            }//if_option_value
-                        }//if_price_Ext
                     }//for_format_options
 
-                    $out .= $outLocation . $outSector . $outTime .$outLength . $outEffort . $outPriceExt;
+                    $out .= $outLocation . $outSector . $outTime .$outLength . $outEffort;
                     break;
                 default:
                     break;

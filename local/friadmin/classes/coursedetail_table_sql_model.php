@@ -71,8 +71,8 @@ class local_friadmin_coursedetail_table_sql_model extends local_friadmin_widget 
                                 cl.name     as 'location',
                                 cmn.value 	as 'responsible',
                                 '-'         as 'teacher',
-                                cpi.value   as 'priceinternal',
-                                cpe.value   as 'priceexternal',
+                                '-'         as 'priceinternal',
+                                '-'         as 'priceexternal',
                                 '-'         as 'seats',
                                 e.deadline  as 'deadline'
                        FROM 	{course} c
@@ -84,12 +84,6 @@ class local_friadmin_coursedetail_table_sql_model extends local_friadmin_widget 
                                  WHERE 	e.status = 0
                                  GROUP BY e.courseid
                                ) e ON e.courseid = c.id
-                          # Get Price Internal
-                          LEFT JOIN {course_format_options}		cpi		ON	cpi.courseid	= c.id
-                                                                        AND cpi.name		= 'price_int'
-                          # Get Price External
-                          LEFT JOIN {course_format_options}		cpe		ON	cpe.courseid	= c.id
-                                                                        AND cpe.name		= 'price_ext'
                           # Get the Time From - To
                           LEFT JOIN {course_format_options}	    cft		ON	cft.courseid	= c.id
 													                    AND cft.name		= 'time'

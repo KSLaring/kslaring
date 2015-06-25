@@ -11,8 +11,7 @@
  */
 
 function local_express_login_extends_settings_navigation($settingsnav, $context) {
-    global $USER;
-
+    /* Plugin Info */
     $plugin     = get_config('local_express_login');
     if (($plugin) && ($plugin->activate_express) && (isset($plugin->activate_express))) {
         if ($setting_node = $settingsnav->get('usercurrentsettings')) {

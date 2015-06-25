@@ -310,12 +310,6 @@ class format_classroom_frikomport extends format_base {
                 'manager' => array(
                     'default' => 0,
                     'type' => PARAM_INT,
-                ),
-                'price_int' => array(
-                    'type'      => PARAM_TEXT,
-                ),
-                'price_ext' => array(
-                    'type'      => PARAM_TEXT,
                 )
             );
         }
@@ -422,14 +416,6 @@ class format_classroom_frikomport extends format_base {
                     'label' => get_string('home_manager', 'format_classroom_frikomport'),
                     'element_type' => 'select',
                     'element_attributes' => array($lstManager)
-                ),
-                'price_int'         => array(
-                    'label'         => get_string('home_price_internal','format_classroom_frikomport'),
-                    'element_type'  => 'text',
-                ),
-                'price_ext'         => array(
-                    'label'         => get_string('home_price_external','format_classroom_frikomport'),
-                    'element_type'  => 'text',
                 )
             );
             $courseformatoptions = array_merge_recursive($courseformatoptions, $courseformatoptionsedit);

@@ -74,6 +74,7 @@ class FirstAccess {
         /* Variables    */
         global $DB;
         $muniProfile = null;
+        $params      = null;
 
         try {
             /* Search Criteria  */
@@ -131,6 +132,7 @@ class FirstAccess {
     private static function IsDoskomUser($user_id) {
         /* Variables    */
         global $DB;
+        $rdo = null;
 
         try {
             /* Execute  */
@@ -164,6 +166,7 @@ class FirstAccess {
     private static function IsFirstAccess($user_id) {
         /* Variables    */
         global $DB;
+        $rdo = null;
 
         try {
             /* Execute  */
@@ -197,11 +200,15 @@ class FirstAccess {
     private static function ExtraProfileFields_Completed($user_id) {
         /* Variables    */
         global $DB;
-        $params     = array();
+        $params     = null;
+        $sql        = null;
+        $rdo        = null;
+        $rdo_user   = null;
 
         try {
             /* First, it gets all the fields that are compulsory    */
             /* Search Criteria  */
+            $params     = array();
             $params['required'] = 1;
             /* SQL Instruction  */
             $sql = " SELECT		GROUP_CONCAT(DISTINCT uif.id ORDER BY uif.id SEPARATOR ',') as 'obligatory'
@@ -256,7 +263,8 @@ class FirstAccess {
     private static function ProfileFields_Completed($user_id) {
         /* Variables    */
         global $DB;
-        $completed = null;
+        $completed  = null;
+        $rdo        = null;
 
         try {
             /* Execute  */

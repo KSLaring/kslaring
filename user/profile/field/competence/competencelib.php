@@ -32,6 +32,7 @@ class Competence {
     public static function IsPublic($company) {
         /* Variables    */
         global $DB;
+        $rdo    = null;
 
         try {
             /* Get Public Field */
@@ -92,7 +93,9 @@ class Competence {
     public  static function Get_CompanyName($companies) {
         /* Variables    */
         global $DB;
-        $companies_name = array();
+        $companiesName  = array();
+        $sql            = null;
+        $rdo            = null;
 
         try {
             /* SQL Instruction  */
@@ -105,11 +108,11 @@ class Competence {
             $rdo = $DB->get_records_sql($sql);
             if ($rdo) {
                 foreach ($rdo as $instance) {
-                    $companies_name[$instance->id] = $instance->name;
+                    $companiesName[$instance->id] = $instance->name;
                 }//for_instance
             }//if_rdo
 
-            return $companies_name;
+            return $companiesName;
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
@@ -143,6 +146,9 @@ class Competence {
         global $DB;
         $my_competence  = array();
         $info_hierarchy = null;
+        $params         = null;
+        $sql            = null;
+        $rdo            = null;
 
         try {
             /* Search Criteria  */
@@ -265,7 +271,10 @@ class Competence {
     public static function GetCompanies_Level($level,$parent_id = 0,$my_companies = null) {
         /* Variables    */
         global $DB;
-        $companies = array();
+        $companies  = array();
+        $params     = null;
+        $sql        = null;
+        $rdo        = null;
 
         try {
             /* Research Criteria */
@@ -273,27 +282,27 @@ class Competence {
             $params['level']    = $level;
 
             /* SQL Instruction */
-            $sql_Select = " SELECT     DISTINCT rcd.id,
+            $sql = " SELECT   DISTINCT rcd.id,
                                        rcd.name,
                                        rcd.industrycode
-                            FROM       {report_gen_companydata} rcd ";
+                     FROM     {report_gen_companydata} rcd ";
             /* Join */
-            $sql_Join = " ";
             if ($parent_id) {
-                $sql_Join = " JOIN  {report_gen_company_relation} rcr   ON    rcr.companyid = rcd.id
-                                                                        AND   rcr.parentid  IN ($parent_id) ";
+                $sql .= " JOIN  {report_gen_company_relation} rcr   ON    rcr.companyid = rcd.id
+                                                                    AND   rcr.parentid  IN ($parent_id) ";
             }//if_level
 
-            $sql_Where = " WHERE rcd.hierarchylevel = :level ";
+            /* Add Condition    */
+            $sql .= " WHERE rcd.hierarchylevel = :level ";
             /* Don't display the companies just added in the profile    */
             if ($my_companies) {
-                $sql_Where .= " AND rcd.id NOT IN ($my_companies) ";
+                $sql .= " AND rcd.id NOT IN ($my_companies) ";
             }
-            $sql_Order = " ORDER BY rcd.industrycode, rcd.name ASC ";
 
-            /* SQL */
-            $sql = $sql_Select . $sql_Join . $sql_Where . $sql_Order;
+            /* Add Order    */
+            $sql .= " ORDER BY rcd.industrycode, rcd.name ASC ";
 
+            /* Execute  */
             $companies[0] = get_string('select_level_list','report_manager');
             if ($rdo = $DB->get_records_sql($sql,$params)) {
                 foreach ($rdo as $instance) {
@@ -321,6 +330,9 @@ class Competence {
     public static function Get_MyCompanies($user_id) {
         /* Variables    */
         global $DB;
+        $params = null;
+        $sql    = null;
+        $rdo    = null;
 
         try {
             $params = array();
@@ -356,6 +368,8 @@ class Competence {
     public static function GetJobRoles_Generics(&$options) {
         /* Variables    */
         global $DB;
+        $sql = null;
+        $rdo = null;
 
         try {
             /* SQL Instruction  */
@@ -397,6 +411,8 @@ class Competence {
     public static function GetJobRoles_Hierarchy(&$options,$levelZero,$levelOne,$levelTwo, $levelThree,$jr_lst = null) {
         /* Variables    */
         global $DB;
+        $sql = null;
+        $rdo = null;
 
         try {
             /* Add Connected with the level */
@@ -478,7 +494,7 @@ class Competence {
     public static function AddCompetence($data) {
         /* Variables    */
         global $DB;
-        $time               = time();
+        $time                   = time();
         $info_competence        = null;
         $info_competence_data   = null;
         $info_data              = null;
@@ -552,7 +568,6 @@ class Competence {
         /* Variables    */
         global $DB;
         $info_competence_data    = null;
-
 
         try {
             /* Info Data    */
@@ -716,6 +731,8 @@ class Competence {
         /* Variables    */
         global $DB;
         $jobRoles   = array();
+        $sql        = null;
+        $rdo        = null;
 
         try {
             /* SQL Instruction  */

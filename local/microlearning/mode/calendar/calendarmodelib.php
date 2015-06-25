@@ -162,7 +162,11 @@ class Calendar_Mode {
     public static function Get_CalendarDeliveries($campaign_id,$sort,$limit_from,$limit_num) {
         /* Variables    */
         global $DB;
-        $delivery_lst = null;
+        $delivery       = null;
+        $delivery_lst   = null;
+        $params         = null;
+        $sql            = null;
+        $rdo            = null;
 
         try {
             /* Search Criteria  */
@@ -278,6 +282,9 @@ class Calendar_Mode {
     public static function HasStarted_Campaign($campaign_id) {
         /* Variables    */
         global $DB;
+        $params = null;
+        $sql    = null;
+        $rdo    = null;
 
         try {
             /* Search Criteria  */
@@ -321,7 +328,10 @@ class Calendar_Mode {
     public static function GetDeliveryInfo_CalendarMode($campaign_id,$delivery_id) {
         /* Variables    */
         global $DB;
-        $delivery_info = null;
+        $delivery_info  = null;
+        $params         = null;
+        $sql            = null;
+        $rdo            = null;
 
         try {
             /* Search Criteria  */
@@ -394,6 +404,7 @@ class Calendar_Mode {
     private static function AddActivities_toDelivery($campaign_id,$delivery_id,$activities_lst,$activities_type,$modeCalendar) {
         /* Variables    */
         global $DB;
+        $activity_selected = null;
 
         try {
             /* Insert Activities Selected */
@@ -428,8 +439,9 @@ class Calendar_Mode {
     private static function AddUsers_ToDelivery($calendar_mode,$delivery_id,$users_campaign) {
         /* Variables    */
         global $DB;
-        $days = null;
-        $date = null;
+        $days       = null;
+        $date       = null;
+        $delivery   = null;
 
         try {
             /* Insert Deliveries Users */
@@ -505,8 +517,4 @@ class Calendar_Mode {
             throw $ex;
         }//try_catch
     }//GenerateActivitiesCalendarMode_MicroKey
-
-
-
-
 }//class_Calendar_Mode

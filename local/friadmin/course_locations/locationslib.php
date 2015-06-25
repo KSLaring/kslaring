@@ -41,6 +41,9 @@ class CourseLocations {
     public static function CheckCapability_FriAdmin() {
         /* Variables    */
         global $DB, $USER;
+        $params = null;
+        $rdo    = null;
+        $sql    = null;
 
         try {
             /* Search Criteria  */
@@ -93,6 +96,8 @@ class CourseLocations {
         $myCompetence   = null;
         $levelZero      = null;
         $levelOne       = null;
+        $sql            = null;
+        $rdo            = null;
 
         try {
             /* Get My Job Roles */
@@ -157,6 +162,9 @@ class CourseLocations {
         /* Variables    */
         global $DB;
         $myJobRoles = null;
+        $params     = null;
+        $sql        = null;
+        $rdo        = null;
 
         try {
             /* Search Criteria  */
@@ -197,6 +205,9 @@ class CourseLocations {
         /* Variables    */
         global $DB;
         $companies  = array();
+        $params     = null;
+        $sql        = null;
+        $rdo        = null;
 
         try {
             /* Search Criteria  */
@@ -255,6 +266,8 @@ class CourseLocations {
     public static function Get_TotalLocationsList($filter) {
         /* Variables    */
         global $DB;
+        $sql    = null;
+        $rdo    = null;
 
         try {
             /* SQL Instruction */
@@ -318,6 +331,8 @@ class CourseLocations {
         $strAddress = null;
         $strDetail  = null;
         $strContact = null;
+        $sql        = null;
+        $rdo        = null;
 
         try {
             /* SQL Instruction */
@@ -441,7 +456,9 @@ class CourseLocations {
         global $DB;
         $coursesLst = array();
         $info       = null;
+        $sql        = null;
         $sqlWhere   = null;
+        $rdo        = null;
 
         try {
 
@@ -668,6 +685,7 @@ class CourseLocations {
     public static function Get_CompanyLevelName($company) {
         /* Variables    */
         global $DB;
+        $rdo    = null;
 
         try {
             $rdo = $DB->get_record('report_gen_companydata',array('id' => $company),'name,industrycode');
@@ -695,6 +713,9 @@ class CourseLocations {
     public static function Get_LocationDetail($locationId) {
         /* Variables    */
         global $DB;
+        $params = null;
+        $sql    = null;
+        $rdo    = null;
 
         try {
             /* Search Criteria  */
@@ -824,6 +845,9 @@ class CourseLocations {
     public static function ChangeStatus_Location($locationId) {
         /* Variables    */
         global $DB;
+        $params = null;
+        $sql    = null;
+        $rdo    = null;
 
         try {
             /* Search Criteria  */
@@ -856,6 +880,9 @@ class CourseLocations {
     public static function Has_CoursesConnected($locationId) {
         /* Variables    */
         global $DB;
+        $params = null;
+        $sql    = null;
+        $rdo    = null;
 
         try {
             /* Search Criteria  */
@@ -895,6 +922,7 @@ class CourseLocations {
     public static function Delete_Location($locationId) {
         /* Variables    */
         global $DB;
+        $params = null;
 
         try {
             /* Search Criteria  */
@@ -1077,7 +1105,9 @@ class CourseLocations {
     private static function Get_SectorsName($sectors) {
         /* Variables    */
         global $DB;
-        $sectorsName = null;
+        $sectorsName    = null;
+        $sql            = null;
+        $rdo            = null;
 
         try {
             /* SQL Instruction  */
@@ -1568,6 +1598,8 @@ class CourseLocations {
         global $DB;
         $coursesLink    = array();
         $link           = null;
+        $sql            = null;
+        $rdo            = null;
 
         try {
             /* SQL Instruction  */

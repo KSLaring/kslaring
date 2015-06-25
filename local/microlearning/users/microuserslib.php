@@ -31,6 +31,7 @@ class Micro_Users {
      * @param           $campaign_id
      * @param           $started
      * @return          array
+     * @throws          Exception
      *
      * @creationDate    13/09/2014
      * @author          eFaktor         (fbv)
@@ -44,61 +45,71 @@ class Micro_Users {
         $enrol_users    = null;
         $users_campaign = null;
         $in             = null;
+        $sqlwhere       = null;
+        $params         = null;
+        $total          = null;
+        $acount         = null;
+        $scount         = null;
+        $userlist       = null;
 
-        // get the SQL filter
-        list($sqlwhere, $params) = $users_filter->get_sql_filter("id<>:exguest AND deleted <> 1", array('exguest'=>$CFG->siteguest));
+        try {
+            // get the SQL filter
+            list($sqlwhere, $params) = $users_filter->get_sql_filter("id<>:exguest AND deleted <> 1", array('exguest'=>$CFG->siteguest));
 
-        /* Get Users Enrolled   */
-        $enrol_users = self::Get_UsersEnrolled($users_filter->course_id);
-        if ($enrol_users) {
-            if ($sqlwhere) {
-                $sqlwhere .= ' AND id IN ('. implode(',',$enrol_users) . ')';
-            }else {
-                $sqlwhere .= ' WHERE id IN ('. implode(',',$enrol_users) . ')';
+            /* Get Users Enrolled   */
+            $enrol_users = self::Get_UsersEnrolled($users_filter->course_id);
+            if ($enrol_users) {
+                if ($sqlwhere) {
+                    $sqlwhere .= ' AND id IN ('. implode(',',$enrol_users) . ')';
+                }else {
+                    $sqlwhere .= ' WHERE id IN ('. implode(',',$enrol_users) . ')';
+                }
             }
-        }
 
-        $total  = count($enrol_users);
-        $acount = $DB->count_records_select('user', $sqlwhere, $params);
+            $total  = count($enrol_users);
+            $acount = $DB->count_records_select('user', $sqlwhere, $params);
 
-        /* Get the users connected to campagin*/
-        if (!$SESSION->removeAll) {
-            self::AddUsersCampaign_To_UsersSelector($campaign_id);
-        }//if_removeAll
-        $scount = count($SESSION->bulk_users);
+            /* Get the users connected to campagin*/
+            if (!$SESSION->removeAll) {
+                self::AddUsersCampaign_To_UsersSelector($campaign_id);
+            }//if_removeAll
+            $scount = count($SESSION->bulk_users);
 
-        if ($scount) {
-            if ($scount < MAX_BULK_USERS) {
-                $in .= implode(',', $SESSION->bulk_users);
-            } else {
-                $bulkusers = array_slice($SESSION->bulk_users, 0, MAX_BULK_USERS, true);
-                $in .= implode(',', $bulkusers);
-            }
-        }//if_scount
+            if ($scount) {
+                if ($scount < MAX_BULK_USERS) {
+                    $in .= implode(',', $SESSION->bulk_users);
+                } else {
+                    $bulkusers = array_slice($SESSION->bulk_users, 0, MAX_BULK_USERS, true);
+                    $in .= implode(',', $bulkusers);
+                }
+            }//if_scount
 
-        /* Add Selector */
-        if ($in) {
-            if ($sqlwhere) {
-                $sqlwhere .= ' AND id NOT IN ('. $in . ')';
-            }else {
-                $sqlwhere .= ' WHERE id NOT IN ('. $in. ')';
-            }
-        }//if_in
+            /* Add Selector */
+            if ($in) {
+                if ($sqlwhere) {
+                    $sqlwhere .= ' AND id NOT IN ('. $in . ')';
+                }else {
+                    $sqlwhere .= ' WHERE id NOT IN ('. $in. ')';
+                }
+            }//if_in
 
-        $userlist = array('acount'=>$acount, 'scount'=>$scount, 'ausers'=>false, 'susers'=>false, 'total'=>$total);
-        $userlist['ausers'] = $DB->get_records_select_menu('user', $sqlwhere, $params, 'fullname', 'id,'.$DB->sql_fullname().' AS fullname', 0, MAX_BULK_USERS);
+            $userlist = array('acount'=>$acount, 'scount'=>$scount, 'ausers'=>false, 'susers'=>false, 'total'=>$total);
+            $userlist['ausers'] = $DB->get_records_select_menu('user', $sqlwhere, $params, 'fullname', 'id,'.$DB->sql_fullname().' AS fullname', 0, MAX_BULK_USERS);
 
-        /* Users Selected   */
-        if ($in) {
-            $userlist['susers'] = $DB->get_records_select_menu('user', "id in ($in) ", null, 'fullname', 'id,'.$DB->sql_fullname().' AS fullname');
-        }//if_in
+            /* Users Selected   */
+            if ($in) {
+                $userlist['susers'] = $DB->get_records_select_menu('user', "id in ($in) ", null, 'fullname', 'id,'.$DB->sql_fullname().' AS fullname');
+            }//if_in
 
-        $userlist['course']     = $course_id;
-        $userlist['mode']       = $mode_learning;
-        $userlist['campaign']   = $campaign_id;
-        $userlist['started']    = $started;
+            $userlist['course']     = $course_id;
+            $userlist['mode']       = $mode_learning;
+            $userlist['campaign']   = $campaign_id;
+            $userlist['started']    = $started;
 
-        return $userlist;
+            return $userlist;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
     }//Get_SelectiorUsers_Filter
 
     /**
@@ -116,7 +127,10 @@ class Micro_Users {
     public static function Get_UsersEnrolled($course_id) {
         /* Variables    */
         global $DB;
-        $users_lst = null;
+        $users_lst  = null;
+        $params     = null;
+        $sql        = null;
+        $rdo        = null;
 
         try {
             /* Search Criteria  */
@@ -149,6 +163,7 @@ class Micro_Users {
     /**
      * @static
      * @param           $users_filter
+     * @throws          Exception
      *
      * @creationDate    13/09/2014
      * @author          eFaktor     (fbv)
@@ -157,28 +172,36 @@ class Micro_Users {
      * Add the users to the selection form
      */
     public static function AddSelectionAll($users_filter) {
+        /* Variables    */
         global $SESSION, $DB, $CFG;
-        $enrol_users = null;
+        $enrol_users    = null;
+        $sqlwhere       = null;
+        $params         = null;
+        $rs             = null;
 
-        list($sqlwhere, $params) = $users_filter->get_sql_filter("id<>:exguest AND deleted <> 1", array('exguest'=>$CFG->siteguest));
+        try {
+            list($sqlwhere, $params) = $users_filter->get_sql_filter("id<>:exguest AND deleted <> 1", array('exguest'=>$CFG->siteguest));
 
-        /* Get Users Enrolled   */
-        $enrol_users = self::Get_UsersEnrolled($users_filter->course_id);
-        if ($enrol_users) {
-            if ($sqlwhere) {
-                $sqlwhere .= ' AND id IN ('. implode(',',$enrol_users) . ')';
-            }else {
-                $sqlwhere .= ' WHERE id IN ('. implode(',',$enrol_users) . ')';
+            /* Get Users Enrolled   */
+            $enrol_users = self::Get_UsersEnrolled($users_filter->course_id);
+            if ($enrol_users) {
+                if ($sqlwhere) {
+                    $sqlwhere .= ' AND id IN ('. implode(',',$enrol_users) . ')';
+                }else {
+                    $sqlwhere .= ' WHERE id IN ('. implode(',',$enrol_users) . ')';
+                }
             }
-        }
 
-        $rs = $DB->get_recordset_select('user', $sqlwhere, $params, 'fullname', 'id,'.$DB->sql_fullname().' AS fullname');
-        foreach ($rs as $user) {
-            if (!isset($SESSION->bulk_users[$user->id])) {
-                $SESSION->bulk_users[$user->id] = $user->id;
+            $rs = $DB->get_recordset_select('user', $sqlwhere, $params, 'fullname', 'id,'.$DB->sql_fullname().' AS fullname');
+            foreach ($rs as $user) {
+                if (!isset($SESSION->bulk_users[$user->id])) {
+                    $SESSION->bulk_users[$user->id] = $user->id;
+                }
             }
-        }
-        $rs->close();
+            $rs->close();
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
     }//AddSelectionAll
 
     /**
@@ -193,6 +216,9 @@ class Micro_Users {
     public static function SaveUsers_Campaign($campaign_id,$lst_users) {
         /* Variables    */
         global $DB;
+        $transaction    = null;
+        $micro_delivery = null;
+        $deliveries_lst = null;
 
         try {
             $transaction = $DB->start_delegated_transaction();
@@ -247,6 +273,7 @@ class Micro_Users {
     private static function AddUsersCampaign_To_UsersSelector($campaign_id) {
         /* Variables    */
         global $DB,$SESSION;
+        $rdo = null;
 
         try {
             /* Execute  */
@@ -279,6 +306,9 @@ class Micro_Users {
         /* Variables    */
         global $DB;
         $deliveries_lst = array();
+        $params         = null;
+        $sql            = null;
+        $rdo            = null;
 
         try {
             /* Search Criteria  */
@@ -318,6 +348,9 @@ class Micro_Users {
     private static function Delete_UsersDeliveries($campaign_id) {
         /* Variables    */
         global $DB;
+        $params = null;
+        $sql    = null;
+        $rdo    = null;
 
         try {
             /* Search Criteria  */
@@ -353,6 +386,7 @@ class Micro_Users {
     private static function AddNew_UsersDeliveries($deliveries_lst,$users_lst,$campaign_id) {
         /* Variables    */
         global $DB;
+        $delivery_info = null;
 
         try {
             /* Add all the users for each delivery  */

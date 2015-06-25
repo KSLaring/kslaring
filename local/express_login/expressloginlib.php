@@ -52,6 +52,8 @@ class Express_Login {
     public static function Exists_ExpressLogin($user_id) {
         /* Variables    */
         global $DB;
+        $params = null;
+        $rdo    = null;
 
         try {
             /* Search Criteria  */
@@ -319,6 +321,7 @@ class Express_Login {
     private static function IsLink_Valid($link) {
         /* Variables    */
         global $DB;
+        $rdo    = null;
 
         try {
             /* Execute  */
@@ -347,7 +350,8 @@ class Express_Login {
     private static function Express_Link($user_id) {
         /* Variables    */
         global $DB;
-        $express_link = null;
+        $express_link   = null;
+        $rdo            = null;
 
         try {
             /* Search Criteria */
