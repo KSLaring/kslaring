@@ -12,20 +12,18 @@
 
 $string['pluginname']               = 'Single Sign on - Web Service';
 
-$string['err_authenticate']         = 'Sorry, You are not authenticated user. Please, contact with the system administrator.';
-$string['exists_username']          = 'Other user is using the username <b>{$a->username}</b>. Please, contact with the system administrator.';
-$string['user_deleted']             = 'The user <b>{$a->username}</b> has been de-activated. Please, contact with the system administrator.';
+$string['err_authenticate']         = 'Beklager, men du er ingen godkjent bruker. Vennligst kontakt systemadministrator.';
+$string['exists_username']          = 'Brukernavnet ditt er allerede i bruk.<br />Vennligst kontakt systemadministrator.';
+$string['user_deleted']             = 'Brukeren  <strong>{$a->username}</strong> er blitt deaktivert. Vennligst kontakt systmeadministrator.';
+$string['application_subject']      = 'Velkommen til KS Læring {$a->site}';
+$string['application_body']         = '<p>Hei, <strong>{$a->name}</strong>, velkommen til KS Læring på <strong>{$a->site}</strong></p>Vi har laget en ny brukerkonto til deg. Brukerinformasjonen som er lagret på deg er:<p>p><b>username:</b> {$a->username}</p><b>password:</b> {$a->pwd}<p></p><p>Vennligst <b>bytt passsord!!</b>. Du kan gjøre det her: <b>{$a->change}</b></p>';
+$string['sel_company']              = 'Velg et firma...';
+$string['company']                  = 'Firma';
 
-$string['application_subject']      = 'Welcome to Moodle {$a->site}';
-$string['application_body']         = '<p>Welcome <b>{$a->name}</b> to Moodle <b>{$a->site}</b></p><p>A new account has been created for you. The details of your new account are:</p><p><b>username:</b> {$a->username}</p><b>password:</b> {$a->pwd}<p></p><p>Please,<b>YOU MUST CHANGE YOUR PASSWORD</b>. You can do it from <b>{$a->change}</b></p>';
+$string['cron_activate']            = 'Aktiver';
+$string['cron_deactivate']          = 'Deaktiver';
+$string['cron_wsso']                = 'Single Sign On - Cron';
 
-$string['sel_company']              = 'Choose a company...';
-$string['company']                  = 'Company';
-
-$string['cron_activate']            = 'Enabled';
-$string['cron_deactivate']          = 'Disabled';
-$string['cron_wsso']                = 'Single Sign on - Cron';
-
-$string['end_point']                        = 'API Import Users';
-$string['end_point_production']             = 'Production';
-$string['end_point_production_desc']        = 'Production or Pilot site';
+$string['end_point']                        = 'API for import av brukere';
+$string['end_point_production']             = 'Produksjon';
+$string['end_point_production_desc']        = 'Produksjons- eller Dev-site';

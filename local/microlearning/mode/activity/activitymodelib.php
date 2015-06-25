@@ -163,7 +163,11 @@ class Activity_Mode {
     public static function Get_ActivityDeliveries($campaign_id,$sort,$limit_from,$limit_num) {
         /* Variables    */
         global $DB;
-        $delivery_lst = null;
+        $delivery       = null;
+        $delivery_lst   = null;
+        $params         = null;
+        $sql            = null;
+        $rdo            = null;
 
         try {
             /* Search Criteria  */
@@ -279,6 +283,9 @@ class Activity_Mode {
     public static function HasStarted_Campaign($campaign_id) {
         /* Variables    */
         global $DB;
+        $params = null;
+        $sql    = null;
+        $rdo    = null;
 
         try {
             /* Search Criteria  */
@@ -322,7 +329,10 @@ class Activity_Mode {
     public static function GetDeliveryInfo_ActivityMode($campaign_id,$delivery_id) {
         /* Variables    */
         global $DB;
-        $delivery_info = null;
+        $delivery_info  = null;
+        $params         = null;
+        $sql            = null;
+        $rdo            = null;
 
         try {
             /* Search Criteria  */
@@ -400,6 +410,7 @@ class Activity_Mode {
     private static function AddActivities_toDelivery($campaign_id,$delivery_id,$activities_lst,$activities_type,$modeActivity) {
         /* Variables    */
         global $DB;
+        $activity_selected = null;
 
         try {
             /* Insert Activities Selected */
@@ -438,6 +449,7 @@ class Activity_Mode {
         $days           = null;
         $date           = null;
         $users_enrol    = null;
+        $delivery       = null;
 
         try {
             /* Get the time enrol   */
@@ -497,6 +509,9 @@ class Activity_Mode {
         global $DB;
         $users_enrol = null;
         $lst_users   = implode(',',array_keys($user_lst));
+        $params      = null;
+        $sql         = null;
+        $rdo         = null;
 
         try {
             /* Search Criteria  */

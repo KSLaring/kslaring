@@ -83,4 +83,13 @@ $string['ERROR_EXPRESS_PIN_NOT_VALID']              = 'Ugyldig PIN-kode. Du har 
 $string['clipboardDiv'] = 'Hurtigtilgangslenken din har blitt kopiert til utklippstavlen din. Alt du trenger å gjøre er å trykke på ctrl+v for å lime den inn der du ønsker.';
 $string['bookmarkDiv']  = 'For å legge til hurtigtilgang som et bokmerke, vennligst dra og slipp <strong>{$a}</strong> til bokmerkene.';
 
-$string['err_express_access'] = 'You not have permissions to generate Express Login.';
+$string['err_express_access'] = 'Du har ikke høye nok rettigheter til å generere nye pin-koder.';
+
+$string['cron_settings']            = 'Cron-innstillinger';
+$string['cron_activate']            = 'Aktivert';
+$string['cron_deactivate']          = 'Deaktivert';
+
+$string['express_subject']        = '{$a}: Pin- og hurtiglogin-lenker generert';
+$string['express_body']           = '<p>Hei {$a->name},</p><p>Vi har nå automatisk generert en <strong>hurtiglogin</strong> for deg. Dette er en personlig URL du kan lagre som en Favoritt i nettleseren din. Din tilhørende pinkode er: <strong>{$a->express}</strong><p>Av sikkerhetsgrunner sender vi ikke ut hurtigloginlenken i en epost, men den er lagret i din brukerprofil.</p><p>Du kan hente hurtiginnloggingslenken fra brukerprofilen din under "Hurtiglogin".</p>';
+
+$string['micro_message']          = '<p>Siden du nå har byttet pin-kode (og dermed også hurtigloginlenken) sender vi deg om igjen alle mikrolærings-eposter du har fått tidligere hvor du IKKE har gjort aktivitene ennå.</p>';

@@ -72,3 +72,4 @@ $string['undockitem'] = 'Undock this item';
 $string['visible'] = 'Visible';
 $string['weight'] = 'Weight';
 $string['wherethisblockappears'] = 'Where this block appears';
+$string['blockfrikomport'] = 'Frikomport';

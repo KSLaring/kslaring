@@ -1,0 +1,20 @@
+{
+  "municipality": {
+    "Lillehammer": "Lillehammer",
+    "Oslo": "Oslo"
+  },
+  "sector": {
+    "Health": "Health",
+    "School": "School"
+  },
+  "location": {
+    "Course room 1": "Course room 1",
+    "Course room 2": "Course room 2",
+    "Course room 4": "Course room 4",
+    "Course room 12": "Course room 12",
+    "Room 312": "Room 312",
+    "Room 300": "Room 300"
+  },
+  "from": 1426118400,
+  "to": 1436745600
+}

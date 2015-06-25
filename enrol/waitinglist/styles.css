@@ -1,0 +1,27 @@
+input[type="button"].entercoursenowbutton {
+  	background-color: #00a85a;
+    background-image: linear-gradient(to bottom, #00a870, #00a838);
+    background-repeat: repeat-x;
+    border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
+    color: #fff;
+    text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+}
+
+div.enrol_waitinglist_listbuttons {
+	display: block;
+	/*float: left;*/
+}
+.enrol_waitinglist_listbuttons input[type="submit"]{
+	width: 400px;
+	/*float: left;*/
+}
+
+div.enrol_waitinglist_actionbuttons {
+	display: flex;
+	float: right;
+}
+
+tr.enrol_waitinglist_lastrow td {
+	border-bottom: 1px solid #ddd;
+}
+

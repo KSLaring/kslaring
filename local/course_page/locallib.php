@@ -50,6 +50,11 @@ class course_page  {
      * get the correct url to display the Home Graphics
      */
     public static function getUrlPageGraphicsVideo($itemid) {
+        /* Variables    */
+        $fs     = null;
+        $file   = null;
+        $url    = null;
+
         try {
             /* Store File   */
             $fs = get_file_storage();
@@ -92,7 +97,12 @@ class course_page  {
      * Get all the users are candidates to be manager
      */
     public static function getCourseManager() {
+        /* Variables */
         global $DB;
+        $context_levels = null;
+        $lst_manager    = null;
+        $sql            = null;
+        $rdo            = null;
 
         try {
             /* Context LEvels   */
@@ -142,7 +152,13 @@ class course_page  {
      * Get the teachers connected with the course.
      */
     public static function getCoursesTeachers($course_id,$manager_id) {
+        /* Variables    */
         global $DB;
+        $lst_teachers   = null;
+        $context        = null;
+        $params         = null;
+        $sql            = null;
+        $rdo            = null;
 
         try {
             /* Teachers */
@@ -194,7 +210,12 @@ class course_page  {
      * Get the last ratings.
      */
     public static function getLastRatings($course_id) {
+        /* Variables    */
         global $DB;
+        $last_rates = null;
+        $params     = null;
+        $sql        = null;
+        $rdo        = null;
 
         try {
             /* Last Ratings */
@@ -240,7 +261,9 @@ class course_page  {
      * Check if the course has been rated.
      */
     public static function IsCourseRating($course_id) {
+        /* Variables    */
         global $DB;
+        $rdo    = null;
 
         try {
            /* Execute   */
@@ -271,6 +294,7 @@ class course_page  {
     public static function UserRateCourse($user_id,$course_id) {
         /* Variables    */
         global $DB;
+        $rdo = null;
 
         try {
             /* Execute   */
@@ -299,7 +323,10 @@ class course_page  {
      * Get how many records there are for each rating
      */
     public static function getCountTypeRateCourse($course_id,$type_rate) {
+        /* Variables    */
         global $DB;
+        $params = null;
+        $total  = null;
 
         try {
             /* Search Criteria  */
@@ -330,7 +357,12 @@ class course_page  {
      * Get the last comments for specific rating
      */
     protected static function getComentsTypeRateCourse($course_id,$type_rate) {
+        /* Variables    */
         global $DB;
+        $coments_rate   = null;
+        $params         = null;
+        $sql            = null;
+        $rdo            = null;
 
         try {
             $coments_rate = array();
@@ -377,7 +409,13 @@ class course_page  {
      * Get the last comments
      */
     public static function getLastCommentsRateCourse($course_id) {
+        /* Variables    */
         global $DB;
+        $last_comments  = null;
+        $params         = null;
+        $sql            = null;
+        $rdo            = null;
+        $info           = null;
 
         try {
             /* Last Ratings */
@@ -430,8 +468,11 @@ class course_page  {
      * Get how many users are enrolled in the course
      */
     public static function getTotalUsersEnrolledCourse($course_id) {
+        /* Variables    */
         global $DB;
-
+        $params = null;
+        $sql    = null;
+        $rdo    = null;
         try {
             /* Search Criteria  */
             $params             = array();
@@ -471,7 +512,10 @@ class course_page  {
      * Count all the rates
      */
     public static function getTotalRatesCourse($course_id) {
+        /* Variables */
         global $DB;
+        $params = null;
+        $total  = null;
 
         try {
             /* Search Criteria  */
@@ -546,8 +590,8 @@ class course_page  {
         $out .= '<h5 class="title_ratings chp-title">' . get_string('ratings_avg','local_course_page') . '</h5>';
 
         $out .= '<div class="rating_total clearfix chp-content">';
-            $out .= '<div class="rating_total_title">' . '<img src="'. $url_avg . '" .  alt="average ratings"/>' . '</div>';
-            $out .= '<div class="rating_total_value">' . $total_rates . '</div>';
+        $out .= '<div class="rating_total_title">' . '<img src="'. $url_avg . '" .  alt="average ratings"/>' . '</div>';
+        $out .= '<div class="rating_total_value">' . $total_rates . '</div>';
         $out .= '</div>';
 
         return $out;
@@ -567,7 +611,11 @@ class course_page  {
      * It checks if the user is just enrolled.
      */
     public static function IsUserEnrol($course_id,$user_id) {
+        /* Variables    */
         global $DB;
+        $params = null;
+        $sql    = null;
+        $rdo    = null;
 
         try {
             /* Params   */
@@ -608,7 +656,13 @@ class course_page  {
      * Get the fields/options connected with course format
      */
     public static function getFormatFields($course_id) {
+        /* Variables    */
         global $DB;
+        $format_fields  = null;
+        $params         = null;
+        $sql            = null;
+        $rdo            = null;
+        $field          = null;
 
         try {
             /* Format Fields    */
@@ -650,6 +704,7 @@ class course_page  {
 
     /**
      * @return          array
+     * @throws          Exception
      *
      * @creationDate    20/05/2014
      * @author          eFaktor     (fbv)
@@ -658,23 +713,31 @@ class course_page  {
      * Return the edit_options
      */
     public static function get_edit_options() {
+        /* Variables    */
         global $CFG,$COURSE;
+        $context        = null;
+        $edit_options   = null;
 
-        /* Get the context  */
-        if ($COURSE->id) {
-            $context        = CONTEXT_COURSE::instance($COURSE->id);
-        }else {
-            $context = CONTEXT_COURSECAT::instance(0);
-        }//if_else_course
+        try {
+            /* Get the context  */
+            if ($COURSE->id) {
+                $context        = CONTEXT_COURSE::instance($COURSE->id);
+            }else {
+                $context = CONTEXT_COURSECAT::instance(0);
+            }//if_else_course
 
-        $edit_options   = array('maxfiles' => EDITOR_UNLIMITED_FILES, 'maxbytes'=>$CFG->maxbytes, 'trusttext'=>false, 'noclean'=>true, 'context' => $context);
+            $edit_options   = array('maxfiles' => EDITOR_UNLIMITED_FILES, 'maxbytes'=>$CFG->maxbytes, 'trusttext'=>false, 'noclean'=>true, 'context' => $context);
 
-        return array($edit_options,$context);
+            return array($edit_options,$context);
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
     }//get_edit_options
 
 
     /**
      * @return          array
+     * @throws          Exception
      *
      * @creationDate    20/05/2014
      * @author          eFaktor     (fbv)
@@ -683,18 +746,25 @@ class course_page  {
      * Return the file_options
      */
     public static function get_file_options() {
+        /* Variables    */
         global $CFG,$COURSE;
+        $context        = null;
+        $file_options   = null;
 
-        /* Get the context  */
-        if ($COURSE->id) {
-            $context        = CONTEXT_COURSE::instance($COURSE->id);
-        }else {
-            $context = CONTEXT_COURSECAT::instance(0);
-        }//if_else_course
+        try {
+            /* Get the context  */
+            if ($COURSE->id) {
+                $context        = CONTEXT_COURSE::instance($COURSE->id);
+            }else {
+                $context = CONTEXT_COURSECAT::instance(0);
+            }//if_else_course
 
-        $file_options   = array('maxfiles' => 1, 'maxbytes'=>$CFG->maxbytes, 'subdirs' => 0, 'context' => $context);
+            $file_options   = array('maxfiles' => 1, 'maxbytes'=>$CFG->maxbytes, 'subdirs' => 0, 'context' => $context);
 
-        return array($file_options,$context);
+            return array($file_options,$context);
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
     }//get_file_options
 
     /**
@@ -702,6 +772,7 @@ class course_page  {
      * @param           $edit_options
      * @param           $context
      * @return          stdClass
+     * @throws          Exception
      *
      * @creationDate    27/05/2014
      * @author          eFaktor     (fbv)
@@ -712,25 +783,30 @@ class course_page  {
     public static function prepareStandardHomeSummaryEditor($edit_options,$context) {
         /* Variables  */
         global $COURSE;
-        $editor         = new stdClass();
+        $editor         = null;
+        $format_options = null;
 
-        /* Prepare Standard Editor */
-        $editor->homesummary       = '';
-        $editor->homesummaryformat  = FORMAT_HTML;
+        try {
+            /* Prepare Standard Editor */
+            $editor         = new stdClass();
+            $editor->homesummary       = '';
+            $editor->homesummaryformat  = FORMAT_HTML;
 
-        /* Prepare the editor   */
-        if ($COURSE->id) {
-            $format_options = course_get_format($COURSE->id)->get_format_options();
-            if (array_key_exists('homesummary',$format_options)) {
-                $editor->homesummary = $format_options['homesummary'];
-            }//if_array_exists
-            $editor = file_prepare_standard_editor($editor, 'homesummary', $edit_options,$context, 'course', 'homesummary',0);
-        }else {
-            $editor = file_prepare_standard_editor($editor, 'homesummary', $edit_options,null, 'course', 'homesummary',0);
-        }//if_course
+            /* Prepare the editor   */
+            if ($COURSE->id) {
+                $format_options = course_get_format($COURSE->id)->get_format_options();
+                if (array_key_exists('homesummary',$format_options)) {
+                    $editor->homesummary = $format_options['homesummary'];
+                }//if_array_exists
+                $editor = file_prepare_standard_editor($editor, 'homesummary', $edit_options,$context, 'course', 'homesummary',0);
+            }else {
+                $editor = file_prepare_standard_editor($editor, 'homesummary', $edit_options,null, 'course', 'homesummary',0);
+            }//if_course
 
-
-        return $editor;
+            return $editor;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
     }//prepareStandardHomeSummaryEditor
 
     /**
@@ -739,6 +815,7 @@ class course_page  {
      * @param           $context
      * @param           $field
      * @return          stdClass
+     * @throws          Exception
      *
      * @creationDate    27/05/2014
      * @author          eFaktor     (fbv)
@@ -749,28 +826,37 @@ class course_page  {
     public static function prepareFileManagerHomeGraphicsVideo($file_options,$context,$field) {
         /* Variables */
         global $COURSE;
-        $file_editor = new stdClass();
-        $file_editor->$field  = 0;
+        $file_editor    = null;
+        $format_options = null;
 
-        /* Prepare Standard Editor */
-        if ($COURSE->id) {
-            $format_options = course_get_format($COURSE->id)->get_format_options();
-            if (array_key_exists($field,$format_options)) {
-                $file_editor->$field    = $format_options[$field];
-            }//if_array_Exists
+        try {
+            /* File Editor  */
+            $file_editor = new stdClass();
+            $file_editor->$field  = 0;
 
-            file_prepare_standard_filemanager($file_editor, $field,$file_options,$context, 'course',$field,0);
-        }else {
-            file_prepare_standard_filemanager($file_editor, $field,$file_options,null, 'course',$field,0);
-        }//if_course
+            /* Prepare Standard Editor */
+            if ($COURSE->id) {
+                $format_options = course_get_format($COURSE->id)->get_format_options();
+                if (array_key_exists($field,$format_options)) {
+                    $file_editor->$field    = $format_options[$field];
+                }//if_array_Exists
 
-        return $file_editor;
+                file_prepare_standard_filemanager($file_editor, $field,$file_options,$context, 'course',$field,0);
+            }else {
+                file_prepare_standard_filemanager($file_editor, $field,$file_options,null, 'course',$field,0);
+            }//if_course
+
+            return $file_editor;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
     }//prepareFileManagerHomeGraphics
 
     /**
      * @static
      * @param           $homesummary_editor
      * @return          mixed
+     * @throws          Exception
      *
      * @creationDate    27/05/2014
      * @author          eFaktor     (fbv)
@@ -779,15 +865,26 @@ class course_page  {
      * Get the content of 'Home Summary Editor'
      */
     public static function getHomeSummaryEditor($homesummary_editor) {
-        /* Get Home Page Description */
-        list($edit_options,$context) = self::get_edit_options();
-        $editor = new stdClass();
-        $editor->homesummary_editor = $homesummary_editor;
-        $editor->homesummary = '';
+        /* Variables    */
+        $edit_options   = null;
+        $context        = null;
+        $editor         = null;
 
-        $editor = file_postupdate_standard_editor($editor, 'homesummary', $edit_options, $context, 'course', 'homesummary', 0);
+        try {
+            /* Get Home Page Description */
+            list($edit_options,$context) = self::get_edit_options();
 
-        return $editor->homesummary;
+            /* Editor */
+            $editor = new stdClass();
+            $editor->homesummary_editor = $homesummary_editor;
+            $editor->homesummary = '';
+
+            $editor = file_postupdate_standard_editor($editor, 'homesummary', $edit_options, $context, 'course', 'homesummary', 0);
+
+            return $editor->homesummary;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
     }//postupdateHomeSummaryEditor
 
     /**
@@ -797,6 +894,7 @@ class course_page  {
      * @param           $file_manager
      * @param           $delete
      * @return          int
+     * @throws          Exception
      *
      * @creationDate    27/05/2014
      * @author          eFaktor     (fbv)
@@ -806,35 +904,45 @@ class course_page  {
      */
     public static function getHomeGraphicsVideo($file_id,$field,$file_manager,$delete) {
         /* Variables    */
-        global $DB,$COURSE;
-        $Id_GraphicVideo = 0;
-        $field_manager = $field . '_filemanager';
+        global $DB;
+        $fs                 = null;
+        $file               = null;
+        $file_options       = null;
+        $context            = null;
+        $file_graphicVideo  = null;
+        $Id_GraphicVideo    = 0;
+        $field_manager  = $field . '_filemanager';
 
-        /* First Remove Previous    */
-        $fs = get_file_storage();
-        if ($delete) {
-            $file = $fs->get_file_by_id($file_id);
+        try {
+            /* First Remove Previous    */
+            $fs = get_file_storage();
+            if ($delete) {
+                $file = $fs->get_file_by_id($file_id);
 
-            $DB->delete_records('files',array('itemid' => $file->get_itemid()));
-        }///deletepicture
+                $DB->delete_records('files',array('itemid' => $file->get_itemid()));
+            }///deletepicture
 
-        /* Get Home Graphics    */
-        list($file_options,$context) = self::get_file_options();
-        $file_options['accepted_types'] = array('image','web_image','video','web_video');
+            /* Get Home Graphics    */
+            list($file_options,$context) = self::get_file_options();
+            $file_options['accepted_types'] = array('image','web_image','video','web_video');
 
-        $file_graphicVideo = new stdClass();
-        $file_graphicVideo->$field_manager = $file_manager;
+            /* File Graphic Video   */
+            $file_graphicVideo = new stdClass();
+            $file_graphicVideo->$field_manager = $file_manager;
 
-        $file_graphicVideo = file_postupdate_standard_filemanager($file_graphicVideo, $field, $file_options, $context, 'course', $field, $file_graphicVideo->$field_manager);
+            $file_graphicVideo = file_postupdate_standard_filemanager($file_graphicVideo, $field, $file_options, $context, 'course', $field, $file_graphicVideo->$field_manager);
 
-        if ($files = $fs->get_area_files($context->id, 'course', $field, $file_graphicVideo->$field_manager, 'id DESC', false)) {
-            /* Remove Previous  */
-            $file = reset($files);
+            if ($files = $fs->get_area_files($context->id, 'course', $field, $file_graphicVideo->$field_manager, 'id DESC', false)) {
+                /* Remove Previous  */
+                $file = reset($files);
 
-            $Id_GraphicVideo = $file->get_id();
-        }//if_file
+                $Id_GraphicVideo = $file->get_id();
+            }//if_file
 
-        return $Id_GraphicVideo;
+            return $Id_GraphicVideo;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
     }//getHomeGraphics
 
     /**
@@ -848,9 +956,22 @@ class course_page  {
      *
      * Description
      * Update all the information connected with the Course Home Page
+     *
+     * @updateDate      14/05/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Course Sector
      */
     public static function UpdateCourseHomePage($data,$course) {
+        /* Variables    */
         global $DB;
+        $editor_options = null;
+        $context        = null;
+        $format_fields  = null;
+        $delete         = null;
+        $graphic_id     = null;
+        $video_id       = null;
 
         try {
             /* Update Course Details    */
@@ -901,7 +1022,13 @@ class course_page  {
                         }//if_video_id
 
                         break;
+                    case 'course_sector':
+                        if (isset($data->$field)) {
+                            $option->value = implode(',',$data->$field);
+                            $DB->update_record('course_format_options',$option);
+                        }//if_data_field
 
+                        break;
                     default:
                         if (isset($data->$field)) {
                             $option->value = $data->$field;
@@ -928,51 +1055,70 @@ class course_page  {
      *
      * Description
      * Print the options/fields connected with the course format. Only for the Course Home Page
+     *
+     * @updateDate      08/05/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Add Course Location and Course Sector
      */
     public static function printFormatOptions(&$form,$option,$value,$format) {
         /* Variables*/
-        $str_format = null;;
-
+        global  $USER;
+        $str_format     = null;;
+        $lstManager     = null;
+        $lstLocations   = null;
+        $lstSectors     = null;
 
         try {
             $str_format = 'format_' . $format;
                 switch ($option) {
                     case 'prerequisities':
-                    $form->addElement('textarea','prerequisities',get_string('home_prerequisities',$str_format),'rows="5" style="width:95%;"');
+                        $form->addElement('textarea','prerequisities',get_string('home_prerequisities',$str_format),'rows="5" style="width:95%;"');
                         $form->setDefault('prerequisities',$value);
                         break;
                     case 'producedby':
-                    $form->addElement('text','producedby',get_string('home_producedby',$str_format),'style="width:95%;"');
+                        $form->addElement('text','producedby',get_string('home_producedby',$str_format),'style="width:95%;"');
                         $form->setDefault('producedby',$value);
                         $form->setType('producedby',PARAM_TEXT);
                         break;
-                    case 'location':
-                    $form->addElement('text','location',get_string('home_location',$str_format),'style="width:95%;"');
-                        $form->setDefault('location',$value);
-                        $form->setType('location',PARAM_TEXT);
+                    case 'course_location':
+                        $lstLocations = course_page::Get_CourseLocationsList($USER->id);
+                        $form->addElement('select','course_location',get_string('home_location',$str_format),$lstLocations);
+                        $form->setDefault('course_location',$value);
+                        break;
+                    case 'course_sector':
+                        $lstLocations   = course_page::Get_CourseLocationsList($USER->id);
+                        $lstSectors     = course_page::Get_SectorsLocationsList(implode(',',array_keys($lstLocations)));;
+                        $form->addElement('select','course_sector',get_string('home_sector',$str_format),$lstSectors,'multiple');
+                        $form->setDefault('course_sector',$value);
+                        break;
+                    case 'time':
+                        $form->addElement('textarea','time',get_string('home_time_from_to',$str_format),'rows="5" style="width:95%;"');
+                        $form->setDefault('time',$value);
                         break;
                     case 'length':
-                    $form->addElement('text','length',get_string('home_length',$str_format),'style="width:95%;"');
+                        $form->addElement('text','length',get_string('home_length',$str_format),'style="width:95%;"');
                         $form->setDefault('length',$value);
                         $form->setType('length',PARAM_TEXT);
                         break;
                     case 'effort':
-                    $form->addElement('text','effort',get_string('home_effort',$str_format),'style="width:95%;"');
+                        $form->addElement('text','effort',get_string('home_effort',$str_format),'style="width:95%;"');
                         $form->setDefault('effort',$value);
                         $form->setType('effort',PARAM_TEXT);
                         break;
                     case 'manager':
                         $lst_manager = self::getCourseManager();
-                    $form->addElement('select','manager',get_string('home_manager',$str_format),$lst_manager);
+                        $form->addElement('select','manager',get_string('home_manager',$str_format),$lst_manager);
                         $form->setDefault('manager',$value);
                         break;
                     case 'author':
-                    $form->addElement('text','author',get_string('home_author',$str_format),'style="width:95%;"');
+                        $form->addElement('text','author',get_string('home_author',$str_format),'style="width:95%;"');
                         $form->setDefault('author',$value);
                         $form->setType('author',PARAM_TEXT);
                         break;
                     case 'licence':
-                    $form->addElement('text','licence',get_string('home_licence',$str_format),'style="width:95%;"');
+                        $form->addElement('text','licence',get_string('home_licence',$str_format),'style="width:95%;"');
                         $form->setDefault('licence',$value);
                         $form->setType('licence',PARAM_TEXT);
                         break;
@@ -1113,6 +1259,7 @@ class course_page  {
      * @param           $itemid
      * @param           array $options
      * @return          mixed
+     * @throws          Exception
      *
      * @creationDate    04/09/2014
      * @author          eFaktor     (fbv)
@@ -1121,28 +1268,34 @@ class course_page  {
      * Get the url to show the content of home page summary like images...
      */
     public static function fileRewritePluginfileUrls_HomePage($text, $file, $contextid, $component, $filearea, $itemid, array $options=null) {
+        /* Variables */
         global $CFG;
+        $baseurl    = null;
 
-        $options = (array)$options;
-        if (!isset($options['forcehttps'])) {
-            $options['forcehttps'] = false;
-        }
+        try {
+            $options = (array)$options;
+            if (!isset($options['forcehttps'])) {
+                $options['forcehttps'] = false;
+            }
 
-        if (!$CFG->slasharguments) {
-            $file = $file . '?file=';
-        }
+            if (!$CFG->slasharguments) {
+                $file = $file . '?file=';
+            }
 
-        $baseurl = "$CFG->wwwroot/local/course_page/$file/$contextid/$component/$filearea/";
+            $baseurl = "$CFG->wwwroot/local/course_page/$file/$contextid/$component/$filearea/";
 
-        if ($itemid !== null) {
-            $baseurl .= "$itemid/";
-        }
+            if ($itemid !== null) {
+                $baseurl .= "$itemid/";
+            }
 
-        if ($options['forcehttps']) {
-            $baseurl = str_replace('http://', 'https://', $baseurl);
-        }
+            if ($options['forcehttps']) {
+                $baseurl = str_replace('http://', 'https://', $baseurl);
+            }
 
-        return str_replace('@@PLUGINFILE@@/', $baseurl, $text);
+            return str_replace('@@PLUGINFILE@@/', $baseurl, $text);
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
     }//fileRewritePluginfileUrls_HomePage
 
     /**
@@ -1150,6 +1303,7 @@ class course_page  {
      * @param           $relativepath
      * @param           $forcedownload
      * @param           $preview
+     * @throws          Exception
      *
      * @creationDate    04/09/2014
      * @author          eFaktor     (fbv)
@@ -1158,51 +1312,249 @@ class course_page  {
      * Show the content of home page summary like images...
      */
     public static function filePluginfile_HomePage($relativepath,$forcedownload,$preview) {
-        global $DB, $CFG, $USER;
-        // relative path must start with '/'
-        if (!$relativepath) {
-            print_error('invalidargorconf');
-        } else if ($relativepath[0] != '/') {
-            print_error('pathdoesnotstartslash');
-        }
+        /* Variables    */
+        global $CFG;
+        $args       = null;
+        $contextid  = null;
+        $component  = null;
+        $filearea   = null;
+        $fs         = null;
+        $filename   = null;
+        $filepath   = null;
 
-        // extract relative path components
-        $args = explode('/', ltrim($relativepath, '/'));
-
-        if (count($args) < 3) { // always at least context, component and filearea
-            print_error('invalidarguments');
-        }
-
-        $contextid = (int)array_shift($args);
-        $component = clean_param(array_shift($args), PARAM_COMPONENT);
-        $filearea  = clean_param(array_shift($args), PARAM_AREA);
-
-        list($context, $course, $cm) = get_context_info_array($contextid);
-
-        $fs = get_file_storage();
-
-        if ($component === 'course') {
-            if ($context->contextlevel != CONTEXT_COURSE) {
-                send_file_not_found();
+        try {
+            // relative path must start with '/'
+            if (!$relativepath) {
+                print_error('invalidargorconf');
+            } else if ($relativepath[0] != '/') {
+                print_error('pathdoesnotstartslash');
             }
 
-            if ($filearea === 'homesummary') {
-                if ($CFG->forcelogin) {
-                    require_login();
-                }
+            // extract relative path components
+            $args = explode('/', ltrim($relativepath, '/'));
 
-                $filename = array_pop($args);
-                $filepath = $args ? '/'.implode('/', $args).'/' : '/';
-                if (!$file = $fs->get_file($context->id, 'course', $filearea, 0, $filepath, $filename) or $file->is_directory()) {
+            if (count($args) < 3) { // always at least context, component and filearea
+                print_error('invalidarguments');
+            }
+
+            $contextid = (int)array_shift($args);
+            $component = clean_param(array_shift($args), PARAM_COMPONENT);
+            $filearea  = clean_param(array_shift($args), PARAM_AREA);
+
+            list($context, $course, $cm) = get_context_info_array($contextid);
+
+            $fs = get_file_storage();
+
+            if ($component === 'course') {
+                if ($context->contextlevel != CONTEXT_COURSE) {
                     send_file_not_found();
                 }
 
-                \core\session\manager::write_close(); // Unlock session during file serving.
-                send_stored_file($file, 60*60, 0, $forcedownload, array('preview' => $preview));
+                if ($filearea === 'homesummary') {
+                    if ($CFG->forcelogin) {
+                        require_login();
+                    }
 
+                    $filename = array_pop($args);
+                    $filepath = $args ? '/'.implode('/', $args).'/' : '/';
+                    if (!$file = $fs->get_file($context->id, 'course', $filearea, 0, $filepath, $filename) or $file->is_directory()) {
+                        send_file_not_found();
+                    }
+
+                    \core\session\manager::write_close(); // Unlock session during file serving.
+                    send_stored_file($file, 60*60, 0, $forcedownload, array('preview' => $preview));
+
+                }
             }
-        }
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
     }//filePluginfile_HomePage
+
+    /**
+     * @param           $userId
+     * @return          array
+     * @throws          Exception
+     *
+     * @creationDate    08/05/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Get the locations that can be added to the course
+     */
+    public static function Get_CourseLocationsList($userId) {
+        /* Variables    */
+        global $DB,$CFG;
+        $myCompetence       = null;
+        $sql                = null;
+        $sqlWhere           = null;
+        $rdo                = null;
+        $courseLocations    = array();
+
+        try {
+            /* Course Locations List    */
+            $courseLocations[0] = get_string('sel_location','local_friadmin');
+            /* Get Competence connected with user    */
+            require_once($CFG->dirroot . '/local/friadmin/course_locations/locationslib.php');
+            $myCompetence = CourseLocations::Get_MyCompetence($userId);
+
+            /* SQL Instruction  */
+            /* All Locations    */
+            $sql = " SELECT			cl.id,
+                                    cl.name
+                     FROM			{course_locations}	cl ";
+            if ($myCompetence) {
+                if ($myCompetence->levelZero) {
+                    /* Locations Connected with level zero  */
+                    if ($sqlWhere) {
+                        $sqlWhere  = " WHERE cl.levelzero IN ($myCompetence->levelZero) ";
+                    }else {
+                        $sqlWhere .= " AND cl.levelzero IN ($myCompetence->levelZero) ";
+                    }//if_sqlWhere
+
+                    /* Locations Level One  */
+                    if ($myCompetence->levelOne) {
+                        if ($sqlWhere) {
+                            $sqlWhere  = " WHERE cl.levelone IN ($myCompetence->levelOne) ";
+                        }else {
+                            $sqlWhere .= " AND cl.levelone IN ($myCompetence->levelOne) ";
+                        }//if_sqlWhere
+                    }//if_levelOne
+                }//if_levelZero
+
+                /* Add Criteria */
+                $sql .= $sqlWhere;
+                /* ADD Order    */
+                $sql .= " ORDER BY cl.name ";
+
+                /* Execute  */
+                $rdo = $DB->get_records_sql($sql);
+                if ($rdo) {
+                    foreach ($rdo as $instance) {
+                        $courseLocations[$instance->id] = $instance->name;
+                    }//for_location
+                }//if_rdo
+            }//if_myCompetence
+
+            return $courseLocations;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//Get_MyCourseLocations
+
+    /**
+     * @param           $locations
+     * @return          array
+     * @throws          Exception
+     *
+     * @creationDate    08/05/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Get the sectors that can be added to the course
+     */
+    public static function Get_SectorsLocationsList($locations) {
+        /* Variables    */
+        global $DB;
+        $sectors = array();
+        $sql     = null;
+        $rdo     = null;
+
+        try {
+            /* Sectors List     */
+            $sectors[0] = get_string('sel_sector','local_friadmin');
+
+            if ($locations) {
+                /* SQL Instruction  */
+                $sql = " SELECT		DISTINCT 	rgc.id,
+                                                rgc.name,
+                                                rgc.industrycode
+                         FROM		{report_gen_companydata}		rgc
+                            JOIN	{report_gen_company_relation}	rg_cr	ON rg_cr.companyid 	= rgc.id
+                            JOIN	{course_locations}			    cl		ON cl.levelone 		= rg_cr.parentid
+                                                                            AND cl.id IN ($locations)
+                         ORDER BY	rgc.industrycode, rgc.name ";
+
+                /* Execute  */
+                $rdo = $DB->get_records_sql($sql);
+                if ($rdo) {
+                    foreach ($rdo as $instance) {
+                        $sectors[$instance->id] = $instance->industrycode . ' - ' . $instance->name;
+                    }//for_Each
+                }//if_rdo
+            }//if_locations
+
+
+            return $sectors;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//Get_SectorsLocationsList
+
+    /**
+     * @param           $locationId
+     * @return          null
+     * @throws          Exception
+     *
+     * @creationDate    11/05/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Get the location name
+     */
+    public static function Get_LocationName($locationId) {
+        /* Variables    */
+        global $DB;
+        $rdo = null;
+
+        try {
+            /* Execute  */
+            $rdo = $DB->get_record('course_locations',array('id' => $locationId),'name');
+            if ($rdo) {
+                return $rdo->name;
+            }else {
+                return null;
+            }//if_rdo
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//Get_LocationName
+
+
+    /**
+     * @param           $sectorsLst
+     * @return          null
+     * @throws          Exception
+     *
+     * @creationDate    11/05/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Get the sectors name. List Format
+     */
+    public static function Get_SectorsName($sectorsLst) {
+        /* Variables    */
+        global $DB;
+        $sectorsName = null;
+        $sql         = null;
+        $rdo         = null;
+        try {
+            /* SQL Instruction  */
+            $sql = " SELECT		GROUP_CONCAT(DISTINCT CONCAT(rgc.industrycode,' - ', rgc.name) ORDER BY rgc.industrycode, rgc.name SEPARATOR ', ') as 'sectors'
+                     FROM		{report_gen_companydata}	rgc
+                     WHERE      rgc.id IN ($sectorsLst) ";
+
+            /* Execute*/
+            $rdo = $DB->get_record_sql($sql);
+            if ($rdo) {
+                $sectorsName = $rdo->sectors;
+            }//if_rdo
+
+            return $sectorsName;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//Get_SectorsName
 
     /* PRIVATE          */
 }//course_page

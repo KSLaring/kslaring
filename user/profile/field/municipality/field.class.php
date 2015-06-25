@@ -16,6 +16,7 @@
 class profile_field_municipality extends profile_field_base {
 
     public function edit_field_add($m_form) {
+        /* Variables    */
         global $PAGE;
 
         $PAGE->requires->js(new moodle_url('/user/profile/field/municipality/js/FilterMunicipality.js'));
@@ -43,6 +44,7 @@ class profile_field_municipality extends profile_field_base {
     /**
      * @param           stdClass $usernew
      * @return          mixed|void
+     * @throws          Exception
      *
      * @creationDate    19/11/2014
      * @author          eFaktor     (fbv)
@@ -56,32 +58,36 @@ class profile_field_municipality extends profile_field_base {
         $selectedMuni   = null;
         $idMuni         = null;
         $index          = null;
+        $data           = null;
 
+        try {
+            if (!isset($usernew->{$this->inputname})) {
+                // Field not present in form, probably locked and invisible - skip it.
+                return;
+            }
 
-        if (!isset($usernew->{$this->inputname})) {
-            // Field not present in form, probably locked and invisible - skip it.
-            return;
-        }
+            /* Get the Id Muni  */
+            $selectedMuni   = $usernew->{$this->inputname};
+            $index          = strripos($selectedMuni,"_");
+            $idMuni         = substr($selectedMuni,$index+1);
 
-        /* Get the Id Muni  */
-        $selectedMuni   = $usernew->{$this->inputname};
-        $index          = strripos($selectedMuni,"_");
-        $idMuni         = substr($selectedMuni,$index+1);
+            $data = new stdClass();
 
-        $data = new stdClass();
+            $usernew->{$this->inputname} = $idMuni;
 
-        $usernew->{$this->inputname} = $idMuni;
+            $data->userid  = $usernew->id;
+            $data->fieldid = $this->field->id;
+            $data->data    = $usernew->{$this->inputname};
 
-        $data->userid  = $usernew->id;
-        $data->fieldid = $this->field->id;
-        $data->data    = $usernew->{$this->inputname};
-
-        if ($dataid = $DB->get_field('user_info_data', 'id', array('userid' => $data->userid, 'fieldid' => $data->fieldid))) {
-            $data->id = $dataid;
-            $DB->update_record('user_info_data', $data);
-        } else {
-            $DB->insert_record('user_info_data', $data);
-        }
+            if ($dataid = $DB->get_field('user_info_data', 'id', array('userid' => $data->userid, 'fieldid' => $data->fieldid))) {
+                $data->id = $dataid;
+                $DB->update_record('user_info_data', $data);
+            } else {
+                $DB->insert_record('user_info_data', $data);
+            }//if_insert_update
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
     }//edit_save_data
 
     /**
@@ -143,7 +149,10 @@ class profile_field_municipality extends profile_field_base {
     private static function GetReference_MyMunicipality($user_id,$field_id) {
         /* Variables    */
         global $DB;
-        $ref_municipality = 0;
+        $ref_municipality   = 0;
+        $params             = null;
+        $sql                = null;
+        $rdo                = null;
 
         try {
             /* Search Criteria  */
@@ -186,7 +195,10 @@ class profile_field_municipality extends profile_field_base {
     private static function GetName_MyMunicipality($user_id,$field_id) {
         /* Variables    */
         global $DB;
-        $str_municipality = null;
+        $str_municipality   = null;
+        $params             = null;
+        $sql                = null;
+        $rdo                = null;
 
         try {
             /* Search Criteria  */
@@ -230,6 +242,7 @@ class profile_field_municipality extends profile_field_base {
         /* Variables    */
         global $DB;
         $county_lst     = array();
+        $rdo            = null;
 
         try {
             /* Counties List    */
@@ -262,7 +275,8 @@ class profile_field_municipality extends profile_field_base {
     private static function GetMunicipalities() {
         /* Variables    */
         global $DB;
-        $municipality_lst = array();
+        $municipality_lst   = array();
+        $rdo                = null;
 
         try {
             /* Municipality List    */
@@ -275,7 +289,6 @@ class profile_field_municipality extends profile_field_base {
                     $municipality_lst[$municipality->idcounty . '_' . $municipality->idmuni] = $municipality->municipality;
                 }//for_rdo
             }//if_rdo
-
 
             return $municipality_lst;
         }catch (Exception $ex) {

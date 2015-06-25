@@ -68,6 +68,10 @@ class Activity_ModeCron {
         global $DB;
         $campaigns_cron = array();
         $to_sent        = time();
+        $params         = null;
+        $sql            = null;
+        $rdo            = null;
+        $info           = null;
 
         try {
             /* Search Criteria  */
@@ -145,7 +149,11 @@ class Activity_ModeCron {
     private static function GetDeliveriesCampaign_ToCron($campaign_id,$deliveries_lst,$course_id,$to_sent) {
         /* Variables    */
         global $DB;
-        $deliveries_cron = array();
+        $deliveries_cron    = array();
+        $params             = null;
+        $sql                = null;
+        $rdo                = null;
+        $info               = null;
 
         try {
             /* Search Criteria  */
@@ -209,7 +217,10 @@ class Activity_ModeCron {
     private static function GetActivitiesDelivery_ToCron($campaign_id,$delivery_id) {
         /* Variables    */
         global $DB;
-        $activities_cron = array();
+        $activities_cron    = array();
+        $params             = null;
+        $rdo                = null;
+        $info               = null;
 
         try {
             /* Search Criteria  */
@@ -251,8 +262,12 @@ class Activity_ModeCron {
     private static function GetUsersDelivery_ToCron($campaign_id,$delivery_info,$course_id,$to_sent) {
         /* Variables    */
         global $DB,$CFG;
-        $users_cron = array();
-        $act_completed = null;
+        $users_cron     = array();
+        $act_completed  = null;
+        $params         = null;
+        $sql            = null;
+        $rdo            = null;
+        $info           = null;
 
         try {
             /* Search Criteria      */
@@ -267,22 +282,23 @@ class Activity_ModeCron {
             $sql = " SELECT			mi_d.id,
                                     mi_d.userid   as 'user',
                                     GROUP_CONCAT(DISTINCT u_cc.moduleinstance ORDER BY u_cc.moduleinstance SEPARATOR ',') as 	'activities_completed',
-                                    uep.token     as 'express'
-                     FROM			mdl_microlearning_deliveries		mi_d
-                        JOIN		mdl_user_express					uep		ON		uep.userid			= mi_d.userid
-                        JOIN		mdl_user							u		ON		u.id				= uep.userid
-                                                                                AND		u.deleted			= 0
-                        JOIN		mdl_user_enrolments					ue		ON		ue.userid			= u.id
-                        JOIN		mdl_enrol							e		ON		e.id				= ue.enrolid
-                                                                                AND		e.status			= 0
-                                                                                AND		e.courseid			= :course
+                                    uep.token     as 'express',
+                                    mi_d.message
+                     FROM			{microlearning_deliveries}		mi_d
+                        JOIN		{user_express}					uep		ON		uep.userid			= mi_d.userid
+                        JOIN		{user}							u		ON		u.id				= uep.userid
+                                                                            AND		u.deleted			= 0
+                        JOIN		{user_enrolments}				ue		ON		ue.userid			= u.id
+                        JOIN		{enrol}							e		ON		e.id				= ue.enrolid
+                                                                            AND		e.status			= 0
+                                                                            AND		e.courseid			= :course
                         LEFT JOIN	(
                                         SELECT		ccc.userid,
                                                     cc.moduleinstance
-                                        FROM		mdl_course_completion_crit_compl	ccc
-                                            JOIN	mdl_course_completion_criteria		cc		ON 	cc.id 				= ccc.criteriaid
-                                                                                                AND	cc.course 			= ccc.course
-                                                                                                AND	cc.moduleinstance 	IN ($delivery_info->activities)
+                                        FROM		{course_completion_crit_compl}	ccc
+                                            JOIN	{course_completion_criteria}	cc		ON 	cc.id 				= ccc.criteriaid
+                                                                                            AND	cc.course 			= ccc.course
+                                                                                            AND	cc.moduleinstance 	IN ($delivery_info->activities)
 
                                         WHERE		ccc.course = :ccc_course
                                         GROUP BY 	ccc.userid
@@ -307,6 +323,7 @@ class Activity_ModeCron {
                     $info->user         = $instance->user;
                     $info->express      = $CFG->wwwroot . '/local/express_login/loginExpress.php/' . $instance->express . '/' . $delivery_info->modeactivity;
                     $info->toSend       = true;
+                    $info->message      = $instance->message;
 
                     /* AFTER COMPLETION */
                     if ($delivery_info->aftercompletion) {
@@ -373,7 +390,14 @@ class Activity_ModeCron {
                     $users_lst = $delivery->users;
                     foreach ($users_lst as $user_info) {
                         /* Info to send */
-                        $body           = $delivery->body;
+                        /* Add the extra message    */
+                        if ($user_info->message) {
+                            $body  = $user_info->message . '</br></br>';
+                            $body .= $delivery->body;
+                        }else {
+                            $body  = $delivery->body;
+                        }//if_message
+
 
                         /* AFTER NO COMPLETED   */
                         if (($delivery->afternotcompletion) && (!$user_info->toSend)) {
@@ -442,7 +466,9 @@ class Activity_ModeCron {
         /* Variables    */
         global $DB;
         /* Users to update their status*/
-        $users_lst = null;
+        $users_lst      = null;
+        $activity_mode  = null;
+        $delivery_user  = null;
 
         $transaction = $DB->start_delegated_transaction();
         try {
@@ -462,6 +488,7 @@ class Activity_ModeCron {
                 $delivery_user->microid         = $activity->microid;
                 $delivery_user->micromodeid     = $activity->micromodeid;
                 $delivery_user->sent            = 1;
+                $delivery_user->message         = null;
                 $delivery_user->timesent        = $activity->timesent;
                 $delivery_user->timemodified    = time();
                 /* Finally, update the delivery status of each user  */

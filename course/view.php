@@ -74,7 +74,7 @@
      */
     if (strpos($return,'home_page.php')) {
         $return = '';
-    }else if (($course->format == 'netcourse') || ($course->format == 'classroom') || ($course->format == 'whitepaper')) {
+    }else if (($course->format == 'netcourse') || ($course->format == 'classroom') || ($course->format == 'whitepaper') || ($course->format == 'elearning_frikomport') || ($course->format == 'classroom_frikomport') || ($course->format == 'single_frikomport')) {
         $return = '';
     }//if_return
 

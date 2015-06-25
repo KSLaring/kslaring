@@ -23,38 +23,61 @@ class first_access_form extends moodleform {
         $countries      = null;
         $muniProfile    = null;
         $newfield       = null;
+        $infoUser       = null;
 
         /* Form         */
         $form   = $this->_form;
 
         $userId = $this->_customdata;
+        $infoUser = get_complete_user_data('id',$userId);
 
         /* Generic Header   */
         $form->addElement('header', 'generic', get_string('general'));
         $form->setExpanded('generic',true);
+
         /* First Name       */
         $form->addElement('text','firstname',get_string('firstname'),'maxlength="100" size="30"');
         $form->addRule('firstname','required','required', null, 'client');
         $form->setType('firstname',PARAM_TEXT);
+        if ($infoUser->firstname) {
+            $form->setDefault('firstname',$infoUser->firstname);
+        }//first_name
+
         /* Surname          */
         $form->addElement('text','lastname',get_string('lastname'),'maxlength="100" size="30"');
         $form->addRule('lastname','required','required',null,'client');
         $form->setType('lastname',PARAM_TEXT);
+        if ($infoUser->lastname) {
+            $form->setDefault('lastname',$infoUser->lastname);
+        }//surname
+
         /* Email Address    */
         $form->addElement('text','email',get_string('email'),'maxlength="100" size="30"');
         $form->addRule('email','required','required',null,'client');
         $form->setType('email',PARAM_TEXT);
+        if ($infoUser->email) {
+            $form->setDefault('email',$infoUser->email);
+        }//email
+
         /* City             */
         $form->addElement('text','city',get_string('city'),'maxlength="100" size="30"');
         $form->addRule('city','required','required',null,'client');
         $form->setType('city',PARAM_TEXT);
+        if ($infoUser->city) {
+            $form->setDefault('city',$infoUser->city);
+        }//city
+
         /* Country          */
         $countries = get_string_manager()->get_list_of_countries();
         $countries = array('' => get_string('selectacountry') . '...') + $countries;
         $form->addElement('select','country',get_string('selectacountry'),$countries);
-        if (!empty($CFG->country)) {
-            $form->setDefault('country', $CFG->country);
-        }
+        if ($infoUser->country) {
+            $form->setDefault('country', $infoUser->country);
+        }else {
+            if (!empty($CFG->country)) {
+                $form->setDefault('country', $CFG->country);
+            }
+        }//country
 
         /* County / Kommune - Header    */
         $form->addElement('header', 'muni', get_string('header_muni', 'local_first_access'));

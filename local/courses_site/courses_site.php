@@ -469,6 +469,12 @@ class courses_site  {
      *
      * Description
      * Get info to display.
+     *
+     * @updateDate          21/04/2015
+     * @author              eFaktor     (fbv)
+     *
+     * Description
+     * Add the frikomport formats
      */
     public static function courses_site_GetInfoBlock($course_site) {
         /* Variables    */
@@ -489,11 +495,14 @@ class courses_site  {
 
             switch ($info_display->type) {
                 case 'netcourse':
+                case 'elearning_frikomport':
                 case 'classroom':
+                case 'classroom_frikomport':
                     $info_display->prerequisities = $format_options['prerequisities'];
 
                     break;
                 case 'whitepaper':
+                case 'single_frikomport':
                     $info_display->author = $format_options['author'];
 
                     break;

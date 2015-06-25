@@ -38,7 +38,11 @@ class Micro_Learning {
     public static function Get_MicrolearningCampaigns($course_id,$sort,$limit_from,$limit_num) {
         /* Variables    */
         global $DB;
-        $campaign_lst = null;
+        $campaign_lst   = null;
+        $params         = null;
+        $sql            = null;
+        $rdo            = null;
+        $info           = null;
 
         try {
             /* Search Criteria  */
@@ -110,6 +114,7 @@ class Micro_Learning {
     public static function Get_NameCampaign($campaign_id) {
         /* Variables    */
         global $DB;
+        $rdo = null;
 
         try {
             /* Execute  */
@@ -141,7 +146,10 @@ class Micro_Learning {
     public static function Get_DetailCampaign($micro_id,$course_id) {
         /* Variables    */
         global $DB;
-        $campaign_info = null;
+        $campaign_info  = null;
+        $params         = null;
+        $sql            = null;
+        $rdo            = null;
 
         try {
             /* Subject, Message, Activities Included, Time Created   */
@@ -232,6 +240,9 @@ class Micro_Learning {
         /* Variables    */
         global $DB;
         $users_campaign = null;
+        $params         = null;
+        $sql            = null;
+        $rdo            = null;
 
         try {
             /* Search Criteria  */
@@ -298,6 +309,7 @@ class Micro_Learning {
     public static function GetStatus_Campaign($campaign_id) {
         /* Variables    */
         global $DB;
+        $rdo    = null;
 
         try {
             $rdo = $DB->get_record('microlearning',array('id' => $campaign_id),'activate');
@@ -471,6 +483,9 @@ class Micro_Learning {
     public static function ChangeStatus_Campaign($campaign,$course) {
         /* Variables    */
         global $DB;
+        $params = null;
+        $sql    = null;
+        $rdo    = null;
 
         try {
             /* Search Criteria  */
@@ -845,6 +860,9 @@ class Micro_Learning {
     private static function GetCriterias_ToComplete($course_id) {
         /* Variables    */
         global $DB;
+        $params = null;
+        $sql    = null;
+        $sql    = null;
 
         try {
             /* Search Criteria  */
@@ -884,7 +902,8 @@ class Micro_Learning {
     private static function GetUsersCampaign_ToDuplicate($campaign_id) {
         /* Variables    */
         global $DB;
-        $users_lst = array();
+        $users_lst  = array();
+        $rdo        = null;
 
         try {
             /* Execute  */

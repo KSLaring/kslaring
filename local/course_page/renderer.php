@@ -167,9 +167,9 @@ class local_course_page_renderer extends plugin_renderer_base {
             if ($url_video) {
                 $media_renderer = $this->page->get_renderer('core', 'media');
                 $embed_options = array(
-                                       core_media::OPTION_TRUSTED => true,
-                                       core_media::OPTION_BLOCK => true,
-                                      );
+                    core_media::OPTION_TRUSTED => true,
+                    core_media::OPTION_BLOCK => true,
+                );
                 // Media (audio/video) file.
                 $code = $media_renderer->embed_url($url_video, '', 0, 0, $embed_options);
                 $out .= $code;
@@ -233,6 +233,12 @@ class local_course_page_renderer extends plugin_renderer_base {
      *
      * Description
      * Add Prerequisites Block
+     *
+     * @updateDate      21/04/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Add the frikomport formats
      */
     protected function addExtra_PrerequisitesBlock($course,$format_options,&$manager) {
         /* Variables */
@@ -254,6 +260,8 @@ class local_course_page_renderer extends plugin_renderer_base {
             switch ($course->format) {
                 case 'netcourse':
                 case 'classroom':
+                case 'elearning_frikomport':
+                case 'classroom_frikomport':
                     foreach ($format_options as $option) {
                         if ($option->name == 'prerequisities') {
                             if ($option->value) {
@@ -276,6 +284,7 @@ class local_course_page_renderer extends plugin_renderer_base {
 
                     break;
                 case 'whitepaper':
+                case 'single_frikomport':
                     foreach ($format_options as $option) {
                         if ($option->name == 'author') {
                             if ($option->value) {
@@ -315,15 +324,41 @@ class local_course_page_renderer extends plugin_renderer_base {
      *
      * Description
      * Add Duration Block
+     *
+     * @updateDate      21/04/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Add the frikomport formats
+     *
+     * @updateDate      11/05/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Course Location / Course Sectors
+     *
+     * @updateDate      17/06/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Course Location -- Classroom format
      */
     protected function addExtra_DurationBlock($course_format,$format_options) {
         /* Variables */
         $out = '';
-        $str_format = 'format_' . $course_format;
+        $strLocationName    = null;
+        $sectorsName        = null;
+        $str_format         = 'format_' . $course_format;
+        $outLocation        = null;
+        $outSector          = null;
+        $outTime            = null;
+        $outLength          = null;
+        $outEffort          = null;
 
         $out .= html_writer::start_tag('div',array('class' => 'extra chp-block'));
             switch ($course_format) {
                 case 'netcourse':
+                case 'elearning_frikomport':
                     foreach ($format_options as $option) {
                         if ($option->name == 'length') {
                             if ($option->value) {
@@ -342,29 +377,47 @@ class local_course_page_renderer extends plugin_renderer_base {
 
                     break;
                 case 'classroom':
+                case 'classroom_frikomport':
                     foreach ($format_options as $option) {
-                        if ($option->name == 'location') {
+                        if ($option->name == 'course_location') {
                             if ($option->value) {
-                                $out .= '<h5 class="title_home chp-title">' . get_string('home_location',$str_format) . '</h5>';
-                                $out .= '<div class="extra_home chp-content">' . $option->value . '</div>';
+                                $strLocationName = course_page::Get_LocationName($option->value);
+                                $outLocation  = '<h5 class="title_home chp-title">' . get_string('home_title_location',$str_format) . '</h5>';
+                                $outLocation .= '<div class="extra_home chp-content">' . $strLocationName . '</div>';
                             }//if_value
-                        }//if_location
+                        }//if_course_location
+
+                        if ($option->name == 'course_sector') {
+                            if ($option->value) {
+                                $sectorsName = course_page::Get_SectorsName($option->value);
+                                $outSector   = '<h5 class="title_home chp-title">' . get_string('home_title_sector',$str_format) . '</h5>';
+                                $outSector  .= '<div class="extra_home chp-content">' . $sectorsName . '</div>';
+                            }//if_value
+                        }//if_course_sector
+
+                        if ($option->name == 'time') {
+                            if ($option->value) {
+                                $outTime  = '<h5 class="title_home chp-title">' . get_string('home_time_from_to',$str_format) . '</h5>';
+                                $outTime .=  '<div class="extra_home chp-content">' . str_replace(',','</br>',$option->value) . '</div>';
+                            }//if_value
+                        }//if_time
 
                         if ($option->name == 'length') {
                             if ($option->value) {
-                                $out .= '<h5 class="title_home chp-title">' . get_string('home_length',$str_format) . '</h5>';
-                                $out .=  '<div class="extra_home chp-content">' . $option->value . '</div>';
+                                $outLength  = '<h5 class="title_home chp-title">' . get_string('home_length',$str_format) . '</h5>';
+                                $outLength .=  '<div class="extra_home chp-content">' . $option->value . '</div>';
                             }//if_value
                         }//if_length
 
                         if ($option->name == 'effort') {
                             if ($option->value) {
-                                $out .= '<h5 class="title_home chp-title">' . get_string('home_effort',$str_format) . '</h5>';
-                                $out .= '<div class="extra_home chp-content">' . $option->value . '</div>';
+                                $outEffort  = '<h5 class="title_home chp-title">' . get_string('home_effort',$str_format) . '</h5>';
+                                $outEffort .= '<div class="extra_home chp-content">' . $option->value . '</div>';
                             }//if_value
                         }//if_effort
                     }//for_format_options
 
+                    $out .= $outLocation . $outSector . $outTime .$outLength . $outEffort;
                     break;
                 default:
                     break;
@@ -384,6 +437,12 @@ class local_course_page_renderer extends plugin_renderer_base {
      *
      * Description
      * Add Course Type Block
+     *
+     * @updateDate      21/04/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Add the frikomport formats
      */
     protected function addExtra_TypeCourseBlock($course_format) {
         /* Variables    */
@@ -404,7 +463,16 @@ class local_course_page_renderer extends plugin_renderer_base {
                     $out .= get_string('net_course','local_course_page');
 
                     break;
+                case 'elearning_frikomport';
+                    $url_img = $OUTPUT->pix_url('i/nettkurs');
+                    $alt        = get_string('elearning','local_course_page');
+
+                    $out .= html_writer::empty_tag('img', array('src' => $url_img, 'alt' => $alt, 'class' => 'icon'));
+                    $out .= get_string('elearning','local_course_page');
+
+                    break;
                 case 'classroom':
+                case 'classroom_frikomport':
                     $url_img = $OUTPUT->pix_url('i/classroom');
                     $alt        = get_string('class_course','local_course_page');
 
@@ -415,6 +483,13 @@ class local_course_page_renderer extends plugin_renderer_base {
                 case 'whitepaper':
                     $url_img = $OUTPUT->pix_url('i/whitepaper');
                     $alt        = get_string('whitepaper','local_course_page');
+
+                    $out .= html_writer::empty_tag('img', array('src' => $url_img, 'alt' => $alt, 'class' => 'icon'));
+
+                    break;
+                case 'single_frikomport':
+                    $url_img = $OUTPUT->pix_url('i/whitepaper');
+                    $alt        = get_string('single','local_course_page');
 
                     $out .= html_writer::empty_tag('img', array('src' => $url_img, 'alt' => $alt, 'class' => 'icon'));
 
@@ -454,7 +529,7 @@ class local_course_page_renderer extends plugin_renderer_base {
 
                 $out .= '<h5 class="title_coordinator chp-title">' . get_string('home_coordinater','local_course_page') . '</h5>';
                 $out .= '<div class="user_profile chp-content clearfix">';
-                $out .= '<div class="user_picture">' . $OUTPUT->user_picture($user, array('size'=>150)) . '</div>';
+                    $out .= '<div class="user_picture">' . $OUTPUT->user_picture($user, array('size'=>150)) . '</div>';
                     $out .= '<div class="user"><a href="' . $url_user . '">' . fullname($user) . '</a>';
                     $out .= '<div class="extra_coordinator">' . $user->description . '</div>'  . '</div>';
                 $out .= '</div>';

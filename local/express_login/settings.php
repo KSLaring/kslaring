@@ -54,4 +54,15 @@ if ($hassiteconfig) {
     //                                            get_string('set_encryption','local_express_login'),
     //                                            '',
     //                                            PARAM_TEXT,50));
+
+    /**
+     * CRON Settings
+     */
+    $settings->add(new admin_setting_heading('local_express_login_cron_settings', get_string('cron_settings', 'local_express_login'),''));
+    // Cron Activate/Deactivate.
+    $options = array('0' => get_string('cron_deactivate','local_express_login'),
+                     '1' => get_string('cron_activate','local_express_login'));
+    $settings->add(new admin_setting_configselect('local_express_login/express_cron_active', new lang_string('active'),  '', 1, $options));
+    //Time
+    $settings->add(new admin_setting_configtime('local_express_login/express_auto_time','express_auto_time_minute', new lang_string('executeat'), '', array('h' => 0, 'm' => 0)));
 }//if_hasconfig

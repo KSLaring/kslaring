@@ -30,7 +30,7 @@ if ($loggedin) {
                                                                      src="<?php echo
                                                                      $OUTPUT->pix_url('logo', 'theme'); ?>"></a>
         </div>
-
+        
         <div class="header-right">
             <?php
             /**
@@ -45,7 +45,6 @@ if ($loggedin) {
             }
             ?>
         </div>
-
     </div>
 </div>
 
@@ -74,3 +73,19 @@ if ($loggedin) {
         </nav>
     </header>
 </div>
+
+<!--Put in header-->
+<style type="text/css"></style>
+<script type="text/javascript" language="javascript">
+ed24ChatObj = {
+  'entrypoint':'Kommuneforlaget_Main'
+ ,'mainid':'A53'
+  ,'Online':'<img src="http://www.kommuneforlaget.no/filestore/dev/GFX/nettpratonline.png"></img>'
+  ,'Offline':'<img src="http://www.kommuneforlaget.no/filestore/dev/GFX/nettpratoffline.png"></img>'
+  ,'Busy':'<img src="https://login.edialog24.com/images/standard2-offline-no.jpg"></img>'
+  ,'webserverAddress':'https://login.edialog24.com'
+  ,'urlToOpen':'https://login.edialog24.com/chattemplate/Kommuneforlaget_Main/index.html'
+  ,'windowSettings':'width=600,height=800,status=0,scrollbars=0,titlebar=0'
+};
+</script>
+<script src="http://login.edialog24.com/ChatClient3/EntrypointScript4.js" type="text/javascript"></script>

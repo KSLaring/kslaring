@@ -68,6 +68,10 @@ class Calendar_ModeCron {
         global $DB;
         $campaigns_cron = array();
         $to_sent        = time();
+        $params         = null;
+        $sql            = null;
+        $rdo            = null;
+        $info           = null;
 
         try {
             /* Search Criteria  */
@@ -141,7 +145,11 @@ class Calendar_ModeCron {
     private static function GetDeliveriesCampaign_ToCron($campaign_id,$deliveries_lst,$course_id,$to_sent) {
         /* Variables    */
         global $DB;
-        $deliveries_cron = array();
+        $deliveries_cron    = array();
+        $params             = null;
+        $sql                = null;
+        $rdo                = null;
+        $info               = null;
 
         try {
             /* Search Criteria  */
@@ -202,7 +210,11 @@ class Calendar_ModeCron {
     private static function GetActivitiesDelivery_ToCron($campaign_id,$delivery_id) {
         /* Variables    */
         global $DB;
-        $activities_cron = array();
+        $activities_cron    = array();
+        $params             = null;
+        $sql                = null;
+        $rdo                = null;
+        $info               = null;
 
         try {
             /* Search Criteria  */
@@ -245,8 +257,12 @@ class Calendar_ModeCron {
     private static function GetUsersDelivery_ToCron($campaign_id,$delivery_info,$course_id,$to_sent) {
         /* Variables    */
         global $DB,$CFG;
-        $users_cron = array();
-        $act_completed = null;
+        $users_cron     = array();
+        $act_completed  = null;
+        $params         = null;
+        $sql            = null;
+        $rdo            = null;
+        $info           = null;
 
         try {
             /* Search Criteria  */
@@ -262,7 +278,8 @@ class Calendar_ModeCron {
                                     mi_d.userid  as 'user',
                                     GROUP_CONCAT(DISTINCT u_cc.moduleinstance ORDER BY u_cc.moduleinstance SEPARATOR ',') as 'activities_completed',
                                     uep.token    as 'express',
-                                    mi_d.timetosend
+                                    mi_d.timetosend,
+                                    mi_d.message
                      FROM			{microlearning_deliveries}		mi_d
                         JOIN		{user_express}					uep		ON		uep.userid			= mi_d.userid
                         JOIN		{user}							u		ON		u.id				= uep.userid
@@ -298,6 +315,7 @@ class Calendar_ModeCron {
                     $info->user         = $instance->user;
                     $info->express      = $CFG->wwwroot . '/local/express_login/loginExpress.php/' . $instance->express . '/' . $delivery_info->modecalendar;
                     $info->toSend       = true;
+                    $info->message      = $instance->message;
 
                     if ($delivery_info->activityafter) {
                         $act_completed = explode(',',$instance->activities_completed);
@@ -356,7 +374,15 @@ class Calendar_ModeCron {
                     $users_lst = $delivery->users;
                     foreach ($users_lst as $user_info) {
                         /* Info to send */
-                        $body           = $delivery->body;
+                        /* Add the extra message    */
+                        if ($user_info->message) {
+                            $body  = $user_info->message . '</br></br>';
+                            $body .= $delivery->body;
+                        }else {
+                            $body  = $delivery->body;
+                        }//if_message
+
+
 
                         /* ACTIVITY COMPLETED AFTER */
                         if (($delivery->activityafter) && (!$user_info->toSend)) {
@@ -426,7 +452,9 @@ class Calendar_ModeCron {
         /* Variables    */
         global $DB;
         /* Users to update their status*/
-        $users_lst = null;
+        $users_lst      = null;
+        $calendar_mode  = null;
+        $delivery_user  = null;
 
         $transaction = $DB->start_delegated_transaction();
         try {
@@ -446,6 +474,7 @@ class Calendar_ModeCron {
                 $delivery_user->microid         = $calendar->microid;
                 $delivery_user->micromodeid     = $calendar->micromodeid;
                 $delivery_user->sent            = 1;
+                $delivery_user->message         = null;
                 $delivery_user->timesent        = $calendar->timesent;
                 $delivery_user->timemodified    = time();
                 /* Finally, update the delivery status of each user  */
