@@ -64,5 +64,5 @@ if ($hassiteconfig) {
                      '1' => get_string('cron_activate','local_express_login'));
     $settings->add(new admin_setting_configselect('local_express_login/express_cron_active', new lang_string('active'),  '', 1, $options));
     //Time
-    $settings->add(new admin_setting_configtime('local_express_login/express_auto_time','express_auto_time_minute', new lang_string('executeat'), '', array('h' => 0, 'm' => 0)));
+    //$settings->add(new admin_setting_configtime('local_express_login/express_auto_time','express_auto_time_minute', new lang_string('executeat'), '', array('h' => 0, 'm' => 0)));
 }//if_hasconfig
