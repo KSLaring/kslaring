@@ -90,6 +90,18 @@ $string['cron_activate']            = 'Aktivert';
 $string['cron_deactivate']          = 'Deaktivert';
 
 $string['express_subject']        = '{$a}: Pin- og hurtiglogin-lenker generert';
-$string['express_body']           = '<p>Hei {$a->name},</p><p>Vi har nå automatisk generert en <strong>hurtiglogin</strong> for deg. Dette er en personlig URL du kan lagre som en Favoritt i nettleseren din. Din tilhørende pinkode er: <strong>{$a->express}</strong><p>Av sikkerhetsgrunner sender vi ikke ut hurtigloginlenken i en epost, men den er lagret i din brukerprofil.</p><p>Du kan hente hurtiginnloggingslenken fra brukerprofilen din under "Hurtiglogin".</p>';
+$string['express_body']           = '<p>Hei {$a->name},</p>
+<p>KS Læring (https://kurs.kommit.no) utvikles og forbedres kontinuerlig. Vi har nå forenklet innloggingen til KS Læring, slik at det ikke er nødvendig å bruke MinId hver gang du skal bruke KS Læring.</p>
+<p>Den forenklede innloggingen til KS Læring baserer seg på at du benytter en personlig snarvei (URL) som kan lagres som favoritt i nettleseren din, samt en pinkode som er automatisk generert til deg. Du kan selv bytte pinkoden i din brukerprofil.</p>
+ 
+<p>Din automatisk genererte pinkode er: <strong>{$a->express}</strong></p>
+ 
+<p>eLæring som viser hvordan du tar i bruk pinkode: https://kurs.kommit.no/mod/page/view.php?id=2478</p>
+<p>Du mottar denne eposten fordi du er registret som bruker på KS Læring. Dette er enten fordi du selv har opprettet en brukertilgang, eller fordi din kommune har inngått avtale om bruk.<br >
+Har du spørsmål om hvordan du bruker KS Læring, ta kontakt med vår brukerstøtte: kslaering@ks.no</p>
+
+<p>Med vennlig hilsen<br />
+Aleksander Øines<br />
+KS KommIT</p>';
 
 $string['micro_message']          = '<p>Siden du nå har byttet pin-kode (og dermed også hurtigloginlenken) sender vi deg om igjen alle mikrolærings-eposter du har fått tidligere hvor du IKKE har gjort aktivitene ennå.</p>';
