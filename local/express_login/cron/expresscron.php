@@ -30,29 +30,19 @@ class Express_Cron {
         $noExpress  = null;
         $pluginInfo = null;
         $dbLog      = null;
-
+        $minimum    = null;
+        $digits     = null;
         try {
             mtrace('Express Login Cron - Start');
             /* Plugin Info */
             $pluginInfo     = get_config('local_express_login');
 
-            /* Get Users without Express Login  */
-            mtrace('Express Login -- Get Users without Not Express Login');
-            $noExpress = self::GetUsers_NotExpress();
+            /* First the correct number of digits   */
+            $minimum    = array('4','6','8');
+            $digits     = $minimum[$pluginInfo->minimum_digits];
 
-            /* Auto Generate Express Login   */
-            if ($noExpress) {
-                mtrace('Express Login - Auto Generate Express Login - Start');
-                self::Auto_ExpressLogin($noExpress,$pluginInfo);
-                mtrace('Express Login Cron - Auto Generate Express Login Finish');
-                /* Send eMail */
-                mtrace('Express Login Cron - Send eMail - Start');
-                foreach ($noExpress as $user) {
-                    self::Send_ExpressLogin($user);
-                }//for_Each_user
-                mtrace('Express Login Cron - Send eMail - Finish');
-            }//if_noExpress
-            mtrace('Express Login Cron - Finish');
+            /* Generate Auto Express Login */
+            self::Auto_ExpressLogin($digits);
         }catch (Exception $ex) {
             /* Write Log    */
             mtrace('Express Login Cron Error - Look Log');
@@ -61,39 +51,46 @@ class Express_Cron {
             error_log($dbLog, 3, $CFG->dataroot . "/Express_Login_Cron.log");
 
             /* Any Error during the process - Clean Express Login Generated */
-            self::Clean_ExpressLogin($noExpress);
+            self::Clean_ExpressLogin();
 
             throw $ex;
-        }//try_Catch
+        }//try_catch
     }//cron
+
 
     /* ***************** */
     /* PRIVATE FUNCTIONS */
     /* ***************** */
 
     /**
-     * @return          array
+     * @param           $digits
      * @throws          Exception
      *
-     * @creationDate    15/06/2015
+     * @updateDate      08/07/2015
      * @author          eFaktor     (fbv)
      *
      * Description
-     * Get all users that have not generated his/her express login yet.
+     * Generate auto express login
      */
-    private static function GetUsers_NotExpress() {
+    private static function Auto_ExpressLogin($digits) {
         /* Variables    */
-        global $DB;
-        $noExpress  = array();
-        $info       = null;
+        global $DB,$CFG;
+        $sql            = null;
+        $rdo            = null;
+        $expressInfo    = null;
+        $expressId      = null;
+        $info           = null;
+        $pinCode        = null;
+        $dbLog          = null;
 
         try {
             /* SQL Instruction  */
             $sql = " SELECT			u.id,
-                                    u.firstname,
-                                    u.lastname,
+                                    concat(u.firstname,' ',u.lastname) as 'name',
                                     u.email,
-                                    u.lang
+                                    u.mailformat,
+                                    u.lang,
+                                    '' as 'express'
                      FROM			{user}			u
                         LEFT JOIN	{user_express}	uex		ON uex.userid = u.id
                      WHERE			u.deleted = 0
@@ -102,80 +99,46 @@ class Express_Cron {
                         AND			u.username NOT LIKE '%wsdossier%'
                         AND			u.username NOT LIKE '%wsdoskom%'
                         AND			u.email IS NOT NULL
-                        AND			u.email <> '' ";
+                        AND			u.email <> ''
+                     LIMIT 0,2000 ";
 
-            /* Execute  */
             $rdo = $DB->get_records_sql($sql);
             if ($rdo) {
                 foreach ($rdo as $instance) {
-                    /* Info User    */
-                    $info = new stdClass();
-                    $info->id           = $instance->id;
-                    $info->name         = $instance->firstname . ' ' . $instance->lastname;
-                    $info->email        = $instance->email;
-                    $info->mailformat   = 1;
-                    $info->lang         = $instance->lang;
-                    $info->express      = null;
+                    /* Pin Code */
+                    $pinCode            = self::Generate_PinCode($digits);
+                    $instance->express  = $pinCode;
 
-                    /* Add User */
-                    $noExpress[$instance->id] = $info;
+                    /* Express Info */
+                    $expressInfo = new stdClass();
+                    $expressInfo->userid       = $instance->id;
+                    $expressInfo->express      = self::GenerateHash($pinCode);
+                    $expressInfo->remind       = self::generateSecurityPhrase($instance->id);
+                    $expressInfo->token        = self::Generate_ExpressToken($expressInfo->remind);
+                    $expressInfo->attempt      = 0;
+                    $expressInfo->auto         = 1;
+                    $expressInfo->sent         = 0;
+                    $expressInfo->timecreated  = time();
+
+                    /* Save Express Login   */
+                    $expressId = $DB->insert_record('user_express',$expressInfo);
+                    /* Send eMail   */
+                    self::Send_ExpressLogin($instance,$expressId);
                 }//for_user
-            }//if_Rdo
-
-            return $noExpress;
+            }//if_rdo
         }catch (Exception $ex) {
-            throw $ex;
-        }//try_catch
-    }//GetUsers_NotExpress
-
-    /**
-     * @param           $noExpress
-     * @param           $pluginInfo
-     * @throws          Exception
-     *
-     * @creationDate    15/06/2015
-     * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Generate automatically the express login
-     */
-    private static function Auto_ExpressLogin(&$noExpress,$pluginInfo) {
-        /* Variables    */
-        global      $DB;
-        $minimum    = null;
-        $digits     = null;
-        $pinCode    = null;
-        $created    = null;
-
-        /* Start Transaction    */
-        $transaction = $DB->start_delegated_transaction();
-        try {
-            /* Generate Express Login for each user */
-            foreach ($noExpress as $user) {
-                /* First Generate Pin Code  */
-                $user->express = self::Generate_PinCode($pluginInfo);
-
-                /* Auto generate Express Login   */
-                $created = self::Generate_ExpressLogin($user->id,$user->express,$DB);
-
-                /* If it has not been created, the user will be removed from the list   */
-                if (!$created) {
-                    unset($noExpress[$user->id]);
-                }//if_not_Created
-            }//for_each_user
-
-            /* Commit   */
-            $transaction->allow_commit();
-        }catch (Exception $ex) {
-            /* Rollback */
-            $transaction->rollback($ex);
+            /* Write Log */
+            $dbLog  = userdate(time(),'%d.%m.%Y', 99, false). ' Express Login Cron Error - Auto Express . ' . "\n";
+            $dbLog .= 'Error: ' . $ex->getMessage() . "\n\n\n";
+            error_log($dbLog, 3, $CFG->dataroot . "/Express_Login_Cron.log");
 
             throw $ex;
         }//try_catch
     }//Auto_ExpressLogin
 
+
     /**
-     * @param           $pluginInfo
+     * @param           $digits
      * @return          string
      * @throws          Exception
      *
@@ -185,17 +148,11 @@ class Express_Cron {
      * Description
      * Generate an internal pin code for the express login
      */
-    private static function Generate_PinCode($pluginInfo) {
+    private static function Generate_PinCode($digits) {
         /* Variables    */
-        $minimum    = null;
-        $digits     = null;
         $pinCode    = null;
 
         try {
-            /* First the correct number of digits   */
-            $minimum    = array('4','6','8');
-            $digits     = $minimum[$pluginInfo->minimum_digits];
-
             $pinCode = str_shuffle(mt_rand());
             $pinCode = substr ($pinCode, 0, $digits);
 
@@ -205,45 +162,6 @@ class Express_Cron {
         }//try_catch
     }//Generate_PinCode
 
-    /**
-     * @param           $userId
-     * @param           $express
-     * @param           $DB
-     * @return          bool
-     * @throws          Exception
-     *
-     * @creationDate    15/06/2015
-     * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Create an express login for the user
-     */
-    private static function Generate_ExpressLogin($userId,$express,$DB) {
-        /* Variables    */
-        $expressInfo = null;
-
-        try {
-            /* Express Info */
-            $expressInfo = new stdClass();
-            $expressInfo->userid       = $userId;
-            $expressInfo->express      = self::GenerateHash($express);
-            $expressInfo->remind       = self::generateSecurityPhrase($userId);
-            $expressInfo->token        = self::Generate_ExpressToken($expressInfo->remind);
-            $expressInfo->attempt      = 0;
-            $expressInfo->timecreated  = time();
-
-            /* Save Express Login   */
-            /* Check if the user has created his/her own Express Login  during the process */
-            if (!$DB->get_record('user_express',array('userid' => $userId))) {
-                $DB->insert_record('user_express',$expressInfo);
-                return true;
-            }else {
-                return false;
-            }//if_else_exist
-        }catch (Exception $ex) {
-            throw $ex;
-        }//try_catch
-    }//Generate_ExpressLogin
 
     /**
      * @param           $value
@@ -426,6 +344,7 @@ class Express_Cron {
 
     /**
      * @param           $user
+     * @param           $expressId
      * @throws          Exception
      *
      * @creationDate    15/06/2015
@@ -434,24 +353,91 @@ class Express_Cron {
      * Description
      * Send by email the express login to the user
      */
-    private static function Send_ExpressLogin($user) {
+    private static function Send_ExpressLogin($user,$expressId) {
         /* Variables    */
-        global $SITE;
-        $subject    = null;
-        $body       = null;
-        try {
-            $subject        = (string)new lang_string('express_subject','local_express_login',$SITE->shortname,$user->lang);
-            $body           = (string)new lang_string('express_body','local_express_login',$user,$user->lang) . "</br></br>";
+        global $DB,$CFG,$SITE;
+        $subject        = null;
+        $body           = null;
+        $expressInfo    = null;
+        $dbLog          = null;
 
-            email_to_user($user, $SITE->shortname, $subject, $body,$body);
+        try {
+
+            $subject  = (string)new lang_string('express_subject','local_express_login',$SITE->shortname,$user->lang);
+            $body     = (string)new lang_string('express_body','local_express_login',$user,$user->lang) . "</br></br>";
+
+            /* If eMail */
+            if (email_to_user($user, $SITE->shortname, $subject, $body,$body)) {
+                /* Update   */
+                $expressInfo = new stdClass();
+                $expressInfo->id    = $expressId;
+                $expressInfo->sent  = 1;
+
+                $DB->update_record('user_express',$expressInfo);
+
+                /* Update Deliveries    */
+                self::UpdateDeliveries_MicroLearning($user->id);
+            }//if_email
+
         }catch (Exception $ex) {
-            echo $ex->getMessage();
+            /* Write Log */
+            $dbLog  = userdate(time(),'%d.%m.%Y', 99, false). ' Express Login Cron Error - Sent Notification . ' . "\n";
+            $dbLog .= 'Error: ' . $ex->getMessage() . "\n\n\n";
+            error_log($dbLog, 3, $CFG->dataroot . "/Express_Login_Cron.log");
+
             throw $ex;
         }//try_Catch
     }//Send_ExpressLogin
 
     /**
-     * @param           $noExpress
+     * @param           $userId
+     * @throws          Exception
+     *
+     * @creationDate    16/06/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Update all the deliveries set with the old express login to the status not sent.
+     */
+    private static function UpdateDeliveries_MicroLearning($userId) {
+        /* Variables    */
+        global $DB;
+        $dbMan          = null;
+        $time           = null;
+
+        try {
+            /* First, it checks if the table exists */
+            $dbMan = $DB->get_manager();
+            if ($dbMan->table_exists('microlearning_deliveries')) {
+                /* Search Criteria  */
+                $params = array();
+                $params['userid']   = $userId;
+                $params['sent']     = 1;
+
+                /* Execute  */
+                $rdo = $DB->get_records('microlearning_deliveries',$params,'id','id,sent,message,timemodified');
+                if ($rdo) {
+                    /* Time modified    */
+                    $time = time();
+
+                    /* Update deliveries    */
+                    foreach ($rdo as $instance) {
+                        /* Update Delivery to not sent  */
+                        $instance->sent = 0;
+                        $instance->timemodified = $time;
+                        $instance->message = get_string('micro_message','local_express_login');
+
+                        /* Execute  */
+                        $DB->update_record('microlearning_deliveries',$instance);
+                    }//for_each_delivery
+                }//if_Rdo
+            }//if_table_exists
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//UpdateDeliveries_MicroLearning
+
+    /**
      * @throws          Exception
      *
      * @creationDate    15/06/2015
@@ -460,17 +446,13 @@ class Express_Cron {
      * Description
      * Clean the express login generated automatically, if there is any error during the process.
      */
-    private static function Clean_ExpressLogin($noExpress) {
+    private static function Clean_ExpressLogin() {
         /* Variables    */
         global $DB;
 
         try {
-            if ($noExpress) {
-                foreach ($noExpress as $userId=>$user) {
-                    /* Execute  */
-                    $DB->delete_records('user_express',array('userid' => $userId));
-                }//for_Each_user
-            }//if_noExpress
+            /* Execute  */
+            $DB->delete_records('user_express',array('auto' => 1));
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
