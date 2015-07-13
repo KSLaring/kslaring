@@ -793,13 +793,19 @@ class course_page  {
             $editor->homesummaryformat  = FORMAT_HTML;
 
             /* Prepare the editor   */
-            if ($COURSE->id) {
+            // When changes are made during a new course setup the $COURSE global
+            // is set to the site, therefore we need to check if courseid is set
+            // and if it is greater than 1.
+            if (isset($COURSE->id) && $COURSE->id > 1) {
                 $format_options = course_get_format($COURSE->id)->get_format_options();
                 if (array_key_exists('homesummary',$format_options)) {
                     $editor->homesummary = $format_options['homesummary'];
                 }//if_array_exists
                 $editor = file_prepare_standard_editor($editor, 'homesummary', $edit_options,$context, 'course', 'homesummary',0);
             }else {
+                // If changes are made during a new course setup the context needs
+                // to be removed from the $edit_options.
+                $edit_options['context'] = null;
                 $editor = file_prepare_standard_editor($editor, 'homesummary', $edit_options,null, 'course', 'homesummary',0);
             }//if_course
 
