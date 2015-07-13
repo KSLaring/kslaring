@@ -20,7 +20,7 @@ defined('MOODLE_INTERNAL') || die;
 
 require_once($CFG->dirroot . '/lib/formslib.php');
 
-use \stdClass;
+//use \stdClass;
 
 /**
  * The form for the local_friadmin course_list selection area
