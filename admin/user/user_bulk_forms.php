@@ -34,6 +34,9 @@ class user_bulk_action_form extends moodleform {
         if (has_capability('moodle/cohort:assign', $syscontext)) {
             $actions[8] = get_string('bulkadd', 'core_cohort');
         }
+		if (has_capability('moodle/site:readallmessages', $syscontext) && !empty($CFG->messaging)) {
+		$actions[9] = 'Bulk Send Emails';
+		}
         $objs = array();
         $objs[] =& $mform->createElement('select', 'action', null, $actions);
         $objs[] =& $mform->createElement('submit', 'doaction', get_string('go'));
