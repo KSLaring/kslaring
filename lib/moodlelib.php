@@ -2485,6 +2485,11 @@ function require_login($courseorid = null, $autologinguest = true, $cm = null, $
         $preventredirect = true;
     }
 
+    if (AJAX_SCRIPT) {
+        // We cannot redirect for AJAX scripts either.
+        $preventredirect = true;
+    }
+
     // Setup global $COURSE, themes, language and locale.
     if (!empty($courseorid)) {
         if (is_object($courseorid)) {
@@ -2524,11 +2529,15 @@ function require_login($courseorid = null, $autologinguest = true, $cm = null, $
     }
 
     // Redirect to the login page if session has expired, only with dbsessions enabled (MDL-35029) to maintain current behaviour.
-    if ((!isloggedin() or isguestuser()) && !empty($SESSION->has_timed_out) && !$preventredirect && !empty($CFG->dbsessions)) {
-        if ($setwantsurltome) {
-            $SESSION->wantsurl = qualified_me();
+    if ((!isloggedin() or isguestuser()) && !empty($SESSION->has_timed_out) && !empty($CFG->dbsessions)) {
+        if ($preventredirect) {
+            throw new require_login_session_timeout_exception();
+        } else {
+            if ($setwantsurltome) {
+                $SESSION->wantsurl = qualified_me();
+            }
+            redirect(get_login_url());
         }
-        redirect(get_login_url());
     }
 
     // If the user is not even logged in yet then make sure they are.
@@ -2552,8 +2561,10 @@ function require_login($courseorid = null, $autologinguest = true, $cm = null, $
             if ($setwantsurltome) {
                 $SESSION->wantsurl = qualified_me();
             }
-            if (!empty($_SERVER['HTTP_REFERER'])) {
-                $SESSION->fromurl  = $_SERVER['HTTP_REFERER'];
+
+            $referer = get_local_referer(false);
+            if (!empty($referer)) {
+                $SESSION->fromurl = $referer;
             }
 
             // Give auth plugins an opportunity to authenticate or redirect to an external login page
@@ -3984,8 +3995,11 @@ function delete_user(stdClass $user) {
     // Force logout - may fail if file based sessions used, sorry.
     \core\session\manager::kill_user_sessions($user->id);
 
+    // Generate username from email address, or a fake email.
+    $delemail = !empty($user->email) ? $user->email : $user->username . '.' . $user->id . '@unknownemail.invalid';
+    $delname = clean_param($delemail . "." . time(), PARAM_USERNAME);
+
     // Workaround for bulk deletes of users with the same email address.
-    $delname = clean_param($user->email . "." . time(), PARAM_USERNAME);
     while ($DB->record_exists('user', array('username' => $delname))) { // No need to use mnethostid here.
         $delname++;
     }
