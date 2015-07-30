@@ -18,14 +18,13 @@
 /**
  * This page lists all the instances of certificate in a particular course
  *
- * @package    mod
- * @subpackage certificate
+ * @package    mod_certificate
  * @copyright  Mark Nelson <markn@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 require_once('../../config.php');
-require_once('lib.php');
+require_once('locallib.php');
 
 $id = required_param('id', PARAM_INT);           // Course Module ID
 
@@ -35,7 +34,7 @@ if (!$course = $DB->get_record('course', array('id'=> $id))) {
 }
 
 // Requires a login
-require_course_login($course);
+require_login($course);
 
 // Declare variables
 $currentsection = "";
@@ -56,7 +55,11 @@ $PAGE->set_title($strcertificates);
 $PAGE->set_heading($course->fullname);
 
 // Add the page view to the Moodle log
-add_to_log($course->id, 'certificate', 'view all', 'index.php?id='.$course->id, '');
+$event = \mod_certificate\event\course_module_instance_list_viewed::create(array(
+    'context' => context_course::instance($course->id)
+));
+$event->add_record_snapshot('course', $course);
+$event->trigger();
 
 // Get the certificates, if there are none display a notice
 if (!$certificates = get_all_instances_in_course('certificate', $course)) {
