@@ -28,15 +28,18 @@ $THEME->doctype = 'html5';
 $THEME->yuicssmodules = array();
 $THEME->name = 'bootstrap';
 $THEME->parents = array();
-$THEME->sheets = array('moodle', 'custom');
-
+if ('ltr' === get_string('thisdirection', 'langconfig')) {
+    $THEME->sheets = array('moodle');
+} else {
+    $THEME->sheets = array('moodle-rtl');
+}
+$THEME->enable_dock = true;
 $THEME->supportscssoptimisation = false;
 
 $THEME->editor_sheets = array('editor');
 
 $THEME->plugins_exclude_sheets = array(
     'block' => array(
-        'html',
         'search_forums'
     ),
     'tool' => array(

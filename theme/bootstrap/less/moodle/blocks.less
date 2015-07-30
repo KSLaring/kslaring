@@ -41,6 +41,7 @@
         }
     }
     .content {
+        word-wrap: break-word;
         padding: 4px 14px;
         hr {
             margin: 5px 0;
@@ -152,6 +153,15 @@
     }
     .list li:first-child {
         border-top-width: 1px; // undo the style provided by the block's styles.css
+    }
+}
+
+.block_myprofile {
+    .content {
+        .email {
+            overflow-wrap: break-word;
+            word-wrap: break-word;
+        }
     }
 }
 
