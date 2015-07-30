@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<XMLDB PATH="local/bulkemails/db" VERSION="20130424" COMMENT="XMLDB file for Moodle local/bulkemails"
+
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+    xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
+
+>
+
+  <TABLES>
+
+    <TABLE NAME="local_bulkemails" COMMENT="manage Bulk emails " NEXT="local_bulkemails_cron">
+
+      <FIELDS>
+
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" NEXT="email"/>
+
+        <FIELD NAME="email" TYPE="text" LENGTH="255" NOTNULL="true" SEQUENCE="false" PREVIOUS="id" NEXT="from"/>
+
+		<FIELD NAME="from" TYPE="text" LENGTH="255" NOTNULL="true" SEQUENCE="false" PREVIOUS="email" NEXT="to"/>
+
+		<FIELD NAME="to" TYPE="text" LENGTH="255" NOTNULL="true" SEQUENCE="false" PREVIOUS="from" NEXT="subject"/>
+
+		<FIELD NAME="subject" TYPE="text" LENGTH="255" NOTNULL="true" SEQUENCE="false" PREVIOUS="to" NEXT="message"/>
+
+		<FIELD NAME="message" TYPE="text" LENGTH="255" NOTNULL="true" SEQUENCE="false" PREVIOUS="subject" NEXT="timestart"/>
+
+		<FIELD NAME="timestart" TYPE="text" LENGTH="255" NOTNULL="false" SEQUENCE="false" PREVIOUS="message" NEXT="timeend"/>
+
+		<FIELD NAME="timeend" TYPE="text" LENGTH="255" NOTNULL="false" SEQUENCE="false" PREVIOUS="timestart" NEXT="created"/>
+
+		<FIELD NAME="created" TYPE="int" LENGTH="10"  NOTNULL="false" SEQUENCE="false" PREVIOUS="timeend" />
+
+      </FIELDS>
+
+      <KEYS>
+
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+
+      </KEYS>
+
+    </TABLE>
+
+    <TABLE NAME="local_bulkemails_cron" COMMENT="manage Bulk emails " PREVIOUS="local_bulkemails">
+
+       <FIELDS>
+
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true"  SEQUENCE="false" NEXT="timecreated"/>
+
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10"  NOTNULL="true" SEQUENCE="false" PREVIOUS="id" />
+
+      </FIELDS>
+
+      <KEYS>
+
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+
+      </KEYS>
+
+    </TABLE>
+
+    
+
+    <TABLE NAME="local_bulkemails_messages" COMMENT="manage Bulk emails messages " PREVIOUS="local_bulkemails_cron">
+
+       <FIELDS>
+
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true"  SEQUENCE="false" NEXT="subject"/>
+
+        <FIELD NAME="subject" TYPE="text" NOTNULL="false" SEQUENCE="false" PREVIOUS="id" NEXT="message" />
+
+        <FIELD NAME="message" TYPE="text" NOTNULL="false"  SEQUENCE="false" PREVIOUS="subject" NEXT="created" />
+
+        <FIELD NAME="created" TYPE="text" NOTNULL="false" SEQUENCE="false" PREVIOUS="message"  />
+
+      </FIELDS>
+
+      <KEYS>
+
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+
+      </KEYS>
+
+    </TABLE>
+
+    
+
+    <TABLE NAME="local_bulkmail_sent_queue" COMMENT="manage Bulkmails Mails Sent Queue " PREVIOUS="local_bulkemails_messages">
+
+       <FIELDS>
+
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" NEXT="from_userid"/>
+
+        <FIELD NAME="from_userid" TYPE="text" NOTNULL="false" SEQUENCE="false" PREVIOUS="id" NEXT="to_userid" />
+
+		<FIELD NAME="to_userid" TYPE="text" NOTNULL="false"  SEQUENCE="false" PREVIOUS="from_userid" NEXT="email" />
+
+        <FIELD NAME="email" TYPE="text" NOTNULL="false" SEQUENCE="false" PREVIOUS="to_userid" NEXT="messageid" />
+
+        <FIELD NAME="messageid" TYPE="text" NOTNULL="false" SEQUENCE="false" PREVIOUS="email" NEXT="status"  />
+
+        <FIELD NAME="status" TYPE="text" NOTNULL="false" SEQUENCE="false" PREVIOUS="messageid" NEXT="createdtime" />
+
+        <FIELD NAME="createdtime" TYPE="text" NOTNULL="false" SEQUENCE="false" PREVIOUS="status" NEXT="mail_cron_start_time" />
+
+        <FIELD NAME="mail_cron_start_time" NOTNULL="false" TYPE="text"  SEQUENCE="false" PREVIOUS="createdtime" NEXT="mail_cron_end_time"  />
+
+        <FIELD NAME="mail_cron_end_time" NOTNULL="false" TYPE="text"  SEQUENCE="false" PREVIOUS="mail_cron_start_time" NEXT="email_time_delay_next_mail" />
+
+        <FIELD NAME="email_time_delay_next_mail"  NOTNULL="false" TYPE="text"  SEQUENCE="false" PREVIOUS="mail_cron_end_time" NEXT="email_responce" />
+
+        <FIELD NAME="email_responce" TYPE="text"  NOTNULL="false" SEQUENCE="false" PREVIOUS="email_time_delay_next_mail"  />
+
+      </FIELDS>
+
+      <KEYS>
+
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+
+      </KEYS>
+
+    </TABLE>
+
+    
+
+  </TABLES>
+
+    
+
+</XMLDB>

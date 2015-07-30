@@ -1,0 +1,14 @@
+[21-Jul-2015 12:50:53 America/Chicago] PHP Fatal error:  Call to a member function get_records() on a non-object in /home/vlmsinfo/public_html/local/bulkemails/lib.php on line 9
+[21-Jul-2015 12:51:04 America/Chicago] PHP Fatal error:  Call to a member function get_records() on a non-object in /home/vlmsinfo/public_html/local/bulkemails/lib.php on line 9
+[21-Jul-2015 12:51:41 America/Chicago] PHP Fatal error:  Call to undefined function get_config() in /home/vlmsinfo/public_html/local/bulkemails/lib.php on line 7
+[21-Jul-2015 12:56:20 America/Chicago] PHP Fatal error:  Call to undefined function get_config() in /home/vlmsinfo/public_html/local/bulkemails/lib.php on line 7
+[21-Jul-2015 12:56:22 America/Chicago] PHP Fatal error:  Call to undefined function get_config() in /home/vlmsinfo/public_html/local/bulkemails/lib.php on line 7
+[21-Jul-2015 12:57:13 America/Chicago] PHP Notice:  Trying to get property of non-object in /home/vlmsinfo/public_html/local/bulkemails/lib.php on line 9
+[21-Jul-2015 12:57:15 America/Chicago] PHP Notice:  Trying to get property of non-object in /home/vlmsinfo/public_html/local/bulkemails/lib.php on line 9
+[21-Jul-2015 12:57:53 America/Chicago] PHP Notice:  Trying to get property of non-object in /home/vlmsinfo/public_html/local/bulkemails/lib.php on line 9
+[21-Jul-2015 12:58:06 America/Chicago] PHP Notice:  Trying to get property of non-object in /home/vlmsinfo/public_html/local/bulkemails/lib.php on line 9
+[21-Jul-2015 12:58:38 America/Chicago] PHP Fatal error:  Call to undefined function get_config() in /home/vlmsinfo/public_html/local/bulkemails/lib.php on line 7
+[21-Jul-2015 12:58:40 America/Chicago] PHP Fatal error:  Call to undefined function get_config() in /home/vlmsinfo/public_html/local/bulkemails/lib.php on line 7
+[27-Jul-2015 12:48:27 America/Chicago] PHP Fatal error:  Call to undefined function get_config() in /home/vlmsinfo/public_html/local/bulkemails/lib.php on line 5
+[27-Jul-2015 12:49:35 America/Chicago] PHP Fatal error:  Call to undefined function get_config() in /home/vlmsinfo/public_html/local/bulkemails/lib.php on line 5
+[27-Jul-2015 12:49:37 America/Chicago] PHP Fatal error:  Call to undefined function get_config() in /home/vlmsinfo/public_html/local/bulkemails/lib.php on line 5
