@@ -24,63 +24,48 @@
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-require_once(dirname(__FILE__).'/includes/pagesettings.php');
-
-echo $OUTPUT->doctype() ?>
-<html <?php echo $OUTPUT->htmlattributes(); ?>>
-<head>
-    <title><?php echo $OUTPUT->page_title(); ?></title>
-    <link rel="shortcut icon" href="<?php echo $OUTPUT->favicon(); ?>" />
-    <?php echo $OUTPUT->standard_head_html() ?>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <?php if (!empty($fontselect) && ($fontselect < 7)) {
-        // Google web fonts -->
-        require_once(dirname(__FILE__).'/includes/fonts.php');
-    }?>
-    <!-- iOS Homescreen Icons -->
-    <?php require_once(dirname(__FILE__).'/includes/iosicons.php'); ?>
-    <!-- Start Google Analytics -->
-    <?php if ($hasanalytics) { ?>
-        <?php require_once(dirname(__FILE__).'/includes/analytics.php'); ?>
-    <?php } ?>
-    <!-- End Google Analytics -->
-</head>
-
-<body <?php echo $OUTPUT->body_attributes($bodyclasses); ?>>
-
-<?php echo $OUTPUT->standard_top_of_body_html() ?>
+require_once(dirname(__FILE__) . $OUTPUT->get_child_relative_layout_path() . '/includes/header.php'); ?>
 
 <div id="page" class="container-fluid">
-    <?php require_once(dirname(__FILE__).'/includes/header.php'); ?>
-
+    <div id="page-navbar" class="clearfix row-fluid">
+        <div
+            class="breadcrumb-nav pull-<?php echo ($left) ? 'left' : 'right'; ?>"><?php echo $OUTPUT->navbar(); ?></div>
+        <nav
+            class="breadcrumb-button pull-<?php echo ($left) ? 'right' : 'left'; ?>"><?php echo $OUTPUT->page_heading_button(); ?></nav>
+    </div>
     <section role="main-content">
         <!-- Start Main Regions -->
         <div id="page-content" class="row-fluid">
-            <section id="<?php echo $regionbsid;?>" class="span9<?php if ($left) { echo ' pull-right'; } ?>">
-                <div id="page-navbar" class="clearfix">
-                    <div class="breadcrumb-nav"><?php echo $OUTPUT->navbar(); ?></div>
-                    <nav class="breadcrumb-button"><?php echo $OUTPUT->page_heading_button(); ?></nav>
+            <div id="<?php echo $regionbsid ?>" class="span12">
+                <div class="row-fluid">
+                    <?php if (($hasboringlayout && $left) || (!$left)) { ?>
+                        <section id="region-main" class="span9 pull-right">
+                    <?php } else { ?>
+                        <section id="region-main" class="span9 desktop-first-column">
+                    <?php } ?>
+                            <?php if ($COURSE->id > 1) {
+                                echo $OUTPUT->heading(format_string($COURSE->fullname), 1, 'coursetitle');
+                                echo '<div class="bor"></div>';
+                            } ?>
+                            <?php echo $OUTPUT->course_content_header(); ?>
+                            <?php echo $OUTPUT->main_content(); ?>
+                            <?php if (empty($PAGE->layout_options['nocoursefooter'])) {
+                                echo $OUTPUT->course_content_footer();
+                            }?>
+                        </section>
+                    <?php if (($hasboringlayout && $left) || (!$left)) { ?>
+                        <?php echo $OUTPUT->blocks('side-pre', 'span3 desktop-first-column'); ?>
+                    <?php } else { ?>
+                        <?php echo $OUTPUT->blocks('side-pre', 'span3 pull-right'); ?>
+                    <?php } ?>
                 </div>
-                
-                <?php
-                echo $OUTPUT->course_content_header();
-                echo $OUTPUT->main_content();
-                echo $OUTPUT->course_content_footer();
-                ?>
-            </section>
-            <?php
-            $classextra = '';
-            if ($left) {
-                $classextra = ' desktop-first-column';
-            }
-            echo $OUTPUT->blocks('side-pre', 'span3'.$classextra);
-            ?>
+            </div>
         </div>
         <!-- End Main Regions -->
     </section>
-
-    <?php require_once(dirname(__FILE__).'/includes/footer.php'); ?>
 </div>
+
+<?php require_once(dirname(__FILE__) . $OUTPUT->get_child_relative_layout_path() . '/includes/footer.php'); ?>
 
 </body>
 </html>

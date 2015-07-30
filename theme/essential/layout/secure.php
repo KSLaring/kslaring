@@ -23,15 +23,17 @@
  * @copyright   2014 Gareth J Barnard, David Bezemer
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
- 
-require_once(dirname(__FILE__).'/includes/pagesettings.php');
+
+require_once(dirname(__FILE__) . $OUTPUT->get_child_relative_layout_path() . '/includes/pagesettings.php');
+require_once(dirname(__FILE__) . '/../lib.php');
 
 echo $OUTPUT->doctype() ?>
 <html <?php echo $OUTPUT->htmlattributes(); ?>>
 <head>
     <title><?php echo $OUTPUT->page_title(); ?></title>
-    <link rel="shortcut icon" href="<?php echo $OUTPUT->favicon(); ?>" />
-    <?php echo $OUTPUT->standard_head_html() ?>
+    <link rel="shortcut icon" href="<?php echo $OUTPUT->favicon(); ?>"/>
+    <?php echo $OUTPUT->get_csswww(); ?>
+    <?php echo $OUTPUT->standard_head_html(); ?>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 
@@ -42,17 +44,7 @@ echo $OUTPUT->doctype() ?>
 <header role="banner" class="navbar navbar-fixed-top">
     <nav role="navigation" class="navbar-inner">
         <div class="container-fluid">
-            <a class="brand" href="<?php echo $CFG->wwwroot;?>"><?php echo $SITE->shortname; ?></a>
-            <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-            </a>
-            <div class="nav-collapse collapse">
-                <ul class="nav pull-right">
-                    <li><?php echo $OUTPUT->page_heading_menu(); ?></li>
-                </ul>
-            </div>
+            <a class="brand" href="<?php echo preg_replace("(https?:)", "", $CFG->wwwroot); ?>"><?php echo $SITE->shortname; ?></a>
         </div>
     </nav>
 </header>
@@ -71,8 +63,31 @@ echo $OUTPUT->doctype() ?>
             <?php echo $OUTPUT->blocks('side-post', 'span3'); ?>
         </div>
     </section>
-
-    <?php echo $OUTPUT->standard_end_of_body_html() ?>
 </div>
+
+<footer>
+    <a href="#top" class="back-to-top" ><i class="fa fa-angle-up "></i></a>
+    <script type="text/javascript">
+        jQuery(document).ready(function () {
+            <?php
+            if (theme_essential_not_lte_ie9()) {
+              echo "jQuery('#essentialnavbar').affix({";
+              echo "offset: {";
+              echo "top: $('#page-header').height()";
+              echo "}";
+              echo "});";
+              if ($breadcrumbstyle == '1') {
+                  echo "$('.breadcrumb').jBreadCrumb();";
+              }
+            }
+            if (theme_essential_get_setting('fitvids')) {
+                echo "$('#page').fitVids();";
+            }
+            ?>
+        });
+    </script>
+</footer>
+
+<?php echo $OUTPUT->standard_end_of_body_html() ?>
 </body>
 </html>

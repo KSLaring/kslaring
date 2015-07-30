@@ -23,68 +23,67 @@
  * @copyright   2014 Gareth J Barnard, David Bezemer
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
- 
-require_once(dirname(__FILE__).'/pagesettings.php');
- 
-?>
-<footer role="contentinfo" id="page-footer">
-    <div class="container-fluid">
-        <div class="row-fluid">
-            <div class="span4 pull-left">
-                <div class="column">
-                    <?php echo $OUTPUT->blocks('footer-left'); ?>
+
+if (empty($PAGE->layout_options['nofooter'])) {
+    ?>
+    <footer role="contentinfo" id="page-footer">
+        <div class="container-fluid">
+            <?php echo theme_essential_edit_button('theme_essential_footer'); ?>
+            <div class="row-fluid footerblocks">
+                <div class="span4 pull-left">
+                    <div class="column">
+                        <?php echo $OUTPUT->blocks('footer-left'); ?>
+                    </div>
+                </div>
+                <div class="span4 center">
+                    <div class="column">
+                        <?php echo $OUTPUT->blocks('footer-middle'); ?>
+                    </div>
+                </div>
+                <div class="span4 pull-right">
+                    <div class="column">
+                        <?php echo $OUTPUT->blocks('footer-right'); ?>
+                    </div>
                 </div>
             </div>
-            <div class="span4 center">
-                <div class="column">
-                    <?php echo $OUTPUT->blocks('footer-middle'); ?>
-                </div>
+            <div class="footerlinks row-fluid">
+                <hr/>
+                <span class="helplink"><?php echo page_doc_link(get_string('moodledocslink')); ?></span>
+                <?php if ($hascopyright) { ?>
+                    <span class="copy">&copy;<?php echo userdate(time(), '%Y') . ' ' . $hascopyright; ?></span>
+                <?php } ?>
+                <?php if ($hasfootnote) {
+                    echo '<div class="footnote span12">' . $hasfootnote . '</div>';
+                } ?>
             </div>
-            <div class="span4 pull-right">
-                <div class="column">
-                    <?php echo $OUTPUT->blocks('footer-right'); ?>
-                </div>
+            <div class="footerperformance row-fluid">
+                <?php echo $OUTPUT->standard_footer_html(); ?>
+            </div>
+            <div class="footercredit row-fluid">
+                <?php echo get_string('credit', 'theme_essential'); ?><a href="//about.me/gjbarnard" target="_blank">Gareth J Barnard</a>
             </div>
         </div>
+    </footer>
+    <a href="#top" class="back-to-top" ><i class="fa fa-angle-up "></i></a>
+<?php } ?>
 
-        <div class="footerlinks row-fluid">
-            <hr />
-            <p class="helplink"><?php echo page_doc_link(get_string('moodledocslink')); ?></p>
-        <?php if ($hascopyright) {
-            echo '<p class="copy">&copy; '.date("Y").' '.$hascopyright.'</p>';
-        } ?>
-
-        <?php if ($hasfootnote) {
-            echo '<div class="footnote">'.$hasfootnote.'</div>';
-        } ?>
-        </div>
-        <?php echo $OUTPUT->standard_footer_html(); ?>
-    </div>
-</footer>
-
-<script type="text/javascript">
-jQuery(document).ready(function() {
-    var offset = 220;
-    var duration = 500;
-    jQuery(window).scroll(function() {
-        if (jQuery(this).scrollTop() > offset) {
-            jQuery('.back-to-top').fadeIn(duration);
-        } else {
-            jQuery('.back-to-top').fadeOut(duration);
-        }
-    });
-    
-    jQuery('.back-to-top').click(function(event) {
-        event.preventDefault();
-        jQuery('html, body').animate({scrollTop: 0}, duration);
-        return false;
-    })
-	$('.navbar').affix({
-		  offset: {
-			top: $('header').height()
-		  }
-	});	
-});
-</script>
-<a href="#top" class="back-to-top" title="<?php print_string('backtotop', 'theme_essential'); ?>"><i class="fa fa-angle-up "></i></a>
+    <script type="text/javascript">
+        jQuery(document).ready(function () {
+            <?php
+            if (theme_essential_not_lte_ie9()) {
+              echo "jQuery('#essentialnavbar').affix({";
+              echo "offset: {";
+              echo "top: $('#page-header').height()";
+              echo "}";
+              echo "});";
+              if ($breadcrumbstyle == '1') {
+                  echo "$('.breadcrumb').jBreadCrumb();";
+              }
+            }
+            if (theme_essential_get_setting('fitvids')) {
+                echo "$('#page').fitVids();";
+            }
+            ?>
+        });
+    </script>
 <?php echo $OUTPUT->standard_end_of_body_html() ?>
