@@ -251,10 +251,15 @@ class local_course_page_renderer extends plugin_renderer_base {
                 $out .= '<div class="extra_home chp-content">' . $course->idnumber . '</div>';
             }//if_number
 
-            if (isset($course->startdate) && $course->startdate) {
-                $out .= '<h5 class="title_home chp-title">' . get_string('home_published','local_course_page') . '</h5>';
-                $out.= '<div class="extra_home chp-content">' . userdate($course->startdate,'%d.%m.%Y', 99, false) . '</div>';
-            }//if_startdate
+            /**
+             * @updateDate      03/08/2015
+             * @author          eFaktor     (fbv)
+             *
+             * Description
+             * Change Start Date for Modified Date
+             */
+            $out .= '<h5 class="title_home chp-title">' . get_string('home_published','local_course_page') . '</h5>';
+            $out.= '<div class="extra_home chp-content">' . userdate($course->timemodified,'%d.%m.%Y', 99, false) . '</div>';
 
             $str_format = 'format_' . $course->format;
             switch ($course->format) {
