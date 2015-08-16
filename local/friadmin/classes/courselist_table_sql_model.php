@@ -231,75 +231,74 @@ class local_friadmin_courselist_table_sql_model extends local_friadmin_widget {
                         $sqlWhere .= " AND ";
                     }//if_selWhere
                     $sqlWhere .= " c.format like '%classroom%' ";
-
-                    /* Municipality Filter  */
-                    if (isset($filterData['selmunicipality']) && ($filterData['selmunicipality'])) {
-                        if (!$sqlWhere) {
-                            $sqlWhere = " WHERE ";
-                        }else {
-                            $sqlWhere .= " AND ";
-                        }//if_selWhere
-                        $sqlWhere .= " rgcmu.id = :selmunicipality ";
-                        $params['selmunicipality'] = $filterData['selmunicipality'];
-                    }//if_selmunicipality
-
-                    /* Location Filter      */
-                    if (isset($filterData['sellocation']) && ($filterData['sellocation'])) {
-                        if (!$sqlWhere) {
-                            $sqlWhere = " WHERE ";
-                        }else {
-                            $sqlWhere .= " AND ";
-                        }//if_selWhere
-                        $sqlWhere .= " cl.id = :sellocation ";
-                        $params['sellocation'] = $filterData['sellocation'];
-                    }//if_location
-
-                    /* Sector Filter        */
-                    if (isset($filterData['selsector']) && ($filterData['selsector'])) {
-                        if (!$sqlWhere) {
-                            $sqlWhere = " WHERE ";
-                        }else {
-                            $sqlWhere .= " AND ";
-                        }//if_selWhere
-                        $sqlWhere .= " rgcse.id = :selsector ";
-                        $params['selsector'] = $filterData['selsector'];
-                    }//if_sector
-
-                    /* From Time Filter     */
-                    if (isset($filterData['seltimefrom']) && ($filterData['seltimefrom'])) {
-                        if (!$sqlWhere) {
-                            $sqlWhere = " WHERE ";
-                        }else {
-                            $sqlWhere .= " AND ";
-                        }//if_selWhere
-                        $sqlWhere .= " c.startdate >= :seltimefrom ";
-                        $params['seltimefrom'] = $filterData['seltimefrom'];
-                    }//if_seltimeFrom
-
-                    /* To Time Filter       */
-                    if (isset($filterData['seltimeto']) && ($filterData['seltimeto'])) {
-                        if (!$sqlWhere) {
-                            $sqlWhere = " WHERE ";
-                        }else {
-                            $sqlWhere .= " AND ";
-                        }//if_selWhere
-                        $sqlWhere .= " c.startdate <= :seltimeto ";
-                        $params['seltimeto'] = $filterData['seltimeto'];
-                    }//if_seltimeto
-
-                    /* Course Name Filter   */
-                    if (isset($filterData['selname']) && ($filterData['selname'])) {
-                        if (!$sqlWhere) {
-                            $sqlWhere = " WHERE ";
-                        }else {
-                            $sqlWhere .= " AND ";
-                        }//if_selWhere
-                        $sqlWhere .= $DB->sql_like('c.fullname', ':selname', false, false);
-                        $params['selname'] = "%" . $filterData['selname'] . "%";
-                    }//if_selName
                 }//if_classroom
-            }//if_filterData
 
+                /* Municipality Filter  */
+                if (isset($filterData['selmunicipality']) && ($filterData['selmunicipality'])) {
+                    if (!$sqlWhere) {
+                        $sqlWhere = " WHERE ";
+                    }else {
+                        $sqlWhere .= " AND ";
+                    }//if_selWhere
+                    $sqlWhere .= " rgcmu.id = :selmunicipality ";
+                    $params['selmunicipality'] = $filterData['selmunicipality'];
+                }//if_selmunicipality
+
+                /* Location Filter      */
+                if (isset($filterData['sellocation']) && ($filterData['sellocation'])) {
+                    if (!$sqlWhere) {
+                        $sqlWhere = " WHERE ";
+                    }else {
+                        $sqlWhere .= " AND ";
+                    }//if_selWhere
+                    $sqlWhere .= " cl.id = :sellocation ";
+                    $params['sellocation'] = $filterData['sellocation'];
+                }//if_location
+
+                /* Sector Filter        */
+                if (isset($filterData['selsector']) && ($filterData['selsector'])) {
+                    if (!$sqlWhere) {
+                        $sqlWhere = " WHERE ";
+                    }else {
+                        $sqlWhere .= " AND ";
+                    }//if_selWhere
+                    $sqlWhere .= " rgcse.id = :selsector ";
+                    $params['selsector'] = $filterData['selsector'];
+                }//if_sector
+
+                /* From Time Filter     */
+                if (isset($filterData['seltimefrom']) && ($filterData['seltimefrom'])) {
+                    if (!$sqlWhere) {
+                        $sqlWhere = " WHERE ";
+                    }else {
+                        $sqlWhere .= " AND ";
+                    }//if_selWhere
+                    $sqlWhere .= " c.startdate >= :seltimefrom ";
+                    $params['seltimefrom'] = $filterData['seltimefrom'];
+                }//if_seltimeFrom
+
+                /* To Time Filter       */
+                if (isset($filterData['seltimeto']) && ($filterData['seltimeto'])) {
+                    if (!$sqlWhere) {
+                        $sqlWhere = " WHERE ";
+                    }else {
+                        $sqlWhere .= " AND ";
+                    }//if_selWhere
+                    $sqlWhere .= " c.startdate <= :seltimeto ";
+                    $params['seltimeto'] = $filterData['seltimeto'];
+                }//if_seltimeto
+
+                /* Course Name Filter   */
+                if (isset($filterData['selname']) && ($filterData['selname'])) {
+                    if (!$sqlWhere) {
+                        $sqlWhere = " WHERE ";
+                    }else {
+                        $sqlWhere .= " AND ";
+                    }//if_selWhere
+                    $sqlWhere .= $DB->sql_like('c.fullname', ':selname', false, false);
+                    $params['selname'] = "%" . $filterData['selname'] . "%";
+                }//if_selName
+            }//if_filterData
 
             return array($sqlWhere,$params);
         }catch (Exception $ex) {

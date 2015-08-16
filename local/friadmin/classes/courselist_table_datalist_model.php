@@ -40,6 +40,7 @@ class local_friadmin_courselist_table_datalist_model extends local_efaktor_model
      * @param           $userleveloneids
      * @param           $filterdata
      * @param           $sort
+     *
      * @throws          Exception
      *
      * @creationDate
@@ -49,7 +50,7 @@ class local_friadmin_courselist_table_datalist_model extends local_efaktor_model
      * Construct the courselist_page renderable.
      */
     public function __construct($userleveloneids, $filterdata, $sort) {
-        /* Variables    */
+        global $CFG;
 
         try {
             // Create the data object and set the first values
@@ -61,8 +62,12 @@ class local_friadmin_courselist_table_datalist_model extends local_efaktor_model
             $this->sort             = $sort;
 
             /* Set up the fields    */
-            $this->fields = array('courseid', 'name', 'date', 'seats', 'deadline', 'length','municipality', 'sector', 'location');
-        }catch (Exception $ex) {
+            $this->fields = array('courseid', 'name', 'date', 'seats', 'deadline',
+                'length', 'municipality', 'sector', 'location');
+            $this->set_fixture_data(
+                $CFG->dirroot . '/local/friadmin/fixtures/friadmin_courselist.json',
+                'data', $this->fields);
+        } catch (Exception $ex) {
             throw $ex;
         }//try_catch
     }//constructor
@@ -104,7 +109,7 @@ class local_friadmin_courselist_table_datalist_model extends local_efaktor_model
             }
 
             return true;
-        }catch (Exception $ex) {
+        } catch (Exception $ex) {
             throw $ex;
         }//try_catch
     }
