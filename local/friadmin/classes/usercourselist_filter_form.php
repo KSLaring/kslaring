@@ -23,7 +23,7 @@ require_once($CFG->dirroot . '/lib/formslib.php');
 //use \stdClass;
 
 /**
- * The form for the local_friadmin course_list selection area
+ * The form for the local_friadmin usercourse_list selection area
  *
  * @package         local
  * @subpackage      friadmin
@@ -31,7 +31,7 @@ require_once($CFG->dirroot . '/lib/formslib.php');
  * @author          Urs Hunkler {@link urs.hunkler@unodo.de}
  * @license         http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class local_friadmin_courselist_filter_form extends \moodleform {
+class local_friadmin_usercourselist_filter_form extends \moodleform {
     function definition() {
         global $SESSION;
         $mform = $this->_form;
@@ -40,7 +40,7 @@ class local_friadmin_courselist_filter_form extends \moodleform {
         // The first form row
         $elementgroup = array();
 
-        $options = array('0' => get_string('selmunicipality', 'local_friadmin'));
+        $options = array('0' => get_string('seleverywhere', 'local_friadmin'));
         $options = $options + $customdata['municipality'];
         $elementgroup[] = $mform->createElement('select', 'selmunicipality', '', $options);
         $mform->setDefault('selmunicipality', '0');
@@ -49,14 +49,18 @@ class local_friadmin_courselist_filter_form extends \moodleform {
         $options = $options + $customdata['sector'];
         $elementgroup[] = $mform->createElement('select', 'selsector', '', $options);
         $mform->setDefault('selsector', '0');
+        $mform->disabledIf('selsector', 'selmunicipality', 'eq', '0');
 
         $options = array('0' => get_string('sellocation', 'local_friadmin'));
         $options = $options + $customdata['location'];
         $elementgroup[] = $mform->createElement('select', 'sellocation', '', $options);
         $mform->setDefault('sellocation', '0');
+        $mform->disabledIf('sellocation', 'selmunicipality', 'eq', '0');
 
-        $mform->addGroup($elementgroup, 'selectrowone', get_string('locationline', 'local_friadmin'),
+        $mform->addGroup($elementgroup, 'selectrowone',
+            get_string('locationline', 'local_friadmin'),
             '<span class="group-spacer"> </span>', false);
+        $mform->addHelpButton('selectrowone', 'locationline', 'local_friadmin');
 
 
         // The second form row
@@ -78,8 +82,10 @@ class local_friadmin_courselist_filter_form extends \moodleform {
             '', $options);
         $mform->setDefault('seltimeto', $customdata['to']);
 
-        $mform->addGroup($elementgroup, 'selectrowtwo', get_string('fromto', 'local_friadmin'),
+        $mform->addGroup($elementgroup, 'selectrowtwo',
+            get_string('fromto', 'local_friadmin'),
             '<span class="group-spacer"> </span>', false);
+        $mform->addHelpButton('selectrowtwo', 'fromto', 'local_friadmin');
 
 
         // The third form row
@@ -95,22 +101,18 @@ class local_friadmin_courselist_filter_form extends \moodleform {
         $mform->setType('selname', PARAM_TEXT);
         $elementgroup[] = $textinput;
 
-        /**
-         * @updateDate  22/06/2015
-         * @author      eFaktor     (fbv)
-         *
-         * Description
-         * Add checkbox -- Only Classroom Courses
-         */
-        $classRoom = $mform->createElement('checkbox','classroom','',get_string('only_classroom','local_friadmin'));
+        $classRoom = $mform->createElement('checkbox', 'classroom', '',
+            get_string('only_classroom', 'local_friadmin'));
         $elementgroup[] = $classRoom;
         $mform->setDefault('classroom', $customdata['classroom']);
 
         $elementgroup[] = $mform->createElement('submit', 'submitbutton',
             get_string('selsubmit', 'local_friadmin'));
 
-        $mform->addGroup($elementgroup, 'selectrowthree', get_string('coursename', 'local_friadmin'),
+        $mform->addGroup($elementgroup, 'selectrowthree',
+            get_string('coursename', 'local_friadmin'),
             '<span class="group-spacer"> </span>', false);
+        $mform->addHelpButton('selectrowthree', 'coursename', 'local_friadmin');
     }
 
     /**

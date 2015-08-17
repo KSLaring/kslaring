@@ -14,9 +14,10 @@
  * Description
  * Integrate 'Course Locations' plugin into FriAdmin plugin
  */
-$string['pluginname']           = 'Friadmin';
 
-$string['courselist_title']     = 'Friadmin tilgjengelige kurs';
+$string['pluginname']           = 'Frikomport';
+
+$string['courselist_title']     = 'Frikomport tilgjengelige kurs';
 $string['coursetable_title']    = 'Kursoversikt';
 $string['course_courseid']      = 'Kurs ID';
 $string['course_name']          = 'Navn';
@@ -24,7 +25,7 @@ $string['course_summary']       = 'Beskrivelse';
 $string['course_targetgroup']   = 'Målgruppe';
 $string['course_date']          = 'Dato';
 $string['course_time']          = 'Tid fra - til';
-$string['course_seats']         = 'Tilgjengelige plasser';
+$string['course_seats']         = 'Tilg. plasser';
 $string['course_deadline']      = 'Påmeldingsfrist';
 $string['course_length']        = 'Varighet';
 $string['course_municipality']  = 'Kommune';
@@ -37,7 +38,32 @@ $string['course_priceexternal'] = 'Eksternpris';
 $string['course_link']          = 'Lenke';
 $string['course_edit']          = '';
 
-$string['coursedetail_title']           = 'Friadmin kursdetaljer';
+$string['usercourselist_title']     = 'Frikomport tilgjengelige kurs';
+$string['usercoursetable_title']    = 'Kursoversikt';
+$string['usercourse_courseid']      = 'Kurs ID';
+$string['usercourse_name']          = 'Navn';
+$string['usercourse_summary']       = 'Beskrivelse';
+$string['usercourse_targetgroup']   = 'Målgruppe';
+$string['usercourse_date']          = 'Dato';
+$string['usercourse_time']          = 'Tid fra - til';
+$string['usercourse_seats']         = 'Tilg. plasser';
+$string['usercourse_deadline']      = 'Påmeldingsfrist';
+$string['usercourse_length']        = 'Varighet';
+$string['usercourse_municipality']  = 'Kommune';
+$string['usercourse_sector']        = 'Sektor';
+$string['usercourse_location']      = 'Kurssted';
+$string['usercourse_responsible']   = 'Ansvarlig';
+$string['usercourse_teacher']       = 'Kurslærer';
+$string['usercourse_priceinternal'] = 'Internpris';
+$string['usercourse_priceexternal'] = 'Eksternpris';
+$string['usercourse_link']          = 'Lenke';
+$string['usercourse_edit']          = '';
+$string['usercourse_counter']       = 'No';
+$string['usercourse_morecourses']   = 'There are more courses you may be interested in
+than the ones listed in the table.<br />Please use the filters above the table to specify
+what you are looking for.';
+
+$string['coursedetail_title']           = 'Frikomport kursdetaljer';
 $string['coursedetail_back']            = 'Tilbake til kursoversikten';
 $string['coursedetail_go']              = 'Gå til kurset';
 $string['coursedetail_settings']        = 'Kursinnstillinger';
@@ -50,7 +76,7 @@ $string['coursedetail_participantlist'] = 'Last ned deltakerliste';
 $string['coursedetail_duplicate']       = 'Dupliser';
 $string['coursedetail_email']           = 'Send epost';
 
-$string['coursetemplate_title']         = 'Friadmin - Legg til fra kursmal';
+$string['coursetemplate_title']         = 'Frikomport - Legg til fra kursmal';
 $string['coursetemplate_subtitle']      = 'Opprett et kurs fra en kursmal.';
 $string['coursetemplate_cat']           = 'Kurskategori for kursmaler';
 $string['coursetemplate_cat_desc']      = 'Vennligst velg kurskategorien hvor alle kursmaler skal lagres.';
@@ -64,7 +90,7 @@ id: <strong>{$a->id}</strong>, kortnavn: "<strong>{$a->shortname}</strong>",
 Fullt navn: "<strong>{$a->fullname}</strong>".';
 $string['coursetemplate_error']         = 'Kurset kunne ikke opprettes.';
 
-$string['location']             = 'Sted: ';
+$string['locationline']         = 'Sted: ';
 $string['fromto']               = 'Fra - til: ';
 $string['coursename']           = 'Kursnavn: ';
 $string['selmunicipality']      = 'Søk overalt';
@@ -77,6 +103,11 @@ $string['seltemplate']          = 'Kursmal';
 $string['missingseltemplate']   = 'Mangler kursmal';
 $string['selsubmit']            = 'Søk';
 $string['selsubmitcreate']      = 'Opprett kurs';
+
+$string['seleverywhere']        = 'Everywhere';
+$string['locationline_help']    = 'Explain the location selection ...';
+$string['fromto_help']          = 'Explain the time selection ...';
+$string['coursename_help']      = 'Explain the course related selections ...';
 
 $string['edit'] = 'Endre kurs';
 $string['show'] = 'Vis detaljer';

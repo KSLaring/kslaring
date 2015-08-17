@@ -26,42 +26,26 @@
 
 require_once(__DIR__ . '/../../config.php');
 
-require_login();
+// Don't autologin guests.
+require_login(null, false);
 
 $friadmin = new local_friadmin\friadmin();
 
-// Basic page init - set context and pagelayout
+// Basic page init - set context and pagelayout.
 $friadmin->init_page();
 
-/**
- * @updateDate  22/06/2015
- * @author      eFaktor     (fbv)
- *
- * Description
- * Check if the user is super user
- */
-if (!$friadmin->superuser) {
-    print_error('nopermissions', 'error', '', 'block/frikomport:view');
-}//if_superuser
-
-// In Moodle 2.7 renderers and renderables can't be loaded via namespaces
-// Get the renderer for this plugin
+// In Moodle 2.7 renderers and renderables can't be loaded via namespaces.
+// Get the renderer for this plugin.
 $output = $PAGE->get_renderer('local_friadmin');
 
-// Prepare the renderables for the page and the page areas
-$page = new local_friadmin_courselist_page();
-$filter = new local_friadmin_courselist_filter();
-/**
- * @updateDate  17/06/2015
- * @author      eFaktor     (fbv)
- *
- * Description
- * Add the user categories
- */
-$table = new local_friadmin_courselist_table($page->data->url,
+// Prepare the renderables for the page and the page areas.
+$page = new local_friadmin_usercourselist_page();
+$filter = new local_friadmin_usercourselist_filter();
+
+$table = new local_friadmin_usercourselist_table($page->data->url,
     $filter->get_userleveloneids(), $filter->get_myCategories(), $filter->get_fromform());
 
-$friadmin->set_courselist_references($page, $filter, $table, $output);
+$friadmin->set_usercourselist_references($page, $filter, $table, $output);
 
-$friadmin->setup_courselist_page();
-$friadmin->display_courselist_page();
+$friadmin->setup_usercourselist_page();
+$friadmin->display_usercourselist_page();
