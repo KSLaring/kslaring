@@ -410,3 +410,27 @@
         margin-left: 1%;
     }
 }
+
+// blocksatbottom bottom block area
+// --------------------------------------------------
+#bottom-area {
+    .block {
+        float: left;
+        margin-left: 1%;
+        margin-right: 1%;
+        width: 22.7%;
+
+        @media all and (max-width: 1023px) {
+            width: 31%;
+        }
+        @media all and (max-width: (@mediumWidth - 1)) {
+            width: 47%;
+        }
+        @media all and (max-width: (@narrowWidth - 1)) {
+            float: none;
+            margin-left: 0;
+            margin-right: 0;
+            width: 100%;
+        }
+    }
+}
