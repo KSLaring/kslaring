@@ -1088,6 +1088,15 @@ body {
   padding: 2px;
   border: 2px solid white;
 }
+#bottom-area.row-fluid [class*="span"] {
+  display: inline;
+  float: none;
+  margin: 0;
+  width: auto;
+}
+#bottom-area .skip-block-to {
+  display: inline;
+}
 .profilepicture {
   border: 1px solid #cccccc;
   background: white;

@@ -41,6 +41,7 @@ $THEME->parents = array('bootstrapbase');
 $THEME->sheets = array('font-awesomemin', 'moodle', 'theme', 'custom');
 $THEME->supportscssoptimisation = false;
 $THEME->yuicssmodules = array();
+$THEME->enable_dock = false;
 
 // add custom javascripts here
 //---------------------------------
@@ -109,6 +110,12 @@ $THEME->layouts = array(
         'regions' => array('content-top', 'content-bottom', 'side-pre', 'side-post', 'top', 'hidden-dock'),
         'defaultregion' => 'side-pre',
         'options' => array('langmenu' => true),
+    ),
+    // Blocks at the bottom.
+    'blocksatbottom' => array(
+        'file' => 'columns3blocksbottom.php',
+        'regions' => array('side-pre', 'side-post', 'top', 'content-top', 'content-bottom', 'hidden-dock'),
+        'defaultregion' => 'side-pre',
     )
 );
 
