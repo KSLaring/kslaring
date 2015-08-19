@@ -29,17 +29,17 @@
  *
  */
 
-$string['currentsection'] = 'This topic';
-$string['sectionname'] = 'Topic';
-$string['pluginname'] = 'eLearning Frikomport format';
-$string['section0name'] = 'General';
-$string['page-course-view-topics'] = 'Any course main page in topics format';
-$string['page-course-view-topics-x'] = 'Any course page in topics format';
-$string['hidefromothers'] = 'Hide topic';
-$string['showfromothers'] = 'Show topic';
+$string['currentsection'] = 'Dette emnet';
+$string['sectionname'] = 'Emne';
+$string['pluginname'] = 'Frikomport nettkursformat';
+$string['section0name'] = 'Generelt';
+$string['page-course-view-topics'] = 'Et kurs i Frikomport nettkursformat';
+$string['page-course-view-topics-x'] = 'En kursside i Frikomport nettkursformat';
+$string['hidefromothers'] = 'Skjul emne';
+$string['showfromothers'] = 'Vis emne';
 
-$string['home_prerequisities']      = 'Prerequisites';
-$string['home_producedby']          = 'Produced by';
-$string['home_length']              = 'Estimated time spent';
-$string['home_effort']              = 'Estimated Effort';
-$string['home_manager']             = 'Course Manager';
+$string['home_prerequisities']      = 'Forutsetninger';
+$string['home_producedby']          = 'Produsert av';
+$string['home_length']              = 'Forventet tidsbruk';
+$string['home_effort']              = 'Forventet innsats';
+$string['home_manager']             = 'Kursansvarlig';
