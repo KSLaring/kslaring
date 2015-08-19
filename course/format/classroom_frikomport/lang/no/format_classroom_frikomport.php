@@ -29,23 +29,23 @@
  *
  */
 
-$string['currentsection']               = 'This topic';
-$string['sectionname']                  = 'Topic';
-$string['pluginname']                   = 'Classroom Frikomport format';
-$string['section0name']                 = 'General';
-$string['page-course-view-topics']      = 'Any course main page in topics format';
-$string['page-course-view-topics-x']    = 'Any course page in topics format';
-$string['hidefromothers']               = 'Hide topic';
-$string['showfromothers']               = 'Show topic';
+$string['currentsection']               = 'Dette emnet';
+$string['sectionname']                  = 'Emne';
+$string['pluginname']                   = 'Frikomport klasseromsformat';
+$string['section0name']                 = 'Generelt';
+$string['page-course-view-topics']      = 'Et kurs i Frikomport klasseromsformat';
+$string['page-course-view-topics-x']    = 'En kursside i Frikomport klasseromsformat';
+$string['hidefromothers']               = 'Skjul emne';
+$string['showfromothers']               = 'Vis emne';
 
-$string['home_prerequisities']      = 'Prerequisites';
-$string['home_producedby']          = 'Produced by';
-$string['home_location']            = 'Course location';
-$string['home_title_location']      = 'Location';
-$string['home_sector']              = 'Course sectors';
-$string['home_title_sector']        = 'Sectors';
-$string['home_length']              = 'Estimated time spent';
-$string['home_effort']              = 'Estimated Effort';
-$string['home_manager']             = 'Course Manager';
+$string['home_prerequisities']      = 'Forutsetninger';
+$string['home_producedby']          = 'Produsert av';
+$string['home_location']            = 'Kurssted';
+$string['home_title_location']      = 'Kurssted';
+$string['home_sector']              = 'Kurssektor';
+$string['home_title_sector']        = 'Sektor';
+$string['home_length']              = 'Forventet tidsbruk';
+$string['home_effort']              = 'Forventet innsats';
+$string['home_manager']             = 'Kursansvarlig';
 $string['home_time_from_to']        = 'Tid fra - til';
 $string['home_time_from_to_help']   = 'Du kan legge til flere kursholdere ved å bruke komma som separator';
