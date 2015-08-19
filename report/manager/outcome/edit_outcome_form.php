@@ -28,41 +28,52 @@ class manager_edit_outcome_form extends moodleform {
         list($job_role_list, $roles_selected) = outcome::Get_JobRoles_ConnectedOutcome($outcome_id);
 
         /* Available Job roles  */
-        $achoices       = null;
+        $achoices       = array();
         $achoices[0]    = get_string('av_jobroles','report_manager');
         $achoices       = $achoices + $job_role_list;
 
         /* Selected Job roles   */
         $schoices       = array();
         $schoices[0]    = get_string('not_sel_jobroles','report_manager');
-        if ($roles_selected) {
-            $schoices [0] = get_string('selected_jobroles','report_manager');
-            foreach ($roles_selected as $role) {
-                if (!in_array($role,$SESSION->selJobRoles) &&
-                    !in_array($role,$SESSION->jobRoles)) {
-                    $SESSION->selJobRoles[$role] = $role;
-                }
 
-                $schoices[$role] = $job_role_list[$role];
-                unset($achoices[$role]);
-            }
+        if ($roles_selected) {
+            foreach ($roles_selected as $role) {
+                if (!in_array($role,$SESSION->deleted)) {
+                    $SESSION->selJobRoles[$role] = $role;
+                    $schoices[$role] = $job_role_list[$role];
+                    unset($achoices[$role]);
+                }//if_deleted
+            }///for_Each
         }//if_roles_selected
 
         /* REMOVE ALL JOB ROLES */
         if (isset($SESSION->removeAll) && $SESSION->removeAll) {
+            /* Selected Job Roles   */
+            $SESSION->selJobRoles   = array();
             $schoices       = array();
             $schoices[0]    = get_string('not_sel_jobroles','report_manager');
+
+            /* Available Job Roles   */
+            $achoices       = array();
             $achoices[0]    = get_string('av_jobroles','report_manager');
             $achoices       = $achoices + $job_role_list;
+
+            /* Job Roles Deleted    */
+            foreach ($job_role_list  as $key => $job_role) {
+                $SESSION->deleted[$key] = $key;
+            }
         }//if_remove_all
 
         /* ADD ALL JOB ROLES    */
         if (isset($SESSION->addAll) && $SESSION->addAll) {
-            $schoices       = array();
-            $schoices [0]   = get_string('selected_jobroles','report_manager');
-            $schoices       = $schoices + $job_role_list;
+            /* Available Job Roles   */
             $achoices       = array();
             $achoices[0]    = get_string('av_jobroles','report_manager');
+
+            /* Selected Job Roles   */
+            foreach ($job_role_list  as $key => $job_role) {
+                $SESSION->selJobRoles[$key] = $key;
+            }
         }//if_remove_all
 
         /* Job Roles Selected   */
@@ -75,13 +86,6 @@ class manager_edit_outcome_form extends moodleform {
                 unset($achoices[$job_role]);
             }
         }//if_selJobRoles
-
-        /* Available Job Roles  */
-        if (isset($SESSION->jobRoles) && $SESSION->jobRoles) {
-            foreach ($SESSION->jobRoles as $job_role) {
-                $achoices[$job_role] = $job_role_list[$job_role];
-            }
-        }//if_addJobRoles
 
         $m_form->addElement('html','<div class="job_roles_selector">');
             /* Selected Job Roles   */

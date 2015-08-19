@@ -359,7 +359,14 @@ class cachestore_file extends cache_store implements cache_is_key_aware, cache_i
         }
         // Lock it up!
         // We don't care if this succeeds or not, on some systems it will, on some it won't, meah either way.
-        flock($handle, LOCK_SH);
+        /**
+         * @updateDate  17/08(2015
+         * @author      eFaktor     (fbv)
+         *
+         * Description
+         * Comment the line to try to fix problems with catche
+         */
+        //flock($handle, LOCK_SH);
         $data = '';
         // Read the data in 1Mb chunks. Small caches will not loop more than once.  We don't use filesize as it may
         // be cached with a different value than what we need to read from the file.

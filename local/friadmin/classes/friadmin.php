@@ -39,6 +39,9 @@ use stdClass;
  */
 class friadmin {
 
+    // Set the max courses listed in the user course listing
+    const MAX_LISTED_COURSES = 50;
+
     // The table renderable
     protected $table = null;
 
@@ -67,6 +70,7 @@ class friadmin {
 
     /**
      * The renderer
+     *
      * @var \core_renderer|\local_friadmin_renderer $output
      */
     protected $output;
@@ -74,8 +78,8 @@ class friadmin {
     // The page context
     protected $context = null;
 
-//    public function __construct() {
-//    }
+    //    public function __construct() {
+    //    }
 
     /*
      * Inititialize the page
@@ -97,10 +101,9 @@ class friadmin {
         $PAGE->set_pagelayout('standard');
         if (has_capability('block/frikomport:view', $this->context)) {
             $this->superuser = true;
-        }else {
+        } else {
             $this->superuser = self::CheckCapability_FriAdmin();
         }
-
 
         //require_capability('block/frikomport:view', $this->context);
     }
@@ -109,6 +112,17 @@ class friadmin {
      *
      */
     public function set_courselist_references($page, $filter, $table,
+        \local_friadmin_renderer $output) {
+        $this->page = $page;
+        $this->filter = $filter;
+        $this->table = $table;
+        $this->output = $output;
+    }
+
+    /*
+     *
+     */
+    public function set_usercourselist_references($page, $filter, $table,
         \local_friadmin_renderer $output) {
         $this->page = $page;
         $this->filter = $filter;
@@ -139,7 +153,7 @@ class friadmin {
     }
 
     /*
-     * Set up the page
+     * Set up the courselist page
      */
     public function setup_courselist_page() {
         global $PAGE;
@@ -149,6 +163,23 @@ class friadmin {
         $PAGE->set_url($data->url);
         $PAGE->set_docs_path('');
         $PAGE->set_title($data->title);
+
+        $PAGE->navbar->add(get_string('pluginname', 'local_friadmin'));
+        $PAGE->navbar->add($data->title);
+    }
+
+    /*
+     * Set up the user courselist page
+     */
+    public function setup_usercourselist_page() {
+        global $PAGE;
+
+        $data = $this->page->data;
+
+        $PAGE->set_url($data->url);
+        $PAGE->set_docs_path('');
+        $PAGE->set_title($data->title);
+        $PAGE->set_pagelayout('blocksatbottom');
 
         $PAGE->navbar->add(get_string('pluginname', 'local_friadmin'));
         $PAGE->navbar->add($data->title);
@@ -193,6 +224,21 @@ class friadmin {
      * Display the course list
      */
     public function display_courselist_page() {
+        $output = $this->output;
+
+        $this->filter->render();
+        $this->page->data->filter = $this->filter;
+        $this->page->data->table = $this->table;
+
+        echo $output->header();
+        echo $output->render($this->page);
+        echo $output->footer();
+    }
+
+    /*
+     * Display the user course list
+     */
+    public function display_usercourselist_page() {
         $output = $this->output;
 
         $this->filter->render();
@@ -275,6 +321,9 @@ class friadmin {
         return $this->output;
     }
 
+    /**
+     * Superuser getter
+     */
     protected  function get_superuser() {
         return $this->superuser;
     }//get_superuser
@@ -289,8 +338,8 @@ class friadmin {
      * @param mixed $value
      */
     public function __set($key, $value) {
-        if (method_exists($this, 'set_'.$key)) {
-            $this->{'set_'.$key}($value);
+        if (method_exists($this, 'set_' . $key)) {
+            $this->{'set_' . $key}($value);
         }
         $this->properties->{$key} = $value;
     }
@@ -302,12 +351,14 @@ class friadmin {
      * to return the raw property
      *
      * @param string $key
+     *
      * @return mixed
      */
     public function __get($key) {
-        if (method_exists($this, 'get_'.$key)) {
-            return $this->{'get_'.$key}();
+        if (method_exists($this, 'get_' . $key)) {
+            return $this->{'get_' . $key}();
         }
+
         return $this->properties->{$key};
     }
 
@@ -316,13 +367,16 @@ class friadmin {
      * still want empty calls to work.
      *
      * @param string $key
+     *
      * @return bool
      */
     public function __isset($key) {
-        if (method_exists($this, 'get_'.$key)) {
-            $val = $this->{'get_'.$key}();
+        if (method_exists($this, 'get_' . $key)) {
+            $val = $this->{'get_' . $key}();
+
             return !empty($val);
         }
+
         return !empty($this->properties->{$key});
     }
 
@@ -357,13 +411,13 @@ class friadmin {
                      WHERE		ra.userid 		= :user ";
 
             /* Execute  */
-            $rdo = $DB->get_records_sql($sql,$params);
+            $rdo = $DB->get_records_sql($sql, $params);
             if ($rdo) {
                 return true;
-            }else {
+            } else {
                 return false;
             }//if_Rdo
-        }catch (\Exception $ex) {
+        } catch (\Exception $ex) {
             throw $ex;
         }//try_catch
     }//CheckCapability_FriAdmin

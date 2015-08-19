@@ -283,6 +283,42 @@ a.autolink.glossary {
                     }
                 }
             }
+            .fcontainer {
+                .contents {
+                    margin-bottom: 1em;
+                }
+            }
+            .fitem {
+                div.fitemtitle {
+                    text-align: left;
+                    //width: auto;
+                }
+                .felement {
+                    margin-left: 0;
+                }
+            }
+        }
+        .branchbuttoncontainer {
+            .singlebutton {
+                form {
+                    margin-left: 0;
+                }
+            }
+        }
+        .correctanswer {
+            margin-top: 1em;
+        }
+        .feedback {
+            + form {
+                margin-left: 0;
+            }
+        }
+        div[role="main"] {
+            &> .singlebutton {
+                form {
+                    margin-left: 0;
+                }
+            }
         }
     }
 }

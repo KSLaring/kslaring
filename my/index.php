@@ -161,12 +161,18 @@ if ($PAGE->user_allowed_editing()) {
      *
      * Description
      * Remove the edit button
+     *
+     * @updateDate  03/08/2015
+     * @author      eFaktor     (fbv)
+     *
+     * Description
+     * Remove for everybody. Even for the admin user
      */
-    if (is_siteadmin($USER->id)) {
-        $url = new moodle_url("$CFG->wwwroot/my/index.php", $params);
-        $button = $OUTPUT->single_button($url, $editstring);
-        $PAGE->set_button($resetbutton . $button);
-    }
+    //if (is_siteadmin($USER->id)) {
+    //    $url = new moodle_url("$CFG->wwwroot/my/index.php", $params);
+    //    $button = $OUTPUT->single_button($url, $editstring);
+    //    $PAGE->set_button($resetbutton . $button);
+    //}
 } else {
     $USER->editing = $edit = 0;
 }
