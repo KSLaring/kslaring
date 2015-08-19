@@ -55,11 +55,6 @@ if (empty($CFG->loginhttps)) {
     $secure_www_root = str_replace('http:','https:',$CFG->wwwroot);
 }//if_security
 
-/* Available Job Roles  */
-if (!isset($SESSION->jobRoles)) {
-    $SESSION->jobRoles = array();
-}//companies
-
 /* Selected Job Roles   */
 if (!isset($SESSION->selJobRoles)) {
     $SESSION->selJobRoles = array();
@@ -75,6 +70,11 @@ if (!isset($SESSION->removeAll)) {
     $SESSION->removeAll = false;
 }//if_removeAll
 
+/* Job Roles To Delete  */
+if (!isset($SESSION->deleted)) {
+    $SESSION->deleted = array();
+}
+
 /* Show Form */
 $form = new manager_edit_outcome_form(null,array($outcome_id,$expiration_id));
 
@@ -88,8 +88,8 @@ if ($form->is_cancelled()) {
     /* Clean SESSION    */
     unset($SESSION->addAll);
     unset($SESSION->removeAll);
-    unset($SESSION->jobRoles);
     unset($SESSION->selJobRoles);
+    unset($SESSION->deleted);
 
     $_POST = array();
     redirect($return_url);
@@ -101,7 +101,7 @@ if ($form->is_cancelled()) {
     if (isset($data->add_all) && ($data->add_all)) {
         $SESSION->addAll        = true;
         $SESSION->selJobRoles   = array();
-        $SESSION->jobRoles      = array();
+        $SESSION->deleted       = array();
 
         $form = new manager_edit_outcome_form(null,array($outcome_id,$expiration_id));
     }//add_all_jobroles
@@ -110,26 +110,30 @@ if ($form->is_cancelled()) {
     if (isset($data->remove_all) && ($data->remove_all)) {
         $SESSION->removeAll     = true;
         $SESSION->selJobRoles   = array();
-        $SESSION->jobRoles      = array();
 
         $form = new manager_edit_outcome_form(null,array($outcome_id,$expiration_id));
     }//remove_all_jobroles
 
     /* Add selected Job Roles       */
     if (isset($data->add_sel) && ($data->add_sel)) {
-        foreach($data->ajobroles as $key=>$value) {
-            $SESSION->selJobRoles[$value] = $value;
+        if (isset($data->ajobroles) && $data->ajobroles) {
+            foreach($data->ajobroles as $key=>$value) {
+                $SESSION->selJobRoles[$value] = $value;
+                unset($SESSION->deleted[$value]);
+            }
+            $form = new manager_edit_outcome_form(null,array($outcome_id,$expiration_id));
         }
-        $form = new manager_edit_outcome_form(null,array($outcome_id,$expiration_id));
     }//if_add_jobroles
 
     /* Remove selected Job Roles    */
     if (isset($data->remove_sel) && ($data->remove_sel)) {
-        foreach($data->sjobroles as $key=>$value) {
-            unset($SESSION->selJobRoles[$value]);
-            $SESSION->jobRoles[$value] = $value;
+        if (isset($data->sjobroles) && $data->sjobroles) {
+            foreach($data->sjobroles as $key=>$value) {
+                unset($SESSION->selJobRoles[$value]);
+                $SESSION->deleted[$value] = $value;
+            }
+            $form = new manager_edit_outcome_form(null,array($outcome_id,$expiration_id));
         }
-        $form = new manager_edit_outcome_form(null,array($outcome_id,$expiration_id));
     }//if_remove_jobroles
 
     if ((isset($data->submitbutton) && $data->submitbutton)) {
@@ -151,8 +155,8 @@ if ($form->is_cancelled()) {
 
         unset($SESSION->addAll);
         unset($SESSION->removeAll);
-        unset($SESSION->jobRoles);
         unset($SESSION->selJobRoles);
+        unset($SESSION->deleted);
 
         $_POST = array();
         redirect($return_url);
