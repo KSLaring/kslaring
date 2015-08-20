@@ -23,7 +23,7 @@ defined('MOODLE_INTERNAL') || die;
 //use stdClass;
 
 /**
- * Model class for the local_friadmin course_list table
+ * Model class for the local_friadmin usercourse_list table
  *
  * @package         local
  * @subpackage      friadmin
@@ -31,23 +31,19 @@ defined('MOODLE_INTERNAL') || die;
  * @author          Urs Hunkler {@link urs.hunkler@unodo.de}
  * @license         http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class local_friadmin_courselist_table_datalist_model extends local_efaktor_model {
+class local_friadmin_usercourselist_table_datalist_model extends local_efaktor_model {
 
     // The user municipality list
     protected $userleveloneids = null;
 
     /**
+     * Construct the usercourselist_page renderable.
+     *
      * @param           $userleveloneids
      * @param           $filterdata
      * @param           $sort
      *
      * @throws          Exception
-     *
-     * @creationDate
-     * @author          Urs Hunkler {@link urs.hunkler@unodo.de}
-     *
-     * Description
-     * Construct the courselist_page renderable.
      */
     public function __construct($userleveloneids, $filterdata, $sort) {
         global $CFG;
@@ -57,9 +53,9 @@ class local_friadmin_courselist_table_datalist_model extends local_efaktor_model
             parent::__construct();
 
             /* Set the data */
-            $this->userleveloneids  = $userleveloneids;
-            $this->filterdata       = $filterdata;
-            $this->sort             = $sort;
+            $this->userleveloneids = $userleveloneids;
+            $this->filterdata = $filterdata;
+            $this->sort = $sort;
 
             /* Set up the fields    */
             $this->fields = array('courseid', 'name', 'date', 'seats', 'deadline',
@@ -73,14 +69,7 @@ class local_friadmin_courselist_table_datalist_model extends local_efaktor_model
     }//constructor
 
     /**
-     * @return          Bool
-     * @throws          Exception
-     *
-     * @creationDate
-     * @author          Urs Hunkler {@link urs.hunkler@unodo.de}
-     *
-     * Description
-     * Add datalist filters
+     * Datalist filters
      */
     protected function add_datalist_filters() {
         /* Variables    */

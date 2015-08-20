@@ -32,7 +32,7 @@ defined('MOODLE_INTERNAL') || die;
 class local_friadmin_renderer extends plugin_renderer_base {
 
     /**
-     * Render the page.
+     * Render the courselist page.
      *
      * @param local_friadmin_courselist_page $page The page renderable
      *
@@ -118,6 +118,52 @@ class local_friadmin_renderer extends plugin_renderer_base {
      */
     public function render_local_friadmin_courselist_table(
         local_friadmin_courselist_table $table) {
+
+        return $table->get_table_html();
+    }
+
+    /**
+     * Render the user courselist page.
+     *
+     * @param local_friadmin_courselist_page $page The page renderable
+     *
+     * @return string html for the page
+     */
+    public function render_local_friadmin_usercourselist_page(
+        local_friadmin_usercourselist_page $page) {
+        global $OUTPUT;
+
+        $out = '';
+
+        $out .= $OUTPUT->heading($page->data->title, 2);
+        $out .= $this->render($page->data->filter);
+        $out .= $this->render($page->data->table);
+
+        return $out;
+    }
+
+    /**
+     * Render the user course table.
+     *
+     * @param local_friadmin_courselist_table $table The table renderable
+     *
+     * @return string html for the page
+     */
+    public function render_local_friadmin_usercourselist_filter(
+        local_friadmin_usercourselist_filter $filter) {
+
+        return $filter->data->content;
+    }
+
+    /**
+     * Render the user course table.
+     *
+     * @param local_friadmin_courselist_table $table The table renderable
+     *
+     * @return string html for the page
+     */
+    public function render_local_friadmin_usercourselist_table(
+        local_friadmin_usercourselist_table $table) {
 
         return $table->get_table_html();
     }

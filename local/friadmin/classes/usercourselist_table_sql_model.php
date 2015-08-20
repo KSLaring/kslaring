@@ -23,7 +23,7 @@ defined('MOODLE_INTERNAL') || die;
 //use stdClass;
 
 /**
- * Model class for the local_friadmin course_list table
+ * Model class for the local_friadmin usercourse_list table
  *
  * @package         local
  * @subpackage      friadmin
@@ -31,49 +31,21 @@ defined('MOODLE_INTERNAL') || die;
  * @author          Urs Hunkler {@link urs.hunkler@unodo.de}
  * @license         http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class local_friadmin_courselist_table_sql_model extends local_friadmin_widget {
+class local_friadmin_usercourselist_table_sql_model extends local_friadmin_widget {
 
-    // The user municipality list
+    // The user municipality list.
     protected $userleveloneids = null;
 
-    /**
-     * @var         array
-     *
-     * @updateDate  17/06/2015
-     * @author      eFaktor     (fbv)
-     *
-     * Description
-     * Categories connected with user
-     */
-    protected  $myCategories    = array();
+    // Categories connected with user.
+    protected $myCategories = array();
 
-    // The related filter data returned from the form
+    // The related filter data returned from the form.
     protected $filterdata = null;
 
-    // The related sort data returned from the table
+    // The related sort data returned from the table.
     protected $sort = null;
 
-    /**
-     * @var         string
-     *
-     * @updateDate  17/06/2015
-     * @author      eFaktor     (fbv)
-     *
-     * Description
-     * Rewrite sql to get all the courses connected with user
-     *
-     * @updateDate  22/06/2015
-     * @author      eFaktor     (fbv)
-     *
-     * Description
-     * Add LEFT
-     *
-     * @updateDate  23/06/2015
-     * @author      eFaktor     (fbv)
-     *
-     * Description
-     * Replace customint1 by enrolenddate
-     */
+    // SQL to get all the courses connected to a user.
     protected $sql = " SELECT	c.id        	as 'courseid',
                                 c.fullname  	as 'name',
                                 c.startdate 	as 'date',
@@ -84,6 +56,7 @@ class local_friadmin_courselist_table_sql_model extends local_friadmin_widget {
                                 rgcse.name  	as 'sector',
                                 cl.name     	as 'location'
                        FROM 	{course} c
+
                            # Get the deadline from enrol
                            JOIN (
                                     SELECT	e.courseid,
@@ -92,6 +65,7 @@ class local_friadmin_courselist_table_sql_model extends local_friadmin_widget {
                                     WHERE 	e.status = 0
                                     GROUP BY e.courseid
                                  ) e ON e.courseid = c.id
+
                            # Get the length
                            LEFT JOIN {course_format_options} 	cln   ON 	cln.courseid 	= c.id
                                                                       AND	cln.name 		= 'length'
@@ -100,34 +74,35 @@ class local_friadmin_courselist_table_sql_model extends local_friadmin_widget {
                                                                       AND	clo.name		= 'course_location'
                            # Get the course location name
                            LEFT JOIN {course_locations} 		cl	  ON 	cl.id 			= clo.value
+
                            # Get the course sector
                            LEFT JOIN {course_format_options}	cse	  ON	cse.courseid	= c.id
                                                                       AND	cse.name		= 'course_sector'
                            # Get the course sector name
                            LEFT JOIN {report_gen_companydata} 	rgcse ON 	rgcse.id 		= cse.value
+
                            # Get the municipality
-                           LEFT JOIN {report_gen_companydata} 	rgcmu ON 	rgcmu.id 		= cl.levelone ";
+                           LEFT JOIN {report_gen_companydata} 	rgcmu ON 	rgcmu.id 		= cl.levelone
+
+                           # Get only courses with a course home page
+                           LEFT JOIN {course_format_options}	csh	  ON	csh.courseid	= c.id
+                                                                      AND	csh.name	    = 'homepage'
+
+                           # Get only courses with a course home page which is visible
+                           LEFT JOIN {course_format_options}	cshv  ON	cshv.courseid	= c.id
+                                                                      AND	cshv.name	    = 'homevisible'";
 
     /**
+     * Construct the courselist_page renderable.
+     *
      * @param           $userleveloneids
      * @param   null    $usercategories
      * @param           $filterdata
      * @param           $sort
+     *
      * @throws          Exception
-     *
-     * @creationDate
-     * @author          Urs Hunkler {@link urs.hunkler@unodo.de}
-     *
-     * Description
-     * Construct the courselist_page renderable.
-     *
-     * @updateDate      17/06/2015
-     * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Add the users categories parameter
      */
-    public function __construct($userleveloneids, $usercategories = null,$filterdata, $sort) {
+    public function __construct($userleveloneids, $usercategories = null, $filterdata, $sort) {
         /* Variables    */
 
         try {
@@ -135,37 +110,33 @@ class local_friadmin_courselist_table_sql_model extends local_friadmin_widget {
             parent::__construct();
 
             /* Set up the data  */
-            $this->userleveloneids  = $userleveloneids;
-            $this->filterdata       = $filterdata;
-            $this->sort             = $sort;
-            $this->myCategories     = $usercategories;
+            $this->userleveloneids = $userleveloneids;
+            $this->filterdata = $filterdata;
+            $this->sort = $sort;
+            $this->myCategories = $usercategories;
 
             /* Get courses list */
             $this->get_data_from_db();
-        }catch (Exception $ex) {
+        } catch (Exception $ex) {
             throw $ex;
         }//try_catch
     }//constructor
 
     /**
-     * @throws      Exception
-     *
-     * @updateDate  22/06/2015
-     * @author      eFaktor     (fbv)
-     *
-     * Description
      * Rebuild the logical to get the data from DB and to add the filter criteria
+     *
+     * @throws      Exception
      */
     protected function get_data_from_db() {
         /* Variables    */
         global $DB;
-        $params     = null;
-        $result     = null;
-        $sqlWhere   = null;
+        $params = null;
+        $result = null;
+        $sqlWhere = null;
 
         try {
             /* Add Filter   */
-            list($sqlWhere,$params) = self::AddCriteria_Filter();
+            list($sqlWhere, $params) = self::AddCriteria_Filter();
             if ($sqlWhere) {
                 $this->sql .= $sqlWhere;
             }//if_sqlWhere
@@ -175,59 +146,49 @@ class local_friadmin_courselist_table_sql_model extends local_friadmin_widget {
                 $this->sql .= ' ORDER BY ' . $this->sort;
             }//if_sort
 
+            /* Add the course limit */
+            $this->sql .= ' LIMIT ' . (local_friadmin\friadmin::MAX_LISTED_COURSES + 1);
+
             /* Execute  */
-            $result = $DB->get_records_sql($this->sql,$params);
+            $result = $DB->get_records_sql($this->sql, $params);
 
             $this->data = $result;
-        }catch (Exception $ex) {
+        } catch (Exception $ex) {
             throw $ex;
         }//try_catch
     }//get_data_from_db
 
     /**
-     * @return          array
-     * @throws          Exception
-     *
-     * @creationDate    22/06/2015
-     * @author          eFaktor     (fbv)
-     *
-     * Description
      * Get the filter criteria
      *
-     * @updateDate      23/06/2015
-     * @author          eFaktor     (fbv)
-     *
-     * Description
-     * FilterData as an Array
+     * @return          array
+     * @throws          Exception
      */
     private function AddCriteria_Filter() {
         /* Variables    */
         global $DB;
-        $params         = array();
-        $categories     = null;
-        $sqlWhere       = null;
-        $filterData     = null;
+        $params = array();
+        $categories = null;
+        $sqlWhere = null;
+        $filterData = null;
 
         try {
-            /* Categories   */
-            if ($this->myCategories) {
-                $categories = implode(',',array_keys($this->myCategories));
-                if (!$sqlWhere) {
-                    $sqlWhere = " WHERE ";
-                }else {
-                    $sqlWhere .= " AND ";
-                }//if_selWhere
-                $sqlWhere .= " c.category IN ($categories) ";
-            }//if_Categories
+            /* Courses with a visible homepage only, and they must be visible */
+            if (!$sqlWhere) {
+                $sqlWhere = " WHERE ";
+            } else {
+                $sqlWhere .= " AND ";
+            }//if_selWhere
+            $sqlWhere .= " csh.value = 1 AND cshv.value = 1 AND c.visible = 1 ";
 
-            /* Get filter criteria from the form*/
+            /* Get filter criteria from the form */
             $filterData = $this->filterdata;
             if ($filterData) {
                 /* Add Only Classroom Courses   */
                 if (isset($filterData['classroom']) && ($filterData['classroom'])) {
                     if (!$sqlWhere) {
                         $sqlWhere = " WHERE ";
-                    }else {
+                    } else {
                         $sqlWhere .= " AND ";
                     }//if_selWhere
                     $sqlWhere .= " c.format like '%classroom%' ";
@@ -235,42 +196,53 @@ class local_friadmin_courselist_table_sql_model extends local_friadmin_widget {
 
                 /* Municipality Filter  */
                 if (isset($filterData['selmunicipality']) && ($filterData['selmunicipality'])) {
+                    /* Categories   */
+                    if ($this->myCategories) {
+                        $categories = implode(',', array_keys($this->myCategories));
+                        if (!$sqlWhere) {
+                            $sqlWhere = " WHERE ";
+                        } else {
+                            $sqlWhere .= " AND ";
+                        }//if_selWhere
+                        $sqlWhere .= " c.category IN ($categories) ";
+                    }//if_Categories
+
                     if (!$sqlWhere) {
                         $sqlWhere = " WHERE ";
-                    }else {
+                    } else {
                         $sqlWhere .= " AND ";
                     }//if_selWhere
                     $sqlWhere .= " rgcmu.id = :selmunicipality ";
                     $params['selmunicipality'] = $filterData['selmunicipality'];
+
+                    /* Location Filter      */
+                    if (isset($filterData['sellocation']) && ($filterData['sellocation'])) {
+                        if (!$sqlWhere) {
+                            $sqlWhere = " WHERE ";
+                        } else {
+                            $sqlWhere .= " AND ";
+                        }//if_selWhere
+                        $sqlWhere .= " cl.id = :sellocation ";
+                        $params['sellocation'] = $filterData['sellocation'];
+                    }//if_location
+
+                    /* Sector Filter        */
+                    if (isset($filterData['selsector']) && ($filterData['selsector'])) {
+                        if (!$sqlWhere) {
+                            $sqlWhere = " WHERE ";
+                        } else {
+                            $sqlWhere .= " AND ";
+                        }//if_selWhere
+                        $sqlWhere .= " rgcse.id = :selsector ";
+                        $params['selsector'] = $filterData['selsector'];
+                    }//if_sector
                 }//if_selmunicipality
-
-                /* Location Filter      */
-                if (isset($filterData['sellocation']) && ($filterData['sellocation'])) {
-                    if (!$sqlWhere) {
-                        $sqlWhere = " WHERE ";
-                    }else {
-                        $sqlWhere .= " AND ";
-                    }//if_selWhere
-                    $sqlWhere .= " cl.id = :sellocation ";
-                    $params['sellocation'] = $filterData['sellocation'];
-                }//if_location
-
-                /* Sector Filter        */
-                if (isset($filterData['selsector']) && ($filterData['selsector'])) {
-                    if (!$sqlWhere) {
-                        $sqlWhere = " WHERE ";
-                    }else {
-                        $sqlWhere .= " AND ";
-                    }//if_selWhere
-                    $sqlWhere .= " rgcse.id = :selsector ";
-                    $params['selsector'] = $filterData['selsector'];
-                }//if_sector
 
                 /* From Time Filter     */
                 if (isset($filterData['seltimefrom']) && ($filterData['seltimefrom'])) {
                     if (!$sqlWhere) {
                         $sqlWhere = " WHERE ";
-                    }else {
+                    } else {
                         $sqlWhere .= " AND ";
                     }//if_selWhere
                     $sqlWhere .= " c.startdate >= :seltimefrom ";
@@ -281,7 +253,7 @@ class local_friadmin_courselist_table_sql_model extends local_friadmin_widget {
                 if (isset($filterData['seltimeto']) && ($filterData['seltimeto'])) {
                     if (!$sqlWhere) {
                         $sqlWhere = " WHERE ";
-                    }else {
+                    } else {
                         $sqlWhere .= " AND ";
                     }//if_selWhere
                     $sqlWhere .= " c.startdate <= :seltimeto ";
@@ -292,7 +264,7 @@ class local_friadmin_courselist_table_sql_model extends local_friadmin_widget {
                 if (isset($filterData['selname']) && ($filterData['selname'])) {
                     if (!$sqlWhere) {
                         $sqlWhere = " WHERE ";
-                    }else {
+                    } else {
                         $sqlWhere .= " AND ";
                     }//if_selWhere
                     $sqlWhere .= $DB->sql_like('c.fullname', ':selname', false, false);
@@ -300,8 +272,8 @@ class local_friadmin_courselist_table_sql_model extends local_friadmin_widget {
                 }//if_selName
             }//if_filterData
 
-            return array($sqlWhere,$params);
-        }catch (Exception $ex) {
+            return array($sqlWhere, $params);
+        } catch (Exception $ex) {
             throw $ex;
         }//try_catch
     }//AddCategories_Filter

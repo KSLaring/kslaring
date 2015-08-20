@@ -15,10 +15,9 @@
  * Integrate 'Course Locations' plugin into FriAdmin plugin
  */
 
+$string['pluginname']           = 'Frikomport';
 
-$string['pluginname']           = 'Friadmin';
-
-$string['courselist_title']     = 'Friadmin available courses';
+$string['courselist_title']     = 'Frikomport available courses';
 $string['coursetable_title']    = 'Course table';
 $string['course_courseid']      = 'Course ID';
 $string['course_name']          = 'Name';
@@ -39,7 +38,32 @@ $string['course_priceexternal'] = 'Price external';
 $string['course_link']          = 'Link';
 $string['course_edit']          = '';
 
-$string['coursedetail_title']           = 'Friadmin course details';
+$string['usercourselist_title']     = 'Frikomport available courses';
+$string['usercoursetable_title']    = 'Course table';
+$string['usercourse_courseid']      = 'Course ID';
+$string['usercourse_name']          = 'Name';
+$string['usercourse_summary']       = 'Summary';
+$string['usercourse_targetgroup']   = 'Target group';
+$string['usercourse_date']          = 'Date';
+$string['usercourse_time']          = 'Time from - to';
+$string['usercourse_seats']         = 'Avail.&nbsp;seats';
+$string['usercourse_deadline']      = 'Deadline';
+$string['usercourse_length']        = 'Length';
+$string['usercourse_municipality']  = 'Municipality';
+$string['usercourse_sector']        = 'Sector';
+$string['usercourse_location']      = 'Location';
+$string['usercourse_responsible']   = 'In charge';
+$string['usercourse_teacher']       = 'Teacher';
+$string['usercourse_priceinternal'] = 'Price internal';
+$string['usercourse_priceexternal'] = 'Price external';
+$string['usercourse_link']          = 'Link';
+$string['usercourse_edit']          = '';
+$string['usercourse_counter']       = 'No';
+$string['usercourse_morecourses']   = 'There are more courses you may be interested in
+than the ones listed in the table.<br />Please use the filters above the table to specify
+what you are looking for.';
+
+$string['coursedetail_title']           = 'Frikomport course details';
 $string['coursedetail_back']            = 'Back to courselist';
 $string['coursedetail_go']              = 'Open course';
 $string['coursedetail_settings']        = 'Course settings';
@@ -52,7 +76,7 @@ $string['coursedetail_participantlist'] = 'Downlaod participant list';
 $string['coursedetail_duplicate']       = 'Duplicate';
 $string['coursedetail_email']           = 'Send email';
 
-$string['coursetemplate_title']         = 'Friadmin add from template';
+$string['coursetemplate_title']         = 'Frikomport add from template';
 $string['coursetemplate_subtitle']      = 'Create a course from a course template.';
 $string['coursetemplate_cat']           = 'Course template category';
 $string['coursetemplate_cat_desc']      = 'Please select the course category where all template courses are stored.';
@@ -66,7 +90,7 @@ id: <strong>{$a->id}</strong>, shortname: "<strong>{$a->shortname}</strong>",
 fullname: "<strong>{$a->fullname}</strong>".';
 $string['coursetemplate_error']         = 'Course could not be created.';
 
-$string['location']             = 'Location: ';
+$string['locationline']         = 'Location: ';
 $string['fromto']               = 'From - to: ';
 $string['coursename']           = 'Course name: ';
 $string['selmunicipality']      = 'My municipalities';
@@ -79,6 +103,11 @@ $string['seltemplate']          = 'Course template';
 $string['missingseltemplate']   = 'Missing course template';
 $string['selsubmit']            = 'Search';
 $string['selsubmitcreate']      = 'Create course';
+
+$string['seleverywhere']        = 'Everywhere';
+$string['locationline_help']    = 'Explain the location selection ...';
+$string['fromto_help']          = 'Explain the time selection ...';
+$string['coursename_help']      = 'Explain the course related selections ...';
 
 $string['edit']     = 'Edit course';
 $string['show']     = 'Show details';
