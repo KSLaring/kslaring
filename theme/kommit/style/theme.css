@@ -692,6 +692,27 @@ a.autolink.glossary {
 #page-mod-lesson-view #region-main .mform:not(.unresponsive) .femptylabel .fitemtitle {
   display: none;
 }
+#page-mod-lesson-view #region-main .mform .fcontainer .contents {
+  margin-bottom: 1em;
+}
+#page-mod-lesson-view #region-main .mform .fitem div.fitemtitle {
+  text-align: left;
+}
+#page-mod-lesson-view #region-main .mform .fitem .felement {
+  margin-left: 0;
+}
+#page-mod-lesson-view #region-main .branchbuttoncontainer .singlebutton form {
+  margin-left: 0;
+}
+#page-mod-lesson-view #region-main .correctanswer {
+  margin-top: 1em;
+}
+#page-mod-lesson-view #region-main .feedback + form {
+  margin-left: 0;
+}
+#page-mod-lesson-view #region-main div[role="main"] > .singlebutton form {
+  margin-left: 0;
+}
 #page-mod-lesson-continue .ftoggler {
   display: none;
 }
