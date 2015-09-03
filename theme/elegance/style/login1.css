@@ -1,7 +1,11 @@
-
 /* @group Login */
+
 #page-login-index {
 	background: transparent;
+}
+
+#page-login-index #main {
+  background: none;
 }
 
 #page-login-index #region-main {
@@ -59,6 +63,7 @@ html.login-page{
 	background: transparent;
 	border: 0px none;
 	height: auto;
+	clear: both;
 }
 
 .loginpanel form#guestlogin input[type="submit"] {
