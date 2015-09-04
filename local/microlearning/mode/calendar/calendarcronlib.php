@@ -355,6 +355,7 @@ class Calendar_ModeCron {
         $body           = null;
         $calendar_sent  = array();
         $users_sent     = null;
+        $link           = null;
 
         try {
             mtrace('...... Start SendDeliveries_To_Users ' );
@@ -395,8 +396,8 @@ class Calendar_ModeCron {
                         }else if ($user_info->toSend) {
                             foreach ($activities_lst as $activity) {
                                 /* Build the url    */
-                                $user_info->express .= '/' . $activity->microkey;
-                                $html  = html_writer::link($user_info->express,$activity->name);
+                                $link = $user_info->express . '/' . $activity->microkey;
+                                $html  = html_writer::link($link,$activity->name);
                                 $html .= '</br>';
 
                                 $body .= '</br></br>' . $html;
