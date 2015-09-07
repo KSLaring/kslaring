@@ -312,21 +312,24 @@ class Activity_ModeCron {
                     $info->toSend       = true;
                     $info->message      = $instance->message;
 
-                    /* AFTER COMPLETION */
-                    if ($delivery_info->aftercompletion) {
-                        $act_completed = explode(',',$instance->activities_completed);
-                        if (!in_array($delivery_info->tocomplete,$act_completed)) {
-                            $info->toSend    = false;
-                        }//if_activity_completed
-                    }//if_delivery_after_completion
+                    if (!$instance->message) {
+                        /* AFTER COMPLETION */
+                        if ($delivery_info->aftercompletion) {
+                            $act_completed = explode(',',$instance->activities_completed);
+                            if (!in_array($delivery_info->tocomplete,$act_completed)) {
+                                $info->toSend    = false;
+                            }//if_activity_completed
+                        }//if_delivery_after_completion
 
-                    /* AFTER NO COMPLETED   */
-                    if ($delivery_info->afternotcompletion) {
-                        $act_completed = explode(',',$instance->activities_completed);
-                        if (in_array($delivery_info->notcomplete,$act_completed)) {
-                            $info->toSend    = false;
-                        }//if_activity_completed
-                    }//if_delivery_after_not_completed
+                        /* AFTER NO COMPLETED   */
+                        if ($delivery_info->afternotcompletion) {
+                            $act_completed = explode(',',$instance->activities_completed);
+                            if (in_array($delivery_info->notcomplete,$act_completed)) {
+                                $info->toSend    = false;
+                            }//if_activity_completed
+                        }//if_delivery_after_not_completed
+                    }
+
 
                     $users_cron[$instance->user] = $info;
                 }//for_rdo
