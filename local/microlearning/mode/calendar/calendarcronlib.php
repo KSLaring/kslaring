@@ -304,11 +304,13 @@ class Calendar_ModeCron {
                     $info->toSend       = true;
                     $info->message      = $instance->message;
 
-                    if ($delivery_info->activityafter) {
-                        $act_completed = explode(',',$instance->activities_completed);
-                        if (in_array($delivery_info->activityafter,$act_completed)) {
-                            $info->toSend    = false;
-                        }//if_activity_completed
+                    if (!$instance->message) {
+                        if ($delivery_info->activityafter) {
+                            $act_completed = explode(',',$instance->activities_completed);
+                            if (in_array($delivery_info->activityafter,$act_completed)) {
+                                $info->toSend    = false;
+                            }//if_activity_completed
+                        }
                     }
 
                     $users_cron[$instance->user] = $info;

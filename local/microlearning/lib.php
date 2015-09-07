@@ -79,7 +79,7 @@ function local_microlearning_cron() {
             /* Check if has to be run it    */
             if (isset($pluginInfo->lastcron)) {
                 /* Calculate when it has to be triggered it */
-                $timeYesterday  = mktime($cronHour, $cronMin, 0, $date['mon'], $date['mday'] - 1, $date['year']);
+                $timeYesterday  = mktime($cronHour - 3600, $cronMin - 60 , 0, $date['mon'], $date['mday'] - 1, $date['year']);
 
                 if (($pluginInfo->lastcron <= $timeYesterday)) {
                     Calendar_ModeCron::cron();
