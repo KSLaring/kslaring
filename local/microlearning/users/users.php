@@ -138,7 +138,7 @@ if ($selector_users->is_cancelled()) {
 
         /* Save the users   */
         $lst_users = Micro_Users::get_UsersFilter();
-        Micro_Users::SaveUsers_Campaign($campaign_id,$lst_users);
+        Micro_Users::SaveUsers_Campaign($course_id,$campaign_id,$mode_learning,$lst_users);
 
         $_POST = array();
         redirect($return_url);
