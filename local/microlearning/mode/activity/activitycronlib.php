@@ -90,15 +90,9 @@ class Activity_ModeCron {
                         JOIN	{microlearning_activity_mode}	mi_am	ON		mi_am.microid		= mi.id
                         JOIN	{microlearning_users}			mi_u	ON		mi_u.microid		= mi_am.microid
                         JOIN	{user_express}					uep		ON		uep.userid			= mi_u.userid
-                        JOIN	{user}							u		ON		u.id				= uep.userid
-                                                                        AND		u.deleted			= 0
-                        JOIN	{user_enrolments}				ue		ON		ue.userid			= u.id
-                        JOIN	{enrol}							e		ON		e.id				= ue.enrolid
-                                                                        AND		e.status			= 0
-                                                                        AND		e.courseid			= c.id
                         JOIN	{microlearning_deliveries}		mi_d	ON		mi_d.microid		= mi_u.microid
                                                                         AND		mi_d.micromodeid	= mi_am.id
-                                                                        AND		mi_d.userid			= ue.userid
+                                                                        AND		mi_d.userid			= uep.userid
                                                                         AND		mi_d.sent			= 0
                                                                         AND		(
                                                                                  mi_d.timetosend	<= :to_sent
@@ -275,7 +269,6 @@ class Activity_ModeCron {
             $params['campaign']     = $campaign_id;
             $params['delivery']     = $delivery_info->delivery;
             $params['course']       = $course_id;
-            $params['ccc_course']   = $course_id;
             $params['to_sent']      = $to_sent;
 
             /* SQL Instruction      */
@@ -286,12 +279,6 @@ class Activity_ModeCron {
                                     mi_d.message
                      FROM			{microlearning_deliveries}		mi_d
                         JOIN		{user_express}					uep		ON		uep.userid			= mi_d.userid
-                        JOIN		{user}							u		ON		u.id				= uep.userid
-                                                                            AND		u.deleted			= 0
-                        JOIN		{user_enrolments}				ue		ON		ue.userid			= u.id
-                        JOIN		{enrol}							e		ON		e.id				= ue.enrolid
-                                                                            AND		e.status			= 0
-                                                                            AND		e.courseid			= :course
                         LEFT JOIN	(
                                         SELECT		ccc.userid,
                                                     cc.moduleinstance
@@ -300,9 +287,9 @@ class Activity_ModeCron {
                                                                                             AND	cc.course 			= ccc.course
                                                                                             AND	cc.moduleinstance 	IN ($delivery_info->activities)
 
-                                        WHERE		ccc.course = :ccc_course
+                                        WHERE		ccc.course = :course
                                         GROUP BY 	ccc.userid
-                                    ) u_cc ON u_cc.userid = ue.userid
+                                    ) u_cc ON u_cc.userid = uep.userid
                      WHERE		mi_d.microid 		= :campaign
                        AND		mi_d.micromodeid 	= :delivery
                        AND		mi_d.sent			= 0
