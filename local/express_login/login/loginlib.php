@@ -303,9 +303,6 @@ class Express_Link {
                                                                             AND mi_d.userid			= :user
                                                                             AND	mi_d.sent			= 1
                         JOIN		{microlearning}				    mi		ON 	mi.id 				= mi_d.microid
-                        JOIN		{course_modules}				cm		ON	cm.course			= mi.courseid
-                                                                            AND	cm.instance			= mi_a.activityid
-                        JOIN		{modules}						m		ON	m.id				= cm.module
                         LEFT JOIN	{microlearning_calendar_mode}	mi_cm	ON 	mi_cm.microid		= mi.id
                                                                             AND	mi_cm.id			= mi_d.micromodeid
                                                                             AND mi_cm.microkey		= :mod_calendar
