@@ -91,8 +91,6 @@ function local_microlearning_cron() {
                 Calendar_ModeCron::cron();
                 Activity_ModeCron::cron();
                 set_config('lastexecution', $now, 'local_microlearning');
-            }else {
-
             }
         }else {
             Calendar_ModeCron::cron();

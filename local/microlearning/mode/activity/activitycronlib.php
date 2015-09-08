@@ -298,8 +298,7 @@ class Activity_ModeCron {
                                  OR
                                  mi_d.timetosend	IS NULL
                                 )
-                     GROUP BY	mi_d.userid
-                     LIMIT 0,2000 ";
+                     GROUP BY	mi_d.userid ";
 
             /* Execute  */
             $rdo = $DB->get_records_sql($sql,$params);
