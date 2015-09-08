@@ -290,7 +290,8 @@ class Calendar_ModeCron {
                         AND		mi_d.micromodeid 	= :delivery
                         AND		mi_d.sent			= 0
                         AND		mi_d.timetosend		<= :to_sent
-                     GROUP BY	mi_d.userid ";
+                     GROUP BY	mi_d.userid
+                     LIMIT 0,2000 ";
 
             /* Execute  */
             $rdo = $DB->get_records_sql($sql,$params);
