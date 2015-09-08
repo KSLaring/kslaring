@@ -139,4 +139,7 @@ function xmldb_local_doskom_install() {
         /* Create Table */
         $db_man->create_table($table_personalia);
     }//if_table_exists_user_personalia
+
+    /* Last time executed   */
+    set_config('lastexecution', 0, 'local_doskom');
 }//xmldb_local_doskom_install

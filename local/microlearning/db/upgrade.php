@@ -31,6 +31,11 @@ function xmldb_local_microlearning_upgrade($oldVersion) {
             }//if_exists
         }//if_oldVersion
 
+        if ($oldVersion < 2015090810) {
+            /* Last time executed   */
+            set_config('lastexecution', 0, 'local_microlearning');
+        }//if_oldversion
+
         return true;
     }catch (Exception $ex) {
         throw $ex;

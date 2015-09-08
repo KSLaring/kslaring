@@ -47,9 +47,16 @@ function local_microlearning_extends_settings_navigation($settingsnav, $context)
  *
  * Description
  * Cron - Micro Learning
+ *
+ * @updateDate      08/09/2015
+ * @author          eFaktor     (fbv)
+ *
+ * Description
+ * Fix problem with the last execution and last cron
  */
 function local_microlearning_cron() {
     /* Variables    */
+    global $DB;
     $pluginInfo     = null;
     $admin          = null;
     $now            = null;
@@ -59,40 +66,41 @@ function local_microlearning_cron() {
     $date           = null;
     $timeYesterday  = null;
 
-    try {
-        /* Plugins Info */
-        $pluginInfo     = get_config('local_microlearning');
+    /* Plugins Info */
+    $pluginInfo     = get_config('local_microlearning');
 
-        /* Check if the cron is activated   */
-        if ($pluginInfo->micro_cron_active) {
-            require_once('mode/calendar/calendarcronlib.php');
-            require_once('mode/activity/activitycronlib.php');
+    /* Check if the cron is Activate    */
+    if ($pluginInfo->micro_cron_active) {
+        require_once('mode/calendar/calendarcronlib.php');
+        require_once('mode/activity/activitycronlib.php');
 
-            /* Admin */
-            $admin      = get_admin();
-            $now        = time();
-            $timezone   = $admin->timezone;
-            $cronHour   = $pluginInfo->crm_auto_time;
-            $cronMin    = $pluginInfo->crm_auto_time_minute;
-            $date       = usergetdate($now, $timezone);
+        /* Admin */
+        $admin      = get_admin();
+        $now        = time();
+        $timezone   = $admin->timezone;
+        $cronHour   = $pluginInfo->micro_auto_time;
+        $cronMin    = $pluginInfo->micro_auto_time_minute;
+        $date       = usergetdate($now, $timezone);
 
-            /* Check if has to be run it    */
-            if (isset($pluginInfo->lastcron)) {
-                /* Calculate when it has to be triggered it */
-                //$timeYesterday  = mktime($cronHour, $cronMin , 0, $date['mon'], $date['mday'] - 1, $date['year']);
+        /* Check if has to be run it    */
+        if (isset($pluginInfo->lastcron)) {
+            /* Calculate when it has to be triggered it */
+            $timeYesterday  = mktime($cronHour, $cronMin, 0, $date['mon'], $date['mday'] - 1, $date['year']);
 
-                //if (($pluginInfo->lastcron <= $timeYesterday)) {
-                    Calendar_ModeCron::cron();
-                    Activity_ModeCron::cron();
-                //}
-            }else {
+            if (($pluginInfo->lastexecution <= $timeYesterday)) {
                 Calendar_ModeCron::cron();
                 Activity_ModeCron::cron();
-            }//if_else_lastcron
+                set_config('lastexecution', $now, 'local_microlearning');
+            }else {
+
+            }
         }else {
-            mtrace('... Micro Learning Cron Disabled');
-        }//if_else
-    }catch (Exception $ex) {
-        throw $ex;
-    }//try_Catch
+            Calendar_ModeCron::cron();
+            Activity_ModeCron::cron();
+            set_config('lastexecution', $now, 'local_microlearning');
+        }//if_else_lastcron
+    }else {
+        mtrace('... Micro Learning Cron Disabled');
+    }
+
 }//function_cron
