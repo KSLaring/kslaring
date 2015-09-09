@@ -13,6 +13,6 @@
 
 
 $plugin->version    =   '2015090802';         /* The plugin current version (DATE: YYYYMMDDXX) */
-$plugin->cron       =   3600;
+$plugin->cron       =   14400;
 $plugin->component  =   'local_doskom';
 

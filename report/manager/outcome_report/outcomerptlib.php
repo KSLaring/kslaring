@@ -2070,23 +2070,32 @@ class outcome_report {
     private static function Download_OutcomeReport_LevelZero($outcome_report) {
         /* Variables    */
         global $CFG;
-        $row        = null;
+        $row                = null;
+        $time               = null;
+        $fileName           = null;
+        $options            = null;
+        $completedBefore    = null;
+        $levelOne           = null;
+        $levelTwo           = null;
+        $company            = null;
+        $export             = null;
+        $myXls              = null;
 
         try {
             require_once($CFG->dirroot.'/lib/excellib.class.php');
 
             /* File Name    */
             $time = userdate(time(),'%d.%m.%Y', 99, false);
-            $file_name = clean_filename($outcome_report->name . '_' . $time . ".xls");
+            $fileName = clean_filename($outcome_report->name . '_' . $time . ".xls");
 
             /* Get Expiration Period            */
             $options            = CompetenceManager::GetCompletedList();
-            $completed_before   = $options[$outcome_report->completed_before];
+            $completedBefore    = $options[$outcome_report->completed_before];
 
             // Creating a workbook
             $export = new MoodleExcelWorkbook("-");
             // Sending HTTP headers
-            $export->send($file_name);
+            $export->send($fileName);
 
             /* One Sheet By Level twoo  */
             if ($outcome_report->levelOne) {
@@ -2094,23 +2103,23 @@ class outcome_report {
                     foreach ($levelOne->levelTwo as $levelTwo) {
                         $row = 0;
                         // Adding the worksheet
-                        $my_xls = $export->add_worksheet($levelTwo->name);
+                        $myXls = $export->add_worksheet($levelTwo->name);
 
                         /* Add Header - Company Outcome Report  - Level One */
-                        self::AddHeader_CompanySheet($outcome_report->name,$outcome_report->description,$outcome_report->job_roles,$outcome_report->levelZero,$levelOne,$levelTwo,null,$completed_before,$my_xls,$row);
+                        self::AddHeader_CompanySheet($outcome_report->name,$outcome_report->description,$outcome_report->job_roles,$outcome_report->levelZero,$levelOne,$levelTwo,null,$completedBefore,$myXls,$row);
                         /* Ad Level Two */
                         if ($levelTwo->levelThree) {
                             /* Add Header Table */
                             $row++;
-                            self::AddHeader_LevelTwo_TableCourse($my_xls,$row);
+                            self::AddHeader_LevelTwo_TableCourse($myXls,$row);
 
                             /* Add Content Table    */
                             $row++;
                             foreach ($levelTwo->levelThree as $company) {
                                 if ($company->courses) {
-                                    self::AddContent_LevelTwo_TableCourse($my_xls,$row,$company);
+                                    self::AddContent_LevelTwo_TableCourse($myXls,$row,$company);
 
-                                    $my_xls->merge_cells($row,0,$row,13);
+                                    $myXls->merge_cells($row,0,$row,13);
                                     $row++;
                                 }//if_courses
                             }//for_each_company
@@ -2120,10 +2129,10 @@ class outcome_report {
             }else {
                 $row = 0;
                 // Adding the worksheet
-                $my_xls = $export->add_worksheet($outcome_report->levelZero);
+                $myXls = $export->add_worksheet($outcome_report->levelZero);
 
                 /* Add Header - Company Outcome Report  - Level One */
-                self::AddHeader_CompanySheet($outcome_report->name,$outcome_report->description,$outcome_report->job_roles,$outcome_report->levelZero,null,null,get_string('no_data', 'report_manager'),$completed_before,$my_xls,$row);
+                self::AddHeader_CompanySheet($outcome_report->name,$outcome_report->description,$outcome_report->job_roles,$outcome_report->levelZero,null,null,get_string('no_data', 'report_manager'),$completedBefore,$myXls,$row);
             }//if_levelOne
 
             $export->close();
@@ -2146,24 +2155,32 @@ class outcome_report {
     private static function Download_OutcomeReport_LevelOne($outcome_report) {
         /* Variables    */
         global $CFG;
-        $levelOne   = null;
-        $row        = null;
+        $time               = null;
+        $fileName           = null;
+        $options            = null;
+        $completedBefore    = null;
+        $levelOne           = null;
+        $levelTwo           = null;
+        $company            = null;
+        $row                = null;
+        $export             = null;
+        $myXls              = null;
 
         try {
             require_once($CFG->dirroot.'/lib/excellib.class.php');
 
             /* File Name    */
             $time = userdate(time(),'%d.%m.%Y', 99, false);
-            $file_name = clean_filename($outcome_report->name . '_' . $time . ".xls");
+            $fileName = clean_filename($outcome_report->name . '_' . $time . ".xls");
 
             /* Get Expiration Period            */
             $options            = CompetenceManager::GetCompletedList();
-            $completed_before   = $options[$outcome_report->completed_before];
+            $completedBefore    = $options[$outcome_report->completed_before];
 
             // Creating a workbook
             $export = new MoodleExcelWorkbook("-");
             // Sending HTTP headers
-            $export->send($file_name);
+            $export->send($fileName);
 
             /* One Sheet by Level Two   */
             $levelOne = array_shift($outcome_report->levelOne);
@@ -2171,24 +2188,24 @@ class outcome_report {
                 foreach ($levelOne->levelTwo as $levelTwo) {
                     $row = 0;
                     // Adding the worksheet
-                    $my_xls = $export->add_worksheet($levelTwo->name);
+                    $myXls = $export->add_worksheet($levelTwo->name);
 
                     /* Add Header - Company Outcome Report  - Level One */
-                    self::AddHeader_CompanySheet($outcome_report->name,$outcome_report->description,$outcome_report->job_roles,$outcome_report->levelZero,$levelOne,$levelTwo,null,$completed_before,$my_xls,$row);
+                    self::AddHeader_CompanySheet($outcome_report->name,$outcome_report->description,$outcome_report->job_roles,$outcome_report->levelZero,$levelOne,$levelTwo,null,$completedBefore,$myXls,$row);
 
                     /* Ad Level Two */
                     if ($levelTwo->levelThree) {
                         /* Add Header Table */
                         $row++;
-                        self::AddHeader_LevelTwo_TableCourse($my_xls,$row);
+                        self::AddHeader_LevelTwo_TableCourse($myXls,$row);
 
                         /* Add Content Table    */
                         $row++;
                         foreach ($levelTwo->levelThree as $company) {
                             if ($company->courses) {
-                                self::AddContent_LevelTwo_TableCourse($my_xls,$row,$company);
+                                self::AddContent_LevelTwo_TableCourse($myXls,$row,$company);
 
-                                $my_xls->merge_cells($row,0,$row,13);
+                                $myXls->merge_cells($row,0,$row,13);
                                 $row++;
                             }//if_courses
                         }//for_each_company
@@ -2197,10 +2214,10 @@ class outcome_report {
             }else {
                 $row = 0;
                 // Adding the worksheet
-                $my_xls = $export->add_worksheet($levelOne->name);
+                $myXls = $export->add_worksheet($levelOne->name);
 
                 /* Add Header - Company Outcome Report  - Level One */
-                self::AddHeader_CompanySheet($outcome_report->name,$outcome_report->description,$outcome_report->job_roles,$outcome_report->levelZero,$levelOne,null,get_string('no_data', 'report_manager'),$completed_before,$my_xls,$row);
+                self::AddHeader_CompanySheet($outcome_report->name,$outcome_report->description,$outcome_report->job_roles,$outcome_report->levelZero,$levelOne,null,get_string('no_data', 'report_manager'),$completedBefore,$myXls,$row);
             }//if_levelTwo
 
 
@@ -2224,25 +2241,32 @@ class outcome_report {
     private static function Download_OutcomeReport_LevelTwo($outcome_report) {
         /* Variables    */
         global $CFG;
-        $levelOne   = null;
-        $levelTwo   = null;
-        $row        = null;
+        $time               = null;
+        $fileName           = null;
+        $options            = null;
+        $completedBefore    = null;
+        $levelOne           = null;
+        $levelTwo           = null;
+        $company            = null;
+        $export             = null;
+        $myXls              = null;
+        $row                = null;
 
         try {
             require_once($CFG->dirroot.'/lib/excellib.class.php');
 
             /* File Name    */
             $time = userdate(time(),'%d.%m.%Y', 99, false);
-            $file_name = clean_filename($outcome_report->name . '_' . $time . ".xls");
+            $fileName = clean_filename($outcome_report->name . '_' . $time . ".xls");
 
             /* Get Expiration Period            */
             $options            = CompetenceManager::GetCompletedList();
-            $completed_before   = $options[$outcome_report->completed_before];
+            $completedBefore    = $options[$outcome_report->completed_before];
 
             // Creating a workbook
             $export = new MoodleExcelWorkbook("-");
             // Sending HTTP headers
-            $export->send($file_name);
+            $export->send($fileName);
 
             /* Level One   */
             $levelOne = array_shift($outcome_report->levelOne);
@@ -2252,31 +2276,31 @@ class outcome_report {
             /* One Sheet by Level Two   */
             $row = 0;
             // Adding the worksheet
-            $my_xls    = $export->add_worksheet($levelTwo->name);
+            $myXls    = $export->add_worksheet($levelTwo->name);
 
 
             /* Ad Level Two */
             if ($levelTwo->levelThree) {
                 /* Add Header - Company Outcome Report  - Level One */
-                self::AddHeader_CompanySheet($outcome_report->name,$outcome_report->description,$outcome_report->job_roles,$outcome_report->levelZero,$levelOne,$levelTwo,null,$completed_before,$my_xls,$row);
+                self::AddHeader_CompanySheet($outcome_report->name,$outcome_report->description,$outcome_report->job_roles,$outcome_report->levelZero,$levelOne,$levelTwo,null,$completedBefore,$myXls,$row);
 
                 /* Add Header Table */
                 $row++;
-                self::AddHeader_LevelTwo_TableCourse($my_xls,$row);
+                self::AddHeader_LevelTwo_TableCourse($myXls,$row);
 
                 /* Add Content Table    */
                 $row++;
                 foreach ($levelTwo->levelThree as $company) {
                     if ($company->courses) {
-                        self::AddContent_LevelTwo_TableCourse($my_xls,$row,$company);
+                        self::AddContent_LevelTwo_TableCourse($myXls,$row,$company);
 
-                        $my_xls->merge_cells($row,0,$row,13);
+                        $myXls->merge_cells($row,0,$row,13);
                         $row++;
                     }//if_courses
                 }//for_each_company
             }else {
                 /* Add Header - Company Outcome Report  - Level One */
-                self::AddHeader_CompanySheet($outcome_report->name,$outcome_report->description,$outcome_report->job_roles,$outcome_report->levelZero,$levelOne,$levelTwo,get_string('no_data', 'report_manager'),$completed_before,$my_xls,$row);
+                self::AddHeader_CompanySheet($outcome_report->name,$outcome_report->description,$outcome_report->job_roles,$outcome_report->levelZero,$levelOne,$levelTwo,get_string('no_data', 'report_manager'),$completedBefore,$myXls,$row);
             }//if_level_three
 
             $export->close();
@@ -2299,25 +2323,32 @@ class outcome_report {
     private static function Download_OutcomeReport_LevelThree($outcome_report) {
         /* Variables    */
         global $CFG;
-        $levelOne   = null;
-        $levelTwo   = null;
-        $row        = null;
+        $time               = null;
+        $fileName           = null;
+        $options            = null;
+        $completedBefore    = null;
+        $levelOne           = null;
+        $levelTwo           = null;
+        $company            = null;
+        $row                = null;
+        $export             = null;
+        $myXls              = null;
 
         try {
             require_once($CFG->dirroot.'/lib/excellib.class.php');
 
             /* File Name    */
             $time = userdate(time(),'%d.%m.%Y', 99, false);
-            $file_name = clean_filename($outcome_report->name . '_' . $time . ".xls");
+            $fileName = clean_filename($outcome_report->name . '_' . $time . ".xls");
 
             /* Get Expiration Period            */
             $options            = CompetenceManager::GetCompletedList();
-            $completed_before   = $options[$outcome_report->completed_before];
+            $completedBefore    = $options[$outcome_report->completed_before];
 
             // Creating a workbook
             $export = new MoodleExcelWorkbook("-");
             // Sending HTTP headers
-            $export->send($file_name);
+            $export->send($fileName);
 
             /* Level One   */
             $levelOne = array_shift($outcome_report->levelOne);
@@ -2330,28 +2361,28 @@ class outcome_report {
                     /* One Sheet by Level Three   */
                     $row = 0;
                     // Adding the worksheet
-                    $my_xls    = $export->add_worksheet($company->name);
+                    $myXls    = $export->add_worksheet($company->name);
 
                     /* Add Header - Company Outcome Report  - Level One */
-                    self::AddHeader_CompanySheet($outcome_report->name,$outcome_report->description,$outcome_report->job_roles,$outcome_report->levelZero,$levelOne,$levelTwo,$company->name,$completed_before,$my_xls,$row);
+                    self::AddHeader_CompanySheet($outcome_report->name,$outcome_report->description,$outcome_report->job_roles,$outcome_report->levelZero,$levelOne,$levelTwo,$company->name,$completedBefore,$myXls,$row);
 
                     /* Add Header Table     */
                     $row++;
-                    self::AddHeader_LevelThree_TableCourse($my_xls,$row);
+                    self::AddHeader_LevelThree_TableCourse($myXls,$row);
                     ///* Add Content Table    */
                     $row++;
-                    self::AddContent_LevelThree_TableCourse($my_xls,$row,$company,$outcome_report->expiration);
+                    self::AddContent_LevelThree_TableCourse($myXls,$row,$company,$outcome_report->expiration);
 
-                    $my_xls->merge_cells($row,0,$row,16);
+                    $myXls->merge_cells($row,0,$row,16);
                 }//for_each_company
             }else {
                 /* One Sheet by Level Three   */
                 $row = 0;
                 // Adding the worksheet
-                $my_xls    = $export->add_worksheet($levelTwo->name);
+                $myXls    = $export->add_worksheet($levelTwo->name);
 
                 /* Add Header - Company Outcome Report  - Level One */
-                self::AddHeader_CompanySheet($outcome_report->name,$outcome_report->description,$outcome_report->job_roles,$outcome_report->levelZero,$levelOne,$levelTwo,get_string('no_data', 'report_manager'),$completed_before,$my_xls,$row);
+                self::AddHeader_CompanySheet($outcome_report->name,$outcome_report->description,$outcome_report->job_roles,$outcome_report->levelZero,$levelOne,$levelTwo,get_string('no_data', 'report_manager'),$completedBefore,$myXls,$row);
             }//if_level_three
 
             $export->close();
