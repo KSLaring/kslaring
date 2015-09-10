@@ -714,10 +714,11 @@ class ImportCompetence {
             self::AddHeader_CompetenceSheet($myXls,$row);
 
             /* Add content  */
-            $row++;
+            $row ++;
             self::AddContent_CompetenceSheet($notImported,$myXls,$row);
 
             $export->close();
+            exit;
         }catch (Exception $ex) {
             throw $ex;
         }//try_Catch
@@ -2078,49 +2079,49 @@ class ImportCompetence {
         try {
             /* Username                 */
             $myXls->write($row, $col, $colUser,array('size'=>12, 'name'=>'Arial','bold'=>'1','color' => '#004b93','bg_color'=>'#efefef','align'=>'left','v_align'=>'center'));
-            $myXls->merge_cells($row,$col,$row,$col+5);
+            $myXls->merge_cells($row,$col,$row,$col+1);
             $myXls->set_row($row,20);
 
             /* Workplace                */
-            $col += 6;
+            $col += 2;
             $myXls->write($row, $col, $colWK,array('size'=>12, 'name'=>'Arial','bold'=>'1','color' => '#004b93','bg_color'=>'#efefef','align'=>'left','v_align'=>'center'));
-            $myXls->merge_cells($row,$col,$row,$col+5);
+            $myXls->merge_cells($row,$col,$row,$col+3);
             $myXls->set_row($row,20);
 
             /* Workplace Industry code  */
-            $col += 6;
+            $col += 4;
             $myXls->write($row, $col, $colWKIC,array('size'=>12, 'name'=>'Arial','bold'=>'1','color' => '#004b93','bg_color'=>'#efefef','align'=>'left','v_align'=>'center'));
-            $myXls->merge_cells($row,$col,$row,$col+5);
+            $myXls->merge_cells($row,$col,$row,$col+1);
             $myXls->set_row($row,20);
 
             /* Sector                   */
-            $col += 6;
+            $col += 2;
             $myXls->write($row, $col, $colSE,array('size'=>12, 'name'=>'Arial','bold'=>'1','color' => '#004b93','bg_color'=>'#efefef','align'=>'left','v_align'=>'center'));
-            $myXls->merge_cells($row,$col,$row,$col+5);
+            $myXls->merge_cells($row,$col,$row,$col+3);
             $myXls->set_row($row,20);
 
             /* Jobrole                  */
-            $col += 6;
+            $col += 4;
             $myXls->write($row, $col, $colJR,array('size'=>12, 'name'=>'Arial','bold'=>'1','color' => '#004b93','bg_color'=>'#efefef','align'=>'left','v_align'=>'center'));
-            $myXls->merge_cells($row,$col,$row,$col+5);
+            $myXls->merge_cells($row,$col,$row,$col+3);
             $myXls->set_row($row,20);
 
             /* Jobrole Industry Code    */
-            $col += 6;
+            $col += 4;
             $myXls->write($row, $col, $colJRIC,array('size'=>12, 'name'=>'Arial','bold'=>'1','color' => '#004b93','bg_color'=>'#efefef','align'=>'left','v_align'=>'center'));
-            $myXls->merge_cells($row,$col,$row,$col+5);
+            $myXls->merge_cells($row,$col,$row,$col+1);
             $myXls->set_row($row,20);
 
             /* Generic                  */
-            $col += 6;
+            $col += 2;
             $myXls->write($row, $col, $colGene,array('size'=>12, 'name'=>'Arial','bold'=>'1','color' => '#004b93','bg_color'=>'#efefef','align'=>'left','v_align'=>'center'));
-            $myXls->merge_cells($row,$col,$row,$col+5);
+            $myXls->merge_cells($row,$col,$row,$col+1);
             $myXls->set_row($row,20);
 
             /* Delete                   */
-            $col += 6;
+            $col += 2;
             $myXls->write($row, $col, $colDel,array('size'=>12, 'name'=>'Arial','bold'=>'1','color' => '#004b93','bg_color'=>'#efefef','align'=>'left','v_align'=>'center'));
-            $myXls->merge_cells($row,$col,$row,$col+5);
+            $myXls->merge_cells($row,$col,$row,$col+1);
             $myXls->set_row($row,20);
         }catch (Exception $ex) {
             throw $ex;
@@ -2150,38 +2151,38 @@ class ImportCompetence {
         try {
             foreach ($notImported as $info) {
                 /* Username                 */
-                $myXls->write($row, $col, $info->username,array('size'=>12, 'name'=>'Arial','align'=>'left','v_align'=>'center'));
-                $myXls->merge_cells($row,$col,$row,$col+5);
+                $myXls->write_string($row, $col, $info->username,array('size'=>12, 'name'=>'Arial','align'=>'left','v_align'=>'center'));
+                $myXls->merge_cells($row,$col,$row,$col+1);
                 $myXls->set_row($row,20);
 
                 /* Workplace                */
-                $col += 6;
+                $col += 2;
                 $myXls->write($row, $col, $info->workplace,array('size'=>12, 'name'=>'Arial','align'=>'left','v_align'=>'center'));
-                $myXls->merge_cells($row,$col,$row,$col+5);
+                $myXls->merge_cells($row,$col,$row,$col+3);
                 $myXls->set_row($row,20);
 
                 /* Workplace Industry Code  */
-                $col += 6;
-                $myXls->write($row, $col, $info->workplace_ic,array('size'=>12, 'name'=>'Arial','align'=>'left','v_align'=>'center'));
-                $myXls->merge_cells($row,$col,$row,$col+5);
+                $col += 4;
+                $myXls->write_string($row, $col, $info->workplace_ic,array('size'=>12, 'name'=>'Arial','align'=>'left','v_align'=>'center'));
+                $myXls->merge_cells($row,$col,$row,$col+1);
                 $myXls->set_row($row,20);
 
                 /* Sector                   */
-                $col += 6;
+                $col += 2;
                 $myXls->write($row, $col, $info->sector,array('size'=>12, 'name'=>'Arial','align'=>'left','v_align'=>'center'));
-                $myXls->merge_cells($row,$col,$row,$col+5);
+                $myXls->merge_cells($row,$col,$row,$col+3);
                 $myXls->set_row($row,20);
 
                 /* Jobrole                  */
-                $col += 6;
+                $col += 4;
                 $myXls->write($row, $col, $info->jobrole,array('size'=>12, 'name'=>'Arial','align'=>'left','v_align'=>'center'));
-                $myXls->merge_cells($row,$col,$row,$col+5);
+                $myXls->merge_cells($row,$col,$row,$col+3);
                 $myXls->set_row($row,20);
 
                 /* Jobrole Industry Code    */
-                $col += 6;
-                $myXls->write($row, $col, $info->jobrole_ic,array('size'=>12, 'name'=>'Arial','align'=>'left','v_align'=>'center'));
-                $myXls->merge_cells($row,$col,$row,$col+5);
+                $col += 4;
+                $myXls->write_string($row, $col, $info->jobrole_ic,array('size'=>12, 'name'=>'Arial','align'=>'left','v_align'=>'center'));
+                $myXls->merge_cells($row,$col,$row,$col+1);
                 $myXls->set_row($row,20);
 
                 /* Generic                  */
@@ -2190,9 +2191,9 @@ class ImportCompetence {
                 }else {
                     $strGeneric = 'FALSE';
                 }//if_generic
-                $col += 6;
+                $col += 2;
                 $myXls->write($row, $col, $strGeneric,array('size'=>12, 'name'=>'Arial','align'=>'left','v_align'=>'center'));
-                $myXls->merge_cells($row,$col,$row,$col+5);
+                $myXls->merge_cells($row,$col,$row,$col+1);
                 $myXls->set_row($row,20);
 
                 /* Delete                   */
@@ -2201,9 +2202,9 @@ class ImportCompetence {
                 }else {
                     $strDelete = 'FALSE';
                 }//if_todelete
-                $col += 6;
+                $col += 2;
                 $myXls->write($row, $col, $strDelete,array('size'=>12, 'name'=>'Arial','align'=>'left','v_align'=>'center'));
-                $myXls->merge_cells($row,$col,$row,$col+5);
+                $myXls->merge_cells($row,$col,$row,$col+1);
                 $myXls->set_row($row,20);
 
                 /* Reset for the new row    */
