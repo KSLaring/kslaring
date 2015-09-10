@@ -34,30 +34,35 @@ function local_tracker_manager_extends_navigation(global_navigation $navigation)
  */
 function local_tracker_manager_extends_settings_navigation($settingsnav, $context) {
     /* Variables    */
-    global $USER;
-    $node_before    = null;
+    global $USER,$ADMIN;
+    $url                = null;
+    $strTitle           = null;
+    $nodeBefore         = null;
+    $settingNode        = null;
+    $competenceNode     = null;
+    $competenceImpNode  = null;
 
-    if ($setting_node = $settingsnav->get('usercurrentsettings')) {
-        $str_title = get_string('competence_profile', 'profilefield_competence');
-        $url =new moodle_url('/user/profile/field/competence/competence.php',array('id' =>$USER->id));
+    if ($settingNode = $settingsnav->get('usercurrentsettings')) {
+        $strTitle   = get_string('competence_profile', 'profilefield_competence');
+        $url        = new moodle_url('/user/profile/field/competence/competence.php',array('id' =>$USER->id));
 
         /* Create Node  */
-        $competence_node = navigation_node::create($str_title,
+        $competenceNode = navigation_node::create($strTitle,
                                                    $url,
                                                    navigation_node::TYPE_SETTING,'competence_profile',
                                                    'competence_profile',
                                                    null);
         /* Find the position to add the link    */
-        foreach ($setting_node->children as $child) {
+        foreach ($settingNode->children as $child) {
             if ($child->text == get_string('changepassword')) {
-                $node_before = $child->key;
+                $nodeBefore = $child->key;
             }
         }//for_childrens
 
-        if ($node_before) {
-            $setting_node->add_node($competence_node,$node_before);
+        if ($nodeBefore) {
+            $settingNode->add_node($competenceNode,$nodeBefore);
         }else {
-            $setting_node->add_node($competence_node);
+            $settingNode->add_node($competenceNode);
         }//if_node_before
     }//if_usercurrentsettings
 }//local_microlearning_extends_settings_navigation
