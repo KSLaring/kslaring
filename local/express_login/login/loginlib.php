@@ -295,8 +295,8 @@ class Express_Link {
             $params['module']       = $microLearning[1];
 
             /* SQL Instruction  */
-            $sql = " SELECT		    mi_a.activityid,
-                                    mi_a.module
+            $sql = " SELECT		    DISTINCT  mi_a.activityid,
+                                              mi_a.module
                      FROM			{microlearning_activities}	    mi_a
                         JOIN		{microlearning_deliveries}	    mi_d	ON	mi_d.microid		= mi_a.microid
                                                                             AND mi_d.micromodeid	= mi_a.micromodeid

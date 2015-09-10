@@ -374,7 +374,7 @@ class Activity_ModeCron {
                     $users_sent = array();
 
                     /* Info to send     */
-                    $subject        = $campaign->course_name . ' (' . $campaign->campaign_name . ') ' . $delivery->subject;
+                    $subject        = $delivery->subject;
                     $activities_lst = $delivery->activities;
 
                     /* Get the Users    */
