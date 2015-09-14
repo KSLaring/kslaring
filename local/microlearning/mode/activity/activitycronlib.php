@@ -43,7 +43,7 @@ class Activity_ModeCron {
 
                 /* Update Status    */
                 self::UpdateStatusActivityDeliveries($campaignSent,$deliveriesSent);
-            }//if_activitites
+            }//if_activitiesDeliveries
 
             mtrace('Finish Activity Mode Cron Campaigns: ' . time() );
             return true;
@@ -433,7 +433,8 @@ class Activity_ModeCron {
                         SET sent          = 1,
                             message       = null,
                             timesent      = :time,
-                            timemodified  = :mod ";
+                            timemodified  = :mod
+                     WHERE id IN ($mdKeys) ";
             /* Execute  */
             $DB->execute($sql,$params);
 

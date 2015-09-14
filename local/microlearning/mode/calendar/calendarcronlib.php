@@ -397,7 +397,8 @@ class Calendar_ModeCron {
                         SET sent          = 1,
                             message       = null,
                             timesent      = :time,
-                            timemodified  = :mod ";
+                            timemodified  = :mod
+                     WHERE id IN ($mdKeys) ";
             /* Execute  */
             $DB->execute($sql,$params);
 
