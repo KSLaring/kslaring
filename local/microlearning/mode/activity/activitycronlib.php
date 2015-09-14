@@ -86,7 +86,7 @@ class Activity_ModeCron {
             /* Search Criteria  */
             $params = array();
             $params['sent']     = 0;
-            $params['timeTo']   = $time;
+            $params['time']     = $time;
             $params['activate'] = 1;
 
             /* SQL Instruction  */
@@ -117,7 +117,7 @@ class Activity_ModeCron {
                                                                             AND		cc_n.course			= mi.courseid
                      WHERE		mi_d.sent 		 = :sent
                         AND		(
-                                 mi_d.timetosend <= :timeTo
+                                 mi_d.timetosend <= :time
                                  OR
                                  mi_d.timetosend IS NULL
                                 )
@@ -128,7 +128,7 @@ class Activity_ModeCron {
             if ($rdo) {
                 foreach($rdo as $instance) {
                     /* Get Activities   */
-                    $activitiesDelivery = self::GetInfoActivities_Delivery($instance->microid,$instance->id,$instance->course,$instance->activities);
+                    $activitiesDelivery = self::GetInfoActivities_Delivery($instance->microid,$instance->id,$instance->courseid,$instance->activities);
                     /* Get Users        */
                     $usersDelivery      = self::GetUsersDelivery($instance,$activitiesDelivery,$time);
 
@@ -235,7 +235,7 @@ class Activity_ModeCron {
             /* Search Criteria  */
             $params = array();
             $params['sent']     = 0;
-            $params['timeTo']   = $time;
+            $params['time']     = $time;
             $params['campaign'] = $infoDelivery->microid;
             $params['delivery'] = $infoDelivery->id;
 
@@ -259,7 +259,7 @@ class Activity_ModeCron {
                             JOIN	{course_completion_crit_compl}	ccc		ON 	ccc.userid 					 = uep.userid
                                                                             AND ccc.course 					 = :course
                                                                             AND ccc.criteriaid 				 = :criteria
-                                                                            AND (ccc.timecompleted + $daysAfter) <= :timeTo
+                                                                            AND (ccc.timecompleted + $daysAfter) <= :time
                          WHERE		mi_d.microid        = :campaign
                             AND		mi_d.micromodeid 	= :delivery
                             AND		mi_d.sent			= :sent ";
@@ -282,10 +282,11 @@ class Activity_ModeCron {
                          WHERE		mi_d.microid        = :campaign
                             AND		mi_d.micromodeid 	= :delivery
                             AND		mi_d.sent			= :sent
-                            AND		mi_d.timetosend		<= :timeTo
+                            AND		mi_d.timetosend		<= :time
                             AND		ccc.id IS NULL ";
             }else {
-                $sql = " SELECT			mi_d.userid,
+                $sql = " SELECT			mi_d.id,
+                                        mi_d.userid,
                                         uep.token,
                                         mi_d.timetosend,
                                         mi_d.message
@@ -294,7 +295,7 @@ class Activity_ModeCron {
                          WHERE		mi_d.microid        = :campaign
                             AND		mi_d.micromodeid 	= :delivery
                             AND		mi_d.sent			= :sent
-                            AND		mi_d.timetosend		<= :timeTo ";
+                            AND		mi_d.timetosend		<= :time ";
             }//if_Else
 
             /* Execute  */
@@ -429,7 +430,7 @@ class Activity_ModeCron {
             /* SQL Instruction  */
             $sql = " UPDATE {microlearning_deliveries}
                         SET sent          = 1,
-                            message       = null
+                            message       = null,
                             timesent      = :time,
                             timemodified  = :mod ";
             /* Execute  */

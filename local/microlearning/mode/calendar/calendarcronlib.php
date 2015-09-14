@@ -85,7 +85,7 @@ class Calendar_ModeCron {
             /* Search Criteria  */
             $params = array();
             $params['sent']     = 0;
-            $params['timeTo']   = $time;
+            $params['time']     = $time;
             $params['activate'] = 1;
 
             /* SQL Instruction  */
@@ -108,7 +108,7 @@ class Calendar_ModeCron {
                         LEFT JOIN	{course_completion_criteria}	cc		ON		cc.moduleinstance	= mi_cm.activityafter
                                                                             AND		cc.course			= mi.courseid
                      WHERE		mi_d.sent 		 = :sent
-                        AND		mi_d.timetosend <= :timeTo
+                        AND		mi_d.timetosend <= :time
                      GROUP BY mi_cm.id ";
 
 
@@ -117,7 +117,7 @@ class Calendar_ModeCron {
             if ($rdo) {
                 foreach($rdo as $instance) {
                     /* Get Activities   */
-                    $activitiesDelivery = self::GetInfoActivities_Delivery($instance->microid,$instance->id,$instance->course,$instance->activities);
+                    $activitiesDelivery = self::GetInfoActivities_Delivery($instance->microid,$instance->id,$instance->courseid,$instance->activities);
                     /* Get Users        */
                     $usersDelivery      = self::GetUsersDelivery($instance,$activitiesDelivery,$time);
 
@@ -223,12 +223,12 @@ class Calendar_ModeCron {
             /* Search Criteria  */
             $params = array();
             $params['sent']     = 0;
-            $params['timeTo']   = $time;
+            $params['time']   = $time;
             $params['calendar'] = $infoDelivery->microid;
             $params['delivery'] = $infoDelivery->id;
 
             /* SQL Instruction  */
-            if ($infoDelivery->critria_after) {
+            if ($infoDelivery->criteria_after) {
                 /* Search Criteria  */
                 $params['course']   = $infoDelivery->courseid;
                 $params['criteria'] = $infoDelivery->criteria_after;
@@ -246,10 +246,11 @@ class Calendar_ModeCron {
                      WHERE		mi_d.microid        = :calendar
                         AND		mi_d.micromodeid 	= :delivery
                         AND		mi_d.sent			= :sent
-                        AND		mi_d.timetosend		<= :timeTo
+                        AND		mi_d.timetosend		<= :time
                         AND		ccc.id IS NULL ";
             }else {
-                $sql = " SELECT			mi_d.userid,
+                $sql = " SELECT			mi_d.id,
+                                        mi_d.userid,
                                         uep.token,
                                         mi_d.timetosend,
                                         mi_d.message
@@ -258,7 +259,7 @@ class Calendar_ModeCron {
                          WHERE		mi_d.microid        = :calendar
                             AND		mi_d.micromodeid 	= :delivery
                             AND		mi_d.sent			= :sent
-                            AND		mi_d.timetosend		<= :timeTo ";
+                            AND		mi_d.timetosend		<= :time ";
             }//if_else
 
             /* Execute  */
@@ -393,7 +394,7 @@ class Calendar_ModeCron {
             /* SQL Instruction  */
             $sql = " UPDATE {microlearning_deliveries}
                         SET sent          = 1,
-                            message       = null
+                            message       = null,
                             timesent      = :time,
                             timemodified  = :mod ";
             /* Execute  */
