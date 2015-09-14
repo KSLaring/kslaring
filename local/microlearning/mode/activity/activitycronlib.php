@@ -12,40 +12,42 @@
  */
 
 class Activity_ModeCron {
-
     /**
      * @return          bool
+     * @throws          Exception
      *
      * @creationDate    05/12/2014
      * @author          eFaktor     (fbv)
      *
+     * @updateDate      11/09/2015
+     * @author          eFaktor     (fbv)
+     *
      * Description
-     * Activity Mode Cron
+     * Activity Mode
+     * Optimize code and queries
      */
     public static function cron() {
         /* Variables    */
-        $activity_campaigns     = null;
-        $activities_sent        = null;
+        $activitiesDeliveries   = null;
+        $campaignSent           = null;
+        $deliveriesSent         = null;
 
         try {
             mtrace('Start Activity Mode Cron Campaigns: ' . time() );
 
-            /* Get all the information connected with the campaigns */
-            $activity_campaigns = self::GetCampaigns_ToCron();
-            if ($activity_campaigns) {
-                /* Send Deliveries          */
-                $activities_sent = self::SendDeliveries_To_Users($activity_campaigns);
-                /* Update Status Deliveries */
-                if ($activities_sent) {
-                    self::UpdateStatus_ActivityDeliveries($activities_sent);
-                }//if_calendars_sent
-            }//if_activity_campaigns
+            /* Get Deliveries Activity Mode   */
+            $activitiesDeliveries = self::GetDeliveriesActivity();
+
+            /* Send Deliveries  */
+            list($campaignSent,$deliveriesSent) = self::SendDeliveries($activitiesDeliveries);
+
+            /* Update Status    */
+            self::UpdateStatusActivityDeliveries($campaignSent,$deliveriesSent);
 
             mtrace('Finish Activity Mode Cron Campaigns: ' . time() );
-
             return true;
         }catch (Exception $ex) {
-            return false;
+            throw $ex;
         }//try_Catch
     }//cron
 
@@ -60,448 +62,388 @@ class Activity_ModeCron {
      * @creationDate    05/12/2014
      * @author          eFaktor     (fbv)
      *
+     * @updateDate      11/09/2015
+     * @author          eFaktor     (fbv)
+     *
      * Description
-     * Get all the activity campaigns to send to the users
+     * Get all deliveries with users to notify
      */
-    private static function GetCampaigns_ToCron() {
+    private static function GetDeliveriesActivity() {
         /* Variables    */
         global $DB;
-        $campaigns_cron = array();
-        $to_sent        = time();
-        $params         = null;
-        $sql            = null;
-        $rdo            = null;
-        $info           = null;
+        $time               = null;
+        $params             = null;
+        $sql                = null;
+        $rdo                = null;
+        $deliveriesActivity = array();
+        $activitiesDelivery = null;
+        $usersDelivery      = null;
 
         try {
+            /* Local Time   */
+            $time = time();
+
             /* Search Criteria  */
             $params = array();
-            $params['to_sent'] = $to_sent;
+            $params['sent']     = 0;
+            $params['timeTo']   = $time;
+            $params['activate'] = 1;
 
             /* SQL Instruction  */
-            $sql = " SELECT		mi.id															as 	'campaign',
-                                c.id															as 	'course',
-                                c.fullname														as 	'course_name',
-                                mi.name															as	'campaign_name',
-                                GROUP_CONCAT(DISTINCT mi_am.id ORDER BY mi_am.id SEPARATOR ',') as 	'deliveries'
-                     FROM		{microlearning}					mi
-                        JOIN	{course}						c		ON		c.id 				= mi.courseid
-                                                                        AND		c.visible 			= 1
-                        JOIN	{microlearning_activity_mode}	mi_am	ON		mi_am.microid		= mi.id
-                        JOIN	{microlearning_users}			mi_u	ON		mi_u.microid		= mi_am.microid
-                        JOIN	{user_express}					uep		ON		uep.userid			= mi_u.userid
-                        JOIN	{microlearning_deliveries}		mi_d	ON		mi_d.microid		= mi_u.microid
-                                                                        AND		mi_d.micromodeid	= mi_am.id
-                                                                        AND		mi_d.userid			= uep.userid
-                                                                        AND		mi_d.sent			= 0
-                                                                        AND		(
-                                                                                 mi_d.timetosend	<= :to_sent
-                                                                                 OR
-                                                                                 mi_d.timetosend	IS NULL
-                                                                                )
-
-                     WHERE		mi.activate = 1
-                       AND		mi.type		= 2
-                     GROUP BY	mi.id ";
+            $sql = " SELECT		DISTINCT	mi_am.id,
+                                            mi_am.microid,
+                                            mi_am.microkey,
+                                            mi_am.aftercompletion,
+                                            cc.id as 'criteria_tocomplete',
+                                            mi_am.afternotcompletion,
+                                            cc_n.id as 'criteria_notcomplete',
+                                            mi_am.subject,
+                                            mi_am.body,
+                                            GROUP_CONCAT(DISTINCT mi_a.activityid ORDER BY mi_a.activityid SEPARATOR ',') 	as 	'activities',
+                                            mi.courseid
+                     FROM			{microlearning_activity_mode}	mi_am
+                        JOIN		{microlearning}					mi		ON		mi.id 				= mi_am.microid
+                                                                            AND		mi.activate			= :activate
+                        JOIN		{microlearning_activities}		mi_a	ON		mi_a.microid		= mi.id
+                                                                            AND		mi_a.micromodeid	= mi_am.id
+                        JOIN		{microlearning_deliveries}		mi_d	ON		mi_d.microid		= mi_a.microid
+                                                                            AND		mi_d.micromodeid	= mi_a.micromodeid
+                        JOIN		{user_express}					uep		ON		uep.userid			= mi_d.userid
+                        -- AFTER COMLPETION
+                        LEFT JOIN	{course_completion_criteria}	cc		ON		cc.moduleinstance	= mi_am.tocomplete
+                                                                            AND		cc.course			= mi.courseid
+                        -- AFTER NOT COMPLETE
+                        LEFT JOIN	{course_completion_criteria}	cc_n	ON		cc_n.moduleinstance	= mi_am.notcomplete
+                                                                            AND		cc_n.course			= mi.courseid
+                     WHERE		mi_d.sent 		 = :sent
+                        AND		(
+                                 mi_d.timetosend <= :timeTo
+                                 OR
+                                 mi_d.timetosend IS NULL
+                                )
+                     GROUP BY mi_am.id ";
 
             /* Execute  */
             $rdo = $DB->get_records_sql($sql,$params);
             if ($rdo) {
-                foreach ($rdo as $instance) {
-                    /* Info Campaign    */
-                    $info = new stdClass();
-                    $info->campaign         = $instance->campaign;
-                    $info->campaign_name    = $instance->campaign_name;
-                    $info->course_name      = $instance->course_name;
-                    /* Get Deliveries Info  */
-                    $info->deliveries       = self::GetDeliveriesCampaign_ToCron($instance->campaign,$instance->deliveries,$instance->course,$to_sent);
+                foreach($rdo as $instance) {
+                    /* Get Activities   */
+                    $activitiesDelivery = self::GetInfoActivities_Delivery($instance->microid,$instance->id,$instance->course,$instance->activities);
+                    /* Get Users        */
+                    $usersDelivery      = self::GetUsersDelivery($instance,$activitiesDelivery,$time);
 
-                    $campaigns_cron[$instance->campaign] = $info;
-                }//for_rdo_campaign
+                    /* Add Delivery */
+                    if ($usersDelivery) {
+                        $deliveriesCalendar[$instance->id] = $usersDelivery;
+                    }//if_users
+                }//for_rdo
             }//if_rdo
 
-            return $campaigns_cron;
+            return $deliveriesActivity;
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//GetCampaigns_ToCron
+    }//GetDeliveriesActivity
 
     /**
-     * @param           $campaign_id
-     * @param           $deliveries_lst
-     * @param           $course_id
-     * @param           $to_sent
+     * @param           $campaignId
+     * @param           $deliveryId
+     * @param           $activities
      * @return          array
      * @throws          Exception
      *
-     * @creationDate    05/12/2014
-     * @author          eFaktor         (fbv)
+     * @creationDate    11/09/2015
+     * @author          eFaktor     (fbv)
      *
      * Description
-     * Get the information of all the deliveries to sent connected to the campaign
+     * Get the information connected with the activities of the delivery
      */
-    private static function GetDeliveriesCampaign_ToCron($campaign_id,$deliveries_lst,$course_id,$to_sent) {
+    private static function GetInfoActivities_Delivery($campaignId,$deliveryId,$activities) {
         /* Variables    */
         global $DB;
-        $deliveries_cron    = array();
         $params             = null;
-        $sql                = null;
         $rdo                = null;
+        $sql                = null;
+        $activitiesDelivery = array();
         $info               = null;
 
         try {
             /* Search Criteria  */
             $params = array();
-            $params['campaign'] = $campaign_id;
+            $params['campaign'] = $campaignId;
+            $params['delivery'] = $deliveryId;
 
             /* SQL Instruction  */
-            $sql = " SELECT		mi_am.id 			as 'delivery',
-                                mi_am.microkey 		as 'modeactivity',
-                                mi_am.aftercompletion,
-                                mi_am.tocomplete,
-                                mi_am.afternotcompletion,
-                                mi_am.notcomplete,
-                                mi_am.subject,
-                                mi_am.body,
-                                GROUP_CONCAT(DISTINCT mi_a.activityid ORDER BY mi_a.activityid SEPARATOR ',') as 	'activities'
-                     FROM		{microlearning_activity_mode}	mi_am
-                        JOIN	{microlearning_activities}		mi_a		ON	mi_a.microid 		= mi_am.microid
-                                                                            AND	mi_a.micromodeid	= mi_am.id
-                     WHERE		mi_am.microid = :campaign
-                        AND		mi_am.id IN ($deliveries_lst)
-                     GROUP BY	mi_am.id ";
+            $sql = " SELECT		activityid,
+                                name,
+                                microkey
+                     FROM		{microlearning_activities}
+                     WHERE		microid 		= :campaign
+                        AND 	micromodeid 	= :delivery
+                        AND		activityid IN ($activities) ";
 
-            /* Execute      */
+
+            /* Execute  */
             $rdo = $DB->get_records_sql($sql,$params);
             if ($rdo) {
-                foreach ($rdo as $instance) {
-                    /* Info Delivery    */
+                foreach($rdo as $instance) {
+                    /* Info Activity    */
                     $info = new stdClass();
-                    $info->delivery             = $instance->delivery;
-                    $info->subject              = $instance->subject;
-                    $info->body                 = $instance->body;
-                    $info->afternotcompletion   = $instance->afternotcompletion;
-                    /* Info Activities  */
-                    $info->activities       = self::GetActivitiesDelivery_ToCron($campaign_id,$instance->delivery);
-                    /* Info Users       */
-                    $info->users            = self::GetUsersDelivery_ToCron($campaign_id,$instance,$course_id,$to_sent);
+                    $info->name     = $instance->name;
+                    $info->token    = $instance->microkey;
 
-                    $deliveries_cron[$instance->delivery] = $info;
-                }//for_rdo_delivery
+                    /* Add activity */
+                    $activitiesDelivery[$instance->activityid] = $info;
+                }//for_Rdo
             }//if_rdo
-
-            return $deliveries_cron;
+            return $activitiesDelivery;
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//GetDeliveriesCampaign_ToCron
+    }//GetInfoActivities_Delivery
 
     /**
-     * @param           $campaign_id
-     * @param           $delivery_id
+     * @param           $infoDelivery
+     * @param           $activitiesDelivery
+     * @param           $time
+     * @return          array
+     * @throws          Exception
+     *
+     * @creationDate    05/12/2014
+     * @author          eFaktor     (fbv)
+     *
+     * @updateDate      11/09/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Get all users to send the campaign
+     */
+    private static function GetUsersDelivery($infoDelivery,$activitiesDelivery,$time) {
+        /* Variables    */
+        global $DB,$CFG;
+        $params         = null;
+        $sql            = null;
+        $rdo            = null;
+        $daysAfter      = null;
+        $usersDelivery  = array();
+        $infoUser       = null;
+        $activity       = null;
+        $link           = null;
+        $strLink        = null;
+
+        try {
+            /* Search Criteria  */
+            $params = array();
+            $params['sent']     = 0;
+            $params['timeTo']   = $time;
+            $params['campaign'] = $infoDelivery->microid;
+            $params['delivery'] = $infoDelivery->id;
+
+
+            /* SQL Instruction */
+            if ($infoDelivery->criteria_tocomplete) {
+                /* Days After   */
+                $daysAfter = $infoDelivery->aftercompletion * (24*3600);
+                /* Search Criteria  */
+                $params['course']   = $infoDelivery->courseid;
+                $params['criteria'] = $infoDelivery->criteria_tocomplete;
+
+                /* AFTER COMPLETE ACTIVITY  */
+                $sql = " SELECT		mi_d.id,
+                                    mi_d.userid,
+                                    uep.token,
+                                    mi_d.timetosend,
+                                    mi_d.message
+                         FROM		{microlearning_deliveries}		mi_d
+                            JOIN	{user_express}					uep		ON	uep.userid 					 = mi_d.userid
+                            JOIN	{course_completion_crit_compl}	ccc		ON 	ccc.userid 					 = uep.userid
+                                                                            AND ccc.course 					 = :course
+                                                                            AND ccc.criteriaid 				 = :criteria
+                                                                            AND (ccc.timecompleted + $daysAfter) <= :timeTo
+                         WHERE		mi_d.microid        = :campaign
+                            AND		mi_d.micromodeid 	= :delivery
+                            AND		mi_d.sent			= :sent ";
+            }else if ($infoDelivery->criteria_notcomplete) {
+                /* Search Criteria  */
+                $params['course']   = $infoDelivery->courseid;
+                $params['criteria'] = $infoDelivery->criteria_notcomplete;
+
+                /* After Activity Not Done  */
+                $sql = " SELECT		mi_d.id,
+                                    mi_d.userid,
+                                    uep.token,
+                                    mi_d.timetosend,
+                                    mi_d.message
+                         FROM			{microlearning_deliveries}		mi_d
+                            JOIN		{user_express}					uep		ON	uep.userid 		= mi_d.userid
+                            LEFT JOIN	{course_completion_crit_compl}	ccc		ON 	ccc.userid 		= uep.userid
+                                                                                AND ccc.course 		= :course
+                                                                                AND ccc.criteriaid 	= :criteria
+                         WHERE		mi_d.microid        = :campaign
+                            AND		mi_d.micromodeid 	= :delivery
+                            AND		mi_d.sent			= :sent
+                            AND		mi_d.timetosend		<= :timeTo
+                            AND		ccc.id IS NULL ";
+            }else {
+                $sql = " SELECT			mi_d.userid,
+                                        uep.token,
+                                        mi_d.timetosend,
+                                        mi_d.message
+                         FROM			{microlearning_deliveries}		mi_d
+                            JOIN		{user_express}					uep		ON	uep.userid 		= mi_d.userid
+                         WHERE		mi_d.microid        = :campaign
+                            AND		mi_d.micromodeid 	= :delivery
+                            AND		mi_d.sent			= :sent
+                            AND		mi_d.timetosend		<= :timeTo ";
+            }//if_Else
+
+            /* Execute  */
+            $rdo = $DB->get_records_sql($sql,$params);
+            if ($rdo) {
+                foreach($rdo as $instance) {
+                    /* Info User    */
+                    $infoUser = new stdClass();
+                    $infoUser->user         = $instance->userid;
+                    $infoUser->express      = $CFG->wwwroot . '/local/express_login/loginExpress.php/' . $instance->token . '/' . $infoDelivery->microkey;
+                    $infoUser->toSend       = true;
+                    $infoUser->subject      = $infoDelivery->subject;
+                    /* Body */
+                    if ($instance->message) {
+                        $infoUser->body =  $instance->message . '</br></br>';
+                        $infoUser->body .= $infoDelivery->body;
+                    }else {
+                        $infoUser->body = $infoDelivery->body;
+                    }
+                    /* Add Link Activities  */
+                    foreach ($activitiesDelivery as $activity) {
+                        /* Build the url    */
+                        $link = $infoUser->express . '/' . $activity->microkey;
+                        $strLink  = '<a href="' . $link. '">' . $activity->name . '</a>';
+                        $strLink .= '</br>';
+
+                        $infoUser->body .= '</br></br>' . $strLink;
+                    }//for_each_act
+
+                    /* Add User */
+                    $usersDelivery[$instance->id] = $infoUser;
+                }//for_eachUser
+            }//if_rdo
+
+            return $usersDelivery;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//getUsersDelivery
+
+    /**
+     * @param           $deliveriesActivities
      * @return          array
      * @throws          Exception
      *
      * @creationDate    25/11/2014
      * @author          eFaktor     (fbv)
      *
-     * Description
-     * Get the information connected with the activities of the delivery
-     */
-    private static function GetActivitiesDelivery_ToCron($campaign_id,$delivery_id) {
-        /* Variables    */
-        global $DB;
-        $activities_cron    = array();
-        $params             = null;
-        $rdo                = null;
-        $info               = null;
-
-        try {
-            /* Search Criteria  */
-            $params['microid']      = $campaign_id;
-            $params['micromodeid']  = $delivery_id;
-
-            /* Execute  */
-            $rdo = $DB->get_records('microlearning_activities',$params,'name','activityid,name,microkey');
-            if ($rdo) {
-                foreach ($rdo as $instance){
-                    $info = new stdClass();
-                    $info->name     = $instance->name;
-                    $info->microkey = $instance->microkey;
-
-                    $activities_cron[$instance->activityid] = $info;
-                }//for_rdo
-            }//if_rdo
-
-            return $activities_cron;
-        }catch (Exception $ex) {
-            throw $ex;
-        }//try_catch
-    }//GetActivitiesDelivery_ToCron
-
-    /**
-     * @param           $campaign_id
-     * @param           $delivery_info
-     * @param           $course_id
-     * @param           $to_sent
-     * @return          array
-     * @throws          Exception
-     *
-     * @creationDate    05/12/2014
+     * @updateDate      11/09/2015
      * @author          eFaktor     (fbv)
      *
      * Description
-     * Get the users to send the campaign
+     * Send deliveries to the users
      */
-    private static function GetUsersDelivery_ToCron($campaign_id,$delivery_info,$course_id,$to_sent) {
-        /* Variables    */
-        global $DB,$CFG;
-        $users_cron     = array();
-        $act_completed  = null;
-        $params         = null;
-        $sql            = null;
-        $rdo            = null;
-        $info           = null;
-
-        try {
-            /* Search Criteria      */
-            $params = array();
-            $params['campaign']     = $campaign_id;
-            $params['delivery']     = $delivery_info->delivery;
-            $params['course']       = $course_id;
-            $params['to_sent']      = $to_sent;
-
-            /* SQL Instruction      */
-            $sql = " SELECT			mi_d.id,
-                                    mi_d.userid   as 'user',
-                                    GROUP_CONCAT(DISTINCT u_cc.moduleinstance ORDER BY u_cc.moduleinstance SEPARATOR ',') as 	'activities_completed',
-                                    uep.token     as 'express',
-                                    mi_d.message
-                     FROM			{microlearning_deliveries}		mi_d
-                        JOIN		{user_express}					uep		ON		uep.userid			= mi_d.userid
-                        LEFT JOIN	(
-                                        SELECT		ccc.userid,
-                                                    cc.moduleinstance
-                                        FROM		{course_completion_crit_compl}	ccc
-                                            JOIN	{course_completion_criteria}	cc		ON 	cc.id 				= ccc.criteriaid
-                                                                                            AND	cc.course 			= ccc.course
-                                                                                            AND	cc.moduleinstance 	IN ($delivery_info->activities)
-
-                                        WHERE		ccc.course = :course
-                                        GROUP BY 	ccc.userid
-                                    ) u_cc ON u_cc.userid = uep.userid
-                     WHERE		mi_d.microid 		= :campaign
-                       AND		mi_d.micromodeid 	= :delivery
-                       AND		mi_d.sent			= 0
-                       AND		(
-                                 mi_d.timetosend    <= :to_sent
-                                 OR
-                                 mi_d.timetosend	IS NULL
-                                )
-                     GROUP BY	mi_d.userid
-                     LIMIT 0,2000 ";
-
-            /* Execute  */
-            $rdo = $DB->get_records_sql($sql,$params);
-            if ($rdo) {
-                foreach ($rdo as $instance) {
-                    /* User Info    */
-                    $info = new stdClass();
-                    $info->id           = $instance->id;
-                    $info->user         = $instance->user;
-                    $info->express      = $CFG->wwwroot . '/local/express_login/loginExpress.php/' . $instance->express . '/' . $delivery_info->modeactivity;
-                    $info->toSend       = true;
-                    $info->message      = $instance->message;
-
-                    if (!$instance->message) {
-                        /* AFTER COMPLETION */
-                        if ($delivery_info->aftercompletion) {
-                            $act_completed = explode(',',$instance->activities_completed);
-                            if (!in_array($delivery_info->tocomplete,$act_completed)) {
-                                $info->toSend    = false;
-                            }//if_activity_completed
-                        }//if_delivery_after_completion
-
-                        /* AFTER NO COMPLETED   */
-                        if ($delivery_info->afternotcompletion) {
-                            $act_completed = explode(',',$instance->activities_completed);
-                            if (in_array($delivery_info->notcomplete,$act_completed)) {
-                                $info->toSend    = false;
-                            }//if_activity_completed
-                        }//if_delivery_after_not_completed
-                    }
-
-
-                    $users_cron[$instance->user] = $info;
-                }//for_rdo
-            }//if_rdo
-
-            return $users_cron;
-        }catch (Exception $ex) {
-            throw $ex;
-        }//try_catch
-    }//GetUsersDelivery_ToCron
-
-    /**
-     * @param           $activity_campaigns
-     * @return          array
-     * @throws          Exception
-     *
-     * @creationDate    05/12/2014
-     * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Send the deliveries to the users
-     */
-    private static function SendDeliveries_To_Users($activity_campaigns) {
+    private static function SendDeliveries($deliveriesActivities) {
         /* Variables    */
         global $SITE;
-        $deliveries_lst     = null;
-        $activities_lst     = null;
-        $users_lst          = null;
-        $subject            = null;
-        $body               = null;
-        $activities_sent    = array();
-        $users_sent         = null;
-        $link               = null;
+        $deliveriesSent = array();
+        $campaignSent   = array();
+        $usersDelivery  = null;
+        $delivery       = null;
 
         try {
-            mtrace('...... Start SendDeliveries_To_Users ' );
-            foreach($activity_campaigns as $campaign) {
-                /* Get the deliveries   */
-                $deliveries_lst = $campaign->deliveries;
-                foreach ($deliveries_lst as $delivery) {
-                    /* To Update Status */
-                    $users_sent = array();
+            /* Send Deliveries  */
+            foreach ($deliveriesActivities as $mi_am => $usersDelivery) {
+                foreach ($usersDelivery as $mi_d => $delivery) {
+                    /* Get Info User */
+                    $user = get_complete_user_data('id',$delivery->user);
+                    /* Send Mail    */
+                    if (email_to_user($user, $SITE->shortname, $delivery->subject, $delivery->body,$delivery->body)) {
+                        /* Deliveries Sent  */
+                        $deliveriesSent[$mi_d] = $mi_d;
+                    }//send_mail
+                }//for_userDeliveries
 
-                    /* Info to send     */
-                    $subject        = $campaign->course_name . ' (' . $campaign->campaign_name . ') ' . $delivery->subject;
-                    $activities_lst = $delivery->activities;
+                /* Activity Sent    */
+                $campaignSent[$mi_am] = $mi_am;
+            }//for_each_delivery
 
-                    /* Get the Users    */
-                    $users_lst = $delivery->users;
-                    foreach ($users_lst as $user_info) {
-                        /* Info to send */
-                        /* Add the extra message    */
-                        if ($user_info->message) {
-                            $body  = $user_info->message . '</br></br>';
-                            $body .= $delivery->body;
-                        }else {
-                            $body  = $delivery->body;
-                        }//if_message
-
-
-                        /* AFTER NO COMPLETED   */
-                        if (($delivery->afternotcompletion) && (!$user_info->toSend)) {
-                            /* Completed Task -- Update Status && Not send eMail    */
-                            $sent_info = new stdClass();
-                            $sent_info->id                  = $user_info->id;
-                            $sent_info->userid              = $user_info->user;
-
-                            $users_sent[$user_info->user]   = $sent_info;
-                        }else if ($user_info->toSend) {
-                            foreach ($activities_lst as $activity) {
-                                /* Build the url    */
-                                $link = $user_info->express . '/' . $activity->microkey;
-                                $html  = html_writer::link($link,$activity->name);
-                                $html .= '</br>';
-
-                                $body .= '</br></br>' . $html;
-                            }//for_each_act
-
-                            /* Send eMail to the User   */
-                            $user = get_complete_user_data('id',$user_info->user);
-                            if (email_to_user($user, $SITE->shortname, $subject, $body,$body)) {
-                                /* Save the users that are received the delivery    */
-                                $sent_info = new stdClass();
-                                $sent_info->id          = $user_info->id;
-                                $sent_info->userid      = $user->id;
-
-                                $users_sent[$user->id]  = $sent_info;
-                            }//if_email_sent
-                        }//if_else
-                    }//for_each_user
-
-                    /* To Update Status */
-                    if ($users_sent) {
-                        $activity_sent_info                 = new stdClass();
-                        $activity_sent_info->microid        = $campaign->campaign;
-                        $activity_sent_info->micromodeid    = $delivery->delivery;
-                        $activity_sent_info->users          = $users_sent;
-                        $activity_sent_info->timesent       = time();
-
-                        /* Save the Activity Mode Deliveries to update their status  */
-                        $activities_sent[]                  = $activity_sent_info;
-                    }//if_users_sent
-                }//for_each_delivery
-            }//for_Each_campaign
-            mtrace('...... Finish SendDeliveries_To_Users ' );
-
-            return $activities_sent;
+            return array($campaignSent,$deliveriesSent);
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//SendDeliveries_To_Users
+    }//SendDeliveries
 
     /**
-     * @param           $activities_sent
+     * @param           $campaignSent
+     * @param           $deliveriesSent
      * @return          bool
      * @throws          Exception
      *
-     * @creationDate    05/12/2014
+     * @creationDate    24/11/2014
+     * @author          eFaktor     (fbv)
+     *
+     * @updateDate      11/09/2015
      * @author          eFaktor     (fbv)
      *
      * Description
-     * Update the Activity Mode Deliveries and User Deliveries Status
+     * Update status to sent
      */
-    private static function UpdateStatus_ActivityDeliveries($activities_sent) {
+    private static function UpdateStatusActivityDeliveries($campaignSent,$deliveriesSent) {
         /* Variables    */
         global $DB;
-        /* Users to update their status*/
-        $users_lst      = null;
-        $activity_mode  = null;
-        $delivery_user  = null;
+        $trans  = null;
+        $caKeys = null;
+        $mdKeys = null;
+        $sql    = null;
+        $params = null;
 
-        $transaction = $DB->start_delegated_transaction();
+        /* Start transaction    */
+        $trans = $DB->start_delegated_transaction();
+
         try {
-            /* First Update Status Activity Mode Deliveries  */
-            foreach ($activities_sent as $activity) {
-                mtrace('...... ... Update Activity Mode Delivery Status ' );
-                /* Activity Delivery Status */
-                $activity_mode              = new stdClass();
-                $activity_mode->id          = $activity->micromodeid;
-                $activity_mode->microid     = $activity->microid;
-                $activity_mode->timesent    = $activity->timesent;
-                /* Execute  */
-                $DB->update_record('microlearning_activity_mode',$activity_mode);
+            /* Params   */
+            $params = array();
+            $params['time'] = time();
 
-                /* Delivery Users Status    */
-                $delivery_user = new stdClass();
-                $delivery_user->microid         = $activity->microid;
-                $delivery_user->micromodeid     = $activity->micromodeid;
-                $delivery_user->sent            = 1;
-                $delivery_user->message         = null;
-                $delivery_user->timesent        = $activity->timesent;
-                $delivery_user->timemodified    = time();
-                /* Finally, update the delivery status of each user  */
-                $users_lst = $activity->users;
-                foreach ($users_lst as $user) {
-                    mtrace('...... ... ...... ... Update Delivery User Status ' );
-                    $delivery_user->id      = $user->id;
-                    $delivery_user->userid  = $user->userid;
+            /* Update Status Activity Mode  */
+            /* Keys */
+            $caKeys = implode(',',$campaignSent);
+            /* SQL Instruction  */
+            $sql = " UPDATE {microlearning_activity_mode}
+                        SET timesent = :time
+                     WHERE  id IN ($caKeys) ";
+            /* Execute  */
+            $DB->execute($sql,$params);
 
-                    /* Execute  */
-                    $DB->update_record('microlearning_deliveries',$delivery_user);
-                }//foreach_user
-            }//for_each_activity_delivery
+            /* Update Status Deliveries */
+            $params['mod'] = time();
+            /* Keys */
+            $mdKeys = implode(',',$deliveriesSent);
+            /* SQL Instruction  */
+            $sql = " UPDATE {microlearning_deliveries}
+                        SET sent          = 1,
+                            message       = null
+                            timesent      = :time,
+                            timemodified  = :mod ";
+            /* Execute  */
+            $DB->execute($sql,$params);
 
             /* Commit   */
-            $transaction->allow_commit();
+            $trans->allow_commit();
+
             return true;
         }catch (Exception $ex) {
             /* Rollback */
-            $transaction->rollback($ex);
+            $trans->rollback($ex);
+
             throw $ex;
         }//try_catch
-    }//UpdateStatus_ActivityDeliveries
+    }//UpdateStatusActivityDeliveries
 }//Activity_ModeCron

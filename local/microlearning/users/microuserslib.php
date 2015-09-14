@@ -205,89 +205,88 @@ class Micro_Users {
     }//AddSelectionAll
 
     /**
-     * @static
-     * @param           $course_id
-     * @param           $campaign_id
+     * @param           $courseId
+     * @param           $campaignId
      * @param           $mode
-     * @param           $lst_users
+     * @param           $selUsers
+     * @return          bool
      * @throws          Exception
      *
      * @updateDate      07/09/2015
      * @author          eFaktor     (fbv)
      *
      * Description
-     * Save the users selected to the campaign
+     * Add / Delete the users selected to the campaign
      */
-    public static function SaveUsers_Campaign($course_id,$campaign_id,$mode,$lst_users) {
+    public static function SaveUsers_Campaign($courseId,$campaignId,$mode,$selUsers) {
         /* Variables    */
         global $DB;
-        $transaction    = null;
-        $micro_delivery = null;
-        $deliveries_lst = null;
-        $presentUsers   = null;
-        $newUsers       = array();
+        $trans              = null;
+        $microUser          = null;
+        $microDeliveries    = null;
+        $usersCampaign      = null;
+        $newUsers           = array();
+
 
         try {
-            $transaction = $DB->start_delegated_transaction();
+            /* Start Transaction    */
+            $trans = $DB->start_delegated_transaction();
 
             try {
-                /* Get Present Users    */
-                $rdo = $DB->get_records('microlearning_users',array('microid' => $campaign_id),'userid');
-                if ($rdo) {
-                    foreach($rdo as $instance) {
-                      $presentUsers[$instance->userid] = $instance->userid;
-                    }
-                }//if_Rdo
+                /* First Delete the users   */
+                self::DeleteUsers_FromCampaign($campaignId,$selUsers);
+
+                /* Get Present Users        */
+                $usersCampaign = self::GetUsers_FromCampaign($campaignId);
 
                 /* Second Add the new users */
-                /* Execute  */
-                foreach ($lst_users as $user) {
+                foreach ($selUsers as $user) {
                     /* New User*/
-                    if ($presentUsers) {
-                        if (!in_array($user,$presentUsers)) {
+                    if ($usersCampaign) {
+                        if (!in_array($user,$usersCampaign)) {
                             /* New User */
-                            $micro_delivery = new stdClass();
-                            $micro_delivery->microid    = $campaign_id;
-                            $micro_delivery->userid     = $user;
+                            $microUser = new stdClass();
+                            $microUser->microid    = $campaignId;
+                            $microUser->userid     = $user;
 
                             /* Execute  */
-                            $DB->insert_record('microlearning_users',$micro_delivery);
+                            $DB->insert_record('microlearning_users',$microUser);
 
                             /* Save */
                             $newUsers[$user] = $user;
                         }//if_user_not_exist
                     }else {
                         /* New User */
-                        $micro_delivery = new stdClass();
-                        $micro_delivery->microid    = $campaign_id;
-                        $micro_delivery->userid     = $user;
+                        $microUser = new stdClass();
+                        $microUser->microid    = $campaignId;
+                        $microUser->userid     = $user;
 
                         /* Execute  */
-                        $DB->insert_record('microlearning_users',$micro_delivery);
+                        $DB->insert_record('microlearning_users',$microUser);
 
                         /* Save */
                         $newUsers[$user] = $user;
-                    }//if_presentUseres
-                }//for_users
+                    }//if_campaignUsers
+                }//for_eachUser
 
                 /* Add the new users to sent */
                 if ($newUsers) {
                     switch ($mode) {
                         case CALENDAR_MODE:
                             /* Get the Deliveries   */
-                            $deliveries_lst = self::GetInfoDeliveries_CalendarMode($campaign_id);
+                            $microDeliveries = self::GetInfoDeliveries_CalendarMode($campaignId);
                             /* Add Users        */
-                            if ($deliveries_lst) {
-                                self::AddUsers_CalendarMode($newUsers,$deliveries_lst);
+                            if ($microDeliveries) {
+                                self::AddUsers_CalendarMode($newUsers,$microDeliveries);
                             }//deliveries
 
                             break;
                         case ACTIVITY_MODE:
                             /* Get the Deliveries   */
-                            $deliveries_lst = self::GetInfoDeliveries_ActivityMode($campaign_id);
+                            $microDeliveries = self::GetInfoDeliveries_ActivityMode($campaignId);
                             /* Add Users        */
-                            if ($deliveries_lst) {
-                                self::AddUsers_ActivityMode($newUsers,$deliveries_lst,$course_id);
+                            if ($microDeliveries) {
+                                self::AddUsers_ActivityMode($newUsers,$microDeliveries,$courseId);
                             }//if_deliveries
 
                             break;
@@ -296,9 +295,15 @@ class Micro_Users {
                     }//switch_mode
                 }//if_newUsers
 
-                $transaction->allow_commit();
-            }catch (Exception $ex_trans) {
-                $transaction->rollback($ex_trans);
+                /* Commit   */
+                $trans->allow_commit();
+
+                return true;
+            }catch (Exception $exTrans) {
+                /* Rollback */
+                $trans->rollback($exTrans);
+
+                throw $exTrans;
             }//try_catch
         }catch (Exception $ex) {
             throw $ex;
@@ -339,6 +344,105 @@ class Micro_Users {
             throw $ex;
         }//try_catch
     }//GetUsers_Campaign
+
+    /**
+     * @param           $campaignId
+     * @param           $lstUsers
+     * @return          bool
+     * @throws          Exception
+     *
+     * @creationDate    10/09/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Delete the users that have been eliminated from the campaign
+     */
+    private static function DeleteUsers_FromCampaign($campaignId,$lstUsers) {
+        /* Variables    */
+        global $DB;
+        $sql    = null;
+        $params = null;
+        $trans  = null;
+        $users  = null;
+
+        /* Start Transaction    */
+        $trans = $DB->start_delegated_transaction();
+
+        try {
+            /* Users belong campaign */
+            $users = implode(',',$lstUsers);
+
+            /* Search Criteria  */
+            $params = array();
+            $params['campaign'] = $campaignId;
+
+            /* First delete from microlearning_users    */
+            /* SQL Instruction  */
+            $sql = " DELETE
+                     FROM	{microlearning_users}
+                     WHERE	microid = :campaign
+                        AND	userid NOT IN ($users) ";
+            /* Execute  */
+            $DB->execute($sql,$params);
+
+            /* Finally, delete from mirolearning deliveries */
+            /* SQL Instruction  */
+            $sql = " DELETE
+                     FROM	{microlearning_deliveries}
+                     WHERE	microid = :campaign
+                        AND	userid NOT IN ($users) ";
+            /* Execute  */
+            $DB->execute($sql,$params);
+
+            /* Commit   */
+            $trans->allow_commit();
+
+            return true;
+        }catch (Exception $ex) {
+            /* Rollback */
+            $trans->rollback($ex);
+
+            throw $ex;
+        }//try_Catch
+    }//DeleteUsers_FromCampaign
+
+    /**
+     * @param           $campaignId
+     * @return          array
+     * @throws          Exception
+     *
+     * @creationDate    10/09/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Get all users that belong to the campaign
+     */
+    private static function GetUsers_FromCampaign($campaignId) {
+        /* Variables    */
+        global $DB;
+        $params         = null;
+        $rdo            = null;
+        $usersCampaign  = array();
+
+        try {
+            /* Search criteria  */
+            $params = array();
+            $params['microid'] = $campaignId;
+
+            /* Execute  */
+            $rdo = $DB->get_records('microlearning_users',$params,'userid');
+            if ($rdo) {
+                /* Get Users    */
+                foreach($rdo as $instance) {
+                    $usersCampaign[$instance->userid] = $instance->userid;
+                }
+            }//if_Rdo
+
+            return $usersCampaign;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//GetUsers_FromCampaign
 
 
     /**
