@@ -37,12 +37,13 @@ class Activity_ModeCron {
 
             /* Get Deliveries Activity Mode   */
             $activitiesDeliveries = self::GetDeliveriesActivity();
+            if ($activitiesDeliveries) {
+                /* Send Deliveries  */
+                list($campaignSent,$deliveriesSent) = self::SendDeliveries($activitiesDeliveries);
 
-            /* Send Deliveries  */
-            list($campaignSent,$deliveriesSent) = self::SendDeliveries($activitiesDeliveries);
-
-            /* Update Status    */
-            self::UpdateStatusActivityDeliveries($campaignSent,$deliveriesSent);
+                /* Update Status    */
+                self::UpdateStatusActivityDeliveries($campaignSent,$deliveriesSent);
+            }//if_activitites
 
             mtrace('Finish Activity Mode Cron Campaigns: ' . time() );
             return true;

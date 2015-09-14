@@ -39,12 +39,13 @@ class Calendar_ModeCron {
 
             /* Get Deliveries Calendar Campaign */
             $calendarDeliveries = self::GetDeliveriesCalendar();
+            if ($calendarDeliveries) {
+                /* Send Deliveries  */
+                list($calendarSent,$deliveriesSent) = self::SendDeliveries($calendarDeliveries);
 
-            /* Send Deliveries  */
-            list($calendarSent,$deliveriesSent) = self::SendDeliveries($calendarDeliveries);
-
-            /* Update Status    */
-            self::UpdateStatusCalendarDeliveries($calendarSent,$deliveriesSent);
+                /* Update Status    */
+                self::UpdateStatusCalendarDeliveries($calendarSent,$deliveriesSent);
+            }//if_calendarDeliveries
 
             mtrace(' Finish Calendar Mode Cron Campaigns:' . time() );
             return true;
