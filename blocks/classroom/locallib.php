@@ -120,7 +120,7 @@ class ClassroomBlock {
                             $sectors = self::GetSectorsName($formatOptions['course_sector']);
                         }//if_sectors
 
-                        $content .= '<label class="value">' . $sectors . '</label>';
+                        $content .= '<label class="value">' . str_replace(',','</br>',$sectors) . '</label>';
                     }//if_prerequisites
                 $content .= html_writer::end_div();//summary_content
 
