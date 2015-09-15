@@ -31,11 +31,10 @@ label.title {
     cursor: default;
     margin-bottom: 0px;
     padding-top: 0px;
-    width: 125px;
 }
 
 label.value {
-    text-align: right;
+    text-align: left;
     display: inline-block;
     cursor: default;
     word-wrap: break-word;
