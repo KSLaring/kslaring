@@ -12,28 +12,48 @@
  */
 
 function local_doskom_cron() {
+    /* Variables    */
+    global $DB;
+    $pluginInfo     = null;
+    $admin          = null;
+    $now            = null;
+    $timezone       = null;
+    $cronHour       = null;
+    $cronMin        = null;
+    $date           = null;
+    $timeYesterday  = null;
+
     /* Plugins Info */
-    $plugin_info     = get_config('local_doskom');
+    $pluginInfo     = get_config('local_doskom');
+
 
     /* Check if the cron is Activate    */
-    if ($plugin_info->wsdoskom_cron_active) {
+    if ($pluginInfo->wsdoskom_cron_active) {
         require_once('cron/wsssocron.php');
 
-        $date_hour  = date('H',time());
-        $date_min   = date('i',time());
-        $cron_hour  = $plugin_info->wsdoskom_auto_time;
-        $cron_min   = $plugin_info->wsdoskom_auto_time_minute;
+        /* Admin */
+        $admin      = get_admin();
+        $now        = time();
+        $timezone   = $admin->timezone;
+        $cronHour   = $pluginInfo->wsdoskom_auto_time;
+        $cronMin    = $pluginInfo->wsdoskom_auto_time_minute;
+        $date       = usergetdate($now, $timezone);
 
-        if (($date_hour >= $cron_hour) && ($date_min >= $cron_min)) {
-            if (isset($plugin_info->lastcron)) {
-                $time = time() - (60*60*24);
-                if ($plugin_info->lastcron <= $time){
-                    WSDOSKOM_Cron::cron();
-                }
-            }else {
+        /* Check if has to be run it    */
+        if (isset($pluginInfo->lastcron)) {
+            /* Calculate when it has to be triggered it */
+            $timeYesterday  = mktime($cronHour, $cronMin, 0, $date['mon'], $date['mday'] - 1, $date['year']);
+
+            if (($pluginInfo->lastexecution <= $timeYesterday)) {
                 WSDOSKOM_Cron::cron();
+                set_config('lastexecution', $now, 'local_doskom');
+            }else {
+
             }
-        }
+        }else {
+            WSDOSKOM_Cron::cron();
+            set_config('lastexecution', $now, 'local_doskom');
+        }//if_else_lastcron
     }else {
         mtrace('... WSDOSKOM Cron Disabled');
     }

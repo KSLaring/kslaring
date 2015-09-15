@@ -54,4 +54,4 @@ $string['home_length']              = 'Estimated time spent';
 $string['home_effort']              = 'Estimated Effort';
 $string['home_manager']             = 'Course Manager';
 $string['home_time_from_to']        = 'Time from - to';
-$string['home_time_from_to_help']   = 'You can enter more one lecture separated by comma';
+$string['home_time_from_to_help']   = 'You can enter more one date separated by comma';

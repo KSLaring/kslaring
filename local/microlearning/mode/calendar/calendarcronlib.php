@@ -118,7 +118,7 @@ class Calendar_ModeCron {
             if ($rdo) {
                 foreach($rdo as $instance) {
                     /* Get Activities   */
-                    $activitiesDelivery = self::GetInfoActivities_Delivery($instance->microid,$instance->id,$instance->courseid,$instance->activities);
+                    $activitiesDelivery = self::GetInfoActivities_Delivery($instance->microid,$instance->id,$instance->activities);
                     /* Get Users        */
                     $usersDelivery      = self::GetUsersDelivery($instance,$activitiesDelivery,$time);
 
@@ -186,6 +186,7 @@ class Calendar_ModeCron {
                     $activitiesDelivery[$instance->activityid] = $info;
                 }//for_Rdo
             }//if_rdo
+
             return $activitiesDelivery;
         }catch (Exception $ex) {
             throw $ex;
@@ -283,7 +284,7 @@ class Calendar_ModeCron {
                     /* Add Link Activities  */
                     foreach ($activitiesDelivery as $activity) {
                         /* Build the url    */
-                        $link = $infoUser->express . '/' . $activity->microkey;
+                        $link = $infoUser->express . '/' . $activity->token;
                         $strLink  = '<a href="' . $link. '">' . $activity->name . '</a>';
                         $strLink .= '</br>';
 
@@ -330,7 +331,20 @@ class Calendar_ModeCron {
                     /* Get Info User */
                     $user = get_complete_user_data('id',$delivery->user);
                     /* Send Mail    */
-                    if (email_to_user($user, $SITE->shortname, $delivery->subject, $delivery->body,$delivery->body)) {
+                    $message = $delivery->body;
+                    $messagetext = null;
+                    $messagehtml = null;
+                    if (strpos($message, '<') === false) {
+                        // Plain text only.
+                        $messagetext = $message;
+                        $messagehtml = text_to_html($messagetext, null, false, true);
+                    } else {
+                        // This is most probably the tag/newline soup known as FORMAT_MOODLE.
+                        $messagehtml = format_text($message, FORMAT_MOODLE);
+                        $messagetext = html_to_text($messagehtml);
+                    }
+
+                    if (email_to_user($user, $SITE->shortname, $delivery->subject, $messagetext,$messagehtml)) {
                         /* Deliveries Sent  */
                         $deliveriesSent[$mi_d] = $mi_d;
                     }//send_mail
