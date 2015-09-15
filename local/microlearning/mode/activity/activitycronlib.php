@@ -43,7 +43,7 @@ class Activity_ModeCron {
 
                 /* Update Status    */
                 self::UpdateStatusActivityDeliveries($campaignSent,$deliveriesSent);
-            }//if_activitiesDeliveries
+            }//if_ActivitiesDeliveries
 
             mtrace('Finish Activity Mode Cron Campaigns: ' . time() );
             return true;
@@ -129,7 +129,7 @@ class Activity_ModeCron {
             if ($rdo) {
                 foreach($rdo as $instance) {
                     /* Get Activities   */
-                    $activitiesDelivery = self::GetInfoActivities_Delivery($instance->microid,$instance->id,$instance->courseid,$instance->activities);
+                    $activitiesDelivery = self::GetInfoActivities_Delivery($instance->microid,$instance->id,$instance->activities);
                     /* Get Users        */
                     $usersDelivery      = self::GetUsersDelivery($instance,$activitiesDelivery,$time);
 
@@ -319,7 +319,7 @@ class Activity_ModeCron {
                     /* Add Link Activities  */
                     foreach ($activitiesDelivery as $activity) {
                         /* Build the url    */
-                        $link = $infoUser->express . '/' . $activity->microkey;
+                        $link = $infoUser->express . '/' . $activity->token;
                         $strLink  = '<a href="' . $link. '">' . $activity->name . '</a>';
                         $strLink .= '</br>';
 
@@ -366,7 +366,20 @@ class Activity_ModeCron {
                     /* Get Info User */
                     $user = get_complete_user_data('id',$delivery->user);
                     /* Send Mail    */
-                    if (email_to_user($user, $SITE->shortname, $delivery->subject, $delivery->body,$delivery->body)) {
+                    $message = $delivery->body;
+                    $messagetext = null;
+                    $messagehtml = null;
+                    if (strpos($message, '<') === false) {
+                        // Plain text only.
+                        $messagetext = $message;
+                        $messagehtml = text_to_html($messagetext, null, false, true);
+                    } else {
+                        // This is most probably the tag/newline soup known as FORMAT_MOODLE.
+                        $messagehtml = format_text($message, FORMAT_MOODLE);
+                        $messagetext = html_to_text($messagehtml);
+                    }
+
+                    if (email_to_user($user, $SITE->shortname, $delivery->subject, $messagetext,$messagehtml)) {
                         /* Deliveries Sent  */
                         $deliveriesSent[$mi_d] = $mi_d;
                     }//send_mail

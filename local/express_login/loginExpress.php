@@ -18,6 +18,10 @@ require_once('expressloginlib.php');
 $PAGE->set_context(context_system::instance());
 $PAGE->set_url("$CFG->httpswwwroot/login/index.php");
 
+/* Guess USer -- Logout */
+if (isguestuser($USER)) {
+    require_logout();
+}//if_guestuser
 
 $relative_path = get_file_argument();
 //extract relative path components

@@ -161,7 +161,7 @@ class auth_plugin_saml extends auth_plugin_base {
                 if (!strpos('http://',$LogoutUrl) && !strpos('https://',$LogoutUrl)) {
                     $redirect = $LogoutUrl;
                 }else {
-                    $redirect = 'http://' . $SESSION->LogoutUrl;
+                    $redirect = 'http://' . $LogoutUrl;
                 }
 
                 require_logout();
