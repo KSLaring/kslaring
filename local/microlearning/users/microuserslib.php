@@ -720,11 +720,8 @@ class Micro_Users {
                                                         AND	e.courseid 	= :course
                                                         AND	e.status	= 0
                      WHERE		ue.userid IN ($usersIn)
-                        AND     (
-                                 ue.timestart != 0
-                                 OR
-                                 ue.timestart IS NOT NULL
-                                )";
+                        AND     ue.timestart != 0
+                        AND     ue.timestart IS NOT NULL ";
 
             /* Execute  */
             $rdo = $DB->get_records_sql($sql,$params);
