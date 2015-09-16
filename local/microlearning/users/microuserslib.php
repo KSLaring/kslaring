@@ -631,10 +631,8 @@ class Micro_Users {
 
         try {
             /* Get Time Enrol   */
-            foreach ($newUsers as $user) {
-                /* Get time enrol   */
-                $usersEnrol = self::GetEnrollment_User($newUsers,$courseId);
-            }//for_users
+            /* Get time enrol   */
+            $usersEnrol = self::GetEnrollment_User($newUsers,$courseId);
 
             /* Add new Users for each delivery  */
             foreach ($deliveries as $infoDelivery) {
