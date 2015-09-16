@@ -719,7 +719,12 @@ class Micro_Users {
                         JOIN	{enrol}				e	ON 	e.id 		= ue.enrolid
                                                         AND	e.courseid 	= :course
                                                         AND	e.status	= 0
-                     WHERE		ue.userid IN ($usersIn) ";
+                     WHERE		ue.userid IN ($usersIn)
+                        AND     (
+                                 ue.timestart != 0
+                                 OR
+                                 ue.timestart IS NOT NULL
+                                )";
 
             /* Execute  */
             $rdo = $DB->get_records_sql($sql,$params);
