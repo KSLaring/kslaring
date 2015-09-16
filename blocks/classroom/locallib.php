@@ -208,7 +208,7 @@ class ClassroomBlock {
             /* Execute  */
             $rdo = $DB->get_record('user',$params,'firstname,lastname');
             if ($rdo) {
-                $name = $rdo->lastname . ' ' . $rdo->firstname;
+                $name = $rdo->firstname . ' '  .$rdo->lastname;
                 $name = trim($name);
 
                 return $name;
