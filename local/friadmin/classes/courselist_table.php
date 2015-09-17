@@ -36,8 +36,8 @@ require_once($CFG->dirroot . '/enrol/waitinglist/lib.php');
 class local_friadmin_courselist_table extends local_friadmin_widget implements renderable {
 
     // The table column names
-    protected $colnames = array("name", "date", "seats", "deadline", "length",
-                                "municipality", "sector", "location", "edit");
+    protected $colnames = array("edit", "name", "date", "seats", "deadline", "length",
+                                "municipality", "sector", "location");
 
     // The table column titles
     protected $colheaders = array();
@@ -176,7 +176,7 @@ class local_friadmin_courselist_table extends local_friadmin_widget implements r
     }//get_table_html
 
     /**
-     * @param           $data       The table data
+     * @param array     $data       The table data
      *
      * @return          array       The modified table data
      * @throws          Exception
@@ -240,7 +240,7 @@ class local_friadmin_courselist_table extends local_friadmin_widget implements r
     }//add_course_link_and_icons
 
     /**
-     * @param           $data       The table data
+     * @param array     $data       The table data
      *
      * @return          array       The modified table data
      * @throws          Exception
@@ -290,8 +290,8 @@ class local_friadmin_courselist_table extends local_friadmin_widget implements r
     }//add_availseats
 
     /**
-     * @param           $data       The table data
-     * @param           $fields     The fields containing dates
+     * @param stdClass  $data       The table data
+     * @param array     $fields     The fields containing dates
      *
      * @return          array
      * @throws          Exception
