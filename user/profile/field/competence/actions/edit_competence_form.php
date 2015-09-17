@@ -155,6 +155,12 @@ class competence_edit_competence_form extends moodleform {
      *
      * Description
      * Add the job role selector to the form
+     *
+     * @updateDate      17/05/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Job roles not compulsory
      */
     function Add_JobRoleLevel(&$form,$my_hierarchy) {
         /* Variables    */
@@ -174,7 +180,6 @@ class competence_edit_competence_form extends moodleform {
                                     $options);
         $select->setMultiple(true);
         $select->setSize(10);
-        $form->addRule('job_roles','','required', null, 'server');
         $form->setDefault('job_roles',array_keys($my_hierarchy->roles));
 
         $form->disabledIf('job_roles' ,'level_0','eq',0);
@@ -183,13 +188,19 @@ class competence_edit_competence_form extends moodleform {
         $form->disabledIf('job_roles' ,'level_3','eq',0);
     }//Add_JobRoleLevel
 
+    /**
+     * @param       array $data
+     * @param       array $files
+     * @return      array
+     *
+     * @updateDate  17/09/2015
+     * @author      eFaktor     (fbv)
+     *
+     * Description
+     * Job role no compulsory
+     */
     function validation($data, $files) {
         $errors = parent::validation($data, $files);
-
-        /* Job Roles    */
-        if (!isset($data['job_roles'])) {
-            $errors['job_roles'] = get_string('required');
-        }//if_level_three
 
         /* Validation   */
         return $errors;

@@ -266,6 +266,7 @@ YUI().use('node', function(Y) {
             }
 
             window.onbeforeunload = null;
+            window.location.reload();
         });
     }//if_other_company
 

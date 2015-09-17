@@ -88,6 +88,12 @@ class competence_add_competence_form extends moodleform {
      *
      * Description
      * Add the job role selector to the form
+     *
+     * @updateDate      17/09/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Job role no compulsory
      */
     function Add_JobRoleLevel(&$form) {
         /* Variables    */
@@ -111,7 +117,6 @@ class competence_add_competence_form extends moodleform {
                                     $options);
         $select->setMultiple(true);
         $select->setSize(10);
-        $form->addRule('job_roles','','required', null, 'server');
 
         $form->disabledIf('job_roles' ,'level_0','eq',0);
         $form->disabledIf('job_roles' ,'level_1','eq',0);
@@ -221,6 +226,17 @@ class competence_add_competence_form extends moodleform {
         }//if_elvel
     }//setLevelDefault
 
+    /**
+     * @param       array $data
+     * @param       array $files
+     * @return      array
+     *
+     * @updateDate  17/09/2015
+     * @author      eFaktor     (fbv)
+     *
+     * Description
+     * Job roles no compulsory
+     */
     function validation($data, $files) {
         list($user_id,$my_companies) = $this->_customdata;
 
@@ -229,11 +245,6 @@ class competence_add_competence_form extends moodleform {
         /* Level Three  */
         if (!isset($data['level_3'])) {
             $errors['level_3'] = get_string('required');
-        }//if_level_three
-
-        /* Job Roles    */
-        if (!isset($data['job_roles'])) {
-            $errors['job_roles'] = get_string('required');
         }//if_level_three
 
         /* Validation   */

@@ -37,7 +37,7 @@ YUI().use('node', function(Y) {
             document.cookie = "parentLevelThree"     + "=0";
 
             window.onbeforeunload = null;
-            window.location = location.href;
+            window.location.reload();
         });
     }//if_level_0
 
@@ -59,7 +59,7 @@ YUI().use('node', function(Y) {
             document.cookie = "parentLevelThree"    + "=0";
 
             window.onbeforeunload = null;
-            window.location = location.href;
+            window.location.reload();
         });
     }//if_level_1
 
@@ -80,7 +80,7 @@ YUI().use('node', function(Y) {
             document.cookie = "parentLevelThree"    + "=0";
 
             window.onbeforeunload = null;
-            window.location = location.href;
+            window.location.reload();
         });
     }//if_level_2
 
@@ -104,7 +104,7 @@ YUI().use('node', function(Y) {
             document.cookie = "parentLevelThree"     + "=" + LevelThree;
 
             window.onbeforeunload = null;
-            window.location = location.href;
+            window.location.reload();
         });
     }//if_level_3
     window.onbeforeunload = null;
