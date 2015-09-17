@@ -69,6 +69,7 @@ $string['coursedetail_go']              = 'Open course';
 $string['coursedetail_settings']        = 'Course settings';
 $string['coursedetail_completion']      = 'Course completions';
 $string['coursedetail_statistics']      = 'Overview statistics';
+$string['coursedetail_enrollment']      = 'Enrollment methods';
 $string['coursedetail_users']           = 'Enrolled users';
 $string['coursedetail_confirmed']       = 'Manage confirmed';
 $string['coursedetail_waitlist']        = 'Manage queue';
