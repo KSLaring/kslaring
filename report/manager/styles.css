@@ -829,3 +829,109 @@ input#id_remove_sel,
 input#id_remove_all {
     width: 110px;
 }
+
+.matching_process {
+    width: 100%;
+    margin-bottom: 0px;
+    margin-top: 0px;
+    display: inline-block;
+}
+
+.matching_process_title {
+    width: 100%;
+    margin-bottom: 0px;
+    margin-top: 25px;
+    display: inline-block;
+    clear:both;
+}
+
+.matching_process_title .area_left {
+    width:40%;
+    float:left;
+    display: inline-block;
+    text-indent: 5px;
+    margin-right: 2px;
+}
+
+.matching_process .area_left {
+    width:40%;
+    float:left;
+    display: inline-block;
+    text-indent: 5px;
+    margin-right: 2px;
+    min-height: 50px;
+    background: #f9f9f9;
+}
+
+.matching_process_title .area_right {
+    width:40%;
+    display: inline-block;
+    text-indent: 5px;
+}
+
+.matching_process .area_right {
+    width:40%;
+    display: inline-block;
+    text-indent: 5px;
+    min-height: 50px;
+    background: #f9f9f9;
+}
+
+.title_matching {
+    text-decoration: none;
+    background-color: #e7eaef;
+    height: 25px;
+}
+
+.title_matching h6 {
+    color: #004b93;
+    /* Top, Right, Bottom, Left */
+    padding: 8px 2px 5px 2px;
+    margin: 0;
+    line-height: 10px;
+    font-weight: bold;
+}
+
+.line_rpt_matching {
+    border: 0;
+    border-top: 5px solid #cfd2d7;
+    width: 80%;
+    margin-top: 0;
+    margin-bottom: 0px;
+}
+
+#fgroup_id_grp .fitemtitle {
+    display: none;
+}
+
+#fgroup_id_grp fieldset.felement.fgroup {
+    margin-left: 5px;
+}
+
+#fgroup_id_grp fieldset.felement.fgroup span{
+    margin-right: 10px;
+}
+
+#fgroup_id_grp fieldset.felement.fgroup{
+    margin-left: 0px;
+}
+
+.div_button_icd {
+    position: relative;
+    float: left;
+    /* Top, Right, Bottom, Left */
+    margin: 10px,0px,0px,0px;
+}
+
+.button_icd {
+    font: bold 14px Arial;
+    text-decoration: none;
+    background-color: #0E7B9E;
+    color: white;
+    padding: 8px 8px 8px 8px;
+    border-top: 1px solid #0E7B9E;
+    border-right: 1px solid #0E7B9E;
+    border-bottom: 1px solid #0E7B9E;
+    border-left: 1px solid #0E7B9E;
+    display: inline-block;
+}

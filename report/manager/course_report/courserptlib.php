@@ -666,8 +666,11 @@ class course_report {
      */
     private static function Get_CompanyReportInfo_LevelOne(&$course_report,$parent_lst,$inTwo,$inThree) {
         /* Variables    */
-        $levelTwo      = null;
-        $company_list  = null;
+        $levelTwo       = null;
+        $company_list   = null;
+        $companyInfo    = null;
+        $company        = null;
+        $output         = null;
 
         try {
             /* Get Information Level One    */
@@ -724,10 +727,12 @@ class course_report {
      */
     private static function Get_CompanyReportInfo_LevelTwo($course_report,$parent_lst,$inThree) {
         /* Variables    */
-        $levelTwo      = array();
-        $companyInfo   = null;
-        $levelThree    = null;
-        $company_list  = null;
+        $levelTwo       = array();
+        $companyInfo    = null;
+        $levelThree     = null;
+        $company_list   = null;
+        $company        = null;
+        $output         = null;
 
         try {
             /* Get Information Level Two    */
@@ -843,10 +848,14 @@ class course_report {
      */
     private static function GetUsers_Completed($course_id,$job_roles,$company) {
         /* Variables    */
-        global $DB;
-        $users_completed    = array();
-        $job_keys           = array_flip(array_keys($job_roles));
-        $jr_users           = null;
+        global $DB,$SESSION;
+        $params             = null;
+        $sql                = null;
+        $rdo                = null;
+        $usersCompleted     = array();
+        $infoUser           = null;
+        $jrKeys             = array_flip(array_keys($job_roles));
+        $jrUsers            = null;
 
         try {
             /* Search Criteria  */
@@ -856,8 +865,8 @@ class course_report {
 
             /* SQL Instruction  */
             $sql = " SELECT   	DISTINCT 	u.id,
-                                            CONCAT(u.firstname, ' ', u.lastname) as 'name',
-                                            uic.jobroles,
+                                            CONCAT(u.firstname, ' ', u.lastname)  as 'name',
+                                            IF(uic.jobroles,uic.jobroles,0)       as 'jobroles',
                                             cc.timecompleted
                      FROM	 	{user}						  u
                         JOIN	{user_info_competence_data}	  uic			ON		uic.userid		  = u.id
@@ -873,19 +882,28 @@ class course_report {
             $rdo = $DB->get_records_sql($sql,$params);
             if ($rdo) {
                 foreach ($rdo as $instance) {
-                    $jr_users = array_flip(explode(',',$instance->jobroles));
-                    if (array_intersect_key($job_keys,$jr_users)) {
-                        /* User Info    */
-                        $user_info              = new stdClass();
-                        $user_info->name        = $instance->name;
-                        $user_info->completed   = $instance->timecompleted;
+                    if (isset($SESSION->job_roles) && $SESSION->job_roles) {
+                        $jrUsers = array_flip(explode(',',$instance->jobroles));
+                        if (array_intersect_key($jrKeys,$jrUsers)) {
+                            /* User Info    */
+                            $infoUser              = new stdClass();
+                            $infoUser->name        = $instance->name;
+                            $infoUser->completed   = $instance->timecompleted;
 
-                        $users_completed[$instance->id] = $user_info;
-                    }//if_job_role
+                            $usersCompleted[$instance->id] = $infoUser;
+                        }//if_job_role
+                    }else {
+                        /* User Info    */
+                        $infoUser              = new stdClass();
+                        $infoUser->name        = $instance->name;
+                        $infoUser->completed   = $instance->timecompleted;
+
+                        $usersCompleted[$instance->id] = $infoUser;
+                    }//if_jobroles_selected
                 }//for_each
             }//if_Rdo
 
-            return $users_completed;
+            return $usersCompleted;
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
@@ -909,10 +927,14 @@ class course_report {
      */
     private static function GetUsers_NotCompleted($course_id,$job_roles,$company) {
         /* Variables    */
-        global $DB;
-        $users_not_completed    = array();
-        $job_keys               = array_flip(array_keys($job_roles));
-        $jr_users               = null;
+        global $DB,$SESSION;
+        $params             = null;
+        $sql                = null;
+        $rdo                = null;
+        $usersNotCompleted  = array();
+        $infoUser           = null;
+        $jrKeys             = array_flip(array_keys($job_roles));
+        $jrUsers            = null;
 
         try {
             /* Search Criteria  */
@@ -922,8 +944,8 @@ class course_report {
 
             /* SQL Instruction  */
             $sql = " SELECT   	DISTINCT 	u.id,
-                                            CONCAT(u.firstname, ' ', u.lastname) as 'name',
-                                            uic.jobroles,
+                                            CONCAT(u.firstname, ' ', u.lastname)  as 'name',
+                                            IF(uic.jobroles,uic.jobroles,0)       as 'jobroles',
                                             cc.timecompleted
                      FROM	 	{user}						  u
                         JOIN	{user_info_competence_data}	  uic			ON		uic.userid		  = u.id
@@ -940,18 +962,26 @@ class course_report {
             $rdo = $DB->get_records_sql($sql,$params);
             if ($rdo) {
                 foreach ($rdo as $instance) {
-                    $jr_users = array_flip(explode(',',$instance->jobroles));
-                    if (array_intersect_key($job_keys,$jr_users)) {
-                        /* User Info    */
-                        $user_info          = new stdClass();
-                        $user_info->name    = $instance->name;
+                    if (isset($SESSION->job_roles) && $SESSION->job_roles) {
+                        $jrUsers = array_flip(explode(',',$instance->jobroles));
+                        if (array_intersect_key($jrKeys,$jrUsers)) {
+                            /* User Info    */
+                            $infoUser          = new stdClass();
+                            $infoUser->name    = $instance->name;
 
-                        $users_not_completed[$instance->id] = $user_info;
-                    }//if_job_role
+                            $usersNotCompleted[$instance->id] = $infoUser;
+                        }//if_job_role
+                    }else {
+                        /* User Info    */
+                        $infoUser          = new stdClass();
+                        $infoUser->name    = $instance->name;
+
+                        $usersNotCompleted[$instance->id] = $infoUser;
+                    }//if_JOBROLES_SELECTED
                 }//for_each
             }//if_Rdo
 
-            return $users_not_completed;
+            return $usersNotCompleted;
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
@@ -975,10 +1005,14 @@ class course_report {
      */
     private static function GetUsers_NotEnrol($users,$job_roles,$company) {
         /* Variables    */
-        global $DB;
-        $users_not_enrol    = array();
-        $job_keys           = array_flip(array_keys($job_roles));
-        $jr_users           = null;
+        global $DB,$SESSION;
+        $params             = null;
+        $sql                = null;
+        $rdo                = null;
+        $usersNotEnrol      = array();
+        $infoUser           = null;
+        $jrKeys             = array_flip(array_keys($job_roles));
+        $jrUsers            = null;
 
         try {
             /* Search Criteria  */
@@ -1006,18 +1040,26 @@ class course_report {
             $rdo = $DB->get_records_sql($sql,$params);
             if ($rdo) {
                 foreach ($rdo as $instance) {
-                    $jr_users = array_flip(explode(',',$instance->jobroles));
-                    if (array_intersect_key($job_keys,$jr_users)) {
-                        /* User Info    */
-                        $user_info          = new stdClass();
-                        $user_info->name    = $instance->name;
+                    if (isset($SESSION->job_roles) && $SESSION->job_roles) {
+                        $jrUsers = array_flip(explode(',',$instance->jobroles));
+                        if (array_intersect_key($jrKeys,$jrUsers)) {
+                            /* User Info    */
+                            $infoUser          = new stdClass();
+                            $infoUser->name    = $instance->name;
 
-                        $users_not_enrol[$instance->id] = $user_info;
-                    }//if_job_role
+                            $usersNotEnrol[$instance->id] = $infoUser;
+                        }//if_job_role
+                    }else {
+                        /* User Info    */
+                        $infoUser          = new stdClass();
+                        $infoUser->name    = $instance->name;
+
+                        $usersNotEnrol[$instance->id] = $infoUser;
+                    }//if_jobroles_selected
                 }//for_each
             }//if_Rdo
 
-            return $users_not_enrol;
+            return $usersNotEnrol;
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch

@@ -390,3 +390,45 @@ $string['selected_jobroles']    = 'Valgte jobbroller';
 
 $string['add_all']      = 'Legg til alle';
 $string['remove_all']   = 'Fjern alle';
+
+/**
+ * @updateDate  24/08/2015
+ * @author      eFaktor     (fbv)
+ *
+ * Description
+ * Add new language strings for 'Competence Data Import' functionality
+ */
+$string['upload_competence_imp'] = 'Upload competence';
+$string['header_competence_imp']        = 'Upload competence data';
+$string['header_competence_imp_help']   = 'Upload competence data for existing users from file. Info connected with the file???';
+$string['title_processing']             = 'Importing competence data for existing users. The process can take long time.';
+$string['err_imp_user']                 = 'User not exist';
+$string['err_wk_none_match']            = 'There is none match for this workplace.';
+$string['err_jr_none_match']            = 'There is none match for this job role. Check name, industry code, workplace, sector... connected with';
+
+$string['match_wk']         = 'Matching process for workplaces';
+$string['match_wk_help']    = '???';
+$string['match_jr']         = 'Matching process for job roles';
+$string['match_jr_help']    = '???';
+
+$string['to_match']         = 'To Match';
+$string['po_match']         = 'Possible Matches';
+$string['not_sure']         = 'Not sure';
+$string['btn_match']        = 'Match';
+
+$string['icd_line']     = 'Line';
+$string['icd_user']     = 'Username';
+$string['icd_wk']       = 'Workplace';
+$string['icd_wk_ic']    = 'Workplace IC';
+$string['icd_sector']   = 'Sector';
+$string['icd_jr']       = 'Jobrole';
+$string['icd_jr_ic']    = 'Jobrole IC';
+$string['icd_msg']      = 'Reason';
+
+$string['icd_not_imported']     = 'The import process has finished with some issues. The next records could not be imported.';
+$string['icd_not_imported_adv'] = 'Please, you should review the <strong>download file</strong>, where you can file all records that have not been imported and the reason.';
+$string['icd_imported']         = 'All the competence data have been imported successfully.';
+$string['icd_total_not_imp']    = '<strong style="color: red;">Total Errors: {$a}</strong></br>';
+
+$string['icd_file_name']        = 'CompetenceDataNotImported';
+$string['icd_download']         = 'Download File';

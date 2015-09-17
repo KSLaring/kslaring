@@ -40,6 +40,7 @@ YUI().use('node', function(Y) {
 
         Y.one("#id_search_add_jobroles").focus();
         window.onbeforeunload = null;
+        window.location.reload();
     });
 
     /* Search Selected Job Roles  */
@@ -69,6 +70,7 @@ YUI().use('node', function(Y) {
 
         Y.one("#id_search_sel_jobroles").focus();
         window.onbeforeunload = null;
+        window.location.reload();
     });
 
     window.onbeforeunload = null;

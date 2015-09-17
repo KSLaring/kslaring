@@ -631,7 +631,6 @@ class Micro_Users {
 
         try {
             /* Get Time Enrol   */
-            /* Get time enrol   */
             $usersEnrol = self::GetEnrollment_User($newUsers,$courseId);
 
             /* Add new Users for each delivery  */
