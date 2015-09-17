@@ -393,7 +393,8 @@ class TrackerManager {
             $sql = " SELECT		uicd.companyid,
                                 rgc.industrycode,
                                 rgc.name,
-                                uicd.jobroles
+                                uicd.jobroles,
+                                IF(uicd.jobroles,uicd.jobroles,0) as 'jobroles'
                      FROM		{user_info_competence_data} 	uicd
                         JOIN	{report_gen_companydata}		rgc		ON rgc.id = uicd.companyid
                      WHERE		uicd.userid = :user

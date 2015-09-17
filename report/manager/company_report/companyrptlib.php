@@ -241,7 +241,8 @@ class CompanyReport {
             }//if_job_roles
 
             /* Users Info       */
-            $companyTracker->users  = self::GetUsers_CompanyTracker($company->levelThree,$users_selected,$outcomes,$job_roles);
+            //$companyTracker->users  = self::GetUsers_CompanyTracker($company->levelThree,$users_selected,$outcomes,$job_roles);
+            $companyTracker->users  = self::GetUsers_CompanyTracker($company->levelThree,$users_selected);
 
             /* Save Outcomes    */
             $companyTracker->outcomes = $outcomes;
@@ -537,6 +538,21 @@ class CompanyReport {
      * Description
      * Get the users are connected to the company
      *
+
+     */
+
+    /**
+     * @param           $company
+     * @param           $users_selected
+     * @return          array
+     * @throws          Exception
+     *
+     * @creationDate    09/04/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Get tracker info of the users connected with the company
+     *
      * Users Tracker
      *          [id]
      *              --> id
@@ -565,15 +581,20 @@ class CompanyReport {
      *                          --> id
      *                          --> name
      *                          --> completed
+     *
+     * @updateDate      17/09/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Show users without jobrole. Not jobrole --> Courses are considered as Individual courses
      */
-    private static function GetUsers_CompanyTracker($company,$users_selected,&$outcomes,$job_roles) {
+    private static function GetUsers_CompanyTracker($company,$users_selected) {
         /* Variables    */
         global $DB;
         $usersIn            = implode(',',$users_selected);
         $usersTracker       = array();
         $info               = null;
         $jr_users           = null;
-        $job_keys           = array_flip(array_keys($job_roles));
         $outcomesCourses    = null;
 
         try {
@@ -583,15 +604,15 @@ class CompanyReport {
 
             /* SQL Instruction  */
             $sql = "  SELECT		DISTINCT 	u.id,
-                                                CONCAT(u.firstname, ' ', u.lastname) as 'name',
-                                                uicd.jobroles
-                     FROM			{user}	    					u
+                                                CONCAT(u.firstname, ' ', u.lastname)  as 'name',
+                                                IF(uicd.jobroles,uicd.jobroles,0)     as 'jobroles'
+                      FROM			{user}	    					u
                         JOIN		{user_info_competence_data}	  	uicd 	ON  	uicd.userid    	= u.id
                                                                             AND 	uicd.companyid  = :company
-                     WHERE		u.deleted 	 = 0
+                      WHERE		u.deleted 	 = 0
                         AND     u.id 		IN ($usersIn)
                         AND     u.username 	!=  'guest'
-                     ORDER BY   u.firstname, u.lastname ";
+                      ORDER BY   u.firstname, u.lastname ";
 
             /* Execute  */
             $rdo = $DB->get_records_sql($sql,$params);
@@ -599,39 +620,131 @@ class CompanyReport {
                 foreach ($rdo as $instance) {
                     /* User Info    */
                     $info = new stdClass();
-                    $info->id                   = $instance->id;
-                    $info->name                 = $instance->name;
-                    $info->job_roles            = $instance->jobroles;
-                    $info->job_roles_names      = self::Get_JobRolesNames($instance->jobroles);
-                    $info->outcomes             = null;
-                    $info->completed            = null;
-                    $info->not_completed        = null;
-
-                    /* Get Info Outcomes Courses    */
-                    if ($outcomes) {
-                        $jr_users = array_flip(explode(',',$instance->jobroles));
-                        if (array_intersect_key($job_keys,$jr_users)) {
-                            list($info->outcomes,$outcomesCourses) = self::GetInfo_OutcomesCourses($instance->id,$outcomes);
-                        }//if_job_roles
-                    }//if_outcomes
+                    $info->id                               = $instance->id;
+                    $info->name                             = $instance->name;
+                    $info->job_roles                        = $instance->jobroles;
+                    $info->job_roles_names                  = self::Get_JobRolesNames($instance->jobroles);
+                    /* Courses Connected with my Job roles  */
+                    list($info->outcomes,$outcomesCourses)  = self::GetInfoOutcomes_JobRoles($instance->id,$instance->jobroles);
+                    /* Individual Courses                   */
+                    $info->completed                        = null;
+                    $info->not_completed                    = null;
 
                     /* Get Info Individual Courses  */
-                    if ($outcomesCourses) {
-                        list($info->completed,$info->not_completed) = self::GetInfo_IndividualCoursesEnrol($instance->id,$outcomesCourses);
-                    }//if_individualCourses
+                    list($info->completed,$info->not_completed) = self::GetInfo_IndividualCoursesEnrol($instance->id,$outcomesCourses);
 
                     /* Add User */
                     if ($info->outcomes || $info->completed || $info->not_completed) {
                         $usersTracker[$instance->id] = $info;
                     }//if_outcomes_completed_notCompleted
-                }//for_each_user
-            }//if_Rdo
+                }//for_Rdo
+            }//if_rdo
 
             return $usersTracker;
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
     }//GetUsers_CompanyTracker
+
+
+    /**
+     * @param           $userId
+     * @param           $jr_lst
+     * @return          array
+     * @throws          Exception
+     *
+     * @creationDate    09/04/2015
+     * @author          eFaktor     (fbv)
+     *
+     * @updateDate      17/09/2015
+     * @author          eFaktor     (fbv)
+     * 
+     * Description
+     * Get the outcomes courses connected with the user
+     *
+     * Outcomes
+     *          [id]
+     *              --> id
+     *              --> name
+     *              --> expiration
+     *              --> completed.      Array
+     *                                      [id]
+     *                                          --> id
+     *                                          --> name
+     *                                          --> completed
+     *              --> not_completed.  Array
+     *                                      [id]
+     *                                          --> id
+     *                                          --> name
+     *                                          --> completed
+     *              --> not_enrol.      Array
+     *                                      [id]
+     *                                          --> id
+     *                                          --> name
+     *
+     *
+     */
+    private static function GetInfoOutcomes_JobRoles($userId,$jr_lst) {
+        /* Variables    */
+        global $DB;
+        $info               = null;
+        $coursesEnrol       = null;
+        $outcomes           = array();
+        $coursesOutcomes    = 0;
+
+        try {
+            /* SQL Instruction  */
+            $sql = " SELECT	    o.id,
+                                o.fullname,
+                                GROUP_CONCAT(DISTINCT oucu.courseid ORDER BY oucu.courseid SEPARATOR ',') as 'courses',
+                                rgo.expirationperiod
+                     FROM		{grade_outcomes}              o
+                        JOIN 	{grade_outcomes_courses}      oucu	    ON 	  	oucu.outcomeid  = o.id
+                        JOIN 	{report_gen_outcome_exp}      rgo	  	ON 	  	rgo.outcomeid   = oucu.outcomeid
+                        JOIN 	{report_gen_outcome_jobrole}  oj	  	ON 	  	oj.outcomeid    = rgo.outcomeid
+                        JOIN 	{report_gen_jobrole}          jr	  	ON 	  	jr.id 		  	= oj.jobroleid
+                                                                        AND   	jr.id 		    IN ($jr_lst)
+                     GROUP BY 	o.id
+                     ORDER BY   o.fullname ASC ";
+
+            /* Execute  */
+            $rdo = $DB->get_records_sql($sql);
+            if ($rdo) {
+                foreach ($rdo as $instance) {
+                    /* Outcome Info */
+                    $info = new stdClass();
+                    $info->id               = $instance->id;
+                    $info->name             = $instance->fullname;
+                    $info->expiration       = $instance->expirationperiod;
+                    /* Get Completed - Not Completed Courses    */
+                    list($info->completed,$info->not_completed) = self::GetInfo_CoursesEnrol($userId,$instance->courses);
+                    /* Get Not Enrol    */
+                    if ($info->completed && $info->not_completed) {
+                        $coursesEnrol   = implode(',',array_keys($info->completed));
+                        $coursesEnrol  .= ',' . implode(',',array_keys($info->not_completed));
+                    }else {
+                        if ($info->completed) {
+                            $coursesEnrol = implode(',',array_keys($info->completed));
+                        }else {
+                            $coursesEnrol = implode(',',array_keys($info->not_completed));
+                        }//if_completed
+                    }//if_completed_not_completed
+                    $info->not_enrol = self::GetInfo_CoursesNotEnrol($instance->courses,$coursesEnrol);
+
+                    /* Add outcome  */
+                    if ($info->completed || $info->not_completed || $info->not_enrol)  {
+                        $outcomes[$instance->id] = $info;
+                        $coursesOutcomes .= ',' . $instance->courses;
+                    }//if_courses
+                }//for_instance_outcome
+            }//if_rdo
+
+            return array($outcomes,$coursesOutcomes);
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//GetInfoOutcomes_JobRoles
+
 
     /**
      * @param           $job_roles
@@ -677,99 +790,6 @@ class CompanyReport {
             throw $ex;
         }//try_catch
     }//Get_JobRolesNames
-
-    /**
-     * @param           $user_id
-     * @param           $outcomesTracker
-     * @return          array
-     * @throws          Exception
-     *
-     * @creationDate    09/04/2015
-     * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Get the outcomes courses connected with the user
-     *
-     * Outcomes
-     *          [id]
-     *              --> id
-     *              --> name
-     *              --> expiration
-     *              --> completed.      Array
-     *                                      [id]
-     *                                          --> id
-     *                                          --> name
-     *                                          --> completed
-     *              --> not_completed.  Array
-     *                                      [id]
-     *                                          --> id
-     *                                          --> name
-     *                                          --> completed
-     *              --> not_enrol.      Array
-     *                                      [id]
-     *                                          --> id
-     *                                          --> name
-     */
-    private static function GetInfo_OutcomesCourses($user_id,&$outcomesTracker) {
-        /* Variables    */
-        global $DB;
-        $outcomesUser       = array();
-        $completed          = null;
-        $not_completed      = null;
-        $not_enrol          = null;
-        $coursesEnrol       = null;
-        $info               = null;
-        $outcomesCourses    = 0;
-
-        try {
-            /* Get Info Courses by Outcome  */
-            foreach ($outcomesTracker as $outcome) {
-                /* Get Completed - Not Completed Courses    */
-                list($completed,$not_completed) = self::GetInfo_CoursesEnrol($user_id,$outcome->courses);
-
-                /* Get Not Enrol Courses                    */
-                if ($completed && $not_completed) {
-                    $coursesEnrol = implode(',',array_keys($completed));
-                    $coursesEnrol .= ',' . implode(',',array_keys($not_completed));
-                }else {
-                    if ($completed) {
-                        $coursesEnrol = implode(',',array_keys($completed));
-                    }else {
-                        $coursesEnrol = implode(',',array_keys($not_completed));
-                    }//if_completed
-                }//if_completed_not_completed
-                $not_enrol = self::GetInfo_CoursesNotEnrol($outcome->courses,$coursesEnrol);
-
-                /*  Outcome  */
-                if ($completed || $not_completed || $not_enrol) {
-                    /* Outcome Info */
-                    $info = new stdClass();
-                    $info->id               = $outcome->id;
-                    $info->name             = $outcome->name;
-                    $info->expiration       = $outcome->expiration;
-                    $info->completed        = $completed;
-                    $info->not_completed    = $not_completed;
-                    $info->not_enrol        = $not_enrol;
-
-                    /* Add Outcome  */
-                    $outcomesUser[$outcome->id] = $info;
-                    $outcomesTracker[$outcome->id]->users[$user_id] = $user_id;
-                }//if_completed_notCompleted_notEnrol
-
-                if ($coursesEnrol) {
-                    $outcomesCourses .= ',' . $coursesEnrol;
-                }
-
-                if ($not_enrol) {
-                    $outcomesCourses .= ',' . implode(',',array_keys($not_enrol));
-                }
-            }//for_each_outcome
-
-            return array($outcomesUser,$outcomesCourses);
-        }catch (Exception $ex) {
-            throw $ex;
-        }//try_catch
-    }//GetInfo_OutcomesCourses
 
     /**
      * @param           $user_id

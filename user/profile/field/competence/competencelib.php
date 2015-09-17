@@ -67,11 +67,11 @@ class Competence {
 
         try {
             foreach ($my_companies as $company) {
-                $levelZero[$company->levelZero] = $company->levelZero;
-                $levelOne[$company->levelOne]   = $company->levelOne;
-                $levelTwo[$company->levelTwo]   = $company->levelTwo;
-                $levelThree[$company->levelThree] = $company->levelThree;
-            }
+                $levelZero[$company->levelZero]     = $company->levelZero;
+                $levelOne[$company->levelOne]       = $company->levelOne;
+                $levelTwo[$company->levelTwo]       = $company->levelTwo;
+                $levelThree[$company->levelThree]   = $company->levelThree;
+            }//for_each_company
 
             return array($levelZero,$levelOne,$levelTwo,$levelThree);
         }catch (Exception $ex) {
@@ -158,11 +158,11 @@ class Competence {
             /* SQL Instruction  */
             $sql = " SELECT		uicd.id,
                                 uicd.competenceid,
-                                level_two.parentid 	as 'leveltwo',
-                                level_one.parentid 	as 'levelone',
-                                level_zero.parentid as 'levelzero',
-                                uicd.companyid 		as 'levelthree',
-                                uicd.jobroles
+                                level_two.parentid 	                as 'leveltwo',
+                                level_one.parentid 	                as 'levelone',
+                                level_zero.parentid                 as 'levelzero',
+                                uicd.companyid 		                as 'levelthree',
+                                IF(uicd.jobroles,uicd.jobroles,0) 	as 'jobroles'
                      FROM		{user_info_competence_data} 	uicd
                         JOIN	(
                                     SELECT		cr.companyid,
@@ -490,56 +490,65 @@ class Competence {
      *
      * Description
      * Add the new info competence to the user profile
+     *
+     * @updateDate      17/05/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Job role not compulsory
      */
     public static function AddCompetence($data) {
         /* Variables    */
         global $DB;
         $time                   = time();
-        $info_competence        = null;
-        $info_competence_data   = null;
-        $info_data              = null;
-        $my_roles               = null;
+        $infoCompetence         = null;
+        $infoCompetenceData     = null;
+        $infoData               = null;
+        $myRoles                = null;
 
         /* Begin Transaction    */
         $trans = $DB->start_delegated_transaction();
         try {
             /* Check if it exists a competence info instance for the user */
-            $info_competence = $DB->get_record('user_info_competence',array('userid' => $data->id));
-            if ($info_competence) {
-                $info_competence->timemodified  = $time;
+            $infoCompetence = $DB->get_record('user_info_competence',array('userid' => $data->id));
+            if ($infoCompetence) {
+                $infoCompetence->timemodified  = $time;
 
                 /* Update   */
-                $DB->update_record('user_info_competence',$info_competence);
+                $DB->update_record('user_info_competence',$infoCompetence);
             }else {
                 /* First    --> Create Instance user_info_competence    */
-                $info_competence = new stdClass();
-                $info_competence->userid        = $data->id;
-                $info_competence->timemodified  = $time;
+                $infoCompetence = new stdClass();
+                $infoCompetence->userid        = $data->id;
+                $infoCompetence->timemodified  = $time;
                 /* Execute  */
-                $info_competence->id = $DB->insert_record('user_info_competence',$info_competence);
+                $infoCompetence->id = $DB->insert_record('user_info_competence',$infoCompetence);
             }//if_info_competence
 
             /* Second   --> User Info Competence Data   */
-            $info_competence_data = new stdClass();
-            $info_competence_data->competenceid     = $info_competence->id;
-            $info_competence_data->userid           = $info_competence->userid;
-            $info_competence_data->companyid        = $data->level_3;
-            $info_competence_data->jobroles         = implode(',',$data->job_roles);
-            $info_competence_data->timemodified     = $time;
+            $infoCompetenceData = new stdClass();
+            $infoCompetenceData->competenceid     = $infoCompetence->id;
+            $infoCompetenceData->userid           = $infoCompetence->userid;
+            $infoCompetenceData->companyid        = $data->level_3;
+            /* Job Roles */
+            if (isset($data->job_roles) && $data->job_roles) {
+                $infoCompetenceData->jobroles         = implode(',',$data->job_roles);
+            }//if_jobroles
+            $infoCompetenceData->timemodified     = $time;
             /* Execute  */
-            $DB->insert_record('user_info_competence_data',$info_competence_data);
+            $DB->insert_record('user_info_competence_data',$infoCompetenceData);
 
             /* Third    --> User Info Data              */
             /* Get the fieldid of competence profile    */
             $field = $DB->get_record('user_info_field',array('datatype' => 'competence'),'id');
-            $info_data = $DB->get_record('user_info_data',array('fieldid' => $field->id,'userid' => $info_competence->userid));
-            if (!$info_data) {
-                $info_data = new stdClass();
-                $info_data->userid  = $data->id;
-                $info_data->fieldid = $field->id;
-                $info_data->data    = $info_competence->id;
+            $infoData = $DB->get_record('user_info_data',array('fieldid' => $field->id,'userid' => $infoCompetence->userid));
+            if (!$infoData) {
+                $infoData = new stdClass();
+                $infoData->userid  = $data->id;
+                $infoData->fieldid = $field->id;
+                $infoData->data    = $infoCompetence->id;
                 /* Execute  */
-                $DB->insert_record('user_info_data',$info_data);
+                $DB->insert_record('user_info_data',$infoData);
             }//create_new_entrance
 
             /* Commit   */
@@ -563,23 +572,38 @@ class Competence {
      *
      * Description
      * Edit the competence
+     *
+     * @updateDate      17/09/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Job Role Not Compulsory
      */
     public static function EditCompetence($data) {
         /* Variables    */
         global $DB;
-        $info_competence_data    = null;
+        $infoCompetenceData = null;
 
         try {
             /* Info Data    */
-            $info_competence_data = new stdClass();
-            $info_competence_data->id           = $data->icd;
-            $info_competence_data->competenceid = $data->ic;
-            $info_competence_data->userid       = $data->id;
-            $info_competence_data->jobroles     = implode(',',$data->job_roles);
-            $info_competence_data->timemodified = time();
+            $infoCompetenceData = new stdClass();
+            $infoCompetenceData->id           = $data->icd;
+            $infoCompetenceData->competenceid = $data->ic;
+            $infoCompetenceData->userid       = $data->id;
+            /* Job roles    */
+            if ($data->job_roles) {
+                $infoCompetenceData->jobroles   = implode(',',$data->job_roles);
+                if (!$infoCompetenceData->jobroles) {
+                    $infoCompetenceData->jobroles   = null;
+                }
+            }else {
+                $infoCompetenceData->jobroles   = null;
+            }
+
+            $infoCompetenceData->timemodified = time();
 
             /* Update       */
-            $DB->update_record('user_info_competence_data',$info_competence_data);
+            $DB->update_record('user_info_competence_data',$infoCompetenceData);
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
@@ -587,8 +611,8 @@ class Competence {
 
 
     /**
-     * @param           $user_id
-     * @param           $competence_data
+     * @param           $userId
+     * @param           $competenceData
      * @param           $competence
      * @return          bool
      * @throws          Exception
@@ -599,26 +623,27 @@ class Competence {
      * Description
      * Delete the competence from the user profile.
      */
-    public static function DeleteCompetence($user_id,$competence_data,$competence) {
+    public static function DeleteCompetence($userId,$competenceData,$competence) {
         /* Variables    */
         global $DB;
-        $info_competence = null;
-        $companies       = null;
-        $job_roles       = null;
+        $rdo            = null;
+        $field          = null;
+        $infoData       = null;
 
         /* Begin Transaction    */
         $trans = $DB->start_delegated_transaction();
+
         try {
-            $DB->delete_records('user_info_competence_data',array('id' => $competence_data, 'competenceid' => $competence, 'userid' => $user_id));
+            $DB->delete_records('user_info_competence_data',array('id' => $competenceData, 'competenceid' => $competence, 'userid' => $userId));
             /* Check if Delete user_info_competence / user_info_data    */
-            $rdo = $DB->get_records('user_info_competence_data',array('competenceid' => $competence, 'userid' => $user_id));
+            $rdo = $DB->get_records('user_info_competence_data',array('competenceid' => $competence, 'userid' => $userId));
             if (!$rdo) {
                 /* Delete User Info Competence / User Info Data */
-                $DB->delete_records('user_info_competence',array('id' => $competence, 'userid' => $user_id));
+                $DB->delete_records('user_info_competence',array('id' => $competence, 'userid' => $userId));
                 /* Get ID of User Info Data */
                 $field      = $DB->get_record('user_info_field',array('datatype' => 'competence'),'id');
-                $info_data  = $DB->get_record('user_info_data',array('fieldid' => $field->id,'userid' => $user_id));
-                $DB->delete_records('user_info_data',array('id' => $info_data->id,'fieldid' => $field->id,'userid' => $user_id));
+                $infoData   = $DB->get_record('user_info_data',array('fieldid' => $field->id,'userid' => $userId));
+                $DB->delete_records('user_info_data',array('id' => $infoData->id,'fieldid' => $field->id,'userid' => $userId));
             }//if_!rdo
 
             /* Commit   */
@@ -634,8 +659,8 @@ class Competence {
     }//DeleteCompetence
 
     /**
-     * @param           $my_competence
-     * @param           $user_id
+     * @param           $myCompetence
+     * @param           $userId
      * @return          string
      * @throws          Exception
      *
@@ -661,18 +686,18 @@ class Competence {
      * Description
      * Synchronize with Force Profile Plugin
      */
-    public static function Get_CompetenceTable($my_competence,$user_id) {
+    public static function Get_CompetenceTable($myCompetence,$userId) {
         /* Variables    */
         global          $SESSION;
         $out            = '';
 
-        $return_url     = new moodle_url('/user/profile.php',array('id' =>$user_id));
-        $url_add        = new moodle_url('/user/profile/field/competence/actions/add_competence.php',array('id' =>$user_id));
+        $return_url     = new moodle_url('/user/profile.php',array('id' =>$userId));
+        $url_add        = new moodle_url('/user/profile/field/competence/actions/add_competence.php',array('id' =>$userId));
 
         try {
             /* Synchronize with Force Profile Plugin    */
             if (isset($SESSION->force_profile) && ($SESSION->force_profile)) {
-                $return_url = new moodle_url('/local/force_profile/confirm_profile.php',array('id'=>$user_id));
+                $return_url = new moodle_url('/local/force_profile/confirm_profile.php',array('id'=>$userId));
             }//force_profile
 
             /* Title    */
@@ -691,8 +716,8 @@ class Competence {
             /* Get Info Competence to display      */
             /* HIERARCHY LEVEL - HEADER TABLE   */
             $out .= self::AddHeader_CompetenceTable();
-            if ($my_competence) {
-                $out .= self::AddContent_CompetenceTable($my_competence,$user_id);
+            if ($myCompetence) {
+                $out .= self::AddContent_CompetenceTable($myCompetence,$userId);
             }//if_my_competence
 
             /* Add the Actions Link */
