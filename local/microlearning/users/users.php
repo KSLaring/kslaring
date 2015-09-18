@@ -82,7 +82,7 @@ if ($selector_users->is_cancelled()) {
     } else if (!empty($data->add_sel)) {
         if (!empty($data->ausers)) {
             if (in_array(0, $data->ausers)) {
-                add_selection_all($user_filter);
+                Micro_Users::AddSelectionAll($user_filter);
             } else {
                 foreach($data->ausers as $userid) {
                     if ($userid == -1) {
@@ -102,6 +102,7 @@ if ($selector_users->is_cancelled()) {
         if (!empty($data->susers)) {
             if (in_array(0, $data->susers)) {
                 $SESSION->bulk_users= array();
+                $SESSION->removeAll = true;
             } else {
                 foreach($data->susers as $userid) {
                     if ($userid == -1) {
