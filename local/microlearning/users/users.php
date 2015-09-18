@@ -64,7 +64,7 @@ $user_filter = new microlearning_users_filtering(null,$url,null);
 $user_filter->course_id = $course_id;
 /* Selector User Form   */
 $user_list              = Micro_Users::Get_SelectiorUsers_Filter($user_filter,$course_id,$mode_learning,$campaign_id,$started);
-$selector_users = new microlearning_users_selector_form(null,$user_list);
+$selector_users         = new microlearning_users_selector_form(null,$user_list);
 if ($selector_users->is_cancelled()) {
     unset($SESSION->bulk_users);
 

@@ -76,12 +76,7 @@ class Micro_Users {
             $scount = count($SESSION->bulk_users);
 
             if ($scount) {
-                if ($scount < MAX_BULK_USERS) {
-                    $in .= implode(',', $SESSION->bulk_users);
-                } else {
-                    $bulkusers = array_slice($SESSION->bulk_users, 0, MAX_BULK_USERS, true);
-                    $in .= implode(',', $bulkusers);
-                }
+                $in .= implode(',', $SESSION->bulk_users);
             }//if_scount
 
             /* Add Selector */
@@ -105,6 +100,7 @@ class Micro_Users {
             $userlist['mode']       = $mode_learning;
             $userlist['campaign']   = $campaign_id;
             $userlist['started']    = $started;
+            $userlist['acount']     = $acount - $scount;
 
             return $userlist;
         }catch (Exception $ex) {
