@@ -48,7 +48,7 @@ $PAGE->set_heading($SITE->fullname);
 $PAGE->navbar->add(get_string('title_index','local_microlearning'),$return_url);
 $PAGE->navbar->add(get_string('title_users','local_microlearning'));
 $PAGE->navbar->add($campaign_name,$campaign_url);
-$PAGE->requires->js(new moodle_url('/local/microlearning/js/users.js'));
+//$PAGE->requires->js(new moodle_url('/local/microlearning/js/users.js'));
 
 if (!isset($SESSION->bulk_users)) {
     $SESSION->bulk_users = array();

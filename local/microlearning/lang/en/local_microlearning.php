@@ -100,3 +100,6 @@ $string['err_generic']          = 'It has been an error during the process. Plea
 
 $string['cron_activate']    = 'Enabled';
 $string['cron_deactivate']  = 'Disabled';
+
+$string['micro_too_many']   = 'Too many users {$a}';
+$string['micro_use_filter'] = 'Please use the filter';
