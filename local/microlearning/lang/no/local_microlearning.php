@@ -100,3 +100,6 @@ $string['err_generic']          = 'Det har skjedd en feil. Vennligst prøv på n
 
 $string['cron_activate']    = 'Aktivert';
 $string['cron_deactivate']  = 'Deaktivert';
+
+$string['micro_too_many']   = 'Too many users {$a}';
+$string['micro_use_filter'] = 'Please use the filter';

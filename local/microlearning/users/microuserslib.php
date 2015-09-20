@@ -10,6 +10,7 @@
  * @author          eFaktor     (fbv)
  *
  */
+define('MAX_USERS',100);
 
 class Micro_Users {
     private   static    $users_filter;
@@ -76,12 +77,7 @@ class Micro_Users {
             $scount = count($SESSION->bulk_users);
 
             if ($scount) {
-                if ($scount < MAX_BULK_USERS) {
                     $in .= implode(',', $SESSION->bulk_users);
-                } else {
-                    $bulkusers = array_slice($SESSION->bulk_users, 0, MAX_BULK_USERS, true);
-                    $in .= implode(',', $bulkusers);
-                }
             }//if_scount
 
             /* Add Selector */
@@ -94,7 +90,7 @@ class Micro_Users {
             }//if_in
 
             $userlist = array('acount'=>$acount, 'scount'=>$scount, 'ausers'=>false, 'susers'=>false, 'total'=>$total);
-            $userlist['ausers'] = $DB->get_records_select_menu('user', $sqlwhere, $params, 'fullname', 'id,'.$DB->sql_fullname().' AS fullname', 0, MAX_BULK_USERS);
+            $userlist['ausers'] = $DB->get_records_select_menu('user', $sqlwhere, $params, 'fullname', 'id,'.$DB->sql_fullname().' AS fullname', 0, MAX_USERS);
 
             /* Users Selected   */
             if ($in) {
@@ -105,6 +101,7 @@ class Micro_Users {
             $userlist['mode']       = $mode_learning;
             $userlist['campaign']   = $campaign_id;
             $userlist['started']    = $started;
+            $userlist['acount']     = $acount - $scount;
 
             return $userlist;
         }catch (Exception $ex) {

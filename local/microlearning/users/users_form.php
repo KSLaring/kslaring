@@ -71,8 +71,9 @@ class microlearning_users_selector_form extends moodleform {
             }
             $achoices = $achoices + $ausers;
 
-            if ($acount > MAX_BULK_USERS) {
+            if ($acount > MAX_USERS) {
                 $achoices[-1] = '...';
+
             }
 
         } else {
@@ -86,7 +87,7 @@ class microlearning_users_selector_form extends moodleform {
             $schoices[0] = get_string('allselectedusers', 'bulkusers', $a);
             $schoices = $schoices + $susers;
 
-            if ($scount > MAX_BULK_USERS) {
+            if ($scount > MAX_USERS) {
                 $schoices[-1] = '...';
             }
 
@@ -100,8 +101,8 @@ class microlearning_users_selector_form extends moodleform {
             /* Selected Users   */
             $form->addElement('html','<div class="sel_users_left">');
                 $form->addElement('select','susers','',$schoices,'multiple size="15"');
-                $form->addElement('text','search_sel_users',get_string('search'));
-                $form->setType('search_sel_users',PARAM_TEXT);
+                //$form->addElement('text','search_sel_users',get_string('search'));
+                //$form->setType('search_sel_users',PARAM_TEXT);
             $form->addElement('html','</div>');//sel_users_left
 
             /* Buttons          */
@@ -131,8 +132,8 @@ class microlearning_users_selector_form extends moodleform {
             /* Add Users        */
             $form->addElement('html','<div class="sel_users_right">');
                 $form->addElement('select','ausers','',$achoices,'multiple size="15"');
-                $form->addElement('text','search_add_users',get_string('search'));
-                $form->setType('search_add_users',PARAM_TEXT);
+                //$form->addElement('text','search_add_users',get_string('search'));
+                //$form->setType('search_add_users',PARAM_TEXT);
             $form->addElement('html','</div>');//sel_users_right
         $form->addElement('html','</div>');//micro_learning_users
 
