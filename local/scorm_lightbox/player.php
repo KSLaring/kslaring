@@ -268,7 +268,7 @@ if (empty($scorm->popup) || $displaymode == 'popup') {
     }
     $jsmodule = array(
         'name' => 'mod_scorm',
-        'fullpath' => '/mod/scorm/module.js',
+        'fullpath' => '/local/scorm_lightbox/module.js',
         'requires' => array('json'),
     );
     $scorm->nav = intval($scorm->nav);
