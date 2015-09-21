@@ -27,7 +27,7 @@
 require_once(__DIR__ . '/../../config.php');
 
 // Don't autologin guests.
-require_login(null, false);
+//require_login(null, false);
 
 $friadmin = new local_friadmin\friadmin();
 

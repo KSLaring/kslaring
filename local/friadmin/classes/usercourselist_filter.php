@@ -146,6 +146,10 @@ class local_friadmin_usercourselist_filter extends local_friadmin_widget impleme
                 'classroom' => true,
             );
 
+            if (!isloggedin()) {
+                return $result;
+            }
+
             if (is_null($userId)) {
                 $userId = $USER->id;
             }//id_userid
