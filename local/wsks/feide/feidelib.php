@@ -122,15 +122,8 @@ class KS_FEIDE {
             $token      = $pluginInfo->feide_token;
             $service    = $pluginInfo->feide_service;
 
-            $token = 'f33fe85c095677df265363cb728140c1';
-            $domain = 'https://feidedev.weblogin.no';
-
-            $service = 'wsValidateUserFeide';
-
-            $server     = $domain . '/webservice/soap/server.php?wsdl=1&wstoken=' . $token;
-
             /* Build end Point Service  */
-            //$server     = $domain . '/webservice/soap/server.php?wsdl=1&wstoken=' . $token;
+            $server     = $domain . '/webservice/soap/server.php?wsdl=1&wstoken=' . $token;
 
             /* Call service */
             $client     = new SoapClient($server);
