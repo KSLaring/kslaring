@@ -115,12 +115,9 @@ class KS_FEIDE {
             $pluginInfo = get_config('local_wsks');
 
             /* User to Validate */
-            //$userRequest = array();
-            //$userRequest['id']     = $args[0];
-            //$userRequest['ticket'] = $args[1];
-            $userRequest = new stdClass();
-            $userRequest->id        = $args[0];
-            $userRequest->ticket    = $args[1];
+            $userRequest = array();
+            $userRequest['id']     = $args[0];
+            $userRequest['ticket'] = $args[1];
 
             /* Data to call Service */
             $domain     = $pluginInfo->feide_point;
@@ -128,59 +125,23 @@ class KS_FEIDE {
             $service    = $pluginInfo->feide_service;
 
             /* Build end Point Service  */
-            //$server     = $domain . '/webservice/soap/server.php?wsdl=1&wstoken=' . $token;
-
-            $server     = $domain . '/webservice/soap/server.php?wstoken=' . $token . '&wsfunction=' . $service . '&moodlewsrestformat=json';
-
-            //$server_url     = $domain . '/webservice/rest/server.php?wstoken=' . $token . '&wsfunction=' . $login_user .'&moodlewsrestformat=json';
+            $server     = $domain . '/webservice/soap/server.php?wsdl=1&wstoken=' . $token;
 
             /* Call service */
-            //$client     = new SoapClient($server);
-            //$response   = $client->$service($userRequest);
+            $client     = new SoapClient($server);
+            $response   = $client->$service($userRequest);
 
-            $params = array('user' => $userRequest);
+            if ($response['error'] == '200') {
+                if ($response['valid']) {
+                    $errCode = FEIDE_NON_ERROR;
+                }else {
+                    $errCode = FEIDE_NOT_VALID;
+                }//if_valid
 
-            $fields = http_build_query( $params );
-            $fields = str_replace( '&amp;', '&', $fields );
-
-            $ch = curl_init($server);
-            curl_setopt( $ch, CURLOPT_SSL_VERIFYPEER, false );
-            curl_setopt( $ch, CURLOPT_SSL_VERIFYHOST,2 );
-            curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
-            curl_setopt( $ch, CURLOPT_POST, true );
-            curl_setopt( $ch, CURLOPT_HTTPHEADER, array( 'Content-Length: ' . strlen( $fields ) ) );
-            curl_setopt( $ch, CURLOPT_POSTFIELDS, $fields );
-
-            $response = curl_exec( $ch );
-            $error = false;
-
-            if( $response === false )
-            {
-                $error = curl_error( $ch );
-                print_r($error);
-            }
-
-
-            curl_close( $ch );
-
-            $result = json_decode($response);
-
-            if ($result->error == '200') {
-                $userInfo = $result->user;
+                $userInfo = $response['user'][0];
             }else {
                 $errCode = FEIDE_ERR_PROCESS;
-            }
-            //if ($response['error'] == '200') {
-            //    if ($response['valid']) {
-            //        $errCode = FEIDE_NON_ERROR;
-            //    }else {
-            //        $errCode = FEIDE_NOT_VALID;
-            //    }//if_valid
-
-            //    $userInfo = $response['user'][0];
-            //}else {
-            //    $errCode = FEIDE_ERR_PROCESS;
-            //}//if_no_error
+            }//if_no_error
 
             return array($userInfo,$errCode);
         }catch (Exception $ex) {
@@ -243,13 +204,13 @@ class KS_FEIDE {
             /* Info to update  */
             $instance = new stdClass();
             $instance->id           = $userId;
-            $instance->username     = $user->username;
-            $instance->firstname    = $user->firstname;
-            $instance->lastname     = $user->lastname;
-            $instance->email        = $user->email;
-            $instance->city         = $user->city;
-            $instance->country      = $user->country;
-            $instance->lang         = $user->lang;
+            $instance->username     = $user['username'];
+            $instance->firstname    = $user['firstname'];
+            $instance->lastname     = $user['lastname'];
+            $instance->email        = $user['email'];
+            $instance->city         = $user['city'];
+            $instance->country      = $user['country'];
+            $instance->lang         = $user['lang'];
             $instance->timemodified = time();
 
             /* Execute  */
@@ -280,7 +241,7 @@ class KS_FEIDE {
             $newUser = new stdClass();
 
             /* Username     */
-            $newUser->username     = $user->username;
+            $newUser->username     = $user['username'];
             /* Auth method  */
             $newUser->auth         = 'saml';
             /* Password     */
@@ -288,20 +249,20 @@ class KS_FEIDE {
 
 
             /* First name   */
-            $newUser->firstname    = $user->firstname;
+            $newUser->firstname    = $user['firstname'];
             /* Last name    */
-            $newUser->lastname     = $user->lastname;
+            $newUser->lastname     = $user['lastname'];
             /* eMail        */
-            $newUser->email        = $user->email;
+            $newUser->email        = $user['email'];
             /* City         */
-            $newUser->city         = $user->city;
+            $newUser->city         = $user['city'];
             /* Country      */
-            $newUser->country      = $user->country;
+            $newUser->country      = $user['country'];
 
             /* Lang */
             $newUser->lang = 'no';
-            if ($user->lang) {
-                $newUser->lang     = $user->lang;
+            if ($user['lang']) {
+                $newUser->lang     = $user['lang'];
             }//lang
 
 
