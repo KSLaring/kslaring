@@ -14,3 +14,6 @@
 $string['pluginname']   = 'Feide Integration Web Service';
 
 $string['ks_site']      = 'KS Læring site';
+
+$string['feide_activate']    = 'Enabled';
+$string['feide_deactivate']  = 'Disabled';

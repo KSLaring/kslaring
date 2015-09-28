@@ -18,5 +18,9 @@ if ($hassiteconfig) {
     $ADMIN->add('localplugins', $settings);
 
     /* Web Service  */
+    $options = array('0' => get_string('feide_activate','local_feide'),
+                     '1' => get_string('feide_deactivate','local_feide'));
+    $settings->add(new admin_setting_configselect('local_feide/feide_active', new lang_string('active'),  '', 1, $options));
+
     $settings->add(new admin_setting_configtext('local_feide/ks_point',get_string('ks_site','local_feide'),'','',PARAM_TEXT,50));
 }//if_config
