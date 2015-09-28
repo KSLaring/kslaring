@@ -223,8 +223,7 @@ define('SAML_INTERNAL', 1);
         //if (isset($SESSION->ksSource)) {
             require_once ('../../local/feide/feidelib.php');
             $urlKS = WS_FEIDE::GenerateResponse($USER->id);
-        header('Location: ' . urldecode($urlKS));
-            //redirect($urlKS);
+            redirect($urlKS);
         //}else {
         //    redirect($urltogo);
         //}//if_else
