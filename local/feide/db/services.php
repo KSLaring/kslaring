@@ -26,7 +26,7 @@ $functionConfig = array('classname'    =>    $className,
                         'methodname'   =>    $functionName,
                         'classpath'    =>    $classPath,
                         'description'  =>    'Feide Integration',
-                        'type'         =>    'read'
+                        'type'         =>    'write'
 );
 
 
@@ -41,7 +41,7 @@ $functions = array($functionName    =>  $functionConfig);
 $service_name   = 'feide';
 $service_config = array(
     'functions'         => array($functionName),
-    'restrictedusers'   => 0,
+    'restrictedusers'   => 1,
     'enabled'           => 1
 );
 
