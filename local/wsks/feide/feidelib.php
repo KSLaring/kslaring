@@ -126,7 +126,7 @@ class KS_FEIDE {
             $server     = $domain . '/webservice/soap/server.php?wsdl=1&wstoken=' . $token;
 
             /* Call service */
-            $client     = new SoapClient($server);
+            $client     = new SoapClient($server,array('cache_wsdl' => WSDL_CACHE_NONE));
             $response   = $client->$service($userRequest);
 
             if ($response['error'] == '200') {
