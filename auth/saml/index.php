@@ -221,12 +221,12 @@ define('SAML_INTERNAL', 1);
          * Redirect the user to KS Site
          */
         $pluginInfo = get_config('local_feide');
-        if (($pluginInfo) && ($pluginInfo->feide_active)) {
+        //if (($pluginInfo) && ($pluginInfo->feide_active)) {
             require_once ('../../local/feide/feidelib.php');
             $urlKS = WS_FEIDE::GenerateResponse($userId);
             redirect($urlKS);
-        }//if_pluginInfo
+        //}//if_pluginInfo
 
 
-        redirect($urltogo);
+        //redirect($urltogo);
     }
