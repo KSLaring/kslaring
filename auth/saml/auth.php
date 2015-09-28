@@ -157,30 +157,31 @@ class auth_plugin_saml extends auth_plugin_base {
         $LogoutUrl  = null;
 
         try {
-        if (isset($SESSION->LogoutUrl)) {
-            if (!is_siteadmin($USER)) {
-                $LogoutUrl = $SESSION->LogoutUrl;
-                unset($SESSION->LogoutUrl);
-                if (!strpos('http://',$LogoutUrl) && !strpos('https://',$LogoutUrl)) {
-                    $redirect = $LogoutUrl;
-                }else {
-                    $redirect = 'http://' . $LogoutUrl;
-                }
+            if (isset($SESSION->LogoutUrl)) {
+                if (!is_siteadmin($USER)) {
+                    $LogoutUrl = $SESSION->LogoutUrl;
+                    unset($SESSION->LogoutUrl);
+                    if (!strpos('http://',$LogoutUrl) && !strpos('https://',$LogoutUrl)) {
+                        $redirect = $LogoutUrl;
+                    }else {
+                        $redirect = 'http://' . $LogoutUrl;
+                    }
 
-                require_logout();
-                redirect($redirect);
-            }//if_user_admin
+                    require_logout();
+                    redirect($redirect);
+                }//if_user_admin
             }else if (isset($SESSION->ksSource)) {
                 /* Get End Point    */
                 $pluginInfo = get_config('local_wsks');
                 $redirect = $pluginInfo->feide_point . '/local/feide/logout.php';
-                redirect($redirect);
-        }else {
-            if(isset($this->config->dosinglelogout) && $this->config->dosinglelogout) {
-                set_moodle_cookie('nobody');
                 require_logout();
-                redirect($GLOBALS['CFG']->wwwroot.'/auth/saml/index.php?logout=1');
-            }
+                redirect($redirect);
+            }else {
+                if(isset($this->config->dosinglelogout) && $this->config->dosinglelogout) {
+                    set_moodle_cookie('nobody');
+                    require_logout();
+                    redirect($GLOBALS['CFG']->wwwroot.'/auth/saml/index.php?logout=1');
+                }
             }//if_else_SESSION
         }catch (Exception $ex) {
             throw $ex;
