@@ -110,7 +110,7 @@ class WS_FEIDE {
 
             /* Ticket - Something long and Unique   */
             $token  = uniqid(mt_rand(),1);
-            $ticket = complex_random_string(15) . $userId . '_' . time() . '_' . $token . complex_random_string(15);
+            $ticket = random_string() . $userId . '_' . time() . '_' . $token . random_string();
             $remind = self::GenerateHash($ticket);
             $remind = str_replace('/', '.', $remind);
 
