@@ -223,7 +223,7 @@ define('SAML_INTERNAL', 1);
         $pluginInfo = get_config('local_feide');
         //if (($pluginInfo) && ($pluginInfo->feide_active)) {
             require_once ('../../local/feide/feidelib.php');
-            $urlKS = WS_FEIDE::GenerateResponse($userId);
+            $urlKS = WS_FEIDE::GenerateResponse($USER->id);
             redirect($urlKS);
         //}//if_pluginInfo
 
