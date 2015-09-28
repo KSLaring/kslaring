@@ -113,9 +113,12 @@ class KS_FEIDE {
             $pluginInfo = get_config('local_wsks');
 
             /* User to Validate */
-            $userRequest = array();
-            $userRequest['id']     = $args[0];
-            $userRequest['ticket'] = $args[1];
+            //$userRequest = array();
+            //$userRequest['id']     = $args[0];
+            //$userRequest['ticket'] = $args[1];
+            $userRequest = new stdClass();
+            $userRequest->id        = $args[0];
+            $userRequest->ticket    = $args[1];
 
             /* Data to call Service */
             $domain     = $pluginInfo->feide_point;
@@ -123,23 +126,59 @@ class KS_FEIDE {
             $service    = $pluginInfo->feide_service;
 
             /* Build end Point Service  */
-            $server     = $domain . '/webservice/soap/server.php?wsdl=1&wstoken=' . $token;
+            //$server     = $domain . '/webservice/soap/server.php?wsdl=1&wstoken=' . $token;
+
+            $server     = $domain . '/webservice/soap/server.php?wstoken=' . $token . '&wsfunction=' . $service . '&moodlewsrestformat=json';
+
+            //$server_url     = $domain . '/webservice/rest/server.php?wstoken=' . $token . '&wsfunction=' . $login_user .'&moodlewsrestformat=json';
 
             /* Call service */
-            $client     = new SoapClient($server,array('cache_wsdl' => WSDL_CACHE_NONE));
-            $response   = $client->$service($userRequest);
+            //$client     = new SoapClient($server);
+            //$response   = $client->$service($userRequest);
 
-            if ($response['error'] == '200') {
-                if ($response['valid']) {
-                    $errCode = FEIDE_NON_ERROR;
-                }else {
-                    $errCode = FEIDE_NOT_VALID;
-                }//if_valid
+            $params = array('user' => $userRequest);
 
-                $userInfo = $response['user'][0];
+            $fields = http_build_query( $params );
+            $fields = str_replace( '&amp;', '&', $fields );
+
+            $ch = curl_init($server);
+            curl_setopt( $ch, CURLOPT_SSL_VERIFYPEER, false );
+            curl_setopt( $ch, CURLOPT_SSL_VERIFYHOST,2 );
+            curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
+            curl_setopt( $ch, CURLOPT_POST, true );
+            curl_setopt( $ch, CURLOPT_HTTPHEADER, array( 'Content-Length: ' . strlen( $fields ) ) );
+            curl_setopt( $ch, CURLOPT_POSTFIELDS, $fields );
+
+            $response = curl_exec( $ch );
+            $error = false;
+
+            if( $response === false )
+            {
+                $error = curl_error( $ch );
+                print_r($error);
+            }
+
+
+            curl_close( $ch );
+
+            $result = json_decode($response);
+
+            if ($result->error == '200') {
+                $userInfo = $result->user;
             }else {
                 $errCode = FEIDE_ERR_PROCESS;
-            }//if_no_error
+            }
+            //if ($response['error'] == '200') {
+            //    if ($response['valid']) {
+            //        $errCode = FEIDE_NON_ERROR;
+            //    }else {
+            //        $errCode = FEIDE_NOT_VALID;
+            //    }//if_valid
+
+            //    $userInfo = $response['user'][0];
+            //}else {
+            //    $errCode = FEIDE_ERR_PROCESS;
+            //}//if_no_error
 
             return array($userInfo,$errCode);
         }catch (Exception $ex) {
