@@ -128,7 +128,7 @@ class local_feide_external extends external_api {
         $result['error']        = 200;
         $result['msg_error']    = '';
         $result['valid']        = 0;
-        $result['user']         = array();
+        $result['user']         = null;
 
         try {
             /* Get Attributes   */
@@ -151,7 +151,7 @@ class local_feide_external extends external_api {
             $user[0] = $userInfo;
             $result['user'] = $user;
             $result['valid'] = 1;
-            
+
             return $result;
         }catch (Exception $ex) {
             if ($result['error']        == '200') {
