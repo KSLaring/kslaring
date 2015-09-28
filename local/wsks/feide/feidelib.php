@@ -123,7 +123,7 @@ class KS_FEIDE {
             $service    = $pluginInfo->feide_service;
 
             /* Build end Point Service  */
-            $server     = $domain . '/webservice/soap/server.php?wstoken=' . $token;
+            $server     = $domain . '/webservice/soap/server.php?wsdl=1&wstoken=' . $token;
 
             /* Call service */
             $client     = new SoapClient($server);
