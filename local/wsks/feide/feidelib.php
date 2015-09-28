@@ -125,7 +125,6 @@ class KS_FEIDE {
             /* Build end Point Service  */
             $server     = $domain . '/webservice/soap/server.php?wsdl=1&wstoken=' . $token;
 
-            echo "SErver : " . $server . "</br>";
             /* Call service */
             $client     = new SoapClient($server);
             $response   = $client->$service($userRequest);
