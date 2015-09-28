@@ -60,7 +60,9 @@ class KS_FEIDE {
 
         try {
             /* Check if the user exists */
-            $userId = self::ExistUser($userFeide['username']);
+            //$userId = self::ExistUser($userFeide['username']);
+
+            $userId = self::ExistUser($userFeide->username);
 
             /* User already exists  --> Update && Log In    */
             if ($userId) {
@@ -241,13 +243,13 @@ class KS_FEIDE {
             /* Info to update  */
             $instance = new stdClass();
             $instance->id           = $userId;
-            $instance->username     = $user['username'];
-            $instance->firstname    = $user['firstname'];
-            $instance->lastname     = $user['lastname'];
-            $instance->email        = $user['email'];
-            $instance->city         = $user['city'];
-            $instance->country      = $user['country'];
-            $instance->lang         = $user['lang'];
+            $instance->username     = $user->username;
+            $instance->firstname    = $user->firstname;
+            $instance->lastname     = $user->lastname;
+            $instance->email        = $user->email;
+            $instance->city         = $user->city;
+            $instance->country      = $user->country;
+            $instance->lang         = $user->lang;
             $instance->timemodified = time();
 
             /* Execute  */
@@ -278,7 +280,7 @@ class KS_FEIDE {
             $newUser = new stdClass();
 
             /* Username     */
-            $newUser->username     = $user['username'];
+            $newUser->username     = $user->username;
             /* Auth method  */
             $newUser->auth         = 'saml';
             /* Password     */
@@ -286,20 +288,20 @@ class KS_FEIDE {
 
 
             /* First name   */
-            $newUser->firstname    = $user['firstname'];
+            $newUser->firstname    = $user->firstname;
             /* Last name    */
-            $newUser->lastname     = $user['lastname'];
+            $newUser->lastname     = $user->lastname;
             /* eMail        */
-            $newUser->email        = $user['email'];
+            $newUser->email        = $user->email;
             /* City         */
-            $newUser->city         = $user['city'];
+            $newUser->city         = $user->city;
             /* Country      */
-            $newUser->country      = $user['country'];
+            $newUser->country      = $user->country;
 
             /* Lang */
             $newUser->lang = 'no';
-            if ($user['lang']) {
-                $newUser->lang     = $user['lang'];
+            if ($user->lang) {
+                $newUser->lang     = $user->lang;
             }//lang
 
 
