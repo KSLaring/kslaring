@@ -203,7 +203,7 @@ class WS_FEIDE {
                      WHERE		upk.script       = :script
                         AND		upk.userid       = :user_id
                         AND		upk.value        = :ticket
-                       --  AND		upk.validuntil  >= :valid ";
+                        -- AND		upk.validuntil  >= :valid ";
 
             /* Execute  */
             $rdo = $DB->get_record_sql($sql,$params);
@@ -265,7 +265,7 @@ class WS_FEIDE {
                         JOIN	{user_private_key}	upk		ON 	upk.userid 		= u.id
                                                             AND	upk.script		= :script
                                                             AND	upk.value		= :ticket
-                                                           --  AND upk.validuntil  >= :valid
+                                                            -- AND upk.validuntil  >= :valid
                      WHERE	  u.id 		= :user
                         AND   u.deleted = 0 ";
 
