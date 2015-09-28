@@ -120,3 +120,5 @@ $string['pluginname'] = 'SAML Authentication';
 $string['pluginnotenabled'] = 'Plugin not enabled!';
 $string['syncfromnotenabled'] = 'No external plugin selected. SAML cannot synchronize users on its own.';
 $string['unknownplugin'] = 'SAML does not know how to invoke the sync_users method of the specified plugin: ';
+
+

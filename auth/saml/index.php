@@ -213,5 +213,16 @@ define('SAML_INTERNAL', 1);
         if(isset($err) && !empty($err)) {
             auth_saml_error($err, $urltogo, $pluginconfig->samllogfile);
         }
-        redirect($urltogo);
+        /**
+         * @updateDate  21/09/2015
+         * @author      eFaktor     (fbv)
+         *
+         * Description
+         * Redirect the user to KS Site
+         */
+        require_once ('../../local/feide/feidelib.php');
+        $urlKS = WS_FEIDE::GenerateResponse($userId);
+        redirect($urlKS);
+
+        //redirect($urltogo);
     }

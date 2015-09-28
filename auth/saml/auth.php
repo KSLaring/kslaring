@@ -127,9 +127,11 @@ class auth_plugin_saml extends auth_plugin_base {
     }
 
     function pre_loginpage_hook() {
+        /* Variables    */
+        global $CFG,$SESSION;
+
         // If Force Login is on then we can safely jump directly to the SAML IdP
         if (isset($this->config->autologin) && $this->config->autologin) {
-            global $SESSION;
             $samlurl = $CFG->wwwroot.'/auth/saml/index.php?wantsurl=' . urlencode($SESSION->wantsurl);
             redirect($samlurl);
         }
