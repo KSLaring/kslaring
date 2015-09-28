@@ -80,7 +80,7 @@ if (in_array('saml', $authsequence)){
      */
     /* Get End Point    */
     $pluginInfo = get_config('local_wsks');
-    $urlFeide = $pluginInfo->feide_point . '/auth/saml/index.php';
+    $urlFeide = $pluginInfo->feide_point . '/local/feide/login.php';
     $btnFeide  = '<a href="' . $urlFeide . '" class="btn-login">';
     $btnFeide .= '<span class="login-icon"><i class="fa fa-arrow-right"></i></span>';
     $btnFeide .= get_string('btn_feide','auth_saml');
