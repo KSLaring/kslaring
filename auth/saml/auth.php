@@ -143,17 +143,20 @@ class auth_plugin_saml extends auth_plugin_base {
      *
      * Description
      * Update the functionality for the user have been logged in from other system different that SAML
+     *
+     * @updateDate      23/09/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Logout users from Feide
      */
     function logoutpage_hook() {
+        /* Variables    */
         global $USER,$SESSION;
+        $pluginInfo = null;
+        $LogoutUrl  = null;
 
-        /**
-         * @updateDate      04/12/2013
-         * @author          eFaktor     (fbv)
-         *
-         * Description
-         * Where the user must be redirected when he/she log out;
-         */
+        try {
         if (isset($SESSION->LogoutUrl)) {
             if (!is_siteadmin($USER)) {
                 $LogoutUrl = $SESSION->LogoutUrl;
@@ -166,15 +169,22 @@ class auth_plugin_saml extends auth_plugin_base {
 
                 require_logout();
                 redirect($redirect);
-
             }//if_user_admin
+            }else if (isset($SESSION->ksSource)) {
+                /* Get End Point    */
+                $pluginInfo = get_config('local_wsks');
+                $redirect = $pluginInfo->feide_point . '/local/feide/logout.php';
+                redirect($redirect);
         }else {
             if(isset($this->config->dosinglelogout) && $this->config->dosinglelogout) {
                 set_moodle_cookie('nobody');
                 require_logout();
                 redirect($GLOBALS['CFG']->wwwroot.'/auth/saml/index.php?logout=1');
             }
-        }//if_session_back
+            }//if_else_SESSION
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
     }
 
     /**
@@ -540,6 +550,7 @@ class auth_plugin_saml extends auth_plugin_base {
 	
 		    //END-COURSE MAPPINGS
 	    }
+
 	    return true;
     }
 
