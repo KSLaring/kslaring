@@ -22,27 +22,28 @@ $classPath = 'local/feide/externallib.php';
 
 /* Validate User From Feide */
 $functionName   = 'wsValidateUserFeide';
-$functionConfig = array('classname'    =>    $className,
-                        'methodname'   =>    $functionName,
-                        'classpath'    =>    $classPath,
-                        'description'  =>    'Feide Integration',
-                        'type'         =>    'write'
+$functionConfig = array('classname'     =>    $className,
+                        'methodname'    =>    $functionName,
+                        'classpath'     =>    $classPath,
+                        'description'   =>    'Feide Integration',
+                        'type'          =>    'write',
+                        'capabilities'  =>    ''
 );
 
 
 /**
  * Web Service Functions to install
  */
-$functions = array($functionName    =>  $functionConfig);
+$functions = array('local_feide_' . $functionName    =>  $functionConfig);
 
 /**
  * Services to install
  */
 $service_name   = 'feide';
 $service_config = array(
-    'functions'         => array($functionName),
-    'restrictedusers'   => 1,
-    'enabled'           => 1
+                        'functions'         => array('local_feide_' . $functionName),
+                        'restrictedusers'   => 1,
+                        'enabled'           => 1
 );
 
 $services = array('feide' => $service_config);
