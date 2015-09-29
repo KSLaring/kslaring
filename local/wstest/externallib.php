@@ -41,7 +41,7 @@ class local_wstest_external extends external_api {
         $result['msg_error']    = '';
 
         try {
-            $result['MyMessage'] = 'I have received <strng>' . $message['msg'] . '</strong>. And today it will be a good day.';
+            $result['MyMessage'] = 'I have received <strong>' . $message. '</strong>. And today it will be a good day.';
 
             return $result;
         }catch (Exception $ex) {
