@@ -28,9 +28,8 @@ try {
     $client = new SoapClient($server_url);
 
     $message = array();
-    $message['msg']         = 'Perico de los Palotes';
 
-    $resp = $client->$service($message);
+    $resp = $client->$service('Perico de los Palotes');
 
 
     if ($resp['error'] == '200') {
