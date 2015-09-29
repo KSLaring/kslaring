@@ -16,7 +16,7 @@ $PAGE->set_pagelayout('admin');
 
 
 $token = '707b497d0b53021b64db79698afc26e5';
-$domain = 'https://feidedev.weblogin.no';
+$domain = 'http://feidedev.weblogin.no';
 
 $service = 'HelloWorld';
 
