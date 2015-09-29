@@ -55,7 +55,7 @@ if ($sharedsecret === false) {
 }
 
 // TODO MDL-46023 Replace this code with a call to the new library.
-$origentity = libxml_disable_entity_loader(true);
+$origentity = libxml_disable_entity_loader(false);
 $xml = simplexml_load_string($rawbody);
 if (!$xml) {
     libxml_disable_entity_loader($origentity);
