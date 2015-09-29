@@ -24,7 +24,10 @@ $server_url     = $domain . '/webservice/soap/server.php?wsdl=1&wstoken=' . $tok
 
 echo $OUTPUT->header();
 
+
 try {
+    echo "START : " . time() . "</br>";
+    
     $client = new SoapClient($server_url);
 
     $message = array();
@@ -37,6 +40,8 @@ try {
     }else {
         print($resp['error'] . '-' . $resp['msg_error']);
     }
+
+    echo " FINISH : " . time() . "</br>";
 }catch (Exception $ex) {
     throw $ex;
 }//try_catch
