@@ -25,8 +25,7 @@ $server_url     = $domain . '/webservice/soap/server.php?wsdl=1&wstoken=' . $tok
 echo $OUTPUT->header();
 
 try {
-    libxml_disable_entity_loader(false);
-    $client = new SoapClient($server_url,array('exceptions' => 0, 'trace'=>true, "cache_wsdl" => WSDL_CACHE_NONE));
+    $client = new SoapClient($server_url);
 
     $message = array();
 
