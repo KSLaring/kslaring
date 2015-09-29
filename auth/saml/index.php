@@ -221,10 +221,10 @@ define('SAML_INTERNAL', 1);
          * Redirect the user to KS Site
          */
         //if (isset($SESSION->ksSource)) {
-            require_once ('../../local/feide/feidelib.php');
-            $urlKS = WS_FEIDE::GenerateResponse($USER->id);
-            redirect($urlKS);
+            //require_once ('../../local/feide/feidelib.php');
+            //$urlKS = WS_FEIDE::GenerateResponse($USER->id);
+            //redirect($urlKS);
         //}else {
-        //    redirect($urltogo);
+            redirect($urltogo);
         //}//if_else
     }
