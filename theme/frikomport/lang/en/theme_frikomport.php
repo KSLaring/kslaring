@@ -86,3 +86,7 @@ $string['editimage_alt'] = 'Edit image alt';
 
 /* Course category page */
 $string['expandall_initial'] = 'Collapse/expand all (Expand a section first)';
+
+/* Set my home page */
+$string['sethome']      = 'Set as my home page';
+$string['resethome']    = 'Reset to default page';

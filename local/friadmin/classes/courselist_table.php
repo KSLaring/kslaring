@@ -210,8 +210,7 @@ class local_friadmin_courselist_table extends local_friadmin_widget implements r
                 }//if_is_array
 
                 /* Set Detail Name  Link    */
-                $urlDetail = new moodle_url('/local/friadmin/coursedetail.php',
-                    array('id' => $row->courseid));
+                $urlDetail = new moodle_url('/local/friadmin/coursedetail.php', array('id' => $row->courseid));
                 $nameLink   = html_writer::link($urlDetail, $row->name);
                 $row->name  = $nameLink;
 
@@ -269,8 +268,7 @@ class local_friadmin_courselist_table extends local_friadmin_widget implements r
                 }//if_isArray
 
                 /* Get Instance Enrolment Waiting List  */
-                $instance = $DB->get_record('enrol', array('courseid' => $row->courseid,
-                    'enrol' => 'waitinglist'));
+                $instance = $DB->get_record('enrol', array('courseid' => $row->courseid,'enrol' => 'waitinglist'));
                 if ($instance) {
                     /* Get Seats    */
                     $enrolWaitingList = new enrol_waitinglist_plugin();
@@ -324,8 +322,7 @@ class local_friadmin_courselist_table extends local_friadmin_widget implements r
 
                 foreach ($fields as $field) {
                     if (isset($row->$field) && ($row->$field)) {
-                        $row->$field = '<span class="nowrap">' . userdate($row->$field,
-                                '%d.%m.%Y', 99, false) . '</span>';
+                        $row->$field = '<span class="nowrap">' . userdate($row->$field,'%d.%m.%Y', 99, false) . '</span>';
                     } else {
                         $row->$field = '-';
                     }

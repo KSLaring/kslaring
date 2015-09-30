@@ -78,3 +78,7 @@ $string['adminmenuentry'] = 'Bottom blocks';
 /* Capabilities */
 $string['frikomport:viewhiddenblocks'] = 'View hidden blocks';
 $string['frikomport:frontpageviewhiddenblocks'] = 'View hidden frontpage blocks';
+
+/* Set my home page */
+$string['sethome']      = 'Angi som startside';
+$string['resethome']    = 'Bruk standard startside';

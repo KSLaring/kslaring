@@ -80,9 +80,9 @@ if ($loggedin) {
 ed24ChatObj = {
   'entrypoint':'Kommuneforlaget_Main'
  ,'mainid':'A53'
-  ,'Online':'<img src="http://www.kommuneforlaget.no/filestore/dev/GFX/nettpratonline.png"></img>'
-  ,'Offline':'<img src="http://www.kommuneforlaget.no/filestore/dev/GFX/nettpratoffline.png"></img>'
-  ,'Busy':'<img src="https://login.edialog24.com/images/standard2-offline-no.jpg"></img>'
+  ,'Online':'<img src="http://www.kommuneforlaget.no/filestore/dev/GFX/nettpratonline.png"/>'
+  ,'Offline':'<img src="http://www.kommuneforlaget.no/filestore/dev/GFX/nettpratoffline.png"/>'
+  ,'Busy':'<img src="https://login.edialog24.com/images/standard2-offline-no.jpg"/>'
   ,'webserverAddress':'https://login.edialog24.com'
   ,'urlToOpen':'https://login.edialog24.com/chattemplate/Kommuneforlaget_Main/index.html'
   ,'windowSettings':'width=600,height=800,status=0,scrollbars=0,titlebar=0'
