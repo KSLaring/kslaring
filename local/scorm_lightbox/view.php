@@ -60,7 +60,7 @@ $scorm->popup = 0;
 $scorm->skipview = SCORM_SKIPVIEW_ALWAYS;
 /* End change uh */
 
-$url = new moodle_url('/mod/scorm/view.php', array('id'=>$cm->id));
+$url = new moodle_url('/local/scorm_lightbox/view.php', array('id'=>$cm->id));
 if ($organization !== '') {
     $url->param('organization', $organization);
 }

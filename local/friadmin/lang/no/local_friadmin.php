@@ -69,6 +69,7 @@ $string['coursedetail_go']              = 'Gå til kurset';
 $string['coursedetail_settings']        = 'Kursinnstillinger';
 $string['coursedetail_completion']      = 'Kursfullføringer';
 $string['coursedetail_statistics']      = 'Statistikk';
+$string['coursedetail_enrollment']      = 'Enrollment methods';
 $string['coursedetail_users']           = 'Påmeldte kursdeltakere';
 $string['coursedetail_confirmed']       = 'Administrere bekreftede';
 $string['coursedetail_waitlist']        = 'Administrere venteliste';

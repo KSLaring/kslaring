@@ -251,7 +251,6 @@ class enrol_self_plugin extends enrol_plugin {
                         $this->enrol_self($instance, $data);
                     }
                 }
-
                 ob_start();
                 $form->display();
                 $output = ob_get_clean();

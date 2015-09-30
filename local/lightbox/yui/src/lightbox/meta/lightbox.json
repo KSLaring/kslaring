@@ -2,15 +2,17 @@
     "moodle-local_lightbox-lightbox": {
         "requires": [
             "panel",
-            "dd-plugin",
             "node",
+            "dd-plugin",
+            "dd-drag",
             "event-resize"
         ],
         "config": {
             "use": [
                 "panel",
-                "dd-plugin",
                 "node",
+                "dd-plugin",
+                "dd-drag",
                 "event-resize"
             ]
         }

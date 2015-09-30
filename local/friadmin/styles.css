@@ -55,6 +55,9 @@ body #region-main #mform-coursefilter:not(.unresponsive) .femptylabel .fitemtitl
 #page-local-friadmin-usercourselist .morecourses {
   margin: 1em 1em 2em .4em;
 }
+#page-local-friadmin-coursedetail #region-main {
+  margin-bottom: 1em;
+}
 #page-local-friadmin-coursedetail #coursedetails .header {
   font-weight: bold;
   text-align: right;

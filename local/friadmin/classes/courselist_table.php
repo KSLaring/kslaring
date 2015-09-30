@@ -36,8 +36,8 @@ require_once($CFG->dirroot . '/enrol/waitinglist/lib.php');
 class local_friadmin_courselist_table extends local_friadmin_widget implements renderable {
 
     // The table column names
-    protected $colnames = array("name", "date", "seats", "deadline", "length",
-                                "municipality", "sector", "location", "edit");
+    protected $colnames = array("edit", "name", "date", "seats", "deadline", "length",
+                                "municipality", "sector", "location");
 
     // The table column titles
     protected $colheaders = array();
@@ -176,7 +176,7 @@ class local_friadmin_courselist_table extends local_friadmin_widget implements r
     }//get_table_html
 
     /**
-     * @param           $data       The table data
+     * @param array     $data       The table data
      *
      * @return          array       The modified table data
      * @throws          Exception
@@ -210,8 +210,7 @@ class local_friadmin_courselist_table extends local_friadmin_widget implements r
                 }//if_is_array
 
                 /* Set Detail Name  Link    */
-                $urlDetail = new moodle_url('/local/friadmin/coursedetail.php',
-                    array('id' => $row->courseid));
+                $urlDetail = new moodle_url('/local/friadmin/coursedetail.php', array('id' => $row->courseid));
                 $nameLink   = html_writer::link($urlDetail, $row->name);
                 $row->name  = $nameLink;
 
@@ -240,7 +239,7 @@ class local_friadmin_courselist_table extends local_friadmin_widget implements r
     }//add_course_link_and_icons
 
     /**
-     * @param           $data       The table data
+     * @param array     $data       The table data
      *
      * @return          array       The modified table data
      * @throws          Exception
@@ -269,8 +268,7 @@ class local_friadmin_courselist_table extends local_friadmin_widget implements r
                 }//if_isArray
 
                 /* Get Instance Enrolment Waiting List  */
-                $instance = $DB->get_record('enrol', array('courseid' => $row->courseid,
-                    'enrol' => 'waitinglist'));
+                $instance = $DB->get_record('enrol', array('courseid' => $row->courseid,'enrol' => 'waitinglist'));
                 if ($instance) {
                     /* Get Seats    */
                     $enrolWaitingList = new enrol_waitinglist_plugin();
@@ -290,8 +288,8 @@ class local_friadmin_courselist_table extends local_friadmin_widget implements r
     }//add_availseats
 
     /**
-     * @param           $data       The table data
-     * @param           $fields     The fields containing dates
+     * @param stdClass  $data       The table data
+     * @param array     $fields     The fields containing dates
      *
      * @return          array
      * @throws          Exception
@@ -324,8 +322,7 @@ class local_friadmin_courselist_table extends local_friadmin_widget implements r
 
                 foreach ($fields as $field) {
                     if (isset($row->$field) && ($row->$field)) {
-                        $row->$field = '<span class="nowrap">' . userdate($row->$field,
-                                '%d.%m.%Y', 99, false) . '</span>';
+                        $row->$field = '<span class="nowrap">' . userdate($row->$field,'%d.%m.%Y', 99, false) . '</span>';
                     } else {
                         $row->$field = '-';
                     }

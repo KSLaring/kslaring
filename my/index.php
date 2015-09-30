@@ -65,7 +65,8 @@ if (isguestuser()) {  // Force them to see system default, no editing allowed
     $PAGE->set_blocks_editing_capability('moodle/my:configsyspages');  // unlikely :)
     $header = "$SITE->shortname: $strmymoodle (GUEST)";
 
-} else {        // We are trying to view or edit our own My Moodle page
+} else {
+    // We are trying to view or edit our own My Moodle page
     $userid = $USER->id;  // Owner of the page
     $context = context_user::instance($USER->id);
     $PAGE->set_blocks_editing_capability('moodle/my:manageblocks');
@@ -93,6 +94,20 @@ $PAGE->set_title($header);
 $PAGE->set_heading($header);
 
 if (!isguestuser()) {   // Skip default home page for guests
+    /**
+     * @updateDate  30/09/2015
+     * @author      eFaktor     (fbv)
+     *
+     * Description
+     * Redirect to the correct 'My Home'
+     */
+    if (strtolower($PAGE->theme->get_theme_name()) == 'frikomport') {
+        $my_page = get_user_preferences('user_home_page_preference_frikomport');
+        if ($my_page) {
+            redirect($my_page);
+        }
+    }//if_them_frikomport
+
     if (get_home_page() != HOMEPAGE_MY) {
         if (optional_param('setdefaulthome', false, PARAM_BOOL)) {
             set_user_preference('user_home_page_preference', HOMEPAGE_MY);
