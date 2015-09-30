@@ -71,6 +71,23 @@ if (in_array('saml', $authsequence)){
 
 
     }
+    /**
+     * @updateDate  21/09/2015
+     * @author      eFaktor     (fbv)
+     *
+     * Description
+     * Add button to log in via FEIDE
+     */
+    /* Get End Point    */
+    $pluginInfo = get_config('local_wsks');
+    $urlFeide = $pluginInfo->feide_point . '/local/feide/login.php';
+    $btnFeide  = '<a href="' . $urlFeide . '" class="btn-login">';
+    $btnFeide .= '<span class="login-icon"><i class="fa fa-arrow-right"></i></span>';
+    $btnFeide .= get_string('btn_feide','auth_saml');
+    $btnFeide .= '</a>';
+    echo $btnFeide;
+
+    /* ADD Button to log in via ADFS */
 }
 echo '</center>';
 

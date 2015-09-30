@@ -107,3 +107,5 @@ $string['auth_saml_samlhookfile_description'] = 'Set a path if you want to use a
 $string['auth_saml_errorbadhook'] = "Incorrect SAML plugin hook file: {\$a}";
 
 $string['pluginname'] = 'SAML Authentication';
+
+$string['btn_feide']    = 'Log In via FEIDE';
