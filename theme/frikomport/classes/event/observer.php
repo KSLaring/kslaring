@@ -35,12 +35,17 @@ class observer {
      * @param \core\event\base $event
      */
     public static function process_user_created(\core\event\base $event) {
-        $data = $event->get_data();
-        $objectid = $data['objectid'];
-        $objecttable = $data['objecttable'];
+        global $CFG;
 
-        if ($objecttable === 'user') {
-            self::set_user_preference($objectid);
+        // Only run when the fripomort theme is activated.
+        if (get_string('pluginname', 'theme_frikomport') === $CFG->theme) {
+            $data = $event->get_data();
+            $objectid = $data['objectid'];
+            $objecttable = $data['objecttable'];
+
+            if ($objecttable === 'user') {
+                self::set_user_preference($objectid);
+            }
         }
     }
 
