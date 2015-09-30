@@ -78,14 +78,14 @@ if ($loggedin) {
 <style type="text/css"></style>
 <script type="text/javascript" language="javascript">
 ed24ChatObj = {
-  'entrypoint':'Kommuneforlaget_Main'
- ,'mainid':'A53'
-  ,'Online':'<img src="http://www.kommuneforlaget.no/filestore/dev/GFX/nettpratonline.png"></img>'
-  ,'Offline':'<img src="http://www.kommuneforlaget.no/filestore/dev/GFX/nettpratoffline.png"></img>'
-  ,'Busy':'<img src="https://login.edialog24.com/images/standard2-offline-no.jpg"></img>'
-  ,'webserverAddress':'https://login.edialog24.com'
-  ,'urlToOpen':'https://login.edialog24.com/chattemplate/Kommuneforlaget_Main/index.html'
-  ,'windowSettings':'width=600,height=800,status=0,scrollbars=0,titlebar=0'
+  'entrypoint':'Kommuneforlaget_Kommit'
+,'mainid':'A53'
+                ,'Online':'<img src="https://login.edialog24.com/kontakt/online_42275571536875427..png"></img>'
+                ,'Offline':'<img src="https://login.edialog24.com/kontakt/online_422755716172106262..png"></img>'
+                ,'Busy':'<img src="https://login.edialog24.com/images/standard2-offline-no.jpg"></img>'
+                ,'webserverAddress':'https://login.edialog24.com'
+                ,'urlToOpen':'https://login.edialog24.com/chattemplate/Kommuneforlaget_Kommit/index.html'
+                ,'windowSettings':'width=600,height=800,status=0,scrollbars=0,titlebar=0'
 };
 </script>
 <script src="http://login.edialog24.com/ChatClient3/EntrypointScript4.js" type="text/javascript"></script>
