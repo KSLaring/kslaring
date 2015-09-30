@@ -179,7 +179,7 @@ define('SAML_INTERNAL', 1);
 
         if (!$authorize_user) {
             $err['login'] = "<p>" . $authorize_error . "</p>";
-	    auth_saml_error($err, '?logout', $pluginconfig->samllogfile);
+	        auth_saml_error($err, '?logout', $pluginconfig->samllogfile);
         }
         
         // Just passes time as a password. User will never log in directly to moodle with this password anyway or so we hope?
@@ -220,11 +220,18 @@ define('SAML_INTERNAL', 1);
          * Description
          * Redirect the user to KS Site
          */
+        //if (is_siteadmin($USER->id)) {
+        //    redirect($urltogo);
+        //}else {
+            require_once ('../../local/feide/feidelib.php');
+            $urlKS = WS_FEIDE::GenerateResponse($USER->id);
+            redirect($urlKS);
+        //}
         //if (isset($SESSION->ksSource)) {
             //require_once ('../../local/feide/feidelib.php');
             //$urlKS = WS_FEIDE::GenerateResponse($USER->id);
             //redirect($urlKS);
         //}else {
-            redirect($urltogo);
+            //redirect($urltogo);
         //}//if_else
     }
