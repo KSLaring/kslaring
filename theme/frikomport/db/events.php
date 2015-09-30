@@ -15,25 +15,22 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Moodle's frikomport theme, an example of how to make a Bootstrap theme
+ * Event observer.
  *
- * DO NOT MODIFY THIS THEME!
- * COPY IT FIRST, THEN RENAME THE COPY AND MODIFY IT INSTEAD.
- *
- * For full information about creating Moodle themes, see:
- * http://docs.moodle.org/dev/Themes_2.0
- *
- * @package    theme_frikomport
- * @copyright  2015 eFaktor
- * @author     Urs Hunkler {@link urs.hunkler@unodo.de}
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package   theme_frikomport
+ * @category  event
+ * @copyright 2015 eFaktor
+ * @author    Urs Hunkler {@link urs.hunkler@unodo.de}
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die;
+defined('MOODLE_INTERNAL') || die();
 
-$plugin->version = 2015093001;
-$plugin->requires = 2013110500;
-$plugin->component = 'theme_frikomport';
-$plugin->dependencies = array(
-    'theme_bootstrapbase' => 2013110500,
+$observers = array(
+    array(
+        'eventname' => '\core\event\user_created',
+        'callback' => '\theme_frikomport\event\observer::process_user_created',
+        'internal' => false, // This means that we get events only after transaction commit.
+        'priority' => 1000,
+    ),
 );
