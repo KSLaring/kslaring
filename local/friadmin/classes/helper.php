@@ -138,7 +138,7 @@ class local_friadmin_helper {
         /* Variables    */
         global $DB;
         $ids            = array();
-        $leveloneobjs   = null;
+        $leveloneobjs   = array();
         $competences    = null;
 
         try {
