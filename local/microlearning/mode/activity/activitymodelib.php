@@ -389,6 +389,61 @@ class Activity_Mode {
         }//try_catch
     }//GetDeliveryInfo_ActivityMode
 
+    /**
+     * @param           $data
+     * @return          bool|int
+     * @throws          Exception
+     *
+     * @creationDate    30/09/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Duplicate campaign
+     */
+    public static function DuplicateCampaign($data) {
+        /* Variables    */
+        global $DB;
+        $trans          = null;
+        $newCampaign    = null;
+        $delCampaign    = null;
+
+        /* Start Transaction*/
+        $trans = $DB->start_delegated_transaction();
+
+        try {
+            /* New Campaign         */
+            $newCampaign = new stdClass();
+            $newCampaign->courseid         = $data->id;
+            $newCampaign->name             = $data->campaign;
+            $newCampaign->type             = $data->type;
+            $newCampaign->timecreated      = time();
+            /* Execute  */
+            $newCampaign->id = $DB->insert_record('microlearning',$newCampaign);
+
+            /* Duplicate Users Campaign */
+            self::DuplicateUsers_NewCampaign($newCampaign->id,$data->cp,$DB);
+
+            /* Duplicate Deliveries for new Campaign    */
+            $delCampaign = self::DuplicateDeliveries_NewCampaign($newCampaign->id,$data->cp,$DB);
+
+            /* Duplicate Activities Deliveries for the New Campaign */
+            self::DuplicateActivitiesDeliveries_NewCampaign($newCampaign->id,$data->cp,$delCampaign,$DB);
+
+            /* Duplicate Users od each delivery for the new campaign    */
+            self::DuplicateUsersDelivery_NewCampaign($newCampaign->id,$data->cp,$delCampaign,$DB);
+
+            /* Commit   */
+            $trans->allow_commit();
+
+            return $newCampaign->id;
+        }catch (Exception $ex) {
+            /* Exception    */
+            $trans->rollback($ex);
+
+            throw $ex;
+        }//try_Catch
+    }//DuplicateCampaign
+
     /************/
     /* PRIVATE */
     /************/
@@ -540,6 +595,245 @@ class Activity_Mode {
             throw $ex;
         }//try_catch
     }//GetEnrollment_User
+
+    /**
+     * @param           $newCampaign
+     * @param           $oldCampaign
+     * @param           $DB
+     *
+     * @return          bool
+     * @throws          Exception
+     *
+     * @creationDate    30/09/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Duplicate users campaign
+     */
+    private static function DuplicateUsers_NewCampaign($newCampaign,$oldCampaign,$DB) {
+        /* Variables    */
+        $rdo            = null;
+        $infoMicroUser  = null;
+
+        try {
+            /* Get Users from old Campaign   */
+            $rdo = $DB->get_records('microlearning_users',array('microid' => $oldCampaign),'userid','userid');
+            if ($rdo) {
+                foreach ($rdo as $instance) {
+                    /* Info Campaign User   */
+                    $infoMicroUser = new stdClass();
+                    $infoMicroUser->microid = $newCampaign;
+                    $infoMicroUser->userid = $instance->userid;
+
+                    /* Duplicate User   */
+                    $DB->insert_record('microlearning_users',$infoMicroUser);
+
+                    /* Add User    */
+                    $usersCampaign[$instance->userid] = $instance->userid;
+                }//for_Rdo
+            }//if_Rdo
+
+            return true;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//DuplicateUsers_NewCampaign
+
+    /**
+     * @param           $newCampaign
+     * @param           $oldCampaign
+     * @param           $DB
+     * @return          array
+     * @throws          Exception
+     *
+     * @creationDate    30/09/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Duplicate deliveries for the new campaign
+     */
+    private static function DuplicateDeliveries_NewCampaign($newCampaign,$oldCampaign,$DB) {
+        /* Variables    */
+        $rdo            = null;
+        $sql            = null;
+        $params         = null;
+        $delCampaign    = array();
+        $infoDelivery   = null;
+
+        try {
+            /* Search Criteria  */
+            $params = array();
+            $params['microid'] = $oldCampaign;
+
+            /* SQL Instruction  */
+            $sql = " SELECT	  mi_am.id,
+                              mi_am.afterenrol,
+                              mi_am.aftercompletion,
+                              mi_am.tocomplete,
+                              mi_am.afternotcompletion,
+                              mi_am.notcomplete,
+                              mi_am.subject,
+                              mi_am.body
+                     FROM		{microlearning_activity_mode}	mi_am
+                     WHERE	  mi_am.microid = :microid ";
+
+            /* Execute  */
+            $rdo = $DB->get_records_sql($sql,$params);
+            if ($rdo) {
+                foreach ($rdo as $instance) {
+                    /* Info Delivery Activity Mode */
+                    $infoDelivery = new stdClass();
+                    $infoDelivery->microid              = $newCampaign;
+                    $infoDelivery->microkey             = self::GenerateActivityMode_MicroKey();
+                    $infoDelivery->afterenrol           = $instance->afterenrol;
+                    $infoDelivery->aftercompletion      = $instance->aftercompletion;
+                    $infoDelivery->tocomplete           = $instance->tocomplete;
+                    $infoDelivery->afternotcompletion   = $instance->afternotcompletion;
+                    $infoDelivery->notcomplete          = $instance->notcomplete;
+                    $infoDelivery->subject              = $instance->subject;
+                    $infoDelivery->body                 = $instance->body;
+
+                    /* Duplicate Delivery Campaign  */
+                    $infoDelivery->id = $DB->insert_record('microlearning_activity_mode',$infoDelivery);
+
+                    /* Add Delivery */
+                    $delCampaign[$instance->id] = $infoDelivery;
+                }//for_Rdo
+            }//if_rdo
+
+            return $delCampaign;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//DuplicateDeliveries_NewCampaign
+
+    /**
+     * @param           $newCampaign
+     * @param           $oldCampaign
+     * @param           $delCampaign
+     * @param           $DB
+     * @return          bool
+     * @throws          Exception
+     *
+     * @creationDate    30/09/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Duplicate the activities connected with each delivery for the new campaign
+     */
+    private static function DuplicateActivitiesDeliveries_NewCampaign($newCampaign,$oldCampaign,$delCampaign,$DB) {
+        /* Variables    */
+        $rdo                = null;
+        $params             = null;
+        $sql                = null;
+        $infoActDelivery    = null;
+
+        try {
+            /* Search Criteria  */
+            $params = array();
+            $params['microid'] = $oldCampaign;
+
+            /* SQL Instruction */
+            $sql = " SELECT	mi_act.activityid,
+                            mi_act.name,
+                            mi_act.module
+                     FROM	{microlearning_activities}	mi_act
+                     WHERE	mi_act.microid 		= :microid
+                        AND	mi_act.micromodeid	= :micromodeid ";
+
+
+            /* Duplicate the activities for each delivery   */
+            foreach ($delCampaign as $oldDelId => $newDelivery) {
+                $params['micromodeid']= $oldDelId;
+
+                /* Execute  */
+                $rdo = $DB->get_records_sql($sql,$params);
+                if ($rdo) {
+                    foreach ($rdo as $instance) {
+                        /* New Activity Delivery    */
+                        $infoActDelivery = new stdClass();
+                        $infoActDelivery->microid      = $newCampaign;
+                        $infoActDelivery->micromodeid  = $newDelivery->id;
+                        $infoActDelivery->microkey     = self::GenerateActivitiesActivityMode_MicroKey($newDelivery->microkey);
+                        $infoActDelivery->activityid   = $instance->activityid;
+                        $infoActDelivery->name         = $instance->name;
+                        $infoActDelivery->module       = $instance->module;
+
+                        /* Duplicate Activity Delivery*/
+                        $DB->insert_record('microlearning_activities',$infoActDelivery);
+                    }
+                }//if_Rdo
+            }//for_deliveries
+
+            return true;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//DuplicateActivitiesDeliveries_NewCampaign
+
+
+    /**
+     * @param           $newCampaign
+     * @param           $oldCampaign
+     * @param           $delCampaign
+     * @param           $DB
+     * @return          bool
+     * @throws          Exception
+     *
+     * @creationDate    30/09/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Duplicate users from each delivery for the new campaign
+     */
+    private static function DuplicateUsersDelivery_NewCampaign($newCampaign,$oldCampaign,$delCampaign,$DB) {
+        /* Variables    */
+        $rdo                = null;
+        $params             = null;
+        $sql                = null;
+        $infoUserDelivery   = null;
+
+        try {
+            /* Search Criteria  */
+            $params = array();
+            $params['microid'] = $oldCampaign;
+
+            /* SQL Instruction  */
+            $sql = " SELECT	mi_d.userid,
+                            mi_d.timetosend
+                     FROM	{microlearning_deliveries}		mi_d
+                     WHERE	mi_d.microid 		= :microid
+                        AND	mi_d.micromodeid	= :micromodeid ";
+
+            /* Duplicate users for each delivery   */
+            foreach ($delCampaign as $oldDelId => $newDelivery) {
+                $params['micromodeid']= $oldDelId;
+
+                /* Execute  */
+                $rdo = $DB->get_records_sql($sql,$params);
+                if ($rdo) {
+                    foreach ($rdo as $instance) {
+                        /* New Info User Delivery   */
+                        $infoUserDelivery = new stdClass();
+                        $infoUserDelivery->microid      = $newCampaign;
+                        $infoUserDelivery->micromodeid  = $newDelivery->id;
+                        $infoUserDelivery->userid       = $instance->userid;
+                        $infoUserDelivery->sent         = 0;
+                        $infoUserDelivery->timetosend   = $instance->timetosend;
+                        $infoUserDelivery->timesent     = null;
+                        $infoUserDelivery->timemodified = null;
+
+                        /* Duplicate Users Delivery*/
+                        $DB->insert_record('microlearning_deliveries',$infoUserDelivery);
+                    }
+                }//if_Rdo
+            }//for_deliveries
+
+            return true;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//DuplicateUsersDelivery_NewCampaign
 
     /**
      * @return          string

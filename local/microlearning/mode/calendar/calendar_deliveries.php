@@ -23,6 +23,7 @@ $sort           = optional_param('sort','ASC',PARAM_ALPHA);
 $page           = optional_param('page', 0, PARAM_INT);
 $perpage        = optional_param('perpage', 10, PARAM_INT);        // how many per page
 $act            = optional_param('act',0,PARAM_INT);
+$strAlert       = null;
 
 $context        = context_system::instance();
 $context_course = context_course::instance($course_id);
@@ -65,9 +66,13 @@ if ($act) {
     $total_deliveries   = Calendar_Mode::Get_TotalCalendarDeliveries($campaign_id);
     $deliveries_lst     = Calendar_Mode::Get_CalendarDeliveries($campaign_id,$sort,$page*$perpage,$perpage);
     $started            = Calendar_Mode::HasStarted_Campaign($campaign_id);
+    $canBeAct           = Calendar_Mode::CanBeActivated($campaign_id);
+    if (!$canBeAct) {
+        $strAlert   = $strAlert   = get_string('alert_campaign','local_microlearning');
+    }//if_canBeAct
 
     /* Print the table  */
-    echo Micro_Learning::Get_CampaignDeliveries_Table($campaign_id,$campaign_name,$deliveries_lst,$mode_learning,$course_id,$started);
+    echo Micro_Learning::Get_CampaignDeliveries_Table($campaign_id,$campaign_name,$deliveries_lst,$mode_learning,$course_id,$started,$strAlert);
     echo "</br>";
     echo $OUTPUT->paging_bar($total_deliveries, $page, $perpage, $url);
 

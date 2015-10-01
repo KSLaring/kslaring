@@ -52,7 +52,9 @@ class Micro_Learning {
             /* SQL Instruction  */
             $sql = " SELECT     id,
                                 name,
-                                type
+                                type,
+                                activate,
+                                duplicated_from
                      FROM       {microlearning}
                      WHERE      courseid = :course_id
                      ORDER BY   type, name " . $sort;
@@ -62,9 +64,11 @@ class Micro_Learning {
             if ($rdo) {
                 foreach ($rdo as $campaign) {
                     $info = new stdClass();
-                    $info->id   = $campaign->id;
-                    $info->name = $campaign->name;
-                    $info->type = $campaign->type;
+                    $info->id           = $campaign->id;
+                    $info->name         = $campaign->name;
+                    $info->type         = $campaign->type;
+                    $info->activate     = $campaign->activate;
+                    $info->duplicate    = $campaign->duplicated_from;
 
                     $campaign_lst[$campaign->id] = $info;
                 }//for_rdo
@@ -414,62 +418,6 @@ class Micro_Learning {
     }//Get_ActivitiesType
 
     /**
-     * @param           $data
-     * @return          bool
-     * @throws          Exception
-     *
-     * @creationDate    21/11/2014
-     * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Duplicate the campaign
-     */
-    public static function Duplicate_Campaign($data) {
-        /* Variables    */
-        global $DB;
-        $campaign_id    = null;
-        $new_campaign   = null;
-        $users_lts      = null;
-        $micro_user     = null;
-
-        /* Start Transaction    */
-        $transaction = $DB->start_delegated_transaction();
-        try {
-            /* Create the new campaign*/
-            $new_campaign = new stdClass();
-            $new_campaign->courseid         = $data->id;
-            $new_campaign->name             = $data->campaign;
-            $new_campaign->type             = $data->type;
-            $new_campaign->timecreated      = time();
-
-            /* Execute  */
-            $campaign_id = $DB->insert_record('microlearning',$new_campaign);
-
-            /* Add the Users to the new campaign    */
-            $users_lts = self::GetUsersCampaign_ToDuplicate($data->cp);
-            if ($users_lts) {
-                foreach ($users_lts as $user) {
-                    /* User Campaign    */
-                    $micro_user = new stdClass();
-                    $micro_user->microid    = $campaign_id;
-                    $micro_user->userid     = $user;
-
-                    /* Execute  */
-                    $DB->insert_record('microlearning_users',$micro_user);
-                }//for_each
-            }//if_users
-
-            /* Commit   */
-            $transaction->allow_commit();
-            return $campaign_id;
-        }catch (Exception $ex) {
-            /* Rollback */
-            $transaction->rollback($ex);
-            throw $ex;
-        }//try_catch
-    }//Duplicate_Campaign
-
-    /**
      * @param           $campaign
      * @param           $course
      * @return          bool
@@ -529,7 +477,9 @@ class Micro_Learning {
     public static function Get_MicrolearningCampaigns_Table($course_id,$sort,$limit_from,$limit_num) {
         /* Variables    */
         $out = '';
-        $campaign_lst = null;
+        $campaign_lst   = null;
+        $strAlert       = null;
+        $classAlert     = null;
 
         try {
             $out .= '<h3>' . get_string('title_campaign','local_microlearning'). '</h3>';
@@ -561,6 +511,8 @@ class Micro_Learning {
                     $delete_lnk     = null;
                     $duplicate_lnk  = null;
                     $edit_lnk       = null;
+                    $classAlert     = '';
+                    $strAlert       = null;
 
                     switch ($campaign->type) {
                         case CALENDAR_MODE:
@@ -568,6 +520,11 @@ class Micro_Learning {
                             $edit_lnk       = new moodle_url('/local/microlearning/mode/calendar/calendar_deliveries.php',array('id'=>$course_id,'mode' => CALENDAR_MODE,'cp' => $campaign->id));
                             $delete_lnk     = new moodle_url('/local/microlearning/mode/calendar/delete.php',array('id' => $course_id,'cp' => $campaign->id,'cp_name' => $campaign->name));
                             $duplicate_lnk  = new moodle_url('/local/microlearning/mode/calendar/duplicate.php',array('id' => $course_id,'cp' => $campaign->id));
+
+                            if ((!$campaign->activate) && ($campaign->duplicate)) {
+                                $classAlert = "alert_campaign";
+                                $strAlert   = get_string('alert_campaign','local_microlearning');
+                            }
 
                             break;
                         case ACTIVITY_MODE:
@@ -579,7 +536,7 @@ class Micro_Learning {
                             break;
                     }//switch_campaign_type
 
-                    $out .= html_writer::start_div('micro_campaign_table_row ' . $color);
+                    $out .= html_writer::start_div('micro_campaign_table_row ' . $color . ' ' . $classAlert);
                         /* Col One  */
                         $out .= html_writer::start_div('col_one');
                             $out .= '<a href="' . $edit_lnk . '">' . $campaign->name . '</a>';
@@ -591,9 +548,15 @@ class Micro_Learning {
                         /* Col Three  */
                         $out .= html_writer::start_div('col_three');
                             $out .= '<a href="' . $edit_lnk . '" class="lnk_col">' . get_string('edit') . '</a>';
-                            $out .= '<a href="' . $delete_lnk . '" class="lnk_col">' . get_string('delete') . '</a>';
                             $out .= '<a href="' . $duplicate_lnk . '" class="lnk_col">' . get_string('duplicate') . '</a>';
+                            $out .= '<a href="' . $delete_lnk . '" class="lnk_col">' . get_string('delete') . '</a>';
                             $out .= '<a href="#" class="lnk_col lnk_disabled">' . get_string('report') . '</a>';
+
+                            if ($strAlert) {
+                                $out .= html_writer::start_div('alert_text');
+                                    $out .= '<h6>' . $strAlert . '</h6>';
+                                $out .= html_writer::end_div();//alert_text
+                            }//if_strAlert
                         $out .= html_writer::end_div();//col_three
                     $out .= html_writer::end_div();//micro_campaign_table_row
 
@@ -622,6 +585,8 @@ class Micro_Learning {
      * @param           $mode_learning
      * @param           $course_id
      * @param           $started
+     * @param           $strAlert
+     *
      * @return          string
      * @throws          Exception
      *
@@ -631,13 +596,14 @@ class Micro_Learning {
      * Description
      * Get the table with all the eMails connected with the campaign
      */
-    public static function Get_CampaignDeliveries_Table($campaign_id,$campaign_name,$deliveries_lst,$mode_learning,$course_id,$started) {
+    public static function Get_CampaignDeliveries_Table($campaign_id,$campaign_name,$deliveries_lst,$mode_learning,$course_id,$started,$strAlert=null) {
         /* Variables    */
         global $OUTPUT;
         $url_edit_users     = null;
         $url_edit_delivery  = null;
-        $out = '';
+        $out                = '';
         $disabled           = '';
+        $classUrl           = '';
 
         try {
             /* Build the links to edit  */
@@ -646,7 +612,13 @@ class Micro_Learning {
                 case CALENDAR_MODE:
                     $url_edit_users     = new moodle_url('/local/microlearning/users/users.php',$params);
                     $url_edit_delivery  = new moodle_url('/local/microlearning/mode/calendar/calendar.php',array('id'=>$course_id,'mode' => $mode_learning,'cp' => $campaign_id));
-                    $url_activate       = new moodle_url('/local/microlearning/mode/calendar/calendar_deliveries.php',array('id'=>$course_id,'mode' => $mode_learning,'cp' => $campaign_id,'act' => 1));
+                    if ($strAlert) {
+                        $url_activate = '#';
+                        $disabled = true;
+                    }else {
+                        $url_activate       = new moodle_url('/local/microlearning/mode/calendar/calendar_deliveries.php',array('id'=>$course_id,'mode' => $mode_learning,'cp' => $campaign_id,'act' => 1));
+                    }
+
 
                     break;
                 case ACTIVITY_MODE:
@@ -702,6 +674,7 @@ class Micro_Learning {
                     $out .= html_writer::end_div();//info_two
                 $out .= html_writer::end_div();//micro_info_table
             $out .= html_writer::end_div();//micro_deliveries_info
+
             /* Status   */
             $status = self::GetStatus_Campaign($campaign_id);
             $out .= html_writer::start_div('micro_deliveries_info');
@@ -719,9 +692,14 @@ class Micro_Learning {
                                 $src = $OUTPUT->pix_url('t/show');
                             }//if_status
 
+                            /* Check if the link is enable or not   */
+                            if ($disabled) {
+                                $classUrl = 'lnk_disabled';
+                            }
+
                             $out .= html_writer::link($url_activate,
                                                       html_writer::empty_tag('img', array('src'=>$src,'alt'=>$alt,'class'=>'iconsmall')),
-                                                      array('title'=>$alt));
+                                                      array('title'=>$alt, 'class' => $classUrl));
                         $out .= html_writer::end_div();//lnk_edit
 
                     $out .= html_writer::end_div();//info_one
@@ -734,6 +712,13 @@ class Micro_Learning {
                     $out .= html_writer::end_div();//info_two
                 $out .= html_writer::end_div();//micro_info_table
             $out .= html_writer::end_div();//micro_deliveries_info
+
+            if ($strAlert) {
+                $out .= "</br>";
+                $out .= html_writer::start_div('alert_campaign alert_text');
+                $out .= '<h5>' . $strAlert . '</h5>';
+                $out .= html_writer::end_div();//alert_text
+            }//if_strAlert
 
             $out .= "</br>";
             $out .= "</br>";
@@ -887,38 +872,6 @@ class Micro_Learning {
             throw $ex;
         }//try_catch
     }//local_completion_getCriteriasToComplete
-
-    /**
-     * @param           $campaign_id
-     * @return          array
-     * @throws          Exception
-     *
-     * @creationDate    21/11/2014
-     * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Get the users connected to the campaign to duplicate
-     */
-    private static function GetUsersCampaign_ToDuplicate($campaign_id) {
-        /* Variables    */
-        global $DB;
-        $users_lst  = array();
-        $rdo        = null;
-
-        try {
-            /* Execute  */
-            $rdo = $DB->get_records('microlearning_users',array('microid' => $campaign_id),'userid','userid');
-            if ($rdo) {
-                foreach ($rdo as $user) {
-                    $users_lst[$user->userid] = $user->userid;
-                }//for_users
-            }//if_rdo
-
-            return $users_lst;
-        }catch (Exception $ex) {
-            throw $ex;
-        }//try_catch
-    }//GetUsersCampaign_ToDuplicate
 
     /**
      * @param           $value

@@ -13,6 +13,7 @@
 
 require_once('../../../../config.php');
 require_once('../../microlearninglib.php');
+require_once('calendarmodelib.php');
 require_once('duplicate_form.php');
 
 /* PARAMS   */
@@ -22,6 +23,7 @@ $campaign_id    = required_param('cp',PARAM_INT);
 $context        = context_system::instance();
 $context_course = context_course::instance($course_id);
 $course         = get_course($course_id);
+$error          = false;
 
 $url                = new moodle_url('/local/microlearning/mode/calendar/duplicate.php',array('id'=>$course_id,'cp' => $campaign_id));
 $return_url         = new moodle_url('/local/microlearning/index.php',array('id'=>$course_id));
@@ -44,20 +46,30 @@ if ($form->is_cancelled()) {
     $_POST = array();
     redirect($return_url);
 }else if ($data = $form->get_data()) {
-    /* Duplicate Campaign   */
-    $new_campaign = Micro_Learning::Duplicate_Campaign($data);
+    try {
+        /* Duplicate Campaign   */
+        $new_campaign = Calendar_Mode::DuplicateCampaign($data);
 
-    /* Return Calendar Deliveries   */
-    $return_delivery    = new moodle_url('/local/microlearning/mode/calendar/calendar_deliveries.php',array('id'=>$course_id,'mode' => CALENDAR_MODE,'cp' => $new_campaign));
-    $_POST = array();
-    redirect($return_delivery);
+        /* Return Calendar Deliveries   */
+        $return_delivery    = new moodle_url('/local/microlearning/mode/calendar/calendar_deliveries.php',array('id'=>$course_id,'mode' => CALENDAR_MODE,'cp' => $new_campaign));
+        $_POST = array();
+        redirect($return_delivery);
+    }catch (Exception $ex) {
+        $error = true;
+    }//try_catch
 }//if_form
 
 
 /* Header   */
 echo $OUTPUT->header();
 
-$form->display();
+if ($error) {
+    /* Not Duplicated */
+    echo $OUTPUT->notification(get_string('err_generic','local_microlearning'), 'notifysuccess');
+    echo $OUTPUT->continue_button($return_url);
+}else {
+    $form->display();
+}
 
 /* Foot*/
 echo $OUTPUT->footer();
