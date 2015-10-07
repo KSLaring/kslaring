@@ -52,7 +52,7 @@ define('SAML_INTERNAL', 1);
                     require_once ('../../local/feide/feidelib.php');
                     $urltogo = WS_FEIDE::Generate_LogoutResponse();
                 }
-                
+
                 header('Location: '. $urltogo);
                 exit();
             }

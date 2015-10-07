@@ -150,7 +150,7 @@ class auth_plugin_saml extends auth_plugin_base {
 
     function logoutpage_hook() {
         /* Variables    */
-        global $CFG;
+        global $CFG,$SESSION;
         $pluginInfo = null;
         $urlKS      = null;
         $urltogo    = null;
