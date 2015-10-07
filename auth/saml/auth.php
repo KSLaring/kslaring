@@ -152,7 +152,7 @@ class auth_plugin_saml extends auth_plugin_base {
      */
     function logoutpage_hook() {
         /* Variables    */
-        global $USER,$SESSION;
+        global $USER,$SESSION,$CFG;
         $pluginInfo = null;
         $LogoutUrl  = null;
 
@@ -181,6 +181,10 @@ class auth_plugin_saml extends auth_plugin_base {
                     set_moodle_cookie('nobody');
                     require_logout();
                     redirect($GLOBALS['CFG']->wwwroot.'/auth/saml/index.php?logout=1');
+                }else {
+                    require_logout();
+                    $urltogo = $CFG->wwwroot;
+                    redirect($urltogo);
                 }
             }//if_else_SESSION
         }catch (Exception $ex) {

@@ -60,9 +60,7 @@ class KS_FEIDE {
 
         try {
             /* Check if the user exists */
-            //$userId = self::ExistUser($userFeide['username']);
-
-            $userId = self::ExistUser($userFeide->username);
+            $userId = self::ExistUser($userFeide['username']);
 
             /* User already exists  --> Update && Log In    */
             if ($userId) {
