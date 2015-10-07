@@ -26,7 +26,7 @@
  * 2009-07  Added new configuration options
 **/
 
-    global $CFG;
+    global $CFG,$OUTPUT;
 
     require_once("courses.php");
     require_once("roles.php");
