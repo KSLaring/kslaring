@@ -16,7 +16,5 @@ require_once('../../config.php');
 $PAGE->set_url('/login/logout.php');
 $PAGE->set_context(context_system::instance());
 
-$SESSION->ksSource = 'KS';
-
 $url = new moodle_url('/auth/saml/index.php');
 redirect($url);
