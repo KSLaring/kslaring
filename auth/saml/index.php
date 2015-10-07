@@ -42,8 +42,18 @@ define('SAML_INTERNAL', 1);
             if($saml_param->dosinglelogout) {
                 $as->logout($urltogo);
                 assert("FALSE"); // The previous line issues a redirect
+
+                if (isset($SESSION->ksSource) && ($SESSION->ksSource == 'KS')) {
+                    require_once ('../../local/feide/feidelib.php');
+                    $urltogo = WS_FEIDE::Generate_LogoutResponse();
+                }
             } else {
-                header('Location: '.$urltogo);
+                if (isset($SESSION->ksSource) && ($SESSION->ksSource == 'KS')) {
+                    require_once ('../../local/feide/feidelib.php');
+                    $urltogo = WS_FEIDE::Generate_LogoutResponse();
+                }
+                
+                header('Location: '. $urltogo);
                 exit();
             }
         }
@@ -220,18 +230,11 @@ define('SAML_INTERNAL', 1);
          * Description
          * Redirect the user to KS Site
          */
-        //if (is_siteadmin($USER->id)) {
-        //    redirect($urltogo);
-        //}else {
+        if (isset($SESSION->ksSource)) {
             require_once ('../../local/feide/feidelib.php');
             $urlKS = WS_FEIDE::GenerateResponse($USER->id);
             redirect($urlKS);
-        //}
-        //if (isset($SESSION->ksSource)) {
-            //require_once ('../../local/feide/feidelib.php');
-            //$urlKS = WS_FEIDE::GenerateResponse($USER->id);
-            //redirect($urlKS);
-        //}else {
-            //redirect($urltogo);
-        //}//if_else
+        }else {
+            redirect($urltogo);
+        }//if_else
     }
