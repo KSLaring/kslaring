@@ -95,8 +95,6 @@ if ($form->is_cancelled()) {
         }//if_read_count
 
         /* Import the new companies */
-        $imported       = true;
-        $records_file   = Import_Companies::ValidateData($file_columns,$cir,$level);
         switch ($data->level) {
             case 1:
                 $level_parent = $data->import_0;
@@ -123,6 +121,8 @@ if ($form->is_cancelled()) {
 
                 break;
         }//switch_level
+        $imported       = true;
+        $records_file   = Import_Companies::ValidateData($file_columns,$cir,$level,$level_parent);
 
         $err_import     = Import_Companies::ImportStructure($records_file,$data->level,$level_parent,$public);
         /* Get the companies have not been imported  */

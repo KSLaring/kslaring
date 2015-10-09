@@ -1759,11 +1759,15 @@ class ImportCompetence {
         $competenceId       = null;
         $infoData           = null;
         $trans              = null;
+        $time               = null;
 
         /* Start transaction    */
         $trans = $DB->start_delegated_transaction();
 
         try {
+            /* Local Time   */
+            $time = time();
+
             /* Search Criteria  */
             $params = array();
             $params['import']   = 1;
@@ -1785,8 +1789,9 @@ class ImportCompetence {
                     if (!$instance->id) {
                         /* Create a entry   */
                         $competenceEntry = new stdClass();
-                        $competenceEntry->userid    = $instance->userid;
-                        $competenceId               = $DB->insert_record('user_info_competence',$competenceEntry);
+                        $competenceEntry->userid            = $instance->userid;
+                        $competenceEntry->timemodified      = $time;
+                        $competenceId                       = $DB->insert_record('user_info_competence',$competenceEntry);
                     }else {
                         $competenceId = $instance->id;
                     }//if_competence

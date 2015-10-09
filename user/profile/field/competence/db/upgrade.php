@@ -26,15 +26,15 @@ function xmldb_profilefield_competence_upgrade($old_version) {
 
         if ($old_version < 2015020102) {
             /* Competence Table */
-            if ($db_man->table_exists('user_info_competence')) {
+            if (!$db_man->table_exists('user_info_competence')) {
                 $table_competence = new xmldb_table('user_info_competence');
-                $db_man->drop_table($table_competence);
-
                 /* Create Table */
                 /* ID               -->     Primary Key. Autonumeric.   */
                 $table_competence->add_field('id',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, XMLDB_SEQUENCE,null);
                 /* User Id          -->  Foreign Key to user             */
                 $table_competence->add_field('userid',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, null,null);
+                /* Time modified    -->     The last changes    */
+                $table_competence->add_field('timemodified',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, null,null);
 
                 /* Primary Keys         */
                 $table_competence->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
@@ -69,6 +69,17 @@ function xmldb_profilefield_competence_upgrade($old_version) {
 
                 $db_man->create_table($table_competence_data);
             }//if_table_exists_competence_data
+        }//if_old_version
+
+        if ($old_version < 2015100900) {
+            if ($db_man->table_exists('user_info_competence')) {
+                /* New Fields   */
+                $tblCompetenceData = new xmldb_table('user_info_competence');
+                $fieldTimeModified = new xmldb_field('timemodified', XMLDB_TYPE_INTEGER, '10', null, null, null,null,'userid');
+                if (!$db_man->field_exists($tblCompetenceData, $fieldTimeModified)) {
+                    $db_man->add_field($tblCompetenceData, $fieldTimeModified);
+                }//if_exists
+            }
         }//if_old_version
 
         return true;
