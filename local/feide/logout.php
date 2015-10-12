@@ -27,13 +27,6 @@ foreach($authsequence as $authname) {
     $authplugin->logoutpage_hook();
 }
 
-//require_logout();
+require_logout();
 
-//redirect($redirect);
-
-
-//$PAGE->set_url('/login/logout.php');
-//$PAGE->set_context(context_system::instance());
-
-//$url = new moodle_url('/auth/saml/index.php');
-//redirect($url);
+redirect($redirect);
