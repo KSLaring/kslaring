@@ -27,6 +27,6 @@ foreach($authsequence as $authname) {
     $authplugin->logoutpage_hook();
 }
 
-require_logout();
+//require_logout();
 
-redirect($redirect);
+//redirect($redirect);
