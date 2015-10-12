@@ -30,7 +30,7 @@ define('SAML_INTERNAL', 1);
                 $urltogo = $_SERVER['HTTP_REFERER'];
             }
             else{
-                $urltogo = '/';
+                $urltogo = $CFG->wwwroot;
             }
 
             if($saml_param->dosinglelogout) {
