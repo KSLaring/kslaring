@@ -273,7 +273,7 @@ class WS_FEIDE {
             $params['valid']    = time();
 
             /* SQL Instruction  */
-            $sql = " SELECT	  u.username,
+            $sql = " SELECT	  u.idnumber,
                               u.firstname,
                               u.lastname,
                               u.email,
@@ -293,7 +293,7 @@ class WS_FEIDE {
             if ($rdo) {
                 /* User Info    */
                 $userInfo = new stdClass();
-                $userInfo->username   = $rdo->username;
+                $userInfo->username   = $rdo->idnumber;
                 $userInfo->firstname  = $rdo->firstname;
                 $userInfo->lastname   = $rdo->lastname;
                 $userInfo->email      = $rdo->email;
