@@ -173,8 +173,8 @@ class auth_plugin_saml extends auth_plugin_base {
             }else if (isset($SESSION->ksSource)) {
                 /* Get End Point    */
                 $pluginInfo = get_config('local_wsks');
-                $redirect = $pluginInfo->feide_point . '/auth/saml/index.php?logout=1'; //'/local/feide/logout.php';
-                require_logout();
+                $redirect = $pluginInfo->feide_point . '/local/feide/logout.php';
+                //require_logout();
                 
                 redirect($redirect);
             }else {
