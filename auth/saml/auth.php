@@ -173,13 +173,13 @@ class auth_plugin_saml extends auth_plugin_base {
             }else if (isset($SESSION->ksSource)) {
                 /* Get End Point    */
                 $pluginInfo = get_config('local_wsks');
-                $redirect = $pluginInfo->feide_point . '/local/feide/logout.php';
+                $redirect = $pluginInfo->feide_point . '/auth/saml/index.php?logout=1'; //'/local/feide/logout.php';
                 require_logout();
                 
                 redirect($redirect);
             }else {
                 if(isset($this->config->dosinglelogout) && $this->config->dosinglelogout) {
-                    //set_moodle_cookie('nobody');
+                    set_moodle_cookie('nobody');
                     require_logout();
                     redirect($GLOBALS['CFG']->wwwroot.'/auth/saml/index.php?logout=1');
                 }else {
