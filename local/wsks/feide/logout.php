@@ -23,5 +23,5 @@ unset($SESSION->ksSource);
 //}
 
 $url = new moodle_url('login/logout.php');
-redirect($url);
-
+//redirect($url);
+echo "HOLA";
