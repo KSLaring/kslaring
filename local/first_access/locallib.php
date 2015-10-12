@@ -52,23 +52,51 @@ class FirstAccess {
                     }else {
                        return true;
                     }//if_else
-
-                    //if (self::ExtraProfileFields_Completed($user_id)) {
-                    //    /* Check User Profile Completed */
-                    //    if (self::ProfileFields_Completed($user_id)) {
-                    //        return false;
-                    //    }else {
-                    //        return true;
-                    //    }
-                    //}else {
-                    //    return true;
-                    //}///if_profile
                 }//if_first_access
             }//if_doskom_user
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
     }//HasToUpdate_Profile
+
+    /**
+     * @param           $userId
+     * @return          bool
+     * @throws          Exception
+     *
+     * @creationDate    12/10/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Check if remains update the competence profile
+     */
+    public static function HasToUpdateCompetence($userId) {
+        /* Variables    */
+        global $DB;
+        $rdo    = null;
+
+        try {
+            /* Exist Competence Profile */
+            $rdo = $DB->get_record('user_info_field',array('datatype' => 'competence'),'id');
+            if ($rdo) {
+                if ($rdo->id) {
+                    /* Update Competence Profile    */
+                    $rdo = $DB->get_records('user_info_competence_data',array('userid' => $userId),'id');
+                    if ($rdo) {
+                        return false;
+                    }else {
+                        return true;
+                    }
+                }else {
+                    return false;
+                }
+            }else {
+                return false;
+            }//if_Rdo
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//HasToUpdateCompetence
 
     /**
      * @return          mixed
@@ -100,6 +128,16 @@ class FirstAccess {
         }//try_catch
     }//GetMunicipalityProfile
 
+    /**
+     * @param           $data
+     * @throws          Exception
+     *
+     * @creationDate    18/06/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Update user profile
+     */
     public static function Update_UserProfile($data) {
         /* Variables    */
         global $DB;
