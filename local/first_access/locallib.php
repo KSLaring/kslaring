@@ -43,16 +43,26 @@ class FirstAccess {
                     return true;
                 }else {
                     /* Check User Extra Profile Fields - Obligatory   */
-                    if (self::ExtraProfileFields_Completed($user_id)) {
-                        /* Check User Profile Completed */
-                        if (self::ProfileFields_Completed($user_id)) {
+                    if (self::ProfileFields_Completed($user_id)) {
+                        if (self::ExtraProfileFields_Completed($user_id)) {
                             return false;
                         }else {
                             return true;
                         }
                     }else {
-                        return true;
-                    }///if_profile
+                       return true;
+                    }//if_else
+
+                    //if (self::ExtraProfileFields_Completed($user_id)) {
+                    //    /* Check User Profile Completed */
+                    //    if (self::ProfileFields_Completed($user_id)) {
+                    //        return false;
+                    //    }else {
+                    //        return true;
+                    //    }
+                    //}else {
+                    //    return true;
+                    //}///if_profile
                 }//if_first_access
             }//if_doskom_user
         }catch (Exception $ex) {
