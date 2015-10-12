@@ -177,6 +177,7 @@ class auth_plugin_saml extends auth_plugin_base {
                 require_logout();
                 
                 redirect($redirect);
+                die;
             }else {
                 if(isset($this->config->dosinglelogout) && $this->config->dosinglelogout) {
                     set_moodle_cookie('nobody');
