@@ -164,7 +164,7 @@ class auth_plugin_saml extends auth_plugin_base {
             $pluginInfo = get_config('local_feide');
 
             /* Make KS URL Response */
-            $urlKS = $pluginInfo->ks_point . "/local/wsks/feide/logout.php";
+            $urlKS = $pluginInfo->ks_point;// . "/local/wsks/feide/logout.php";
             require_logout();
             redirect($urlKS);
         }else {
