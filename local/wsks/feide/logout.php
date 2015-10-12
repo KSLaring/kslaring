@@ -20,8 +20,5 @@ unset($SESSION->ksSource);
 
 //if (isguestuser($USER)) {
    require_logout();
-//}
 
-$url = new moodle_url('login/logout.php');
-redirect('https://google.com');
-//echo "HOLA";
+//}

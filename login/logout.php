@@ -56,6 +56,8 @@ if (!isloggedin()) {
 
     require_logout();
     redirect($redirect);
+} else if (isset($SESSION->ksSource)) {
+    $redirect = 'https://google.com';
 } else if (!confirm_sesskey($sesskey)) {
     $PAGE->set_title($SITE->fullname);
     $PAGE->set_heading($SITE->fullname);
