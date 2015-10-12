@@ -21,12 +21,19 @@ $login   = optional_param('loginpage', 0, PARAM_BOOL);
 $pluginIno  = get_config('local_feide');
 $redirect   = $pluginIno->ks_point . '/local/wsks/feide/logout.php';
 
-$authsequence = get_enabled_auth_plugins(); // auths, in sequence
-foreach($authsequence as $authname) {
-    $authplugin = get_auth_plugin($authname);
-    $authplugin->logoutpage_hook();
-}
+//$authsequence = get_enabled_auth_plugins(); // auths, in sequence
+//foreach($authsequence as $authname) {
+//    $authplugin = get_auth_plugin($authname);
+//    $authplugin->logoutpage_hook();
+//}
 
-//require_logout();
+require_logout();
 
-//redirect($redirect);
+redirect($CFG->wwwroot);
+
+
+//$PAGE->set_url('/login/logout.php');
+//$PAGE->set_context(context_system::instance());
+
+//$url = new moodle_url('/auth/saml/index.php');
+//redirect($url);
