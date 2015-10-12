@@ -66,8 +66,6 @@ if ($login) {
                 die();
             }else {
                 // test the session actually works by redirecting to self
-                $urltogo = core_login_get_return_url();
-                $SESSION->wantsurl = $urltogo;
                 redirect($CFG->wwwroot);
             }//if_else_UpdateProfile
         }//if_first_access
