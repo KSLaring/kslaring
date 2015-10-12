@@ -87,7 +87,7 @@ class WS_FEIDE {
             $pluginInfo = get_config('local_feide');
 
             /* Make KS URL Response */
-            $urlKS = $pluginInfo->ks_point;// . "/local/wsks/feide/logout.php";
+            $urlKS = $pluginInfo->ks_point . "/local/wsks/feide/logout.php";
 
             return $urlKS;
         }catch (Exception $ex) {
