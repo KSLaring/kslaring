@@ -18,9 +18,9 @@ $PAGE->set_context(context_system::instance());
 
 unset($SESSION->ksSource);
 
-if (isguestuser($USER)) {
-    require_logout();
-}
+//if (isguestuser($USER)) {
+//    require_logout();
+//}
 
 //$url = new moodle_url('login/index.php');
 redirect($CFG->wwwroot);
