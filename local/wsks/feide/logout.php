@@ -24,3 +24,4 @@ if (isguestuser($USER)) {
 
 //$url = new moodle_url('login/index.php');
 redirect($CFG->wwwroot);
+
