@@ -18,7 +18,7 @@ $PAGE->set_context(context_system::instance());
 
 unset($SESSION->ksSource);
 
-$redirect = $CFG->wwwroot.'/';
+$redirect = $CFG->wwwroot . '?redirect=1';
 
 require_logout();
 
