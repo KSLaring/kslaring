@@ -22,5 +22,5 @@ if (isguestuser($USER)) {
     require_logout();
 }
 
-$url = new moodle_url('login/index.php');
-redirect($url);
+//$url = new moodle_url('login/index.php');
+redirect($CFG->wwwroot);
