@@ -22,6 +22,6 @@ unset($SESSION->ksSource);
 //    require_logout();
 //}
 
-//$url = new moodle_url('login/index.php');
-redirect($CFG->wwwroot);
+$url = new moodle_url('login/logout.php');
+redirect($url);
 
