@@ -25,6 +25,8 @@ $PAGE->set_heading($SITE->fullname);
 
 
 
+require_logout();
+
 echo $OUTPUT->header();
 
 
