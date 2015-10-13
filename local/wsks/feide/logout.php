@@ -93,16 +93,16 @@ try {
     //}//if_no_error
 
 
-    echo $OUTPUT->header();
+    //echo $OUTPUT->header();
 
 
-    $urltogo = $CFG->wwwroot;
+    //$urltogo = $CFG->wwwroot;
 
-    echo $OUTPUT->notification('POPOPOO', 'notifysuccess');
-    echo $OUTPUT->continue_button($urltogo);
+    //echo $OUTPUT->notification('POPOPOO', 'notifysuccess');
+    //echo $OUTPUT->continue_button($urltogo);
 
 
-    echo $OUTPUT->footer();
+    //echo $OUTPUT->footer();
 //    die;
 //}
 
