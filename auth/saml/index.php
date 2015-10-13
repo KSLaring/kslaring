@@ -40,9 +40,10 @@ define('SAML_INTERNAL', 1);
             }
 
             if($saml_param->dosinglelogout) {
-                $as->logout($urltogo);
+                $as->logout('http://elpais.com');
                 assert("FALSE"); // The previous line issues a redirect
             } else {
+
                 header('Location: '. $urltogo);
                 exit();
             }
