@@ -21,14 +21,12 @@ $ks         = optional_param('ks',0,PARAM_INT);
 
 
 if ($ks) {
-    echo "HOLA " . "</br>";
-
     /* Plugin Info */
     $pluginInfo = get_config('local_feide');
-    echo " - " . $pluginInfo->ks_point . "/local/wsks/feide/logout.php";
+    $redirect =  $pluginInfo->ks_point . "/local/wsks/feide/logout.php";
+    redirect($redirect);
+    die;
 }else {
     $authplugin = get_auth_plugin('saml');
     $authplugin->logoutpage_hook();
 }
-//require_logout();
-//redirect($redirect);
