@@ -62,7 +62,7 @@ if (!isloggedin()) {
     require_logout();
 
     /* Log out from Feide       */
-    $redirect = new moodle_url('/local/wsks/feide/logout.php',array('lg' => 0));
+    $redirect = new moodle_url('/local/wsks/feide/logout.php',array('lg' => 1));
     redirect($redirect);
     die;
 } else if (!confirm_sesskey($sesskey)) {
