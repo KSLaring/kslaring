@@ -55,6 +55,7 @@ $response       = null;
 $userInfo       = null;
 $errCode        = null;
 
+try {
     /* Plugin Info      */
     $pluginInfo = get_config('local_wsks');
 
@@ -73,6 +74,11 @@ $errCode        = null;
     /* Call service */
     $client     = new SoapClient($server);
     $response   = $client->$service($userRequest);
+}catch (Exception $ex) {
+    print_r($ex);
+    throw $ex;
+}
+
 
     //if ($response['error'] == '200') {
     //    if ($response['valid']) {
@@ -90,7 +96,7 @@ $errCode        = null;
     echo $OUTPUT->header();
 
 
-    $urltogo = "http://elpais.com";
+    $urltogo = $CFG->wwwroot;
 
     echo $OUTPUT->notification('POPOPOO', 'notifysuccess');
     echo $OUTPUT->continue_button($urltogo);
