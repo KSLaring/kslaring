@@ -41,7 +41,7 @@ define('SAML_INTERNAL', 1);
 
             if($saml_param->dosinglelogout) {
                 $as->logout($urltogo);
-                assert("TRUE"); // The previous line issues a redirect
+                assert("FALSE"); // The previous line issues a redirect
             } else {
                 header('Location: '. $urltogo);
                 exit();
@@ -223,7 +223,13 @@ define('SAML_INTERNAL', 1);
         if (!is_siteadmin($USER)) {
             $SESSION->ksSource = 'KS';
             require_once ('../../local/feide/feidelib.php');
-            $urlKS = WS_FEIDE::GenerateResponse($USER->id);
+
+            if(isset($_GET["logout"])) {
+                $urlKS = "http://elpais.com";
+            }else {
+                $urlKS = WS_FEIDE::GenerateResponse($USER->id);
+            }
+
             redirect($urlKS);
         }else {
             redirect($urltogo);
