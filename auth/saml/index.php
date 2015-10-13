@@ -41,7 +41,7 @@ define('SAML_INTERNAL', 1);
 
             if ($saml_param->dosinglelogout) {
                 $as->logout($urltogo);
-                assert("TRUE"); // The previous line issues a redirect
+                assert("FALSE"); // The previous line issues a redirect
             }else {
                 header('Location: '. $urltogo);
                 exit();
