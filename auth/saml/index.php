@@ -224,11 +224,7 @@ define('SAML_INTERNAL', 1);
             $SESSION->ksSource = 'KS';
             require_once ('../../local/feide/feidelib.php');
 
-            if(isset($_GET["logout"])) {
-                $urlKS = "http://elpais.com";
-            }else {
-                $urlKS = WS_FEIDE::GenerateResponse($USER->id);
-            }
+            $urlKS = WS_FEIDE::GenerateResponse($USER->id);
 
             redirect($urlKS);
         }else {
