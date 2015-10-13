@@ -42,7 +42,29 @@ define('SAML_INTERNAL', 1);
             if($saml_param->dosinglelogout) {
                 $as->logout($urltogo);
                 assert("FALSE"); // The previous line issues a redirect
+
+                if (isset($SESSION->ksSource) && ($SESSION->ksSource == 'KS')){
+                    require_logout();
+
+                    $pluginIno  = get_config('local_feide');
+                    $urltogo   = $pluginIno->ks_point . '/local/wsks/feide/logout.php';
+
+                    $urltogo = "http://elpais.com";
+
+                    redirect($urltogo);
+                    exit();
+                }
+
+
             } else {
+                if (isset($SESSION->ksSource) && ($SESSION->ksSource == 'KS')){
+                    $pluginIno  = get_config('local_feide');
+                    $urltogo   = $pluginIno->ks_point . '/local/wsks/feide/logout.php';
+
+                    redirect($urltogo);
+                    exit();
+                }
+
                 header('Location: '. $urltogo);
                 exit();
             }

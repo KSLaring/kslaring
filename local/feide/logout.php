@@ -18,16 +18,18 @@ $PAGE->set_context(context_system::instance());
 $sesskey = optional_param('sesskey', '__notpresent__', PARAM_RAW); // we want not null default to prevent required sesskey warning
 $login   = optional_param('loginpage', 0, PARAM_BOOL);
 
+
 $pluginIno  = get_config('local_feide');
 $redirect   = $pluginIno->ks_point . '/local/wsks/feide/logout.php';
 
-$redirect = $CFG->wwwroot;
-$authsequence = get_enabled_auth_plugins(); // auths, in sequence
-foreach($authsequence as $authname) {
-    $authplugin = get_auth_plugin($authname);
-    $authplugin->logoutpage_hook();
-}
+redirect($CFG->wwwroot.'/auth/saml/index.php?logout=1&ks=1');
 
-require_logout();
+//$authsequence = get_enabled_auth_plugins(); // auths, in sequence
+//foreach($authsequence as $authname) {
+//    $authplugin = get_auth_plugin($authname);
+//    $authplugin->logoutpage_hook();
+//}
 
-redirect($redirect);
+//require_logout();
+
+//redirect($redirect);
