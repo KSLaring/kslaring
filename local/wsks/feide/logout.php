@@ -24,9 +24,7 @@ $PAGE->set_title($SITE->fullname);
 $PAGE->set_heading($SITE->fullname);
 
 
-echo $OUTPUT->header();
 
-echo "HOLA. VINC DES DE FEIDE.";
 
 if ($logout) {
     /* Get End Point    */
@@ -34,7 +32,12 @@ if ($logout) {
     $redirect = $pluginInfo->feide_point . '/local/feide/logout.php';
 
     redirect($redirect);
+    die;
 }
+
+echo $OUTPUT->header();
+
+echo "HOLA. VINC DES DE FEIDE.";
 
 echo $OUTPUT->footer();
 //redirect($CFG->wwwroot);
