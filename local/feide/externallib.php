@@ -149,56 +149,6 @@ class local_feide_external extends external_api {
         }//try_catch
     }//wsValidateUserFeide
 
-    /*****************/
-    /* wsLogOutFeide */
-    /*****************/
-    public static function wsLogOutFeide_parameters() {
-        $idNumber       = new external_value(PARAM_TEXT,'User ID - From Feide');
-
-
-        /* USER FEIDE */
-        $userFeide    = new external_single_structure(array('id' =>  $idNumber));
-
-        return new external_function_parameters(array('user'=> $userFeide));
-    }//wsLogOutFeide_parameters
-
-    public static function wsLogOutFeide_returns() {
-        $error      = new external_value(PARAM_INT,'Error. True/False');
-        $msg_error  = new external_value(PARAM_TEXT,'Error Description');
-
-
-        $exist_return = new external_single_structure(array('error'         => $error,
-            'msg_error'     => $msg_error));
-
-        return null;
-       // return $exist_return;
-    }//wsLogOutFeide_returns
-
-    public static function wsLogOutFeide($userFeide) {
-        /* Parameter Validation */
-        $params = self::validate_parameters(self::wsLogOutFeide_parameters(), array('user' => $userFeide));
-
-        /* Execute  */
-        //$result['error']        = 200;
-        //$result['msg_error']    = '';
-
-        try {
-            $authplugin = get_auth_plugin('saml');
-            $authplugin->logoutpage_hook();
-
-            require_logout();
-
-        }catch (Exception $ex) {
-        //    if ($result['error']        == '200') {
-        //        $result['error']        = 500;
-        //        $result['msg_error']    = $ex->getMessage() . ' ' . $ex->getTraceAsString();
-        //    }//if_error
-
-        //    return $result;
-        }
-
-    }//wsLogOutFeide
-
     /*****************************/
     /*****************************/
     /*****************************/
