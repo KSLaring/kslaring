@@ -62,6 +62,7 @@ if (!isloggedin()) {
     /* Plugin Info      */
     $pluginInfo     = get_config('local_wsks');
     $redirect       = $pluginInfo->feide_point . '/local/feide/logout.php';
+    redirect($redirect);
 
     die;
 } else if (!confirm_sesskey($sesskey)) {
