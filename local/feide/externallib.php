@@ -166,7 +166,10 @@ class local_feide_external extends external_api {
         return null;
     }//wsLogOutFeide_returns
 
-    public static function wsLogOutFeide() {
+    public static function wsLogOutFeide($userFeide) {
+        /* Parameter Validation */
+        $params = self::validate_parameters(self::wsLogOutFeide_parameters(), array('user' => $userFeide));
+
         require_logout();
 
         $authplugin = get_auth_plugin('saml');
