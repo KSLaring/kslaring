@@ -39,13 +39,9 @@ define('SAML_INTERNAL', 1);
                 $urltogo = '/';
             }
 
-            if ($saml_param->dosinglelogout) {
-                if(isset($SESSION->ksSource)) {
-                    $pluginIno  = get_config('local_feide');
-                    $urltogo   = $pluginIno->ks_point . '/local/wsks/feide/logout.php';
-                }
+            $urltogo = 'http://elpais.com';
 
-                $urltogo   = $pluginIno->ks_point . '/local/wsks/feide/logout.php';
+            if ($saml_param->dosinglelogout) {
                 $as->logout($urltogo);
                 assert("FALSE"); // The previous line issues a redirect
             }else {
