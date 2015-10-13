@@ -21,6 +21,7 @@ $login   = optional_param('loginpage', 0, PARAM_BOOL);
 $pluginIno  = get_config('local_feide');
 $redirect   = $pluginIno->ks_point . '/local/wsks/feide/logout.php';
 
+$redirect = $CFG->wwwroot;
 $authsequence = get_enabled_auth_plugins(); // auths, in sequence
 foreach($authsequence as $authname) {
     $authplugin = get_auth_plugin($authname);
