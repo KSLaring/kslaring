@@ -183,7 +183,7 @@ class auth_plugin_saml extends auth_plugin_base {
                     redirect($GLOBALS['CFG']->wwwroot.'/auth/saml/index.php?logout=1');
                 }else {
                     require_logout();
-                    $urltogo = $CFG->wwwroot;
+                    $urltogo = $CFG->wwwroot . '/index.php';
                     redirect($urltogo);
                 }
             }//if_else_SESSION

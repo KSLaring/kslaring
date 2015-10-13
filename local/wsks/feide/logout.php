@@ -23,8 +23,6 @@ $PAGE->set_pagelayout('standard');
 $PAGE->set_title($SITE->fullname);
 $PAGE->set_heading($SITE->fullname);
 
-
-
 require_logout();
 redirect($CFG->wwwroot . '/index.php');
 
