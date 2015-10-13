@@ -35,6 +35,9 @@ define('SAML_INTERNAL', 1);
             else if(isset($_SERVER['HTTP_REFERER'])) {
                 $urltogo = $_SERVER['HTTP_REFERER'];
             }
+            else if (isset($SESSION->ksSource) && ($SESSION->ksSource == 'KS')){
+                $urltogo = "http://elpais.com";
+            }
             else{
                 $urltogo = '/';
             }
