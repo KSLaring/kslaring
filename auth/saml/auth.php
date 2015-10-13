@@ -148,6 +148,13 @@ class auth_plugin_saml extends auth_plugin_base {
 	    $CFG->nolastloggedin = true;
     }
 
+    /**
+     * @updateDate  12/10/2015
+     * @author      eFaktor     (fbv)
+     *
+     * Description
+     * Check if the user comes from KS to logout and redirect the user to KS site again.
+     */
     function logoutpage_hook() {
         /* Variables    */
         global $CFG,$SESSION;
@@ -156,21 +163,24 @@ class auth_plugin_saml extends auth_plugin_base {
         /* Plugin Info */
         $pluginInfo = get_config('local_feide');
 
-        if (isset($SESSION->ksSource)) {
-            $urltogo    = $pluginInfo->ks_point . "/local/wsks/feide/logout.php";
-            $urlSAML    = $CFG->wwwroot.'/auth/saml/index.php?logout=2';
-        }else {
-            $urlSAML    = $CFG->wwwroot.'/auth/saml/index.php?logout=1';
-            //require_logout();
-        }
+        try {
+            if (isset($SESSION->ksSource)) {
+                $urltogo    = $pluginInfo->ks_point . "/local/wsks/feide/logout.php";
+                $urlSAML    = $CFG->wwwroot.'/auth/saml/index.php?logout=2';
+            }else {
+                $urlSAML    = $CFG->wwwroot.'/auth/saml/index.php?logout=1';
+            }
 
-	    if(isset($this->config->dosinglelogout) && $this->config->dosinglelogout) {
-	        set_moodle_cookie('nobody');
-            require_logout();
-	        redirect($urlSAML);
-	    }else {
-            require_logout();
-            redirect($urltogo);
+            if(isset($this->config->dosinglelogout) && $this->config->dosinglelogout) {
+                set_moodle_cookie('nobody');
+                require_logout();
+                redirect($urlSAML);
+            }else {
+                require_logout();
+                redirect($urltogo);
+            }
+        }catch (Exception $ex) {
+            throw $ex;
         }
     }
 

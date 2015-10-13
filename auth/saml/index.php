@@ -40,6 +40,13 @@ define('SAML_INTERNAL', 1);
                 $urltogo = '/';
             }
 
+            /**
+             * @updateDate  12/10/2015
+             * @author      eFaktor     (fbv)
+             *
+             * Description
+             * Check if the user comes from KS Site
+             */
             if ($logout == 2) {
                 /* Make KS URL Response */
                 $urltogo = '/local/feide/logout.php?ks=1';

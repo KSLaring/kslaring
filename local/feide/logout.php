@@ -21,6 +21,7 @@ $ks         = optional_param('ks',0,PARAM_INT);
 
 
 if ($ks) {
+    /* Back to KS   */
     /* Plugin Info */
     $pluginInfo = get_config('local_feide');
     $redirect =  $pluginInfo->ks_point . "/local/wsks/feide/logout.php";
