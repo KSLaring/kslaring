@@ -41,10 +41,8 @@ define('SAML_INTERNAL', 1);
             }
 
             if ($logout == 2) {
-                /* Plugin Info */
-                //$pluginInfo = get_config('local_feide');
                 /* Make KS URL Response */
-                $urltogo = '/local/feide/logout.php?ks=1'; //. $pluginInfo->ks_point . "/local/wsks/feide/logout.php";
+                $urltogo = '/local/feide/logout.php?ks=1';
             }
 
             if ($saml_param->dosinglelogout) {
