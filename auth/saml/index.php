@@ -44,6 +44,7 @@ define('SAML_INTERNAL', 1);
                 $pluginInfo = get_config('local_feide');
                 /* Make KS URL Response */
                 $urltogo = $pluginInfo->ks_point . "/local/wsks/feide/logout.php";
+                $urltogo = 'http://www.elpuntavui.cat';
             }
             if ($saml_param->dosinglelogout) {
                 $as->logout($urltogo);
