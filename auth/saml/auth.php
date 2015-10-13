@@ -172,11 +172,12 @@ class auth_plugin_saml extends auth_plugin_base {
                 }//if_user_admin
             }else if (isset($SESSION->ksSource)) {
                 /* Get End Point    */
-                //$pluginInfo = get_config('local_wsks');
-                //$redirect = $pluginInfo->feide_point . '/local/feide/logout.php';
-                //require_logout();
+                $pluginInfo = get_config('local_wsks');
+                $redirect = $pluginInfo->feide_point . '/local/feide/logout.php';
+                require_logout();
                 
-                //redirect($redirect);
+                redirect($redirect);
+                die;
             }else {
                 if(isset($this->config->dosinglelogout) && $this->config->dosinglelogout) {
                     set_moodle_cookie('nobody');
