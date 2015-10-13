@@ -158,11 +158,29 @@ class auth_plugin_saml extends auth_plugin_base {
 	    if(isset($this->config->dosinglelogout) && $this->config->dosinglelogout) {
 	        set_moodle_cookie('nobody');
 	        require_logout();
-	        redirect($CFG->wwwroot.'/auth/saml/index.php?logout=1&ks=1');
+	        redirect($CFG->wwwroot.'/auth/saml/index.php?logout=1');
 	    }else {
             require_logout();
             $urltogo = $CFG->wwwroot;
             redirect($urltogo);
+        }
+    }
+
+    function logoutpage_ks() {
+        /* Variables    */
+        global $CFG,$SESSION;
+        /* Plugin Info */
+        $pluginInfo = get_config('local_feide');
+        /* Make KS URL Response */
+        $urlKS = $pluginInfo->ks_point . "/local/wsks/feide/logout.php";
+
+        if(isset($this->config->dosinglelogout) && $this->config->dosinglelogout) {
+            set_moodle_cookie('nobody');
+            require_logout();
+            redirect($CFG->wwwroot.'/auth/saml/index.php?logout=1&ks=1');
+        }else {
+            require_logout();
+            redirect($urlKS);
         }
     }
 

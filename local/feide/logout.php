@@ -20,7 +20,7 @@ $login      = optional_param('loginpage', 0, PARAM_BOOL);
 $redirect   = $CFG->wwwroot.'/index.php';
 
 $authplugin = get_auth_plugin('saml');
-$authplugin->logoutpage_hook();
+$authplugin->logoutpage_ks();
 
 //require_logout();
 //redirect($redirect);

@@ -36,9 +36,15 @@ define('SAML_INTERNAL', 1);
                 $urltogo = $_SERVER['HTTP_REFERER'];
             }
             else{
-                $urltogo = 'http://www.elpuntavui.cat';
+                $urltogo = '/';
             }
 
+            if (isset($_GET["ks"])) {
+                /* Plugin Info */
+                $pluginInfo = get_config('local_feide');
+                /* Make KS URL Response */
+                $urltogo = $pluginInfo->ks_point . "/local/wsks/feide/logout.php";
+            }
             if ($saml_param->dosinglelogout) {
                 $as->logout($urltogo);
                 assert("FALSE"); // The previous line issues a redirect
