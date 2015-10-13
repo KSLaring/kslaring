@@ -39,13 +39,14 @@ define('SAML_INTERNAL', 1);
                 $urltogo = '/';
             }
 
-            if ($_GET["logout"] == '2')) {
+            //if ($_GET["logout"] == '2')) {
                 /* Plugin Info */
-                $pluginInfo = get_config('local_feide');
-                /* Make KS URL Response */
-                $urltogo = $pluginInfo->ks_point . "/local/wsks/feide/logout.php";
-                $urltogo = 'http://www.elpuntavui.cat';
-            }
+            //    $pluginInfo = get_config('local_feide');
+            //    /* Make KS URL Response */
+            //    $urltogo = $pluginInfo->ks_point . "/local/wsks/feide/logout.php";
+            //    $urltogo = 'http://www.elpuntavui.cat';
+            //}
+            
             if ($saml_param->dosinglelogout) {
                 $as->logout($urltogo);
                 assert("FALSE"); // The previous line issues a redirect
