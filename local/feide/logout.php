@@ -19,13 +19,9 @@ $sesskey    = optional_param('sesskey', '__notpresent__', PARAM_RAW); // we want
 $login      = optional_param('loginpage', 0, PARAM_BOOL);
 $redirect   = $CFG->wwwroot.'/index.php';
 
-//$authplugin = get_auth_plugin('saml');
-//$authplugin->logoutpage_hook();
+$authplugin = get_auth_plugin('saml');
+$authplugin->logoutpage_hook();
 
-if (isset($SESSION->ksSource)) {
-    echo "HOLA";
-}else {
-    echo "NO";
-}
-//require_logout();
+
+require_logout();
 //redirect($redirect);

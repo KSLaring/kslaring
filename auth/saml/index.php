@@ -35,16 +35,16 @@ define('SAML_INTERNAL', 1);
             else if(isset($_SERVER['HTTP_REFERER'])) {
                 $urltogo = $_SERVER['HTTP_REFERER'];
             }
-            else if(isset($SESSION->ksSource)) {
-                $pluginIno  = get_config('local_feide');
-                $urltogo   = $pluginIno->ks_point . '/local/wsks/feide/logout.php';
-                require_logout();
-            }
             else{
                 $urltogo = '/';
             }
 
             if ($saml_param->dosinglelogout) {
+                if(isset($SESSION->ksSource)) {
+                    $pluginIno  = get_config('local_feide');
+                    $urltogo   = $pluginIno->ks_point . '/local/wsks/feide/logout.php';
+                }
+
                 $as->logout($urltogo);
                 assert("FALSE"); // The previous line issues a redirect
             }else {
