@@ -23,7 +23,7 @@ $PAGE->set_heading($SITE->fullname);
 
 echo $OUTPUT->header();
 
-echo "HOLA. VINC DES DE SAML.";
+echo "HOLA. VINC DES DE FEIDE.";
 
 echo $OUTPUT->footer();
 //redirect($CFG->wwwroot);
