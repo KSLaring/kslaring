@@ -17,10 +17,14 @@ $PAGE->set_context(context_system::instance());
 
 $sesskey    = optional_param('sesskey', '__notpresent__', PARAM_RAW); // we want not null default to prevent required sesskey warning
 $login      = optional_param('loginpage', 0, PARAM_BOOL);
-$redirect   = $CFG->wwwroot.'/index.php';
+$ks         = optional_param('ks',0,PARAM_INT);
 
-$authplugin = get_auth_plugin('saml');
-$authplugin->logoutpage_hook();
 
+if ($ks) {
+    echo "HOLA";
+}else {
+    $authplugin = get_auth_plugin('saml');
+    $authplugin->logoutpage_hook();
+}
 //require_logout();
 //redirect($redirect);
