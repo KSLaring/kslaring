@@ -38,6 +38,11 @@ if ($logout) {
 
     die;
 }else {
+    /* Guess USer -- Logout */
+    if (isguestuser($USER)) {
+        require_logout();
+    }//if_guestuser
+
     echo $OUTPUT->header();
 
 
