@@ -26,7 +26,7 @@ define('SAML_INTERNAL', 1);
         }
         include_once($saml_param->samllib.'/_autoload.php');
         $as = new SimpleSAML_Auth_Simple($saml_param->sp_source);
-    
+
         if(isset($_GET["logout"])) {
             if(isset($_SERVER['SCRIPT_URI'])) {
                 $urltogo = $_SERVER['SCRIPT_URI'];
