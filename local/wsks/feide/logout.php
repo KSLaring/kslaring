@@ -16,9 +16,10 @@ $PAGE->set_url('/login/logout.php');
 $PAGE->set_context(context_system::instance());
 
 
-unset($SESSION->ksSource);
+redirect($CFG->wwwroot);
+//unset($SESSION->ksSource);
 
 //if (isguestuser($USER)) {
-   require_logout();
+//   require_logout();
 
 //}

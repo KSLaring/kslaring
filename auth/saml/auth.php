@@ -176,8 +176,9 @@ class auth_plugin_saml extends auth_plugin_base {
                 $redirect = $pluginInfo->feide_point . '/local/feide/logout.php';
                 require_logout();
                 
-                redirect($redirect);
-                die;
+                //redirect($redirect);
+                header('Location: '.$redirect);
+                exit();
             }else {
                 if(isset($this->config->dosinglelogout) && $this->config->dosinglelogout) {
                     set_moodle_cookie('nobody');
