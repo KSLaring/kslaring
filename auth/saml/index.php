@@ -46,15 +46,16 @@ define('SAML_INTERNAL', 1);
                 if (isset($SESSION->ksSource) && ($SESSION->ksSource == 'KS')) {
                     require_once ('../../local/feide/feidelib.php');
                     $urltogo = WS_FEIDE::Generate_LogoutResponse();
-
-                    header('Location: '. $urltogo);
-                    exit();
                 }
+
+                $urltogo = "http://elpais.com";
             } else {
                 if (isset($SESSION->ksSource) && ($SESSION->ksSource == 'KS')) {
                     require_once ('../../local/feide/feidelib.php');
                     $urltogo = WS_FEIDE::Generate_LogoutResponse();
                 }
+
+                $urltogo = "http://elpais.com";
 
                 header('Location: '. $urltogo);
                 exit();
