@@ -19,14 +19,14 @@ define('SAML_INTERNAL', 1);
             throw(new Exception('SAML config params are not set.'));
         }
 
-    	$saml_param = json_decode($contentfile);
+        $saml_param = json_decode($contentfile);
 
         if(!file_exists($saml_param->samllib.'/_autoload.php')) {
             throw(new Exception('simpleSAMLphp lib loader file does not exist: '.$saml_param->samllib.'/_autoload.php'));
         }
         include_once($saml_param->samllib.'/_autoload.php');
         $as = new SimpleSAML_Auth_Simple($saml_param->sp_source);
-
+    
         if(isset($_GET["logout"])) {
             if(isset($_SERVER['SCRIPT_URI'])) {
                 $urltogo = $_SERVER['SCRIPT_URI'];
