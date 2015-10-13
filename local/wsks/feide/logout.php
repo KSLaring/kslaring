@@ -28,11 +28,11 @@ $PAGE->set_heading($SITE->fullname);
 
 if ($logout) {
     /* Get End Point    */
-    $pluginInfo = get_config('local_wsks');
-    $redirect = $pluginInfo->feide_point . '/local/feide/logout.php';
+    //$pluginInfo = get_config('local_wsks');
+    //$redirect = $pluginInfo->feide_point . '/local/feide/logout.php';
 
-    redirect($redirect);
-    die;
+    //redirect($redirect);
+    //die;
 }
 
 echo $OUTPUT->header();
