@@ -31,6 +31,9 @@ echo $OUTPUT->header();
 //$urltogo = $CFG->wwwroot;
 
 //echo $OUTPUT->notification('POPOPOO', 'notifysuccess');
+
+echo 'HOLA CARACOLA';
+
 //echo $OUTPUT->continue_button($urltogo);
 
 

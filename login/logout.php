@@ -62,7 +62,13 @@ if (!isloggedin()) {
     //require_logout();
 
     /* Log out from Feide       */
-    $redirect = new moodle_url('/local/wsks/feide/logout.php');
+    //$redirect = new moodle_url('/local/wsks/feide/logout.php');
+
+    /* Plugin Info      */
+    $pluginInfo     = get_config('local_wsks');
+    $redirect       = $pluginInfo->feide_point . '/local/feide/logout.php';
+
+
     redirect($redirect);
     
     die;
