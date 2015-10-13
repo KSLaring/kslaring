@@ -228,14 +228,6 @@ define('SAML_INTERNAL', 1);
 
             redirect($urlKS);
         }else {
-
-
-            if (isset($SESSION->ksSource) && ($SESSION->ksSource == 'KS')){
-                if(isset($_GET["logout"])) {
-                    $urltogo = "http://elpais.com";
-                }
-
-            }
             redirect($urltogo);
         }//if_else
     }
