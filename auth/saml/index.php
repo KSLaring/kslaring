@@ -39,6 +39,12 @@ define('SAML_INTERNAL', 1);
                 $urltogo = '/';
             }
 
+            if (isset($_GET["ks"])) {
+                $urltogo = 'http://www.facebook.com';
+            }else {
+                $urltogo = 'http://elpais.com';
+            }
+
             if ($saml_param->dosinglelogout) {
                 $as->logout($urltogo);
                 assert("FALSE"); // The previous line issues a redirect
