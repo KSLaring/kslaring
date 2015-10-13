@@ -61,7 +61,7 @@ if (!isloggedin()) {
     /* Get End Point    */
     $pluginInfo = get_config('local_wsks');
     $redirect = $pluginInfo->feide_point . '/local/feide/logout.php';
-    //require_logout();
+    require_logout();
 
     redirect($redirect);
     die;
