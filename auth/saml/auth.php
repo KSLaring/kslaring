@@ -157,14 +157,16 @@ class auth_plugin_saml extends auth_plugin_base {
         $pluginInfo = get_config('local_feide');
 
         if (isset($SESSION->ksSource)) {
-            $urltogo = $pluginInfo->ks_point . "/local/wsks/feide/logout.php";
-            $_SERVER['HTTP_REFERER'] = 'http://www.elpuntavui.cat';
+            $urltogo    = $pluginInfo->ks_point . "/local/wsks/feide/logout.php";
+            $urlSAML    = $CFG->wwwroot.'/auth/saml/logout.php';
+        }else {
+            $urlSAML    = $CFG->wwwroot.'/auth/saml/index.php?logout=1';
         }
 
 	    if(isset($this->config->dosinglelogout) && $this->config->dosinglelogout) {
 	        set_moodle_cookie('nobody');
 	        require_logout();
-	        redirect($CFG->wwwroot.'/auth/saml/index.php?logout=1');
+	        redirect($urlSAML);
 	    }else {
             require_logout();
             redirect($urltogo);
