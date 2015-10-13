@@ -38,6 +38,7 @@ define('SAML_INTERNAL', 1);
             else if(isset($SESSION->ksSource)) {
                 $pluginIno  = get_config('local_feide');
                 $urltogo   = $pluginIno->ks_point . '/local/wsks/feide/logout.php';
+                require_logout();
             }
             else{
                 $urltogo = '/';

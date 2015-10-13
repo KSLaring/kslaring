@@ -22,5 +22,5 @@ $redirect   = $CFG->wwwroot.'/index.php';
 $authplugin = get_auth_plugin('saml');
 $authplugin->logoutpage_hook();
 
-require_logout();
+//require_logout();
 //redirect($redirect);
