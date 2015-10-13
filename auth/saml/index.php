@@ -39,7 +39,7 @@ define('SAML_INTERNAL', 1);
                 $urltogo = '/';
             }
 
-            if (isset($_GET["ks"])) {
+            if ($_GET["logout"] == '2')) {
                 /* Plugin Info */
                 $pluginInfo = get_config('local_feide');
                 /* Make KS URL Response */
