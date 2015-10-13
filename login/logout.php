@@ -57,14 +57,6 @@ if (!isloggedin()) {
     require_logout();
     redirect($redirect);
     die;
-} else if (isset($SESSION->ksSource)) {
-    /* Log out from Feide       */
-    /* Plugin Info      */
-    $pluginInfo     = get_config('local_wsks');
-    $redirect       = $pluginInfo->feide_point . '/local/feide/logout.php';
-    redirect($redirect);
-
-    die;
 } else if (!confirm_sesskey($sesskey)) {
     $PAGE->set_title($SITE->fullname);
     $PAGE->set_heading($SITE->fullname);
