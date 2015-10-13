@@ -59,11 +59,12 @@ if (!isloggedin()) {
     die;
 } else if (isset($SESSION->ksSource)) {
     /* Log out from Kommit Dev  */
-    require_logout();
+    //require_logout();
 
     /* Log out from Feide       */
     $redirect = new moodle_url('/local/wsks/feide/logout.php');
     redirect($redirect);
+    
     die;
 } else if (!confirm_sesskey($sesskey)) {
     $PAGE->set_title($SITE->fullname);

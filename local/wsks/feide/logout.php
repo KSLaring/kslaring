@@ -25,6 +25,16 @@ $PAGE->set_heading($SITE->fullname);
 
 
 
+echo $OUTPUT->header();
+
+
+//$urltogo = $CFG->wwwroot;
+
+//echo $OUTPUT->notification('POPOPOO', 'notifysuccess');
+//echo $OUTPUT->continue_button($urltogo);
+
+
+echo $OUTPUT->footer();
 
 //if ($logout) {
 
@@ -43,41 +53,6 @@ $PAGE->set_heading($SITE->fullname);
 //        require_logout();
 //    }//if_guestuser
 
-/* Variables    */
-$userRequest    = null;
-$pluginInfo     = null;
-$domain         = null;
-$token          = null;
-$service        = null;
-$server         = null;
-$client         = null;
-$response       = null;
-$userInfo       = null;
-$errCode        = null;
-
-try {
-    /* Plugin Info      */
-    $pluginInfo = get_config('local_wsks');
-
-    /* User to Validate */
-    $userRequest = array();
-    $userRequest['id']     = '45400';
-
-    /* Data to call Service */
-    $domain     = $pluginInfo->feide_point;
-    $token      = $pluginInfo->feide_token;
-    $service    = 'wsLogOutFeide';//$pluginInfo->feide_service;
-
-    /* Build end Point Service  */
-    $server     = $domain . '/webservice/soap/server.php?wsdl=1&wstoken=' . $token;
-
-    /* Call service */
-    $client     = new SoapClient($server);
-    $response   = $client->$service($userRequest);
-}catch (Exception $ex) {
-    print_r($ex);
-    throw $ex;
-}
 
 
     //if ($response['error'] == '200') {
@@ -107,10 +82,3 @@ try {
 //}
 
 
-//redirect($CFG->wwwroot);
-//unset($SESSION->ksSource);
-
-//if (isguestuser($USER)) {
-//   require_logout();
-
-//}
