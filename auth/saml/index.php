@@ -41,15 +41,11 @@ define('SAML_INTERNAL', 1);
             }
 
             if ($logout == 2) {
-                $urltogo = 'http://www.elpuntavui.cat';
-            }
-            //if ($_GET["logout"] == '2')) {
                 /* Plugin Info */
-            //    $pluginInfo = get_config('local_feide');
-            //    /* Make KS URL Response */
-            //    $urltogo = $pluginInfo->ks_point . "/local/wsks/feide/logout.php";
-            //    $urltogo = 'http://www.elpuntavui.cat';
-            //}
+                $pluginInfo = get_config('local_feide');
+                /* Make KS URL Response */
+                $urltogo = $pluginInfo->ks_point . "/local/wsks/feide/logout.php";
+            }
 
             if ($saml_param->dosinglelogout) {
                 $as->logout($urltogo);
