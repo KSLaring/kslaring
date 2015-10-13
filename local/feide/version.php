@@ -11,5 +11,5 @@
  *
  */
 
-$plugin->version    =   '2015092810';         /* The plugin current version (DATE: YYYYMMDDXX) */
+$plugin->version    =   '2015101200';         /* The plugin current version (DATE: YYYYMMDDXX) */
 $plugin->component  =   'local_feide';

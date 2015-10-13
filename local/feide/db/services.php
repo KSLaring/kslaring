@@ -30,17 +30,27 @@ $functionConfig = array('classname'     =>    $className,
                         'capabilities'  =>    ''
 );
 
+/* Log Out  */
+$functionOutName    = 'wsLogOutFeide';
+$functionOutConfig  = array('classname'     =>    $className,
+                            'methodname'    =>    $functionOutName,
+                            'classpath'     =>    $classPath,
+                            'description'   =>    'Feide Integration',
+                            'type'          =>    'write',
+                            'capabilities'  =>    ''
+);
 /**
  * Web Service Functions to install
  */
-$functions = array($functionName    =>  $functionConfig);
+$functions = array($functionName    =>  $functionConfig,
+                   $functionOutName =>  $functionOutConfig);
 
 /**
  * Services to install
  */
 $service_name   = 'feide';
 $service_config = array(
-                        'functions'         => array($functionName),
+                        'functions'         => array($functionName,$functionOutName),
                         'restrictedusers'   => 1,
                         'enabled'           => 1
 );

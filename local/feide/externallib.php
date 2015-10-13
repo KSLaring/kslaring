@@ -149,6 +149,29 @@ class local_feide_external extends external_api {
         }//try_catch
     }//wsValidateUserFeide
 
+    /*****************/
+    /* wsLogOutFeide */
+    /*****************/
+    public static function wsLogOutFeide_parameters() {
+        $idNumber       = new external_value(PARAM_TEXT,'User ID - From Feide');
+
+
+        /* USER FEIDE */
+        $userFeide    = new external_single_structure(array('id' =>  $idNumber));
+
+        return new external_function_parameters(array('user'=> $userFeide));
+    }//wsLogOutFeide_parameters
+
+    public static function wsLogOutFeide_returns() {
+        return null;
+    }//wsLogOutFeide_returns
+
+    public static function wsLogOutFeide() {
+        require_logout();
+
+        $authplugin = get_auth_plugin('saml');
+        $authplugin->logoutpage_hook();
+    }//wsLogOutFeide
 
     /*****************************/
     /*****************************/
