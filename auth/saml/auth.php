@@ -159,6 +159,7 @@ class auth_plugin_saml extends auth_plugin_base {
 	        set_moodle_cookie('nobody');
 	        require_logout();
 	        redirect($CFG->wwwroot.'/auth/saml/index.php?logout=1');
+
 	    }else {
             require_logout();
             $urltogo = $CFG->wwwroot;

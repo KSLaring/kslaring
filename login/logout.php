@@ -39,6 +39,7 @@ if ($login) {
     $redirect = $CFG->wwwroot.'/';
 }
 
+
 if (!isloggedin()) {
     // no confirmation, user has already logged out
     require_logout();
