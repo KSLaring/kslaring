@@ -120,7 +120,7 @@ function xmldb_report_manager_upgrade($old_version) {
                 /* generic          --> true or false                       */
                 $tblCompetencyImport->add_field('generic',XMLDB_TYPE_INTEGER,'1',null, null, null,null);
                 /* jobrole_match  --> Job role ID.                        */
-                $tblCompetencyImport->add_field('jobrole_match',XMLDB_TYPE_INTEGER,'1',null, null, null,null);
+                $tblCompetencyImport->add_field('jobrole_match',XMLDB_TYPE_INTEGER,'10',null, null, null,null);
                 /* delete           --> true/false                          */
                 $tblCompetencyImport->add_field('todelete',XMLDB_TYPE_INTEGER,'1',null, null, null,null);
                 /* toimport         --> true/false                          */
