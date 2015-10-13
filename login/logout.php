@@ -36,31 +36,33 @@ $login   = optional_param('loginpage', 0, PARAM_BOOL);
 if ($login) {
     $redirect = get_login_url();
 } else {
-    $redirect = $CFG->wwwroot.'/';
+    /**
+     * @updateDate  12/10/2015
+     * @author      eFaktor     (fbv)
+     *
+     * Description
+     * Problems with guest users
+     */
+    $redirect = $CFG->wwwroot.'/index.php';
 }
 
-/**
- * @updateDate  15/04/2015
- * @author      eFaktor     (fbv)
- *
- * Description
- * Check Log out process for Guest users
- */
 if (!isloggedin()) {
     // no confirmation, user has already logged out
     require_logout();
     redirect($redirect);
 
-} else if (isguestuser($USER)) {
-    $redirect = $CFG->wwwroot.'/';
-
-    require_logout();
-    redirect($redirect);
 } else if (!confirm_sesskey($sesskey)) {
     $PAGE->set_title($SITE->fullname);
     $PAGE->set_heading($SITE->fullname);
     echo $OUTPUT->header();
-    echo $OUTPUT->confirm(get_string('logoutconfirm'), new moodle_url($PAGE->url, array('sesskey'=>sesskey())), $CFG->wwwroot.'/');
+    /**
+     * @updateDate  12/10/2015
+     * @author      eFaktor     (fbv)
+     *
+     * Description
+     * Problems with guest users
+     */
+    echo $OUTPUT->confirm(get_string('logoutconfirm'), new moodle_url($PAGE->url, array('sesskey'=>sesskey())), $CFG->wwwroot.'/index.php');
     echo $OUTPUT->footer();
     die;
 }

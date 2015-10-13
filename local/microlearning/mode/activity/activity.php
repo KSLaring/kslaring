@@ -140,11 +140,11 @@ if ($form->is_cancelled()) {
         if ($bool) {
             /* Get the correct place to return */
             if (isset($data->submitbutton2) && ($data->submitbutton2)) {
-                $return_url = new moodle_url('/course/view.php',array('id' => $data->id));
+                $url_deliveries = new moodle_url('/course/view.php',array('id' => $data->id));
             }//if_save_return_course
 
             /* Return to the correct place */
-            redirect($return_url);
+            redirect($url_deliveries);
         }else {
             echo $OUTPUT->header();
             echo $OUTPUT->notification(get_string('err_generic','local_microlearning'), 'notifysuccess');

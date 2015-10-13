@@ -69,6 +69,7 @@ class Import_Companies {
      * @param           $columns
      * @param           $cir
      * @param           $level
+     * @param           $level_parent
      * @return          stdClass
      * @throws          Exception
      *
@@ -84,12 +85,14 @@ class Import_Companies {
      * Description
      * Check Company and Industry Code
      */
-    public static function ValidateData($columns, $cir,$level) {
+    public static function ValidateData($columns, $cir,$level,$level_parent) {
         /* Variables    */
         global $DB;
         $company        = null;
         $industry_code  = null;
         $params         = array();
+        $sql            = null;
+        $rdo            = null;
 
         try {
             /* Records File */
@@ -118,7 +121,18 @@ class Import_Companies {
                 $params['name']             = $company;
                 $params['industrycode']     = $industry_code;
                 $params['hierarchylevel']   = $level;
-                if ($DB->get_record('report_gen_companydata',$params,'id')) {
+                $params['parent']           = $level_parent;
+                /* SQL Instruction  */
+                $sql = " SELECT 	co.id
+                         FROM 		{report_gen_companydata}			co
+                            JOIN	{report_gen_company_relation}		co_rel 	ON 	co_rel.companyid 	= co.id
+                                                                                AND	co_rel.parentid 	= :parent
+                         WHERE 	co.hierarchylevel 	= :hierarchylevel
+                            AND co.name 			= :name
+                            AND co.industrycode 	= :industrycode ";
+                /* Execute  */
+                $rdo = $DB->get_records_sql($sql,$params);
+                if ($rdo) {
                     $status .= get_string('err_company','report_manager') . '<br/>';
                 }//if_exist
 

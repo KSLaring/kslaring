@@ -171,10 +171,10 @@ class auth_plugin_saml extends auth_plugin_base {
                     redirect($redirect);
                 }//if_user_admin
             }else if (isset($SESSION->ksSource)) {
-                /* Get End Point    */
+                /* Log out from Feide       */
+                /* Plugin Info      */
                 $pluginInfo = get_config('local_wsks');
                 $redirect = $pluginInfo->feide_point . '/local/feide/logout.php';
-                require_logout();
                 redirect($redirect);
             }else {
                 if(isset($this->config->dosinglelogout) && $this->config->dosinglelogout) {
@@ -183,7 +183,7 @@ class auth_plugin_saml extends auth_plugin_base {
                     redirect($GLOBALS['CFG']->wwwroot.'/auth/saml/index.php?logout=1');
                 }else {
                     require_logout();
-                    $urltogo = $CFG->wwwroot;
+                    $urltogo = $CFG->wwwroot . '/index.php';
                     redirect($urltogo);
                 }
             }//if_else_SESSION

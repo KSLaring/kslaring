@@ -24,13 +24,13 @@
 }
 
 .micro_deliveries_info .micro_info_table {
-    width: 75%;
+    width: 80%;
     display: inline-block;
     min-height: 30px;
 }
 
 .micro_info_table .info_one {
-    width: 35%;
+    width: 40%;
     float: left;
     font:  bold 13px Arial;
     text-align: left;
@@ -50,7 +50,7 @@
     width: 5%;
     float: right;
     display: inline-block;
-    padding-right: 5px;
+    padding-right: 10px;
 }
 
 a.lnk_disabled {
@@ -59,7 +59,7 @@ a.lnk_disabled {
 }
 
 .micro_info_table .info_two {
-    width: 22%;
+    width: 30%;
     float:left;
     font:  12px Arial;
     text-align: right;
@@ -166,21 +166,25 @@ a.lnk_disabled {
     display: inline-block;
     color: #004b93;
     margin-top: 5px;
-    margin-right: 12px;
+    margin-right: 10px;
 }
 
 .micro_campaign_table .micro_campaign_table_row .col_three {
-    width:18%;
+    width:25%;
     float:left;
     font:  13px Arial;
     text-align: left;
     display: inline-block;
     color: #004b93;
     margin-top: 5px;
+    margin-left: 15px;
+    text-justify: inter-word;
+    word-wrap: break-word;
+    white-space: pre-line;
 }
 
 .micro_campaign_table .micro_campaign_table_row .lnk_col {
-    padding-right: 15px;
+    padding-right: 10px;
 }
 
 
@@ -240,6 +244,26 @@ a.lnk_disabled {
 .r2 {
     background-color: #f2f2f2;
 }
+
+.alert_campaign {
+    padding: 0;
+    margin-bottom: 0px;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
+    background-color: #fcf8e3;
+    border: 1px solid #fbeed5;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+}
+
+.alert_text {
+    display: inline-block;
+}
+.alert_text h6,
+.alert_text h5 {
+    color: red;
+}
+
 
 .micro_calendar_mode,
 .micro_learning_users {

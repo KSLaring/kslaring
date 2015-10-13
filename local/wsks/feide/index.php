@@ -32,8 +32,47 @@ if (!isset($_SESSION['user'])) {
 
 $login = KS_FEIDE::LoginUser($userInfo);
 if ($login) {
+    $user = get_complete_user_data('username', $userInfo['username']);
     $SESSION->ksSource = 'Feide';
-    redirect($CFG->wwwroot);
+
+    /**
+     * @updateDate  10/11/2014
+     * @author      eFaktor     (fbv)
+     *
+     * Description
+     * Check if it is the first access. Then the user has to check and update his/her profile
+     */
+    require_once('../../first_access/locallib.php');
+
+    if (!isguestuser($user)) {
+        if (FirstAccess::HasToUpdate_Profile($USER->id)) {
+            redirect(new moodle_url('/local/first_access/index.php',array('id'=>$USER->id)));
+            die();
+        }else {
+            /**
+             * @updateDate      28/04/2014
+             * @author          eFaktor     (fbv)
+             *
+             * Description
+             * Check if the user has to update his/her profile
+             */
+            require_once('../../force_profile/forceprofilelib.php');
+            if (ForceProfile::ForceProfile_HasToUpdateProfile($USER->id)) {
+                echo $OUTPUT->header();
+                $url = new moodle_url('/local/force_profile/confirm_profile.php',array('id' => $USER->id));
+                echo $OUTPUT->notification(get_string('msg_force_update','local_force_profile'), 'notifysuccess');
+                echo $OUTPUT->continue_button($url);
+                echo $OUTPUT->footer();
+                die();
+            }else {
+                // test the session actually works by redirecting to self
+                redirect($CFG->wwwroot);
+            }//if_else_UpdateProfile
+        }//if_first_access
+    } else {
+        require_logout();
+        redirect($CFG->wwwroot);
+    }//if_guest_user
 }else {
     redirect($errURL);
 }//if_login

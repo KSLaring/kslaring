@@ -21,6 +21,7 @@ $userId         = required_param('id',PARAM_INT);
 $context        = context_system::instance();
 $url            = new moodle_url('/local/first_access/first_access.php',array('id' => $userId));
 $user_context   = context_user::instance($userId);
+$redirect       = null;
 
 $PAGE->set_url($url);
 $PAGE->set_context($user_context);
@@ -39,8 +40,13 @@ if ($form->is_cancelled()) {
     // Save custom profile fields data.
     profile_save_data($data);
 
+    if (FirstAccess::HasToUpdate_Profile($userId)) {
+        $redirect = new moodle_url('/user/profile/field/competence/competence.php',array('id' => $userId));
+    }else {
+        $redirect = $CFG->wwwroot;
+    }
     //$_POST = array();
-    redirect($CFG->wwwroot);
+    redirect($redirect);
 }//if_else
 
 echo $OUTPUT->header();

@@ -17,6 +17,10 @@ defined('MOODLE_INTERNAL') || die();
 function xmldb_local_microlearning_upgrade($oldVersion) {
     /* Variables    */
     global $DB;
+    $tableMicroDeliveries   = null;
+    $fieldMessage           = null;
+    $tblMicrolearning       = null;
+    $fieldDuplicatefrom     = null;
 
     try {
         /* Get Manager  */
@@ -35,6 +39,15 @@ function xmldb_local_microlearning_upgrade($oldVersion) {
             /* Last time executed   */
             set_config('lastexecution', 0, 'local_microlearning');
         }//if_oldversion
+
+        /* Add a new filed to know from where it was duplicated */
+        if ($oldVersion <= 2015100100) {
+            $tblMicrolearning   = new xmldb_table('microlearning');
+            $fieldDuplicatefrom = new xmldb_field('duplicated_from', XMLDB_TYPE_INTEGER, 10, null, null, null,null,'activate');
+            if (!$db_man->field_exists($tblMicrolearning, $fieldDuplicatefrom)) {
+                $db_man->add_field($tblMicrolearning, $fieldDuplicatefrom);
+            }//if_exists
+        }//if_oldVersion
 
         return true;
     }catch (Exception $ex) {
