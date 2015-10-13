@@ -25,6 +25,12 @@ echo $OUTPUT->header();
 
 echo "HOLA. VINC DES DE FEIDE.";
 
+/* Get End Point    */
+$pluginInfo = get_config('local_wsks');
+$redirect = $pluginInfo->feide_point . '/local/feide/logout.php';
+
+redirect($redirect);
+
 echo $OUTPUT->footer();
 //redirect($CFG->wwwroot);
 //unset($SESSION->ksSource);
