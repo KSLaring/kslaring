@@ -58,12 +58,11 @@ if (!isloggedin()) {
     redirect($redirect);
     die;
 } else if (isset($SESSION->ksSource)) {
-    /* Get End Point    */
-    $pluginInfo = get_config('local_wsks');
-    $redirect = $pluginInfo->feide_point . '/local/feide/logout.php';
+    /* Log out from Kommit Dev  */
     require_logout();
 
-    $redirect = new moodle_url('/local/feide/logout.php');
+    /* Log out from Feide       */
+    $redirect = new moodle_url('/local/wsks/feide/logout.php',array('lg' => 1));
     redirect($redirect);
     die;
 } else if (!confirm_sesskey($sesskey)) {

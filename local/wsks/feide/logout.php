@@ -12,11 +12,14 @@
 
 require_once('../../../config.php');
 
+/* PARAMS   */
+$logout = optional_param('lg',0,PARAM_INT);
+
 $PAGE->set_url('/local/wsks/feide/logout.php');
 $PAGE->set_context(context_system::instance());
 
-$PAGE->set_pagetype('site-index');
-$PAGE->set_pagelayout('frontpage');
+//$PAGE->set_pagetype('site-index');
+$PAGE->set_pagelayout('login');
 $PAGE->set_title($SITE->fullname);
 $PAGE->set_heading($SITE->fullname);
 
@@ -25,11 +28,13 @@ echo $OUTPUT->header();
 
 echo "HOLA. VINC DES DE FEIDE.";
 
-/* Get End Point    */
-$pluginInfo = get_config('local_wsks');
-$redirect = $pluginInfo->feide_point . '/local/feide/logout.php';
+if ($logout) {
+    /* Get End Point    */
+    $pluginInfo = get_config('local_wsks');
+    $redirect = $pluginInfo->feide_point . '/local/feide/logout.php';
 
-redirect($redirect);
+    redirect($redirect);
+}
 
 echo $OUTPUT->footer();
 //redirect($CFG->wwwroot);
