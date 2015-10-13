@@ -39,7 +39,13 @@ define('SAML_INTERNAL', 1);
                 $urltogo = '/';
             }
 
-            $urltogo = 'http://elpais.com';
+            if (isset($SESSION->ksSource)) {
+                $urltogo = 'http://www.facebook.com';
+            }else {
+                $urltogo = 'htpp://elpais.com';
+            }
+
+            
 
             if ($saml_param->dosinglelogout) {
                 $as->logout($urltogo);
