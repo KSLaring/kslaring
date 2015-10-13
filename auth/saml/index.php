@@ -35,15 +35,18 @@ define('SAML_INTERNAL', 1);
             else if(isset($_SERVER['HTTP_REFERER'])) {
                 $urltogo = $_SERVER['HTTP_REFERER'];
             }
+            else if(isset($SESSION->ksSource)) {
+                $pluginIno  = get_config('local_feide');
+                $urltogo   = $pluginIno->ks_point . '/local/wsks/feide/logout.php';
+            }
             else{
                 $urltogo = '/';
             }
 
-            if($saml_param->dosinglelogout) {
-                $as->logout('http://elpais.com');
+            if ($saml_param->dosinglelogout) {
+                $as->logout($urltogo);
                 assert("FALSE"); // The previous line issues a redirect
-            } else {
-
+            }else {
                 header('Location: '. $urltogo);
                 exit();
             }
@@ -52,7 +55,7 @@ define('SAML_INTERNAL', 1);
         $as->requireAuth();
         $valid_saml_session = $as->isAuthenticated();
         $saml_attributes = $as->getAttributes();
-    } catch (Exception $e) {
+    }catch (Exception $e) {
         session_write_close();
         require_once('../../config.php');
         require_once('error.php');
