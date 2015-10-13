@@ -45,6 +45,7 @@ define('SAML_INTERNAL', 1);
                     $urltogo   = $pluginIno->ks_point . '/local/wsks/feide/logout.php';
                 }
 
+                $urltogo   = $pluginIno->ks_point . '/local/wsks/feide/logout.php';
                 $as->logout($urltogo);
                 assert("FALSE"); // The previous line issues a redirect
             }else {
