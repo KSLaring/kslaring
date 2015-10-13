@@ -28,6 +28,7 @@ define('SAML_INTERNAL', 1);
         $as = new SimpleSAML_Auth_Simple($saml_param->sp_source);
 
         if(isset($_GET["logout"])) {
+            $logout = $_GET["logout"];
             if(isset($_SERVER['SCRIPT_URI'])) {
                 $urltogo = $_SERVER['SCRIPT_URI'];
                 $urltogo = str_replace('auth/saml/index.php', '', $urltogo);
@@ -36,9 +37,12 @@ define('SAML_INTERNAL', 1);
                 $urltogo = $_SERVER['HTTP_REFERER'];
             }
             else{
-                $urltogo = '/'.$_GET["logout"];
+                $urltogo = '/';
             }
 
+            if ($logout == 2) {
+                $urltogo = 'http://www.elpuntavui.cat';
+            }
             //if ($_GET["logout"] == '2')) {
                 /* Plugin Info */
             //    $pluginInfo = get_config('local_feide');
