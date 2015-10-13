@@ -50,6 +50,7 @@ if (!isloggedin()) {
 
     /* Make KS URL Response */
     $redirect = $pluginInfo->ks_point . "/local/wsks/feide/logout.php";
+    die;
 } else if (!confirm_sesskey($sesskey)) {
     $PAGE->set_title($SITE->fullname);
     $PAGE->set_heading($SITE->fullname);
