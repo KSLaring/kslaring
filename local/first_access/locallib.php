@@ -205,7 +205,7 @@ class FirstAccess {
             $rdo = $DB->get_record('user_info_field',array('datatype' => 'competence'),'id');
             if ($rdo) {
                 /* Check if user has completed  */
-                $rdo = $DB->get_record('user_info_competence_data',array('userid' => $userId),'id');
+                $rdo = $DB->get_records('user_info_competence_data',array('userid' => $userId),'id');
                 if ($rdo) {
                     /* Completed    */
                     return true;
