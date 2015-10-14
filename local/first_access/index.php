@@ -17,11 +17,14 @@ require_once('../../config.php');
 require_once('locallib.php');
 
 /* PARAMS */
-$user_id        = required_param('id',PARAM_INT);
+$userId         = required_param('id',PARAM_INT);
 $context        = context_system::instance();
-$url            = new moodle_url('/local/first_access/index.php',array('id'=>$user_id));
-$url_profile    = new moodle_url('/local/first_access/first_access.php',array('id' => $user_id));
-$user_context = context_user::instance($user_id);
+$url            = new moodle_url('/local/first_access/index.php',array('id'=>$userId));
+$urlCompetence  = new moodle_url('/user/profile/field/competence/competence.php',array('id' => $userId));
+$urlUserProfile = new moodle_url('/local/first_access/first_access.php',array('id' => $userId));
+$urlProfile     = $urlUserProfile;
+
+$user_context = context_user::instance($userId);
 
 $PAGE->set_url($url);
 $PAGE->set_context($user_context);
@@ -32,20 +35,21 @@ $PAGE->set_pagelayout('standard');
 echo $OUTPUT->header();
 echo $OUTPUT->heading(get_string('welcome_title','local_first_access'));
 
-$user = get_complete_user_data('id',$user_id);
-if (($user->firstname) && ($user->lastname) && ($user->email) && ($user->city)) {
-    if (FirstAccess::HasToUpdateCompetence($user->id)) {
-        $url_profile = new moodle_url('/user/profile/field/competence/competence.php',array('id' => $user_id));
-    }
+/* Check if it only remains to update the competence profile */
+if (FirstAccess::HasCompleted_AllUserProfile($userId) && FirstAccess::HasCompleted_AllExtraProfile($userId)) {
+    if (!FirstAccess::HasCompleted_CompetenceProfile($userId)) {
+        $urlProfile = $urlCompetence;
+    }//if_CompletedCompetenceProfile
 
 }
+
 echo html_writer::start_div();
     echo "</br>";
     echo get_string('welcome_message','local_first_access');
     echo "</br></br>";
 
     echo html_writer::start_div('buttons');
-        echo '<a href="' . $url_profile . '">';
+        echo '<a href="' . $urlProfile . '">';
             echo '<button>' . get_string('welcome_btn','local_first_access') . '</button>';
         echo '</a>';
     echo html_writer::end_div();//buttons

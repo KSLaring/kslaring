@@ -199,7 +199,7 @@
   font-size: 0.7em;
   text-align: left;
 }
-.home_page_block_two .ratings a .disabled_ratings {
+.disabled_ratings {
   cursor: default;
   color: #7e7e7e;
   pointer-events: none;

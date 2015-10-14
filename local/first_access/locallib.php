@@ -33,27 +33,42 @@ class FirstAccess {
      * Exclude the DOSKOM users
      */
     public static function HasToUpdate_Profile($user_id) {
+        /* Variables    */
+        $updateProfile      = false;
+
         try {
             /* Exclude DOSKOM Users */
             if (self::IsDoskomUser($user_id)) {
-                return false;
+                $updateProfile = false;
             }else {
                 /* Check First Access   */
                 if (self::IsFirstAccess($user_id)) {
-                    return true;
+                    $updateProfile = true;
                 }else {
-                    /* Check User Extra Profile Fields - Obligatory   */
-                    if (self::ProfileFields_Completed($user_id)) {
-                        if (self::ExtraProfileFields_Completed($user_id)) {
-                            return false;
+                    /* Completed User Profile    */
+                    if (self::HasCompleted_AllUserProfile($user_id)) {
+                        /* Completed all Extra Profile  */
+                        if (self::HasCompleted_AllExtraProfile($user_id)) {
+                            /* Completed Competence Profile */
+                            if (self::HasCompleted_CompetenceProfile($user_id)) {
+                                /* No to update */
+                                $updateProfile = false;
+                            }else {
+                                /* To Update    */
+                                $updateProfile = true;
+                            }//if_competenceProfile
                         }else {
-                            return true;
-                        }
+                            /* To Update    */
+                            $updateProfile = true;
+                        }//if_else_AllExtraProfile
                     }else {
-                       return true;
-                    }//if_else
+                        /* To Update    */
+                        $updateProfile = true;
+                    }//if_else_allUseProfile
                 }//if_first_access
             }//if_doskom_user
+
+            return $updateProfile;
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
@@ -64,39 +79,148 @@ class FirstAccess {
      * @return          bool
      * @throws          Exception
      *
-     * @creationDate    12/10/2015
+     * @creationDate    14/10/2015
      * @author          eFaktor     (fbv)
      *
      * Description
-     * Check if remains update the competence profile
+     * Check if the user has completed all his/her profile
+     * username, firstname, lastname and email
      */
-    public static function HasToUpdateCompetence($userId) {
+    public static function HasCompleted_AllUserProfile($userId) {
+        /* Variables    */
+        global $DB;
+        $rdo    = null;
+        $params = null;
+        $sql    = null;
+
+        try {
+            /* Search Criteria  */
+            $params = array();
+            $params['user'] = $userId;
+
+            /* SQL Instruction  */
+            $sql = " SELECT		u.*
+                     FROM		{user}	u
+                     WHERE		u.id = :user
+                        AND 	(u.username  IS NOT NULL 	AND 	u.username  != '')
+                        AND		(u.firstname IS NOT NULL 	AND 	u.firstname != '')
+                        AND		(u.lastname  IS NOT NULL	AND		u.lastname 	!= '')
+                        AND		(u.email     IS NOT NULL	AND		u.email		!= '') ";
+
+
+            /* Execute  */
+            $rdo = $DB->get_record_sql($sql,$params);
+            if ($rdo) {
+                /* All user profile completed   */
+                return true;
+            }else {
+                /* Not Completed    */
+                return false;
+            }//if_else
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//HasCompleted_AllUserProfile
+
+    /**
+     * @param           $userId
+     * @return          bool
+     * @throws          Exception
+     *
+     * @creationDate    14/10/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Check if the user has completed all the extra profile fields that are compulsory
+     */
+    public static function HasCompleted_AllExtraProfile($userId) {
+        /* Variables    */
+        global $DB;
+        $params         = null;
+        $sql            = null;
+        $rdo            = null;
+        $extraProfile   = null;
+
+        try {
+            /* First Check if there are extra profile fields to update  */
+            $extraProfile = self::Get_ExtraProfileFields();
+            if ($extraProfile) {
+                /* Check if has completed all extra profile */
+                /* Search Criteria  */
+                $params = array();
+                $params['user']         = $userId;
+                $params['required']     = 1;
+                $params['competence']   = 'competence';
+
+                /* SQL Instruction  */
+                $sql = " SELECT 	GROUP_CONCAT(DISTINCT uid.fieldid ORDER BY uid.fieldid SEPARATOR ',') as 'completed'
+                         FROM		{user_info_data}	uid
+                            JOIN	{user_info_field}	uif	  ON 	uif.id 			= uid.fieldid
+                                                              AND	uif.required	= :required
+                                                              AND   uif.datatype   != :competence
+                         WHERE		uid.userid = :user
+                            AND		(uid.data IS NOT NULL 	AND uid.data != '') ";
+
+                /* Execute  */
+                $rdo = $DB->get_record_sql($sql,$params);
+                if ($rdo) {
+                    if ($rdo->completed == $extraProfile) {
+                        /* All Completed    */
+                        return true;
+                    }else {
+                        /* Not Completed    */
+                        return false;
+                    }
+                }else {
+                    /* Not completed    */
+                    return false;
+                }//if_else_rdo
+            }else {
+                /* There is nothing to update   */
+                return true;
+            }//if_extraProfile
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//HasCompleted_AllExtraProfile
+
+    /**
+     * @param           $userId
+     * @return          bool
+     * @throws          Exception
+     *
+     * @creationDate    14/10/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Check if the users has completed his/her competence profile
+     */
+    public static function HasCompleted_CompetenceProfile($userId) {
         /* Variables    */
         global $DB;
         $rdo    = null;
 
         try {
-            /* Exist Competence Profile */
+            /* First check if exist competence profile to update    */
             $rdo = $DB->get_record('user_info_field',array('datatype' => 'competence'),'id');
             if ($rdo) {
-                if ($rdo->id) {
-                    /* Update Competence Profile    */
-                    $rdo = $DB->get_records('user_info_competence_data',array('userid' => $userId),'id');
-                    if ($rdo) {
-                        return false;
-                    }else {
-                        return true;
-                    }
+                /* Check if user has completed  */
+                $rdo = $DB->get_records('user_info_competence_data',array('userid' => $userId),'id');
+                if ($rdo) {
+                    /* Completed    */
+                    return true;
                 }else {
+                    /* Not Completed    */
                     return false;
-                }
+                }//if_else
             }else {
-                return false;
-            }//if_Rdo
+                /* Nothing to complete  */
+                return true;
+            }//if_else
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//HasToUpdateCompetence
+    }//HasCompleted_CompetenceProfile
 
     /**
      * @return          mixed
@@ -234,95 +358,43 @@ class FirstAccess {
     }//IsFirstAccess
 
     /**
-     * @static
-     * @param           $user_id
-     * @return          bool
+     * @return          null
      * @throws          Exception
      *
-     * @creationDate    10/11/2014
+     * @creationDate    14/10/2015
      * @author          eFaktor     (fbv)
      *
      * Description
-     * Check if the user has been completed all the extra profile fields that are obligatory
+     * Get all extra profile fields that are compulsory
      */
-    private static function ExtraProfileFields_Completed($user_id) {
+    private static function Get_ExtraProfileFields() {
         /* Variables    */
         global $DB;
-        $params     = null;
-        $sql        = null;
-        $rdo        = null;
-        $rdo_user   = null;
+        $params = null;
+        $sql    = null;
+        $rdo    = null;
 
         try {
-            /* First, it gets all the fields that are compulsory    */
             /* Search Criteria  */
-            $params     = array();
-            $params['required'] = 1;
+            $params = array();
+            $params['required']     = 1;
+            $params['competence']   = 'competence';
+
             /* SQL Instruction  */
-            $sql = " SELECT		GROUP_CONCAT(DISTINCT uif.id ORDER BY uif.id SEPARATOR ',') as 'obligatory'
-                     FROM		{user_info_field} uif
-                     WHERE		uif.required = :required ";
+            $sql = " SELECT		GROUP_CONCAT(DISTINCT id ORDER BY id SEPARATOR ',') as 'obligatory'
+                     FROM		{user_info_field}
+                     WHERE		required  = :required
+                        AND		datatype != :competence ";
+
             /* Execute  */
             $rdo = $DB->get_record_sql($sql,$params);
             if ($rdo) {
-                /* Sencond, it gets all the user fields profile that are compulsory and that have been completed by the user    */
-                /* Search Criteria  */
-                $params['user_id'] = $user_id;
-                /* SQL Instruction  */
-                $sql = " SELECT		GROUP_CONCAT(DISTINCT uid.fieldid ORDER BY uid.fieldid SEPARATOR ',') as 'completed'
-                         FROM		{user_info_data}		uid
-                            JOIN	{user_info_field}		uif		ON 	uif.id        = uid.fieldid
-                                                                    AND uif.required  = :required
-                         WHERE		uid.userid = :user_id ";
-
-                /* Execute  */
-                $rdo_user = $DB->get_record_sql($sql,$params);
-                if ($rdo_user) {
-                    if ($rdo_user->completed == $rdo->obligatory) {
-                        return true;
-                    }else {
-                        /* Not Completed    */
-                        return false;
-                    }//if_else_completed_obligatory
-                }else {
-                    /* Not Completed        */
-                    return false;
-                }//if_else_rdo_user
+                return $rdo->obligatory;
             }else {
-                return true;
+                return null;
             }//if_else
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//ExtraProfileFields_Completed
-
-    /**
-     * @static
-     * @param           $user_id
-     * @return          bool|null
-     * @throws          Exception
-     *
-     * @creationDate    10/11/2014
-     * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Check if the profile fields have been completed
-     */
-    private static function ProfileFields_Completed($user_id) {
-        /* Variables    */
-        global $DB;
-        $completed  = null;
-        $rdo        = null;
-
-        try {
-            /* Execute  */
-            $rdo = $DB->get_record('user',array('id' => $user_id),'username,firstname,lastname,email');
-
-            $completed = $rdo->username && $rdo->firstname && $rdo->lastname && $rdo->email;
-
-            return $completed;
-        }catch (Exception $ex) {
-            throw $ex;
-        }//try_catch
-    }//ProfileFields_Completed
+    }//Get_ExtraProfileFields
 }//FirstAccess
