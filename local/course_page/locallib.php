@@ -279,35 +279,60 @@ class course_page  {
     }//IsCourseRating
 
     /**
-     * @static
-     * @param           $user_id
-     * @param           $course_id
+     * @param           $userId
+     * @param           $courseId
      * @return          bool
      * @throws          Exception
      *
-     * @creationDate    03/09/2014
+     * @creationDate    14/10/2015
      * @author          eFaktor     (fbv)
      *
      * Description
-     * Check if the course has been evaluated by user
+     * Check if the user can give a rate
      */
-    public static function UserRateCourse($user_id,$course_id) {
+    public static function User_CanRateCourse($userId,$courseId) {
         /* Variables    */
         global $DB;
-        $rdo = null;
+        $rdo    = null;
+        $params = null;
+        $sql    = null;
 
         try {
-            /* Execute   */
-            $rdo = $DB->get_records('block_rate_course',array('course' => $course_id,'userid' => $user_id));
+            /* Search Criteria  */
+            $params = array();
+            $params['userid']   = $userId;
+            $params['course']   = $courseId;
+
+            /* First */
+            /* Rate course only if the user has completed it    */
+            $sql = " SELECT	id
+                     FROM	{course_completions}
+                     WHERE	userid = :userid
+                        AND	course = :course
+                        AND timecompleted IS NOT NULL
+                        AND	timecompleted != 0 ";
+
+            /* Execute  */
+            $rdo = $DB->get_record_sql($sql,$params);
             if ($rdo) {
-                return true;
+                /* Check if the user has already rated  */
+                /* Execute   */
+                $rdo = $DB->get_records('block_rate_course',$params);
+                if ($rdo) {
+                    /* Already rated    */
+                    return false;
+                }else {
+                    /* No rated yet     */
+                    return true;
+                }
             }else {
+                /* Not Completed -- No Rate */
                 return false;
-            }//if_else_rdo
+            }//if_else
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//UserRateCourse
+    }//User_CanRateCourse
 
     /**
      * @static

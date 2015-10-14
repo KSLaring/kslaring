@@ -568,6 +568,12 @@ class local_course_page_renderer extends plugin_renderer_base {
      *
      * Description
      * Add the Course Ratings Block
+     *
+     * @updateDate      14/10/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Check if the user can rate or not the course
      */
     protected function addCourseRatings($course_id) {
         /* Variables    */
@@ -665,11 +671,11 @@ class local_course_page_renderer extends plugin_renderer_base {
                 $out .= $OUTPUT->pix_icon('star', get_string('giverating', 'block_rate_course'),'block_rate_course', array('class'=>'icon'));
                 $url = new moodle_url('/blocks/rate_course/rate.php', array('courseid'=>$course_id));
 
-                if (course_page::UserRateCourse($USER->id,$course_id)) {
-                    $class = array('class' => 'disabled_ratings');
-                }else {
+                if (course_page::User_CanRateCourse($USER->id,$course_id)) {
                     $class = null;
-                }
+                }else {
+                    $class = array('class' => 'disabled_ratings');
+                }//CanRateCourse
                 $out .= $OUTPUT->action_link($url, get_string('giverating', 'block_rate_course'),null,$class);
             $out .= '</div>';//label_ratings
 
