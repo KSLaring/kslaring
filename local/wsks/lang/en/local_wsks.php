@@ -10,7 +10,7 @@
  * @author          eFaktor     (fbv)
  */
 
-$string['pluginname']   = 'KS Læring Integration';
+$string['pluginname']   = 'Feide Integration';
 
 $string['feide_settings']   = 'Feide Settings';
 $string['feide_site']       = 'Feide Site';
