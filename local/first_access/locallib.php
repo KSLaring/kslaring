@@ -280,8 +280,12 @@ class FirstAccess {
                 $userInfo->country      = $data->country;
             }//if_data_country
 
+
             /* Execute  */
             $DB->update_record('user',$userInfo);
+
+            // Update mail bounces.
+            useredit_update_bounces($userInfo, $data);
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
