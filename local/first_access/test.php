@@ -40,10 +40,10 @@ if (user_not_fully_set_up($USER)) {
 
     //return (empty($user->firstname) or empty($user->lastname) or empty($user->email) or over_bounce_threshold($user));
 
-    echo "Username  :   "   .   $USER->username     .   "</br>";
-    echo "Firstname :   "   .   $USER->firstname    .   "</br>";
-    echo "Lastname  :   "   .   $USER->lastname     .   "</br>";
-    echo "eMail     :   "   .   $USER->email        .   "</br>";
+    echo "Username  :   "   .   $USER->username     .   "Empty --> "    .   empty($USER->username)  .    "</br>";
+    echo "Firstname :   "   .   $USER->firstname    .   "Empty --> "    .   empty($USER->firstname)  .   "</br>";
+    echo "Lastname  :   "   .   $USER->lastname     .   "Empty --> "    .   empty($USER->lastname)  .   "</br>";
+    echo "eMail     :   "   .   $USER->email        .   "Empty --> "    .   empty($USER->email)  .   "</br>";
 
     //redirect($CFG->wwwroot .'/user/edit.php?id='. $USER->id .'&amp;course='. SITEID);
 }
