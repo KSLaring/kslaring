@@ -17,7 +17,6 @@ require_once('../../../../config.php');
 require_once('competencelib.php');
 require_once($CFG->libdir . '/adminlib.php');
 
-require_login();
 
 /* PARAMS */
 $user_id        = required_param('id',PARAM_INT);
@@ -25,6 +24,9 @@ $my_competence  = null;
 $out            = '';
 $url            = new moodle_url('/user/profile/field/competence/competence.php',array('id' =>$user_id));
 
+if (!isloggedin() && isguestuser()) {
+    redirect($CFG->wwwroot . '/index.php');
+}
 
 /* Settings Page    */
 $PAGE->https_required();

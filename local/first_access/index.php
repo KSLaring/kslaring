@@ -32,6 +32,10 @@ $PAGE->set_heading($SITE->fullname);
 $PAGE->set_title($SITE->fullname);
 $PAGE->set_pagelayout('standard');
 
+if (!isloggedin() && isguestuser()) {
+    redirect($CFG->wwwroot . '/index.php');
+}
+
 echo $OUTPUT->header();
 echo $OUTPUT->heading(get_string('welcome_title','local_first_access'));
 
