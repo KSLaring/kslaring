@@ -49,7 +49,7 @@ if ($form->is_cancelled()) {
     }//if_CompletedCompetenceProfile
 
     $user = get_complete_user_data('id',$data->id);
-    $redirect       = new moodle_url('/local/first_access/test.php',array('id',$user->id));
+    $redirect       = new moodle_url('/local/first_access/test.php',array('id' => $user->id));
 
     //$_POST = array();
     redirect($redirect);
