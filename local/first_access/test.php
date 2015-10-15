@@ -23,6 +23,12 @@ $PAGE->set_pagelayout('admin');
 
 echo $OUTPUT->header();
 
-echo "TEsting --> USER : " . $userId;
+echo "TEsting --> USER : " . $userId . "</br>";
+
+if (isloggedin()) {
+    echo " USER Log In" . "</br>";
+}else {
+    echo " USER NOT LOG IN " . "</br>";
+}
 
 echo $OUTPUT->footer();
