@@ -272,10 +272,9 @@ class KS_FEIDE {
             $newUser->mnethostid   = $CFG->mnet_localhost_id;
 
             /* Execute  */
-            //$newUser->id = $DB->insert_record('user',$newUser);
+            $newUser->id = $DB->insert_record('user',$newUser);
 
-            require_once($CFG->dirroot.'/user/lib.php');
-            return user_create_user($newUser, false, false); //$newUser->id;
+            return $newUser->id;
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch

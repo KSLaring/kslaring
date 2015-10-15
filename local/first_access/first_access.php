@@ -16,6 +16,8 @@ require_once('../../config.php');
 require_once('locallib.php');
 require_once('first_access_form.php');
 require_once($CFG->dirroot.'/user/editlib.php');
+require_once($CFG->dirroot.'/user/profile/lib.php');
+require_once($CFG->dirroot.'/user/lib.php');
 
 /* PARAMS */
 $userId         = required_param('id',PARAM_INT);
@@ -41,12 +43,14 @@ if ($form->is_cancelled()) {
     // Save custom profile fields data.
     profile_save_data($data);
 
+    // Reload from db, we need new full name on this page if we do not redirect.
+    $user = $DB->get_record('user', array('id' => $data->id), '*', MUST_EXIST);
+
     /* Check if it still remains to update competence profile */
     if (!FirstAccess::HasCompleted_CompetenceProfile($data->id)) {
         $redirect = new moodle_url('/user/profile/field/competence/competence.php',array('id' => $data->id));
     }//if_CompletedCompetenceProfile
 
-    $user = get_complete_user_data('id',$data->id);
 
     //$_POST = array();
     redirect($redirect);
