@@ -23,12 +23,4 @@ if ($hassiteconfig) {
                                                  get_string('feide_site_desc','local_wsks'),'',PARAM_TEXT,50));
     $settings->add(new admin_setting_configtext('local_wsks/feide_service',get_string('feide_service','local_wsks'),'','',PARAM_TEXT,50));
     $settings->add(new admin_setting_configpasswordunmask('local_wsks/feide_token',get_string('feide_token','local_wsks'),'',''));
-
-    /* Login ADFS   */
-    $settings->add(new admin_setting_heading('local_wsks_adfs_settings', '', get_string('adfs_settings', 'local_wsks')));
-    $settings->add(new admin_setting_configtext('local_wsks/adfs_point',
-                                                get_string('adfs_site','local_wsks'),
-                                                get_string('adfs_site_desc','local_wsks'),'',PARAM_TEXT,50));
-    $settings->add(new admin_setting_configtext('local_wsks/adfs_service',get_string('adfs_service','local_wsks'),'','',PARAM_TEXT,50));
-    $settings->add(new admin_setting_configpasswordunmask('local_wsks/adfs_token',get_string('adfs_token','local_wsks'),'',''));
 }//if_hasconfig
