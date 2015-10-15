@@ -284,6 +284,13 @@ class FirstAccess {
             /* Execute  */
             $DB->update_record('user',$userInfo);
 
+            // Update mail bounces.
+            useredit_update_bounces($userInfo, $data);
+
+            // Update forum track preference.
+            useredit_update_trackforums($userInfo, $data);
+
+
             // Trigger event.
             \core\event\user_updated::create_from_userid($userInfo->id)->trigger();
         }catch (Exception $ex) {

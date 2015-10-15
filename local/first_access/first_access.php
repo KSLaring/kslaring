@@ -22,7 +22,7 @@ $userId         = required_param('id',PARAM_INT);
 $context        = context_system::instance();
 $url            = new moodle_url('/local/first_access/first_access.php',array('id' => $userId));
 $user_context   = context_user::instance($userId);
-$redirect       = $CFG->wwwroot;
+$redirect       = new moodle_url('/user/profile.php',array('id' => $userId));
 
 $PAGE->set_url($url);
 $PAGE->set_context($user_context);
