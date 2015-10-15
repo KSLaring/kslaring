@@ -22,7 +22,7 @@ $userId         = required_param('id',PARAM_INT);
 $context        = context_system::instance();
 $url            = new moodle_url('/local/first_access/first_access.php',array('id' => $userId));
 $user_context   = context_user::instance($userId);
-$redirect       = new moodle_url('/user/profile.php',array('id' => $userId));
+$redirect       = new moodle_url('/user/view.php',array('id' => $userId));
 
 $PAGE->set_url($url);
 $PAGE->set_context($user_context);
@@ -47,14 +47,9 @@ if ($form->is_cancelled()) {
     }//if_CompletedCompetenceProfile
 
     $user = get_complete_user_data('id',$data->id);
-    if (user_not_fully_set_up($user)) {
-        echo "NOT ";
-    }else {
-        echo "YES";
-    }
 
     //$_POST = array();
-    //redirect($redirect);
+    redirect($redirect);
 }//if_else
 
 echo $OUTPUT->header();
