@@ -37,6 +37,14 @@ echo "GLOBAL USER : " . $USER->id . "</br>";
 // Check that the user account is properly set up.
 if (user_not_fully_set_up($USER)) {
     echo " NOT FULLY SET UP" . "</br>";
+
+    //return (empty($user->firstname) or empty($user->lastname) or empty($user->email) or over_bounce_threshold($user));
+
+    echo "Username  :   "   .   $USER->username     .   "</br>";
+    echo "Firstname :   "   .   $USER->firstname    .   "</br>";
+    echo "Lastname  :   "   .   $USER->lastname     .   "</br>";
+    echo "eMail     :   "   .   $USER->email        .   "</br>";
+
     //redirect($CFG->wwwroot .'/user/edit.php?id='. $USER->id .'&amp;course='. SITEID);
 }
 
