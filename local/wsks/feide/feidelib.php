@@ -274,7 +274,7 @@ class KS_FEIDE {
             /* Execute  */
             //$newUser->id = $DB->insert_record('user',$newUser);
 
-            require_once($CFG->dirroot.'/user/editlib.php');
+            require_once($CFG->dirroot.'/user/lib.php');
             return user_create_user($newUser, false, false); //$newUser->id;
         }catch (Exception $ex) {
             throw $ex;
