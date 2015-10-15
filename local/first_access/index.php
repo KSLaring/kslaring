@@ -32,10 +32,6 @@ $PAGE->set_heading($SITE->fullname);
 $PAGE->set_title($SITE->fullname);
 $PAGE->set_pagelayout('standard');
 
-if (!isloggedin() && isguestuser()) {
-    throw new require_login_exception('You are not logged in');
-}
-
 echo $OUTPUT->header();
 echo $OUTPUT->heading(get_string('welcome_title','local_first_access'));
 

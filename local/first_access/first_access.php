@@ -15,9 +15,6 @@
 require_once('../../config.php');
 require_once('locallib.php');
 require_once('first_access_form.php');
-require_once($CFG->dirroot.'/user/editlib.php');
-require_once($CFG->dirroot.'/user/profile/lib.php');
-require_once($CFG->dirroot.'/user/lib.php');
 
 /* PARAMS */
 $userId         = $USER->id;
