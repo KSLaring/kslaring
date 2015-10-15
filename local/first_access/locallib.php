@@ -275,6 +275,7 @@ class FirstAccess {
             $userInfo->lastname     = $data->lastname;
             $userInfo->email        = $data->email;
             $userInfo->city         = $data->city;
+            $userInfo->timemodified = time();
             if (isset($data->country) && ($data->country)) {
                 $userInfo->country      = $data->country;
             }//if_data_country
