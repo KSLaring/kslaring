@@ -46,8 +46,15 @@ if ($form->is_cancelled()) {
         $redirect = new moodle_url('/user/profile/field/competence/competence.php',array('id' => $data->id));
     }//if_CompletedCompetenceProfile
 
-    $_POST = array();
-    redirect($redirect);
+    $user = get_complete_user_data('id',$data->id);
+    if (user_not_fully_set_up($user)) {
+        echo "NOT ";
+    }else {
+        echo "YES";
+    }
+
+    //$_POST = array();
+    //redirect($redirect);
 }//if_else
 
 echo $OUTPUT->header();
