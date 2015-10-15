@@ -269,7 +269,8 @@ class FirstAccess {
 
         try {
             /* Info to Update   */
-            $userInfo = get_complete_user_data('id',$data->id);
+            $userInfo = new stdClass();
+            $userInfo->id           = $data->id;
             $userInfo->firstname    = $data->firstname;
             $userInfo->lastname     = $data->lastname;
             $userInfo->email        = $data->email;
