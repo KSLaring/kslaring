@@ -33,14 +33,9 @@ if (isloggedin()) {
 
 $course = $SITE;
 
+echo "GLOBAL USER : " . $USER->id . "</br>";
 // Check that the user account is properly set up.
 if (user_not_fully_set_up($USER)) {
-    if ($preventredirect) {
-        throw new require_login_exception('User not fully set-up');
-    }
-    if ($setwantsurltome) {
-        $SESSION->wantsurl = qualified_me();
-    }
     echo " NOT FULLY SET UP" . "</br>";
     //redirect($CFG->wwwroot .'/user/edit.php?id='. $USER->id .'&amp;course='. SITEID);
 }
