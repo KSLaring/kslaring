@@ -266,7 +266,9 @@ class KS_FEIDE {
 
             $newUser->confirmed    = '1';
             $newUser->firstaccess  = time();
-            $newUser->timemodified = time();
+            $newUser->calendartype = $CFG->calendartype;
+            $newUser->timecreated = time();
+            $newUser->timemodified = $newUser->timecreated;
             $newUser->mnethostid   = $CFG->mnet_localhost_id;
 
             /* Execute  */

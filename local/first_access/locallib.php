@@ -269,8 +269,7 @@ class FirstAccess {
 
         try {
             /* Info to Update   */
-            $userInfo = new stdClass();
-            $userInfo->id           = $data->id;
+            $userInfo = get_complete_user_data('id',$data->id);
             $userInfo->firstname    = $data->firstname;
             $userInfo->lastname     = $data->lastname;
             $userInfo->email        = $data->email;
@@ -280,19 +279,8 @@ class FirstAccess {
                 $userInfo->country      = $data->country;
             }//if_data_country
 
-
             /* Execute  */
             $DB->update_record('user',$userInfo);
-
-            // Update mail bounces.
-            useredit_update_bounces($userInfo, $data);
-
-            // Update forum track preference.
-            useredit_update_trackforums($userInfo, $data);
-
-
-            // Trigger event.
-            \core\event\user_updated::create_from_userid($userInfo->id)->trigger();
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
