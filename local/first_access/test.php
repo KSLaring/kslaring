@@ -31,4 +31,6 @@ if (isloggedin()) {
     echo " USER NOT LOG IN " . "</br>";
 }
 
+require_login();
+
 echo $OUTPUT->footer();
