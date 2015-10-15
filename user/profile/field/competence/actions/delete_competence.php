@@ -17,7 +17,9 @@ require_once('../../../../../config.php');
 require_once('../competencelib.php');
 require_once($CFG->libdir . '/adminlib.php');
 
-require_login();
+if (!isloggedin() && isguestuser()) {
+    throw new require_login_exception('You are not logged in');
+}
 
 /* PARAMS */
 $user_id            = optional_param('id',0,PARAM_INT);

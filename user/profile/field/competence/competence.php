@@ -25,7 +25,7 @@ $out            = '';
 $url            = new moodle_url('/user/profile/field/competence/competence.php',array('id' =>$user_id));
 
 if (!isloggedin() && isguestuser()) {
-    redirect($CFG->wwwroot . '/index.php');
+    throw new require_login_exception('You are not logged in');
 }
 
 /* Settings Page    */

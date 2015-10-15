@@ -33,7 +33,7 @@ $PAGE->set_title($SITE->fullname);
 $PAGE->set_pagelayout('standard');
 
 if (!isloggedin() && isguestuser()) {
-    redirect($CFG->wwwroot . '/index.php');
+    throw new require_login_exception('You are not logged in');
 }
 
 echo $OUTPUT->header();
