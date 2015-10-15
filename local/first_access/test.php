@@ -8,7 +8,9 @@
  */
 require_once('../../config.php');
 
-$userId         = $USER->id;
+$url            = new moodle_url('/local/first_access/test.php');
+
+$userId         = optional_param('id',0,PARAM_INT);
 $context        = context_system::instance();
 
 $user_context   = context_user::instance($userId);
@@ -21,6 +23,6 @@ $PAGE->set_pagelayout('admin');
 
 echo $OUTPUT->header();
 
-echo "TEsting";
+echo "TEsting --> USER : " . $userId;
 
 echo $OUTPUT->footer();
