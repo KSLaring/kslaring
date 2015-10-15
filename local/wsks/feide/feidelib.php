@@ -243,8 +243,7 @@ class KS_FEIDE {
             /* Auth method  */
             $newUser->auth         = 'saml';
             /* Password     */
-            $newUser->password     = 'not cached';
-
+            $newUser->password     = AUTH_PASSWORD_NOT_CACHED;
 
             /* First name   */
             $newUser->firstname    = $user['firstname'];
@@ -252,6 +251,7 @@ class KS_FEIDE {
             $newUser->lastname     = $user['lastname'];
             /* eMail        */
             $newUser->email        = $user['email'];
+
             /* City         */
             $newUser->city         = $user['city'];
             /* Country      */
@@ -266,12 +266,13 @@ class KS_FEIDE {
 
             $newUser->confirmed    = '1';
             $newUser->firstaccess  = time();
-            $newUser->timemodified = time();
+            $newUser->calendartype = $CFG->calendartype;
+            $newUser->timecreated = time();
+            $newUser->timemodified = $newUser->timecreated;
             $newUser->mnethostid   = $CFG->mnet_localhost_id;
 
             /* Execute  */
             $newUser->id = $DB->insert_record('user',$newUser);
-
 
             return $newUser->id;
         }catch (Exception $ex) {
