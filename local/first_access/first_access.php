@@ -24,8 +24,7 @@ $userId         = $USER->id;
 $context        = context_system::instance();
 $url            = new moodle_url('/local/first_access/first_access.php');
 $user_context   = context_user::instance($userId);
-$redirect       = new moodle_url('/user/view.php',array('id' => $userId));
-$redirect       = new moodle_url('/local/first_access/test.php');
+$redirect       = new moodle_url('/user/profile.php',array('id'=>$userId));
 $PAGE->set_url($url);
 $PAGE->set_context($user_context);
 $PAGE->set_heading($SITE->fullname);
@@ -50,7 +49,6 @@ if ($form->is_cancelled()) {
 
     $user = get_complete_user_data('id',$data->id);
     complete_user_login($user,true);
-    $redirect       = new moodle_url('/local/first_access/test.php',array('id' => $user->id));
 
     //$_POST = array();
     redirect($redirect);
