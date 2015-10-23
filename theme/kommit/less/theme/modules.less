@@ -635,7 +635,7 @@ a.autolink.glossary {
     }
 }
 
-/* set up the keyframes */
+// set up the keyframes
 @-webkit-keyframes nodeInserted {
     from {
         opacity: 0.99;
@@ -645,9 +645,15 @@ a.autolink.glossary {
     }
 }
 
-/* force a repaint with a super short duration */
+// force Safari to repaint with a super short duration
 #scorm_content > iframe {
     -webkit-animation-duration: 0.001s;
+    -webkit-animation-name: nodeInserted;
+}
+
+// force Safari to repaint if the class is added
+.repaint {
+    -webkit-animation-duration: 0.5s;
     -webkit-animation-name: nodeInserted;
 }
 

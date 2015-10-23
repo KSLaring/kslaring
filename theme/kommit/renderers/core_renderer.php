@@ -43,7 +43,9 @@ class theme_kommit_core_renderer extends core_renderer {
         $jsscript = <<<EOT
 YUI().use('anim', 'node-event-simulate', function(Y) {
   var nbl = Y.one("#mod_quiz_navblock"),
-    p = nbl.one("a.thispage");
+    p = nbl.one("a.thispage"),
+    qbtns = Y.one(".qn_buttons"),
+    allqbtns = qbtns.all(".qnbutton");
 
   if (p) {
     var p_id = p.getAttribute('id'),
@@ -57,7 +59,11 @@ YUI().use('anim', 'node-event-simulate', function(Y) {
         btnn = nbl.one(".next-btn"),
         ppos = parseInt(p.getX()),
         cpos = parseInt(c.getX()),
-        poff = ppos - cpos;
+        poff = ppos - cpos,
+        pl = 0,
+        pr = 0,
+        amount = 0,
+        base = 0;
 
       btnp.on('click', function() {
         if (p_no > 1) {
@@ -80,6 +86,25 @@ YUI().use('anim', 'node-event-simulate', function(Y) {
         });
         ani.run();
       }
+
+      // Calculate the padding depending on the number of elements
+      // to get the percentage for left and right padding. One button has
+      // left padding, the number, right padding. So padding will reference
+      // roughly 1/3. If the numbers show 1 figure use 40% if there are more than 10
+      // questions numbers have one and two figures - then use 35%.
+      amount = allqbtns.size();
+      base = (amount < 10) ? 43 : 35;
+      pr = (base / amount) + "%";
+      pl = pr;
+
+      // console.log(amount, base, pr);
+
+      allqbtns.setStyles({
+        "padding-right": pr,
+        "padding-left": pl
+      });
+
+      qbtns.addClass("repaint");
 
     //  console.log(p_id, p_no, l_btn_no);
     }
@@ -303,7 +328,7 @@ EOT;
                 $usermenu->add('<i class="fa fa-file"></i>' . get_string('myhome'), new moodle_url('/my/'));
 
                 $usermenu->add('<i class="fa fa-user"></i>' . get_string('viewprofile'), new moodle_url('/user/profile.php',
-                        array('id' => $USER->id)),
+                    array('id' => $USER->id)),
                     get_string('viewprofile'));
 
                 $usermenu->add('<i class="fa fa-cog"></i>' . get_string('editmyprofile'),
@@ -312,7 +337,7 @@ EOT;
                     get_string('editmyprofile'));
 
                 $usermenu->add('<i class="fa fa-lock"></i>' . get_string('logout'), new moodle_url('/login/logout.php',
-                        array('sesskey' => sesskey(), 'alt' => 'logout')),
+                    array('sesskey' => sesskey(), 'alt' => 'logout')),
                     get_string('logout'));
 
             } else {
@@ -474,9 +499,11 @@ EOT;
      * Return the standard string that says whether you are logged in (and switched
      * roles/logged in as another user).
      *
-     * @param bool $withlinks if false, then don't include any links in the HTML produced.
-     *                        If not set, the default is the nologinlinks option from the theme config.php file,
-     *                        and if that is not set, then links are included.
+     * @param bool $withlinks if false, then don't include any links in the HTML
+     *                        produced.
+     *                        If not set, the default is the nologinlinks option from the
+     *                        theme config.php file, and if that is not set, then links
+     *                        are included.
      *
      * @return string HTML fragment.
      */
@@ -555,7 +582,7 @@ EOT;
             // start change uh 2014-11-18
             // Remove the text »You are not logged in.« and the brackets,
             // set the login link to bold.
-//            $loggedinas = get_string('loggedinnot', 'moodle');
+            //            $loggedinas = get_string('loggedinnot', 'moodle');
             $loggedinas = '';
             if (!$loginpage && $withlinks) {
                 $loggedinas .= " <a href=\"$loginurl\"><strong>" . get_string('login') . '</strong></a>';
@@ -633,6 +660,42 @@ EOT;
     }
 
     /**
+     * Create a link »Return to normal role« when the admin had switched role.
+     *
+     * Use the code from outputrenderers->login_info.
+     *
+     * @return string The HTML for the link
+     */
+    public function return_to_role() {
+        global $DB, $PAGE, $USER;
+        $loggedinas = '';
+
+        if (!is_role_switched($PAGE->course->id)) { // Has no switched roles
+            return $loggedinas;
+        }
+
+        $context = context_course::instance($PAGE->course->id);
+        $fullname = fullname($USER, true);
+
+        $rolename = '';
+        if ($role = $DB->get_record('role', array('id' => $USER->access['rsw'][$context->path]))) {
+            $rolename = ': ' . role_get_name($role, $context);
+        }
+
+        $loggedinas .= '<div class="returntorole">';
+        $loggedinas .= get_string('loggedinas', 'moodle', $fullname) . $rolename;
+        $url = new moodle_url('/course/switchrole.php',
+            array('id' => $PAGE->course->id, 'sesskey' => sesskey(),
+                'switchrole' => 0,
+                'returnurl' => $this->page->url->out_as_local_url(false)));
+        $loggedinas .= ' (' . html_writer::tag('a', get_string('switchrolereturn'),
+                array('href' => $url)) . ')';
+        $loggedinas .= '</div>';
+
+        return $loggedinas;
+    }
+
+    /**
      * Get the background image style with the Moodle URL.
      *
      * @param $context object The Moodle context
@@ -660,7 +723,7 @@ EOT;
     /**
      * Get the background image edit button
      *
-     * @param $context object The Moodle context
+     * @param $context   object The Moodle context
      * @param $sectionid int The section id
      *
      * @return string The HTML for the edit button
@@ -710,12 +773,12 @@ EOT;
          * Check if the table exists
          */
         if ($DB->get_manager()->table_exists('background_image')) {
-            if (!$bgimg = $DB->get_record('background_image',array('sectionid' => $sectionid))) {
-            $bgimg = false;
-        }
+            if (!$bgimg = $DB->get_record('background_image', array('sectionid' => $sectionid))) {
+                $bgimg = false;
+            }
 
-        return $bgimg;
-        }else {
+            return $bgimg;
+        } else {
             return false;
         }//if_table_exist
     }
