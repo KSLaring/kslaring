@@ -660,6 +660,42 @@ EOT;
     }
 
     /**
+     * Create a link »Return to normal role« when the admin had switched role.
+     *
+     * Use the code from outputrenderers->login_info.
+     *
+     * @return string The HTML for the link
+     */
+    public function return_to_role() {
+        global $DB, $PAGE, $USER;
+        $loggedinas = '';
+
+        if (!is_role_switched($PAGE->course->id)) { // Has no switched roles
+            return $loggedinas;
+        }
+
+        $context = context_course::instance($PAGE->course->id);
+        $fullname = fullname($USER, true);
+
+        $rolename = '';
+        if ($role = $DB->get_record('role', array('id' => $USER->access['rsw'][$context->path]))) {
+            $rolename = ': ' . role_get_name($role, $context);
+        }
+
+        $loggedinas .= '<div class="returntorole">';
+        $loggedinas .= get_string('loggedinas', 'moodle', $fullname) . $rolename;
+        $url = new moodle_url('/course/switchrole.php',
+            array('id' => $PAGE->course->id, 'sesskey' => sesskey(),
+                'switchrole' => 0,
+                'returnurl' => $this->page->url->out_as_local_url(false)));
+        $loggedinas .= ' (' . html_writer::tag('a', get_string('switchrolereturn'),
+                array('href' => $url)) . ')';
+        $loggedinas .= '</div>';
+
+        return $loggedinas;
+    }
+
+    /**
      * Get the background image style with the Moodle URL.
      *
      * @param $context object The Moodle context

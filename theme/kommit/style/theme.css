@@ -283,7 +283,7 @@ h6 {
 .navbar .nav > li > a:hover,
 .navbar .nav > li > a:focus {
   background: #7e7e7e !important;
-  color: #ffffff;
+  color: #fff;
 }
 .navbar .nav .active > a,
 .navbar .nav .active > a:hover,
@@ -292,7 +292,7 @@ h6 {
 .navbar .nav li.dropdown.active > .dropdown-toggle,
 .navbar .nav li.dropdown.open.active > .dropdown-toggle {
   background: #7e7e7e !important;
-  color: #ffffff;
+  color: #fff;
 }
 /* @group Navbar */
 .navbar {
@@ -305,8 +305,8 @@ h6 {
 .navbar-inner {
   background-color: #1a1a1a !important;
   background-image: none;
-  border-top: 1px solid #000000 !important;
-  border-bottom: 1px solid #000000 !important;
+  border-top: 1px solid #000 !important;
+  border-bottom: 1px solid #000 !important;
   line-height: 0;
   filter: none;
   -webkit-border-radius: 0;
@@ -314,21 +314,21 @@ h6 {
   border-radius: 0;
 }
 .navbar .brand {
-  color: #ffffff !important;
+  color: #fff !important;
   text-shadow: none;
   line-height: 20px;
 }
 .navbar .caret {
-  border-top-color: #ffffff !important;
-  border-bottom-color: #ffffff !important;
+  border-top-color: #fff !important;
+  border-bottom-color: #fff !important;
   margin-left: 5px;
 }
 .navbar .nav > li > a {
-  color: #ffffff;
+  color: #fff;
   text-shadow: none;
 }
 .navbar .nav > li > a:hover {
-  color: #ffffff;
+  color: #fff;
 }
 .navbar .btn-navbar {
   position: relative;
@@ -351,7 +351,7 @@ h6 {
 .navbar .btn-navbar.disabled,
 .navbar .btn-navbar[disabled] {
   color: #003876;
-  background-color: #ffffff !important;
+  background-color: #fff !important;
   transform: rotate(90deg);
   -ms-transform: rotate(90deg);
   /* IE 9 */
@@ -383,7 +383,7 @@ h6 {
   text-align: right;
 }
 .navbar-text .logininfo {
-  color: #ffffff;
+  color: #fff;
   float: right;
   margin-right: .5em;
 }
@@ -506,10 +506,10 @@ Courses and categories lists, from Mary Evans
 .toggle_switch {
   position: relative;
   float: left;
-  background: #cccccc;
+  background: #ccc;
   height: 24px;
   width: 24px;
-  border: 1px solid #999999;
+  border: 1px solid #999;
   border-radius: 15px;
 }
 .toggle_container {
@@ -520,7 +520,7 @@ Courses and categories lists, from Mary Evans
   height: 25px;
   width: 55px;
   border-radius: 15px;
-  border: 1px solid #cccccc;
+  border: 1px solid #ccc;
 }
 .edit_text {
   float: right;
@@ -533,10 +533,10 @@ Courses and categories lists, from Mary Evans
 .toggle_switch_active {
   float: right;
   position: relative;
-  background: #cccccc;
+  background: #ccc;
   height: 24px;
   width: 24px;
-  border: 1px solid #999999;
+  border: 1px solid #999;
   border-radius: 15px;
 }
 .toggle_container_active {
@@ -547,11 +547,11 @@ Courses and categories lists, from Mary Evans
   height: 25px;
   width: 55px;
   border-radius: 15px;
-  border: 1px solid #cccccc;
+  border: 1px solid #ccc;
 }
 .edit_text_active {
   float: left;
-  color: #555555;
+  color: #555;
   font-weight: normal;
   font-size: 13.504px;
   padding-top: 3px;
@@ -660,7 +660,7 @@ a.autolink.glossary {
   width: 100%;
 }
 .path-mod-glossary .glossarycategoryheader h3 {
-  border-bottom: 1px solid #eeeeee;
+  border-bottom: 1px solid #eee;
   text-align: center;
   padding-bottom: .3em;
 }
@@ -759,7 +759,7 @@ a.autolink.glossary {
 #page-mod-quiz-attempt .que .info,
 #page-mod-quiz-review .que .info {
   *zoom: 1;
-  background-color: #ffffff;
+  background-color: #fff;
   border: 1px solid #e8e8e8;
   border-width: 1px 0;
   float: none;
@@ -797,7 +797,7 @@ a.autolink.glossary {
 }
 #page-mod-quiz-attempt .que .formulation,
 #page-mod-quiz-review .que .formulation {
-  background-color: #ffffff;
+  background-color: #fff;
   border: 0;
   padding: 0.3em 0.5em;
 }
@@ -807,17 +807,17 @@ a.autolink.glossary {
 }
 #page-mod-quiz-attempt .que .formulation .correct,
 #page-mod-quiz-review .que .formulation .correct {
-  background-color: #ffffff;
+  background-color: #fff;
   border-left: 3px solid #46a546;
 }
 #page-mod-quiz-attempt .que .formulation .partiallycorrect,
 #page-mod-quiz-review .que .formulation .partiallycorrect {
-  background-color: #ffffff;
+  background-color: #fff;
   border-left: 3px solid #ffc40d;
 }
 #page-mod-quiz-attempt .que .formulation .incorrect,
 #page-mod-quiz-review .que .formulation .incorrect {
-  background-color: #ffffff;
+  background-color: #fff;
   border-left: 3px solid #9d261d;
 }
 #page-mod-quiz-attempt .que .formulation div.r0,
@@ -846,7 +846,7 @@ a.autolink.glossary {
 }
 #page-mod-quiz-attempt .que .outcome,
 #page-mod-quiz-review .que .outcome {
-  background-color: #ffffff;
+  background-color: #fff;
   border: 1px solid #ffc40d;
   border-left-width: 3px;
 }
@@ -895,7 +895,7 @@ a.autolink.glossary {
 }
 #page-mod-quiz-review table.quizreviewsummary th.cell,
 #page-mod-quiz-review table.quizreviewsummary td.cell {
-  background-color: #ffffff;
+  background-color: #fff;
 }
 #page-mod-quiz-review table.quizreviewsummary td {
   border-color: #e8e8e8;
@@ -905,7 +905,7 @@ a.autolink.glossary {
   width: 29%;
 }
 #page-mod-quiz-edit .questionbankwindow.block div.header {
-  background-color: #eeeeee;
+  background-color: #eee;
 }
 #page-mod-quiz-edit .questionbankwindow.block div.header div.title h2 {
   color: #333333;
@@ -923,10 +923,10 @@ a.autolink.glossary {
   padding-top: .2em;
 }
 #page-mod-quiz-edit #categoryquestions > tbody > tr:nth-of-type(even) {
-  background-color: #eeeeee;
+  background-color: #eee;
 }
 #page-mod-quiz-edit div.quizpage .pagecontent {
-  background-color: #eeeeee;
+  background-color: #eee;
 }
 #page-mod-quiz-edit div.question div.content div.qorder {
   background-color: inherit;
@@ -959,7 +959,6 @@ a.autolink.glossary {
 .path-mod-scorm .scorm-center {
   text-align: left;
 }
-/* set up the keyframes */
 @-webkit-keyframes nodeInserted {
   from {
     opacity: 0.99;
@@ -968,9 +967,12 @@ a.autolink.glossary {
     opacity: 1;
   }
 }
-/* force a repaint with a super short duration */
 #scorm_content > iframe {
   -webkit-animation-duration: 0.001s;
+  -webkit-animation-name: nodeInserted;
+}
+.repaint {
+  -webkit-animation-duration: 0.5s;
   -webkit-animation-name: nodeInserted;
 }
 .yui3-skin-sam .yui3-moodle-local_lightbox-lightbox.yui3-panel .yui3-widget-bd {
@@ -993,11 +995,11 @@ body {
 }
 .header-background {
   background-color: #fcfcfd;
-  background-image: -webkit-gradient(left, linear, 0 0, 0 100%, from(#ffffff), color-stop(60%, #ffffff), to(#f2f2f3));
-  background-image: -webkit-linear-gradient(left, #ffffff, #ffffff 60%, #f2f2f3);
-  background-image: -moz-linear-gradient(left, #ffffff, #ffffff 60%, #f2f2f3);
-  background-image: -o-linear-gradient(left, #ffffff, #ffffff 60%, #f2f2f3);
-  background-image: linear-gradient(to right, #ffffff, #ffffff 60%, #f2f2f3);
+  background-image: -webkit-gradient(left, linear, 0 0, 0 100%, from(#fff), color-stop(60%, #fff), to(#f2f2f3));
+  background-image: -webkit-linear-gradient(left, #fff, #fff 60%, #f2f2f3);
+  background-image: -moz-linear-gradient(left, #fff, #fff 60%, #f2f2f3);
+  background-image: -o-linear-gradient(left, #fff, #fff 60%, #f2f2f3);
+  background-image: linear-gradient(to right, #fff, #fff 60%, #f2f2f3);
   background-repeat: no-repeat;
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffffff', endColorstr='#fff2f2f3', GradientType=0);
   height: 100px;
@@ -1067,6 +1069,13 @@ body {
   font-size: 13.504px;
   color: white;
 }
+#page-footer #page-footer-inner .footer-left .returntorole {
+  color: #7e7e7e;
+  padding-left: 20px;
+}
+#page-footer #page-footer-inner .footer-left .returntorole a {
+  color: #b1b1b1;
+}
 #page-footer #page-footer-inner .footer-right {
   float: right;
   display: block;
@@ -1098,7 +1107,7 @@ body {
   display: inline;
 }
 .profilepicture {
-  border: 1px solid #cccccc;
+  border: 1px solid #ccc;
   background: white;
   padding: 4px;
   display: inline-block;
@@ -1107,8 +1116,8 @@ body {
 }
 .descriptionbox {
   margin: 20px 0 5px 0;
-  border: 1px solid #cccccc;
-  background: #eeeeee;
+  border: 1px solid #ccc;
+  background: #eee;
   -webkit-border-radius: 4px;
   -moz-border-radius: 4px;
   border-radius: 4px;
@@ -1121,7 +1130,7 @@ body {
   padding: 0 10px 0 10px;
 }
 .userprofile dl {
-  background: #eeeeee;
+  background: #eee;
   margin-bottom: 0px;
   margin-top: 0px;
 }
@@ -1155,7 +1164,7 @@ body {
   background-image: url([[pix:theme|banner_image]]);
   background-repeat: no-repeat;
   background-position: 50% 50%;
-  color: #ffffff;
+  color: #fff;
   height: 420px;
   line-height: 31.5px;
   margin: 0 auto;
@@ -1169,7 +1178,7 @@ body {
   padding: .3em .5em;
 }
 .hero-unit h1 {
-  color: #ffffff;
+  color: #fff;
   font-family: 'clan_otbook', Calibri, Candara, Segoe, "Segoe UI", Optima, Arial, sans-serif;
   font-weight: normal;
   margin-bottom: 0;
@@ -1279,7 +1288,7 @@ body {
 .format-classroom #block-region-content-bottom {
   background-color: #f9f9f9;
   border: 1px solid;
-  border-color: #e8e8e8 #ffffff #e8e8e8 #e8e8e8;
+  border-color: #e8e8e8 #fff #e8e8e8 #e8e8e8;
   padding: .5em 1% 1em 2%;
   margin: 0 0 1em 0%;
 }
@@ -1337,11 +1346,11 @@ p.active_tree_node a {
   margin: 30px 20px;
 }
 .loginpanel {
-  border: 1px solid #cccccc;
+  border: 1px solid #ccc;
   -webkit-border-radius: 4px;
   -moz-border-radius: 4px;
   border-radius: 4px;
-  background: #eeeeee;
+  background: #eee;
   padding: 10px 10px;
   position: relative;
   min-width: 210px;
@@ -1383,7 +1392,7 @@ div.loginpanel h2 {
 }
 .course_category_tree .collapseexpand.disabled:hover,
 .course_category_tree .collapseexpand.disabled {
-  color: #cccccc;
+  color: #ccc;
 }
 .course_category_tree .category > .info,
 .course_category_tree .category > .content {
@@ -1487,7 +1496,7 @@ a.disabled {
 }
 .kitable th,
 .kitable td {
-  background-color: #ffffff;
+  background-color: #fff;
   font-size: inherit;
   padding: .3em .5em;
   vertical-align: top;
@@ -1509,7 +1518,7 @@ div.editor_atto_content .kitable1 caption {
 div.editor_atto_content .kitable1 th,
 .kitable1 td,
 div.editor_atto_content .kitable1 td {
-  background-color: #ffffff;
+  background-color: #fff;
   font-size: inherit;
   padding: .3em .5em;
   vertical-align: top;
@@ -1523,13 +1532,13 @@ div.editor_atto_content .kitable1 tbody > tr:nth-child(odd) > th {
 .kitable1 caption,
 div.editor_atto_content .kitable1 caption {
   background-color: #003876;
-  color: #ffffff;
+  color: #fff;
 }
 .kitable1 th,
 div.editor_atto_content .kitable1 th,
 .kitable1 td,
 div.editor_atto_content .kitable1 td {
-  background-color: #ffffff;
+  background-color: #fff;
 }
 .kitable2,
 div.editor_atto_content .kitable2 {
@@ -1546,7 +1555,7 @@ div.editor_atto_content .kitable2 caption {
 div.editor_atto_content .kitable2 th,
 .kitable2 td,
 div.editor_atto_content .kitable2 td {
-  background-color: #ffffff;
+  background-color: #fff;
   font-size: inherit;
   padding: .3em .5em;
   vertical-align: top;
@@ -1588,7 +1597,7 @@ div.editor_atto_content .kitable3 caption {
 div.editor_atto_content .kitable3 th,
 .kitable3 td,
 div.editor_atto_content .kitable3 td {
-  background-color: #ffffff;
+  background-color: #fff;
   font-size: inherit;
   padding: .3em .5em;
   vertical-align: top;
@@ -1607,7 +1616,7 @@ div.editor_atto_content .kitable3 th {
 div.editor_atto_content .kitable3 th,
 .kitable3 td,
 div.editor_atto_content .kitable3 td {
-  border-right: 5px solid #ffffff;
+  border-right: 5px solid #fff;
 }
 .kitable3.table-no-lines th,
 div.editor_atto_content .kitable3.table-no-lines th,
