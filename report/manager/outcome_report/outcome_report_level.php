@@ -100,11 +100,11 @@ if ($company_id) {
 
     $data_form['rpt']                                   = $report_level;
     $data_form[OUTCOME_REPORT_FORMAT_LIST]              = OUTCOME_REPORT_FORMAT_SCREEN;
-    $data_form[MANAGER_OUTCOME_STRUCTURE_LEVEL .'0']    = $_COOKIE['parentLevelZero'];
+    $data_form[MANAGER_OUTCOME_STRUCTURE_LEVEL .'0']    = $USER->levelZero;
     $data_form[MANAGER_OUTCOME_STRUCTURE_LEVEL .'1']    = $parentOne;
     $data_form[MANAGER_OUTCOME_STRUCTURE_LEVEL .'2']    = $parentTwo;
     $data_form[MANAGER_OUTCOME_STRUCTURE_LEVEL .'3']    = array($company_id);
-    $data_form[REPORT_MANAGER_OUTCOME_LIST]             = $_COOKIE['outcomeReport'];
+    $data_form[REPORT_MANAGER_OUTCOME_LIST]             = $USER->outcomeReport;
     $data_form[REPORT_MANAGER_COMPLETED_LIST]           = $completed_option;
 
     /* Get the data to the report   */
@@ -114,13 +114,6 @@ if ($company_id) {
 
 $form = new manager_outcome_report_level_form(null,array($report_level,$my_hierarchy));
 if ($form->is_cancelled()) {
-    setcookie('parentLevelZero',0);
-    setcookie('parentLevelOne',0);
-    setcookie('parentLevelTwo',0);
-    setcookie('parentLevelThree',0);
-    setcookie('courseReport',0);
-    setcookie('outcomeReport',0);
-
     $_POST = array();
     redirect($return_url);
 }else if($data = $form->get_data()) {
@@ -163,6 +156,9 @@ if (!empty($out)) {
     require('../tabs.php');
 
     $form->display();
+
+    /* Initialise Organization Structure    */
+    CompetenceManager::Init_OrganizationStructure_OutcomeReport(COMPANY_STRUCTURE_LEVEL,REPORT_MANAGER_JOB_ROLE_LIST,REPORT_MANAGER_OUTCOME_LIST,$report_level);
 }//if_else
 
 /* Print Footer */

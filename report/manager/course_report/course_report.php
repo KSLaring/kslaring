@@ -51,14 +51,6 @@ if (empty($CFG->loginhttps)) {
     $secure_www_root = str_replace('http:','https:',$CFG->wwwroot);
 }//if_security
 
-/* Clean Cookies */
-setcookie('parentLevelZero',0);
-setcookie('parentLevelOne',0);
-setcookie('parentLevelTwo',0);
-setcookie('parentLevelThree',0);
-setcookie('courseReport',0);
-setcookie('outcomeReport',0);
-
 /* Start the page */
 $PAGE->verify_https_required();
 

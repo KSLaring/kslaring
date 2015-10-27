@@ -115,6 +115,7 @@ class course_report {
      */
     public static function Get_CourseReportLevel($data_form,$my_hierarchy) {
         /* Variables    */
+        global $USER;
         $companies_report   = null;
         $course_report      = null;
         $course_id          = null;
@@ -123,6 +124,7 @@ class course_report {
         $levelOne           = null;
         $levelTwo           = null;
         $levelThree         = null;
+        $selectorThree      = null;
         $inZero             = null;
         $inOne              = null;
         $inTwo              = null;
@@ -152,7 +154,8 @@ class course_report {
                 /* Get information to display by level          */
                 /* Level zero    - That's common for all levels  */
                 $course_report->levelZero = $data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'0'];
-                setcookie('parentLevelZero',$data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'0']);
+                $USER->levelZero    = $course_report->levelZero;
+                $USER->courseReport = $course_id;
 
                 /* Check Level  */
                 switch ($data_form['rpt']) {
@@ -241,7 +244,9 @@ class course_report {
                         /* Get Info connected with the level three  */
                         $levelThree = CompetenceManager::GetCompanies_LevelList(3,$data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'2'],$inThree);
                         unset($levelThree[0]);
-                        if (!empty($data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'3'])) {
+                        $selectorThree = $data_form[MANAGER_OUTCOME_STRUCTURE_LEVEL .'3'];
+                        unset($selectorThree[0]);
+                        if ($selectorThree) {
                             $company_keys   = array_keys($levelThree);
                             $companies      = array_intersect($data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'3'],$company_keys);
                             $companies      = array_fill_keys($companies,null);

@@ -210,7 +210,7 @@ var level_structure = {
             /* Remove companies */
             Y.one("#id_" + level).all('option').each(function(option){
                 if (option.get('selected')) {
-                   selected[option.get('value')] = option.get('test');
+                   selected[option.get('value')] = option.get('value');
                 }
                 option.remove();
             });
