@@ -171,6 +171,22 @@ class CompetenceManager {
         }//try_catch
     }//Get_MyAccess
 
+    /**
+     * @param           $selector
+     * @param           $employeeSel
+     * @param           $outcomeSel
+     * @param           $superUser
+     * @param           $myAccess
+     * @param           $btnActions
+     *
+     * @throws          Exception
+     *
+     * @creationDate    27/10/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Initialize the organization structure selectors
+     */
     public static function Init_Organization_Structure($selector,$employeeSel,$outcomeSel,$superUser,$myAccess,$btnActions) {
         /* Variables    */
         global $PAGE;

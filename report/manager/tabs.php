@@ -71,7 +71,7 @@ if ($superUser) {
     }//if_level3
 
     /* Only for admins */
-    if (has_capability('report/manager:edit', $site_context)) {
+    if (has_capability('report/manager:manage', $site_context)) {
         $top_row[] = new tabobject('company_structure',
             new moodle_url($CFG->wwwroot.'/report/manager/company_structure/company_structure.php'),
             get_string('company_structure','report_manager'));

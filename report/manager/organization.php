@@ -23,6 +23,11 @@ $parent         = optional_param('parent',0,PARAM_INT);
 $levelZero      = optional_param('levelZero',0,PARAM_INT);
 $level          = required_param('level',PARAM_INT);
 $superUser      = required_param('sp',PARAM_INT);
+$myHierarchy    = null;
+$myLevelZero    = null;
+$myLevelOne     = null;
+$myLevelTwo     = null;
+$myLevelThree   = null;
 
 $myAccess       = null;
 $myLevelAccess  = null;
@@ -39,17 +44,23 @@ $PAGE->set_url($url);
 
 /* Check the correct access */
 require_login();
-//require_sesskey();
+require_sesskey();
 
 echo $OUTPUT->header();
 
 /* Get Companies connected with super user  */
 if ($superUser) {
     $myAccess   = CompetenceManager::Get_MyAccess($USER->id);
+}else {
+    /* My Hierarchy */
+    $myHierarchy = CompetenceManager::get_MyHierarchyLevel($USER->id,$context);
+    list($myLevelZero,$myLevelOne,$myLevelTwo,$myLevelThree) = CompetenceManager::GetMyCompanies_By_Level($myHierarchy->competence,$myHierarchy->my_level);
 }//if_superUser
 
+
+
 /* Get Data */
-$data       = array('name' => COMPANY_STRUCTURE_LEVEL . $level, 'items' => array(),'clean' => array(),'buttons' => array());
+$data       = array('name' => COMPANY_STRUCTURE_LEVEL . $level, 'items' => array(),'clean' => array());
 $toClean    = array();
 
 switch ($level) {
@@ -61,10 +72,15 @@ switch ($level) {
         $toClean[4] = REPORT_MANAGER_EMPLOYEE_LIST;
 
         /* Companies Connected with */
-        if ($myAccess) {
-            $myLevelAccess = implode(',',array_keys($myAccess));
-        }//if_myAccess
-
+        if ($superUser) {
+            if ($myAccess) {
+                $myLevelAccess = implode(',',array_keys($myAccess));
+            }//if_myAccess
+        }else {
+            if ($myLevelZero) {
+                $myLevelAccess = implode(',',$myLevelZero);
+            }//if_myLevelZero
+        }
 
         break;
     case 1:
@@ -74,9 +90,15 @@ switch ($level) {
         $toClean[3] = REPORT_MANAGER_EMPLOYEE_LIST;
 
         /* Companies Connected with */
-        if (($levelZero) && ($myAccess)) {
-            $myLevelAccess = $myAccess[$levelZero]->levelOne;
-        }//if_parent
+        if ($superUser) {
+            if (($levelZero) && ($myAccess)) {
+                $myLevelAccess = $myAccess[$levelZero]->levelOne;
+            }//if_parent
+        }else {
+            if ($myLevelOne) {
+                $myLevelAccess = implode(',',$myLevelOne);
+            }//if_myLevelZero
+        }
 
         break;
     case 2:
@@ -85,18 +107,30 @@ switch ($level) {
         $toClean[2] = REPORT_MANAGER_EMPLOYEE_LIST;
 
         /* Companies Connected with */
-        if (($levelZero) && ($myAccess)) {
-            $myLevelAccess = $myAccess[$levelZero]->levelTwo;
-        }//if_parent
+        if ($superUser) {
+            if (($levelZero) && ($myAccess)) {
+                $myLevelAccess = $myAccess[$levelZero]->levelTwo;
+            }//if_parent
+        }else {
+            if ($myLevelTwo) {
+                $myLevelAccess = implode(',',$myLevelTwo);
+            }//if_myLevelZero
+        }
 
         break;
     case 3:
         $toClean[0] = REPORT_MANAGER_EMPLOYEE_LIST;
 
         /* Companies Connected with */
-        if (($levelZero) && ($myAccess)) {
-            $myLevelAccess = $myAccess[$levelZero]->levelThree;
-        }//if_parent
+        if ($superUser) {
+            if (($levelZero) && ($myAccess)) {
+                $myLevelAccess = $myAccess[$levelZero]->levelThree;
+            }//if_parent
+        }else {
+            if ($myLevelThree) {
+                $myLevelAccess = implode(',',$myLevelThree);
+            }//if_myLevelZero
+        }
 
         break;
 }//switch
