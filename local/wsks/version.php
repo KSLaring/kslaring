@@ -10,5 +10,5 @@
  * @author          eFaktor     (fbv)
  */
 
-$plugin->version    =   '2015092800';         /* The plugin current version (DATE: YYYYMMDDXX) */
+$plugin->version    =   '2015102700';         /* The plugin current version (DATE: YYYYMMDDXX) */
 $plugin->component  =   'local_wsks';
