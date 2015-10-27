@@ -25,13 +25,6 @@ require_login();
 $url        = new moodle_url('/report/manager/outcome/outcome.php');
 $return_url = new moodle_url('/report/manager/index.php');
 
-/* Clean Cookies */
-setcookie('parentLevelOne',0);
-setcookie('parentLevelTwo',0);
-setcookie('parentLevelThree',0);
-setcookie('courseReport',0);
-setcookie('outcomeReport',0);
-
 /* Start the page */
 $site_context = CONTEXT_SYSTEM::instance();
 //HTTPS is required in this page when $CFG->loginhttps enabled

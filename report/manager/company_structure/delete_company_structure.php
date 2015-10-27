@@ -18,6 +18,7 @@
  */
 
 require_once('../../../config.php');
+require_once( '../managerlib.php');
 require_once('company_structurelib.php');
 require_once($CFG->libdir . '/adminlib.php');
 
@@ -26,8 +27,11 @@ require_once($CFG->libdir . '/adminlib.php');
 $company_id     = required_param('id',PARAM_INT);
 $level          = optional_param('level', 0, PARAM_INT);
 $confirmed      = optional_param('confirm', false, PARAM_BOOL);
-$return_url     = new moodle_url('/report/manager/company_structure/company_structure.php',array('level'=>$level));
 $url            = new moodle_url('/report/manager/company_structure/delete_company_structure.php',array('level' => $level,'id' => $company_id));
+$returnUrl      = new moodle_url('/report/manager/company_structure/company_structure.php');
+$parents        = $SESSION->parents;
+$params         = array();
+
 /* Start the page */
 $site_context = context_system::instance();
 
@@ -39,11 +43,13 @@ $PAGE->set_url($url);
 $PAGE->set_title($SITE->fullname);
 $PAGE->set_heading($SITE->fullname);
 $PAGE->navbar->add(get_string('report_manager','report_manager'),new moodle_url('/report/manager/index.php'));
-$PAGE->navbar->add(get_string('company_structure','report_manager'),$return_url);
+$PAGE->navbar->add(get_string('company_structure','report_manager'),$returnUrl);
 $PAGE->navbar->add(get_string('delete_company_level','report_manager'));
 
 /* ADD require_capability */
-require_capability('report/manager:edit', $site_context);
+if (!CompetenceManager::IsSuperUser($USER->id)) {
+    require_capability('report/manager:edit', $site_context);
+}//if_SuperUser
 
 if (empty($CFG->loginhttps)) {
     $secure_www_root = $CFG->wwwroot;
@@ -53,6 +59,25 @@ if (empty($CFG->loginhttps)) {
 
 $PAGE->verify_https_required();
 
+/* Return Url   */
+$levelZero  = COMPANY_STRUCTURE_LEVEL . 0;
+$levelOne   = COMPANY_STRUCTURE_LEVEL . 1;
+$levelTwo   = COMPANY_STRUCTURE_LEVEL . 2;
+$levelThree = COMPANY_STRUCTURE_LEVEL . 3;
+if (isset($parents[0])) {
+    $params[$levelZero] = $parents[0];
+}
+if (isset($parents[1])) {
+    $params[$levelOne] = $parents[1];
+}
+if (isset($parents[2])) {
+    $params[$levelTwo] = $parents[2];
+}
+if (isset($parents[3])) {
+    $params[$levelThree] = $params[3];
+}
+$returnUrl = new moodle_url('/report/manager/company_structure/company_structure.php',$params);
+
 /* Print Header */
 echo $OUTPUT->header();
 
@@ -61,18 +86,18 @@ if ($confirmed) {
     if (company_structure::Company_HasEmployees($company_id)) {
         /* Not Remove */
         echo $OUTPUT->notification(get_string('error_deleting_company_employees','report_manager'), 'notifysuccess');
-        echo $OUTPUT->continue_button($return_url);
+        echo $OUTPUT->continue_button($returnUrl);
     }else {
         /* Remove */
         if (company_structure::Company_HasChildren($company_id)) {
             /* Not Remove */
             echo $OUTPUT->notification(get_string('error_deleting_company_structure','report_manager'), 'notifysuccess');
-            echo $OUTPUT->continue_button($return_url);
+            echo $OUTPUT->continue_button($returnUrl);
         }else {
             /* Remove */
             if (company_structure::Delete_Company($company_id)) {
                 echo $OUTPUT->notification(get_string('deleted_company_structure','report_manager'), 'notifysuccess');
-                echo $OUTPUT->continue_button($return_url);
+                echo $OUTPUT->continue_button($returnUrl);
             }
         }//if_deleted
     }//if_deleted
@@ -80,7 +105,7 @@ if ($confirmed) {
     /* First Confirm    */
     $company_name   = company_structure::Get_CompanyName($company_id);
     $confirm_url    = new moodle_url('/report/manager/company_structure/delete_company_structure.php',array('level' => $level,'id' => $company_id, 'confirm' => true));
-    echo $OUTPUT->confirm(get_string('delete_company_structure_are_you_sure','report_manager',$company_name),$confirm_url,$return_url);
+    echo $OUTPUT->confirm(get_string('delete_company_structure_are_you_sure','report_manager',$company_name),$confirm_url,$returnUrl);
 }//if_confirm_delte_company
 
 /* Print Footer */

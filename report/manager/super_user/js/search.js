@@ -1,34 +1,31 @@
 /**
- * JavaScript for the user selectors.
- * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @package userselector
+ * Report Competence Manager - Java Script - Super Users Selector
+ *
+ * @package         report
+ * @subpackage      manager/super_user/js
+ * @copyright       2013    eFaktor {@link http://www.efaktor.no}
+ *
+ * @creationDate    16/10/2015
+ * @author          eFaktor     (fbv)
  */
 
 // Define the core_user namespace if it has not already been defined
 M.core_user = M.core_user || {};
 // Define a user selectors array for against the cure_user namespace
-M.core_user.user_selectors = [];
+M.core_user.super_user_selectors = [];
+
 /**
  * Retrieves an instantiated user selector or null if there isn't one by the requested name
  * @param {string} name The name of the selector to retrieve
  * @return bool
  */
-M.core_user.get_user_selector = function (name) {
-    return this.user_selectors[name] || null;
+M.core_user.get_super_user_selector = function (name) {
+    return this.super_user_selectors[name] || null;
 };
 
-/**
- * Initialise a new user selector.
- *
- * @param {YUI} Y The YUI3 instance
- * @param {string} name the control name/id.
- * @param {string} hash the hash that identifies this selector in the user's session.
- * @param {array} extrafields extra fields we are displaying for each user in addition to fullname.
- * @param {string} lastsearch The last search that took place
- */
-M.core_user.init_user_selector = function (Y, name, hash, extrafields, lastsearch) {
-    // Creates a new user_selector object
-    var user_selector = {
+M.core_user.init_super_user_selector = function (Y, name, level, hash, extrafields, lastsearch,remove_users) {
+
+    var super_user_selector = {
         /** This id/name used for this control in the HTML. */
         name : name,
         /** Array of fields to display for each user, in addition to fullname. */
@@ -37,6 +34,15 @@ M.core_user.init_user_selector = function (Y, name, hash, extrafields, lastsearc
         querydelay : 0.5,
         /** The input element that contains the search term. */
         searchfield : Y.one('#' + name + '_searchtext'),
+        /* Level Zero Selector   */
+        levelZero : Y.one('#id_' + level + '0'),
+        /* Level One Selector   */
+        levelOne : Y.one('#id_' + level + '1'),
+        /* Level Two Selector   */
+        levelTwo : Y.one('#id_' + level + '2'),
+        /* Level Three Selector */
+        levelThree : Y.one('#id_' + level + '3'),
+
         /** The clear button. */
         clearbutton : null,
         /** The select element that contains the list of users. */
@@ -50,16 +56,12 @@ M.core_user.init_user_selector = function (Y, name, hash, extrafields, lastsearc
         /** Whether any options where selected last time we checked. Used by
          *  handle_selection_change to track when this status changes. */
         selectionempty : true,
+
         /**
          * Initialises the user selector object
          * @constructor
          */
         init : function() {
-            // Hide the search button and replace it with a label.
-            var searchbutton = Y.one('#' + this.name + '_searchbutton');
-            this.searchfield.insert(Y.Node.create('<label for="' + this.name + '_searchtext">' + searchbutton.get('value') + '</label>'), this.searchfield);
-            searchbutton.remove();
-
             // Hook up the event handler for when the search text changes.
             this.searchfield.on('keyup', this.handle_keyup, this);
 
@@ -68,23 +70,12 @@ M.core_user.init_user_selector = function (Y, name, hash, extrafields, lastsearc
             this.listbox.on('click', this.handle_selection_change, this);
             this.listbox.on('change', this.handle_selection_change, this);
 
-            // And when the search any substring preference changes. Do an immediate re-search.
-            Y.one('#userselector_searchanywhereid').on('click', this.handle_searchanywhere_change, this);
-
             // Define our custom event.
-            //this.createEvent('selectionchanged');
             this.selectionempty = this.is_selection_empty();
-
-            // Replace the Clear submit button with a clone that is not a submit button.
-            var clearbtn = Y.one('#' + this.name + '_clearbutton');
-            this.clearbutton = Y.Node.create('<input type="button" value="' + clearbtn.get('value') + '" />');
-            clearbtn.replace(Y.Node.getDOMNode(this.clearbutton));
-            this.clearbutton.set('id', this.name + "_clearbutton");
-            this.clearbutton.on('click', this.handle_clear, this);
-            this.clearbutton.set('disabled', (this.get_search_text() == ''));
 
             this.send_query(false);
         },
+
         /**
          * Key up hander for the search text box.
          * @param {Y.Event} e the keyup event.
@@ -94,14 +85,12 @@ M.core_user.init_user_selector = function (Y, name, hash, extrafields, lastsearc
             this.cancel_timeout();
             this.timeoutid = Y.later(this.querydelay * 1000, e, function(obj){obj.send_query(false)}, this);
 
-            // Enable or diable the clear button.
-            this.clearbutton.set('disabled', (this.get_search_text() == ''));
-
             // If enter was pressed, prevent a form submission from happening.
             if (e.keyCode == 13) {
                 e.halt();
             }
         },
+
         /**
          * Handles when the selection has changed. If the selection has changed from
          * empty to not-empty, or vice versa, then fire the event handlers.
@@ -109,26 +98,11 @@ M.core_user.init_user_selector = function (Y, name, hash, extrafields, lastsearc
         handle_selection_change : function() {
             var isselectionempty = this.is_selection_empty();
             if (isselectionempty !== this.selectionempty) {
-                this.fire('user_selector:selectionchanged', isselectionempty);
+                this.fire('super_user_selector:selectionchanged', isselectionempty);
             }
             this.selectionempty = isselectionempty;
         },
-        /**
-         * Trigger a re-search when the 'search any substring' option is changed.
-         */
-        handle_searchanywhere_change : function() {
-            if (this.lastsearch != '' && this.get_search_text() != '') {
-                this.send_query(true);
-            }
-        },
-        /**
-         * Click handler for the clear button..
-         */
-        handle_clear : function() {
-            this.searchfield.set('value', '');
-            this.clearbutton.set('disabled',true);
-            this.send_query(false);
-        },
+
         /**
          * Fires off the ajax search request.
          */
@@ -136,7 +110,8 @@ M.core_user.init_user_selector = function (Y, name, hash, extrafields, lastsearc
             // Cancel any pending timeout.
             this.cancel_timeout();
 
-            var value = this.get_search_text();
+            var value   = this.get_search_text();
+
             this.searchfield.set('class', '');
             if (this.lastsearch == value && !forceresearch) {
                 return;
@@ -147,11 +122,27 @@ M.core_user.init_user_selector = function (Y, name, hash, extrafields, lastsearc
                 trans.abort();
             });
 
-            var iotrans = Y.io(M.cfg.wwwroot + '/user/selector/search.php', {
+            var valueZero   = this.levelZero.get('value');
+            var valueOne    = this.levelOne.get('value');
+            var valueTwo    = this.levelTwo.get('value');
+            var valueThree  = 0;
+
+            this.levelThree.all('option').each(function(option){
+                if (option.get('selected') && (option.get('value') != 0)) {
+                    if (valueThree == 0) {
+                        valueThree = option.get('value');
+                    }else {
+                        valueThree = valueThree + '#' + option.get('value');
+                    }
+                }//seleted
+            });
+
+            var iotrans = Y.io(M.cfg.wwwroot + '/report/manager/super_user/search.php', {
                 method: 'POST',
-                data: 'selectorid=' + hash + '&sesskey=' + M.cfg.sesskey + '&search=' + value + '&userselector_searchanywhere=' + this.get_option('searchanywhere'),
+                data: 'selectorid=' + hash + '&search' + '=' + value + '&levelZero=' + valueZero + '&levelOne=' + valueOne + '&levelTwo=' + valueTwo + '&levelThree=' + valueThree + '&sesskey=' + M.cfg.sesskey,
                 on: {
-                    complete: this.handle_response
+                    complete: this.handle_response,
+                    end: this.mark
                 },
                 context:this
             });
@@ -160,6 +151,7 @@ M.core_user.init_user_selector = function (Y, name, hash, extrafields, lastsearc
             this.lastsearch = value;
             this.listbox.setStyle('background','url(' + M.util.image_url('i/loading', 'moodle') + ') no-repeat center center');
         },
+
         /**
          * Handle what happens when we get some data back from the search.
          * @param {int} requestid not used.
@@ -185,6 +177,7 @@ M.core_user.init_user_selector = function (Y, name, hash, extrafields, lastsearc
                 return new M.core.exception(e);
             }
         },
+
         /**
          * This method should do the same sort of thing as the PHP method
          * user_selector_base::output_options.
@@ -211,6 +204,7 @@ M.core_user.init_user_selector = function (Y, name, hash, extrafields, lastsearc
             var count = 0;
             for (var key in data.results) {
                 var groupdata = data.results[key];
+
                 this.output_group(groupdata.name, groupdata.users, selectedusers, true);
                 count ++;
             }
@@ -223,8 +217,10 @@ M.core_user.init_user_selector = function (Y, name, hash, extrafields, lastsearc
             if (this.get_option('preserveselected') && selectedusers) {
                 this.output_group(this.insert_search_into_str(M.str.moodle.previouslyselectedusers, this.lastsearch), selectedusers, true, false);
             }
-            this.handle_selection_change();
+
+           this.handle_selection_change();
         },
+
         /**
          * This method should do the same sort of thing as the PHP method
          * user_selector_base::output_optgroup.
@@ -240,14 +236,7 @@ M.core_user.init_user_selector = function (Y, name, hash, extrafields, lastsearc
             for (var key in users) {
                 var user = users[key];
                 var option = Y.Node.create('<option value="' + user.id + '">' + user.name + '</option>');
-                if (user.disabled) {
-                    option.set('disabled', true);
-                } else if (selectedusers === true || selectedusers[user.id]) {
-                    option.set('selected', true);
-                    delete selectedusers[user.id];
-                } else {
-                    option.set('selected', false);
-                }
+
                 optgroup.append(option);
                 if (user.infobelow) {
                     extraoption = Y.Node.create('<option disabled="disabled" class="userselector-infobelow"/>');
@@ -267,7 +256,17 @@ M.core_user.init_user_selector = function (Y, name, hash, extrafields, lastsearc
                 optgroup.append(Y.Node.create('<option disabled="disabled">\u00A0</option>'));
             }
             this.listbox.append(optgroup);
+
+            /* Mark selected    */
+            this.listbox.get("options").each( function() {
+               if (selectedusers[this.get('value')]) {
+                   this.setAttribute('selected','selected');
+               }else {
+                   this.removeAttribute('selected');
+               }
+            });
         },
+
         /**
          * Replace
          * @param {string} str
@@ -292,6 +291,7 @@ M.core_user.init_user_selector = function (Y, name, hash, extrafields, lastsearc
             var selection = false;
             this.listbox.all('option').each(function(){
                 if (this.get('selected')) {
+                    this.setAttribute('selected','selected');
                     selection = true;
                 }
             });
@@ -317,56 +317,47 @@ M.core_user.init_user_selector = function (Y, name, hash, extrafields, lastsearc
             } else {
                 return false;
             }
+        },
+
+        reload_super_users : function() {
+            // Cancel any pending timeout.
+            clearTimeout(this.timeoutid);
+            this.timeoutid = null;
+
+            this.send_query(true);
+        },
+
+        mark: function() {
+            var users = remove_users.split(",");
+
+            if (this.name == 'removeselect') {
+                this.listbox.get("options").each( function() {
+                    if (remove_users) {
+                        if (users.indexOf(this.get('value')) !== -1) {
+                            this.setAttribute('selected','selected');
+                        }else {
+                            this.removeAttribute('selected');
+                        }
+                    }else {
+                        this.removeAttribute('selected');
+                    }
+                });
+            }
+
         }
     };
+
 
     // Augment the user selector with the EventTarget class so that we can use
     // custom events
-    Y.augment(user_selector, Y.EventTarget, null, null, {});
+    Y.augment(super_user_selector, Y.EventTarget, null, null, {});
     // Initialise the user selector
-    user_selector.init();
+    super_user_selector.init();
     // Store the user selector so that it can be retrieved
-    this.user_selectors[name] = user_selector;
-    // Return the user selector
-    return user_selector;
-};
+    this.super_user_selectors[name] = super_user_selector;
 
-/**
- * Initialise a class that updates the user's preferences when they change one of
- * the options checkboxes.
- * @constructor
- * @param {YUI} Y
- * @return Tracker object
- */
-M.core_user.init_user_selector_options_tracker = function(Y) {
-    // Create a user selector options tracker
-    var user_selector_options_tracker = {
-        /**
-         * Initlises the option tracker and gets everything going.
-         * @constructor
-         */
-        init : function() {
-            var settings = [
-                'userselector_preserveselected',
-                'userselector_autoselectunique',
-                'userselector_searchanywhere'
-            ];
-            for (var s in settings) {
-                var setting = settings[s];
-                Y.one('#' + setting + 'id').on('click', this.set_user_preference, this, setting);
-            }
-        },
-        /**
-         * Sets a user preference for the options tracker
-         * @param {Y.Event|null} e
-         * @param {string} name The name of the preference to set
-         */
-        set_user_preference : function(e, name) {
-            M.util.set_user_preference(name, Y.one('#' + name + 'id').get('checked'));
-        }
-    };
-    // Initialise the options tracker
-    user_selector_options_tracker.init();
-    // Return it just incase it is ever wanted
-    return user_selector_options_tracker;
+    window.onbeforeunload = null;
+
+    // Return the user selector
+    return super_user_selector;
 };

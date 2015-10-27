@@ -49,6 +49,9 @@ function xmldb_report_manager_install() {
         /* Competence Import    */
         CompetenceManager_Install::CreateCompetenceImport($db_man);
 
+        /* Super User   */
+        CompetenceManager_Install::CreateSuperUser($db_man);
+
         /* For Kommit   */
         /* Level Zero */
         Kommit_CompetenceManager::InsertLevelZero();
@@ -380,6 +383,16 @@ class CompetenceManager_Install {
         }//try_catch
     }//CreateOutcomesExpiration
 
+    /**
+     * @param           $db_man
+     * @throws          Exception
+     *
+     * @creationDate    24/08/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Create Competence Import Table
+     */
     public static function CreateCompetenceImport($db_man) {
         /* Variables    */
         $tblCompetencyImport = null;
@@ -431,6 +444,51 @@ class CompetenceManager_Install {
             throw $ex;
         }//try_catch
     }//CreateCompetenceImport
+
+    /**
+     * @param           $db_man
+     * @throws          Exception
+     *
+     * @creationDate    14/10/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Create Super user table
+     */
+    public static function CreateSuperUser($db_man) {
+        /* Variables    */
+        $tblSuperUser = null;
+
+        try {
+            /* New Table    */
+            $tblSuperUser = new xmldb_table('report_gen_super_user');
+            /* Add fields   */
+            /* Id           --  Primary Key */
+            $tblSuperUser->add_field('id',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, XMLDB_SEQUENCE,null);
+            /* userid       --  Foreign Key */
+            $tblSuperUser->add_field('userid',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, null,null);
+            /* County  */
+            $tblSuperUser->add_field('levelzero',XMLDB_TYPE_CHAR,'10',null, null,null,null);
+            /* Level  One */
+            $tblSuperUser->add_field('levelone',XMLDB_TYPE_INTEGER,'10',null, null,null,null);
+            /* Level  Two */
+            $tblSuperUser->add_field('leveltwo',XMLDB_TYPE_INTEGER,'10',null, null,null,null);
+            /* Level  Three */
+            $tblSuperUser->add_field('levelthree',XMLDB_TYPE_INTEGER,'10',null, null,null,null);
+
+            /* Adding keys  */
+            $tblSuperUser->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+            $tblSuperUser->add_key('userid',XMLDB_KEY_FOREIGN,array('userid'), 'user', array('id'));
+            $tblSuperUser->add_key('levelzero',XMLDB_KEY_FOREIGN,array('levelzero'), 'report_gen_companydata', array('id'));
+
+            /* Create Table */
+            if (!$db_man->table_exists('report_gen_super_user')) {
+                $db_man->create_table($tblSuperUser);
+            }//if_not_exist
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//CreateSuperUser
 }//CompetenceManager_Install
 
 class Kommit_CompetenceManager {

@@ -15,7 +15,6 @@
  *
  */
 define('REPORT_MANAGER_COMPANY_CANCEL','rg_cancel');
-define('REPORT_MANAGER_COMPANY_FIELD', 'rgcompany');
 define('REPORT_MANAGER_ADD_ITEM', 'add_item');
 define('REPORT_MANAGER_RENAME_SELECTED', 'rename_selected');
 define('REPORT_MANAGER_DELETE_SELECTED', 'delete_selected');
@@ -46,6 +45,8 @@ define('REPORT_MANAGER_ERROR', 0);
 define('REPORT_MANAGER_SUCCESS', 1);
 define('REPORT_MANAGER_ERROR_NO_USER_PROFILE_DATA', 0);
 
+define('COMPANY_STRUCTURE_LEVEL','level_');
+
 define('REPORT_MANAGER_IMPORT_0',0);
 define('REPORT_MANAGER_IMPORT_1',1);
 define('REPORT_MANAGER_IMPORT_2',2);
@@ -67,6 +68,149 @@ class CompetenceManager {
     /********************/
     /* PUBLIC FUNCTIONS */
     /********************/
+
+    /**
+     * @param           $userId
+     *
+     * @return          bool
+     * @throws          Exception
+     *
+     * @creationDate    23/10/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Check if the user is a Super User
+     */
+    public static function IsSuperUser($userId) {
+        /* Variables    */
+        global $DB;
+        $params = null;
+        $rdo    = null;
+        $sql    = null;
+
+        try {
+            /* Search Criteria  */
+            $params = array();
+            $params['user']     = $userId;
+            $params['deleted']  = 0;
+
+            /* SQL Instruction  */
+            $sql = " SELECT		sp.id
+                     FROM		{report_gen_super_user}	sp
+                        JOIN	{user}					u	ON 	u.id 		= sp.userid
+                                                            AND	u.deleted 	= :deleted
+                     WHERE		sp.userid = :user ";
+
+
+            /* Execute  */
+            $rdo = $DB->get_records_sql($sql,$params);
+            if ($rdo) {
+                return true;
+            }else {
+                return false;
+            }//if_else_rdo
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//IsSuperUser
+
+    /**
+     * @param           $userId
+     * @return          array
+     *
+     * @throws          Exception
+     *
+     * @creationDate    23/10/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Get level access connected with user.
+     */
+    public static function Get_MyAccess($userId) {
+        /* Variables    */
+        global $DB;
+        $params     = null;
+        $rdo        = null;
+        $sql        = null;
+        $myAccess   = array();
+        $infoAccess = null;
+
+        try {
+            /* Search Criteria  */
+            $params = array();
+            $params['user'] = $userId;
+
+            /* SQL Instruction  */
+            $sql = " SELECT		sp.levelzero,
+                                GROUP_CONCAT(DISTINCT sp.levelone 	ORDER BY sp.levelone 	SEPARATOR ',') 	as 'levelone',
+                                GROUP_CONCAT(DISTINCT sp.leveltwo 	ORDER BY sp.leveltwo 	SEPARATOR ',') 	as 'leveltwo',
+                                GROUP_CONCAT(DISTINCT sp.levelthree ORDER BY sp.levelthree 	SEPARATOR ',') 	as 'levelthree'
+                     FROM		{report_gen_super_user}	sp
+                     WHERE		sp.userid = :user
+                     GROUP BY	sp.levelzero ";
+
+            /* Execute  */
+            $rdo = $DB->get_records_sql($sql,$params);
+            if ($rdo) {
+                foreach ($rdo as $instance) {
+                    /* Info Access  */
+                    $infoAccess = new stdClass();
+                    $infoAccess->levelZero  = ($instance->levelzero ? $instance->levelzero : 0);
+                    $infoAccess->levelOne   = ($instance->levelone ? $instance->levelone : 0);
+                    $infoAccess->levelTwo   = ($instance->leveltwo ? $instance->leveltwo : 0);
+                    $infoAccess->levelThree = ($instance->levelthree ? $instance->levelthree : 0);
+
+                    /* Add Access   */
+                    $myAccess[$instance->levelzero] = $infoAccess;
+                }//for_rdo
+            }//if_rdo
+
+            return $myAccess;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//Get_MyAccess
+
+    public static function Init_Organization_Structure($selector,$employeeSel,$outcomeSel,$superUser,$myAccess,$btnActions) {
+        /* Variables    */
+        global $PAGE;
+        $options    = null;
+        $hash       = null;
+        $jsModule   = null;
+        $name       = null;
+        $path       = null;
+        $requires   = null;
+        $strings    = null;
+        $grpOne     = null;
+        $grpTwo     = null;
+        $grpThree   = null;
+        $sp         = null;
+
+        try {
+            /* Initialise variables */
+            $name       = 'level_structure';
+            $path       = '/report/manager/js/organization.js';
+            $requires   = array('node', 'event-custom', 'datasource', 'json', 'moodle-core-notification');
+            $grpThree   = array('none', 'moodle');
+            $strings    = array($grpThree);
+
+            /* Initialise js module */
+            $jsModule = array('name'        => $name,
+                              'fullpath'    => $path,
+                              'requires'    => $requires,
+                              'strings'     => $strings
+                             );
+
+            $sp = ($superUser ? 1 : 0);
+            $PAGE->requires->js_init_call('M.core_user.init_organization',
+                                          array($selector,$employeeSel,$outcomeSel,$sp,$myAccess,$btnActions),
+                                          false,
+                                          $jsModule
+                                         );
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//Init_Organization_Structure
 
     /**
      * @param           $tab
@@ -579,7 +723,6 @@ class CompetenceManager {
             throw $ex;
         }//try_catch
     }//Get_Companies_LevelList
-
 
     /**
      * @param           $company

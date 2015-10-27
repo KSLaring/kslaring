@@ -15,12 +15,17 @@
  *
  * Add Job Role (Form)
  *
+ * @updateDate      26/10/2015
+ * @author          eFaktor     (fbv)
+ *
+ * Description
+ * Update to Super User
+ * Update to new java script to load the companies
  */
 
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->libdir.'/formslib.php');
-$PAGE->requires->js('/report/manager/js/manager.js');
 
 class manager_add_job_role_form extends moodleform {
     function definition () {
@@ -32,6 +37,9 @@ class manager_add_job_role_form extends moodleform {
 
         /* Form */
         $m_form         = $this->_form;
+
+        /* My Access    */
+        $myAccess = $this->_customdata;
 
         /* Job Role */
         $m_form->addElement('header', 'name_area', get_string('job_role_name', 'report_manager'));
@@ -54,13 +62,25 @@ class manager_add_job_role_form extends moodleform {
         $m_form->addElement('header', 'levels_connected', get_string('jr_connected', 'report_manager'));
         $m_form->setExpanded('levels_connected',true);
         /* Level Zero   */
-        $this->Add_CompanyLevel(0,$m_form);
+        /* Companies connected with super user  */
+        $myCompanies    = null;
+        $myCompanies = $this->Get_MyLevelAccess($myAccess,0);
+        $this->Add_CompanyLevel(0,$m_form,$myCompanies);
         /* Level One    */
-        $this->Add_CompanyLevel(1,$m_form);
+        /* Companies connected with super user  */
+        $myCompanies    = null;
+        $myCompanies = $this->Get_MyLevelAccess($myAccess,1);
+        $this->Add_CompanyLevel(1,$m_form,$myCompanies);
         /* Level Two    */
-        $this->Add_CompanyLevel(2,$m_form);
+        /* Companies connected with super user  */
+        $myCompanies    = null;
+        $myCompanies = $this->Get_MyLevelAccess($myAccess,2);
+        $this->Add_CompanyLevel(2,$m_form,$myCompanies);
         /* Level Three  */
-        $this->Add_CompanyLevel(3,$m_form);
+        /* Companies connected with super user  */
+        $myCompanies    = null;
+        $myCompanies = $this->Get_MyLevelAccess($myAccess,3);
+        $this->Add_CompanyLevel(3,$m_form,$myCompanies);
 
         /* ADD List with all outcomes */
         $m_form->addElement('header', 'outcomes', get_string('related_outcomes', 'report_manager'));
@@ -81,21 +101,82 @@ class manager_add_job_role_form extends moodleform {
     }//definition
 
     /**
+     * @param               $myAccess
+     * @param               $level
+     *
+     * @return          null|string
+     * @throws              Exception
+     *
+     * @creationDate        23/10/2015
+     * @author              eFaktor     (fbv)
+     *
+     * Description
+     * Get companies connected with super user
+     */
+    function Get_MyLevelAccess($myAccess,$level) {
+        /* Variables    */
+        $myLevelAccess  = null;
+        $parent         = null;
+
+        try {
+            if ($myAccess) {
+                $parent     = optional_param(COMPANY_STRUCTURE_LEVEL . 0, 0, PARAM_INT);
+
+                switch ($level) {
+                    case 0:
+                        $myLevelAccess = implode(',',array_keys($myAccess));
+
+                        break;
+                    case 1:
+                        if ($parent) {
+                            $myLevelAccess = $myAccess[$parent]->levelOne;
+                        }//if_parent
+
+                        break;
+                    case 2:
+                        if ($parent) {
+                            $myLevelAccess = $myAccess[$parent]->levelTwo;
+                        }//if_parent
+
+                        break;
+                    case 3:
+                        if ($parent) {
+                            $myLevelAccess = $myAccess[$parent]->levelThree;
+                        }//if_parent
+
+                        break;
+                }//switch_level
+            }//if_myAccess
+
+            return $myLevelAccess;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//Get_MyLevelAccess
+
+    /**
      * @param           $level
      * @param           $form
+     * @param           $myCompanies
      *
      * @creationDate    26/01/2015
      * @author          eFaktor     (fbv)
      *
      * Description
      * Add the company selector for a specific level
+     *
+     * @updateDate      26/10/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Update to super user
      */
-    function Add_CompanyLevel($level,&$form) {
+    function Add_CompanyLevel($level,&$form,$myCompanies) {
         /* Add Level X      */
         /* Add Company List */
-        $options = $this->getCompanyList($level);
+        $options = $this->getCompanyList($level,$myCompanies);
         $select= &$form->addElement('select',
-                                    REPORT_JR_COMPANY_STRUCTURE_LEVEL . $level,
+                                    COMPANY_STRUCTURE_LEVEL . $level,
                                     get_string('select_company_structure_level','report_manager',$level),
                                     $options);
         if ($level == 3) {
@@ -108,6 +189,8 @@ class manager_add_job_role_form extends moodleform {
 
     /**
      * @param           $level
+     * @param           $myCompanies
+     *
      * @return          array
      *
      * @creationDate    26/01/2015
@@ -115,38 +198,35 @@ class manager_add_job_role_form extends moodleform {
      *
      * Description
      * Get the company List
+     *
+     * @updateDate      26/10/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Update to super user
+     * Update to new java script to load the companies
      */
-    function getCompanyList($level) {
+    function getCompanyList($level,$myCompanies) {
         /* Variables    */
-        $options = array();
+        $options        = array();
 
+        /* Get Company List */
         switch ($level) {
             case 0:
-                $options = CompetenceManager::GetCompanies_LevelList($level);
+                /* Companies for Level Zero */
+                $options    = CompetenceManager::GetCompanies_LevelList($level,0,$myCompanies);
 
                 break;
-            case 1:
-                if (isset($_COOKIE['parentLevelZero']) && ($_COOKIE['parentLevelZero'])) {
-                    $options = CompetenceManager::GetCompanies_LevelList($level,$_COOKIE['parentLevelZero']);
-                }else {
-                    $options[0] = get_string('select_level_list','report_manager');
-                }//IF_COOKIE
+            default:
+                /* Parent*/
+                $parent     = optional_param(COMPANY_STRUCTURE_LEVEL . ($level-1), 0, PARAM_INT);
 
-                break;
-            case 2:
-                if (isset($_COOKIE['parentLevelOne']) && ($_COOKIE['parentLevelOne'])) {
-                    $options = CompetenceManager::GetCompanies_LevelList($level,$_COOKIE['parentLevelOne']);
+                /* Companies for the current level */
+                if ($parent) {
+                    $options = CompetenceManager::GetCompanies_LevelList($level,$parent,$myCompanies);
                 }else {
                     $options[0] = get_string('select_level_list','report_manager');
-                }//IF_COOKIE
-
-                break;
-            case 3:
-                if (isset($_COOKIE['parentLevelTwo']) && ($_COOKIE['parentLevelTwo'])) {
-                    $options = CompetenceManager::GetCompanies_LevelList($level,$_COOKIE['parentLevelTwo']);
-                }else {
-                    $options[0] = get_string('select_level_list','report_manager');
-                }//IF_COOKIE
+                }//if_parent
 
                 break;
         }//level
@@ -164,51 +244,82 @@ class manager_add_job_role_form extends moodleform {
      *
      * Description
      * Set the company selected
+     *
+     * @updateDate      26/10/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Update to new java script to load the companies
      */
     function setLevelDefault($level,&$form) {
+        /* Variables    */
+        $default    = null;
+        $parent     = null;
 
-        switch ($level) {
-            case 0:
-                if (isset($_COOKIE['parentLevelZero']) && ($_COOKIE['parentLevelZero'])) {
-                    $form->setDefault(REPORT_JR_COMPANY_STRUCTURE_LEVEL . $level,$_COOKIE['parentLevelZero']);
-                }else {
-                    $form->setDefault(REPORT_JR_COMPANY_STRUCTURE_LEVEL . $level,0);
-                }//if_cookie
+        /* Get Default Value    */
+        if ($level != 3) {
+            $default = optional_param(COMPANY_STRUCTURE_LEVEL . $level, 0, PARAM_INT);
+        }else {
+            $default = optional_param_array(COMPANY_STRUCTURE_LEVEL . $level, 0, PARAM_INT);
+        }
 
-                break;
-            case 1:
-                if (isset($_COOKIE['parentLevelOne']) && ($_COOKIE['parentLevelOne'])) {
-                    $form->setDefault(REPORT_JR_COMPANY_STRUCTURE_LEVEL . $level,$_COOKIE['parentLevelOne']);
-                }else {
-                    $form->setDefault(REPORT_JR_COMPANY_STRUCTURE_LEVEL . $level,0);
-                }//if_cookie
-
-                break;
-            case 2:
-                if (isset($_COOKIE['parentLevelTwo']) && ($_COOKIE['parentLevelTwo'])) {
-                    $form->setDefault(REPORT_JR_COMPANY_STRUCTURE_LEVEL . $level,$_COOKIE['parentLevelTwo']);
-                }else {
-                    $form->setDefault(REPORT_JR_COMPANY_STRUCTURE_LEVEL . $level,0);
-                }//if_cookie
-
-                break;
-            case 3:
-                if (isset($_COOKIE['parentLevelThree']) && ($_COOKIE['parentLevelThree'])) {
-                    $form->setDefault(REPORT_JR_COMPANY_STRUCTURE_LEVEL . $level,$_COOKIE['parentLevelThree']);
-                }else {
-                    $form->setDefault(REPORT_JR_COMPANY_STRUCTURE_LEVEL . $level,0);
-                }//if_cookie
-
-                break;
-        }//switch
-
-        if ($level) {
-            $form->disabledIf(REPORT_JR_COMPANY_STRUCTURE_LEVEL . $level ,REPORT_JR_COMPANY_STRUCTURE_LEVEL . ($level - 1),'eq',0);
-        }//if_elvel
+        /* Set Default  */
+        $form->setDefault(COMPANY_STRUCTURE_LEVEL . $level,$default);
     }//setLevelDefault
 
+    /**
+     * @param       array $data
+     * @param       array $files
+     *
+     * @return      array
+     *
+     * @updateDate  26/10/2015
+     * @author      eFaktor     (fbv)
+     *
+     * Description
+     * Update to super user
+     */
     function validation($data, $files) {
+        /* Variables    */
+        $selZero    = null;
+        $levelZero  = null;
+        $selOne     = null;
+        $selTwo     = null;
+        $selThree   = null;
+
         $errors = parent::validation($data, $files);
+
+        /* My Access    */
+        $myAccess = $this->_customdata;
+        if ($myAccess) {
+            $selZero = COMPANY_STRUCTURE_LEVEL . 0;
+            if (!$data[$selZero]) {
+                $errors[$selZero]  = get_string('required');
+            }else {
+                $levelZero  = $myAccess[$data[$selZero]];
+                if ($levelZero->levelOne) {
+                    $selOne     = COMPANY_STRUCTURE_LEVEL . 1;
+                    if (!$data[$selOne]) {
+                        $errors[$selOne]  = get_string('required');
+                    }else {
+                        if ($levelZero->levelTwo) {
+                            $selTwo     = COMPANY_STRUCTURE_LEVEL . 2;
+                            if (!$data[$selTwo]) {
+                                $errors[$selTwo]  = get_string('required');
+                            }else {
+                                if ($levelZero->levelThree) {
+                                    $selThree     = COMPANY_STRUCTURE_LEVEL . 3;
+                                    if (!$data[$selThree]) {
+                                        $errors[$selTwo]  = get_string('required');
+                                    }
+                                }
+                            }
+                        }//levelTwo
+                    }//sel_levelOne
+                }
+            }
+        }
+
 
         /* New Function to check if the Job Role just exists*/
         /* Same Name and Industry Code  */

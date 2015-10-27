@@ -247,7 +247,7 @@ class EmployeeReport {
 
         try {
             /* Outcomes */
-            $outcomes[0] = get_string('select') . '...';
+            $outcomes[0] = get_string('select');
 
             /* SQL Instruction  */
             $sql = " SELECT			DISTINCT 	go.id,

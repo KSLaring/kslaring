@@ -100,6 +100,9 @@ if (!empty($out)) {
     require('../tabs.php');
 
     $form->display();
+
+    /* Initialise Organization Structure    */
+    CompetenceManager::Init_Organization_Structure(COMPANY_STRUCTURE_LEVEL,null,REPORT_MANAGER_OUTCOME_LIST,0,null,false);
 }//if_out
 
 /* Print Footer */
