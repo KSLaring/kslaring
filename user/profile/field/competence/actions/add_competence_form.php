@@ -11,11 +11,16 @@
  * @creationDate    27/01/2015
  * @author          eFaktor     (fbv)
  *
+ * @updateDate      27/10/2015
+ * @author          eFaktor     (fbv)
+ *
+ * Description
+ * New js to load the company structure
+ *
  */
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->libdir.'/formslib.php');
-$PAGE->requires->js('/user/profile/field/competence/js/competence.js');
 
 class competence_add_competence_form extends moodleform {
     function definition() {
@@ -72,8 +77,6 @@ class competence_add_competence_form extends moodleform {
                                     get_string('select_company_structure_level','report_manager',$level),
                                     $options);
         if ($level == 3) {
-            //$select->setMultiple(true);
-            //$select->setSize(10);
             $form->addRule('level_' . $level,'','required', null, 'server');
         }//if_level_three
 
@@ -94,22 +97,36 @@ class competence_add_competence_form extends moodleform {
      *
      * Description
      * Job role no compulsory
+     *
+     * @updateDate      27/10/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * New js to load the company structure
      */
     function Add_JobRoleLevel(&$form) {
         /* Variables    */
-        $options = array();
+        $options    = array();
+        $levelZero  = null;
+        $levelOne   = null;
+        $levelTwo   = null;
+        $levelThree = null;
+
+        /* Get Levels     */
+        $levelZero      = optional_param('level_' . 0, 0, PARAM_INT);
+        $levelOne       = optional_param('level_' . 1, 0, PARAM_INT);
+        $levelTwo       = optional_param('level_' . 2, 0, PARAM_INT);
+        $levelThree     = optional_param('level_' . 3, 0, PARAM_INT);
 
         /* Job Roles    */
         $options[0] = get_string('select_level_list','report_manager');
-
-        /* Level Three  */
-        if (isset($_COOKIE['parentLevelThree']) && ($_COOKIE['parentLevelThree'])) {
+        if ($levelThree) {
             /* Add Generics --> Only Public Job Roles   */
-            if (Competence::IsPublic($_COOKIE['parentLevelThree'])) {
+            if (Competence::IsPublic($levelThree)) {
                 Competence::GetJobRoles_Generics($options);
             }//if_isPublic
 
-            Competence::GetJobRoles_Hierarchy($options,$_COOKIE['parentLevelZero'],$_COOKIE['parentLevelOne'],$_COOKIE['parentLevelTwo'],$_COOKIE['parentLevelThree']);
+            Competence::GetJobRoles_Hierarchy($options,$levelZero,$levelOne,$levelTwo,$levelThree);
         }//if_level_three
 
         $select= &$form->addElement('select','job_roles',
@@ -134,10 +151,19 @@ class competence_add_competence_form extends moodleform {
      *
      * Description
      * Get the company List
+     *
+     * @updateDate      27/10/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * New js to load the company structure
      */
     function getCompanyList($level,$my_companies) {
         /* Variables    */
         $options = array();
+
+        /* Parent*/
+        $parent     = optional_param('level_' . ($level-1), 0, PARAM_INT);
 
         switch ($level) {
             case 0:
@@ -145,24 +171,24 @@ class competence_add_competence_form extends moodleform {
 
                 break;
             case 1:
-                if (isset($_COOKIE['parentLevelZero']) && ($_COOKIE['parentLevelZero'])) {
-                    $options = Competence::GetCompanies_Level(1,$_COOKIE['parentLevelZero']);
+                if ($parent) {
+                    $options = Competence::GetCompanies_Level(1,$parent);
                 }else {
                     $options[0] = get_string('select_level_list','report_manager');
                 }//if_levelZero
 
                 break;
             case 2:
-                if (isset($_COOKIE['parentLevelOne']) && ($_COOKIE['parentLevelOne'])) {
-                    $options = Competence::GetCompanies_Level(2,$_COOKIE['parentLevelOne']);
+                if ($parent) {
+                    $options = Competence::GetCompanies_Level(2,$parent);
                 }else {
                     $options[0] = get_string('select_level_list','report_manager');
                 }//if_levelOne
 
                 break;
             case 3:
-                if (isset($_COOKIE['parentLevelTwo']) && ($_COOKIE['parentLevelTwo'])) {
-                    $options = Competence::GetCompanies_Level(3,$_COOKIE['parentLevelTwo'],$my_companies);
+                if ($parent) {
+                    $options = Competence::GetCompanies_Level(3,$parent,$my_companies);
                 }else {
                     $options[0] = get_string('select_level_list','report_manager');
                 }//if_levelTwo
@@ -183,47 +209,27 @@ class competence_add_competence_form extends moodleform {
      *
      * Description
      * Set the company selected
+     *
+     * @updateDate      27/10/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * New js to load the company structure
      */
     function setLevelDefault($level,&$form) {
+        /* Variables    */
+        $default    = null;
+        $parent     = null;
 
-        switch ($level) {
-            case 0:
-                if (isset($_COOKIE['parentLevelZero']) && ($_COOKIE['parentLevelZero'])) {
-                    $form->setDefault('level_' . $level,$_COOKIE['parentLevelZero']);
-                }else {
-                    $form->setDefault('level_' . $level,0);
-                }//if_cookie
-
-                break;
-            case 1:
-                if (isset($_COOKIE['parentLevelOne']) && ($_COOKIE['parentLevelOne'])) {
-                    $form->setDefault('level_' . $level,$_COOKIE['parentLevelOne']);
-                }else {
-                    $form->setDefault('level_' . $level,0);
-                }//if_cookie
-
-                break;
-            case 2:
-                if (isset($_COOKIE['parentLevelTwo']) && ($_COOKIE['parentLevelTwo'])) {
-                    $form->setDefault('level_' . $level,$_COOKIE['parentLevelTwo']);
-                }else {
-                    $form->setDefault('level_' . $level,0);
-                }//if_cookie
-
-                break;
-            case 3:
-                if (isset($_COOKIE['parentLevelThree']) && ($_COOKIE['parentLevelThree'])) {
-                    $form->setDefault('level_' . $level,$_COOKIE['parentLevelThree']);
-                }else {
-                    $form->setDefault('level_' . $level,-1);
-                }//if_cookie
-
-                break;
-        }//switch
-
-        if ($level) {
-            $form->disabledIf('level_'  . $level ,'level_'  . ($level - 1),'eq',0);
-        }//if_elvel
+        /* Get Default Value    */
+        $default = optional_param('level_'  . $level, 0, PARAM_INT);
+        /* Set Default  */
+        if ($level == 3) {
+            if (!$default) {
+                $default = -1;
+            }
+        }
+        $form->setDefault('level_' . $level,$default);
     }//setLevelDefault
 
     /**
