@@ -15,15 +15,20 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Waitinglist enrolment plugin version specification.
+ * Self enrol plugin external functions and service definitions.
  *
- * @package    enrol_waitinglist
- * @copyright  2015 Justin Hunt {@link http://poodll.com}
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package   enrol_invoice
+ * @copyright 2013 Rajesh Taneja <rajesh@moodle.com>
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @since     Moodle 2.6
  */
 
-defined('MOODLE_INTERNAL') || die();
-
-$plugin->version   = 2015102806;        // The current plugin version (Date: YYYYMMDDXX)
-$plugin->requires  = 2014050800;        // Requires this Moodle version
-$plugin->component = 'enrol_waitinglist';    // Full name of the plugin (used for diagnostics)
+$functions = array(
+    'enrol_invoice_get_instance_info' => array(
+        'classname'   => 'enrol_invoice_external',
+        'methodname'  => 'get_instance_info',
+        'classpath'   => 'enrol/invoice/externallib.php',
+        'description' => 'invoice enrolment instance information.',
+        'type'        => 'read'
+    )
+);

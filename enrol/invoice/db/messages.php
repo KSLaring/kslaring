@@ -15,15 +15,15 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Waitinglist enrolment plugin version specification.
+ * Defines message providers for self enrolments.
  *
- * @package    enrol_waitinglist
- * @copyright  2015 Justin Hunt {@link http://poodll.com}
+ * @package    enrol_invoice
+ * @copyright  2012 Petr Skoda {@link http://skodak.org}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
+$messageproviders = array (
 
-$plugin->version   = 2015102806;        // The current plugin version (Date: YYYYMMDDXX)
-$plugin->requires  = 2014050800;        // Requires this Moodle version
-$plugin->component = 'enrol_waitinglist';    // Full name of the plugin (used for diagnostics)
+    'expiry_notification' => array(),
+
+);

@@ -32,7 +32,6 @@
 namespace enrol_waitinglist\method\self;
 
 require_once($CFG->dirroot . '/enrol/waitinglist/lib.php');
-
 class enrolmethodself extends \enrol_waitinglist\method\enrolmethodbase{
 
 	const METHODTYPE='self';
@@ -59,7 +58,18 @@ class enrolmethodself extends \enrol_waitinglist\method\enrolmethodbase{
      */
     public function __construct()
     {
+        global $CFG;
 
+        /**
+         * @updateDate  30/10/2015
+         * @author      eFaktor     (fbv)
+         *
+         * Description
+         * Update to invoice data
+         */
+        if (enrol_get_plugin('invoice')) {
+            require_once($CFG->dirroot . '/enrol/invoice/invoicelib.php');
+        }
     }
 	 
 	  /**
@@ -225,34 +235,52 @@ class enrolmethodself extends \enrol_waitinglist\method\enrolmethodbase{
      * @return bool|array true if enroled else eddor code and messege
      */
     public function waitlistrequest_self(\stdClass $waitinglist, $data = null) {
+        /* Variables    */
         global $DB, $USER, $CFG;
-		
-		
-        // Don't enrol user if password is not passed when required.
-        if ($this->password && !isset($data->enrolpassword)) {
-            return;
-        }
+        $queue_entry = null;
 
-		//prepare additional fields for our queue DB entry
-		$queue_entry = new \stdClass;
-		$queue_entry->waitinglistid      = $waitinglist->id;
-		$queue_entry->courseid       = $waitinglist->courseid;
-		$queue_entry->userid       = $USER->id;
-		$queue_entry->methodtype   = static::METHODTYPE;
-		if(!isset($data->enrolpassword)){$data->enrolpassword='';}
-		$queue_entry->{self::QFIELD_ENROLPASSWORD}=$data->enrolpassword;
-		$queue_entry->timecreated  = time();
-		$queue_entry->queueno = 	0;
-		$queue_entry->seats = 1;
-		$queue_entry->allocseats = 0;
-		$queue_entry->confirmedseats = 0;
-		$queue_entry->enroledseats = 0;
-		$queue_entry->offqueue = 0;
-		$queue_entry->timemodified = $queue_entry->timecreated;
-		
-		//add the user to the waitinglist queue 
-        $queueid = $this->add_to_waitinglist($waitinglist, $queue_entry);
 
+        try {
+            // Don't enrol user if password is not passed when required.
+            if ($this->password && !isset($data->enrolpassword)) {
+                return;
+            }
+
+            //prepare additional fields for our queue DB entry
+            $queue_entry = new \stdClass;
+            $queue_entry->waitinglistid                 = $waitinglist->id;
+            $queue_entry->courseid                      = $waitinglist->courseid;
+            $queue_entry->userid                        = $USER->id;
+            $queue_entry->methodtype                    = static::METHODTYPE;
+            if(!isset($data->enrolpassword)){$data->enrolpassword='';}
+            $queue_entry->{self::QFIELD_ENROLPASSWORD}  = $data->enrolpassword;
+            $queue_entry->timecreated       = time();
+            $queue_entry->queueno           = 	0;
+            $queue_entry->seats             = 1;
+            $queue_entry->allocseats        = 0;
+            $queue_entry->confirmedseats    = 0;
+            $queue_entry->enroledseats      = 0;
+            $queue_entry->offqueue          = 0;
+            $queue_entry->timemodified      = $queue_entry->timecreated;
+
+            //add the user to the waitinglist queue
+            $queueid = $this->add_to_waitinglist($waitinglist, $queue_entry);
+
+            /**
+             * @updateDate  28/10/2015
+             * @author      eFaktor     (fbv)
+             *
+             * Description
+             * Save Invoice Information
+             */
+            if (enrol_get_plugin('invoice')) {
+                if ($waitinglist->{ENROL_WAITINGLIST_FIELD_INVOICE}) {
+                    \Invoices::Add_InvoiceInto($data,$USER->id,$waitinglist->courseid,$waitinglist->id);
+                }//if_invoice_info
+            }
+        }catch (\Exception $ex) {
+            throw $ex;
+        }//try_catch
     }
     
     
@@ -264,6 +292,8 @@ class enrolmethodself extends \enrol_waitinglist\method\enrolmethodbase{
      * @return null 
      */
 	public function graduate_from_list(\stdClass $waitinglist,\stdClass $queue_entry, $seats){
+        global $CFG;
+
 		$entryman= \enrol_waitinglist\entrymanager::get_by_course($waitinglist->courseid);
 		$success =false;
 		
@@ -295,23 +325,28 @@ class enrolmethodself extends \enrol_waitinglist\method\enrolmethodbase{
      * @return null 
      */
 	public function do_post_enrol_actions(\stdClass $waitinglist,\stdClass $queueentry){
-		global $DB,$CFG;
-		 if ($this->password and $this->{self::MFIELD_GROUPKEY} and $queueentry->{QFIELD_ENROLPASSWORD} !== $this->password) {
-            // It must be a group enrolment, let's assign group too.
-            $groups = $DB->get_records('groups', array('courseid'=>$waitinglist->courseid), 'id', 'id, enrolmentkey');
-            foreach ($groups as $group) {
-                if (empty($group->enrolmentkey)) {
-                    continue;
-                }
-                if ($group->enrolmentkey ===  $queueentry->{QFIELD_ENROLPASSWORD} ) {
-                    // Add user to group.
-                    require_once($CFG->dirroot.'/group/lib.php');
-                    groups_add_member($group->id, $USER->id);
-                    break;
+        /* Variables    */
+		global $DB,$CFG, $USER;
+
+        try {
+            if ($this->password and $this->{self::MFIELD_GROUPKEY} and $queueentry->{QFIELD_ENROLPASSWORD} !== $this->password) {
+                // It must be a group enrolment, let's assign group too.
+                $groups = $DB->get_records('groups', array('courseid'=>$waitinglist->courseid), 'id', 'id, enrolmentkey');
+                foreach ($groups as $group) {
+                    if (empty($group->enrolmentkey)) {
+                        continue;
+                    }
+                    if ($group->enrolmentkey ===  $queueentry->{QFIELD_ENROLPASSWORD} ) {
+                        // Add user to group.
+                        require_once($CFG->dirroot.'/group/lib.php');
+                        groups_add_member($group->id, $USER->id);
+                        break;
+                    }
                 }
             }
-        }
-	
+        }catch (\Exception $ex) {
+            throw $ex;
+        }//try_catch
 	}
 
     /**
@@ -339,12 +374,27 @@ class enrolmethodself extends \enrol_waitinglist\method\enrolmethodbase{
         // Don't show enrolment instance form, if user can't enrol using it.
         if (true === $enrolstatus) {
         	$listtotal = $queueman->get_listtotal();
+
             $form = new enrolmethodself_enrolform(NULL, array($waitinglist,$this,$listtotal));
             $waitinglistid = optional_param('waitinglist', 0, PARAM_INT);
             if ($waitinglist->id == $waitinglistid) {
             	//if this is an enrol form submission, process it
                 if ($data = $form->get_data()) {
                     $this->waitlistrequest_self($waitinglist, $data);
+
+                    /**
+                     * @updateDate  28/10/2015
+                     * @author      eFaktor     (fbv)
+                     *
+                     * Description
+                     * Save Invoice Information
+                     */
+                    if (enrol_get_plugin('invoice')) {
+                        if ($waitinglist->{ENROL_WAITINGLIST_FIELD_INVOICE}) {
+                            \Invoices::activate_enrol_invoice($USER->id,$waitinglist->courseid,$waitinglist->id);
+                        }//if_invoice_info
+                    }//if_enrol_invoice
+
                     redirect($CFG->wwwroot . '/course/view.php?id=' . $waitinglist->courseid);
                 }
             }
