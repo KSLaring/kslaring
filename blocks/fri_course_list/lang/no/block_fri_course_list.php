@@ -8,9 +8,9 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-$string['enabledock'] = 'Tillat brukeren å flytte denne blokken til sidestolpen';
-$string['pluginname'] = 'Frikomport kurs liste';
-$string['searchinfrikomport'] = 'Søk';
-$string['fri_course_list:addinstance'] = 'Legg til en ny Frikomport-kurs-liste-blokk';
-$string['fri_course_list:myaddinstance'] = 'Legg til en ny Frikomport-kurs-liste-blokk til Min startside';
-$string['fri_course_list:view'] = 'Vis Frikomport-kurs-liste-blokken';
+$string['enabledock']               = 'Tillat brukeren å flytte denne blokken til sidestolpen';
+$string['pluginname']               = 'Frikomport kurs liste';
+$string['searchinfrikomport']       = 'Søk';
+$string['frikomport:addinstance']   = 'Legg til en ny Frikomport-kurs-liste-blokk';
+$string['frikomport:myaddinstance'] = 'Legg til en ny Frikomport-kurs-liste-blokk til Min startside';
+$string['frikomport:view'] = 'Vis Frikomport-kurs-liste-blokken';

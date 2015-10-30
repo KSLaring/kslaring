@@ -24,9 +24,9 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-$string['enabledock'] = 'Allow the user to dock this block';
-$string['pluginname'] = 'Frikomport course list';
-$string['searchinfrikomport'] = 'Search';
-$string['fri_course_list:addinstance'] = 'Add a new frikomport course list block';
-$string['fri_course_list:myaddinstance'] = 'Add a new frikomport course list block to My home';
-$string['fri_course_list:view'] = 'View the frikomport course list block';
+$string['enabledock']               = 'Allow the user to dock this block';
+$string['pluginname']               = 'Frikomport course list';
+$string['searchinfrikomport']       = 'Search';
+$string['frikomport:addinstance']   = 'Add a new frikomport course list block';
+$string['frikomport:myaddinstance'] = 'Add a new frikomport course list block to My home';
+$string['frikomport:view'] = 'View the frikomport course list block';
