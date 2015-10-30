@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -16,23 +15,16 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * The course list page
+ * Version details
  *
- * @package         local
- * @subpackage      friadmin
- * @copyright       2015 eFaktor
- * @author          Urs Hunkler {@link urs.hunkler@unodo.de}
- * @license         http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package    block_fri_course_list
+ * @copyright  2015 eFaktor
+ * @author     Urs Hunkler {@link urs.hunkler@unodo.de}
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-/**
- * @updateDate      16/06/2015
- * @author          eFaktor     (fbv)
- *
- * Description
- * Integrate the Course Loction plugin
- */
-defined('MOODLE_INTERNAL') || die;
 
-$plugin->version    = 2015103000;       /* The current plugin version (Date: YYYYMMDDXX)  */
-$plugin->requires   = 2014051205;       /* Requires this Moodle version                   */
-$plugin->component  = 'local_friadmin'; /* Full name of the plugin (used for diagnostics) */
+defined('MOODLE_INTERNAL') || die();
+
+$plugin->version = 2015103001;    // The current plugin version (Date: YYYYMMDDXX)
+$plugin->requires = 2014050800;   // Requires this Moodle version
+$plugin->component = 'block_fri_course_list';  // Full name of the plugin (used for diagnostics)

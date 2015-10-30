@@ -16,23 +16,17 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * The course list page
+ * This file contains language strings used in the frikomport course list block
  *
- * @package         local
- * @subpackage      friadmin
- * @copyright       2015 eFaktor
- * @author          Urs Hunkler {@link urs.hunkler@unodo.de}
- * @license         http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package   block_fri_course_list
+ * @copyright 2015 eFaktor
+ * @author    Urs Hunkler {@link urs.hunkler@unodo.de}
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-/**
- * @updateDate      16/06/2015
- * @author          eFaktor     (fbv)
- *
- * Description
- * Integrate the Course Loction plugin
- */
-defined('MOODLE_INTERNAL') || die;
 
-$plugin->version    = 2015103000;       /* The current plugin version (Date: YYYYMMDDXX)  */
-$plugin->requires   = 2014051205;       /* Requires this Moodle version                   */
-$plugin->component  = 'local_friadmin'; /* Full name of the plugin (used for diagnostics) */
+$string['enabledock']               = 'Allow the user to dock this block';
+$string['pluginname']               = 'Frikomport course list';
+$string['searchinfrikomport']       = 'Search';
+$string['frikomport:addinstance']   = 'Add a new frikomport course list block';
+$string['frikomport:myaddinstance'] = 'Add a new frikomport course list block to My home';
+$string['frikomport:view'] = 'View the frikomport course list block';
