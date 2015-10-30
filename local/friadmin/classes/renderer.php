@@ -143,6 +143,26 @@ class local_friadmin_renderer extends plugin_renderer_base {
     }
 
     /**
+     * Render the user courselist block.
+     *
+     * @param local_friadmin_courselist_page $page The page renderable
+     *
+     * @return string html for the block
+     */
+    public function render_local_friadmin_usercourselist_block(
+        local_friadmin_usercourselist_block $block) {
+        global $OUTPUT;
+
+        $out = '';
+
+        $out .= $OUTPUT->heading($block->data->title, 2);
+        $out .= $this->render($block->data->filter);
+        $out .= $this->render($block->data->table);
+
+        return $out;
+    }
+
+    /**
      * Render the user course table.
      *
      * @param local_friadmin_courselist_table $table The table renderable
