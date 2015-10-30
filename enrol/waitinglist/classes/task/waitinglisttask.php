@@ -46,5 +46,16 @@ class waitinglisttask extends \core\task\scheduled_task {
         $waitinglist->sync($trace, null);
         $waitinglist->send_expiry_notifications($trace);
 		$waitinglist->check_and_enrol($trace);
+
+        /**
+         * @updateDate  29/10/2015
+         * @author      eFaktor     (fbv)
+         *
+         * Description
+         * Check if there are invoices to activate
+         */
+        if (enrol_get_plugin('invoice')) {
+            $waitinglist->check_invoices($trace);
+        }//if_enrolInvocie
 	}
 }

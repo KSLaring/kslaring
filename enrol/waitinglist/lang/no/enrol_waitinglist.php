@@ -152,6 +152,17 @@ $string['exportprint'] = 'Utskriftsvennling versjon';
 $string['manageconfirmedheading']='Bekreftede plasser i kurset: {$a}'; 
 $string['totalcell']='Totalt: {$a}'; 
 
+/**
+ * @updateDate      28/10/2015
+ * @author          eFaktor     (fbv)
+ *
+ * Description
+ * New strings to add invoice information option
+ */
+$string['invoice']      = 'Invoice information required';
+$string['invoice_help'] = 'The user must fill in all information about the invoice before the enrolment will be done.';
+
+
 
 
 

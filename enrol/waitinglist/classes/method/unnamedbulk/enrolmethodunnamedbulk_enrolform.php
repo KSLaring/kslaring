@@ -26,7 +26,6 @@ namespace enrol_waitinglist\method\unnamedbulk;
  
 require_once($CFG->libdir.'/formslib.php');
 
-
 class enrolmethodunnamedbulk_enrolform extends \moodleform {
     protected $method;
     protected $waitinglist;
@@ -74,19 +73,22 @@ class enrolmethodunnamedbulk_enrolform extends \moodleform {
 		$mform->addRule('seats', null, 'numeric', null, 'client');
 		$mform->setType('seats', PARAM_INT);
 
-        
+        /**
+         * @updateDate  28/10/2015
+         * @author      eFaktor     (fbv)
+         *
+         * Description
+         * Add Invoice fields
+         */
+        if ((!$queuestatus->hasentry) && ($waitinglist->{ENROL_WAITINGLIST_FIELD_INVOICE})) {
+            global $PAGE;
+            $PAGE->requires->js('/enrol/invoice/js/invoice.js');
 
-		$mform->addElement('hidden', 'id');
-        $mform->setType('id', PARAM_INT);
-        $mform->setDefault('id', $waitinglist->courseid);
-		$mform->addElement('hidden', 'waitinglist');
-        $mform->setType('waitinglist', PARAM_INT);
-		$mform->setDefault('waitinglist', $waitinglist->id);
-		$mform->addElement('hidden', 'methodtype');
-        $mform->setType('methodtype', PARAM_TEXT);
-		$mform->setDefault('methodtype', $this->method->get_methodtype());
-		$mform->addElement('hidden', 'datarecordid');
-        $mform->setType('datarecordid', PARAM_INT);
+            \Invoices::AddElements_ToForm($mform);
+            $mform->addElement('hidden', 'invoicedata');
+            $mform->setType('invoicedata', PARAM_INT);
+            $mform->setDefault('invoicedata', 1);
+        }
 		
 		//add submit + enter course
 		$buttonarray=array();
@@ -96,7 +98,19 @@ class enrolmethodunnamedbulk_enrolform extends \moodleform {
 			$buttonarray[] = &$mform->createElement('button', 'entercoursebutton', get_string('entercoursenow', 'enrol_waitinglist'),array('class'=>'entercoursenowbutton','onclick'=>'location.href="' . $url .'"'));
 		}
 		$mform->addGroup($buttonarray, 'buttonar', '', array(' '), false);
-		
+
+        $mform->addElement('hidden', 'id');
+        $mform->setType('id', PARAM_INT);
+        $mform->setDefault('id', $waitinglist->courseid);
+        $mform->addElement('hidden', 'waitinglist');
+        $mform->setType('waitinglist', PARAM_INT);
+        $mform->setDefault('waitinglist', $waitinglist->id);
+        $mform->addElement('hidden', 'methodtype');
+        $mform->setType('methodtype', PARAM_TEXT);
+        $mform->setDefault('methodtype', $this->method->get_methodtype());
+        $mform->addElement('hidden', 'datarecordid');
+        $mform->setType('datarecordid', PARAM_INT);
+
 		//use this in place of button group, if you don't need the go to course button
 		//$this->add_action_buttons(false, get_string('reserveseats', 'enrol_waitinglist'));
 
@@ -110,17 +124,30 @@ class enrolmethodunnamedbulk_enrolform extends \moodleform {
         $queuestatus = $this->queuestatus;
         $waitinglist = $this->waitinglist;
 
-	   $availabletouser = ($queuestatus->waitlistsize - $queuestatus->queueposition) + 
+	   $availabletouser = ($queuestatus->waitlistsize - $queuestatus->queueposition) +
 	   		($queuestatus->vacancies + $queuestatus->assignedseats);
+
        //if($queuestatus->waitlistsize && $queuestatus->waitlistsize  < ($queuestatus->queueposition + $data['seats'])){
        if($availabletouser  < $data['seats']){
-       		$available = $queuestatus->waitlistsize - $queuestatus->queueposition - $queuestatus->waitingseats;
-       		$a = new \stdClass;
+      		$available = $queuestatus->waitlistsize - $queuestatus->queueposition - $queuestatus->waitingseats;
+      		$a = new \stdClass;
        		$a->available = $available;
        		$a->vacancies =  $queuestatus->vacancies;
         	$errors['seats'] = get_string('nomoreseats', 'enrol_waitinglist', $a);
         	return $errors;
         }
+
+        /**
+         * @updateDate  30/10/2015
+         * @author      eFaktor     (fbv)
+         *
+         * Description
+         * Validate invoice data
+         */
+        if (isset($data['invoicedata']) && $data['invoicedata']) {
+            \Invoices::Validate_InvoiceData($data,$errors);
+        }//if_invoicedata
+
 
         return $errors;
     }

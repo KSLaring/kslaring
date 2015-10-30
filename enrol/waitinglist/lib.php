@@ -24,15 +24,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-/**
- * @updateDate  23/06/2015
- * @author      eFaktor     (fbv)
- *
- * Description
- * CUT OFF DATE --> enrolenddate --> That is used by moodle
- */
-define('ENROL_WAITINGLIST_FIELD_CUTOFFDATE_OLD', 'customint1');
-define('ENROL_WAITINGLIST_FIELD_CUTOFFDATE', 'enrolenddate');
+define('ENROL_WAITINGLIST_FIELD_CUTOFFDATE', 'customint1');
 define('ENROL_WAITINGLIST_FIELD_MAXENROLMENTS', 'customint2');
 //define('ENROL_WAITINGLIST_FIELD_WAITLISTSIZE', 'customint3');
 define('ENROL_WAITINGLIST_FIELD_WAITLISTSIZE', 'customint6');
@@ -42,7 +34,7 @@ define('ENROL_WAITINGLIST_FIELD_WELCOMEMESSAGE', 'customtext1');
 define('ENROL_WAITINGLIST_FIELD_WAITLISTMESSAGE', 'customtext2');
 define('ENROL_WAITINGLIST_TABLE_QUEUE', 'enrol_waitinglist_queue');
 define('ENROL_WAITINGLIST_TABLE_METHODS', 'enrol_waitinglist_method');
-
+define('ENROL_WAITINGLIST_FIELD_INVOICE','customint8');
 
 class enrol_waitinglist_plugin extends enrol_plugin {
 
@@ -142,6 +134,25 @@ class enrol_waitinglist_plugin extends enrol_plugin {
 				}//end of if
 			}//end of for each
 		}//end of if has capability
+
+        /* Add Report Invoice Link */
+        $parent_node = $instancesnode->parent;
+        $parent_node = $parent_node->parent;
+        $str_title = get_string('report_link', 'enrol_invoice');
+        $url = new moodle_url('/enrol/invoice/report/report_invoice.php',array('courseid'=>$instance->courseid, 'id'=>$instance->id));
+        $report_invoices = navigation_node::create($str_title,
+            $url,
+            navigation_node::TYPE_SETTING,'report_invoices',
+            'report_invoices',
+            new pix_icon('i/report', $str_title)
+        );
+
+        global $PAGE;
+        if ($PAGE->url->compare($url, URL_MATCH_BASE)) {
+            $report_invoices->make_active();
+        }
+        $parent_node->add_node($report_invoices,'users');
+
     }//end of function
 
     /**
@@ -375,13 +386,12 @@ class enrol_waitinglist_plugin extends enrol_plugin {
 		$roleid = $instance->roleid;
    		
    		parent::enrol_user($instance,$userid,$roleid,$timestart,$timeend,$status,$recovergrades);
-     	// Send welcome message.
+
+        // Send welcome message.
         if ($instance->{ENROL_WAITINGLIST_FIELD_SENDWELCOMEMESSAGE}) {
             $this->email_welcome_message($instance, $USER);
         }
     }
-    
-	
 	    /**
      * Checks if user can self enrol.
      *
@@ -448,27 +458,34 @@ class enrol_waitinglist_plugin extends enrol_plugin {
      * Add new instance of enrol plugin with default settings.
      * @param stdClass $course
      * @return int id of new instance, null if can not be created
+     *
+     * @updateDate  28/10/2015
+     * @author      eFaktor     (fbv)
+     *
+     * Description
+     * Add Invoice Information Option
      */
     public function add_default_instance($course) {
         $expirynotify = $this->get_config('expirynotify', 0);
         if ($expirynotify == 2) {
-            $expirynotify = 1;
-            $notifyall = 1;
+            $expirynotify   = 1;
+            $notifyall      = 1;
         } else {
             $notifyall = 0;
         }
         $fields = array(
-            'status'          => $this->get_config('status'),
-            'roleid'          => $this->get_config('roleid', 0),
-            'enrolperiod'     => $this->get_config('enrolperiod', 0),
-            'expirynotify'    => $expirynotify,
-            'notifyall'       => $notifyall,
-             ENROL_WAITINGLIST_FIELD_SENDWELCOMEMESSAGE=> $this->get_config('sendcoursewelcomemessage'),
-             ENROL_WAITINGLIST_FIELD_SENDWAITLISTMESSAGE=> $this->get_config('sendcoursewaitlistmessage'),
-             ENROL_WAITINGLIST_FIELD_MAXENROLMENTS=> $this->get_config('maxenrolments'),
-             ENROL_WAITINGLIST_FIELD_WAITLISTSIZE=> $this->get_config('waitlistsize'),
-            'expirythreshold' => $this->get_config('expirythreshold', 86400),
-        );
+                        'status'                                    => $this->get_config('status'),
+                        'roleid'                                    => $this->get_config('roleid', 0),
+                        'enrolperiod'                               => $this->get_config('enrolperiod', 0),
+                        'expirynotify'                              => $expirynotify,
+                        'notifyall'                                 => $notifyall,
+                        ENROL_WAITINGLIST_FIELD_SENDWELCOMEMESSAGE  => $this->get_config('sendcoursewelcomemessage'),
+                        ENROL_WAITINGLIST_FIELD_SENDWAITLISTMESSAGE => $this->get_config('sendcoursewaitlistmessage'),
+                        ENROL_WAITINGLIST_FIELD_MAXENROLMENTS       => $this->get_config('maxenrolments'),
+                        ENROL_WAITINGLIST_FIELD_WAITLISTSIZE        => $this->get_config('waitlistsize'),
+                        'expirythreshold'                           => $this->get_config('expirythreshold', 86400),
+                        ENROL_WAITINGLIST_FIELD_INVOICE             => 0
+                       );
         $waitinglistid = $this->add_instance($course, $fields);
 
         //add an instance of each of the methods, if the waitinglist instance was created ok
@@ -563,7 +580,69 @@ class enrol_waitinglist_plugin extends enrol_plugin {
 		}//end of for each instances
 		 $trace->finished();
 	}//end of check and enrol
-	
+
+
+    /**
+     * @param           progress_trace $trace
+     *
+     * @throws          Exception
+     *
+     * @creationDate    29/10/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Check if there are users with invoices to activate
+     */
+    public function check_invoices(progress_trace $trace){
+        /* Variables    */
+        global $DB;
+        $instances  = null;
+        $wl         = null;
+        $sql        = null;
+        $rdo        = null;
+        $time       = null;
+
+        try {
+            $trace->output('waitinglist enrolment check for invoices to update');
+            /* Enrol Plugin */
+            $wl = enrol_get_plugin('waitinglist');
+
+            /* Get Invoice Users to activate    */
+            $trace->output('waitinglist get users with invoice to update');
+            /* SQL Instruction  */
+            $sql = " SELECT		ei.id,
+                                ei.userid,
+                                ei.courseid,
+                                ue.id as 'userenrolid',
+                                ei.waitinglistid,
+                                ei.timemodified
+                     FROM		{enrol_invoice}	    ei
+                        JOIN	{user_enrolments}	ue	ON 	ue.userid 	= ei.userid
+                        JOIN	{enrol}			    e	ON 	e.id 		= ue.enrolid
+                                                        AND e.id 		= ei.waitinglistid
+                     WHERE		ei.userenrolid		= 0 ";
+
+            /* Execute  */
+            $rdo = $DB->get_records_sql($sql);
+            if ($rdo) {
+                /* Time local   */
+                $time = time();
+
+                /* Update each user */
+                foreach ($rdo as $instance) {
+                    $instance->timemodified = $time;
+
+                    /* Update   */
+                    $DB->update_record('enrol_invoice',$instance);
+                }//for_rdo
+            }//if_rdo
+
+            $trace->output('waitinglist enrolment check for invoices to update - Finished');
+            $trace->finished();
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }
 	 /**
      * Get the vacancy count for this waiting list
      * We need remove enrolments and confirmations from maxenrolments
@@ -591,44 +670,120 @@ class enrol_waitinglist_plugin extends enrol_plugin {
      * @return boolean true = successful
      */
 	public function handle_enrol($courseid,$userid){
-		return true;
+        return true;
 	}
-	
-	 /**
+
+    /**
+     * @param           $courseid
+     * @param           $userid
+     *
+     * @return          bool
+     * @throws          Exception
+     *
+     * Description
      * Handle users who are unenroled. Called from observer class
      *
-     * @param int $courseid
-     * @param int $userid
-     * @return boolean true = successful
+     * @updateDate      29/10/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Update to invoice option
      */
-	public function handle_unenrol($courseid,$userid){
-		global $DB;
-		$entryman =  \enrol_waitinglist\entrymanager::get_by_course($courseid);
-		$entry = $entryman->get_entry_by_userid($userid);
-		
-		//We might get here without an entry
-		//if the user was unenroled via seats modifcation in the entry manager
-		//in that case, and unforeseen proces flows, just return
-		if(!$entry){return true;}
-		
-		//remove entry from list altogether
-		$entryman->remove_entry_from_db($entry->id);
-		return true;
-		
+    public function handle_unenrol($courseid,$userid){
+        /* Variables    */
+		global  $DB;
+        $entryman   = null;
+        $entry      = null;
+        $waitingLst = null;
+        $rdo        = null;
+        $params     = null;
+
+        try {
+            $entryman   =  \enrol_waitinglist\entrymanager::get_by_course($courseid);
+            $entry      = $entryman->get_entry_by_userid($userid);
+
+            //We might get here without an entry
+            //if the user was unenroled via seats modifcation in the entry manager
+            //in that case, and unforeseen proces flows, just return
+            if(!$entry){return true;}
+
+            //remove entry from list altogether
+            $entryman->remove_entry_from_db($entry->id);
+
+            /* Check Invoice Option */
+            if (enrol_get_plugin('invoice')) {
+                $waitingLst = $entryman->waitinglist;
+                if ($waitingLst->{ENROL_WAITINGLIST_FIELD_INVOICE}) {
+                    /* Mark user as unenrolled  */
+                    /* Get record   */
+                    $params = array();
+                    $params['userid']           = $userid;
+                    $params['courseid']         = $courseid;
+                    $params['waitinglistid']    = $waitingLst->id;
+                    $params['unenrol']          = 0;
+                    $rdo = $DB->get_record('enrol_invoice',$params);
+                    if ($rdo) {
+                        $rdo->unenrol       = 1;
+                        $rdo->timemodified  = time();
+
+                        /* Update   */
+                        $DB->update_record('enrol_invoice',$rdo);
+                    }//if_rdo
+                }//if_invoice_option
+            }//if_invoice
+
+            return true;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_vcathc
 	}
-	
-	/**
+
+
+    /**
+     * @param           $courseid
+     *
+     * @return          bool
+     * @throws          Exception
+     *
+     * Description
      * Remove entries from DB when a course is deleted. Called from observer class
      *
-     * @param int $courseid
-     * @param int $userid
-     * @return boolean true = successful
+     * @updateDate      29/10/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * remove invoice entries
      */
-	public function handle_coursedeleted($courseid){
+    public function handle_coursedeleted($courseid){
+        /* Variables    */
 		global $DB;
-		$DB->delete_records(ENROL_WAITINGLIST_TABLE_QUEUE,array('courseid'=>$courseid));
-		$DB->delete_records(ENROL_WAITINGLIST_TABLE_METHODS,array('courseid'=>$courseid));
-		return true;
+
+        try {
+            /**
+             * @updateDate  29/10/2015
+             * @author      eFaktor     (fbv)
+             *
+             * Description
+             * Remove from enrol invoice
+             */
+            if (enrol_get_plugin('invoice')) {
+                /* GEt Instace Waiting List Id  */
+                $waitingLst = $DB->get_records(ENROL_WAITINGLIST_TABLE_METHODS,array('courseid' => $courseid));
+                if ($waitingLst) {
+                    foreach ($waitingLst as $instance) {
+                        $DB->delete_records('enrol_invoice',array('courseid'=>$courseid,'waitinglistid' => $instance->waitinglistid));
+                    }
+                }
+
+            }//if_enrol_invoice
+
+            $DB->delete_records(ENROL_WAITINGLIST_TABLE_QUEUE,array('courseid'=>$courseid));
+            $DB->delete_records(ENROL_WAITINGLIST_TABLE_METHODS,array('courseid'=>$courseid));
+
+            return true;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
 	}
 
 

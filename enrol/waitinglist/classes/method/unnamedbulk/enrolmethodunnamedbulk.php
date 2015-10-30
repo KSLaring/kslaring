@@ -63,6 +63,20 @@ class enrolmethodunnamedbulk extends \enrol_waitinglist\method\enrolmethodbase {
      */
     public function __construct()
     {
+        global $CFG;
+
+        /**
+         * @updateDate  30/10/2015
+         * @author      eFaktor     (fbv)
+         *
+         * Description
+         * Update to invoice data
+         */
+        if (enrol_get_plugin('invoice')) {
+            require_once($CFG->dirroot . '/enrol/invoice/invoicelib.php');
+        }
+
+
     }
     
     /**
@@ -225,23 +239,36 @@ class enrolmethodunnamedbulk extends \enrol_waitinglist\method\enrolmethodbase {
 		
 		//prepare fields for our queue DB entry
 		$queue_entry = new \stdClass;
-		$queue_entry->waitinglistid      = $waitinglist->id;
-		$queue_entry->courseid       = $waitinglist->courseid;
-		$queue_entry->userid       = $USER->id;
-		$queue_entry->methodtype   = static::METHODTYPE;
-		$queue_entry->timecreated  = time();
-		$queue_entry->queueno = 	0;
-		$queue_entry->seats = $data->seats;
-		$queue_entry->confirmedseats = 0;
-		$queue_entry->enroledseats =0;
-		$queue_entry->allocseats = 0;
-		$queue_entry->offqueue = 0;
-		$queue_entry->timemodified = $queue_entry->timecreated;
+		$queue_entry->waitinglistid     = $waitinglist->id;
+		$queue_entry->courseid          = $waitinglist->courseid;
+		$queue_entry->userid            = $USER->id;
+		$queue_entry->methodtype        = static::METHODTYPE;
+		$queue_entry->timecreated       = time();
+		$queue_entry->queueno           = 0;
+		$queue_entry->seats             = $data->seats;
+		$queue_entry->confirmedseats    = 0;
+		$queue_entry->enroledseats      = 0;
+		$queue_entry->allocseats        = 0;
+		$queue_entry->offqueue          = 0;
+		$queue_entry->timemodified      = $queue_entry->timecreated;
 		
 		
 		//add the user to the waitinglist queue 
 		$queueid = $this->add_to_waitinglist($waitinglist,$queue_entry );
-		
+
+        /**
+         * @updateDate  28/10/2015
+         * @author      eFaktor     (fbv)
+         *
+         * Description
+         * Save Invoice Information
+         */
+        if (enrol_get_plugin('invoice')) {
+            if ($waitinglist->{ENROL_WAITINGLIST_FIELD_INVOICE}) {
+                \Invoices::Add_InvoiceInto($data,$USER->id,$waitinglist->courseid,$waitinglist->id);
+            }//if_invoice_info
+        }
+
 		return $queueid;
     }
 
@@ -374,6 +401,7 @@ class enrolmethodunnamedbulk extends \enrol_waitinglist\method\enrolmethodbase {
 				$qstatus->waitingseats=$entry->{static::QFIELD_SEATS} - $entry->{static::QFIELD_ASSIGNEDSEATS};
 				$qstatus->queueposition=$queueman->get_listposition($entry);
 			}
+
             $form = new enrolmethodunnamedbulk_enrolform(NULL, array($waitinglist,$this,$qstatus));
 			
             $waitinglistid = optional_param('waitinglist', 0, PARAM_INT);
@@ -381,11 +409,12 @@ class enrolmethodunnamedbulk extends \enrol_waitinglist\method\enrolmethodbase {
 				
 				//check we had an error free submission
 				$data = false;  
-				if ($form->is_submitted() || !$form->is_cancelled()) {  
+				if ($form->is_submitted() || !$form->is_cancelled()) {
 					if($form->is_validated()){
-						$data = $form->get_data(); 
+						$data = $form->get_data();
 					}
-				}  
+				}
+
  				//ok
                 if ($data) {
                 	if($entry){
@@ -400,6 +429,19 @@ class enrolmethodunnamedbulk extends \enrol_waitinglist\method\enrolmethodbase {
                 		//if this is a new enrol form submission, process it
 					 	$this->waitlistrequest_unnamedbulk($waitinglist, $data);
 					 	$actiontaken='updated';
+
+                        /**
+                         * @updateDate  28/10/2015
+                         * @author      eFaktor     (fbv)
+                         *
+                         * Description
+                         * Save Invoice Information
+                         */
+                        if (enrol_get_plugin('invoice')) {
+                            if ($waitinglist->{ENROL_WAITINGLIST_FIELD_INVOICE}) {
+                                \Invoices::activate_enrol_invoice($USER->id,$waitinglist->courseid,$waitinglist->id);
+                            }//if_invoice_info
+                        }
 					}
 					
 					//in the case that the user has updated their entry, we 
@@ -426,7 +468,7 @@ class enrolmethodunnamedbulk extends \enrol_waitinglist\method\enrolmethodbase {
 								$graduationcomplete = $this->graduate_from_list($waitinglist,$updatedentry,$giveseats);
 							}
 					}
-					
+
 					//Send the user on somewhere
 					$continueurl = new \moodle_url('/enrol/waitinglist/edit_enrolform.php', 
 											array('id'=>$waitinglist->courseid,'methodtype'=> static::METHODTYPE));

@@ -68,6 +68,14 @@ if ($instances = $DB->get_records('enrol', array('courseid'=>$course->id, 'enrol
     $instance->courseid        = $course->id;
     $instance->expirynotify    = $plugin->get_config('expirynotify');
     $instance->expirythreshold = $plugin->get_config('expirythreshold');
+    /**
+     * @updateDate      28/10/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Add invoice option
+     */
+    $instance->{ENROL_WAITINGLIST_FIELD_INVOICE}          = 0;
 }
 
 $mform = new enrol_waitinglist_edit_form(null, array($instance, $plugin, $context));
@@ -87,18 +95,26 @@ if ($mform->is_cancelled()) {
         $data->expirythreshold = $instance->expirythreshold;
     }
     if ($instance->id) {
-        $instance->roleid          = $data->roleid;
-        $instance->enrolperiod     = $data->enrolperiod;
-        $instance->expirynotify    = $data->expirynotify;
-        $instance->notifyall       = $data->notifyall;
-        $instance->expirythreshold = $data->expirythreshold;
-		$instance->{ENROL_WAITINGLIST_FIELD_CUTOFFDATE}=$data->{ENROL_WAITINGLIST_FIELD_CUTOFFDATE};
-		$instance->{ENROL_WAITINGLIST_FIELD_MAXENROLMENTS}=$data->{ENROL_WAITINGLIST_FIELD_MAXENROLMENTS};
-		$instance->{ENROL_WAITINGLIST_FIELD_WAITLISTSIZE}=$data->{ENROL_WAITINGLIST_FIELD_WAITLISTSIZE};
-		$instance->{ENROL_WAITINGLIST_FIELD_SENDWAITLISTMESSAGE}=$data->{ENROL_WAITINGLIST_FIELD_SENDWAITLISTMESSAGE};
-		$instance->{ENROL_WAITINGLIST_FIELD_SENDWELCOMEMESSAGE}=$data->{ENROL_WAITINGLIST_FIELD_SENDWELCOMEMESSAGE};
-		$instance->{ENROL_WAITINGLIST_FIELD_WELCOMEMESSAGE}=$data->{ENROL_WAITINGLIST_FIELD_WELCOMEMESSAGE};
+        $instance->roleid                                           = $data->roleid;
+        $instance->enrolperiod                                      = $data->enrolperiod;
+        $instance->expirynotify                                     = $data->expirynotify;
+        $instance->notifyall                                        = $data->notifyall;
+        $instance->expirythreshold                                  = $data->expirythreshold;
+		$instance->{ENROL_WAITINGLIST_FIELD_CUTOFFDATE}             = $data->{ENROL_WAITINGLIST_FIELD_CUTOFFDATE};
+		$instance->{ENROL_WAITINGLIST_FIELD_MAXENROLMENTS}          = $data->{ENROL_WAITINGLIST_FIELD_MAXENROLMENTS};
+		$instance->{ENROL_WAITINGLIST_FIELD_WAITLISTSIZE}           = $data->{ENROL_WAITINGLIST_FIELD_WAITLISTSIZE};
+		$instance->{ENROL_WAITINGLIST_FIELD_SENDWAITLISTMESSAGE}    = $data->{ENROL_WAITINGLIST_FIELD_SENDWAITLISTMESSAGE};
+		$instance->{ENROL_WAITINGLIST_FIELD_SENDWELCOMEMESSAGE}     = $data->{ENROL_WAITINGLIST_FIELD_SENDWELCOMEMESSAGE};
+		$instance->{ENROL_WAITINGLIST_FIELD_WELCOMEMESSAGE}         = $data->{ENROL_WAITINGLIST_FIELD_WELCOMEMESSAGE};
         $instance->timemodified    = time();
+        /**
+         * @updateDate      28/10/2015
+         * @author          eFaktor     (fbv)
+         *
+         * Description
+         * Add the invoice information option
+         */
+        $instance->{ENROL_WAITINGLIST_FIELD_INVOICE} = $data->{ENROL_WAITINGLIST_FIELD_INVOICE};
 
         $DB->update_record('enrol', $instance);
 
@@ -111,19 +127,27 @@ if ($mform->is_cancelled()) {
 
     } else {
         $fields = array(
-            'status'          => $data->status,
-            'roleid'          => $data->roleid,
-            'enrolperiod'     => $data->enrolperiod,
-            'expirynotify'    => $data->expirynotify,
-            'notifyall'       => $data->notifyall,
-            'expirythreshold' => $data->expirythreshold,
-			ENROL_WAITINGLIST_FIELD_CUTOFFDATE=>$data->{ENROL_WAITINGLIST_FIELD_CUTOFFDATE},
-			ENROL_WAITINGLIST_FIELD_MAXENROLMENTS=>$data->{ENROL_WAITINGLIST_FIELD_MAXENROLMENTS},
-			ENROL_WAITINGLIST_FIELD_WAITLISTSIZE=>$data->{ENROL_WAITINGLIST_FIELD_WAITLISTSIZE},
-			ENROL_WAITINGLIST_FIELD_SENDWAITLISTMESSAGE=>$data->{ENROL_WAITINGLIST_FIELD_SENDWAITLISTMESSAGE},
-			ENROL_WAITINGLIST_FIELD_SENDWELCOMEMESSAGE=>$data->{ENROL_WAITINGLIST_FIELD_SENDWELCOMEMESSAGE},
-			ENROL_WAITINGLIST_FIELD_WELCOMEMESSAGE=>$data->{ENROL_WAITINGLIST_FIELD_WELCOMEMESSAGE}
-		);
+                        'status'                                    => $data->status,
+                        'roleid'                                    => $data->roleid,
+                        'enrolperiod'                               => $data->enrolperiod,
+                        'expirynotify'                              => $data->expirynotify,
+                        'notifyall'                                 => $data->notifyall,
+                        'expirythreshold'                           => $data->expirythreshold,
+			            ENROL_WAITINGLIST_FIELD_CUTOFFDATE          =>$data->{ENROL_WAITINGLIST_FIELD_CUTOFFDATE},
+			            ENROL_WAITINGLIST_FIELD_MAXENROLMENTS       =>$data->{ENROL_WAITINGLIST_FIELD_MAXENROLMENTS},
+			            ENROL_WAITINGLIST_FIELD_WAITLISTSIZE        =>$data->{ENROL_WAITINGLIST_FIELD_WAITLISTSIZE},
+			            ENROL_WAITINGLIST_FIELD_SENDWAITLISTMESSAGE =>$data->{ENROL_WAITINGLIST_FIELD_SENDWAITLISTMESSAGE},
+			            ENROL_WAITINGLIST_FIELD_SENDWELCOMEMESSAGE  =>$data->{ENROL_WAITINGLIST_FIELD_SENDWELCOMEMESSAGE},
+			            ENROL_WAITINGLIST_FIELD_WELCOMEMESSAGE      =>$data->{ENROL_WAITINGLIST_FIELD_WELCOMEMESSAGE},
+                        /**
+                         * @updateDate  28/10/2015
+                         * @author      eFaktor     (fbv)
+                         *
+                         * Description
+                         * Add the invoice information option
+                         */
+                        ENROL_WAITINGLIST_FIELD_INVOICE => $data->{ENROL_WAITINGLIST_FIELD_INVOICE}
+		               );
        $waitinglistid =  $plugin->add_instance($course, $fields);
 
        //add default methods

@@ -392,5 +392,4 @@ abstract class enrolmethodbase  {
 	 public  function has_settings(){return false;}
 	 public  function get_dummy_form_plugin(){return false;}
 	 
-
 }
