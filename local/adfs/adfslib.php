@@ -37,6 +37,7 @@ class KS_ADFS {
         $pluginInfo     = get_config('local_adfs');
 
         try {
+            echo "LogIn_UserADFS " . $userId . "</br>";
             $urlRedirect = self::ProcessUserADFSService($userId,$pluginInfo);
 
             return $urlRedirect;
@@ -95,14 +96,14 @@ class KS_ADFS {
             $server     = $domain . '/webservice/soap/server.php?wsdl=1&wstoken=' . $token;
 
             /* Call service */
-            $client     = new SoapClient($server);
-            $response   = $client->$service($userRequest);
+            //$client     = new SoapClient($server);
+            //$response   = $client->$service($userRequest);
 
-            if ($response['error'] == '200') {
-                $urlRedirect =   $response['url'];
-            }else {
-                $urlRedirect = $response['url'];
-            }//if_no_error
+            //if ($response['error'] == '200') {
+            //    $urlRedirect =   $response['url'];
+            //}else {
+            //    $urlRedirect = $response['url'];
+            //}//if_no_error
 
             return $urlRedirect;
         }catch (Exception $ex) {
@@ -149,6 +150,7 @@ class KS_ADFS {
 
             return $userADFS;
         }catch (Exception $ex) {
+            print_r($ex);
             throw $ex;
         }//try_catch
     }//GetUserADFS
