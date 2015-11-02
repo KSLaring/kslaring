@@ -22,7 +22,7 @@ if ($hassiteconfig) {
     /* End Point    */
     $settings->add(new admin_setting_configtext('local_adfs/ks_point',get_string('ks_site','local_adfs'),'','',PARAM_TEXT,50));
     /* Web service  */
-    $settings->add(new admin_setting_configtext('local_adfs/adfs_service',get_string('adfs_service','local_wsks'),'','',PARAM_TEXT,50));
+    $settings->add(new admin_setting_configtext('local_adfs/adfs_service',get_string('adfs_service','local_adfs'),'','',PARAM_TEXT,50));
     /* Token        */
-    $settings->add(new admin_setting_configpasswordunmask('local_adfs/adfs_token',get_string('adfs_token','local_wsks'),'',''));
+    $settings->add(new admin_setting_configpasswordunmask('local_adfs/adfs_token',get_string('adfs_token','local_adfs'),'',''));
 }//if_config
