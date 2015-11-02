@@ -138,10 +138,7 @@ label.invoice_info {
     width: 25%;
     text-align: left;
     text-justify:inter-word;
-    padding-left: 0;
-    padding-bottom: 0;
-    padding-top: 0;
-    padding-right: 4px;
+    padding: 0px 10px 0px 0px;
 }
 
 .block_enrol_invoices .block_invoices  th.info,
@@ -149,10 +146,7 @@ label.invoice_info {
     width: 25%;
     text-align: left;
     text-justify:inter-word;
-    padding-left: 0;
-    padding-bottom: 0;
-    padding-top: 0;
-    padding-right: 4px;
+    padding: 0px 10px 0px 0px;
 }
 
 .block_enrol_invoices .block_invoices  th.type,
@@ -160,15 +154,21 @@ label.invoice_info {
     width: 17%;
     text-align: left;
     text-justify:inter-word;
-    padding-left: 0;
-    padding-bottom: 0;
-    padding-top: 0;
-    padding-right: 4px;
+    padding: 0px 10px 0px 0px;
+}
+
+.block_enrol_invoices .block_invoices  th.seats,
+.block_enrol_invoices .block_invoices  td.seats {
+    width: 5%;
+    text-align: left;
+    text-justify:inter-word;
+    padding: 0px 10px 0px 0px;
 }
 
 .block_enrol_invoices .block_invoices td.user,
 .block_enrol_invoices .block_invoices td.info,
-.block_enrol_invoices .block_invoices td.type {
+.block_enrol_invoices .block_invoices td.type,
+.block_enrol_invoices .block_invoices td.seats {
     background-color: white;
     white-space: pre-line;
     word-break: break-all;

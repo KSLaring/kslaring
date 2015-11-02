@@ -276,6 +276,12 @@ class Invoices {
      *
      * Description
      * Get all the invoices connected with the course and their details
+     *
+     * @updateDate      31/10/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Add the seats confirmed.
      */
     public static function Get_InvoicesUsers($course_id,$enrol_id) {
         /* Variables    */
@@ -301,7 +307,8 @@ class Invoices {
                                             ei.street,
                                             ei.postcode,
                                             ei.city,
-                                            ei.bilto
+                                            ei.bilto,
+                                            ei.waitinglistid
                      FROM		    {user}				u
                         JOIN	    {user_enrolments}	ue		ON 		ue.userid 		= 	u.id
                                                                 AND		ue.enrolid		=	:enrol_id
@@ -333,7 +340,9 @@ class Invoices {
                     $info->city         = $invoice->city;
                     $info->bil_to       = $invoice->bilto;
                     $info->arbeidssted  = $invoice->arbeidssted;
-
+                    if ($invoice->waitinglistid) {
+                        $info->seats    = self::GetConfirmedSeats($invoice->id,$course_id,$invoice->waitinglistid);
+                    }//if_waitinglist
                     $lst_invoices[$invoice->id] = $info;
                 }//for_rdo
             }//if_rdo
@@ -532,6 +541,12 @@ class Invoices {
      *
      * Description
      * Add the header of the invoices table
+     *
+     * @updateDate      31/10/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Add the seats confirmed.
      */
     public static function Add_InvoiceUser_HeaderTable() {
         /* Variables    */
@@ -541,6 +556,7 @@ class Invoices {
         $str_mail       = get_string('rpt_mail','enrol_invoice');
         $str_invoice    = get_string('rpt_invoice','enrol_invoice');
         $str_detail     = get_string('rpt_details','enrol_invoice');
+        $str_seats      = get_String('rpt_seats','enrol_invoice');
 
         $header .=  html_writer::start_tag('thead');
         $header .=  html_writer::start_tag('tr',array('class' => 'header_invoice'));
@@ -555,6 +571,10 @@ class Invoices {
             /* Mail         */
             $header .= html_writer::start_tag('th',array('class' => 'info'));
                 $header .= $str_mail;
+            $header .= html_writer::end_tag('th');
+            /* Seats Confirmed  */
+            $header .= html_writer::start_tag('th',array('class' => 'seats'));
+                $header .= $str_seats;
             $header .= html_writer::end_tag('th');
             /* Details      */
             $header .= html_writer::start_tag('th',array('class' => 'type'));
@@ -576,6 +596,12 @@ class Invoices {
      *
      * Description
      * Add the content of the invoices table
+     *
+     * @updateDate      31/10/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Add the seats confirmed.
      */
     public static function Add_InvoiceUser_Content($invoices_lst) {
         /* Variables    */
@@ -595,6 +621,10 @@ class Invoices {
                 /* Mail         */
                 $body .= html_writer::start_tag('td',array('class' => 'info'));
                     $body .= $invoice->email;
+                $body .= html_writer::end_tag('td');
+                /* Seats Confirmed  */
+                $body .= html_writer::start_tag('td',array('class' => 'seats'));
+                    $body .= $invoice->seats;
                 $body .= html_writer::end_tag('td');
                 /* Details      */
                 $body .= html_writer::start_tag('td',array('class' => 'type'));
@@ -767,6 +797,12 @@ class Invoices {
      *
      * Description
      * Add the header of the invoices table in the excel report
+     *
+     * @updateDate      31/10/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Add the seats confirmed.
      */
     private static function Add_HeaderExcel_CourseTable(&$my_xls,&$row) {
         /* Variables    */
@@ -782,6 +818,7 @@ class Invoices {
         $str_service    = get_string('invoice_service','enrol_invoice');
         $str_project    = get_string('invoice_project','enrol_invoice');
         $str_act        = get_string('invoice_act','enrol_invoice');
+        $str_seats      = get_string('rpt_seats','enrol_invoice');
 
         try {
             /* User/Name    */
@@ -798,6 +835,12 @@ class Invoices {
             /* Mail         */
             $col = $col + 1;
             $my_xls->write($row, $col, $str_mail,array('size'=>12, 'name'=>'Arial','bold'=>'1','bg_color'=>'#efefef','text_wrap'=>true,'v_align'=>'left'));
+            //$my_xls->merge_cells($row,$col,$row,$col+3);
+            $my_xls->set_row($row,20);
+
+            /* Seats    */
+            $col = $col + 1;
+            $my_xls->write($row, $col, $str_seats,array('size'=>12, 'name'=>'Arial','bold'=>'1','bg_color'=>'#efefef','text_wrap'=>true,'v_align'=>'left'));
             //$my_xls->merge_cells($row,$col,$row,$col+3);
             $my_xls->set_row($row,20);
 
@@ -859,6 +902,12 @@ class Invoices {
      *
      * Description
      * Add the content of the invoices table to the excel report
+     *
+     * @updateDate      31/10/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Add the seats confirmed.
      */
     private static function Add_ContentExcel_CourseTable($invoices_lst,&$my_xls,&$row) {
         /* Variables    */
@@ -880,6 +929,12 @@ class Invoices {
                 /* Mail         */
                 $col = $col + 1;
                 $my_xls->write($row, $col, $invoice->email,array('size'=>12, 'name'=>'Arial','text_wrap'=>true,'v_align'=>'left'));
+                //$my_xls->merge_cells($row,$col,$row,$col+3);
+                $my_xls->set_row($row,25);
+
+                /* Seats    */
+                $col = $col + 1;
+                $my_xls->write($row, $col, $invoice->seats,array('size'=>12, 'name'=>'Arial','text_wrap'=>true,'v_align'=>'left'));
                 //$my_xls->merge_cells($row,$col,$row,$col+3);
                 $my_xls->set_row($row,25);
 
@@ -932,4 +987,57 @@ class Invoices {
             throw $ex;
         }//try_catch
     }//Add_ContentExcel_CourseTable
+
+    /**
+     * @param           $userId
+     * @param           $courseId
+     * @param           $waitingListId
+     *
+     * @return          null
+     * @throws          Exception
+     *
+     * @creationDate    31/10/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Get seats confirmed
+     */
+    private static function GetConfirmedSeats($userId,$courseId,$waitingListId) {
+        /* Variables    */
+        global $DB;
+        $params = null;
+        $rdo    = null;
+
+        try {
+            /* Search Criteria  */
+            $params = array();
+            $params['userid']           = $userId;
+            $params['courseid']         = $courseId;
+            $params['waitinglistid']    = $waitingListId;
+
+
+            /* SQL Instruction  */
+            $sql = " SELECT	id,
+                            allocseats
+                     FROM	{enrol_waitinglist_queue}
+                     WHERE	userid 			= :userid
+                        AND	courseid 		= :courseid
+                        AND waitinglistid 	= :waitinglistid
+                        AND methodtype 		= 'unnamedbulk' ";
+
+            /* Execute  */
+            $rdo = $DB->get_record_sql($sql,$params);
+            if ($rdo) {
+                if ($rdo->allocseats) {
+                    return $rdo->allocseats;
+                }else {
+                    return 0;
+                }
+            }else {
+                return '-';
+            }//if_else_rdo
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//GetConfirmedSeats
 }//Invoices
