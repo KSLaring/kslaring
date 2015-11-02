@@ -14,7 +14,7 @@ require_once('adfslib.php');
 $urlKS = KS_ADFS::LogIn_UserADFS(4);
 
 header('Location: ' . urldecode($urlKS));
-die;
+require_logout();
 
 /* User to Validate */
 
