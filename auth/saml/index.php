@@ -213,5 +213,22 @@ define('SAML_INTERNAL', 1);
         if(isset($err) && !empty($err)) {
             auth_saml_error($err, $urltogo, $pluginconfig->samllogfile);
         }
-        redirect($urltogo);
+
+        /**
+         * @updateDate  02/11/2015
+         * @author      eFaktor     (fbv)
+         *
+         * Description
+         * Redirect the user to KS Site
+         */
+        if (!is_siteadmin($USER)) {
+            require_once ('../../local/adfs/adfslib.php');
+
+            $urlKS = KS_ADFS::LogIn_UserADFS($USER->id);
+
+            header('Location: ' . urldecode($urlKS));
+            die;
+        }else {
+            redirect($urltogo);
+        }//if_else
     }
