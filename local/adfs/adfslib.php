@@ -11,7 +11,7 @@
  *
  */
 
-define('ERR_LOG_IN','/local/wsks/error.php');
+define('ERR_LOG_IN','/local/wsks/adfs/error.php');
 
 class KS_ADFS {
     /**********/
@@ -41,8 +41,10 @@ class KS_ADFS {
 
             return $urlRedirect;
         }catch (Exception $ex) {
-            $urlRedirect = urlencode($pluginInfo->ks_point . ERR_LOG_IN);
-            return $urlRedirect;
+            print_r($ex);
+            throw $ex;
+            //$urlRedirect = urlencode($pluginInfo->ks_point . ERR_LOG_IN);
+            //return $urlRedirect;
         }//try_catch
     }//LogIn_UserADFS
 
