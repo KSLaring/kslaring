@@ -19,7 +19,7 @@ require_once ('../wsadfslib.php');
 $id             = $SESSION->user;
 
 $url            = new moodle_url('/local/wsks/adfs/login.php');
-$index          = new moodle_url('/login/index.php');
+$index          = new moodle_url('/index.php');
 $errUrl         = new moodle_url('/local/wsks/adfs/error.php');
 
 /* Clean SESSION Variables  */
@@ -38,7 +38,49 @@ try {
     $user = get_complete_user_data('id',$id);
     complete_user_login($user,true);
 
-    redirect($index);
+    /**
+     * @updateDate  10/11/2014
+     * @author      eFaktor     (fbv)
+     *
+     * Description
+     * Check if it is the first access. Then the user has to check and update his/her profile
+     */
+    require_once('../../first_access/locallib.php');
+
+    if (!isguestuser($user)) {
+        if (FirstAccess::HasToUpdate_Profile($USER->id)) {
+            redirect(new moodle_url('/local/first_access/index.php',array('id'=>$USER->id)));
+            die();
+        }else {
+            /**
+             * @updateDate      28/04/2014
+             * @author          eFaktor     (fbv)
+             *
+             * Description
+             * Check if the user has to update his/her profile
+             */
+            require_once('../../force_profile/forceprofilelib.php');
+            if (ForceProfile::ForceProfile_HasToUpdateProfile($USER->id)) {
+                echo $OUTPUT->header();
+                $url = new moodle_url('/local/force_profile/confirm_profile.php',array('id' => $USER->id));
+                echo $OUTPUT->notification(get_string('msg_force_update','local_force_profile'), 'notifysuccess');
+                echo $OUTPUT->continue_button($url);
+                echo $OUTPUT->footer();
+                die();
+            }else {
+                // test the session actually works by redirecting to self
+                redirect($index);
+            }//if_else_UpdateProfile
+        }//if_first_access
+    } else {
+        require_logout();
+        redirect($index);
+    }//if_guest_user
+
 }catch (Exception $ex) {
     redirect($errUrl);
 }
+
+
+echo $OUTPUT->header();
+echo $OUTPUT->footer();
