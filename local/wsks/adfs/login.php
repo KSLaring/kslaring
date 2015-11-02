@@ -19,7 +19,7 @@ require_once ('../wsadfslib.php');
 $id             = $SESSION->user;
 
 $url            = new moodle_url('/local/wsks/adfs/login.php');
-$index          = new moodle_url('/index.php');
+$index          = new moodle_url('/login/index.php');
 $errUrl         = new moodle_url('/local/wsks/adfs/error.php');
 
 /* Clean SESSION Variables  */

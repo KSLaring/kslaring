@@ -54,7 +54,7 @@ class WS_ADFS {
         }catch (Exception $ex) {
             $result['error']        = 409;
             $result['valid']        = 0;
-            $result['url']          = urlencode($CFG->wwwroot . '/local/wsks/error.php');
+            $result['url']          = urlencode($CFG->wwwroot . '/local/wsks/adfs/error.php');
             $result['msg_error']    = $ex->getMessage();
 
             throw $ex;
@@ -220,7 +220,7 @@ class WS_ADFS {
 
 
         try {
-            $response = urlencode($CFG->wwwroot . '/local/wsks/login.php?id=' . $userId);
+            $response = urlencode($CFG->wwwroot . '/local/wsks/adfs/autologin.php?id=' . $userId);
 
             return $response;
         }catch (Exception $ex) {
