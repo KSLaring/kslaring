@@ -88,7 +88,7 @@ class KS_ADFS {
             $userRequest = self::GetUserADFS($userId);
 
             /* Data to call Service */
-            $domain     = $pluginInfo->adfs_point;
+            $domain     = $pluginInfo->ks_point;
             $token      = $pluginInfo->adfs_token;
             $service    = $pluginInfo->adfs_service;
 
