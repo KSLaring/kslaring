@@ -39,6 +39,56 @@ class course_page  {
     /* PUBLIC FUNCTIONS */
 
     /**
+     * @param           $managerSel
+     * @param           $search
+     * @param           $courseId
+     *
+     * @throws          Exception
+     *
+     * @creationDate    05/11/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Initialise the manager selector (listbox)
+     */
+    public static function Init_Manager_Selector($managerSel,$search,$courseId) {
+        /* Variables    */
+        global $PAGE;
+        $jsModule   = null;
+        $name       = null;
+        $path       = null;
+        $requires   = null;
+        $strings    = null;
+        $grpOne     = null;
+        $grpTwo     = null;
+        $grpThree   = null;
+
+        try {
+            /* Initialise variables */
+            $name       = 'manager_selector';
+            $path       = '/local/course_page/yui/manager.js';
+            $requires   = array('node', 'event-custom', 'datasource', 'json', 'moodle-core-notification');
+            $grpThree   = array('none', 'moodle');
+            $strings    = array($grpThree);
+
+            /* Initialise js module */
+            $jsModule = array('name'        => $name,
+                              'fullpath'    => $path,
+                              'requires'    => $requires,
+                              'strings'     => $strings
+                             );
+
+            $PAGE->requires->js_init_call('M.core_user.init_manager',
+                                          array($managerSel,$search,$courseId),
+                                          false,
+                                          $jsModule
+                                         );
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//Init_Manager_Selector
+
+    /**
      * @param           $itemid
      * @return          moodle_url|null
      * @throws          Exception
@@ -87,6 +137,8 @@ class course_page  {
 
     /**
      * @static
+     * @param           $search
+     *
      * @return          array
      * @throws          Exception
      *
@@ -95,8 +147,14 @@ class course_page  {
      *
      * Description
      * Get all the users are candidates to be manager
+     *
+     * @updateDate      05/11/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Add the search filter
      */
-    public static function getCourseManager() {
+    public static function getCourseManager($search = null) {
         /* Variables */
         global $DB;
         $context_levels = null;
@@ -105,7 +163,7 @@ class course_page  {
         $rdo            = null;
 
         try {
-            /* Context LEvels   */
+            /* Context Levels   */
             $context_levels =  CONTEXT_SYSTEM . ',' . CONTEXT_COURSE . ',' . CONTEXT_COURSECAT . ',' . CONTEXT_MODULE;
 
             /* Managers */
@@ -121,8 +179,17 @@ class course_page  {
                                                                 AND		r.archetype 	IN ('teacher','editingteacher','coursecreator')
                         JOIN 	{context}				c		ON		c.id 			= ra.contextid
                                                                 AND		c.contextlevel  IN ($context_levels)
-                     WHERE		u.deleted = 0
-                     ORDER BY 	u.firstname, u.lastname ";
+                     WHERE		u.deleted = 0 ";
+
+            /* Search Filter    */
+            if ($search) {
+                $sql .= " AND   (u.firstname like '%" . $search . "%'
+                                 OR
+                                 u.lastname like '%". $search. "%')";
+            }//if_search
+
+            /* Order    */
+            $sql .= " ORDER BY 	u.firstname, u.lastname ";
 
             /* Execute  */
             $rdo = $DB->get_records_sql($sql);
@@ -137,6 +204,43 @@ class course_page  {
             throw $ex;
         }//try_catch
     }//getCourseManager
+
+    /**
+     * @param           $courseId
+     *
+     * @return          null
+     * @throws          Exception
+     *
+     * @creationDate    05/11/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Gets the present manager connected with the course
+     */
+    public static function GetManagerAssigned($courseId) {
+        /* Variables    */
+        global $DB;
+        $params     = null;
+        $rdo        = null;
+        $manager    = null;
+
+        try {
+            /* Search Criteria  */
+            $params = array();
+            $params['name']     = 'manager';
+            $params['courseid'] = $courseId;
+
+            /* Execute  */
+            $rdo = $DB->get_record('course_format_options',$params,'value');
+            if ($rdo) {
+                $manager = $rdo->value;
+            }//if_rdo
+
+            return $manager;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//GetManagerAssigned
 
     /**
      * @static
@@ -1092,10 +1196,16 @@ class course_page  {
      *
      * Description
      * Add Course Location and Course Sector
+     *
+     * @updateDate      02/11/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Add the manager list with the search filter
      */
     public static function printFormatOptions(&$form,$option,$value,$format) {
         /* Variables*/
-        global  $USER;
+        global  $COURSE,$USER;
         $str_format     = null;;
         $lstManager     = null;
         $lstLocations   = null;
@@ -1142,6 +1252,12 @@ class course_page  {
                         $lst_manager = self::getCourseManager();
                         $form->addElement('select','manager',get_string('home_manager',$str_format),$lst_manager);
                         $form->setDefault('manager',$value);
+
+                        $form->addElement('static', 'serach-description', '', 'enter the first letters to reduce the list');
+                        $form->addElement('text','manager_search' ,'','size = 25');
+                        $form->setType('manager_search',PARAM_TEXT);
+
+                        self::Init_Manager_Selector('manager',null,$COURSE->id);
                         break;
                     case 'author':
                         $form->addElement('text','author',get_string('home_author',$str_format),'style="width:95%;"');
@@ -1165,14 +1281,21 @@ class course_page  {
      * @static
      * @param           $form
      * @param           $field
+     * @param           $from_home
      *
      * @creationDate    27/05/2014
      * @author          eFaktor     (fbv)
      *
      * Description
      * Add the elements to the 'Course Home Page' form
+     *
+     * @updateDate      02/11/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Add the manager list with the search filter
      */
-    public static function addCourseHomePage_Section(&$form,$field) {
+    public static function addCourseHomePage_Section(&$form,$field,$from_home = false) {
         /* Variables    */
         global $COURSE;
         $visible        = array();
@@ -1273,6 +1396,23 @@ class course_page  {
                 if (array_key_exists('pagevideo',$format_options)) {
                     $form->setDefault('pagevideo',$format_options['pagevideo']);
                 }//if_exists
+
+                break;
+            case 'manager': //appearancehdr
+                $lstManager = self::getCourseManager();
+                if (!$from_home) {
+                    $manager = $form->createElement('select','manager',get_string('home_manager','format_classroom'),$lstManager);
+                    $form->insertElementBefore($manager,'appearancehdr');
+
+                    $static = $form->createElement('static', 'serach-description', '', 'enter the first letters to reduce the list');
+                    $form->insertElementBefore($static,'appearancehdr');
+
+                    $search = $form->createElement('text','manager_search' ,'','size = 25');
+                    $form->insertElementBefore($search,'appearancehdr');
+                    $form->setType('manager_search',PARAM_TEXT);
+
+                    self::Init_Manager_Selector('manager',null,$COURSE->id);
+                }
 
                 break;
             default:
@@ -1636,7 +1776,7 @@ class home_page_form extends moodleform {
         /* Course Format Section    */
         $format_options = course_get_format($course)->get_format_options();
         foreach ($format_options as $name=>$option) {
-            course_page::addCourseHomePage_Section($form,$name);
+            course_page::addCourseHomePage_Section($form,$name,true);
             course_page::printFormatOptions($form,$name,$option,$course->format);
         }
 
