@@ -244,7 +244,7 @@ class course_report {
                         /* Get Info connected with the level three  */
                         $levelThree = CompetenceManager::GetCompanies_LevelList(3,$data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'2'],$inThree);
                         unset($levelThree[0]);
-                        $selectorThree = $data_form[MANAGER_OUTCOME_STRUCTURE_LEVEL .'3'];
+                        $selectorThree = $data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'3'];
                         unset($selectorThree[0]);
                         if ($selectorThree) {
                             $company_keys   = array_keys($levelThree);
