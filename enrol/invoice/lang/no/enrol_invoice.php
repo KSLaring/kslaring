@@ -128,3 +128,5 @@ $string['csvdownload']      = 'Last ned påmeldinger fra dette kurset i et regne
 
 $string['rpt_course_info']      = 'Kursinfo';
 $string['rpt_invoices_info']    = 'Brannvernkurs';
+
+$string['rpt_seats'] = 'Forespurte';

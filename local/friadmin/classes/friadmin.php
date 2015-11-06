@@ -236,6 +236,21 @@ class friadmin {
     }
 
     /*
+     * Create the course list page for the frikomort course list block
+     *
+     * @return string The rendered course list
+     */
+    public function render_courselist_for_block() {
+        $output = $this->output;
+
+        $this->filter->render();
+        $this->page->data->filter = $this->filter;
+        $this->page->data->table = $this->table;
+
+        return $output->render($this->page);
+    }
+
+    /*
      * Display the user course list
      */
     public function display_usercourselist_page() {

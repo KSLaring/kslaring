@@ -31,6 +31,7 @@ class ClassroomBlock {
         $content = '';
         $formatOptions  = null;
         $manager        = null;
+        $urlHomePage    = null;
         $location       = ' - ';
         $sectors        = ' - ';
         $fromTo         = ' - ';
@@ -46,128 +47,141 @@ class ClassroomBlock {
             /* Add Options      */
             $content .= html_writer::start_div('summary');
                 /* Prerequisites        */
-                /* Title*/
-                $content .= html_writer::start_div('summary_content');
-                    $content .= '<label class="title">' . get_string('home_prerequisities','format_classroom_frikomport')  . '</label>';
-                $content .= html_writer::end_div();//summary_content
-                /* Value    */
                 if (array_key_exists('prerequisities',$formatOptions)) {
                     if ($formatOptions['prerequisities']) {
-                        $preReq = $formatOptions['prerequisities'];
-                    }//if_prerequisites
-
-                    $content .= '<label class="value">' . $preReq . '</label>';
-                }//if_prerequisites
-                $content .= html_writer::end_div();//summary_content
+                        /* Title*/
+                        $content .= html_writer::start_div('summary_content');
+                            $content .= '<label class="title">' . get_string('home_prerequisities','format_classroom_frikomport')  . '</label>';
+                        $content .= html_writer::end_div();//summary_content
+                        /* Value    */
+                        $content .= html_writer::start_div('summary_content');
+                            $preReq = $formatOptions['prerequisities'];
+                            $content .= '<label class="value">' . $preReq . '</label>';
+                        $content .= html_writer::end_div();//summary_content
+                    }//if_prerequisities
+                }//if_pre_requisites
 
                 /* Produced By          */
-                /* Title    */
-                $content .= html_writer::start_div('summary_content');
-                    $content .= '<label class="title">' . get_string('home_producedby','format_classroom_frikomport')  . '</label>';
-                $content .= html_writer::end_div();//summary_content
-                /* Value    */
-                $content .= html_writer::start_div('summary_content');
-                    if (array_key_exists('producedby',$formatOptions)) {
-                        if ($formatOptions['producedby']) {
+                if (array_key_exists('producedby',$formatOptions)) {
+                    if ($formatOptions['producedby']) {
+                        /* Title    */
+                        $content .= html_writer::start_div('summary_content');
+                            $content .= '<label class="title">' . get_string('home_producedby','format_classroom_frikomport')  . '</label>';
+                        $content .= html_writer::end_div();//summary_content
+                        /* Value    */
+                        $content .= html_writer::start_div('summary_content');
                             $prodBy = $formatOptions['producedby'];
-                        }//if_producedBy
-
-                        $content .= '<label class="value">' . $prodBy . '</label>';
-                    }//if_prerequisites
-                $content .= html_writer::end_div();//summary_content
+                            $content .= '<label class="value">' . $prodBy . '</label>';
+                        $content .= html_writer::end_div();//summary_content
+                    }//if_produced_by
+                }//if_produced_by
 
                 /* Coordinator          */
-                /* Title    */
-                $content .= html_writer::start_div('summary_content');
-                    $content .= '<label class="title">' . get_string('home_coordinater','local_course_page')  . '</label>';
-                $content .= html_writer::end_div();//summary_content
-                /* Value    */
-                $content .= html_writer::start_div('summary_content');
-                    if ((array_key_exists('manager',$formatOptions)) && $formatOptions['manager']) {
+                if ((array_key_exists('manager',$formatOptions)) && $formatOptions['manager']) {
+                    /* Title    */
+                    $content .= html_writer::start_div('summary_content');
+                        $content .= '<label class="title">' . get_string('home_coordinater','local_course_page')  . '</label>';
+                    $content .= html_writer::end_div();//summary_content
+                    /* Value    */
+                    $content .= html_writer::start_div('summary_content');
                         /* Get Manager */
                         $manager = self::GetManagerName($formatOptions['manager']);
                         $content .= '<label class="value">' . $manager . '</label>';
-                    }//if_prerequisites
-                $content .= html_writer::end_div();//summary_content
+                    $content .= html_writer::end_div();//summary_content
+                }//if_manager
 
                 /* Location             */
-                /* Title    */
-                $content .= html_writer::start_div('summary_content');
-                    $content .= '<label class="title">' . get_string('home_title_location','format_classroom_frikomport')  . '</label>';
-                $content .= html_writer::end_div();//summary_content
-                /* Value    */
-                $content .= html_writer::start_div('summary_content');
-                    if (array_key_exists('course_location',$formatOptions)) {
-                        /* Get Location Name    */
-                        if ($formatOptions['course_location']) {
+                if (array_key_exists('course_location',$formatOptions)) {
+                    if ($formatOptions['course_location']) {
+                        /* Title    */
+                        $content .= html_writer::start_div('summary_content');
+                            $content .= '<label class="title">' . get_string('home_title_location','format_classroom_frikomport')  . '</label>';
+                        $content .= html_writer::end_div();//summary_content
+                        /* Value    */
+                        $content .= html_writer::start_div('summary_content');
+                            /* Get Location Name    */
                             $location = self::GetLocationName($formatOptions['course_location']);
-                        }//if_location
-
-                        $content .= '<label class="value">' . $location . '</label>';
-                    }//if_prerequisites
-                $content .= html_writer::end_div();//summary_content
+                            $content .= '<label class="value">' . $location . '</label>';
+                        $content .= html_writer::end_div();//summary_content
+                    }//if_location
+                }//if_location
 
                 /* Sectors              */
-                /* Title    */
-                $content .= html_writer::start_div('summary_content');
-                    $content .= '<label class="title">' . get_string('home_title_sector','format_classroom_frikomport')  . '</label>';
-                $content .= html_writer::end_div();//summary_content
-                /* Value    */
-                $content .= html_writer::start_div('summary_content');
-                    if (array_key_exists('course_sector',$formatOptions)) {
-                        /* Get Sectors Name    */
-                        if ($formatOptions['course_sector']) {
+                if (array_key_exists('course_sector',$formatOptions)) {
+                    if ($formatOptions['course_sector']) {
+                        /* Title    */
+                        $content .= html_writer::start_div('summary_content');
+                            $content .= '<label class="title">' . get_string('home_title_sector','format_classroom_frikomport')  . '</label>';
+                        $content .= html_writer::end_div();//summary_content
+                        /* Value    */
+                        $content .= html_writer::start_div('summary_content');
+                            /* Get Sectors Name    */
                             $sectors = self::GetSectorsName($formatOptions['course_sector']);
-                        }//if_sectors
-
-                        $content .= '<label class="value">' . str_replace(',','</br>',$sectors) . '</label>';
-                    }//if_prerequisites
-                $content .= html_writer::end_div();//summary_content
+                            $content .= '<label class="value">' . str_replace(',','</br>',$sectors) . '</label>';
+                        $content .= html_writer::end_div();//summary_content
+                    }//if_course_sector
+                }//if_course_sector
 
                 /* Time From - To       */
-                /* Title    */
-                $content .= html_writer::start_div('summary_content');
-                    $content .= '<label class="title">' . get_string('home_time_from_to','format_classroom_frikomport')  . '</label>';
-                $content .= html_writer::end_div();//summary_content
-                /* Value    */
-                $content .= html_writer::start_div('summary_content');
-                    if (array_key_exists('time',$formatOptions)) {
-                        if ($formatOptions['time']) {
+                if (array_key_exists('time',$formatOptions)) {
+                    if ($formatOptions['time']) {
+                        /* Title    */
+                        $content .= html_writer::start_div('summary_content');
+                            $content .= '<label class="title">' . get_string('home_time_from_to','format_classroom_frikomport')  . '</label>';
+                        $content .= html_writer::end_div();//summary_content
+                        /* Value    */
+                        $content .= html_writer::start_div('summary_content');
                             $fromTo = str_replace(',','</br>',$formatOptions['time']);
-                        }//if_time
-                        $content .= '<label class="value">' . $fromTo . '</label>';
-                    }//if_prerequisites
-                $content .= html_writer::end_div();//summary_content
+                            $content .= '<label class="value">' . $fromTo . '</label>';
+                        $content .= html_writer::end_div();//summary_content
+                    }//if_time
+                }//if_time
 
                 /* Estimated Time Spent */
-                /* Title    */
-                $content .= html_writer::start_div('summary_content');
-                    $content .= '<label class="title">' . get_string('home_length','format_classroom_frikomport')  . '</label>';
-                $content .= html_writer::end_div();//summary_content
-                /* Value    */
-                $content .= html_writer::start_div('summary_content');
-                    if (array_key_exists('length',$formatOptions)) {
-                        if ($formatOptions['length']) {
+                if (array_key_exists('length',$formatOptions)) {
+                    if ($formatOptions['length']) {
+                        /* Title    */
+                        $content .= html_writer::start_div('summary_content');
+                            $content .= '<label class="title">' . get_string('home_length','format_classroom_frikomport')  . '</label>';
+                        $content .= html_writer::end_div();//summary_content
+                        /* Value    */
+                        $content .= html_writer::start_div('summary_content');
                             $length = $formatOptions['length'];
-                        }//if_time
-                        $content .= '<label class="value">' . $length . '</label>';
-                    }//if_prerequisites
-                $content .= html_writer::end_div();//summary_content
+                            $content .= '<label class="value">' . $length . '</label>';
+                        $content .= html_writer::end_div();//summary_content
+                    }//if_length
+                }//if_length
 
                 /* Estimated Effort     */
-                /* Title    */
-                $content .= html_writer::start_div('summary_content');
-                    $content .= '<label class="title">' . get_string('home_effort','format_classroom_frikomport')  . '</label>';
-                $content .= html_writer::end_div();//summary_content
-                /* Value    */
-                $content .= html_writer::start_div('summary_content');
-                    if (array_key_exists('effort',$formatOptions)) {
-                        if ($formatOptions['effort']) {
+                if (array_key_exists('effort',$formatOptions)) {
+                    if ($formatOptions['effort']) {
+                        /* Title    */
+                        $content .= html_writer::start_div('summary_content');
+                            $content .= '<label class="title">' . get_string('home_effort','format_classroom_frikomport')  . '</label>';
+                        $content .= html_writer::end_div();//summary_content
+                        /* Value    */
+                        $content .= html_writer::start_div('summary_content');
                             $effort = $formatOptions['effort'];
-                        }//if_time
-                        $content .= '<label class="value">' . $effort . '</label>';
-                    }//if_prerequisites
-                $content .= html_writer::end_div();//summary_content
+                            $content .= '<label class="value">' . $effort . '</label>';
+                        $content .= html_writer::end_div();//summary_content
+                    }//if_effort
+                }//if_effort
+
+            /* Add Link Course Home Page    */
+            if (array_key_exists('homepage',$formatOptions)) {
+                if ($formatOptions['homepage']) {
+                    /* Check if it's visible    */
+                    if (array_key_exists('homevisible',$formatOptions)) {
+                        if ($formatOptions['homevisible']) {
+                            $urlHomePage = new moodle_url('/local/course_page/home_page.php',array('id' => $courseId));
+                            /* Title    */
+                            $content .= html_writer::start_div('summary_content');
+                                $content .= '<a href="' . $urlHomePage . '">' . get_string('home_page','local_course_page') . '</a>';
+                            $content .= html_writer::end_div();//summary_content
+                        }//if_homevisible
+                    }//if_homevisible
+                }//if_homepage
+            }//if_hompeage
             $content .= html_writer::end_div();//summary
 
             return $content;

@@ -11,6 +11,12 @@
  * @creationDate    27/01/2015
  * @author          eFaktor     (fbv)
  *
+ * @updateDate      27/10/2015
+ * @author          eFaktor     (fbv)
+ *
+ * Description
+ * New js to load the company structure
+ *
  */
 
 require_once('../../../../../config.php');
@@ -56,18 +62,9 @@ $my_companies = Competence::Get_MyCompanies($user_id);
 /* Form */
 $form = new competence_add_competence_form(null,array($user_id,$my_companies));
 if ($form->is_cancelled()) {
-    setcookie('parentLevelZero',0);
-    setcookie('parentLevelOne',0);
-    setcookie('parentLevelTwo',0);
-    setcookie('parentLevelThree',0);
-
     $_POST = array();
     redirect($return_url);
 }else if($data = $form->get_data()) {
-    setcookie('parentLevelZero',0);
-    setcookie('parentLevelOne',0);
-    setcookie('parentLevelTwo',0);
-    setcookie('parentLevelThree',0);
 
     /* Add the Competence   */
     Competence::AddCompetence($data);
@@ -81,6 +78,9 @@ if ($form->is_cancelled()) {
 echo $OUTPUT->header();
 
 $form->display();
+
+/* Initialise Organization Structure    */
+Competence::Init_OrganizationStructure('level_','job_roles',$user_id);
 
 /* Print Footer */
 echo $OUTPUT->footer();

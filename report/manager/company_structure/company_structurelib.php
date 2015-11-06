@@ -12,8 +12,6 @@
  *
  */
 
-define('MANAGER_COMPANY_STRUCTURE_LEVEL','level_');
-
 class company_structure {
 
     /*********************/
@@ -96,39 +94,41 @@ class company_structure {
      *
      * Description
      * Update to the level zero
+     *
+     * @updateDate  23/10/2015
+     * @author      eFaktor     (fbv)
+     *
+     * Description
+     * Clean code.
      */
     public static function Get_EmployeeLevel($parent) {
         /* Variables    */
         global $DB;
-        $employee_list = array();
+        $employee_list  = array();
+        $sql            = null;
+        $info           = null;
 
         try {
-            /* Research Criteria */
-            $params = array();
-            $params['parent']   = $parent;
-            $params['dtotype']  = 'rgcompany';
 
             /* SQL Instruction      */
             $sql = " SELECT	    DISTINCT  	u.id,
                                             CONCAT(u.firstname,' ',u.lastname) as 'name'
                      FROM		{user}					    u
-                        JOIN	{user_info_competence_data}	uicd		ON 		uicd.userid = u.id
-                                                                        AND		(
-                                                                                 (uicd.companyid = :parent)
-                                                                                 OR
-                                                                                 (uicd.companyid LIKE '%,"   . $parent . ",%')
-                                                                                 OR
-                                                                                 (uicd.companyid LIKE '%"    . $parent . ",%')
-                                                                                 OR
-                                                                                 (uicd.companyid LIKE '%,"   . $parent . "%')
-                                                                                )
+                        JOIN	{user_info_competence_data}	uicd		ON 		uicd.userid 	= u.id
+                                                                        AND		uicd.companyid	IN (" .$parent . ")
                      WHERE		u.deleted = 0
                      ORDER BY 	u.lastname, u.firstname ";
 
             /* Execute */
-            if ($rdo = $DB->get_records_sql($sql,$params)) {
+            if ($rdo = $DB->get_records_sql($sql)) {
                 foreach ($rdo as $field) {
-                    $employee_list[$field->id] = $field->name;
+                    /* info Employee    */
+                    $info = new stdClass();
+                    $info->id   = $field->id;
+                    $info->name = $field->name;
+
+                    /* Add Employee */
+                    $employee_list[$field->id] = $info;
                 }//for
             }//if_rdo
 

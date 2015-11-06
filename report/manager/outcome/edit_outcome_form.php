@@ -8,11 +8,11 @@ require_once($CFG->libdir.'/formslib.php');
 class manager_edit_outcome_form extends moodleform {
     function definition() {
         /* Variables    */
-        global $OUTPUT,$SESSION;
+        global $OUTPUT;
 
         $m_form = $this->_form;
 
-        list($outcome_id,$expiration_id) = $this->_customdata;
+        list($outcome_id,$expiration_id,$addSearch,$removeSearch,$removeSelected) = $this->_customdata;
 
         $m_form->addElement('header', 'name_area', get_string('expiration_period', 'report_manager'));
         $m_form->addElement('text', 'expiration_period', get_string('expiration_period', 'report_manager'));
@@ -24,101 +24,40 @@ class manager_edit_outcome_form extends moodleform {
 
         $m_form->addElement('header', 'job_roles', get_string('related_job_roles', 'report_manager'));
 
-        /* Job Roles Related    */
-        list($job_role_list, $roles_selected) = outcome::Get_JobRoles_ConnectedOutcome($outcome_id);
-
-        /* Available Job roles  */
-        $achoices       = array();
-        $achoices[0]    = get_string('av_jobroles','report_manager');
-        $achoices       = $achoices + $job_role_list;
-
-        /* Selected Job roles   */
-        $schoices       = array();
-        $schoices[0]    = get_string('not_sel_jobroles','report_manager');
-
-        if ($roles_selected) {
-            foreach ($roles_selected as $role) {
-                if (!in_array($role,$SESSION->deleted)) {
-                    $SESSION->selJobRoles[$role] = $role;
-                    $schoices[$role] = $job_role_list[$role];
-                    unset($achoices[$role]);
-                }//if_deleted
-            }///for_Each
-        }//if_roles_selected
-
-        /* REMOVE ALL JOB ROLES */
-        if (isset($SESSION->removeAll) && $SESSION->removeAll) {
-            /* Selected Job Roles   */
-            $SESSION->selJobRoles   = array();
-            $schoices       = array();
-            $schoices[0]    = get_string('not_sel_jobroles','report_manager');
-
-            /* Available Job Roles   */
-            $achoices       = array();
-            $achoices[0]    = get_string('av_jobroles','report_manager');
-            $achoices       = $achoices + $job_role_list;
-
-            /* Job Roles Deleted    */
-            foreach ($job_role_list  as $key => $job_role) {
-                $SESSION->deleted[$key] = $key;
-            }
-        }//if_remove_all
-
-        /* ADD ALL JOB ROLES    */
-        if (isset($SESSION->addAll) && $SESSION->addAll) {
-            /* Available Job Roles   */
-            $achoices       = array();
-            $achoices[0]    = get_string('av_jobroles','report_manager');
-
-            /* Selected Job Roles   */
-            foreach ($job_role_list  as $key => $job_role) {
-                $SESSION->selJobRoles[$key] = $key;
-            }
-        }//if_remove_all
-
-        /* Job Roles Selected   */
-        if (isset($SESSION->selJobRoles) && $SESSION->selJobRoles) {
-            $schoices       = array();
-            $schoices[0]    = get_string('selected_jobroles','report_manager');
-
-            foreach ($SESSION->selJobRoles as $job_role) {
-                $schoices[$job_role] = $job_role_list[$job_role];
-                unset($achoices[$job_role]);
-            }
-        }//if_selJobRoles
-
+        /* Job Roles */
         $m_form->addElement('html','<div class="job_roles_selector">');
             /* Selected Job Roles   */
-            $m_form->addElement('html','<div class="sel_jobroles_left">');
-                $m_form->addElement('select','sjobroles','',$schoices,'multiple size="15"');
-                $m_form->addElement('text','search_sel_jobroles',get_string('search'));
-                $m_form->setType('search_sel_jobroles',PARAM_TEXT);
+            $m_form->addElement('html','<div class="sel_users_left">');
+                $schoices = outcome::FindJobRoles_Selector($outcome_id,$removeSearch);
+                $m_form->addElement('select','removeselect','',$schoices,'multiple size="15"');
+                $m_form->setDefault('removeselect',0);
+                $m_form->addElement('text','removeselect_searchtext',get_string('search'),'id="removeselect_searchtext"');
+                $m_form->setType('removeselect_searchtext',PARAM_TEXT);
             $m_form->addElement('html','</div>');//sel_jobroles_left
 
             /* Buttons          */
-            $m_form->addElement('html','<div class="sel_jobroles_buttons">');
+            $m_form->addElement('html','<div class="sel_users_buttons">');
                 /* Add Job Roles     */
                 $add_btn    = html_to_text($OUTPUT->larrow() . '&nbsp;'.get_string('add'));
                 $m_form->addElement('submit','add_sel',$add_btn);
+
+                $m_form->addElement('html','</br>');
+
                 /* Remove Job Roles  */
                 $remove_btn = html_to_text(get_string('remove') . '&nbsp;' . $OUTPUT->rarrow());
                 $m_form->addElement('submit','remove_sel',$remove_btn);
 
-                $m_form->addElement('html','</br>');
 
-                /* Add All Job Roles     */
-                $add_all_btn    = html_to_text($OUTPUT->larrow() . '&nbsp;'.get_string('add_all', 'report_manager'));
-                $m_form->addElement('submit','add_all',$add_all_btn);
-                /* Remove All Job Roles  */
-                $remove_all_btn = html_to_text(get_string('remove_all', 'report_manager') . '&nbsp;' . $OUTPUT->rarrow());
-                $m_form->addElement('submit','remove_all',$remove_all_btn);
             $m_form->addElement('html','</div>');//sel_jobroles_buttons
 
             /* Job Role List */
-            $m_form->addElement('html','<div class="sel_jobroles_right">');
-                $m_form->addElement('select','ajobroles', '',$achoices,'multiple size="15"');
-                $m_form->addElement('text','search_add_jobroles',get_string('search'));
-                $m_form->setType('search_add_jobroles',PARAM_TEXT);
+            $m_form->addElement('html','<div class="sel_users_right">');
+                $selected = implode(',',array_keys($schoices));
+                $achoices = outcome::FindPotentialJobRole_Selector($selected,$addSearch);
+                $m_form->addElement('select','addselect', '',$achoices,'multiple size="15"');
+                $m_form->setDefault('addselect',0);
+                $m_form->addElement('text','addselect_searchtext',get_string('search'),'id="addselect_searchtext"');
+                $m_form->setType('addselect_searchtext',PARAM_TEXT);
             $m_form->addElement('html','</div>');//sel_jobroles_right
         $m_form->addElement('html','</div>');//job_roles_selector
 
@@ -132,4 +71,30 @@ class manager_edit_outcome_form extends moodleform {
 
         $this->add_action_buttons();
     }//definition
+
+
+
+    function validation($data, $files) {
+        /* Variables    */
+        $errors = parent::validation($data, $files);
+
+        /* Get Extra Info   */
+        list($outcome_id,$expiration_id,$addSearch,$removeSearch,$removeSelected) = $this->_customdata;
+
+        /* Check there are users to add */
+        if ((isset($data['add_sel']) && $data['add_sel'])) {
+            if (!isset($data['addselect'])) {
+                $errors['addselect'] = get_string('required');
+            }//if_addselect
+        }//if_add_sel
+
+        /* Check there are users to remove  */
+        if ((isset($data['remove_sel']) && $data['remove_sel'])) {
+            if (!isset($data['removeselect'])) {
+                $errors['removeselect'] = get_string('required');
+            }//if_removeselect
+        }//if_remove_sel
+
+        return $errors;
+    }//validation
 }//manager_edit_outcome_form

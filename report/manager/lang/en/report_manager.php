@@ -426,6 +426,18 @@ $string['icd_total_not_imp']    = '<strong style="color: red;">Total Errors: {$a
 $string['icd_file_name']        = 'CompetenceDataNotImported';
 $string['icd_download']         = 'Download File';
 
+/**
+ * @updateDate  14/10/2015
+ * @author      eFaktor     (fbv)
+ *
+ * Description
+ * Add new language strings for 'Super Users' functionality
+ */
+$string['spuser'] = 'Super Users';
 
-
-
+$string['pot_users']                = 'Potential users';
+$string['pot_users_matching']       = 'Potential matching users';
+$string['current_users']            = 'Current users';
+$string['current_users_matching']   = 'Current users matching';
+$string['no_users']                 = 'No super users';
+$string['sp_level_required']        = 'At least one level is required';

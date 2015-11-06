@@ -29,6 +29,8 @@ class job_role {
 
     /**
      * @static
+     * @param       $superUser
+     *
      * @return      array       List of all job roles and their outcomes connected with them.
      * @throws      Exception
      *
@@ -38,34 +40,59 @@ class job_role {
      * Description
      * Get a list of all job roles and their outcomes connected with them.
      */
-    public static function JobRole_With_Outcomes(){
+    public static function JobRole_With_Outcomes($superUser=false){
         /* Variables    */
-        global $DB;
-        $job_roles = array();
+        global $DB,$USER;
+        $job_roles  = array();
+        $sql        = null;
+        $params     = null;
+        $rdo        = null;
+        $info       = null;
 
         try {
-            /* SQL Instruction */
+            /* Search Criteria  */
+            $params = array();
+            $params['user'] = $USER->id;
+
+            /* SQL Instruction  */
             $sql = " SELECT		jr.id,
                                 jr.name,
                                 jr.industrycode,
                                 oc.outcomename as 'outcome_name'
-                     FROM  		{report_gen_jobrole} 			jr
-                        LEFT JOIN (SELECT     GROUP_CONCAT(go.fullname
-                                                           ORDER BY go.fullname ASC
-                                                           SEPARATOR ', '
-                                                           ) as 'outcomename',
-                                              ojrel.jobroleid
-                                   FROM     {report_gen_outcome_jobrole}  ojrel
-                                      JOIN  {grade_outcomes}              go    ON  ojrel.outcomeid = go.id
-                                   GROUP BY ojrel.jobroleid
-                                  ) oc
-                                    ON jr.id = oc.jobroleid
-                     ORDER BY	jr.industrycode, jr.name ASC ";
+                     FROM  		{report_gen_jobrole}				jr
+                        LEFT JOIN (SELECT   GROUP_CONCAT(go.fullname ORDER BY go.fullname ASC SEPARATOR ', ') as 'outcomename',
+                                            ojrel.jobroleid
+                                   FROM     	{report_gen_outcome_jobrole}  ojrel
+                                        JOIN  	{grade_outcomes}              go    ON  ojrel.outcomeid = go.id
+                                   GROUP BY ojrel.jobroleid ) 	oc
+                                                                ON jr.id = oc.jobroleid
+                         ";
+
+            /* Only Job Roles Connected with super user */
+            if ($superUser) {
+                $sql .= "   JOIN	{report_gen_jobrole_relation}	jr_rel	ON jr_rel.jobroleid = jr.id
+                            JOIN	{report_gen_super_user}			sp		ON 	IF(sp.levelzero,sp.levelzero,0) 	= IF(jr_rel.levelzero,jr_rel.levelzero,0)
+                                                                            AND IF(sp.levelone,sp.levelone,0)		= IF(jr_rel.levelone,jr_rel.levelone,0)
+                                                                            AND	IF(sp.leveltwo,sp.leveltwo,0) 		= IF(jr_rel.leveltwo,jr_rel.leveltwo,0)
+                                                                            AND IF(sp.levelthree,sp.levelthree,0) 	= IF(jr_rel.levelthree,jr_rel.levelthree,0)
+                                                                            AND sp.userid = :user ";
+            }//if_superUser
+
+            /* Order By */
+            $sql .= " ORDER BY	jr.industrycode, jr.name ASC ";
 
             /* Execute */
-            if ($rdo = $DB->get_records_sql($sql)) {
-                foreach ($rdo as $field) {
-                    $job_roles[$field->id] = $field;
+            if ($rdo = $DB->get_records_sql($sql,$params)) {
+                foreach ($rdo as $instance) {
+                    /* Info Job Role    */
+                    $info = new stdClass();
+                    $info->id           = $instance->id;
+                    $info->name         = $instance->name;
+                    $info->industrycode = $instance->industrycode;
+                    $info->outcome_name = $instance->outcome_name;
+
+                    /* Add */
+                    $job_roles[$instance->id] = $info;
                 }//for_rdo
             }//if_rdo
 
@@ -78,6 +105,7 @@ class job_role {
     /**
      * @static
      * @param           $job_role_id
+     *
      * @return          mixed|null
      * @throws          Exception
      *
@@ -89,41 +117,47 @@ class job_role {
      */
     public static function JobRole_Info($job_role_id) {
         /* Variables    */
-        global $DB;
-        $jr_info        = null;
+        global $DB,$USER;
+        $jrInfo     = null;
+        $params     = null;
+        $sql        = null;
+        $rdo        = null;
 
         try {
             /* Search Criteria  */
             $params = array();
-            $params['jr_id'] = $job_role_id;
+            $params['jr_id']    = $job_role_id;
+            $params['user']     = $USER->id;
 
             /* SQL Instruction  */
-            $sql = " SELECT			jr.id,
-                                    jr.name,
-                                    jr.industrycode,
-                                    jr_rel.levelzero,
-                                    jr_rel.levelone,
-                                    jr_rel.leveltwo,
-                                    GROUP_CONCAT(DISTINCT jr_rel.levelthree ORDER BY jr_rel.levelthree SEPARATOR ',') as 'levelthree'
-                     FROM			{report_gen_jobrole}				jr
-                        JOIN		{report_gen_jobrole_relation}		jr_rel	ON	jr_rel.jobroleid = jr.id
-                     WHERE          jr.id = :jr_id ";
+            $sql = " SELECT		jr.id,
+                                jr.name,
+                                jr.industrycode,
+                                jr_rel.levelzero,
+                                GROUP_CONCAT(DISTINCT jr_rel.levelone ORDER BY jr_rel.levelone SEPARATOR ',') 		as 'levelone',
+                                GROUP_CONCAT(DISTINCT jr_rel.leveltwo ORDER BY jr_rel.leveltwo SEPARATOR ',') 		as 'leveltwo',
+                                GROUP_CONCAT(DISTINCT jr_rel.levelthree ORDER BY jr_rel.levelthree SEPARATOR ',') 	as 'levelthree'
+                     FROM		{report_gen_jobrole}				jr
+                        JOIN	{report_gen_jobrole_relation}		jr_rel	ON	jr_rel.jobroleid = jr.id
+                     WHERE      jr.id = :jr_id
+                     GROUP BY   jr_rel.levelzero,jr.id ";
+
 
             /* Execute  */
             $rdo = $DB->get_record_sql($sql,$params);
             if ($rdo) {
                 /* Job Role Info    */
-                $jr_info = new stdClass();
-                $jr_info->id                = $rdo->id;
-                $jr_info->name              = $rdo->name;
-                $jr_info->industry_code     = $rdo->industrycode;
-                $jr_info->levelZero         = $rdo->levelzero;
-                $jr_info->levelOne          = $rdo->levelone;
-                $jr_info->levelTwo          = $rdo->leveltwo;
-                $jr_info->levelThree        = $rdo->levelthree;
+                $jrInfo = new stdClass();
+                $jrInfo->id                = $rdo->id;
+                $jrInfo->name              = $rdo->name;
+                $jrInfo->industry_code     = $rdo->industrycode;
+                $jrInfo->levelZero         = $rdo->levelzero;
+                $jrInfo->levelOne          = $rdo->levelone;
+                $jrInfo->levelTwo          = $rdo->leveltwo;
+                $jrInfo->levelThree        = $rdo->levelthree;
             }//if_rdo
 
-            return $jr_info;
+            return $jrInfo;
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
@@ -231,47 +265,54 @@ class job_role {
         }//try_catch
     }//JobRole_Exists
 
+
     /**
-     * @static
-     * @param               $job_role_id        Job Role identity
-     * @param               string $field       Type of Company
-     * @return              int                 Number of users
-     * @throws              Exception
+     * @param           $jrId
      *
-     * @updateDate          08/10/2014
-     * @author              eFaktor         (fbv)
+     * @return          bool
+     * @throws          Exception
+     *
+     * @creationDate    26/10/2015
+     * @author          eFaktor     (fbv)
      *
      * Description
-     * Return the number of users that are connected with a specific job role.
+     * Check if there are users connected with the job role.
+     * L5
      */
-    public static function Users_Connected_JobRole($job_role_id, $field = REPORT_MANAGER_COMPANY_FIELD) {
+    public static function Users_Connected($jrId) {
         /* Variables    */
         global $DB;
-        $count = 0;
+        $params = null;
+        $rdo    = null;
+        $sql    = null;
 
         try {
-            /* Research Criteria */
+            /* Search Criteria  */
             $params = array();
-            $params['job_role_id'] = $job_role_id;
-            $params['field'] = $field;
+            $params['jr'] = $jrId;
 
-            /* SQL Instruction   */
-            $sql = " SELECT 	COUNT(DISTINCT uid.id) as 'count'
-                     FROM		{user_info_data} 	uid
-                        JOIN	{user_info_field} 	uif ON uid.fieldid = uif.id
-                     WHERE 		uid.data     = :job_role_id
-                        AND     uif.datatype = :field ";
+            /* SQL Instruction  */
+            $sql = " SELECT	*
+                     FROM	{user_info_competence_data}
+                     WHERE	jobroles = :jr
+                            OR
+                            jobroles	LIKE '%,"   . $jrId . ",%'
+                            OR
+                            jobroles  	LIKE '"     . $jrId . ",%'
+                            OR
+                            jobroles  	LIKE '%,"   . $jrId. "' ";
 
             /* Execute */
-            if ($rdo = $DB->get_record_sql($sql,$params)) {
-                $count = $rdo->count;
-            }//if_Rdo
-
-            return $count;
+            $rdo = $DB->get_records_sql($sql,$params);
+            if ($rdo) {
+                return true;
+            }else {
+                return false;
+            }//if_rdo
         }catch (Exception $ex) {
             throw $ex;
-        }//try_catch
-    }//Users_Connected_JobRole
+        }//try_Catch
+    }//Users_Connected
 
     /**
      * @static
@@ -422,6 +463,8 @@ class job_role {
     /**
      * @static
      * @param           $job_roles      Job roles list
+     * @param           $superUser
+     *
      * @return          html_table
      *
      * @updateDate      12/09/2012
@@ -430,7 +473,7 @@ class job_role {
      * Description
      * Draw a table which contains all job roles available.
      */
-    public static function JobRoles_table($job_roles){
+    public static function JobRoles_table($job_roles,$superUser=false){
         /* Variables    */
         global $CFG;
         $context        = CONTEXT_SYSTEM::instance();
@@ -459,9 +502,9 @@ class job_role {
             /* Outcomes Col */
             $row[] = $job_role->outcome_name;
             /* Edit Col */
-            if ($can_edit) {
+            if (($can_edit) || ($superUser)) {
                 /* Edit Button */
-                $url_edit = new moodle_url('/report/manager/job_role/edit_job_role.php',array('id'=>$job_role->id));
+                $url_edit = new moodle_url('/report/manager/job_role/edit_job_role.php',array('id' => $job_role->id));
                 $buttons[] = html_writer::link($url_edit,
                                                html_writer::empty_tag('img', array('src'=>$OUTPUT->pix_url('t/edit'),
                                                'alt'=>get_string('edit'),
@@ -469,7 +512,7 @@ class job_role {
                                                array('title'=>get_string('edit_this_job_role', 'report_manager')));
 
                 /* Delete Button */
-                $url_delete = new moodle_url('/report/manager/job_role/delete_job_role.php',array('id'=>$job_role->id));
+                $url_delete = new moodle_url('/report/manager/job_role/delete_job_role.php',array('id' => $job_role->id));
                 $buttons[] = html_writer::link($url_delete,
                                                html_writer::empty_tag('img', array('src'=>$OUTPUT->pix_url('t/delete'),
                                                'alt'=>get_string('delete'),

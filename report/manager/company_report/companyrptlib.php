@@ -241,7 +241,6 @@ class CompanyReport {
             }//if_job_roles
 
             /* Users Info       */
-            //$companyTracker->users  = self::GetUsers_CompanyTracker($company->levelThree,$users_selected,$outcomes,$job_roles);
             $companyTracker->users  = self::GetUsers_CompanyTracker($company->levelThree,$users_selected);
 
             /* Save Outcomes    */

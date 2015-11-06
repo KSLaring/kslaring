@@ -14,12 +14,18 @@
  *
  * Edit Job Role    (Form)
  *
+ * @updateDate      26/10/2015
+ * @author          eFaktor     (fbv)
+ *
+ * Description
+ * Update to super users
+ * Update to new java script to load the companies
+ *
  */
 
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->libdir.'/formslib.php');
-$PAGE->requires->js('/report/manager/js/manager.js');
 
 class manager_edit_job_role_form extends moodleform {
     function definition () {
@@ -30,40 +36,44 @@ class manager_edit_job_role_form extends moodleform {
         );
 
         /* Form */
-        $m_form     = $this->_form;
-        $jr_info    = $this->_customdata;
+        $m_form                     = $this->_form;
+        list($jr_info,$myAccess)    = $this->_customdata;
 
         /* Job Role */
         $m_form->addElement('header', 'name_area', get_string('job_role_name', 'report_manager'));
         $m_form->addElement('text', 'job_role_name', get_string('job_role_name', 'report_manager'));
-        if (isset($_COOKIE['jobRole']) && ($_COOKIE['jobRole']) && ($jr_info->name != $_COOKIE['jobRole'])) {
-            $m_form->setDefault('job_role_name',$_COOKIE['jobRole']);
-        }else {
-            $m_form->setDefault('job_role_name',$jr_info->name);
-        }//if_jobRole
+        $m_form->setDefault('job_role_name',$jr_info->name);
         $m_form->setType('job_role_name',PARAM_TEXT);
         $m_form->addRule('job_role_name','required','required', null, 'client');
 
         /* Add Industry Code (Required) */
         $m_form->addElement('text', 'industry_code', get_string('industry_code','report_manager'), $text_attr);
-        if (isset($_COOKIE['industryCode']) && ($_COOKIE['industryCode']) && ($jr_info->industry_code != $_COOKIE['industryCode'])) {
-            $m_form->setDefault('industry_code',$_COOKIE['industryCode']);
-        }else {
-            $m_form->setDefault('industry_code',$jr_info->industry_code);
-        }//if_industrycode
+        $m_form->setDefault('industry_code',$jr_info->industry_code);
         $m_form->setType('industry_code',PARAM_TEXT);
         $m_form->addRule('industry_code', 'required', 'required', null, 'client');
         /* Companies Levels Connected With  */
         $m_form->addElement('header', 'levels_connected', get_string('jr_connected', 'report_manager'));
         $m_form->setExpanded('levels_connected',true);
         /* Level Zero   */
-        $this->Add_CompanyLevel(0,$jr_info,$m_form);
+        /* Companies connected with super user  */
+        $myCompanies    = null;
+        $myCompanies = $this->Get_MyLevelAccess($myAccess,$jr_info,0);
+        $this->Add_CompanyLevel(0,$jr_info,$myCompanies,$m_form);
         /* Level One    */
-        $this->Add_CompanyLevel(1,$jr_info,$m_form);
+        /* Companies connected with super user  */
+        $myCompanies    = null;
+        $myCompanies = $this->Get_MyLevelAccess($myAccess,$jr_info,1);
+        $this->Add_CompanyLevel(1,$jr_info,$myCompanies,$m_form);
         /* Level Two    */
-        $this->Add_CompanyLevel(2,$jr_info,$m_form);
+        /* Companies connected with super user  */
+        $myCompanies    = null;
+        $myCompanies = $this->Get_MyLevelAccess($myAccess,$jr_info,2);
+        $this->Add_CompanyLevel(2,$jr_info,$myCompanies,$m_form);
         /* Level Three  */
-        $this->Add_CompanyLevel(3,$jr_info,$m_form);
+        /* Companies connected with super user  */
+        $myCompanies    = null;
+        $myCompanies = $this->Get_MyLevelAccess($myAccess,$jr_info,3);
+        $this->Add_CompanyLevel(3,$jr_info,$myCompanies,$m_form);
 
         /* ADD List with all outcomes */
         $m_form->addElement('header', 'outcomes', get_string('related_outcomes', 'report_manager'));
@@ -89,8 +99,76 @@ class manager_edit_job_role_form extends moodleform {
     }//definition
 
     /**
+     * @param               $myAccess
+     * @param               $jr_info
+     * @param               $level
+     *
+     * @return          null|string
+     * @throws              Exception
+     *
+     * @creationDate        23/10/2015
+     * @author              eFaktor     (fbv)
+     *
+     * Description
+     * Get companies connected with super user
+     */
+    function Get_MyLevelAccess($myAccess,$jr_info,$level) {
+        /* Variables    */
+        $myLevelAccess  = null;
+        $parent         = null;
+
+        try {
+            if ($myAccess) {
+                $parent     = optional_param(COMPANY_STRUCTURE_LEVEL . 0, 0, PARAM_INT);
+
+                switch ($level) {
+                    case 0:
+                        $myLevelAccess = implode(',',array_keys($myAccess));
+
+                        break;
+                    case 1:
+                        if ($parent) {
+                            $myLevelAccess = $myAccess[$parent]->levelOne;
+                        }else {
+                            if ($jr_info->levelZero) {
+                                $myLevelAccess = $myAccess[$jr_info->levelZero]->levelOne;
+                            }
+                        }//if_parent
+
+                        break;
+                    case 2:
+                        if ($parent) {
+                            $myLevelAccess = $myAccess[$parent]->levelTwo;
+                        }else {
+                            if ($jr_info->levelZero) {
+                                $myLevelAccess = $myAccess[$jr_info->levelZero]->levelTwo;
+                            }
+                        }//if_parent
+
+                        break;
+                    case 3:
+                        if ($parent) {
+                            $myLevelAccess = $myAccess[$parent]->levelThree;
+                        }else {
+                            if ($jr_info->levelZero) {
+                                $myLevelAccess = $myAccess[$jr_info->levelZero]->levelThree;
+                            }
+                        }//if_parent
+
+                        break;
+                }//switch_level
+            }//if_myAccess
+
+            return $myLevelAccess;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//Get_MyLevelAccess
+
+    /**
      * @param           $level
      * @param           $jr_info
+     * @param           $myCompanies
      * @param           $form
      *
      * @creationDate    26/01/0215
@@ -98,13 +176,20 @@ class manager_edit_job_role_form extends moodleform {
      *
      * Description
      * Add the Company Level
+     *
+     * @updateDate      26/10/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Update Super User
+     * Update to new java script to load the companies
      */
-    function Add_CompanyLevel($level,$jr_info,&$form) {
+    function Add_CompanyLevel($level,$jr_info,$myCompanies,&$form) {
         /* Add Level X      */
         /* Add Company List */
-        $options = $this->getCompanyList($level,$jr_info);
+        $options = $this->getCompanyList($level,$jr_info,$myCompanies);
         $select= &$form->addElement('select',
-                                    REPORT_JR_COMPANY_STRUCTURE_LEVEL . $level,
+                                    COMPANY_STRUCTURE_LEVEL . $level,
                                     get_string('select_company_structure_level','report_manager',$level),
                                     $options);
         if ($level == 3) {
@@ -118,6 +203,8 @@ class manager_edit_job_role_form extends moodleform {
     /**
      * @param           $level
      * @param           $jr_info
+     * @param           $myCompanies
+     *
      * @return          array
      *
      * @creationDate    26/01/2015
@@ -126,50 +213,71 @@ class manager_edit_job_role_form extends moodleform {
      * Description
      * Get the company List
      */
-    function getCompanyList($level,$jr_info) {
+    function getCompanyList($level,$jr_info,$myCompanies) {
         /* Variables    */
-        $options = array();
+        $options        = array();
+        /* Level Zero   */
+        $parent         = optional_param(COMPANY_STRUCTURE_LEVEL . ($level-1), 0, PARAM_INT);
+        $levelZero      = $jr_info->levelZero;
+        $levelOne       = $jr_info->levelOne;
+        $levelTwo       = $jr_info->levelTwo;
+        $levelThree     = $jr_info->levelThree;
 
+        /* Get Company List */
         switch ($level) {
             case 0:
-                $options = CompetenceManager::GetCompanies_LevelList($level);
+                $options    = CompetenceManager::GetCompanies_LevelList($level,0,$myCompanies);
 
                 break;
             case 1:
-                if (isset($_COOKIE['parentLevelZero']) && ($_COOKIE['parentLevelZero']) && ($_COOKIE['parentLevelZero'] != $jr_info->levelZero)) {
-                    $options = CompetenceManager::GetCompanies_LevelList($level,$_COOKIE['parentLevelZero']);
+                /* Get Correct Parent       */
+                if (!$parent) {
+                    $parent = $levelZero;
+                }
+
+                if (!$parent) {
+                    $options[0] = get_string('select_level_list','report_manager');
                 }else {
-                    if ($jr_info->levelZero) {
-                        $options = CompetenceManager::GetCompanies_LevelList($level,$jr_info->levelZero);
+                    if ($myCompanies) {
+                        $options = CompetenceManager::GetCompanies_LevelList($level,$parent,$myCompanies);
                     }else {
-                        $options[0] = get_string('select_level_list','report_manager');
-                    }//if_levelInfo
-                }//IF_COOKIE
+                        $options = CompetenceManager::GetCompanies_LevelList($level,$parent);
+                    }//if_companies
+                }//if_parent
 
                 break;
             case 2:
-                if (isset($_COOKIE['parentLevelOne']) && ($_COOKIE['parentLevelOne']) && ($_COOKIE['parentLevelOne'] != $jr_info->levelOne)) {
-                    $options = CompetenceManager::GetCompanies_LevelList($level,$_COOKIE['parentLevelOne']);
+                /* Get Correct Parent       */
+                if (!$parent) {
+                    $parent = $levelOne;
+                }
+
+                if (!$parent) {
+                    $options[0] = get_string('select_level_list','report_manager');
                 }else {
-                    if ($jr_info->levelOne) {
-                        $options = CompetenceManager::GetCompanies_LevelList($level,$jr_info->levelOne);
+                    if ($myCompanies) {
+                        $options = CompetenceManager::GetCompanies_LevelList($level,$parent,$myCompanies);
                     }else {
-                        $options[0] = get_string('select_level_list','report_manager');
-                    }//if_levelInfo
-                }//IF_COOKIE
+                        $options = CompetenceManager::GetCompanies_LevelList($level,$parent);
+                    }//if_companies
+                }//if_parent
 
                 break;
             case 3:
-                if (isset($_COOKIE['parentLevelTwo']) && ($_COOKIE['parentLevelTwo']) && ($_COOKIE['parentLevelTwo'] != $jr_info->levelTwo)) {
-                    $options = CompetenceManager::GetCompanies_LevelList($level,$_COOKIE['parentLevelTwo']);
-                }else {
-                    if ($jr_info->levelTwo) {
-                        $options = CompetenceManager::GetCompanies_LevelList($level,$jr_info->levelTwo);
-                    }else {
-                        $options[0] = get_string('select_level_list','report_manager');
-                    }//if_levelInfo
+                /* Get Correct Parent       */
+                if (!$parent) {
+                    $parent = $levelTwo;
+                }
 
-                }//IF_COOKIE
+                if (!$parent) {
+                    $options[0] = get_string('select_level_list','report_manager');
+                }else {
+                    if ($myCompanies) {
+                        $options = CompetenceManager::GetCompanies_LevelList($level,$parent,$myCompanies);
+                    }else {
+                        $options = CompetenceManager::GetCompanies_LevelList($level,$parent);
+                    }//if_companies
+                }//if_parent
 
                 break;
         }//level
@@ -190,65 +298,87 @@ class manager_edit_job_role_form extends moodleform {
      * Set the company selected
      */
     function setLevelDefault($level,$jr_info,&$form) {
+        /* Variables    */
+        $default    = null;
+        $parent     = null;
 
+        /* Get Default Value    */
         switch ($level) {
             case 0:
-                if (isset($_COOKIE['parentLevelZero']) && ($_COOKIE['parentLevelZero']) && ($_COOKIE['parentLevelZero'] != $jr_info->levelZero)) {
-                    $form->setDefault(REPORT_JR_COMPANY_STRUCTURE_LEVEL . '0',$_COOKIE['parentLevelZero']);
-                }else {
-                    if ($jr_info->levelZero) {
-                        $form->setDefault(REPORT_JR_COMPANY_STRUCTURE_LEVEL . '0',$jr_info->levelZero);
-                    }else {
-                        $form->setDefault(REPORT_JR_COMPANY_STRUCTURE_LEVEL . '0',0);
-                    }//if_levelInfo
-                }//if_cookie
+                $default = optional_param(COMPANY_STRUCTURE_LEVEL . $level, 0, PARAM_INT);
+                if ($jr_info->levelZero != $default) {
+                    $default = $jr_info->levelZero;
+                }
 
                 break;
             case 1:
-                if (isset($_COOKIE['parentLevelOne']) && ($_COOKIE['parentLevelOne']) && ($_COOKIE['parentLevelOne'] != $jr_info->levelOne)) {
-                    $form->setDefault(REPORT_JR_COMPANY_STRUCTURE_LEVEL . '1',$_COOKIE['parentLevelOne']);
-                }else {
-                    if ($jr_info->levelOne) {
-                        $form->setDefault(REPORT_JR_COMPANY_STRUCTURE_LEVEL . '1',$jr_info->levelOne);
-                    }else {
-                        $form->setDefault(REPORT_JR_COMPANY_STRUCTURE_LEVEL . '1',0);
-                    }//if_levelInfo
-                }//if_cookie
+                $default = optional_param(COMPANY_STRUCTURE_LEVEL . $level, 0, PARAM_INT);
+                if ($jr_info->levelOne != $default) {
+                    $default = $jr_info->levelOne;
+                }
 
                 break;
             case 2:
-                if (isset($_COOKIE['parentLevelTwo']) && ($_COOKIE['parentLevelTwo']) && ($_COOKIE['parentLevelTwo'] != $jr_info->levelTwo)) {
-                    $form->setDefault(REPORT_JR_COMPANY_STRUCTURE_LEVEL . '2',$_COOKIE['parentLevelTwo']);
-                }else {
-                    if ($jr_info->levelTwo) {
-                        $form->setDefault(REPORT_JR_COMPANY_STRUCTURE_LEVEL . '2',$jr_info->levelTwo);
-                    }else {
-                        $form->setDefault(REPORT_JR_COMPANY_STRUCTURE_LEVEL . '2',0);
-                    }//if_levelInfo
-                }//if_cookie
+                $default = optional_param(COMPANY_STRUCTURE_LEVEL . $level, 0, PARAM_INT);
+                if ($jr_info->levelTwo != $default) {
+                    $default = $jr_info->levelTwo;
+                }
 
                 break;
             case 3:
-                if (isset($_COOKIE['parentLevelThree']) && ($_COOKIE['parentLevelThree']) && ($_COOKIE['parentLevelThree'] != $jr_info->levelThree)) {
-                    $form->setDefault(REPORT_JR_COMPANY_STRUCTURE_LEVEL . '3',$_COOKIE['parentLevelThree']);
-                }else {
-                    if ($jr_info->levelThree) {
-                        $form->setDefault(REPORT_JR_COMPANY_STRUCTURE_LEVEL . '3',$jr_info->levelThree);
-                    }else {
-                        $form->setDefault(REPORT_JR_COMPANY_STRUCTURE_LEVEL . '3',0);
-                    }//if_levelInfo
-                }//if_cookie
+                $default = optional_param_array(COMPANY_STRUCTURE_LEVEL . $level, 0, PARAM_INT);
+                if ($jr_info->levelThree != $default) {
+                    $default = $jr_info->levelThree;
+                }
 
                 break;
-        }//switch
+        }//switch_levle
 
-        if ($level) {
-            $form->disabledIf(REPORT_JR_COMPANY_STRUCTURE_LEVEL . $level ,REPORT_JR_COMPANY_STRUCTURE_LEVEL . ($level - 1),'eq',0);
-        }//if_elvel
+
+        /* Set Default  */
+        $form->setDefault(COMPANY_STRUCTURE_LEVEL . $level,$default);
     }//setLevelDefault
 
     function validation($data, $files) {
+        /* Variables    */
+        $selZero    = null;
+        $levelZero  = null;
+        $selOne     = null;
+        $selTwo     = null;
+        $selThree   = null;
+
         $errors = parent::validation($data, $files);
+
+        /* My Access    */
+        list($jr_info,$myAccess)    = $this->_customdata;
+        if ($myAccess) {
+            $selZero = COMPANY_STRUCTURE_LEVEL . 0;
+            if (!$data[$selZero]) {
+                $errors[$selZero]  = get_string('required');
+            }else {
+                $levelZero  = $myAccess[$data[$selZero]];
+                if ($levelZero->levelOne) {
+                    $selOne     = COMPANY_STRUCTURE_LEVEL . 1;
+                    if (!$data[$selOne]) {
+                        $errors[$selOne]  = get_string('required');
+                    }else {
+                        if ($levelZero->levelTwo) {
+                            $selTwo     = COMPANY_STRUCTURE_LEVEL . 2;
+                            if (!$data[$selTwo]) {
+                                $errors[$selTwo]  = get_string('required');
+                            }else {
+                                if ($levelZero->levelThree) {
+                                    $selThree     = COMPANY_STRUCTURE_LEVEL . 3;
+                                    if (!$data[$selThree]) {
+                                        $errors[$selTwo]  = get_string('required');
+                                    }
+                                }
+                            }
+                        }//levelTwo
+                    }//sel_levelOne
+                }
+            }
+        }
 
         /* New Function to check if the Job Role just exists*/
         /* Same Name and Industry Code  */

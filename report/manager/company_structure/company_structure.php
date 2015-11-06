@@ -26,6 +26,8 @@ require_once('company_structure_form.php');
 $url            = new moodle_url('/report/manager/company_structure/company_structure.php');
 $return_url     = new moodle_url('/report/manager/index.php');
 $redirect_url   = null;
+$superUser      = false;
+$myAccess       = null;
 
 /* Start the page */
 $site_context = context_system::instance();
@@ -37,11 +39,19 @@ $PAGE->set_pagelayout('report');
 $PAGE->set_url($url);
 $PAGE->set_title($SITE->fullname);
 $PAGE->set_heading($SITE->fullname);
-$PAGE->navbar->add(get_string('report_manager','report_manager'),new moodle_url('/report/manager/index.php'));
-$PAGE->navbar->add(get_string('company_structure','report_manager'),$url);
+
 
 /* ADD require_capability */
-require_capability('report/manager:edit', $site_context);
+$superUser  = CompetenceManager::IsSuperUser($USER->id);
+$myAccess   = CompetenceManager::Get_MyAccess($USER->id);
+
+if (!$superUser) {
+    require_capability('report/manager:edit', $site_context);
+    $PAGE->navbar->add(get_string('report_manager','report_manager'),$return_url);
+}else {
+    $return_url = $url;
+}//if_SuperUser
+$PAGE->navbar->add(get_string('company_structure','report_manager'),$url);
 
 if (empty($CFG->loginhttps)) {
     $secure_www_root = $CFG->wwwroot;
@@ -50,76 +60,58 @@ if (empty($CFG->loginhttps)) {
 }//if_loginhttps
 
 /* Show Form */
-$form = new manager_company_structure_form(null);
+$form = new manager_company_structure_form(null,$myAccess);
 
 if ($form->is_cancelled()) {
-    /* Clean Cookies    */
-    setcookie('parentLevelZero',0);
-    setcookie('parentLevelOne',0);
-    setcookie('parentLevelTwo',0);
-    setcookie('parentLevelThree',0);
-    setcookie('courseReport',0);
-    setcookie('outcomeReport',0);
 
     $_POST = array();
     redirect($return_url);
-}else {
+}else if ($data = $form->get_data()) {
+    /* Get Action   */
+    list($action, $level) = company_structure::Get_ActionLevel($data);
 
-    if ($data = $form->get_data()) {
-        list($action, $level) = company_structure::Get_ActionLevel($data);
+    $parent = array();
+    for ($i = 0; $i <= $level; $i++) {
+        $select      = COMPANY_STRUCTURE_LEVEL . $i;
+        $parent[$i]  = $data->$select;
+    }//for
+    $SESSION->parents = $parent;
 
-        switch ($action) {
-            case REPORT_MANAGER_GET_LEVEL:
-                break;
-            case REPORT_MANAGER_COMPANY_CANCEL:
-                $_POST = array();
-                redirect($return_url);
+    switch ($action) {
+        case REPORT_MANAGER_COMPANY_CANCEL:
+            $_POST = array();
+            redirect($return_url);
 
-                break;
-            case REPORT_MANAGER_ADD_ITEM:
-                $parent = array();
+            break;
+        case REPORT_MANAGER_ADD_ITEM:
+            $redirect_url    = new moodle_url('/report/manager/company_structure/add_company_structure.php',array('level'=>$level));
 
-                for ($i = 0; $i < $level; $i++) {
-                    $select = MANAGER_COMPANY_STRUCTURE_LEVEL . $i;
-                    $parent[$i] = $data->$select;
-                }//for
+            break;
+        case REPORT_MANAGER_RENAME_SELECTED:
+            $redirect_url    = new moodle_url('/report/manager/company_structure/edit_company_structure.php',array('level'=>$level));
 
-                $SESSION->parents = $parent;
-                $redirect_url    = new moodle_url('/report/manager/company_structure/add_company_structure.php',array('level'=>$level));
+            break;
+        case REPORT_MANAGER_DELETE_SELECTED:
+            $select     = COMPANY_STRUCTURE_LEVEL . $level;
+            $company_id = $data->$select;
 
-                break;
-            case REPORT_MANAGER_RENAME_SELECTED:
-                $parent = array();
+            $redirect_url    = new moodle_url('/report/manager/company_structure/delete_company_structure.php',array('id'=>$company_id, 'level'=>$level));
 
-                for ($i = 0; $i <= $level; $i++) {
-                    $select = MANAGER_COMPANY_STRUCTURE_LEVEL . $i;
-                    $parent[$i] = $data->$select;
-                }//for
+            break;
+        case REPORT_MANAGER_UNLINK_SELECTED:
+            $select     = COMPANY_STRUCTURE_LEVEL . $level;
+            $company_id = $data->$select;
 
-                $SESSION->parents = $parent;
-                $redirect_url    = new moodle_url('/report/manager/company_structure/edit_company_structure.php',array('level'=>$level));
+            $redirect_url    = new moodle_url('/report/manager/company_structure/unlink_company_structure.php',array('id'=>$company_id));
 
-                break;
-            case REPORT_MANAGER_DELETE_SELECTED:
-                $select     = MANAGER_COMPANY_STRUCTURE_LEVEL . $level;
-                $company_id = $data->$select;
+            break;
+        default:
+            break;
+    }//$action
 
-                $redirect_url    = new moodle_url('/report/manager/company_structure/delete_company_structure.php',array('id'=>$company_id, 'level'=>$level));
-                break;
-            case REPORT_MANAGER_UNLINK_SELECTED:
-                $select     = MANAGER_COMPANY_STRUCTURE_LEVEL . $level;
-                $company_id = $data->$select;
-
-                $redirect_url    = new moodle_url('/report/manager/company_structure/unlink_company_structure.php',array('id'=>$company_id));
-                break;
-            default:
-                break;
-        }//$action
-
-        if (!is_null($redirect_url)) {
-            redirect($redirect_url);
-        }
-    }//form
+    if (!is_null($redirect_url)) {
+        redirect($redirect_url);
+    }
 }//form_cancelled
 
 $PAGE->verify_https_required();
@@ -135,6 +127,9 @@ require('../tabs.php');
 echo $OUTPUT->heading(get_string('company_structure', 'report_manager'));
 
 $form->display();
+
+/* Initialise Organization Structure    */
+CompetenceManager::Init_Organization_Structure(COMPANY_STRUCTURE_LEVEL,REPORT_MANAGER_EMPLOYEE_LIST,null,$superUser,$myAccess,true);
 
 /* Print Footer */
 echo $OUTPUT->footer();

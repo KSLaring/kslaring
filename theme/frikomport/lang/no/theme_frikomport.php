@@ -41,7 +41,7 @@ $string['logodesc'] = 'Vennligst last opp logoen din her hvis du vil ha en annen
 Hvis høyden på logoen er mer enn 75px, må du legge til følgende CSS-regel i Egendefinert CSS-feltet under.<br>
 a.logo {height: 100px;} eller hva høyden på logoen i pixler måtte være.';
 
-$string['pluginname'] = 'Frikomport';
+$string['pluginname'] = 'frikomport';
 
 $string['region-side-post'] = 'Høyre';
 $string['region-side-pre'] = 'Venstre';

@@ -19,6 +19,7 @@
 
 require_once('../../../config.php');
 require_once( 'jobrolelib.php');
+require_once('../managerlib.php');
 require_once($CFG->libdir . '/adminlib.php');
 
 /* Params */
@@ -29,6 +30,8 @@ $return_url     = new moodle_url('/report/manager/job_role/job_role.php');
 $return         = new moodle_url('/report/manager/index.php');
 $url            = new moodle_url('/report/manager/job_role/delete_job_role.php',array('id' => $job_role_id));
 $confirmUrl     = new moodle_url('/report/manager/job_role/delete_job_role.php',array('id' => $job_role_id,'confirm'=>true));
+
+$superUser      = false;
 
 $jobRoleInfo    = null;
 $jobName        = null;
@@ -42,13 +45,17 @@ $PAGE->set_url($url);
 $PAGE->set_context($site_context);
 $PAGE->set_title($SITE->fullname);
 $PAGE->set_heading($SITE->fullname);
-$PAGE->navbar->add(get_string('report_manager','local_tracker_manager'),$return);
-$PAGE->navbar->add(get_string('job_roles', 'report_manager'),$return_url);
+
+/* Info Super Users */
+$superUser  = CompetenceManager::IsSuperUser($USER->id);
 
 /* ADD require_capability */
-if (!has_capability('report/manager:edit', $site_context)) {
-    print_error('nopermissions', 'error', '', 'report/manager:edit');
-}
+if (!$superUser) {
+    require_capability('report/manager:edit', $site_context);
+    $PAGE->navbar->add(get_string('report_manager','local_tracker_manager'),$return);
+}//if_SuperUser
+$PAGE->navbar->add(get_string('job_roles', 'report_manager'),$return_url);
+
 
 if (empty($CFG->loginhttps)) {
     $secure_www_root = $CFG->wwwroot;
@@ -63,7 +70,7 @@ echo $OUTPUT->header();
 
 if ($confirmed) {
     /* Check if the job role can be removed */
-    $user_connected = job_role::Users_Connected_JobRole($job_role_id,REPORT_MANAGER_JOB_ROLE_FIELD);
+    $user_connected = job_role::Users_Connected($job_role_id);
     if (!$user_connected) {
         /* Remove */
         job_role::Delete_JobRole($job_role_id);
