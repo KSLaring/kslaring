@@ -90,22 +90,18 @@ class KS_ADFS {
             $token      = $pluginInfo->adfs_token;
             $service    = $pluginInfo->adfs_service;
 
-            echo "Domain : " . $domain . "</br>";
-            echo "Token: " . $token . "</br>";
-            echo "Service : " . $service . "</br>";
-
             /* Build end Point Service  */
-            //$server     = $domain . '/webservice/soap/server.php?wsdl=1&wstoken=' . $token;
+            $server     = $domain . '/webservice/soap/server.php?wsdl=1&wstoken=' . $token;
 
             /* Call service */
-            //$client     = new SoapClient($server);
-            //$response   = $client->$service($userRequest);
+            $client     = new SoapClient($server);
+            $response   = $client->$service($userRequest);
 
-            //if ($response['error'] == '200') {
-            //    $urlRedirect =   $response['url'];
-            //}else {
-            //    $urlRedirect = $response['url'];
-            //}//if_no_error
+            if ($response['error'] == '200') {
+                $urlRedirect =   $response['url'];
+            }else {
+                $urlRedirect = $response['url'];
+            }//if_no_error
 
             return $urlRedirect;
         }catch (Exception $ex) {
