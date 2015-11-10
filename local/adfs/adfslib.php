@@ -41,8 +41,9 @@ class KS_ADFS {
 
             return $urlRedirect;
         }catch (Exception $ex) {
-            $urlRedirect = urlencode($pluginInfo->ks_point . ERR_LOG_IN);
-            return $urlRedirect;
+            throw $ex;
+            //$urlRedirect = urlencode($pluginInfo->ks_point . ERR_LOG_IN);
+            //return $urlRedirect;
         }//try_catch
     }//LogIn_UserADFS
 
