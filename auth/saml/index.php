@@ -235,6 +235,7 @@ define('SAML_INTERNAL', 1);
          //       print_r($ex);
             //}
         //}else {
+        $urltogo = "http://elpais.com";
             redirect($urltogo);
         //}//if_else
     }
