@@ -1730,6 +1730,27 @@ div.editor_atto_content .kitable3.table-lines td {
     width: 100%;
     display: block;
   }
+  .sel_users_left {
+      float: none;
+      width: 100%;
+      display: block;
+  }
+  .userselector .sel_users_left select {
+    width: 100%;
+  }
+  .userselector .sel_users_right select {
+    width: 100%;
+  }
+  .sel_users_right {
+      float: none;
+      width: 100%;
+      display: block;
+  }
+  .sel_users_buttons {
+    float: none;
+    width: 100%;
+    display: block;
+  }
   .format-netcourse #page-content {
     padding: 0 10px;
     margin: 0 -10px;
@@ -1846,6 +1867,27 @@ div.editor_atto_content .kitable3.table-lines td {
     width: 100%;
     display: block;
   }
+  .sel_users_left {
+    float: none;
+    width: 100%;
+    display: block;
+  }
+  .sel_users_right {
+    float: none;
+    width: 100%;
+    display: block;
+  }
+  .userselector .sel_users_left select {
+    width: 100%;
+  }
+  .userselector .sel_users_right select {
+    width: 100%;
+  }
+  .sel_users_buttons {
+    float: none;
+    width: 100%;
+    display: block;
+  }
   .label_header {
     min-height: 70px;
   }
@@ -1860,6 +1902,30 @@ div.editor_atto_content .kitable3.table-lines td {
   .block_courses_site_type {
     height: 80px;
   }
+
+    .sel_users_left {
+        float: none;
+        width: 100%;
+        display: block;
+    }
+    .sel_users_right {
+        float: none;
+        width: 100%;
+        display: block;
+    }
+
+    .sel_users_buttons {
+        float: none;
+        width: 100%;
+        display: block;
+    }
+
+    .userselector .sel_users_left select {
+        width: 100%;
+    }
+    .userselector .sel_users_right select {
+        width: 100%;
+    }
 }
 @media (max-width: 979px) {
   .nav-collapse.active {

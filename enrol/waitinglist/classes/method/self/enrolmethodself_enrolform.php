@@ -22,10 +22,16 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+/**
+ * @updateDate      28/10/2015
+ * @author          eFaktor     (fbv)
+ *
+ * Description
+ * Add Invoice information option
+ */
 namespace enrol_waitinglist\method\self;
  
 require_once($CFG->libdir.'/formslib.php');
-
 
 class enrolmethodself_enrolform extends \moodleform {
     protected $method;
@@ -63,6 +69,23 @@ class enrolmethodself_enrolform extends \moodleform {
                     array('id' => 'enrolpassword_'.$method->id));
         } else {
             $mform->addElement('static', 'nokey', '', get_string('nopassword', 'enrol_self'));
+        }
+
+        /**
+         * @updateDate  28/10/2015
+         * @author      eFaktor     (fbv)
+         *
+         * Description
+         * Add Invoice fields
+         */
+        if ($waitinglist->{ENROL_WAITINGLIST_FIELD_INVOICE}) {
+            global $PAGE;
+            $PAGE->requires->js('/enrol/invoice/js/invoice.js');
+            \Invoices::AddElements_ToForm($mform);
+
+            $mform->addElement('hidden', 'invoicedata');
+            $mform->setType('invoicedata', PARAM_INT);
+            $mform->setDefault('invoicedata', 1);
         }
 
         $this->add_action_buttons(false, get_string('enrolme', 'enrol_self'));
@@ -117,6 +140,17 @@ class enrolmethodself_enrolform extends \moodleform {
                 }
             }
         }
+
+        /**
+         * @updateDate  30/10/2015
+         * @author      eFaktor     (fbv)
+         *
+         * Description
+         * Validate invoice data
+         */
+        if (isset($data['invoicedata']) && $data['invoicedata']) {
+            \Invoices::Validate_InvoiceData($data,$errors);
+        }//if_invoicedata
 
         return $errors;
     }

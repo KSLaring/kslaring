@@ -27,7 +27,6 @@ defined('MOODLE_INTERNAL') || die();
 require_once('../../../config.php');
 require_once($CFG->libdir . '/adminlib.php');
 require_once($CFG->libdir.'/formslib.php');
-$PAGE->requires->js('/report/manager/js/manager.js');
 
 /* Outcome Report Level - Form  */
 class manager_outcome_report_level_form extends moodleform {
@@ -45,10 +44,6 @@ class manager_outcome_report_level_form extends moodleform {
         $form->addElement('html', '<div class="level-wrapper">');
             $options = outcome_report::Get_OutcomesList();
             $form->addElement('select',REPORT_MANAGER_OUTCOME_LIST,get_string('select_outcome_to_report', 'report_manager'),$options);
-
-            if (isset($_COOKIE['outcomeReport'])) {
-                $form->setDefault(REPORT_MANAGER_OUTCOME_LIST,$_COOKIE['outcomeReport']);
-            }//if_cookie
             $form->addRule(REPORT_MANAGER_OUTCOME_LIST, 'required', 'required', 'nonzero', 'client');
             $form->addRule(REPORT_MANAGER_OUTCOME_LIST, 'required', 'nonzero', null, 'client');
         $form->addElement('html', '</div>');
@@ -114,7 +109,7 @@ class manager_outcome_report_level_form extends moodleform {
             /* Add Company List */
             $options = $this->getCompanyList($level,$my_hierarchy);
             $select = &$form->addElement('select',
-                                         MANAGER_OUTCOME_STRUCTURE_LEVEL . $level,
+                                         COMPANY_STRUCTURE_LEVEL . $level,
                                          get_string('select_company_structure_level', 'report_manager', $level),
                                          $options);
             $this->setLevelDefault($form,$level);
@@ -125,8 +120,8 @@ class manager_outcome_report_level_form extends moodleform {
                 $select->setSize(10);
                 $form->addElement('html', '<p class="helptext">' . get_string('help_multi_select', 'report_manager') . '</p>');
             }else {
-                $form->addRule(MANAGER_OUTCOME_STRUCTURE_LEVEL . $level, null, 'required', null, 'client');
-                $form->addRule(MANAGER_OUTCOME_STRUCTURE_LEVEL . $level, 'required', 'nonzero', null, 'client');
+                $form->addRule(COMPANY_STRUCTURE_LEVEL . $level, null, 'required', null, 'client');
+                $form->addRule(COMPANY_STRUCTURE_LEVEL . $level, 'required', 'nonzero', null, 'client');
             }//if_level_three
         $form->addElement('html', '</div>');
     }//AddLevel
@@ -154,6 +149,8 @@ class manager_outcome_report_level_form extends moodleform {
         /* Get My Companies by Level    */
         list($levelZero,$levelOne,$levelTwo,$levelThree) = CompetenceManager::GetMyCompanies_By_Level($my_hierarchy->competence,$my_hierarchy->my_level);
 
+        /* Parent*/
+        $parent     = optional_param(COMPANY_STRUCTURE_LEVEL . ($level-1), 0, PARAM_INT);
         switch ($level) {
             case 0:
                 /* Only My Companies    */
@@ -169,11 +166,11 @@ class manager_outcome_report_level_form extends moodleform {
                     $companies_in = implode(',',$levelOne);
                 }//if_level_One
 
-                if (isset($_COOKIE['parentLevelZero']) && ($_COOKIE['parentLevelZero'])) {
-                    $options = CompetenceManager::GetCompanies_LevelList($level,$_COOKIE['parentLevelZero'],$companies_in);
+                if ($parent) {
+                    $options = CompetenceManager::GetCompanies_LevelList($level,$parent,$companies_in);
                 }else {
                     $options[0] = get_string('select_level_list','report_manager');
-                }//IF_COOKIE
+                }//if_parent
 
                 break;
             case 2:
@@ -182,11 +179,11 @@ class manager_outcome_report_level_form extends moodleform {
                     $companies_in = implode(',',$levelTwo);
                 }//if_level_Two
 
-                if (isset($_COOKIE['parentLevelOne']) && ($_COOKIE['parentLevelOne'])) {
-                    $options = CompetenceManager::GetCompanies_LevelList($level,$_COOKIE['parentLevelOne'],$companies_in);
+                if ($parent) {
+                    $options = CompetenceManager::GetCompanies_LevelList($level,$parent,$companies_in);
                 }else {
                     $options[0] = get_string('select_level_list','report_manager');
-                }//IF_COOKIE
+                }//if_parent
 
                 break;
             case 3:
@@ -194,11 +191,11 @@ class manager_outcome_report_level_form extends moodleform {
                     $companies_in = implode(',',$levelThree);
                 }//if_level_Two
 
-                if (isset($_COOKIE['parentLevelTwo']) && ($_COOKIE['parentLevelTwo'])) {
-                    $options = CompetenceManager::GetCompanies_LevelList($level,$_COOKIE['parentLevelTwo'],$companies_in);
+                if ($parent) {
+                    $options = CompetenceManager::GetCompanies_LevelList($level,$parent,$companies_in);
                 }else {
                     $options[0] = get_string('select_level_list','report_manager');
-                }//IF_COOKIE
+                }//if_parent
 
                 break;
         }//level
@@ -218,42 +215,19 @@ class manager_outcome_report_level_form extends moodleform {
      * Set the company selected
      */
     function setLevelDefault(&$form,$level) {
-        switch ($level) {
-            case 0:
-                if (isset($_COOKIE['parentLevelZero']) && ($_COOKIE['parentLevelZero'])) {
-                    $form->setDefault(MANAGER_OUTCOME_STRUCTURE_LEVEL . $level,$_COOKIE['parentLevelZero']);
-                }else {
-                    $form->setDefault(MANAGER_OUTCOME_STRUCTURE_LEVEL . $level,0);
-                }//if_cookie
+        /* Variables    */
+        $default    = null;
+        $parent     = null;
 
-                break;
-            case 1:
-                if (isset($_COOKIE['parentLevelOne']) && ($_COOKIE['parentLevelOne'])) {
-                    $form->setDefault(MANAGER_OUTCOME_STRUCTURE_LEVEL . $level,$_COOKIE['parentLevelOne']);
-                }else {
-                    $form->setDefault(MANAGER_OUTCOME_STRUCTURE_LEVEL . $level,0);
-                }//if_cookie
+        /* Get Default Value    */
+        if ($level == 3) {
+            $default = optional_param_array(COMPANY_STRUCTURE_LEVEL . $level, 0, PARAM_INT);
+        }else {
+            $default = optional_param(COMPANY_STRUCTURE_LEVEL . $level, 0, PARAM_INT);
+        }
 
-                break;
-            case 2:
-                if (isset($_COOKIE['parentLevelTwo']) && ($_COOKIE['parentLevelTwo'])) {
-                    $form->setDefault(MANAGER_OUTCOME_STRUCTURE_LEVEL . $level,$_COOKIE['parentLevelTwo']);
-                }else {
-                    $form->setDefault(MANAGER_OUTCOME_STRUCTURE_LEVEL . $level,0);
-                }//if_cookie
-
-                break;
-            case 3:
-                if (isset($_COOKIE['parentLevelThree']) && ($_COOKIE['parentLevelThree'])) {
-                    $form->setDefault(MANAGER_OUTCOME_STRUCTURE_LEVEL . $level,$_COOKIE['parentLevelThree']);
-                }//if_cookie
-
-                break;
-        }//switch
-
-        if ($level) {
-            $form->disabledIf(MANAGER_OUTCOME_STRUCTURE_LEVEL . $level ,MANAGER_OUTCOME_STRUCTURE_LEVEL . ($level - 1),'eq',0);
-        }//if_elvel
+        /* Set Default  */
+        $form->setDefault(COMPANY_STRUCTURE_LEVEL . $level,$default);
     }//setLevelDefault
 
     /**
@@ -268,70 +242,104 @@ class manager_outcome_report_level_form extends moodleform {
      */
     function Add_JobRoleLevel(&$form,$level) {
         /* Variables    */
-        $options        = array();
-        $jr_outcomes    = null;
+        $levelZero  = null;
+        $levelOne   = null;
+        $levelTwo   = null;
+        $levelThree = null;
+        $options    = array();
+        $jrOutcomes = array();
+        $outcome    = null;
 
         /* Job Roles    */
         switch ($level) {
             case 0:
-                if (isset($_COOKIE['parentLevelZero']) && ($_COOKIE['parentLevelZero'])) {
+                /* Level Zero   */
+                $levelZero = optional_param(COMPANY_STRUCTURE_LEVEL . $level, 0, PARAM_INT);
+
+                /* Job Roles connected with level   */
+                if ($levelZero) {
                     /* Add Generics --> Only Public Job Roles   */
-                    if (CompetenceManager::IsPublic($_COOKIE['parentLevelZero'])) {
+                    if (CompetenceManager::IsPublic($levelZero)) {
                         CompetenceManager::GetJobRoles_Generics($options);
                     }//if_isPublic
 
-                    CompetenceManager::GetJobRoles_Hierarchy($options,$level,$_COOKIE['parentLevelZero']);
+                    CompetenceManager::GetJobRoles_Hierarchy($options,$level,$levelZero);
                 }//if_level_Zero
 
                 break;
             case 1:
-                if (isset($_COOKIE['parentLevelOne']) && ($_COOKIE['parentLevelOne'])) {
+                /* Level Zero   */
+                $levelZero = optional_param(COMPANY_STRUCTURE_LEVEL . ($level-1), 0, PARAM_INT);
+                /* Level One */
+                $levelOne = optional_param(COMPANY_STRUCTURE_LEVEL . $level, 0, PARAM_INT);
+
+                /* Job Roles connected with level   */
+                if ($levelOne) {
                     /* Add Generics --> Only Public Job Roles   */
-                    if (CompetenceManager::IsPublic($_COOKIE['parentLevelOne'])) {
+                    if (CompetenceManager::IsPublic($levelOne)) {
                         CompetenceManager::GetJobRoles_Generics($options);
                     }//if_isPublic
 
-                    CompetenceManager::GetJobRoles_Hierarchy($options,$level-1,$_COOKIE['parentLevelZero']);
-                    CompetenceManager::GetJobRoles_Hierarchy($options,$level,$_COOKIE['parentLevelZero'],$_COOKIE['parentLevelOne']);
+                    CompetenceManager::GetJobRoles_Hierarchy($options,$level-1,$levelZero);
+                    CompetenceManager::GetJobRoles_Hierarchy($options,$level,$levelZero,$levelOne);
                 }//if_level_One
 
                 break;
             case 2:
-                if (isset($_COOKIE['parentLevelTwo']) && ($_COOKIE['parentLevelTwo'])) {
+                /* Level Zero   */
+                $levelZero = optional_param(COMPANY_STRUCTURE_LEVEL . ($level-2), 0, PARAM_INT);
+                /* Level One    */
+                $levelOne = optional_param(COMPANY_STRUCTURE_LEVEL . ($level-1), 0, PARAM_INT);
+                /* Level Two    */
+                $levelTwo = optional_param(COMPANY_STRUCTURE_LEVEL . $level, 0, PARAM_INT);
+
+                /* Job Roles connected with level   */
+                if ($levelTwo) {
                     /* Add Generics --> Only Public Job Roles   */
-                    if (CompetenceManager::IsPublic($_COOKIE['parentLevelTwo'])) {
+                    if (CompetenceManager::IsPublic($levelTwo)) {
                         CompetenceManager::GetJobRoles_Generics($options);
                     }//if_isPublic
 
-                    CompetenceManager::GetJobRoles_Hierarchy($options,$level-2,$_COOKIE['parentLevelZero']);
-                    CompetenceManager::GetJobRoles_Hierarchy($options,$level-1,$_COOKIE['parentLevelZero'],$_COOKIE['parentLevelOne']);
-                    CompetenceManager::GetJobRoles_Hierarchy($options,$level,$_COOKIE['parentLevelZero'],$_COOKIE['parentLevelOne'],$_COOKIE['parentLevelTwo']);
+                    CompetenceManager::GetJobRoles_Hierarchy($options,$level-2,$levelZero);
+                    CompetenceManager::GetJobRoles_Hierarchy($options,$level-1,$levelZero,$levelOne);
+                    CompetenceManager::GetJobRoles_Hierarchy($options,$level,$levelZero,$levelOne,$levelTwo);
                 }//if_level_Two
 
                 break;
             case 3:
-                if (isset($_COOKIE['parentLevelThree']) && ($_COOKIE['parentLevelThree'])) {
+                /* Level Zero   */
+                $levelZero  = optional_param(COMPANY_STRUCTURE_LEVEL . ($level-3), 0, PARAM_INT);
+                /* Level One    */
+                $levelOne   = optional_param(COMPANY_STRUCTURE_LEVEL . ($level-2), 0, PARAM_INT);
+                /* Level Two    */
+                $levelTwo   = optional_param(COMPANY_STRUCTURE_LEVEL . ($level-1), 0, PARAM_INT);
+                /* Level Three  */
+                $levelThree = optional_param_array(COMPANY_STRUCTURE_LEVEL . $level, 0, PARAM_INT);
+
+                if ($levelThree) {
                     /* Add Generics --> Only Public Job Roles   */
-                    if (CompetenceManager::IsPublic($_COOKIE['parentLevelThree'])) {
+                    if (CompetenceManager::IsPublic($levelTwo)) {
                         CompetenceManager::GetJobRoles_Generics($options);
                     }//if_isPublic
 
-                    CompetenceManager::GetJobRoles_Hierarchy($options,$level,$_COOKIE['parentLevelZero'],$_COOKIE['parentLevelOne'],$_COOKIE['parentLevelTwo'],$_COOKIE['parentLevelThree']);
+                    $levelThree = implode(',',$levelThree);
+                    CompetenceManager::GetJobRoles_Hierarchy($options,$level,$levelZero,$levelOne,$levelTwo,$levelThree);
                 }else {
-                    CompetenceManager::GetJobRoles_Hierarchy($options,$level-3,$_COOKIE['parentLevelZero']);
-                    CompetenceManager::GetJobRoles_Hierarchy($options,$level-2,$_COOKIE['parentLevelZero'],$_COOKIE['parentLevelOne']);
-                    CompetenceManager::GetJobRoles_Hierarchy($options,$level-1,$_COOKIE['parentLevelZero'],$_COOKIE['parentLevelOne'],$_COOKIE['parentLevelTwo']);
+                    CompetenceManager::GetJobRoles_Hierarchy($options,$level-3,$levelZero);
+                    CompetenceManager::GetJobRoles_Hierarchy($options,$level-2,$levelZero,$levelOne);
+                    CompetenceManager::GetJobRoles_Hierarchy($options,$level-1,$levelZero,$levelOne,$levelTwo);
                 }//if_level_Three
 
                 break;
         }//switch_level
 
         /* Only the Job Roles connected to the outcome and level    */
-        if (isset($_COOKIE['outcomeReport']) && ($_COOKIE['outcomeReport'])) {
-            $jr_outcomes = outcome_report::Outcome_JobRole_List($_COOKIE['outcomeReport']);
-            if ($jr_outcomes) {
-                $jr_outcomes[0] = 0;
-                $options = array_intersect_key($options,$jr_outcomes);
+        $outcome = optional_param(REPORT_MANAGER_OUTCOME_LIST,0,PARAM_INT);
+        if (isset($outcome)) {
+            $jrOutcomes = outcome_report::Outcome_JobRole_List($outcome);
+            if ($jrOutcomes) {
+                $jrOutcomes[0] = 0;
+                $options = array_intersect_key($options,$jrOutcomes);
             }//if_jr_outcomes
         }//if_outcome_selected
 

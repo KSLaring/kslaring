@@ -20,3 +20,7 @@ $string['feide_token']      = 'Feide Token';
 $string['FEIDE_ERR_NOT_VALID']  = 'Dette er ikke en gyldig bruker, vennligst kontakt administrator.';
 $string['FEIDE_ERR_PROCESS']    = 'Det har skjedd en feil under innloggingen. Vennligst kontakt administrator.';
 
+$string['set_activate']         = 'Activate Feide login';
+$string['set_activate_desc']    = 'Activate Feide login';
+
+$string['ADFS_ERR_PROCESS']    = 'There has been an error during the process. Please, contact your Moodle Administrator.';

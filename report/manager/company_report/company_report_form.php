@@ -20,7 +20,6 @@ defined('MOODLE_INTERNAL') || die();
 require_once('../../../config.php');
 require_once($CFG->libdir . '/adminlib.php');
 require_once($CFG->libdir.'/formslib.php');
-$PAGE->requires->js('/report/manager/js/manager.js');
 
 /* Company Report - Form */
 class manager_company_report_form extends moodleform {
@@ -68,14 +67,14 @@ class manager_company_report_form extends moodleform {
         $form->addElement('html', '<div class="level-wrapper">');
             /* Add Company List */
             $options = $this->getCompanyList($level,$my_hierarchy);
-            $form->addElement('select',COMPANY_REPORT_STRUCTURE_LEVEL . $level,
+            $form->addElement('select',COMPANY_STRUCTURE_LEVEL . $level,
                               get_string('select_company_structure_level', 'report_manager', $level),
                               $options
                              );
             $this->setLevelDefault($form,$level);
 
-            $form->addRule(COMPANY_REPORT_STRUCTURE_LEVEL . $level, null, 'required', null, 'client');
-            $form->addRule(COMPANY_REPORT_STRUCTURE_LEVEL . $level, 'required', 'nonzero', null, 'client');
+            $form->addRule(COMPANY_STRUCTURE_LEVEL . $level, null, 'required', null, 'client');
+            $form->addRule(COMPANY_STRUCTURE_LEVEL . $level, 'required', 'nonzero', null, 'client');
         $form->addElement('html', '</div>');
     }//AddLevel
 
@@ -109,12 +108,15 @@ class manager_company_report_form extends moodleform {
         /* Get My Companies by Level    */
         list($levelZero,$levelOne,$levelTwo,$levelThree) = CompetenceManager::GetMyCompanies_By_Level($my_hierarchy->competence,$my_hierarchy->my_level);
 
+        /* Parent*/
+        $parent     = optional_param(COMPANY_STRUCTURE_LEVEL . ($level-1), 0, PARAM_INT);
         switch ($level) {
             case 0:
                 /* Only My Companies    */
                 if ($levelZero) {
                     $companies_in = implode(',',$levelZero);
                 }//if_level_zero
+
                 $options = CompetenceManager::GetCompanies_LevelList($level,null,$companies_in);
 
                 break;
@@ -124,12 +126,11 @@ class manager_company_report_form extends moodleform {
                     $companies_in = implode(',',$levelOne);
                 }//if_level_One
 
-                if (isset($_COOKIE['parentLevelZero']) && ($_COOKIE['parentLevelZero'])) {
-                    $options = CompetenceManager::GetCompanies_LevelList($level,$_COOKIE['parentLevelZero'],$companies_in);
+                if ($parent) {
+                    $options = CompetenceManager::GetCompanies_LevelList($level,$parent,$companies_in);
                 }else {
                     $options[0] = get_string('select_level_list','report_manager');
                 }//IF_COOKIE
-
                 break;
             case 2:
                 /* Only My Companies    */
@@ -137,8 +138,8 @@ class manager_company_report_form extends moodleform {
                     $companies_in = implode(',',$levelTwo);
                 }//if_level_Two
 
-                if (isset($_COOKIE['parentLevelOne']) && ($_COOKIE['parentLevelOne'])) {
-                    $options = CompetenceManager::GetCompanies_LevelList($level,$_COOKIE['parentLevelOne'],$companies_in);
+                if ($parent) {
+                    $options = CompetenceManager::GetCompanies_LevelList($level,$parent,$companies_in);
                 }else {
                     $options[0] = get_string('select_level_list','report_manager');
                 }//IF_COOKIE
@@ -149,12 +150,11 @@ class manager_company_report_form extends moodleform {
                     $companies_in = implode(',',$levelThree);
                 }//if_level_Two
 
-                if (isset($_COOKIE['parentLevelTwo']) && ($_COOKIE['parentLevelTwo'])) {
-                    $options = CompetenceManager::GetCompanies_LevelList($level,$_COOKIE['parentLevelTwo'],$companies_in);
+                if ($parent) {
+                    $options = CompetenceManager::GetCompanies_LevelList($level,$parent,$companies_in);
                 }else {
                     $options[0] = get_string('select_level_list','report_manager');
                 }//IF_COOKIE
-
                 break;
         }//level
 
@@ -172,41 +172,13 @@ class manager_company_report_form extends moodleform {
      * Set the company selected
      */
     function setLevelDefault(&$form,$level) {
-        switch ($level) {
-            case 0:
-                if (isset($_COOKIE['parentLevelZero']) && ($_COOKIE['parentLevelZero'])) {
-                    $form->setDefault(COMPANY_REPORT_STRUCTURE_LEVEL . $level,$_COOKIE['parentLevelZero']);
-                }else {
-                    $form->setDefault(COMPANY_REPORT_STRUCTURE_LEVEL . $level,0);
-                }//if_cookie
+        /* Variables    */
+        $default    = null;
+        $parent     = null;
 
-                break;
-            case 1:
-                if (isset($_COOKIE['parentLevelOne']) && ($_COOKIE['parentLevelOne'])) {
-                    $form->setDefault(COMPANY_REPORT_STRUCTURE_LEVEL . $level,$_COOKIE['parentLevelOne']);
-                }else {
-                    $form->setDefault(COMPANY_REPORT_STRUCTURE_LEVEL . $level,0);
-                }//if_cookie
-
-                break;
-            case 2:
-                if (isset($_COOKIE['parentLevelTwo']) && ($_COOKIE['parentLevelTwo'])) {
-                    $form->setDefault(COMPANY_REPORT_STRUCTURE_LEVEL . $level,$_COOKIE['parentLevelTwo']);
-                }else {
-                    $form->setDefault(COMPANY_REPORT_STRUCTURE_LEVEL . $level,0);
-                }//if_cookie
-
-                break;
-            case 3:
-                if (isset($_COOKIE['parentLevelThree']) && ($_COOKIE['parentLevelThree'])) {
-                    $form->setDefault(COMPANY_REPORT_STRUCTURE_LEVEL . $level,$_COOKIE['parentLevelThree']);
-                }//if_cookie
-
-                break;
-        }//switch
-
-        if ($level) {
-            $form->disabledIf(COMPANY_REPORT_STRUCTURE_LEVEL . $level ,COMPANY_REPORT_STRUCTURE_LEVEL . ($level - 1),'eq',0);
-        }//if_level
+        /* Get Default Value    */
+        $default = optional_param(COMPANY_STRUCTURE_LEVEL . $level, 0, PARAM_INT);
+        /* Set Default  */
+        $form->setDefault(COMPANY_STRUCTURE_LEVEL . $level,$default);
     }//setLevelDefault
 }//manager_company_report_form

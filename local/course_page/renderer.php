@@ -544,7 +544,7 @@ class local_course_page_renderer extends plugin_renderer_base {
             /* Teachers */
             $lst_teachers = course_page::getCoursesTeachers($course_id,$manager);
             if ($lst_teachers) {
-                $out .= '<div class="label_teacher">' . get_string('home_teachers','local_course_page') . '</div>';
+                $out .= '<div class="title_coordinator chp-title">' . get_string('home_teachers','local_course_page') . '</div>';
                 $url_user = new moodle_url('/user/profile.php');
                 $out .= '<div class="extra_teacher">';
                     foreach ($lst_teachers as $id => $teacher) {

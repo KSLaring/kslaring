@@ -17,7 +17,15 @@ if ($hassiteconfig) {
     $ADMIN->add('localplugins', $settings);
 
     /* Login Feide  */
+    /* Heading */
     $settings->add(new admin_setting_heading('local_wsks_feide_settings', '', get_string('feide_settings', 'local_wsks')));
+    /* Settings */
+    /* Activate/Deactivate  */
+    /* Activate Express Login   */
+    $settings->add(new admin_setting_configcheckbox('local_wsks/activate_feide',
+                                                    get_string('set_activate', 'local_wsks'),
+                                                    get_string('set_activate_desc', 'local_wsks'), 0));
+    /* End Point / Web Service  */
     $settings->add(new admin_setting_configtext('local_wsks/feide_point',
                                                  get_string('feide_site','local_wsks'),
                                                  get_string('feide_site_desc','local_wsks'),'',PARAM_TEXT,50));

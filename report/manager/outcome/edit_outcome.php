@@ -23,8 +23,11 @@ require_once('edit_outcome_form.php');
 require_once($CFG->libdir . '/adminlib.php');
 
 /* Params */
-$outcome_id    = required_param('id', PARAM_INT);
-$expiration_id = optional_param('expid', 0, PARAM_INT);
+$outcome_id     = required_param('id', PARAM_INT);
+$expiration_id  = optional_param('expid', 0, PARAM_INT);
+$removeSelected = optional_param_array('removeselect',0,PARAM_INT);
+$addSearch      = optional_param('addselect_searchtext', '', PARAM_RAW);
+$removeSearch   = optional_param('removeselect_searchtext', '', PARAM_RAW);
 
 $url        = new moodle_url('/report/manager/outcome/edit_outcome.php',array('id' => $outcome_id));
 $return     = new moodle_url('/report/manager/index.php');
@@ -42,7 +45,6 @@ $PAGE->set_heading($SITE->fullname);
 $PAGE->navbar->add(get_string('report_manager','local_tracker_manager'),$return_url);
 $PAGE->navbar->add(get_string('outcome', 'report_manager'),$return);
 $PAGE->navbar->add(get_string('edit_outcome', 'report_manager'));
-$PAGE->requires->js('/report/manager/js/outcome.js');
 
 /* ADD require_capability */
 if (!has_capability('report/manager:edit', $site_context)) {
@@ -55,86 +57,36 @@ if (empty($CFG->loginhttps)) {
     $secure_www_root = str_replace('http:','https:',$CFG->wwwroot);
 }//if_security
 
-/* Selected Job Roles   */
-if (!isset($SESSION->selJobRoles)) {
-    $SESSION->selJobRoles = array();
-}//selCompanies
-
-/* Add all Job Roles    */
-if (!isset($SESSION->addAll)) {
-    $SESSION->addAll = false;
-}//id_addAll
-
-/* Remove Job Roles */
-if (!isset($SESSION->removeAll)) {
-    $SESSION->removeAll = false;
-}//if_removeAll
-
-/* Job Roles To Delete  */
-if (!isset($SESSION->deleted)) {
-    $SESSION->deleted = array();
-}
-
 /* Show Form */
-$form = new manager_edit_outcome_form(null,array($outcome_id,$expiration_id));
+$form = new manager_edit_outcome_form(null,array($outcome_id,$expiration_id,$addSearch,$removeSearch,$removeSelected));
 
 if ($form->is_cancelled()) {
-    setcookie('parentLevelOne',0);
-    setcookie('parentLevelTwo',0);
-    setcookie('parentLevelThree',0);
-    setcookie('courseReport',0);
-    setcookie('outcomeReport',0);
-
-    /* Clean SESSION    */
-    unset($SESSION->addAll);
-    unset($SESSION->removeAll);
-    unset($SESSION->selJobRoles);
-    unset($SESSION->deleted);
-
     $_POST = array();
     redirect($return_url);
 }else if($data = $form->get_data()) {
-    $SESSION->addAll    = false;
-    $SESSION->removeAll = false;
+    if (!empty($data->add_sel)) {
+        if (isset($data->addselect)) {
+            /* Add Jobroles */
+            /* Get Data */
+            $infoOutcome = new stdClass();
+            $infoOutcome->outcomeid         = $data->id;
+            $infoOutcome->expirationperiod  = $data->expiration_period;
+            $infoOutcome->modified          = time();
 
-    /* Add All Job Roles    */
-    if (isset($data->add_all) && ($data->add_all)) {
-        $SESSION->addAll        = true;
-        $SESSION->selJobRoles   = array();
-        $SESSION->deleted       = array();
-
-        $form = new manager_edit_outcome_form(null,array($outcome_id,$expiration_id));
-    }//add_all_jobroles
-
-    /* Remove All Job Roles */
-    if (isset($data->remove_all) && ($data->remove_all)) {
-        $SESSION->removeAll     = true;
-        $SESSION->selJobRoles   = array();
-
-        $form = new manager_edit_outcome_form(null,array($outcome_id,$expiration_id));
-    }//remove_all_jobroles
-
-    /* Add selected Job Roles       */
-    if (isset($data->add_sel) && ($data->add_sel)) {
-        if (isset($data->ajobroles) && $data->ajobroles) {
-            foreach($data->ajobroles as $key=>$value) {
-                $SESSION->selJobRoles[$value] = $value;
-                unset($SESSION->deleted[$value]);
-            }
-            $form = new manager_edit_outcome_form(null,array($outcome_id,$expiration_id));
+            if ($data->expid) {
+                /* Update Outcome */
+                $infoOutcome->id = $data->expid;
+                outcome::Update_Outcome($infoOutcome,$data->addselect);
+            }else {
+                /* Insert */
+                outcome::Insert_Outcome($infoOutcome,$data->addselect);
+            }//if_else
+        }//if_addselect
+    }if (!empty($data->remove_sel)) {
+        if (isset($data->removeselect)) {
+           outcome::Delete_JR_Outcome($data->id,$data->removeselect);
         }
-    }//if_add_jobroles
-
-    /* Remove selected Job Roles    */
-    if (isset($data->remove_sel) && ($data->remove_sel)) {
-        if (isset($data->sjobroles) && $data->sjobroles) {
-            foreach($data->sjobroles as $key=>$value) {
-                unset($SESSION->selJobRoles[$value]);
-                $SESSION->deleted[$value] = $value;
-            }
-            $form = new manager_edit_outcome_form(null,array($outcome_id,$expiration_id));
-        }
-    }//if_remove_jobroles
+    }
 
     if ((isset($data->submitbutton) && $data->submitbutton)) {
         /* Get Data */
@@ -142,25 +94,21 @@ if ($form->is_cancelled()) {
         $outcome->outcomeid         = $data->id;
         $outcome->expirationperiod  = $data->expiration_period;
         $outcome->modified          = time();
-        $role_list = $SESSION->selJobRoles;
 
         if ($expiration_id) {
             /* Update Outcome */
             $outcome->id = $data->expid;
-            outcome::Update_Outcome($outcome,$role_list);
+            outcome::Update_Outcome($outcome,null);
         }else {
             /* Insert */
-            outcome::Insert_Outcome($outcome,$role_list);
+            outcome::Insert_Outcome($outcome,null);
         }//if_else
-
-        unset($SESSION->addAll);
-        unset($SESSION->removeAll);
-        unset($SESSION->selJobRoles);
-        unset($SESSION->deleted);
 
         $_POST = array();
         redirect($return_url);
     }//if_submit_button
+
+    $_POST = array();
 }//if_else
 
 $PAGE->verify_https_required();
@@ -169,6 +117,9 @@ $PAGE->verify_https_required();
 echo $OUTPUT->header();
 
 $form->display();
+
+/* Initialise Selectors */
+outcome::Init_JobRoles_Selectors($outcome_id,$addSearch,$removeSearch,$removeSelected);
 
 /* Print Footer */
 echo $OUTPUT->footer();

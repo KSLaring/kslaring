@@ -31,7 +31,7 @@
 
 defined('MOODLE_INTERNAL') || die;
 
-$plugin->version   = 2015091700;
+$plugin->version = 2015093001;
 $plugin->requires  = 2013110500;
 $plugin->component = 'theme_frikomport';
 $plugin->dependencies = array(

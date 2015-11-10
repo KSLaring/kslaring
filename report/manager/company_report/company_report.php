@@ -129,14 +129,6 @@ $form = new manager_company_report_form(null,array($my_hierarchy,$show_advanced)
 $out = '';
 
 if ($form->is_cancelled()) {
-    /* Clean Cookies    */
-    setcookie('parentLevelZero',0);
-    setcookie('parentLevelOne',0);
-    setcookie('parentLevelTwo',0);
-    setcookie('parentLevelThree',0);
-    setcookie('courseReport',0);
-    setcookie('outcomeReport',0);
-
     $_POST = array();
     redirect($return_url);
 }else if($data = $form->get_data()) {
@@ -152,10 +144,10 @@ if ($form->is_cancelled()) {
 
     /* Get Company Tracker Info */
     $company = new stdClass();
-    $company->levelZero     = $_COOKIE['parentLevelZero'];
-    $company->levelOne      = $_COOKIE['parentLevelOne'];
-    $company->levelTwo      = $_COOKIE['parentLevelTwo'];
-    $company->levelThree    = $data_form[COMPANY_REPORT_STRUCTURE_LEVEL . '3'];
+    $company->levelZero     = $data_form[COMPANY_STRUCTURE_LEVEL . '0'];
+    $company->levelOne      = $data_form[COMPANY_STRUCTURE_LEVEL . '1'];
+    $company->levelTwo      = $data_form[COMPANY_STRUCTURE_LEVEL . '2'];
+    $company->levelThree    = $data_form[COMPANY_STRUCTURE_LEVEL . '3'];
 
     $companyTracker = CompanyReport::Get_CompanyTracker($company,$users_lst);
 
@@ -203,6 +195,9 @@ if (!empty($out)) {
     }//if_show_advanced
 
     $form->display();
+
+    /* Initialise Organization Structure    */
+    CompetenceManager::Init_Organization_Structure(COMPANY_STRUCTURE_LEVEL,null,null,0,null,false);
 }//if_else
 
 

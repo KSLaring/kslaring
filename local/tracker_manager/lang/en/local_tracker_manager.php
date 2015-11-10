@@ -88,3 +88,12 @@ $string['pdf_email_text'] = '$a->username,
 the PDF report has been automatically sent to you on your request.';
 $string['return_to_selection'] = 'Return to Report Competence Manager page';
 
+/**
+ * @updateDate  14/10/2015
+ * @author      eFaktor     (fbv)
+ *
+ * Description
+ * Add new language strings for 'Super Users' functionality
+ */
+$string['spuser'] = 'Super Users';
+

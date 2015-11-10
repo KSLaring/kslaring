@@ -50,90 +50,15 @@ function xmldb_report_manager_upgrade($old_version) {
         }//if_old_Version
 
 
-
-        if (!$db_man->table_exists('report_gen_outcome_jobrole')) {
-            $tblOutcomeJobRole = new xmldb_table('report_gen_outcome_jobrole');
-            //Adding fields
-            /* id           (Primary)                   */
-            $tblOutcomeJobRole->add_field('id',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, XMLDB_SEQUENCE,null);
-            /* outcomeid    (Foreign key - Not null)    */
-            $tblOutcomeJobRole->add_field('outcomeid',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL,null,null);
-            /* jobroleid    (Foreign key - Not null)    */
-            $tblOutcomeJobRole->add_field('jobroleid',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL,null,null);
-            /* modified     (Not null)                  */
-            $tblOutcomeJobRole->add_field('modified',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL,null,null);
-            //Adding Keys
-            $tblOutcomeJobRole->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
-            $tblOutcomeJobRole->add_key('outcomeid',XMLDB_KEY_FOREIGN,array('outcomeid'), 'grade_outcomes', array('id'));
-            $tblOutcomeJobRole->add_key('jobroleid',XMLDB_KEY_FOREIGN,array('jobroleid'), 'report_gen_jobrole', array('id'));
-
-            $db_man->create_table($tblOutcomeJobRole);
-        }//if_table_not_exits
-
-        if (!$db_man->table_exists('report_gen_outcome_exp')) {
-            $tblOutcomeExpiration = new xmldb_table('report_gen_outcome_exp');
-            //Adding fields
-            /* id               (Primary)                   */
-            $tblOutcomeExpiration->add_field('id',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, XMLDB_SEQUENCE,null);
-            /* outcomeid        (Foreign key - Not null)    */
-            $tblOutcomeExpiration->add_field('outcomeid',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL,null,null);
-            /* expirationperiod (Int - Not null - Index)    */
-            $tblOutcomeExpiration->add_field('expirationperiod',XMLDB_TYPE_INTEGER,'2',null, XMLDB_NOTNULL,null,0);
-            /* modified         (Not null)                  */
-            $tblOutcomeExpiration->add_field('modified',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL,null,null);
-            //Adding Keys
-            $tblOutcomeExpiration->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
-            $tblOutcomeExpiration->add_key('outcomeid',XMLDB_KEY_FOREIGN,array('outcomeid'), 'grade_outcomes', array('id'));
-            //Adding Index
-            $tblOutcomeExpiration->add_index('expirationperiod',XMLDB_INDEX_NOTUNIQUE,array('expirationperiod'));
-
-            $db_man->create_table($tblOutcomeExpiration);
-        }//if_table_not_exits
-
+        /* New Table for Import Competence Profile   */
         if ($old_version < 2015083102) {
-            if (!$db_man->table_exists('report_gen_competence_imp')) {
-                /* New table    */
-                $tblCompetencyImport = new xmldb_table('report_gen_competence_imp');
-                /* Add fields   */
-                /* Id               --> Primary Key.                        */
-                $tblCompetencyImport->add_field('id',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, XMLDB_SEQUENCE,null);
-                /* Line             --> File line                           */
-                $tblCompetencyImport->add_field('line',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, null,null);
-                /* Username         --> Username                            */
-                $tblCompetencyImport->add_field('username',XMLDB_TYPE_CHAR,'50',null, null, null,null);
-                /* User ID                                                  */
-                $tblCompetencyImport->add_field('userid',XMLDB_TYPE_CHAR,'50',null, null, null,null);
-                /* workplace        --> Level three name                    */
-                $tblCompetencyImport->add_field('workplace',XMLDB_TYPE_CHAR,'255',null, null, null,null);
-                /* workplace_ic     --> Industry code. Level three          */
-                $tblCompetencyImport->add_field('workplace_ic',XMLDB_TYPE_CHAR,'50',null, null, null,null);
-                /* workplace_match  --> Level three id                      */
-                $tblCompetencyImport->add_field('workplace_match',XMLDB_TYPE_INTEGER,'10',null, null, null,null);
-                /* sector           --> level two connected with workplace  */
-                $tblCompetencyImport->add_field('sector',XMLDB_TYPE_CHAR,'255',null, null, null,null);
-                /* sector_match   --> Sector Id. Level Two Id.            */
-                $tblCompetencyImport->add_field('sector_match',XMLDB_TYPE_INTEGER,'10',null, null, null,null);
-                /* jobrole          --> Job role name.                      */
-                $tblCompetencyImport->add_field('jobrole',XMLDB_TYPE_CHAR,'255',null, null, null,null);
-                /* jobrole_ic       --> Industry code job role.             */
-                $tblCompetencyImport->add_field('jobrole_ic',XMLDB_TYPE_CHAR,'50',null, null, null,null);
-                /* generic          --> true or false                       */
-                $tblCompetencyImport->add_field('generic',XMLDB_TYPE_INTEGER,'1',null, null, null,null);
-                /* jobrole_match  --> Job role ID.                        */
-                $tblCompetencyImport->add_field('jobrole_match',XMLDB_TYPE_INTEGER,'10',null, null, null,null);
-                /* delete           --> true/false                          */
-                $tblCompetencyImport->add_field('todelete',XMLDB_TYPE_INTEGER,'1',null, null, null,null);
-                /* toimport         --> true/false                          */
-                $tblCompetencyImport->add_field('toimport',XMLDB_TYPE_INTEGER,'1',null, null, null,null);
-                /* error            --> type of error. Message              */
-                $tblCompetencyImport->add_field('error',XMLDB_TYPE_CHAR,'255',null, null, null,null);
-
-                /* Adding keys  */
-                $tblCompetencyImport->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
-
-                $db_man->create_table($tblCompetencyImport);
-            }//if_not_exit_report_gen_competence_imp
+            CompetenceManager_Update::CreateCompetenceImport($db_man);
         }//if_old_version
+
+        /* New Table for Super Uses */
+        if ($old_version < 2015102000) {
+            CompetenceManager_Update::CreateSuperUser($db_man);
+        }//if_old_Version
 
         return true;
     }catch (Exception $ex) {
@@ -289,4 +214,111 @@ class CompetenceManager_Update {
             throw $ex;
         }//try_catch
     }//Update_PrivateCompanies
+
+    /**
+     * @param           $db_man
+     * @throws          Exception
+     *
+     * @creationDate    24/08/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Create Competence Import Table
+     */
+    public static function CreateCompetenceImport($db_man) {
+        /* Variables    */
+        $tblCompetencyImport = null;
+
+        try {
+            /* New table    */
+            $tblCompetencyImport = new xmldb_table('report_gen_competence_imp');
+            /* Add fields   */
+            /* Id               --> Primary Key.                        */
+            $tblCompetencyImport->add_field('id',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, XMLDB_SEQUENCE,null);
+            /* Line             --> File line                           */
+            $tblCompetencyImport->add_field('line',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, null,null);
+            /* Username         --> Username                            */
+            $tblCompetencyImport->add_field('username',XMLDB_TYPE_CHAR,'50',null, null, null,null);
+            /* User ID                                                  */
+            $tblCompetencyImport->add_field('userid',XMLDB_TYPE_CHAR,'50',null, null, null,null);
+            /* workplace        --> Level three name                    */
+            $tblCompetencyImport->add_field('workplace',XMLDB_TYPE_CHAR,'255',null, null, null,null);
+            /* workplace_ic     --> Industry code. Level three          */
+            $tblCompetencyImport->add_field('workplace_ic',XMLDB_TYPE_CHAR,'50',null, null, null,null);
+            /* workplace_match  --> Level three id                      */
+            $tblCompetencyImport->add_field('workplace_match',XMLDB_TYPE_INTEGER,'10',null, null, null,null);
+            /* sector           --> level two connected with workplace  */
+            $tblCompetencyImport->add_field('sector',XMLDB_TYPE_CHAR,'255',null, null, null,null);
+            /* sector_match   --> Sector Id. Level Two Id.            */
+            $tblCompetencyImport->add_field('sector_match',XMLDB_TYPE_INTEGER,'10',null, null, null,null);
+            /* jobrole          --> Job role name.                      */
+            $tblCompetencyImport->add_field('jobrole',XMLDB_TYPE_CHAR,'255',null, null, null,null);
+            /* jobrole_ic       --> Industry code job role.             */
+            $tblCompetencyImport->add_field('jobrole_ic',XMLDB_TYPE_CHAR,'50',null, null, null,null);
+            /* generic          --> true or false                       */
+            $tblCompetencyImport->add_field('generic',XMLDB_TYPE_INTEGER,'1',null, null, null,null);
+            /* jobrole_match  --> Job role ID.                        */
+            $tblCompetencyImport->add_field('jobrole_match',XMLDB_TYPE_INTEGER,'10',null, null, null,null);
+            /* delete           --> true/false                          */
+            $tblCompetencyImport->add_field('todelete',XMLDB_TYPE_INTEGER,'1',null, null, null,null);
+            /* toimport         --> true/false                          */
+            $tblCompetencyImport->add_field('toimport',XMLDB_TYPE_INTEGER,'1',null, null, null,null);
+            /* error            --> type of error. Message              */
+            $tblCompetencyImport->add_field('error',XMLDB_TYPE_CHAR,'255',null, null, null,null);
+
+            /* Adding keys  */
+            $tblCompetencyImport->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+
+            if (!$db_man->table_exists('report_gen_competence_imp')) {
+                $db_man->create_table($tblCompetencyImport);
+            }//if_not_exist
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//CreateCompetenceImport
+
+    /**
+     * @param           $db_man
+     * @throws          Exception
+     *
+     * @creationDate    14/10/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Create Super user table
+     */
+    public static function CreateSuperUser($db_man) {
+        /* Variables    */
+        $tblSuperUser = null;
+
+        try {
+            /* New Table    */
+            $tblSuperUser = new xmldb_table('report_gen_super_user');
+            /* Add fields   */
+            /* Id           --  Primary Key */
+            $tblSuperUser->add_field('id',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, XMLDB_SEQUENCE,null);
+            /* userid       --  Foreign Key */
+            $tblSuperUser->add_field('userid',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, null,null);
+            /* County  */
+            $tblSuperUser->add_field('levelzero',XMLDB_TYPE_CHAR,'10',null, null,null,null);
+            /* Level  One */
+            $tblSuperUser->add_field('levelone',XMLDB_TYPE_INTEGER,'10',null, null,null,null);
+            /* Level  Two */
+            $tblSuperUser->add_field('leveltwo',XMLDB_TYPE_INTEGER,'10',null, null,null,null);
+            /* Level  Three */
+            $tblSuperUser->add_field('levelthree',XMLDB_TYPE_INTEGER,'10',null, null,null,null);
+
+            /* Adding keys  */
+            $tblSuperUser->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+            $tblSuperUser->add_key('userid',XMLDB_KEY_FOREIGN,array('userid'), 'user', array('id'));
+            $tblSuperUser->add_key('levelzero',XMLDB_KEY_FOREIGN,array('levelzero'), 'report_gen_companydata', array('id'));
+
+            /* Create Table */
+            if (!$db_man->table_exists('report_gen_super_user')) {
+                $db_man->create_table($tblSuperUser);
+            }//if_not_exist
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//CreateSuperUser
 }//CompetenceManager_Update

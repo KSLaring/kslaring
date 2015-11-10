@@ -19,6 +19,59 @@ class Competence {
     /*************/
 
     /**
+     * @param           $selector
+     * @param           $jrSelector
+     * @param           $userId
+     *
+     * @throws          Exception
+     *
+     * @creationDate    28/10/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Initialize Company structure selectors
+     */
+    public static function Init_OrganizationStructure($selector,$jrSelector,$userId) {
+        /* Variables    */
+        global $PAGE;
+        $options    = null;
+        $hash       = null;
+        $jsModule   = null;
+        $name       = null;
+        $path       = null;
+        $requires   = null;
+        $strings    = null;
+        $grpOne     = null;
+        $grpTwo     = null;
+        $grpThree   = null;
+        $sp         = null;
+
+        try {
+            /* Initialise variables */
+            $name       = 'level_structure';
+            $path       = '/user/profile/field/competence/js/competence.js';
+            $requires   = array('node', 'event-custom', 'datasource', 'json', 'moodle-core-notification');
+            $grpThree   = array('none', 'moodle');
+            $strings    = array($grpThree);
+
+            /* Initialise js module */
+            $jsModule = array('name'        => $name,
+                'fullpath'    => $path,
+                'requires'    => $requires,
+                'strings'     => $strings
+            );
+
+            $PAGE->requires->js_init_call('M.core_user.init_organization',
+                                          array($selector,$jrSelector,$userId),
+                                          false,
+                                          $jsModule
+                                         );
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//Init_OrganizationStructure_CourseReport
+
+    /**
      * @param           $company
      * @return          bool
      * @throws          Exception

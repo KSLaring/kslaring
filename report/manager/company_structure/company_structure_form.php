@@ -24,22 +24,33 @@
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->libdir.'/formslib.php');
-$PAGE->requires->js('/report/manager/js/manager.js');
 
 /* Levels Company - Form  */
 class manager_company_structure_form extends moodleform {
     function definition() {
         $m_form = $this->_form;
 
+        /* My Access    */
+        $myAccess = $this->_customdata;
+
         /* Add Level Company Structure      */
         /* Level Zero   */
-        $this->AddLevel(0,$m_form,REPORT_MANAGER_IMPORT_0);
+        /* Companies connected with super user  */
+        $myCompanies    = null;
+        $myCompanies = $this->Get_MyLevelAccess($myAccess,0);
+        $this->AddLevel(0,$m_form,REPORT_MANAGER_IMPORT_0,$myCompanies);
         /* Level One    */
-        $this->AddLevel(1,$m_form,REPORT_MANAGER_IMPORT_1);
+        /* Companies connected with super user  */
+        $myCompanies = $this->Get_MyLevelAccess($myAccess,1);
+        $this->AddLevel(1,$m_form,REPORT_MANAGER_IMPORT_1,$myCompanies);
         /* Level Two    */
-        $this->AddLevel(2,$m_form,REPORT_MANAGER_IMPORT_2);
+        /* Companies connected with super user  */
+        $myCompanies = $this->Get_MyLevelAccess($myAccess,2);
+        $this->AddLevel(2,$m_form,REPORT_MANAGER_IMPORT_2,$myCompanies);
         /* Level Three  */
-        $this->AddLevel(3,$m_form,REPORT_MANAGER_IMPORT_3);
+        /* Companies connected with super user  */
+        $myCompanies = $this->Get_MyLevelAccess($myAccess,3);
+        $this->AddLevel(3,$m_form,REPORT_MANAGER_IMPORT_3,$myCompanies);
 
         /* Level Four - Employees   */
         $options = array();
@@ -50,12 +61,12 @@ class manager_company_structure_form extends moodleform {
         $m_form->setExpanded('employees',true);
         $m_form->addElement('html', '<div class="level-wrapper">');
             $m_form->addElement('select',
-                                'list-' . REPORT_MANAGER_EMPLOYEE_LIST,
+                                REPORT_MANAGER_EMPLOYEE_LIST,
                                 get_string('company_structure_employees', 'report_manager'),
                                 $options,
                                 'size = 10');
             /* Options */
-            $m_form->disabledIf('list-' . REPORT_MANAGER_EMPLOYEE_LIST,MANAGER_COMPANY_STRUCTURE_LEVEL . '3','eq',0);
+            $m_form->disabledIf(REPORT_MANAGER_EMPLOYEE_LIST,COMPANY_STRUCTURE_LEVEL . '3','eq',0);
         $m_form->addElement('html', '</div>');
 
         /* Cancel Button */
@@ -67,14 +78,18 @@ class manager_company_structure_form extends moodleform {
      * @param           $level
      * @param           $form
      * @param           $level_import
+     * @param           $myCompanies
      *
      * @creationDate    24/01/2015
+     * @author          eFaktor     (fbv)
+     *
+     * @updateDate      23/10/2015
      * @author          eFaktor     (fbv)
      *
      * Description
      * Add Level Company Structure
      */
-    function AddLevel($level,&$form,$level_import){
+    function AddLevel($level,&$form,$level_import,$myCompanies){
         /* Variables    */
         $header_ID      = 'header_level_' . $level;
         $header_Label   = get_string(REPORT_MANAGER_COMPANY_STRUCTURE_LEVEL, 'report_manager', $level);
@@ -94,12 +109,16 @@ class manager_company_structure_form extends moodleform {
 
         $form->addElement('html', '<div class="level-wrapper">');
             /* Add Company List */
-            $options = $this->getCompanyList($level);
+            $options = $this->getCompanyList($level,$myCompanies);
             $form->addElement('select',
-                              MANAGER_COMPANY_STRUCTURE_LEVEL . $level,
+                              COMPANY_STRUCTURE_LEVEL . $level,
                               get_string('level'.$level,'report_manager'),
                               $options);
+
             $unlink_btn = $this->setLevelDefault($level,$form);
+            if (($level == 0) && $myCompanies) {
+                $unlink_btn = ' lnk_disabled';
+            }
 
             /* Add Action Buttons   */
             $this->AddActionButtons($level,$form,$unlink_btn);
@@ -107,46 +126,95 @@ class manager_company_structure_form extends moodleform {
     }//AddLevel
 
     /**
+     * @param               $myAccess
+     * @param               $level
+     *
+     * @return          null|string
+     * @throws              Exception
+     *
+     * @creationDate        23/10/2015
+     * @author              eFaktor     (fbv)
+     *
+     * Description
+     * Get companies connected with super user
+     */
+    function Get_MyLevelAccess($myAccess,$level) {
+        /* Variables    */
+        $myLevelAccess  = null;
+        $parent         = null;
+
+        try {
+            if ($myAccess) {
+                $parent     = optional_param(COMPANY_STRUCTURE_LEVEL . 0, 0, PARAM_INT);
+
+                switch ($level) {
+                    case 0:
+                        $myLevelAccess = implode(',',array_keys($myAccess));
+
+                        break;
+                    case 1:
+                        if ($parent) {
+                            $myLevelAccess = $myAccess[$parent]->levelOne;
+                        }//if_parent
+
+                        break;
+                    case 2:
+                        if ($parent) {
+                            $myLevelAccess = $myAccess[$parent]->levelTwo;
+                        }//if_parent
+
+                        break;
+                    case 3:
+                        if ($parent) {
+                            $myLevelAccess = $myAccess[$parent]->levelThree;
+                        }//if_parent
+
+                        break;
+                }//switch_level
+            }
+
+            return $myLevelAccess;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//Get_MyLevelAccess
+
+    /**
      * @param           $level
+     * @param           $myCompanies
+     *
      * @return          array
      *
      * @creationDate    24/01/2015
      * @author          eFaktor     (fbv)
      *
+     * @updateDate      23/10/2015
+     * @author          eFaktor     (fbv)
+     *
      * Description
      * Get the company List connected to the level and parent
      */
-    function getCompanyList($level) {
+    function getCompanyList($level,$myCompanies) {
         /* Variables    */
-        $options = array();
+        $options        = array();
 
+        /* Get Company List */
         switch ($level) {
             case 0:
-                $options = CompetenceManager::GetCompanies_LevelList($level);
+                /* Companies for Level Zero */
+                $options    = CompetenceManager::GetCompanies_LevelList($level,0,$myCompanies);
 
                 break;
-            case 1:
-                if (isset($_COOKIE['parentLevelZero']) && ($_COOKIE['parentLevelZero'])) {
-                    $options = CompetenceManager::GetCompanies_LevelList($level,$_COOKIE['parentLevelZero']);
-                }else {
-                    $options[0] = get_string('select_level_list','report_manager');
-                }//IF_COOKIE
+            default:
+                /* Parent*/
+                $parent     = optional_param(COMPANY_STRUCTURE_LEVEL . ($level-1), 0, PARAM_INT);
 
-                break;
-            case 2:
-                if (isset($_COOKIE['parentLevelOne']) && ($_COOKIE['parentLevelOne'])) {
-                    $options = CompetenceManager::GetCompanies_LevelList($level,$_COOKIE['parentLevelOne']);
+                /* Companies for the current level */
+                if ($parent) {
+                    $options = CompetenceManager::GetCompanies_LevelList($level,$parent,$myCompanies);
                 }else {
                     $options[0] = get_string('select_level_list','report_manager');
-                }//IF_COOKIE
-
-                break;
-            case 3:
-                if (isset($_COOKIE['parentLevelTwo']) && ($_COOKIE['parentLevelTwo'])) {
-                    $options = CompetenceManager::GetCompanies_LevelList($level,$_COOKIE['parentLevelTwo']);
-                }else {
-                    $options[0] = get_string('select_level_list','report_manager');
-                }//IF_COOKIE
+                }//if_parent
 
                 break;
         }//level
@@ -162,62 +230,39 @@ class manager_company_structure_form extends moodleform {
      * @creationDate    24/01/2015
      * @author          eFaktor     (fbv)
      *
+     * @updateDate      23/10/2015
+     * @author          eFaktor     (fbv)
+     *
      * Description
      * Set the company selected
      */
     function setLevelDefault($level,&$form) {
         /* Variables    */
-        $unlink = 'class="submit-btn" ';
+        $unlink     = '';
+        $default    = null;
+        $parent     = null;
 
-        switch ($level) {
-            case 0:
-                if (isset($_COOKIE['parentLevelZero']) && ($_COOKIE['parentLevelZero'])) {
-                    $form->setDefault(MANAGER_COMPANY_STRUCTURE_LEVEL . $level,$_COOKIE['parentLevelZero']);
-                }else {
-                    $form->setDefault(MANAGER_COMPANY_STRUCTURE_LEVEL . $level,0);
-                }//if_cookie
+        /* Get Default Value    */
+        $default = optional_param(COMPANY_STRUCTURE_LEVEL . $level, 0, PARAM_INT);
 
-                break;
-            case 1:
-                if (isset($_COOKIE['parentLevelOne']) && ($_COOKIE['parentLevelOne'])) {
-                    $form->setDefault(MANAGER_COMPANY_STRUCTURE_LEVEL . $level,$_COOKIE['parentLevelOne']);
-                    if (company_structure::Company_CountParents($_COOKIE['parentLevelOne']) <= 1) {
-                        $unlink .= 'disabled ';
-                    }
-                }else {
-                    $form->setDefault(MANAGER_COMPANY_STRUCTURE_LEVEL . $level,0);
-                    $unlink .= 'disabled ';
-                }//if_cookie
+        if ($level > 0) {
+            $parent  = optional_param(COMPANY_STRUCTURE_LEVEL . ($level-1), 0, PARAM_INT);
 
-                break;
-            case 2:
-                if (isset($_COOKIE['parentLevelTwo']) && ($_COOKIE['parentLevelTwo'])) {
-                    $form->setDefault(MANAGER_COMPANY_STRUCTURE_LEVEL . $level,$_COOKIE['parentLevelTwo']);
-                    if (company_structure::Company_CountParents($_COOKIE['parentLevelTwo']) <= 1) {
-                        $unlink .= 'disabled ';
-                    }
-                }else {
-                    $form->setDefault(MANAGER_COMPANY_STRUCTURE_LEVEL . $level,0);
-                    $unlink .= 'disabled ';
-                }//if_cookie
+            if ($parent) {
+                if (company_structure::Company_CountParents($parent) <= 1) {
+                    $unlink = 'lnk_disabled ';
+                }
+            }else {
+                $unlink = ' lnk_disabled ';
+            }//if_parent
+        }//if_level
 
-                break;
-            case 3:
-                if (isset($_COOKIE['parentLevelThree']) && ($_COOKIE['parentLevelThree'])) {
-                    $form->setDefault(MANAGER_COMPANY_STRUCTURE_LEVEL . '3',$_COOKIE['parentLevelThree']);
-                    if (company_structure::Company_CountParents($_COOKIE['parentLevelThree']) <= 1) {
-                        $unlink .= 'disabled ';
-                    }
-                }else {
-                    $form->setDefault(MANAGER_COMPANY_STRUCTURE_LEVEL . $level,0);
-                    $unlink .= 'disabled ';
-                }//if_cookie
 
-                break;
-        }//switch
-
+        /* Set Default  */
+        $form->setDefault(COMPANY_STRUCTURE_LEVEL . $level,$default);
+        /* Deactivate levels    */
         if ($level) {
-            $form->disabledIf(MANAGER_COMPANY_STRUCTURE_LEVEL . $level ,MANAGER_COMPANY_STRUCTURE_LEVEL . ($level - 1),'eq',0);
+            $form->disabledIf(COMPANY_STRUCTURE_LEVEL . $level ,COMPANY_STRUCTURE_LEVEL . ($level - 1),'eq',0);
         }//if_elvel
 
         return $unlink;
@@ -237,6 +282,12 @@ class manager_company_structure_form extends moodleform {
      *      - Rename level
      *      - Delete level
      *      - Unlink level
+     *
+     * @updateDate      23/10/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Update to super users
      */
     function AddActionButtons($level,&$form,$unlink_btn){
         /* Variables    */
@@ -261,17 +312,6 @@ class manager_company_structure_form extends moodleform {
             $form->addGroup($button, 'btn_' . $level, '&nbsp;', '&nbsp;', false);
         $form->addElement('html', '</div>');
         $form->addHelpButton('btn_' . $level ,'level_' . $level . '_btn','report_manager');
-
-        /* Activate /Deactivate buttons */
-        if ($level) {
-            $form->disabledIf('btn-' . REPORT_MANAGER_ADD_ITEM . $level,MANAGER_COMPANY_STRUCTURE_LEVEL . ($level-1),'eq',0);
-            $form->disabledIf('btn-' . REPORT_MANAGER_RENAME_SELECTED . $level,MANAGER_COMPANY_STRUCTURE_LEVEL . $level,'eq',0);
-            $form->disabledIf('btn-' . REPORT_MANAGER_DELETE_SELECTED . $level,MANAGER_COMPANY_STRUCTURE_LEVEL . $level,'eq',0);
-            $form->disabledIf('btn-' . REPORT_MANAGER_UNLINK_SELECTED . $level,MANAGER_COMPANY_STRUCTURE_LEVEL . $level,'eq',0);
-        }else {
-            $form->disabledIf('btn-' . REPORT_MANAGER_RENAME_SELECTED . $level,MANAGER_COMPANY_STRUCTURE_LEVEL . $level,'eq',0);
-            $form->disabledIf('btn-' . REPORT_MANAGER_DELETE_SELECTED . $level,MANAGER_COMPANY_STRUCTURE_LEVEL . $level,'eq',0);
-        }//if_elvel_0
     }//AddActionButtons
 }//manager_company_structure_1_form
 

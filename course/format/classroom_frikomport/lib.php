@@ -439,6 +439,12 @@ class format_classroom_frikomport extends format_base {
      * Description
      * Don't call create_edit_form      --> parent
      * Different functionality          --> Course Home Page
+     *
+     * @updateDate      05/11/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Add search filter for the manager
      */
     public function create_edit_form_elements(&$mform, $forsection = false) {
         //$elements = parent::create_edit_form_elements($mform, $forsection);
@@ -456,6 +462,7 @@ class format_classroom_frikomport extends format_base {
                 case 'homesummary':
                 case 'pagegraphics':
                 case 'pagevideo':
+                case 'manager':
                     course_page::addCourseHomePage_Section($mform, $optionname);
 
                     break;

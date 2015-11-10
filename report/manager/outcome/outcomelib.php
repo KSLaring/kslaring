@@ -18,6 +18,59 @@ class outcome {
     /*********************/
 
     /**
+     * @param           $outcome_id
+     * @param           $addSearch
+     * @param           $removeSearch
+     * @param           $removeSelected
+     *
+     * @throws          Exception
+     *
+     * @creationDate    26/10/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Initialise the job roles selectors
+     */
+    public static function Init_JobRoles_Selectors($outcome_id,$addSearch,$removeSearch,$removeSelected) {
+        /* Variables    */
+        $jsModule   = null;
+        $name       = null;
+        $path       = null;
+        $requires   = null;
+        $strings    = null;
+        $grpOne     = null;
+        $grpTwo     = null;
+        $grpThree   = null;
+        $hashAdd    = null;
+        $hashRemove = null;
+
+        try {
+            /* Initialise variables */
+            $name       = 'job_role_selector';
+            $path       = '/report/manager/outcome/js/search.js';
+            $requires   = array('node', 'event-custom', 'datasource', 'json', 'moodle-core-notification');
+            $grpOne     = array('previouslyselectedusers', 'moodle', '%%SEARCHTERM%%');
+            $grpTwo     = array('nomatchingusers', 'moodle', '%%SEARCHTERM%%');
+            $grpThree   = array('none', 'moodle');
+            $strings    = array($grpOne,$grpTwo,$grpThree);
+
+            /* Initialise js module */
+            $jsModule = array('name'        => $name,
+                              'fullpath'    => $path,
+                              'requires'    => $requires,
+                              'strings'     => $strings
+                             );
+
+            /* Super Users - Add Selector       */
+            self::Init_JobRoles_AddSelector($outcome_id,$addSearch,$jsModule);
+            /* Super Users - Remove Selector    */
+            self::Init_JobRoles_RemoveSelector($outcome_id,$removeSearch,$jsModule,$removeSelected);
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//Init_JobRoles_Selectors
+
+    /**
      * @static
      * @return          array       List of all outcomes and their job roles connected with them.
      * @throws          Exception
@@ -95,53 +148,115 @@ class outcome {
     }//Outcome_Expiration
 
     /**
-     * @static
-     * @param           $outcome_id     Outcome Identity
-     * @return          array           Job Role List
+     * @param           $outcome
+     * @param           $search
+     * @return          array
      * @throws          Exception
      *
-     * @updateDate      08/10/2014
-     * @author          eFaktor         (fbv)
+     * @creationDate    26/10/2015
+     * @author          eFaktor     (fbv)
      *
      * Description
-     * Get a list of all job roles available and which of them are connected with a specific outcome.
+     * Get job roles connected with outcome
      */
-    public static function Get_JobRoles_ConnectedOutcome($outcome_id) {
+    public static function FindJobRoles_Selector($outcome,$search) {
         /* Variables    */
         global $DB;
-        $job_roles_list = array();
-        $roles_selected = array();
+        $params     = null;
+        $sql        = null;
+        $rdo        = null;
+        $jobRoles   = array();
 
         try {
             /* Params  */
             $params = array();
-            $params['outcome'] = $outcome_id;
+            $params['outcome'] = $outcome;
 
-            /* SQL Instruction */
-            $sql = " SELECT        	jr.id,
-                                    jr.name,
-                                    jr.industrycode,
-                                    ojr.jobroleid
-                     FROM          	{report_gen_jobrole}  		  jr
-                        LEFT JOIN	{report_gen_outcome_jobrole}  ojr   ON 	ojr.jobroleid = jr.id
-                                                                        AND	ojr.outcomeid = :outcome
-                     ORDER BY jr.industrycode, jr.name ASC ";
+            /* SQL Instruction  */
+            $sql = " SELECT  jr.id,
+                             jr.name,
+                             jr.industrycode,
+                             ojr.jobroleid
+                     FROM    	{report_gen_jobrole}  		  jr
+                        JOIN	{report_gen_outcome_jobrole}  ojr  ON 	ojr.jobroleid = jr.id
+                                                                   AND	ojr.outcomeid = :outcome ";
+
+            /* Search   */
+            if ($search) {
+                $sql .= " WHERE jr.name like '%" . $search . "%'";
+            }//if_search
+
+            /* Order */
+            $sql .= " ORDER BY jr.industrycode, jr.name ASC ";
 
             /* Execute */
             if ($rdo = $DB->get_records_sql($sql,$params)) {
+                $jobRoles[0] = get_string('selected_jobroles','report_manager');
                 foreach ($rdo as $field) {
-                    $job_roles_list[$field->id] = $field->industrycode . ' - ' . $field->name;
-                    if ($field->jobroleid) {
-                        $roles_selected[] = $field->id;
-                    }
+                    $jobRoles[$field->id] = $field->industrycode . ' - ' . $field->name;
                 }//for
+            }else {
+                $jobRoles[0] = get_string('not_sel_jobroles','report_manager');
             }//if_Rdo
 
-            return array($job_roles_list,$roles_selected);
+            return $jobRoles;
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//Get_JobRoles_ConnectedOutcome
+    }//FindJobRoles_Selector
+
+    /**
+     * @param           $selected
+     * @param           $search
+     *
+     * @return          array
+     * @throws          Exception
+     *
+     * @creationDate    26/10/2015
+     * @author          eFaktor     (Fbv)
+     *
+     * Description
+     * Get potential job roles
+     */
+    public static function FindPotentialJobRole_Selector($selected,$search) {
+        /* Variables    */
+        global $DB;
+        $params     = null;
+        $sql        = null;
+        $rdo        = null;
+        $jobRoles   = array();
+
+        try {
+            /* SQL Instruction  */
+            $sql = " SELECT  jr.id,
+                             jr.name,
+                             jr.industrycode
+                     FROM    	{report_gen_jobrole}  		  jr
+                     WHERE   jr.id NOT IN (" . $selected .")";
+
+            /* Search   */
+            if ($search) {
+                $sql .= " AND jr.name like '%" . $search . "%'";
+            }//if_search
+
+            /* Order */
+            $sql .= " ORDER BY jr.industrycode, jr.name ASC ";
+
+            /* Execute */
+            if ($rdo = $DB->get_records_sql($sql,$params)) {
+                $jobRoles[0] = get_string('av_jobroles','report_manager');
+                foreach ($rdo as $field) {
+                    $jobRoles[$field->id] = $field->industrycode . ' - ' . $field->name;
+                }//for
+            }else {
+                $jobRoles[0] = get_string('not_sel_jobroles','report_manager');
+            }//if_Rdo
+
+            return $jobRoles;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//FindPotentialJobRole_Selector
 
     /**
      * @static
@@ -154,6 +269,9 @@ class outcome {
      *
      * Description
      * Insert a new outcome
+     *
+     * @updateDate      26/10/2015
+     * @author          eFaktor     (fbv)
      */
     public static function Insert_Outcome($outcome,$role_list){
         /* Variables    */
@@ -166,15 +284,15 @@ class outcome {
                 $job_role_sel->modified     = $outcome->modified;
                 $job_role_sel->outcomeid    = $outcome->outcomeid;
 
-                /* First --> Clean old relations */
-                $DB->delete_records_select('report_gen_outcome_jobrole','outcomeid='.$outcome->outcomeid);
                 /* Second --> Add new relations. */
-                foreach ($role_list as $rol) {
-                    $job_role_sel->jobroleid = $rol;
-                    if (!$DB->insert_record('report_gen_outcome_jobrole',$job_role_sel)) {
-                        print_error('error_updating_outcome_job_role', 'report_manager', $url);
-                    }
-                }//for
+                if ($role_list) {
+                    foreach ($role_list as $rol) {
+                        $job_role_sel->jobroleid = $rol;
+                        if (!$DB->insert_record('report_gen_outcome_jobrole',$job_role_sel)) {
+                            print_error('error_updating_outcome_job_role', 'report_manager', $url);
+                        }
+                    }//for
+                }//if_role_list
             }else {
                 print_error('error_updating_outcome_job_role', 'report_manager', $url);
             }//if_else
@@ -195,6 +313,9 @@ class outcome {
      *
      * Description
      * Update outcome data
+     *
+     * @updateDate      26/10/2015
+     * @author          eFaktor     (fbv)
      */
     public static function Update_Outcome($outcome,$role_list){
         /* Variables    */
@@ -202,8 +323,6 @@ class outcome {
 
         try {
             if ($DB->update_record('report_gen_outcome_exp',$outcome)) {
-                /* First --> Clean old relations */
-                $DB->delete_records_select('report_gen_outcome_jobrole','outcomeid='.$outcome->outcomeid);
 
                 /* Second --> Add new relations */
                 $job_role_sel               = new stdClass();
@@ -212,12 +331,14 @@ class outcome {
 
                 $url = new moodle_url('/report/manager/outcome/edit_outcome.php');
 
-                foreach ($role_list as $rol) {
-                    $job_role_sel->jobroleid = $rol;
-                    if (!$DB->insert_record('report_gen_outcome_jobrole',$job_role_sel)) {
-                        print_error('error_updating_outcome_job_role', 'report_manager', $url);
-                    }
-                }//for
+                if ($role_list) {
+                    foreach ($role_list as $rol) {
+                        $job_role_sel->jobroleid = $rol;
+                        if (!$DB->insert_record('report_gen_outcome_jobrole',$job_role_sel)) {
+                            print_error('error_updating_outcome_job_role', 'report_manager', $url);
+                        }
+                    }//for
+                }//if_role_list
 
                 return true;
             }else {
@@ -227,6 +348,30 @@ class outcome {
             throw $ex;
         }//try_catch
     }//Update_Outcome
+
+    /**
+     * @param           $outcomeId
+     * @param           $jobRoles
+     * @throws          Exception
+     *
+     * @creationDate    26/10/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Delete job roles connected with outcome
+     */
+    public static function Delete_JR_Outcome($outcomeId,$jobRoles) {
+        /* Variables    */
+        global $DB;
+
+        try {
+            foreach ($jobRoles as $rol) {
+                $DB->delete_records('report_gen_outcome_jobrole',array('outcomeid' => $outcomeId,'jobroleid' => $rol));
+            }//for
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//Delete_JR_Outcome
 
     /**
      * @static
@@ -290,4 +435,99 @@ class outcome {
 
         return $table;
     }//Outcomes_Table
+
+    /* PRIVATE */
+
+    /**
+     * @param           $outcome
+     * @param           $search
+     * @param           $jsModule
+     *
+     * @return          string
+     * @throws          Exception
+     *
+     * @creationDate    22/10/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Initialise the selector to add job roles
+     */
+    private static function Init_JobRoles_AddSelector($outcome,$search,$jsModule) {
+        /* Variables    */
+        global $USER,$PAGE;
+        $options    = null;
+        $hash       = null;
+
+
+        try {
+            /* Initialise Options Selector  */
+            $options = array();
+            $options['class']       = 'FindPotentialJobRole_Selector';
+            $options['name']        = 'addselect';
+            $options['multiselect'] = true;
+
+            /* Connect Selector User    */
+            $hash                     = md5(serialize($options));
+            $USER->jrselectors[$hash] = $options;
+
+            $PAGE->requires->js_init_call('M.core_user.init_job_role_selector',
+                                          array('addselect',$hash, $outcome,$search,null),
+                                          false,
+                                          $jsModule
+                                         );
+
+            return $hash;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//Init_JobRoles_AddSelector
+
+
+    /**
+     * @param           $outcome
+     * @param           $search
+     * @param           $jsModule
+     * @param           $removeSelected
+     *
+     * @return          string
+     * @throws          Exception
+     *
+     * @creationDate    26/10/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Initialise the selector to remove job roles
+     */
+    private static function Init_JobRoles_RemoveSelector($outcome,$search,$jsModule,$removeSelected) {
+        /* Variables    */
+        global $USER,$PAGE;
+        $options    = null;
+        $hash       = null;
+
+        try {
+            /* Initialise Options Selector  */
+            $options = array();
+            $options['class']       = 'FindJobRoles_Selector';
+            $options['name']        = 'removeselect';
+            $options['multiselect'] = true;
+
+            /* Connect Selector User    */
+            $hash                     = md5(serialize($options));
+            $USER->jrselectors[$hash] = $options;
+
+            /* Supers Users selected to delete  */
+            if ($removeSelected) {
+                $removeSelected = implode(',',$removeSelected);
+            }
+            $PAGE->requires->js_init_call('M.core_user.init_job_role_selector',
+                                          array('removeselect',$hash, $outcome,$search,$removeSelected),
+                                          false,
+                                          $jsModule
+                                         );
+
+            return $hash;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//Init_JobRoles_RemoveSelector
 }//class_outcome

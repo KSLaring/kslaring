@@ -49,19 +49,9 @@ $PAGE->verify_https_required();
 /* Form */
 $form = new competence_edit_competence_form(null,array($user_id,$competence_data,$competence));
 if ($form->is_cancelled()) {
-    setcookie('parentLevelZero',0);
-    setcookie('parentLevelOne',0);
-    setcookie('parentLevelTwo',0);
-    setcookie('parentLevelThree',0);
-
     $_POST = array();
     redirect($return_url);
 }else if($data = $form->get_data()) {
-    setcookie('parentLevelZero',0);
-    setcookie('parentLevelOne',0);
-    setcookie('parentLevelTwo',0);
-    setcookie('parentLevelThree',0);
-
     /* Update Competence Info   */
     Competence::EditCompetence($data);
 

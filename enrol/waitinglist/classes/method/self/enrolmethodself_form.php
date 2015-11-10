@@ -21,7 +21,7 @@
  * @copyright  2015 Justin Hunt  {@link http://poodll.com}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
- 
+
 namespace enrol_waitinglist\method\self;
  
 require_once($CFG->libdir.'/formslib.php');
@@ -41,7 +41,6 @@ class enrolmethodself_form extends \moodleform {
         $mform->addElement('text', 'name', get_string('custominstancename', 'enrol'));
         $mform->setType('name', PARAM_TEXT);
 */
-
         $mform->addElement('selectyesno', 'status', get_string('enable'));
         $mform->addHelpButton('status', 'status', 'enrol_self');
 /*

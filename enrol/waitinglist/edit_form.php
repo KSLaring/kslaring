@@ -23,6 +23,13 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+/**
+ * @updateDate  28/10/2015
+ * @author      eFaktor     (fbv)
+ *
+ * Description
+ * Add the invoice information option
+ */
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->libdir.'/formslib.php');
@@ -53,18 +60,30 @@ class enrol_waitinglist_edit_form extends moodleform {
 		$mform->setDefault(ENROL_WAITINGLIST_FIELD_CUTOFFDATE, 0);
 		$mform->setDefault(ENROL_WAITINGLIST_FIELD_MAXENROLMENTS, $plugin->get_config('maxenrolments'));
 		$mform->setDefault(ENROL_WAITINGLIST_FIELD_WAITLISTSIZE, $plugin->get_config('waitlistsize'));
-		
-		
-		
-	/*	
-	$settings->add(new admin_setting_configtext('enrol_waitinglist/maxenrolments', get_string('maxenrolments', 'enrol_waitinglist'), get_string('maxenrolments_desc', 'enrol_waitinglist'), ''));
-	*/
-/*	
-	$settings->add(new admin_setting_configtext('enrol_waitinglist/cutoffdate', get_string('cutoffdate', 'enrol_waitinglist'), get_string('cutoffdate_desc', 'enrol_waitinglist'), ''));
-*/	
-	/*
-	$settings->add(new admin_setting_configtext('enrol_waitinglist/waitlistsize', get_string('waitlistsize', 'enrol_waitinglist'), get_string('waitlistsize_desc', 'enrol_waitinglist'), ''));
-	*/
+
+        /**
+         * @updateDate  28/10/2015
+         * @author      eFaktor     (fbv)
+         *
+         * Description
+         * Check if exists Invoice enrolment method to add the option
+         */
+        $pluginInvoice = enrol_get_plugin('invoice');
+        if ($pluginInvoice) {
+            $mform->addElement('advcheckbox', ENROL_WAITINGLIST_FIELD_INVOICE, get_string('invoice', 'enrol_waitinglist'));
+            $mform->addHelpButton(ENROL_WAITINGLIST_FIELD_INVOICE, 'invoice', 'enrol_waitinglist');
+
+        }
+
+        /*
+        $settings->add(new admin_setting_configtext('enrol_waitinglist/maxenrolments', get_string('maxenrolments', 'enrol_waitinglist'), get_string('maxenrolments_desc', 'enrol_waitinglist'), ''));
+        */
+        /*
+            $settings->add(new admin_setting_configtext('enrol_waitinglist/cutoffdate', get_string('cutoffdate', 'enrol_waitinglist'), get_string('cutoffdate_desc', 'enrol_waitinglist'), ''));
+        */
+        /*
+        $settings->add(new admin_setting_configtext('enrol_waitinglist/waitlistsize', get_string('waitlistsize', 'enrol_waitinglist'), get_string('waitlistsize_desc', 'enrol_waitinglist'), ''));
+        */
 
         if ($instance->id) {
             $roles = get_default_enrol_roles($context, $instance->roleid);

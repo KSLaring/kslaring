@@ -1,7 +1,10 @@
 <?php
 
+require_once($CFG->dirroot . '/report/manager/managerlib.php');
+
 function local_tracker_manager_extends_navigation(global_navigation $navigation) {
-    global $USER;
+    /* Variables    */
+    global $USER,$CFG;
 
     if (isloggedin()) {
         $nodeTracker = $navigation->add(get_string('name','local_tracker_manager'), new moodle_url('/report/manager/tracker/index.php'));
@@ -14,10 +17,15 @@ function local_tracker_manager_extends_navigation(global_navigation $navigation)
 			$nodBar = $nodeTracker->add(get_string('company_structure','local_tracker_manager'),new moodle_url('/report/manager/company_structure/company_structure.php'));
             $nodBar = $nodeTracker->add(get_string('job_roles','local_tracker_manager'),new moodle_url('/report/manager/job_role/job_role.php'));
             $nodBar = $nodeTracker->add(get_string('outcomes','local_tracker_manager'),new moodle_url('/report/manager/outcome/outcome.php'));
+            $nodBar = $nodeTracker->add(get_string('spuser','local_tracker_manager'),new moodle_url('/report/manager/super_user/spuser.php'));
         }else {
+
             if (has_capability('report/manager:viewlevel4', CONTEXT_SYSTEM::instance())) {
                 $nodBar = $nodeTracker->add(get_string('report_manager','local_tracker_manager'),new moodle_url('/report/manager/index.php'));
-            }
+            }else if (CompetenceManager::IsSuperUser($USER->id)) {
+                $nodBar = $nodeTracker->add(get_string('company_structure','local_tracker_manager'),new moodle_url('/report/manager/company_structure/company_structure.php'));
+                $nodBar = $nodeTracker->add(get_string('job_roles','local_tracker_manager'),new moodle_url('/report/manager/job_role/job_role.php'));
+            }//if_super_user
         }//if_else
     }
 }//tracker_extends_navigation

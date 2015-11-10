@@ -319,6 +319,7 @@ M.core_user.init_user_selector = function (Y, name, hash, extrafields, lastsearc
             }
         }
     };
+
     // Augment the user selector with the EventTarget class so that we can use
     // custom events
     Y.augment(user_selector, Y.EventTarget, null, null, {});

@@ -78,3 +78,12 @@ $string['outcomes']             = 'Godkjenninger';
 $string['report_manager']       = 'Arbeidsstedsrapporter';
 $string['outcome_report']       = 'Godkjenningsrapport';
 $string['course_report']        = 'Kursrapport';
+
+/**
+ * @updateDate  14/10/2015
+ * @author      eFaktor     (fbv)
+ *
+ * Description
+ * Add new language strings for 'Super Users' functionality
+ */
+$string['spuser'] = 'Super Users';
