@@ -227,9 +227,9 @@ define('SAML_INTERNAL', 1);
             try {
                 $urlKS = KS_ADFS::LogIn_UserADFS($USER->id);
 
-                //header('Location: ' . urldecode($urlKS));
-                //require_logout();
-                //die;
+                header('Location: ' . urldecode($urlKS));
+                require_logout();
+                die;
             //    redirect($urltogo);
             }catch (Exception $ex) {
                 throw $ex;
