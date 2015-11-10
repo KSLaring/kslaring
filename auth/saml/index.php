@@ -221,21 +221,20 @@ define('SAML_INTERNAL', 1);
          * Description
          * Redirect the user to KS Site
          */
-        //if (!is_siteadmin($USER)) {
-        //    require_once ('../../local/adfs/adfslib.php');
+        if (!is_siteadmin($USER)) {
+            require_once ('../../local/adfs/adfslib.php');
 
-            //try {
-            //    $urlKS = KS_ADFS::LogIn_UserADFS($USER->id);
+            try {
+                $urlKS = KS_ADFS::LogIn_UserADFS($USER->id);
 
                 //header('Location: ' . urldecode($urlKS));
                 //require_logout();
                 //die;
             //    redirect($urltogo);
-            //}catch (Exception $ex) {
-         //       print_r($ex);
-            //}
-        //}else {
-        $urltogo = "http://elpais.com";
+            }catch (Exception $ex) {
+                print_r($ex);
+            }
+        }else {
             redirect($urltogo);
-        //}//if_else
+        }//if_else
     }
