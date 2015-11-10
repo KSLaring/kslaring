@@ -232,7 +232,7 @@ define('SAML_INTERNAL', 1);
                 //die;
             //    redirect($urltogo);
             //}catch (Exception $ex) {
-                print_r($ex);
+         //       print_r($ex);
             //}
         //}else {
             redirect($urltogo);
