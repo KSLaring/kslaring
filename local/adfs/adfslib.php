@@ -90,6 +90,10 @@ class KS_ADFS {
             $token      = $pluginInfo->adfs_token;
             $service    = $pluginInfo->adfs_service;
 
+            $domain     = 'http://kommitdev.kursportal.net';
+            $token      = 'f1bc4ded0550da9f8e4a6172bea6f913';
+            $service    = 'wsUserADFS';
+
             /* Build end Point Service  */
             $server     = $domain . '/webservice/soap/server.php?wsdl=1&wstoken=' . $token;
 
