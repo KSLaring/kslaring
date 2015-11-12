@@ -27,6 +27,9 @@
 $string['enabledock'] = 'Allow the user to dock this block';
 $string['pluginname'] = 'Frikomport course list';
 $string['searchinfrikomport'] = 'Search';
+$string['morecoursesinfo'] = 'There may be more courses you may be interested in
+than the ones listed in the table. Please use the filters above to specify
+what you are looking for.';
 $string['fri_course_list:addinstance'] = 'Add a new frikomport course list block';
 $string['fri_course_list:myaddinstance'] = 'Add a new frikomport course list block to My home';
 $string['fri_course_list:view'] = 'View the frikomport course list block';
