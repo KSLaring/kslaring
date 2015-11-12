@@ -9,6 +9,12 @@
  * @updateDate      12/09/2014
  * @author          eFaktor     (fbv)
  *
+ * @updateDate      12/11/2015
+ * @author          eFaktor     (fbv)
+ *
+ * Description
+ * Search fields. New javascript and functionality
+ *
  */
 require_once($CFG->libdir.'/formslib.php');
 
@@ -51,7 +57,8 @@ class microlearning_users_selector_form extends moodleform {
         $scount         = $this->_customdata['scount'];
         $ausers         = $this->_customdata['ausers'];
         $susers         = $this->_customdata['susers'];
-        $total          = $this->_customdata['total'];
+        $totalPotential = $this->_customdata['total_potential'];
+        $totalCampaign  = $this->_customdata['total_camp'];
         $course_id      = $this->_customdata['course'];
         $mode_learning  = $this->_customdata['mode'];
         $campaign_id    = $this->_customdata['campaign'];
@@ -61,36 +68,21 @@ class microlearning_users_selector_form extends moodleform {
         $schoices = array();
 
         if (is_array($ausers)) {
-            if ($total == $acount) {
-                $achoices[0] = get_string('allusers', 'bulkusers', $total);
-            } else {
-                $a = new stdClass();
-                $a->total  = $total;
-                $a->count = $acount;
-                $achoices[0] = get_string('allfilteredusers', 'bulkusers', $a);
-            }
+            $a = new stdClass();
+            $a->total   = $totalPotential;
+            $a->count   = $acount;
+            $achoices[0] = get_string('allfilteredusers', 'bulkusers', $a);
             $achoices = $achoices + $ausers;
-
-            if ($acount > MAX_USERS) {
-                $achoices[-1] = '...';
-
-            }
-
         } else {
-            $achoices[-1] = get_string('nofilteredusers', 'bulkusers', $total);
+            $achoices[-1] = get_string('nofilteredusers', 'bulkusers', $totalPotential);
         }
 
         if (is_array($susers)) {
             $a = new stdClass();
-            $a->total  = $total;
-            $a->count = $scount;
-            $schoices[0] = get_string('allselectedusers', 'bulkusers', $a);
-            $schoices = $schoices + $susers;
-
-            if ($scount > MAX_USERS) {
-                $schoices[-1] = '...';
-            }
-
+            $a->total       = $totalCampaign;
+            $a->count       = $scount;
+            $schoices[0]    = get_string('allselectedusers', 'bulkusers', $a);
+            $schoices       = $schoices + $susers;
         } else {
             $schoices[-1] = get_string('noselectedusers', 'bulkusers');
         }
@@ -101,8 +93,8 @@ class microlearning_users_selector_form extends moodleform {
             /* Selected Users   */
             $form->addElement('html','<div class="sel_users_left">');
                 $form->addElement('select','susers','',$schoices,'multiple size="15"');
-                //$form->addElement('text','search_sel_users',get_string('search'));
-                //$form->setType('search_sel_users',PARAM_TEXT);
+                $form->addElement('text','removeselect_searchtext',get_string('search'),'id="removeselect_searchtext"');
+                $form->setType('removeselect_searchtext',PARAM_TEXT);
             $form->addElement('html','</div>');//sel_users_left
 
             /* Buttons          */
@@ -132,8 +124,8 @@ class microlearning_users_selector_form extends moodleform {
             /* Add Users        */
             $form->addElement('html','<div class="sel_users_right">');
                 $form->addElement('select','ausers','',$achoices,'multiple size="15"');
-                //$form->addElement('text','search_add_users',get_string('search'));
-                //$form->setType('search_add_users',PARAM_TEXT);
+                $form->addElement('text','addselect_searchtext',get_string('search'),'id="addselect_searchtext"');
+                $form->setType('addselect_searchtext',PARAM_TEXT);
             $form->addElement('html','</div>');//sel_users_right
         $form->addElement('html','</div>');//micro_learning_users
 
@@ -157,15 +149,28 @@ class microlearning_users_selector_form extends moodleform {
     }//definition
 
     function validation($data, $files) {
-        $errors = parent::validation($data, $files);
-
+        $errors         = parent::validation($data, $files);
         $susers         = $this->_customdata['susers'];
-
+        /* Check if there are users connected with the campaign */
         if ((isset($data['submitbutton']) && $data['submitbutton'])) {
             if (!$susers) {
                 $errors['susers'] = get_string('required');
-            }//sel_activities
-        }//if_$data_submition
+            }//if_addselect
+        }else {
+            /* Check there are users to add */
+            if ((isset($data['add_sel']) && $data['add_sel'])) {
+                if (!isset($data['ausers'])) {
+                    $errors['ausers'] = get_string('required');
+                }//if_addselect
+            }//if_add_sel
+
+            /* Check there are users to remove  */
+            if ((isset($data['remove_sel']) && $data['remove_sel'])) {
+                if (!isset($data['susers'])) {
+                    $errors['susers'] = get_string('required');
+                }//if_addselect
+            }//if_add_sel
+        }//if_submiitbutton_next
 
         return $errors;
     }//validation

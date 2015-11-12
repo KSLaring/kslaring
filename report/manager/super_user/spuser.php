@@ -62,7 +62,9 @@ if ($form->is_cancelled()) {
             /* Create Super Users   */
             SuperUser::AddSuperUsers($data->addselect,$levelZero,$levelOne,$levelTwo,$levelThree);
         }//if_addselect
-    }  if (!empty($data->remove_sel)) {
+    }
+
+    if (!empty($data->remove_sel)) {
         if ($removeSelected) {
             /* Remove Super Users   */
             SuperUser::RemoveSuperUsers($removeSelected,$levelZero,$levelOne,$levelTwo,$levelThree);
