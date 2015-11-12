@@ -110,7 +110,12 @@ class block_fri_course_list extends block_base {
 
         $friadmin->set_usercourselist_references($block, $filter, $table, $output);
 
-        $this->content->text = $friadmin->render_courselist_for_block();
+        $o = $friadmin->render_courselist_for_block();
+
+        $o .= '<div class="alert alert-info">' .
+            get_string('morecoursesinfo', 'block_fri_course_list'). '</div>';
+
+        $this->content->text = $o;
 
         $this->contentgenerated = true;
 
