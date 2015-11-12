@@ -63,7 +63,16 @@ class local_friadmin_usercourselist_filter extends local_friadmin_widget impleme
             $SESSION->filterData = array();
         }//if_filterData_SESSION
 
-        $mform = new local_friadmin_usercourselist_filter_form(null, $customdata, 'post',
+        // If we are on the frontpage the URL contains '?redirect=0'.
+        // Moodle strips the query from the URL for the mform action, so we need
+        // to set the action for the frontpage when the form is set up.
+        // On all other pages the action can be null -> Moodle handles it.
+        $action = qualified_me();
+        if (strpos($action, '?redirect=0') === false) {
+            $action = null;
+        }
+
+        $mform = new local_friadmin_usercourselist_filter_form($action, $customdata, 'post',
             '', array('id' => 'mform-coursefilter'));
 
         $this->mform = $mform;
