@@ -53,9 +53,10 @@ class manager_company_structure_form extends moodleform {
         $this->AddLevel(3,$m_form,REPORT_MANAGER_IMPORT_3,$myCompanies);
 
         /* Level Four - Employees   */
-        $options = array();
-        if (isset($_COOKIE['parentLevelThree'])) {
-            $options = company_structure::Get_EmployeeLevel($_COOKIE['parentLevelThree']);
+        $parentThree  = optional_param(COMPANY_STRUCTURE_LEVEL . 3, 0, PARAM_INT);
+        $options    = array();
+        if ($parentThree) {
+            $options = company_structure::Get_EmployeeLevel($parentThree);
         }//if
         $m_form->addElement('header', 'employees', get_string('company_structure_employees', 'report_manager'));
         $m_form->setExpanded('employees',true);
