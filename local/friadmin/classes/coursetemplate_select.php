@@ -70,8 +70,8 @@ class local_friadmin_coursetemplate_select extends local_friadmin_widget impleme
             $customdata = $this->get_popup_data();
 
             /* Create form  */
-            $mform          = new local_friadmin_coursetemplate_select_form(null, $customdata, 'post','', array('id' => 'mform-coursetemplate-select'));
-            $this->mform    = $mform;
+            $mform = new local_friadmin_coursetemplate_select_form(null, $customdata, 'post', '', array('id' => 'mform-coursetemplate-select'));
+            $this->mform = $mform;
 
             /* Collect the input data and create the new course */
             if ($fromform = $mform->get_data()) {
@@ -82,7 +82,7 @@ class local_friadmin_coursetemplate_select extends local_friadmin_widget impleme
                 /* Create the course    */
                 $this->coursecreationresult = $this->create_course();
             }//if_get_data
-        }catch (Exception $ex) {
+        } catch (Exception $ex) {
             throw $ex;
         }//try_catch
     }//construct
@@ -147,11 +147,11 @@ class local_friadmin_coursetemplate_select extends local_friadmin_widget impleme
     protected function get_popup_data() {
         /* Variables    */
         global $CFG;
-        $result             = null;
-        $pluginInfo         = null;
-        $templateCatId      = null;
-        $courseCat          = null;
-        $templateCourses    = null;
+        $result = null;
+        $pluginInfo = null;
+        $templateCatId = null;
+        $courseCat = null;
+        $templateCourses = null;
 
         try {
             require_once($CFG->libdir . '/coursecatlib.php');
@@ -161,8 +161,8 @@ class local_friadmin_coursetemplate_select extends local_friadmin_widget impleme
 
             /* Result Structure */
             $result = array('categories' => array(),
-                            'templates' => array()
-                           );
+                'templates' => array()
+            );
 
             /* Get Categories   */
             $result['categories'] = coursecat::make_categories_list('moodle/category:manage');
@@ -172,7 +172,7 @@ class local_friadmin_coursetemplate_select extends local_friadmin_widget impleme
                 if (isset($pluginInfo->template_category) && ($pluginInfo->template_category)) {
                     /* Get Template Category && Course Category */
                     $templateCatId = $pluginInfo->template_category;
-                    $courseCat     = coursecat::get($templateCatId, MUST_EXIST, true);
+                    $courseCat = coursecat::get($templateCatId, MUST_EXIST, true);
 
                     /* Get Courses category */
                     $templateCourses = $courseCat->get_courses();
@@ -180,23 +180,23 @@ class local_friadmin_coursetemplate_select extends local_friadmin_widget impleme
                     /* Add to result Structure  */
                     foreach ($templateCourses as $templateCo) {
                         if ($templateCo->visible) {
-                            $result['templates'][$templateCo->shortname] = $templateCo->fullname;
+                            //$result['templates'][$templateCo->shortname] = $templateCo->fullname;
+                            $result['templates'][$templateCo->id] = $templateCo->fullname;
                         }//if_visible
                     }//for_templatesCourse
                 }//if_template_category
             }//if_pluginInfo
 
             return $result;
-        }catch (Exception $ex) {
+        } catch (Exception $ex) {
             throw $ex;
         }//try_catch
     }//get_popup_data
 
     /**
      * Create the course with the given data
-     *
-     * Use uplaodcourse functionality to create a course from CSV data,
-     * see tool/uploadcourse/cli/uploadcourse.php
+     * Restore the course from an exisitng course backup file.
+     * Create a course backup if non exists.
      */
     /**
      * @return          array|string
@@ -212,134 +212,65 @@ class local_friadmin_coursetemplate_select extends local_friadmin_widget impleme
      * Rebuild function.
      *  - Add Exception
      *  - Check if the user has the correct permissions
-     *  - Create a Fake Permission before create the new course from the template and remove later.
+     *  - Create a Fake Permission before create the new course from the template and
+     *  remove later.
      *  - Errors is an array. So, it has to be converted into a string
      */
     protected function create_course() {
         /* Variables    */
-        global $DB,$CFG;
-        $result             = false;
-        $fakePermission     = null;
-        $courseConfig       = null;
-        $options            = null;
-        $processorOptions   = null;
-        $processor          = null;
-        $defaults           = array();
-        $templateFormat     = null;
-        $content            = null;
-        $importId           = null;
-        $cir                = null;
-        $readCount          = null;
-        $newCourse          = null;
-        $info               = null;
-        $errorMsg           = null;
+        global $DB, $CFG;
+
+        $result = '';
+        $fakePermission = null;
+        $newcourseid = null;
+        $error = null;
+        $coursedata = null;
+        $newCourse = null;
+        $info = null;
+        $errorMsg = null;
+        $admin = get_admin();
 
         try {
-
-            /* Course Config    */
-            $courseConfig = get_config('moodlecourse');
-
-            /* Set the course generation options */
-            $options = array('mode'                 => tool_uploadcourse_processor::MODE_CREATE_NEW,
-                             'updatemode'           => tool_uploadcourse_processor::UPDATE_NOTHING,
-                             'file'                 => '',
-                             'delimiter'            => 'comma',
-                             'encoding'             => 'UTF-8',
-                             'shortnametemplate'    => '',
-                             'templatecourse'       => $this->fromform->seltemplate,
-                             'restorefile'          => false,
-                             'allowdeletes'         => false,
-                             'allowrenames'         => false,
-                             'allowresets'          => false,
-                             'reset'                => false,
-                             'category'             => $this->fromform->selcategory
-                            );
-
-            /* Set processor options */
-            $processorOptions = array('mode'                => $options['mode'],
-                                      'updatemode'          => $options['updatemode'],
-                                      'allowdeletes'        => $options['allowdeletes'],
-                                      'allowrenames'        => $options['allowrenames'],
-                                      'allowresets'         => $options['allowresets'],
-                                      'reset'               => $options['reset'],
-                                      'shortnametemplate'   => $options['shortnametemplate'],
-                                      'templatecourse'      => $options['templatecourse']
-                                     );
-
-            /* Set the course default values */
-            $defaults['category']       = $options['category'];
-            $defaults['startdate']      = time() + 3600 * 24;
-            $defaults['newsitems']      = $courseConfig->newsitems;
-            $defaults['showgrades']     = $courseConfig->showgrades;
-            $defaults['showreports']    = $courseConfig->showreports;
-            $defaults['maxbytes']       = $courseConfig->maxbytes;
-            $defaults['legacyfiles']    = $CFG->legacyfilesinnewcourses;
-            $defaults['groupmode']      = $courseConfig->groupmode;
-            $defaults['groupmodeforce'] = $courseConfig->groupmodeforce;
-            $defaults['visible']        = $courseConfig->visible;
-            $defaults['lang']           = $courseConfig->lang;
-
-            /* Set the course format to the same format as the template */
-            $templateFormat = $DB->get_field('course','format',array('shortname' => $this->fromform->seltemplate),MUST_EXIST);
-            if ($templateFormat) {
-                $defaults['format'] = $templateFormat;
-            }//if_templateFormat
-
-            /* Create the course from CSV data                  */
-            /* Create the CSV: line 1: field names, line2: data */
-            $content  = 'shortname,fullname,category,templatecourse' . "\n";
-            $content .= $this->fromform->selshortname   . ',';
-            $content .= $this->fromform->selfullname    . ',';
-            $content .= $this->fromform->selcategory    . ',';
-            $content .= $this->fromform->seltemplate;
-
-            $importId   = csv_import_reader::get_new_iid('uploadcourse');
-            $cir        = new csv_import_reader($importId, 'uploadcourse');
-            $readCount  = $cir->load_csv_content($content, $options['encoding'], $options['delimiter']);
-            unset($content);
-            if ($readCount === false) {
-                print_error('csvfileerror', 'tool_uploadcourse', '', $cir->get_error());
-            } else if ($readCount == 0) {
-                print_error('csvemptyfile', 'error', '', $cir->get_error());
-            }//if_readCount
-
             /* First, it checks if the user has the correct permissions */
             if (!self::HasCorrectPermissions()) {
                 /* Create a Fake Permission */
-                $fakePermission     = new stdClass();
+                $fakePermission = new stdClass();
                 $fakePermission->id = self::Add_FakePermission_To_User();
             }//if_Has_not_permissions
 
-            /* Process the creation of new course form the template */
-            $processor = new tool_uploadcourse_processor($cir, $processorOptions, $defaults);
-            $processor->execute(new tool_uploadcourse_tracker(tool_uploadcourse_tracker::NO_OUTPUT));
-            $errors = $processor->get_errors();
-            if (!$errors) {
-                /* Get Info new course  */
-                $newCourse = $DB->get_record('course',array('shortname' => $this->fromform->selshortname), '*', MUST_EXIST);
+            $coursedata = array(
+                'userid' => $admin->id,
+                'sourcedir' => $CFG->dataroot . '/temp/test/',
+                'categoryid' => $this->fromform->selcategory,
+                'fullname' => $this->fromform->selfullname,
+                'shortname' => $this->fromform->selshortname,
+            );
+
+            list($newcourseid, $error) =
+                $this->restore_course((int)$this->fromform->seltemplate, $coursedata);
+
+            if (empty($error)) {
+                // Get the infos for the new course.
+                $newCourse =
+                    $DB->get_record('course', array('id' => $newcourseid), '*', MUST_EXIST);
                 if ($newCourse) {
                     $this->newcourseid = $newCourse->id;
                     $info = array('id' => $newCourse->id,
-                                  'shortname' => $newCourse->shortname,
-                                  'fullname' => $newCourse->fullname
+                        'shortname' => $newCourse->shortname,
+                        'fullname' => $newCourse->fullname
                     );
 
-                    $result  = '<p class="result">';
-                    $result .= get_string('coursetemplate_result', 'local_friadmin', $info) . '</p>';
-                }else {
+                    $result .= '<p class="result">';
+                    $result .=
+                        get_string('coursetemplate_result', 'local_friadmin', $info) . '</p>';
+                } else {
                     /* The course should exist when no processor errors had been generated */
-                    $result  = '<p class="result">';
+                    $result = '<p class="result">';
                     $result .= get_string('coursetemplate_error', 'local_friadmin') . '</p>';
                 }//if_else_new_course
-            }else {
-                /* Convert to string */
-                foreach($errors as $code=>$msg) {
-                    $errorMsg .= $msg . "</br>";
-                }//for_Errors
-
-                /* Return the correct value */
-                $result = '<p class="result">' . $errorMsg . '</p>';
-            }//if_errors
+            } else {
+                $result .= $error;
+            }
 
             /* Finally, remove the fake permission that have been added */
             if ($fakePermission) {
@@ -347,7 +278,7 @@ class local_friadmin_coursetemplate_select extends local_friadmin_widget impleme
             }//if_fakePermission
 
             return $result;
-        }catch (Exception $ex) {
+        } catch (Exception $ex) {
             /* Remove the fake permission that have been added */
             if ($fakePermission) {
                 self::Delete_FakePermission($fakePermission->id);
@@ -360,6 +291,181 @@ class local_friadmin_coursetemplate_select extends local_friadmin_widget impleme
     /**********************/
     /* PRIVATE FUNCTIONS */
     /*********************/
+    /**
+     * Restore a backup course file with the given parameters for the new course.
+     *
+     * @param int $cid The course id of the course to restore
+     *
+     * @return array With the course id and the error
+     * @throws Exception
+     * @throws dml_transaction_exception
+     * @throws restore_controller_exception
+     */
+    protected function restore_course($cid, $options) {
+        global $CFG, $DB;
+
+        $error = '';
+        $courseid = null;
+        $component = 'backup';
+        $filearea = 'course';
+        $itemid = '0';
+        $sourcefile = null;
+
+        require_once($CFG->dirroot . '/backup/util/includes/restore_includes.php');
+
+        $coursecontext = context_course::instance($cid);
+        $fs = get_file_storage();
+
+        $backupid = $this->create_backup_if_needed($cid);
+
+        $browser = get_file_browser();
+        $fileinfo = $browser->get_file_info($coursecontext, $component, $filearea, $itemid);
+
+        if (is_a($fileinfo, 'file_info_stored')) {
+            $files = $fs->get_area_files($coursecontext->id, $component, $filearea, $itemid);
+            $sourcefile = $this->newest_stored_file($files);
+        }
+
+        if (is_null($sourcefile)) {
+            $error .= 'No backupfile found for course id ' . $cid . "<br>\n";
+            return array($courseid, $error);
+        }
+
+        // Extract the file.
+        $packer = get_file_packer('application/vnd.moodle.backup');
+        $backupid = restore_controller::get_tempdir_name(SITEID, $options['userid']);
+        $path = "$CFG->tempdir/backup/$backupid/";
+        if (!$packer->extract_to_pathname($sourcefile, $path)) {
+            $error .= 'Invalid backup file ' . $sourcefile->get_filename() . "<br>\n";
+            return array($courseid, $error);
+        }
+
+        // Start delegated transaction.
+        $transaction = $DB->start_delegated_transaction();
+
+        // Create new course.
+        $courseid = restore_dbops::create_new_course(fix_utf8($sourcefile->get_filename()),
+            'restored-' . $backupid, $options['categoryid']);
+
+        // Restore backup into course.
+        $controller = new restore_controller($backupid, $courseid, backup::INTERACTIVE_NO,
+            backup::MODE_SAMESITE, $options['userid'], backup::TARGET_NEW_COURSE);
+
+        if ($controller->execute_precheck()) {
+            $controller->execute_plan();
+        } else {
+            $error .= 'Precheck fails for ' . $sourcefile->get_filename() . ' ... skipping' . "<br>\n";
+            $results = $controller->get_precheck_results();
+            foreach ($results as $type => $messages) {
+                foreach ($messages as $index => $message) {
+                    $error .= 'precheck ' . $type . '[' . $index . '] = ' . $message . "<br>\n";
+                }
+            }
+            try {
+                $transaction->rollback(new Exception('Prechecked failed'));
+            } catch (Exception $e) {
+                unset($transaction);
+                $controller->destroy();
+                unset($controller);
+
+                return array($courseid, $error);
+            }
+        }
+
+        // Commit and clean up.
+        $transaction->allow_commit();
+        unset($transaction);
+        $controller->destroy();
+        unset($controller);
+
+        // Set the course name choosen by the user
+        $course = new stdClass;
+        $course->id = $courseid;
+        $course->fullname = fix_utf8($options['fullname']);
+        $course->shortname = $options['shortname'];
+        $DB->update_record('course', $course);
+
+        return array($courseid, $error);
+    }
+
+    /**
+     * Get the newest file in the file area.
+     *
+     * @param array $files The stored files
+     *
+     * @return null|stored_file The newest file
+     */
+    protected function newest_stored_file($files) {
+        $newesttime = 0;
+        $newest = null;
+
+        /* @var $f stored_file */
+        foreach ($files as $f) {
+            if ($f->get_filename() === '.') {
+                continue;
+            }
+
+            if ($f->get_timecreated() > $newesttime) {
+                $newesttime = $f->get_timecreated();
+                $newest = $f;
+            }
+        }
+
+        return $newest;
+    }
+
+    /**
+     * Create an automatic course backup if none exisits.
+     *
+     * @param int $cid The course id
+     *
+     * @return int|null The backup id if success, null if failure
+     */
+    protected function create_backup_if_needed($cid) {
+        global $CFG, $DB;
+
+        $result = null;
+        $component = 'backup';
+        $filearea = 'course';
+        $itemid = '0';
+
+        $coursecontext = context_course::instance($cid);
+        $fs = get_file_storage();
+
+        if ($fs->is_area_empty($coursecontext->id, $component, $filearea)) {
+            $course = $DB->get_record('course', array('id' => $cid), '*', MUST_EXIST);
+            if ($course) {
+                $admin = get_admin();
+                require_once($CFG->dirroot . '/backup/util/includes/backup_includes.php');
+                $bc = new backup_controller(backup::TYPE_1COURSE, $cid, backup::FORMAT_MOODLE,
+                    backup::INTERACTIVE_NO, backup::MODE_SAMESITE, $admin->id);
+
+                // Set the default filename.
+                $format = $bc->get_format();
+                $type = $bc->get_type();
+                $id = $bc->get_id();
+                $users = $bc->get_plan()->get_setting('users')->get_value();
+                $anonymised = $bc->get_plan()->get_setting('anonymize')->get_value();
+                $filename = backup_plan_dbops::get_default_backup_filename($format, $type,
+                    $id, $users, $anonymised);
+                $bc->get_plan()->get_setting('filename')->set_value($filename);
+
+                // Backup the course.
+                $bc->set_status(backup::STATUS_AWAITING);
+                $bc->execute_plan();
+
+                // Get the results.
+                $backupid = $bc->get_backupid();
+                //$results = $bc->get_results();
+
+                $bc->destroy();
+
+                $result = $backupid;
+            }
+        }
+
+        return $result;
+    }
 
     /**
      * @return          bool
@@ -369,19 +475,20 @@ class local_friadmin_coursetemplate_select extends local_friadmin_widget impleme
      * @author          eFaktor     (fbv)
      *
      * Description
-     * Check if the user has the correct permissions to create a new course from the template
+     * Check if the user has the correct permissions to create a new course from the
+     * template
      */
     private function HasCorrectPermissions() {
         /* Variables    */
-        global $DB,$USER;
+        global $DB, $USER;
 
         try {
             /* Fist, check if the user has the correct permissions  */
             /* Search Criteria  */
             $params = array();
-            $params['user']         = $USER->id;
-            $params['context']      = '1';
-            $params['archetype']    = 'manager';
+            $params['user'] = $USER->id;
+            $params['context'] = '1';
+            $params['archetype'] = 'manager';
 
             /* SQL Instruction  */
             $sql = " SELECT		ra.id,
@@ -395,13 +502,13 @@ class local_friadmin_coursetemplate_select extends local_friadmin_widget impleme
                         AND     ra.contextid  = :context ";
 
             /* Execute  */
-            $rdo = $DB->get_records_sql($sql,$params);
+            $rdo = $DB->get_records_sql($sql, $params);
             if ($rdo) {
                 return true;
-            }else {
+            } else {
                 return false;
             }//if_rdo
-        }catch (Exception $ex) {
+        } catch (Exception $ex) {
             throw $ex;
         }//try_catch
     }//HasCorrectPermissions
@@ -419,38 +526,39 @@ class local_friadmin_coursetemplate_select extends local_friadmin_widget impleme
      */
     private function Add_FakePermission_To_User() {
         /* Variables    */
-        global $DB,$USER;
+        global $DB, $USER;
         $fakePermission = null;
-        $context        = null;
-        $role           = null;
+        $context = null;
+        $role = null;
 
         try {
             /* Context System   */
             $context = CONTEXT_SYSTEM::instance();
             /* Role Id      */
-            $role = $DB->get_record('role',array('archetype' => 'manager','shortname' => 'manager'));
+            $role = $DB->get_record('role', array('archetype' => 'manager', 'shortname' => 'manager'));
 
             /* New Fake Permission  */
             $fakePermission = new stdClass();
-            $fakePermission->userid         = $USER->id;
-            $fakePermission->roleid         = $role->id;
-            $fakePermission->contextid      = $context->id;
-            $fakePermission->timemodified   = time();
+            $fakePermission->userid = $USER->id;
+            $fakePermission->roleid = $role->id;
+            $fakePermission->contextid = $context->id;
+            $fakePermission->timemodified = time();
 
             /* Insert   */
-            $fakePermission->id = $DB->insert_record('role_assignments',$fakePermission);
+            $fakePermission->id = $DB->insert_record('role_assignments', $fakePermission);
 
             /* Reload All Capabilities  */
             reload_all_capabilities();
 
             return $fakePermission->id;
-        }catch (Exception $ex) {
+        } catch (Exception $ex) {
             throw $ex;
         }//try_catch
     }//Add_FakePermission_To_User
 
     /**
      * @param           $fakePermissionId
+     *
      * @throws          Exception
      *
      * @creationDate    23/06/2015
@@ -465,11 +573,11 @@ class local_friadmin_coursetemplate_select extends local_friadmin_widget impleme
 
         try {
             /* Delete Fake Permission   */
-            $DB->delete_records('role_assignments',array('id' => $fakePermissionId));
+            $DB->delete_records('role_assignments', array('id' => $fakePermissionId));
 
             /* Reload All Capabilities  */
             reload_all_capabilities();
-        }catch (Exception $ex) {
+        } catch (Exception $ex) {
             throw $ex;
         }//try_catch
     }//Delete_FakePermission
