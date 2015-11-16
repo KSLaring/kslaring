@@ -19,6 +19,43 @@ class Express_Login {
     /**********/
 
     /**
+     * @param           $users
+     *
+     * @return          bool
+     * @throws          Exception
+     *
+     * @creationDate    16/11/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Activate Auto Generated Express Login
+     */
+    public static function Activate_AutoExpressLogin($users) {
+        /* Variables    */
+        global $DB;
+        $infoProfile = null;
+        $params = null;
+
+        try {
+            /* Get Id Profile Field */
+            $infoProfile = $DB->get_record('user_info_field',array('datatype' => 'express'));
+            if ($infoProfile) {
+                /* SQL Instruction  */
+                $sql = " UPDATE	mdl_user_info_data
+                                SET	data = 1
+                            WHERE userid IN ($users)
+                              AND fieldid = " . $infoProfile->id;
+
+                $DB->execute($sql);
+            }//if_infoProfile
+
+            return true;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//Activate_AutoExpressLogin
+
+    /**
      * @return          bool
      *
      * @creationDate    26/11/2014

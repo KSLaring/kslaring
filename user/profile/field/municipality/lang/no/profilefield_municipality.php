@@ -1,6 +1,6 @@
 <?php
 /**
- * Extra Profile Field Municipality - Language settings (English)
+ * Extra Profile Field Municipality - Language settings (Norwegian)
  *
  * Description
  *

@@ -105,3 +105,6 @@ Aleksander Øines<br />
 KS KommIT</p>';
 
 $string['micro_message']          = '<p>Siden du nå har byttet pin-kode (og dermed også hurtigloginlenken) sender vi deg om igjen alle mikrolærings-eposter du har fått tidligere hvor du IKKE har gjort aktivitene ennå.</p>';
+
+$string['bulk_action']      = 'Generated Express Login';
+$string['bulk_succesful']   = 'The Express Login will be generated during the next 30 minutes.';

@@ -94,3 +94,6 @@ $string['express_body']           = '<p>Dear {$a->name},</p><p>We would like to 
                                     <p>You can get your <strong>Express Login Link</strong> in <strong>My profile settings->Express Login-><u>Express Login</u></strong>.</p>';
 
 $string['micro_message']          = '<p>We would like to inform you, that you have changed your <strong>Express Login</strong>.So, you get your <strong>Microlearning</strong> with the new <strong>Express Login</strong>.</p>';
+
+$string['bulk_action']      = 'Generated Express Login';
+$string['bulk_succesful']   = 'The Express Login will be generated during the next 30 minutes.';
