@@ -629,7 +629,7 @@ class course_report {
                     break;
             }//switch_level
 
-            if (empty($data_form[REPORT_MANAGER_JOB_ROLE_LIST]) && ($data_form['rpt'] == 3)) {
+            if (empty($data_form[REPORT_MANAGER_JOB_ROLE_LIST])) {
                 return null;
             }else {
                 if (array_intersect_key($job_roles,$jr_level)) {
