@@ -36,6 +36,15 @@ if ($data = $action_form->get_data()) {
          */
         case 9:
             redirect(new moodle_url('/local/force_profile/user_bulk_force_profile.php'));
+        /**
+         * @updateDate      16/11/2015
+         * @author          eFaktor     (fbv)
+         *
+         * Description
+         * Add a new action - Auto generated Express Login
+         */
+        case 10:
+            redirect(new moodle_url('/local/express_login/bulk_express/user_bulk_express_login.php'));
     }
 }
 

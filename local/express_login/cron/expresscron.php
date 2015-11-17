@@ -71,6 +71,12 @@ class Express_Cron {
      *
      * Description
      * Generate auto express login
+     *
+     * @updateDate      16/11/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Check the profile filed - auto generated express login
      */
     private static function Auto_ExpressLogin($digits) {
         /* Variables    */
@@ -91,15 +97,19 @@ class Express_Cron {
                                     u.mailformat,
                                     u.lang,
                                     '' as 'express'
-                     FROM			{user}			u
-                        LEFT JOIN	{user_express}	uex		ON uex.userid = u.id
-                     WHERE			u.deleted = 0
-                        AND			uex.id IS NULL
-                        AND			u.username != 'guest'
-                        AND			u.username NOT LIKE '%wsdossier%'
-                        AND			u.username NOT LIKE '%wsdoskom%'
-                        AND			u.email IS NOT NULL
-                        AND			u.email <> ''
+                     FROM			{user}			    u
+                        JOIN		{user_info_data}	uid		ON 	uid.userid		= u.id
+                                                                AND	uid.data		= 1
+                        JOIN		{user_info_field}	uif		ON	uif.id			= uid.fieldid
+                                                                AND	uif.datatype	= 'express'
+                        LEFT JOIN	{user_express}	    uex		ON 	uex.userid 		= uid.userid
+                     WHERE			u.deleted 	= 0
+                        AND			uex.id 		IS NULL
+                        AND			u.username 	!= 'guest'
+                        AND			u.username 	NOT LIKE '%wsdossier%'
+                        AND			u.username 	NOT LIKE '%wsdoskom%'
+                        AND			u.email 	IS NOT NULL
+                        AND			u.email 	<> ''
                      LIMIT 0,2000 ";
 
             $rdo = $DB->get_records_sql($sql);

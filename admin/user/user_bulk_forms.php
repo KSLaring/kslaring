@@ -44,6 +44,15 @@ class user_bulk_action_form extends moodleform {
          */
         $actions[9] = get_string('force_bulk','local_force_profile');
 
+        /**
+         * @updateDate      16/11/2015
+         * @author          eFaktor     (fbv)
+         *
+         * Description
+         * Auto generate Express Login
+         */
+        $actions[10] = get_string('bulk_action','local_express_login');
+
         $objs = array();
         $objs[] =& $mform->createElement('select', 'action', null, $actions);
         $objs[] =& $mform->createElement('submit', 'doaction', get_string('go'));
