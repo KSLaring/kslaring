@@ -91,24 +91,35 @@ class ExpressInstall {
         global $DB;
         $trans      = null;
         $usersLst   = null;
+        $limit      = 2000;
+        $indexIni   = 0;
+        $totalUsers = null;
 
         /* Start Transaction    */
         $trans = $DB->start_delegated_transaction();
 
         try {
             /* Get all users    */
-            $usersLst = $DB->get_records('user',array('deleted' => 0),null,'id');
-            if ($usersLst) {
-                /* Create entry for all users   */
-                foreach ($usersLst as $user) {
-                    $infoData = new stdClass();
-                    $infoData->userid   = $user->id;
-                    $infoData->fieldid  = $infoProfile;
-                    $infoData->data     = 1;
+            $totalUsers = $DB->count_records('user',array('deleted' => 0));
 
-                    $DB->insert_record('user_info_data',$infoData);
-                }
-            }//if_usersLst
+            if ($totalUsers) {
+                do {
+                    $usersLst = $DB->get_records('user',array('deleted' => 0),null,'id',$indexIni,$limit);
+                    if ($usersLst) {
+                        /* Create entry for all users   */
+                        foreach ($usersLst as $user) {
+                            $infoData = new stdClass();
+                            $infoData->userid   = $user->id;
+                            $infoData->fieldid  = $infoProfile;
+                            $infoData->data     = 1;
+
+                            $DB->insert_record('user_info_data',$infoData);
+                        }
+                    }//if_usersLst
+                    $indexIni = $indexIni + $limit;
+                }while ($indexIni < $totalUsers);
+            }//if_totalUsers
+
             /* Commit */
             $trans->allow_commit();
 
