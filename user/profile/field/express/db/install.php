@@ -27,7 +27,7 @@ function xmldb_profilefield_express_install() {
 
         /* Create entry for all users   */
         if ($infoProfile) {
-            ExpressInstall::Create_EntryProfile_Users($infoProfile);
+            //ExpressInstall::Create_EntryProfile_Users($infoProfile);
         }//if_infoProfile
 
 
