@@ -470,3 +470,105 @@ div#fgroup_id_grp_AfterCompletion,
 div#fgroup_id_grp_NotDoneAfter {
     margin-top: 20px;
 }
+
+@media (max-width: 767px) {
+    .sel_users_left,
+    .sel_activities_left {
+        float: none;
+        width: 100%;
+        display: block;
+    }
+    .sel_users_right,
+    .sel_users_right {
+        float: none;
+        width: 100%;
+        display: block;
+    }
+
+    .sel_users_buttons,
+    .sel_activities_buttons {
+        float: none;
+        width: 100%;
+        display: block;
+    }
+
+    .sel_activities_left select,
+    .sel_activities_right select {
+        width: 100%;
+    }
+
+    .userselector .sel_users_left select {
+        width: 100%;
+    }
+    .userselector .sel_users_right select {
+        width: 100%;
+    }
+}
+
+@media (min-width: 850px) and (max-width: 978px) {
+    .sel_users_left,
+    .sel_activities_left {
+        float: none;
+        width: 100%;
+        display: block;
+    }
+    .sel_users_right,
+    .sel_users_right {
+        float: none;
+        width: 100%;
+        display: block;
+    }
+
+    .sel_users_buttons,
+    .sel_activities_buttons {
+        float: none;
+        width: 100%;
+        display: block;
+    }
+
+    .sel_activities_left select,
+    .sel_activities_right select {
+        width: 100%;
+    }
+
+    .userselector .sel_users_left select {
+        width: 100%;
+    }
+    .userselector .sel_users_right select {
+        width: 100%;
+    }
+}
+
+@media (min-width: 767px) and (max-width: 849px) {
+    .sel_users_left,
+    .sel_activities_left {
+        float: none;
+        width: 100%;
+        display: block;
+    }
+    .sel_users_right,
+    .sel_users_right {
+        float: none;
+        width: 100%;
+        display: block;
+    }
+
+    .sel_users_buttons,
+    .sel_activities_buttons {
+        float: none;
+        width: 100%;
+        display: block;
+    }
+
+    .sel_activities_left select,
+    .sel_activities_right select {
+        width: 100%;
+    }
+
+    .userselector .sel_users_left select {
+        width: 100%;
+    }
+    .userselector .sel_users_right select {
+        width: 100%;
+    }
+}
