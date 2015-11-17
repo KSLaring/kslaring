@@ -1715,21 +1715,7 @@ div.editor_atto_content .kitable3.table-lines td {
   .hero-unit .texts {
     margin-top: 5%;
   }
-  .block_courses_site_one {
-    float: none;
-    width: 100%;
-    display: block;
-  }
-  .block_courses_site_two {
-    float: none;
-    width: 100%;
-    display: block;
-  }
-  .block_courses_site_three {
-    float: none;
-    width: 100%;
-    display: block;
-  }
+
   .format-netcourse #page-content {
     padding: 0 10px;
     margin: 0 -10px;
@@ -1740,9 +1726,6 @@ div.editor_atto_content .kitable3.table-lines td {
   }
   .label_header {
     min-height: 70px;
-  }
-  .block_courses_site_type {
-    height: 80px;
   }
   #page-footer {
     margin-left: -20px;
@@ -1831,34 +1814,13 @@ div.editor_atto_content .kitable3.table-lines td {
   }
 }
 @media (min-width: 767px) and (max-width: 849px) {
-  .block_courses_site_one {
-    float: none;
-    width: 100%;
-    display: block;
-  }
-  .block_courses_site_two {
-    float: none;
-    width: 100%;
-    display: block;
-  }
-  .block_courses_site_three {
-    float: none;
-    width: 100%;
-    display: block;
-  }
   .label_header {
     min-height: 70px;
-  }
-  .block_courses_site_type {
-    height: 60px;
   }
 }
 @media (min-width: 850px) and (max-width: 978px) {
   .label_header {
     min-height: 100px;
-  }
-  .block_courses_site_type {
-    height: 80px;
   }
 }
 @media (max-width: 979px) {
@@ -1892,9 +1854,6 @@ div.editor_atto_content .kitable3.table-lines td {
 @media (min-width: 976px) and (max-width: 1090px) {
   .label_header {
     min-height: 100px;
-  }
-  .block_courses_site_type {
-    height: 90px;
   }
 }
 @media (min-width: 979px) {
