@@ -500,7 +500,7 @@ class CourseLocations {
             /* Add Search Criteria  */
             /* County       */
             if ($filter['county']) {
-                if ($sqlWhere) {
+                if (!$sqlWhere) {
                     $sqlWhere = " WHERE cl.levelzero = :county ";
                 }else {
                     $sqlWhere .= " AND cl.levelzero = :county ";
@@ -509,7 +509,7 @@ class CourseLocations {
 
             /* Municipality */
             if ($filter['muni']) {
-                if ($sqlWhere) {
+                if (!$sqlWhere) {
                     $sqlWhere = " WHERE cl.levelone = :muni ";
                 }else {
                     $sqlWhere .= " AND cl.levelone = :muni ";
@@ -518,7 +518,7 @@ class CourseLocations {
 
             /* Sector       */
             if ($filter['sector']) {
-                if ($sqlWhere) {
+                if (!$sqlWhere) {
                     $sqlWhere = " WHERE     cse.sectors 	LIKE '"     . $filter['sector'] . ",%'" .
                         " OR    cse.sectors  	LIKE '%,"   . $filter['sector'] . "' " .
                         " OR    cse.sectors 	LIKE '%,"   . $filter['sector'] . ",%'" .
@@ -533,7 +533,7 @@ class CourseLocations {
 
             /* Course       */
             if ($filter['course']) {
-                if ($sqlWhere) {
+                if (!$sqlWhere) {
                     $sqlWhere = 'WHERE c.fullname like "%' . $filter['course'] . '%"';
                 }else {
                     $sqlWhere .= 'AND c.fullname like "%' . $filter['course'] . '%"';
@@ -542,20 +542,20 @@ class CourseLocations {
 
             /* Date (Start Date???)        */
             if ($filter['fromDate'] && $filter['toDate']) {
-                if ($sqlWhere) {
+                if (!$sqlWhere) {
                     $sqlWhere = " WHERE c.startdate BETWEEN :fromDate AND :toDate ";
                 }else {
                     $sqlWhere .= " AND c.startdate BETWEEN :fromDate AND :toDate  ";
                 }//if_else
             }else {
                 if ($filter['fromDate']) {
-                    if ($sqlWhere) {
+                    if (!$sqlWhere) {
                         $sqlWhere = " WHERE c.startdate >= :fromDate ";
                     }else {
                         $sqlWhere .= " AND c.startdate >= :fromDate  ";
                     }//if_else
                 }else {
-                    if ($sqlWhere) {
+                    if (!$sqlWhere) {
                         $sqlWhere = " WHERE c.startdate <= :toDate ";
                     }else {
                         $sqlWhere .= " AND c.startdate <= :toDate  ";
