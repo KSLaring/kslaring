@@ -524,7 +524,7 @@ class CourseLocations {
                         " OR    cse.sectors 	LIKE '%,"   . $filter['sector'] . ",%'" .
                         " OR    cse.sectors 	= :sector ";
                 }else {
-                    $sqlWhere = " AND       cse.sectors 	LIKE '"     . $filter['sector'] . ",%'" .
+                    $sqlWhere .= " AND       cse.sectors 	LIKE '"     . $filter['sector'] . ",%'" .
                         " OR    cse.sectors  	LIKE '%,"   . $filter['sector'] . "' " .
                         " OR    cse.sectors 	LIKE '%,"   . $filter['sector'] . ",%'" .
                         " OR    cse.sectors 	= :sector ";
