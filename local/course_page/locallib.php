@@ -1575,10 +1575,9 @@ class course_page  {
                                     cl.name
                      FROM			{course_locations}	cl ";
             if ($myCompetence) {
-                $sqlWhere           = '';
                 if ($myCompetence->levelZero) {
                     /* Locations Connected with level zero  */
-                    if ($sqlWhere) {
+                    if (!$sqlWhere) {
                         $sqlWhere  = " WHERE cl.levelzero IN ($myCompetence->levelZero) ";
                     }else {
                         $sqlWhere .= " AND cl.levelzero IN ($myCompetence->levelZero) ";
@@ -1586,7 +1585,7 @@ class course_page  {
 
                     /* Locations Level One  */
                     if ($myCompetence->levelOne) {
-                        if ($sqlWhere) {
+                        if (!$sqlWhere) {
                             $sqlWhere  = " WHERE cl.levelone IN ($myCompetence->levelOne) ";
                         }else {
                             $sqlWhere .= " AND cl.levelone IN ($myCompetence->levelOne) ";
