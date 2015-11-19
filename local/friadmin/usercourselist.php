@@ -32,7 +32,7 @@ require_once(__DIR__ . '/../../config.php');
 $friadmin = new local_friadmin\friadmin();
 
 // Basic page init - set context and pagelayout.
-$friadmin->init_page();
+$friadmin->init_page('blocksatbottom');
 
 // In Moodle 2.7 renderers and renderables can't be loaded via namespaces.
 // Get the renderer for this plugin.
