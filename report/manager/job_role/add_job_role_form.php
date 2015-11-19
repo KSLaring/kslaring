@@ -44,17 +44,12 @@ class manager_add_job_role_form extends moodleform {
         /* Job Role */
         $m_form->addElement('header', 'name_area', get_string('job_role_name', 'report_manager'));
         $m_form->addElement('text', 'job_role_name', get_string('job_role_name', 'report_manager'));
-        if (isset($_COOKIE['jobRole']) && ($_COOKIE['jobRole'])) {
-            $m_form->setDefault('job_role_name',$_COOKIE['jobRole']);
-        }//if_jobRole
+
         $m_form->setType('job_role_name',PARAM_TEXT);
         $m_form->addRule('job_role_name','required','required', null, 'client');
 
         /* Add Industry Code (Required) */
         $m_form->addElement('text', 'industry_code', get_string('industry_code','report_manager'), $text_attr);
-        if (isset($_COOKIE['industryCode']) && ($_COOKIE['industryCode'])) {
-            $m_form->setDefault('industry_code',$_COOKIE['industryCode']);
-        }//if_industrycode
         $m_form->setType('industry_code',PARAM_TEXT);
         $m_form->addRule('industry_code','required','required', null, 'client');
 
