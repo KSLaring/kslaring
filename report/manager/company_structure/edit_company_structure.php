@@ -60,16 +60,16 @@ $levelZero  = COMPANY_STRUCTURE_LEVEL . 0;
 $levelOne   = COMPANY_STRUCTURE_LEVEL . 1;
 $levelTwo   = COMPANY_STRUCTURE_LEVEL . 2;
 $levelThree = COMPANY_STRUCTURE_LEVEL . 3;
-if (isset($parents[0])) {
+if (isset($parents[0]) && $parents[0]) {
     $params[$levelZero] = $parents[0];
 }
-if (isset($parents[1])) {
+if (isset($parents[1]) && $parents[1]) {
     $params[$levelOne] = $parents[1];
 }
-if (isset($parents[2])) {
+if (isset($parents[2]) && $parents[2]) {
     $params[$levelTwo] = $parents[2];
 }
-if (isset($parents[3])) {
+if (isset($parents[3]) && $parents[3]) {
     $params[$levelThree] = $params[3];
 }
 $returnUrl = new moodle_url('/report/manager/company_structure/company_structure.php',$params);
