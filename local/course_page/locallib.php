@@ -1575,6 +1575,7 @@ class course_page  {
                                     cl.name
                      FROM			{course_locations}	cl ";
             if ($myCompetence) {
+                $sqlWhere           = '';
                 if ($myCompetence->levelZero) {
                     /* Locations Connected with level zero  */
                     if ($sqlWhere) {
