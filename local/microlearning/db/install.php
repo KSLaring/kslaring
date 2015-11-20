@@ -295,6 +295,8 @@ class MicroInstall {
         $tbl_micro_deliveries->add_field('userid',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, null,null);
         /* Sent             --> True/False                                                  */
         $tbl_micro_deliveries->add_field('sent',XMLDB_TYPE_INTEGER,'1',null, XMLDB_NOTNULL, null,0);
+        /* Messages */
+        $tbl_micro_deliveries->add_field('message',XMLDB_TYPE_TEXT,null,null, null, null,null);
         /* Time to Send     --> Not Null                                                    */
         $tbl_micro_deliveries->add_field('timetosend',XMLDB_TYPE_INTEGER,'10',null, null, null,null);
         /* Time Sent        */
