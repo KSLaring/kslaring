@@ -57,7 +57,7 @@ function local_express_login_cron() {
     try {
         mtrace("Cron Express Login Ini");
         /* Plugin Info */
-        $pluginInfo     = get_config(' ');
+        $pluginInfo     = get_config('local_express_login');
 
         /* Trigger the Cron */
         if ($pluginInfo->express_cron_active) {
