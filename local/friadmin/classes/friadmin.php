@@ -93,12 +93,12 @@ class friadmin {
      * Description
      * change the logical to check if the user is superuser or not
      */
-    public function init_page() {
+    public function init_page($pagelayout = 'standard')  {
         global $PAGE;
 
         $this->context = context_system::instance();
         $PAGE->set_context($this->context);
-        $PAGE->set_pagelayout('standard');
+        $PAGE->set_pagelayout($pagelayout);
         if (has_capability('block/frikomport:view', $this->context)) {
             $this->superuser = true;
         } else {
@@ -179,7 +179,6 @@ class friadmin {
         $PAGE->set_url($data->url);
         $PAGE->set_docs_path('');
         $PAGE->set_title($data->title);
-        $PAGE->set_pagelayout('blocksatbottom');
 
         $PAGE->navbar->add(get_string('pluginname', 'local_friadmin'));
         $PAGE->navbar->add($data->title);
