@@ -138,7 +138,7 @@ class Express_Cron {
             }//if_rdo
         }catch (Exception $ex) {
             /* Write Log */
-            $dbLog  = userdate(time(),'%d.%m.%Y', 99, false). ' Express Login Cron Error - Auto Express . ' . "\n";
+            $dbLog  = userdate(time(),'%d.%m.%Y', 99, false). ' Express Login Cron Error - Auto Express (Insert) . ' . "\n";
             $dbLog .= 'Error: ' . $ex->getMessage() . "\n\n\n";
             error_log($dbLog, 3, $CFG->dataroot . "/Express_Login_Cron.log");
 
@@ -271,7 +271,7 @@ class Express_Cron {
      */
     private static function generateSecurityPhrase($userId) {
         /* Variables        */
-        global $DB;
+        global $DB,$CFG;
         /* Ticket User      */
         $ticket = null;
         /* Token            */
@@ -295,6 +295,11 @@ class Express_Cron {
 
             return $remind;
         }catch (Exception $ex) {
+            /* Write Log */
+            $dbLog  = userdate(time(),'%d.%m.%Y', 99, false). ' Express Login Cron Error - Auto Express (Phrase) . ' . "\n";
+            $dbLog .= 'Error: ' . $ex->getMessage() . "\n\n\n";
+            error_log($dbLog, 3, $CFG->dataroot . "/Express_Login_Cron.log");
+
             throw $ex;
         }//try_catch
     }//generateSecurityPhrase
@@ -411,7 +416,7 @@ class Express_Cron {
      */
     private static function UpdateDeliveries_MicroLearning($userId) {
         /* Variables    */
-        global $DB;
+        global $DB,$CFG;
         $dbMan          = null;
         $time           = null;
 
@@ -443,6 +448,11 @@ class Express_Cron {
                 }//if_Rdo
             }//if_table_exists
         }catch (Exception $ex) {
+            /* Write Log */
+            $dbLog  = userdate(time(),'%d.%m.%Y', 99, false). ' Express Login Cron Error - Auto Express (Micro) . ' . "\n";
+            $dbLog .= 'Error: ' . $ex->getMessage() . "\n\n\n";
+            error_log($dbLog, 3, $CFG->dataroot . "/Express_Login_Cron.log");
+
             throw $ex;
         }//try_catch
     }//UpdateDeliveries_MicroLearning
