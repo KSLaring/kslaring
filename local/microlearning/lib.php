@@ -69,6 +69,7 @@ function local_microlearning_cron() {
     /* Plugins Info */
     $pluginInfo     = get_config('local_microlearning');
 
+    mtrace('HOLA MICROLEARNING FBV');
     /* Check if the cron is Activate    */
     if ($pluginInfo->micro_cron_active) {
         require_once('mode/calendar/calendarcronlib.php');
