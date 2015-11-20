@@ -104,6 +104,75 @@ class TrackerManager {
     }//GetUserTracker
 
     /**
+     * @param           $courseId
+     * @param           $userId
+     *
+     * @return          bool
+     * @throws          Exception
+     *
+     * @creationDate    20/11/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Unenrol user from the course
+     */
+    public static function Unenrol_FromCourse($courseId,$userId) {
+        /* Variables    */
+        global $DB;
+        $trans  = null;
+        $sql    = null;
+        $params = null;
+        $rdo    = null;
+        $plugin = null;
+        $exit   = true;
+
+        /* Start Transaction    */
+        $trans = $DB->start_delegated_transaction();
+
+        try {
+            /* Get Instances    */
+            /* Search Criteria  */
+            $params = array();
+            $params['course'] = $courseId;
+            $params['user']   = $userId;
+
+            /* Sql Instruction  */
+            $sql = " SELECT		DISTINCT 	e.id,
+                                            e.enrol,
+                                            e.courseid
+                     FROM		{enrol}				e
+                        JOIN	{user_enrolments}	ue	ON 	ue.enrolid 	= e.id
+                                                        AND	ue.status	= 0
+                                                        AND	ue.userid	= :user
+                     WHERE		e.courseid = :course
+                        AND		e.status   = 0 ";
+
+            /* Execute  */
+            $rdo = $DB->get_records_sql($sql,$params);
+            if ($rdo) {
+                foreach($rdo as $instance) {
+                    $plugin     = enrol_get_plugin($instance->enrol);
+                    $plugin->unenrol_user($instance,$userId);
+                }
+
+                $exit = true;
+            }else {
+                $exit = false;
+            }//if_rdo
+
+            /* Commit   */
+            $trans->allow_commit();
+
+            return $exit;
+        }catch (Exception $ex) {
+            /* Rollback */
+            $trans->rollback($ex);
+
+            throw $ex;
+        }//try_catch
+    }//Unenrol_FromCourse
+
+    /**
      * @param           $trackerUser
      * @return          string
      * @throws          Exception
@@ -393,7 +462,6 @@ class TrackerManager {
             $sql = " SELECT		uicd.companyid,
                                 rgc.industrycode,
                                 rgc.name,
-                                uicd.jobroles,
                                 IF(uicd.jobroles,uicd.jobroles,0) as 'jobroles'
                      FROM		{user_info_competence_data} 	uicd
                         JOIN	{report_gen_companydata}		rgc		ON rgc.id = uicd.companyid
@@ -459,7 +527,7 @@ class TrackerManager {
             $sql = " SELECT	    o.id,
                                 o.fullname,
                                 GROUP_CONCAT(DISTINCT oucu.courseid ORDER BY oucu.courseid SEPARATOR ',') as 'courses',
-                                GROUP_CONCAT(DISTINCT jr.name ORDER BY jr.name SEPARATOR ',') as 'job_roles',
+                                GROUP_CONCAT(DISTINCT jr.name ORDER BY jr.name SEPARATOR ',')             as 'job_roles',
                                 rgo.expirationperiod
                      FROM		{grade_outcomes}              o
                         JOIN 	{grade_outcomes_courses}      oucu	    ON 	  	oucu.outcomeid  = o.id
@@ -710,6 +778,12 @@ class TrackerManager {
      *                          --> id
      *                          --> name
      *                          --> completed
+     *
+     * @updateDate      20/11/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Check if the user can unenrol from the course
      */
     private static function GetTrackerNotConnected($user_id,$competence) {
         /* Variables    */
@@ -718,8 +792,11 @@ class TrackerManager {
         $completed      = array();
         $not_completed  = array();
         $info           = null;
+        $user           = null;
 
         try {
+            $user = get_complete_user_data('id',$user_id);
+
             /* Get Courses Not Connected    */
             foreach ($competence as $levelThree) {
                 if ($levelThree->outcomes) {
@@ -733,17 +810,24 @@ class TrackerManager {
 
             /* Search Criteria */
             $params = array();
-            $params['user'] = $user_id;
+            $params['user']     = $user_id;
+            $params['ue_user']  = $user_id;
 
             /* SQL Instruction  */
             $sql = " SELECT		c.id,
                                 c.fullname,
-                                IF (cc.timecompleted,cc.timecompleted,0) as 'completed'
+                                IF (cc.timecompleted,cc.timecompleted,0)                                        as 'completed',
+                                GROUP_CONCAT(DISTINCT CONCAT(e.enrol,'#',e.id) ORDER BY e.enrol SEPARATOR ',')  as 'enrolments'
                      FROM		{course}				c
-
-                        JOIN	{course_completions}	cc	ON	cc.course = c.id
-                                                            AND cc.userid = :user
+                        JOIN	{course_completions}    cc	ON	cc.course   = c.id
+                                                            AND cc.userid   = :user
+                        JOIN	{enrol} 				e	ON 	e.courseid 	= c.id
+                                                            AND	e.status 	= 0
+                        JOIN	{user_enrolments}		ue	ON 	ue.enrolid 	= e.id
+                                                            AND	ue.status	= 0
+                                                            AND ue.userid   = :ue_user
                      WHERE		c.id NOT IN ($connected)
+                     GROUP BY	c.id
                      ORDER BY	c.fullname ";
 
             /* Execute   */
@@ -762,6 +846,9 @@ class TrackerManager {
                     }else {
                         $not_completed[$instance->id] = $info;
                     }//if_time_Completed
+
+
+                    $info->unEnrol = self::Check_CanUnenrol(explode(',',$instance->enrolments),$user,$instance->id);
                 }//for_instance
             }//if_rdo
 
@@ -770,6 +857,54 @@ class TrackerManager {
             throw $ex;
         }//try_Catch
     }//GetTrackerNotConnected
+
+    /**
+     * @param           $enrolMethods
+     * @param           $user
+     * @param           $courseId
+     *
+     * @return          bool
+     * @throws          Exception
+     *
+     * @creationDate    20/11/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Check if the user can enrol by himsef/herslef
+     */
+    private static function Check_CanUnenrol($enrolMethods,$user,$courseId) {
+        /* Variables    */
+        global $DB;
+        $method         = null;
+        $instance       = null;
+        $plugin         = null;
+        $context        = CONTEXT_COURSE::instance($courseId);
+        $unEnrol        = true;
+
+        try {
+            foreach ($enrolMethods as $enrol) {
+                $method = explode('#',$enrol);
+
+                $plugin = enrol_get_plugin($method[0]);
+                $instance = new stdClass();
+                $instance->id       = $method[1];
+                $instance->courseid = $courseId;
+                $instance->enrol    = $method[0];
+
+                $capability = 'enrol/' . $method[0] . ':unenrol';
+                if ($plugin->allow_unenrol_user($instance,$user) && has_capability($capability, $context)) {
+                    $unEnrol  = $unEnrol && true;
+                }else {
+                    $unEnrol = false;
+                }
+
+            }
+
+            return $unEnrol;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_cathc
+    }//Check_CanUnenrol
 
     /**
      * @param           $job_roles
@@ -1130,12 +1265,19 @@ class TrackerManager {
      *
      * Description
      * Add the content to individual courses table - Screen Format
+     *
+     * @updateDate      20/11/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Add the link to unerol
      */
     private static function AddContent_IndividualCoursesTable($completed,$not_completed) {
         /* Variables    */
         $content    = '';
         $url        = null;
         $strUrl     = null;
+        $urlUnEnrol = new moodle_url('/report/manager/tracker/unenrol.php');
 
         try {
             $content .= html_writer::start_tag('table');
@@ -1160,7 +1302,14 @@ class TrackerManager {
                             $content .= html_writer::end_tag('td');
                             /* Valid        */
                             $content .= html_writer::start_tag('td',array('class' => 'status'));
-                                $content .= '&nbsp;';
+                                /* Unenrol allowed --> add link to unenrol */
+                                if ($course->unEnrol) {
+                                    $urlUnEnrol->param('id',$course->id);
+                                    $strUrl  = '<a href="'.$urlUnEnrol .'">'. get_string('unenrol','report_manager') .'</a>';
+                                    $content .= $strUrl;
+                                }else {
+                                    $content .= '&nbsp;';
+                                }//if_unenrol
                             $content .= html_writer::end_tag('td');
                             /* Empty Col    */
                             $url     = new moodle_url('/course/view.php',array('id'=>$course->id));
@@ -1193,7 +1342,14 @@ class TrackerManager {
                             $content .= html_writer::end_tag('td');
                             /* Valid        */
                             $content .= html_writer::start_tag('td',array('class' => 'status'));
-                                $content .= '&nbsp;';
+                                /* Unenrol allowed --> add link to unenrol */
+                                if ($course->unEnrol) {
+                                    $urlUnEnrol->param('id',$course->id);
+                                    $strUrl  = '<a href="'.$urlUnEnrol .'">'. get_string('unenrol','report_manager') .'</a>';
+                                    $content .= $strUrl;
+                                }else {
+                                    $content .= '&nbsp;';
+                                }//if_unenrol
                             $content .= html_writer::end_tag('td');
                             /* Empty Col    */
                             $url     = new moodle_url('/course/view.php',array('id'=>$course->id));
