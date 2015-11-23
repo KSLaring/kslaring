@@ -11,8 +11,8 @@
  * @author          efaktor     (fbv)
  */
 
-$string['pluginname']   = 'Min side';
-$string['name']         = 'Min side';
+$string['pluginname']   = 'Kompetansestyring';
+$string['name']         = 'Kompetansestyring';
 
-$string['tracker_manager:addinstance']      = 'Legg til en ny Min side-blokk';
-$string['tracker_manager:myaddinstance']    = 'Legg til en ny Min side-blokk';
+$string['tracker_manager:addinstance']      = 'Legg til en ny blokk med kompetansestyring';
+$string['tracker_manager:myaddinstance']    = 'Legg til en ny blokk med kompetansestyring';
