@@ -16,6 +16,7 @@ require_once('locallib.php');
 $course_id          = required_param('id',PARAM_INT);
 $edit               = optional_param('edit', -1, PARAM_BOOL);
 $show               = optional_param('show', 0, PARAM_INT);
+$start              = optional_param('start',1,PARAM_INT);
 $course             = get_course($course_id);
 $context            = CONTEXT_COURSE::instance($course_id);
 $url                = new moodle_url('/local/course_page/home_page.php',array('id' => $course_id));
@@ -90,10 +91,22 @@ if ($show) {
     $form->display();
     echo $OUTPUT->footer();
 }else {
-    $format_options = course_page::getFormatFields($course->id);
-    $renderer = $PAGE->get_renderer('local_course_page');
-    echo $renderer->display_home_page($course,$format_options);
-    echo $renderer->footer();
+    if ($start) {
+        if (course_page::IsUserEnrol($course->id,$USER->id)) {
+            $url = new moodle_url('/course/view.php',array('id'=>$course->id,'start' =>1));
+            redirect($url);
+        }else {
+            $format_options = course_page::getFormatFields($course->id);
+            $renderer = $PAGE->get_renderer('local_course_page');
+            echo $renderer->display_home_page($course,$format_options);
+            echo $renderer->footer();
+        }
+    }else {
+        $format_options = course_page::getFormatFields($course->id);
+        $renderer = $PAGE->get_renderer('local_course_page');
+        echo $renderer->display_home_page($course,$format_options);
+        echo $renderer->footer();
+    }
 }//if_Edit
 
 

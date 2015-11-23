@@ -1102,7 +1102,7 @@ class TrackerManager {
                             $content .= '&nbsp;';
                         $content .= html_writer::end_tag('td');
                         /* Empty Col    */
-                        $url     = new moodle_url('/course/view.php',array('id'=>$course->id));
+                        $url     = new moodle_url('/course/view.php',array('id'=>$course->id,'start' =>1));
                         $strUrl  = '<a href="'.$url .'">'. get_string('start_course','local_tracker_manager') .'</a>';
                         $content .= html_writer::start_tag('td',array('class' => 'start'));
                             $content .= $strUrl;
@@ -1179,7 +1179,7 @@ class TrackerManager {
                             $content .= userdate($ts,'%d.%m.%Y', 99, false);
                         $content .= html_writer::end_tag('td');
                         /* Empty Col    */
-                        $url     = new moodle_url('/course/view.php',array('id'=>$course->id));
+                        $url     = new moodle_url('/course/view.php',array('id'=>$course->id,'start'=>1));
                         $strUrl  = '<a href="'.$url .'">'. get_string('start_course','local_tracker_manager') .'</a>';
                         $content .= html_writer::start_tag('td',array('class' => 'start'));
                             $content .= $strUrl;
@@ -1312,7 +1312,7 @@ class TrackerManager {
                                 }//if_unenrol
                             $content .= html_writer::end_tag('td');
                             /* Empty Col    */
-                            $url     = new moodle_url('/course/view.php',array('id'=>$course->id));
+                            $url     = new moodle_url('/course/view.php',array('id'=>$course->id,'start'=>1));
                             $strUrl  = '<a href="'.$url .'">'. get_string('start_course','local_tracker_manager') .'</a>';
                             $content .= html_writer::start_tag('td',array('class' => 'start'));
                                 $content .= $strUrl;
@@ -1352,7 +1352,7 @@ class TrackerManager {
                                 }//if_unenrol
                             $content .= html_writer::end_tag('td');
                             /* Empty Col    */
-                            $url     = new moodle_url('/course/view.php',array('id'=>$course->id));
+                            $url     = new moodle_url('/course/view.php',array('id'=>$course->id,'start'=>1));
                             $strUrl  = '<a href="'.$url .'">'. get_string('start_course','local_tracker_manager') .'</a>';
                             $content .= html_writer::start_tag('td',array('class' => 'start'));
                                 $content .= $strUrl;

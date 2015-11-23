@@ -27,9 +27,13 @@ class local_course_page_renderer extends plugin_renderer_base {
         $context = CONTEXT_COURSE::instance($course->id);
 
         $course->summary = file_rewrite_pluginfile_urls($course->summary, 'pluginfile.php', $context->id, 'course', 'summary',null);
-        $home_summary = $format_options['homesummary']->value;
-        $home_summary = course_page::fileRewritePluginfileUrls_HomePage($home_summary, 'pluginfile.php', $context->id, 'course', 'homesummary',null);
-        $format_options['homesummary']->value = $home_summary;
+        if (isset($format_options['homesummary'])) {
+            $home_summary = $format_options['homesummary']->value;
+            $home_summary = course_page::fileRewritePluginfileUrls_HomePage($home_summary, 'pluginfile.php', $context->id, 'course', 'homesummary',null);
+            $format_options['homesummary']->value = $home_summary;
+        }else {
+            $format_options['homesummary'] = null;
+        }
 
         $output .= html_writer::start_tag('div',array('class' => 'home_page'));
             /* Header   */
@@ -84,13 +88,25 @@ class local_course_page_renderer extends plugin_renderer_base {
     private function addBlockOne_HomePage($course,$format_options) {
         /* Variables    */
         $block_one = '';
+        $homeSummary    = null;
+        $pageVideo      = null;
+        $pageGraphics   = null;
 
         $block_one .= html_writer::start_tag('div',array('class' => 'home_page_block_one'));
             /* Add Short Description  */
             $pagegraphicstitle = !empty($format_options['pagegraphicstitle']) ? $format_options['pagegraphicstitle']->value : '';
-            $block_one .= $this->addSummary_HomePage($course,$format_options['pagegraphics'],$pagegraphicstitle);
+            if (isset($format_options['pagegraphics'])) {
+                $pageGraphics = $format_options['pagegraphics'];
+            }
+            $block_one .= $this->addSummary_HomePage($course,$pageGraphics,$pagegraphicstitle);
             /* Add Home Description / Video */
-            $block_one .= $this->addDescription_HomePage($format_options['homesummary'],$format_options['pagevideo']);
+            if (isset($format_options['homesummary'])) {
+                $homeSummary = $format_options['homesummary'];
+            }
+            if (isset($format_options['pagevideo'])) {
+                $pageVideo = $format_options['pagevideo'];
+            }
+            $block_one .= $this->addDescription_HomePage($homeSummary,$pageVideo);
         $block_one .= html_writer::end_tag('div');//home_page_block_one
 
         return $block_one;
@@ -116,11 +132,13 @@ class local_course_page_renderer extends plugin_renderer_base {
         $out = '';
 
         /* Graphics */
-        if ($home_graphics->value) {
-            $url_img = course_page::getUrlPageGraphicsVideo($home_graphics->value);
-            $img = '<img src="'  . $url_img . '" class="img-responsive"' . ' title="' . $home_graphicstitle . '" alt ="' . $home_graphicstitle . '"></br>';
-            $out .= $img;
-        }//if_graphics
+        if ($home_graphics) {
+            if ($home_graphics->value) {
+                $url_img = course_page::getUrlPageGraphicsVideo($home_graphics->value);
+                $img = '<img src="'  . $url_img . '" class="img-responsive"' . ' title="' . $home_graphicstitle . '" alt ="' . $home_graphicstitle . '"></br>';
+                $out .= $img;
+            }//if_graphics
+        }//home_graphics
 
         $out .=  '<p>' . trim($course->summary) . '</p>';
 
@@ -160,21 +178,26 @@ class local_course_page_renderer extends plugin_renderer_base {
 
         $out .=  '<h3>' . get_string('home_about','local_course_page') . '</h3>';
 
-        $out .=  '<p>' . $home_summary->value . '</p>';
+        if ($home_summary) {
+            $out .=  '<p>' . $home_summary->value . '</p>';
+        }
+
         /* Graphics */
-        if ($video->value) {
-            $url_video = course_page::getUrlPageGraphicsVideo($video->value);
-            if ($url_video) {
-                $media_renderer = $this->page->get_renderer('core', 'media');
-                $embed_options = array(
-                    core_media::OPTION_TRUSTED => true,
-                    core_media::OPTION_BLOCK => true,
-                );
-                // Media (audio/video) file.
-                $code = $media_renderer->embed_url($url_video, '', 0, 0, $embed_options);
-                $out .= $code;
-            }//if_url_video
-        }//if_value
+        if ($video) {
+            if ($video->value) {
+                $url_video = course_page::getUrlPageGraphicsVideo($video->value);
+                if ($url_video) {
+                    $media_renderer = $this->page->get_renderer('core', 'media');
+                    $embed_options = array(
+                        core_media::OPTION_TRUSTED => true,
+                        core_media::OPTION_BLOCK => true,
+                    );
+                    // Media (audio/video) file.
+                    $code = $media_renderer->embed_url($url_video, '', 0, 0, $embed_options);
+                    $out .= $code;
+                }//if_url_video
+            }//if_value
+        }//if_video
 
         return $out;
     }//addDescription_HomePage

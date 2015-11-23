@@ -173,7 +173,7 @@ class ClassroomBlock {
                     /* Check if it's visible    */
                     if (array_key_exists('homevisible',$formatOptions)) {
                         if ($formatOptions['homevisible']) {
-                            $urlHomePage = new moodle_url('/local/course_page/home_page.php',array('id' => $courseId));
+                            $urlHomePage = new moodle_url('/local/course_page/home_page.php',array('id' => $courseId,'start' => 0));
                             /* Title    */
                             $content .= html_writer::start_div('summary_content');
                                 $content .= '<a href="' . $urlHomePage . '">' . get_string('home_page','local_course_page') . '</a>';
