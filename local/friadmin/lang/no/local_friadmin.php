@@ -18,7 +18,7 @@
 $string['pluginname']           = 'Frikomport';
 
 $string['courselist_title']     = 'Frikomport tilgjengelige kurs';
-$string['coursetable_title']    = 'Kursoversikt';
+$string['coursetable_title']    = 'Kursdetaljer';
 $string['course_courseid']      = 'Kurs ID';
 $string['course_name']          = 'Navn';
 $string['course_summary']       = 'Beskrivelse';
@@ -38,7 +38,7 @@ $string['course_priceexternal'] = 'Eksternpris';
 $string['course_link']          = 'Lenke';
 $string['course_edit']          = '';
 
-$string['usercourselist_title']     = 'Frikomport tilgjengelige kurs';
+$string['usercourselist_title']     = 'Tilgjengelige kurs';
 $string['usercoursetable_title']    = 'Kursoversikt';
 $string['usercourse_courseid']      = 'Kurs ID';
 $string['usercourse_name']          = 'Navn';
@@ -77,7 +77,7 @@ $string['coursedetail_participantlist'] = 'Last ned deltakerliste';
 $string['coursedetail_duplicate']       = 'Dupliser';
 $string['coursedetail_email']           = 'Send epost';
 
-$string['coursetemplate_title']         = 'Frikomport - Legg til fra kursmal';
+$string['coursetemplate_title']         = 'Legg til fra en kursmal';
 $string['coursetemplate_subtitle']      = 'Opprett et kurs fra en kursmal.';
 $string['coursetemplate_cat']           = 'Kurskategori for kursmaler';
 $string['coursetemplate_cat_desc']      = 'Vennligst velg kurskategorien hvor alle kursmaler skal lagres.';
@@ -114,10 +114,10 @@ $string['edit'] = 'Endre kurs';
 $string['show'] = 'Vis detaljer';
 
 $string['naddcourse']           = 'Opprett nytt kurs';
-$string['my_categories']        = 'Your course categories';
-$string['my_categories_help']   = 'This setting determines the category in which the course will appear in the list of courses.';
-$string['info_new_course']      = 'Before starting to edit a new course, you must determine in which category the course will belong to. You are only allowed create new courses in the categories from the list.';
-$string['sel_category']         = 'Select one category ...';
+$string['my_categories']        = 'Dine kurskategorier';
+$string['my_categories_help']   = 'Denne innstillingen bestemmer hvilken kurskategori kurset skal plasseres i.';
+$string['info_new_course']      = 'Før du endrer på et nytt kurs må du bestemme hvilken kurskategori kurset skal plasseres i. Du får bare plassert kurset i kurskategoriene som vises i denne listen.';
+$string['sel_category']         = 'Velg en kategori...';
 
 /* ********************** */
 /* Course Location Plugin */
@@ -164,7 +164,7 @@ $string['location_map']         = 'URL til kart';
 $string['location_post']        = 'Postadresse';
 $string['location_contact']     = 'Kontaktperson';
 $string['location_phone']       = 'Kontakt-tlf';
-$string['location_mail']        = 'Komtakt epost';
+$string['location_mail']        = 'Kontakt epost';
 $string['location_contact_inf'] = 'Kontakt';
 $string['location_comments']    = 'Kommentarer';
 
