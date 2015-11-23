@@ -398,40 +398,40 @@ $string['remove_all']   = 'Fjern alle';
  * Description
  * Add new language strings for 'Competence Data Import' functionality
  */
-$string['upload_competence_imp'] = 'Upload competence';
-$string['header_competence_imp']        = 'Upload competence data';
-$string['header_competence_imp_help']   = 'Upload competence data for existing users from file. Info connected with the file???';
-$string['title_processing']             = 'Importing competence data for existing users. The process can take long time.';
-$string['err_imp_user']                 = 'User not exist';
-$string['err_wk_none_match']            = 'There is none match for this workplace.';
-$string['err_jr_none_match']            = 'There is none match for this job role. Check name, industry code, workplace, sector... connected with';
+$string['upload_competence_imp'] = 'Import brukeres arbeidssteder og jobbroller';
+$string['header_competence_imp']        = 'Importér arbeidssteds- og jobbrolledata';
+$string['header_competence_imp_help']   = 'Importerer arbeidssteds- og jobbrolledata fra en fil for eksisterende brukere. Informasjon koblet med filen??';
+$string['title_processing']             = 'Importerer data for eksisterende brukere. Prosessen kan ta lang tid.';
+$string['err_imp_user']                 = 'Brukeren eksisterer ikke';
+$string['err_wk_none_match']            = 'Det er ingen treff på dette arbeidsstedet.';
+$string['err_jr_none_match']            = 'Det er ingen treff for denne jobbrollen. Sjekk navn, org-enhetskode, arbeidssted og sektor... koblet med';
 
-$string['match_wk']         = 'Matching process for workplaces';
+$string['match_wk']         = 'Arbeider med kobling mot arbeidssteder';
 $string['match_wk_help']    = '???';
-$string['match_jr']         = 'Matching process for job roles';
+$string['match_jr']         = 'Arbeider med kobling mot jobbroller';
 $string['match_jr_help']    = '???';
 
-$string['to_match']         = 'To Match';
-$string['po_match']         = 'Possible Matches';
-$string['not_sure']         = 'Not sure';
-$string['btn_match']        = 'Match';
+$string['to_match']         = 'Skal kobles';
+$string['po_match']         = 'Mulige koblinger';
+$string['not_sure']         = 'Ikke sikker';
+$string['btn_match']        = 'Koble';
 
-$string['icd_line']     = 'Line';
-$string['icd_user']     = 'Username';
-$string['icd_wk']       = 'Workplace';
-$string['icd_wk_ic']    = 'Workplace IC';
-$string['icd_sector']   = 'Sector';
-$string['icd_jr']       = 'Jobrole';
-$string['icd_jr_ic']    = 'Jobrole IC';
-$string['icd_msg']      = 'Reason';
+$string['icd_line']     = 'Linje';
+$string['icd_user']     = 'Brukernavn';
+$string['icd_wk']       = 'Arbeidssted';
+$string['icd_wk_ic']    = 'Arbeidsstedskode';
+$string['icd_sector']   = 'Sektor';
+$string['icd_jr']       = 'Jobbrolle';
+$string['icd_jr_ic']    = 'Jobbrollekode';
+$string['icd_msg']      = 'Årsak';
 
-$string['icd_not_imported']     = 'The import process has finished with some issues. The next records could not be imported.';
-$string['icd_not_imported_adv'] = 'Please, you should review the <strong>download file</strong>, where you can file all records that have not been imported and the reason.';
-$string['icd_imported']         = 'All the competence data have been imported successfully.';
-$string['icd_total_not_imp']    = '<strong style="color: red;">Total Errors: {$a}</strong></br>';
+$string['icd_not_imported']     = 'Importprosessen er fullført med noen problemer. De neste radene kunne ikke importeres.';
+$string['icd_not_imported_adv'] = 'Vennligs se nøye gjennom  <strong>nedlastet fil</strong>, hvor du finner alle radene som ikke kunne importeres og årsakene til dette.';
+$string['icd_imported']         = 'Alle arbeidssteder og jobbroller ble importert uten problemer.';
+$string['icd_total_not_imp']    = '<strong style="color: red;">Totalt antall feil: {$a}</strong></br>';
 
 $string['icd_file_name']        = 'CompetenceDataNotImported';
-$string['icd_download']         = 'Download File';
+$string['icd_download']         = 'Last ned fil';
 
 /**
  * @updateDate  14/10/2015
@@ -440,11 +440,11 @@ $string['icd_download']         = 'Download File';
  * Description
  * Add new language strings for 'Super Users' functionality
  */
-$string['spuser'] = 'Super Users';
+$string['spuser'] = 'Superbrukere';
 
-$string['pot_users']                = 'Potential users';
-$string['pot_users_matching']       = 'Potential matching users';
-$string['current_users']            = 'Current users';
-$string['current_users_matching']   = 'Current users matching';
-$string['no_users']                 = 'No super users';
-$string['sp_level_required']        = 'At least one level is required';
+$string['pot_users']                = 'Potensielle brukere';
+$string['pot_users_matching']       = 'Potensielt matchende brukere';
+$string['current_users']            = 'Gjeldende brukere';
+$string['current_users_matching']   = 'Matching av gjeldende brukere';
+$string['no_users']                 = 'Ingen superbrukere';
+$string['sp_level_required']        = 'Det kreves i det minste ett nivå';
