@@ -22,10 +22,10 @@ $string['pluginname_help']      = 'Brukerens kompetanseprofil inneholder informa
 $string['competence_profile']   = 'Kompetanseprofil';
 
 $string['profile_desc'] = 'Dine arbeidssteder og jobbroller.<br >Vennligst legg til minst ett arbeidssted med tilhørende jobbrolle. Klikk på "Opprett ny" for å gjøre dette.';
-$string['lnk_update']   = 'Oppdater mine arbeidssteder og jobbroller';
+$string['lnk_update']   = 'Endre mine arbeidssteder og jobbroller';
 $string['lnk_edit']     = 'Rediger';
 $string['lnk_delete']   = 'Slett';
-$string['lnk_view']     = 'Vis mine kompetanser';
+$string['lnk_view']     = 'Vis mine arbeidssteder og jobbroller';
 
 $string['my_companies'] = 'Arbeidssteder';
 $string['my_job_roles'] = 'Jobbroller';
