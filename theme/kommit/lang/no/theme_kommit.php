@@ -72,7 +72,7 @@ $string['adminlogin']      = 'admin login';
 
 /* Hidden blocks area */
 $string['visibleadminonly'] = 'Blocks moved into the area below will only be seen by teachers and admins.';
-$string['adminmenuentry'] = 'Bottom blocks';
+$string['adminmenuentry'] = 'Rød sone';
 
 /* Capabilities */
 $string['kommit:viewhiddenblocks'] = 'View hidden blocks';
