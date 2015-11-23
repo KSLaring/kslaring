@@ -81,7 +81,7 @@ $string['ERROR_EXPRESS_LINK_USER_NOT_VALID']        = 'Ikke gyldig bruker';
 $string['ERROR_EXPRESS_PIN_NOT_VALID']              = 'Ugyldig PIN-kode. Du har igjen {$a} forsøk';
 
 $string['clipboardDiv'] = 'Hurtigtilgangslenken din har blitt kopiert til utklippstavlen din. Alt du trenger å gjøre er å trykke på ctrl+v for å lime den inn der du ønsker.';
-$string['bookmarkDiv']  = 'For å legge til hurtigtilgang som et bokmerke, vennligst dra og slipp <strong>{$a}</strong> til bokmerkene.';
+$string['bookmarkDiv']  = '<p>For å legge til hurtigtilgangen din som et bokmerke kan du nå klikke på lenken under og dra den over på bokmerkeraden i nettleseren din eller ut på skrivebordet. Da lages det en snarvei som du kan klikke på neste gang du skal logge inn kun med PIN-kode.</p><p>Klikk og dra denne lenken til bokmerkeraden --> {$a}</p>';
 
 $string['err_express_access'] = 'Du har ikke høye nok rettigheter til å generere nye pin-koder.';
 
@@ -91,18 +91,13 @@ $string['cron_deactivate']          = 'Deaktivert';
 
 $string['express_subject']        = '{$a}: Pin- og hurtiglogin-lenker generert';
 $string['express_body']           = '<p>Hei {$a->name},</p>
-<p>KS Læring (https://kurs.kommit.no) utvikles og forbedres kontinuerlig. Vi har nå forenklet innloggingen til KS Læring, slik at det ikke er nødvendig å bruke MinId hver gang du skal bruke KS Læring.</p>
-<p>Den forenklede innloggingen til KS Læring baserer seg på at du benytter en personlig snarvei (URL) som kan lagres som favoritt i nettleseren din, samt en pinkode som er automatisk generert til deg. Du kan selv bytte pinkoden i din brukerprofil.</p>
+<p>Kursportalen utvikles og forbedres kontinuerlig. Vi har nå forenklet innloggingen, slik at det ikke er nødvendig å bruke MinId eller brukernavn/passord hver gang du skal bruke portalen.</p>
+<p>Den forenklede innloggingen til kursportalen baserer seg på at du benytter en personlig snarvei (URL) som kan lagres som favoritt i nettleseren din, samt en pinkode som er automatisk generert til deg. Du kan selv bytte pinkoden i din brukerprofil.</p>
  
 <p>Din automatisk genererte pinkode er: <strong>{$a->express}</strong></p>
  
-<p>eLæring som viser hvordan du tar i bruk pinkode: https://kurs.kommit.no/mod/page/view.php?id=2478</p>
-<p>Du mottar denne eposten fordi du er registret som bruker på KS Læring. Dette er enten fordi du selv har opprettet en brukertilgang, eller fordi din kommune har inngått avtale om bruk.<br >
-Har du spørsmål om hvordan du bruker KS Læring, ta kontakt med vår brukerstøtte: kslaering@ks.no</p>
-
 <p>Med vennlig hilsen<br />
-Aleksander Øines<br />
-KS KommIT</p>';
+Portaladministrator</p>';
 
 $string['micro_message']          = '<p>Siden du nå har byttet pin-kode (og dermed også hurtigloginlenken) sender vi deg om igjen alle mikrolærings-eposter du har fått tidligere hvor du IKKE har gjort aktivitene ennå.</p>';
 
