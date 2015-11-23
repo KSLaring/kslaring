@@ -12,11 +12,11 @@
  * @author          eFaktor     (fbv)
  *
  */
-$string['pluginname']           = 'Municipality';
-$string['profile_type']         = 'Municipality';
+$string['pluginname']           = 'Kommunelogo';
+$string['profile_type']         = 'Kommunelogo';
 
-$string['county']                           = 'County';
-$string['sel_county']                       = 'Choose a county...';
-$string['sel_muni']                         = 'Choose a municipality...';
+$string['county']                           = 'Fylke';
+$string['sel_county']                       = 'Velg et fylke...';
+$string['sel_muni']                         = 'Velg en kommune...';
 
 
