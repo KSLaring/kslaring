@@ -676,6 +676,7 @@ class TrackerManager {
                         JOIN	{course_completions}	cc	ON	cc.course = c.id
                                                             AND cc.userid = :user
                      WHERE		c.id IN ($courses)
+                        AND     c.visible = 1
                      ORDER BY	c.fullname ";
 
             /* Execute  */
@@ -731,7 +732,8 @@ class TrackerManager {
             $sql = " SELECT		c.id,
                                 c.fullname
                     FROM		{course}		  c
-                    WHERE		c.id IN ($courses) ";
+                    WHERE		c.id IN ($courses)
+                      AND       c.visible = 1 ";
 
             /* Courses Enrol    */
             if ($coursesEnrol) {
@@ -827,6 +829,7 @@ class TrackerManager {
                                                             AND	ue.status	= 0
                                                             AND ue.userid   = :ue_user
                      WHERE		c.id NOT IN ($connected)
+                        AND     c.visible = 1
                      GROUP BY	c.id
                      ORDER BY	c.fullname ";
 
@@ -839,6 +842,7 @@ class TrackerManager {
                     $info->id           = $instance->id;
                     $info->name         = $instance->fullname;
                     $info->completed    = $instance->completed;
+                    $info->unEnrol      = self::Check_CanUnenrol(explode(',',$instance->enrolments),$user,$instance->id);
 
                     /* Add course   */
                     if ($instance->completed) {
@@ -846,9 +850,6 @@ class TrackerManager {
                     }else {
                         $not_completed[$instance->id] = $info;
                     }//if_time_Completed
-
-
-                    $info->unEnrol = self::Check_CanUnenrol(explode(',',$instance->enrolments),$user,$instance->id);
                 }//for_instance
             }//if_rdo
 

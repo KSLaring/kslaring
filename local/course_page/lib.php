@@ -28,7 +28,7 @@ function local_course_page_extends_settings_navigation($settingsnav, $context) {
     $format_options = course_get_format($PAGE->course)->get_format_options();
     if (array_key_exists('homepage',$format_options) && ($format_options['homepage'])) {
         if ($settingnode = $settingsnav->find('courseadmin', navigation_node::TYPE_COURSE)) {
-            $home_url = new moodle_url('/local/course_page/home_page.php',array('id' => $PAGE->course->id));
+            $home_url = new moodle_url('/local/course_page/home_page.php',array('id' => $PAGE->course->id,'start'=>0));
             $home_url->param('sesskey', sesskey());
             if ($PAGE->user_is_editing()) {
                 $home_url->param('edit', 'on');
