@@ -943,7 +943,7 @@ class format_classroom extends format_base {
         $coursehomepageurl = false;
         if ($this->check_course_homepage_active($PAGE->course->id)) {
             $coursehomepageurl = new moodle_url('/local/course_page/home_page.php',
-                array('id' => $PAGE->course->id));
+                array('id' => $PAGE->course->id,'start'=>0));
         }
 
         $courseactive = '';
