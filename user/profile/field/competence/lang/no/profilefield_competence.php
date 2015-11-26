@@ -49,3 +49,5 @@ $string['btn_save']             = 'Lagre';
 $string['edit_competence_desc'] = 'Her kan du oppdatere kompetanseprofilen din.';
 
 $string['level_generic']        = 'Generiske';
+
+$string['btn_edit_users']           = 'Rediger brukere';

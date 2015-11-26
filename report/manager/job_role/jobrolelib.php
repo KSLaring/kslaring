@@ -292,16 +292,9 @@ class job_role {
             $params['jr'] = $jrId;
 
             /* SQL Instruction  */
-            $sql = " SELECT	*
-                     FROM	{user_info_competence_data}
-                     WHERE	jobroles = :jr
-                            OR
-                            jobroles	LIKE '%,"   . $jrId . ",%'
-                            OR
-                            jobroles  	LIKE '"     . $jrId . ",%'
-                            OR
-                            jobroles  	LIKE '%,"   . $jrId. "' ";
-
+            $sql = " SELECT *
+                     FROM   {user_info_competence_data}
+                     WHERE  FIND_IN_SET(:jr,jobroles) ";
             /* Execute */
             $rdo = $DB->get_records_sql($sql,$params);
             if ($rdo) {

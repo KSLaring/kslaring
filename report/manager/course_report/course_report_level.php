@@ -114,7 +114,7 @@ if ($company_id) {
     $data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'0'] = $USER->levelZero;
     $data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'1'] = $parentOne;
     $data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'2'] = $parentTwo;
-    $data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'3'] = array($company_id);
+    $data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'3'] = array($company_id => $company_id);
     $data_form[REPORT_MANAGER_COURSE_LIST]          = $USER->courseReport;
     $data_form[REPORT_MANAGER_COMPLETED_LIST]       = $completed_option;
 

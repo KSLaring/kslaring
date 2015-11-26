@@ -211,35 +211,26 @@ class Competence {
             /* SQL Instruction  */
             $sql = " SELECT		uicd.id,
                                 uicd.competenceid,
-                                level_two.parentid 	                as 'leveltwo',
-                                level_one.parentid 	                as 'levelone',
-                                level_zero.parentid                 as 'levelzero',
-                                uicd.companyid 		                as 'levelthree',
-                                IF(uicd.jobroles,uicd.jobroles,0) 	as 'jobroles'
+                                GROUP_CONCAT(DISTINCT co_zero.id 	ORDER BY co_zero.id   SEPARATOR ',') 	  as 'levelzero',
+                                GROUP_CONCAT(DISTINCT co_one.id  	ORDER BY co_one.id    SEPARATOR ',') 	  as 'levelone',
+                                GROUP_CONCAT(DISTINCT co_two.id  	ORDER BY co_two.id    SEPARATOR ',') 	  as 'leveltwo',
+                                uicd.companyid 		                    as 'levelthree',
+                                IF(uicd.jobroles,uicd.jobroles,0) 		as 'jobroles'
                      FROM		{user_info_competence_data} 	uicd
-                        JOIN	(
-                                    SELECT		cr.companyid,
-                                                cr.parentid
-                                    FROM		{report_gen_companydata}			co
-                                        JOIN	{report_gen_company_relation}		cr	ON cr.parentid = co.id
-                                    WHERE		co.hierarchylevel = 2
-                                ) level_two ON level_two.companyid = uicd.companyid
-                        JOIN	(
-                                    SELECT		cr.companyid,
-                                                cr.parentid
-                                    FROM		{report_gen_companydata}			co
-                                        JOIN	{report_gen_company_relation}		cr	ON cr.parentid = co.id
-                                    WHERE		co.hierarchylevel = 1
-                                ) level_one	ON level_one.companyid = level_two.parentid
-                        JOIN	(
-                                    SELECT		cr.companyid,
-                                                cr.parentid
-                                    FROM		{report_gen_companydata}			co
-                                        JOIN	{report_gen_company_relation}		cr	ON cr.parentid = co.id
-                                    WHERE		co.hierarchylevel = 0
-
-                                ) level_zero ON level_zero.companyid = level_one.parentid
-                     WHERE		uicd.userid = :user ";
+                        -- LEVEL TWO
+                        JOIN	{report_gen_company_relation}   cr_two	ON 	cr_two.companyid 		= uicd.companyid
+                        JOIN	{report_gen_companydata}		co_two	ON 	co_two.id 				= cr_two.parentid
+                                                                        AND co_two.hierarchylevel 	= 2
+                        -- LEVEL ONE
+                        JOIN	{report_gen_company_relation}   cr_one	ON 	cr_one.companyid 		= cr_two.parentid
+                        JOIN	{report_gen_companydata}		co_one	ON 	co_one.id 				= cr_one.parentid
+                                                                        AND co_one.hierarchylevel 	= 1
+                        -- LEVEL ZERO
+                        JOIN	{report_gen_company_relation}   cr_zero	ON 	cr_zero.companyid 		= cr_one.parentid
+                        JOIN	{report_gen_companydata}		co_zero	ON 	co_zero.id 				= cr_zero.parentid
+                                                                        AND co_zero.hierarchylevel 	= 0
+                     WHERE		uicd.userid = :user
+                     GROUP BY	uicd.id ";
 
             if ($competence_data && $competence) {
                 $params['competence_data']  = $competence_data;
@@ -289,18 +280,27 @@ class Competence {
      */
     private static function GetHierarchyPath($hierarchy) {
         /* Variables    */
-        $hierarchyPath     = null;
-        $companies_name    = null;
+        $hierarchyPath      = null;
+        $companies_name     = null;
+        $levelZero          = null;
+        $levelOne           = null;
+        $levelTwo           = null;
 
         try {
             /* Get Companies Name   */
-            $companies      = $hierarchy->levelThree . ',' . $hierarchy->levelTwo . ',' . $hierarchy->levelOne . ',' . $hierarchy->levelZero;
+            $levelZero  = explode(',',$hierarchy->levelZero);
+            $levelOne   = explode(',',$hierarchy->levelOne);
+            $levelTwo   = explode(',',$hierarchy->levelTwo);
+
+            $companies = $hierarchy->levelThree . ',' . $hierarchy->levelTwo . ',' . $hierarchy->levelOne . ',' . $hierarchy->levelZero;
+
             $companies_name = self::Get_CompanyName($companies);
 
-            $hierarchyPath   = $companies_name[$hierarchy->levelZero]  . '/' .
-                               $companies_name[$hierarchy->levelOne]   . '/' .
-                               $companies_name[$hierarchy->levelTwo]   . '/' .
+            $hierarchyPath   = $companies_name[$levelZero[0]]  . '/' .
+                               $companies_name[$levelOne[0]]   . '/' .
+                               $companies_name[$levelTwo[0]]   . '/' .
                                $companies_name[$hierarchy->levelThree];
+
             return $hierarchyPath;
         }catch (Exception $ex) {
             throw $ex;
@@ -916,9 +916,9 @@ class Competence {
                                 $url_edit = new moodle_url('/user/profile/field/competence/actions/edit_competence.php',array('id' =>$user_id,'icd' => $competence->data,'ic' => $competence->competence));
                                 $content .= html_writer::link($url_edit,
                                                               html_writer::empty_tag('img', array('src'=>$OUTPUT->pix_url('t/edit'),
-                                                                                     'alt'=>get_string('btn_edit_users','local_microlearning'),
+                                                                                     'alt'=>get_string('btn_edit_users','profilefield_competence'),
                                                                                      'class'=>'iconsmall')),
-                                                              array('title'=>get_string('btn_edit_users','local_microlearning')));
+                                                              array('title'=>get_string('btn_edit_users','profilefield_competence')));
                             $content .= html_writer::end_div();//col_zero
                             /* Col One  */
                             $content .= html_writer::start_div('col_one');
