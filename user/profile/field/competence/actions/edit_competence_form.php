@@ -23,10 +23,8 @@ class competence_edit_competence_form extends moodleform {
         $levelOne       = null;
         $levelTwo       = null;
         $levelThree     = null;
-        $my_competence  = null;
-        $my_Hierarchy   = null;
-        $my_Roles       = null;
-        $my_Generics    = null;
+        $myCompetence   = null;
+        $myHierarchy    = null;
 
         /* Form */
         $form = $this->_form;
@@ -37,27 +35,27 @@ class competence_edit_competence_form extends moodleform {
         $form->addElement('static', 'edit-description', '', get_string('edit_competence_desc', 'profilefield_competence'));
 
         /* Get My Competence    */
-            $my_competence = Competence::Get_CompetenceData($user_id,$competence_data,$competence);
-            $my_hierarchy  = $my_competence[$competence_data];
+            $myCompetence = Competence::Get_CompetenceData($user_id,$competence_data,$competence);
+            $myHierarchy   = $myCompetence[$competence_data];
 
             /* Company Structure    */
             $form->addElement('header', 'header_level', get_string('company_structure', 'report_manager'));
             $form->setExpanded('header_level',true);
             /* Add Hierarchy Level  */
             /* Level Zero   */
-            $this->Add_CompanyLevel(0,$form,$my_hierarchy->levelZero,$my_hierarchy->levelOne,$my_hierarchy->levelTwo,$my_hierarchy->levelThree);
+            $this->Add_CompanyLevel(0,$form,$myHierarchy->levelZero,$myHierarchy->levelOne,$myHierarchy->levelTwo,$myHierarchy->levelThree);
             /* Level One    */
-            $this->Add_CompanyLevel(1,$form,$my_hierarchy->levelZero,$my_hierarchy->levelOne,$my_hierarchy->levelTwo,$my_hierarchy->levelThree);
+            $this->Add_CompanyLevel(1,$form,$myHierarchy->levelZero,$myHierarchy->levelOne,$myHierarchy->levelTwo,$myHierarchy->levelThree);
             /* Level Two    */
-            $this->Add_CompanyLevel(2,$form,$my_hierarchy->levelZero,$my_hierarchy->levelOne,$my_hierarchy->levelTwo,$my_hierarchy->levelThree);
+            $this->Add_CompanyLevel(2,$form,$myHierarchy->levelZero,$myHierarchy->levelOne,$myHierarchy->levelTwo,$myHierarchy->levelThree);
             /* Level Three  */
-            $this->Add_CompanyLevel(3,$form,$my_hierarchy->levelZero,$my_hierarchy->levelOne,$my_hierarchy->levelTwo,$my_hierarchy->levelThree);
+            $this->Add_CompanyLevel(3,$form,$myHierarchy->levelZero,$myHierarchy->levelOne,$myHierarchy->levelTwo,$myHierarchy->levelThree);
 
             /* Add Job Roles    */
             /* Job Roles            */
             $form->addElement('header', 'header_jr', get_string('job_roles', 'report_manager'));
             $form->setExpanded('header_jr',true);
-            $this->Add_JobRoleLevel($form,$my_hierarchy);
+            $this->Add_JobRoleLevel($form,$myHierarchy);
 
         $form->addElement('hidden','id');
         $form->setDefault('id',$user_id);
@@ -124,22 +122,22 @@ class competence_edit_competence_form extends moodleform {
         switch ($level) {
             case 0:
                 $options = Competence::GetCompanies_Level($level);
-                $options = array_intersect_key($options,array($levelZero => $levelZero));
+                $options = array_intersect_key($options,array_flip(explode(',',$levelZero)));
 
                 break;
             case 1:
-                $options = Competence::GetCompanies_Level(1,$levelZero);
-                $options = array_intersect_key($options,array($levelOne => $levelOne));
+                $options = Competence::GetCompanies_Level($level,$levelZero);
+                $options = array_intersect_key($options,array_flip(explode(',',$levelOne)));
 
                 break;
             case 2:
-                $options = Competence::GetCompanies_Level(2,$levelOne);
-                $options = array_intersect_key($options,array($levelTwo => $levelTwo));
+                $options = Competence::GetCompanies_Level($level,$levelOne);
+                $options = array_intersect_key($options,array_flip(explode(',',$levelTwo)));
 
                 break;
             case 3:
-                $options = Competence::GetCompanies_Level(3,$levelTwo);
-                $options = array_intersect_key($options,array($levelThree => $levelThree));
+                $options = Competence::GetCompanies_Level($level,$levelTwo);
+                $options = array_intersect_key($options,array_flip(explode(',',$levelThree)));
 
                 break;
         }//level

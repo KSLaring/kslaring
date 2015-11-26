@@ -73,7 +73,7 @@ M.core_user.init_super_user_selector = function (Y, name, level, hash, extrafiel
             // Define our custom event.
             this.selectionempty = this.is_selection_empty();
 
-            this.send_query(false);
+            this.send_query(true);
         },
 
         /**
@@ -328,22 +328,23 @@ M.core_user.init_super_user_selector = function (Y, name, level, hash, extrafiel
         },
 
         mark: function() {
-            var users = remove_users.split(",");
+            if (remove_users) {
+                var users = remove_users.split(",");
 
-            if (this.name == 'removeselect') {
-                this.listbox.get("options").each( function() {
-                    if (remove_users) {
-                        if (users.indexOf(this.get('value')) !== -1) {
-                            this.setAttribute('selected','selected');
+                if (this.name == 'removeselect') {
+                    this.listbox.get("options").each( function() {
+                        if (remove_users) {
+                            if (users.indexOf(this.get('value')) !== -1) {
+                                this.setAttribute('selected','selected');
+                            }else {
+                                this.removeAttribute('selected');
+                            }
                         }else {
                             this.removeAttribute('selected');
                         }
-                    }else {
-                        this.removeAttribute('selected');
-                    }
-                });
+                    });
+                }
             }
-
         }
     };
 

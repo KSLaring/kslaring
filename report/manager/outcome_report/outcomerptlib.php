@@ -693,7 +693,6 @@ class outcome_report {
                     /* Get Job Roles    */
                     if (isset($data_form[MANAGER_OUTCOME_STRUCTURE_LEVEL .'3']) && ($data_form[MANAGER_OUTCOME_STRUCTURE_LEVEL .'3'])) {
                         $levelThree = implode(',',$data_form[MANAGER_OUTCOME_STRUCTURE_LEVEL .'3']);
-
                         /* Get Job Roles    */
                         CompetenceManager::GetJobRoles_Hierarchy($jr_level,3,$levelZero,$levelOne,$levelTwo,$levelThree);
                     }else {
@@ -709,7 +708,7 @@ class outcome_report {
                 $job_roles = array_intersect_key($job_roles,$jr_level);
                 return $job_roles;
             }else {
-                return $jr_level;
+                return $job_roles;
             }//if_intersect
         }catch (Exception $ex) {
             throw $ex;
@@ -964,6 +963,7 @@ class outcome_report {
             $params = array();
             $params['company']   = $company;
             $params['course']    = $course;
+
 
             /* SQL Instruction  */
             $sql = " SELECT   	DISTINCT 	u.id,

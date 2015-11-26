@@ -103,7 +103,7 @@ if ($company_id) {
     $data_form[MANAGER_OUTCOME_STRUCTURE_LEVEL .'0']    = $USER->levelZero;
     $data_form[MANAGER_OUTCOME_STRUCTURE_LEVEL .'1']    = $parentOne;
     $data_form[MANAGER_OUTCOME_STRUCTURE_LEVEL .'2']    = $parentTwo;
-    $data_form[MANAGER_OUTCOME_STRUCTURE_LEVEL .'3']    = array($company_id);
+    $data_form[MANAGER_OUTCOME_STRUCTURE_LEVEL .'3']    = array($company_id => $company_id);
     $data_form[REPORT_MANAGER_OUTCOME_LIST]             = $USER->outcomeReport;
     $data_form[REPORT_MANAGER_COMPLETED_LIST]           = $completed_option;
 

@@ -25,7 +25,7 @@ class manager_edit_outcome_form extends moodleform {
         $m_form->addElement('header', 'job_roles', get_string('related_job_roles', 'report_manager'));
 
         /* Job Roles */
-        $m_form->addElement('html','<div class="job_roles_selector">');
+        $m_form->addElement('html','<div class="userselector" id="addselect_wrapper">');
             /* Selected Job Roles   */
             $m_form->addElement('html','<div class="sel_users_left">');
                 $schoices = outcome::FindJobRoles_Selector($outcome_id,$removeSearch);

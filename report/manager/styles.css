@@ -791,7 +791,7 @@
     margin-right: 20px;
 }
 
-.sel_jobroles_left select,
+.job_roles_selector .sel_jobroles_left select,
 .userselector .sel_users_left select,
 .sel_jobroles_right select,
 .userselector .sel_users_right select {
@@ -968,7 +968,7 @@ a.lnk_disabled {
         display: block;
     }
     .sel_users_right,
-    .sel_users_right {
+    .sel_activities_right {
         float: none;
         width: 100%;
         display: block;
@@ -1002,7 +1002,7 @@ a.lnk_disabled {
         display: block;
     }
     .sel_users_right,
-    .sel_users_right {
+    .sel_activities_right {
         float: none;
         width: 100%;
         display: block;
@@ -1036,7 +1036,7 @@ a.lnk_disabled {
         display: block;
     }
     .sel_users_right,
-    .sel_users_right {
+    .sel_activities_right {
         float: none;
         width: 100%;
         display: block;

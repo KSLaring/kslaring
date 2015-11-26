@@ -281,8 +281,8 @@ class SuperUser {
                                 u.firstname,
                                 u.lastname,
                                 u.email
-                     FROM	        {user}	u
-                        LEFT JOIN   mdl_report_gen_super_user	sp	ON sp.userid = u.id " . $sqlLeft .
+                     FROM	        {user}	                u
+                        LEFT JOIN   {report_gen_super_user}	sp	ON sp.userid = u.id " . $sqlLeft .
                    "
                      WHERE	u.deleted = 0
                         AND	sp.id IS NULL ";

@@ -106,9 +106,9 @@ class CompanyReport {
 
         try {
             foreach ($my_companies as $company) {
-                $levelZero[$company->levelZero]     = $company->levelZero;
-                $levelOne[$company->levelOne]       = $company->levelOne;
-                $levelTwo[$company->levelTwo]       = $company->levelTwo;
+                $levelZero  = array_flip(explode(',',$company->levelZero));
+                $levelOne   = array_flip(explode(',',$company->levelOne));
+                $levelTwo   = array_flip(explode(',',$company->levelTwo));
                 $levelThree[$company->levelThree]   = $company->levelThree;
             }
 

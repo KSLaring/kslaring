@@ -422,9 +422,9 @@ class CompetenceManager {
 
         try {
             foreach ($my_companies as $company) {
-                $levelZero[$company->levelZero]     = $company->levelZero;
-                $levelOne[$company->levelOne]       = $company->levelOne;
-                $levelTwo[$company->levelTwo]       = $company->levelTwo;
+                $levelZero  = explode(',',$company->levelZero);
+                $levelOne   = explode(',',$company->levelOne);
+                $levelTwo   = explode(',',$company->levelTwo);
                 $levelThree[$company->levelThree]   = $company->levelThree;
             }
 
@@ -1052,34 +1052,25 @@ class CompetenceManager {
 
             /* SQL Instruction  */
             $sql = " SELECT		uicd.companyid 		as 'levelthree',
-                                level_two.parentid 	as 'leveltwo',
-                                level_one.parentid 	as 'levelone',
-                                level_zero.parentid as 'levelzero',
+                                GROUP_CONCAT(DISTINCT cr_two.parentid  	ORDER BY cr_two.parentid SEPARATOR ',') 	as 'leveltwo',
+                                GROUP_CONCAT(DISTINCT cr_one.parentid  	ORDER BY cr_one.parentid SEPARATOR ',') 	as 'levelone',
+                                GROUP_CONCAT(DISTINCT cr_zero.parentid  ORDER BY cr_zero.parentid SEPARATOR ',') 	as 'levelzero',
                                 uicd.jobroles
                      FROM		{user_info_competence_data} 	uicd
-                        JOIN	(
-                                    SELECT		cr.companyid,
-                                                cr.parentid
-                                    FROM		{report_gen_companydata}			co
-                                        JOIN	{report_gen_company_relation}		cr	ON cr.parentid = co.id
-                                    WHERE		co.hierarchylevel = 2
-                                ) level_two ON level_two.companyid = uicd.companyid
-                        JOIN	(
-                                    SELECT		cr.companyid,
-                                                cr.parentid
-                                    FROM		{report_gen_companydata}			co
-                                        JOIN	{report_gen_company_relation}		cr	ON cr.parentid = co.id
-                                    WHERE		co.hierarchylevel = 1
-                                ) level_one	ON level_one.companyid = level_two.parentid
-                        JOIN	(
-                                    SELECT		cr.companyid,
-                                                cr.parentid
-                                    FROM		{report_gen_companydata}			co
-                                        JOIN	{report_gen_company_relation}		cr	ON cr.parentid = co.id
-                                    WHERE		co.hierarchylevel = 0
-
-                                ) level_zero ON level_zero.companyid = level_one.parentid
-                     WHERE		uicd.userid = :user_id ";
+                        -- LEVEL TWO
+                        JOIN	{report_gen_company_relation}   cr_two	ON 	cr_two.companyid 		= uicd.companyid
+                        JOIN	{report_gen_companydata}		co_two	ON 	co_two.id 				= cr_two.parentid
+                                                                        AND co_two.hierarchylevel 	= 2
+                        -- LEVEL ONE
+                        JOIN	{report_gen_company_relation}   cr_one	ON 	cr_one.companyid 		= cr_two.parentid
+                        JOIN	{report_gen_companydata}		co_one	ON 	co_one.id 				= cr_one.parentid
+                                                                        AND co_one.hierarchylevel 	= 1
+                        -- LEVEL ZERO
+                        JOIN	{report_gen_company_relation} cr_zero	ON 	cr_zero.companyid 		= cr_one.parentid
+                        JOIN	{report_gen_companydata}	  co_zero	ON 	co_zero.id 				= cr_zero.parentid
+                                                                        AND co_zero.hierarchylevel 	= 0
+                     WHERE		uicd.userid = :user_id
+                     GROUP BY uicd.companyid ";
 
             /* Execute  */
             $rdo = $DB->get_records_sql($sql,$params);
