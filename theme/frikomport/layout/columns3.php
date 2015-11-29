@@ -79,6 +79,7 @@ echo $OUTPUT->doctype() ?>
                     //echo $html->heading;
                     echo $OUTPUT->course_content_header();
                     echo $OUTPUT->blocks('content-top', 'content-top-blocks', 'section');
+                    echo $html->manualcompletionhtml;
                     echo $OUTPUT->main_content();
                     echo $OUTPUT->blocks('content-bottom', 'content-bottom-blocks', 'section');
                     echo $OUTPUT->course_content_footer();
