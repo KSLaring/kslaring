@@ -221,6 +221,16 @@ function theme_kommit_get_html_for_settings(renderer_base $output, moodle_page $
         $return->footnote = '<div class="footnote text-center">'.$page->theme->settings->footnote.'</div>';
     }
 
+    $return->manualcompletionhtml = '';
+    if (function_exists('course_get_format')) {
+        $courseformat = course_get_format($page->course);
+        if (method_exists($courseformat, 'get_manualcompletionhtml') &&
+            !is_null($courseformat->get_manualcompletionhtml())
+        ) {
+            $return->manualcompletionhtml = $courseformat->get_manualcompletionhtml();
+        }
+    }
+
     return $return;
 }
 
