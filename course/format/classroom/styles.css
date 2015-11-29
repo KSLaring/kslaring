@@ -26,13 +26,10 @@
     padding: 0 20px 0 2px;
 }
 
-
-
 /* general layout styles
 /* Jon Jack 23/05/2013 - additional color
 /* styling will be done in the theme
  */
-
 
 .course-content ul.classroom {
     margin: 0;
@@ -147,6 +144,15 @@
     padding-top: .2em;
     overflow: hidden;
 }
+#instcnav .completed {
+    background-color: #dff0d8;
+    background-image: -moz-linear-gradient(left, #f7f7f7, #dff0d8); /* FF 3.6+ */
+    background-image: -webkit-gradient(linear, 0 0, 100% 0, from(#f7f7f7), to(#dff0d8)); /* Safari 4+, Chrome 2+ */
+    background-image: -webkit-linear-gradient(left, #f7f7f7, #dff0d8); /* Safari 5.1+, Chrome 10+ */
+    background-image: -o-linear-gradient(left, #f7f7f7, #dff0d8); /* Opera 11.10 */
+    background-image: linear-gradient(to right, #f7f7f7, #dff0d8); /* Standard, IE10 */
+    background-repeat: repeat-x;
+}
 .format-classroom.path-mod-lesson .box .progress_bar {
     border: none;
     height: 25px;
@@ -170,4 +176,8 @@
 }
 .format-classroom .block .list li {
     margin: 0;
+}
+.format-classroom #region-main .togglecompletion {
+    margin: 1em 20px 0 0;
+    text-align: right;
 }
