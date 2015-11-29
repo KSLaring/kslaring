@@ -58,6 +58,10 @@ class format_classroom extends format_base {
 
     protected $openlast = null;
 
+    // The HTML to display the completion checkbox in activities and resource
+    // with manual completion.
+    protected $manualcompletionhtml = null;
+
     static protected $lastlessonpage = null;
 
     /**
@@ -88,6 +92,13 @@ class format_classroom extends format_base {
         } else {
             return get_string('topic') . ' ' . $section->section;
         }
+    }
+
+    /**
+     * @return null|string The HTML for the completion checkbox
+     */
+    public function get_manualcompletionhtml() {
+        return $this->manualcompletionhtml;
     }
 
     /**
@@ -254,6 +265,8 @@ class format_classroom extends format_base {
      * theme/kommit/lib.php.
      */
     public function page_init(moodle_page $page) {
+        global $CFG, $OUTPUT;
+
         if (!$page->user_is_editing()) {
             $page->theme->layouts['incourse']['options']['nonavbar'] = true;
         }
@@ -267,6 +280,85 @@ class format_classroom extends format_base {
             // the classroom navigation block
             if ($page->pagetype !== 'mod-scorm-report') {
                 $this->add_fake_nav_block_later($page);
+            }
+        }
+
+        // Get the manual completion form
+        if ($page->pagelayout === 'incourse') {
+            $completioninfo = new completion_info($page->course);
+            $cancomplete = isloggedin() && !isguestuser();
+            $thismod = $page->cm;
+            $completionicon = false;
+            $output = '';
+            $completionactivated = false;
+            $completioncriteria = $completioninfo->get_criteria(COMPLETION_CRITERIA_TYPE_ACTIVITY);
+            foreach ($completioncriteria as $completioncriterium) {
+                if ($completioncriterium->moduleinstance == $thismod->id) {
+                    $completionactivated = true;
+                    break;
+                }
+            }
+
+            if ($completionactivated && $cancomplete &&
+                $completioninfo->is_enabled($thismod) != COMPLETION_TRACKING_NONE) {
+                $completiondata = $completioninfo->get_data($thismod, true);
+                $completion = $completioninfo->is_enabled($thismod);
+                if ($completion == COMPLETION_TRACKING_MANUAL) {
+                    switch ($completiondata->completionstate) {
+                        case COMPLETION_INCOMPLETE:
+                            $completionicon = 'manual-n';
+                            break;
+                        case COMPLETION_COMPLETE:
+                            $completionicon = 'manual-y';
+                            break;
+                    }
+                }
+
+                if ($completionicon) {
+                    $formattedname = $thismod->get_formatted_name();
+                    $imgalt = get_string('completion-alt-' . $completionicon, 'completion', $formattedname);
+
+                    if ($completion == COMPLETION_TRACKING_MANUAL) {
+                        $imgtitle = get_string('completion-title-' . $completionicon, 'completion', $formattedname);
+                        $newstate =
+                            $completiondata->completionstate == COMPLETION_COMPLETE
+                                ? COMPLETION_INCOMPLETE
+                                : COMPLETION_COMPLETE;
+                        // In manual mode the icon is a toggle form...
+
+                        // If this completion state is used by the
+                        // conditional activities system, we need to turn
+                        // off the JS.
+                        $extraclass = '';
+                        if (!empty($CFG->enableavailability) &&
+                            core_availability\info::completion_value_used($page->course, $thismod->id)
+                        ) {
+                            $extraclass = ' preventjs';
+                        }
+                        $output .= html_writer::start_tag('form', array('method' => 'post',
+                            'action' => new moodle_url('/course/togglecompletion.php'),
+                            'class' => 'togglecompletion' . $extraclass));
+                        $output .= html_writer::start_tag('div');
+                        $output .= html_writer::empty_tag('input', array(
+                            'type' => 'hidden', 'name' => 'id', 'value' => $thismod->id));
+                        $output .= html_writer::empty_tag('input', array(
+                            'type' => 'hidden', 'name' => 'sesskey', 'value' => sesskey()));
+                        $output .= html_writer::empty_tag('input', array(
+                            'type' => 'hidden', 'name' => 'modulename', 'value' => $thismod->name));
+                        $output .= html_writer::empty_tag('input', array(
+                            'type' => 'hidden', 'name' => 'completionstate', 'value' => $newstate));
+                        $output .= get_string('completion-title-' . $completionicon, 'completion', '');
+                        $output .= html_writer::empty_tag('input', array(
+                            'type' => 'image',
+                            'src' => $OUTPUT->pix_url('i/completion-' . $completionicon),
+                            'alt' => $imgalt, 'title' => $imgtitle,
+                            'aria-live' => 'polite'));
+                        $output .= html_writer::end_tag('div');
+                        $output .= html_writer::end_tag('form');
+
+                        $this->manualcompletionhtml = $output;
+                    }
+                }
             }
         }
     }
@@ -1446,6 +1538,44 @@ EOT;
             find_all_of_type(navigation_node::TYPE_CUSTOM);
         foreach ($customnodes as $customnode) {
             $customnode->remove();
+        }
+
+        // Set the completion state of the navigation nodes.
+        // Walk all TYPE_ACTIVITY and TYPE_RESOURCE nodes and set the completion state.
+        $course = $this->page->course;
+        $coursemods = get_course_mods($course->id);
+        $completioninfo = new completion_info($course);
+        $cancomplete = isloggedin() && !isguestuser();
+        $activitynodes = $thiscourse_navigation->
+        find_all_of_type(navigation_node::TYPE_ACTIVITY);
+        /* @var $oneactivitynode navigation_node */
+        foreach ($activitynodes as $oneactivitynode) {
+            $nodeinfo = $oneactivitynode;
+            $thismod = $coursemods[$nodeinfo->key];
+            if ($cancomplete && $completioninfo->is_enabled($thismod) != COMPLETION_TRACKING_NONE) {
+                $completiondata = $completioninfo->get_data($thismod, true);
+                if ($completiondata->completionstate == COMPLETION_COMPLETE ||
+                    $completiondata->completionstate == COMPLETION_COMPLETE_PASS
+                ) {
+                    $nodeinfo->add_class('completed');
+                }
+            }
+        }
+
+        $resourcenodes = $thiscourse_navigation->
+        find_all_of_type(navigation_node::TYPE_RESOURCE);
+        /* @var $oneresourcenode navigation_node */
+        foreach ($resourcenodes as $oneresourcenode) {
+            $nodeinfo = $oneresourcenode;
+            $thismod = $coursemods[$nodeinfo->key];
+            if ($cancomplete && $completioninfo->is_enabled($thismod) != COMPLETION_TRACKING_NONE) {
+                $completiondata = $completioninfo->get_data($thismod, true);
+                if ($completiondata->completionstate == COMPLETION_COMPLETE ||
+                    $completiondata->completionstate == COMPLETION_COMPLETE_PASS
+                ) {
+                    $nodeinfo->add_class('completed');
+                }
+            }
         }
 
         $expansionlimit = null;

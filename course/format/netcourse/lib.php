@@ -58,6 +58,10 @@ class format_netcourse extends format_base {
 
     protected $openlast = null;
 
+    // The HTML to display the completion checkbox in activities and resource
+    // with manual completion.
+    protected $manualcompletionhtml = null;
+
     static protected $lastlessonpage = null;
 
     /**
@@ -74,7 +78,8 @@ class format_netcourse extends format_base {
      *
      * Use section name is specified by user. Otherwise use default ("Topic #")
      *
-     * @param int|stdClass $section Section object from database or just field section.section
+     * @param int|stdClass $section Section object from database or just field
+     *                              section.section
      *
      * @return string Display name that the course format prefers, e.g. "Topic 2"
      */
@@ -91,15 +96,23 @@ class format_netcourse extends format_base {
     }
 
     /**
+     * @return null|string The HTML for the completion checkbox
+     */
+    public function get_manualcompletionhtml() {
+        return $this->manualcompletionhtml;
+    }
+
+    /**
      * The URL to use for the specified course (with section)
      *
      * @param int|stdClass $section Section object from database or just field
-     *                              course_sections.section if omitted the course view page
-     *                              is returned
+     *                              course_sections.section if omitted the course view
+     *                              page is returned
      * @param array        $options options for view URL. At the moment core uses:
-     *                              'navigation' (bool) if true and section has no separate
-     *                              page, the function returns null 'sr' (int) used by
-     *                              multipage formats to specify to which section to return.
+     *                              'navigation' (bool) if true and section has no
+     *                              separate page, the function returns null 'sr' (int)
+     *                              used by multipage formats to specify to which section
+     *                              to return.
      *
      * @return null|moodle_url
      */
@@ -139,7 +152,8 @@ class format_netcourse extends format_base {
      *
      * The returned object's property (boolean)capable indicates that
      * the course format supports Moodle course ajax features.
-     * The property (array)testedbrowsers can be used as a parameter for {@link ajaxenabled()}.
+     * The property (array)testedbrowsers can be used as a parameter for {@link
+     * ajaxenabled()}.
      *
      * @return stdClass
      */
@@ -254,6 +268,8 @@ class format_netcourse extends format_base {
      * theme/kommit/lib.php.
      */
     public function page_init(moodle_page $page) {
+        global $CFG, $OUTPUT;
+
         if (!$page->user_is_editing()) {
             $page->theme->layouts['incourse']['options']['nonavbar'] = true;
         }
@@ -267,6 +283,85 @@ class format_netcourse extends format_base {
             // the netcourse navigation block
             if ($page->pagetype !== 'mod-scorm-report') {
                 $this->add_fake_nav_block_later($page);
+            }
+        }
+
+        // Get the manual completion form
+        if ($page->pagelayout === 'incourse') {
+            $completioninfo = new completion_info($page->course);
+            $cancomplete = isloggedin() && !isguestuser();
+            $thismod = $page->cm;
+            $completionicon = false;
+            $output = '';
+            $completionactivated = false;
+            $completioncriteria = $completioninfo->get_criteria(COMPLETION_CRITERIA_TYPE_ACTIVITY);
+            foreach ($completioncriteria as $completioncriterium) {
+                if ($completioncriterium->moduleinstance == $thismod->id) {
+                    $completionactivated = true;
+                    break;
+                }
+            }
+
+            if ($completionactivated && $cancomplete &&
+                $completioninfo->is_enabled($thismod) != COMPLETION_TRACKING_NONE) {
+                $completiondata = $completioninfo->get_data($thismod, true);
+                $completion = $completioninfo->is_enabled($thismod);
+                if ($completion == COMPLETION_TRACKING_MANUAL) {
+                    switch ($completiondata->completionstate) {
+                        case COMPLETION_INCOMPLETE:
+                            $completionicon = 'manual-n';
+                            break;
+                        case COMPLETION_COMPLETE:
+                            $completionicon = 'manual-y';
+                            break;
+                    }
+                }
+
+                if ($completionicon) {
+                    $formattedname = $thismod->get_formatted_name();
+                    $imgalt = get_string('completion-alt-' . $completionicon, 'completion', $formattedname);
+
+                    if ($completion == COMPLETION_TRACKING_MANUAL) {
+                        $imgtitle = get_string('completion-title-' . $completionicon, 'completion', $formattedname);
+                        $newstate =
+                            $completiondata->completionstate == COMPLETION_COMPLETE
+                                ? COMPLETION_INCOMPLETE
+                                : COMPLETION_COMPLETE;
+                        // In manual mode the icon is a toggle form...
+
+                        // If this completion state is used by the
+                        // conditional activities system, we need to turn
+                        // off the JS.
+                        $extraclass = '';
+                        if (!empty($CFG->enableavailability) &&
+                            core_availability\info::completion_value_used($page->course, $thismod->id)
+                        ) {
+                            $extraclass = ' preventjs';
+                        }
+                        $output .= html_writer::start_tag('form', array('method' => 'post',
+                            'action' => new moodle_url('/course/togglecompletion.php'),
+                            'class' => 'togglecompletion' . $extraclass));
+                        $output .= html_writer::start_tag('div');
+                        $output .= html_writer::empty_tag('input', array(
+                            'type' => 'hidden', 'name' => 'id', 'value' => $thismod->id));
+                        $output .= html_writer::empty_tag('input', array(
+                            'type' => 'hidden', 'name' => 'sesskey', 'value' => sesskey()));
+                        $output .= html_writer::empty_tag('input', array(
+                            'type' => 'hidden', 'name' => 'modulename', 'value' => $thismod->name));
+                        $output .= html_writer::empty_tag('input', array(
+                            'type' => 'hidden', 'name' => 'completionstate', 'value' => $newstate));
+                        $output .= get_string('completion-title-' . $completionicon, 'completion', '');
+                        $output .= html_writer::empty_tag('input', array(
+                            'type' => 'image',
+                            'src' => $OUTPUT->pix_url('i/completion-' . $completionicon),
+                            'alt' => $imgalt, 'title' => $imgtitle,
+                            'aria-live' => 'polite'));
+                        $output .= html_writer::end_tag('div');
+                        $output .= html_writer::end_tag('form');
+
+                        $this->manualcompletionhtml = $output;
+                    }
+                }
             }
         }
     }
@@ -312,7 +407,7 @@ class format_netcourse extends format_base {
             return null;
         }
         $sectionname = get_section_name($this->get_course(), $section);
-//        $url = course_get_url($this->get_course(), $section->section, array('navigation' => true));
+        //        $url = course_get_url($this->get_course(), $section->section, array('navigation' => true));
 
         $sectionnode = $node->add($sectionname, null, navigation_node::TYPE_SECTION, null,
             $section->id);
@@ -607,7 +702,8 @@ class format_netcourse extends format_base {
      * This function is called from {@link course_edit_form::definition_after_data()}.
      *
      * @param MoodleQuickForm $mform      form the elements are added to.
-     * @param bool            $forsection 'true' if this is a section edit form, 'false' if this is course edit form.
+     * @param bool            $forsection 'true' if this is a section edit form, 'false'
+     *                                    if this is course edit form.
      *
      * @return array array of references to the added form elements.
      */
@@ -702,9 +798,11 @@ class format_netcourse extends format_base {
      * If previous course format did not have 'numsections' option, we populate it with
      * thecurrent number of sections
      *
-     * @param stdClass|array $data      return value from {@link moodleform::get_data()} or array with data
-     * @param stdClass       $oldcourse if this function is called from {@link update_course()}
-     *                                  this object contains information about the course before update
+     * @param stdClass|array $data      return value from {@link moodleform::get_data()}
+     *                                  or array with data
+     * @param stdClass       $oldcourse if this function is called from {@link
+     *                                  update_course()} this object contains information
+     *                                  about the course before update
      *
      * @return bool whether there were any changes to the options values
      */
@@ -893,7 +991,7 @@ class format_netcourse extends format_base {
         $coursehomepageurl = false;
         if ($this->check_course_homepage_active($PAGE->course->id)) {
             $coursehomepageurl = new moodle_url('/local/course_page/home_page.php',
-                array('id' => $PAGE->course->id,'start'=>0));
+                array('id' => $PAGE->course->id, 'start' => 0));
         }
 
         $courseactive = '';
@@ -1064,14 +1162,14 @@ class format_netcourse extends format_base {
                 }
                 self::$lastlessonpage = $lastpage;
                 // Check the values in the browser with ChromePHP
-//                ChromePhp::log('$showgrades: ' . $showgrades);
-//                ChromePhp::log('$pageid: ' . $pageid);
-//                ChromePhp::log('$nextpage: ' . $nextpage);
-//                ChromePhp::log('$lastpage: ' . $lastpage);
+                //                ChromePhp::log('$showgrades: ' . $showgrades);
+                //                ChromePhp::log('$pageid: ' . $pageid);
+                //                ChromePhp::log('$nextpage: ' . $nextpage);
+                //                ChromePhp::log('$lastpage: ' . $lastpage);
 
                 $progressbar = $lessonoutput_local->progress_bar($lesson);
                 $lesson->properties()->progressbar = 0;
-//                $lesson->progressbar = 0;
+                //                $lesson->progressbar = 0;
 
                 // Create the object for the course content header renderer
                 $retval = new format_netcourse_specialnav($progressbar);
@@ -1172,7 +1270,7 @@ EOT;
                     array('id' => $cm->id));
 
                 // Set parameters for the link
-//                $params['rel'] = 'lightbox';
+                //                $params['rel'] = 'lightbox';
                 $params['class'] = 'btn btn-lightbox scorm';
                 $params['data-scormid'] = $cm->id;
                 if (!is_null($scormdata)) {
@@ -1309,6 +1407,7 @@ EOT;
 
         // Get the current course nodes and extract the course node collection
         // The current course has only one collection, can be fetched with "last"
+        /* @var $thiscourse_navigation navigation_node */
         $thiscourse_navigation = $course_navigation->get("currentcourse");
 
         // return null if the currentcourse has no navigation items.
@@ -1391,11 +1490,50 @@ EOT;
         foreach ($customnodes as $customnode) {
             $customnode->remove();
         }
+
         // Remove all activty submenu entries with the node type TYPE_CUSTOM
         $customnodes = $thiscourse_navigation->
         find_all_of_type(navigation_node::TYPE_CUSTOM);
         foreach ($customnodes as $customnode) {
             $customnode->remove();
+        }
+
+        // Set the completion state of the navigation nodes.
+        // Walk all TYPE_ACTIVITY and TYPE_RESOURCE nodes and set the completion state.
+        $course = $this->page->course;
+        $coursemods = get_course_mods($course->id);
+        $completioninfo = new completion_info($course);
+        $cancomplete = isloggedin() && !isguestuser();
+        $activitynodes = $thiscourse_navigation->
+        find_all_of_type(navigation_node::TYPE_ACTIVITY);
+        /* @var $oneactivitynode navigation_node */
+        foreach ($activitynodes as $oneactivitynode) {
+            $nodeinfo = $oneactivitynode;
+            $thismod = $coursemods[$nodeinfo->key];
+            if ($cancomplete && $completioninfo->is_enabled($thismod) != COMPLETION_TRACKING_NONE) {
+                $completiondata = $completioninfo->get_data($thismod, true);
+                if ($completiondata->completionstate == COMPLETION_COMPLETE ||
+                    $completiondata->completionstate == COMPLETION_COMPLETE_PASS
+                ) {
+                    $nodeinfo->add_class('completed');
+                }
+            }
+        }
+
+        $resourcenodes = $thiscourse_navigation->
+        find_all_of_type(navigation_node::TYPE_RESOURCE);
+        /* @var $oneresourcenode navigation_node */
+        foreach ($resourcenodes as $oneresourcenode) {
+            $nodeinfo = $oneresourcenode;
+            $thismod = $coursemods[$nodeinfo->key];
+            if ($cancomplete && $completioninfo->is_enabled($thismod) != COMPLETION_TRACKING_NONE) {
+                $completiondata = $completioninfo->get_data($thismod, true);
+                if ($completiondata->completionstate == COMPLETION_COMPLETE ||
+                    $completiondata->completionstate == COMPLETION_COMPLETE_PASS
+                ) {
+                    $nodeinfo->add_class('completed');
+                }
+            }
         }
 
         $expansionlimit = null;
@@ -1423,12 +1561,12 @@ EOT;
         $options['linkcategories'] = false;
 
         // Grab the items to display
-//        $renderer = $this->get_renderer($this->page);
+        //        $renderer = $this->get_renderer($this->page);
         $renderer = $this->page->get_renderer('format_' . $this->get_format(), 'fakeblock');
         $content = $renderer->course_navigation_tree($thiscourse_navigation,
             $expansionlimit, $options);
 
-//        $content ='test';
+        //        $content ='test';
 
         return $content;
     }
@@ -1531,8 +1669,8 @@ EOT;
      * @return string The truncated string
      */
     protected function trim_left($string, $length) {
-//        return '...' . core_text::substr($string,
-//            core_text::strlen($string) - $length, $length);
+        //        return '...' . core_text::substr($string,
+        //            core_text::strlen($string) - $length, $length);
         return '... ' . shorten_text($string, $ideal = $length, $exact = false, $ending = '');
     }
 
