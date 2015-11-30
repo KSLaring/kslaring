@@ -430,12 +430,12 @@ class CompetenceManager {
 
             switch ($my_level) {
                 case 0:
-                    $levelZero  = array();
+                   $levelZero  = array();
                     $levelOne   = array();
                     $levelTwo   = array();
                     $levelThree = array();
 
-                    break;
+                   break;
                 case 1:
                     $levelOne   = array();
                     $levelTwo   = array();
@@ -447,13 +447,13 @@ class CompetenceManager {
                     $levelThree = array();
 
                     break;
-                case 3:
+               case 3:
                     $levelThree = array();
 
                     break;
-                case 4:
+               case 4:
                     break;
-                default:
+               default:
                     break;
             }
             return array($levelZero,$levelOne,$levelTwo,$levelThree);
@@ -461,6 +461,59 @@ class CompetenceManager {
             throw $ex;
         }//try_catch
     }//GetMyCompanies_By_Level
+
+    /**
+     * @return          null|stdClass
+     * @throws          Exception
+     *
+     * @creationDate    27/11/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Get companies with employees
+     */
+    public static function GetCompanies_WithEmployees() {
+        /* Variables    */
+        global $DB;
+        $sql        = null;
+        $rdo        = null;
+        $companies  = null;
+
+        try {
+            /* SQL Instruction  */
+            $sql = " SELECT		GROUP_CONCAT(DISTINCT uicd.companyid  	ORDER BY uicd.companyid SEPARATOR ',') 		as 'levelthree',
+                                GROUP_CONCAT(DISTINCT cr_two.parentid  	ORDER BY cr_two.parentid SEPARATOR ',') 	as 'leveltwo',
+                                GROUP_CONCAT(DISTINCT cr_one.parentid  	ORDER BY cr_one.parentid SEPARATOR ',') 	as 'levelone',
+                                GROUP_CONCAT(DISTINCT cr_zero.parentid  ORDER BY cr_zero.parentid SEPARATOR ',') 	as 'levelzero'
+                     FROM		{user_info_competence_data} 		uicd
+                        -- LEVEL TWO
+                        JOIN	{report_gen_company_relation}   	cr_two	ON 	cr_two.companyid 		= uicd.companyid
+                        JOIN	{report_gen_companydata}			co_two	ON 	co_two.id 				= cr_two.parentid
+                                                                            AND co_two.hierarchylevel 	= 2
+                        -- LEVEL ONE
+                        JOIN	{report_gen_company_relation}   	cr_one	ON 	cr_one.companyid 		= cr_two.parentid
+                        JOIN	{report_gen_companydata}			co_one	ON 	co_one.id 				= cr_one.parentid
+                                                                            AND co_one.hierarchylevel 	= 1
+                        -- LEVEL ZERO
+                        JOIN	{report_gen_company_relation} 	    cr_zero	ON 	cr_zero.companyid 		= cr_one.parentid
+                        JOIN	{report_gen_companydata}			co_zero	ON 	co_zero.id 				= cr_zero.parentid
+                                                                            AND co_zero.hierarchylevel 	= 0 ";
+
+            /* EXecute  */
+            $rdo = $DB->get_record_sql($sql);
+            if ($rdo) {
+                $companies = new stdClass();
+                $companies->levelZero   = explode(',',$rdo->levelzero);
+                $companies->levelOne    = explode(',',$rdo->levelone);
+                $companies->levelTwo    = explode(',',$rdo->leveltwo);
+                $companies->levelThree  = explode(',',$rdo->levelthree);
+            }//if_rdo
+
+            return $companies;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//GetCompanies_WithEmployees
 
     /**
      * @return          array
