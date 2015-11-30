@@ -65,6 +65,7 @@ require('../tabs.php');
 echo $OUTPUT->heading(get_string('course_report', 'report_manager'));
 
 /* Report Levels Links  */
+course_report::CleanTemporary();
 CompetenceManager::GetLevelLink_ReportPage($current_tab,$site_context);
 
 /* Print Fo>r */

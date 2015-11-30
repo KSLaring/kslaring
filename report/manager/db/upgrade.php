@@ -24,6 +24,8 @@ function xmldb_report_manager_upgrade($old_version) {
     $fieldPublic            = null;
     $tblOutcomeJobRole      = null;
     $tblOutcomeExpiration   = null;
+    $tblCompetencyImport    = null;
+    $fieldJRMatch           = null;
 
     try {
         /* Manager  */
@@ -59,6 +61,20 @@ function xmldb_report_manager_upgrade($old_version) {
         if ($old_version < 2015102000) {
             CompetenceManager_Update::CreateSuperUser($db_man);
         }//if_old_Version
+
+        if ($old_version < 2015112400) {
+            if ($db_man->table_exists('report_gen_competence_imp')) {
+                /* New Fields   */
+                $tblCompetencyImport = new xmldb_table('report_gen_competence_imp');
+                $fieldJRMatch = new xmldb_field('jobrole_match',XMLDB_TYPE_INTEGER,'10',null, null, null,null);
+                $db_man->change_field_precision($tblCompetencyImport,$fieldJRMatch);
+            }
+        }//if_odl_version
+
+        if ($old_version < 2015113000) {
+            /* New Temporary table  */
+            CompetenceManager_Update::CreateTemporaryTable($db_man);
+        }//if_old_version
 
         return true;
     }catch (Exception $ex) {
@@ -321,4 +337,65 @@ class CompetenceManager_Update {
             throw $ex;
         }//try_catch
     }//CreateSuperUser
+
+    /**
+     * @param           $db_man
+     *
+     * @throws          Exception
+     *
+     * @creationDate    30/11/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Temporary table to save the data connected with outcome and course report
+     */
+    public static function CreateTemporaryTable($db_man) {
+        /* Variables    */
+        $tblTemporary = null;
+
+        try {
+            /* New Table    */
+            $tblTemporary = new xmldb_table('report_gen_temp');
+
+            /* Add Fields   */
+            /* Id               --> Primary Key */
+            $tblTemporary->add_field('id',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, XMLDB_SEQUENCE,null);
+            /* manager          --> Foreign Key. Who ask for the report     */
+            $tblTemporary->add_field('manager',XMLDB_TYPE_CHAR,'50',null, XMLDB_NOTNULL, null,null);
+            /* report   */
+            $tblTemporary->add_field('report',XMLDB_TYPE_CHAR,'25',null, XMLDB_NOTNULL, null,null);
+            /* userid           --> Foreign Key. User id                    */
+            $tblTemporary->add_field('userid',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, null,null);
+            /* Name */
+            $tblTemporary->add_field('name',XMLDB_TYPE_CHAR,'255',null, null, null,null);
+            /* companyid        --> Foreign Key. Company id                 */
+            $tblTemporary->add_field('companyid',XMLDB_TYPE_INTEGER,'10',null, null,null,null);
+            /* courseid         --> Foreign Key. Course id                  */
+            $tblTemporary->add_field('courseid',XMLDB_TYPE_INTEGER,'10',null, null,null,null);
+            /* outcomeid        --> Foreign Key. Outcome id                 */
+            $tblTemporary->add_field('outcomeid',XMLDB_TYPE_INTEGER,'10',null, null,null,null);
+            /* completed        --> Null. Boolean. Course Completed         */
+            $tblTemporary->add_field('completed',XMLDB_TYPE_INTEGER,'1',null, null,null,null);
+            /* notcompleted     --> Null. Boolean. Course Not Completed     */
+            $tblTemporary->add_field('notcompleted',XMLDB_TYPE_INTEGER,'1',null, null,null,null);
+            /* notenrol         --> Null. Boolean.                          */
+            $tblTemporary->add_field('notenrol',XMLDB_TYPE_INTEGER,'1',null, null,null,null);
+            /* timecompleted    --> Null.                                   */
+            $tblTemporary->add_field('timecompleted',XMLDB_TYPE_INTEGER,'10',null, null,null,null);
+
+            /* Adding Keys  */
+            $tblTemporary->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+            $tblTemporary->add_key('userid',XMLDB_KEY_FOREIGN,array('userid'), 'user', array('id'));
+            $tblTemporary->add_key('courseid',XMLDB_KEY_FOREIGN,array('courseid'), 'course', array('id'));
+            $tblTemporary->add_key('companyid',XMLDB_KEY_FOREIGN,array('companyid'), 'report_gen_companydata', array('id'));
+
+            /* Create Table */
+            if (!$db_man->table_exists('report_gen_temp')) {
+                $db_man->create_table($tblTemporary);
+            }//if_not_exist
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//CreateTemporaryTable
+
 }//CompetenceManager_Update
