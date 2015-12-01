@@ -201,7 +201,7 @@ class CourseLocations {
                 $myCompetence->jobRoles     = $rdo->jobroles;
                 $myCompetence->levelZero    = $rdo->levelzero;
                 $myCompetence->levelOne     = $rdo->levelone;
-                $myCompetence->levelTwo     = $rdo->levelTwo;
+                $myCompetence->levelTwo     = $rdo->leveltwo;
                 $myCompetence->levelThree   = $rdo->levelthree;
             }//if_rdo
 
