@@ -89,7 +89,7 @@ class CourseLocations {
      *          --> levelZero.      Counties split by coma.
      *          --> levelOne.       Municipalities split by comma.
      */
-    public static function Get_MyCompetence($user_id) {
+    public static function Get_MyCompetence_old($user_id) {
         /* Variables    */
         global $DB;
         $myJobRoles     = null;
@@ -140,6 +140,70 @@ class CourseLocations {
                     }
                 }//if_rdo
             }//if_MyJobRoles
+
+            return $myCompetence;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//Get_MyCompetence
+
+    /**
+     * @param           $userId
+     *
+     * @return          null|stdClass
+     * @throws          Exception
+     *
+     * @creationDate    01/12/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Get the competence locations for the user. Based only on his/her companies.
+     */
+    public static function Get_MyCompetence($userId) {
+        /* Variables    */
+        global $DB;
+        $sql            = null;
+        $rdo            = null;
+        $params         = null;
+        $myCompetence   = null;
+
+        try {
+            /* Criteria */
+            $params = array();
+            $params['user'] = $userId;
+
+            /* SQL Instruction */
+            $sql = " SELECT	GROUP_CONCAT(DISTINCT 	uicd.companyid 		ORDER BY uicd.companyid 	SEPARATOR ',')	as 'levelthree',
+                            GROUP_CONCAT(DISTINCT 	cr_two.parentid  	ORDER BY cr_two.parentid 	SEPARATOR ',') 	as 'leveltwo',
+                            GROUP_CONCAT(DISTINCT 	cr_one.parentid  	ORDER BY cr_one.parentid 	SEPARATOR ',') 	as 'levelone',
+                            GROUP_CONCAT(DISTINCT 	cr_zero.parentid  	ORDER BY cr_zero.parentid 	SEPARATOR ',') 	as 'levelzero',
+                            GROUP_CONCAT(DISTINCT	uicd.jobroles		ORDER BY uicd.jobroles		SEPARATOR ',')	as 'jobroles'
+                     FROM		{user_info_competence_data} 		uicd
+                        -- LEVEL TWO
+                        JOIN	{report_gen_company_relation}   	cr_two	ON 	cr_two.companyid 		= uicd.companyid
+                        JOIN	{report_gen_companydata}			co_two	ON 	co_two.id 				= cr_two.parentid
+                                                                            AND co_two.hierarchylevel 	= 2
+                        -- LEVEL ONE
+                        JOIN	{report_gen_company_relation}   	cr_one	ON 	cr_one.companyid 		= cr_two.parentid
+                        JOIN	{report_gen_companydata}			co_one	ON 	co_one.id 				= cr_one.parentid
+                                                                            AND co_one.hierarchylevel 	= 1
+                        -- LEVEL ZERO
+                        JOIN	{report_gen_company_relation} 	    cr_zero	ON 	cr_zero.companyid 		= cr_one.parentid
+                        JOIN	{report_gen_companydata}	  		co_zero	ON 	co_zero.id 				= cr_zero.parentid
+                                                                            AND co_zero.hierarchylevel 	= 0
+                     WHERE		uicd.userid = :user ";
+
+            /* Execute  */
+            $rdo = $DB->get_record_sql($sql,$params);
+            if ($rdo) {
+                /* Competence   Info    */
+                $myCompetence = new stdClass();
+                $myCompetence->jobRoles     = $rdo->jobroles;
+                $myCompetence->levelZero    = $rdo->levelzero;
+                $myCompetence->levelOne     = $rdo->levelone;
+                $myCompetence->levelTwo     = $rdo->levelTwo;
+                $myCompetence->levelThree   = $rdo->levelthree;
+            }//if_rdo
 
             return $myCompetence;
         }catch (Exception $ex) {
