@@ -185,4 +185,5 @@ $string['btn_save'] = 'Save';
 $string['lnk_back'] = 'Back';
 
 $string['only_classroom'] = 'Show only classroom courses';
+$string['only_elearning']   = 'Show only eLearning courses';
 
