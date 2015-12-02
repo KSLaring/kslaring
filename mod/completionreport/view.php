@@ -197,16 +197,28 @@ if ($enrolled && $completionenabled) {
             $criteria = $completion->get_criteria();
 
             $row = array();
-            $row['type'] = $criteria->criteriatype;
-            $row['title'] = $criteria->get_title();
-            $row['status'] = $completion->get_status();
-            $row['complete'] = $completion->is_complete();
-            $row['timecompleted'] = $completion->timecompleted;
-            $row['details'] = $criteria->get_details($completion);
+            $row['type']            = $criteria->criteriatype;
+            $row['title']           = $criteria->get_title();
+            $row['status']          = $completion->get_status();
+            $row['complete']        = $completion->is_complete();
+            $row['timecompleted']   = $completion->timecompleted;
+            $row['details']         = $criteria->get_details($completion);
 
             // In details/requirement the module name is not translated.
             // Get the language module name and change the requirement string.
-            $modname = get_string('modulename', $criteria->module);
+            /**
+             * @updateDate      02/12/2015
+             * @author          eFaktor     (fbv)
+             *
+             * Description
+             * Check if there is a module name or not
+             */
+            if ($criteria->module) {
+                $modname = get_string('modulename', $criteria->module);
+            }else {
+                $modname = $row['type'];
+            }
+
             $newrequirement = get_string('viewingactivity', 'completion', $modname);
             $row['details']['requirement'] = $newrequirement;
 
