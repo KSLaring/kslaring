@@ -44,60 +44,79 @@ class enrolmethodunnamedbulk_enrolform extends \moodleform {
     }
 
     public function definition() {
-    	global $CFG;
-    
+        global $CFG;
+
         $mform = $this->_form;
-       list( $waitinglist,$method,$queuestatus) = $this->_customdata;
+        list( $waitinglist,$method,$queuestatus,$confirmed) = $this->_customdata;
         $this->method = $method;
         $this->waitinglist = $waitinglist;
         $this->queuestatus=$queuestatus;
-        
+
         $plugin = enrol_get_plugin('waitinglist');
 
         $heading = $plugin->get_instance_name($waitinglist);
         $mform->addElement('header', 'selfheader', $heading. ' : ' . get_string('unnamedbulk_menutitle','enrol_waitinglist'));
-        
-        $mform->addElement('static','formintro',
-			'',
-			get_string('unnamedbulk_enrolformintro','enrol_waitinglist'));
-        
-        //add caution for number of seats available, and waiting list size etc
-        if($queuestatus->hasentry){
-			$mform->addElement('static','aboutqueuestatus',
-			get_string('unnamedbulk_enrolformqueuestatus_label','enrol_waitinglist'),
-			get_string('unnamedbulk_enrolformqueuestatus','enrol_waitinglist',$queuestatus));
-        }
-        
-        //add form input elements
-        $mform->addElement('text','seats',  get_string('reserveseatcount', 'enrol_waitinglist'), array('size' => '8'));
-		$mform->addRule('seats', null, 'numeric', null, 'client');
-		$mform->setType('seats', PARAM_INT);
 
-        /**
-         * @updateDate  28/10/2015
-         * @author      eFaktor     (fbv)
-         *
-         * Description
-         * Add Invoice fields
-         */
-        if ((!$queuestatus->hasentry) && ($waitinglist->{ENROL_WAITINGLIST_FIELD_INVOICE})) {
-            global $PAGE;
-            $PAGE->requires->js('/enrol/invoice/js/invoice.js');
+        $mform->addElement('static','formintro','',get_string('unnamedbulk_enrolformintro','enrol_waitinglist'));
 
-            \Invoices::AddElements_ToForm($mform);
-            $mform->addElement('hidden', 'invoicedata');
-            $mform->setType('invoicedata', PARAM_INT);
-            $mform->setDefault('invoicedata', 1);
+        $buttonarray    = array();
+        $buttonarray[]  = &$mform->createElement('submit', 'submitbutton', get_string('reserveseats', 'enrol_waitinglist'));
+        if (!$confirmed) {
+            /**
+             * @updateDate  02/12/2015
+             * @author      eFaktor     (fbv)
+             *
+             * Description
+             * Check vacancies. Not vacancies --> Warning Message
+             */
+
+            //add caution for number of seats available, and waiting list size etc
+            if($queuestatus->hasentry){
+                $mform->addElement('static','aboutqueuestatus',
+                    get_string('unnamedbulk_enrolformqueuestatus_label','enrol_waitinglist'),
+                    get_string('unnamedbulk_enrolformqueuestatus','enrol_waitinglist',$queuestatus));
+            }
+
+            //add form input elements
+            $mform->addElement('text','seats',  get_string('reserveseatcount', 'enrol_waitinglist'), array('size' => '8'));
+            $mform->addRule('seats', null, 'numeric', null, 'client');
+            $mform->setType('seats', PARAM_INT);
+
+            /**
+             * @updateDate  28/10/2015
+             * @author      eFaktor     (fbv)
+             *
+             * Description
+             * Add Invoice fields
+             */
+            if ((!$queuestatus->hasentry) && ($waitinglist->{ENROL_WAITINGLIST_FIELD_INVOICE})) {
+                global $PAGE;
+                $PAGE->requires->js('/enrol/invoice/js/invoice.js');
+
+                \Invoices::AddElements_ToForm($mform);
+                $mform->addElement('hidden', 'invoicedata');
+                $mform->setType('invoicedata', PARAM_INT);
+                $mform->setDefault('invoicedata', 1);
+            }
+
+            $mform->addElement('hidden', 'confirm');
+            $mform->setType('confirm', PARAM_INT);
+            $mform->setDefault('confirm', '1');
+
+            //add submit + enter course
+            if($queuestatus->assignedseats>0){
+                $url = $CFG->wwwroot . '/course/view.php?id=' . $waitinglist->courseid;
+                $buttonarray[] = &$mform->createElement('button', 'entercoursebutton', get_string('entercoursenow', 'enrol_waitinglist'),array('class'=>'entercoursenowbutton','onclick'=>'location.href="' . $url .'"'));
+            }
+        }else {
+            $mform->addElement('html','<div class="lbl_warning">');
+                $mform->addElement('html','<h5>' . get_string('seats_occupied','enrol_waitinglist') . '</h5>');
+            $mform->addElement('html','</div>');
         }
-		
-		//add submit + enter course
-		$buttonarray=array();
-		$buttonarray[] = &$mform->createElement('submit', 'submitbutton', get_string('reserveseats', 'enrol_waitinglist'));
-		if($queuestatus->assignedseats>0){
-			$url = $CFG->wwwroot . '/course/view.php?id=' . $waitinglist->courseid;
-			$buttonarray[] = &$mform->createElement('button', 'entercoursebutton', get_string('entercoursenow', 'enrol_waitinglist'),array('class'=>'entercoursenowbutton','onclick'=>'location.href="' . $url .'"'));
-		}
-		$mform->addGroup($buttonarray, 'buttonar', '', array(' '), false);
+
+
+        $buttonarray[] = $mform->createElement('cancel');
+        $mform->addGroup($buttonarray, 'buttonar', '', array(' '), false);
 
         $mform->addElement('hidden', 'id');
         $mform->setType('id', PARAM_INT);
@@ -111,8 +130,8 @@ class enrolmethodunnamedbulk_enrolform extends \moodleform {
         $mform->addElement('hidden', 'datarecordid');
         $mform->setType('datarecordid', PARAM_INT);
 
-		//use this in place of button group, if you don't need the go to course button
-		//$this->add_action_buttons(false, get_string('reserveseats', 'enrol_waitinglist'));
+        //use this in place of button group, if you don't need the go to course button
+        //$this->add_action_buttons(false, get_string('reserveseats', 'enrol_waitinglist'));
 
     }
 

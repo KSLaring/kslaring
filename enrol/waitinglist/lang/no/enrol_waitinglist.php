@@ -162,6 +162,8 @@ $string['totalcell']='Totalt: {$a}';
 $string['invoice']      = 'Invoice information required';
 $string['invoice_help'] = 'The user must fill in all information about the invoice before the enrolment will be done.';
 
+$string['seats_occupied'] = 'At the moment, all available seats are occupied. Do you want to set on the wait list for this course?';
+
 
 
 

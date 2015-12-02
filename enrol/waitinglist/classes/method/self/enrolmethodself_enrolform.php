@@ -50,53 +50,69 @@ class enrolmethodself_enrolform extends \moodleform {
 
     public function definition() {
         $mform = $this->_form;
-       list( $waitinglist,$method,$listtotal) = $this->_customdata;
+        list( $waitinglist,$method,$listtotal) = $this->_customdata;
         $this->method = $method;
         $plugin = enrol_get_plugin('waitinglist');
 
+
         $heading = $plugin->get_instance_name($waitinglist);
-       $mform->addElement('header', 'selfheader', $heading. ' : ' . get_string('self_menutitle','enrol_waitinglist'));
-       
-       //queuewarning
-       if($listtotal>0){
-       	$mform->addElement('static','queuewarning',get_string('self_queuewarning_label','enrol_waitinglist'),get_string('self_queuewarning','enrol_waitinglist',$listtotal));
-       }
-       
-        if ($method->password) {
-            // Change the id of self enrolment key input as there can be multiple self enrolment methods.
-			//NB actually this probably doesnt apply to waitinglist self enrolment, but just to be safe
-            $mform->addElement('passwordunmask', 'enrolpassword', get_string('password', 'enrol_self'),
-                    array('id' => 'enrolpassword_'.$method->id));
-        } else {
-            $mform->addElement('static', 'nokey', '', get_string('nopassword', 'enrol_self'));
-        }
+        $mform->addElement('header', 'selfheader', $heading. ' : ' . get_string('self_menutitle','enrol_waitinglist'));
 
         /**
-         * @updateDate  28/10/2015
+         * @updateDate  02/12/2015
          * @author      eFaktor     (fbv)
          *
          * Description
-         * Add Invoice fields
+         * Check vacancies. Not vacancies --> Warning Message
          */
-        if ($waitinglist->{ENROL_WAITINGLIST_FIELD_INVOICE}) {
-            global $PAGE;
-            $PAGE->requires->js('/enrol/invoice/js/invoice.js');
-            \Invoices::AddElements_ToForm($mform);
+        $vacancies  = $plugin->get_vacancy_count($waitinglist);
 
-            $mform->addElement('hidden', 'invoicedata');
-            $mform->setType('invoicedata', PARAM_INT);
-            $mform->setDefault('invoicedata', 1);
-        }
+        if (!$vacancies) {
+            $mform->addElement('html','<div class="lbl_warning">');
+            $mform->addElement('html','<h5>' . get_string('seats_occupied','enrol_waitinglist') . '</h5>');
+            $mform->addElement('html','</div>');
+        }else {
+            //queuewarning
+            if($listtotal>0){
+                $mform->addElement('static','queuewarning',get_string('self_queuewarning_label','enrol_waitinglist'),get_string('self_queuewarning','enrol_waitinglist',$listtotal));
+            }
 
-        $this->add_action_buttons(false, get_string('enrolme', 'enrol_self'));
+            if ($method->password) {
+                // Change the id of self enrolment key input as there can be multiple self enrolment methods.
+                //NB actually this probably doesnt apply to waitinglist self enrolment, but just to be safe
+                $mform->addElement('passwordunmask', 'enrolpassword', get_string('password', 'enrol_self'),
+                    array('id' => 'enrolpassword_'.$method->id));
+            } else {
+                $mform->addElement('static', 'nokey', '', get_string('nopassword', 'enrol_self'));
+            }
+
+            /**
+             * @updateDate  28/10/2015
+             * @author      eFaktor     (fbv)
+             *
+             * Description
+             * Add Invoice fields
+             */
+            if ($waitinglist->{ENROL_WAITINGLIST_FIELD_INVOICE}) {
+                global $PAGE;
+                $PAGE->requires->js('/enrol/invoice/js/invoice.js');
+                \Invoices::AddElements_ToForm($mform);
+
+                $mform->addElement('hidden', 'invoicedata');
+                $mform->setType('invoicedata', PARAM_INT);
+                $mform->setDefault('invoicedata', 1);
+            }
+        }//if_vacancies
+
+        $this->add_action_buttons(true, get_string('enrolme', 'enrol_self'));
 
         $mform->addElement('hidden', 'id');
         $mform->setType('id', PARAM_INT);
         $mform->setDefault('id', $waitinglist->courseid);
-        
+
         $mform->addElement('hidden', 'methodtype');
         $mform->setType('methodtype', PARAM_TEXT);
-		$mform->setDefault('methodtype', $this->method->get_methodtype());
+        $mform->setDefault('methodtype', $this->method->get_methodtype());
 
         $mform->addElement('hidden', 'waitinglist');
         $mform->setType('waitinglist', PARAM_INT);

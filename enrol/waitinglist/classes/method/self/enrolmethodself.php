@@ -375,11 +375,21 @@ class enrolmethodself extends \enrol_waitinglist\method\enrolmethodbase{
         if (true === $enrolstatus) {
         	$listtotal = $queueman->get_listtotal();
 
+            $waitinglistid  = optional_param('waitinglist', 0, PARAM_INT);
+
             $form = new enrolmethodself_enrolform(NULL, array($waitinglist,$this,$listtotal));
-            $waitinglistid = optional_param('waitinglist', 0, PARAM_INT);
+
             if ($waitinglist->id == $waitinglistid) {
-            	//if this is an enrol form submission, process it
-                if ($data = $form->get_data()) {
+                /**
+                 * @updateDate  02/12/2015
+                 * @author      eFaktor     (fbv)
+                 *
+                 * Description
+                 * Check vancacies
+                 */
+                if ($form->is_cancelled()) {
+                    redirect($CFG->wwwroot . '/index.php');
+                }else if ($data = $form->get_data()) {
                     $this->waitlistrequest_self($waitinglist, $data);
 
                     /**
@@ -396,8 +406,8 @@ class enrolmethodself extends \enrol_waitinglist\method\enrolmethodbase{
                     }//if_enrol_invoice
 
                     redirect($CFG->wwwroot . '/course/view.php?id=' . $waitinglist->courseid);
-                }
-            }
+                }//if_form
+            }//if_waitinglist_id
 
             ob_start();
             $form->display();
