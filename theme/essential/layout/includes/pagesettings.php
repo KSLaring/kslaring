@@ -42,6 +42,15 @@ if (theme_essential_get_setting('enablealternativethemecolors1') ||
     $colourswitcher = false;
 }
 
+$devicetype = core_useragent::get_device_type(); // In /lib/classes/useragent.php.
+if ($devicetype == "mobile") {
+    $bodyclasses[] = 'mobiledevice';
+} else if ($devicetype == "tablet") {
+    $bodyclasses[] = 'tabletdevice';
+} else {
+    $bodyclasses[] = 'desktopdevice';
+}
+
 switch (theme_essential_get_setting('pagewidth')) {
     case 100:
         $bodyclasses[] = 'pagewidthvariable';
@@ -63,6 +72,10 @@ if (theme_essential_get_setting('enablecategoryicon')) {
     $bodyclasses[] = 'categoryicons';
 }
 
+if (($PAGE->pagelayout == 'course') && (get_config('core', 'modeditingmenu'))) {
+    $bodyclasses[] = 'modeditingmenu';
+}
+
 $regionbsid = 'region-bs-main-and-pre';
 $left = true;
 if (right_to_left()) {
@@ -79,9 +92,7 @@ $headingfont = urlencode(theme_essential_get_setting('fontnameheading'));
 $bodyfont = urlencode(theme_essential_get_setting('fontnamebody'));
 
 
-
 /* Group Header */
-
 $hassocialnetworks = (
     theme_essential_get_setting('facebook') ||
     theme_essential_get_setting('twitter') ||
@@ -99,23 +110,52 @@ $hasmobileapps = (theme_essential_get_setting('ios') ||
     theme_essential_get_setting('android')
 );
 
-$logoclass = 'span12';
+$logoclass = 'ecol12';
 if ($hassocialnetworks || $hasmobileapps) {
-    $logoclass = 'span6';
+    $logoclass = 'ecol8';
 }
 
 $oldnavbar = theme_essential_get_setting('oldnavbar');
 $haslogo = theme_essential_get_setting('logo');
 
-
-/* Group Frontpage */
-$alertinfo = '<span class="fa-stack "><i class="fa fa-square fa-stack-2x"></i><i class="fa fa-info fa-stack-1x fa-inverse"></i></span>';
-$alerterror = '<span class="fa-stack"><i class="fa fa-square fa-stack-2x"></i><i class="fa fa-warning fa-stack-1x fa-inverse"></i></span>';
-$alertsuccess = '<span class="fa-stack"><i class="fa fa-square fa-stack-2x"></i><i class="fa fa-bullhorn fa-stack-1x fa-inverse"></i></span>';
-
 /* Group Content */
 $hasboringlayout = theme_essential_get_setting('layout');
 
+/* Group Report Page Title */
+function essential_report_page_has_title() {
+    global $PAGE;
+    $hastitle = true;
+
+    switch ($PAGE->pagetype) {
+        case 'grade-report-overview-index':
+            $hastitle = false;
+            break;
+        default: break;
+    }
+
+    return $hastitle;
+}
+
+/* Group Page Footer Region */
+function essential_has_footer_region() {
+    global $PAGE;
+    $hasregion = false;
+
+    switch ($PAGE->pagetype) {
+        case 'admin-plugins':
+        case 'course-management':
+        case 'mod-quiz-edit':
+            $hasregion = true;
+            break;
+        default: break;
+    }
+
+    return $hasregion;
+}
+
 /* Group Footer */
 $hascopyright = theme_essential_get_setting('copyright', true);
-$hasfootnote = theme_essential_get_setting('footnote', 'format_text');
+$hasfootnote = theme_essential_get_setting('footnote', 'format_html');
+
+/* Group Breadcrumb */
+$breadcrumbstyle = theme_essential_get_setting('breadcrumbstyle');

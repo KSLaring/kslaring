@@ -23,9 +23,7 @@
  * @copyright   2014 Gareth J Barnard, David Bezemer
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class theme_essential_core_renderer extends core_renderer
-{
-
+class theme_essential_core_renderer extends core_renderer {
     public $language = null;
 
     /**
@@ -35,8 +33,11 @@ class theme_essential_core_renderer extends core_renderer
     public function navbar()
     {
         $breadcrumbstyle = theme_essential_get_setting('breadcrumbstyle');
-        $breadcrumbs = html_writer::start_tag('ul', array('class' => "breadcrumb style$breadcrumbstyle"));
         if ($breadcrumbstyle) {
+            if ($breadcrumbstyle == '4') {
+                $breadcrumbstyle = '1'; // Fancy style with no collapse.
+            }
+            $breadcrumbs = html_writer::start_tag('ul', array('class' => "breadcrumb style$breadcrumbstyle"));
             $index = 1;
             foreach ($this->page->navbar->get_items() as $item) {
                 $item->hideicon = true;
@@ -44,6 +45,8 @@ class theme_essential_core_renderer extends core_renderer
                 $index += 1;
             }
             $breadcrumbs .= html_writer::end_tag('ul');
+        } else {
+            $breadcrumbs = html_writer::tag('p', '&nbsp;');
         }
         return $breadcrumbs;
     }
@@ -72,7 +75,6 @@ class theme_essential_core_renderer extends core_renderer
         $notification = "<div class=\"$type\">$message</div>";
         return $notification;
     }
-
 
     /**
      * Outputs the page's footer
@@ -233,6 +235,8 @@ class theme_essential_core_renderer extends core_renderer
      */
     public function custom_menu_courses()
     {
+        global $CFG;
+
         $coursemenu = new custom_menu();
 
         $hasdisplaymycourses = theme_essential_get_setting('displaymycourses');
@@ -248,14 +252,23 @@ class theme_essential_core_renderer extends core_renderer
                 $branchtitle = get_string('mycourses', 'theme_essential');
             }
             $branchlabel = '<i class="fa fa-briefcase"></i>' . $branchtitle;
-            $branchurl = new moodle_url('/my/index.php');
+            $branchurl = new moodle_url('');
             $branchsort = 200;
 
             $branch = $coursemenu->add($branchlabel, $branchurl, $branchtitle, $branchsort);
 
+            $hometext = get_string('myhome');
+            $homelabel = html_writer::tag('i', '', array('class' => 'fa fa-home')).html_writer::tag('span', ' '.$hometext);
+            $branch->add($homelabel, new moodle_url('/my/index.php'), $hometext);
+
+            // Get 'My courses' sort preference from admin config.
+            if (!$sortorder = $CFG->navsortmycoursessort) {
+                $sortorder = 'sortorder';
+            }
+
             // Retrieve courses and add them to the menu when they are visible
             $numcourses = 0;
-            if ($courses = enrol_get_my_courses(NULL, 'fullname ASC')) {
+            if ($courses = enrol_get_my_courses(NULL, $sortorder . ' ASC')) {
                 foreach ($courses as $course) {
                     if ($course->visible) {
                         $branch->add('<i class="fa fa-graduation-cap"></i>' . format_string($course->fullname), new moodle_url('/course/view.php?id=' . $course->id), format_string($course->shortname));
@@ -314,6 +327,78 @@ class theme_essential_core_renderer extends core_renderer
             }
         }
         return $this->render_custom_menu($colourmenu);
+    }
+
+    /**
+     * Outputs the Activity Stream menu
+     * @return custom_menu object
+     */
+    public function custom_menu_activitystream() {
+        if ($this->page->pagelayout != 'course') {
+            return '';
+        }
+
+        if (!isguestuser()) {
+            if (isset($this->page->course->id) && $this->page->course->id > 1) {
+                $activitystreammenu = new custom_menu();
+                $branchtitle = get_string('thiscourse', 'theme_essential');
+                $branchlabel = '<i class="fa fa-book"></i>'.$branchtitle;
+                $branchurl = new moodle_url('#');
+                $branch = $activitystreammenu->add($branchlabel, $branchurl, $branchtitle, 10002);
+                $branchtitle = get_string('people', 'theme_essential');
+                $branchlabel = '<i class="fa fa-users"></i>'.$branchtitle;
+                $branchurl = new moodle_url('/user/index.php', array('id' => $this->page->course->id));
+                $branch->add($branchlabel, $branchurl, $branchtitle, 100003);
+                $branchtitle = get_string('grades');
+                $branchlabel = '<i class="fa fa-list-alt icon"></i>'.$branchtitle;
+                $branchurl = new moodle_url('/grade/report/index.php', array('id' => $this->page->course->id));
+                $branch->add($branchlabel, $branchurl, $branchtitle, 100004);
+
+                $data = $this->get_course_activities();
+                foreach ($data as $modname => $modfullname) {
+                    if ($modname === 'resources') {
+                        $icon = $this->pix_icon('icon', '', 'mod_page', array('class' => 'icon'));
+                        $branch->add($icon.$modfullname, new moodle_url('/course/resources.php', array('id' => $this->page->course->id)));
+                    } else {
+                        $icon = '<img src="'.$this->pix_url('icon', $modname) . '" class="icon" alt="" />';
+                        $branch->add($icon.$modfullname, new moodle_url('/mod/'.$modname.'/index.php', array('id' => $this->page->course->id)));
+                    }
+                }
+                return $this->render_custom_menu($activitystreammenu);
+            }
+        }
+        return '';
+    }
+
+    private function get_course_activities() {
+        // A copy of block_activity_modules.
+        $course = $this->page->course;
+        $content = new stdClass();
+        $modinfo = get_fast_modinfo($course);
+        $modfullnames = array();
+        $archetypes = array();
+        foreach ($modinfo->cms as $cm) {
+            // Exclude activities which are not visible or have no link (=label).
+            if (!$cm->uservisible or !$cm->has_view()) {
+                continue;
+            }
+            if (array_key_exists($cm->modname, $modfullnames)) {
+                continue;
+            }
+            if (!array_key_exists($cm->modname, $archetypes)) {
+                $archetypes[$cm->modname] = plugin_supports('mod', $cm->modname, FEATURE_MOD_ARCHETYPE, MOD_ARCHETYPE_OTHER);
+            }
+            if ($archetypes[$cm->modname] == MOD_ARCHETYPE_RESOURCE) {
+                if (!array_key_exists('resources', $modfullnames)) {
+                    $modfullnames['resources'] = get_string('resources');
+                }
+            } else {
+                $modfullnames[$cm->modname] = $cm->modplural;
+            }
+        }
+        core_collator::asort($modfullnames);
+
+        return $modfullnames;
     }
 
     /**
@@ -377,6 +462,9 @@ class theme_essential_core_renderer extends core_renderer
                     $messagecontent .= html_writer::span($message->text, 'notification-text');
                     $messagecontent .= html_writer::end_div();
                 } else {
+                    if (!is_object($message->from) || !empty($message->from->deleted)) {
+                        continue;
+                    }
                     $senderpicture = new user_picture($message->from);
                     $senderpicture->link = false;
                     $senderpicture->size = 60;
@@ -455,6 +543,9 @@ class theme_essential_core_renderer extends core_renderer
             $messagecontent->text = $message->smallmessage;
             $messagecontent->type = 'notification';
             $messagecontent->url = new moodle_url($message->contexturl);
+            if (empty($message->contexturl)) {
+                $messagecontent->url = new moodle_url('/message/index.php', array('user1' => $USER->id, 'viewing' => 'recentnotifications'));
+            }
         } else {
             $messagecontent->type = 'message';
             if ($message->fullmessageformat == FORMAT_HTML) {
@@ -468,6 +559,10 @@ class theme_essential_core_renderer extends core_renderer
             $messagecontent->from = $DB->get_record('user', array('id' => $message->useridfrom));
             $messagecontent->url = new moodle_url('/message/index.php', array('user1' => $USER->id, 'user2' => $message->useridfrom));
         }
+
+        $options = new stdClass();
+        $options->para = false;
+        $messagecontent->text = format_text($messagecontent->text, FORMAT_PLAIN, $options);
 
         $messagecontent->date = $message->timecreated;
         $messagecontent->unread = empty($message->timeread);
@@ -529,7 +624,23 @@ class theme_essential_core_renderer extends core_renderer
     }
 
     /**
-     * Outputs the messages menu
+     * Outputs the goto bottom menu.
+     * @return custom_menu object
+     */
+    public function custom_menu_goto_bottom()
+    {
+        $html = '';
+        if (($this->page->pagelayout == 'course') || ($this->page->pagelayout == 'incourse') || ($this->page->pagelayout == 'admin')) { // Go to bottom.
+            $menu = new custom_menu();
+            $gotobottom = html_writer::tag('i', '', array('class' => 'fa fa-arrow-circle-o-down'));
+            $menu->add($gotobottom, new moodle_url('#region-main'), get_string('gotobottom', 'theme_essential'));
+            $html = $this->render_custom_menu($menu);
+        }
+        return $html;
+    }
+
+    /**
+     * Outputs the user menu.
      * @return custom_menu object
      */
     public function custom_menu_user()
@@ -546,9 +657,10 @@ class theme_essential_core_renderer extends core_renderer
         $usermenu .= html_writer::start_tag('li', array('class' => 'dropdown'));
 
         if (!isloggedin()) {
-            $userpic = '<em><i class="fa fa-sign-in"></i>' . get_string('login') . '</em>';
-            $usermenu .= html_writer::link($loginurl, $userpic, array('class' => 'loginurl'));
-
+            if ($this->page->pagelayout != 'login') {
+                $userpic = '<em><i class="fa fa-sign-in"></i>' . get_string('login') . '</em>';
+                $usermenu .= html_writer::link($loginurl, $userpic, array('class' => 'loginurl'));
+            }
         } else if (isguestuser()) {
             $userurl = new moodle_url('#');
             $userpic = parent::user_picture($USER, array('link' => false));
@@ -698,7 +810,7 @@ class theme_essential_core_renderer extends core_renderer
      */
     private function theme_essential_render_helplink()
     {
-        global $USER;
+        global $USER, $CFG;
         if (!theme_essential_get_setting('helplinktype')) {
             return false;
         }
@@ -706,32 +818,36 @@ class theme_essential_core_renderer extends core_renderer
         $branchurl = '';
         $target = '';
 
-        if (theme_essential_get_setting('helplinktype') == 1) {
-            if (filter_var(theme_essential_get_setting('helplink'), FILTER_VALIDATE_EMAIL)) {
+        if (theme_essential_get_setting('helplinktype') === '1') {
+            if (theme_essential_get_setting('helplink') && filter_var(theme_essential_get_setting('helplink'), FILTER_VALIDATE_EMAIL)) {
                 $branchurl = 'mailto:' . theme_essential_get_setting('helplink') . '?cc=' . $USER->email;
-            } else if ((theme_essential_get_setting('helplink')) && (filter_var(get_config('supportemail'), FILTER_VALIDATE_EMAIL))) {
-                $branchurl = 'mailto:' . get_config('supportemail') . '?cc=' . $USER->email;
+            } else if ($CFG->supportemail && filter_var($CFG->supportemail, FILTER_VALIDATE_EMAIL)) {
+                $branchurl = 'mailto:' . $CFG->supportemail . '?cc=' . $USER->email;
             } else {
+                if (is_siteadmin()) {
+                    $branchurl = preg_replace("(https?:)", "", $CFG->wwwroot).'/admin/settings.php?section=theme_essential_header';
+                }
                 $branchlabel = '<em><i class="fa fa-exclamation-triangle red"></i>' . get_string('invalidemail') . '</em>';
             }
-
-            return html_writer::tag('li', html_writer::link($branchurl, $branchlabel, array('target' => $target)));
         }
 
-        if (theme_essential_get_setting('helplinktype') == 2) {
-            if (filter_var(theme_essential_get_setting('helplink'), FILTER_VALIDATE_URL, FILTER_FLAG_SCHEME_REQUIRED)) {
+        if (theme_essential_get_setting('helplinktype') === '2') {
+            if (theme_essential_get_setting('helplink') && filter_var(theme_essential_get_setting('helplink'), FILTER_VALIDATE_URL, FILTER_FLAG_SCHEME_REQUIRED)) {
                 $branchurl = theme_essential_get_setting('helplink');
                 $target = '_blank';
-            } else if ((!theme_essential_get_setting('helplink')) && (filter_var(get_config('supportpage'), FILTER_VALIDATE_URL, FILTER_FLAG_SCHEME_REQUIRED))) {
-                $branchurl = get_config('supportpage');
+            } else if ((!theme_essential_get_setting('helplink')) && (filter_var($CFG->supportpage, FILTER_VALIDATE_URL, FILTER_FLAG_SCHEME_REQUIRED))) {
+                $branchurl = $CFG->supportpage;
                 $target = '_blank';
             } else {
+                if (is_siteadmin()) {
+                    $branchurl = preg_replace("(https?:)", "", $CFG->wwwroot).'/admin/settings.php?section=theme_essential_header';
+                }
                 $branchlabel = '<em><i class="fa fa-exclamation-triangle red"></i>' . get_string('invalidurl', 'error') . '</em>';
             }
 
-            return html_writer::tag('li', html_writer::link($branchurl, $branchlabel, array('target' => $target)));
         }
 
+        return html_writer::tag('li', html_writer::link($branchurl, $branchlabel, array('target' => $target)));
     }
 
     /**
@@ -755,7 +871,7 @@ class theme_essential_core_renderer extends core_renderer
         }
         if (has_capability('moodle/user:changeownpassword', $context)) {
             $branchlabel = '<em><i class="fa fa-key"></i>' . get_string('changepassword') . '</em>';
-            $branchurl = new moodle_url('/login/change_password.php', array('id' => $USER->id));
+            $branchurl = new moodle_url('/login/change_password.php');
             $preferences .= html_writer::tag('li', html_writer::link($branchurl, $branchlabel));
         }
         if (has_capability('moodle/user:editownmessageprofile', $context)) {
@@ -776,8 +892,6 @@ class theme_essential_core_renderer extends core_renderer
         $preferences .= html_writer::end_tag('ul');
         $preferences .= html_writer::end_tag('li');
         return $preferences;
-
-
     }
 
     /**
@@ -968,6 +1082,208 @@ class theme_essential_core_renderer extends core_renderer
             return false;
         }
     }
-}
 
-?>
+    /**
+     * Get the HTML for blocks in the given region.
+     *
+     * @since 2.5.1 2.6
+     * @param string $region The region to get HTML for.
+     * @param array $classes array of classes for the tag.
+     * @param string $tag Tag to use.
+     * @param int $footer if > 0 then this is a footer block specifying the number of blocks per row, max of '4'.
+     * @return string HTML.
+     */
+    public function essential_blocks($region, $classes = array(), $tag = 'aside', $footer = 0) {
+        $classes = (array) $classes;
+        $classes[] = 'block-region';
+
+        $attributes = array(
+            'id' => 'block-region-' . preg_replace('#[^a-zA-Z0-9_\-]+#', '-', $region),
+            'class' => join(' ', $classes),
+            'data-blockregion' => $region,
+            'data-droptarget' => '1'
+        );
+
+        if ($footer > 0) {
+            $attributes['class'] .= ' footer-blocks';
+            $editing = $this->page->user_is_editing();
+            if ($editing) {
+                $attributes['class'] .= ' footer-edit';
+            }
+            $output = html_writer::tag($tag, $this->essential_blocks_for_region($region, $footer, $editing), $attributes);
+        } else {
+            $output = html_writer::tag($tag, $this->blocks_for_region($region), $attributes);
+        }
+
+        return $output;
+    }
+
+    /**
+     * Output all the blocks in a particular region.
+     *
+     * @param string $region the name of a region on this page.
+     * @param int $blocksperrow Number of blocks per row, if > 4 will be set at 4.
+     * @param boolean $editing If we are editing.
+     * @return string the HTML to be output.
+     */
+    protected function essential_blocks_for_region($region, $blocksperrow, $editing) {
+        $blockcontents = $this->page->blocks->get_content_for_region($region, $this);
+        $output = '';
+
+        $blockcount = count($blockcontents);
+
+        if ($blockcount >= 1) {
+            if (!$editing) {
+                $output .= html_writer::start_tag('div', array('class' => 'row-fluid'));
+            }
+            $blocks = $this->page->blocks->get_blocks_for_region($region);
+            $lastblock = null;
+            $zones = array();
+            foreach ($blocks as $block) {
+                $zones[] = $block->title;
+            }
+
+            /*
+             * When editing we want all the blocks to be the same as side-pre / side-post so set by CSS:
+             *
+             * aside.footer-edit .block {
+             *     .footer-fluid-span(3);
+             * }
+             */
+            if (($blocksperrow > 4) || ($editing)) {
+                $blocksperrow = 4; // Will result in a 'span3' when more than one row.
+            }
+            $rows = $blockcount / $blocksperrow; // Maximum blocks per row.
+
+            if (!$editing) {
+                if ($rows <= 1) {
+                    $span = 12 / $blockcount;
+                    if ($span < 1) {
+                        // Should not happen but a fail safe - block will be small so good for screen shots when this happens.
+                        $span = 1;
+                    }
+                } else {
+                    $span = 12 / $blocksperrow;
+                }
+            }
+
+            $currentblockcount = 0;
+            $currentrow = 0;
+            $currentrequiredrow = 1;
+            foreach ($blockcontents as $bc) {
+
+                if (!$editing) { // Using CSS and special 'span3' only when editing.
+                    $currentblockcount++;
+                    if ($currentblockcount > ($currentrequiredrow * $blocksperrow)) {
+                        // Tripping point.
+                        $currentrequiredrow++;
+                        // Break...
+                        $output .= html_writer::end_tag('div');
+                        $output .= html_writer::start_tag('div', array('class' => 'row-fluid'));
+                        // Recalculate span if needed...
+                        $remainingblocks = $blockcount - ($currentblockcount - 1);
+                        if ($remainingblocks < $blocksperrow) {
+                            $span = 12 / $remainingblocks;
+                            if ($span < 1) {
+                                // Should not happen but a fail safe - block will be small so good for screen shots when this happens.
+                                $span = 1;
+                            }
+                        }
+                    }
+
+                    if ($currentrow < $currentrequiredrow) {
+                        $currentrow = $currentrequiredrow;
+                    }
+
+                    // 'desktop-first-column' done in CSS with ':first-of-type' and ':nth-of-type'.
+                    // 'spanX' done in CSS with calculated special width class as fixed at 'span3' for all.
+                    $bc->attributes['class'] .= ' span' . $span;
+                }
+
+                if ($bc instanceof block_contents) {
+                    $output .= $this->block($bc, $region);
+                    $lastblock = $bc->title;
+                } else if ($bc instanceof block_move_target) {
+                    $output .= $this->block_move_target($bc, $zones, $lastblock);
+                } else {
+                    throw new coding_exception('Unexpected type of thing (' . get_class($bc) . ') found in list of block contents.');
+                }
+            }
+            if (!$editing) {
+                $output .= html_writer::end_tag('div');
+            }
+        }
+
+        return $output;
+    }
+
+    // Essential custom bits.
+    // Moodle CSS file serving.
+    public function get_csswww() {
+        global $CFG;
+
+        if (!$this->theme_essential_lte_ie9()) {
+            if (right_to_left()) {
+                $moodlecss = 'essential-rtl.css';
+            } else {
+                $moodlecss = 'essential.css';
+            }
+
+            $syscontext = context_system::instance();
+            $itemid = theme_get_revision();
+            $url = moodle_url::make_file_url("$CFG->wwwroot/pluginfile.php", "/$syscontext->id/theme_essential/style/$itemid/$moodlecss");
+            $url = preg_replace('|^https?://|i', '//', $url->out(false));
+            return '<link rel="stylesheet" href="'.$url.'">';
+        } else {
+            if (right_to_left()) {
+                $moodlecssone = 'essential-rtl_ie9-blessed1.css';
+                $moodlecsstwo = 'essential-rtl_ie9.css';
+            } else {
+                $moodlecssone = 'essential_ie9-blessed1.css';
+                $moodlecsstwo = 'essential_ie9.css';
+            }
+
+            $syscontext = context_system::instance();
+            $itemid = theme_get_revision();
+            $urlone = moodle_url::make_file_url("$CFG->wwwroot/pluginfile.php", "/$syscontext->id/theme_essential/style/$itemid/$moodlecssone");
+            $urlone = preg_replace('|^https?://|i', '//', $urlone->out(false));
+            $urltwo = moodle_url::make_file_url("$CFG->wwwroot/pluginfile.php", "/$syscontext->id/theme_essential/style/$itemid/$moodlecsstwo");
+            $urltwo = preg_replace('|^https?://|i', '//', $urltwo->out(false));
+            return '<link rel="stylesheet" href="'.$urlone.'"><link rel="stylesheet" href="'.$urltwo.'">';
+        }
+    }
+
+    /**
+     *  Override this method in the child to use its 'header' and 'footer' in '/layout/includes/' in inherited layouts from Essential.
+     *  This is so that non-overridden layout files in Essential's 'layout' folder can find the child's 'includes' version rather than Essential's.
+     *  Child theme's do not need to call this method when including files.
+     *  Please look at the included 'Essentials' child theme for an example.
+     */
+    public function get_child_relative_layout_path() {
+        return '';
+    }
+
+    /**
+     * States if the browser is IE9 or less.
+     */
+    public function theme_essential_lte_ie9() {
+        $properties = $this->theme_essential_ie_properties();
+        if (!is_array($properties)) {
+            return false;
+        }
+        // We have properties, it is a version of IE, so is it greater than 9?
+        return ($properties['version'] <= 9.0);
+    }
+
+    /**
+     * States if the browser is IE by returning properties, otherwise false.
+     */
+    public function theme_essential_ie_properties() {
+        $properties = core_useragent::check_ie_properties(); // In /lib/classes/useragent.php.
+        if (!is_array($properties)) {
+            return false;
+        } else {
+            return $properties;
+        }
+    }
+}

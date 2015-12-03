@@ -42,21 +42,27 @@ Bas Brands, Stuart Lamour, Mark Aberdour, Paul Hibbitts, Mary Evans.</p>
 Work taken over in July 2014 by:<br>
 Gareth J. Barnard<br>
 David Bezemer<br>
+Work taken over on the 9th October 2014 by:<br>
+Gareth J. Barnard<br>
 </p>
 <h3>Donations</h3>
-<p>This theme is provided to you for free, and if you want to express your gratitude for using this theme, please consider donating by
-<a href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=themmai%40gmail%2ecom&lc=GB&item_name=Essential%20Theme%20Fund&currency_code=EUR&bn=PP%2dDonationsBF%3abtn_donate_LG%2egif%3aNonHosted" target="_blank">
-     clicking here to donate.
-</a><br>Donations may allow us to provide you with more or better features in less time.</p>
+<p>This theme is provided to you for free, and if you want to express your gratitude for using this theme, please consider donating by:
+<h4>PayPal</h4>
+<p>Please contact me via my <a href="http://moodle.org/user/profile.php?id=442195" target="_blank">\'Moodle profile\'</a> for details as I am an individual and therefore am unable to have \'donation\' / \'buy me now\' buttons under their terms.</p>
+<h4>Flattr</h4>
+<a href="https://flattr.com/profile/gjb2048" target="_blank">
+clicking here to donate.
+</a>
+<br>Donations may allow me to provide you with more or better features in less time.</p>
 </div></div>';
 
-/* General */
+// General.
 $string['genericsettings'] = 'General';
 $string['generalheadingsub'] = 'General settings';
-$string['generalheadingdesc'] = 'Configure the global settings for the theme here. You will find both layout and visual options here.';
+$string['generalheadingdesc'] = 'Configure the general settings for the theme here.';
 
 $string['customcss'] = 'Custom CSS';
-$string['customcssdesc'] = 'Whatever CSS rules you add to this textarea will be reflected in every page, making for easier customization of this theme.';
+$string['customcssdesc'] = 'Whatever CSS rules you add to this text area will be reflected in every page, making for easier customization of this theme.';
 
 $string['footnote'] = 'Footnote';
 $string['footnotedesc'] = 'Whatever you add to this textarea will be displayed in the footer throughout your Moodle site.';
@@ -65,9 +71,11 @@ $string['logo'] = 'Logo';
 $string['logodesc'] = 'Please upload your custom logo here if you want to add it to the header.
                        <br>The image should be 65px high and any reasonable width that suits.
                        <br>If you upload a logo it will replace the standard icon and name that was displayed by default.';
+$string['credit'] = 'The Essential theme is developed, enhanced and maintained by ';
 
-/* Font settings */
-$string['fontheading'] = 'Font settings';
+// Font settings.
+$string['fontsettings'] = 'Font';
+$string['fontheadingsub'] = 'Font settings';
 $string['fontheadingdesc'] = 'Select and enter the fonts that you want to use in your Moodle environment.';
 $string['fontselect'] = 'Font type selector';
 $string['fontselectdesc'] = 'Choose from the list of available font types. Please save to show the options for your choice.';
@@ -79,11 +87,21 @@ $string['fontnameheadingdesc'] = 'Enter the exact name of the font to use for he
 $string['fontnamebody'] = 'Text font';
 $string['fontnamebodydesc'] = 'Enter the exact name of the font to use for all other text.';
 
-/* Font files */
+// Font files.
 $string['fontfiles'] = 'Font files';
-$string['fontfilesdesc'] = 'Upload your font files here, only TTF files are supported.';
+$string['fontfilesdesc'] = 'Upload your font files here.';
 $string['fontfilettfheading'] = 'Heading TTF font file';
+$string['fontfileotfheading'] = 'Heading OTF font file';
+$string['fontfilewoffheading'] = 'Heading WOFF font file';
+$string['fontfilewofftwoheading'] = 'Heading WOFF2 font file';
+$string['fontfileeotheading'] = 'Heading EOT font file';
+$string['fontfilesvgheading'] = 'Heading SVG font file';
 $string['fontfilettfbody'] = 'Body TTF font file';
+$string['fontfileotfbody'] = 'Body OTF font file';
+$string['fontfilewoffbody'] = 'Body WOFF font file';
+$string['fontfilewofftwobody'] = 'Body WOFF2 font file';
+$string['fontfileeotbody'] = 'Body EOT font file';
+$string['fontfilesvgbody'] = 'Body SVG font file';
 
 
 $string['fontcharacterset'] = 'Google font additional character set';
@@ -110,13 +128,16 @@ $string['contactinfo'] = 'Contact information';
 $string['contactinfodesc'] = 'Enter your contact information';
 
 $string['siteicon'] = 'Site icon';
-$string['siteicondesc'] = 'Do not have a logo? Enter the name of the icon you wish to use. List is <a href="http://fortawesome.github.io/Font-Awesome/cheatsheet/" target="_new">here</a>. Just enter what is after the "fa-". ';
+$string['siteicondesc'] = 'Do not have a logo? Enter the name of the icon you wish to use.  List is <a href="http://fortawesome.github.io/Font-Awesome/cheatsheet/" target="_new">here</a>. Just enter what is after the "fa-". ';
 
 $string['layout'] = 'Use a standard course layout';
 $string['layoutdesc'] = 'This theme is designed to put both block columns on the side.  If you prefer the standard Moodle course layout you can check this box and be returned to the boring old three column layout.';
 
 $string['oldnavbar'] = 'Use the old navbar position';
-$string['oldnavbardesc'] = 'Enable this option to use the old navbar position.';
+$string['oldnavbardesc'] = 'Enable this option to use the old navbar position, placing it below the header.';
+
+$string['fitvids'] = 'Use FitVids';
+$string['fitvidsdesc'] = 'Enable FitVids (fitvidsjs.com) to make your embedded videos responsive.  If FitVids is on and you want a video to be excluded then add \'class="fitvidsignore"\' to the \'iframe\' tag in the HTML mode of the editor.  For example: \'iframe class="fitvidsignore" width="420" height="315" src="//www.youtube.com/embed/enmEmym85xc" frameborder="0" allowfullscreen=""></iframe\'.';
 
 $string['left'] = 'Left';
 $string['right'] = 'Right';
@@ -133,6 +154,7 @@ $string['memused'] = 'Memory Used';
 $string['peakmem'] = 'Peak Memory';
 $string['included'] = 'Files Included';
 $string['dbqueries'] = 'DB Read/Write';
+$string['dbtime'] = 'DB Queries Time';
 $string['serverload'] = 'Server Load';
 $string['cachesused'] = 'Cached Used';
 $string['sessionsize'] = 'Session Size';
@@ -155,25 +177,29 @@ $string['displaybeforelogin'] = 'Show before login only';
 $string['displayafterlogin'] = 'Show after login only';
 $string['dontdisplay'] = 'Never show';
 
-// Donate
+// Donate.
 $string['donate_title'] = 'Essential donations';
-$string['donate_desc'] = 'Please {$a->url} to keep the Essential development going, or simply expressing your gratitude.';
-$string['donate_click'] = 'click to donate';
+$string['donate_desc'] = 'Please donate via PayPal by contacting me via my \'';
+$string['donate_desc2'] = ' to keep the Essential development going, or simply to express your gratitude.';
+$string['paypal_desc'] = '{$a->url}\' for details as I am an individual and therefore am unable to have \'donation\' / \'buy me now\' buttons under their terms or ';
+$string['flattr_desc'] = '{$a->url}';
+$string['paypal_click'] = 'Moodle profile';
+$string['flattr_click'] = 'donate via Flattr';
 
-// Readme
+// Readme.
 $string['readme_title'] = 'Essential read-me';
 $string['readme_desc'] = 'Please {$a->url} containing more information about the Essential theme.';
 $string['readme_click'] = 'click for README.txt';
 
 
-/* CustomMenu */
+// Custom Menu.
 $string['mycoursesinfo'] = 'Enrolled courses menu';
 $string['mycoursesinfodesc'] = 'Displays a dynamic list of enrolled courses to the user.';
 $string['displaymycourses'] = 'Display enrolled courses';
 $string['displaymycoursesdesc'] = 'Display enrolled courses for users in the Custom Menu';
 
 $string['mycoursetitle'] = 'Terminology';
-$string['mycoursetitledesc'] = 'Change the terminology for the "My Courses" link in the dropdown menu';
+$string['mycoursetitledesc'] = 'Change the terminology for the "My Courses" link in the drop down menu';
 $string['mycourses'] = 'My courses';
 $string['myunits'] = 'My units';
 $string['mymodules'] = 'My modules';
@@ -183,6 +209,8 @@ $string['allunits'] = 'All units';
 $string['allmodules'] = 'All modules';
 $string['allclasses'] = 'All classes';
 $string['noenrolments'] = 'You have no current enrolments';
+$string['thiscourse'] = 'This course';
+$string['people'] = 'People';
 
 $string['helplinktype'] = 'Enable help link in menu';
 $string['helplinktypedesc'] = 'Choose whether you want to enable a help option in the user menu, you can choose to either provide an URL that will be opened in a new window or an email address.';
@@ -196,15 +224,18 @@ $string['loggedinfrom'] = 'Logged in from ';
 $string['mygrades'] = 'My grades';
 $string['coursegrades'] = 'Course grades';
 
-/* Breadcrumb Style */
+$string['gotobottom'] = 'Go to the bottom of the page';
+
+// Breadcrumb Style.
 $string['breadcrumbstyle'] = 'Breadcrumb style';
 $string['breadcrumbstyledesc'] = 'Here you can change the style of the breadcrumbs.';
 $string['breadcrumbstyled'] = 'Fancy';
+$string['breadcrumbstylednocollapse'] = 'Fancy with no collapse';
 $string['breadcrumbsimple'] = 'Simple';
 $string['breadcrumbthin'] = 'Thin';
 $string['nobreadcrumb'] = 'Hide';
 
-/* Regions */
+// Regions.
 $string['region-side-post'] = 'Right';
 $string['region-side-pre'] = 'Left';
 $string['region-home-left'] = 'Home (Left)';
@@ -215,7 +246,7 @@ $string['region-footer-middle'] = 'Footer (Middle)';
 $string['region-footer-right'] = 'Footer (Right)';
 $string['region-hidden-dock'] = 'Hidden from users';
 
-/* Colours */
+// Colours.
 $string['colorheading'] = 'Colour';
 $string['colorheadingsub'] = 'Set the colours used in your theme';
 $string['colordesc'] = 'Here you can find various settings to change many of the colours found in this theme.';
@@ -250,6 +281,10 @@ $string['footerhovercolordesc'] = 'Set the colour for your linked text when hove
 $string['footerheadingcolor'] = 'Footer heading colour';
 $string['footerheadingcolordesc'] = 'Set the colour for block headings in the footer.';
 
+$string['headerbackground'] = 'Header background image';
+$string['headerbackgrounddesc'] = 'Upload your own background image.';
+$string['headertextcolor'] = 'Header text colour';
+$string['headertextcolordesc'] = 'Set the text colour for the header.';
 $string['pagebackground'] = 'Page background image';
 $string['pagebackgrounddesc'] = 'Upload your own background image. Select the style of the image below.';
 $string['pagebackgroundstyle'] = 'Page background style';
@@ -258,7 +293,7 @@ $string['backgroundstylefixed'] = 'Fixed';
 $string['backgroundstyletiled'] = 'Tiled';
 $string['backgroundstylestretch'] = 'Stretch';
 
-/* Alternate Colour Switcher */
+// Alternate Colour Switcher.
 $string['themecolors'] = 'Theme colours';
 $string['defaultcolors'] = 'Default colours';
 $string['alternativecolors'] = 'Alternative colours {$a}';
@@ -279,9 +314,12 @@ $string['alternativethemehovercolordesc'] = 'What colour should your theme hover
 $string['enablealternativethemecolors'] = 'Enable alternative theme colours {$a}';
 $string['enablealternativethemecolorsdesc'] = 'If enabled, the user will be able to choose the alternative theme colours {$a}.';
 
-/* Frontpage Settings */
+// Frontpage Settings.
 $string['frontpageheading'] = 'Front page';
 $string['frontpageheadingdesc'] = 'Configure here what additional items you want to show on the front page.';
+
+$string['courselistteachericon'] = 'Course list teacher icon';
+$string['courselistteachericondesc'] = 'Name of the icon you wish to use or empty for none.  List is <a href="http://fortawesome.github.io/Font-Awesome/cheatsheet/" target="_new">here</a>.  Just enter what is after "fa-", e.g. "star".';
 
 $string['frontcontentheading'] = 'Front page content area';
 $string['frontcontent'] = 'Enable front page content area';
@@ -290,12 +328,12 @@ $string['frontcontentarea'] = 'Front page content area contents';
 $string['frontcontentareadesc'] = 'Whatever is typed into this box will display across the full width of the page in between the slide show and the Marketing spots.';
 
 $string['frontpageblocksheading'] = 'Front page blocks';
-$string['frontpageblocks'] = 'Frontpage blocks alignment';
+$string['frontpageblocks'] = 'Front page blocks alignment';
 $string['frontpageblocksdesc'] = 'Here you can determine if the standard Moodle blocks on the frontpage align to the left or the right.';
 $string['frontpagemiddleblocks'] = 'Enable additional front page middle blocks';
 $string['frontpagemiddleblocksdesc'] = 'If enabled this will display three additional block locations just under the marketing spots.';
 
-/* Slideshow */
+// Slideshow.
 $string['slideshowheading'] = 'Slide show';
 $string['slideshowheadingsub'] = 'Dynamic slide show for the front page';
 $string['slideshowdesc'] = 'This creates a dynamic slide show of up to sixteen slides for you to promote important elements of your site.  The show is responsive where image height is set according to screen size.  The recommended height is 300px.  The width is set at 100% and therefore the actual height will be smaller if the width is greater than the screen size.  At smaller screen sizes the height is reduced dynamically without the need to provide separate images.  For reference screen width < 767px = height 165px, width between 768px and 979px = height 225px and width > 980px = height 300px.  If no image is selected for a slide, then the default_slide image in the pix folder is used.';
@@ -320,6 +358,13 @@ $string['slideintervaldesc'] = 'Slide transition interval in milliseconds.';
 $string['slidecolor'] = 'Slide text colour';
 $string['slidecolordesc'] = 'What colour the slide caption text should be.';
 
+$string['slidecaptionoptions'] = 'Slide caption options';
+$string['slidecaptionoptionsdesc'] = 'Where the captions should appear in relation to the image.';
+$string['slidecaptionbeside'] = 'Beside';
+$string['slidecaptionontop'] = 'On top';
+$string['slidecaptionunderneath'] = 'Underneath';
+
+// Backward compatibility.
 $string['slidecaptionbelow'] = 'Slide caption below image';
 $string['slidecaptionbelowdesc'] = 'If the slide caption should be below the image.';
 
@@ -348,13 +393,13 @@ $string['slideurltargetself'] = 'Current page';
 $string['slideurltargetnew'] = 'New page';
 $string['slideurltargetparent'] = 'Parent frame';
 
-/* Marketing Spots */
+// Marketing Spots.
 $string['marketingheading'] = 'Marketing spots';
 $string['marketinginfodesc'] = 'Enter the settings for your marketing spot.';
 $string['marketingheadingsub'] = 'Three locations on the front page to add information and links';
 
 $string['marketingheight'] = 'Height of marketing images';
-$string['marketingheightdesc'] = 'If you want to display images in the Marketing boxes you can specify their hight here.';
+$string['marketingheightdesc'] = 'If you want to display images in the Marketing boxes you can specify their height here.';
 $string['marketingdesc'] = 'This theme provides the option of enabling three "marketing" or "ad" spots just under the slide show.  These allow you to easily identify core information to your users and provide direct links.';
 
 $string['togglemarketing'] = 'Toggle marketing spot display';
@@ -367,7 +412,7 @@ $string['marketing3'] = 'Marketing spot three';
 $string['marketingtitle'] = 'Title';
 $string['marketingtitledesc'] = 'Title to show in this marketing spot';
 $string['marketingicon'] = 'Icon';
-$string['marketingicondesc'] = 'Name of the icon you wish to use. List is <a href="http://fortawesome.github.io/Font-Awesome/cheatsheet/" target="_new">here</a>.  Just enter what is after "fa-", e.g. "star".';
+$string['marketingicondesc'] = 'Name of the icon you wish to use.  List is <a href="http://fortawesome.github.io/Font-Awesome/cheatsheet/" target="_new">here</a>.  Just enter what is after "fa-", e.g. "star".';
 $string['marketingimage'] = 'Image';
 $string['marketingimagedesc'] = 'This provides the option of displaying an image above the text in the marketing spot';
 $string['marketingcontent'] = 'Content';
@@ -382,7 +427,7 @@ $string['marketingurltargetself'] = 'Current page';
 $string['marketingurltargetnew'] = 'New page';
 $string['marketingurltargetparent'] = 'Parent frame';
 
-/* Social Networks */
+// Social Networks.
 $string['socialheading'] = 'Social networking';
 $string['socialheadingsub'] = 'Engage your users with social networking';
 $string['socialdesc'] = 'Provide direct links to the core social networks that promote your brand.  These will appear in the header of every page.';
@@ -419,9 +464,9 @@ $string['instagram'] = 'Instagram URL';
 $string['instagramdesc'] = 'Enter the URL of your Instagram page. (i.e http://instagram.com/mycollege)';
 
 $string['website'] = 'Website URL';
-$string['websitedesc'] = 'Enter the URL of your own website. (i.e http://www.uplearning.nl)';
+$string['websitedesc'] = 'Enter the URL of your own website. (i.e http://about.me/gjbarnard)';
 
-/* Category Icons */
+// Category Icons.
 $string['categoryiconheading'] = 'Category icons';
 $string['categoryiconheadingsub'] = 'Use icons to represent your categories';
 $string['categoryicondesc'] = 'If enabled this will allow you to set icons for each category of course.';
@@ -442,10 +487,10 @@ $string['enablecustomcategoryicondesc'] = 'If enabled below this section you wil
 $string['categoryiconinfo'] = 'Set custom category icons';
 $string['categoryiconinfodesc'] = 'Enter the name of the icon you wish to use.  List is <a href="http://fortawesome.github.io/Font-Awesome/cheatsheet/" target="_new">here</a>. Just enter what is after "fa-".';
 
-/* Header Settings */
+// Header Settings.
 $string['headerheading'] = 'Header';
 $string['headertitle'] = 'Header title';
-$string['headertitledesc'] = 'Configure here what title to output in the header.';
+$string['headertitledesc'] = 'Configure here what title to output in the header.  Note: The header title will only be used if there is no logo.';
 $string['navbartitle'] = 'Navigation bar title';
 $string['navbartitledesc'] = 'Configure here what title to output in the navigation bar.';
 $string['notitle'] = 'No Title';
@@ -454,10 +499,10 @@ $string['shortname'] = 'Site short name';
 $string['fullnamesummary'] = 'Full name and summary';
 $string['shortnamesummary'] = 'Short name and summary';
 
-/* Footer Settings */
+// Footer Settings.
 $string['footerheading'] = 'Footer';
 
-/* Mobile Apps */
+// Mobile Apps.
 $string['mobileappsheading'] = 'Apps';
 $string['mobileappsheadingsub'] = 'Link to your app to get your students using mobiles';
 $string['mobileappsdesc'] = 'Have you got a web app on the App Store or Google Play Store?  Provide a link here so your users can grab the apps online.';
@@ -474,7 +519,7 @@ $string['winphonedesc'] = 'Provide an URL to your mobile App on the Google Play 
 $string['ios'] = 'iPhone/iPad (App Store)';
 $string['iosdesc'] = 'Provide an URL to your mobile App on the App Store.  If you do not have one of your own maybe consider linking to the official Moodle Mobile app (https://itunes.apple.com/en/app/moodle-mobile/id633359593).';
 
-/* iOS Icons */
+// iOS Icons.
 $string['iosicon'] = 'iOS home screen icons';
 $string['iosicondesc'] = 'The theme does provide a default icon for iOS and android home screens.  You can upload your custom icons if you wish.';
 
@@ -490,19 +535,19 @@ $string['ipadicondesc'] = 'Icon should be a PNG files sized 72px by 72px.';
 $string['ipadretinaicon'] = 'iPad Icon (Retina)';
 $string['ipadretinaicondesc'] = 'Icon should be a PNG files sized 144px by 144px.';
 
-/* Analytics */
+// Analytics.
 $string['analytics'] = 'Analytics';
 $string['analyticsheadingsub'] = 'Powerful analytics for Moodle';
-$string['analyticsdesc'] = 'Choose the type of Analytics you want to insert and save to enable the other options.';
+$string['analyticsdesc'] = 'Choose the type of analytics you want to insert and save to enable the other options.';
 $string['analyticssiteid'] = 'Site ID';
 $string['analyticssiteiddesc'] = 'Enter your Site ID';
 $string['analyticstrackingid'] = 'Site ID';
 $string['analyticstrackingiddesc'] = 'Enter your Tracking ID';
 $string['analyticssiteurl'] = 'Analytics URL';
-$string['analyticssiteurldesc'] = 'Enter your Piwik Analytics URL without http(s) or a trailing slash';
+$string['analyticssiteurldesc'] = 'Enter your "Piwik Analytics" URL without http(s) or a trailing slash.  For example "mysite.com/analytics".';
 $string['analyticsenabled'] = 'Enabled';
-$string['analyticsenableddesc'] = 'Enable Analytics for Moodle';
-$string['analyticsimagetrack'] = 'Image Tracking';
+$string['analyticsenableddesc'] = 'Enable analytics for Moodle';
+$string['analyticsimagetrack'] = 'Image tracking';
 $string['analyticscleanurl'] = 'Clean URLs';
 $string['analyticscleanurldesc'] = 'Generate clean URL for in advanced tracking';
 $string['analyticsimagetrackdesc'] = 'Enable Image Tracking for browsers with JavaScript disabled.';
@@ -511,7 +556,7 @@ $string['analyticstrackadmindesc'] = 'Enable tracking of Admin users (not recomm
 $string['analyticspiwik'] = 'Piwik';
 $string['analyticsguniversal'] = 'Google Universal Analytics';
 
-/* Alerts */
+// Alerts.
 $string['alertsheading'] = 'User alerts';
 $string['alertsheadingsub'] = 'Display important messages to your users on the front page';
 $string['alertsdesc'] = 'This will display an alert (or multiple) in three different styles to your users on the Moodle frontpage. Please remember to disable these when no longer needed.';
@@ -522,6 +567,7 @@ $string['enablealertdesc'] = 'Enable or disable alerts';
 $string['alert1'] = 'First alert';
 $string['alert2'] = 'Second alert';
 $string['alert3'] = 'Third alert';
+$string['alertinfodesc'] = 'Enter the settings for your alert.';
 
 $string['alerttitle'] = 'Title';
 $string['alerttitledesc'] = 'Main title/heading for your alert.';
@@ -536,11 +582,10 @@ $string['alert_info'] = 'Information';
 $string['alert_warning'] = 'Warning';
 $string['alert_general'] = 'Announcement';
 
-/* Message Menu */
+// Message Menu.
 $string['unreadnewnotification'] = 'New notification';
 $string['nomessagesfound'] = 'No messages were found';
 
 $string['blogpreferences'] = 'Blog preferences';
 $string['badgepreferences'] = 'Badge preferences';
 $string['messagepreferences'] = 'Message preferences';
-

@@ -50,7 +50,7 @@ if (empty($PAGE->layout_options['nofooter'])) {
                 <hr/>
                 <span class="helplink"><?php echo page_doc_link(get_string('moodledocslink')); ?></span>
                 <?php if ($hascopyright) { ?>
-                    <span class="copy">&copy;<?php echo date("Y") . ' ' . $hascopyright; ?></span>
+                    <span class="copy">&copy;<?php echo userdate(time(), '%Y') . ' ' . $hascopyright; ?></span>
                 <?php } ?>
                 <?php if ($hasfootnote) {
                     echo '<div class="footnote span12">' . $hasfootnote . '</div>';
@@ -59,6 +59,9 @@ if (empty($PAGE->layout_options['nofooter'])) {
             <div class="footerperformance row-fluid">
                 <?php echo $OUTPUT->standard_footer_html(); ?>
             </div>
+            <div class="footercredit row-fluid">
+                <?php echo get_string('credit', 'theme_essential'); ?><a href="//about.me/gjbarnard" target="_blank">Gareth J Barnard</a>
+            </div>
         </div>
     </footer>
     <a href="#top" class="back-to-top" ><i class="fa fa-angle-up "></i></a>
@@ -66,29 +69,21 @@ if (empty($PAGE->layout_options['nofooter'])) {
 
     <script type="text/javascript">
         jQuery(document).ready(function () {
-            var offset = 220;
-            var duration = 500;
-            jQuery(window).scroll(function () {
-                if (jQuery(this).scrollTop() > offset) {
-                    jQuery('.back-to-top').fadeIn(duration);
-                } else {
-                    jQuery('.back-to-top').fadeOut(duration);
-                }
-            });
-
-            jQuery('.back-to-top').click(function (event) {
-                event.preventDefault();
-                jQuery('html, body').animate({scrollTop: 0}, duration);
-                return false;
-            });
-
-            jQuery('.navbar').affix({
-                offset: {
-                    top: $('header').height()
-                }
-            });
-            $('.breadcrumb').jBreadCrumb();
-            $('body').fitVids();
+            <?php
+            if (theme_essential_not_lte_ie9()) {
+              echo "jQuery('#essentialnavbar').affix({";
+              echo "offset: {";
+              echo "top: $('#page-header').height()";
+              echo "}";
+              echo "});";
+              if ($breadcrumbstyle == '1') {
+                  echo "$('.breadcrumb').jBreadCrumb();";
+              }
+            }
+            if (theme_essential_get_setting('fitvids')) {
+                echo "$('#page').fitVids();";
+            }
+            ?>
         });
     </script>
 <?php echo $OUTPUT->standard_end_of_body_html() ?>

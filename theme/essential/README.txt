@@ -1,8 +1,13 @@
 The "Essential" Moodle Theme
 ======================
 
-With 2.5 now released Julian thought it time to take the opportunity to build a new theme that would push the new theme engine to it's limits a bit. With that in mind he introduced the new "Essential" theme. Now Julian has left us for Canvassian adventures, Gareth and David have taken over development and maintenance of this theme.
-The idea of this theme is to make the site look as little like Moodle as possible. In this specific instance, it would be used on sites where Moodle would potentially serve as a company homepage rather than just a course list.
+With 2.5 now released Julian thought it time to take the opportunity to build a new theme that would push the new theme engine
+to it's limits a bit. With that in mind he introduced the new "Essential" theme.  Now Julian has left us for Canvassian
+adventures, David and Gareth took over development and maintenance.  And now David has left for pastures new, Gareth continues
+to maintain and make improvements.
+
+The idea of this theme is to make the site look as little like Moodle as possible. In this specific instance, it would be used
+on sites where Moodle would potentially serve as a company homepage rather than just a course list.
 
 Cool things to know about the theme.
  - It attempts to load as many as possible icons from a font
@@ -15,18 +20,76 @@ Cool things to know about the theme.
  - The entire colour scheme can be modified with theme settings
  - The homepage main area is just a label. The theme will ship with custom classes that you can set for tables and links to modify their formatting. No knowledge of code is needed as you can use the text editor to do this. Documentation will be provided outlining what the additional classes are.
 
+Original Author
+===============
+Julian Ridden
+Moodle profile: https://moodle.org/user/profile.php?id=39680
+Web profile:    http://au.linkedin.com/in/eduridden/
+
+Previous Authors
+================
+David Bezemer
+Moodle profile | https://moodle.org/user/profile.php?id=1416592
+Web profile | http://www.davidbezemer.nl
+
+Maintained by
+=============
+G J Barnard MSc. BSc(Hons)(Sndw). MBCS. CEng. CITP. PGCE.
+Moodle profile | http://moodle.org/user/profile.php?id=442195
+Web profile | http://about.me/gjbarnard
+
+Free Software
+=============
+The Essential theme is 'free' software under the terms of the GNU GPLv3 License, please see 'COPYING.txt'.
+
+It can be obtained for free from:
+http://moodle.org/plugins/view.php?plugin=theme_essential
+and
+https://github.com/gjb2048/moodle-theme_essential/releases
+
+You have all the rights granted to you by the GPLv3 license.  If you are unsure about anything, then the
+FAQ - http://www.gnu.org/licenses/gpl-faq.html - is a good place to look.
+
+If you reuse any of the code then I kindly ask that you make reference to the theme.
+
+If you make improvements or bug fixes then I would appreciate if you would send them back to me by forking from
+https://github.com/gjb2048/moodle-theme_essential and doing a 'Pull Request' so that the rest of the
+Moodle community benefits.
+
+Support
+=======
+As Essential is licensed under the GNU GPLv3 License it comes with NO support.  If you would like support from
+me then I'm happy to provide it for a fee (please see my contact details above).  Otherwise, the 'Themes' forum:
+moodle.org/mod/forum/view.php?id=46 is an excellent place to ask questions.
+
+Donations
+=========
+This theme is provided to you for free, and if you want to express your gratitude for using this theme, please consider donating by:
+
+PayPal - Please contact me via my 'Moodle profile' (above) for details as I am an individual and therefore am unable to have 'donation' / 'buy me now' buttons under their terms.
+
+Flattr - https://flattr.com/profile/gjb2048
+
+Donations may allow me to provide you with more or better features in less time.
+
+Donators
+========
+Donations gratefully received with thanks from:
+Mihai Bojonca, TCM International Institute.
+Guido Hornig, actXcellence http://actxcellence.de
+
 Required version of Moodle
 ==========================
-This version works with Moodle version 2013111800 release 2.6 (Build: 20131118) and above within the 2.6 branch until the
+This version works with Moodle version 2014051200.00 release 2.7 (Build: 20140512) and above within the 2.7 branch until the
 next release.
 
 Please ensure that your hardware and software complies with 'Requirements' in 'Installing Moodle' on
-'docs.moodle.org/26/en/Installing_Moodle'.
+'docs.moodle.org/27/en/Installing_Moodle'.
 
 Installation
 ============
  1. Ensure you have the version of Moodle as stated above in 'Required version of Moodle'.  This is essential as the
-    theme relies on underlying core code that is out of our control.
+    theme relies on underlying core code that is out of my control.
  2. Login as an administrator and put Moodle in 'Maintenance Mode' so that there are no users using it bar you as the administrator.
  3. Copy the extracted 'essential' folder to the '/theme/' folder.
  4. Go to 'Site administration' -> 'Notifications' and follow standard the 'plugin' update notification.
@@ -36,7 +99,7 @@ Installation
 Upgrading
 =========
  1. Ensure you have the version of Moodle as stated above in 'Required version of Moodle'.  This is essential as the
-    theme relies on underlying core code that is out of our control.
+    theme relies on underlying core code that is out of my control.
  2. Login as an administrator and put Moodle in 'Maintenance Mode' so that there are no users using it bar you as the administrator.
  3. Make a backup of your old 'essential' folder in '/theme/' and then delete the folder.
  4. Copy the replacement extracted 'essential' folder to the '/theme/' folder.
@@ -72,6 +135,20 @@ do so:
     Default'.
 9.  Put Moodle out of 'Maintenance mode' under 'Home -> Administration -> Site administration -> Server -> Maintenance mode'.
 
+CSlider
+=======
+The original version of Essential used 'CSlider' - http://tympanus.net/codrops/2012/03/15/parallax-content-slider-with-css3-and-jquery/.
+
+It has been removed because of licencing issues: https://github.com/gjb2048/moodle-theme_essential/issues/61
+
+Please do not request that it be put back.  The licence that CSlider has is incompatible with GPLv3 and therefore cannot be a part
+of or redistributed with the theme.
+
+Videos and FitVids
+==================
+Essential uses FitVids.js - http://fitvidsjs.com/ - to make embedded videos responsive.  If you do not want this feature for a particular
+video, then please add the class 'fitvidsignore' to the video element.
+
 Reporting issues
 ================
 Before reporting an issue, please ensure that you are running the latest version for your release of Moodle.  It is essential
@@ -79,12 +156,168 @@ that you are operating the required version of Moodle as stated at the top - thi
 functionality that is out of its control.
 
 When reporting an issue you can post in the theme's forum on Moodle.org (currently 'moodle.org/mod/forum/view.php?id=46')
-or check the issue list https://github.com/DBezemer/moodle-theme_essential/issues and if the problem does not exist, create an
+or check the issue list https://github.com/gjb2048/moodle-theme_essential/issues and if the problem does not exist, create an
 issue.
 
 It is essential that you provide as much information as possible, the critical information being the contents of the theme's 
 'version.php' file.  Other version information such as specific Moodle version, theme name and version also helps.  A screen shot
 can be really useful in visualising the issue along with any files you consider to be relevant.
+
+New in 2.7.9.5.2
+================
+- FIX: Small security issue.
+
+New in 2.7.9.5.1
+================
+- FIX: Small issues in 2.7.9.5.
+
+New in 2.7.9.5
+==============
+- FIX: Issue #422: Regression from #179 in the core_renderer.php file.
+- FIX: Issue #423: Forum floating buttons.
+- FIX: Issue #425: Copyright date localization.
+- FIX: Issue #429: Front page content area set to "Show before login only" still paritally displays.
+- FIX: Issue #430: Book Module - Print (centred) - layout changed.
+- FIX: Issue #432: Adjusted lang string for 'oldnavbardesc'.  Thanks to Mathieu Pelletier (https://github.com/mkpelletier) for this.
+- FIX: Issue #434: Explain if a logo uploaded then no header title will be shown.
+- FIX: Issue #436: Header background colour setting.
+- FIX: Issue #455: IE9 4096 selector limit.
+- FIX: Issue #456: Error in maintenance.php.
+- FIX: Apply MDL-46183.
+- FIX: Apply MDL-45930.
+- FIX: Apply MDL-44907.
+- FIX: Improved custom font file detection and serving.
+- FIX: Serving of slide show images when the parent frontpage is used in a child theme.
+- FIX: Misc tweaks I spotted - look at the commit on 23/2/2015 for details.
+- NEW: Issue #428: Add setting to customise header background image.  Thanks to Jerome Charaoui (https://github.com/jcharaoui) for this.
+- NEW: Issue #433: Add a 'This Course' dropdown menu.  Thanks to ActionJONA (https://github.com/ActionJONA) for the ported BCU theme code.
+- NEW: Added 'Essentials' child theme in 'essentials' sub-folder.  To use, read the 'Installation' instructions in 'essentials/README.txt'.
+       The 'essentials' sub-folder is just a place to store and distribute the child theme.  It will NOT be available until you install it.
+- NEW: Code refactoring to make child theme creation easier.
+
+New in 2.7.9.4.3
+================
+- FIX: Issue #342: Essential Theme (version 2014101000 2.7.8 Build: 2014091804) issue with IE9 and earlier.
+- FIX: Issue #416: Missing background colour in breadcrumb and footer.
+
+New in 2.7.9.4.2
+================
+- FIX: Issue #414: Slider not work properly in RTL.
+
+New in 2.7.9.4.1
+================
+- FIX: Issue #413: Maturity BETA wrong for STABLE version.
+
+New in 2.7.9.4
+==============
+Attempt to see if html5shiv needs to be applied to IE9 to make it look ok.
+- FIX: Issue #348: Slider controls do not work in RTL.
+- FIX: Issue #403: Enroll button does not work with two or more self-enrollment options.
+- FIX: Issue #405: Extension of blocks into Footer region with "Edit Settings" on.
+- FIX: Issue #406: Assignment types: Online Audio Recording.
+- FIX: Issue #408: Show text of question in list.
+- FIX: Issue #411: Atto editor causing horizontal scroll bar.
+- FIX: Issue #412: Drop down background should be themeurlcolour and not themetextcolour.
+- NEW: Issue #410: Use admin preference for 'My courses' menu sort order.  Thanks to Tony Butler for this.
+
+New in 2.7.9.3
+==============
+- FIX: Issue #244: Rows too long on plugins overview page.
+- FIX: Issue #310: Moodle TinyMCE editor issue.
+                   Thanks to Mary Evans for the fix on: https://moodle.org/mod/forum/discuss.php?d=275976 and
+                   https://github.com/zahrah- for testing.
+- FIX: Issue #382: Missing style in mod_feedback.
+- FIX: Issue #385: Embedded YouTube videos not working.
+- FIX: Issue #387: Floating "Submit" area on mobiles is evil.  Also added 'Go to bottom' icon when applicable.
+- FIX: Issue #388: Navbar overlaps "Enrol Users" window, z index?
+- FIX: Issue #389: Slideshow data-slide-to index regression.
+- FIX: Issue #391: question bank - strings of questionnames cuted.
+- FIX: Issue #395: Small overlap on Course and Category Management page.
+- FIX: Issue #396: Fine tuning required on Edit Quiz page.
+- FIX: Issue #397: Docked blocks are not wide enough.
+- FIX: Issue #402: Moving "Automatic redirect" window.
+- FIX: MDL-48246 : YUI generated class 'hidepanelicon' not styled because of a typo.
+
+New in 2.7.9.2
+==============
+- FIX: Issue #372: Hovering block on Grading page.
+- FIX: Issue #377: Fixed width setting breaks carousel images.
+- FIX: Issue #378: Breadcrumb error on many pages when set to 'hide'.
+- FIX: Issue #379: Typo on slide settings page.
+
+New in 2.7.9.1
+==============
+- FIX: Issue #371: Alert Icons not rendered.
+
+New in 2.7.9
+============
+- FIX: Issue #326: Submit panel overlaps the message input area.
+- FIX: Issue #329: Social icons in mobile view showing odd behaviour.
+- FIX: Issue #330: Slider caption below causes jump.
+- FIX: Issue #346: Affix header height when using the old navbar setting.
+- FIX: Issue #349: Background missing in private messages.
+- FIX: Issue #350: Background missing after posting to forum.
+- FIX: Issue #352: Piwik function clash with local plugin version - https://moodle.org/plugins/view.php?plugin=local_analytics.
+- FIX: Issue #356: Incorrect $filename in /pluginfile.php/1/theme_essential/style/<timestamp>/essential.css.
+- FIX: Issue #357: Beside slider option layout issues.
+- FIX: Issue #358: 2.7.9b issues.
+- FIX: Issue #359: Further 2.7.9b issues.
+- FIX: Issue #361: Tweak to quiz editing in 2.7.9b.
+- FIX: Issue #366: My Grades view includes course name.
+- FIX: Issue #367: Course discription summary box not wide enough.
+- FIX: Issue #370: Fancy breadcrumb hidden courses are strikethrough.
+- UPDATE         : moodle/core.less - MDL-47340 & MDL-47097.
+- UPDATE         : moodle/course.less - MDL-47340.
+- UPDATE         : moodle/responsive.less - MDL-47242.
+- NEW: Issue #247: Provide option to prevent automatic collapse for breadcrumbs.
+- NEW: Issue #327: Font file types.
+- NEW: Issue #340: Show slider navigation icons only when mouse in the slider.
+- NEW: Issue #354: Ability to turn FitVids on / off.
+- NEW: Issue #364: Add Shoelace dynamic footer blocks.
+
+New in 2.7.8
+============
+- FIX: Issue #248: Navbar overlay on activity selection popup.
+- FIX: Issue #252: LESS background: transparent; being compiled as background: 0 0;
+- FIX: Issue #254: Gradebook alignment.
+- FIX: Issue #257: Header options cause navbar to display incorrectly.
+- FIX: Issue #258: Message menu text wrapping in IE 11.
+- FIX: Issue #259: In course page icon not appears.
+- FIX: Issue #260: Preview Questions.
+- FIX: Issue #263: Group Image alignment in Forums.
+- FIX: Issue #264: Incorrect H1 content in Password change screen.
+- FIX: Issue #268: When vertical, Marketing spot urls all link to the url for Marketing spot 1.
+- FIX: Issue #271: Performance information not readable when theme colour is #ffffff.
+- FIX: Issue #272: Email/URL for Help link not correctly parsed.
+- FIX: Issue #277: Docking clash when not using old navbar.
+- FIX: Issue #284: Testing 2.7.8a - Save changes bar offset to the right.
+- FIX: Issue #285: Some colours need checking.
+- FIX: Issue #286: CSS caching in Google Chrome.
+- FIX: Issue #287: Embedded objects overlap the navigation elements.
+- FIX: Issue #289: Conflict with Turnitin plugin's navbar.
+- FIX: Issue #291: Carousel images distort.
+- FIX: Issue #292: Google Fonts through https FIX.  Thanks to @PiotrNawrot.
+- FIX: Issue #293: Multilang tags do not work with the course heading.
+- FIX: Issue #294: Undefined variable icon.
+- FIX: Issue #296: Quiz settings page.
+- FIX: Issue #298: User profile fields - can't edit Categories.
+- FIX: Issue #300: Piwik not working in 2.7.8c.
+- FIX: Issue #301: Long resource/activity names overlap editing menu with editing on.
+- FIX: Issue #302: Setting "Breadcrumb Style" to "hide" does not remove the breadcrumb background.
+- FIX: Issue #304: Region not defined in M2.6.
+- FIX: Issue #311: Quiz submission in RTL.
+- FIX: Issue #312: Calendar header in RTL.
+- FIX: Issue #315: Dropdown Menu Highlighting.
+- FIX: Issue #318: Quiz Order and Paging - Alignment fine-tuning.
+- FIX: Issue #319: Preview Question displays directly on background image.
+- FIX: Issue #321: Theme not load essential.css when using https on login page.
+- FIX: Issue #322: Menu colour needs checking.
+- NEW: Issue #249: Implement RTL CSS switching.  Thank you to Nadav Kavalerchik and many others for testing.
+- NEW: Issue #251: Marketing spots h tags.
+- NEW: Issue #269: Marketing Spots Social Media Widgets.
+- NEW: Issue #278: Site name needs to be formatted in line with MDL-47080.
+- NEW: Issue #295: My Courses navbar link not working.
+- NEW: Issue #305: Login button in menu bar on login page.
 
 New in 2.7.7
 ============
@@ -380,21 +613,5 @@ A video showing many of the core features is available for viewing at http://vim
 
 Documentation
 =============
-As always, documentation is a work in progress. Available documentation is available at http://docs.moodle.org/25/en/Essential_theme
-If you have questions you can post them in the issue tracker at https://github.com/DBezemer/moodle-theme_essential/issues
-
-Original Author
-===============
-Julian Ridden
-Moodle profile: https://moodle.org/user/profile.php?id=39680
-Web profile:    http://au.linkedin.com/in/eduridden/
-
-Maintained by
-=============
-David Bezemer
-Moodle profile: https://moodle.org/user/profile.php?id=1416592
-Web profile:    http://www.davidbezemer.nl
-
-G J Barnard MSc. BSc(Hons)(Sndw). MBCS. CEng. CITP. PGCE.
-Moodle profile: http://moodle.org/user/profile.php?id=442195
-Web profile   : http://about.me/gjbarnard
+As always, documentation is a work in progress. Available documentation is available at http://docs.moodle.org/28/en/Essential_theme
+If you have questions you can post them in the issue tracker at https://github.com/gjb2048/moodle-theme_essential/issues
