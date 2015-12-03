@@ -11,8 +11,8 @@
  * @author          efaktor     (fbv)
  */
 
-$string['pluginname']   = 'Kompetansestyring';
-$string['name']         = 'Kompetansestyring';
+$string['pluginname']   = 'Påmeldte kurs';
+$string['name']         = 'Påmeldte kurs';
 
-$string['tracker_manager:addinstance']      = 'Legg til en ny blokk med kompetansestyring';
-$string['tracker_manager:myaddinstance']    = 'Legg til en ny blokk med kompetansestyring';
+$string['tracker_manager:addinstance']      = 'Legg til en ny blokk med påmeldte kurs';
+$string['tracker_manager:myaddinstance']    = 'Legg til en ny blokk med påmeldte kurs';
