@@ -80,12 +80,19 @@ class report_overviewstats_chart_logins extends report_overviewstats_chart {
             $lastmonth[$now - $i * DAYSECS] = array();
         }
 
-        if ($CFG->version >= 2014051200) { // Moodle 2.7 and higher
+        if ($CFG->branch >= 27) {
             $logmanger = get_log_manager();
-            $readers = $logmanger->get_readers('\core\log\sql_select_reader');
+            if ($CFG->branch >= 29) {
+                $readers = $logmanger->get_readers('\core\log\sql_reader');
+            } else {
+                $readers = $logmanger->get_readers('\core\log\sql_select_reader');
+            }
             $reader = reset($readers);
-            $params = array('component' => 'core', 'eventname' => '\core\event\user_loggedin', 'timestart' => $now - 30 * DAYSECS);
-            $select = "component = :component AND eventname = :eventname AND timecreated >= :timestart";
+            $params = array('component' => 'core',
+                            'eventname' => '\core\event\user_loggedin',
+                            'guestid' => $CFG->siteguest,
+                            'timestart' => $now - 30 * DAYSECS);
+            $select = "component = :component AND eventname = :eventname AND userid <> :guestid AND timecreated >= :timestart";
             $rs = $reader->get_events_select($select, $params, 'timecreated DESC', 0, 0);
 
             foreach ($rs as $record) {
@@ -102,9 +109,10 @@ class report_overviewstats_chart_logins extends report_overviewstats_chart {
             $sql = "SELECT time, userid
                       FROM {log}
                      WHERE time >= :timestart
+                       AND userid <> :guestid
                        AND action = 'login'";
 
-            $params = array('timestart' => $now - 30 * DAYSECS);
+            $params = array('timestart' => $now - 30 * DAYSECS, 'guestid' => $CFG->siteguest);
 
             $rs = $DB->get_recordset_sql($sql, $params);
 
