@@ -911,6 +911,8 @@ class Micro_Users {
         $params         = null;
         $rdo            = null;
         $sql            = null;
+        $locate         = '';
+        $extra          = null;
 
         try {
             /* Search criteria  */
@@ -932,11 +934,21 @@ class Micro_Users {
 
             /* Search Option    */
             if ($search) {
-                $sql .= " AND (
-                                u.firstname LIKE '%" . $search."%'
-                                OR
-                                u.lastname LIKE '%" . $search. "%'
-                              ) ";
+                $extra = explode(' ',$search);
+                foreach ($extra as $str) {
+                    if ($locate) {
+                        $locate .= ") AND (";
+                    }
+                    $locate .= " LOCATE('" . $str . "',u.firstname)
+                                 OR
+                                 LOCATE('" . $str . "',u.lastname)
+                                 OR
+                                 LOCATE('" . $str . "',CONCAT(u.firstname,' ',u.lastname))
+                                 OR
+                                 LOCATE('". $str . "',u.email) ";
+                }//if_search_opt
+
+                $sql .= " 	AND ($locate) ";
             }//if_search
 
             /* Execute          */
@@ -974,6 +986,8 @@ class Micro_Users {
         $params         = null;
         $rdo            = null;
         $sql            = null;
+        $locate         = '';
+        $extra          = null;
 
         try {
             /* Search criteria  */
@@ -994,11 +1008,21 @@ class Micro_Users {
 
             /* Search Option    */
             if ($search) {
-                $sql .= " AND (
-                                u.firstname LIKE '%" . $search."%'
-                                OR
-                                u.lastname LIKE '%" . $search. "%'
-                              ) ";
+                $extra = explode(' ',$search);
+                foreach ($extra as $str) {
+                    if ($locate) {
+                        $locate .= ") AND (";
+                    }
+                    $locate .= " LOCATE('" . $str . "',u.firstname)
+                                 OR
+                                 LOCATE('" . $str . "',u.lastname)
+                                 OR
+                                 LOCATE('" . $str . "',CONCAT(u.firstname,' ',u.lastname))
+                                 OR
+                                 LOCATE('". $str . "',u.email) ";
+                }//if_search_opt
+
+                $sql .= " 	AND ($locate) ";
             }//if_search
 
             /* Execute  */
