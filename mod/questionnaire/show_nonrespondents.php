@@ -42,6 +42,10 @@ $sid    = optional_param('sid', 0, PARAM_INT);
 $qid    = optional_param('qid', 0, PARAM_INT);
 $currentgroupid = optional_param('group', 0, PARAM_INT); // Groupid.
 
+if (!isset($SESSION->questionnaire)) {
+    $SESSION->questionnaire = new stdClass();
+}
+
 $SESSION->questionnaire->current_tab = 'nonrespondents';
 
 // Get the objects.
@@ -181,11 +185,7 @@ if ($fullname) {
     // Print the main part of the page.
     // Print the users with no responses
     // Get the effective groupmode of this course and module.
-    if (isset($cm->groupmode) && empty($course->groupmodeforce)) {
-        $groupmode = $cm->groupmode;
-    } else {
-        $groupmode = $course->groupmode;
-    }
+    $groupmode = groups_get_activity_groupmode($cm, $course);
 
     $groupselect = groups_print_activity_menu($cm, $url->out(), true);
     $mygroupid = groups_get_activity_group($cm);
@@ -221,7 +221,7 @@ if ($fullname) {
         $tablecolumns[] = 'status';
         $tableheaders[] = get_string('status');
     }
-    if (has_capability('moodle/course:bulkmessaging', $coursecontext)) {
+    if (has_capability('mod/questionnaire:message', $context)) {
         $tablecolumns[] = 'select';
         $tableheaders[] = get_string('select');
     }
@@ -264,7 +264,7 @@ if ($fullname) {
     } else {
         $usedgroupid = false;
     }
-    $nonrespondents = questionnaire_get_incomplete_users($cm, $sid, $usedgroupid, $sort, $startpage, $pagecount);
+    $nonrespondents = questionnaire_get_incomplete_users($cm, $sid, $usedgroupid);
     $countnonrespondents = count($nonrespondents);
 
     $table->initialbars(false);
@@ -278,6 +278,8 @@ if ($fullname) {
         $pagecount = $table->get_page_size();
     }
 }
+
+$nonrespondents = questionnaire_get_incomplete_users($cm, $sid, $usedgroupid, $sort, $startpage, $pagecount);
 
 // Viewreports-start.
 // Print the list of students.
@@ -333,7 +335,7 @@ if (!$nonrespondents) {
                 $lastaccess = get_string('never');
             }
             $data[] = $lastaccess;
-            if (has_capability('moodle/course:bulkmessaging', $coursecontext)) {
+            if (has_capability('mod/questionnaire:message', $context)) {
                 // If questionnaire is set to "resume", look for saved (not completed) responses
                 // we use the alt attribute of the checkboxes to store the started/not started value!
                 $checkboxaltvalue = '';
@@ -366,7 +368,7 @@ if (!$nonrespondents) {
             echo $OUTPUT->container(html_writer::link($allurl,
                             get_string('showall', '', $countnonrespondents)), array(), 'showall');
         }
-        if (has_capability('moodle/course:bulkmessaging', $coursecontext)) {
+        if (has_capability('mod/questionnaire:message', $context)) {
             echo $OUTPUT->box_start('mdl-align'); // Selection buttons container.
             echo '<div class="buttons">';
             echo '<input type="button" id="checkall" value="'.get_string('selectall').'" /> ';
@@ -385,7 +387,7 @@ if (!$nonrespondents) {
             }
         }
     } else {// Anonymous questionnaire.
-        if (has_capability('moodle/course:bulkmessaging', $coursecontext)) {
+        if (has_capability('mod/questionnaire:message', $context)) {
             echo '<fieldset>';
             echo '<legend>'.get_string('send_message_to', 'questionnaire').'</legend>';
                 $checked = ($selectedanonymous == '' || $selectedanonymous == 'none') ? 'checked = "checked"' : '';
@@ -419,7 +421,7 @@ if (!$nonrespondents) {
             echo '</fieldset>';
         }
     }
-    if (has_capability('moodle/course:bulkmessaging', $coursecontext)) {
+    if (has_capability('mod/questionnaire:message', $context)) {
         // Message editor.
         // Prepare data.
         echo '<fieldset class="clearfix">';
@@ -434,7 +436,7 @@ if (!$nonrespondents) {
             $editor = editors_get_preferred_editor();
             $editor->use_editor($id, questionnaire_get_editor_options($context));
             $texteditor = html_writer::tag('div', html_writer::tag('textarea', $message,
-                            array('id' => $id, 'name' => "message", '', '')));
+                            array('id' => $id, 'name' => "message", 'rows'=>'10', 'cols'=>'60')));
             echo '<input type="hidden" name="format" value="'.FORMAT_HTML.'" />';
 
 
@@ -443,7 +445,6 @@ if (!$nonrespondents) {
         $table->align = array('left', 'left');
         $table->data[] = array( '<strong>'.get_string('subject', 'questionnaire').'</strong>', $subjecteditor);
         $table->data[] = array('<strong>'.get_string('messagebody').'</strong>', $texteditor);
-
 
         echo html_writer::table($table);
 
@@ -471,3 +472,14 @@ echo $OUTPUT->box_end();
 // Finish the page.
 
 echo $OUTPUT->footer();
+
+// Log this questionnaire show non-respondents action.
+$context = context_module::instance($questionnaire->cm->id);
+$anonymous = $questionnaire->respondenttype == 'anonymous';
+
+$event = \mod_questionnaire\event\non_respondents_viewed::create(array(
+                'objectid' => $questionnaire->id,
+                'anonymous' => $anonymous,
+                'context' => $context
+));
+$event->trigger();

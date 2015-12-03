@@ -79,17 +79,18 @@ $PAGE->set_url($url);
 $PAGE->set_context($context);
 
 $questionnaire = new questionnaire($qid, $questionnaire, $course, $cm);
-$owner = (trim($questionnaire->survey->owner) == trim($course->id));
 
 $canpreview = (!isset($questionnaire->capabilities) &&
                has_capability('mod/questionnaire:preview', context_course::instance($course->id))) ||
-              (isset($questionnaire->capabilities) && $questionnaire->capabilities->preview && $owner);
+              (isset($questionnaire->capabilities) && $questionnaire->capabilities->preview);
 if (!$canpreview && !$popup) {
     // Should never happen, unless called directly by a snoop...
     print_error('nopermissions', 'questionnaire', $CFG->wwwroot.'/mod/questionnaire/view.php?id='.$cm->id);
 }
 
-$SESSION->questionnaire = new stdClass();
+if (!isset($SESSION->questionnaire)) {
+    $SESSION->questionnaire = new stdClass();
+}
 $SESSION->questionnaire->current_tab = new stdClass();
 $SESSION->questionnaire->current_tab = 'preview';
 
@@ -117,8 +118,34 @@ if (!$popup) {
     require('tabs.php');
 }
 echo $OUTPUT->heading($pq);
+
+if ($questionnaire->capabilities->printblank) {
+    // Open print friendly as popup window.
+
+    $linkname = '&nbsp;'.get_string('printblank', 'questionnaire');
+    $title = get_string('printblanktooltip', 'questionnaire');
+    $url = '/mod/questionnaire/print.php?qid='.$questionnaire->id.'&amp;rid=0&amp;'.'courseid='.$questionnaire->course->id.'&amp;sec=1';
+    $options = array('menubar' => true, 'location' => false, 'scrollbars' => true, 'resizable' => true,
+                    'height' => 600, 'width' => 800, 'title' => $title);
+    $name = 'popup';
+    $link = new moodle_url($url);
+    $action = new popup_action('click', $link, $name, $options);
+    $class = "floatprinticon";
+    echo $OUTPUT->action_link($link, $linkname, $action, array('class' => $class, 'title' => $title), new pix_icon('t/print', $title));
+}
 $questionnaire->survey_print_render('', 'preview', $course->id, $rid = 0, $popup);
 if ($popup) {
     echo $OUTPUT->close_window_button();
 }
 echo $OUTPUT->footer($course);
+
+// Log this questionnaire preview.
+$context = context_module::instance($questionnaire->cm->id);
+$anonymous = $questionnaire->respondenttype == 'anonymous';
+
+$event = \mod_questionnaire\event\questionnaire_previewed::create(array(
+                'objectid' => $questionnaire->id,
+                'anonymous' => $anonymous,
+                'context' => $context
+));
+$event->trigger();
