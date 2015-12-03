@@ -18,8 +18,7 @@
 /**
 * Instance add/edit form
 *
-* @package    mod
-* @subpackage certificate
+* @package    mod_certificate
 * @copyright  Mark Nelson <markn@moodle.com>
 * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
 */
@@ -29,7 +28,7 @@ if (!defined('MOODLE_INTERNAL')) {
 }
 
 require_once ($CFG->dirroot.'/course/moodleform_mod.php');
-require_once($CFG->dirroot.'/mod/certificate/lib.php');
+require_once($CFG->dirroot.'/mod/certificate/locallib.php');
 
 class mod_certificate_mod_form extends moodleform_mod {
 
@@ -136,7 +135,7 @@ class mod_certificate_mod_form extends moodleform_mod {
 
         $orientation = array( 'L' => get_string('landscape', 'certificate'), 'P' => get_string('portrait', 'certificate'));
         $mform->addElement('select', 'orientation', get_string('orientation', 'certificate'), $orientation);
-        $mform->setDefault('orientation', 'landscape');
+        $mform->setDefault('orientation', 'L');
         $mform->addHelpButton('orientation', 'orientation', 'certificate');
 
         $mform->addElement('select', 'borderstyle', get_string('borderstyle', 'certificate'), certificate_get_images(CERT_IMAGE_BORDER));
