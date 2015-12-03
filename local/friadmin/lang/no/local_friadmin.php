@@ -185,5 +185,6 @@ $string['btn_save'] = 'Lagre';
 $string['lnk_back'] = 'Tilbake';
 
 $string['only_classroom'] = 'Vis bare klasseromskurs';
+$string['only_elearning']   = 'Vis bare nettkurs';
 
 

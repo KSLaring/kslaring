@@ -83,6 +83,16 @@ class local_friadmin_usercourselist_filter extends local_friadmin_widget impleme
             if (!isset($SESSION->filterData['classroom'])) {
                 $SESSION->filterData['classroom'] = false;
             }
+            /**
+             * @updateDate  02/2/2015
+             * @author      eFaktor     (fbv)
+             *
+             * Description
+             * Add check elearning
+             */
+            if (!isset($SESSION->filterData['elearning'])) {
+                $SESSION->filterData['elearning'] = false;
+            }
             $this->fromform = $SESSION->filterData;
             $mform->set_defaults($SESSION->filterData);
         }//if_form_data
@@ -146,13 +156,21 @@ class local_friadmin_usercourselist_filter extends local_friadmin_widget impleme
 
         try {
             /* Result Structure */
+            /**
+             * @updateDate  02/12/2015
+             * @author      eFaktor     (fbv)
+             *
+             * Description
+             * Add option only eLearning courses
+             */
             $result = array(
-                'municipality' => array(),
-                'sector' => array(),
-                'location' => array(),
-                'from' => null,
-                'to' => null,
-                'classroom' => true,
+                'municipality'  => array(),
+                'sector'        => array(),
+                'location'      => array(),
+                'from'          => null,
+                'to'            => null,
+                'classroom'     => true,
+                'elearning'     => true,
             );
 
             if (!isloggedin()) {

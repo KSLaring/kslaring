@@ -150,6 +150,8 @@ class SuperUser {
         $availableUsers = array();
         $groupName      = null;
         $users          = array();
+        $locate         = '';
+        $extra          = null;
 
         try {
             /* Search Criteria  */
@@ -186,11 +188,22 @@ class SuperUser {
                 }else {
                     $sqlWhere = ' WHERE ';
                 }
-                $sqlWhere .= " (
-                                u.firstname LIKE '%" . $search."%'
-                                OR
-                                u.lastname LIKE '%" . $search. "%'
-                               ) ";
+
+                $extra = explode(' ',$search);
+                foreach ($extra as $str) {
+                    if ($locate) {
+                        $locate .= ") AND (";
+                    }
+                    $locate .= " LOCATE('" . $str . "',u.firstname)
+                                 OR
+                                 LOCATE('" . $str . "',u.lastname)
+                                 OR
+                                 LOCATE('" . $str . "',CONCAT(u.firstname,' ',u.lastname))
+                                 OR
+                                 LOCATE('". $str . "',u.email) ";
+                }//if_search_opt
+
+                $sql .= $sqlWhere . " ($locate) ";
             }//if_search
 
             /* ORDER */
@@ -257,6 +270,8 @@ class SuperUser {
         $availableUsers = array();
         $groupName      = null;
         $users          = array();
+        $locate         = '';
+        $extra          = null;
 
         try {
             /* Search Criteria  */
@@ -287,14 +302,23 @@ class SuperUser {
                      WHERE	u.deleted = 0
                         AND	sp.id IS NULL ";
 
-
             /* Search   */
             if ($search) {
-                $sql .= " AND (
-                                u.firstname LIKE '%" . $search."%'
-                                OR
-                                u.lastname LIKE '%" . $search. "%'
-                              ) ";
+                $extra = explode(' ',$search);
+                foreach ($extra as $str) {
+                    if ($locate) {
+                        $locate .= ") AND (";
+                    }
+                    $locate .= " LOCATE('" . $str . "',u.firstname)
+                                 OR
+                                 LOCATE('" . $str . "',u.lastname)
+                                 OR
+                                 LOCATE('" . $str . "',CONCAT(u.firstname,' ',u.lastname))
+                                 OR
+                                 LOCATE('". $str . "',u.email) ";
+                }//if_search_opt
+
+                $sql .= " 	AND ($locate) ";
             }//if_search
 
             /* Order    */

@@ -78,8 +78,7 @@ class local_friadmin_courselist_filter_form extends \moodleform {
             '', $options);
         $mform->setDefault('seltimeto', $customdata['to']);
 
-        $mform->addGroup($elementgroup, 'selectrowtwo', get_string('fromto', 'local_friadmin'),
-            '<span class="group-spacer"> </span>', false);
+        $mform->addGroup($elementgroup, 'selectrowtwo', get_string('fromto', 'local_friadmin'),'<span class="group-spacer"> </span>', false);
 
 
         // The third form row
@@ -95,6 +94,8 @@ class local_friadmin_courselist_filter_form extends \moodleform {
         $mform->setType('selname', PARAM_TEXT);
         $elementgroup[] = $textinput;
 
+        $mform->addGroup($elementgroup, 'selectrowthree', get_string('coursename', 'local_friadmin'),'<span class="group-spacer"> </span>', false);
+
         /**
          * @updateDate  22/06/2015
          * @author      eFaktor     (fbv)
@@ -102,15 +103,24 @@ class local_friadmin_courselist_filter_form extends \moodleform {
          * Description
          * Add checkbox -- Only Classroom Courses
          */
-        $classRoom = $mform->createElement('checkbox','classroom','',get_string('only_classroom','local_friadmin'));
+        $elementgroup = array();
+        $classRoom      = $mform->createElement('checkbox','classroom','',get_string('only_classroom','local_friadmin'));
         $elementgroup[] = $classRoom;
         $mform->setDefault('classroom', $customdata['classroom']);
+        /**
+         * @updateDate  02/12/2015
+         * @author      eFaktor     (fbv)
+         *
+         * Description
+         * Add checkbox -- Only eLearnign Course
+         */
+        $eLearning      = $mform->createElement('checkbox','elearning','',get_string('only_elearning','local_friadmin'));
+        $elementgroup[] = $eLearning;
+        $mform->setDefault('elearning', $customdata['elearning']);
 
-        $elementgroup[] = $mform->createElement('submit', 'submitbutton',
-            get_string('selsubmit', 'local_friadmin'));
+        $elementgroup[] = $mform->createElement('submit', 'submitbutton',get_string('selsubmit', 'local_friadmin'));
 
-        $mform->addGroup($elementgroup, 'selectrowthree', get_string('coursename', 'local_friadmin'),
-            '<span class="group-spacer"> </span>', false);
+        $mform->addGroup($elementgroup, 'selectrowthree','&nbsp;&nbsp;&nbsp;&nbsp;','<span class="group-spacer"> </span>', false);
     }
 
     /**

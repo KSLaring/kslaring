@@ -223,6 +223,13 @@ class local_friadmin_courselist_table_sql_model extends local_friadmin_widget {
             /* Get filter criteria from the form*/
             $filterData = $this->filterdata;
             if ($filterData) {
+                /**
+                 * @updateDate  02/12/2015
+                 * @author      eFaktor     (fbv)
+                 *
+                 * Description
+                 * Add Only eLearning Courses
+                 */
                 /* Add Only Classroom Courses   */
                 if (isset($filterData['classroom']) && ($filterData['classroom'])) {
                     if (!$sqlWhere) {
@@ -230,7 +237,22 @@ class local_friadmin_courselist_table_sql_model extends local_friadmin_widget {
                     }else {
                         $sqlWhere .= " AND ";
                     }//if_selWhere
-                    $sqlWhere .= " c.format like '%classroom%' ";
+
+                    if (isset($filterData['elearning']) && ($filterData['elearning'])) {
+                        $sqlWhere .= " (c.format like '%classroom%' OR c.format like '%netcourse%' OR c.format like '%elearning%') ";
+                    }else {
+                        $sqlWhere .= " c.format like '%classroom%' ";
+                    }//if_elearning_courses
+                }else {
+                    if (isset($filterData['elearning']) && ($filterData['elearning'])) {
+                        if (!$sqlWhere) {
+                            $sqlWhere = " WHERE ";
+                        }else {
+                            $sqlWhere .= " AND ";
+                        }//if_selWhere
+
+                        $sqlWhere .= " (c.format like '%netcourse%' OR c.format like '%elearning%') ";
+                    }//if_elearning_courses
                 }//if_classroom
 
                 /* Municipality Filter  */

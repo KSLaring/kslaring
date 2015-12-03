@@ -166,6 +166,8 @@ class outcome {
         $sql        = null;
         $rdo        = null;
         $jobRoles   = array();
+        $locate     = '';
+        $extra      = null;
 
         try {
             /* Params  */
@@ -183,7 +185,17 @@ class outcome {
 
             /* Search   */
             if ($search) {
-                $sql .= " WHERE jr.name like '%" . $search . "%'";
+                $extra = explode(' ',$search);
+                foreach ($extra as $str) {
+                    if ($locate) {
+                        $locate .= ") AND (";
+                    }
+                    $locate .= " LOCATE('" . $str . "',jr.name)
+                                 OR
+                                 LOCATE('" . $str . "',jr.industrycode) ";
+                }//if_search_opt
+
+                $sql .= " 	WHERE ($locate) ";
             }//if_search
 
             /* Order */
@@ -225,18 +237,30 @@ class outcome {
         $sql        = null;
         $rdo        = null;
         $jobRoles   = array();
+        $locate     = '';
+        $extra      = null;
 
         try {
             /* SQL Instruction  */
             $sql = " SELECT  jr.id,
                              jr.name,
                              jr.industrycode
-                     FROM    	{report_gen_jobrole}  		  jr
+                     FROM    	{report_gen_jobrole}  	jr
                      WHERE   jr.id NOT IN (" . $selected .")";
 
             /* Search   */
             if ($search) {
-                $sql .= " AND jr.name like '%" . $search . "%'";
+                $extra = explode(' ',$search);
+                foreach ($extra as $str) {
+                    if ($locate) {
+                        $locate .= ") AND (";
+                    }
+                    $locate .= " LOCATE('" . $str . "',jr.name)
+                                 OR
+                                 LOCATE('" . $str . "',jr.industrycode) ";
+                }//if_search_opt
+
+                $sql .= " 	AND ($locate) ";
             }//if_search
 
             /* Order */
