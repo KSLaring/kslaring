@@ -149,7 +149,7 @@ function xmldb_questionnaire_upgrade($oldversion=0) {
 
     if ($oldversion < 2008031904) {
         $sql = "SELECT q.id, q.resp_eligible, q.resp_view, cm.id as cmid
-                FROM {$CFG->prefix}questionnaire q, {course_modules} cm, {modules} m
+                FROM {questionnaire} q, {course_modules} cm, {modules} m
                 WHERE m.name='questionnaire' AND m.id=cm.module AND cm.instance=q.id";
         if ($rs = $DB->get_recordset_sql($sql)) {
             $studentroleid = $DB->get_field('role', 'id', array('shortname' => 'student'));
@@ -159,7 +159,7 @@ function xmldb_questionnaire_upgrade($oldversion=0) {
             $capsubmit = 'mod/questionnaire:submit';
 
             foreach ($rs as $questionnaire) {
-                $context = CONTEXT_MODULE::instance($questionnaire->cmid);
+                $context = get_context_instance(CONTEXT_MODULE, $questionnaire->cmid);
 
                 // Convert questionnaires with resp_eligible = 'all' so that students & teachers have view and submit.
                 if ($questionnaire->resp_eligible == 'all') {
@@ -387,16 +387,16 @@ function xmldb_questionnaire_upgrade($oldversion=0) {
             $dbman->add_field($table, $field);
         }
 
-        // Replace the = separator with :: separator in quest_choice content.
+        // Replace the = separator with :: separator in quest_choice content. This fixes radio button options using old "value"="display" formats. 
         require_once($CFG->dirroot.'/mod/questionnaire/locallib.php');
-        $choices = $DB->get_records('questionnaire_quest_choice', $conditions = null);
-        $total = count($choices);
+        $choices = $DB->get_recordset('questionnaire_quest_choice', $conditions = null);
+        $total = $DB->count_records('questionnaire_quest_choice');
         if ($total > 0) {
             $pbar = new progress_bar('convertchoicevalues', 500, true);
             $i = 1;
             foreach ($choices as $choice) {
                 if (($choice->value == null || $choice->value == 'NULL')
-                                && !preg_match("/^([0-9]{1,3})=(.*)$/", $choice->content)) {
+                                && !preg_match("/^([0-9]{1,3}=.*|!other=.*)$/", $choice->content)) {
                     $content = questionnaire_choice_values($choice->content);
                     if ($pos = strpos($content->text, '=')) {
                         $newcontent = str_replace('=', '::', $content->text);
@@ -427,7 +427,7 @@ function xmldb_questionnaire_upgrade($oldversion=0) {
         upgrade_mod_savepoint(true, 2013100500, 'questionnaire');
     }
 
-    if ($oldversion < 2013122201) {
+    if ($oldversion < 2013122202) {
         // Personality test feature.
 
         $table = new xmldb_table('questionnaire_survey');
@@ -485,7 +485,7 @@ function xmldb_questionnaire_upgrade($oldversion=0) {
         }
 
         // Questionnaire savepoint reached.
-        upgrade_mod_savepoint(true, 2013122201, 'questionnaire');
+        upgrade_mod_savepoint(true, 2013122202, 'questionnaire');
     }
 
     if ($oldversion < 2014010300) {

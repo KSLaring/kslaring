@@ -1,4 +1,71 @@
 Release Notes
+Version 2.7.3 (Build - 2015102801)
+Remove hard-coded $CFG->prefix
+CONTRIB-5736 - Fixed incorrect use of checking activity group mode.
+
+Version 2.7.2 (Build - 2015031901)
+CONTRIB-4838 - allow configuration of allowed fields for CSV download - security issue.
+CONTRIB-5600 - Fixed filtering of 'Page Break' question when no questions present.
+CONTRIB-5616 fix type qreg_quote
+
+Version 2.7.1 (Build - 2015020601)
+CONTRIB-5530 - Fixed code to correctly ignore '\!other=' when fixing value/display pairs in radio buttons.
+CONTRIB-4891 - Changed use of empty string to db param based.
+Merge pull request #23 from davosmith/patch-3
+CONTRIB-4643 - replaced all db 'IN' usage with get_in_or_equal().
+CONTRIB-5435 - Put back precision setting for text box questions.
+CONTRIB-5403 fix errors from orphaned surveys.
+CONTRIB-5351 fix preg usage
+CONTRIB-5320 :: Wrong display of score for personality test questionnaires
+CONTRIB-5319 :: Editing question throws log event error if editing is cancelled Plus : modified notice string in classes/event/question_created.php to add "modified".
+CONTRIB-5263 :: The message body in non-respondents is inappropriately sized for certain text editors
+CONTRIB-5311 :: Remove "submit" capability from manager role
+CONTRIB-5304 :: Tabs Misaligned When Viewing Individual Responses + Added print popup to Preview page.
+CONTRIB-5315 :: Do not allow page breaks in first position in a questionnaire.
+CONTRIB-5298 :: Small bugs in new events system
+CONTRIB-5288 :: Issue with zero in numeric question
+CONTRIB-5284 :: order of subquestions in report of ranked question varies (using postgres)
+2.7 MATURITY_STABLE for the moodle repository
+CONTRIB-5199 :: Fixed upgrade problem from version 2.5 and updated build number.
+Let the upgrade work from MOODLE_25 to MOODLE_27. Thanks to Didier Raboud [OdyX]
+CONTRIB-5195 :: Replace deprecated textlib:: with core_text
+Added the new loggin/report/event system.
+
+Version 2.7.0 (Build - 2014070400) BETA (github only)
+- Added the new loggin/report/event system for the following events:
+all_responses_deleted
+all_responses_saved_as_text
+all_responses_viewed
+attempt_resumed
+attempt_saved
+attempt_submitted
+course_module_instance_list_viewed
+course_module_viewed
+non_respondents_viewed
+question_created
+question_deleted
+questionnaire_previewed
+response_deleted
+response_viewed
+
+Version 2.6.5 (Build - 2014041801) STABLE
+- Fixed CONTRIB-5074 :: Questionnaire: divide by zero warning.
+- Fixed CONTRIB-5078 :: Course Reset for Questionnaire does not work.
+- Fixed CONTRIB-5050 :: Small bug with Oracle.
+- Fixed CONTRIB-5034 Average rank (and average values) incorrect in N/A rate questions.
+- Fixed CONTRIB-4967 Show nonrespondents list doesn't paginate properly.
+
+Version 2.6.4 (Build - 2014033100) STABLE
+- New capability to allow use of messaging on non-respondents screen, separate to moodle/course:bulkmessaging.
+- fixed CONTRIB-4965 :: Another cast problem with Username 
+- fixed CONTRIB-4957 :: Feedback sections display skips a question 
+- fixed CONTRIB-4948 :: Inconsistent reports from personality test feature 
+- fixed CONTRIB-4943 :: Allow roles with preview capability to preview a questionnaire, even if it's a copy of a public one. 
+- fixed CONTRIB-4942 :: In Activities block, display names (and links to) public questionnaires original and copies 
+- fixed CONTRIB-4938 :: Recent activity block should display questionnaire activity
+- fixed CONTRIB-4871 :: questionnaire_print_overview is broken 
+- fixed CONTRIB-4856 :: Session variable can be empty when accessed causing PHP warning 
+- fixed CONTRIB-4846 // Individual responses navbar linking to ALL students' individual responses 
 
 Version 2.6.3 (Build - 2014010300) BETA released to the Moodle plugins repository in replacement for 2.6.2.
 - Fixed incorrect upgrade $oldversion date in previous version.

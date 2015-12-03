@@ -70,6 +70,9 @@ $sid = $questionnaire->survey->id;
 $courseid = $course->id;
 
 // Tab setup.
+if (!isset($SESSION->questionnaire)) {
+    $SESSION->questionnaire = new stdClass();
+}
 $SESSION->questionnaire->current_tab = 'myreport';
 
 switch ($action) {
@@ -260,8 +263,9 @@ switch ($action) {
         echo $OUTPUT->heading($titletext);
 
         if (count($resps) > 1) {
+            $userresps = $resps;
             echo '<div style="text-align:center; padding-bottom:5px;">';
-            $questionnaire->survey_results_navbar_student ($rid, $userid, $instance, $resps);
+            $questionnaire->survey_results_navbar_student ($rid, $userid, $instance, $userresps);
             echo '</div>';
         }
         $resps = array();
@@ -283,9 +287,9 @@ switch ($action) {
         $compare = true;
         $questionnaire->view_response($rid, null, null, $resps, $compare, $iscurrentgroupmember,
                         $allresponses = false, $currentgroupid);
-        if (count($resps) > 1) {
+        if (isset($userresps) && count($userresps) > 1) {
             echo '<div style="text-align:center; padding-bottom:5px;">';
-            $questionnaire->survey_results_navbar_student ($rid, $userid, $instance, $resps);
+            $questionnaire->survey_results_navbar_student ($rid, $userid, $instance, $userresps);
             echo '</div>';
         }
         echo $OUTPUT->box_end();

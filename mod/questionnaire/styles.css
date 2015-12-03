@@ -90,6 +90,11 @@ td.selected {
     border-color: red;
 }
 
+#page-mod-questionnaire-fbsections .notifyproblem {
+    text-align: left;
+    padding: 0px;
+}
+
 #page-mod-questionnaire-complete .message,
 #page-mod-questionnaire-preview .message,
 #page-mod-questionnaire-complete .thankbody,
@@ -143,7 +148,7 @@ td.selected {
 #page-mod-questionnaire-complete td.notanswered,
 #page-mod-questionnaire-preview td.notanswered {
     /* border: none; */
-    background-color: #fafafa;
+    background-color: #fafafa;;
 }
 
 #page-mod-questionnaire-complete td.notcompleted,
