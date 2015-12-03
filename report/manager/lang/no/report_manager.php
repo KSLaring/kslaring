@@ -449,6 +449,6 @@ $string['current_users_matching']   = 'Matching av gjeldende brukere';
 $string['no_users']                 = 'Ingen superbrukere';
 $string['sp_level_required']        = 'Det kreves i det minste ett nivå';
 
-$string['unenrol']      = 'Unenrol';
-$string['err_unenrol']  = 'Sorry, it has had an error during the process. Please, try it later contact to administrator';
-$string['exit_unenrol'] = 'User enrolled in course';
+$string['unenrol']      = 'Meld ut';
+$string['err_unenrol']  = 'Beklager, men det skjedde en feil under utmeldingen. Vennligst prøv igjen senere eller kontakt administrator om dette problemet fortsetter.';
+$string['exit_unenrol'] = 'Du er nå utmeldt fra kurset';
