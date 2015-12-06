@@ -234,6 +234,7 @@ class local_course_page_renderer extends plugin_renderer_base {
             $block_two .= $this->addExtra_DurationBlock($course->format,$format_options);
             /* Block Course Type    */
             $block_two .= $this->addExtra_TypeCourseBlock($course->format);
+            $block_two .= $this->addAvailable_Seats_Block($format_options);
             $block_two .= html_writer::end_tag('div');//go-left
             $block_two .= html_writer::start_tag('div',array('class' => 'go-right clearfix'));
             /* Block Ratings        */
@@ -530,6 +531,33 @@ class local_course_page_renderer extends plugin_renderer_base {
 
         return $out;
     }//addExtra_TypeCourseBlock
+
+
+    /**
+     * @param           $course_format
+     * @return          string
+     *
+     * @creationDate    2015-12-06
+     * @author          eFaktor     (uh)
+     *
+     * Description
+     * Add available seats block
+     */
+    protected function addAvailable_Seats_Block($format_options) {
+        /* Variables    */
+        $out = '';
+
+        /* Get Extra Options    */
+        $out .= html_writer::start_tag('div', array('class' => 'extra chp-block'));
+        $out .= '<h5 class="title_home chp-title">' .
+            get_string('available_seats', 'local_course_page') . '</h5>';
+        $out .= '<div class="extra_home chp-content">';
+        $out .= $format_options['enrolledusers']->value;
+        $out .= '</div>';//extra_home
+        $out .= html_writer::end_tag('div');//extra
+
+        return $out;
+    }//addAvailable_Seats_Block
 
     /**
      * @param           $course_id
