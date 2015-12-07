@@ -136,23 +136,25 @@ class enrol_waitinglist_plugin extends enrol_plugin {
 		}//end of if has capability
 
         /* Add Report Invoice Link */
-        $parent_node = $instancesnode->parent;
-        $parent_node = $parent_node->parent;
-        $str_title = get_string('report_link', 'enrol_invoice');
-        $url = new moodle_url('/enrol/invoice/report/report_invoice.php',array('courseid'=>$instance->courseid, 'id'=>$instance->id));
-        $report_invoices = navigation_node::create($str_title,
-            $url,
-            navigation_node::TYPE_SETTING,'report_invoices',
-            'report_invoices',
-            new pix_icon('i/report', $str_title)
-        );
+        if (has_capability('enrol/waitinglist:manage', $context) || has_capability('enrol/waitinglist:manage', $context)) {
+            $parent_node        = $instancesnode->parent;
+            $parent_node        = $parent_node->parent;
+            $str_title          = get_string('report_link', 'enrol_invoice');
+            $url                = new moodle_url('/enrol/invoice/report/report_invoice.php',array('courseid'=>$instance->courseid, 'id'=>$instance->id));
+            $report_invoices    = navigation_node::create($str_title,
+                                                          $url,
+                                                          navigation_node::TYPE_SETTING,'report_invoices',
+                                                          'report_invoices',
+                                                          new pix_icon('i/report', $str_title)
+                                                         );
 
-        global $PAGE;
-        if ($PAGE->url->compare($url, URL_MATCH_BASE)) {
-            $report_invoices->make_active();
+            global $PAGE;
+            if ($PAGE->url->compare($url, URL_MATCH_BASE)) {
+                $report_invoices->make_active();
+            }
+            $parent_node->add_node($report_invoices,'users');
         }
-        $parent_node->add_node($report_invoices,'users');
-
+    
     }//end of function
 
     /**

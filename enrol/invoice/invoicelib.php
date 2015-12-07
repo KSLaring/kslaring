@@ -297,7 +297,7 @@ class Invoices {
             /* SQL Instruction      */
             $sql = " SELECT	    DISTINCT	u.id,
                                             CONCAT(u.firstname,', ',u.lastname) as 'name',
-                                            uid.data as 'arbeidssted',
+                                            ar.data as 'arbeidssted',
                                             u.email,
                                             ei.type,
                                             ei.responumber,
@@ -316,11 +316,15 @@ class Invoices {
                                                                 AND		ei.courseid		=	:course_id
                                                                 AND		ei.userid		= 	ue.userid
                                                                 AND		ei.unenrol		= 	0
-                        LEFT JOIN	{user_info_data}	uid		ON 		uid.userid		= 	ei.userid
-                        LEFT JOIN	{user_info_field}	uif		ON		uif.id			= 	uid.fieldid
-                                                                AND		uif.shortname	= 	'Arbeidssted'
+                        LEFT JOIN 	(
+                                        SELECT 	uid.userid,
+                                                uid.data
+                                        FROM		{user_info_data}		uid
+                                            JOIN	{user_info_field}		uif		ON		uif.id			= 	uid.fieldid
+                                                                                    AND		uif.shortname	= 	'Arbeidssted'
+                                    ) ar ON ar.userid = ue.userid
                      WHERE		u.deleted = 0
-                     ORDER BY 	u.firstname, u.lastname  ";
+                     ORDER BY 	u.firstname, u.lastname ";
 
             /* Execute  */
             $rdo = $DB->get_records_sql($sql,$params);
