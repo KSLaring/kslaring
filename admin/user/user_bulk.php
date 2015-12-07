@@ -45,6 +45,15 @@ if ($data = $action_form->get_data()) {
          */
         case 10:
             redirect(new moodle_url('/local/express_login/bulk_express/user_bulk_express_login.php'));
+        /**
+         * @updateDate      07/12/2015
+         * @author          eFaktor     (fbv)
+         *
+         * Description
+         * Add a new action - Change Theme
+         */
+        case 11:
+            redirect($CFG->wwwroot.'/'.$CFG->admin.'/user/user_bulk_theme_changes.php');
     }
 }
 

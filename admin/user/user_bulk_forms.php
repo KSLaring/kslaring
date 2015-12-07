@@ -53,6 +53,15 @@ class user_bulk_action_form extends moodleform {
          */
         $actions[10] = get_string('bulk_action','local_express_login');
 
+        /**
+         * @updateDate      07/12/2015
+         * @author          eFaktor     (fbv)
+         *
+         * Description
+         * Add a new action - Change Theme
+         */
+        $actions[11] = get_string('theme_action','local_theme_changes');
+
         $objs = array();
         $objs[] =& $mform->createElement('select', 'action', null, $actions);
         $objs[] =& $mform->createElement('submit', 'doaction', get_string('go'));
