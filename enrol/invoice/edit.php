@@ -15,7 +15,6 @@
 
 require('../../config.php');
 require_once('edit_form.php');
-require_once ('../../local/wssso/wsSSOlib.php');
 
 $courseid   = required_param('courseid', PARAM_INT);
 $instanceid = optional_param('id', 0, PARAM_INT);
@@ -83,7 +82,6 @@ if ($mform->is_cancelled()) {
 
         $instance->status         = $data->status;
         $instance->name           = $data->name;
-        $instance->company        = $data->company;
         $instance->password       = $data->password;
         $instance->customint1     = $data->customint1;
         $instance->customint2     = $data->customint2;
@@ -110,7 +108,6 @@ if ($mform->is_cancelled()) {
         $fields = array(
             'status'          => $data->status,
             'name'            => $data->name,
-            'company'         =>  $data->company,
             'password'        => $data->password,
             'customint1'      => $data->customint1,
             'customint2'      => $data->customint2,

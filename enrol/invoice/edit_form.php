@@ -30,16 +30,6 @@ class enrol_invoice_edit_form extends moodleform {
         $mform->addElement('text', 'name', get_string('custominstancename', 'enrol'));
         $mform->setType('name', PARAM_TEXT);
 
-        /* Company List */
-        $options = WS_SSO::getCompanyList();
-        $mform->addElement('select', 'company', get_string('company', 'enrol_wssso'), $options);
-        if ($instance->id && isset($instance->company) && $instance->company) {
-            $mform->setDefault('company', $instance->company);
-        }else {
-            $mform->setDefault('company', 0);
-        }//if_else_company
-        $mform->addRule('company', get_string('required', 'enrol_wssso'),'required',null,'server');
-
         /* Status   */
         $options = array(ENROL_INSTANCE_ENABLED  => get_string('yes'),
                          ENROL_INSTANCE_DISABLED => get_string('no'));
