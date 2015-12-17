@@ -376,17 +376,46 @@ class enrolmethodself extends \enrol_waitinglist\method\enrolmethodbase{
         	$listtotal = $queueman->get_listtotal();
 
             $waitinglistid  = optional_param('waitinglist', 0, PARAM_INT);
+            /**
+             * @updateDate  02/12/2015
+             * @author      eFaktor     (fbv)
+             *
+             * Description
+             * Add checking for vacancies and if the user wants to be set on the wait list or no.
+             */
+            $plugin     = enrol_get_plugin('waitinglist');
+            $vacancies  = $plugin->get_vacancy_count($waitinglist);
+            $confirm    = optional_param('confirm', 0, PARAM_INT);
+            $toConfirm  = null;
 
-            $form = new enrolmethodself_enrolform(NULL, array($waitinglist,$this,$listtotal));
+            if ($confirm) {
+                $toConfirm      =  false;
+            }else {
+                if (!$vacancies) {
+                    $toConfirm  =  true;
+                }else {
+                    $toConfirm  =  false;
+                }
+            }
 
-            if ($waitinglist->id == $waitinglistid) {
-                /**
-                 * @updateDate  02/12/2015
-                 * @author      eFaktor     (fbv)
-                 *
-                 * Description
-                 * Check vancacies
-                 */
+            if ($toConfirm) {
+                $form = new enrolmethodself_enrolform(NULL, array($waitinglist,$this,$listtotal,true));
+
+                if ($form->is_cancelled()) {
+                    redirect($CFG->wwwroot . '/index.php');
+                }else if ($form->is_submitted()) {
+                    $form = new enrolmethodself_enrolform(NULL, array($waitinglist,$this,$listtotal,false));
+                }
+
+                //begin the output
+                ob_start();
+                $form->display();
+                $output = ob_get_clean();
+                $message =$OUTPUT->box($output);
+                $ret = array(true,$message);
+            }else {
+                $form = new enrolmethodself_enrolform(NULL, array($waitinglist,$this,$listtotal,false));
+
                 if ($form->is_cancelled()) {
                     redirect($CFG->wwwroot . '/index.php');
                 }else if ($data = $form->get_data()) {
@@ -407,14 +436,14 @@ class enrolmethodself extends \enrol_waitinglist\method\enrolmethodbase{
 
                     redirect($CFG->wwwroot . '/course/view.php?id=' . $waitinglist->courseid);
                 }//if_form
-            }//if_waitinglist_id
 
-            ob_start();
-            $form->display();
-            $output = ob_get_clean();
-    
-            $message =$OUTPUT->box($output);
-			$ret = array(true,$message);
+                ob_start();
+                $form->display();
+                $output = ob_get_clean();
+
+                $message =$OUTPUT->box($output);
+                $ret = array(true,$message);
+            }
         } else {
             $message = $OUTPUT->box($enrolstatus);
 			$ret = array(false,$message);

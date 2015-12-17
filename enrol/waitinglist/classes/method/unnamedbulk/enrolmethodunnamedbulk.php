@@ -412,7 +412,6 @@ class enrolmethodunnamedbulk extends \enrol_waitinglist\method\enrolmethodbase {
              */
             $waitinglistid      = optional_param('waitinglist', 0, PARAM_INT);
             $confirm            = optional_param('confirm', 0, PARAM_INT);
-            $toConfirmParams    = null;
             $toConfirm          = null;
 
             if (($confirm) || isset($entry->seats)) {

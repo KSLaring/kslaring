@@ -50,7 +50,7 @@ class enrolmethodself_enrolform extends \moodleform {
 
     public function definition() {
         $mform = $this->_form;
-        list( $waitinglist,$method,$listtotal) = $this->_customdata;
+        list( $waitinglist,$method,$listtotal,$confirmed) = $this->_customdata;
         $this->method = $method;
         $plugin = enrol_get_plugin('waitinglist');
 
@@ -63,13 +63,11 @@ class enrolmethodself_enrolform extends \moodleform {
          * @author      eFaktor     (fbv)
          *
          * Description
-         * Check vacancies. Not vacancies --> Warning Message
+         * Add checking for vacancies and if the user wants to be set on the wait list or no.
          */
-        $vacancies  = $plugin->get_vacancy_count($waitinglist);
-
-        if (!$vacancies) {
+        if (!$confirmed) {
             $mform->addElement('html','<div class="lbl_warning">');
-            $mform->addElement('html','<h5>' . get_string('seats_occupied','enrol_waitinglist') . '</h5>');
+                $mform->addElement('html','<h5>' . get_string('seats_occupied','enrol_waitinglist') . '</h5>');
             $mform->addElement('html','</div>');
         }else {
             //queuewarning
@@ -102,6 +100,10 @@ class enrolmethodself_enrolform extends \moodleform {
                 $mform->setType('invoicedata', PARAM_INT);
                 $mform->setDefault('invoicedata', 1);
             }
+
+            $mform->addElement('hidden', 'confirm');
+            $mform->setType('confirm', PARAM_INT);
+            $mform->setDefault('confirm', 1);
         }//if_vacancies
 
         $this->add_action_buttons(true, get_string('enrolme', 'enrol_self'));
