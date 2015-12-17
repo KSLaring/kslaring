@@ -66,10 +66,6 @@ class enrolmethodself_enrolform extends \moodleform {
          * Add checking for vacancies and if the user wants to be set on the wait list or no.
          */
         if (!$confirmed) {
-            $mform->addElement('html','<div class="lbl_warning">');
-                $mform->addElement('html','<h5>' . get_string('seats_occupied','enrol_waitinglist') . '</h5>');
-            $mform->addElement('html','</div>');
-        }else {
             //queuewarning
             if($listtotal>0){
                 $mform->addElement('static','queuewarning',get_string('self_queuewarning_label','enrol_waitinglist'),get_string('self_queuewarning','enrol_waitinglist',$listtotal));
@@ -104,6 +100,10 @@ class enrolmethodself_enrolform extends \moodleform {
             $mform->addElement('hidden', 'confirm');
             $mform->setType('confirm', PARAM_INT);
             $mform->setDefault('confirm', 1);
+        }else {
+            $mform->addElement('html','<div class="lbl_warning">');
+            $mform->addElement('html','<h5>' . get_string('seats_occupied','enrol_waitinglist') . '</h5>');
+            $mform->addElement('html','</div>');
         }//if_vacancies
 
         $this->add_action_buttons(true, get_string('enrolme', 'enrol_self'));
