@@ -98,8 +98,10 @@ class enrol_wsdoskom_edit_form extends moodleform {
             $schoices[0]    = get_string('selected_company','enrol_wsdoskom');
 
             foreach ($SESSION->selCompanies as $company) {
-                $schoices[$company] = $company_lst[$company];
-                unset($achoices[$company]);
+                if (isset($company_lst[$company])) {
+                    $schoices[$company] = $company_lst[$company];
+                    unset($achoices[$company]);
+                }
             }
         }//if_selCompanies
 

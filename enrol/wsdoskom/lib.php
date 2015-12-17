@@ -263,7 +263,7 @@ class enrol_wsdoskom_plugin extends enrol_plugin {
     public function cron() {
         $trace = new text_progress_trace();
         $this->sync($trace, null);
-        $this->send_expiry_notifications($trace);
+        //$this->send_expiry_notifications($trace);
     }
 
     /**

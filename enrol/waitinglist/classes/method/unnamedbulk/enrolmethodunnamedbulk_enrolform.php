@@ -81,7 +81,7 @@ class enrolmethodunnamedbulk_enrolform extends \moodleform {
             $mform->addElement('text','seats',  get_string('reserveseatcount', 'enrol_waitinglist'), array('size' => '8'));
             $mform->addRule('seats', null, 'numeric', null, 'client');
             $mform->setType('seats', PARAM_INT);
-
+            $mform->setDefault('seats','');
             /**
              * @updateDate  28/10/2015
              * @author      eFaktor     (fbv)
@@ -99,21 +99,21 @@ class enrolmethodunnamedbulk_enrolform extends \moodleform {
                 $mform->setDefault('invoicedata', 1);
             }
 
-            $mform->addElement('hidden', 'confirm');
-            $mform->setType('confirm', PARAM_INT);
-            $mform->setDefault('confirm', '1');
-
             //add submit + enter course
             if($queuestatus->assignedseats>0){
                 $url = $CFG->wwwroot . '/course/view.php?id=' . $waitinglist->courseid;
                 $buttonarray[] = &$mform->createElement('button', 'entercoursebutton', get_string('entercoursenow', 'enrol_waitinglist'),array('class'=>'entercoursenowbutton','onclick'=>'location.href="' . $url .'"'));
             }
+
+            $mform->addElement('hidden', 'confirm');
+            $mform->setType('confirm', PARAM_INT);
+            $mform->setDefault('confirm', 1);
         }else {
             $mform->addElement('html','<div class="lbl_warning">');
                 $mform->addElement('html','<h5>' . get_string('seats_occupied','enrol_waitinglist') . '</h5>');
             $mform->addElement('html','</div>');
-        }
 
+        }
 
         $buttonarray[] = $mform->createElement('cancel');
         $mform->addGroup($buttonarray, 'buttonar', '', array(' '), false);
