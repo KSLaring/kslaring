@@ -1091,7 +1091,10 @@ class TrackerManager {
                             if (strlen($course->name) <= 30) {
                                 $content .= $course->name;
                             }else {
-                                $content .= substr($course->name,0,30) . '...';
+                                $nameTruncate = substr($course->name,0,30);
+                                $index = strrpos($nameTruncate,' ');
+                                $nameTruncate = substr($nameTruncate,0,$index) . ' ...';
+                                $content .= $nameTruncate;
                             }
 
                         $content .= html_writer::end_tag('td');
@@ -1130,7 +1133,10 @@ class TrackerManager {
                             if (strlen($course->name) <= 30) {
                                 $content .= $course->name;
                             }else {
-                                $content .= substr($course->name,0,30) . '...';
+                                $nameTruncate = substr($course->name,0,30);
+                                $index = strrpos($nameTruncate,' ');
+                                $nameTruncate = substr($nameTruncate,0,$index) . ' ...';
+                                $content .= $nameTruncate;
                             }
                         $content .= html_writer::end_tag('td');
                         /* Status        */
@@ -1177,7 +1183,10 @@ class TrackerManager {
                             if (strlen($course->name) <= 30) {
                                 $content .= $course->name;
                             }else {
-                                $content .= substr($course->name,0,30) . '...';
+                                $nameTruncate = substr($course->name,0,30);
+                                $index = strrpos($nameTruncate,' ');
+                                $nameTruncate = substr($nameTruncate,0,$index) . ' ...';
+                                $content .= $nameTruncate;
                             }
                         $content .= html_writer::end_tag('td');
                         /* Status        */
@@ -1307,7 +1316,10 @@ class TrackerManager {
                                 if (strlen($course->name) <= 30) {
                                     $content .= $course->name;
                                 }else {
-                                    $content .= substr($course->name,0,30) . '...';
+                                    $nameTruncate = substr($course->name,0,30);
+                                    $index = strrpos($nameTruncate,' ');
+                                    $nameTruncate = substr($nameTruncate,0,$index) . ' ...';
+                                    $content .= $nameTruncate;
                                 }
                             $content .= html_writer::end_tag('td');
                             /* Status        */
@@ -1351,7 +1363,10 @@ class TrackerManager {
                                 if (strlen($course->name) <= 30) {
                                     $content .= $course->name;
                                 }else {
-                                    $content .= substr($course->name,0,30) . '...';
+                                    $nameTruncate = substr($course->name,0,30);
+                                    $index = strrpos($nameTruncate,' ');
+                                    $nameTruncate = substr($nameTruncate,0,$index) . ' ...';
+                                    $content .= $nameTruncate;
                                 }
                             $content .= html_writer::end_tag('td');
                             /* Status        */
