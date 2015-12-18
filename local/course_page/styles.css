@@ -232,12 +232,12 @@
   color: #0e7b9e;
   display: block;
   float: left;
-  width: 32%;
+  width: 35%;
 }
 .home_page_block_two .ratings .ratings_review .ratings_review_value {
   display: block;
   float: right;
-  width: 68%;
+  width: 60%;
 }
 .home_page_block_two .ratings .ratings_break {
   clear: both;
@@ -269,7 +269,7 @@
   display: inline-block;
   float: right;
   height: 90px;
-  width: 85%;
+  width: 80%;
 }
 .ratings_panel .ratings_review_title {
   color: #0e7b9e;
@@ -277,7 +277,7 @@
   float: left;
   font-size: 21px;
   height: 90px;
-  width: 15%;
+  width: 20%;
 }
 @media (max-width: 767px) {
   .home_page {
