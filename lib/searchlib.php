@@ -50,10 +50,17 @@ class search_token {
   private $value;
   private $type;
 
-  function search_token($type,$value){
+  public function __construct($type,$value){
     $this->type = $type;
     $this->value = $this->sanitize($value);
 
+  }
+
+  /**
+   * Old syntax of class constructor. Deprecated in PHP7.
+   */
+  public function search_token($type, $value) {
+    self::__construct($type, $value);
   }
 
   // Try to clean up user input to avoid potential security issues.
@@ -82,10 +89,10 @@ class search_token {
  */
 class search_lexer extends Lexer{
 
-  function search_lexer(&$parser){
+  public function __construct(&$parser){
 
     // Call parent constructor.
-    $this->Lexer($parser);
+    parent::__construct($parser);
 
     //Set up the state machine and pattern matches for transitions.
 
@@ -193,6 +200,14 @@ class search_lexer extends Lexer{
     $this->addExitPattern("\s","plainstring");
 
   }
+
+  /**
+   * Old syntax of class constructor. Deprecated in PHP7.
+   */
+  public function search_lexer(&$parser) {
+    self::__construct($parser);
+  }
+
 }
 
 

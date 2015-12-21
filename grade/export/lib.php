@@ -625,9 +625,16 @@ class grade_export_update_buffer {
     /**
      * Constructor - creates the buffer and initialises the time stamp
      */
-    public function grade_export_update_buffer() {
+    public function __construct() {
         $this->update_list = array();
         $this->export_time = time();
+    }
+
+    /**
+     * Old syntax of class constructor. Deprecated in PHP7.
+     */
+    public function grade_export_update_buffer() {
+        self::__construct();
     }
 
     public function flush($buffersize) {

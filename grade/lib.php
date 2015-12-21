@@ -1085,7 +1085,7 @@ class grade_plugin_return {
      *
      * @param array $params - associative array with return parameters, if null parameter are taken from _GET or _POST
      */
-    public function grade_plugin_return($params = null) {
+    public function __construct($params = null) {
         if (empty($params)) {
             $this->type     = optional_param('gpr_type', null, PARAM_SAFEDIR);
             $this->plugin   = optional_param('gpr_plugin', null, PARAM_PLUGIN);
@@ -1100,6 +1100,13 @@ class grade_plugin_return {
                 }
             }
         }
+    }
+
+    /**
+     * Old syntax of class constructor. Deprecated in PHP7.
+     */
+    public function grade_plugin_return($params = null) {
+        self::__construct($params);
     }
 
     /**
@@ -2033,7 +2040,7 @@ class grade_seq extends grade_structure {
      * @param bool $category_grade_last category grade item is the last child
      * @param bool $nooutcomes Whether or not outcomes should be included
      */
-    public function grade_seq($courseid, $category_grade_last=false, $nooutcomes=false) {
+    public function __construct($courseid, $category_grade_last=false, $nooutcomes=false) {
         global $USER, $CFG;
 
         $this->courseid   = $courseid;
@@ -2047,6 +2054,13 @@ class grade_seq extends grade_structure {
         foreach ($this->elements as $key=>$unused) {
             $this->items[$this->elements[$key]['object']->id] =& $this->elements[$key]['object'];
         }
+    }
+
+    /**
+     * Old syntax of class constructor. Deprecated in PHP7.
+     */
+    public function grade_seq($courseid, $category_grade_last=false, $nooutcomes=false) {
+        self::__construct($courseid, $category_grade_last, $nooutcomes);
     }
 
     /**
@@ -2185,7 +2199,7 @@ class grade_tree extends grade_structure {
      * @param array $collapsed array of collapsed categories
      * @param bool  $nooutcomes Whether or not outcomes should be included
      */
-    public function grade_tree($courseid, $fillers=true, $category_grade_last=false,
+    public function __construct($courseid, $fillers=true, $category_grade_last=false,
                                $collapsed=null, $nooutcomes=false) {
         global $USER, $CFG, $COURSE, $DB;
 
@@ -2227,6 +2241,14 @@ class grade_tree extends grade_structure {
 
         grade_tree::fill_levels($this->levels, $this->top_element, 0);
 
+    }
+
+    /**
+     * Old syntax of class constructor. Deprecated in PHP7.
+     */
+    public function grade_tree($courseid, $fillers=true, $category_grade_last=false,
+                               $collapsed=null, $nooutcomes=false) {
+        self::__construct($courseid, $fillers, $category_grade_last, $collapsed, $nooutcomes);
     }
 
     /**

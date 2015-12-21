@@ -1260,7 +1260,7 @@ class environment_results {
      *
      * @param string $part
      */
-    function environment_results($part) {
+    public function __construct($part) {
         $this->part=$part;
         $this->status=false;
         $this->error_code=NO_ERROR;
@@ -1271,6 +1271,13 @@ class environment_results {
         $this->feedback_str='';
         $this->bypass_str='';
         $this->restrict_str='';
+    }
+
+    /**
+     * Old syntax of class constructor. Deprecated in PHP7.
+     */
+    public function environment_results($part) {
+        self::__construct($part);
     }
 
     /**
