@@ -19,6 +19,8 @@ define('REPORT_MANAGER_ADD_ITEM', 'add_item');
 define('REPORT_MANAGER_RENAME_SELECTED', 'rename_selected');
 define('REPORT_MANAGER_DELETE_SELECTED', 'delete_selected');
 define('REPORT_MANAGER_UNLINK_SELECTED', 'unlink_selected');
+define('REPORT_MANAGER_MANAGERS_SELECTED','managers_selected');
+define('REPORT_MANAGER_REPORTERS_SELECTED','reporters_selected');
 define('REPORT_MANAGER_GET_LEVEL', 'get_level');
 define('REPORT_MANAGER_GET_UNCONNECTED', 'get_unconnected');
 define('REPORT_MANAGER_REMOVE_SELECTED', 'remove_selected');
