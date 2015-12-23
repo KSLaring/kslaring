@@ -77,7 +77,7 @@ function xmldb_report_manager_upgrade($old_version) {
         }//if_old_version
 
         /* Manager && Reporter tables   */
-        if ($old_version < 2015122100) {
+        if ($old_version < 2015122200) {
             CompetenceManager_Update::ManagerReporterTables($db_man);
         }//if_old_version
 
@@ -427,8 +427,14 @@ class CompetenceManager_Update {
             $tblManagerTable->add_field('id',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, XMLDB_SEQUENCE,null);
             /* managerid        */
             $tblManagerTable->add_field('managerid',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, null,null);
-            /* comapnyid        */
-            $tblManagerTable->add_field('companyid',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, null,null);
+            /* levelzero        */
+            $tblManagerTable->add_field('levelzero',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, null,null);
+            /* levelone        */
+            $tblManagerTable->add_field('levelone',XMLDB_TYPE_INTEGER,'10',null, null, null,null);
+            /* leveltwo        */
+            $tblManagerTable->add_field('leveltwo',XMLDB_TYPE_INTEGER,'10',null, null, null,null);
+            /* levelthree        */
+            $tblManagerTable->add_field('levelthree',XMLDB_TYPE_INTEGER,'10',null, null, null,null);
             /* hierarchylevel   */
             $tblManagerTable->add_field('hierarchylevel',XMLDB_TYPE_INTEGER,'2',null, XMLDB_NOTNULL, null,null);
             /* timecreated      */
@@ -437,7 +443,7 @@ class CompetenceManager_Update {
             /* Adding Keys  */
             $tblManagerTable->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
             $tblManagerTable->add_key('managerid',XMLDB_KEY_FOREIGN,array('managerid'), 'user', array('id'));
-            $tblManagerTable->add_key('companyid',XMLDB_KEY_FOREIGN,array('companyid'), 'report_gen_companydata', array('id'));
+            $tblManagerTable->add_key('levelzero',XMLDB_KEY_FOREIGN,array('levelzero'), 'report_gen_companydata', array('id'));
 
             /* Create Table */
             if (!$db_man->table_exists('report_gen_company_manager')) {
@@ -452,8 +458,14 @@ class CompetenceManager_Update {
             $tblReporterTable->add_field('id',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, XMLDB_SEQUENCE,null);
             /* reporterid        */
             $tblReporterTable->add_field('reporterid',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, null,null);
-            /* comapnyid        */
-            $tblReporterTable->add_field('companyid',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, null,null);
+            /* levelzero        */
+            $tblReporterTable->add_field('levelzero',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, null,null);
+            /* levelone        */
+            $tblReporterTable->add_field('levelone',XMLDB_TYPE_INTEGER,'10',null, null, null,null);
+            /* leveltwo        */
+            $tblReporterTable->add_field('leveltwo',XMLDB_TYPE_INTEGER,'10',null, null, null,null);
+            /* levelthree        */
+            $tblReporterTable->add_field('levelthree',XMLDB_TYPE_INTEGER,'10',null, null, null,null);
             /* hierarchylevel   */
             $tblReporterTable->add_field('hierarchylevel',XMLDB_TYPE_INTEGER,'2',null, XMLDB_NOTNULL, null,null);
             /* timecreated      */
@@ -462,7 +474,7 @@ class CompetenceManager_Update {
             /* Adding Keys  */
             $tblReporterTable->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
             $tblReporterTable->add_key('reporterid',XMLDB_KEY_FOREIGN,array('reporterid'), 'user', array('id'));
-            $tblReporterTable->add_key('companyid',XMLDB_KEY_FOREIGN,array('companyid'), 'report_gen_companydata', array('id'));
+            $tblReporterTable->add_key('levelzero',XMLDB_KEY_FOREIGN,array('levelzero'), 'report_gen_companydata', array('id'));
 
             /* Create Table */
             if (!$db_man->table_exists('report_gen_company_reporter')) {

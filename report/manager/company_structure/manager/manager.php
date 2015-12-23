@@ -54,17 +54,18 @@ if ($form->is_cancelled()) {
     $_POST = array();
     redirect($url);
 }else if($data = $form->get_data()) {
+
     /* Add Managers     */
     if (!empty($data->add_sel)) {
         if (isset($data->addselect)) {
-            Managers::AddManagers($level,$parents[$level],$data->addselect);
+            Managers::AddManagers($data->le,$parents,$data->addselect);
         }//if_addselect
     }//if_add
 
     /* Remove Managers  */
     if (!empty($data->remove_sel)) {
         if (isset($data->removeselect)) {
-            Managers::RemoveManagers($level,$parents[$level],implode(',',$data->removeselect));
+            Managers::RemoveManagers($data->le,$parents,implode(',',$data->removeselect));
         }//if_removeselect
     }//if_remove
 
@@ -81,7 +82,7 @@ echo $OUTPUT->heading(get_string('title_managers', 'report_manager'));
 $form->display();
 
 /* Initialise Selectors */
-Managers::Init_Managers_Selectors($addSearch,$removeSearch,$level,$parents[$level]);
+Managers::Init_Managers_Selectors($addSearch,$removeSearch,$level,$parents);
 
 /* Print Footer */
 echo $OUTPUT->footer();

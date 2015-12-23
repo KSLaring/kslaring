@@ -23,7 +23,7 @@ Class Reporters {
      * @param           $addSearch
      * @param           $removeSearch
      * @param           $level
-     * @param           $company
+     * @param           $parents
      *
      * @throws          Exception
      *
@@ -33,7 +33,7 @@ Class Reporters {
      * Description
      * Initialise selectors to add and remove reporters to/from the company
      */
-    public static function Init_Reporters_Selectors($addSearch,$removeSearch,$level,$company) {
+    public static function Init_Reporters_Selectors($addSearch,$removeSearch,$level,$parents) {
         /* Variables */
         $jsModule   = null;
         $name       = null;
@@ -64,9 +64,9 @@ Class Reporters {
                              );
 
             /* Super Users - Add Selector       */
-            self::Init_Reporters_AddSelector($addSearch,$jsModule,$level,$company);
+            self::Init_Reporters_AddSelector($addSearch,$jsModule,$level,$parents);
             /* Super Users - Remove Selector    */
-            self::Init_Reporters_RemoveSelector($removeSearch,$jsModule,$level,$company);
+            self::Init_Reporters_RemoveSelector($removeSearch,$jsModule,$level,$parents);
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
@@ -74,7 +74,7 @@ Class Reporters {
 
     /**
      * @param           $search
-     * @param           $company
+     * @param           $parents
      * @param           $level
      *
      * @return          array
@@ -86,7 +86,7 @@ Class Reporters {
      * Description
      * Find existing reporters connected with the company
      */
-    public static function FindReporters_Selector($search,$company,$level) {
+    public static function FindReporters_Selector($search,$parents,$level) {
         /* Variables */
         global $DB;
         $availableReporters     = array();
@@ -102,7 +102,6 @@ Class Reporters {
         try {
             /* Search Criteria  */
             $params = array();
-            $params['company']  = $company;
             $params['level']    = $level;
 
             /* SQL Instruction */
@@ -113,8 +112,52 @@ Class Reporters {
                      FROM 		{report_gen_company_reporter}	cr
                         JOIN	{user}						    u	ON 	u.id 		= cr.reporterid
                                                                     AND	u.deleted 	= 0
-                     WHERE	cr.companyid 		= :company
-                        AND	cr.hierarchylevel	= :level ";
+                     WHERE	cr.hierarchylevel	= :level ";
+
+            /* Get Companies Levels */
+            switch ($level) {
+                case 0:
+                    $params['levelzero'] = $parents[$level];
+
+                    $sql .= " AND cr.levelzero = :levelzero
+                              AND cr.levelone   IS NULL
+                              AND cr.leveltwo   IS NULL
+                              AND cr.levelthree IS NULL ";
+
+                    break;
+                case 1:
+                    $params['levelzero']    = $parents[$level-1];
+                    $params['levelone']     = $parents[$level];
+
+                    $sql .= " AND cr.levelzero = :levelzero
+                              AND cr.levelone  = :levelone
+                              AND cr.leveltwo   IS NULL
+                              AND cr.levelthree IS NULL ";
+
+                    break;
+                case 2:
+                    $params['levelzero']    = $parents[$level-2];
+                    $params['levelone']     = $parents[$level-1];
+                    $params['leveltwo']     = $parents[$level];
+
+                    $sql .= " AND cr.levelzero = :levelzero
+                              AND cr.levelone  = :levelone
+                              AND cr.leveltwo  = :leveltwo
+                              AND cr.levelthree IS NULL ";
+
+                    break;
+                case 3:
+                    $params['levelzero']    = $parents[$level-3];
+                    $params['levelone']     = $parents[$level-2];
+                    $params['leveltwo']     = $parents[$level-1];
+                    $params['levelthree']   = $parents[$level];
+
+                    $sql .= " AND cr.levelzero  = :levelzero
+                              AND cr.levelone   = :levelone
+                              AND cr.leveltwo   = :leveltwo
+                              AND cr.levelthree = :levelthree ";
+                    break;
+            }//switch_level
 
             /* Search Option */
             if ($search) {
@@ -173,7 +216,7 @@ Class Reporters {
 
     /**
      * @param           $search
-     * @param           $company
+     * @param           $parents
      * @param           $level
      *
      * @return          array
@@ -185,7 +228,7 @@ Class Reporters {
      * Description
      * Find potential reporters
      */
-    public static function FindPotentialReporters_Selector($search,$company,$level) {
+    public static function FindPotentialReporters_Selector($search,$parents,$level) {
         /* Variables */
         global $DB;
         $availableReporters     = array();
@@ -201,7 +244,6 @@ Class Reporters {
         try {
             /* Search Criteria  */
             $params = array();
-            $params['company']  = $company;
             $params['level']    = $level;
 
             /* SQL Instruction */
@@ -211,9 +253,55 @@ Class Reporters {
                                 u.email
                      FROM			{user}						  u
                         LEFT JOIN	{report_gen_company_reporter} cr	ON 	cr.reporterid 		= u.id
-                                                                        AND	cr.companyid 		= :company
-                                                                        AND	cr.hierarchylevel 	= :level
-                     WHERE		u.deleted   = 0
+                                                                        AND	cr.hierarchylevel 	= :level ";
+
+            /* Get companies level */
+            switch ($level) {
+                case 0:
+                    $params['levelzero'] = $parents[$level];
+
+                    $sql .= " AND cr.levelzero = :levelzero
+                              AND cr.levelone   IS NULL
+                              AND cr.leveltwo   IS NULL
+                              AND cr.levelthree IS NULL ";
+
+                    break;
+                case 1:
+                    $params['levelzero']    = $parents[$level-1];
+                    $params['levelone']     = $parents[$level];
+
+                    $sql .= " AND cr.levelzero = :levelzero
+                              AND cr.levelone  = :levelone
+                              AND cr.leveltwo   IS NULL
+                              AND cr.levelthree IS NULL ";
+
+                    break;
+                case 2:
+                    $params['levelzero']    = $parents[$level-2];
+                    $params['levelone']     = $parents[$level-1];
+                    $params['leveltwo']     = $parents[$level];
+
+                    $sql .= " AND cr.levelzero = :levelzero
+                              AND cr.levelone  = :levelone
+                              AND cr.leveltwo  = :leveltwo
+                              AND cr.levelthree IS NULL ";
+
+                    break;
+                case 3:
+                    $params['levelzero']    = $parents[$level-3];
+                    $params['levelone']     = $parents[$level-2];
+                    $params['leveltwo']     = $parents[$level-1];
+                    $params['levelthree']   = $parents[$level];
+
+                    $sql .= " AND cr.levelzero  = :levelzero
+                              AND cr.levelone   = :levelone
+                              AND cr.leveltwo   = :leveltwo
+                              AND cr.levelthree = :levelthree ";
+                    break;
+            }//switch_level
+
+            /* Criteria  */
+            $sql .= " WHERE		u.deleted   = 0
                         AND		u.username != 'guest'
                         AND		cr.id IS NULL ";
 
@@ -269,7 +357,7 @@ Class Reporters {
 
     /**
      * @param           $level
-     * @param           $company
+     * @param           $parents
      * @param           $reportersLst
      *
      * @throws          Exception
@@ -280,12 +368,16 @@ Class Reporters {
      * Description
      * Add reporters to the company
      */
-    public static function AddReporters($level,$company,$reportersLst) {
+    public static function AddReporters($level,$parents,$reportersLst) {
         /* Variables */
         global $DB;
         $trans          = null;
         $infoReporter   = null;
         $time           = null;
+        $levelZero      = null;
+        $levelOne       = null;
+        $levelTwo       = null;
+        $levelThree     = null;
 
         /* Start Transaction */
         $trans = $DB->start_delegated_transaction();
@@ -294,11 +386,40 @@ Class Reporters {
             /* Local Time */
             $time = time();
 
+            /* Get Companies Level */
+            switch ($level) {
+                case 0:
+                    $levelZero = $parents[$level];
+
+                    break;
+                case 1:
+                    $levelZero  = $parents[$level-1];
+                    $levelOne   = $parents[$level];
+
+                    break;
+                case 2:
+                    $levelZero  = $parents[$level-2];
+                    $levelOne   = $parents[$level-1];
+                    $levelTwo   = $parents[$level];
+
+                    break;
+                case 3:
+                    $levelZero  = $parents[$level-3];
+                    $levelOne   = $parents[$level-2];
+                    $levelTwo   = $parents[$level-1];
+                    $levelThree = $parents[$level];
+
+                    break;
+            }//switch
+
             foreach ($reportersLst as $reporter) {
                 /* New Reporter */
                 $infoReporter = new stdClass();
                 $infoReporter->reporterid        = $reporter;
-                $infoReporter->companyid         = $company;
+                $infoReporter->levelzero         = $levelZero;
+                $infoReporter->levelone          = $levelOne;
+                $infoReporter->leveltwo          = $levelTwo;
+                $infoReporter->levelthree        = $levelThree;
                 $infoReporter->hierarchylevel    = $level;
                 $infoReporter->timecreated       = $time;
 
@@ -318,7 +439,7 @@ Class Reporters {
 
     /**
      * @param           $level
-     * @param           $company
+     * @param           $parents
      * @param           $reportersLst
      *
      * @throws          Exception
@@ -329,12 +450,17 @@ Class Reporters {
      * Description
      * Remove reporters from company
      */
-    public static function RemoveReporters($level,$company,$reportersLst) {
+    public static function RemoveReporters($level,$parents,$reportersLst) {
         /* Variables */
         global $DB;
-        $trans  = null;
-        $sql    = null;
-        $params = null;
+        $trans      = null;
+        $sql        = null;
+        $params     = null;
+        $sqlLevels  = null;
+        $levelZero  = null;
+        $levelOne   = null;
+        $levelTwo   = null;
+        $levelThree = null;
 
         /* Start Transaction */
         $trans = $DB->start_delegated_transaction();
@@ -343,16 +469,60 @@ Class Reporters {
             /* Search Criteria  */
             $params = array();
             $params['level']    = $level;
-            $params['company']  = $company;
+
+            /* Get Companies Level */
+            switch ($level) {
+                case 0:
+                    $params['levelzero'] = $parents[$level];
+
+                    $sqlLevels = "  AND levelzero = :levelzero
+                                    AND levelone    IS NULL
+                                    AND leveltwo    IS NULL
+                                    AND levelthree  IS NULL ";
+
+                    break;
+                case 1:
+                    $params['levelzero']  = $parents[$level-1];
+                    $params['levelone']   = $parents[$level];
+
+                    $sqlLevels = "  AND levelzero = :levelzero
+                                    AND levelone  = :levelone
+                                    AND leveltwo    IS NULL
+                                    AND levelthree  IS NULL ";
+
+                    break;
+                case 2:
+                    $params['levelzero']  = $parents[$level-2];
+                    $params['levelone']   = $parents[$level-1];
+                    $params['leveltwo']   = $parents[$level];
+
+                    $sqlLevels = "  AND levelzero = :levelzero
+                                    AND levelone  = :levelone
+                                    AND leveltwo  = :leveltwo
+                                    AND levelthree  IS NULL ";
+
+                    break;
+                case 3:
+                    $params['levelzero']    = $parents[$level-3];
+                    $params['levelone']     = $parents[$level-2];
+                    $params['leveltwo']     = $parents[$level-1];
+                    $params['levelthree']   = $parents[$level];
+
+                    $sqlLevels = "  AND levelzero   = :levelzero
+                                    AND levelone    = :levelone
+                                    AND leveltwo    = :leveltwo
+                                    AND levelthree  = :levelthree ";
+
+                    break;
+            }//switch
 
             /* SQL Instruction */
             $sql = " DELETE FROM {report_gen_company_reporter}
                      WHERE  hierarchylevel  = :level
-                        AND companyid       = :company
                         AND reporterid IN ($reportersLst) ";
 
             /* Execute  */
-            $DB->execute($sql,$params);
+            $DB->execute($sql . $sqlLevels,$params);
 
             /* Commit */
             $trans->allow_commit();
@@ -419,7 +589,7 @@ Class Reporters {
      * @param           $search
      * @param           $jsModule
      * @param           $level
-     * @param           $company
+     * @param           $parents
      *
      * @throws          Exception
      *
@@ -429,7 +599,7 @@ Class Reporters {
      * Description
      * Initialise selector to add reporters to the company
      */
-    private static function Init_Reporters_AddSelector($search,$jsModule,$level,$company) {
+    private static function Init_Reporters_AddSelector($search,$jsModule,$level,$parents) {
         /* Variables */
         global $USER,$PAGE;
         $options    = null;
@@ -446,7 +616,7 @@ Class Reporters {
             $USER->reporter_selectors[$hash] = $options;
 
             $PAGE->requires->js_init_call('M.core_user.init_reporters_selector',
-                                          array('addselect',$hash, $level,$company, $search),
+                                          array('addselect',$hash, $level,$parents, $search),
                                           false,
                                           $jsModule
                                          );
@@ -459,7 +629,7 @@ Class Reporters {
      * @param           $search
      * @param           $jsModule
      * @param           $level
-     * @param           $company
+     * @param           $parents
      *
      * @throws          Exception
      *
@@ -469,7 +639,7 @@ Class Reporters {
      * Description
      * Initialise selector to remove reporters from the company
      */
-    private static function Init_Reporters_RemoveSelector($search,$jsModule,$level,$company) {
+    private static function Init_Reporters_RemoveSelector($search,$jsModule,$level,$parents) {
         /* Variables */
         global $USER,$PAGE;
         $options    = null;
@@ -486,7 +656,7 @@ Class Reporters {
             $USER->reporter_selectors[$hash] = $options;
 
             $PAGE->requires->js_init_call('M.core_user.init_reporters_selector',
-                                          array('removeselect',$hash, $level,$company, $search),
+                                          array('removeselect',$hash, $level,$parents, $search),
                                           false,
                                           $jsModule
                                          );

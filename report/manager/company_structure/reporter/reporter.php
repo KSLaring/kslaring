@@ -54,14 +54,14 @@ if ($form->is_cancelled()) {
     /* Add Reporters    */
     if (!empty($data->add_sel)) {
         if (isset($data->addselect)) {
-            Reporters::AddReporters($level,$parents[$level],$data->addselect);
+            Reporters::AddReporters($data->le,$parents,$data->addselect);
         }//if_addselect
     }//if_add
 
     /* Remove Reporters */
     if (!empty($data->remove_sel)) {
         if (isset($data->removeselect)) {
-            Reporters::RemoveReporters($level,$parents[$level],implode(',',$data->removeselect));
+            Reporters::RemoveReporters($data->le,$parents,implode(',',$data->removeselect));
         }//if_removeselect
     }//if_remove
 }//if_else
@@ -75,7 +75,7 @@ echo $OUTPUT->heading(get_string('title_reporters', 'report_manager'));
 $form->display();
 
 /* Initialise Selectors */
-Reporters::Init_Reporters_Selectors($addSearch,$removeSearch,$level,$parents[$level]);
+Reporters::Init_Reporters_Selectors($addSearch,$removeSearch,$level,$parents);
 
 /* Print Footer */
 echo $OUTPUT->footer();

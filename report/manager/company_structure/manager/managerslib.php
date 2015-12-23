@@ -23,7 +23,7 @@ Class Managers {
      * @param           $addSearch
      * @param           $removeSearch
      * @param           $level
-     * @param           $company
+     * @param           $parents
      *
      * @throws          Exception
      *
@@ -34,7 +34,7 @@ Class Managers {
      * Initialise selectors to add and remove managers to/from the company
      *
      */
-    public static function Init_Managers_Selectors($addSearch,$removeSearch,$level,$company) {
+    public static function Init_Managers_Selectors($addSearch,$removeSearch,$level,$parents) {
         /* Variables */
         $jsModule   = null;
         $name       = null;
@@ -65,9 +65,9 @@ Class Managers {
                              );
 
             /* Super Users - Add Selector       */
-            self::Init_Managers_AddSelector($addSearch,$jsModule,$level,$company);
+            self::Init_Managers_AddSelector($addSearch,$jsModule,$level,$parents);
             /* Super Users - Remove Selector    */
-            self::Init_Managers_RemoveSelector($removeSearch,$jsModule,$level,$company);
+            self::Init_Managers_RemoveSelector($removeSearch,$jsModule,$level,$parents);
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
@@ -75,7 +75,7 @@ Class Managers {
 
     /**
      * @param           $search
-     * @param           $company
+     * @param           $parents
      * @param           $level
      *
      * @return          array
@@ -87,7 +87,7 @@ Class Managers {
      * Description
      * Find the managers connected with the company
      */
-    public static function FindManagers_Selector($search,$company,$level) {
+    public static function FindManagers_Selector($search,$parents,$level) {
         /* Variables */
         global $DB;
         $availableManagers  = array();
@@ -103,8 +103,8 @@ Class Managers {
         try {
             /* Search Criteria  */
             $params = array();
-            $params['company']  = $company;
             $params['level']    = $level;
+
 
             /* SQL Instruction */
             $sql = " SELECT	u.id,
@@ -114,8 +114,52 @@ Class Managers {
                      FROM 	  {report_gen_company_manager}	cm
                         JOIN  {user}						u	ON 	u.id 		= cm.managerid
                                                                 AND	u.deleted 	= 0
-                     WHERE	cm.companyid 		= :company
-                        AND	cm.hierarchylevel	= :level ";
+                     WHERE	cm.hierarchylevel	= :level ";
+
+            /* Get Companies Levels */
+            switch ($level) {
+                case 0:
+                    $params['levelzero'] = $parents[$level];
+
+                    $sql .= " AND cm.levelzero = :levelzero
+                              AND cm.levelone   IS NULL
+                              AND cm.leveltwo   IS NULL
+                              AND cm.levelthree IS NULL ";
+
+                    break;
+                case 1:
+                    $params['levelzero']    = $parents[$level-1];
+                    $params['levelone']     = $parents[$level];
+
+                    $sql .= " AND cm.levelzero = :levelzero
+                              AND cm.levelone  = :levelone
+                              AND cm.leveltwo   IS NULL
+                              AND cm.levelthree IS NULL ";
+
+                    break;
+                case 2:
+                    $params['levelzero']    = $parents[$level-2];
+                    $params['levelone']     = $parents[$level-1];
+                    $params['leveltwo']     = $parents[$level];
+
+                    $sql .= " AND cm.levelzero = :levelzero
+                              AND cm.levelone  = :levelone
+                              AND cm.leveltwo  = :leveltwo
+                              AND cm.levelthree IS NULL ";
+
+                    break;
+                case 3:
+                    $params['levelzero']    = $parents[$level-3];
+                    $params['levelone']     = $parents[$level-2];
+                    $params['leveltwo']     = $parents[$level-1];
+                    $params['levelthree']   = $parents[$level];
+
+                    $sql .= " AND cm.levelzero  = :levelzero
+                              AND cm.levelone   = :levelone
+                              AND cm.leveltwo   = :leveltwo
+                              AND cm.levelthree = :levelthree ";
+                    break;
+            }//switch_level
 
             /* Search Option */
             if ($search) {
@@ -174,7 +218,7 @@ Class Managers {
 
     /**
      * @param           $search
-     * @param           $company
+     * @param           $parents
      * @param           $level
      *
      * @return          array
@@ -186,7 +230,7 @@ Class Managers {
      * Description
      * Find potential managers.
      */
-    public static function FindPotentialManagers_Selector($search,$company,$level) {
+    public static function FindPotentialManagers_Selector($search,$parents,$level) {
         /* Variables */
         global $DB;
         $availableManagers  = array();
@@ -202,7 +246,6 @@ Class Managers {
         try {
             /* Search Criteria  */
             $params = array();
-            $params['company']  = $company;
             $params['level']    = $level;
 
             /* SQL Instruction  */
@@ -212,9 +255,55 @@ Class Managers {
                                 u.email
                      FROM			{user}						  u
                         LEFT JOIN	{report_gen_company_manager}  cm	ON  cm.managerid 		= u.id
-                                                                        AND	cm.companyid 		= :company
-                                                                        AND	cm.hierarchylevel 	= :level
-                     WHERE		u.deleted   = 0
+                                                                        AND	cm.hierarchylevel 	= :level ";
+
+            /* Get companies level */
+            switch ($level) {
+                case 0:
+                    $params['levelzero'] = $parents[$level];
+
+                    $sql .= " AND cm.levelzero = :levelzero
+                              AND cm.levelone   IS NULL
+                              AND cm.leveltwo   IS NULL
+                              AND cm.levelthree IS NULL ";
+
+                    break;
+                case 1:
+                    $params['levelzero']    = $parents[$level-1];
+                    $params['levelone']     = $parents[$level];
+
+                    $sql .= " AND cm.levelzero = :levelzero
+                              AND cm.levelone  = :levelone
+                              AND cm.leveltwo   IS NULL
+                              AND cm.levelthree IS NULL ";
+
+                    break;
+                case 2:
+                    $params['levelzero']    = $parents[$level-2];
+                    $params['levelone']     = $parents[$level-1];
+                    $params['leveltwo']     = $parents[$level];
+
+                    $sql .= " AND cm.levelzero = :levelzero
+                              AND cm.levelone  = :levelone
+                              AND cm.leveltwo  = :leveltwo
+                              AND cm.levelthree IS NULL ";
+
+                    break;
+                case 3:
+                    $params['levelzero']    = $parents[$level-3];
+                    $params['levelone']     = $parents[$level-2];
+                    $params['leveltwo']     = $parents[$level-1];
+                    $params['levelthree']   = $parents[$level];
+
+                    $sql .= " AND cm.levelzero  = :levelzero
+                              AND cm.levelone   = :levelone
+                              AND cm.leveltwo   = :leveltwo
+                              AND cm.levelthree = :levelthree ";
+                    break;
+            }//switch_level
+
+            /* Criteria  */
+            $sql .= " WHERE		u.deleted   = 0
                         AND		u.username != 'guest'
                         AND		cm.id IS NULL ";
 
@@ -272,7 +361,7 @@ Class Managers {
 
     /**
      * @param           $level
-     * @param           $company
+     * @param           $parents
      * @param           $managersLst
      *
      * @throws          Exception
@@ -284,13 +373,18 @@ Class Managers {
      * Add managers to the company
      * Manager is a reporter
      */
-    public static function AddManagers($level,$company,$managersLst) {
+    public static function AddManagers($level,$parents,$managersLst) {
         /* Variables    */
         global $DB;
         $trans          = null;
         $infoManager    = null;
         $infoReporter   = null;
         $time           = null;
+        $levelZero      = null;
+        $levelOne       = null;
+        $levelTwo       = null;
+        $levelThree     = null;
+
 
         /* Start Transaction */
         $trans = $DB->start_delegated_transaction();
@@ -299,11 +393,40 @@ Class Managers {
             /* Local Time   */
             $time = time();
 
+            /* Get Companies Level */
+            switch ($level) {
+                case 0:
+                    $levelZero = $parents[$level];
+
+                    break;
+                case 1:
+                    $levelZero  = $parents[$level-1];
+                    $levelOne   = $parents[$level];
+
+                    break;
+                case 2:
+                    $levelZero  = $parents[$level-2];
+                    $levelOne   = $parents[$level-1];
+                    $levelTwo   = $parents[$level];
+
+                    break;
+                case 3:
+                    $levelZero  = $parents[$level-3];
+                    $levelOne   = $parents[$level-2];
+                    $levelTwo   = $parents[$level-1];
+                    $levelThree = $parents[$level];
+
+                    break;
+            }//switch
+
             foreach ($managersLst as $manager) {
                 /* New Manager  */
                 $infoManager = new stdClass();
                 $infoManager->managerid         = $manager;
-                $infoManager->companyid         = $company;
+                $infoManager->levelzero         = $levelZero;
+                $infoManager->levelone          = $levelOne;
+                $infoManager->leveltwo          = $levelTwo;
+                $infoManager->levelthree        = $levelThree;
                 $infoManager->hierarchylevel    = $level;
                 $infoManager->timecreated       = $time;
 
@@ -313,7 +436,10 @@ Class Managers {
                 /* New Reporter */
                 $infoReporter = new stdClass();
                 $infoReporter->reporterid        = $manager;
-                $infoReporter->companyid         = $company;
+                $infoReporter->levelzero         = $levelZero;
+                $infoReporter->levelone          = $levelOne;
+                $infoReporter->leveltwo          = $levelTwo;
+                $infoReporter->levelthree        = $levelThree;
                 $infoReporter->hierarchylevel    = $level;
                 $infoReporter->timecreated       = $time;
 
@@ -333,7 +459,7 @@ Class Managers {
 
     /**
      * @param           $level
-     * @param           $company
+     * @param           $parents
      * @param           $managersLst
      *
      * @throws          Exception
@@ -345,12 +471,17 @@ Class Managers {
      * Remove managers from company
      * A manager is also a reporter
      */
-    public static function RemoveManagers($level,$company,$managersLst) {
+    public static function RemoveManagers($level,$parents,$managersLst) {
         /* Variables */
         global $DB;
-        $trans  = null;
-        $sql    = null;
-        $params = null;
+        $trans      = null;
+        $sql        = null;
+        $params     = null;
+        $sqlLevels  = null;
+        $levelZero  = null;
+        $levelOne   = null;
+        $levelTwo   = null;
+        $levelThree = null;
 
         /* Start Transaction    */
         $trans = $DB->start_delegated_transaction();
@@ -359,25 +490,68 @@ Class Managers {
             /* Search Criteria  */
             $params = array();
             $params['level']    = $level;
-            $params['company']  = $company;
+
+            /* Get Companies Level */
+            switch ($level) {
+                case 0:
+                    $params['levelzero'] = $parents[$level];
+
+                    $sqlLevels = "  AND levelzero = :levelzero
+                                    AND levelone    IS NULL
+                                    AND leveltwo    IS NULL
+                                    AND levelthree  IS NULL ";
+
+                    break;
+                case 1:
+                    $params['levelzero']  = $parents[$level-1];
+                    $params['levelone']   = $parents[$level];
+
+                    $sqlLevels = "  AND levelzero = :levelzero
+                                    AND levelone  = :levelone
+                                    AND leveltwo    IS NULL
+                                    AND levelthree  IS NULL ";
+
+                    break;
+                case 2:
+                    $params['levelzero']  = $parents[$level-2];
+                    $params['levelone']   = $parents[$level-1];
+                    $params['leveltwo']   = $parents[$level];
+
+                    $sqlLevels = "  AND levelzero = :levelzero
+                                    AND levelone  = :levelone
+                                    AND leveltwo  = :leveltwo
+                                    AND levelthree  IS NULL ";
+
+                    break;
+                case 3:
+                    $params['levelzero']    = $parents[$level-3];
+                    $params['levelone']     = $parents[$level-2];
+                    $params['leveltwo']     = $parents[$level-1];
+                    $params['levelthree']   = $parents[$level];
+
+                    $sqlLevels = "  AND levelzero   = :levelzero
+                                    AND levelone    = :levelone
+                                    AND leveltwo    = :leveltwo
+                                    AND levelthree  = :levelthree ";
+
+                    break;
+            }//switch
 
             /* SQL Instruction - Manager */
             $sql = " DELETE FROM {report_gen_company_manager}
                      WHERE  hierarchylevel  = :level
-                        AND companyid       = :company
                         AND managerid IN ($managersLst) ";
 
             /* Execute  */
-            $DB->execute($sql,$params);
+            $DB->execute($sql . $sqlLevels,$params);
 
             /* SQL Instruction - Reporters */
             $sql = " DELETE FROM {report_gen_company_reporter}
                      WHERE  hierarchylevel  = :level
-                        AND companyid       = :company
                         AND reporterid IN ($managersLst) ";
 
             /* Execute  */
-            $DB->execute($sql,$params);
+            $DB->execute($sql . $sqlLevels,$params);
 
             /* Commit */
             $trans->allow_commit();
@@ -397,7 +571,7 @@ Class Managers {
      * @param           $search
      * @param           $jsModule
      * @param           $level
-     * @param           $company
+     * @param           $parents
      *
      * @throws          Exception
      *
@@ -407,7 +581,7 @@ Class Managers {
      * Description
      * Initialise selector to add managers to the company
      */
-    private static function Init_Managers_AddSelector($search,$jsModule,$level,$company) {
+    private static function Init_Managers_AddSelector($search,$jsModule,$level,$parents) {
         /* Variables */
         global $USER,$PAGE;
         $options    = null;
@@ -424,7 +598,7 @@ Class Managers {
             $USER->manager_selectors[$hash] = $options;
 
             $PAGE->requires->js_init_call('M.core_user.init_managers_selector',
-                                          array('addselect',$hash, $level,$company, $search),
+                                          array('addselect',$hash, $level,$parents, $search),
                                           false,
                                           $jsModule
                                          );
@@ -437,7 +611,7 @@ Class Managers {
      * @param           $search
      * @param           $jsModule
      * @param           $level
-     * @param           $company
+     * @param           $parents
      *
      * @throws          Exception
      *
@@ -447,7 +621,7 @@ Class Managers {
      * Description
      * Initialise selector to remove managers from the company
      */
-    private static function Init_Managers_RemoveSelector($search,$jsModule,$level,$company) {
+    private static function Init_Managers_RemoveSelector($search,$jsModule,$level,$parents) {
         /* Variables */
         global $USER,$PAGE;
         $options    = null;
@@ -464,7 +638,7 @@ Class Managers {
             $USER->manager_selectors[$hash] = $options;
 
             $PAGE->requires->js_init_call('M.core_user.init_managers_selector',
-                                          array('removeselect',$hash, $level,$company, $search),
+                                          array('removeselect',$hash, $level,$parents, $search),
                                           false,
                                           $jsModule
                                          );

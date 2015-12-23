@@ -20,7 +20,7 @@ M.core_user.get_manager_selector = function (name) {
     return this.manager_selectors[name] || null;
 };
 
-M.core_user.init_managers_selector = function (Y, name, hash, level, companyId, lastsearch) {
+M.core_user.init_managers_selector = function (Y, name, hash, level, companies, lastsearch) {
     var manager_selector = {
         /** This id/name used for this control in the HTML. */
         name : name,
@@ -42,7 +42,7 @@ M.core_user.init_managers_selector = function (Y, name, hash, level, companyId, 
         /* Level */
         hierarchy : level,
         /* Company */
-        company : companyId,
+        companies : companies,
 
         /**
          * Initialises the user manager object
@@ -94,6 +94,11 @@ M.core_user.init_managers_selector = function (Y, name, hash, level, companyId, 
          * Fires off the ajax search request.
          */
         send_query : function(forceresearch) {
+            var levelZero   =  this.companies[0];
+            var levelOne    = (this.companies[1] || null);
+            var levelTwo    = (this.companies[2] || null);
+            var levelThree  = (this.companies[3] || null);
+
             // Cancel any pending timeout.
             this.cancel_timeout();
 
@@ -111,7 +116,7 @@ M.core_user.init_managers_selector = function (Y, name, hash, level, companyId, 
 
             var iotrans = Y.io(M.cfg.wwwroot + '/report/manager/company_structure/manager/search.php', {
                 method: 'POST',
-                data: 'level=' + level + '&company=' + companyId  + '&search=' + value + '&selectorid=' + hash + '&sesskey=' +M.cfg.sesskey,
+                data: 'level=' + level + '&levelzero=' + levelZero + '&levelone=' + levelOne + '&leveltwo=' + levelTwo + '&levelthree=' + levelThree + '&search=' + value + '&selectorid=' + hash + '&sesskey=' +M.cfg.sesskey,
                 on: {
                     complete: this.handle_response
                 },
@@ -238,6 +243,16 @@ M.core_user.init_managers_selector = function (Y, name, hash, level, companyId, 
                     this.removeAttribute('selected');
                 }
             });
+        },
+
+        /**
+         * Replace
+         * @param {string} str
+         * @param {string} search The search term
+         * @return string
+         */
+        insert_search_into_str : function(str, search) {
+            return str.replace("%%SEARCHTERM%%", search);
         },
 
         /**
