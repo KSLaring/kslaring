@@ -31,6 +31,8 @@ $completed_option       = optional_param('opt',0,PARAM_INT);
 $return_url             = new moodle_url('/report/manager/course_report/course_report.php',array('rpt' => $report_level));
 $url                    = new moodle_url('/report/manager/course_report/course_report_level.php',array('rpt' => $report_level));
 $course_report          = null;
+$IsReporter             = null;
+$myHierarchy            = null;
 
 /* Context */
 $site_context = CONTEXT_SYSTEM::instance();
@@ -54,29 +56,38 @@ $PAGE->navbar->add(get_string('report_manager','local_tracker_manager'),new mood
 $PAGE->navbar->add(get_string('course_report', 'report_manager'),$return_url);
 $PAGE->navbar->add(get_string('level_report','report_manager',$report_level),$url);
 
-/* ADD requiere_capibility */
+/* ADD require_capibility */
+$IsReporter = CompetenceManager::IsReporter($USER->id);
 switch ($report_level) {
     case 0:
         if (!has_capability('report/manager:viewlevel0', $site_context)) {
-            print_error('nopermissions', 'error', '', 'report/manager:viewlevel0');
+            if (!$IsReporter) {
+                print_error('nopermissions', 'error', '', 'report/manager:viewlevel0');
+            }//ifReporter
         }
 
         break;
     case 1:
         if (!has_capability('report/manager:viewlevel1', $site_context)) {
-            print_error('nopermissions', 'error', '', 'report/manager:viewlevel1');
+            if (!$IsReporter) {
+                print_error('nopermissions', 'error', '', 'report/manager:viewlevel1');
+            }//ifReporter
         }
 
         break;
     case 2:
         if (!has_capability('report/manager:viewlevel2', $site_context)) {
-            print_error('nopermissions', 'error', '', 'report/manager:viewlevel2');
+            if (!$IsReporter) {
+                print_error('nopermissions', 'error', '', 'report/manager:viewlevel2');
+            }//ifReporter
         }
 
         break;
     case 3:
         if (!has_capability('report/manager:viewlevel3', $site_context)) {
-            print_error('nopermissions', 'error', '', 'report/manager:viewlevel3');
+            if (!$IsReporter) {
+                print_error('nopermissions', 'error', '', 'report/manager:viewlevel3');
+            }//ifReporter
         }
 
         break;
@@ -98,7 +109,7 @@ if (empty($CFG->loginhttps)) {
 $PAGE->verify_https_required();
 
 /* My Hierarchy */
-$my_hierarchy = CompetenceManager::get_MyHierarchyLevel($USER->id,$site_context);
+$myHierarchy = CompetenceManager::get_MyHierarchyLevel($USER->id,$site_context,$IsReporter,$report_level);
 
 /* Show Form */
 if ($company_id) {
@@ -119,11 +130,11 @@ if ($company_id) {
     $data_form[REPORT_MANAGER_COMPLETED_LIST]       = $completed_option;
 
     /* Get the data to the report   */
-    $course_report = course_report::Get_CourseReportLevel($data_form,$my_hierarchy);
+    $course_report = course_report::Get_CourseReportLevel($data_form,$myHierarchy,$IsReporter);
     $out = course_report::Print_CourseReport_Screen($course_report,$data_form[REPORT_MANAGER_COMPLETED_LIST]);
 }
 
-$form = new manager_course_report_level_form(null,array($report_level,$my_hierarchy));
+$form = new manager_course_report_level_form(null,array($report_level,$myHierarchy,$IsReporter));
 if ($form->is_cancelled()) {
 
     $_POST = array();
@@ -133,7 +144,7 @@ if ($form->is_cancelled()) {
     $data_form = (Array)$data;
 
     /* Get the data to the report   */
-    $course_report = course_report::Get_CourseReportLevel($data_form,$my_hierarchy);
+    $course_report = course_report::Get_CourseReportLevel($data_form,$myHierarchy,$IsReporter);
 
     if (isset($data_form[REPORT_MANAGER_JOB_ROLE_LIST]) && $data_form[REPORT_MANAGER_JOB_ROLE_LIST]) {
         $SESSION->job_roles = $data_form[REPORT_MANAGER_JOB_ROLE_LIST];

@@ -31,6 +31,7 @@ $myLevelThree   = null;
 
 $myAccess       = null;
 $myLevelAccess  = null;
+$IsReporter     = null;
 
 $json           = array();
 $data           = array();
@@ -49,15 +50,21 @@ require_sesskey();
 echo $OUTPUT->header();
 
 /* Get Companies connected with super user  */
+$IsReporter = CompetenceManager::IsReporter($USER->id);
 if ($superUser) {
     $myAccess   = CompetenceManager::Get_MyAccess($USER->id);
 }else {
     /* My Hierarchy */
-    $myHierarchy = CompetenceManager::get_MyHierarchyLevel($USER->id,$context);
-    list($myLevelZero,$myLevelOne,$myLevelTwo,$myLevelThree) = CompetenceManager::GetMyCompanies_By_Level($myHierarchy->competence,$myHierarchy->my_level);
+    $myHierarchy = CompetenceManager::get_MyHierarchyLevel($USER->id,$context,$IsReporter,0);
+    if ($IsReporter) {
+        $myLevelZero  = $myHierarchy->competence->levelZero;
+        $myLevelOne   = $myHierarchy->competence->levelOne;
+        $myLevelTwo   = $myHierarchy->competence->levelTwo;
+        $myLevelThree = $myHierarchy->competence->levelThree;
+    }else {
+        list($myLevelZero,$myLevelOne,$myLevelTwo,$myLevelThree) = CompetenceManager::GetMyCompanies_By_Level($myHierarchy->competence,$myHierarchy->my_level);
+    }//if_IsReporter
 }//if_superUser
-
-
 
 /* Get Data */
 $data       = array('name' => COMPANY_STRUCTURE_LEVEL . $level, 'items' => array(),'clean' => array());

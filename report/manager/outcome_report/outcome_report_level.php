@@ -50,28 +50,37 @@ $PAGE->navbar->add(get_string('outcome_report', 'report_manager'),$return_url);
 $PAGE->navbar->add(get_string('level_report','report_manager',$report_level),$url);
 
 /* ADD requiere_capibility */
+$IsReporter = CompetenceManager::IsReporter($USER->id);
 switch ($report_level) {
     case 0:
         if (!has_capability('report/manager:viewlevel0', $site_context)) {
-            print_error('nopermissions', 'error', '', 'report/manager:viewlevel1');
+            if (!$IsReporter) {
+                print_error('nopermissions', 'error', '', 'report/manager:viewlevel0');
+            }//ifReporter
         }
 
         break;
     case 1:
         if (!has_capability('report/manager:viewlevel1', $site_context)) {
-            print_error('nopermissions', 'error', '', 'report/manager:viewlevel1');
+            if (!$IsReporter) {
+                print_error('nopermissions', 'error', '', 'report/manager:viewlevel1');
+            }//ifReporter
         }
 
         break;
     case 2:
         if (!has_capability('report/manager:viewlevel2', $site_context)) {
-            print_error('nopermissions', 'error', '', 'report/manager:viewlevel2');
+            if (!$IsReporter) {
+                print_error('nopermissions', 'error', '', 'report/manager:viewlevel2');
+            }//ifReporter
         }
 
         break;
     case 3:
         if (!has_capability('report/manager:viewlevel3', $site_context)) {
-            print_error('nopermissions', 'error', '', 'report/manager:viewlevel3');
+            if (!$IsReporter) {
+                print_error('nopermissions', 'error', '', 'report/manager:viewlevel3');
+            }//ifReporter
         }
 
         break;
@@ -87,7 +96,7 @@ if (empty($CFG->loginhttps)) {
 $PAGE->verify_https_required();
 
 /* My Hierarchy */
-$my_hierarchy = CompetenceManager::get_MyHierarchyLevel($USER->id,$site_context);
+$my_hierarchy = CompetenceManager::get_MyHierarchyLevel($USER->id,$site_context,$IsReporter,$report_level);
 
 /* Show Form */
 if ($company_id) {
@@ -108,11 +117,11 @@ if ($company_id) {
     $data_form[REPORT_MANAGER_COMPLETED_LIST]           = $completed_option;
 
     /* Get the data to the report   */
-    $outcome_report = outcome_report::Get_OutcomeReportLevel($data_form,$my_hierarchy);
+    $outcome_report = outcome_report::Get_OutcomeReportLevel($data_form,$my_hierarchy,$IsReporter);
     $out = outcome_report::Print_OutcomeReport_Screen($outcome_report,$data_form[REPORT_MANAGER_COMPLETED_LIST]);
 }
 
-$form = new manager_outcome_report_level_form(null,array($report_level,$my_hierarchy));
+$form = new manager_outcome_report_level_form(null,array($report_level,$my_hierarchy,$IsReporter ));
 if ($form->is_cancelled()) {
     $_POST = array();
     redirect($return_url);
@@ -120,7 +129,7 @@ if ($form->is_cancelled()) {
     /* Get Data */
     $data_form = (Array)$data;
 
-    $outcome_report = outcome_report::Get_OutcomeReportLevel($data_form,$my_hierarchy);
+    $outcome_report = outcome_report::Get_OutcomeReportLevel($data_form,$my_hierarchy,$IsReporter);
 
     if ($outcome_report) {
         /* Screen / Excel   */

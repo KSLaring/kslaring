@@ -30,7 +30,7 @@ class manager_course_report_level_form extends moodleform {
                                   );
 
         $form = $this->_form;
-        list($report_level,$my_hierarchy) = $this->_customdata;
+        list($report_level,$myHierarchy,$IsReporter) = $this->_customdata;
 
         /* Course List  */
         $form->addElement('header', 'course', get_string('course'));
@@ -46,7 +46,7 @@ class manager_course_report_level_form extends moodleform {
         $form->addElement('header', 'company', get_string('company', 'report_manager'));
         $form->setExpanded('company',true);
         for ($i = 0; $i <= $report_level; $i++) {
-            $this->AddLevel($form,$i,$my_hierarchy);
+            $this->AddLevel($form,$i,$myHierarchy,$IsReporter);
         }//for_levels
 
         /* Job Roles    */
@@ -89,7 +89,8 @@ class manager_course_report_level_form extends moodleform {
     /**
      * @param           $form
      * @param           $level
-     * @param           $my_hierarchy
+     * @param           $myHierarchy
+     * @param           $IsReporter
      *
      * @creationDate    17/03/2015
      * @author          eFaktor     (fbv)
@@ -97,11 +98,11 @@ class manager_course_report_level_form extends moodleform {
      * Description
      * Add Level Company Structure
      */
-    function AddLevel(&$form,$level,$my_hierarchy){
+    function AddLevel(&$form,$level,$myHierarchy,$IsReporter){
 
         $form->addElement('html', '<div class="level-wrapper">');
             /* Add Company List */
-            $options = $this->getCompanyList($level,$my_hierarchy);
+            $options = $this->getCompanyList($level,$myHierarchy,$IsReporter);
             $select = &$form->addElement('select',
                                          COMPANY_STRUCTURE_LEVEL . $level,
                                          get_string('select_company_structure_level', 'report_manager', $level),
@@ -123,7 +124,9 @@ class manager_course_report_level_form extends moodleform {
 
     /**
      * @param           $level
-     * @param           $my_hierarchy
+     * @param           $myHierarchy
+     * @param           $IsReporter
+     *
      * @return          array
      *
      * @creationDate    17/03/2015
@@ -132,7 +135,7 @@ class manager_course_report_level_form extends moodleform {
      * Description
      * Get the company List
      */
-    function getCompanyList($level,$my_hierarchy) {
+    function getCompanyList($level,$myHierarchy,$IsReporter) {
         /* Variables    */
         $levelThree     = null;
         $levelTwo       = null;
@@ -142,10 +145,18 @@ class manager_course_report_level_form extends moodleform {
         $options        = array();
 
         /* Get My Companies by Level    */
-        list($levelZero,$levelOne,$levelTwo,$levelThree) = CompetenceManager::GetMyCompanies_By_Level($my_hierarchy->competence,$my_hierarchy->my_level);
+        if (!$IsReporter) {
+            list($levelZero,$levelOne,$levelTwo,$levelThree) = CompetenceManager::GetMyCompanies_By_Level($myHierarchy->competence,$myHierarchy->my_level);
+        }else {
+            $levelZero  = $myHierarchy->competence->levelZero;
+            $levelOne   = $myHierarchy->competence->levelOne;
+            $levelTwo   = $myHierarchy->competence->levelTwo;
+            $levelThree = $myHierarchy->competence->levelThree;
+        }//if_IsReporter
 
         /* Parent*/
         $parent     = optional_param(COMPANY_STRUCTURE_LEVEL . ($level-1), 0, PARAM_INT);
+
         switch ($level) {
             case 0:
                 /* Only My Companies    */
@@ -182,6 +193,7 @@ class manager_course_report_level_form extends moodleform {
 
                 break;
             case 3:
+                /* Get Only My Companies */
                 if ($levelThree) {
                     $companies_in = implode(',',$levelThree);
                 }//if_level_Two

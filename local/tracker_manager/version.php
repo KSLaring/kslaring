@@ -6,7 +6,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 // requires certificate module 2008080904
-$plugin->version  = 2015102200;  // The current module version (Date: YYYYMMDDXX)
+$plugin->version  = 2015122300;  // The current module version (Date: YYYYMMDDXX)
 //$plugin->requires = 2007101506;  // Requires this Moodle version
 //$plugin->cron     = 0;           // Period for cron to check this module (secs)
 $plugin->component = 'local_tracker_manager';

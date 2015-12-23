@@ -16,6 +16,7 @@
  */
 
 require_once('../../config.php');
+require_once( 'managerlib.php');
 require_once($CFG->libdir . '/adminlib.php');
 require_once($CFG->libdir . '/gradelib.php');
 
@@ -37,9 +38,10 @@ $PAGE->set_title($SITE->fullname);
 $PAGE->set_heading($SITE->fullname);
 $PAGE->navbar->add(get_string('company_report','report_manager'),$url);
 
-
 /* ADD require_capability */
-require_capability('report/manager:viewlevel4', $site_context);
+if (!CompetenceManager::IsReporter($USER->id)) {
+    require_capability('report/manager:viewlevel4', $site_context);
+}
 
 if (empty($CFG->loginhttps)) {
     $secure_www_root = $CFG->wwwroot;

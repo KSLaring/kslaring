@@ -45,7 +45,6 @@ require_sesskey();
 
 echo $OUTPUT->header();
 
-
 /* Get Data */
 $data       = array('name' => COMPANY_STRUCTURE_LEVEL . $level, 'items' => array(),'clean' => array());
 $toClean    = array();
@@ -103,8 +102,16 @@ $data['clean'] = $toClean;
 
 /* Get My Companies by Level    */
 /* My Hierarchy */
-$my_hierarchy = CompetenceManager::get_MyHierarchyLevel($USER->id,$context);
-list($myLevelZero,$myLevelOne,$myLevelTwo,$myLevelThree) = CompetenceManager::GetMyCompanies_By_Level($my_hierarchy->competence,$my_hierarchy->my_level);
+$IsReporter = CompetenceManager::IsReporter($USER->id);
+$myHierarchy = CompetenceManager::get_MyHierarchyLevel($USER->id,$context,$IsReporter,$reportLevel);
+if ($IsReporter) {
+    $myLevelZero  = $myHierarchy->competence->levelZero;
+    $myLevelOne   = $myHierarchy->competence->levelOne;
+    $myLevelTwo   = $myHierarchy->competence->levelTwo;
+    $myLevelThree = $myHierarchy->competence->levelThree;
+}else {
+    list($myLevelZero,$myLevelOne,$myLevelTwo,$myLevelThree) = CompetenceManager::GetMyCompanies_By_Level($myHierarchy->competence,$myHierarchy->my_level);
+}//if_IsReporter
 
 switch ($level) {
     case 0:
@@ -132,8 +139,6 @@ switch ($level) {
 
         break;
 }//switch_level
-
-
 
 /* Get Companies List   */
 if ($parent) {

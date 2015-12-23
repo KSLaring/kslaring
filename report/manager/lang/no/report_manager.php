@@ -452,6 +452,7 @@ $string['sp_level_required']        = 'At least one level is required';
 $string['unenrol']      = 'Unenrol';
 $string['err_unenrol']  = 'Sorry, it has had an error during the process. Please, try it later contact to administrator';
 $string['exit_unenrol'] = 'User enrolled in course';
+
 /**
  * @updateDate  21/12/2015
  * @author      eFaktor     (fbv)

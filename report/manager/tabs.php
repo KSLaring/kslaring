@@ -42,10 +42,12 @@ if ($superUser) {
         new moodle_url($CFG->wwwroot. '/report/manager/index.php'),
         get_string('company_report', 'report_manager'));
 
-    if (has_capability('report/manager:viewlevel3', $site_context)) {
+    if ((CompetenceManager::IsReporter($USER->id)) ||
+        (has_capability('report/manager:viewlevel3', $site_context))) {
+
         $top_row[] = new tabobject('outcome_report',
-            new moodle_url($CFG->wwwroot.'/report/manager/outcome_report/outcome_report.php'),
-            get_string('outcome_report','report_manager'));
+                                   new moodle_url($CFG->wwwroot.'/report/manager/outcome_report/outcome_report.php'),
+                                   get_string('outcome_report','report_manager'));
 
 
         if ($current_tab == 'outcome_report_level') {

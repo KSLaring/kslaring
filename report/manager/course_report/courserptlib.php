@@ -63,6 +63,8 @@ class course_report {
     /**
      * @param               $data_form
      * @param               $my_hierarchy
+     * @param               $IsReporter
+     *
      * @return              null|stdClass
      * @throws              Exception
      *
@@ -113,7 +115,7 @@ class course_report {
      *                          --> not_enrol.      Array
      *                                              --> name
      */
-    public static function Get_CourseReportLevel($data_form,$my_hierarchy) {
+    public static function Get_CourseReportLevel($data_form,$my_hierarchy,$IsReporter) {
         /* Variables    */
         global $USER;
         $companies_report   = null;
@@ -145,11 +147,18 @@ class course_report {
                 $course_report->completed_before   = $data_form[REPORT_MANAGER_COMPLETED_LIST];
 
                 /* Get My Companies by Level    */
-                list($inZero,$inOne,$inTwo,$inThree) = CompetenceManager::GetMyCompanies_By_Level($my_hierarchy->competence,$my_hierarchy->my_level);
-                $inZero     = implode(',',$inZero);
-                $inOne      = implode(',',$inOne);
-                $inTwo      = implode(',',$inTwo);
-                $inThree    = implode(',',$inThree);
+                if (!$IsReporter) {
+                    list($inZero,$inOne,$inTwo,$inThree) = CompetenceManager::GetMyCompanies_By_Level($my_hierarchy->competence,$my_hierarchy->my_level);
+                    $inZero     = implode(',',$inZero);
+                    $inOne      = implode(',',$inOne);
+                    $inTwo      = implode(',',$inTwo);
+                    $inThree    = implode(',',$inThree);
+                }else {
+                    $inZero  = $my_hierarchy->competence->levelZero;
+                    $inOne   = $my_hierarchy->competence->levelOne;
+                    $inTwo   = $my_hierarchy->competence->levelTwo;
+                    $inThree = $my_hierarchy->competence->levelThree;
+                }//if_IsReporter
 
                 /* Job Roles Selected   */
                 $course_report->job_roles = self::Get_JobRolesCourse_Report($data_form);

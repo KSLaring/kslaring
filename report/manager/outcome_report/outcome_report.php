@@ -42,7 +42,9 @@ $PAGE->navbar->add(get_string('report_manager','local_tracker_manager'),$return_
 $PAGE->navbar->add(get_string('outcome_report', 'report_manager'),$url);
 
 /* ADD require_capability */
-require_capability('report/manager:viewlevel3', $site_context);
+if (!CompetenceManager::IsReporter($USER->id)) {
+    require_capability('report/manager:viewlevel3', $site_context);
+}
 
 if (empty($CFG->loginhttps)) {
     $secure_www_root = $CFG->wwwroot;
