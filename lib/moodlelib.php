@@ -2026,7 +2026,7 @@ function get_user_preferences($name = null, $default = null, $user = null) {
 // FUNCTIONS FOR HANDLING TIME.
 
 /**
- * Given date parts in user time produce a GMT timestamp.
+ * Given Gregorian date parts in user time produce a GMT timestamp.
  *
  * @package core
  * @category time
@@ -2208,7 +2208,7 @@ function date_format_string($date, $format, $tz = 99) {
 
 /**
  * Given a $time timestamp in GMT (seconds since epoch),
- * returns an array that represents the date in user time
+ * returns an array that represents the Gregorian date in user time
  *
  * @package core
  * @category time
