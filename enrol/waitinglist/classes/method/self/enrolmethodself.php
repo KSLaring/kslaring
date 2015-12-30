@@ -32,6 +32,7 @@
 namespace enrol_waitinglist\method\self;
 
 require_once($CFG->dirroot . '/enrol/waitinglist/lib.php');
+require_once($CFG->dirroot . '/enrol/waitinglist/approval/approvallib.php');
 class enrolmethodself extends \enrol_waitinglist\method\enrolmethodbase{
 
 	const METHODTYPE='self';
@@ -46,12 +47,17 @@ class enrolmethodself extends \enrol_waitinglist\method\enrolmethodbase{
 	const MFIELD_NEWENROLS = 'customint6';
 	const MFIELD_WAITLISTMESSAGE = 'customtext1';
 	
-	public $course = 0;
-    public $waitlist = 0;
-	public $maxseats = 0;
-    public $activeseats = 0;
-	public $notificationtypes = 0;
-	
+	public  $course             = 0;
+    public  $waitlist           = 0;
+	public  $maxseats           = 0;
+    public  $activeseats        = 0;
+	public  $notificationtypes  = 0;
+    /**
+     * @updateDate  28/12/2015
+     * @author      eFaktor     (fbv)
+     */
+    private $myManagers         = null;
+
 
 	 /**
      *  Constructor
@@ -165,18 +171,42 @@ class enrolmethodself extends \enrol_waitinglist\method\enrolmethodbase{
         }
         return $icons;
     }
-	
-	
-	  /**
+
+    /**
+     * @param           \stdClass   $waitinglist            enrolment instance
+     * @param           bool        $checkuserenrolment     if true will check db and queue for user
+     *
+     * @return          bool|null|string                true if successful, else error message or false.
+     *
+     * Description
      * Checks if user can enrol.
      *
-     * @param stdClass $waitinglist enrolment instance
-     * @param bool $checkuserenrolment if true will check db and queue for user
-     * @return bool|string true if successful, else error message or false.
+     * @updateDate      28/12/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * If it is an approval method, it'll check if the user has mangers or not.
+     * No managers --> CANNOT ENROL
      */
     public function can_enrol(\stdClass $waitinglist, $checkuserenrolment = true) {
+        /* Variables */
         global $DB, $USER, $CFG;
-        
+        $rejected = null;
+
+        if ($waitinglist->{ENROL_WAITINGLIST_FIELD_APPROVAL}) {
+            $this->myManagers = \Approval::GetManagers($USER->id);
+            if (!$this->myManagers) {
+                return get_string('not_managers','enrol_waitinglist');
+            }
+            /* Check if it has been rejected    */
+            $rejected = new \stdClass();
+            $rejected->sent = null;
+            if ($rejected->sent = \Approval::IsRejected($USER->id,$waitinglist->courseid,$waitinglist->id)) {
+                $rejected->sent = userdate($rejected->sent,'%d.%m.%Y', 99, false);
+                return get_string('request_rejected','enrol_waitinglist',$rejected);
+            }
+        }//Approval_Method
+
         $entryman =  \enrol_waitinglist\entrymanager::get_by_course($waitinglist->courseid);
 		$entry = $entryman->get_entry_by_userid($USER->id);
 		if($entry && $entry->methodtype!=static::METHODTYPE){
@@ -236,9 +266,10 @@ class enrolmethodself extends \enrol_waitinglist\method\enrolmethodbase{
      */
     public function waitlistrequest_self(\stdClass $waitinglist, $data = null) {
         /* Variables    */
-        global $DB, $USER, $CFG;
-        $queue_entry = null;
-
+        global $USER;
+        $queue_entry    = null;
+        $infoApproval   = null;
+        $infoMail       = null;
 
         try {
             // Don't enrol user if password is not passed when required.
@@ -246,25 +277,43 @@ class enrolmethodself extends \enrol_waitinglist\method\enrolmethodbase{
                 return;
             }
 
-            //prepare additional fields for our queue DB entry
-            $queue_entry = new \stdClass;
-            $queue_entry->waitinglistid                 = $waitinglist->id;
-            $queue_entry->courseid                      = $waitinglist->courseid;
-            $queue_entry->userid                        = $USER->id;
-            $queue_entry->methodtype                    = static::METHODTYPE;
-            if(!isset($data->enrolpassword)){$data->enrolpassword='';}
-            $queue_entry->{self::QFIELD_ENROLPASSWORD}  = $data->enrolpassword;
-            $queue_entry->timecreated       = time();
-            $queue_entry->queueno           = 	0;
-            $queue_entry->seats             = 1;
-            $queue_entry->allocseats        = 0;
-            $queue_entry->confirmedseats    = 0;
-            $queue_entry->enroledseats      = 0;
-            $queue_entry->offqueue          = 0;
-            $queue_entry->timemodified      = $queue_entry->timecreated;
+            /**
+             * @updateDate  28/12/2015
+             * @author      eFaktor     (fbv)
+             *
+             * Description
+             * Check if it is an approval method or not
+             */
+            if (!$waitinglist->{ENROL_WAITINGLIST_FIELD_APPROVAL}) {
+                //prepare additional fields for our queue DB entry
+                $queue_entry = new \stdClass;
+                $queue_entry->waitinglistid                 = $waitinglist->id;
+                $queue_entry->courseid                      = $waitinglist->courseid;
+                $queue_entry->userid                        = $USER->id;
+                $queue_entry->methodtype                    = static::METHODTYPE;
+                if(!isset($data->enrolpassword)){$data->enrolpassword='';}
+                $queue_entry->{self::QFIELD_ENROLPASSWORD}  = $data->enrolpassword;
+                $queue_entry->timecreated       = time();
+                $queue_entry->queueno           = 0;
+                $queue_entry->seats             = 1;
+                $queue_entry->allocseats        = 0;
+                $queue_entry->confirmedseats    = 0;
+                $queue_entry->enroledseats      = 0;
+                $queue_entry->offqueue          = 0;
+                $queue_entry->timemodified      = $queue_entry->timecreated;
 
-            //add the user to the waitinglist queue
-            $queueid = $this->add_to_waitinglist($waitinglist, $queue_entry);
+                //add the user to the waitinglist queue
+                $queueid = $this->add_to_waitinglist($waitinglist, $queue_entry);
+            }else {
+                list($infoApproval,$infoMail) = \Approval::Add_ApprovalEntry($data,$USER->id,$waitinglist->courseid,static::METHODTYPE,1,$waitinglist->id);
+                if (array_key_exists($USER->id,$this->myManagers)) {
+                    $infoApproval->action = APPROVED_ACTION;
+                    \Approval::ApplyAction_FromManager($infoApproval);
+                }else {
+                    /* Send Mails   */
+                    \Approval::SendNotifications($USER,$infoMail,$this->myManagers);
+                }
+            }//if_approval
 
             /**
              * @updateDate  28/10/2015
@@ -282,8 +331,33 @@ class enrolmethodself extends \enrol_waitinglist\method\enrolmethodbase{
             throw $ex;
         }//try_catch
     }
-    
-    
+
+    /**
+     * @param           \stdClass $waitinglist
+     * @param                     $queue_entry
+     *
+     * @return                    int
+     * @throws           Exception|\Exception
+     *
+     * @creationDate    29/12/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * To make accesible the 'add_to_waitinglist' when the request is approved
+     */
+    public function add_to_waitinglist_from_approval(\stdClass $waitinglist, $queue_entry) {
+        /* Variables */
+        $queueid = null;
+
+        try {
+            $queueid = $this->add_to_waitinglist($waitinglist,$queue_entry);
+
+            return $queueid;
+        }catch (\Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//add_to_waitinglist_from_approval
+
     /**
      * Pop off queue and enrol in course
      *
@@ -358,7 +432,7 @@ class enrolmethodself extends \enrol_waitinglist\method\enrolmethodbase{
      */
     public function enrol_page_hook(\stdClass $waitinglist, $flagged) {
         global $CFG, $OUTPUT, $USER;
-		
+
 		$queueman= \enrol_waitinglist\queuemanager::get_by_course($waitinglist->courseid);
 		$qdetails = $queueman->get_user_queue_details(static::METHODTYPE);
 		if($qdetails->queueposition > 0 && $qdetails->offqueue == 0){
@@ -367,7 +441,7 @@ class enrolmethodself extends \enrol_waitinglist\method\enrolmethodbase{
 			//if user is flagged as cant be a new enrol, then just exit
 			if($flagged){
 				return array(false,'');
-			}				
+			}
 			$enrolstatus = $this->can_enrol($waitinglist,true);
 		}
 
@@ -387,24 +461,21 @@ class enrolmethodself extends \enrol_waitinglist\method\enrolmethodbase{
             $vacancies  = $plugin->get_vacancy_count($waitinglist);
             $confirm    = optional_param('confirm', 0, PARAM_INT);
             $toConfirm  = null;
+            $remainder  = null;
 
-            if ($confirm) {
-                $toConfirm      =  false;
-            }else {
-                if (!$vacancies) {
-                    $toConfirm  =  true;
-                }else {
-                    $toConfirm  =  false;
-                }
-            }
+            if ($waitinglist->{ENROL_WAITINGLIST_FIELD_APPROVAL}) {
+                $remainder = \Approval::GetNotificationSent($USER->id,$waitinglist->courseid);
+            }//
 
-            if ($toConfirm) {
-                $form = new enrolmethodself_enrolform(NULL, array($waitinglist,$this,$listtotal,true));
+            if ($remainder) {
+                $form = new enrolmethodself_enrolform(NULL, array($waitinglist,$this,$listtotal,false,$remainder));
 
                 if ($form->is_cancelled()) {
                     redirect($CFG->wwwroot . '/index.php');
                 }else if ($form->is_submitted()) {
-                    $form = new enrolmethodself_enrolform(NULL, array($waitinglist,$this,$listtotal,false));
+                    \Approval::SendReminder($USER,$remainder,$this->myManagers);
+
+                    redirect($CFG->wwwroot . '/index.php');
                 }
 
                 //begin the output
@@ -414,36 +485,74 @@ class enrolmethodself extends \enrol_waitinglist\method\enrolmethodbase{
                 $message =$OUTPUT->box($output);
                 $ret = array(true,$message);
             }else {
-                $form = new enrolmethodself_enrolform(NULL, array($waitinglist,$this,$listtotal,false));
+                if ($confirm) {
+                    $toConfirm      =  false;
+                }else {
+                    if (!$vacancies) {
+                        $toConfirm  =  true;
+                    }else {
+                        $toConfirm  =  false;
+                    }
+                }
 
-                if ($form->is_cancelled()) {
-                    redirect($CFG->wwwroot . '/index.php');
-                }else if ($data = $form->get_data()) {
-                    $this->waitlistrequest_self($waitinglist, $data);
+                if ($toConfirm) {
+                    $form = new enrolmethodself_enrolform(NULL, array($waitinglist,$this,$listtotal,true,null));
 
-                    /**
-                     * @updateDate  28/10/2015
-                     * @author      eFaktor     (fbv)
-                     *
-                     * Description
-                     * Save Invoice Information
-                     */
-                    if (enrol_get_plugin('invoice')) {
-                        if ($waitinglist->{ENROL_WAITINGLIST_FIELD_INVOICE}) {
-                            \Invoices::activate_enrol_invoice($USER->id,$waitinglist->courseid,$waitinglist->id);
-                        }//if_invoice_info
-                    }//if_enrol_invoice
+                    if ($form->is_cancelled()) {
+                        redirect($CFG->wwwroot . '/index.php');
+                    }else if ($form->is_submitted()) {
+                        $form = new enrolmethodself_enrolform(NULL, array($waitinglist,$this,$listtotal,false,null));
+                    }
 
-                    redirect($CFG->wwwroot . '/course/view.php?id=' . $waitinglist->courseid);
-                }//if_form
+                    //begin the output
+                    ob_start();
+                    $form->display();
+                    $output = ob_get_clean();
+                    $message =$OUTPUT->box($output);
+                    $ret = array(true,$message);
+                }else {
+                    $form = new enrolmethodself_enrolform(NULL, array($waitinglist,$this,$listtotal,false,null));
 
-                ob_start();
-                $form->display();
-                $output = ob_get_clean();
+                    if ($form->is_cancelled()) {
+                        redirect($CFG->wwwroot . '/index.php');
+                    }else if ($data = $form->get_data()) {
+                        $this->waitlistrequest_self($waitinglist, $data);
 
-                $message =$OUTPUT->box($output);
-                $ret = array(true,$message);
-            }
+                        if (!$waitinglist->{ENROL_WAITINGLIST_FIELD_APPROVAL}) {
+                            /**
+                             * @updateDate  28/10/2015
+                             * @author      eFaktor     (fbv)
+                             *
+                             * Description
+                             * Save Invoice Information
+                             */
+                            if (enrol_get_plugin('invoice')) {
+                                if ($waitinglist->{ENROL_WAITINGLIST_FIELD_INVOICE}) {
+                                    \Invoices::activate_enrol_invoice($USER->id,$waitinglist->courseid,$waitinglist->id);
+                                }//if_invoice_info
+                            }//if_enrol_invoice
+
+                            redirect($CFG->wwwroot . '/course/view.php?id=' . $waitinglist->courseid);
+                        }else {
+                            $params = array();
+                            $params['id']   = $USER->id;
+                            $params['co']   = $waitinglist->courseid;
+
+                            $redirect       = new \moodle_url('/enrol/waitinglist/approval/info.php',$params);
+                            redirect($redirect);
+                        }
+                    }//if_form
+
+                    ob_start();
+                    $form->display();
+                    $output = ob_get_clean();
+
+                    $message =$OUTPUT->box($output);
+                    $ret = array(true,$message);
+                }//if_toConfirm
+            }//if_else
+
+
         } else {
             $message = $OUTPUT->box($enrolstatus);
 			$ret = array(false,$message);

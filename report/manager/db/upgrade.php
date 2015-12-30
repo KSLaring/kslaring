@@ -321,7 +321,7 @@ class CompetenceManager_Update {
             /* userid       --  Foreign Key */
             $tblSuperUser->add_field('userid',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, null,null);
             /* County  */
-            $tblSuperUser->add_field('levelzero',XMLDB_TYPE_CHAR,'10',null, null,null,null);
+            $tblSuperUser->add_field('levelzero',XMLDB_TYPE_INTEGER,'10',null, null,null,null);
             /* Level  One */
             $tblSuperUser->add_field('levelone',XMLDB_TYPE_INTEGER,'10',null, null,null,null);
             /* Level  Two */

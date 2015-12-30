@@ -115,6 +115,14 @@ if ($mform->is_cancelled()) {
          * Add the invoice information option
          */
         $instance->{ENROL_WAITINGLIST_FIELD_INVOICE} = $data->{ENROL_WAITINGLIST_FIELD_INVOICE};
+        /**
+         * @updateDate      24/12/2015
+         * @author          eFaktor     (fbv)
+         *
+         * Description
+         * Add the approval request option
+         */
+        $instance->{ENROL_WAITINGLIST_FIELD_APPROVAL} = $data->{ENROL_WAITINGLIST_FIELD_APPROVAL};
 
         $DB->update_record('enrol', $instance);
 
@@ -146,7 +154,15 @@ if ($mform->is_cancelled()) {
                          * Description
                          * Add the invoice information option
                          */
-                        ENROL_WAITINGLIST_FIELD_INVOICE => $data->{ENROL_WAITINGLIST_FIELD_INVOICE}
+                        ENROL_WAITINGLIST_FIELD_INVOICE => $data->{ENROL_WAITINGLIST_FIELD_INVOICE},
+                        /**
+                         * @updateDate      24/12/2015
+                         * @author          eFaktor     (fbv)
+                         *
+                         * Description
+                         * Add the approval request option
+                         */
+                        ENROL_WAITINGLIST_FIELD_APPROVAL => $data->{ENROL_WAITINGLIST_FIELD_APPROVAL}
 		               );
        $waitinglistid =  $plugin->add_instance($course, $fields);
 
