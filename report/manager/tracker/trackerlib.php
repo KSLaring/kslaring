@@ -1045,6 +1045,10 @@ class TrackerManager {
                     $header .= html_writer::start_tag('td',array('class' => 'head_start'));
                         $header .= '&nbsp;';
                     $header .= html_writer::end_tag('td');
+                    /* Last Col     */
+                    $header .= html_writer::start_tag('td',array('class' => 'head_first'));
+                        $header .= '&nbsp;';
+                    $header .= html_writer::end_tag('td');
                 $header .= html_writer::end_tag('tr');
             $header .= html_writer::end_tag('table');
 
@@ -1116,6 +1120,9 @@ class TrackerManager {
                         $content .= html_writer::start_tag('td',array('class' => 'start'));
                             $content .= $strUrl;
                         $content .= html_writer::end_tag('td');
+                        /* Last Col */
+                        $content .= html_writer::start_tag('td',array('class' => 'first'));
+                        $content .= html_writer::end_tag('td');
                     $content .= html_writer::end_tag('tr');
                 }//for_each_course_not_completed
             }//if_not_completed
@@ -1156,6 +1163,9 @@ class TrackerManager {
                         $strUrl  = '<a href="'.$url .'">'. get_string('start_course','local_tracker_manager') .'</a>';
                         $content .= html_writer::start_tag('td',array('class' => 'start'));
                             $content .= $strUrl;
+                        $content .= html_writer::end_tag('td');
+                        /* Last Col */
+                        $content .= html_writer::start_tag('td',array('class' => 'first'));
                         $content .= html_writer::end_tag('td');
                     $content .= html_writer::end_tag('tr');
                 }//for_each_course_not_enrol
@@ -1206,6 +1216,9 @@ class TrackerManager {
                         $strUrl  = '<a href="'.$url .'">'. get_string('start_course','local_tracker_manager') .'</a>';
                         $content .= html_writer::start_tag('td',array('class' => 'start'));
                             $content .= $strUrl;
+                        $content .= html_writer::end_tag('td');
+                        /* Last Col */
+                        $content .= html_writer::start_tag('td',array('class' => 'first'));
                         $content .= html_writer::end_tag('td');
                     $content .= html_writer::end_tag('tr');
                 }//for_each_course_completed
@@ -1266,6 +1279,10 @@ class TrackerManager {
                     $header .= html_writer::end_tag('td');
                     /* Empty Col    */
                     $header .= html_writer::start_tag('td',array('class' => 'head_start'));
+                        $header .= '&nbsp;';
+                    $header .= html_writer::end_tag('td');
+                    /* Last Col     */
+                    $header .= html_writer::start_tag('td',array('class' => 'head_first'));
                         $header .= '&nbsp;';
                     $header .= html_writer::end_tag('td');
                 $header .= html_writer::end_tag('tr');
@@ -1347,6 +1364,9 @@ class TrackerManager {
                             $content .= html_writer::start_tag('td',array('class' => 'start'));
                                 $content .= $strUrl;
                             $content .= html_writer::end_tag('td');
+                            /* Last Col */
+                            $content .= html_writer::start_tag('td',array('class' => 'first'));
+                            $content .= html_writer::end_tag('td');
                         $content .= html_writer::end_tag('tr');
                     }//for_each_course_not_completed
                 }//if_not_completed
@@ -1393,6 +1413,9 @@ class TrackerManager {
                             $strUrl  = '<a href="'.$url .'">'. get_string('start_course','local_tracker_manager') .'</a>';
                             $content .= html_writer::start_tag('td',array('class' => 'start'));
                                 $content .= $strUrl;
+                            $content .= html_writer::end_tag('td');
+                            /* Last Col */
+                            $content .= html_writer::start_tag('td',array('class' => 'first'));
                             $content .= html_writer::end_tag('td');
                         $content .= html_writer::end_tag('tr');
                     }//for_each_course_completed
