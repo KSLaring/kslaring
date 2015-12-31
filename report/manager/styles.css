@@ -281,7 +281,7 @@
 
 .tracker_list .course_list td.head_start  {
     width: 6%;
-    text-align: left;
+    text-align: right;
     margin-right: 2px;
 }
 
@@ -308,7 +308,7 @@
 
 .tracker_list .course_list td.start {
     width: 6%;
-    text-align: left;
+    text-align: right;
     font: 12px Verdana,Verdana Pro,sans-serif;
     margin-right: 2px;
 }

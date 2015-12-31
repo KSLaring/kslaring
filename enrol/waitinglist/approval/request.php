@@ -12,6 +12,7 @@
  * Description
  */
 require('../../../config.php');
+require_once('approvallib.php');
 
 /* PARAMS   */
 $courseId          = required_param('courseid',PARAM_INT);
@@ -21,15 +22,16 @@ $course             = get_course($courseId);
 $context_course     = context_course::instance($courseId);
 $return_url         = new moodle_url('/course/view.php',array('id' => $courseId));
 $url                = new moodle_url('/enrol/waitinglist/approval/request.php',array('courseid' => $courseId));
+$approvalRequests   = null;
 
-require_login($course);
+require_login();
 
 /* Capability   */
 require_capability('enrol/waitinglist:manage',$context_course);
 
 //HTTPS is required in this page when $CFG->loginhttps enabled
 $PAGE->https_required();
-$PAGE->set_pagelayout('report');
+$PAGE->set_pagelayout('admin');
 $PAGE->set_url($url);
 $PAGE->set_context($context_course);
 $PAGE->set_title($SITE->fullname);
@@ -47,7 +49,11 @@ $PAGE->verify_https_required();
 echo $OUTPUT->header();
 echo $OUTPUT->heading(get_string('title_approval','enrol_waitinglist'));
 
-echo "Sorry, we are working on it";
+/*  Get Requests    */
+$approvalRequests = Approval::ApprovalRequests($courseId,$enrolId);
+
+/* Show Report      */
+echo Approval::Display_ApprovalRequests($approvalRequests);
 
 /* Print Footer */
 echo $OUTPUT->footer();

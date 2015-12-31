@@ -208,3 +208,20 @@ $string['approved_mnd'] = 'The request has been approved successfully.';
 $string['rejected_mnd'] = 'The request has been rejected successfully.';
 
 $string['err_process']  = 'Sorry, It has been an error during the process. Please, try it later or contact with administrator.';
+
+$string['no_request']     = 'There is no request';
+$string['act_approve']    = 'Approve';
+$string['act_reject']     = 'Reject';
+
+$string['rpt_name']         = 'Name';
+$string['rpt_username']     = 'Username';
+$string['rpt_mail']         = 'Mail';
+$string['rpt_arguments']    = 'Arguments';
+$string['rpt_seats']        = 'Seats';
+$string['rpt_action']       = 'Action';
+$string['rpt_attended']     = 'Attended';
+$string['rpt_not_attended'] = 'Not Attended';
+$string['rpt_approved']     = 'Approved';
+$string['rpt_rejected']     = 'Rejected';
+$string['rpt_participants'] = 'Maximum number of participants';
+$string['rpt_back']         = 'Back';

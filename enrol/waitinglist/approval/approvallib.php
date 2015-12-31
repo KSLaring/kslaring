@@ -449,6 +449,60 @@ Class Approval {
         }//try_catch
     }//Check_NotificationRequest
 
+    /**
+     * @param           $userId
+     * @param           $courseId
+     * @param           $waitingId
+     *
+     * @return          mixed|null
+     * @throws          Exception
+     *
+     * @creationDate    31/12/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Get the request connected
+     */
+    public static function Get_Request($userId,$courseId,$waitingId) {
+        /* Variables */
+        global $DB;
+        $sql    = null;
+        $params = null;
+        $rdo    = null;
+
+        try {
+            /* Search Criteria */
+            $params = array();
+            $params['user']     = $userId;
+            $params['course']   = $courseId;
+            $params['waiting']  = $waitingId;
+
+            /* SQL Instruction */
+            $sql = " SELECT ea.id,
+                            ea.userid,
+                            ea.courseid,
+                            ea.userenrolid,
+                            ea.waitinglistid,
+                            ea.methodtype,
+                            ea.seats,
+                            ea.approved,
+                            ea.rejected
+                     FROM	  {enrol_approval}	ea
+                     WHERE	ea.waitinglistid 	= :waiting
+                        AND	ea.courseid 		= :course
+                        AND ea.userid 			= :user ";
+
+            /* Execute */
+            $rdo = $DB->get_record_sql($sql,$params);
+            if ($rdo) {
+                return $rdo;
+            }else {
+                return null;
+            }//if_rdo
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//Get_Request
 
     /**
      * @param           $infoRequest
@@ -485,6 +539,86 @@ Class Approval {
             throw $ex;
         }//try_catch
     }//ApplyAction_FromManager
+
+    /**
+     * @param           $courseId
+     * @param           $waitingId
+     *
+     * @return          null|stdClass
+     * @throws          Exception
+     *
+     * @creationDate    30/12/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Get all approval requests
+     */
+    public static function ApprovalRequests($courseId,$waitingId) {
+        /* Variables */
+        $approvalRequests = null;
+
+        try {
+            /* Get basic information for the course instance*/
+            $approvalRequests = self::GetBasicInfo($courseId,$waitingId);
+
+            /* Approval Requests */
+            $approvalRequests->requests = self::Get_ApprovalRequests($courseId,$waitingId);
+
+            return $approvalRequests;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//Get_InfoInstance
+
+    /**
+     * @param           $approvalRequests
+     *
+     * @return          string
+     * @throws          Exception
+     *
+     * @creationDate    31/12/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Get the requests report
+     */
+    public static function Display_ApprovalRequests($approvalRequests) {
+        /* Variables */
+        global $OUTPUT;
+        $content    = '';
+        $url        = null;
+        $lnkCourse  = null;
+
+        try {
+            $content .= html_writer::start_div('block_approval');
+                /* Name Course  */
+                $content .= self::AddNameCourse($approvalRequests->id,$approvalRequests->name);
+
+                /* Basic Info && Requests */
+                if (!$approvalRequests->requests) {
+                    $content .= html_writer::start_tag('label',array('class' => ' label_approval_course'));
+                        $content .= get_string('no_request','enrol_waitinglist');
+                    $content .= html_writer::end_tag('label');
+                }else {
+                    /* Basic Info   */
+                    $content .= self::AddBasicInfo($approvalRequests);
+
+                    /* Requests     */
+                    $content .= self::AddRequestsInfo($approvalRequests);
+                }//if_requests
+
+                /* Return to the course */
+                $url        = new moodle_url('/course/view.php',array('id' => $approvalRequests->id));
+                $content .= '</br>';
+                $content .= $OUTPUT->action_link($url,get_string('rpt_back','enrol_waitinglist'));
+            $content .= html_writer::end_div();//block_approval
+
+            return $content;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//Display_ApprovalRequests
+
 
     /***********/
     /* PRIVATE */
@@ -586,11 +720,11 @@ Class Approval {
                             OR
                             (rm.levelzero IN ($competence->levelZero) AND rm.levelone IN ($competence->levelOne)
                              AND
-                             rm.leveltwo IN ($competence->levelTwo) AND rm.levelthree IS NULL)
+                             rm.leveltwo IN ($competence->levelTwo)   AND rm.levelthree IS NULL)
                             OR
                             (rm.levelzero IN ($competence->levelZero) AND  rm.levelone IN ($competence->levelOne)
                              AND
-                             rm.leveltwo IN ($competence->levelTwo) AND rm.levelthree IN ($competence->levelThree)) ";
+                             rm.leveltwo IN ($competence->levelTwo)   AND rm.levelthree IN ($competence->levelThree)) ";
 
             /* Execute  */
             $rdo = $DB->get_records_sql($sql);
@@ -720,6 +854,7 @@ Class Approval {
             $instanceReject->courseid       = $infoRequest->courseid;
             $instanceReject->waitinglistid  = $infoRequest->waitinglistid;
             $instanceReject->methodtype     = $infoRequest->methodtype;
+            $instanceReject->approved       = 0;
             $instanceReject->rejected       = 1;
             $instanceReject->timemodified   = $time;
 
@@ -753,6 +888,12 @@ Class Approval {
                 $bodyText = html_to_text($bodyHtml);
             }
 
+            /* Delete entries from user_enrolments and enrol_waitinglist_queue */
+            $DB->delete_records('user_enrolments',array('userid'    => $infoRequest->userid,
+                                                        'enrolid'   => $infoRequest->waitinglistid));
+            $DB->delete_records('enrol_waitinglist_queue',array('userid'        => $infoRequest->userid,
+                                                                'courseid'      => $infoRequest->courseid,
+                                                                'waitinglistid' => $infoRequest->waitinglistid));
             /* Send Mail    */
             email_to_user($user, $SITE->shortname, $strSubject, $bodyText,$bodyHtml);
 
@@ -827,6 +968,7 @@ Class Approval {
                 $instanceApprove->waitinglistid  = $infoRequest->waitinglistid;
                 $instanceApprove->methodtype     = $infoRequest->methodtype;
                 $instanceApprove->approved       = 1;
+                $instanceApprove->rejected       = 0;
                 $instanceApprove->timemodified   = $time;
 
                 /* Execute */
@@ -963,6 +1105,154 @@ Class Approval {
             throw $ex;
         }//try_catch
     }//GetInstance_EnrolWaiting
+
+    /**
+     * @param           $courseId
+     * @param           $waitingId
+     *
+     * @return          null|stdClass
+     * @throws          Exception
+     *
+     * @creationDate    30/12/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Get basic information about the course, name, participants...
+     */
+    private static function GetBasicInfo($courseId,$waitingId) {
+        /* Variables    */
+        global $DB;
+        $approvalRequests = null;
+        $params = null;
+        $rdo    = null;
+        $sql    = null;
+
+        try {
+            /* Search Criteria  */
+            $params = array();
+            $params['course']   = $courseId;
+            $params['enrol']    = 'waitinglist';
+            $params['status']   = 0;
+            $params['waiting']  = $waitingId;
+
+            /* SQL Instruction  */
+            $sql = " SELECT	c.id,
+                            c.fullname,
+                            cc.name			as 'category',
+                            e.customint2 	as 'participants',
+                            e.id 			as 'waiting',
+                            count(ea.id) 	as 'total',
+                            count(eaa.id) 	as 'approved',
+                            count(ear.id) 	as 'rejected'
+                     FROM		{course}			c
+                        JOIN	{course_categories}	cc	ON	cc.id 				= c.category
+                        JOIN	{enrol}			    e	ON 	e.courseid 			= c.id
+                                                        AND	e.status			= :status
+                                                        AND e.enrol				= :enrol
+                                                        AND e.id                = :waiting
+                        JOIN	{enrol_approval}	ea	ON	ea.waitinglistid 	= e.id
+                                                        AND	ea.courseid			= e.courseid
+                                                        AND	ea.unenrol			= 0
+                        -- APPROVED
+                        LEFT JOIN {enrol_approval} eaa 	ON 	eaa.id 			= ea.id
+                                                        AND eaa.approved 	= 1
+                                                        AND	eaa.unenrol	    = 0
+                        -- REJECTED
+                        LEFT JOIN {enrol_approval} ear 	ON 	ear.id 			= ea.id
+                                                        AND ear.rejected 	= 1
+                                                        AND	ear.unenrol	    = 0
+                     WHERE c.id = :course ";
+
+            /* Execute */
+            $rdo = $DB->get_record_sql($sql,$params);
+            if ($rdo) {
+                /* Basic info */
+                $approvalRequests = new stdClass();
+                $approvalRequests->id           = $courseId;
+                $approvalRequests->name         = $rdo->fullname;
+                $approvalRequests->category     = $rdo->category;
+                $approvalRequests->participants = $rdo->participants;
+                $approvalRequests->waitingId    = $waitingId;
+                $approvalRequests->requests     = null;
+                $approvalRequests->attended     = $rdo->total;
+                $approvalRequests->approved     = $rdo->approved;
+                $approvalRequests->rejected     = $rdo->rejected;
+                $approvalRequests->noAttended   = $approvalRequests->attended - ($rdo->approved + $rdo->rejected);
+            }//if_rdo
+
+            return $approvalRequests;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//GetBasicInfo
+
+    /**
+     * @param           $courseId
+     * @param           $waitingId
+     *
+     * @return          array
+     * @throws          Exception
+     *
+     * @creationDate    30/12/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Get all approval requests
+     */
+    private static function Get_ApprovalRequests($courseId,$waitingId) {
+        /* Variables */
+        global $DB;
+        $params         = null;
+        $rdo            = null;
+        $ql             = null;
+        $infoRequest    = null;
+        $requests       = array();
+
+        try {
+            /* Search Criteria */
+            $params = array();
+            $params['course']   = $courseId;
+            $params['waiting']  = $waitingId;
+
+            /* SQL Instruction */
+            $sql = " SELECT	u.id,
+                            CONCAT(u.firstname,' ',u.lastname) as 'name',
+                            u.email,
+                            ea.arguments,
+                            ea.seats,
+                            ea.approved,
+                            ea.rejected
+                     FROM		{enrol_approval}	ea
+                        JOIN 	{user}			    u	ON u.id 		= ea.userid
+                                                        AND u.deleted 	= 0
+                     WHERE	ea.courseid 		= :course
+                        AND ea.waitinglistid 	= :waiting
+                     ORDER BY u.firstname,u.lastname ";
+
+            /* Execute */
+            $rdo = $DB->get_records_sql($sql,$params);
+            if ($rdo) {
+                foreach ($rdo as $instance) {
+                    /* Info Request */
+                    $infoRequest = new stdClass();
+                    $infoRequest->user      = $instance->id;
+                    $infoRequest->name      = $instance->name;
+                    $infoRequest->email     = $instance->email;
+                    $infoRequest->arguments = $instance->arguments;
+                    $infoRequest->seats     = $instance->seats;
+                    $infoRequest->approved  = $instance->approved;
+                    $infoRequest->rejected  = $instance->rejected;
+
+                    /* Add Request */
+                    $requests[$instance->id] = $infoRequest;
+                }//foreach_rdo
+            }//if_rdo
+
+            return $requests;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//Get_ApprovalRequests
 
     /**
      * @param           $userId
@@ -1127,5 +1417,312 @@ Class Approval {
             throw $ex;
         }//try_Catch
     }//GenerateHash
+
+    /**
+     * @param           $courseId
+     * @param           $courseName
+     *
+     * @return          string
+     * @throws          Exception
+     *
+     * @creationDate    30/12/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Add the name of the course
+     */
+    private static function AddNameCourse($courseId,$courseName) {
+        /* Variables */
+        $header = '';
+
+        try {
+            $url        = new moodle_url('/course/view.php',array('id' => $courseId));
+            $lnkCourse  = '<a href="' . $url. '">' . $courseName . '</a>';
+
+            $header .= html_writer::start_tag('label',array('class' => ' header_course'));
+                $header .= $lnkCourse ;
+            $header .= html_writer::end_tag('label');
+
+            return $header;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//AddNameCourse
+
+    /**
+     * @param           $approvalRequests
+     *
+     * @return          string
+     * @throws          Exception
+     *
+     * @creationDate    31/12/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Add the basic information to the report
+     */
+    private static function AddBasicInfo($approvalRequests) {
+        /* Variables */
+        $content = '';
+
+        try {
+            /* Category */
+            $content .= html_writer::start_div('block_basic_info approval_r0');
+                $content .= html_writer::start_tag('label',array('class' => ' label_approval_course'));
+                    $content .= get_string('category');
+                $content .= html_writer::end_tag('label');
+            $content .= html_writer::end_div();//block_basic_info
+
+            $content .= html_writer::start_div('block_basic_info ');
+                $content .= html_writer::start_tag('p',array('class' => ' approval_course_value'));
+                    $content .= $approvalRequests->category;
+                $content .= html_writer::end_tag('p');
+            $content .= html_writer::end_div();//block_basic_info
+
+            /* Participants */
+            $content .= html_writer::start_div('block_basic_info approval_r0');
+                $content .= html_writer::start_tag('label',array('class' => ' label_approval_course'));
+                    $content .= get_string('rpt_participants','enrol_waitinglist');
+                $content .= html_writer::end_tag('label');
+            $content .= html_writer::end_div();//block_basic_info
+
+            $content .= html_writer::start_div('block_basic_info ');
+                $content .= html_writer::start_tag('p',array('class' => ' approval_course_value'));
+                    $content .= $approvalRequests->participants;
+                $content .= html_writer::end_tag('p');
+            $content .= html_writer::end_div();//block_basic_info
+
+            /* Attended */
+            $content .= html_writer::start_div('block_basic_info approval_r0');
+                $content .= html_writer::start_tag('label',array('class' => ' label_approval_course'));
+                    $content .= get_string('rpt_attended','enrol_waitinglist');
+                $content .= html_writer::end_tag('label');
+            $content .= html_writer::end_div();//block_basic_info
+
+            $content .= html_writer::start_div('block_basic_info ');
+                $content .= html_writer::start_tag('p',array('class' => ' approval_course_value'));
+                    $content .= $approvalRequests->attended;
+                $content .= html_writer::end_tag('p');
+            $content .= html_writer::end_div();//block_basic_info
+
+            /* Approved     */
+            $content .= html_writer::start_div('block_basic_info approval_r2');
+                $content .= html_writer::start_tag('label',array('class' => ' label_approval_course to_right'));
+                    $content .= get_string('rpt_approved','enrol_waitinglist');
+                $content .= html_writer::end_tag('label');
+            $content .= html_writer::end_div();//block_basic_info
+
+            $content .= html_writer::start_div('block_basic_info ');
+                $content .= html_writer::start_tag('p',array('class' => ' approval_course_value to_right'));
+                    $content .= $approvalRequests->approved;
+                $content .= html_writer::end_tag('p');
+            $content .= html_writer::end_div();//block_basic_info
+
+            /* Rejected     */
+            $content .= html_writer::start_div('block_basic_info approval_r2');
+                $content .= html_writer::start_tag('label',array('class' => ' label_approval_course to_right'));
+                    $content .= get_string('rpt_rejected','enrol_waitinglist');
+                $content .= html_writer::end_tag('label');
+            $content .= html_writer::end_div();//block_basic_info
+
+            $content .= html_writer::start_div('block_basic_info ');
+                $content .= html_writer::start_tag('p',array('class' => ' approval_course_value to_right'));
+                    $content .= $approvalRequests->rejected;
+                $content .= html_writer::end_tag('p');
+            $content .= html_writer::end_div();//block_basic_info
+
+            /* No Attended */
+            $content .= html_writer::start_div('block_basic_info approval_r0');
+                $content .= html_writer::start_tag('label',array('class' => ' label_approval_course'));
+                    $content .= get_string('rpt_not_attended','enrol_waitinglist');
+                $content .= html_writer::end_tag('label');
+            $content .= html_writer::end_div();//block_basic_info
+
+            $content .= html_writer::start_div('block_basic_info ');
+                $content .= html_writer::start_tag('p',array('class' => ' approval_course_value'));
+                    $content .= $approvalRequests->noAttended;
+                $content .= html_writer::end_tag('p');
+            $content .= html_writer::end_div();//block_basic_info
+
+            return $content;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//AddBasicInfo
+
+    /**
+     * @return          string
+     * @throws          Exception
+     *
+     * @creationDate    31/12/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Add header requests table
+     */
+    private static function AddHeader_RequestsTable() {
+        /* Variables */
+        $header         = '';
+        $strName        = null;
+        $strMail        = null;
+        $strArguments   = null;
+        $strSeats       = null;
+        $strAction      = null;
+
+        try {
+            /* Headers */
+            $strName        = get_string('rpt_name','enrol_waitinglist');
+            $strMail        = get_string('rpt_mail','enrol_waitinglist');
+            $strArguments   = get_string('rpt_arguments','enrol_waitinglist');
+            $strSeats       = get_string('rpt_seats','enrol_waitinglist');
+            $strAction      = get_string('rpt_action','enrol_waitinglist');
+
+            $header .=  html_writer::start_tag('thead');
+                $header .=  html_writer::start_tag('tr',array('class' => 'header_approval'));
+                    /* User Name    */
+                    $header .= html_writer::start_tag('th',array('class' => 'user'));
+                        $header .= $strName;
+                    $header .= html_writer::end_tag('th');
+                    /* Mail         */
+                    $header .= html_writer::start_tag('th',array('class' => 'info'));
+                        $header .= $strMail;
+                    $header .= html_writer::end_tag('th');
+                    /* Arguments       */
+                    $header .= html_writer::start_tag('th',array('class' => 'info'));
+                        $header .= $strArguments;
+                    $header .= html_writer::end_tag('th');
+                    /* Seats Confirmed  */
+                    //$header .= html_writer::start_tag('th',array('class' => 'seats'));
+                    //    $header .= $strSeats;
+                    //$header .= html_writer::end_tag('th');
+                    /* Action */
+                    $header .= html_writer::start_tag('th',array('class' => 'action'));
+                        $header .= $strAction;
+                    $header .= html_writer::end_tag('th');
+                $header .= html_writer::end_tag('tr');
+            $header .= html_writer::end_tag('thead');
+
+            return $header;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//AddHeader_RequestsTable
+
+    /**
+     * @param           $approvalRequests
+     * @param           $waitingId
+     * @param           $courseId
+     *
+     * @return          string
+     * @throws          Exception
+     *
+     * @creationDate    31/12/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Add content of the requests table
+     */
+    private static function AddContent_RequestTable($approvalRequests,$waitingId,$courseId) {
+        /* Variables */
+        $content        = '';
+        $lnkUser        = null;
+        $lnkAction      = null;
+        $classAction    = null;
+        $params         = null;
+
+        try {
+            /* Params Link Action */
+            $params = array();
+            $params['co'] = $courseId;
+            $params['ea'] = $waitingId;
+
+            foreach ($approvalRequests as $request) {
+                $classAction    = null;
+                $params['act']  = null;
+                $content .= html_writer::start_tag('tr');
+                    /* User Name    */
+                    $content .= html_writer::start_tag('td',array('class' => 'user'));
+                        $lnkUser = new moodle_url('/user/profile.php',array('id' => $request->user));
+                        $content .= '<a href="' . $lnkUser . '">' . $request->name . '</a>';;
+                    $content .= html_writer::end_tag('td');
+                    /* Mail         */
+                    $content .= html_writer::start_tag('td',array('class' => 'info'));
+                        $content .= $request->email;
+                    $content .= html_writer::end_tag('td');
+                    /* Arguments       */
+                    $content .= html_writer::start_tag('td',array('class' => 'info'));
+                        $content .= $request->arguments;
+                    $content .= html_writer::end_tag('td');
+                    /* Seats Confirmed  */
+                    /* Action */
+                    $content .= html_writer::start_tag('td',array('class' => 'action'));
+                        $params['id'] = $request->user;
+
+                        /* Approve Action */
+                        $params['act'] = APPROVED_ACTION;
+                        $lnkAction = new moodle_url('/enrol/waitinglist/approval/act_request.php',$params);
+                        if ($request->approved) {
+                            $classAction = 'lnk_disabled';
+                        }else {
+                            $classAction = 'approved';
+                        }//if_approved
+                        $content .= html_writer::link($lnkAction,
+                                                      get_string('act_approve','enrol_waitinglist'),
+                                                      array('class'=>$classAction));
+                        $content .= '&nbsp;&nbsp;';
+                        /* Reject Action */
+                        $params['act'] = REJECTED_ACTION;
+                        $lnkAction = new moodle_url('/enrol/waitinglist/approval/act_request.php',$params);
+                        if ($request->rejected) {
+                            $classAction = 'lnk_disabled';
+                        }else {
+                            $classAction = 'rejected';
+                        }//if_rejected
+                        $content .= html_writer::link($lnkAction,
+                                                      get_string('act_reject','enrol_waitinglist'),
+                                                      array('class'=>$classAction));
+                    $content .= html_writer::end_tag('td');
+                $content .= html_writer::end_tag('tr');
+            }//for_requests
+
+            return $content;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//AddContent_RequestTable
+
+    /**
+     * @param           $approvalRequests
+     *
+     * @return          string
+     * @throws          Exception
+     *
+     * @creationDate    31/12/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Add the request to the report
+     */
+    private static function AddRequestsInfo($approvalRequests) {
+        /* Variables */
+        $content = null;
+
+        try {
+            $content .= html_writer::start_div('block_requests');
+                /* Request Table */
+                $content .= html_writer::start_tag('table',array('class' => 'generaltable'));
+                    /* Header Table     */
+                    $content .= self::AddHeader_RequestsTable();
+                    $content .= '</br>';
+                    /* Content Table    */
+                    $content .= self::AddContent_RequestTable($approvalRequests->requests,$approvalRequests->waitingId,$approvalRequests->id);
+                $content .= html_writer::end_tag('table');
+            $content .= html_writer::end_div();//block_requests
+
+            return $content;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//AddRequestsInfo
 }//Approval
 
