@@ -398,40 +398,40 @@ $string['remove_all']   = 'Fjern alle';
  * Description
  * Add new language strings for 'Competence Data Import' functionality
  */
-$string['upload_competence_imp'] = 'Upload competence';
-$string['header_competence_imp']        = 'Upload competence data';
-$string['header_competence_imp_help']   = 'Upload competence data for existing users from file. Info connected with the file???';
-$string['title_processing']             = 'Importing competence data for existing users. The process can take long time.';
-$string['err_imp_user']                 = 'User not exist';
-$string['err_wk_none_match']            = 'There is none match for this workplace.';
-$string['err_jr_none_match']            = 'There is none match for this job role. Check name, industry code, workplace, sector... connected with';
+$string['upload_competence_imp'] = 'Opplasting av kompetansedata';
+$string['header_competence_imp']        = 'Opplasting av kompetansedata';
+$string['header_competence_imp_help']   = 'Opplasting av kompetansedata fra en fil for eksisterende brukere. Informasjon koblet med filen???';
+$string['title_processing']             = 'Importerer kompetansedata for eksisterende brukere. Prosessen kan ta lang tid.';
+$string['err_imp_user']                 = 'Brukeren eksisterer ikke';
+$string['err_wk_none_match']            = 'Det er ingen match for dette arbeidsstedet.';
+$string['err_jr_none_match']            = 'Det er ingen match for denne jobbrollen. Vennligst sjekk navn, kode, arbeidssted, sektor osv. koblet med';
 
-$string['match_wk']         = 'Matching process for workplaces';
+$string['match_wk']         = 'Matche-prosess for arbeidssteder';
 $string['match_wk_help']    = '???';
-$string['match_jr']         = 'Matching process for job roles';
+$string['match_jr']         = 'Matche-prosess for jobbroller';
 $string['match_jr_help']    = '???';
 
-$string['to_match']         = 'To Match';
-$string['po_match']         = 'Possible Matches';
-$string['not_sure']         = 'Not sure';
+$string['to_match']         = 'Å matche';
+$string['po_match']         = 'Mulige matcher';
+$string['not_sure']         = 'Usikker';
 $string['btn_match']        = 'Match';
 
-$string['icd_line']     = 'Line';
-$string['icd_user']     = 'Username';
-$string['icd_wk']       = 'Workplace';
-$string['icd_wk_ic']    = 'Workplace IC';
-$string['icd_sector']   = 'Sector';
-$string['icd_jr']       = 'Jobrole';
-$string['icd_jr_ic']    = 'Jobrole IC';
-$string['icd_msg']      = 'Reason';
+$string['icd_line']     = 'Linje';
+$string['icd_user']     = 'Brukernavn';
+$string['icd_wk']       = 'Arbeidssted';
+$string['icd_wk_ic']    = 'Arbeidsstedskode';
+$string['icd_sector']   = 'Sektor';
+$string['icd_jr']       = 'Jobbrolle';
+$string['icd_jr_ic']    = 'Jobbrollekode';
+$string['icd_msg']      = 'Årsak';
 
-$string['icd_not_imported']     = 'The import process has finished with some issues. The next records could not be imported.';
-$string['icd_not_imported_adv'] = 'Please, you should review the <strong>download file</strong>, where you can file all records that have not been imported and the reason.';
-$string['icd_imported']         = 'All the competence data have been imported successfully.';
-$string['icd_total_not_imp']    = '<strong style="color: red;">Total Errors: {$a}</strong></br>';
+$string['icd_not_imported']     = 'Importprosessen har fullført, men har noen problemer. Følgende rader kunne ikke importeres.';
+$string['icd_not_imported_adv'] = 'Vennligst gå gjennom <strong>nedlastingsfilen</strong>, hvor du finner alle radene som ikke kunne importeres og årsakene til dette.';
+$string['icd_imported']         = 'Alle kompetansedata ble importert som de skulle.';
+$string['icd_total_not_imp']    = '<strong style="color: red;">Totalt antall feil: {$a}</strong></br>';
 
-$string['icd_file_name']        = 'CompetenceDataNotImported';
-$string['icd_download']         = 'Download File';
+$string['icd_file_name']        = 'Ikke_importerte_kompetansedata';
+$string['icd_download']         = 'Nedlastingsfil';
 
 /**
  * @updateDate  14/10/2015
@@ -440,18 +440,18 @@ $string['icd_download']         = 'Download File';
  * Description
  * Add new language strings for 'Super Users' functionality
  */
-$string['spuser'] = 'Super Users';
+$string['spuser'] = 'Superbrukere';
 
-$string['pot_users']                = 'Potential users';
-$string['pot_users_matching']       = 'Potential matching users';
-$string['current_users']            = 'Current users';
-$string['current_users_matching']   = 'Current users matching';
-$string['no_users']                 = 'No super users';
-$string['sp_level_required']        = 'At least one level is required';
+$string['pot_users']                = 'Potensielle brukere';
+$string['pot_users_matching']       = 'Potensielt matchende brukere';
+$string['current_users']            = 'Gjeldende brukere';
+$string['current_users_matching']   = 'Gjeldende matchende brukere';
+$string['no_users']                 = 'Ingen superbrukere';
+$string['sp_level_required']        = 'Minst ett nivå må velges først';
 
-$string['unenrol']      = 'Unenrol';
-$string['err_unenrol']  = 'Sorry, it has had an error during the process. Please, try it later contact to administrator';
-$string['exit_unenrol'] = 'User enrolled in course';
+$string['unenrol']      = 'Meld ut';
+$string['err_unenrol']  = 'Beklager, men det har skjedd en feil under prosessen. Vennligst prøv igjen senere eller kontakt administrator';
+$string['exit_unenrol'] = 'Du er nå utmeldt fra kurset';
 
 /**
  * @updateDate  21/12/2015
@@ -460,10 +460,10 @@ $string['exit_unenrol'] = 'User enrolled in course';
  * Description
  * Add new language strings for 'Managers' && 'Reporters' functionality
  */
-$string['title_managers']   = 'Managers Structure';
-$string['btn_managers']     = 'Managers';
-$string['btn_reporters']    = 'Reporters';
-$string['title_reporters']  = 'Reporters Structure';
+$string['title_managers']   = 'Lederstruktur';
+$string['btn_managers']     = 'Ledere';
+$string['btn_reporters']    = 'Rapporttilgang';
+$string['title_reporters']  = 'Rapporttilgangstruktur';
 
-$string['no_managers']      = 'No Managers';
-$string['no_reporters']     = 'No Reporters';
+$string['no_managers']      = 'Ingen ledere';
+$string['no_reporters']     = 'Ingen med rapporttilgang';
