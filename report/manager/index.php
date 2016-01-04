@@ -38,6 +38,8 @@ $PAGE->set_title($SITE->fullname);
 $PAGE->set_heading($SITE->fullname);
 $PAGE->navbar->add(get_string('company_report','report_manager'),$url);
 
+unset($SESSION->parents);
+
 /* ADD require_capability */
 if (!CompetenceManager::IsReporter($USER->id)) {
     require_capability('report/manager:viewlevel4', $site_context);
@@ -48,13 +50,6 @@ if (empty($CFG->loginhttps)) {
 } else {
     $secure_www_root = str_replace('http:','https:',$CFG->wwwroot);
 }//if_loginhttps
-
-/* Clean Cookies */
-setcookie('parentLevelOne',0);
-setcookie('parentLevelTwo',0);
-setcookie('parentLevelThree',0);
-setcookie('courseReport',0);
-setcookie('outcomeReport',0);
 
 $PAGE->verify_https_required();
 

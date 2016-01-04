@@ -88,7 +88,7 @@ class report_manager_managers_form extends moodleform {
 
         /* BUTTONS  */
         $buttons = array();
-        $buttons[] = $mForm->createElement('cancel');
+        $buttons[] = $mForm->createElement('cancel','btn_back',get_string('back'));
 
         $mForm->addGroup($buttons, 'buttonar', '', array(' '), false);
         $mForm->setType('buttonar', PARAM_RAW);

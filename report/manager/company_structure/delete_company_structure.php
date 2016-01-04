@@ -74,7 +74,7 @@ if (isset($parents[2]) && $parents[2]) {
     $params[$levelTwo] = $parents[2];
 }
 if (isset($parents[3]) && $parents[3]) {
-    $params[$levelThree] = $params[3];
+    $params[$levelThree] = $parents[3];
 }
 $returnUrl = new moodle_url('/report/manager/company_structure/company_structure.php',$params);
 

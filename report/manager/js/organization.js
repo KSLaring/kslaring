@@ -48,7 +48,6 @@ var level_structure = {
     sp_user     : superUser,
     /* Level Access */
     myLevelAccess : myAccess,
-
     /* Actions Button   */
     btnActions  : btnActions,
 
@@ -84,6 +83,7 @@ var level_structure = {
     Activate_LevelOne : function(e) {
         var parent  = this.levelZero.get('value');
         var level   = 1;
+
         //  Trigger an ajax search after a delay.
         this.cancel_timeout();
         this.timeoutid  = Y.later(this.querydelay * 1000, e, function(obj){obj.send_query(false,parent,level)}, this);
@@ -92,6 +92,7 @@ var level_structure = {
     Activate_LevelTwo : function(e) {
         var parent      = this.levelOne.get('value');
         var level       = 2;
+
         //  Trigger an ajax search after a delay.
         this.cancel_timeout();
         this.timeoutid = Y.later(this.querydelay * 1000, e, function(obj){obj.send_query(false,parent,level)}, this);
@@ -199,6 +200,10 @@ var level_structure = {
                 if (Y.one("#id_" + clean)) {
                     Y.one("#id_" + clean).all('option').each(function(option){
                         if (option.get('value') != 0) {
+                            if (option.get('selected')) {
+                                selected[option.get('value')] = option.get('value');
+                            }
+
                             option.remove();
                         }
 
@@ -232,7 +237,8 @@ var level_structure = {
                     option.removeAttribute('selected');
                 }
             });
-            //Y.one("#id_" + level).set('selectedIndex',0);
+
+
         }//for_level
     },
 

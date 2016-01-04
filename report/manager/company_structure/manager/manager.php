@@ -23,11 +23,10 @@ require_once($CFG->libdir . '/adminlib.php');
 $level          = optional_param('le',0,PARAM_INT);
 $addSearch      = optional_param('addselect_searchtext', '', PARAM_RAW);
 $removeSearch   = optional_param('removeselect_searchtext', '', PARAM_RAW);
-$url            = new moodle_url('/report/manager/company_structure/company_structure.php');
-$returnUrl      = new moodle_url('/report/manager/index.php');
-
-
-/* Levels   */
+$url            = new moodle_url('/report/manager/company_structure/manager/manager.php');
+$returnUrl      = new moodle_url('/report/manager/company_structure/company_structure.php');
+$parents        = $SESSION->parents;
+$params         = array();
 
 /* Start the page */
 $siteContext = context_system::instance();
@@ -46,14 +45,32 @@ $PAGE->verify_https_required();
 /* ADD require_capability */
 require_capability('report/manager:edit', $siteContext);
 
-/* Show Form */
-$parents    = $SESSION->parents;
-$form       = new report_manager_managers_form(null,array($level,$parents,$addSearch,$removeSearch));
+/* Return Url   */
+$levelZero  = 'level_' . 0;
+$levelOne   = 'level_' . 1;
+$levelTwo   = 'level_' . 2;
+$levelThree = 'level_' . 3;
+if (isset($parents[0]) && $parents[0]) {
+    $params[$levelZero] = $parents[0];
+}
+if (isset($parents[1]) && $parents[1]) {
+    $params[$levelOne] = $parents[1];
+}
+if (isset($parents[2]) && $parents[2]) {
+    $params[$levelTwo] = $parents[2];
+}
+if (isset($parents[3]) && $parents[3]) {
+    $params[$levelThree] = $parents[3];
+}
+$returnUrl      = new moodle_url('/report/manager/company_structure/company_structure.php',$params);
 
+/* Show Form */
+$form       = new report_manager_managers_form(null,array($level,$parents,$addSearch,$removeSearch));
 if ($form->is_cancelled()) {
     $_POST = array();
-    redirect($url);
+    redirect($returnUrl);
 }else if($data = $form->get_data()) {
+    $parents = $SESSION->parents;
 
     /* Add Managers     */
     if (!empty($data->add_sel)) {
@@ -68,9 +85,6 @@ if ($form->is_cancelled()) {
             Managers::RemoveManagers($data->le,$parents,implode(',',$data->removeselect));
         }//if_removeselect
     }//if_remove
-
-    $_POST = array();
-    //redirect($url);
 }//if_else
 
 /* Print Header */

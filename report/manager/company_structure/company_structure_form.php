@@ -258,9 +258,9 @@ class manager_company_structure_form extends moodleform {
             }//if_parent
         }//if_level
 
-
         /* Set Default  */
         $form->setDefault(COMPANY_STRUCTURE_LEVEL . $level,$default);
+
         /* Deactivate levels    */
         if ($level) {
             $form->disabledIf(COMPANY_STRUCTURE_LEVEL . $level ,COMPANY_STRUCTURE_LEVEL . ($level - 1),'eq',0);

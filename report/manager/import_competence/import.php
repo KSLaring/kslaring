@@ -53,6 +53,8 @@ $PAGE->set_context($siteContext);
 $PAGE->set_title($SITE->fullname);
 $PAGE->set_heading($SITE->fullname);
 
+unset($SESSION->parents);
+
 /* ADD require_capability */
 if (!has_capability('report/manager:edit', $siteContext)) {
     print_error('nopermissions', 'error', '', 'report/manager:edit');

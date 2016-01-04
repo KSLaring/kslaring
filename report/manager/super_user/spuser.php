@@ -41,6 +41,8 @@ $PAGE->set_heading($SITE->fullname);
 $PAGE->navbar->add(get_string('company_structure','report_manager'),$returnUrl);
 $PAGE->navbar->add(get_string('spuser','report_manager'));
 
+unset($SESSION->parents);
+
 $PAGE->verify_https_required();
 
 /* ADD require_capability */

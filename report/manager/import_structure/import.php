@@ -50,6 +50,8 @@ $PAGE->navbar->add(get_string('report_manager','local_tracker_manager'),$return)
 $PAGE->navbar->add(get_string('company_structure', 'report_manager'),$return_url);
 $PAGE->navbar->add(get_string('header_import', 'report_manager'),$url);
 
+unset($SESSION->parents);
+
 /* ADD require_capability */
 if (!has_capability('report/manager:edit', $site_context)) {
     print_error('nopermissions', 'error', '', 'report/manager:edit');
