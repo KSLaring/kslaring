@@ -159,64 +159,64 @@ $string['totalcell']='Totalt: {$a}';
  * Description
  * New strings to add invoice information option
  */
-$string['invoice']      = 'Invoice information required';
-$string['invoice_help'] = 'The user must fill in all information about the invoice before the enrolment will be done.';
+$string['invoice']      = 'Fakturainformasjon er påkrevd';
+$string['invoice_help'] = 'Brukeren må fylle inn all nødvendig fakturainformasjon før påmeldingen skjer.';
 
-$string['seats_occupied'] = 'At the moment, all available seats are occupied. Do you want to set on the wait list for this course?';
+$string['seats_occupied'] = 'Det er i øyeblikket ingen ledige plasser. Ønsker du å bli plassert på en venteliste for dette kurset?';
 
-$string['title_approval']   = 'Requests List';
-$string['lnk_approval']     = 'Moderated Approval Requests';
+$string['title_approval']   = 'Godkjenningsforespørsler';
+$string['lnk_approval']     = 'Forespørsler om godkjenning av påmelding';
 
-$string['approval']         = 'Approval required';
-$string['approval_help']    = 'The user must wait the approval to be enrolled in the course';
+$string['approval']         = 'Godkjenning fra leder er påkrevd';
+$string['approval_help']    = 'Brukeren må vente på godkjenning fra leder før påmeldingen blir fullført';
 
-$string['approval_info']    = 'Please, you must fill in your reasons to apply for the course';
-$string['arguments']        = 'Arguments';
+$string['approval_info']    = 'Vennligst fyll inn en begrunnelse for at du vil melde deg på dette kurset';
+$string['arguments']        = 'Begrunnelse';
 
-$string['not_managers'] = 'Sorry, you cannot apply for the course because of there is no manager connected with you.';
+$string['not_managers'] = 'Beklager, men du kan ikke melde deg på dette kurset når vi ikke vet hvem som er lederen din.';
 
-$string['mng_subject']  = '{$a->site}: Application for enrolment in course {$a->course}';
-$string['mng_body']     = '<p>We would like to inform you that you are manager for <b>{$a->user}</b>, and the <b>{$a->user}</b> has just applied for the course <b>{$a->course}</b>.</p><p>The arguments of the user are:</p><p>{$a->arguments}</p>
-                           <p>To approve it You must use this link: {$a->approve}.</p>
-                           <p>To reject it You must use this link: {$a->reject}.</p>';
+$string['mng_subject']  = '{$a->site}: Søknad om kursplass for kurset {$a->course}';
+$string['mng_body']     = '<p>Du får denne forespørselsen om godkjenning siden du er oppført som lederen for <b>{$a->user}</b>, og <b>{$a->user}</b> nettopp har søkt om plass på kurset  <b>{$a->course}</b>.</p><p>Brukerens begrunnelse for søknaden er:</p><p>{$a->arguments}</p>
+                           <p>For å godkjenne denne søknaden kan du klikke her: {$a->approve}.</p>
+                           <p>For å avslå denne søknaden kan du klikke her: {$a->reject}.</p>';
 
-$string['subject_reminder'] = '{$a->site}: Application for enrolment in course {$a->course}. REMINDER';
-$string['body_reminder']    = '<p>We would like to <b><u>reminder</u></b> you that you are manager for <b>{$a->user}</b>, and the <b>{$a->user}</b> has just applied for the course <b>{$a->course}</b>.</p><p>The arguments of the user are:</p><p>{$a->arguments}</p>
-                               <p>You should approve or reject the request as soon as possible.</p>
-                               <p>To approve it You must use this link: {$a->approve}.</p>
-                               <p>To reject it You must use this link: {$a->reject}.</p>';
+$string['subject_reminder'] = '{$a->site}: Søknad om påmelding til kurset: {$a->course}. PÅMINNELSE';
+$string['body_reminder']    = '<p>Vi vil bare minne deg om at du er lederen for <b>{$a->user}</b>, og <b>{$a->user}</b> har nylig søkt om plass på kurset: <b>{$a->course}</b>.</p><p>Brukerens begrunnelse for søknaden er:</p><p>{$a->arguments}</p>
+                               <p>Du bør ta stilling til denne søknaden så raskt som mulig.</p>
+                               <p>For å godkjenne denne søknaden kan du klikke her:  {$a->approve}.</p>
+                               <p>TFor å avslå denne søknaden kan du klikke her:  {$a->reject}.</p>';
 
-$string['std_body']     = 'Your application will be reviewed as soon as possible. We will send you another email when your enrolement is activated.';
+$string['std_body']     = 'Søknaden om påmelding vil bli behandlet så raskt som mulig. Vi sender deg en epost med varsel om resultatet av behandlingen fra din leder.';
 
-$string['approve_lnk']  = 'Approve Request';
-$string['reject_lnk']   = 'Reject Request';
+$string['approve_lnk']  = 'Godkjenn søknaden';
+$string['reject_lnk']   = 'Avslå søknaden';
 
-$string['request_sent']         = 'Your application will be reviewed as soon as possible. We will send you an email when your request has been processed.';
-$string['request_remainder']    = 'Your request was applied on <b>{$a}</b>. It has not been processed yet. Do you want to send a reminder?';
+$string['request_sent']         = 'Søknaden din om plass på kurset vil bli behandlet så raskt som mulig. Vi sender deg en epost når søknaden din er behandlet.';
+$string['request_remainder']    = 'Søknaden din ble innsendt <b>{$a}</b>. Den er dessverre ikke behandlet av din leder ennå. Ønsker du å sende en påminnelse til lederen din?';
 
-$string['err_link'] = 'Sorry, link not valid. Please, contact with administrator. ';
+$string['err_link'] = 'Beklager, men lenken er ikke gyldig. Vennligst kontakt administrator.';
 
-$string['request_approved']   = 'Your request was approved on {$a->sent}.';
-$string['request_rejected']   = 'Your request was rejected on {$a->sent}.';
+$string['request_approved']   = 'Din søknad ble godkjent {$a->sent}.';
+$string['request_rejected']   = 'Din søknad ble avslått {$a->sent}.';
 
-$string['approved_mnd'] = 'The request has been approved successfully.';
-$string['rejected_mnd'] = 'The request has been rejected successfully.';
+$string['approved_mnd'] = 'Søknaden om kursplass er nå godkjent.';
+$string['rejected_mnd'] = 'Søknaden om kursplass er avslått.';
 
-$string['err_process']  = 'Sorry, It has been an error during the process. Please, try it later or contact with administrator.';
+$string['err_process']  = 'Beklager, men det har skjedd en feil under behandlingen. Vennligst prøv igjen senere eller kontakt administrator.';
 
-$string['no_request']     = 'There is no request';
-$string['act_approve']    = 'Approve';
-$string['act_reject']     = 'Reject';
+$string['no_request']     = 'Det foreligger ingen søknader om kursplass';
+$string['act_approve']    = 'Godkjenn';
+$string['act_reject']     = 'Avslå';
 
-$string['rpt_name']         = 'Name';
-$string['rpt_username']     = 'Username';
-$string['rpt_mail']         = 'Mail';
-$string['rpt_arguments']    = 'Arguments';
-$string['rpt_seats']        = 'Seats';
-$string['rpt_action']       = 'Action';
-$string['rpt_attended']     = 'Attended';
-$string['rpt_not_attended'] = 'Not Attended';
-$string['rpt_approved']     = 'Approved';
-$string['rpt_rejected']     = 'Rejected';
-$string['rpt_participants'] = 'Maximum number of participants';
-$string['rpt_back']         = 'Back';
+$string['rpt_name']         = 'Navn';
+$string['rpt_username']     = 'Brukernavn';
+$string['rpt_mail']         = 'Epost';
+$string['rpt_arguments']    = 'Begrunnelse';
+$string['rpt_seats']        = 'Plasser';
+$string['rpt_action']       = 'Handling';
+$string['rpt_attended']     = 'Deltatt';
+$string['rpt_not_attended'] = 'Ikke deltatt';
+$string['rpt_approved']     = 'Godkjent';
+$string['rpt_rejected']     = 'Avslått';
+$string['rpt_participants'] = 'Maks antall deltakere';
+$string['rpt_back']         = 'Tilbake';
