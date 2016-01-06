@@ -54,4 +54,4 @@ $string['whitepaper']               = 'White paper';
 $string['single']                   = 'Single Activity';
 $string['btn_more']                 = 'More';
 $string['not_comments']             = 'No comments';
-$string['available_seats']          = 'Available Seats';
+$string['available_seats'] 			= 'Available seats';
