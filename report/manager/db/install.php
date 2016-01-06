@@ -56,7 +56,7 @@ function xmldb_report_manager_install() {
         CompetenceManager_Update::CreateTemporaryTable($db_man);
 
         /* Manager && Reporter Tables   */
-        CompetenceManager::ManagerReporterTables($db_man);
+        CompetenceManager_Install::ManagerReporterTables($db_man);
 
         /* For Kommit   */
         /* Level Zero */
