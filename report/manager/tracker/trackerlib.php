@@ -1045,6 +1045,10 @@ class TrackerManager {
                     $header .= html_writer::start_tag('td',array('class' => 'head_start'));
                         $header .= '&nbsp;';
                     $header .= html_writer::end_tag('td');
+                    /* Last Col     */
+                    $header .= html_writer::start_tag('td',array('class' => 'head_first'));
+                        $header .= '&nbsp;';
+                    $header .= html_writer::end_tag('td');
                 $header .= html_writer::end_tag('tr');
             $header .= html_writer::end_tag('table');
 
@@ -1088,7 +1092,15 @@ class TrackerManager {
                         $content .= html_writer::end_tag('td');
                         /* Course           */
                         $content .= html_writer::start_tag('td',array('class' => 'course'));
-                            $content .= $course->name;
+                            if (strlen($course->name) <= 30) {
+                                $content .= $course->name;
+                            }else {
+                                $nameTruncate = substr($course->name,0,30);
+                                $index = strrpos($nameTruncate,' ');
+                                $nameTruncate = substr($nameTruncate,0,$index) . ' ...';
+                                $content .= $nameTruncate;
+                            }
+
                         $content .= html_writer::end_tag('td');
                         /* Status        */
                         $content .= html_writer::start_tag('td',array('class' => 'status'));
@@ -1108,6 +1120,9 @@ class TrackerManager {
                         $content .= html_writer::start_tag('td',array('class' => 'start'));
                             $content .= $strUrl;
                         $content .= html_writer::end_tag('td');
+                        /* Last Col */
+                        $content .= html_writer::start_tag('td',array('class' => 'first'));
+                        $content .= html_writer::end_tag('td');
                     $content .= html_writer::end_tag('tr');
                 }//for_each_course_not_completed
             }//if_not_completed
@@ -1122,7 +1137,14 @@ class TrackerManager {
                         $content .= html_writer::end_tag('td');
                         /* Course           */
                         $content .= html_writer::start_tag('td',array('class' => 'course'));
-                            $content .= $course->name;
+                            if (strlen($course->name) <= 30) {
+                                $content .= $course->name;
+                            }else {
+                                $nameTruncate = substr($course->name,0,30);
+                                $index = strrpos($nameTruncate,' ');
+                                $nameTruncate = substr($nameTruncate,0,$index) . ' ...';
+                                $content .= $nameTruncate;
+                            }
                         $content .= html_writer::end_tag('td');
                         /* Status        */
                         $content .= html_writer::start_tag('td',array('class' => 'status'));
@@ -1141,6 +1163,9 @@ class TrackerManager {
                         $strUrl  = '<a href="'.$url .'">'. get_string('start_course','local_tracker_manager') .'</a>';
                         $content .= html_writer::start_tag('td',array('class' => 'start'));
                             $content .= $strUrl;
+                        $content .= html_writer::end_tag('td');
+                        /* Last Col */
+                        $content .= html_writer::start_tag('td',array('class' => 'first'));
                         $content .= html_writer::end_tag('td');
                     $content .= html_writer::end_tag('tr');
                 }//for_each_course_not_enrol
@@ -1165,7 +1190,14 @@ class TrackerManager {
                         $content .= html_writer::end_tag('td');
                         /* Course           */
                         $content .= html_writer::start_tag('td',array('class' => 'course'));
-                            $content .= $course->name;
+                            if (strlen($course->name) <= 30) {
+                                $content .= $course->name;
+                            }else {
+                                $nameTruncate = substr($course->name,0,30);
+                                $index = strrpos($nameTruncate,' ');
+                                $nameTruncate = substr($nameTruncate,0,$index) . ' ...';
+                                $content .= $nameTruncate;
+                            }
                         $content .= html_writer::end_tag('td');
                         /* Status        */
                         $content .= html_writer::start_tag('td',array('class' => 'status'));
@@ -1184,6 +1216,9 @@ class TrackerManager {
                         $strUrl  = '<a href="'.$url .'">'. get_string('start_course','local_tracker_manager') .'</a>';
                         $content .= html_writer::start_tag('td',array('class' => 'start'));
                             $content .= $strUrl;
+                        $content .= html_writer::end_tag('td');
+                        /* Last Col */
+                        $content .= html_writer::start_tag('td',array('class' => 'first'));
                         $content .= html_writer::end_tag('td');
                     $content .= html_writer::end_tag('tr');
                 }//for_each_course_completed
@@ -1246,6 +1281,10 @@ class TrackerManager {
                     $header .= html_writer::start_tag('td',array('class' => 'head_start'));
                         $header .= '&nbsp;';
                     $header .= html_writer::end_tag('td');
+                    /* Last Col     */
+                    $header .= html_writer::start_tag('td',array('class' => 'head_first'));
+                        $header .= '&nbsp;';
+                    $header .= html_writer::end_tag('td');
                 $header .= html_writer::end_tag('tr');
             $header .= html_writer::end_tag('table');
 
@@ -1291,7 +1330,14 @@ class TrackerManager {
                             $content .= html_writer::end_tag('td');
                             /* Course           */
                             $content .= html_writer::start_tag('td',array('class' => 'course'));
-                                $content .= $course->name;
+                                if (strlen($course->name) <= 30) {
+                                    $content .= $course->name;
+                                }else {
+                                    $nameTruncate = substr($course->name,0,30);
+                                    $index = strrpos($nameTruncate,' ');
+                                    $nameTruncate = substr($nameTruncate,0,$index) . ' ...';
+                                    $content .= $nameTruncate;
+                                }
                             $content .= html_writer::end_tag('td');
                             /* Status        */
                             $content .= html_writer::start_tag('td',array('class' => 'status'));
@@ -1318,6 +1364,9 @@ class TrackerManager {
                             $content .= html_writer::start_tag('td',array('class' => 'start'));
                                 $content .= $strUrl;
                             $content .= html_writer::end_tag('td');
+                            /* Last Col */
+                            $content .= html_writer::start_tag('td',array('class' => 'first'));
+                            $content .= html_writer::end_tag('td');
                         $content .= html_writer::end_tag('tr');
                     }//for_each_course_not_completed
                 }//if_not_completed
@@ -1331,7 +1380,14 @@ class TrackerManager {
                             $content .= html_writer::end_tag('td');
                             /* Course           */
                             $content .= html_writer::start_tag('td',array('class' => 'course'));
-                                $content .= $course->name;
+                                if (strlen($course->name) <= 30) {
+                                    $content .= $course->name;
+                                }else {
+                                    $nameTruncate = substr($course->name,0,30);
+                                    $index = strrpos($nameTruncate,' ');
+                                    $nameTruncate = substr($nameTruncate,0,$index) . ' ...';
+                                    $content .= $nameTruncate;
+                                }
                             $content .= html_writer::end_tag('td');
                             /* Status        */
                             $content .= html_writer::start_tag('td',array('class' => 'status'));
@@ -1357,6 +1413,9 @@ class TrackerManager {
                             $strUrl  = '<a href="'.$url .'">'. get_string('start_course','local_tracker_manager') .'</a>';
                             $content .= html_writer::start_tag('td',array('class' => 'start'));
                                 $content .= $strUrl;
+                            $content .= html_writer::end_tag('td');
+                            /* Last Col */
+                            $content .= html_writer::start_tag('td',array('class' => 'first'));
                             $content .= html_writer::end_tag('td');
                         $content .= html_writer::end_tag('tr');
                     }//for_each_course_completed

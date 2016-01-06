@@ -452,3 +452,17 @@ $string['sp_level_required']        = 'Det kreves i det minste ett nivå';
 $string['unenrol']      = 'Meld ut';
 $string['err_unenrol']  = 'Beklager, men det skjedde en feil under utmeldingen. Vennligst prøv igjen senere eller kontakt administrator om dette problemet fortsetter.';
 $string['exit_unenrol'] = 'Du er nå utmeldt fra kurset';
+/**
+ * @updateDate  21/12/2015
+ * @author      eFaktor     (fbv)
+ *
+ * Description
+ * Add new language strings for 'Managers' && 'Reporters' functionality
+ */
+$string['title_managers']   = 'Lederstruktur';
+$string['btn_managers']     = 'Ledere';
+$string['btn_reporters']    = 'Rapporttilgang';
+$string['title_reporters']  = 'Rapporttilgangstruktur';
+
+$string['no_managers']      = 'Ingen ledere';
+$string['no_reporters']     = 'Ingen med rapporttilgang';

@@ -21,7 +21,6 @@ require_once('company_structurelib.php');
 require_once($CFG->libdir . '/adminlib.php');
 require_once('company_structure_form.php');
 
-
 /* PARAMS */
 $url            = new moodle_url('/report/manager/company_structure/company_structure.php');
 $return_url     = new moodle_url('/report/manager/index.php');
@@ -39,7 +38,6 @@ $PAGE->set_pagelayout('report');
 $PAGE->set_url($url);
 $PAGE->set_title($SITE->fullname);
 $PAGE->set_heading($SITE->fullname);
-
 
 /* ADD require_capability */
 $superUser  = CompetenceManager::IsSuperUser($USER->id);
@@ -75,7 +73,7 @@ if ($form->is_cancelled()) {
         $select      = COMPANY_STRUCTURE_LEVEL . $i;
         $parent[$i]  = $data->$select;
     }//for
-    $SESSION->parents = $parent;
+    $SESSION->parents   = $parent;
 
     switch ($action) {
         case REPORT_MANAGER_COMPANY_CANCEL:
@@ -103,6 +101,14 @@ if ($form->is_cancelled()) {
             $company_id = $data->$select;
 
             $redirect_url    = new moodle_url('/report/manager/company_structure/unlink_company_structure.php',array('id'=>$company_id));
+
+            break;
+        case REPORT_MANAGER_MANAGERS_SELECTED:
+            $redirect_url    = new moodle_url('/report/manager/company_structure/manager/manager.php',array('le'=>$level));
+
+            break;
+        case REPORT_MANAGER_REPORTERS_SELECTED:
+            $redirect_url    = new moodle_url('/report/manager/company_structure/reporter/reporter.php',array('le'=>$level));
 
             break;
         default:

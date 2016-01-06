@@ -25,13 +25,13 @@ require_once($CFG->libdir.'/formslib.php');
 class manager_company_report_form extends moodleform {
     function  definition(){
         $form = $this->_form;
-        list($my_hierarchy,$advanced)  = $this->_customdata;
+        list($my_hierarchy,$advanced,$IsReporter)  = $this->_customdata;
 
         /* Company Hierarchy - Levels */
         $form->addElement('header', 'company', get_string('company', 'report_manager'));
         $form->setExpanded('company',true);
         for ($i = 0; $i <= 3; $i++) {
-            $this->AddLevel($form,$i,$my_hierarchy);
+            $this->AddLevel($form,$i,$my_hierarchy,$IsReporter);
         }//for_levels
 
         /* Format Report    */
@@ -56,6 +56,7 @@ class manager_company_report_form extends moodleform {
      * @param           $form
      * @param           $level
      * @param           $my_hierarchy
+     * @param           $IsReporter
      *
      * @creationDate    08/04/2015
      * @author          eFaktor     (fbv)
@@ -63,10 +64,10 @@ class manager_company_report_form extends moodleform {
      * Description
      * Add Level Company Structure
      */
-    function AddLevel(&$form,$level,$my_hierarchy){
+    function AddLevel(&$form,$level,$my_hierarchy,$IsReporter){
         $form->addElement('html', '<div class="level-wrapper">');
             /* Add Company List */
-            $options = $this->getCompanyList($level,$my_hierarchy);
+            $options = $this->getCompanyList($level,$my_hierarchy,$IsReporter);
             $form->addElement('select',COMPANY_STRUCTURE_LEVEL . $level,
                               get_string('select_company_structure_level', 'report_manager', $level),
                               $options
@@ -80,7 +81,8 @@ class manager_company_report_form extends moodleform {
 
     /**
      * @param           $level
-     * @param           $my_hierarchy
+     * @param           $myHierarchy
+     * @param           $IsReporter
      * @return          array
      *
      * @creationDate    08/04/2015
@@ -96,7 +98,7 @@ class manager_company_report_form extends moodleform {
      * Companies connected with my level and/or competence
      *
      */
-    function getCompanyList($level,$my_hierarchy) {
+    function getCompanyList($level,$myHierarchy,$IsReporter) {
         /* Variables    */
         $levelThree     = null;
         $levelTwo       = null;
@@ -106,7 +108,14 @@ class manager_company_report_form extends moodleform {
         $options        = array();
 
         /* Get My Companies by Level    */
-        list($levelZero,$levelOne,$levelTwo,$levelThree) = CompetenceManager::GetMyCompanies_By_Level($my_hierarchy->competence,$my_hierarchy->my_level);
+        if (!$IsReporter) {
+            list($levelZero,$levelOne,$levelTwo,$levelThree) = CompetenceManager::GetMyCompanies_By_Level($myHierarchy->competence,$myHierarchy->my_level);
+        }else {
+            $levelZero  = $myHierarchy->competence->levelZero;
+            $levelOne   = $myHierarchy->competence->levelOne;
+            $levelTwo   = $myHierarchy->competence->levelTwo;
+            $levelThree = $myHierarchy->competence->levelThree;
+        }//if_IsReporter
 
         /* Parent*/
         $parent     = optional_param(COMPANY_STRUCTURE_LEVEL . ($level-1), 0, PARAM_INT);

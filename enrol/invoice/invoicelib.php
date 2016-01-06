@@ -151,7 +151,7 @@ class Invoices {
      *
      * @throws              Exception
      *
-     * @creationDate        29/04/20154
+     * @creationDate        29/04/2015
      * @author              eFaktor     (fbv)
      *
      * Description
@@ -211,6 +211,20 @@ class Invoices {
         }//try_catch
     }//Add_InvoiceInto
 
+    /**
+     * @param           $userId
+     * @param           $courseId
+     * @param           $waitingId
+     *
+     * @return          bool
+     * @throws          Exception
+     *
+     * @creationDate    29/04/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Activate the invoice entry
+     */
     public static function activate_enrol_invoice($userId,$courseId,$waitingId) {
         /* Variables    */
         global $DB;

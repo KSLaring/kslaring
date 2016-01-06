@@ -19,6 +19,8 @@ define('REPORT_MANAGER_ADD_ITEM', 'add_item');
 define('REPORT_MANAGER_RENAME_SELECTED', 'rename_selected');
 define('REPORT_MANAGER_DELETE_SELECTED', 'delete_selected');
 define('REPORT_MANAGER_UNLINK_SELECTED', 'unlink_selected');
+define('REPORT_MANAGER_MANAGERS_SELECTED','managers_selected');
+define('REPORT_MANAGER_REPORTERS_SELECTED','reporters_selected');
 define('REPORT_MANAGER_GET_LEVEL', 'get_level');
 define('REPORT_MANAGER_GET_UNCONNECTED', 'get_unconnected');
 define('REPORT_MANAGER_REMOVE_SELECTED', 'remove_selected');
@@ -68,6 +70,32 @@ class CompetenceManager {
     /********************/
     /* PUBLIC FUNCTIONS */
     /********************/
+
+    public static function IsReporter($userId,$level=-1) {
+        /* Variables */
+        global $DB;
+        $params = null;
+        $rdo    = null;
+
+        try {
+            /* Search Criteria  */
+            $params = array();
+            $params['reporterid']           = $userId;
+            if ($level >= 0) {
+                $params['hierarchylevel']   = $level;
+            }
+            /* Execute  */
+            $rdo = $DB->get_records('report_gen_company_reporter',$params);
+
+            if ($rdo) {
+                return true;
+            }else {
+                return false;
+            }
+        }catch (Exception $ex) {
+            throw $ex;
+        }
+    }//IsReporter
 
     /**
      * @param           $userId
@@ -347,19 +375,29 @@ class CompetenceManager {
      */
     public static function GetLevelLink_ReportPage($tab,$site_context) {
         /* Variables    */
-        global $OUTPUT;
+        global $OUTPUT,$USER;
 
         /* Create links - It's depend on View permissions */
         $out = '<ul class="unlist report-selection">' . "\n";
-        if (has_capability('report/manager:viewlevel0', $site_context)) {
+        if (self::IsReporter($USER->id,0)) {
             $out .= self::Get_ZeroLevelLink($tab);
-        }else if (has_capability('report/manager:viewlevel1', $site_context)) {
+        }else if (self::IsReporter($USER->id,1)) {
             $out .= self::Get_FirstLevelLink($tab);
-        }else if(has_capability('report/manager:viewlevel2', $site_context)) {
+        }else if (self::IsReporter($USER->id,2)) {
             $out .= self::Get_SecondLevelLink($tab);
-        }else if (has_capability('report/manager:viewlevel3', $site_context)) {
+        }else if (self::IsReporter($USER->id,3)) {
             $out .= self::Get_ThirdLevelLink($tab);
-        }//if_capabitity
+        }else {
+            if (has_capability('report/manager:viewlevel0', $site_context)) {
+                $out .= self::Get_ZeroLevelLink($tab);
+            }else if (has_capability('report/manager:viewlevel1', $site_context)) {
+                $out .= self::Get_FirstLevelLink($tab);
+            }else if(has_capability('report/manager:viewlevel2', $site_context)) {
+                $out .= self::Get_SecondLevelLink($tab);
+            }else if (has_capability('report/manager:viewlevel3', $site_context)) {
+                $out .= self::Get_ThirdLevelLink($tab);
+            }//if_capabitity
+        }
         $out .= '</ul>' . "\n";
 
         /* Draw Links */
@@ -370,6 +408,8 @@ class CompetenceManager {
      * @static
      * @param           $user_id
      * @param           $site_context
+     * @param           $IsReporter
+     * @param           $reportLevel
      * @return          stdClass
      * @throws          Exception
      *
@@ -379,17 +419,25 @@ class CompetenceManager {
      * Description
      * Get my hierarchy level
      */
-    public static function get_MyHierarchyLevel($user_id,$site_context) {
+    public static function get_MyHierarchyLevel($user_id,$site_context,$IsReporter,$reportLevel) {
         /* Variables    */
-        $my_hierarchy   = null;
+        $myHierarchy   = null;
 
         try {
             /* Build my hierarchy   */
-            $my_hierarchy               = new stdClass();
-            $my_hierarchy->competence   = self::Get_MyCompetence($user_id);
-            $my_hierarchy->my_level     = self::Get_MyLevelView($user_id,$site_context);
+            $myHierarchy               = new stdClass();
+            $myHierarchy->IsRepoter         = $IsReporter;
+            if ($IsReporter) {
+                $myHierarchy->competence    = self::Get_MyReporterCompetence($user_id);
+                $myHierarchy->my_level      = $reportLevel;
+            }else {
+                $myHierarchy->competence    = self::Get_MyCompetence($user_id);
+                $myHierarchy->my_level      = self::Get_MyLevelView($user_id,$site_context);
+            }//if_IsReporter
 
-            return $my_hierarchy;
+
+
+            return $myHierarchy;
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
@@ -430,7 +478,7 @@ class CompetenceManager {
 
             switch ($my_level) {
                 case 0:
-                   $levelZero  = array();
+                    $levelZero  = array();
                     $levelOne   = array();
                     $levelTwo   = array();
                     $levelThree = array();
@@ -1148,6 +1196,80 @@ class CompetenceManager {
             throw $ex;
         }//try_catch
     }//Get_MyCompetence
+
+    /**
+     * @param           $userId
+     *
+     * @return          null
+     * @throws          Exception
+     *
+     * @creationDate    23/12/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Get competence, access level, to the reporters
+     */
+    private static function Get_MyReporterCompetence($userId) {
+        /* Variables */
+        global $DB;
+        $myCompetence   = null;
+        $infoHierarchy  = null;
+        $sql            = null;
+        $rdo            = null;
+        $params         = null;
+        $levelOne       = null;
+        $levelTwo       = null;
+        $levelThree     = null;
+
+        try {
+            /* Search Criteria */
+            $params = array();
+            $params['user']  = $userId;
+
+            $sql = " SELECT GROUP_CONCAT(DISTINCT re.levelzero  ORDER BY re.levelzero SEPARATOR ',')    as 'levelzero',
+                            GROUP_CONCAT(DISTINCT re.levelone  	ORDER BY re.levelone 	SEPARATOR ',') 	as 'levelone',
+                            GROUP_CONCAT(DISTINCT re.leveltwo  	ORDER BY re.leveltwo 	SEPARATOR ',') 	as 'leveltwo',
+                            GROUP_CONCAT(DISTINCT re.levelthree ORDER BY re.levelthree	SEPARATOR ',') 	as 'levelthree'
+                     FROM	{report_gen_company_reporter} re
+                     WHERE	re.reporterid 		= :user  ";
+
+            /* Execute  */
+            $rdo = $DB->get_record_sql($sql,$params);
+            if ($rdo) {
+                /* Hierarchy */
+                $myCompetence = new stdClass();
+                $myCompetence->levelZero   = explode(',',$rdo->levelzero);
+                /* Level One    */
+                if ($rdo->levelone) {
+                    $myCompetence->levelOne    = explode(',',$rdo->levelone);
+                }else {
+                    $levelOne = self::GetCompanies_LevelList(1,$rdo->levelzero);
+                    unset($levelOne[0]);
+                    $myCompetence->levelOne = array_keys($levelOne);
+                }
+                /* Level Two    */
+                if ($rdo->leveltwo) {
+                    $myCompetence->levelTwo    = explode(',',$rdo->leveltwo);
+                }else {
+                    $levelTwo = self::GetCompanies_LevelList(2,$rdo->levelone);
+                    unset($levelTwo[0]);
+                    $myCompetence->levelTwo = array_keys($levelTwo);
+                }
+                /* Level Three */
+                if ($rdo->levelthree) {
+                    $myCompetence->levelThree    = explode(',',$rdo->levelthree);
+                }else {
+                    $levelThree = self::GetCompanies_LevelList(3,$rdo->leveltwo);
+                    unset($levelThree[0]);
+                    $myCompetence->levelThree = array_keys($levelThree);
+                }
+            }//if_rdo
+
+            return $myCompetence;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//Get_MyReporterCompetence
 
     /**
      * @static

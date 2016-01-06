@@ -27,7 +27,6 @@ require_once($CFG->libdir . '/adminlib.php');
 require_once('employee_report_form.php');
 require_once( 'employeelib.php');
 
-
 /* Params */
 $url                = new moodle_url('/report/manager/employee_report/employee_report.php');
 $return             = new moodle_url('/report/manager/index.php');
@@ -50,7 +49,10 @@ $PAGE->set_heading($SITE->fullname);
 $PAGE->navbar->add(get_string('report_manager','local_tracker_manager'),$return);
 $PAGE->navbar->add(get_string('employee_report_link','report_manager'),$url);
 
-require_capability('report/manager:viewlevel4', $site_context,$USER->id);
+$IsReporter = CompetenceManager::IsReporter($USER->id);
+if (!$IsReporter) {
+    require_capability('report/manager:viewlevel4', $site_context,$USER->id);
+}
 
 if (empty($CFG->loginhttps)) {
     $secure_www_root = $CFG->wwwroot;
@@ -61,10 +63,10 @@ if (empty($CFG->loginhttps)) {
 $PAGE->verify_https_required();
 
 /* My Hierarchy */
-$my_hierarchy = CompetenceManager::get_MyHierarchyLevel($USER->id,$site_context);
+$myHierarchy = CompetenceManager::get_MyHierarchyLevel($USER->id,$site_context,$IsReporter,4);
 
 /* Show Form    */
-$form = new manager_employee_report_form(null,$my_hierarchy);
+$form = new manager_employee_report_form(null,array($myHierarchy,$IsReporter));
 if ($form->is_cancelled()) {
     /* Clean Cookies     */
     setcookie('parentLevelZero',0);

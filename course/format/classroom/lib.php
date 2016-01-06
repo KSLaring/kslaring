@@ -960,6 +960,11 @@ class format_classroom extends format_base {
     public function course_header() {
         global $USER, $CFG, $PAGE, $FULLME;
 
+        if (!($PAGE->pagetype === 'course-view-classroom' ||
+            strpos($PAGE->pagetype, 'mod-') !== false)) {
+            return new format_classroom_specialnav('');
+        }
+
         $strcourse = get_string('course', 'format_classroom');
         $strdescription = get_string('description', 'format_classroom');
         $strforums = get_string('forums', 'format_classroom');

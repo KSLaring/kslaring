@@ -15,7 +15,7 @@
 
 defined('MOODLE_INTERNAL') || die;
 
-$plugin->version    = 2015113000;           /* The current plugin version (Date: YYYYMMDDXX)  */
+$plugin->version    = 2015122200;           /* The current plugin version (Date: YYYYMMDDXX)  */
 $plugin->requires   = 2012061700;           /* Requires this Moodle version                   */
 $plugin->component  = 'report_manager';   /* Full name of the plugin (used for diagnostics) */
 

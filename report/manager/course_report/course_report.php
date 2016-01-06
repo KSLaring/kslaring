@@ -42,8 +42,12 @@ $PAGE->set_heading($SITE->fullname);
 $PAGE->navbar->add(get_string('report_manager','local_tracker_manager'),$return_url);
 $PAGE->navbar->add(get_string('course_report', 'report_manager'),$url);
 
+unset($SESSION->parents);
+
 /* ADD require_capability */
-require_capability('report/manager:viewlevel3', $site_context);
+if (!CompetenceManager::IsReporter($USER->id)) {
+    require_capability('report/manager:viewlevel3', $site_context);
+}
 
 if (empty($CFG->loginhttps)) {
     $secure_www_root = $CFG->wwwroot;

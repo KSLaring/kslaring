@@ -831,6 +831,45 @@ class course_page  {
         }//try_catch
     }//getFormatFields
 
+
+    /**
+     * @static
+     * @param           $course_id
+     * @param           $format_options
+     * @return          $format_options
+     * @throws          Exception
+     *
+     * @creationDate    2015-12-06
+     * @author          eFaktor     (uh)
+     *
+     * Description
+     * Add the available seats to the fields/options connected with course format.
+     */
+    public static function getAvailSeats($course_id, $format_options) {
+        global $CFG, $DB;
+        $avail = '-';
+
+        // Add enrolled users.
+        /* Get Instance Enrolment Waiting List  */
+        $instance = $DB->get_record('enrol', array('courseid' => $course_id,
+            'enrol' => 'waitinglist'));
+        if ($instance) {
+            /* Get Seats    */
+            require_once($CFG->dirroot . '/enrol/waitinglist/lib.php');
+            $enrolWaitingList = new enrol_waitinglist_plugin();
+            $avail = $enrolWaitingList->get_vacancy_count($instance) . '/' .
+                $instance->{ENROL_WAITINGLIST_FIELD_MAXENROLMENTS};
+        }//if_instance
+
+        $field = new stdClass();
+        $field->id      = 0;
+        $field->name    = 'enrolledusers';
+        $field->value   = $avail;
+        $format_options['enrolledusers'] = $field;
+
+        return $format_options;
+    }
+
     /**
      * @return          array
      * @throws          Exception

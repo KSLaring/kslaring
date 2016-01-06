@@ -444,4 +444,19 @@ $string['sp_level_required']        = 'At least one level is required';
 
 $string['unenrol']      = 'Unenrol';
 $string['err_unenrol']  = 'Sorry, it has had an error during the process. Please, try it later contact to administrator';
-$string['exit_unenrol'] = 'You are now unenolled from the course';
+$string['exit_unenrol'] = 'You are now unenrolled from the course';
+
+/**
+ * @updateDate  21/12/2015
+ * @author      eFaktor     (fbv)
+ *
+ * Description
+ * Add new language strings for 'Managers' && 'Reporters' functionality
+ */
+$string['title_managers']   = 'Managers Structure';
+$string['btn_managers']     = 'Managers';
+$string['btn_reporters']    = 'Reporters';
+$string['title_reporters']  = 'Reporters Structure';
+
+$string['no_managers']      = 'No Managers';
+$string['no_reporters']     = 'No Reporters';

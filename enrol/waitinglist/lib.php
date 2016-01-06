@@ -35,6 +35,7 @@ define('ENROL_WAITINGLIST_FIELD_WAITLISTMESSAGE', 'customtext2');
 define('ENROL_WAITINGLIST_TABLE_QUEUE', 'enrol_waitinglist_queue');
 define('ENROL_WAITINGLIST_TABLE_METHODS', 'enrol_waitinglist_method');
 define('ENROL_WAITINGLIST_FIELD_INVOICE','customint8');
+define('ENROL_WAITINGLIST_FIELD_APPROVAL','customint7');
 
 class enrol_waitinglist_plugin extends enrol_plugin {
 
@@ -153,8 +154,28 @@ class enrol_waitinglist_plugin extends enrol_plugin {
                 $report_invoices->make_active();
             }
             $parent_node->add_node($report_invoices,'users');
-        }
-    
+        }//Invoice_Link
+
+        /* Add Approval Requests Link */
+        if (has_capability('enrol/waitinglist:manage', $context)) {
+            $parent_node        = $instancesnode->parent;
+            $parent_node        = $parent_node->parent;
+            $str_title          = get_string('lnk_approval', 'enrol_waitinglist');
+            $url                = new moodle_url('/enrol/waitinglist/approval/request.php',array('courseid'=>$instance->courseid, 'id'=>$instance->id));
+
+            $approvalRequests   = navigation_node::create($str_title,
+                                                          $url,
+                                                          navigation_node::TYPE_SETTING,'approval_requests',
+                                                          'approval_requests',
+                                                          new pix_icon('i/report', $str_title)
+                                                         );
+
+            global $PAGE;
+            if ($PAGE->url->compare($url, URL_MATCH_BASE)) {
+                $approvalRequests->make_active();
+            }
+            $parent_node->add_node($approvalRequests,'users');
+        }//Approval_Requests_Link
     }//end of function
 
     /**
@@ -486,7 +507,8 @@ class enrol_waitinglist_plugin extends enrol_plugin {
                         ENROL_WAITINGLIST_FIELD_MAXENROLMENTS       => $this->get_config('maxenrolments'),
                         ENROL_WAITINGLIST_FIELD_WAITLISTSIZE        => $this->get_config('waitlistsize'),
                         'expirythreshold'                           => $this->get_config('expirythreshold', 86400),
-                        ENROL_WAITINGLIST_FIELD_INVOICE             => 0
+                        ENROL_WAITINGLIST_FIELD_INVOICE             => 0,
+                        ENROL_WAITINGLIST_FIELD_APPROVAL            => 0
                        );
         $waitinglistid = $this->add_instance($course, $fields);
 
@@ -690,6 +712,12 @@ class enrol_waitinglist_plugin extends enrol_plugin {
      *
      * Description
      * Update to invoice option
+     *
+     * @updateDate      30/12/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Update to approval option
      */
     public function handle_unenrol($courseid,$userid){
         /* Variables    */
@@ -713,8 +741,8 @@ class enrol_waitinglist_plugin extends enrol_plugin {
             $entryman->remove_entry_from_db($entry->id);
 
             /* Check Invoice Option */
+            $waitingLst = $entryman->waitinglist;
             if (enrol_get_plugin('invoice')) {
-                $waitingLst = $entryman->waitinglist;
                 if ($waitingLst->{ENROL_WAITINGLIST_FIELD_INVOICE}) {
                     /* Mark user as unenrolled  */
                     /* Get record   */
@@ -733,6 +761,25 @@ class enrol_waitinglist_plugin extends enrol_plugin {
                     }//if_rdo
                 }//if_invoice_option
             }//if_invoice
+
+            /* Approval Option */
+            if ($waitingLst->{ENROL_WAITINGLIST_FIELD_APPROVAL}) {
+                /* Mark user as unenrolled  */
+                /* Get record   */
+                $params = array();
+                $params['userid']           = $userid;
+                $params['courseid']         = $courseid;
+                $params['waitinglistid']    = $waitingLst->id;
+                $params['unenrol']          = 0;
+                $rdo = $DB->get_record('enrol_approval',$params);
+                if ($rdo) {
+                    $rdo->unenrol       = 1;
+                    $rdo->timemodified  = time();
+
+                    /* Update   */
+                    $DB->update_record('enrol_approval',$rdo);
+                }//if_rdo
+            }//if_approval_option
 
             return true;
         }catch (Exception $ex) {
@@ -759,6 +806,8 @@ class enrol_waitinglist_plugin extends enrol_plugin {
     public function handle_coursedeleted($courseid){
         /* Variables    */
 		global $DB;
+        $rdoApproval    = null;
+        $approval       = null;
 
         try {
             /**
@@ -767,17 +816,40 @@ class enrol_waitinglist_plugin extends enrol_plugin {
              *
              * Description
              * Remove from enrol invoice
+             *
+             * @updateDate  30/12/2015
+             * @author      eFaktor     (fbv)
+             *
+             * Description
+             * Remove from enrol approval
              */
-            if (enrol_get_plugin('invoice')) {
-                /* GEt Instace Waiting List Id  */
-                $waitingLst = $DB->get_records(ENROL_WAITINGLIST_TABLE_METHODS,array('courseid' => $courseid));
-                if ($waitingLst) {
-                    foreach ($waitingLst as $instance) {
-                        $DB->delete_records('enrol_invoice',array('courseid'=>$courseid,'waitinglistid' => $instance->waitinglistid));
-                    }
-                }
+            /* GEt Instace Waiting List Id  */
+            $waitingLst = $DB->get_records(ENROL_WAITINGLIST_TABLE_METHODS,array('courseid' => $courseid));
+            if ($waitingLst) {
+                /* Criteria */
+                $params = array();
+                $params['courseid']         = $courseid;
+                $params['waitinglistid']    = 0;
 
-            }//if_enrol_invoice
+                foreach ($waitingLst as $instance) {
+                    /* Criteria */
+                    $params['waitinglistid'] = $instance->waitinglistid;
+                    /* Invoice Option */
+                    if (enrol_get_plugin('invoice')) {
+                        $DB->delete_records('enrol_invoice',$params);
+                    }//if_invoice
+
+                    /* Approval Option */
+                    $rdoApproval = $DB->get_records('enrol_approval',$params,'id');
+                    $DB->delete_records('enrol_approval',$params);
+                    /* Approval Action */
+                    foreach ($rdoApproval as $approval) {
+                        $DB->delete_records('enrol_approval_action',array('approvalid' => $approval->id));
+                    }//for
+                }//for
+
+            }//if_waitinglist
+
 
             $DB->delete_records(ENROL_WAITINGLIST_TABLE_QUEUE,array('courseid'=>$courseid));
             $DB->delete_records(ENROL_WAITINGLIST_TABLE_METHODS,array('courseid'=>$courseid));

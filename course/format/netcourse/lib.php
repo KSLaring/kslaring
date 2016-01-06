@@ -916,6 +916,11 @@ class format_netcourse extends format_base {
     public function course_header() {
         global $USER, $CFG, $PAGE, $FULLME;
 
+        if (!($PAGE->pagetype === 'course-view-netcourse' ||
+            strpos($PAGE->pagetype, 'mod-') !== false)) {
+            return new format_netcourse_specialnav('');
+        }
+
         $strcourse = get_string('course', 'format_netcourse');
         $strdescription = get_string('description', 'format_netcourse');
         $strforums = get_string('forums', 'format_netcourse');

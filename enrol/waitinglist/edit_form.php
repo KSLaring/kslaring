@@ -72,8 +72,17 @@ class enrol_waitinglist_edit_form extends moodleform {
         if ($pluginInvoice) {
             $mform->addElement('advcheckbox', ENROL_WAITINGLIST_FIELD_INVOICE, get_string('invoice', 'enrol_waitinglist'));
             $mform->addHelpButton(ENROL_WAITINGLIST_FIELD_INVOICE, 'invoice', 'enrol_waitinglist');
-
         }
+
+        /**
+         * @updateDate  24/12/2015
+         * @author      eFaktor     (fbv)
+         *
+         * Description
+         * Add the option to be an approval enrolment method
+         */
+        $mform->addElement('advcheckbox', ENROL_WAITINGLIST_FIELD_APPROVAL, get_string('approval', 'enrol_waitinglist'));
+        $mform->addHelpButton(ENROL_WAITINGLIST_FIELD_APPROVAL, 'approval', 'enrol_waitinglist');
 
         /*
         $settings->add(new admin_setting_configtext('enrol_waitinglist/maxenrolments', get_string('maxenrolments', 'enrol_waitinglist'), get_string('maxenrolments_desc', 'enrol_waitinglist'), ''));

@@ -169,4 +169,59 @@ $string['invoice_help'] = 'The user must fill in all information about the invoi
 
 $string['seats_occupied'] = 'At the moment, all available seats are occupied. Do you want to set on the wait list for this course?';
 
+$string['title_approval']   = 'Requests List';
+$string['lnk_approval']     = 'Moderated Approval Requests';
 
+$string['approval']         = 'Approval required';
+$string['approval_help']    = 'The user must wait the approval to be enrolled in the course';
+
+$string['approval_info']    = 'Please, you must fill in your reasons to apply for the course';
+$string['arguments']        = 'Arguments';
+
+$string['not_managers'] = 'Sorry, you cannot apply for the course because of there is no manager connected with you.';
+
+$string['mng_subject']  = '{$a->site}: Application for enrolment in course {$a->course}';
+$string['mng_body']     = '<p>We would like to inform you that you are manager for <b>{$a->user}</b>, and the <b>{$a->user}</b> has just applied for the course <b>{$a->course}</b>.</p><p>The arguments of the user are:</p><p>{$a->arguments}</p>
+                           <p>To approve it You must use this link: {$a->approve}.</p>
+                           <p>To reject it You must use this link: {$a->reject}.</p>';
+
+$string['subject_reminder'] = '{$a->site}: Application for enrolment in course {$a->course}. REMINDER';
+$string['body_reminder']    = '<p>We would like to <b><u>reminder</u></b> you that you are manager for <b>{$a->user}</b>, and the <b>{$a->user}</b> has just applied for the course <b>{$a->course}</b>.</p><p>The arguments of the user are:</p><p>{$a->arguments}</p>
+                               <p>You should approve or reject the request as soon as possible.</p>
+                               <p>To approve it You must use this link: {$a->approve}.</p>
+                               <p>To reject it You must use this link: {$a->reject}.</p>';
+
+$string['std_body']     = 'Your application will be reviewed as soon as possible. We will send you another email when your enrolement is activated.';
+
+$string['approve_lnk']  = 'Approve Request';
+$string['reject_lnk']   = 'Reject Request';
+
+$string['request_sent']         = 'Your application will be reviewed as soon as possible. We will send you an email when your request has been processed.';
+$string['request_remainder']    = 'Your request was applied on <b>{$a}</b>. It has not been processed yet. Do you want to send a reminder?';
+
+$string['err_link'] = 'Sorry, link not valid. Please, contact with administrator. ';
+
+$string['request_approved']   = 'Your request was approved on {$a->sent}.';
+$string['request_rejected']   = 'Your request was rejected on {$a->sent}.';
+
+$string['approved_mnd'] = 'The request has been approved successfully.';
+$string['rejected_mnd'] = 'The request has been rejected successfully.';
+
+$string['err_process']  = 'Sorry, It has been an error during the process. Please, try it later or contact with administrator.';
+
+$string['no_request']     = 'There is no request';
+$string['act_approve']    = 'Approve';
+$string['act_reject']     = 'Reject';
+
+$string['rpt_name']         = 'Name';
+$string['rpt_username']     = 'Username';
+$string['rpt_mail']         = 'Mail';
+$string['rpt_arguments']    = 'Arguments';
+$string['rpt_seats']        = 'Seats';
+$string['rpt_action']       = 'Action';
+$string['rpt_attended']     = 'Attended';
+$string['rpt_not_attended'] = 'Not Attended';
+$string['rpt_approved']     = 'Approved';
+$string['rpt_rejected']     = 'Rejected';
+$string['rpt_participants'] = 'Maximum number of participants';
+$string['rpt_back']         = 'Back';

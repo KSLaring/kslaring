@@ -47,7 +47,10 @@ require_login();
 
 /* Start the page */
 $site_context = CONTEXT_SYSTEM::instance();
-require_capability('report/manager:viewlevel4', $site_context,$USER->id);
+$IsReporter = CompetenceManager::IsReporter($USER->id);
+if (!$IsReporter) {
+    require_capability('report/manager:viewlevel4', $site_context,$USER->id);
+}
 
 if (empty($CFG->loginhttps)) {
     $secure_www_root = $CFG->wwwroot;
@@ -68,14 +71,23 @@ $PAGE->navbar->add(get_string('report_manager','local_tracker_manager'),$return_
 $PAGE->navbar->add(get_string('company_report_link','report_manager'),$url);
 
 /* My Hierarchy */
-$my_hierarchy = CompetenceManager::get_MyHierarchyLevel($USER->id,$site_context);
+$my_hierarchy = CompetenceManager::get_MyHierarchyLevel($USER->id,$site_context,$IsReporter,0);
 
 /* Create the user filter   */
 $user_filter = new company_report_filtering(null,$url,null);
 /* Set My Companies         */
 if ($my_hierarchy->competence) {
-    $myCompanies = CompanyReport::Get_MyCompanies($my_hierarchy->competence,$my_hierarchy->my_level);
-    $user_filter->set_MyCompanies(implode(',',array_keys($myCompanies)));
+    if ($IsReporter) {
+        //if ($my_hierarchy->competence->levelThree) {
+            $user_filter->set_MyCompanies(implode(',',$my_hierarchy->competence->levelThree));
+        //}else {
+        //    $user_filter->set_MyCompanies(null);
+        //}
+
+    }else {
+        $myCompanies = CompanyReport::Get_MyCompanies($my_hierarchy->competence,$my_hierarchy->my_level);
+        $user_filter->set_MyCompanies(implode(',',array_keys($myCompanies)));
+    }//if_IsReporter
 }else {
     $user_filter->set_MyCompanies(null);
 }
@@ -125,7 +137,7 @@ if ($data = $selector_users->get_data()) {
 }//if_selectorUsers_getData
 
 /* Show Form */
-$form = new manager_company_report_form(null,array($my_hierarchy,$show_advanced));
+$form = new manager_company_report_form(null,array($my_hierarchy,$show_advanced,$IsReporter));
 $out = '';
 
 if ($form->is_cancelled()) {

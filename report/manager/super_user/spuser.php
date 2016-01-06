@@ -22,7 +22,8 @@ $removeSelected = optional_param_array('removeselect',0,PARAM_INT);
 $addSearch      = optional_param('addselect_searchtext', '', PARAM_RAW);
 $removeSearch   = optional_param('removeselect_searchtext', '', PARAM_RAW);
 $url            = new moodle_url('/report/manager/super_user/spuser.php');
-$returnUrl      = new moodle_url('/report/manager/index.php');
+$indexUrl       = new moodle_url('/report/manager/index.php');
+$returnUrl      = new moodle_url('/report/manager/company_structure/company_structure.php');
 $site_context   = context_system::instance();
 $levelZero      = null;
 $levelOne       = null;
@@ -37,8 +38,10 @@ $PAGE->set_url($url);
 $PAGE->set_context($site_context);
 $PAGE->set_title($SITE->fullname);
 $PAGE->set_heading($SITE->fullname);
-$PAGE->navbar->add(get_string('report_manager','local_tracker_manager'),$returnUrl);
+$PAGE->navbar->add(get_string('company_structure','report_manager'),$returnUrl);
 $PAGE->navbar->add(get_string('spuser','report_manager'));
+
+unset($SESSION->parents);
 
 $PAGE->verify_https_required();
 

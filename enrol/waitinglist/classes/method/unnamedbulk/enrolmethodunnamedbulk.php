@@ -56,7 +56,11 @@ class enrolmethodunnamedbulk extends \enrol_waitinglist\method\enrolmethodbase {
 	public $maxseats = 0;
     public $activeseats = 0;
 	public $notificationtypes = 0;
-	
+    /**
+     * @updateDate  28/12/2015
+     * @author      eFaktor     (fbv)
+     */
+    private $myManagers         = null;
 
 	 /**
      *  Constructor
@@ -184,16 +188,41 @@ class enrolmethodunnamedbulk extends \enrol_waitinglist\method\enrolmethodbase {
 		}
         return $icons;
     }
-	
-	  /**
+
+    /**
+     * @param       \stdClass $waitinglist      enrolment instance
+     * @param       bool $checkuserenrolment    if true will check db and queue for user
+     *
+     * @return      bool|string                 true if successful, else error message or false.
+     *
+     * Description
      * Checks if user can enrol.
      *
-     * @param stdClass $waitinglist enrolment instance
-     * @param bool $checkuserenrolment if true will check db and queue for user
-     * @return bool|string true if successful, else error message or false.
+     * @updateDate  29/12/2015
+     * @author      eFaktor     (fbv)
+     *
+     * Description
+     * If it is an approval method, it'll check if the user has mangers or not.
+     * No managers --> CANNOT ENROL
      */
     public function can_enrol(\stdClass $waitinglist, $checkuserenrolment = true) {
-        global $DB, $USER, $CFG;
+        /* Variables */
+        global $USER;
+        $rejected = null;
+
+        if ($waitinglist->{ENROL_WAITINGLIST_FIELD_APPROVAL}) {
+            $this->myManagers = \Approval::GetManagers($USER->id);
+            if (!$this->myManagers) {
+                return get_string('not_managers','enrol_waitinglist');
+            }
+            /* Check if it has been rejected    */
+            $rejected = new \stdClass();
+            $rejected->sent = null;
+            if ($rejected->sent = \Approval::IsRejected($USER->id,$waitinglist->courseid,$waitinglist->id)) {
+                $rejected->sent = userdate($rejected->sent,'%d.%m.%Y', 99, false);
+                return get_string('request_rejected','enrol_waitinglist',$rejected);
+            }
+        }//Approval_Method
 
 		$entryman =  \enrol_waitinglist\entrymanager::get_by_course($waitinglist->courseid);
 		$entry = $entryman->get_entry_by_userid($USER->id);
@@ -235,44 +264,95 @@ class enrolmethodunnamedbulk extends \enrol_waitinglist\method\enrolmethodbase {
      * @return bool|array true if enroled else eddor code and messege
      */
     public function waitlistrequest_unnamedbulk(\stdClass $waitinglist, $data = null) {
-        global $DB, $USER, $CFG;
-		
-		//prepare fields for our queue DB entry
-		$queue_entry = new \stdClass;
-		$queue_entry->waitinglistid     = $waitinglist->id;
-		$queue_entry->courseid          = $waitinglist->courseid;
-		$queue_entry->userid            = $USER->id;
-		$queue_entry->methodtype        = static::METHODTYPE;
-		$queue_entry->timecreated       = time();
-		$queue_entry->queueno           = 0;
-		$queue_entry->seats             = $data->seats;
-		$queue_entry->confirmedseats    = 0;
-		$queue_entry->enroledseats      = 0;
-		$queue_entry->allocseats        = 0;
-		$queue_entry->offqueue          = 0;
-		$queue_entry->timemodified      = $queue_entry->timecreated;
-		
-		
-		//add the user to the waitinglist queue 
-		$queueid = $this->add_to_waitinglist($waitinglist,$queue_entry );
+        /* Variables    */
+        global $USER;
+        $queue_entry    = null;
+        $infoApproval   = null;
+        $infoMail       = null;
+        $queueid        = null;
 
-        /**
-         * @updateDate  28/10/2015
-         * @author      eFaktor     (fbv)
-         *
-         * Description
-         * Save Invoice Information
-         */
-        if (enrol_get_plugin('invoice')) {
-            if ($waitinglist->{ENROL_WAITINGLIST_FIELD_INVOICE}) {
-                \Invoices::Add_InvoiceInto($data,$USER->id,$waitinglist->courseid,$waitinglist->id);
-            }//if_invoice_info
-        }
+        try {
+            /**
+             * @updateDate  29/12/2015
+             * @author      eFaktor     (fbv)
+             *
+             * Description
+             * Check if it is an approval method or not
+             */
+            if (!$waitinglist->{ENROL_WAITINGLIST_FIELD_APPROVAL}) {
+                //prepare additional fields for our queue DB entry
+                $queue_entry = new \stdClass;
+                $queue_entry->waitinglistid     = $waitinglist->id;
+                $queue_entry->courseid          = $waitinglist->courseid;
+                $queue_entry->userid            = $USER->id;
+                $queue_entry->methodtype        = static::METHODTYPE;
+                $queue_entry->timecreated       = time();
+                $queue_entry->queueno           = 0;
+                $queue_entry->seats             = $data->seats;
+                $queue_entry->allocseats        = 0;
+                $queue_entry->confirmedseats    = 0;
+                $queue_entry->enroledseats      = 0;
+                $queue_entry->offqueue          = 0;
+                $queue_entry->timemodified      = $queue_entry->timecreated;
 
-		return $queueid;
+                //add the user to the waitinglist queue
+                $queueid = $this->add_to_waitinglist($waitinglist, $queue_entry);
+            }else {
+                list($infoApproval,$infoMail) = \Approval::Add_ApprovalEntry($data,$USER->id,$waitinglist->courseid,static::METHODTYPE,$data->seats,$waitinglist->id);
+                if (array_key_exists($USER->id,$this->myManagers)) {
+                    $infoApproval->action = APPROVED_ACTION;
+                    \Approval::ApplyAction_FromManager($infoApproval);
+                }else {
+                    /* Send Mails   */
+                    \Approval::SendNotifications($USER,$infoMail,$this->myManagers);
+                }
+            }//if_approval
+
+            /**
+             * @updateDate  28/10/2015
+             * @author      eFaktor     (fbv)
+             *
+             * Description
+             * Save Invoice Information
+             */
+            if (enrol_get_plugin('invoice')) {
+                if ($waitinglist->{ENROL_WAITINGLIST_FIELD_INVOICE}) {
+                    \Invoices::Add_InvoiceInto($data,$USER->id,$waitinglist->courseid,$waitinglist->id);
+                }//if_invoice_info
+            }
+
+            return $queueid;
+        }catch (\Exception $ex) {
+            throw $ex;
+        }//try_catch
     }
 
-    
+    /**
+     * @param           \stdClass $waitinglist
+     * @param                     $queue_entry
+     *
+     * @return                    int
+     * @throws           Exception|\Exception
+     *
+     * @creationDate    30/12/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * To make accesible the 'add_to_waitinglist' when the request is approved
+     */
+    public function add_to_waitinglist_from_approval(\stdClass $waitinglist, $queue_entry) {
+        /* Variables */
+        $queueid = null;
+
+        try {
+            $queueid = $this->add_to_waitinglist($waitinglist,$queue_entry);
+
+            return $queueid;
+        }catch (\Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//add_to_waitinglist_from_approval
+
     /**
      * Get the email template to send
      *
@@ -414,120 +494,155 @@ class enrolmethodunnamedbulk extends \enrol_waitinglist\method\enrolmethodbase {
             $confirm            = optional_param('confirm', 0, PARAM_INT);
             $toConfirm          = null;
 
-            if (($confirm) || isset($entry->seats)) {
-                $toConfirm          =  false;
+            $remainder  = null;
+
+            if ($waitinglist->{ENROL_WAITINGLIST_FIELD_APPROVAL}) {
+                $remainder = \Approval::GetNotificationSent($USER->id,$waitinglist->courseid);
+            }//
+
+            if ($remainder) {
+                $form = new enrolmethodunnamedbulk_enrolform(NULL, array($waitinglist,$this,$qstatus,false,$remainder));
+
+                if ($form->is_cancelled()) {
+                    redirect($CFG->wwwroot . '/index.php');
+                }else if ($form->is_submitted()) {
+                    \Approval::SendReminder($USER,$remainder,$this->myManagers);
+
+                    redirect($CFG->wwwroot . '/index.php');
+                }
+
+                //begin the output
+                ob_start();
+                $form->display();
+                $output = ob_get_clean();
+                $message =$OUTPUT->box($output);
+                $ret = array(true,$message);
             }else {
-                if (!$vacancies) {
-                    $toConfirm          =  true;
-                }else {
+                if (($confirm) || isset($entry->seats)) {
                     $toConfirm          =  false;
-                }
-            }
-
-            if ($toConfirm) {
-                $form = new enrolmethodunnamedbulk_enrolform(NULL, array($waitinglist,$this,$qstatus,true));
-
-                if ($form->is_cancelled()) {
-                    redirect($CFG->wwwroot . '/index.php');
-                }else if ($form->is_submitted()) {
-                    $form = new enrolmethodunnamedbulk_enrolform(NULL, array($waitinglist,$this,$qstatus,false));
-                }
-
-                //begin the output
-                ob_start();
-                $form->display();
-                $output = ob_get_clean();
-                $message =$OUTPUT->box($output);
-                $ret = array(true,$message);
-            }else {
-                $form = new enrolmethodunnamedbulk_enrolform(NULL, array($waitinglist,$this,$qstatus,false));
-                //check we had an error free submission
-                $data = false;
-
-                if ($form->is_cancelled()) {
-                    redirect($CFG->wwwroot . '/index.php');
-                }else if ($form->is_submitted()) {
-
-                    if($form->is_validated()){
-                        $data = $form->get_data();
+                }else {
+                    if (!$vacancies) {
+                        $toConfirm      =  true;
+                    }else {
+                        $toConfirm          =  false;
                     }
                 }
 
-                //ok
-                if ($data) {
-                    if($entry){
-                        //if this is an update of user enrol details, process it
-                        if($data->seats != $entry->seats){
-                            $updatedentry=$entryman->update_seats($entry->id,$data->seats);
-                            $actiontaken='updated';
-                        }else{
-                            $actiontaken='nothingchanged';
-                        }
-                    }else{
-                        //if this is a new enrol form submission, process it
-                        $this->waitlistrequest_unnamedbulk($waitinglist, $data);
-                        $actiontaken='updated';
+                if ($toConfirm) {
+                    $form = new enrolmethodunnamedbulk_enrolform(NULL, array($waitinglist,$this,$qstatus,true,null));
 
-                        /**
-                         * @updateDate  28/10/2015
-                         * @author      eFaktor     (fbv)
-                         *
-                         * Description
-                         * Save Invoice Information
-                         */
-                        if (enrol_get_plugin('invoice')) {
-                            if ($waitinglist->{ENROL_WAITINGLIST_FIELD_INVOICE}) {
-                                \Invoices::activate_enrol_invoice($USER->id,$waitinglist->courseid,$waitinglist->id);
-                            }//if_invoice_info
+                    if ($form->is_cancelled()) {
+                        redirect($CFG->wwwroot . '/index.php');
+                    }else if ($form->is_submitted()) {
+                        $form = new enrolmethodunnamedbulk_enrolform(NULL, array($waitinglist,$this,$qstatus,false,null));
+                    }
+
+                    //begin the output
+                    ob_start();
+                    $form->display();
+                    $output = ob_get_clean();
+                    $message =$OUTPUT->box($output);
+                    $ret = array(true,$message);
+                }else {
+                    $form = new enrolmethodunnamedbulk_enrolform(NULL, array($waitinglist,$this,$qstatus,false,null));
+                    //check we had an error free submission
+                    $data = false;
+
+                    if ($form->is_cancelled()) {
+                        redirect($CFG->wwwroot . '/index.php');
+                    }else if ($form->is_submitted()) {
+
+                        if($form->is_validated()){
+                            $data = $form->get_data();
                         }
                     }
 
-                    //in the case that the user has updated their entry, we
-                    //might want to process graduations
-                    //this already happens in the sequence from "enrol_unnamedbulk"
-                    //so we only need to do this for updates
-                    if($actiontaken =='updated' && $updatedentry){
-                        //if there are vacancies, and we have an updatedentry
-                        //and seats was not set to 0, and we are on top of waitinglist
-                        //or there is no waitinglist at all ....give some seats
-                        if($vacancies &&
-                            $data->seats > $entry->seats &&
-                            ($updatedentry->queueno=1 || $queueman->get_entrycount()==0) ){
-
-                            if(($updatedentry->seats - $updatedentry->allocseats) > $vacancies){
-                                $giveseats = $vacancies;
+                    //ok
+                    if ($data) {
+                        if($entry){
+                            //if this is an update of user enrol details, process it
+                            if($data->seats != $entry->seats){
+                                $updatedentry=$entryman->update_seats($entry->id,$data->seats);
+                                $actiontaken='updated';
                             }else{
-                                $giveseats = ($updatedentry->seats - $updatedentry->allocseats);
+                                $actiontaken='nothingchanged';
                             }
+                        }else{
+                            //if this is a new enrol form submission, process it
+                            $this->waitlistrequest_unnamedbulk($waitinglist, $data);
+                            if (!$waitinglist->{ENROL_WAITINGLIST_FIELD_APPROVAL}) {
+                                $actiontaken='updated';
 
-                            //move them off the waitinglist, and onto the course or confirmed list
-                            //post processing (emails mainly) should happen from the function call.
-                            //graduationcomplete doesn't mean much here
-                            $graduationcomplete = $this->graduate_from_list($waitinglist,$updatedentry,$giveseats);
+                                /**
+                                 * @updateDate  28/10/2015
+                                 * @author      eFaktor     (fbv)
+                                 *
+                                 * Description
+                                 * Save Invoice Information
+                                 */
+                                if (enrol_get_plugin('invoice')) {
+                                    if ($waitinglist->{ENROL_WAITINGLIST_FIELD_INVOICE}) {
+                                        \Invoices::activate_enrol_invoice($USER->id,$waitinglist->courseid,$waitinglist->id);
+                                    }//if_invoice_info
+                                }
+                            }else {
+                                $params = array();
+                                $params['id']   = $USER->id;
+                                $params['co']   = $waitinglist->courseid;
+
+                                $redirect       = new \moodle_url('/enrol/waitinglist/approval/info.php',$params);
+                                redirect($redirect);
+                            }//if_approval
+                        }//if_entry
+
+                        //in the case that the user has updated their entry, we
+                        //might want to process graduations
+                        //this already happens in the sequence from "enrol_unnamedbulk"
+                        //so we only need to do this for updates
+                        if($actiontaken =='updated' && $updatedentry){
+                            //if there are vacancies, and we have an updatedentry
+                            //and seats was not set to 0, and we are on top of waitinglist
+                            //or there is no waitinglist at all ....give some seats
+                            if($vacancies &&
+                                $data->seats > $entry->seats &&
+                                ($updatedentry->queueno=1 || $queueman->get_entrycount()==0) ){
+
+                                if(($updatedentry->seats - $updatedentry->allocseats) > $vacancies){
+                                    $giveseats = $vacancies;
+                                }else{
+                                    $giveseats = ($updatedentry->seats - $updatedentry->allocseats);
+                                }
+
+                                //move them off the waitinglist, and onto the course or confirmed list
+                                //post processing (emails mainly) should happen from the function call.
+                                //graduationcomplete doesn't mean much here
+                                $graduationcomplete = $this->graduate_from_list($waitinglist,$updatedentry,$giveseats);
+                            }
                         }
+
+                        //Send the user on somewhere
+                        $continueurl = new \moodle_url('/enrol/waitinglist/edit_enrolform.php',
+                            array('id'=>$waitinglist->courseid,'methodtype'=> static::METHODTYPE));
+                        $actionreport = get_string('qentry' . $actiontaken, 'enrol_waitinglist');
+                        redirect($continueurl,$actionreport,2);
+                    }//if_data
+
+                    //prepare our gotocourse button and form data, if required
+                    if($entry){
+                        $formdata = new \stdClass;
+                        $formdata->seats=$entry->seats;
+                        $form->set_data($formdata);
                     }
 
-                    //Send the user on somewhere
-                    $continueurl = new \moodle_url('/enrol/waitinglist/edit_enrolform.php',
-                        array('id'=>$waitinglist->courseid,'methodtype'=> static::METHODTYPE));
-                    $actionreport = get_string('qentry' . $actiontaken, 'enrol_waitinglist');
-                    redirect($continueurl,$actionreport,2);
+                    //begin the output
+                    ob_start();
+                    $form->display();
+                    $output = ob_get_clean();
+                    $message =$OUTPUT->box($output);
+                    $ret = array(true,$message);
                 }
+            }//if_reminder
 
-                //prepare our gotocourse button and form data, if required
-                if($entry){
-                    $formdata = new \stdClass;
-                    $formdata->seats=$entry->seats;
-                    $form->set_data($formdata);
-                }
-
-                //begin the output
-                ob_start();
-                $form->display();
-                $output = ob_get_clean();
-                $message =$OUTPUT->box($output);
-                $ret = array(true,$message);
-            }
         } else {
 			//if the user cant enrol, tell them why
 			$message = $OUTPUT->box($enrolstatus);

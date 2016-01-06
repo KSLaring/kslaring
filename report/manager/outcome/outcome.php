@@ -37,6 +37,8 @@ $PAGE->set_heading($SITE->fullname);
 $PAGE->navbar->add(get_string('report_manager','local_tracker_manager'),$return_url);
 $PAGE->navbar->add(get_string('outcome', 'report_manager'),$url);
 
+unset($SESSION->parents);
+
 /* ADD require_capability */
 if (!has_capability('report/manager:edit', $site_context)) {
     print_error('nopermissions', 'error', '', 'report/manager:edit');
