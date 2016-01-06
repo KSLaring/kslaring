@@ -51,3 +51,4 @@ $string['sel_course_manager']       = 'Velg en ....';
 $string['single']                   = 'Single Activity';
 $string['title_reviews']            = 'Revisjon';
 $string['whitepaper']               = 'Dokumentformat';
+$string['available_seats'] 			= 'Ledige plasser';
