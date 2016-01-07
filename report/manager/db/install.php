@@ -53,7 +53,7 @@ function xmldb_report_manager_install() {
         CompetenceManager_Install::CreateSuperUser($db_man);
 
         /* Temporary table      */
-        CompetenceManager_Update::CreateTemporaryTable($db_man);
+        CompetenceManager_Install::CreateTemporaryTable($db_man);
 
         /* Manager && Reporter Tables   */
         CompetenceManager_Install::ManagerReporterTables($db_man);
