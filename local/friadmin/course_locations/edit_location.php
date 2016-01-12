@@ -43,7 +43,7 @@ $edit_options   = null;
  * Check if the user is super user
  */
 if (!has_capability('local/friadmin:course_locations_manage',$context)) {
-    if (!CourseLocations::CheckCapability_FriAdmin()) {
+    if (!local_friadmin_helper::CheckCapabilityFriAdmin()) {
         print_error('nopermissions', 'error', '', 'block/frikomport:view');
     }//if_superuser
 }

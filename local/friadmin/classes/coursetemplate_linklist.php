@@ -73,9 +73,9 @@ class local_friadmin_coursetemplate_linklist extends local_friadmin_widget imple
 
             /* Set Up List 1    */
             $list1 = '<ul class="unlist buttons-linklist">
-                        <li><a class="btn" href="' . $url_another . '">' . $str_another . '</a></li>
-                        <li><a class="btn" href="' . $url_go . '">' . $str_go . '</a></li>
-                        <li><a class="btn" href="' . $url_settings . '">' . $str_settings . '</a></li>
+                        <a class="btn" href="' . $url_another . '">' . $str_another . '</a>
+                        <a class="btn" href="' . $url_go . '">' . $str_go . '</a>
+                        <a class="btn" href="' . $url_settings . '">' . $str_settings . '</a>
                       </ul>';
 
             $this->data->content = $list1;
@@ -83,4 +83,17 @@ class local_friadmin_coursetemplate_linklist extends local_friadmin_widget imple
             throw $ex;
         }//try_catch
     }//create_linklist
+
+    /**
+     * @return          mixed
+     *
+     * @creationDate    12/01/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Buttons to show
+     */
+    public function getContentListLink() {
+        return $this->data->content;
+    }
 }

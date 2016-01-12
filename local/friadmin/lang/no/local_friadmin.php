@@ -187,4 +187,7 @@ $string['lnk_back'] = 'Tilbake';
 $string['only_classroom'] = 'Vis bare klasseromskurs';
 $string['only_elearning']   = 'Vis bare nettkurs';
 
+$string['course_enrolment'] = 'Enrolment methods';
 
+$string['enrol_wait_self']  = 'Waiting list Self enrolment';
+$string['enrol_wait_buk']   = 'Waiting list Bulk enrolment';

@@ -82,7 +82,9 @@ $string['wsusercannotassign'] = 'You don\'t have the permission to assign this r
 
 $string['cutoffdate'] = 'Application Deadline';
 $string['maxenrolments'] = 'Max. Enrolments';
+$string['maxenrolments_help']   = 'Specifies the maximum number of users that can enrol. 0 means no limit';
 $string['waitlistsize'] = 'Waitlist Size';
+$string['waitlistsize_help']    = 'Specifies the size of the wait list. 0 means no limit';
 $string['enrolmethods'] = 'Enrolment Methods';
 $string['managequeue'] = 'Manage Queue';
 $string['managemethods'] = 'Manage Enrolment Methods';

@@ -30,5 +30,17 @@ $capabilities = array(
             'manager' => CAP_ALLOW
         ),
         'clonepermissionsfrom' => 'moodle/course:update'
+    ),
+
+    'local/friadmin:view' => array(
+        'riskbitmask' => RISK_XSS,
+
+        'captype' => 'write',
+        'contextlevel' => CONTEXT_SYSTEM,CONTEXT_COURSE,CONTEXT_COURSECAT,
+        'archetypes' => array(
+            'coursecreator'  => CAP_ALLOW,
+            'manager' => CAP_ALLOW
+        ),
+        'clonepermissionsfrom' => 'moodle/course:update'
     )
 );

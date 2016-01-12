@@ -76,6 +76,7 @@ if ($instances = $DB->get_records('enrol', array('courseid'=>$course->id, 'enrol
      * Add invoice option
      */
     $instance->{ENROL_WAITINGLIST_FIELD_INVOICE}          = 0;
+    $instance->{ENROL_WAITINGLIST_FIELD_APPROVAL}         = 0;
 }
 
 $mform = new enrol_waitinglist_edit_form(null, array($instance, $plugin, $context));

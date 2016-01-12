@@ -57,10 +57,17 @@ class local_friadmin_coursetemplate_select extends local_friadmin_widget impleme
      * Description
      * Add Exception
      * Clean code
+     *
+     * @updateDate  07/01/201
+     * @author      eFaktor     (fbv)
+     *
+     * Description
+     * Redirect to Course Settings
      */
     public function __construct() {
         /* Variables    */
-        $customdata = null;
+        $customdata     = null;
+        $urlSettings    = null;
 
         try {
             // Create the data object and set the first values
@@ -81,6 +88,15 @@ class local_friadmin_coursetemplate_select extends local_friadmin_widget impleme
 
                 /* Create the course    */
                 $this->coursecreationresult = $this->create_course();
+                /**
+                 * @updateDate  07/01/2016
+                 * @author      eFaktor     (fbv)
+                 *
+                 * Description
+                 * Redirect the user to course settings to be able to complete it
+                 */
+                $urlSettings = new moodle_url('/local/friadmin/course_template/course_settings.php',array('id' => $this->newcourseid));
+                redirect($urlSettings);
             }//if_get_data
         } catch (Exception $ex) {
             throw $ex;

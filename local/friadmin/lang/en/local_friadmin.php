@@ -124,6 +124,7 @@ $string['sel_category']         = 'Select one category ...';
 /* ********************** */
 $string['plugin_course_locations']          = 'Course Locations';
 $string['friadmin:course_locations_manage'] = 'Manage Course Locations';
+$string['friadmin:view']                    = 'View Friadmin';
 
 $string['lst_locations']        = 'Browse list of locations';
 $string['new_location']         = 'New Location';
@@ -186,4 +187,10 @@ $string['lnk_back'] = 'Back';
 
 $string['only_classroom'] = 'Show only classroom courses';
 $string['only_elearning']   = 'Show only eLearning courses';
+
+$string['course_enrolment'] = 'Enrolment methods';
+
+$string['enrol_wait_self']  = 'Waiting list Self enrolment';
+$string['enrol_wait_buk']   = 'Waiting list Bulk enrolment';
+
 
