@@ -35,6 +35,51 @@ require_once($CFG->dirroot . '/user/profile/field/competence/competencelib.php')
  */
 class local_friadmin_helper {
 
+    /**
+     * @return          bool
+     * @throws          Exception
+     *
+     * @creationDate    07/01/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Check if the user is a super user
+     */
+    public static function CheckCapabilityFriAdmin() {
+        /* Variables    */
+        global $DB, $USER;
+        $params = null;
+        $rdo    = null;
+        $sql    = null;
+
+        try {
+            /* Search Criteria  */
+            $params = array();
+            $params['user']         = $USER->id;
+            $params['level']        = CONTEXT_COURSECAT;
+            $params['archetype']    = 'manager';
+
+            /* SQL Instruction  */
+            $sql = " SELECT		ra.id
+                     FROM		{role_assignments}	ra
+                        JOIN	{role}				r		ON 		r.id			= ra.roleid
+                                                            AND		r.archetype		= :archetype
+                        JOIN	{context}		    ct		ON		ct.id			= ra.contextid
+                                                            AND		ct.contextlevel	= :level
+                     WHERE		ra.userid 		= :user ";
+
+            /* Execute  */
+            $rdo = $DB->get_records_sql($sql,$params);
+            if ($rdo) {
+                return true;
+            }else {
+                return false;
+            }//if_Rdo
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//CheckCapabilityFriAdmin
+
 
     /**
      * @return          null
