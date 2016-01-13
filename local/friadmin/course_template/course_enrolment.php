@@ -62,7 +62,7 @@ if ($waitinglist) {
 
 if ($form->is_cancelled()) {
     if (isset($SESSION->fakepermission)) {
-        CourseTemplate::Delete_FakePermission($fakepermission->id);
+        CourseTemplate::Delete_FakePermission($SESSION->fakepermission);
     }
 
     $_POST = array();
@@ -80,7 +80,7 @@ if ($form->is_cancelled()) {
         }
 
         if (isset($SESSION->fakepermission)) {
-            CourseTemplate::Delete_FakePermission($fakepermission->id);
+            CourseTemplate::Delete_FakePermission($SESSION->fakepermission);
         }
 
         redirect($returnUrl);
