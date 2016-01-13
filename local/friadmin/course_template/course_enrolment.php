@@ -54,7 +54,7 @@ $PAGE->navbar->add($strSubTitle);
 /* Form */
 if ($waitinglist) {
     /* Get Enrol Instance */
-    $instance   = CourseTemplate::GetEnrolInstance($courseId,$waitinglist);
+    $instance   = CourseTemplate::GetEnrolInstance($courseId);
     $form       = new ct_enrolment_settings_form(null,array($courseId,$waitinglist,$instance));
 }else {
     $form = new ct_enrolment_form(null,$courseId);
@@ -70,7 +70,7 @@ if ($form->is_cancelled()) {
 }else if ($data = $form->get_data()) {
 
     if ($waitinglist) {
-        if ($data->waitinglistid) {
+        if ($data->instanceid) {
             /* Update   */
             CourseTemplate::UpdateWaitingEnrolment($data);
 
