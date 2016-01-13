@@ -49,7 +49,7 @@ class ct_enrolment_settings_form extends moodleform {
             $plugin = enrol_get_plugin('self');
             $form->addElement('passwordunmask', 'password', get_string('password', 'enrol_self'));
             $form->addHelpButton('password', 'password', 'enrol_self');
-            if ($instance && $plugin->get_config('requirepassword','enrol_self')) {
+            if (empty($instance->id) && $plugin->get_config('requirepassword','enrol_self')) {
                 $form->addRule('password', get_string('required'), 'required', null, 'client');
             }
         }
@@ -92,15 +92,21 @@ class ct_enrolment_settings_form extends moodleform {
         $form->setType('waitinglist', PARAM_INT);
         $form->setDefault('waitinglist',$enrolMethod);
 
-        /* Waiting id   */
-        $form->addElement('hidden', 'waitinglistid');
-        $form->setType('waitinglistid', PARAM_INT);
-        $form->setDefault('waitinglistid',$instance->waitinglistid);
 
-        /* Instance Id  */
+        /* Instance Id - Waiting list Id */
         $form->addElement('hidden', 'instanceid');
         $form->setType('instanceid', PARAM_INT);
         $form->setDefault('instanceid',$instance->id);
+
+        /* Self Method Id   */
+        $form->addElement('hidden', 'selfid');
+        $form->setType('selfid', PARAM_INT);
+        $form->setDefault('selfid',$instance->selfid);
+
+        /* Bulk Method Id   */
+        $form->addElement('hidden', 'bulkid');
+        $form->setType('bulkid', PARAM_INT);
+        $form->setDefault('bulkid',$instance->bulkid);
 
         $this->add_action_buttons(true,get_string('continue'));
     }//definition
