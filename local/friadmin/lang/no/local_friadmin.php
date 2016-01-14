@@ -59,9 +59,7 @@ $string['usercourse_priceexternal'] = 'Eksternpris';
 $string['usercourse_link']          = 'Lenke';
 $string['usercourse_edit']          = '';
 $string['usercourse_counter']       = 'No';
-$string['usercourse_morecourses']   = 'There are more courses you may be interested in
-than the ones listed in the table.<br />Please use the filters above the table to specify
-what you are looking for.';
+$string['usercourse_morecourses']   = 'Det er flere kurs enn vist her som kan være av interesse.<br />Vennligst bruk søkemulighetene over for å avgrense søket.';
 
 $string['coursedetail_title']           = 'Frikomport kursdetaljer';
 $string['coursedetail_back']            = 'Tilbake til kursoversikten';
@@ -105,26 +103,26 @@ $string['missingseltemplate']   = 'Mangler kursmal';
 $string['selsubmit']            = 'Søk';
 $string['selsubmitcreate']      = 'Opprett kurs';
 
-$string['seleverywhere']        = 'Everywhere';
-$string['locationline_help']    = 'Explain the location selection ...';
-$string['fromto_help']          = 'Explain the time selection ...';
-$string['coursename_help']      = 'Explain the course related selections ...';
+$string['seleverywhere']        = 'Hvor som helst';
+$string['locationline_help']    = 'Her velger du ønsket kurslokale';
+$string['fromto_help']          = 'Her velger du ønsket tidsrom eller dato';
+$string['coursename_help']      = 'Her velger du ønsket sektor';
 
 $string['edit'] = 'Endre kurs';
 $string['show'] = 'Vis detaljer';
 
 $string['naddcourse']           = 'Opprett nytt kurs';
-$string['my_categories']        = 'Your course categories';
-$string['my_categories_help']   = 'This setting determines the category in which the course will appear in the list of courses.';
-$string['info_new_course']      = 'Before starting to edit a new course, you must determine in which category the course will belong to. You are only allowed create new courses in the categories from the list.';
-$string['sel_category']         = 'Select one category ...';
+$string['my_categories']        = 'Dine kurskategorier';
+$string['my_categories_help']   = 'Denne innstillingen bestemmer hvilken kategori kurset skal plasseres i.';
+$string['info_new_course']      = 'Før du starter å redigere et nytt kurs, må du bestemme hvilken kurskategori kurset skal plasseres i. Du kan bare plassere kurset ditt i de kategoriene som vises i listen.';
+$string['sel_category']         = 'Velg en kurskategori...';
 
 /* ********************** */
 /* Course Location Plugin */
 /* ********************** */
 $string['plugin_course_locations']          = 'Kurssteder';
 $string['friadmin:course_locations_manage'] = 'Administrere kurssteder';
-$string['friadmin:view']                    = 'View Friadmin';
+$string['friadmin:view']                    = 'Vis Frikomport';
 
 $string['lst_locations']        = 'Vis liste over kurssteder';
 $string['new_location']         = 'Nytt kurssted';
@@ -188,7 +186,7 @@ $string['lnk_back'] = 'Tilbake';
 $string['only_classroom'] = 'Vis bare klasseromskurs';
 $string['only_elearning']   = 'Vis bare nettkurs';
 
-$string['course_enrolment'] = 'Enrolment methods';
+$string['course_enrolment'] = 'Påmeldingsmetoder';
 
-$string['enrol_wait_self']  = 'Waiting list Self enrolment';
-$string['enrol_wait_buk']   = 'Waiting list Bulk enrolment';
+$string['enrol_wait_self']  = 'Egenpåmelding med venteliste';
+$string['enrol_wait_buk']   = 'Bulkpåmelding med venteliste';
