@@ -18,7 +18,7 @@
 $string['pluginname']           = 'Frikomport';
 
 $string['courselist_title']     = 'Frikomport tilgjengelige kurs';
-$string['coursetable_title']    = 'Kursdetaljer';
+$string['coursetable_title']    = 'Kursoversikt';
 $string['course_courseid']      = 'Kurs ID';
 $string['course_name']          = 'Navn';
 $string['course_summary']       = 'Beskrivelse';
@@ -38,7 +38,7 @@ $string['course_priceexternal'] = 'Eksternpris';
 $string['course_link']          = 'Lenke';
 $string['course_edit']          = '';
 
-$string['usercourselist_title']     = 'Tilgjengelige kurs';
+$string['usercourselist_title']     = 'Frikomport tilgjengelige kurs';
 $string['usercoursetable_title']    = 'Kursoversikt';
 $string['usercourse_courseid']      = 'Kurs ID';
 $string['usercourse_name']          = 'Navn';
@@ -59,9 +59,7 @@ $string['usercourse_priceexternal'] = 'Eksternpris';
 $string['usercourse_link']          = 'Lenke';
 $string['usercourse_edit']          = '';
 $string['usercourse_counter']       = 'No';
-$string['usercourse_morecourses']   = 'There are more courses you may be interested in
-than the ones listed in the table.<br />Please use the filters above the table to specify
-what you are looking for.';
+$string['usercourse_morecourses']   = 'Det er flere kurs enn vist her som kan være av interesse.<br />Vennligst bruk søkemulighetene over for å avgrense søket.';
 
 $string['coursedetail_title']           = 'Frikomport kursdetaljer';
 $string['coursedetail_back']            = 'Tilbake til kursoversikten';
@@ -77,7 +75,7 @@ $string['coursedetail_participantlist'] = 'Last ned deltakerliste';
 $string['coursedetail_duplicate']       = 'Dupliser';
 $string['coursedetail_email']           = 'Send epost';
 
-$string['coursetemplate_title']         = 'Legg til fra en kursmal';
+$string['coursetemplate_title']         = 'Frikomport - Legg til fra kursmal';
 $string['coursetemplate_subtitle']      = 'Opprett et kurs fra en kursmal.';
 $string['coursetemplate_cat']           = 'Kurskategori for kursmaler';
 $string['coursetemplate_cat_desc']      = 'Vennligst velg kurskategorien hvor alle kursmaler skal lagres.';
@@ -105,25 +103,26 @@ $string['missingseltemplate']   = 'Mangler kursmal';
 $string['selsubmit']            = 'Søk';
 $string['selsubmitcreate']      = 'Opprett kurs';
 
-$string['seleverywhere']        = 'Everywhere';
-$string['locationline_help']    = 'Explain the location selection ...';
-$string['fromto_help']          = 'Explain the time selection ...';
-$string['coursename_help']      = 'Explain the course related selections ...';
+$string['seleverywhere']        = 'Hvor som helst';
+$string['locationline_help']    = 'Her velger du ønsket kurslokale';
+$string['fromto_help']          = 'Her velger du ønsket tidsrom eller dato';
+$string['coursename_help']      = 'Her velger du ønsket sektor';
 
 $string['edit'] = 'Endre kurs';
 $string['show'] = 'Vis detaljer';
 
 $string['naddcourse']           = 'Opprett nytt kurs';
 $string['my_categories']        = 'Dine kurskategorier';
-$string['my_categories_help']   = 'Denne innstillingen bestemmer hvilken kurskategori kurset skal plasseres i.';
-$string['info_new_course']      = 'Før du endrer på et nytt kurs må du bestemme hvilken kurskategori kurset skal plasseres i. Du får bare plassert kurset i kurskategoriene som vises i denne listen.';
-$string['sel_category']         = 'Velg en kategori...';
+$string['my_categories_help']   = 'Denne innstillingen bestemmer hvilken kategori kurset skal plasseres i.';
+$string['info_new_course']      = 'Før du starter å redigere et nytt kurs, må du bestemme hvilken kurskategori kurset skal plasseres i. Du kan bare plassere kurset ditt i de kategoriene som vises i listen.';
+$string['sel_category']         = 'Velg en kurskategori...';
 
 /* ********************** */
 /* Course Location Plugin */
 /* ********************** */
 $string['plugin_course_locations']          = 'Kurssteder';
 $string['friadmin:course_locations_manage'] = 'Administrere kurssteder';
+$string['friadmin:view']                    = 'Vis Frikomport';
 
 $string['lst_locations']        = 'Vis liste over kurssteder';
 $string['new_location']         = 'Nytt kurssted';
@@ -164,7 +163,7 @@ $string['location_map']         = 'URL til kart';
 $string['location_post']        = 'Postadresse';
 $string['location_contact']     = 'Kontaktperson';
 $string['location_phone']       = 'Kontakt-tlf';
-$string['location_mail']        = 'Kontakt epost';
+$string['location_mail']        = 'Komtakt epost';
 $string['location_contact_inf'] = 'Kontakt';
 $string['location_comments']    = 'Kommentarer';
 
@@ -187,7 +186,7 @@ $string['lnk_back'] = 'Tilbake';
 $string['only_classroom'] = 'Vis bare klasseromskurs';
 $string['only_elearning']   = 'Vis bare nettkurs';
 
-$string['course_enrolment'] = 'Enrolment methods';
+$string['course_enrolment'] = 'Påmeldingsmetoder';
 
-$string['enrol_wait_self']  = 'Waiting list Self enrolment';
-$string['enrol_wait_buk']   = 'Waiting list Bulk enrolment';
+$string['enrol_wait_self']  = 'Egenpåmelding med venteliste';
+$string['enrol_wait_buk']   = 'Bulkpåmelding med venteliste';
