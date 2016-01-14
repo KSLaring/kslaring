@@ -83,9 +83,9 @@ $string['wsusercannotassign'] = 'Du har ikke tillatelse til å tildele ({$a->rol
 
 $string['cutoffdate'] = 'Frist for påmelding';
 $string['maxenrolments'] = 'Maks antall påmeldinger';
-$string['maxenrolments_help']   = 'Specifies the maximum number of users that can enrol. 0 means no limit';
+$string['maxenrolments_help']   = 'Angir maksgrensen for hvor mange som kan melde seg på. -0- betyr ubegrenset antall plasser.';
 $string['waitlistsize'] = 'Maks størrelse på ventelisten';
-$string['waitlistsize_help']    = 'Specifies the size of the wait list. 0 means no limit';
+$string['waitlistsize_help']    = 'Angir størrelsen på ventelisten. -0- betyr ubegrenset.';
 $string['enrolmethods'] = 'Påmeldingsmetoder';
 $string['managequeue'] = 'Administrere ventelisten';
 $string['managemethods'] = 'Administrere påmeldingsmetoder';
