@@ -122,13 +122,8 @@ class company_structure {
             /* Execute */
             if ($rdo = $DB->get_records_sql($sql)) {
                 foreach ($rdo as $field) {
-                    /* info Employee    */
-                    $info = new stdClass();
-                    $info->id   = $field->id;
-                    $info->name = $field->name;
-
                     /* Add Employee */
-                    $employee_list[$field->id] = $info;
+                    $employee_list[$field->id] = $field->name;
                 }//for
             }//if_rdo
 
@@ -137,7 +132,6 @@ class company_structure {
             throw $ex;
         }//try_catch
     }//Get_EmployeeLevel
-
 
     /**
      * @static
