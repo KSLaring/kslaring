@@ -196,7 +196,7 @@ $string['reject_lnk']   = 'Avslå søknaden';
 $string['request_sent']         = 'Søknaden din om plass på kurset vil bli behandlet så raskt som mulig. Vi sender deg en epost når søknaden din er behandlet.';
 $string['request_remainder']    = 'Søknaden din ble innsendt <b>{$a}</b>. Den er dessverre ikke behandlet av din leder ennå. Ønsker du å sende en påminnelse til lederen din?';
 
-$string['err_link'] = 'Beklager, men lenken er ikke gyldig. Vennligst kontakt administrator.';
+$string['err_link'] = 'OOPS - søknaden er allerede behandlet. Lenken du klikket på kan bare benyttes en gang.';
 
 $string['request_approved']   = 'Din søknad ble godkjent {$a->sent}.';
 $string['request_rejected']   = 'Din søknad ble avslått {$a->sent}.';
