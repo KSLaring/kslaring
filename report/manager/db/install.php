@@ -287,7 +287,7 @@ class CompetenceManager_Install {
             /* name             (Not null)      */
             $tblJobRoleRelation->add_field('jobroleid',XMLDB_TYPE_CHAR,'10',null, null,null,null);
             /* County  */
-            $tblJobRoleRelation->add_field('levelzero',XMLDB_TYPE_CHAR,'10',null, null,null,null);
+            $tblJobRoleRelation->add_field('levelzero',XMLDB_TYPE_INTEGER,'10',null, null,null,null);
             /* Level  One */
             $tblJobRoleRelation->add_field('levelone',XMLDB_TYPE_INTEGER,'10',null, null,null,null);
             /* Level  Two */

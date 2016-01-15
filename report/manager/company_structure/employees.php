@@ -44,9 +44,20 @@ if ($levelThree) {
 }
 $employees = company_structure::Get_EmployeeLevel($levelThree);
 
+/* GEt Employees Info to Send */
+$employeesInfo = array();
+foreach ($employees as $id=>$user) {
+    /* Info */
+    $info = new stdClass();
+    $info->id   = $id;
+    $info->name = $info;
+
+    /* Add Employee Info    */
+    $employeesInfo[$id] = $info;
+}
 /* Get Data */
 $data           =  array('users' => array());
-$data['users']  = $employees;
+$data['users']  = $employeesInfo;
 
 /* Encode and Send */
 $json[] = $data;
