@@ -50,7 +50,7 @@ foreach ($employees as $id=>$user) {
     /* Info */
     $info = new stdClass();
     $info->id   = $id;
-    $info->name = $info;
+    $info->name = $user;
 
     /* Add Employee Info    */
     $employeesInfo[$id] = $info;
