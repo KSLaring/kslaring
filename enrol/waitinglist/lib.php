@@ -412,7 +412,8 @@ class enrol_waitinglist_plugin extends enrol_plugin {
 
         // Send welcome message.
         if ($instance->{ENROL_WAITINGLIST_FIELD_SENDWELCOMEMESSAGE}) {
-            $this->email_welcome_message($instance, $USER);
+            $userMail = get_complete_user_data('id', $userid);
+            $this->email_welcome_message($instance, $userMail);
         }
     }
 	    /**
