@@ -207,7 +207,7 @@ body {
   font-size: 16px;
   line-height: 21px;
   color: #333333;
-  background-color: #ffffff;
+  background-color: #fff;
 }
 a {
   color: #003876;
@@ -259,7 +259,7 @@ cite {
   font-style: normal;
 }
 .muted {
-  color: #cccccc;
+  color: #ccc;
 }
 a.muted:hover,
 a.muted:focus {
@@ -323,7 +323,7 @@ h5 small,
 h6 small {
   font-weight: normal;
   line-height: 1;
-  color: #cccccc;
+  color: #ccc;
 }
 h1,
 h2,
@@ -363,7 +363,7 @@ h4 small {
 .page-header {
   padding-bottom: 9.5px;
   margin: 21px 0 31.5px;
-  border-bottom: 1px solid #eeeeee;
+  border-bottom: 1px solid #eee;
 }
 ul,
 ol {
@@ -438,13 +438,13 @@ dd {
 hr {
   margin: 21px 0;
   border: 0;
-  border-top: 1px solid #eeeeee;
-  border-bottom: 1px solid #ffffff;
+  border-top: 1px solid #eee;
+  border-bottom: 1px solid #fff;
 }
 abbr[title],
 abbr[data-original-title] {
   cursor: help;
-  border-bottom: 1px dotted #cccccc;
+  border-bottom: 1px dotted #ccc;
 }
 abbr.initialism {
   font-size: 90%;
@@ -453,7 +453,7 @@ abbr.initialism {
 blockquote {
   padding: 0 0 0 15px;
   margin: 0 0 21px;
-  border-left: 5px solid #eeeeee;
+  border-left: 5px solid #eee;
 }
 blockquote p {
   margin-bottom: 0;
@@ -464,7 +464,7 @@ blockquote p {
 blockquote small {
   display: block;
   line-height: 21px;
-  color: #cccccc;
+  color: #ccc;
 }
 blockquote small:before {
   content: '\2014 \00A0';
@@ -473,7 +473,7 @@ blockquote.pull-right {
   float: right;
   padding-right: 15px;
   padding-left: 0;
-  border-right: 5px solid #eeeeee;
+  border-right: 5px solid #eee;
   border-left: 0;
 }
 blockquote.pull-right p,
@@ -563,7 +563,7 @@ table {
   line-height: 21px;
   text-align: left;
   vertical-align: top;
-  border-top: 1px solid #dddddd;
+  border-top: 1px solid #ddd;
 }
 .table th {
   font-weight: bold;
@@ -580,17 +580,17 @@ table {
   border-top: 0;
 }
 .table tbody + tbody {
-  border-top: 2px solid #dddddd;
+  border-top: 2px solid #ddd;
 }
 .table .table {
-  background-color: #ffffff;
+  background-color: #fff;
 }
 .table-condensed th,
 .table-condensed td {
   padding: 4px 5px;
 }
 .table-bordered {
-  border: 1px solid #dddddd;
+  border: 1px solid #ddd;
   border-collapse: separate;
   *border-collapse: collapse;
   border-left: 0;
@@ -600,7 +600,7 @@ table {
 }
 .table-bordered th,
 .table-bordered td {
-  border-left: 1px solid #dddddd;
+  border-left: 1px solid #ddd;
 }
 .table-bordered caption + thead tr:first-child th,
 .table-bordered caption + tbody tr:first-child th,
@@ -1282,7 +1282,7 @@ table th[class*="span"],
   *background-color: #e6e6e6;
   /* Darken IE7 buttons by default so they stand out more given they won't have borders */
   filter: progid:DXImageTransform.Microsoft.gradient(enabled = false);
-  border: 1px solid #cccccc;
+  border: 1px solid #ccc;
   *border: 0;
   border-bottom-color: #b3b3b3;
   -webkit-border-radius: 4px;
@@ -1402,7 +1402,7 @@ input[type="button"].btn-block {
   color: rgba(255, 255, 255, 0.75);
 }
 .btn-primary {
-  color: #ffffff;
+  color: #fff;
   text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
   background-color: #0e689e;
   background-image: -moz-linear-gradient(top, #0e7b9e, #0e4b9e);
@@ -1424,7 +1424,7 @@ input[type="button"].btn-block {
 .btn-primary.active,
 .btn-primary.disabled,
 .btn-primary[disabled] {
-  color: #ffffff;
+  color: #fff;
   background-color: #0e4b9e;
   *background-color: #0c4087;
 }
@@ -1433,7 +1433,7 @@ input[type="button"].btn-block {
   background-color: #0a356f \9;
 }
 .btn-warning {
-  color: #ffffff;
+  color: #fff;
   text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
   background-color: #faa732;
   background-image: -moz-linear-gradient(top, #fbb450, #f89406);
@@ -1455,7 +1455,7 @@ input[type="button"].btn-block {
 .btn-warning.active,
 .btn-warning.disabled,
 .btn-warning[disabled] {
-  color: #ffffff;
+  color: #fff;
   background-color: #f89406;
   *background-color: #df8505;
 }
@@ -1464,7 +1464,7 @@ input[type="button"].btn-block {
   background-color: #c67605 \9;
 }
 .btn-danger {
-  color: #ffffff;
+  color: #fff;
   text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
   background-color: #da4f49;
   background-image: -moz-linear-gradient(top, #ee5f5b, #bd362f);
@@ -1486,7 +1486,7 @@ input[type="button"].btn-block {
 .btn-danger.active,
 .btn-danger.disabled,
 .btn-danger[disabled] {
-  color: #ffffff;
+  color: #fff;
   background-color: #bd362f;
   *background-color: #a9302a;
 }
@@ -1495,7 +1495,7 @@ input[type="button"].btn-block {
   background-color: #942a25 \9;
 }
 .btn-success {
-  color: #ffffff;
+  color: #fff;
   text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
   background-color: #5bb75b;
   background-image: -moz-linear-gradient(top, #62c462, #51a351);
@@ -1517,7 +1517,7 @@ input[type="button"].btn-block {
 .btn-success.active,
 .btn-success.disabled,
 .btn-success[disabled] {
-  color: #ffffff;
+  color: #fff;
   background-color: #51a351;
   *background-color: #499249;
 }
@@ -1526,7 +1526,7 @@ input[type="button"].btn-block {
   background-color: #408140 \9;
 }
 .btn-info {
-  color: #ffffff;
+  color: #fff;
   text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
   background-color: #49afcd;
   background-image: -moz-linear-gradient(top, #5bc0de, #2f96b4);
@@ -1548,7 +1548,7 @@ input[type="button"].btn-block {
 .btn-info.active,
 .btn-info.disabled,
 .btn-info[disabled] {
-  color: #ffffff;
+  color: #fff;
   background-color: #2f96b4;
   *background-color: #2a85a0;
 }
@@ -1557,19 +1557,19 @@ input[type="button"].btn-block {
   background-color: #24748c \9;
 }
 .btn-inverse {
-  color: #ffffff;
+  color: #fff;
   text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
   background-color: #363636;
-  background-image: -moz-linear-gradient(top, #444444, #222222);
-  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#444444), to(#222222));
-  background-image: -webkit-linear-gradient(top, #444444, #222222);
-  background-image: -o-linear-gradient(top, #444444, #222222);
-  background-image: linear-gradient(to bottom, #444444, #222222);
+  background-image: -moz-linear-gradient(top, #444, #222);
+  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#444), to(#222));
+  background-image: -webkit-linear-gradient(top, #444, #222);
+  background-image: -o-linear-gradient(top, #444, #222);
+  background-image: linear-gradient(to bottom, #444, #222);
   background-repeat: repeat-x;
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff444444', endColorstr='#ff222222', GradientType=0);
-  border-color: #222222 #222222 #000000;
+  border-color: #222 #222 #000000;
   border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
-  *background-color: #222222;
+  *background-color: #222;
   /* Darken IE7 buttons by default so they stand out more given they won't have borders */
   filter: progid:DXImageTransform.Microsoft.gradient(enabled = false);
 }
@@ -1579,8 +1579,8 @@ input[type="button"].btn-block {
 .btn-inverse.active,
 .btn-inverse.disabled,
 .btn-inverse[disabled] {
-  color: #ffffff;
-  background-color: #222222;
+  color: #fff;
+  background-color: #222;
   *background-color: #151515;
 }
 .btn-inverse:active,
@@ -1753,7 +1753,7 @@ a.thumbnail:focus {
 }
 .thumbnail .caption {
   padding: 9px;
-  color: #555555;
+  color: #555;
 }
 .label,
 .badge {
@@ -1762,11 +1762,11 @@ a.thumbnail:focus {
   font-size: 13.536px;
   font-weight: bold;
   line-height: 14px;
-  color: #ffffff;
+  color: #fff;
   vertical-align: baseline;
   white-space: nowrap;
   text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
-  background-color: #cccccc;
+  background-color: #ccc;
 }
 .label {
   -webkit-border-radius: 3px;
@@ -1788,7 +1788,7 @@ a.label:hover,
 a.label:focus,
 a.badge:hover,
 a.badge:focus {
-  color: #ffffff;
+  color: #fff;
   text-decoration: none;
   cursor: pointer;
 }
@@ -1901,7 +1901,7 @@ body {
 }
 .kitable th,
 .kitable td {
-  background-color: #ffffff;
+  background-color: #fff;
   font-size: inherit;
   padding: .3em .5em;
   vertical-align: top;
@@ -1923,7 +1923,7 @@ div.editor_atto_content .kitable1 caption {
 div.editor_atto_content .kitable1 th,
 .kitable1 td,
 div.editor_atto_content .kitable1 td {
-  background-color: #ffffff;
+  background-color: #fff;
   font-size: inherit;
   padding: .3em .5em;
   vertical-align: top;
@@ -1943,13 +1943,13 @@ div.editor_atto_content .kitable1 tbody > tr:nth-child(odd) > th {
 .kitable1 caption,
 div.editor_atto_content .kitable1 caption {
   background-color: #003876;
-  color: #ffffff;
+  color: #fff;
 }
 .kitable1 th,
 div.editor_atto_content .kitable1 th,
 .kitable1 td,
 div.editor_atto_content .kitable1 td {
-  background-color: #ffffff;
+  background-color: #fff;
 }
 .kitable2,
 div.editor_atto_content .kitable2 {
@@ -1966,7 +1966,7 @@ div.editor_atto_content .kitable2 caption {
 div.editor_atto_content .kitable2 th,
 .kitable2 td,
 div.editor_atto_content .kitable2 td {
-  background-color: #ffffff;
+  background-color: #fff;
   font-size: inherit;
   padding: .3em .5em;
   vertical-align: top;
@@ -2008,7 +2008,7 @@ div.editor_atto_content .kitable3 caption {
 div.editor_atto_content .kitable3 th,
 .kitable3 td,
 div.editor_atto_content .kitable3 td {
-  background-color: #ffffff;
+  background-color: #fff;
   font-size: inherit;
   padding: .3em .5em;
   vertical-align: top;
@@ -2027,7 +2027,7 @@ div.editor_atto_content .kitable3 th {
 div.editor_atto_content .kitable3 th,
 .kitable3 td,
 div.editor_atto_content .kitable3 td {
-  border-right: 5px solid #ffffff;
+  border-right: 5px solid #fff;
 }
 .kitable3.table-no-lines th,
 div.editor_atto_content .kitable3.table-no-lines th,

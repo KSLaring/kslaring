@@ -667,8 +667,36 @@ EOT;
      * @return string The HTML for the link
      */
     public function return_to_role() {
-        global $DB, $PAGE, $USER;
+        global $CFG, $DB, $PAGE, $USER;
         $loggedinas = '';
+        $withlinks = true;
+
+        $course = $PAGE->course;
+        if (\core\session\manager::is_loggedinas()) {
+            $realuser = \core\session\manager::get_realuser();
+            $fullname = fullname($realuser, true);
+            if ($withlinks) {
+                $loginastitle = get_string('loginas');
+                $realuserinfo = " [<a href=\"$CFG->wwwroot/course/loginas.php?id=$course->id&amp;sesskey=" . sesskey() . "\"";
+                $realuserinfo .= "title =\"" . $loginastitle . "\">$fullname</a>] ";
+            } else {
+                $realuserinfo = " [$fullname] ";
+            }
+            $fullname = fullname($USER, true);
+            // Since Moodle 2.0 this link always goes to the public profile page (not the course profile page)
+            if ($withlinks) {
+                $linktitle = get_string('viewprofile');
+                $username = "<a href=\"$CFG->wwwroot/user/profile.php?id=$USER->id\" title=\"$linktitle\">$fullname</a>";
+            } else {
+                $username = $fullname;
+            }
+            $loggedinas .= $realuserinfo . get_string('loggedinas', 'moodle', $username);
+            if ($withlinks) {
+                $loggedinas .= " (<a href=\"$CFG->wwwroot/login/logout.php?sesskey=" . sesskey() . "\">" . get_string('logout') . '</a>)';
+            }
+        } else {
+            $realuserinfo = '';
+        }
 
         if (!is_role_switched($PAGE->course->id)) { // Has no switched roles
             return $loggedinas;
