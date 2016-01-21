@@ -690,10 +690,12 @@ EOT;
             } else {
                 $username = $fullname;
             }
+            $loggedinas .= '<div class="returntorole">';
             $loggedinas .= $realuserinfo . get_string('loggedinas', 'moodle', $username);
             if ($withlinks) {
                 $loggedinas .= " (<a href=\"$CFG->wwwroot/login/logout.php?sesskey=" . sesskey() . "\">" . get_string('logout') . '</a>)';
             }
+            $loggedinas .= '</div>';
         } else {
             $realuserinfo = '';
         }
