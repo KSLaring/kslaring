@@ -30,3 +30,16 @@ $settings->add(new admin_setting_configtext('block_rate_course_quest',
 get_string('survey', 'block_rate_course'),
 get_string('survey_help', 'block_rate_course'),
 ''));
+
+/**
+ * @updateDate    21/01/2016
+ * @author        eFaktor     (fbv)
+ *
+ * Description
+ * add minimum rates to publish the block
+ */
+
+$settings->add(new admin_setting_configtext('block_rate_course/block_rate_course_minimum',
+                                            get_string('minum_rates', 'block_rate_course'),
+                                            get_string('minum_rates_help', 'block_rate_course'),
+                                            ''));

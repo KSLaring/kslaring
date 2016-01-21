@@ -48,3 +48,6 @@ $string['survey'] = 'What is the questionnaire name?';
 $string['survey_help'] = 'This is the questionnaire module which will be linked to (leave blank to stop link to questionnaire)';
 $string['viewreview'] = 'View questionnaire responses';
 $string['add_comments'] = 'Add your comments';
+
+$string['minum_rates']          = 'Minimum rates';
+$string['minum_rates_help']     = 'Minimum number of rates to publish the results';

@@ -52,3 +52,5 @@ $string['single']                   = 'Single Activity';
 $string['title_reviews']            = 'Revisjon';
 $string['whitepaper']               = 'Dokumentformat';
 $string['available_seats'] 			= 'Ledige plasser';
+
+$string['no_minimum_rates']         = 'Sorry, but there are not enough ratings to publish the results for this course.';

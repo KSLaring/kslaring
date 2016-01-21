@@ -1333,6 +1333,12 @@ class course_page  {
      *
      * Description
      * Add the manager list with the search filter
+     *
+     * @updateDate  21/01/2016
+     * @author      eFaktor     (fbv)
+     *
+     * Description
+     * Add the 'ratings' option format
      */
     public static function addCourseHomePage_Section(&$form,$field,$from_home = false) {
         /* Variables    */
@@ -1346,6 +1352,15 @@ class course_page  {
                 $format_options = course_get_format($COURSE->id)->get_format_options();
                 if (!array_key_exists('homepage',$format_options)) {
                     $form->setDefault('homepage',1);
+                }//if_exists
+
+                break;
+            case 'ratings':
+                $home_ratings = $form->createElement('checkbox','ratings',get_string('home_ratings','local_course_page'));
+                $form->insertElementBefore($home_ratings,'descriptionhdr');
+                $format_options = course_get_format($COURSE->id)->get_format_options();
+                if (!array_key_exists('ratings',$format_options)) {
+                    $form->setDefault('ratings',1);
                 }//if_exists
 
                 break;
