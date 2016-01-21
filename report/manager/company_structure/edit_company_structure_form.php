@@ -46,15 +46,9 @@ class manager_edit_company_structure_form extends moodleform {
         $m_form->setType('industry_code',PARAM_TEXT);
         $m_form->addRule('industry_code','required','required', null, 'client');
 
-        /* Public Check Box     */
-        if ($parent_info) {
-            $attr = 'disabled';
-            $default = $parent_info->public;
-        }else {
-            $default = $company_info->public;
-        }
-        $m_form->addElement('checkbox', 'public','',get_string('public', 'report_manager'),$attr);
-        $m_form->setDefault('public',$default);
+        /* Public o private */
+        $m_form->addElement('checkbox', 'public','',get_string('public', 'report_manager'));
+        $m_form->setDefault('public',$company_info->public);
         if ($parent_info) {
             $m_form->addElement('hidden','public_parent');
             $m_form->setDefault('public_parent',$parent_info->public);
