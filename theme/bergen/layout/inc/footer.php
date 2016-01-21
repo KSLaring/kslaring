@@ -13,5 +13,7 @@
             Systemeier: HR-avdelingen. For brukerstøtte kontakt Helpdesk eller «Meld
             feil»
         </p>
+        
+        <?php echo $OUTPUT->return_to_role(); ?>
     </div>
 </footer>
