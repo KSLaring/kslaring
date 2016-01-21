@@ -75,12 +75,9 @@ class manager_add_company_structure_form extends moodleform {
         $m_form->addRule('industry_code','required','required', null, 'client');
 
         /* Public Check Box     */
-        if ($parent_info) {
-            $attr = 'disabled';
-            $default = $parent_info->public;
-        }
-        $m_form->addElement('checkbox', 'public','',get_string('public', 'report_manager'),$attr);
-        $m_form->setDefault('public',$default);
+        $m_form->addElement('checkbox', 'public','',get_string('public', 'report_manager'));
+        $m_form->setDefault('public',$parent_info->public);
+
         /* Public Parent Hide   */
         if ($parent_info) {
             $m_form->addElement('hidden','public_parent');

@@ -77,10 +77,11 @@
     color: #004b93;
     margin-top: 5px;
     margin-right: 10px;
+    margin-left: 5px;
 }
 
 .competence_table .competence_table_row .col_two {
-    width:35%;
+    width:25%;
     float:left;
     font:  13px Arial;
     text-align: left;
@@ -92,11 +93,21 @@
     margin-right: 12px;
 }
 
+.competence_table .competence_table_row .col_mg {
+    width:5%;
+    float:left;
+    font:  13px Arial;
+    text-align: left;
+
+    color: #004b93;
+    margin-top: 5px;
+}
+
 .competence_table .competence_table_row .col_three {
     width:10%;
     float:left;
     font:  13px Arial;
-    text-align: left;
+    text-align: center;
 
     color: #004b93;
     margin-top: 5px;

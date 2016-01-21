@@ -193,6 +193,12 @@ class Competence {
      *                  --> path
      *                  --> roles.      Array.
      *                                  [id]    --> Job Role Name.
+     *
+     * @updateDate      21/01/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Add information about if it is manager and/or reporter
      */
     public static function Get_CompetenceData($user_id,$competence_data=null,$competence=null) {
         /* Variables    */
@@ -211,9 +217,9 @@ class Competence {
             /* SQL Instruction  */
             $sql = " SELECT		uicd.id,
                                 uicd.competenceid,
-                                GROUP_CONCAT(DISTINCT co_zero.id 	ORDER BY co_zero.id   SEPARATOR ',') 	  as 'levelzero',
-                                GROUP_CONCAT(DISTINCT co_one.id  	ORDER BY co_one.id    SEPARATOR ',') 	  as 'levelone',
-                                GROUP_CONCAT(DISTINCT co_two.id  	ORDER BY co_two.id    SEPARATOR ',') 	  as 'leveltwo',
+                                co_zero.id 	as 'levelzero',
+                                co_one.id 	as 'levelone',
+                                co_two.id 	as 'leveltwo',
                                 uicd.companyid 		                    as 'levelthree',
                                 IF(uicd.jobroles,uicd.jobroles,0) 		as 'jobroles'
                      FROM		{user_info_competence_data} 	uicd
@@ -229,8 +235,7 @@ class Competence {
                         JOIN	{report_gen_company_relation}   cr_zero	ON 	cr_zero.companyid 		= cr_one.parentid
                         JOIN	{report_gen_companydata}		co_zero	ON 	co_zero.id 				= cr_zero.parentid
                                                                         AND co_zero.hierarchylevel 	= 0
-                     WHERE		uicd.userid = :user
-                     GROUP BY	uicd.id ";
+                     WHERE		uicd.userid = :user ";
 
             if ($competence_data && $competence) {
                 $params['competence_data']  = $competence_data;
@@ -251,6 +256,14 @@ class Competence {
                     $info_hierarchy->levelTwo       = $instance->leveltwo;
                     $info_hierarchy->levelOne       = $instance->levelone;
                     $info_hierarchy->levelZero      = $instance->levelzero;
+                    $info_hierarchy->manager        = self::IsManager($user_id,$info_hierarchy);
+                    /* Reporter */
+                    if ($info_hierarchy->manager) {
+                        $info_hierarchy->reporter   = 1;
+                    }else {
+                        $info_hierarchy->reporter   = self::IsReporter($user_id,$info_hierarchy);
+                    }//if_manager
+
                     /* Hierarchy Path   */
                     $info_hierarchy->path           = self::GetHierarchyPath($info_hierarchy);
                     /* Job Roles        */
@@ -266,6 +279,124 @@ class Competence {
             throw $ex;
         }//try_catch
     }//Get_CompetenceData
+
+    /**
+     * @param           $userId
+     * @param           $hierarchy
+     *
+     * @return          bool
+     * @throws          Exception
+     *
+     * @creationDate    21/01/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Check if the user is manager or not
+     */
+    private static function IsManager($userId,$hierarchy) {
+        /* Variables */
+        global $DB;
+        $rdo    = null;
+        $sql    = null;
+        $params = null;
+        $zero   = null;
+        $one    = null;
+        $two    = null;
+
+        try {
+            /* Search Criteria  */
+            $params = array();
+            $params['user']     = $userId;
+            $params['three']    = $userId;
+            $zero               = $hierarchy->levelZero;
+            $one                = $hierarchy->levelOne;
+            $two                = $hierarchy->levelTwo;
+
+            /* SQL Instruction */
+            $sql = " SELECT	ma.id
+                     FROM	{report_gen_company_manager}	ma
+                     WHERE	ma.managerid = :user
+                            AND
+                            (
+                             (ma.hierarchylevel = 0	AND	ma.levelzero = '". $zero . "' AND ma.levelone IS NULL AND ma.leveltwo IS NULL AND ma.levelthree IS NULL)
+                             OR
+                             (ma.hierarchylevel = 1	AND	ma.levelzero = '". $zero . "' AND ma.levelone = '". $one . "'  AND ma.leveltwo IS NULL AND ma.levelthree IS NULL)
+                             OR
+                             (ma.hierarchylevel = 2	AND	ma.levelzero = '". $zero . "' AND ma.levelone = '". $one . "'  AND ma.leveltwo = '". $two . "'  AND ma.levelthree IS NULL)
+                             OR
+                             (ma.hierarchylevel = 3	AND	ma.levelzero = '". $zero . "' AND ma.levelone = '". $one . "'  AND ma.leveltwo = '". $two . "'  AND ma.levelthree = :three)
+                            ) ";
+
+            /* Execute */
+            $rdo = $DB->get_record_sql($sql,$params);
+            if ($rdo) {
+                return true;
+            }else {
+                return false;
+            }
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//IsManager
+
+    /**
+     * @param           $userId
+     * @param           $hierarchy
+     *
+     * @return          bool
+     * @throws          Exception
+     *
+     * @creationDate    21/01/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Check if the user is reporter or not
+     */
+    private static function IsReporter($userId,$hierarchy) {
+        /* Variables */
+        global $DB;
+        $rdo    = null;
+        $sql    = null;
+        $params = null;
+        $zero   = null;
+        $one    = null;
+        $two    = null;
+
+        try {
+            /* Search Criteria  */
+            $params = array();
+            $params['user']     = $userId;
+            $params['three']    = $userId;
+            $zero               = $hierarchy->levelZero;
+            $one                = $hierarchy->levelOne;
+            $two                = $hierarchy->levelTwo;
+
+            /* SQL Instruction */
+            $sql = " SELECT	re.id
+                     FROM	{report_gen_company_reporter}	re
+                     WHERE	re.reporterid = :user
+                            AND
+                            (
+                             (re.hierarchylevel = 0	AND	re.levelzero = '". $zero . "' AND re.levelone IS NULL AND re.leveltwo IS NULL AND re.levelthree IS NULL)
+                             OR
+                             (re.hierarchylevel = 1	AND	re.levelzero = '". $zero . "' AND re.levelone = '". $one . "'  AND re.leveltwo IS NULL AND re.levelthree IS NULL)
+                             OR
+                             (re.hierarchylevel = 2	AND	re.levelzero = '". $zero . "' AND re.levelone = '". $one . "'  AND re.leveltwo = '". $two . "'  AND re.levelthree IS NULL)
+                             OR
+                             (re.hierarchylevel = 3	AND	re.levelzero = '". $zero . "' AND re.levelone = '". $one . "'  AND re.leveltwo = '". $two . "'  AND re.levelthree = :three)
+                            ) ";
+
+            /* Execute */
+            $rdo = $DB->get_record_sql($sql,$params);
+            if ($rdo) {
+                return true;
+            }else {
+                return false;
+            }//if_else
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//IsReporter
 
     /**
      * @param           $hierarchy
@@ -288,17 +419,13 @@ class Competence {
 
         try {
             /* Get Companies Name   */
-            $levelZero  = explode(',',$hierarchy->levelZero);
-            $levelOne   = explode(',',$hierarchy->levelOne);
-            $levelTwo   = explode(',',$hierarchy->levelTwo);
-
             $companies = $hierarchy->levelThree . ',' . $hierarchy->levelTwo . ',' . $hierarchy->levelOne . ',' . $hierarchy->levelZero;
 
             $companies_name = self::Get_CompanyName($companies);
 
-            $hierarchyPath   = $companies_name[$levelZero[0]]  . '/' .
-                               $companies_name[$levelOne[0]]   . '/' .
-                               $companies_name[$levelTwo[0]]   . '/' .
+            $hierarchyPath   = $companies_name[$hierarchy->levelZero]  . '/' .
+                               $companies_name[$hierarchy->levelOne]   . '/' .
+                               $companies_name[$hierarchy->levelTwo]   . '/' .
                                $companies_name[$hierarchy->levelThree];
 
             return $hierarchyPath;
@@ -844,6 +971,12 @@ class Competence {
      *
      * Description
      * Add the header of the competence table
+     *
+     * @updateDate      21/01/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Add manager and reporter columns
      */
     private static function AddHeader_CompetenceTable() {
         /* Variables    */
@@ -852,9 +985,7 @@ class Competence {
         try {
             $header .= html_writer::start_tag('div',array('class' => 'competence_table'));
                 $header .= html_writer::start_div('competence_table_row title_competence');
-                    /* Col Zero -- Toggle   */
-                    $header .= html_writer::start_div('col_zero');
-                    $header .= html_writer::end_div();//col_zero
+
                     /* Col One  */
                     $header .= html_writer::start_div('col_one');
                         $header .= '<h6>' . get_string('my_companies','profilefield_competence') . '</h6>';
@@ -863,9 +994,20 @@ class Competence {
                     $header .= html_writer::start_div('col_two');
                         $header .= '<h6>' . get_string('my_job_roles','profilefield_competence') . '</h6>';
                     $header .= html_writer::end_div();//col_ttwo
-                    /* Col Three  */
+                    /* Col Manager   */
                     $header .= html_writer::start_div('col_three');
+                        $header .= '<h6>' . get_string('manager','profilefield_competence') . '</h6>';
                     $header .= html_writer::end_div();//col_three
+                    /* Col Reporter  */
+                    $header .= html_writer::start_div('col_three');
+                        $header .= '<h6>' . get_string('reporter','profilefield_competence') . '</h6>';
+                    $header .= html_writer::end_div();//col_three
+                    /* Col Zero -- Toggle   */
+                    $header .= html_writer::start_div('col_zero');
+                    $header .= html_writer::end_div();//col_zero
+                    /* Col Zero -- Toggle   */
+                    $header .= html_writer::start_div('col_zero');
+                    $header .= html_writer::end_div();//col_zero
                 $header .= html_writer::end_div();//competence_table_row
             $header .= html_writer::end_tag('div'); //competence_table
 
@@ -896,6 +1038,12 @@ class Competence {
      *                  --> path
      *                  --> roles.      Array.
      *                                  [id]    --> Job Role Name.
+     *
+     * @updateDate      21/01/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Add manager and reporter column
      */
     private static function AddContent_CompetenceTable($my_competence,$user_id) {
         /* Variables    */
@@ -910,7 +1058,40 @@ class Competence {
                 if ($my_competence) {
                     foreach ($my_competence as $competence) {
                         $content .= html_writer::start_div('competence_table_row ' . $color);
-                            /* Col Zero -- Toggle   */
+                            /* Col One  */
+                            $content .= html_writer::start_div('col_one');
+                                $content .=  $competence->path;
+                            $content .= html_writer::end_div();//col_one
+                            /* Col Two  */
+                            $content .= html_writer::start_div('col_two');
+                                $content .= implode(', ',$competence->roles) . '</br>';
+                            $content .= html_writer::end_div();//col_ttwo
+                            /* Col Manager  */
+                            $content .= html_writer::start_div('col_three');
+                                if ($competence->manager) {
+                                    $content .= html_writer::empty_tag('img', array('src'=>$OUTPUT->pix_url('i/grade_correct'),
+                                                                       'alt'=>null,
+                                                                       'class'=>'iconsmall'));
+                                }else {
+                                    $content .= html_writer::empty_tag('img', array('src'=>$OUTPUT->pix_url('i/grade_incorrect'),
+                                                                       'alt'=>null,
+                                                                       'class'=>'iconsmall'));
+                                }//if_manager
+                            $content .= html_writer::end_div();//col_three
+                            /* Col Reporter */
+                            $content .= html_writer::start_div('col_three');
+                                if ($competence->reporter) {
+                                    $content .= html_writer::empty_tag('img', array('src'=>$OUTPUT->pix_url('i/grade_correct'),
+                                                                       'alt'=>null,
+                                                                       'class'=>'iconsmall'));
+                                }else {
+                                    $content .= html_writer::empty_tag('img', array('src'=>$OUTPUT->pix_url('i/grade_incorrect'),
+                                                                       'alt'=>null,
+                                                                       'class'=>'iconsmall'));
+                                }//if_reporter
+                            $content .= html_writer::end_div();//col_three
+
+                            /* Col Zero -- Edit   */
                             $content .= html_writer::start_div('col_zero');
                                 /* Edit Link    */
                                 $url_edit = new moodle_url('/user/profile/field/competence/actions/edit_competence.php',array('id' =>$user_id,'icd' => $competence->data,'ic' => $competence->competence));
@@ -920,20 +1101,16 @@ class Competence {
                                                                                      'class'=>'iconsmall')),
                                                               array('title'=>get_string('btn_edit_users','profilefield_competence')));
                             $content .= html_writer::end_div();//col_zero
-                            /* Col One  */
-                            $content .= html_writer::start_div('col_one');
-                                $content .=  $competence->path;
-                            $content .= html_writer::end_div();//col_one
-                            /* Col Two  */
-                            $content .= html_writer::start_div('col_two');
-                                $content .= implode(', ',$competence->roles) . '</br>';
-                            $content .= html_writer::end_div();//col_ttwo
-                            /* Col Three  */
-                            $content .= html_writer::start_div('col_three');
-                                /* URL Deleted  */
+
+                            /* Col Zero -- Toggle   */
+                            $content .= html_writer::start_div('col_zero');
                                 $url_deleted = new moodle_url('/user/profile/field/competence/actions/delete_competence.php',array('id' =>$user_id,'icd' => $competence->data,'ic' => $competence->competence));
-                                $content .= '<a href="' . $url_deleted . '" class="lnk_col">' . get_string('lnk_delete','profilefield_competence')  . '</a>';
-                            $content .= html_writer::end_div();//col_three
+                                $content .= html_writer::link($url_deleted,
+                                                              html_writer::empty_tag('img', array('src'=>$OUTPUT->pix_url('t/delete'),
+                                                                                     'alt'=>get_string('lnk_delete','profilefield_competence'),
+                                                                                     'class'=>'iconsmall')),
+                                                              array('title'=>get_string('lnk_delete','profilefield_competence')));
+                            $content .= html_writer::end_div();//col_zero
                         $content .= html_writer::end_div();//competence_table_row
 
                         if ($color == 'r0') {
