@@ -50,4 +50,7 @@ $string['edit_competence_desc'] = 'Her kan du oppdatere kompetanseprofilen din.'
 
 $string['level_generic']        = 'Generiske';
 
-$string['btn_edit_users']           = 'Rediger brukere';
+$string['btn_edit_users']       = 'Rediger company';
+
+$string['manager']  = 'Manager';
+$string['reporter'] = 'Reporter';

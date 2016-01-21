@@ -50,4 +50,7 @@ $string['edit_competence_desc'] = 'Here you can update your current competence p
 
 $string['level_generic']        = 'Generics ';
 
-$string['btn_edit_users']           = 'Edit users';
+$string['btn_edit_users']       = 'Edit company';
+
+$string['manager']  = 'Manager';
+$string['reporter'] = 'Reporter';
