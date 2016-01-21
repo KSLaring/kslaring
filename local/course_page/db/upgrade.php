@@ -55,5 +55,44 @@ function xmldb_local_course_page_upgrade($oldversion) {
         }//if_exists
     }//if_oldversion
 
+    if ($oldversion < 2016012100) {
+        CoursePage_Upgrade::AddRatings_FormatOption();
+    }//If_oldversion
+
     return true;
 }//xmldb_local_course_page_upgrade
+
+class CoursePage_Upgrade {
+    public static function AddRatings_FormatOption() {
+        /* Variables */
+        global $DB;
+        $sql            = null;
+        $rdo            = null;
+        $instanceFormat = null;
+
+        try {
+            /* SQL Instruction */
+            $sql = " SELECT   DISTINCT  id,
+                                        format
+                     FROM 	  {course}
+                     WHERE 	  format IN ('classroom','classroom_frikomport','elearning_frikomport','netcourse','single_frikomport','format_whitepaper') ";
+
+            /* Execute  */
+            $rdo = $DB->get_records_sql($sql);
+            if ($rdo) {
+                foreach ($rdo as $instance) {
+                    $instanceFormat = new stdClass();
+                    $instanceFormat->courseid   = $instance->id;
+                    $instanceFormat->format     = $instance->format;
+                    $instanceFormat->name       = 'ratings';
+                    $instanceFormat->value      = 1;
+
+                    /* Execute */
+                    $DB->insert_record('course_format_options',$instanceFormat);
+                }//for_Rdo
+            }//if_rdo
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//AddRatings_FormatOption
+}//CoursePage_Upgrade

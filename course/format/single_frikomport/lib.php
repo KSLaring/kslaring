@@ -148,6 +148,12 @@ class format_single_frikomport extends format_base {
      *
      * Description
      * Add Home Page Course fields
+     *
+     * @updateDate  21/01/2016
+     * @author      eFaktor     (fbv)
+     *
+     * Description
+     * Add the 'ratings' option format
      */
     public function course_format_options($foreditform = false) {
         static $courseformatoptions = false;
@@ -161,6 +167,17 @@ class format_single_frikomport extends format_base {
                 'homepage'          => array(
                     'label'         => get_string('checkbox_home','local_course_page'),
                     'element_type'  => 'checkbox',
+                ),
+                /**
+                 * @updateDate  21/01/2016
+                 * @author      eFaktor     (fbv)
+                 *
+                 * Description
+                 * Course ratings
+                 */
+                'ratings' => array(
+                    'label' => get_string('home_ratings', 'local_course_page'),
+                    'element_type' => 'checkbox',
                 ),
                 'homevisible'       => array(
                     'label'         => get_string('home_visible','local_course_page'),
@@ -248,6 +265,12 @@ class format_single_frikomport extends format_base {
      * Description
      * Don't call create_edit_form      --> parent
      * Different functionality          --> Course Home Page
+     *
+     * @updateDate  21/01/2016
+     * @author      eFaktor     (fbv)
+     *
+     * Description
+     * Add the 'ratings' option format
      */
     public function create_edit_form_elements(&$mform, $forsection = false) {
         global $PAGE;
@@ -261,6 +284,7 @@ class format_single_frikomport extends format_base {
         foreach ($options as $optionname => $option) {
             switch ($optionname) {
                 case 'homepage':
+                case 'ratings':
                 case 'homevisible':
                 case 'homesummary':
                 case 'pagegraphics':
