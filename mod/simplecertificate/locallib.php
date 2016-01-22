@@ -694,7 +694,14 @@ class simplecertificate {
             $row = array();
             
             // prepare strings for time taken and date completed
-            $datecompleted = userdate($attempt->timecreated);
+            /**
+             * @updateDate  22/01/2016
+             * @author      eFaktor     (fbv)
+             *
+             * Description
+             * Add format
+             */
+            $datecompleted = userdate($attempt->timecreated,get_string('strftimedaydate'));
             $row[] = $datecompleted;
             
             if ($gradecolumn) {
@@ -1704,15 +1711,16 @@ class simplecertificate {
                 echo $OUTPUT->box(format_module_intro('simplecertificate', $this->get_instance(), $this->coursemodule->id), 
                                 'generalbox', 'intro');
             }
-            
             if ($attempts = $this->get_attempts()) {
                 echo $this->print_attempts($attempts);
             }
             
             if (!$canmanage) {
                 // TODO create a funciton add_log
-               add_to_log($this->get_course()->id, 'simplecertificate', 'view', $url->out_as_local_url(false), 
-                        $this->get_instance()->id, $this->coursemodule->id);
+                $manager = get_log_manager();
+
+                $manager->legacy_add_to_log($this->get_course()->id, 'simplecertificate', 'view', $url->out_as_local_url(false), $this->get_instance()->id, $this->coursemodule->id);
+
             }
             
             if ($this->get_instance()->delivery != 3 || $canmanage) {
@@ -1782,6 +1790,7 @@ class simplecertificate {
         }
         
         // if groupmembersonly used, remove users who are not in any group
+        $cm = $this->get_course_module();
         if (!empty($issedusers) and !empty($CFG->enablegroupings) and $this->coursemodule->groupmembersonly) {
             if ($groupingusers = groups_get_grouping_members($cm->groupingid, 'u.id', 'u.id')) {
                 $issedusers = array_intersect($issedusers, array_keys($groupingusers));

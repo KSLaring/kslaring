@@ -81,16 +81,32 @@ $completion->set_module_viewed($cm);
 $PAGE->set_title(format_string($certificate->name));
 $PAGE->set_heading(format_string($course->fullname));
 
+/**
+ * @updateDate  22/01/2016
+ * @author      eFaktor     (fbv)
+ *
+ * Description
+ * Change language to Norwegian
+ */
+setlocale(LC_TIME,'no_NO');
 switch ($tab) {
 	case $simplecertificate::ISSUED_CERTIFCADES_VIEW :
 		$simplecertificate->view_issued_certificates($url);
-	break;
+	    break;
 	
 	case $simplecertificate::BULK_ISSUE_CERTIFCADES_VIEW :
 		$simplecertificate->view_bulk_certificates($url, $selectedusers);
-	break;
+	    break;
 	
 	default :
 		$simplecertificate->view_default($url, $canmanage);
 	break;
 }
+/**
+ * @updateDate  22/01/2016
+ * @author      eFaktor     (fbv)
+ *
+ * Description
+ * Change language to English
+ */
+setlocale(LC_TIME,'en_EN');
