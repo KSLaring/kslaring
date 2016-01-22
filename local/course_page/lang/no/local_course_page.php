@@ -53,4 +53,4 @@ $string['title_reviews']            = 'Revisjon';
 $string['whitepaper']               = 'Dokumentformat';
 $string['available_seats'] 			= 'Ledige plasser';
 
-$string['no_minimum_rates']         = 'Sorry, but there are not enough ratings to publish the results for this course.';
+$string['no_minimum_rates']         = 'Beklager, men det er ikke mange nok som har vurdert dette kurset ennå.';
