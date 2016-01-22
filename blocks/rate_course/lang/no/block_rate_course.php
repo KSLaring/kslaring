@@ -49,5 +49,5 @@ $string['survey_help'] = 'Dette er spørreundersøkelsen som det blir lenket til
 $string['viewreview'] = 'Vis responser fra spørreundersøkelsen';
 $string['add_comments'] = 'Legg til kommentar';
 
-$string['minum_rates']          = 'Minimum rates';
-$string['minum_rates_help']     = 'Minimum number of rates to publish the results';
+$string['minum_rates']          = 'Minimum antall vurderinger';
+$string['minum_rates_help']     = 'Minimum antall vurderinger før resultatet publiseres';
