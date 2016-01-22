@@ -581,6 +581,12 @@ class local_course_page_renderer extends plugin_renderer_base {
      *
      * Description
      * Add Coordinator Block
+     *
+     * @updateDate      22/01/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Add coordinator's email
      */
     protected function addCoordinatorBlock($course_id,$manager) {
         /* Variables    */
@@ -599,6 +605,7 @@ class local_course_page_renderer extends plugin_renderer_base {
                 $out .= '<div class="user_profile chp-content clearfix">';
                     $out .= '<div class="user_picture">' . $OUTPUT->user_picture($user, array('size'=>150)) . '</div>';
                     $out .= '<div class="user"><a href="' . $url_user . '">' . fullname($user) . '</a>';
+                    $out .= '<div class="extra_home chp-content">'. $user->email . '</div>';
                     $out .= '<div class="extra_coordinator">' . $user->description . '</div>'  . '</div>';
                 $out .= '</div>';
                 }//if_user
