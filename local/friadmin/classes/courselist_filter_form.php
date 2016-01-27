@@ -40,10 +40,11 @@ class local_friadmin_courselist_filter_form extends \moodleform {
         // The first form row
         $elementgroup = array();
 
-        $options = array('0' => get_string('selmunicipality', 'local_friadmin'));
-        $options = $options + $customdata['municipality'];
+        //$options = array('0' => get_string('selmunicipality', 'local_friadmin'));
+        //$options = $options + $customdata['municipality'];
+        $options = $customdata['municipality'];
         $elementgroup[] = $mform->createElement('select', 'selmunicipality', '', $options);
-        $mform->setDefault('selmunicipality', '0');
+        //$mform->setDefault('selmunicipality', '0');
 
         $options = array('0' => get_string('selsector', 'local_friadmin'));
         $options = $options + $customdata['sector'];
@@ -72,7 +73,8 @@ class local_friadmin_courselist_filter_form extends \moodleform {
 
         $elementgroup[] = $mform->createElement('date_selector', 'seltimefrom',
             '', $options);
-        $mform->setDefault('seltimefrom', $customdata['from']);
+        $defaultvalue = empty($customdata['from']) ? (time() + 3600 * 24) : $customdata['from'];
+        $mform->setDefault('seltimefrom', $defaultvalue);
 
         $elementgroup[] = $mform->createElement('date_selector', 'seltimeto',
             '', $options);
