@@ -419,6 +419,12 @@ h6 {
 .section li.activity {
   padding: 0;
 }
+.section li.activity .contentafterlink.dimmed_text {
+  color: #ccc;
+}
+.section li.activity .contentafterlink.dimmed_text * {
+  color: #ccc;
+}
 .course-content .section-summary .section-title {
   font-size: 1.3em;
 }
