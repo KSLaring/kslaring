@@ -76,8 +76,7 @@ class local_friadmin_usercourselist_filter_form extends \moodleform {
 
         $elementgroup[] = $mform->createElement('date_selector', 'seltimefrom',
             '', $options);
-        $defaultvalue = empty($customdata['from']) ? (time() + 3600 * 24) : $customdata['from'];
-        $mform->setDefault('seltimefrom', $defaultvalue);
+        $mform->setDefault('seltimefrom', $customdata['from']);
 
         $elementgroup[] = $mform->createElement('date_selector', 'seltimeto',
             '', $options);

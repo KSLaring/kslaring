@@ -209,9 +209,7 @@ class local_friadmin_courselist_filter extends local_friadmin_widget implements 
             // Get the competence related municipalities
             // The $leveloneobjs array contains objects with
             // id, name and industrycode properties.
-            //$leveloneobjs = local_friadmin_helper::get_levelone_municipalities($userId);
-            $selmunicipalityicode = $USER->profile['municipality'];
-            $leveloneobjs = array(local_friadmin_helper::get_municipality_from_icode($selmunicipalityicode));
+            $leveloneobjs = local_friadmin_helper::get_levelone_municipalities($userId);
 
             /**
              * @updateDate  17/06/2015

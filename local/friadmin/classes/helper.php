@@ -304,43 +304,4 @@ class local_friadmin_helper {
             throw $ex;
         }//try_catch
     }//getSubcategories
-
-    /**
-     * Get the municipality object from the municipality id
-     * (not the id of the database row).
-     *
-     * @param int $id The municipality id
-     * @return object The municipality data
-     * @throws Exception
-     */
-    public static function get_municipality_from_icode($icode) {
-        /* Variables    */
-        global $DB;
-        $leveloneobjs = new stdClass();
-
-        try {
-            /* Search Criteria  */
-            $params = array(
-                'icode' => $icode
-            );
-
-            /* Execute  */
-            $sql = " SELECT id,
-                            name,
-                            industrycode
-                     FROM   {report_gen_companydata}
-                     WHERE  industrycode = :icode
-                        and hierarchylevel = 1";
-
-            /* Execute  */
-            $result = $DB->get_record_sql($sql, $params);
-            if (!is_null($result)) {
-                $leveloneobjs = $result;
-            }
-        } catch (Exception $ex) {
-            throw $ex;
-        }//try_catch
-
-        return $leveloneobjs;
-    }
 }
