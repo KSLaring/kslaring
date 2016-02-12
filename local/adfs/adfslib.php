@@ -21,7 +21,9 @@ class KS_ADFS {
     /**
      * @param           $userId
      *
-     * @return          string
+     * @return          mixed
+     *
+     * @throws          Exception
      *
      * @creationDate    02/11/2015
      * @author          eFaktor     (fbv)
@@ -42,8 +44,6 @@ class KS_ADFS {
             return $urlRedirect;
         }catch (Exception $ex) {
             throw $ex;
-            //$urlRedirect = urlencode($pluginInfo->ks_point . ERR_LOG_IN);
-            //return $urlRedirect;
         }//try_catch
     }//LogIn_UserADFS
 
