@@ -20,6 +20,7 @@
 require_once('../../config.php');
 require_once ($CFG->libdir.'/externallib.php');
 require_once ('wsadfslib.php');
+require_once ('fellesdata/wsfellesdatalib.php');
 
 class local_wsks_external extends external_api {
 
@@ -124,6 +125,806 @@ class local_wsks_external extends external_api {
             return $result;
         }
     }//wsUserADFS
+
+
+    /**********************/
+    /* FELLESDATA SERVICE */
+    /**********************/
+
+    /***************/
+    /* wsFSCompany */
+    /***************/
+
+    /**
+     * @return          external_function_parameters
+     *
+     * @creationDate    26/01/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Parameters of web service to create, updated or delete KS companies from FELLESDATA
+     */
+    public static function wsFSCompany_parameters() {
+        /* Company Info */
+        $companyFSID            = new external_value(PARAM_TEXT,'Fellesdata Id');
+        $companyKSID            = new external_value(PARAM_INT,'Company KS ID. Update and Delete');
+        $companyName            = new external_value(PARAM_TEXT,'Company Name');
+        $companyIndustryCode    = new external_value(PARAM_TEXT,'Industry Code');
+        $companyLevel           = new external_value(PARAM_INT,'Company Level');
+        $companyParent          = new external_value(PARAM_INT,'Company Parent');
+        $action                 = new external_value(PARAM_INT,'Action. Add/Update/Delete');
+
+        $companiesFS = new external_single_structure(array('fsId'       => $companyFSID,
+                                                           'ksId'       => $companyKSID,
+                                                           'name'       => $companyName,
+                                                           'industry'   => $companyIndustryCode,
+                                                           'level'      => $companyLevel,
+                                                           'parent'     => $companyParent,
+                                                           'action'     => $action));
+
+        return new external_function_parameters(array('companiesFS'=> new external_multiple_structure($companiesFS)));
+    }//wsFSCompany_parameters
+
+    /**
+     * @return          external_single_structure
+     *
+     * @creationDate    26/01/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Response from the service. To know which companies have been synchronized.
+     */
+    public static function wsFSCompany_returns() {
+        $error      = new external_value(PARAM_INT,'Error. True/False');
+        $msgError   = new external_value(PARAM_TEXT,'Error Description');
+
+        /* Companies */
+        $companyFSID    = new external_value(PARAM_TEXT,'Fellesdata Id');
+        $companyKSID    = new external_value(PARAM_INT,'KS Company Id');
+        $imported       = new external_value(PARAM_INT,'Imported');
+        $key            = new external_value(PARAM_INT,'Key Id record imported');
+
+        $companiesInfo  = new external_single_structure(array('fsId'        => $companyFSID,
+                                                              'ksId'        => $companyKSID,
+                                                              'imported'    => $imported,
+                                                              'key'         => $key));
+
+        $existReturn = new external_single_structure(array('error'         => $error,
+                                                           'message'       => $msgError,
+                                                           'companies'     => new external_multiple_structure($companiesInfo)));
+
+        return $existReturn;
+    }//wsFSCompany_returns
+
+    /**
+     * @param           $companiesFS
+     *
+     * @return          array
+     *
+     * @creationDate    26/01/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Web service to synchronize KS Companies and FS Companies.
+     */
+    public static function wsFSCompany($companiesFS) {
+        /* Variables    */
+        global $CFG;
+        $result     = array();
+
+        /* Parameter Validation */
+        $params = self::validate_parameters(self::wsFSCompany_parameters(), array('companiesFS' => $companiesFS));
+
+        /* Web Service Response */
+        $result['error']        = '200';
+        $result['message']      = '';
+        $result['companies']    = array();
+
+        try {
+            /* Synchronize companies */
+            WS_FELLESDATA::Synchronize_FSKS_Companies($companiesFS,$result);
+
+            return $result;
+        }catch (Exception $ex) {
+            if ($result['error'] == '200') {
+                $result['error']    = 500;
+                $result['message']  = $ex->getMessage() . ' ' . $ex->getTraceAsString();
+            }//if_error
+
+            return $result;
+        }//try_catch
+    }//wsFSCompany
+
+    /*****************************/
+    /* wsKSOrganizationStructure */
+    /*****************************/
+
+    /**
+     * @return          external_function_parameters
+     *
+     * @creationDate    26/01/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Web service to get all organization structure from KS Læring for a specific level.
+     */
+    public static function wsKSOrganizationStructure_parameters() {
+        /* Top Company   */
+        $topCompany  = new external_value(PARAM_TEXT,'Top Company');
+        $topLevel    = new external_value(PARAM_INT,'Top Level');
+        $notIn       = new external_value(PARAM_TEXT,'Not In');
+
+        $info = new external_single_structure(array('company'   => $topCompany,
+                                                    'level'     => $topLevel,
+                                                    'notIn'     => $notIn));
+
+        return new external_function_parameters(array('topCompany'  => $info));
+    }//wsKSOrganizationStructure_parameters
+
+    /**
+     * @return          external_single_structure
+     *
+     * @creationDate    26/01/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Response of the web service. Organization structure for a given level.
+     */
+    public static function wsKSOrganizationStructure_returns() {
+        $error      = new external_value(PARAM_INT,'Error. True/False');
+        $msgError   = new external_value(PARAM_TEXT,'Error Description');
+
+        /* Organization Info   */
+        $orgName            = new external_value(PARAM_TEXT,'Level Name');
+        $orgId              = new external_value(PARAM_INT,'Level Id');
+        $orgHierarchy       = new external_value(PARAM_INT,'Level Hierarchy');
+        $orgIndustryCode    = new external_value(PARAM_TEXT,'Industry Code');
+
+        $orgInfo      = new external_single_structure(array('id'            => $orgId,
+                                                            'name'          => $orgName,
+                                                            'industrycode'  => $orgIndustryCode,
+                                                            'level'         => $orgHierarchy));
+
+        $existReturn = new external_single_structure(array('error'         => $error,
+                                                           'message'       => $msgError,
+                                                           'structure'     => new external_multiple_structure($orgInfo)));
+
+        return $existReturn;
+    }//wsKSOrganizationStructure_returns
+
+
+    /**
+     * @param           $topCompany
+     *
+     * @return          array
+     *
+     * @creationDate    26/01/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Get organization structure for a specific level.
+     */
+    public static function wsKSOrganizationStructure($topCompany) {
+        /* Variables    */
+        global $CFG;
+        $result     = array();
+
+        /* Parameter Validation */
+        $params = self::validate_parameters(self::wsKSOrganizationStructure_parameters(), array('topCompany' => $topCompany));
+
+        /* Web Service response */
+        $result['error']        = 200;
+        $result['message']      = '';
+        $result['structure']    = array();
+
+        try {
+            /* Get Organization Structure */
+            WS_FELLESDATA::OrganizationStructureByTop($topCompany,$result);
+
+            return $result;
+        }catch (Exception $ex) {
+            if ($result['error'] == '200') {
+                $result['error']    = 500;
+                $result['message']  = $ex->getMessage() . ' ' . $ex->getTraceAsString();
+            }//if_error
+
+            return $result;
+        }//try_catch
+    }//wsKSOrganizationStructure
+
+    /****************/
+    /* wsFSJobRoles */
+    /****************/
+
+    /**
+     * @return          external_function_parameters
+     *
+     * @creationDate    26/01/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Web service to synchronize the job roles between KS Læring and FELLESDATA
+     */
+    public static function wsFSJobRoles_parameters() {
+        /* job Role Info */
+        $jobRoleFSID        = new external_value(PARAM_TEXT,'Fellesdata Job role Id');
+        $jobRoleKSID        = new external_value(PARAM_TEXT,'KS Job role Id. Update and delete');
+        $jobRoleName        = new external_value(PARAM_TEXT,'Job Role name');
+        $jobRoleIndustry    = new external_value(PARAM_TEXT,'Industry code');
+        $jrLevelZero        = new external_value(PARAM_INT,'Level Zero');
+        $jrLevelOne         = new external_value(PARAM_INT,'Level One');
+        $jrLevelTwo         = new external_value(PARAM_INT,'Level Two');
+        $jrLevelThree       = new external_value(PARAM_INT,'Level Three');
+        $action             = new external_value(PARAM_INT,'Action. Add/Update/delete');
+
+        $relationInfo = new external_single_structure(array('levelZero'     => $jrLevelZero,
+                                                            'levelOne'      => $jrLevelOne,
+                                                            'levelTwo'      => $jrLevelTwo,
+                                                            'levelThree'    => $jrLevelThree
+                                                           ));
+
+        $jobRolesFS = new external_single_structure(array('fsId'        => $jobRoleFSID,
+                                                          'ksId'        => $jobRoleKSID,
+                                                          'name'        => $jobRoleName,
+                                                          'industry'    => $jobRoleIndustry,
+                                                          'relation'    => new external_multiple_structure($relationInfo),
+                                                          'action'      => $action));
+
+        return new external_function_parameters(array('jobRoles'=> new external_multiple_structure($jobRolesFS)));
+    }//wsFSJobRoles_parameters
+
+    /**
+     * @return          external_single_structure
+     *
+     * @creationDate    26/01/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Response of the web service. Job roles have been imported
+     */
+    public static function wsFSJobRoles_returns() {
+        $error      = new external_value(PARAM_INT,'Error. True/False');
+        $msgError   = new external_value(PARAM_TEXT,'Error Description');
+
+        /* Job Roles */
+        $jobRolesFSID   = new external_value(PARAM_TEXT,'FS Job Role Id');
+        $jobRolesKSID   = new external_value(PARAM_INT,'KS Job Role Id');
+        $imported       = new external_value(PARAM_INT,'Imported');
+        $key            = new external_value(PARAM_INT,'Key ID record imported');
+
+        $jobRolesInfo  = new external_single_structure(array('fsId'     => $jobRolesFSID,
+                                                             'ksId'     => $jobRolesKSID,
+                                                             'imported' => $imported,
+                                                             'key'      => $key));
+
+        $existReturn = new external_single_structure(array('error'        => $error,
+                                                           'message'      => $msgError,
+                                                           'jobRoles'     => new external_multiple_structure($jobRolesInfo)));
+
+        return $existReturn;
+    }//wsFSJobRoles_returns
+
+    /**
+     * @param           $jobRolesFS
+     *
+     * @return          array
+     *
+     * @creationDate    26/01/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * To synchronize job roles between KS Læring and FELLESDATA
+     */
+    public static function wsFSJobRoles($jobRolesFS) {
+        /* Variables    */
+        global $CFG;
+        $result     = array();
+
+        /* Parameter Validation */
+        $params = self::validate_parameters(self::wsFSJobRoles_parameters(), array('jobRoles' => $jobRolesFS));
+
+        /* Web Service Response */
+        $result['error']    = 200;
+        $result['message']  = '';
+        $result['jobRoles'] = array();
+
+        try {
+            /* Synchronize Job Roles */
+            WS_FELLESDATA::Synchronize_FSKS_JobRoles($jobRolesFS,$result);
+
+            return $result;
+        }catch (Exception $ex) {
+            if ($result['error'] == '200') {
+                $result['error']    = 500;
+                $result['message']  = $ex->getMessage() . ' ' . $ex->getTraceAsString();
+            }//if_error
+
+            return $result;
+        }//try_catch
+    }//wsFSJobRoles
+
+    /****************/
+    /* wsKSJobRoles */
+    /****************/
+
+    /**
+     * @return          external_function_parameters
+     *
+     * @creationDate    26/01/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Parameters - Web service to get all job roles from KS Læring that belong to a specific level zero
+     */
+    public static function wsKSJobRoles_parameters() {
+        /* Level   */
+        $level  = new external_value(PARAM_INT,'Top Level to Import');
+        $notIn  = new external_value(PARAM_TEXT,'Not Int');
+
+        $levelTop = new external_single_structure(array('zero'  => $level,
+                                                        'notIn' => $notIn));
+
+        return new external_function_parameters(array('hierarchy'=> $levelTop));
+    }//wsKSJobRoles_parameters
+
+    public static function wsKSJobRoles_returns() {
+        $error      = new external_value(PARAM_INT,'Error. True/False');
+        $msgError   = new external_value(PARAM_TEXT,'Error Description');
+
+        /* Job Role Info   */
+        $jobRoleID      = new external_value(PARAM_INT,'Job Role Id');
+        $industryCode   = new external_value(PARAM_TEXT,'Industry Code');
+        $jobRoleName    = new external_value(PARAM_TEXT,'Job Role Name');
+        $jrLevelZero    = new external_value(PARAM_INT,'Job Role Level Zero');
+        $jrLevelOne     = new external_value(PARAM_INT,'Job Role Level One');
+        $jrLevelTwo     = new external_value(PARAM_INT,'Job Role Level Two');
+        $jrLevelThree   = new external_value(PARAM_INT,'Job Role Level Three');
+
+
+        $relationInfo = new external_single_structure(array('levelZero'     => $jrLevelZero,
+                                                            'levelOne'      => $jrLevelOne,
+                                                            'levelTwo'      => $jrLevelTwo,
+                                                            'levelThree'    => $jrLevelThree
+                                                           ));
+
+        $jobRoleInfo    = new external_single_structure(array('id'              => $jobRoleID,
+                                                              'name'            => $jobRoleName,
+                                                              'industryCode'    => $industryCode,
+                                                              'relation'        => new external_multiple_structure($relationInfo)
+                                                              ));
+
+        $existReturn = new external_single_structure(array('error'      => $error,
+                                                           'message'    => $msgError,
+                                                           'jobroles'   => new external_multiple_structure($jobRoleInfo)));
+
+        return $existReturn;
+    }//wsKSJobRoles_returns
+
+    /**
+     * @param           $hierarchy
+     *
+     * @return          array
+     *
+     * @creationDate    26/01/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * To get all job roles from KS Læring that belong to a specific level zero
+     */
+    public static function wsKSJobRoles($hierarchy) {
+        /* Variables    */
+        global $CFG;
+        $result     = array();
+
+        /* Parameter Validation */
+        $params = self::validate_parameters(self::wsKSJobRoles_parameters(), array('hierarchy' => $hierarchy));
+
+        /* Web service response */
+        $result['error']        = 200;
+        $result['message']      = '';
+        $result['jobroles']     = array();
+
+        try {
+            /* Get Job Roles connected with a level */
+            WS_FELLESDATA::JobRolesByLevel($hierarchy,$result);
+
+            return $result;
+        }catch (Exception $ex) {
+            if ($result['error'] == '200') {
+                $result['error']    = 500;
+                $result['message']  = $ex->getMessage() . ' ' . $ex->getTraceAsString();
+            }//if_error
+
+            return $result;
+        }//try_catch
+    }//wsKSJobRoles
+
+    /************************/
+    /* wsKSJobRolesGenerics */
+    /************************/
+
+    /**
+     * @return          external_function_parameters
+     *
+     * @creationDate    26/01/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Parameters - Web service to get all generics job roles from KS Læring
+     */
+    public static function wsKSJobRolesGenerics_parameters() {
+        $notIn = new external_value(PARAM_TEXT,'Not IN');
+
+        return new external_function_parameters(array('notIn'=> $notIn));
+    }//wsKSJobRolesGenerics_parameters
+
+    /**
+     * @return          external_single_structure
+     *
+     * @creationDate    26/01/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Web service response. Generics job roles
+     */
+    public static function wsKSJobRolesGenerics_returns() {
+        $error      = new external_value(PARAM_INT,'Error. True/False');
+        $msgError   = new external_value(PARAM_TEXT,'Error Description');
+
+        /* Job Role Info   */
+        $jobRoleID      = new external_value(PARAM_INT,'Job Role Id');
+        $jobRoleName    = new external_value(PARAM_TEXT,'Job Role Name');
+        $industryCode   = new external_value(PARAM_TEXT,'Industry Code');
+
+        $jobRoleInfo    = new external_single_structure(array('id'              => $jobRoleID,
+                                                              'name'            => $jobRoleName,
+                                                              'industryCode'    => $industryCode));
+
+        $existReturn = new external_single_structure(array('error'      => $error,
+                                                           'message'    => $msgError,
+                                                           'jobroles'   => new external_multiple_structure($jobRoleInfo)));
+
+        return $existReturn;
+    }//wsKSJobRolesGenerics_returns
+
+    /**
+     * @param           $notIn
+     *
+     * @return          array
+     *
+     * @creationDate    26/01/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Web service to get all generics job roles from KS Læring
+     */
+    public static function wsKSJobRolesGenerics($notIn) {
+        /* Variables    */
+        global $CFG;
+        $result     = array();
+
+        /* Parameter Validation */
+        $params = self::validate_parameters(self::wsKSJobRolesGenerics_parameters(), array('notIn' => $notIn));
+
+        /* Web Service response */
+        $result['error']    = 200;
+        $result['message']  = '';
+        $result['jobroles'] = array();
+
+        try {
+            /* Get Job Roles generics */
+            WS_FELLESDATA::GenericsJobRoles($notIn,$result);
+
+            return $result;
+        }catch (Exception $ex) {
+            if ($result['error'] == '200') {
+                $result['error']    = 500;
+                $result['message']  = $result['message']. ' ' . $ex->getMessage() . ' ' . $ex->getTraceAsString();
+            }//if_error
+
+            return $result;
+        }//try_catch
+    }//wsKSJobRolesGenerics
+
+    /****************************/
+    /* wsUserCompetenceCompany  */
+    /****************************/
+
+    /**
+     * @return          external_function_parameters
+     *
+     * @creationDate    26/01/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Parameters - Web service to synchronize user competence company between KS Læring and FELLESDATA
+     */
+    public static function wsUserCompetenceCompany_parameters() {
+        /* User Competence Company Info */
+        $personalNumber = new external_value(PARAM_TEXT,'Personal Number');
+        $fsId           = new external_value(PARAM_INT,'FS Company Id');
+        $companyID      = new external_value(PARAM_INT,'Company Id KS');
+        $level          = new external_value(PARAM_INT,'Level');
+        $manager        = new external_value(PARAM_INT,'Manager');
+        $action         = new external_value(PARAM_INT,'Action. Add/Update/Delete');
+
+        $userCompetence = new external_single_structure(array('personalNumber'  => $personalNumber,
+                                                              'fsId'            => $fsId,
+                                                              'ksId'            => $companyID,
+                                                              'level'           => $level,
+                                                              'manager'         => $manager,
+                                                              'action'          => $action));
+
+        return new external_function_parameters(array('usersCompetence'=> new external_multiple_structure($userCompetence)));
+    }//wsUserCompetenceCompany_parameters
+
+    /**
+     * @return          external_single_structure
+     *
+     * @creationDate    26/01/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Response fro the web service. Competences imported
+     */
+    public static function wsUserCompetenceCompany_returns() {
+        $error      = new external_value(PARAM_INT,'Error. True/False');
+        $msgError   = new external_value(PARAM_TEXT,'Error Description');
+
+        /* User Competence Company Info */
+        $personalNumber = new external_value(PARAM_TEXT,'Personal Number');
+        $imported       = new external_value(PARAM_INT,'True/False');
+        $key            = new external_value(PARAM_INT,'Key Id record imported');
+
+        $userCompetence = new external_single_structure(array('personalNumber'  => $personalNumber,
+                                                              'imported'        => $imported,
+                                                              'key'             => $key));
+
+        $existReturn = new external_single_structure(array('error'              => $error,
+                                                           'message'            => $msgError,
+                                                           'usersCompetence'    => new external_multiple_structure($userCompetence)));
+
+        return $existReturn;
+    }//wsUserCompetenceCompany_returns
+
+    /**
+     * @param           $usersCompetence
+     *
+     * @return          array
+     *
+     * @creationDate    26/01/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * To synchronize user competence company between KS Læring and FELLESDATA
+     */
+    public static function wsUserCompetenceCompany($usersCompetence) {
+        /* Variables    */
+        global $CFG;
+        $result     = array();
+
+        /* Parameter Validation */
+        $params = self::validate_parameters(self::wsUserCompetenceCompany_parameters(), array('usersCompetence' => $usersCompetence));
+
+        /* Web Service response */
+        $result['error']            = 200;
+        $result['message']          = '';
+        $result['usersCompetence']  = array();
+
+        try {
+            /* Synchronize Users Competences */
+            WS_FELLESDATA::Synchronize_UserCompetenceCompany($usersCompetence,$result);
+
+            return $result;
+        }catch (Exception $ex) {
+            if ($result['error'] == '200') {
+                $result['error']    = 500;
+                $result['message']  = $ex->getMessage() . ' ' . $ex->getTraceAsString();
+            }//if_error
+
+            return $result;
+        }//try_catch
+    }//wsUserCompetenceCompany
+
+    /****************************/
+    /* wsUserCompetenceJobRole  */
+    /****************************/
+
+    /**
+     * @return          external_function_parameters
+     *
+     * @creationDate    26/01/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Parameters - Web service to synchronize user competence job roles between KS Læring and FELLESDATA
+     */
+    public static function wsUserCompetenceJobRole_parameters() {
+        /* User Competence Job Role Info */
+        $personalNumber = new external_value(PARAM_TEXT,'Personal Number');
+        $jobRoleID      = new external_value(PARAM_TEXT,'Job Roles Id');
+        $jobRoleFSId    = new external_value(PARAM_TEXT,'FS Job Role Id');
+        $companyID      = new external_value(PARAM_INT,'Company Id');
+        $fsId           = new external_value(PARAM_INT,'FS Comapny Id');
+        $level          = new external_value(PARAM_INT,'Level');
+        $action         = new external_value(PARAM_INT,'Action. Add/Update/Delete');
+
+        $userCompetence = new external_single_structure(array('personalNumber'  => $personalNumber,
+                                                              'jobrole'         => $jobRoleID,
+                                                              'fsJrId'          => $jobRoleFSId,
+                                                              'company'         => $companyID,
+                                                              'fsId'            => $fsId,
+                                                              'level'           => $level,
+                                                              'action'          => $action));
+
+        return new external_function_parameters(array('usersCompetence'=> new external_multiple_structure($userCompetence)));
+    }//wsUserCompetenceJobRole_parameters
+
+    /**
+     * @return          external_single_structure
+     *
+     * @creationDate    26/01/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Response of the web service. Competences imported.
+     */
+    public static function wsUserCompetenceJobRole_returns() {
+        $error      = new external_value(PARAM_INT,'Error. True/False');
+        $msgError   = new external_value(PARAM_TEXT,'Error Description');
+
+        /* User Competence Company Info */
+        $personalNumber = new external_value(PARAM_TEXT,'Personal Number');
+        $imported       = new external_value(PARAM_INT,'True/False');
+        $key            = new external_value(PARAM_INT,'Key Id record imported');
+
+        $userCompetence = new external_single_structure(array('personalNumber'  => $personalNumber,
+                                                              'imported'        => $imported,
+                                                              'key'             => $key));
+
+        $existReturn = new external_single_structure(array('error'              => $error,
+                                                           'message'            => $msgError,
+                                                           'usersCompetence'    => new external_multiple_structure($userCompetence)));
+
+        return $existReturn;
+    }//wsUserCompetenceJobRole_returns
+
+    /**
+     * @param           $usersCompetence
+     *
+     * @return          array
+     *
+     * @creationDate    26/01/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * To synchronize user competence job roles between KS Læring and FELLESDATA
+     */
+    public static function wsUserCompetenceJobRole($usersCompetence) {
+        /* Variables    */
+        global $CFG;
+        $result     = array();
+
+        /* Parameter Validation */
+        $params = self::validate_parameters(self::wsUserCompetenceJobRole_parameters(), array('usersCompetence' => $usersCompetence));
+
+        /* Web Service Response */
+        $result['error']            = 200;
+        $result['message']          = '';
+        $result['usersCompetence']  = array();
+
+        try {
+            /* Synchronization */
+            WS_FELLESDATA::Synchronize_UserCompetenceJobRole($usersCompetence,$result);
+
+            return $result;
+        }catch (Exception $ex) {
+            if ($result['error'] == '200') {
+                $result['error']    = 500;
+                $result['message']  = $ex->getMessage() . ' ' . $ex->getTraceAsString();
+            }//if_error
+
+            return $result;
+        }//try_catch
+    }//wsUserCompetenceJobRole
+
+    /****************************/
+    /* wsUsersAccounts          */
+    /****************************/
+
+    /**
+     * @return          external_function_parameters
+     *
+     * @creationDate    26/01/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Parameters - Web service to synchronize the users accounts between KS Læring and FELLESDATA
+     */
+    public static function wsUsersAccounts_parameters() {
+        /* User account info */
+        $personalNumber = new external_value(PARAM_TEXT,'Personal number');
+        $firstName      = new external_value(PARAM_TEXT,'First Name');
+        $lastName       = new external_value(PARAM_TEXT,'Last Name');
+        $eMail          = new external_value(PARAM_TEXT,'eMail');
+        $action         = new external_value(PARAM_INT,'Action. Add/Update/Delete');
+
+        $accountInfo = new external_single_structure(array('personalnumber' => $personalNumber,
+                                                           'firstname'      => $firstName,
+                                                           'lastname'       => $lastName,
+                                                           'email'          => $eMail,
+                                                           'action'         => $action));
+
+        return new external_function_parameters(array('usersAccounts'=> new external_multiple_structure($accountInfo)));
+    }//wsUsersAccounts_parameters
+
+    /**
+     * @return          external_single_structure
+     *
+     * @creationDate    26/01/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Web service response. Users accounts imported
+     */
+    public static function wsUsersAccounts_returns() {
+        $error      = new external_value(PARAM_INT,'Error. True/False');
+        $msgError   = new external_value(PARAM_TEXT,'Error Description');
+
+        /* Account Info */
+        $personalNumber = new external_value(PARAM_TEXT,'Personal Number');
+        $imported       = new external_value(PARAM_INT,'True/False');
+        $key            = new external_value(PARAM_INT,'Key Id record imported');
+
+        $accountInfo = new external_single_structure(array('personalnumber'  => $personalNumber,
+                                                           'imported'        => $imported,
+                                                           'key'             => $key));
+
+        $existReturn = new external_single_structure(array('error'          => $error,
+                                                           'message'        => $msgError,
+                                                           'usersAccounts'  => new external_multiple_structure($accountInfo)));
+
+        return $existReturn;
+    }//wsUsersAccounts_returns
+
+    /**
+     * @param           $usersAccounts
+     *
+     * @return          array
+     *
+     * @creationDate    26/01/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * To synchronize the users accounts between KS Læring and FELLESDATA
+     */
+    public static function wsUsersAccounts($usersAccounts) {
+        /* Variables    */
+        global $CFG;
+        $result     = array();
+
+        /* Parameter Validation */
+        $params = self::validate_parameters(self::wsUsersAccounts_parameters(), array('usersAccounts' => $usersAccounts));
+
+        /* Web Service Response */
+        $result['error']            = 200;
+        $result['message']          = '';
+        $result['usersAccounts']    = array();
+
+        try {
+            /* Synchronization */
+            WS_FELLESDATA::Synchronize_UsersAccounts($usersAccounts,$result);
+
+            return $result;
+        }catch (Exception $ex) {
+            if ($result['error'] == '200') {
+                $result['error']    = 500;
+                $result['message']  = $ex->getMessage() . ' ' . $ex->getTraceAsString();
+            }//if_error
+
+            return $result;
+        }//try_catch
+    }//wsUsersAccounts
 
 
     /*****************************/

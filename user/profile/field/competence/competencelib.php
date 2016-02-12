@@ -221,7 +221,8 @@ class Competence {
                                 co_one.id 	as 'levelone',
                                 co_two.id 	as 'leveltwo',
                                 uicd.companyid 		                    as 'levelthree',
-                                IF(uicd.jobroles,uicd.jobroles,0) 		as 'jobroles'
+                                IF(uicd.jobroles,uicd.jobroles,0) 		as 'jobroles',
+                                uicd.editable
                      FROM		{user_info_competence_data} 	uicd
                         -- LEVEL TWO
                         JOIN	{report_gen_company_relation}   cr_two	ON 	cr_two.companyid 		= uicd.companyid
@@ -256,6 +257,7 @@ class Competence {
                     $info_hierarchy->levelTwo       = $instance->leveltwo;
                     $info_hierarchy->levelOne       = $instance->levelone;
                     $info_hierarchy->levelZero      = $instance->levelzero;
+                    $info_hierarchy->editable       = $instance->editable;
                     $info_hierarchy->manager        = self::IsManager($user_id,$info_hierarchy);
                     /* Reporter */
                     if ($info_hierarchy->manager) {
@@ -1094,22 +1096,34 @@ class Competence {
                             /* Col Zero -- Edit   */
                             $content .= html_writer::start_div('col_zero');
                                 /* Edit Link    */
-                                $url_edit = new moodle_url('/user/profile/field/competence/actions/edit_competence.php',array('id' =>$user_id,'icd' => $competence->data,'ic' => $competence->competence));
-                                $content .= html_writer::link($url_edit,
-                                                              html_writer::empty_tag('img', array('src'=>$OUTPUT->pix_url('t/edit'),
-                                                                                     'alt'=>get_string('btn_edit_users','profilefield_competence'),
-                                                                                     'class'=>'iconsmall')),
-                                                              array('title'=>get_string('btn_edit_users','profilefield_competence')));
+                                if ($competence->editable) {
+                                    $url_edit = new moodle_url('/user/profile/field/competence/actions/edit_competence.php',array('id' =>$user_id,'icd' => $competence->data,'ic' => $competence->competence));
+                                    $content .= html_writer::link($url_edit,
+                                                                  html_writer::empty_tag('img', array('src'=>$OUTPUT->pix_url('t/edit'),
+                                                                                         'alt'=>get_string('btn_edit_users','profilefield_competence'),
+                                                                                         'class'=>'iconsmall')),
+                                                                  array('title'=>get_string('btn_edit_users','profilefield_competence')));
+                                }else {
+                                    $content .=  html_writer::empty_tag('img', array('src'=>$OUTPUT->pix_url('t/edit'),
+                                                                        'alt'=>get_string('btn_edit_users','profilefield_competence'),
+                                                                        'class'=>'iconsmall'));
+                                }//if_editable
                             $content .= html_writer::end_div();//col_zero
 
                             /* Col Zero -- Toggle   */
                             $content .= html_writer::start_div('col_zero');
-                                $url_deleted = new moodle_url('/user/profile/field/competence/actions/delete_competence.php',array('id' =>$user_id,'icd' => $competence->data,'ic' => $competence->competence));
-                                $content .= html_writer::link($url_deleted,
-                                                              html_writer::empty_tag('img', array('src'=>$OUTPUT->pix_url('t/delete'),
-                                                                                     'alt'=>get_string('lnk_delete','profilefield_competence'),
-                                                                                     'class'=>'iconsmall')),
-                                                              array('title'=>get_string('lnk_delete','profilefield_competence')));
+                                if ($competence->editable) {
+                                    $url_deleted = new moodle_url('/user/profile/field/competence/actions/delete_competence.php',array('id' =>$user_id,'icd' => $competence->data,'ic' => $competence->competence));
+                                    $content .= html_writer::link($url_deleted,
+                                                                  html_writer::empty_tag('img', array('src'=>$OUTPUT->pix_url('t/delete'),
+                                                                                         'alt'=>get_string('lnk_delete','profilefield_competence'),
+                                                                                         'class'=>'iconsmall')),
+                                                                  array('title'=>get_string('lnk_delete','profilefield_competence')));
+                                }else {
+                                    $content .= html_writer::empty_tag('img', array('src'=>$OUTPUT->pix_url('t/delete'),
+                                                                       'alt'=>get_string('lnk_delete','profilefield_competence'),
+                                                                       'class'=>'iconsmall'));
+                                }//if_editable
                             $content .= html_writer::end_div();//col_zero
                         $content .= html_writer::end_div();//competence_table_row
 

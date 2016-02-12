@@ -19,6 +19,10 @@
 function xmldb_profilefield_competence_upgrade($old_version) {
     /* Variables    */
     global $DB;
+    $fieldLevel     = null;
+    $fieldEditable  = null;
+    $fieldApproved  = null;
+    $fieldRejected  = null;
 
     try {
         /* Manager  */
@@ -81,6 +85,51 @@ function xmldb_profilefield_competence_upgrade($old_version) {
                 }//if_exists
             }
         }//if_old_version
+
+        if ($old_version <2016012602) {
+            if ($db_man->table_exists('user_info_competence_data')) {
+                $tblCompetenceData = new xmldb_table('user_info_competence_data');
+
+                /* New Fields   */
+                /* Level    */
+                $fieldLevel = new xmldb_field('level', XMLDB_TYPE_INTEGER, '2', null, null, null,null,'companyid');
+                if (!$db_man->field_exists($tblCompetenceData, $fieldLevel)) {
+                    $db_man->add_field($tblCompetenceData, $fieldLevel);
+                }//if_exists_level
+
+                /* Editable */
+                $fieldEditable = new xmldb_field('editable', XMLDB_TYPE_INTEGER, '2', null, null, null,null,'jobroles');
+                if (!$db_man->field_exists($tblCompetenceData, $fieldEditable)) {
+                    $db_man->add_field($tblCompetenceData, $fieldEditable);
+                }//if_exists_editable
+
+                /* Approved */
+                $fieldApproved = new xmldb_field('approved', XMLDB_TYPE_INTEGER, '2', null, null, null,null,'editable');
+                if (!$db_man->field_exists($tblCompetenceData, $fieldApproved)) {
+                    $db_man->add_field($tblCompetenceData, $fieldApproved);
+                }//if_exists_approved
+
+                /* Rejected */
+                $fieldRejected = new xmldb_field('rejected', XMLDB_TYPE_INTEGER, '2', null, null, null,null,'approved');
+                if (!$db_man->field_exists($tblCompetenceData, $fieldRejected)) {
+                    $db_man->add_field($tblCompetenceData, $fieldRejected);
+                }//if_exists_rejected
+
+                /* Update the present users level = 3   */
+                $rdo = $DB->get_records('user_info_competence_data',null,'','id,level');
+                foreach ($rdo as $instance) {
+                    $instance->level = 3;
+                    /* Update */
+                    $DB->update_record('user_info_competence_data',$instance);
+                }
+                
+                $rdo = $DB->get_records('user_info_competence_data',null,'id','id,editable');
+                foreach ($rdo as $instance) {
+                    $instance->editable = 1;
+                    $DB->update_record('user_info_competence_data',$rdo);
+                }
+            }
+        }//if_old_version_2016012600
 
         return true;
     }catch (Exception $ex) {

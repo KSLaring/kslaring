@@ -80,8 +80,16 @@ class CompetenceProfile_Install {
                 $table_competence_data->add_field('userid',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, null,null);
                 /* Company      --> Company. Foreign Key to mdl_report_gen_company_data      */
                 $table_competence_data->add_field('companyid',XMLDB_TYPE_INTEGER,'10',null, null, null,null);
+                /* Level    */
+                $table_competence_data->add_field('level',XMLDB_TYPE_INTEGER,'2',null, null, null,null);
                 /* Job Roles        -->     Long text. All the job roles connected to the user and the company      */
                 $table_competence_data->add_field('jobroles',XMLDB_TYPE_TEXT,null,null, null, null,null);
+                /* Editable */
+                $table_competence_data->add_field('editable',XMLDB_TYPE_INTEGER,'2',null, null, null,null);
+                /* Approved */
+                $table_competence_data->add_field('approved',XMLDB_TYPE_INTEGER,'2',null, null, null,null);
+                /* Rejected */
+                $table_competence_data->add_field('rejected',XMLDB_TYPE_INTEGER,'2',null, null, null,null);
                 /* Time modified    -->     The last changes    */
                 $table_competence_data->add_field('timemodified',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, null,null);
 
