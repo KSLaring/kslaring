@@ -126,7 +126,7 @@ function xmldb_profilefield_competence_upgrade($old_version) {
                 $rdo = $DB->get_records('user_info_competence_data',null,'id','id,editable');
                 foreach ($rdo as $instance) {
                     $instance->editable = 1;
-                    $DB->update_record('user_info_competence_data',$rdo);
+                    $DB->update_record('user_info_competence_data',$instance);
                 }
             }
         }//if_old_version_2016012600
