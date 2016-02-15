@@ -156,20 +156,33 @@ function theme_kommit_set_logo($css, $logo) {
  *
  * @param stdClass $course
  * @param stdClass $cm
- * @param context $context
- * @param string $filearea
- * @param array $args
- * @param bool $forcedownload
- * @param array $options
+ * @param context  $context
+ * @param string   $filearea
+ * @param array    $args
+ * @param bool     $forcedownload
+ * @param array    $options
+ *
  * @return bool
  */
-function theme_kommit_pluginfile($course, $cm, $context, $filearea, $args, $forcedownload, array $options = array()) {
-    if ($context->contextlevel == CONTEXT_SYSTEM and $filearea === 'logo') {
+function theme_kommit_pluginfile($course, $cm, $context, $filearea, $args,
+    $forcedownload, array $options = array()) {
+    static $theme;
+
+    if (empty($theme)) {
         $theme = theme_config::load('kommit');
-        return $theme->setting_file_serve('logo', $args, $forcedownload, $options);
+    }
+
+    if ($context->contextlevel == CONTEXT_SYSTEM) {
+        if (preg_match("/^(logo|heroimg)$/", $filearea)) {
+            return $theme->setting_file_serve($filearea, $args, $forcedownload, $options);
+        } else {
+            send_file_not_found();
+        }
     } else {
         send_file_not_found();
     }
+
+    return true;
 }
 
 /**

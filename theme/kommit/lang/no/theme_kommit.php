@@ -26,6 +26,12 @@ $string['choosereadme'] = 'Hei, jeg er Kommit-designet';
 
 $string['configtitle'] = 'Kommit';
 
+$string['genericsettings'] = 'Generic settings';
+$string['frontpagesettings'] = 'Frontpage settings';
+
+$string['heroimage'] = 'Big image';
+$string['heroimagedesc'] = 'Please upload the big image shown on the frontpage.';
+
 $string['customcss'] = 'Egendefinert CSS';
 $string['customcssdesc'] = 'All CSS du legger til her vil benyttes på alle sider og gjør det lettere å gjøre mindre endringer i dette designet.';
 

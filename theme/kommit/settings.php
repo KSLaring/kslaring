@@ -30,7 +30,14 @@
 
 defined('MOODLE_INTERNAL') || die;
 
-if ($ADMIN->fulltree) {
+$settings = null;
+
+if (is_siteadmin()) {
+    $ADMIN->add('themes', new admin_category('theme_kommit', 'KommIT'));
+
+    /* Generic Settings */
+    $temp = new admin_settingpage('theme_kommit_generic',
+        get_string('genericsettings', 'theme_kommit'));
 
     // Invert Navbar to dark background.
     $name = 'theme_kommit/invert';
@@ -38,15 +45,15 @@ if ($ADMIN->fulltree) {
     $description = get_string('invertdesc', 'theme_kommit');
     $setting = new admin_setting_configcheckbox($name, $title, $description, 0);
     $setting->set_updatedcallback('theme_reset_all_caches');
-    $settings->add($setting);
+    $temp->add($setting);
 
     // Logo file setting.
     $name = 'theme_kommit/logo';
-    $title = get_string('logo','theme_kommit');
+    $title = get_string('logo', 'theme_kommit');
     $description = get_string('logodesc', 'theme_kommit');
     $setting = new admin_setting_configstoredfile($name, $title, $description, 'logo');
     $setting->set_updatedcallback('theme_reset_all_caches');
-    $settings->add($setting);
+    $temp->add($setting);
 
     // Custom CSS file.
     $name = 'theme_kommit/customcss';
@@ -55,7 +62,7 @@ if ($ADMIN->fulltree) {
     $default = '';
     $setting = new admin_setting_configtextarea($name, $title, $description, $default);
     $setting->set_updatedcallback('theme_reset_all_caches');
-    $settings->add($setting);
+    $temp->add($setting);
 
     // Footnote setting.
     $name = 'theme_kommit/footnote';
@@ -64,5 +71,22 @@ if ($ADMIN->fulltree) {
     $default = '';
     $setting = new admin_setting_confightmleditor($name, $title, $description, $default);
     $setting->set_updatedcallback('theme_reset_all_caches');
-    $settings->add($setting);
+    $temp->add($setting);
+
+    $ADMIN->add('theme_kommit', $temp);
+
+
+    /* Frontpage Settings */
+    $temp = new admin_settingpage('theme_kommit_frontpage',
+        get_string('frontpagesettings', 'theme_kommit'));
+
+    // Hero Image.
+    $name = 'theme_kommit/heroimg';
+    $title = get_string('heroimage', 'theme_kommit');
+    $description = get_string('heroimagedesc', 'theme_kommit');
+    $setting = new admin_setting_configstoredfile($name, $title, $description, 'heroimg');
+    $setting->set_updatedcallback('theme_reset_all_caches');
+    $temp->add($setting);
+
+    $ADMIN->add('theme_kommit', $temp);
 }
