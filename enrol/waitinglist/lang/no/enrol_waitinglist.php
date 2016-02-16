@@ -222,3 +222,18 @@ $string['rpt_approved']     = 'Godkjent';
 $string['rpt_rejected']     = 'Avslått';
 $string['rpt_participants'] = 'Maks antall deltakere';
 $string['rpt_back']         = 'Tilbake';
+
+$string['mng_approved_subject']  = '{$a->site}: Application for enrolment in course {$a->course}';
+$string['mng_approved_body_one'] = '<p>We send you this confirmation, because of you are set as manager for the next companies: </p>';
+$string['mng_approved_body_two'] = '<p>We would like to inform you that the <b>{$a->user}</b>, which belongs to the next companies: </p>
+                                    {$a->companies_user}
+                                    <p> has just been enrolled to the course <b>{$a->course}</b>.</p>
+                                    <p>Course information:</p>
+                                    <ul>
+                                        <li><u>Course date</u>: {$a->date}</li>
+                                        <li><u>Instructor</u>: {$a->instructor}</li>
+                                        <li><u>Location</u>: {$a->location}</li>
+                                        <li>More information about the course in {$a->homepage}</li>
+                                    </ul>';
+$string['mng_approved_body_end'] = '<p>This is an automatic generated email from {$a->site} and you cannot answer this email.';
+$string['home_page']    = 'Hjemmesider';

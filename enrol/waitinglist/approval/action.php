@@ -50,6 +50,10 @@ if (count($args) != 2) {
                 case APPROVED_ACTION:
                     $strTitle = get_string('approved_mnd','enrol_waitinglist');
 
+                    /* Send Notification Manager Approved   */
+                    $infoNotification = Approval::Info_NotificationApproved($infoRequest->userid,$infoRequest->courseid);
+                    Approval::SendApprovedNotification_Managers($infoNotification);
+
                     break;
                 case REJECTED_ACTION:
                     $strTitle = get_string('rejected_mnd','enrol_waitinglist');
