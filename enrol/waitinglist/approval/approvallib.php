@@ -619,6 +619,117 @@ Class Approval {
         }//try_catch
     }//Display_ApprovalRequests
 
+    /**
+     * @param           $userId
+     * @param           $courseId
+     *
+     * @return          stdClass
+     * @throws          Exception
+     *
+     * @creationDate    16/02/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Get the information to send when a request has been approved
+     */
+    public static function Info_NotificationApproved($userId,$courseId) {
+        /* Variables    */
+        global $SITE;
+        $infoNotification   = null;
+        $course             = null;
+        $managers           = null;
+        $competenceUser     = null;
+
+        try {
+            /* Competence User */
+            $competenceUser = self::GetCompetence_User($userId);
+
+            /* Info Notification    */
+            $infoNotification = new stdClass();
+            $infoNotification->site     = $SITE->shortname;
+            /* Add Info Course      */
+            self::GetInfoCourse_NotificationApproved($courseId,$infoNotification);
+            /* Add Info Managers    */
+            $infoNotification->managers = self::GetInfoManagers_NotificationApproved($competenceUser);
+            /* Add Info User        */
+            self::GetInfoUser_NotificationApproved($userId,$infoNotification);
+
+            return $infoNotification;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//GetInfo_NotificationApproved
+
+    /**
+     * @param           $infoNotification
+     *
+     * @throws          Exception
+     *
+     * @creationDate    16/02/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Send the notifications for approved request to all managers
+     */
+    public static function SendApprovedNotification_Managers($infoNotification) {
+        /* Variables    */
+        global $SITE;
+        $bodyText   = null;
+        $bodyHtml   = null;
+        $strSubject = null;
+        $strBody    = null;
+        $managers   = null;
+        $companies  = null;
+        $user       = null;
+
+        try {
+            /* Get Managers */
+            $managers = $infoNotification->managers;
+
+            /* Subject  */
+            $strSubject = get_string('mng_approved_subject','enrol_waitinglist',$infoNotification);
+
+            /* Send eMail to managers   */
+            foreach ($managers as $manager) {
+                $companies = '';
+
+                /* Get Info Body eMail  */
+                /* Info User Courses    */
+                $strBody = get_string('mng_approved_body_two','enrol_waitinglist',$infoNotification);
+
+                /* Info Manager */
+                $companies .= '<ul>';
+                foreach ($manager->companies as $info) {
+                    $companies .= '<li>' . $info . '</li>';
+                }
+                $companies .= '</ul>';
+                $strBody .= get_string('mng_approved_body_one','enrol_waitinglist') . $companies . "</br>";
+
+                $strBody .= "</br>" . "</br>" . get_string('mng_approved_body_end','enrol_waitinglist',$infoNotification);
+
+                /* Content Mail */
+                $bodyText = null;
+                $bodyHtml = null;
+                if (strpos($strBody, '<') === false) {
+                    // Plain text only.
+                    $bodyText = $strBody;
+                    $bodyHtml = text_to_html($bodyText, null, false, true);
+                } else {
+                    // This is most probably the tag/newline soup known as FORMAT_MOODLE.
+                    $bodyHtml = format_text($strBody, FORMAT_MOODLE);
+                    $bodyText = html_to_text($bodyHtml);
+                }
+
+                /* Send eMail   */
+                $user = get_complete_user_data('id',$manager->id);
+                email_to_user($user, $SITE->shortname, $strSubject, $bodyText,$bodyHtml);
+            }//for_managers
+
+            /* Body */
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_Catch
+    }//SendApprovedNotification_Managers
 
     /***********/
     /* PRIVATE */
@@ -703,10 +814,11 @@ Class Approval {
         $sql            = null;
         $rdo            = null;
         $myManagers     = array();
+        $infoManager    = null;
 
         try {
             /* Get levels of Managers   */
-            $sql = " SELECT		u.id
+            $sql = " SELECT		DISTINCT u.id
                      FROM		{report_gen_company_manager}  rm
                         JOIN	{user}						  u 	ON 	u.id 		= rm.managerid
                                                                     AND	u.deleted 	= 0
@@ -740,6 +852,239 @@ Class Approval {
             throw $ex;
         }//try_catch
     }//GetManager_User
+
+    /**
+     * @param           $courseId
+     * @param           $infoNotification
+     *
+     * @throws          Exception
+     *
+     * @creationDate    15/02/2016
+     * @author          efaktor     (fbv)
+     *
+     * Description
+     * Get course information that has been approved
+     */
+    private static function GetInfoCourse_NotificationApproved($courseId,&$infoNotification) {
+        /* Variables */
+        global $DB;
+        $sql        = null;
+        $params     = null;
+        $rdo        = null;
+        $instructor = null;
+        $urlHome    = null;
+
+        try {
+            /* Course Home Page */
+            $urlHome = new moodle_url('/local/course_page/home_page.php',array('id' => $courseId));
+
+            /* Search Criteria  */
+            $params = array();
+            $params['course']   = $courseId;
+            $params['visible']  = 1;
+
+            /* SQL Isntruction  */
+            $sql = " SELECT	c.id,
+                            c.fullname,
+                            c.summary,
+                            c.startdate,
+                            lo.name   as 'location',
+                            ci.value  as 'instructor',
+                            u.firstname,
+                            u.lastname,
+                            u.email
+                     FROM		{course}						c
+                        -- Instructors
+                        JOIN		{course_format_options}	ci 	ON 	ci.courseid = c.id
+                                                                AND	ci.name		= 'manager'
+                        LEFT JOIN	{user}					u  	ON 	u.id 		= ci.value
+                        -- Location
+                        JOIN		{course_format_options}	cl 	ON 	cl.courseid = c.id
+                                                                    AND	cl.name like '%location%'
+                        LEFT JOIN   {course_locations}		lo	ON	lo.id = cl.value
+                     WHERE	c.id 		= :course
+                        AND	c.visible 	= :visible ";
+
+            /* Execute  */
+            $rdo = $DB->get_record_sql($sql,$params);
+            if ($rdo) {
+                /* Course Info  */
+                $infoNotification->course   = $rdo->fullname;
+                $infoNotification->summary  = $rdo->summary;
+                $infoNotification->homepage = '<a href="' . $urlHome . '">'. get_string('home_page','enrol_waitinglist') . '</a>';
+                $infoNotification->date     = ($rdo->startdate ? userdate($rdo->startdate,'%d.%m.%Y', 99, false) : 'N/A');
+                $infoNotification->location = $rdo->location;
+                /* Add Info instructor  */
+                if ($rdo->instructor) {
+                    $instructor = $rdo->firstname . " " . $rdo->lastname . " (" . $rdo->email . ")";
+                }//if_instructor
+                $infoNotification->instructor = $instructor;
+            }//if_Rdo
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//GetInfoCourse_NotificationApproved
+
+
+    /**
+     * @param           $competence
+     *
+     * @return          array
+     * @throws          Exception
+     *
+     * @creationDate    15/02/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Get all managers that have to receive an approved notification
+     */
+    private static function GetInfoManagers_NotificationApproved($competence) {
+        /* Variables    */
+        global $DB;
+        $rdo    = null;
+        $sql    = null;
+        $params = null;
+        $managers       = array();
+        $infoManager    = null;
+        $infoCompany    = null;
+        try {
+            /* Search Criteria  */
+            $params = array();
+            $params['deleted']  = 0;
+            $params['zero']     = 0;
+            $params['one']      = 1;
+            $params['two']      = 2;
+            $params['three']    = 3;
+
+            /* SQL Instruction  */
+            $sql = " SELECT		rm.id,
+                                rm.managerid,
+                                u.username,
+                                co_zero.name 	as 'levelzero',
+                                co_one.name		as 'levelone',
+                                co_two.name		as 'leveltwo',
+                                co_tre.name		as 'levelthree'
+                     FROM			{report_gen_company_manager}  rm
+                        JOIN		{user}						  u 		ON 	u.id 		            = rm.managerid
+                                                                            AND	u.deleted 	            = :deleted
+                        -- LEVEL ZERO
+                        JOIN 		{report_gen_companydata}	  co_zero	ON 	co_zero.id 				= rm.levelzero
+                                                                            AND	co_zero.hierarchylevel 	= :zero
+                        -- LEVEL ONE
+                        LEFT JOIN	{report_gen_companydata}	  co_one	ON	co_one.id				= rm.levelone
+                                                                            AND	co_one.hierarchylevel	= :one
+                        -- LEVEL TWO
+                        LEFT JOIN	{report_gen_companydata}      co_two	ON	co_two.id				= rm.leveltwo
+                                                                            AND co_two.hierarchylevel	= :two
+                        -- LEVEL THREE
+                        LEFT JOIN	{report_gen_companydata}	  co_tre    ON 	co_tre.id = rm.levelthree
+                                                                            AND co_tre.hierarchylevel 	= :three
+                     WHERE	(rm.levelzero IN ($competence->levelZero) AND rm.levelone IS NULL	AND rm.leveltwo IS NULL 	AND rm.levelthree IS NULL)
+                            OR
+                            (rm.levelzero IN ($competence->levelZero) AND rm.levelone IN ($competence->levelOne)	AND rm.leveltwo IS NULL 	AND rm.levelthree IS NULL)
+                            OR
+                            (rm.levelzero IN ($competence->levelZero) AND rm.levelone IN ($competence->levelOne)	AND	rm.leveltwo IN ($competence->levelTwo) 	AND rm.levelthree IS NULL)
+                            OR
+                            (rm.levelzero IN ($competence->levelZero) AND rm.levelone IN ($competence->levelOne) 	AND rm.leveltwo IN ($competence->levelTwo)  AND rm.levelthree IN ($competence->levelThree))
+                     ORDER BY rm.managerid ";
+
+            /* Execute  */
+            $rdo = $DB->get_records_sql($sql,$params);
+            if ($rdo) {
+                foreach ($rdo as $instance) {
+                    if (array_key_exists($instance->managerid,$managers)) {
+                        $infoManager = $managers[$instance->managerid];
+
+                    }else {
+                        $infoManager = new stdClass();
+                        $infoManager->id        = $instance->managerid;
+                        $infoManager->companies = array();
+                    }//if_manager_exists
+
+
+                    /* Get Companies where user is manager  */
+                    $infoCompany = $instance->levelzero;
+                    /* Add Level One    */
+                    if ($instance->levelone) {
+                        $infoCompany .= '/' . $instance->levelone;
+
+                        /* Add Level Two*/
+                        if ($instance->leveltwo) {
+                            $infoCompany .= '/' . $instance->leveltwo;
+
+                            /* Add Level Three  */
+                            if ($instance->levelthree) {
+                                $infoCompany .= '/' . $instance->levelthree;
+                            }//if_levelThree
+                        }//if_levelTwo
+                    }//if_levelOne
+
+                    /* Add Company  */
+                    $infoManager->companies[] = $infoCompany;
+
+                    /* Add Manager */
+                    $managers[$instance->managerid] = $infoManager;
+                }//of_rdo
+            }//if_rdo
+
+            return $managers;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_Catch
+    }//GetInfoManagers_NotificationApproved
+
+    /**
+     * @param           $userId
+     * @param           $infoNotification
+     *
+     * @throws          Exception
+     *
+     * @creationDate    16/02/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Get user information to send
+     */
+    private static function GetInfoUser_NotificationApproved($userId,&$infoNotification) {
+        /* Variables    */
+        global $DB;
+        $sql        = null;
+        $params     = null;
+        $rdo        = null;
+        $companies  = null;
+
+        try {
+            /* Search criteria  */
+            $params = array();
+            $params['user'] = $userId;
+
+            /* SQL Instruction  */
+            $sql = " SELECT	u.id,
+                            CONCAT(u.firstname,' ',u.lastname) 								as 'user',
+                            GROUP_CONCAT(DISTINCT co.name ORDER BY co.name SEPARATOR ',') 	as 'companies'
+                     FROM	{user} u
+                        -- COMPETENCE
+                        JOIN	{user_info_competence_data}	ucd		ON ucd.userid 	= u.id
+                        JOIN	{report_gen_companydata}	co 		ON co.id 		= ucd.companyid
+                     WHERE 	 u.id = :user
+                     GROUP BY u.id ";
+
+            /* Execute  */
+            $rdo = $DB->get_record_sql($sql,$params);
+            if ($rdo) {
+                /* Add Info User    */
+                $infoNotification->user = $rdo->user;
+                $companies = explode(',',$rdo->companies);
+                $infoNotification->companies_user = '<ul>';
+                foreach ($companies as $company) {
+                    $infoNotification->companies_user .= '<li>' . $company . '</li>';
+                }
+                $infoNotification->companies_user .= '</ul>';
+            }//if_Rdo
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_Catch
+    }//GetInfoUser_NotificationApproved
 
     /**
      * @param           $infoMail
