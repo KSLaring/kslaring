@@ -58,10 +58,6 @@ if (Approval::ApplyAction_FromManager($infoRequest)) {
         case APPROVED_ACTION:
             $strTitle = get_string('approved_mnd','enrol_waitinglist');
 
-            /* Send Notification Manager Approved   */
-            $infoNotification = Approval::Info_NotificationApproved($userId,$courseId);
-            Approval::SendApprovedNotification_Managers($infoNotification);
-
             break;
         case REJECTED_ACTION:
             $strTitle = get_string('rejected_mnd','enrol_waitinglist');

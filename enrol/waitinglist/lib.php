@@ -37,6 +37,10 @@ define('ENROL_WAITINGLIST_TABLE_METHODS', 'enrol_waitinglist_method');
 define('ENROL_WAITINGLIST_FIELD_INVOICE','customint8');
 define('ENROL_WAITINGLIST_FIELD_APPROVAL','customint7');
 
+define('APPROVAL_NONE',0);
+define('APPROVAL_REQUIRED',1);
+define('APPROVAL_MESSAGE',2);
+
 class enrol_waitinglist_plugin extends enrol_plugin {
 
     protected $lasternoller = null;
@@ -397,7 +401,7 @@ class enrol_waitinglist_plugin extends enrol_plugin {
      * @return void
      */
     public function enrol_user(stdClass $instance, $userid, $roleid = null, $timestart = 0, $timeend = 0, $status = null, $recovergrades = null) {
-   		global $USER;
+   		global $USER,$CFG;
 		
         $timestart = time();
         if ($instance->enrolperiod) {
@@ -414,6 +418,19 @@ class enrol_waitinglist_plugin extends enrol_plugin {
         if ($instance->{ENROL_WAITINGLIST_FIELD_SENDWELCOMEMESSAGE}) {
             $userMail = get_complete_user_data('id', $userid);
             $this->email_welcome_message($instance, $userMail);
+        }
+        /**
+         * @updateDate  @17/02/2016
+         * @author      eFaktor     (fbv)
+         *
+         * Description
+         * Send email to the managers
+         */
+        if ($instance->{ENROL_WAITINGLIST_FIELD_APPROVAL} == APPROVAL_MESSAGE) {
+            require_once('approval/approvallib.php');
+            /* Send Notification Manager Approved   */
+            $infoNotification = \Approval::Info_NotificationApproved($userid,$instance->courseid);
+            \Approval::SendApprovedNotification_Managers($infoNotification);
         }
     }
 	    /**

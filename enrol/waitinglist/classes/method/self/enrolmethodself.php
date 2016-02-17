@@ -193,7 +193,7 @@ class enrolmethodself extends \enrol_waitinglist\method\enrolmethodbase{
         global $DB, $USER, $CFG;
         $rejected = null;
 
-        if ($waitinglist->{ENROL_WAITINGLIST_FIELD_APPROVAL}) {
+        if ($waitinglist->{ENROL_WAITINGLIST_FIELD_APPROVAL} == APPROVAL_REQUIRED) {
             $this->myManagers = \Approval::GetManagers($USER->id);
             if (!$this->myManagers) {
                 return get_string('not_managers','enrol_waitinglist');
@@ -284,7 +284,7 @@ class enrolmethodself extends \enrol_waitinglist\method\enrolmethodbase{
              * Description
              * Check if it is an approval method or not
              */
-            if (!$waitinglist->{ENROL_WAITINGLIST_FIELD_APPROVAL}) {
+            if ($waitinglist->{ENROL_WAITINGLIST_FIELD_APPROVAL} != APPROVAL_REQUIRED) {
                 //prepare additional fields for our queue DB entry
                 $queue_entry = new \stdClass;
                 $queue_entry->waitinglistid                 = $waitinglist->id;
@@ -331,32 +331,6 @@ class enrolmethodself extends \enrol_waitinglist\method\enrolmethodbase{
             throw $ex;
         }//try_catch
     }
-
-    /**
-     * @param           \stdClass $waitinglist
-     * @param                     $queue_entry
-     *
-     * @return                    int
-     * @throws           Exception|\Exception
-     *
-     * @creationDate    29/12/2015
-     * @author          eFaktor     (fbv)
-     *
-     * Description
-     * To make accesible the 'add_to_waitinglist' when the request is approved
-     */
-    public function add_to_waitinglist_from_approval(\stdClass $waitinglist, $queue_entry) {
-        /* Variables */
-        $queueid = null;
-
-        try {
-            $queueid = $this->add_to_waitinglist($waitinglist,$queue_entry);
-
-            return $queueid;
-        }catch (\Exception $ex) {
-            throw $ex;
-        }//try_catch
-    }//add_to_waitinglist_from_approval
 
     /**
      * Pop off queue and enrol in course
@@ -463,7 +437,7 @@ class enrolmethodself extends \enrol_waitinglist\method\enrolmethodbase{
             $toConfirm  = null;
             $remainder  = null;
 
-            if ($waitinglist->{ENROL_WAITINGLIST_FIELD_APPROVAL}) {
+            if ($waitinglist->{ENROL_WAITINGLIST_FIELD_APPROVAL} == APPROVAL_REQUIRED) {
                 $remainder = \Approval::GetNotificationSent($USER->id,$waitinglist->courseid);
             }//
 
@@ -518,7 +492,7 @@ class enrolmethodself extends \enrol_waitinglist\method\enrolmethodbase{
                     }else if ($data = $form->get_data()) {
                         $this->waitlistrequest_self($waitinglist, $data);
 
-                        if (!$waitinglist->{ENROL_WAITINGLIST_FIELD_APPROVAL}) {
+                        if ($waitinglist->{ENROL_WAITINGLIST_FIELD_APPROVAL} != APPROVAL_REQUIRED) {
                             /**
                              * @updateDate  28/10/2015
                              * @author      eFaktor     (fbv)

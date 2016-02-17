@@ -111,7 +111,7 @@ class enrolmethodself_enrolform extends \moodleform {
                  * Description
                  * Add approval data
                  */
-                if ($waitinglist->{ENROL_WAITINGLIST_FIELD_APPROVAL}) {
+                if ($waitinglist->{ENROL_WAITINGLIST_FIELD_APPROVAL} == APPROVAL_REQUIRED) {
                     global $PAGE;
                     \Approval::AddElements_ToForm($mform);
                 }//if_approval

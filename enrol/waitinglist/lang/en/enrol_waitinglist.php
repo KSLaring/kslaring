@@ -177,6 +177,9 @@ $string['lnk_approval']     = 'Moderated Approval Requests';
 $string['approval']         = 'Approval required';
 $string['approval_help']    = 'The user must wait the approval to be enrolled in the course';
 
+$string['none_approval']    = 'None';
+$string['approval_message'] = 'Send email to the manager when enrolled in course';
+
 $string['approval_info']    = 'Please, you must fill in your reasons to apply for the course';
 $string['arguments']        = 'Arguments';
 

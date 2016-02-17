@@ -172,6 +172,9 @@ $string['lnk_approval']     = 'Forespørsler om godkjenning av påmelding';
 $string['approval']         = 'Godkjenning fra leder er påkrevd';
 $string['approval_help']    = 'Brukeren må vente på godkjenning fra leder før påmeldingen blir fullført';
 
+$string['none_approval']    = 'None';
+$string['approval_message'] = 'Send email to the manager when enrolled in course';
+
 $string['approval_info']    = 'Vennligst fyll inn en begrunnelse for at du vil melde deg på dette kurset';
 $string['arguments']        = 'Begrunnelse';
 
