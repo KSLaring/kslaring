@@ -301,9 +301,24 @@ class enrol_waitinglist_plugin extends enrol_plugin {
         */
         
         //we did implement a cut off date
-        if ($instance->{ENROL_WAITINGLIST_FIELD_CUTOFFDATE} && $instance->{ENROL_WAITINGLIST_FIELD_CUTOFFDATE} < $rightnow) {
-			return get_string('enrolmentsclosed', 'enrol_waitinglist');
+        /**
+         * @updateDate  17/02/2016
+         * @author      eFaktor     (fbv)
+         *
+         * Description
+         * Check deadline date to enrol
+         */
+        if ($instance->{ENROL_WAITINGLIST_FIELD_CUTOFFDATE}) {
+            $cutDate = $instance->{ENROL_WAITINGLIST_FIELD_CUTOFFDATE} + (24*60*60);
+
+            if ($cutDate < $rightnow ) {
+                return get_string('enrolmentsclosed', 'enrol_waitinglist');
+            }
         }
+
+        //if ($instance->{ENROL_WAITINGLIST_FIELD_CUTOFFDATE} && $instance->{ENROL_WAITINGLIST_FIELD_CUTOFFDATE} < $rightnow) {
+        //    return get_string('enrolmentsclosed', 'enrol_waitinglist');
+        //}
         
         //check if already enroled
         $enrolled = $DB->record_exists('user_enrolments', array('enrolid' => $instance->id, 'userid'=>$USER->id));
