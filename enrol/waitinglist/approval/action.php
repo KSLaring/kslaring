@@ -46,13 +46,18 @@ if (count($args) != 2) {
         $strTitle = null;
 
         if (Approval::ApplyAction_FromManager($infoRequest)) {
+            $user = get_complete_user_data('id',$infoRequest->userid);
+            $infoNotification = new stdClass();
+            $infoNotification->user = fullname($user);
+            Approval::GetInfoCourse_Notification($infoRequest->courseid,$infoNotification);
+
             switch ($infoRequest->action) {
                 case APPROVED_ACTION:
-                    $strTitle = get_string('approved_mnd','enrol_waitinglist');
+                    $strTitle = get_string('approved_mnd','enrol_waitinglist',$infoNotification);
 
                     break;
                 case REJECTED_ACTION:
-                    $strTitle = get_string('rejected_mnd','enrol_waitinglist');
+                    $strTitle = get_string('rejected_mnd','enrol_waitinglist',$infoNotification);
 
                     break;
             }

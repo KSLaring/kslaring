@@ -201,11 +201,11 @@ $string['request_remainder']    = 'Søknaden din ble innsendt <b>{$a}</b>. Den e
 
 $string['err_link'] = 'OOPS - søknaden er allerede behandlet. Lenken du klikket på kan bare benyttes en gang.';
 
-$string['request_approved']   = 'Din søknad ble godkjent {$a->sent}.';
-$string['request_rejected']   = 'Din søknad ble avslått {$a->sent}.';
+$string['request_approved']   = 'Din søknad om kurset {$a->homepage} ble godkjent {$a->sent}.';
+$string['request_rejected']   = 'Din søknad om kurset {$a->homepage} ble avslått {$a->sent}.';
 
-$string['approved_mnd'] = 'Søknaden om kursplass er nå godkjent.';
-$string['rejected_mnd'] = 'Søknaden om kursplass er avslått.';
+$string['approved_mnd'] = 'Søknaden om kursplass {$a->homepage} og bruker <b>{$a->user}</b> er nå godkjent.';
+$string['rejected_mnd'] = 'Søknaden om kursplass {$a->homepage} og bruker <b>{$a->user}</b> er avslått.';
 
 $string['err_process']  = 'Beklager, men det har skjedd en feil under behandlingen. Vennligst prøv igjen senere eller kontakt administrator.';
 

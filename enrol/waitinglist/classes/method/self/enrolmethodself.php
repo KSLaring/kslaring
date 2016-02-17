@@ -333,6 +333,32 @@ class enrolmethodself extends \enrol_waitinglist\method\enrolmethodbase{
     }
 
     /**
+     * @param           \stdClass $waitinglist
+     * @param                     $queue_entry
+     *
+     * @return                    int
+     * @throws           Exception|\Exception
+     *
+     * @creationDate    29/12/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * To make accesible the 'add_to_waitinglist' when the request is approved
+     */
+    public function add_to_waitinglist_from_approval(\stdClass $waitinglist, $queue_entry) {
+        /* Variables */
+        $queueid = null;
+
+        try {
+            $queueid = $this->add_to_waitinglist($waitinglist,$queue_entry);
+
+            return $queueid;
+        }catch (\Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//add_to_waitinglist_from_approval
+
+    /**
      * Pop off queue and enrol in course
      *
      * @param stdClass $waitinglist
