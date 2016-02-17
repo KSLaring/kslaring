@@ -648,7 +648,7 @@ Class Approval {
             $infoNotification = new stdClass();
             $infoNotification->site     = $SITE->shortname;
             /* Add Info Course      */
-            self::GetInfoCourse_NotificationApproved($courseId,$infoNotification);
+            self::GetInfoCourse_Notification($courseId,$infoNotification);
             /* Add Info Managers    */
             $infoNotification->managers = self::GetInfoManagers_NotificationApproved($competenceUser);
             /* Add Info User        */
@@ -659,6 +659,92 @@ Class Approval {
             throw $ex;
         }//try_catch
     }//GetInfo_NotificationApproved
+
+    /**
+     * @param           $courseId
+     * @param           $infoNotification
+     *
+     * @throws          Exception
+     *
+     * @creationDate    15/02/2016
+     * @author          efaktor     (fbv)
+     *
+     * Description
+     * Get course information that has been approved
+     */
+    public static function GetInfoCourse_Notification($courseId,&$infoNotification) {
+        /* Variables */
+        global $DB;
+        $sql        = null;
+        $params     = null;
+        $rdo        = null;
+        $instructor = null;
+        $urlHome    = null;
+
+        try {
+
+
+            /* Search Criteria  */
+            $params = array();
+            $params['course']   = $courseId;
+            $params['visible']  = 1;
+
+            /* SQL Isntruction  */
+            $sql = " SELECT	c.id,
+                            c.fullname,
+                            c.summary,
+                            c.startdate,
+                            lo.name   as 'location',
+                            ci.value  as 'instructor',
+                            u.firstname,
+                            u.lastname,
+                            u.email,
+                            hp.value as 'homepage',
+                            hv.value as 'homevisible'
+                     FROM			{course}					c
+                        -- Instructors
+                        JOIN		{course_format_options}		ci 	ON 	ci.courseid = c.id
+                                                                    AND	ci.name		= 'manager'
+                        LEFT JOIN	{user}						u  	ON 	u.id 		= ci.value
+                        -- Location
+                        JOIN		{course_format_options}		cl 	ON 	cl.courseid = c.id
+                                                                    AND	cl.name like '%location%'
+                        LEFT JOIN   {course_locations}			lo	ON	lo.id = cl.value
+                        -- HOME PAGE
+                        JOIN		{course_format_options}		hp	ON  hp.courseid = c.id
+                                                                    AND hp.name 	= 'homepage'
+                        -- HOME PAGE VISIBLE
+                        JOIN		{course_format_options}		hv	ON	hv.courseid = c.id
+                                                                    AND hv.name 	= 'homevisible'
+                     WHERE	c.id 		= :course
+                        AND	c.visible 	= :visible ";
+
+            /* Execute  */
+            $rdo = $DB->get_record_sql($sql,$params);
+            if ($rdo) {
+                /* Course Info  */
+                $infoNotification->course   = $rdo->fullname;
+                $infoNotification->summary  = $rdo->summary;
+                if (($rdo->homepage) && ($rdo->homevisible)) {
+                    /* Course Home Page */
+                    $urlHome = new moodle_url('/local/course_page/home_page.php',array('id' => $courseId));
+                }else {
+                    /* Course Page  */
+                    $urlHome = new moodle_url('/course/view.php',array('id' => $courseId));
+                }
+                $infoNotification->homepage = '<a href="' . $urlHome . '">'. $rdo->fullname . '</a>';
+                $infoNotification->date     = ($rdo->startdate ? userdate($rdo->startdate,'%d.%m.%Y', 99, false) : 'N/A');
+                $infoNotification->location = $rdo->location;
+                /* Add Info instructor  */
+                if ($rdo->instructor) {
+                    $instructor = $rdo->firstname . " " . $rdo->lastname . " (" . $rdo->email . ")";
+                }//if_instructor
+                $infoNotification->instructor = $instructor;
+            }//if_Rdo
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//GetInfoCourse_Notification
 
     /**
      * @param           $infoNotification
@@ -852,79 +938,6 @@ Class Approval {
             throw $ex;
         }//try_catch
     }//GetManager_User
-
-    /**
-     * @param           $courseId
-     * @param           $infoNotification
-     *
-     * @throws          Exception
-     *
-     * @creationDate    15/02/2016
-     * @author          efaktor     (fbv)
-     *
-     * Description
-     * Get course information that has been approved
-     */
-    private static function GetInfoCourse_NotificationApproved($courseId,&$infoNotification) {
-        /* Variables */
-        global $DB;
-        $sql        = null;
-        $params     = null;
-        $rdo        = null;
-        $instructor = null;
-        $urlHome    = null;
-
-        try {
-            /* Course Home Page */
-            $urlHome = new moodle_url('/local/course_page/home_page.php',array('id' => $courseId));
-
-            /* Search Criteria  */
-            $params = array();
-            $params['course']   = $courseId;
-            $params['visible']  = 1;
-
-            /* SQL Isntruction  */
-            $sql = " SELECT	c.id,
-                            c.fullname,
-                            c.summary,
-                            c.startdate,
-                            lo.name   as 'location',
-                            ci.value  as 'instructor',
-                            u.firstname,
-                            u.lastname,
-                            u.email
-                     FROM		{course}						c
-                        -- Instructors
-                        JOIN		{course_format_options}	ci 	ON 	ci.courseid = c.id
-                                                                AND	ci.name		= 'manager'
-                        LEFT JOIN	{user}					u  	ON 	u.id 		= ci.value
-                        -- Location
-                        JOIN		{course_format_options}	cl 	ON 	cl.courseid = c.id
-                                                                    AND	cl.name like '%location%'
-                        LEFT JOIN   {course_locations}		lo	ON	lo.id = cl.value
-                     WHERE	c.id 		= :course
-                        AND	c.visible 	= :visible ";
-
-            /* Execute  */
-            $rdo = $DB->get_record_sql($sql,$params);
-            if ($rdo) {
-                /* Course Info  */
-                $infoNotification->course   = $rdo->fullname;
-                $infoNotification->summary  = $rdo->summary;
-                $infoNotification->homepage = '<a href="' . $urlHome . '">'. get_string('home_page','enrol_waitinglist') . '</a>';
-                $infoNotification->date     = ($rdo->startdate ? userdate($rdo->startdate,'%d.%m.%Y', 99, false) : 'N/A');
-                $infoNotification->location = $rdo->location;
-                /* Add Info instructor  */
-                if ($rdo->instructor) {
-                    $instructor = $rdo->firstname . " " . $rdo->lastname . " (" . $rdo->email . ")";
-                }//if_instructor
-                $infoNotification->instructor = $instructor;
-            }//if_Rdo
-        }catch (Exception $ex) {
-            throw $ex;
-        }//try_catch
-    }//GetInfoCourse_NotificationApproved
-
 
     /**
      * @param           $competence
@@ -1212,9 +1225,9 @@ Class Approval {
 
             $infoMail = new stdClass();
             $infoMail->user     = fullname($user);
-            $infoMail->course   = $course->fullname;
             $infoMail->site     = $SITE->shortname;
             $infoMail->sent     = userdate($time,'%d.%m.%Y', 99, false);
+            self::GetInfoCourse_Notification($infoRequest->courseid,$infoMail);
 
             /* Mail for Users       */
             $strSubject = get_string('mng_subject','enrol_waitinglist',$infoMail);
@@ -1273,6 +1286,7 @@ Class Approval {
         $bodyHtml           = null;
         $user               = null;
         $course             = null;
+        $urlCourse          = null;
         $time               = null;
 
         try {
@@ -1321,13 +1335,12 @@ Class Approval {
 
                 /* Send mail to the user */
                 $user   = get_complete_user_data('id',$infoRequest->userid);
-                $course = get_course($infoRequest->courseid);
 
                 $infoMail = new stdClass();
-                $infoMail->user     = fullname($user);
-                $infoMail->course   = $course->fullname;
-                $infoMail->site     = $SITE->shortname;
-                $infoMail->sent     = userdate($time,'%d.%m.%Y', 99, false);
+                $infoMail->user         = fullname($user);
+                $infoMail->site         = $SITE->shortname;
+                $infoMail->sent         = userdate($time,'%d.%m.%Y', 99, false);
+                self::GetInfoCourse_Notification($infoRequest->courseid,$infoMail);
 
                 /* Mail for Users       */
                 $strSubject = get_string('mng_subject','enrol_waitinglist',$infoMail);

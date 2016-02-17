@@ -177,6 +177,9 @@ $string['lnk_approval']     = 'Moderated Approval Requests';
 $string['approval']         = 'Approval required';
 $string['approval_help']    = 'The user must wait the approval to be enrolled in the course';
 
+$string['none_approval']    = 'None';
+$string['approval_message'] = 'Send email to the manager when enrolled in course';
+
 $string['approval_info']    = 'Please, you must fill in your reasons to apply for the course';
 $string['arguments']        = 'Arguments';
 
@@ -203,11 +206,11 @@ $string['request_remainder']    = 'Your request was applied on <b>{$a}</b>. It h
 
 $string['err_link'] = 'Sorry, link not valid. Please, contact with administrator. ';
 
-$string['request_approved']   = 'Your request was approved on {$a->sent}.';
-$string['request_rejected']   = 'Your request was rejected on {$a->sent}.';
+$string['request_approved']   = 'Your request for the course {$a->homepage} was approved on {$a->sent}.';
+$string['request_rejected']   = 'Your request for the course {$a->homepage} was rejected on {$a->sent}.';
 
-$string['approved_mnd'] = 'The request has been approved successfully.';
-$string['rejected_mnd'] = 'The request has been rejected successfully.';
+$string['approved_mnd'] = 'The request for the course {$a->homepage} and for the user <b>{$a->user}</b> has been approved successfully.';
+$string['rejected_mnd'] = 'The request for the course {$a->homepage} and for the user <b>{$a->user}</b> has been rejected successfully.';
 
 $string['err_process']  = 'Sorry, It has been an error during the process. Please, try it later or contact with administrator.';
 

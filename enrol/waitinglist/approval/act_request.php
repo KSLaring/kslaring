@@ -15,13 +15,14 @@ require('../../../config.php');
 require_once('approvallib.php');
 
 /* PARAMS */
-$courseId   = required_param('co',PARAM_INT);
-$userId     = required_param('id',PARAM_INT);
-$action     = required_param('act',PARAM_INT);
-$waitingId  = required_param('ea',PARAM_INT);
-$return     = new moodle_url('/enrol/waitinglist/approval/request.php',array('courseid' => $courseId,'id' => $waitingId));
-$url        = new moodle_url('/enrol/waitinglist/approval/act_request.php',array('co' => $courseId,'id' => $userId, 'ea' => $waitingId, 'act' => $action));
-$contextCourse = CONTEXT_COURSE::instance($courseId);
+$courseId       = required_param('co',PARAM_INT);
+$userId         = required_param('id',PARAM_INT);
+$action         = required_param('act',PARAM_INT);
+$waitingId      = required_param('ea',PARAM_INT);
+$return         = new moodle_url('/enrol/waitinglist/approval/request.php',array('courseid' => $courseId,'id' => $waitingId));
+$url            = new moodle_url('/enrol/waitinglist/approval/act_request.php',array('co' => $courseId,'id' => $userId, 'ea' => $waitingId, 'act' => $action));
+$contextCourse  = CONTEXT_COURSE::instance($courseId);
+$user           = null;
 
 require_login();
 
@@ -54,17 +55,18 @@ $infoRequest->action = $action;
 $strTitle = null;
 
 if (Approval::ApplyAction_FromManager($infoRequest)) {
+    $user = get_complete_user_data('id',$userId);
+    $infoNotification = new stdClass();
+    $infoNotification->user = fullname($user);
+    Approval::GetInfoCourse_Notification($courseId,$infoNotification);
+
     switch ($infoRequest->action) {
         case APPROVED_ACTION:
-            $strTitle = get_string('approved_mnd','enrol_waitinglist');
-
-            /* Send Notification Manager Approved   */
-            $infoNotification = Approval::Info_NotificationApproved($userId,$courseId);
-            Approval::SendApprovedNotification_Managers($infoNotification);
+            $strTitle = get_string('approved_mnd','enrol_waitinglist',$infoNotification);
 
             break;
         case REJECTED_ACTION:
-            $strTitle = get_string('rejected_mnd','enrol_waitinglist');
+            $strTitle = get_string('rejected_mnd','enrol_waitinglist',$infoNotification);
 
             break;
     }

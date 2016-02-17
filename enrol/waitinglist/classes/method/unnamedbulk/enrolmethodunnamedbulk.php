@@ -210,7 +210,7 @@ class enrolmethodunnamedbulk extends \enrol_waitinglist\method\enrolmethodbase {
         global $USER;
         $rejected = null;
 
-        if ($waitinglist->{ENROL_WAITINGLIST_FIELD_APPROVAL}) {
+        if ($waitinglist->{ENROL_WAITINGLIST_FIELD_APPROVAL} == APPROVAL_REQUIRED) {
             $this->myManagers = \Approval::GetManagers($USER->id);
             if (!$this->myManagers) {
                 return get_string('not_managers','enrol_waitinglist');
@@ -279,7 +279,7 @@ class enrolmethodunnamedbulk extends \enrol_waitinglist\method\enrolmethodbase {
              * Description
              * Check if it is an approval method or not
              */
-            if (!$waitinglist->{ENROL_WAITINGLIST_FIELD_APPROVAL}) {
+            if ($waitinglist->{ENROL_WAITINGLIST_FIELD_APPROVAL} != APPROVAL_REQUIRED) {
                 //prepare additional fields for our queue DB entry
                 $queue_entry = new \stdClass;
                 $queue_entry->waitinglistid     = $waitinglist->id;
@@ -496,7 +496,7 @@ class enrolmethodunnamedbulk extends \enrol_waitinglist\method\enrolmethodbase {
 
             $remainder  = null;
 
-            if ($waitinglist->{ENROL_WAITINGLIST_FIELD_APPROVAL}) {
+            if ($waitinglist->{ENROL_WAITINGLIST_FIELD_APPROVAL} == APPROVAL_REQUIRED) {
                 $remainder = \Approval::GetNotificationSent($USER->id,$waitinglist->courseid);
             }//
 
@@ -570,7 +570,7 @@ class enrolmethodunnamedbulk extends \enrol_waitinglist\method\enrolmethodbase {
                         }else{
                             //if this is a new enrol form submission, process it
                             $this->waitlistrequest_unnamedbulk($waitinglist, $data);
-                            if (!$waitinglist->{ENROL_WAITINGLIST_FIELD_APPROVAL}) {
+                            if ($waitinglist->{ENROL_WAITINGLIST_FIELD_APPROVAL} != APPROVAL_REQUIRED) {
                                 $actiontaken='updated';
 
                                 /**

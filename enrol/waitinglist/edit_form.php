@@ -81,8 +81,15 @@ class enrol_waitinglist_edit_form extends moodleform {
          * Description
          * Add the option to be an approval enrolment method
          */
-        $mform->addElement('advcheckbox', ENROL_WAITINGLIST_FIELD_APPROVAL, get_string('approval', 'enrol_waitinglist'));
-        $mform->addHelpButton(ENROL_WAITINGLIST_FIELD_APPROVAL, 'approval', 'enrol_waitinglist');
+        //$mform->addElement('advcheckbox', ENROL_WAITINGLIST_FIELD_APPROVAL, get_string('approval', 'enrol_waitinglist'));
+        //$mform->addHelpButton(ENROL_WAITINGLIST_FIELD_APPROVAL, 'approval', 'enrol_waitinglist');
+
+        /* None Option              */
+        $mform->addElement('radio',ENROL_WAITINGLIST_FIELD_APPROVAL,get_string('none_approval','enrol_waitinglist'),'',APPROVAL_NONE);
+        /* Approval required by manager */
+        $mform->addElement('radio',ENROL_WAITINGLIST_FIELD_APPROVAL,get_string('approval','enrol_waitinglist'),'',APPROVAL_REQUIRED);
+        /* Mail to manager option   */
+        $mform->addElement('radio',ENROL_WAITINGLIST_FIELD_APPROVAL,get_string('approval_message','enrol_waitinglist'),'',APPROVAL_MESSAGE);
 
         /*
         $settings->add(new admin_setting_configtext('enrol_waitinglist/maxenrolments', get_string('maxenrolments', 'enrol_waitinglist'), get_string('maxenrolments_desc', 'enrol_waitinglist'), ''));
