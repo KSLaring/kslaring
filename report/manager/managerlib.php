@@ -71,6 +71,20 @@ class CompetenceManager {
     /* PUBLIC FUNCTIONS */
     /********************/
 
+    /**
+     * @param           $userId
+     * @param           $level
+     *
+     * @return          bool
+     * @throws          Exception
+     *
+     * @creationDate    01/12/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Check if the user is reporter
+     *
+     */
     public static function IsReporter($userId,$level=-1) {
         /* Variables */
         global $DB;
@@ -96,6 +110,45 @@ class CompetenceManager {
             throw $ex;
         }
     }//IsReporter
+
+    /**
+     * @param           $userId
+     * @param           $level
+     *
+     * @return          bool
+     * @throws          Exception
+     *
+     * @creationDate    18/02/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Check if the user is a manager
+     */
+    public static function IsManager($userId,$level=-1) {
+        /* Variables */
+        global $DB;
+        $params = null;
+        $rdo    = null;
+
+        try {
+            /* Search Criteria  */
+            $params = array();
+            $params['managerid']           = $userId;
+            if ($level >= 0) {
+                $params['hierarchylevel']   = $level;
+            }
+            /* Execute  */
+            $rdo = $DB->get_records('report_gen_company_manager',$params);
+
+            if ($rdo) {
+                return true;
+            }else {
+                return false;
+            }
+        }catch (Exception $ex) {
+            throw $ex;
+        }
+    }//IsManager
 
     /**
      * @param           $userId
@@ -408,7 +461,7 @@ class CompetenceManager {
      * @static
      * @param           $user_id
      * @param           $site_context
-     * @param           $IsReporter
+     * @param           $IsReporterManager
      * @param           $reportLevel
      * @return          stdClass
      * @throws          Exception
@@ -419,15 +472,15 @@ class CompetenceManager {
      * Description
      * Get my hierarchy level
      */
-    public static function get_MyHierarchyLevel($user_id,$site_context,$IsReporter,$reportLevel) {
+    public static function get_MyHierarchyLevel($user_id,$site_context,$IsReporterManager,$reportLevel) {
         /* Variables    */
         $myHierarchy   = null;
 
         try {
             /* Build my hierarchy   */
             $myHierarchy               = new stdClass();
-            $myHierarchy->IsRepoter         = $IsReporter;
-            if ($IsReporter) {
+            $myHierarchy->IsRepoter         = $IsReporterManager;
+            if (($IsReporterManager) && (!is_siteadmin($user_id))) {
                 $myHierarchy->competence    = self::Get_MyReporterCompetence($user_id);
                 $myHierarchy->my_level      = $reportLevel;
             }else {

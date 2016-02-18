@@ -240,3 +240,4 @@ $string['mng_approved_body_two'] = '<p>Vi vil gjerne informere deg om at brukere
                                     </ul>';
 $string['mng_approved_body_end'] = '<p>Dette er en automatisk generert epost fra {$a->site} og du kan ikke svare på eposten.';
 $string['home_page']    = 'Hjemmesider';
+

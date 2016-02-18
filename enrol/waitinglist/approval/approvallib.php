@@ -703,18 +703,18 @@ Class Approval {
                             hv.value as 'homevisible'
                      FROM			{course}					c
                         -- Instructors
-                        JOIN		{course_format_options}		ci 	ON 	ci.courseid = c.id
+                        LEFT JOIN	{course_format_options}		ci 	ON 	ci.courseid = c.id
                                                                     AND	ci.name		= 'manager'
                         LEFT JOIN	{user}						u  	ON 	u.id 		= ci.value
                         -- Location
-                        JOIN		{course_format_options}		cl 	ON 	cl.courseid = c.id
+                        LEFT JOIN	{course_format_options}		cl 	ON 	cl.courseid = c.id
                                                                     AND	cl.name like '%location%'
                         LEFT JOIN   {course_locations}			lo	ON	lo.id = cl.value
                         -- HOME PAGE
-                        JOIN		{course_format_options}		hp	ON  hp.courseid = c.id
+                        LEFT JOIN	{course_format_options}		hp	ON  hp.courseid = c.id
                                                                     AND hp.name 	= 'homepage'
                         -- HOME PAGE VISIBLE
-                        JOIN		{course_format_options}		hv	ON	hv.courseid = c.id
+                        LEFT JOIN	{course_format_options}		hv	ON	hv.courseid = c.id
                                                                     AND hv.name 	= 'homevisible'
                      WHERE	c.id 		= :course
                         AND	c.visible 	= :visible ";
@@ -1221,7 +1221,12 @@ Class Approval {
 
             /* Send mail to the user */
             $user   = get_complete_user_data('id',$infoRequest->userid);
-            $course = get_course($infoRequest->courseid);
+
+            $instances = $DB->get_records('enrol', array('courseid'=>$infoRequest->courseid, 'enrol'=>'waitinglist'), 'id ASC');
+            foreach ($instances as $instance) {
+                $plugin = enrol_get_plugin('waitinglist');
+                $plugin->unenrol_user($instance,$infoRequest->userid);
+            }
 
             $infoMail = new stdClass();
             $infoMail->user     = fullname($user);
