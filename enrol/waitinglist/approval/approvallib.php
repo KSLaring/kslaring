@@ -1221,7 +1221,12 @@ Class Approval {
 
             /* Send mail to the user */
             $user   = get_complete_user_data('id',$infoRequest->userid);
-            $course = get_course($infoRequest->courseid);
+
+            $instances = $DB->get_records('enrol', array('courseid'=>$infoRequest->courseid, 'enrol'=>'waitinglist'), 'id ASC');
+            foreach ($instances as $instance) {
+                $plugin = enrol_get_plugin('waitinglist');
+                $plugin->unenrol_user($instance,$infoRequest->userid);
+            }
 
             $infoMail = new stdClass();
             $infoMail->user     = fullname($user);
