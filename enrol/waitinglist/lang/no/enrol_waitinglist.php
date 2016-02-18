@@ -204,8 +204,8 @@ $string['err_link'] = 'OOPS - søknaden er allerede behandlet. Lenken du klikket
 $string['request_approved']   = 'Din søknad om kurset {$a->homepage} ble godkjent {$a->sent}.';
 $string['request_rejected']   = 'Din søknad om kurset {$a->homepage} ble avslått {$a->sent}.';
 
-$string['approved_mnd'] = 'Søknaden om kursplass {$a->homepage} og bruker <b>{$a->user}</b> er nå godkjent.';
-$string['rejected_mnd'] = 'Søknaden om kursplass {$a->homepage} og bruker <b>{$a->user}</b> er avslått.';
+$string['approved_mnd'] = 'Søknaden om kursplass på kurset: {$a->homepage} for brukeren: <b>{$a->user}</b> er nå godkjent.';
+$string['rejected_mnd'] = 'Søknaden om kursplass på kurset: {$a->homepage} for brukeren: <b>{$a->user}</b> er nå avslått.';
 
 $string['err_process']  = 'Beklager, men det har skjedd en feil under behandlingen. Vennligst prøv igjen senere eller kontakt administrator.';
 
