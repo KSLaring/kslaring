@@ -309,7 +309,7 @@ class Competence {
             /* Search Criteria  */
             $params = array();
             $params['user']     = $userId;
-            $params['three']    = $userId;
+            $params['three']    = $hierarchy->levelThree;
             $zero               = $hierarchy->levelZero;
             $one                = $hierarchy->levelOne;
             $two                = $hierarchy->levelTwo;
@@ -709,9 +709,11 @@ class Competence {
 
             /* Second   --> User Info Competence Data   */
             $infoCompetenceData = new stdClass();
-            $infoCompetenceData->competenceid     = $infoCompetence->id;
-            $infoCompetenceData->userid           = $infoCompetence->userid;
-            $infoCompetenceData->companyid        = $data->level_3;
+            $infoCompetenceData->competenceid       = $infoCompetence->id;
+            $infoCompetenceData->userid             = $infoCompetence->userid;
+            $infoCompetenceData->companyid          = $data->level_3;
+            $infoCompetenceData->editable           = 1;
+            $infoCompetenceData->level              = 3;
             /* Job Roles */
             if (isset($data->job_roles) && $data->job_roles) {
                 $infoCompetenceData->jobroles         = implode(',',$data->job_roles);
