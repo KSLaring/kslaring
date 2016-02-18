@@ -738,6 +738,7 @@ class Competence {
             /* Commit   */
             $trans->allow_commit();
 
+            
             return true;
         }catch (Exception $ex) {
             /* Rollback */
