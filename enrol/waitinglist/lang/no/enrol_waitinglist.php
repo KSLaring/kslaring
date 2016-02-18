@@ -172,13 +172,13 @@ $string['lnk_approval']     = 'Forespørsler om godkjenning av påmelding';
 $string['approval']         = 'Godkjenning fra leder er påkrevd';
 $string['approval_help']    = 'Brukeren må vente på godkjenning fra leder før påmeldingen blir fullført';
 
-$string['none_approval']    = 'None';
-$string['approval_message'] = 'Send email to the manager when enrolled in course';
+$string['none_approval']    = 'Hverken ledergodkjenning eller varsling til leder';
+$string['approval_message'] = 'Send en epost til lederen når brukeren meldes inn i kurset';
 
 $string['approval_info']    = 'Vennligst fyll inn en begrunnelse for at du vil melde deg på dette kurset';
 $string['arguments']        = 'Begrunnelse';
 
-$string['not_managers'] = 'Beklager, men du kan ikke melde deg på dette kurset når vi ikke vet hvem som er lederen din.';
+$string['not_managers'] = 'Beklager, men du kan ikke melde deg på dette kurset siden vi ikke vet hvem som er lederen din. Vennligst kontakt din lokale administrator.';
 
 $string['mng_subject']  = '{$a->site}: Søknad om kursplass for kurset {$a->course}';
 $string['mng_body']     = '<p>Du får denne forespørselsen om godkjenning siden du er oppført som lederen for <b>{$a->user}</b>, og <b>{$a->user}</b> nettopp har søkt om plass på kurset  <b>{$a->course}</b>.</p><p>Brukerens begrunnelse for søknaden er:</p><p>{$a->arguments}</p>
