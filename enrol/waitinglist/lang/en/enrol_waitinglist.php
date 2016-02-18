@@ -245,3 +245,4 @@ $string['mng_approved_body_two'] = '<p>We would like to inform you that the <b>{
                                     </ul>';
 $string['mng_approved_body_end'] = '<p>This is an automatic generated email from {$a->site} and you cannot answer this email.';
 $string['home_page']    = 'Course home page';
+
