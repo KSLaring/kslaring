@@ -181,12 +181,12 @@ $string['arguments']        = 'Begrunnelse';
 $string['not_managers'] = 'Beklager, men du kan ikke melde deg på dette kurset siden vi ikke vet hvem som er lederen din. Vennligst kontakt din lokale administrator.';
 
 $string['mng_subject']  = '{$a->site}: Søknad om kursplass for kurset {$a->course}';
-$string['mng_body']     = '<p>Du får denne forespørselsen om godkjenning siden du er oppført som lederen for <b>{$a->user}</b>, og <b>{$a->user}</b> nettopp har søkt om plass på kurset  <b>{$a->course}</b>.</p><p>Brukerens begrunnelse for søknaden er:</p><p>{$a->arguments}</p>
+$string['mng_body']     = '<p>Du får denne forespørselsen om godkjenning siden du er oppført som lederen for <b>{$a->user}</b>.<br /><b>{$a->user}</b> nettopp har søkt om plass på kurset  <b>{$a->course}</b>.</p><p>Begrunnelsen for søknaden om plass på kurset er:</p><p>{$a->arguments}</p>
                            <p>For å godkjenne denne søknaden kan du klikke her: {$a->approve}.</p>
                            <p>For å avslå denne søknaden kan du klikke her: {$a->reject}.</p>';
 
 $string['subject_reminder'] = '{$a->site}: Søknad om påmelding til kurset: {$a->course}. PÅMINNELSE';
-$string['body_reminder']    = '<p>Vi vil bare minne deg om at du er lederen for <b>{$a->user}</b>, og <b>{$a->user}</b> har nylig søkt om plass på kurset: <b>{$a->course}</b>.</p><p>Brukerens begrunnelse for søknaden er:</p><p>{$a->arguments}</p>
+$string['body_reminder']    = '<p>Vi vil bare minne deg om at du er lederen for <b>{$a->user}</b>, og at <b>{$a->user}</b> nylig har søkt om plass på kurset: <b>{$a->course}</b>.</p><p>Brukerens begrunnelse for søknaden er:</p><p>{$a->arguments}</p>
                                <p>Du bør ta stilling til denne søknaden så raskt som mulig.</p>
                                <p>For å godkjenne denne søknaden kan du klikke her:  {$a->approve}.</p>
                                <p>TFor å avslå denne søknaden kan du klikke her:  {$a->reject}.</p>';
@@ -197,7 +197,7 @@ $string['approve_lnk']  = 'Godkjenn søknaden';
 $string['reject_lnk']   = 'Avslå søknaden';
 
 $string['request_sent']         = 'Søknaden din om plass på kurset vil bli behandlet så raskt som mulig. Vi sender deg en epost når søknaden din er behandlet.';
-$string['request_remainder']    = 'Søknaden din ble innsendt <b>{$a}</b>. Den er dessverre ikke behandlet av din leder ennå. Ønsker du å sende en påminnelse til lederen din?';
+$string['request_remainder']    = 'Søknaden din ble innsendt <b>{$a}</b>. Den er ennå ikke behandlet av din leder. Ønsker du å sende en påminnelse til lederen din?';
 
 $string['err_link'] = 'OOPS - søknaden er allerede behandlet. Lenken du klikket på kan bare benyttes en gang.';
 
