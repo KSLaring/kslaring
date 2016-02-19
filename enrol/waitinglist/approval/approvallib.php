@@ -36,6 +36,7 @@ Class Approval {
      */
     public static function AddElements_ToForm(&$form) {
         /* Variables */
+        global $USER,$COURSE;
 
         try {
             /* Approval Info    */
@@ -187,8 +188,6 @@ Class Approval {
             $infoRejectAct->action  = REJECTED_ACTION;
             $DB->insert_record('enrol_approval_action',$infoRejectAct);
 
-            /* Insert OnWait Action  */
-
             /* Info To Send */
             $course = get_course($courseId);
             $infoMail = new stdClass();
@@ -214,6 +213,7 @@ Class Approval {
             throw $ex;
         }//try_catch
     }//Add_ApprovalEntry
+
 
     /**
      * @param           $user
@@ -485,6 +485,7 @@ Class Approval {
                             ea.waitinglistid,
                             ea.methodtype,
                             ea.seats,
+                            ea.arguments,
                             ea.approved,
                             ea.rejected
                      FROM	  {enrol_approval}	ea

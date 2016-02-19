@@ -31,8 +31,6 @@
  
 namespace enrol_waitinglist\method\self;
 
-require_once($CFG->dirroot . '/enrol/waitinglist/lib.php');
-require_once($CFG->dirroot . '/enrol/waitinglist/approval/approvallib.php');
 class enrolmethodself extends \enrol_waitinglist\method\enrolmethodbase{
 
 	const METHODTYPE='self';
@@ -76,6 +74,9 @@ class enrolmethodself extends \enrol_waitinglist\method\enrolmethodbase{
         if (enrol_get_plugin('invoice')) {
             require_once($CFG->dirroot . '/enrol/invoice/invoicelib.php');
         }
+
+        require_once($CFG->dirroot . '/enrol/waitinglist/lib.php');
+        require_once($CFG->dirroot . '/enrol/waitinglist/approval/approvallib.php');
     }
 	 
 	  /**
@@ -306,13 +307,18 @@ class enrolmethodself extends \enrol_waitinglist\method\enrolmethodbase{
                 $queueid = $this->add_to_waitinglist($waitinglist, $queue_entry);
             }else {
                 list($infoApproval,$infoMail) = \Approval::Add_ApprovalEntry($data,$USER->id,$waitinglist->courseid,static::METHODTYPE,1,$waitinglist->id);
-                if (array_key_exists($USER->id,$this->myManagers)) {
-                    $infoApproval->action = APPROVED_ACTION;
-                    \Approval::ApplyAction_FromManager($infoApproval);
-                }else {
-                    /* Send Mails   */
-                    \Approval::SendNotifications($USER,$infoMail,$this->myManagers);
-                }
+                /* Check Vancancies */
+                $wl         = enrol_get_plugin('waitinglist');
+                $vacancies  = $wl->get_vacancy_count($waitinglist);
+                if ($vacancies) {
+                    if (array_key_exists($USER->id,$this->myManagers)) {
+                        $infoApproval->action = APPROVED_ACTION;
+                        \Approval::ApplyAction_FromManager($infoApproval);
+                    }else {
+                        /* Send Mails   */
+                        \Approval::SendNotifications($USER,$infoMail,$this->myManagers);
+                    }
+                }//if_vacancies
             }//if_approval
 
             /**
@@ -374,7 +380,7 @@ class enrolmethodself extends \enrol_waitinglist\method\enrolmethodbase{
 		//if we already have enough of this method type, return false.
     	if($this->maxseats>0){
     		$currentcount = $entryman->get_allocated_listtotal_by_method(static::METHODTYPE);
-    		if($currentcount + $giveseats >= $this->maxseats){
+    		if($currentcount + $seats >= $this->maxseats){
     			$giveseats = $this->maxseats - $currentcount;
     			if($giveseats<1){return false;}
     		}
@@ -457,14 +463,16 @@ class enrolmethodself extends \enrol_waitinglist\method\enrolmethodbase{
              * Description
              * Add checking for vacancies and if the user wants to be set on the wait list or no.
              */
-            $plugin     = enrol_get_plugin('waitinglist');
-            $vacancies  = $plugin->get_vacancy_count($waitinglist);
-            $confirm    = optional_param('confirm', 0, PARAM_INT);
-            $toConfirm  = null;
-            $remainder  = null;
+            $plugin         = enrol_get_plugin('waitinglist');
+            $vacancies      = $plugin->get_vacancy_count($waitinglist);
+            $confirm        = optional_param('confirm', 0, PARAM_INT);
+            $toConfirm      = null;
+            $remainder      = null;
+            $infoRequest    = null;
 
             if ($waitinglist->{ENROL_WAITINGLIST_FIELD_APPROVAL} == APPROVAL_REQUIRED) {
-                $remainder = \Approval::GetNotificationSent($USER->id,$waitinglist->courseid);
+                $remainder      = \Approval::GetNotificationSent($USER->id,$waitinglist->courseid);
+                $infoRequest    = \Approval::Get_Request($USER->id,$waitinglist->courseid,$waitinglist->id);
             }//
 
             if ($remainder) {
@@ -488,10 +496,14 @@ class enrolmethodself extends \enrol_waitinglist\method\enrolmethodbase{
                 if ($confirm) {
                     $toConfirm      =  false;
                 }else {
-                    if (!$vacancies) {
-                        $toConfirm  =  true;
+                    if ($infoRequest) {
+                        $toConfirm = false;
                     }else {
-                        $toConfirm  =  false;
+                        if (!$vacancies) {
+                            $toConfirm  =  true;
+                        }else {
+                            $toConfirm  =  false;
+                        }
                     }
                 }
 
@@ -518,7 +530,16 @@ class enrolmethodself extends \enrol_waitinglist\method\enrolmethodbase{
                     }else if ($data = $form->get_data()) {
                         $this->waitlistrequest_self($waitinglist, $data);
 
-                        if ($waitinglist->{ENROL_WAITINGLIST_FIELD_APPROVAL} != APPROVAL_REQUIRED) {
+                        if ($waitinglist->{ENROL_WAITINGLIST_FIELD_APPROVAL} == APPROVAL_REQUIRED) {
+                            if ($infoRequest && $vacancies) {
+                                $params = array();
+                                $params['id']   = $USER->id;
+                                $params['co']   = $waitinglist->courseid;
+
+                                $redirect       = new \moodle_url('/enrol/waitinglist/approval/info.php',$params);
+                                redirect($redirect);
+                            }//if_infoMail
+                        }else {
                             /**
                              * @updateDate  28/10/2015
                              * @author      eFaktor     (fbv)
@@ -531,16 +552,7 @@ class enrolmethodself extends \enrol_waitinglist\method\enrolmethodbase{
                                     \Invoices::activate_enrol_invoice($USER->id,$waitinglist->courseid,$waitinglist->id);
                                 }//if_invoice_info
                             }//if_enrol_invoice
-
-                            redirect($CFG->wwwroot . '/course/view.php?id=' . $waitinglist->courseid);
-                        }else {
-                            $params = array();
-                            $params['id']   = $USER->id;
-                            $params['co']   = $waitinglist->courseid;
-
-                            $redirect       = new \moodle_url('/enrol/waitinglist/approval/info.php',$params);
-                            redirect($redirect);
-                        }
+                        }//Approval_method
                     }//if_form
 
                     ob_start();

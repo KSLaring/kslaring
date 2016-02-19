@@ -57,5 +57,8 @@ class waitinglisttask extends \core\task\scheduled_task {
         if (enrol_get_plugin('invoice')) {
             $waitinglist->check_invoices($trace);
         }//if_enrolInvocie
+
+        /* Check Approval   */
+         $waitinglist->check_approval($trace);
 	}
 }
