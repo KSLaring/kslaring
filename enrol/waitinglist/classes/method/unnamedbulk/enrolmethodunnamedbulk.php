@@ -80,7 +80,8 @@ class enrolmethodunnamedbulk extends \enrol_waitinglist\method\enrolmethodbase {
             require_once($CFG->dirroot . '/enrol/invoice/invoicelib.php');
         }
 
-
+        require_once($CFG->dirroot . '/enrol/waitinglist/lib.php');
+        require_once($CFG->dirroot . '/enrol/waitinglist/approval/approvallib.php');
     }
     
     /**
@@ -299,13 +300,18 @@ class enrolmethodunnamedbulk extends \enrol_waitinglist\method\enrolmethodbase {
                 $queueid = $this->add_to_waitinglist($waitinglist, $queue_entry);
             }else {
                 list($infoApproval,$infoMail) = \Approval::Add_ApprovalEntry($data,$USER->id,$waitinglist->courseid,static::METHODTYPE,$data->seats,$waitinglist->id);
-                if (array_key_exists($USER->id,$this->myManagers)) {
-                    $infoApproval->action = APPROVED_ACTION;
-                    \Approval::ApplyAction_FromManager($infoApproval);
-                }else {
-                    /* Send Mails   */
-                    \Approval::SendNotifications($USER,$infoMail,$this->myManagers);
-                }
+                /* Check Vancancies */
+                $wl         = enrol_get_plugin('waitinglist');
+                $vacancies  = $wl->get_vacancy_count($waitinglist);
+                if ($vacancies) {
+                    if (array_key_exists($USER->id,$this->myManagers)) {
+                        $infoApproval->action = APPROVED_ACTION;
+                        \Approval::ApplyAction_FromManager($infoApproval);
+                    }else {
+                        /* Send Mails   */
+                        \Approval::SendNotifications($USER,$infoMail,$this->myManagers);
+                    }
+                }//if_vacancies
             }//if_approval
 
             /**
@@ -493,10 +499,12 @@ class enrolmethodunnamedbulk extends \enrol_waitinglist\method\enrolmethodbase {
             $waitinglistid      = optional_param('waitinglist', 0, PARAM_INT);
             $confirm            = optional_param('confirm', 0, PARAM_INT);
             $toConfirm          = null;
+            $infoRequest        = null;
 
             $remainder  = null;
 
             if ($waitinglist->{ENROL_WAITINGLIST_FIELD_APPROVAL} == APPROVAL_REQUIRED) {
+                $infoRequest = \Approval::Get_Request($USER->id,$waitinglist->courseid,$waitinglist->id);
                 $remainder = \Approval::GetNotificationSent($USER->id,$waitinglist->courseid);
             }//
 
@@ -521,10 +529,14 @@ class enrolmethodunnamedbulk extends \enrol_waitinglist\method\enrolmethodbase {
                 if (($confirm) || isset($entry->seats)) {
                     $toConfirm          =  false;
                 }else {
-                    if (!$vacancies) {
-                        $toConfirm      =  true;
-                    }else {
-                        $toConfirm          =  false;
+                    if ($infoRequest) {
+                        $toConfirm = false;
+                    }else{
+                        if (!$vacancies) {
+                            $toConfirm      =  true;
+                        }else {
+                            $toConfirm      =  false;
+                        }
                     }
                 }
 
@@ -568,11 +580,20 @@ class enrolmethodunnamedbulk extends \enrol_waitinglist\method\enrolmethodbase {
                                 $actiontaken='nothingchanged';
                             }
                         }else{
+                            $actiontaken='updated';
                             //if this is a new enrol form submission, process it
                             $this->waitlistrequest_unnamedbulk($waitinglist, $data);
-                            if ($waitinglist->{ENROL_WAITINGLIST_FIELD_APPROVAL} != APPROVAL_REQUIRED) {
-                                $actiontaken='updated';
 
+                            if ($waitinglist->{ENROL_WAITINGLIST_FIELD_APPROVAL} == APPROVAL_REQUIRED) {
+                                if ($infoRequest && $vacancies) {
+                                    $params = array();
+                                    $params['id']   = $USER->id;
+                                    $params['co']   = $waitinglist->courseid;
+
+                                    $redirect       = new \moodle_url('/enrol/waitinglist/approval/info.php',$params);
+                                    redirect($redirect);
+                                }//if_infoMail
+                            }else {
                                 /**
                                  * @updateDate  28/10/2015
                                  * @author      eFaktor     (fbv)
@@ -585,14 +606,7 @@ class enrolmethodunnamedbulk extends \enrol_waitinglist\method\enrolmethodbase {
                                         \Invoices::activate_enrol_invoice($USER->id,$waitinglist->courseid,$waitinglist->id);
                                     }//if_invoice_info
                                 }
-                            }else {
-                                $params = array();
-                                $params['id']   = $USER->id;
-                                $params['co']   = $waitinglist->courseid;
-
-                                $redirect       = new \moodle_url('/enrol/waitinglist/approval/info.php',$params);
-                                redirect($redirect);
-                            }//if_approval
+                            }
                         }//if_entry
 
                         //in the case that the user has updated their entry, we

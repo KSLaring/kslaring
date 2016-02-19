@@ -224,7 +224,7 @@ class enrol_waitinglist_plugin extends enrol_plugin {
 	public function can_enrol_directly($instance){
 		global $DB;
 		//there probably wull be cases where we set the max enrolments to 0, to buffer until a particular start date
-		if ($instance->{ENROL_WAITINGLIST_FIELD_MAXENROLMENTS} > -1) {
+		if ($instance->{ENROL_WAITINGLIST_FIELD_MAXENROLMENTS} > 0) {
             // Max enrol limit specified.
             $vacancies = $this->get_vacancy_count($instance);
 			$queueman= \enrol_waitinglist\queuemanager::get_by_course($instance->courseid);
@@ -666,6 +666,7 @@ class enrol_waitinglist_plugin extends enrol_plugin {
 
             /* Get Invoice Users to activate    */
             $trace->output('waitinglist get users with invoice to update');
+
             /* SQL Instruction  */
             $sql = " SELECT		ei.id,
                                 ei.userid,
@@ -700,6 +701,96 @@ class enrol_waitinglist_plugin extends enrol_plugin {
             throw $ex;
         }//try_catch
     }
+
+    /**
+     * @param   progress_trace  $trace
+     *
+     * @throws                  Exception
+     *
+     * @creationDate            19/02/2016
+     * @author                  eFaktor     (fbv)
+     *
+     * Description
+     * Check if there are users with approval to activate
+     */
+    public function check_approval(progress_trace $trace) {
+        /* Variables    */
+        global $DB,$CFG;
+        $instances  = null;
+        $wl         = null;
+        $sql        = null;
+        $rdo        = null;
+        $time       = null;
+
+        try {
+            $trace->output('waitinglist enrolment check for approval to update');
+            /* Enrol Plugin */
+            $wl = enrol_get_plugin('waitinglist');
+
+            /* Get Invoice Users to activate    */
+            $trace->output('waitinglist get users with approval to update');
+
+            /* SQL Instruction  */
+            $sql = " SELECT	ea.id,
+                            ea.waitinglistid,
+                            ea.methodtype,
+                            ea.userid,
+                            ea.courseid,
+                            c.fullname,
+                            ea.arguments,
+                            ea.seats,
+                            ea.token,
+                            ap.token 	as 'approve',
+                            re.token	as 'reject',
+                            ''          as 'action'
+                     FROM		{enrol_approval}			ea
+                        JOIN	{enrol}					e	ON 	e.id  			= ea.waitinglistid
+                        JOIN	{course}				c	ON	c.id			= e.courseid
+                        -- Approve Action
+                        JOIN	{enrol_approval_action}	ap	ON	ap.approvalid	= ea.id
+                                                            AND	ap.action		= 1
+                        -- Reject action
+                        JOIN	{enrol_approval_action}	re	ON	re.approvalid	= ea.id
+                                                            AND	re.action		= 2
+                     WHERE		ea.userenrolid		= 0 ";
+
+            /* Execute  */
+            $rdo = $DB->get_records_sql($sql);
+            if ($rdo) {
+                foreach ($rdo as $instance) {
+                    $myManagers = \Approval::GetManagers($instance->userid);
+
+                    if (array_key_exists($instance->userid,$myManagers)) {
+                        $instance->action = APPROVED_ACTION;
+                        \Approval::ApplyAction_FromManager($instance);
+                    }else {
+                        $infoMail = new stdClass();
+                        $infoMail->approvalid   = $instance->id;
+                        $infoMail->course       = $instance->fullname;
+
+                        $infoMail->arguments    = $instance->arguments;
+                        /* Approve Link */
+                        $lnkApprove = $CFG->wwwroot . '/enrol/waitinglist/approval/action.php/' . $instance->token . '/' . $instance->approve;
+                        $infoMail->approve = '<a href="' . $lnkApprove . '">' . get_string('approve_lnk','enrol_waitinglist') . '</br>';
+                        /* Reject Link  */
+                        $lnkReject  = $CFG->wwwroot . '/enrol/waitinglist/approval/action.php/' . $instance->token . '/' . $instance->reject;
+                        $infoMail->reject = '<a href="' . $lnkReject . '">' . get_string('reject_lnk','enrol_waitinglist') . '</br>';
+
+                        /* Send Mails   */
+                        $user = get_complete_user_data('id',$instance->userid);
+                        \Approval::SendNotifications($user,$infoMail,$myManagers);
+                    }
+                }//fore_rdo
+            }//if_rdo
+
+            $trace->output('waitinglist enrolment check for approval to update - Finished');
+            $trace->finished();
+        }catch (Exception $ex) {
+            $trace->output('waitinglist enrolment check for approval to update - ERROR' . $ex->getMessage());
+            throw $ex;
+        }//try_catch
+    }//check_approval
+
 	 /**
      * Get the vacancy count for this waiting list
      * We need remove enrolments and confirmations from maxenrolments
@@ -712,8 +803,21 @@ class enrol_waitinglist_plugin extends enrol_plugin {
 		$count = $DB->count_records('user_enrolments', array('enrolid' => $instance->id));
 		$entryman= \enrol_waitinglist\entrymanager::get_by_course($instance->courseid);
 		$confirmedlistcount = $entryman->get_confirmed_listtotal();
-		$vacancies = $instance->{ENROL_WAITINGLIST_FIELD_MAXENROLMENTS} - $count - $confirmedlistcount;
-		if($vacancies < 0){$vacancies=0;}
+
+        /**
+         * @updateDate  19/02/2016
+         * @author      eFaktor     (fbv)
+         *
+         * Description
+         * If the max enrolments is set to 0, it means unlimited.
+         */
+        if ($instance->{ENROL_WAITINGLIST_FIELD_MAXENROLMENTS}) {
+            $vacancies = $instance->{ENROL_WAITINGLIST_FIELD_MAXENROLMENTS} - $count - $confirmedlistcount;
+            if($vacancies < 0){$vacancies=0;}
+        }else {
+            $vacancies = 1;
+        }
+
 		return $vacancies;
 	}
 	

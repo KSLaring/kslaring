@@ -44,9 +44,9 @@ class enrolmethodunnamedbulk_enrolform extends \moodleform {
     }
 
     public function definition() {
-        global $CFG;
-
-        $mform = $this->_form;
+        global $CFG,$USER;
+        $infoRequest = null;
+        $mform       = $this->_form;
         list( $waitinglist,$method,$queuestatus,$confirmed,$reminder) = $this->_customdata;
         $this->method = $method;
         $this->waitinglist = $waitinglist;
@@ -78,11 +78,21 @@ class enrolmethodunnamedbulk_enrolform extends \moodleform {
                  * Check vacancies. Not vacancies --> Warning Message
                  */
 
+                if ($waitinglist->{ENROL_WAITINGLIST_FIELD_APPROVAL} == APPROVAL_REQUIRED) {
+                    $infoRequest = \Approval::Get_Request($USER->id,$waitinglist->courseid,$waitinglist->id);
+                }
                 //add caution for number of seats available, and waiting list size etc
                 if($queuestatus->hasentry){
                     $mform->addElement('static','aboutqueuestatus',
                         get_string('unnamedbulk_enrolformqueuestatus_label','enrol_waitinglist'),
                         get_string('unnamedbulk_enrolformqueuestatus','enrol_waitinglist',$queuestatus));
+                }else if ($infoRequest) {
+                    $infoRequest->assignedseats = 0;
+                    $infoRequest->waitingseats  = $infoRequest->seats;
+                    $infoRequest->queueposition = 1;
+                    $mform->addElement('static','aboutqueuestatus',
+                        get_string('unnamedbulk_enrolformqueuestatus_label','enrol_waitinglist'),
+                        get_string('unnamedbulk_enrolformqueuestatus','enrol_waitinglist',$infoRequest));
                 }
 
                 //add form input elements
@@ -90,6 +100,7 @@ class enrolmethodunnamedbulk_enrolform extends \moodleform {
                 $mform->addRule('seats', null, 'numeric', null, 'client');
                 $mform->setType('seats', PARAM_INT);
                 $mform->setDefault('seats','');
+
                 /**
                  * @updateDate  28/10/2015
                  * @author      eFaktor     (fbv)
@@ -115,8 +126,12 @@ class enrolmethodunnamedbulk_enrolform extends \moodleform {
                  * Add approval data
                  */
                 if ($waitinglist->{ENROL_WAITINGLIST_FIELD_APPROVAL} == APPROVAL_REQUIRED) {
-                    global $PAGE;
                     \Approval::AddElements_ToForm($mform);
+
+                    if ($infoRequest) {
+                        $mform->setDefault('seats',$infoRequest->seats);
+                        $mform->setDefault('arguments',$infoRequest->arguments);
+                    }
                 }//if_approval
 
                 //add submit + enter course

@@ -119,13 +119,17 @@ class enrolmethodself_enrolform extends \moodleform {
                 $mform->addElement('hidden', 'confirm');
                 $mform->setType('confirm', PARAM_INT);
                 $mform->setDefault('confirm', 1);
+
+                $this->add_action_buttons(true, get_string('enrolme', 'enrol_self'));
             }else {
                 $mform->addElement('html','<div class="lbl_warning">');
                 $mform->addElement('html','<h5>' . get_string('seats_occupied','enrol_waitinglist') . '</h5>');
                 $mform->addElement('html','</div>');
+
+                $this->add_action_buttons(true, get_string('continue'));
             }//if_vacancies
 
-            $this->add_action_buttons(true, get_string('enrolme', 'enrol_self'));
+
         }
 
         $mform->addElement('hidden', 'id');
