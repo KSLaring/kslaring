@@ -7,10 +7,10 @@
 </footer>
 <footer id="sub-footer" class="container-fluid">
     <div class="row-fluid">
-        <div class="text span11">
+        <div class="text span10">
             <?php echo $html->footertext ?>
         </div>
-        <div class="help-link span1">
+        <div class="help-link span2">
             <?php echo $html->footerhelp ?>
         </div>
 
