@@ -120,6 +120,7 @@ a.active {
   padding: .7em 0 0;
 }
 #sub-footer .help-link a {
+  float: right;
   display: table-cell;
   text-align: center;
 }
