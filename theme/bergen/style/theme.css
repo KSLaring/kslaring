@@ -116,3 +116,10 @@ a.active {
 #sub-footer .returntorole {
   margin-bottom: 1em;
 }
+#sub-footer .help-link {
+  padding: .7em 0 0;
+}
+#sub-footer .help-link a {
+  display: table-cell;
+  text-align: center;
+}

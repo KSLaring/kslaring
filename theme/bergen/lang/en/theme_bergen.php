@@ -90,3 +90,9 @@ $string['expandall_initial'] = 'Collapse/expand all (Expand a section first)';
 /* Set my home page */
 $string['sethome']      = 'Set as my home page';
 $string['resethome']    = 'Reset to default page';
+
+/* Footer text */
+$string['footertext']    = 'Bergen kommune benytter KS Læring for kursadministrasjon og nettlæring.<br>
+Systemeier: HR-avdelingen. For brukerstøtte kontakt Helpdesk eller «Meld feil»';
+$string['footerhelpurl']    = 'http://www.performit.no/performitplayer/html/v-2-0/bk-laering/bk-laering.how2';
+$string['footerbrukerhelp']    = 'Brukerveiledning';

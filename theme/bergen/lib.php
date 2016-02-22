@@ -89,8 +89,9 @@ EOT;
  *
  * This function can make alterations and replace patterns within the CSS.
  *
- * @param string $css The CSS
+ * @param string       $css   The CSS
  * @param theme_config $theme The theme config object.
+ *
  * @return string The parsed CSS The parsed CSS.
  */
 function theme_bergen_process_css($css, $theme) {
@@ -117,8 +118,8 @@ function theme_bergen_process_css($css, $theme) {
  */
 function theme_bergen_set_fontwww($css) {
     global $CFG, $PAGE;
-    if(empty($CFG->themewww)){
-        $themewww = $CFG->wwwroot."/theme";
+    if (empty($CFG->themewww)) {
+        $themewww = $CFG->wwwroot . "/theme";
     } else {
         $themewww = $CFG->themewww;
     }
@@ -126,18 +127,20 @@ function theme_bergen_set_fontwww($css) {
 
     $theme = theme_config::load('bergen');
     if (!empty($theme->settings->bootstrapcdn)) {
-    	$css = str_replace($tag, '//netdna.bootstrapcdn.com/font-awesome/4.0.0/fonts/', $css);
+        $css = str_replace($tag, '//netdna.bootstrapcdn.com/font-awesome/4.0.0/fonts/', $css);
     } else {
-    	$css = str_replace($tag, $themewww.'/bergen/fonts/', $css);
+        $css = str_replace($tag, $themewww . '/bergen/fonts/', $css);
     }
+
     return $css;
 }
 
 /**
  * Adds the logo to CSS.
  *
- * @param string $css The CSS.
+ * @param string $css  The CSS.
  * @param string $logo The URL of the logo.
+ *
  * @return string The parsed CSS
  */
 function theme_bergen_set_logo($css, $logo) {
@@ -157,16 +160,18 @@ function theme_bergen_set_logo($css, $logo) {
  *
  * @param stdClass $course
  * @param stdClass $cm
- * @param context $context
- * @param string $filearea
- * @param array $args
- * @param bool $forcedownload
- * @param array $options
+ * @param context  $context
+ * @param string   $filearea
+ * @param array    $args
+ * @param bool     $forcedownload
+ * @param array    $options
+ *
  * @return bool
  */
 function theme_bergen_pluginfile($course, $cm, $context, $filearea, $args, $forcedownload, array $options = array()) {
     if ($context->contextlevel == CONTEXT_SYSTEM and $filearea === 'logo') {
         $theme = theme_config::load('bergen');
+
         return $theme->setting_file_serve('logo', $args, $forcedownload, $options);
     } else {
         send_file_not_found();
@@ -176,8 +181,9 @@ function theme_bergen_pluginfile($course, $cm, $context, $filearea, $args, $forc
 /**
  * Adds any custom CSS to the CSS before it is cached.
  *
- * @param string $css The original CSS.
+ * @param string $css       The original CSS.
  * @param string $customcss The custom CSS to add.
+ *
  * @return string The CSS which now contains our custom CSS.
  */
 function theme_bergen_set_customcss($css, $customcss) {
@@ -196,15 +202,22 @@ function theme_bergen_set_customcss($css, $customcss) {
  * Returns an object containing HTML for the areas affected by settings.
  *
  * @param renderer_base $output Pass in $OUTPUT.
- * @param moodle_page $page Pass in $PAGE.
+ * @param moodle_page   $page   Pass in $PAGE.
+ *
  * @return stdClass An object with the following properties:
  *      - navbarclass A CSS class to use on the navbar. By default ''.
- *      - heading HTML to use for the heading. A logo if one is selected or the default heading.
+ *      - heading HTML to use for the heading. A logo if one is selected or the default
+ *      heading.
  *      - footnote HTML to use as a footnote. By default ''.
  */
 function theme_bergen_get_html_for_settings(renderer_base $output, moodle_page $page) {
     global $CFG;
     $return = new stdClass;
+    $strhome = get_string('home');
+    $strfootertext = get_string('footertext', 'theme_bergen');
+    $strfooterhelpurl = get_string('footerhelpurl', 'theme_bergen');
+    $strhelp = get_string('help');
+    $footerbrukerhelp = get_string('footerbrukerhelp', 'theme_bergen');
 
     $return->navbarclass = '';
     if (!empty($page->theme->settings->invert)) {
@@ -212,15 +225,20 @@ function theme_bergen_get_html_for_settings(renderer_base $output, moodle_page $
     }
 
     if (!empty($page->theme->settings->logo)) {
-        $return->heading = html_writer::link($CFG->wwwroot, '', array('title' => get_string('home'), 'class' => 'logo'));
+        $return->heading = html_writer::link($CFG->wwwroot, '',
+            array('title' => $strhome, 'class' => 'logo'));
     } else {
         $return->heading = $output->page_heading();
     }
 
-    $return->footnote = '';
-    if (!empty($page->theme->settings->footnote)) {
-        $return->footnote = '<div class="footnote text-center">'.$page->theme->settings->footnote.'</div>';
-    }
+    $return->footertext = $strfootertext;
+
+    $footerhelp = '';
+    $footerhelp .= '<a href="' . $strfooterhelpurl . '">';
+    $footerhelp .= '<img class="help icon" src="' . $output->pix_url('help') .'"/>';
+    $footerhelp .= '&nbsp;' . $strhelp . '<br/>' . $footerbrukerhelp;
+    $footerhelp .= '</a>';
+    $return->footerhelp = $footerhelp;
 
     return $return;
 }
@@ -237,6 +255,7 @@ function theme_bergen_get_html_for_settings(renderer_base $output, moodle_page $
  *   non-editing teacher
  *
  * @param moodle_page $page Pass in $PAGE.
+ *
  * @return bool
  */
 function theme_bergen_show_hidden_blocks() {
@@ -253,24 +272,27 @@ function theme_bergen_show_hidden_blocks() {
 
 /**
  * All theme functions should start with theme_bergen_
+ *
  * @deprecated since 2.5.1
  */
 function bergen_process_css() {
-    throw new coding_exception('Please call theme_'.__FUNCTION__.' instead of '.__FUNCTION__);
+    throw new coding_exception('Please call theme_' . __FUNCTION__ . ' instead of ' . __FUNCTION__);
 }
 
 /**
  * All theme functions should start with theme_bergen_
+ *
  * @deprecated since 2.5.1
  */
 function bergen_set_logo() {
-    throw new coding_exception('Please call theme_'.__FUNCTION__.' instead of '.__FUNCTION__);
+    throw new coding_exception('Please call theme_' . __FUNCTION__ . ' instead of ' . __FUNCTION__);
 }
 
 /**
  * All theme functions should start with theme_bergen_
+ *
  * @deprecated since 2.5.1
  */
 function bergen_set_customcss() {
-    throw new coding_exception('Please call theme_'.__FUNCTION__.' instead of '.__FUNCTION__);
+    throw new coding_exception('Please call theme_' . __FUNCTION__ . ' instead of ' . __FUNCTION__);
 }
