@@ -1745,6 +1745,134 @@ class course_page  {
         }//try_catch
     }//Get_LocationName
 
+    /**
+     * @param           $locationId
+     *
+     * @return          null|stdClass
+     * @throws          Exception
+     *
+     * @creationDate    23/02/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Get location detail
+     */
+    public static function GetLocationDetail($locationId) {
+        /* Variables */
+        global $DB;
+        $rdo            = null;
+        $sql            = null;
+        $params         = null;
+        $infoLocation   = null;
+
+        try {
+            /* Search Criteria  */
+            $params = array();
+            $params['location'] = $locationId;
+
+            /* Search Criteria  */
+            $sql = " SELECT	cl.id,
+                            cl.name,
+                            levelone.name 	as 'muni',
+                            cl.floor,
+                            cl.room,
+                            cl.seats,
+                            cl.street,
+                            cl.postcode,
+                            cl.city,
+                            cl.contact,
+                            cl.phone,
+                            cl.email,
+                            cl.comments,
+                            GROUP_CONCAT(DISTINCT cfo.courseid ORDER BY cfo.courseid) as 'courses'
+                     FROM		    {course_locations}		    cl
+                        JOIN	    {report_gen_companydata}	levelone	ON  levelone.id 	= cl.levelone
+                        LEFT JOIN	{course_format_options}		cfo			ON 	cfo.value 		= cl.id
+                                                                            AND cfo.name like '%location%'
+                     WHERE		cl.id = :location ";
+
+            /* Execute */
+            $rdo = $DB->get_record_sql($sql,$params);
+            if ($rdo) {
+                /* Info Location    */
+                $infoLocation = new stdClass();
+                $infoLocation->id   = $rdo->id;
+                $infoLocation->name = $rdo->name;
+                /* Detail */
+                $infoLocation->detail      = get_string('location_floor','local_friadmin') . ': ' . $rdo->floor;
+                $infoLocation->detail     .= "</br>";
+                $infoLocation->detail     .= get_string('location_room','local_friadmin')  . ': ' . $rdo->room;
+                $infoLocation->detail     .= "</br>";
+                $infoLocation->detail     .= get_string('location_seats','local_friadmin') . ': ' . $rdo->seats;
+                /* Address  */
+                $infoLocation->address     = $rdo->street;
+                $infoLocation->address    .= "</br>";
+                $infoLocation->address    .= $rdo->postcode . ' ' . $rdo->city;
+                $infoLocation->address    .= "</br>";
+                $infoLocation->address    .= $rdo->muni;
+                /* Courses  */
+                $infoLocation->courses     = implode(',',self::GetCoursesNames($rdo->courses));
+                /* Comments */
+                $infoLocation->comments    = $rdo->comments;
+                /* Contact  */
+                $infoLocation->contact     = $rdo->contact;
+                if ($infoLocation->contact) {
+                    $infoLocation->contact    .= "</br>";
+                }
+                $infoLocation->contact    .= $rdo->email;
+                if ($infoLocation->contact) {
+                    $infoLocation->contact    .= "</br>";
+                }
+                $infoLocation->contact    .= $rdo->phone;
+
+            }//if_Rdo
+
+            return $infoLocation;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//GetLocation
+
+    /**
+     * @param           $coursesLst
+     *
+     * @return          array
+     * @throws          Exception
+     *
+     * @creationDate    23/02/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Get names connected with the courses
+     */
+    private static function GetCoursesNames($coursesLst) {
+        /* Variables */
+        global $DB;
+        $rdo            = null;
+        $sql            = null;
+        $coursesNames   = array();
+
+        try {
+            /* SQL Instruction  */
+            $sql = " SELECT     id,
+                                fullname
+                     FROM       {course}
+                     WHERE      id IN ($coursesLst)
+                     ORDER BY   fullname ";
+
+            /* Execute  */
+            $rdo = $DB->get_records_sql($sql);
+            if ($rdo) {
+                foreach ($rdo as $instance) {
+                    $coursesNames[$instance->id] = $instance->fullname;
+                }//for_rdo
+            }//if_rdo
+
+            return $coursesNames;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//GetCourses
 
     /**
      * @param           $sectorsLst
