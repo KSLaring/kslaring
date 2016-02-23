@@ -388,6 +388,9 @@ class local_course_page_renderer extends plugin_renderer_base {
         /* Variables */
         $out = '';
         $strLocationName    = null;
+        $strLocationTitle   = null;
+        $infoLocation       = null;
+        $lightBox           = null;
         $sectorsName        = null;
         $str_format         = 'format_' . $course_format;
         $outLocation        = null;
@@ -422,9 +425,23 @@ class local_course_page_renderer extends plugin_renderer_base {
                     foreach ($format_options as $option) {
                         if ($option->name == 'course_location') {
                             if ($option->value) {
-                                $strLocationName = course_page::Get_LocationName($option->value);
-                                $outLocation  = '<h5 class="title_home chp-title">' . get_string('home_title_location',$str_format) . '</h5>';
-                                $outLocation .= '<div class="extra_home chp-content">' . $strLocationName . '</div>';
+                                $infoLocation       = course_page::GetLocationDetail($option->value);
+                                $strLocationTitle   = get_string('home_title_location',$str_format);
+
+
+                                $outLocation  = '<h5 class="title_home chp-title">' . $strLocationTitle . '</h5>';
+                                $outLocation .= '<div class="extra_home chp-content">';
+                                $outLocation .= $infoLocation->name;
+                                $outLocation .= '</div>';
+
+                                /* Get Lightbox to add*/
+                                $lightBox = self::AddLightBox_Location($infoLocation);
+
+                                $this->page->requires->yui_module('moodle-local_course_page-location','M.local_course_page.location',array(array('header' => $strLocationTitle,'content' => $lightBox)));
+
+                                $outLocation .= html_writer::start_tag('div', array('class' => 'mdl-right commentPanel'));
+                                $outLocation .= '<a href="#" class="button_location" id="show_location" >' . get_string('view_detail','local_course_page') . '</a>';
+                                $outLocation .= html_writer::end_tag('div');//div_mdl_right
                             }//if_value
                         }//if_course_location
 
@@ -468,6 +485,87 @@ class local_course_page_renderer extends plugin_renderer_base {
         return $out;
     }//addExtra_DurationBlock
 
+    /**
+     * @param           $location
+     *
+     * @return          string
+     * @throws          Exception
+     *
+     * @creationDate    23/02/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Add lightbox panel to the location
+     */
+    private static function AddLightBox_Location($location) {
+        /* Variables */
+        $lightBox       = null;
+        $strDetail      = null;
+        $strCourses     = null;
+        $strComments    = null;
+        $strAddress     = null;
+        $strContact     = null;
+
+        try {
+            /* Sub titles */
+            $strDetail          = get_string('location_detail','local_friadmin');
+            $strCourses         = get_string('courses');
+            $strComments        = get_string('location_comments','local_friadmin');
+            $strAddress         = get_string('location_address','local_friadmin');
+            $strContact         = get_string('location_contact_inf','local_friadmin');
+
+            $lightBox   = '<div class="location_panel">';
+                /* Detail   */
+                $lightBox   .= '<div class="location_sub_panel">';
+                    $lightBox .= '<div class="location_review_title">' . '<h4>' . $strDetail . '</h4>' . '</div>';
+                    $lightBox .= '<div class="location_review_value">';
+                        $lightBox .= $location->detail;
+                        $lightBox .= '<hr class="line_rating">';
+                    $lightBox .= '</div>';
+                $lightBox  .= '</div>';//location_sub_panel
+
+                /* Address  */
+                $lightBox  .= '<div class="location_sub_panel">';
+                    $lightBox .= '<div class="location_review_title">' . '<h4>' . $strAddress    . '</h4>' . '</div>';
+                    $lightBox .= '<div class="location_review_value">';
+                        $lightBox .= $location->address;
+                        $lightBox .= '<hr class="line_rating">';
+                    $lightBox .= '</div>';
+                $lightBox  .= '</div>';//location_sub_panel
+
+                /* Courses  */
+                $lightBox  .= '<div class="location_sub_panel">';
+                    $lightBox .= '<div class="location_review_title">' . '<h4>' . $strCourses  . '</h4>' . '</div>';
+                    $lightBox .= '<div class="location_review_value">';
+                        $lightBox .= $location->courses;
+                        $lightBox .= '<hr class="line_rating">';
+                    $lightBox .= '</div>';
+                $lightBox  .= '</div>';//location_sub_panel
+
+                /* Comments */
+                $lightBox  .= '<div class="location_sub_panel">';
+                    $lightBox .= '<div class="location_review_title">' . '<h4>' . $strComments  . '</h4>' . '</div>';
+                    $lightBox .= '<div class="location_review_value">';
+                        $lightBox .= $location->comments;
+                        $lightBox .= '<hr class="line_rating">';
+                    $lightBox .= '</div>';
+                $lightBox  .= '</div>';//location_sub_panel
+
+                /* Contact  */
+                $lightBox  .= '<div class="location_sub_panel">';
+                    $lightBox .= '<div class="location_review_title">' . '<h4>' . $strContact   . '</h4>' . '</div>';
+                    $lightBox .= '<div class="location_review_value">';
+                        $lightBox .= $location->contact;
+                        $lightBox .= '<hr class="line_rating">';
+                    $lightBox .= '</div>';
+                $lightBox  .= '</div>';//location_sub_panel
+            $lightBox  .= '</div>';//location_panel
+
+            return $lightBox;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//AddLightBox_Location
 
     /**
      * @param           $course_format
