@@ -268,7 +268,6 @@
 }
 
 .location_sub_panel {
-    font-style: italic;
     display: inline-block;
     height: auto;
     margin-right: 5px;
@@ -292,6 +291,11 @@
     display: inline-block;
     float: left;
     width: 80%;
+}
+
+.location_panel .location_review_value  h5 {
+    color:#000000;
+    margin-top: 0px;
 }
 
 .location_panel hr.line_rating {

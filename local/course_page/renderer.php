@@ -518,7 +518,7 @@ class local_course_page_renderer extends plugin_renderer_base {
                 $lightBox   .= '<div class="location_sub_panel">';
                     $lightBox .= '<div class="location_review_title">' . '<h4>' . $strDetail . '</h4>' . '</div>';
                     $lightBox .= '<div class="location_review_value">';
-                        $lightBox .= $location->detail;
+                        $lightBox .=  '<h5>' . $location->detail . '</h5>';
                         $lightBox .= '<hr class="line_rating">';
                     $lightBox .= '</div>';
                 $lightBox  .= '</div>';//location_sub_panel
@@ -527,7 +527,7 @@ class local_course_page_renderer extends plugin_renderer_base {
                 $lightBox  .= '<div class="location_sub_panel">';
                     $lightBox .= '<div class="location_review_title">' . '<h4>' . $strAddress    . '</h4>' . '</div>';
                     $lightBox .= '<div class="location_review_value">';
-                        $lightBox .= $location->address;
+                        $lightBox .= '<h5>' . $location->address . '</h5>';
                         $lightBox .= '<hr class="line_rating">';
                     $lightBox .= '</div>';
                 $lightBox  .= '</div>';//location_sub_panel
@@ -536,7 +536,7 @@ class local_course_page_renderer extends plugin_renderer_base {
                 $lightBox  .= '<div class="location_sub_panel">';
                     $lightBox .= '<div class="location_review_title">' . '<h4>' . $strCourses  . '</h4>' . '</div>';
                     $lightBox .= '<div class="location_review_value">';
-                        $lightBox .= $location->courses;
+                        $lightBox .= '<h5>' . $location->courses . '</h5>';
                         $lightBox .= '<hr class="line_rating">';
                     $lightBox .= '</div>';
                 $lightBox  .= '</div>';//location_sub_panel
@@ -545,7 +545,7 @@ class local_course_page_renderer extends plugin_renderer_base {
                 $lightBox  .= '<div class="location_sub_panel">';
                     $lightBox .= '<div class="location_review_title">' . '<h4>' . $strComments  . '</h4>' . '</div>';
                     $lightBox .= '<div class="location_review_value">';
-                        $lightBox .= $location->comments;
+                        $lightBox .= '<h5>' . $location->comments . '</h5>';
                         $lightBox .= '<hr class="line_rating">';
                     $lightBox .= '</div>';
                 $lightBox  .= '</div>';//location_sub_panel
@@ -554,7 +554,7 @@ class local_course_page_renderer extends plugin_renderer_base {
                 $lightBox  .= '<div class="location_sub_panel">';
                     $lightBox .= '<div class="location_review_title">' . '<h4>' . $strContact   . '</h4>' . '</div>';
                     $lightBox .= '<div class="location_review_value">';
-                        $lightBox .= $location->contact;
+                        $lightBox .= '<h5>' . $location->contact . '</h5>';
                         $lightBox .= '<hr class="line_rating">';
                     $lightBox .= '</div>';
                 $lightBox  .= '</div>';//location_sub_panel
