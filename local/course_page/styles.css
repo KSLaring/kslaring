@@ -257,6 +257,9 @@
   word-wrap: break-word;
 }
 
+.extra_home .mdl-left {
+    margin-top: 10px;
+}
 .location_panel {
     display: block;
     height: auto;

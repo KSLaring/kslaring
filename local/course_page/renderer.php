@@ -428,20 +428,19 @@ class local_course_page_renderer extends plugin_renderer_base {
                                 $infoLocation       = course_page::GetLocationDetail($option->value);
                                 $strLocationTitle   = get_string('home_title_location',$str_format);
 
-
-                                $outLocation  = '<h5 class="title_home chp-title">' . $strLocationTitle . '</h5>';
-                                $outLocation .= '<div class="extra_home chp-content">';
-                                $outLocation .= $infoLocation->name;
-                                $outLocation .= '</div>';
-
                                 /* Get Lightbox to add*/
                                 $lightBox = self::AddLightBox_Location($infoLocation);
 
                                 $this->page->requires->yui_module('moodle-local_course_page-location','M.local_course_page.location',array(array('header' => $strLocationTitle,'content' => $lightBox)));
 
-                                $outLocation .= html_writer::start_tag('div', array('class' => 'mdl-right commentPanel'));
-                                $outLocation .= '<a href="#" class="button_location" id="show_location" >' . get_string('view_detail','local_course_page') . '</a>';
-                                $outLocation .= html_writer::end_tag('div');//div_mdl_right
+                                $outLocation  = '<h5 class="title_home chp-title">' . $strLocationTitle . '</h5>';
+                                $outLocation .= '<div class="extra_home chp-content">';
+                                    $outLocation .= $infoLocation->name;
+
+                                    $outLocation .= html_writer::start_tag('div', array('class' => 'mdl-left'));
+                                        $outLocation .= '<a href="#" id="show_location" >' . get_string('view_detail','local_course_page') . '</a>';
+                                    $outLocation .= html_writer::end_tag('div');//div_mdl_right
+                                $outLocation .= '</div>';
                             }//if_value
                         }//if_course_location
 
