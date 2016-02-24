@@ -669,12 +669,17 @@ class TrackerManager {
             $params['user'] = $user_id;
 
             /* SQL Instruction  */
-            $sql = " SELECT		c.id,
-                                c.fullname,
-                                IF (cc.timecompleted,cc.timecompleted,0) as 'completed'
-                     FROM		{course}				c
-                        JOIN	{course_completions}	cc	ON	cc.course = c.id
-                                                            AND cc.userid = :user
+            $sql = " SELECT	c.id,
+                            c.fullname,
+                            IF (cc.timecompleted,cc.timecompleted,0) as 'completed'
+                     FROM			{course}					c
+                        JOIN		{enrol} 					e	ON 	e.courseid 	= c.id
+                                                                    AND	e.status 	= 0
+                        JOIN		{user_enrolments}			ue	ON 	ue.enrolid 	= e.id
+                                                                    AND	ue.status	= 0
+                                                                    AND ue.userid   = :user
+                        LEFT JOIN	{course_completions}		cc	ON	cc.course 	= e.courseid
+                                                                    AND cc.userid 	= ue.userid
                      WHERE		c.id IN ($courses)
                         AND     c.visible = 1
                      ORDER BY	c.fullname ";
@@ -816,18 +821,18 @@ class TrackerManager {
             $params['ue_user']  = $user_id;
 
             /* SQL Instruction  */
-            $sql = " SELECT		c.id,
-                                c.fullname,
-                                IF (cc.timecompleted,cc.timecompleted,0)                                        as 'completed',
-                                GROUP_CONCAT(DISTINCT CONCAT(e.enrol,'#',e.id) ORDER BY e.enrol SEPARATOR ',')  as 'enrolments'
-                     FROM		{course}				c
-                        JOIN	{course_completions}    cc	ON	cc.course   = c.id
-                                                            AND cc.userid   = :user
-                        JOIN	{enrol} 				e	ON 	e.courseid 	= c.id
-                                                            AND	e.status 	= 0
-                        JOIN	{user_enrolments}		ue	ON 	ue.enrolid 	= e.id
-                                                            AND	ue.status	= 0
-                                                            AND ue.userid   = :ue_user
+            $sql = " SELECT	c.id,
+                            c.fullname,
+                            IF (cc.timecompleted,cc.timecompleted,0)                                        as 'completed',
+                            GROUP_CONCAT(DISTINCT CONCAT(e.enrol,'#',e.id) ORDER BY e.enrol SEPARATOR ',')  as 'enrolments'
+                     FROM			{course}					c
+                        LEFT JOIN	{course_completions}  	    cc	ON	cc.course   = c.id
+                                                                    AND cc.userid   = :user
+                        JOIN		{enrol} 					e	ON 	e.courseid 	= c.id
+                                                                    AND	e.status 	= 0
+                        JOIN		{user_enrolments}			ue	ON 	ue.enrolid 	= e.id
+                                                                    AND	ue.status	= 0
+                                                                    AND ue.userid   = :ue_user
                      WHERE		c.id NOT IN ($connected)
                         AND     c.visible = 1
                      GROUP BY	c.id

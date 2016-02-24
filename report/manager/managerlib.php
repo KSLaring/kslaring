@@ -480,15 +480,13 @@ class CompetenceManager {
             /* Build my hierarchy   */
             $myHierarchy               = new stdClass();
             $myHierarchy->IsRepoter         = $IsReporterManager;
-            if (($IsReporterManager) && (!is_siteadmin($user_id))) {
+            if ($IsReporterManager) {
                 $myHierarchy->competence    = self::Get_MyReporterCompetence($user_id);
                 $myHierarchy->my_level      = $reportLevel;
             }else {
                 $myHierarchy->competence    = self::Get_MyCompetence($user_id);
                 $myHierarchy->my_level      = self::Get_MyLevelView($user_id,$site_context);
             }//if_IsReporter
-
-
 
             return $myHierarchy;
         }catch (Exception $ex) {
