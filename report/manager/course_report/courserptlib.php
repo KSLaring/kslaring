@@ -147,18 +147,18 @@ class course_report {
                 $course_report->completed_before   = $data_form[REPORT_MANAGER_COMPLETED_LIST];
 
                 /* Get My Companies by Level    */
-                if (!$IsReporter) {
+                if ($IsReporter) {
+                    $inZero  = $my_hierarchy->competence->levelZero;
+                    $inOne   = $my_hierarchy->competence->levelOne;
+                    $inTwo   = $my_hierarchy->competence->levelTwo;
+                    $inThree = $my_hierarchy->competence->levelThree;
+                }else {
                     list($inZero,$inOne,$inTwo,$inThree) = CompetenceManager::GetMyCompanies_By_Level($my_hierarchy->competence,$my_hierarchy->my_level);
                     $inZero     = implode(',',$inZero);
                     $inOne      = implode(',',$inOne);
                     $inTwo      = implode(',',$inTwo);
                     $inThree    = implode(',',$inThree);
-                }else {
-                    $inZero  = $my_hierarchy->competence->levelZero;
-                    $inOne   = $my_hierarchy->competence->levelOne;
-                    $inTwo   = $my_hierarchy->competence->levelTwo;
-                    $inThree = $my_hierarchy->competence->levelThree;
-                }//if_IsReporter
+                }
 
                 /* Job Roles Selected   */
                 $course_report->job_roles = self::Get_JobRolesCourse_Report($data_form);
@@ -613,26 +613,30 @@ class course_report {
             $params['course'] = $courseId;
 
             /* SQL Instruction  */
-            $sql = " SELECT	  CONCAT(cc.id,'_',uic.id),
-                              u.id 			                      as 'user',
-                              CONCAT(u.firstname, ' ', u.lastname)  as 'name',
-                              uic.companyid,
-                              uic.jobroles,
-                              cc.timecompleted
-                     FROM		{course_completions}		cc
-                        JOIN	{user_info_competence_data}	uic		ON 	uic.userid 	= cc.userid
-                        JOIN	{user}						u		ON 	u.id 		= uic.userid
-                                                                    AND u.deleted 	= 0
-                     WHERE	  cc.course = :course ";
+            $sql = " SELECT	CONCAT(ue.id,'_',uic.id) as 'id',
+                            u.id 			                      as 'user',
+                            CONCAT(u.firstname, ' ', u.lastname)  as 'name',
+                            uic.companyid,
+                            uic.jobroles,
+                            IF (cc.timecompleted,cc.timecompleted,0) as 'timecompleted'
+                     FROM			{user_enrolments}			ue
+                        JOIN		{enrol}						e	ON 	e.id 	    = ue.enrolid
+                                                                    AND	e.courseid 	= :course
+                                                                    AND	e.status	= 0
+                        JOIN		{user}						u	ON 	u.id 		= ue.userid
+                                                                    AND	u.deleted	= 0
+                        JOIN		{user_info_competence_data}	uic	ON 	uic.userid 	= u.id
+                        LEFT JOIN	{course_completions}		cc	ON 	cc.userid	= uic.userid
+                                                                    AND cc.id 		= e.courseid ";
 
             /* Companies Criteria    */
             if ($companies) {
                 $companies = implode(',',array_keys($companies));
-                $sql .= " AND uic.companyid IN ($companies) ";
+                $sql .= " WHERE uic.companyid IN ($companies) ";
             }//if_companies
 
             /* ORDER BY */
-            $sql .= " ORDER BY cc.course,u.id ";
+            $sql .= " ORDER BY e.courseid,u.id ";
 
             /* Execute  */
             $rdo = $DB->get_records_sql($sql,$params);
@@ -870,7 +874,6 @@ class course_report {
         try {
             if (!empty($data_form[REPORT_MANAGER_JOB_ROLE_LIST])) {
                 $list = join(',',$data_form[REPORT_MANAGER_JOB_ROLE_LIST]);
-                echo "JOB ROLES : " . $list;
                 $job_roles = CompetenceManager::Get_JobRolesList($list);
                 /* Save Job Roles Selected  */
                 $SESSION->job_roles = array_keys($job_roles);

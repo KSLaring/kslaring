@@ -690,27 +690,31 @@ class outcome_report {
             $managerKey = $_SESSION['USER']->sesskey;
 
             /* SQL Instruction  */
-            $sql = " SELECT	CONCAT(cc.id,'_',uic.id),
-                            cc.course,
+            $sql = " SELECT	CONCAT(ue.id,'_',uic.id) as 'id',
                             u.id 			                      as 'user',
                             CONCAT(u.firstname, ' ', u.lastname)  as 'name',
                             uic.companyid,
                             uic.jobroles,
-                            cc.timecompleted
-                     FROM		{course_completions}		cc
-                        JOIN	{user_info_competence_data}	uic		ON 	uic.userid 	= cc.userid
-                        JOIN	{user}						u		ON 	u.id 		= uic.userid
-                                                                    AND u.deleted 	= 0
-                     WHERE	  cc.course IN ($courses) ";
+                            e.courseid,
+                            IF (cc.timecompleted,cc.timecompleted,0) as 'timecompleted'
+                     FROM			{user_enrolments}			ue
+                        JOIN		{enrol}						e	ON 	e.id 	    = ue.enrolid
+                                                                    AND	e.courseid 	IN ($courses)
+                                                                    AND	e.status	= 0
+                        JOIN		{user}						u	ON 	u.id 		= ue.userid
+                                                                    AND	u.deleted	= 0
+                        JOIN		{user_info_competence_data}	uic	ON 	uic.userid 	= u.id
+                        LEFT JOIN	{course_completions}		cc	ON 	cc.userid	= uic.userid
+                                                                    AND cc.id 		= e.courseid ";
 
             /* Companies Criteria    */
             if ($companies) {
                 $companies = implode(',',array_keys($companies));
-                $sql .= " AND uic.companyid IN ($companies) ";
+                $sql .= " WHERE uic.companyid IN ($companies) ";
             }//if_companies
 
             /* ORDER BY */
-            $sql .= " ORDER BY cc.course,u.id ";
+            $sql .= " ORDER BY e.courseid,u.id ";
 
             /* Execute  */
             $rdo = $DB->get_records_sql($sql);
@@ -725,7 +729,7 @@ class outcome_report {
                         $infoTempReport->userid     = $instance->user;
                         $infoTempReport->name       = $instance->name;
                         $infoTempReport->companyid  = $instance->companyid;
-                        $infoTempReport->courseid   = $instance->course;
+                        $infoTempReport->courseid   = $instance->courseid;
                         $infoTempReport->outcomeid  = $outcomeId;
                         if ($instance->timecompleted) {
                             $infoTempReport->completed      = 1;

@@ -510,11 +510,15 @@ class EmployeeReport {
             $params['user'] = $user_id;
 
             /* SQL Instruction  */
-            $sql = " SELECT		c.id,
-                                IF (cc.timecompleted,cc.timecompleted,0) as 'completed'
-                     FROM		{course}				c
-                        JOIN	{course_completions}	cc	ON	    cc.course = c.id
-                                                            AND     cc.userid = :user
+            $sql = " SELECT	c.id,
+                            IF (cc.timecompleted,cc.timecompleted,0) as 'completed'
+                     FROM			{course}				c
+                        JOIN		{enrol}				    e	ON		e.courseid 	= c.id
+                                                                AND		e.status	= 0
+                        JOIN		{user_enrolments}		ue	ON 		ue.enrolid	= e.id
+                                                                AND		ue.userid	= :user
+                        LEFT JOIN	{course_completions}	cc	ON	    cc.course 	= e.courseid
+                                                                AND		cc.userid	= ue.userid
                      WHERE		c.id IN ($courses)
                      ORDER BY	c.fullname ";
 

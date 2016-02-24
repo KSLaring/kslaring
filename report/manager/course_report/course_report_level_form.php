@@ -137,6 +137,7 @@ class manager_course_report_level_form extends moodleform {
      */
     function getCompanyList($level,$myHierarchy,$IsReporter) {
         /* Variables    */
+        global $USER;
         $levelThree     = null;
         $levelTwo       = null;
         $levelOne       = null;
@@ -145,14 +146,14 @@ class manager_course_report_level_form extends moodleform {
         $options        = array();
 
         /* Get My Companies by Level    */
-        if (!$IsReporter) {
-            list($levelZero,$levelOne,$levelTwo,$levelThree) = CompetenceManager::GetMyCompanies_By_Level($myHierarchy->competence,$myHierarchy->my_level);
-        }else {
+        if ($IsReporter) {
             $levelZero  = $myHierarchy->competence->levelZero;
             $levelOne   = $myHierarchy->competence->levelOne;
             $levelTwo   = $myHierarchy->competence->levelTwo;
             $levelThree = $myHierarchy->competence->levelThree;
-        }//if_IsReporter
+        }else {
+            list($levelZero,$levelOne,$levelTwo,$levelThree) = CompetenceManager::GetMyCompanies_By_Level($myHierarchy->competence,$myHierarchy->my_level);
+        }//If_IsReporter
 
         /* Parent*/
         $parent     = optional_param(COMPANY_STRUCTURE_LEVEL . ($level-1), 0, PARAM_INT);

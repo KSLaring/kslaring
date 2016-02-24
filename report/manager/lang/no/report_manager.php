@@ -398,23 +398,23 @@ $string['remove_all']   = 'Fjern alle';
  * Description
  * Add new language strings for 'Competence Data Import' functionality
  */
-$string['upload_competence_imp'] = 'Import brukeres arbeidssteder og jobbroller';
-$string['header_competence_imp']        = 'Importér arbeidssteds- og jobbrolledata';
-$string['header_competence_imp_help']   = 'Importerer arbeidssteds- og jobbrolledata fra en fil for eksisterende brukere. Informasjon koblet med filen??';
-$string['title_processing']             = 'Importerer data for eksisterende brukere. Prosessen kan ta lang tid.';
+$string['upload_competence_imp'] = 'Opplasting av kompetansedata';
+$string['header_competence_imp']        = 'Opplasting av kompetansedata';
+$string['header_competence_imp_help']   = 'Opplasting av kompetansedata fra en fil for eksisterende brukere. Informasjon koblet med filen???';
+$string['title_processing']             = 'Importerer kompetansedata for eksisterende brukere. Prosessen kan ta lang tid.';
 $string['err_imp_user']                 = 'Brukeren eksisterer ikke';
-$string['err_wk_none_match']            = 'Det er ingen treff på dette arbeidsstedet.';
-$string['err_jr_none_match']            = 'Det er ingen treff for denne jobbrollen. Sjekk navn, org-enhetskode, arbeidssted og sektor... koblet med';
+$string['err_wk_none_match']            = 'Det er ingen match for dette arbeidsstedet.';
+$string['err_jr_none_match']            = 'Det er ingen match for denne jobbrollen. Vennligst sjekk navn, kode, arbeidssted, sektor osv. koblet med';
 
-$string['match_wk']         = 'Arbeider med kobling mot arbeidssteder';
+$string['match_wk']         = 'Matche-prosess for arbeidssteder';
 $string['match_wk_help']    = '???';
-$string['match_jr']         = 'Arbeider med kobling mot jobbroller';
+$string['match_jr']         = 'Matche-prosess for jobbroller';
 $string['match_jr_help']    = '???';
 
-$string['to_match']         = 'Skal kobles';
-$string['po_match']         = 'Mulige koblinger';
-$string['not_sure']         = 'Ikke sikker';
-$string['btn_match']        = 'Koble';
+$string['to_match']         = 'Å matche';
+$string['po_match']         = 'Mulige matcher';
+$string['not_sure']         = 'Usikker';
+$string['btn_match']        = 'Match';
 
 $string['icd_line']     = 'Linje';
 $string['icd_user']     = 'Brukernavn';
@@ -425,13 +425,13 @@ $string['icd_jr']       = 'Jobbrolle';
 $string['icd_jr_ic']    = 'Jobbrollekode';
 $string['icd_msg']      = 'Årsak';
 
-$string['icd_not_imported']     = 'Importprosessen er fullført med noen problemer. De neste radene kunne ikke importeres.';
-$string['icd_not_imported_adv'] = 'Vennligs se nøye gjennom  <strong>nedlastet fil</strong>, hvor du finner alle radene som ikke kunne importeres og årsakene til dette.';
-$string['icd_imported']         = 'Alle arbeidssteder og jobbroller ble importert uten problemer.';
+$string['icd_not_imported']     = 'Importprosessen har fullført, men har noen problemer. Følgende rader kunne ikke importeres.';
+$string['icd_not_imported_adv'] = 'Vennligst gå gjennom <strong>nedlastingsfilen</strong>, hvor du finner alle radene som ikke kunne importeres og årsakene til dette.';
+$string['icd_imported']         = 'Alle kompetansedata ble importert som de skulle.';
 $string['icd_total_not_imp']    = '<strong style="color: red;">Totalt antall feil: {$a}</strong></br>';
 
-$string['icd_file_name']        = 'CompetenceDataNotImported';
-$string['icd_download']         = 'Last ned fil';
+$string['icd_file_name']        = 'Ikke_importerte_kompetansedata';
+$string['icd_download']         = 'Nedlastingsfil';
 
 /**
  * @updateDate  14/10/2015
@@ -445,13 +445,14 @@ $string['spuser'] = 'Superbrukere';
 $string['pot_users']                = 'Potensielle brukere';
 $string['pot_users_matching']       = 'Potensielt matchende brukere';
 $string['current_users']            = 'Gjeldende brukere';
-$string['current_users_matching']   = 'Matching av gjeldende brukere';
+$string['current_users_matching']   = 'Gjeldende matchende brukere';
 $string['no_users']                 = 'Ingen superbrukere';
-$string['sp_level_required']        = 'Det kreves i det minste ett nivå';
+$string['sp_level_required']        = 'Minst ett nivå må velges først';
 
 $string['unenrol']      = 'Meld ut';
-$string['err_unenrol']  = 'Beklager, men det skjedde en feil under utmeldingen. Vennligst prøv igjen senere eller kontakt administrator om dette problemet fortsetter.';
+$string['err_unenrol']  = 'Beklager, men det har skjedd en feil under prosessen. Vennligst prøv igjen senere eller kontakt administrator';
 $string['exit_unenrol'] = 'Du er nå utmeldt fra kurset';
+
 /**
  * @updateDate  21/12/2015
  * @author      eFaktor     (fbv)

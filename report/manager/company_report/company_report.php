@@ -78,12 +78,7 @@ $user_filter = new company_report_filtering(null,$url,null);
 /* Set My Companies         */
 if ($my_hierarchy->competence) {
     if ($IsReporter) {
-        //if ($my_hierarchy->competence->levelThree) {
-            $user_filter->set_MyCompanies(implode(',',$my_hierarchy->competence->levelThree));
-        //}else {
-        //    $user_filter->set_MyCompanies(null);
-        //}
-
+        $user_filter->set_MyCompanies(implode(',',$my_hierarchy->competence->levelThree));
     }else {
         $myCompanies = CompanyReport::Get_MyCompanies($my_hierarchy->competence,$my_hierarchy->my_level);
         $user_filter->set_MyCompanies(implode(',',array_keys($myCompanies)));

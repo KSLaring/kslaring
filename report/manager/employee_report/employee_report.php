@@ -68,14 +68,6 @@ $myHierarchy = CompetenceManager::get_MyHierarchyLevel($USER->id,$site_context,$
 /* Show Form    */
 $form = new manager_employee_report_form(null,array($myHierarchy,$IsReporter));
 if ($form->is_cancelled()) {
-    /* Clean Cookies     */
-    setcookie('parentLevelZero',0);
-    setcookie('parentLevelOne',0);
-    setcookie('parentLevelTwo',0);
-    setcookie('parentLevelThree',0);
-    setcookie('courseReport',0);
-    setcookie('outcomeReport',0);
-
     $_POST = array();
     redirect($return);
 }else if($data = $form->get_data()) {
