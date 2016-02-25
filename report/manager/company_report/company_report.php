@@ -178,7 +178,7 @@ if (!empty($out)) {
     echo $out;
 }else {
     /* Print tabs at the top */
-    $current_tab = 'company_report';
+    $current_tab = 'manager_reports';
     $show_roles = 1;
     require('../tabs.php');
 

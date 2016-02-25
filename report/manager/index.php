@@ -41,7 +41,8 @@ $PAGE->navbar->add(get_string('company_report','report_manager'),$url);
 unset($SESSION->parents);
 
 /* ADD require_capability */
-if (!CompetenceManager::IsReporter($USER->id)) {
+$IsReporter = CompetenceManager::IsReporter($USER->id);
+if (!$IsReporter) {
     require_capability('report/manager:viewlevel4', $site_context);
 }
 
@@ -56,23 +57,44 @@ $PAGE->verify_https_required();
 /* Print Header */
 echo $OUTPUT->header();
 /* Print tabs at the top */
-$current_tab = 'company_report';
+$current_tab = 'manager_reports';
 $show_roles = 1;
 require('tabs.php');
 
-/* Company Report   */
-echo $OUTPUT->heading(get_string('company_report', 'report_manager'));
+/* Competence Manager Reports   */
+echo $OUTPUT->heading(get_string('reports_manager', 'report_manager'));
 
-$url_company    = new moodle_url('/report/manager/company_report/company_report.php');
-$url_employee   = new moodle_url($CFG->wwwroot.'/report/manager/employee_report/employee_report.php');
+/* Reports  */
+$urlCompany     = new moodle_url('/report/manager/company_report/company_report.php');
+$urlEmployee    = new moodle_url('/report/manager/employee_report/employee_report.php');
+$courseReport   = new moodle_url('/report/manager/course_report/course_report.php');
+$outcomeReport  = new moodle_url('/report/manager/outcome_report/outcome_report.php');
+
+/* Add Reports */
 echo '<p class="note">' . get_string('company_report_note', 'report_manager') . '</p>';
+
 echo '<ul class="unlist report-selection">' . "\n";
+    /* Employee Report  */
     echo '<li class="first last">' . "\n";
-        echo '<a href="' . $url_employee . '">' . get_string('employee_report_link', 'report_manager') . '</a>';
+        echo '<a href="' . $urlEmployee . '">' . get_string('employee_report_link', 'report_manager') . '</a>';
     echo '</li>' . "\n";
+    /* Company Report  */
     echo '<li class="first last">' . "\n";
-        echo '<a href="' . $url_company . '">' . get_string('company_report_link', 'report_manager') . '</a>';
+        echo '<a href="' . $urlCompany . '">' . get_string('company_report_link', 'report_manager') . '</a>';
+    echo '</li>' . "\n";
+
+    echo "</br>";
+
+    /* Course Report    */
+    if (($IsReporter) || (has_capability('report/manager:viewlevel3', $site_context))) {
+    echo '<li class="first last">' . "\n";
+            echo '<a href="' . $courseReport . '">' . get_string('course_report', 'report_manager') . '</a>';
+    echo '</li>' . "\n";
+        /* Outcome Report   */
+    echo '<li class="first last">' . "\n";
+            echo '<a href="' . $outcomeReport . '">' . get_string('outcome_report', 'report_manager') . '</a>';
         echo '</li>' . "\n";
+    }//if_capability
 echo '</ul>' . "\n" . "</br>";
 
 /* Print Footer */

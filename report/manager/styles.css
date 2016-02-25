@@ -338,6 +338,21 @@
     border-bottom: 1px solid #CCCCCC;
     border-left: 1px solid #CCCCCC;
 }
+
+.button_reports {
+    font: bold 14px Arial;
+    text-decoration: none;
+    padding: 8px 8px 8px 8px;
+    margin-left: 0px;
+    margin-top: 25px;
+    background-color: #0e7b9e;
+    color: #ffffff;
+    border-top: 1px solid #CCCCCC;
+    border-right: 1px solid #CCCCCC;
+    border-bottom: 1px solid #CCCCCC;
+    border-left: 1px solid #CCCCCC;
+}
+
 .div_button_tracker {
     position: relative;
     float: right;

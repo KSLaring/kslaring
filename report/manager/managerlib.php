@@ -428,7 +428,7 @@ class CompetenceManager {
      */
     public static function GetLevelLink_ReportPage($tab,$site_context) {
         /* Variables    */
-        global $OUTPUT,$USER;
+        global $USER;
 
         /* Create links - It's depend on View permissions */
         $out = '<ul class="unlist report-selection">' . "\n";

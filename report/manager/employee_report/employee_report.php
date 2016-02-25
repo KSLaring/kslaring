@@ -86,7 +86,7 @@ if ($form->is_cancelled()) {
 /* Print Header */
 echo $OUTPUT->header();
 /* Print tabs at the top */
-$current_tab = 'employee_report';
+$current_tab = 'manager_reports';
 
 if (!empty($out)) {
     echo $out;
