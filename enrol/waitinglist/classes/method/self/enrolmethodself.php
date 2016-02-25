@@ -473,7 +473,21 @@ class enrolmethodself extends \enrol_waitinglist\method\enrolmethodbase{
             if ($waitinglist->{ENROL_WAITINGLIST_FIELD_APPROVAL} == APPROVAL_REQUIRED) {
                 $remainder      = \Approval::GetNotificationSent($USER->id,$waitinglist->courseid);
                 $infoRequest    = \Approval::Get_Request($USER->id,$waitinglist->courseid,$waitinglist->id);
-            }//
+            }
+
+            if ($confirm) {
+                $toConfirm      =  false;
+            }else {
+                if ($infoRequest) {
+                    $toConfirm = false;
+                }else {
+                    if (!$vacancies) {
+                        $toConfirm  =  true;
+                    }else {
+                        $toConfirm  =  false;
+                    }
+                }
+            }
 
             if ($remainder) {
                 $form = new enrolmethodself_enrolform(NULL, array($waitinglist,$this,$listtotal,false,$remainder));
@@ -493,20 +507,6 @@ class enrolmethodself extends \enrol_waitinglist\method\enrolmethodbase{
                 $message =$OUTPUT->box($output);
                 $ret = array(true,$message);
             }else {
-                if ($confirm) {
-                    $toConfirm      =  false;
-                }else {
-                    if ($infoRequest) {
-                        $toConfirm = false;
-                    }else {
-                        if (!$vacancies) {
-                            $toConfirm  =  true;
-                        }else {
-                            $toConfirm  =  false;
-                        }
-                    }
-                }
-
                 if ($toConfirm) {
                     $form = new enrolmethodself_enrolform(NULL, array($waitinglist,$this,$listtotal,true,null));
 
@@ -531,14 +531,18 @@ class enrolmethodself extends \enrol_waitinglist\method\enrolmethodbase{
                         $this->waitlistrequest_self($waitinglist, $data);
 
                         if ($waitinglist->{ENROL_WAITINGLIST_FIELD_APPROVAL} == APPROVAL_REQUIRED) {
-                            if ($infoRequest && $vacancies) {
-                                $params = array();
-                                $params['id']   = $USER->id;
-                                $params['co']   = $waitinglist->courseid;
+                            $params = array();
+                            $params['id']   = $USER->id;
+                            $params['co']   = $waitinglist->courseid;
 
-                                $redirect       = new \moodle_url('/enrol/waitinglist/approval/info.php',$params);
-                                redirect($redirect);
+                            if ($vacancies) {
+                                $params['se'] = 1;
+                            }else {
+                                $params['se'] = 0;
                             }//if_infoMail
+
+                            $redirect       = new \moodle_url('/enrol/waitinglist/approval/info.php',$params);
+                            redirect($redirect);
                         }else {
                             /**
                              * @updateDate  28/10/2015

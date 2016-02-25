@@ -246,3 +246,5 @@ $string['mng_approved_body_two'] = '<p>We would like to inform you that the <b>{
 $string['mng_approved_body_end'] = '<p>This is an automatic generated email from {$a->site} and you cannot answer this email.';
 $string['home_page']    = 'Course home page';
 
+$string['approval_occupied'] = 'At the moment, all available seats are occupied.So, your application will be processed as soon as there are available seats.';
+

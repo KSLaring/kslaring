@@ -508,6 +508,20 @@ class enrolmethodunnamedbulk extends \enrol_waitinglist\method\enrolmethodbase {
                 $remainder = \Approval::GetNotificationSent($USER->id,$waitinglist->courseid);
             }//
 
+            if (($confirm) || isset($entry->seats)) {
+                $toConfirm          =  false;
+            }else {
+                if ($infoRequest) {
+                    $toConfirm = false;
+                }else{
+                    if (!$vacancies) {
+                        $toConfirm      =  true;
+                    }else {
+                        $toConfirm      =  false;
+                    }
+                }
+            }
+
             if ($remainder) {
                 $form = new enrolmethodunnamedbulk_enrolform(NULL, array($waitinglist,$this,$qstatus,false,$remainder));
 
@@ -526,20 +540,6 @@ class enrolmethodunnamedbulk extends \enrol_waitinglist\method\enrolmethodbase {
                 $message =$OUTPUT->box($output);
                 $ret = array(true,$message);
             }else {
-                if (($confirm) || isset($entry->seats)) {
-                    $toConfirm          =  false;
-                }else {
-                    if ($infoRequest) {
-                        $toConfirm = false;
-                    }else{
-                        if (!$vacancies) {
-                            $toConfirm      =  true;
-                        }else {
-                            $toConfirm      =  false;
-                        }
-                    }
-                }
-
                 if ($toConfirm) {
                     $form = new enrolmethodunnamedbulk_enrolform(NULL, array($waitinglist,$this,$qstatus,true,null));
 
@@ -585,14 +585,18 @@ class enrolmethodunnamedbulk extends \enrol_waitinglist\method\enrolmethodbase {
                             $this->waitlistrequest_unnamedbulk($waitinglist, $data);
 
                             if ($waitinglist->{ENROL_WAITINGLIST_FIELD_APPROVAL} == APPROVAL_REQUIRED) {
-                                if ($infoRequest && $vacancies) {
-                                    $params = array();
-                                    $params['id']   = $USER->id;
-                                    $params['co']   = $waitinglist->courseid;
+                                $params = array();
+                                $params['id']   = $USER->id;
+                                $params['co']   = $waitinglist->courseid;
 
-                                    $redirect       = new \moodle_url('/enrol/waitinglist/approval/info.php',$params);
-                                    redirect($redirect);
+                                if ($vacancies) {
+                                    $params['se'] = 1;
+                                }else {
+                                    $params['se'] = 0;
                                 }//if_infoMail
+
+                                $redirect       = new \moodle_url('/enrol/waitinglist/approval/info.php',$params);
+                                redirect($redirect);
                             }else {
                                 /**
                                  * @updateDate  28/10/2015
