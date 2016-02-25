@@ -56,7 +56,7 @@ if ($superUser) {
 }else {
     /* My Hierarchy */
     $myHierarchy = CompetenceManager::get_MyHierarchyLevel($USER->id,$context,$IsReporter,0);
-    if ($IsReporter) {
+    if (($IsReporter) && (!is_siteadmin($user_id))) {
         $myLevelZero  = $myHierarchy->competence->levelZero;
         $myLevelOne   = $myHierarchy->competence->levelOne;
         $myLevelTwo   = $myHierarchy->competence->levelTwo;

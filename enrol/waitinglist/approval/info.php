@@ -17,11 +17,13 @@ require_once('approvallib.php');
 /* PARAMS   */
 $userId     = required_param('id',PARAM_INT);
 $courseId   = required_param('co',PARAM_INT);
+$seats      = required_param('se',PARAM_INT);
 
-$course            = get_course($courseId);
-$contextCourse     = context_course::instance($courseId);
-$returnUrl         = new moodle_url('/course/view.php',array('id' => $courseId));
-$url               = new moodle_url('/enrol/waitinglist/approval/info.php',array('courseid' => $courseId));
+$course             = get_course($courseId);
+$contextCourse      = context_course::instance($courseId);
+$returnUrl          = new moodle_url('/course/view.php',array('id' => $courseId));
+$url                = new moodle_url('/enrol/waitinglist/approval/info.php',array('courseid' => $courseId));
+$strMessage         = null;
 
 require_login();
 
@@ -48,7 +50,12 @@ echo $OUTPUT->heading(get_string('enrolmentoptions','enrol'));
 
 echo '<h3>' . $course->fullname . '</h3>';
 
-echo $OUTPUT->notification(get_string('request_sent','enrol_waitinglist'), 'notifysuccess');
+if ($seats) {
+    $strMessage = get_string('request_sent','enrol_waitinglist');
+}else {
+    $strMessage = get_string('approval_occupied','enrol_waitinglist');
+}
+echo $OUTPUT->notification($strMessage, 'notifysuccess');
 echo $OUTPUT->continue_button($returnUrl);
 
 /* Print Footer */

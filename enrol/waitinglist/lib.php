@@ -716,72 +716,129 @@ class enrol_waitinglist_plugin extends enrol_plugin {
     public function check_approval(progress_trace $trace) {
         /* Variables    */
         global $DB,$CFG;
-        $instances  = null;
-        $wl         = null;
-        $sql        = null;
-        $rdo        = null;
-        $time       = null;
+        $instances          = null;
+        $wl                 = null;
+        $vacancies          = null;
+        $sendNotification   = null;
+        $totalSeats         = null;
+        $params             = null;
+        $sql                = null;
+        $rdo                = null;
+        $time               = null;
 
         try {
-            $trace->output('waitinglist enrolment check for approval to update');
+            /* Local Time  */
+            $time = time();
+
             /* Enrol Plugin */
             $wl = enrol_get_plugin('waitinglist');
+
+            $trace->output('waitinglist enrolment check for approval to update');
 
             /* Get Invoice Users to activate    */
             $trace->output('waitinglist get users with approval to update');
 
-            /* SQL Instruction  */
-            $sql = " SELECT	ea.id,
-                            ea.waitinglistid,
-                            ea.methodtype,
-                            ea.userid,
-                            ea.courseid,
-                            c.fullname,
-                            ea.arguments,
-                            ea.seats,
-                            ea.token,
-                            ap.token 	as 'approve',
-                            re.token	as 'reject',
-                            ''          as 'action'
-                     FROM		{enrol_approval}			ea
-                        JOIN	{enrol}					e	ON 	e.id  			= ea.waitinglistid
-                        JOIN	{course}				c	ON	c.id			= e.courseid
-                        -- Approve Action
-                        JOIN	{enrol_approval_action}	ap	ON	ap.approvalid	= ea.id
-                                                            AND	ap.action		= 1
-                        -- Reject action
-                        JOIN	{enrol_approval_action}	re	ON	re.approvalid	= ea.id
-                                                            AND	re.action		= 2
-                     WHERE		ea.userenrolid		= 0 ";
+            $instances = $DB->get_records('enrol', array( 'enrol'=>'waitinglist'));
+            if ($instances) {
+                $params = array();
+                foreach ($instances as $waitingInstance) {
+                    $vacancies      = $wl->get_vacancy_count($waitingInstance);
 
-            /* Execute  */
-            $rdo = $DB->get_records_sql($sql);
-            if ($rdo) {
-                foreach ($rdo as $instance) {
-                    $myManagers = \Approval::GetManagers($instance->userid);
+                    /* Check Approval request pendent to send   */
+                    if ($vacancies) {
+                        $params['waiting']  = $waitingInstance->id;
+                        $params['course']   = $waitingInstance->courseid;
 
-                    if (array_key_exists($instance->userid,$myManagers)) {
-                        $instance->action = APPROVED_ACTION;
-                        \Approval::ApplyAction_FromManager($instance);
-                    }else {
-                        $infoMail = new stdClass();
-                        $infoMail->approvalid   = $instance->id;
-                        $infoMail->course       = $instance->fullname;
+                        /* SQL Instruction */
+                        $sql = " SELECT	  ea.id,
+                                          ea.waitinglistid,
+                                          ea.methodtype,
+                                          ea.userid,
+                                          ea.courseid,
+                                          c.fullname,
+                                          ea.arguments,
+                                          ea.seats,
+                                          ea.token,
+                                          ap.token 	as 'approve',
+                                          re.token	as 'reject',
+                                          ''          as 'action'
+                                 FROM		{enrol_approval}			ea
+                                    JOIN	{enrol}					e	ON 	e.id  			= ea.waitinglistid
+                                    JOIN	{course}				c	ON	c.id			= e.courseid
+                                    -- Approve Action
+                                    JOIN	{enrol_approval_action}	ap	ON	ap.approvalid	= ea.id
+                                                                        AND	ap.action		= 1
+                                    -- Reject action
+                                    JOIN	{enrol_approval_action}	re	ON	re.approvalid	= ea.id
+                                                                        AND	re.action		= 2
+                                 WHERE		ea.waitinglistid	= :waiting
+                                    AND		ea.courseid			= :course
+                                    AND		ea.userenrolid		= 0
+                                    AND		ea.timesent IS NULL
+                                    OR		ea.timesent = 0 ";
 
-                        $infoMail->arguments    = $instance->arguments;
-                        /* Approve Link */
-                        $lnkApprove = $CFG->wwwroot . '/enrol/waitinglist/approval/action.php/' . $instance->token . '/' . $instance->approve;
-                        $infoMail->approve = '<a href="' . $lnkApprove . '">' . get_string('approve_lnk','enrol_waitinglist') . '</br>';
-                        /* Reject Link  */
-                        $lnkReject  = $CFG->wwwroot . '/enrol/waitinglist/approval/action.php/' . $instance->token . '/' . $instance->reject;
-                        $infoMail->reject = '<a href="' . $lnkReject . '">' . get_string('reject_lnk','enrol_waitinglist') . '</br>';
+                        /* Execute  */
+                        $rdo = $DB->get_records_sql($sql,$params);
+                        if ($rdo) {
+                            foreach ($rdo as $instance) {
+                                $sendNotification = false;
+                                if ($vacancies) {
+                                    switch ($instance->methodtype) {
+                                        case 'self':
+                                            if ($vacancies >= $instance->seats) {
+                                                $sendNotification   = true;
+                                                $totalSeats         = $instance->seats;
+                                            }
+                                            break;
+                                        case 'unnamedbulk':
+                                            if ($vacancies >= $instance->seats) {
+                                                $totalSeats = $instance->seats;
+                                            }else {
+                                                $totalSeats = $instance->seats - $vacancies;
+                                            }//if_else
 
-                        /* Send Mails   */
-                        $user = get_complete_user_data('id',$instance->userid);
-                        \Approval::SendNotifications($user,$infoMail,$myManagers);
-                    }
-                }//fore_rdo
-            }//if_rdo
+                                            $sendNotification = true;
+                                            break;
+                                    }//switch_methodtype
+                                }//vacancies
+
+                                if ($sendNotification) {
+                                    $myManagers = \Approval::GetManagers($instance->userid);
+
+                                    if (array_key_exists($instance->userid,$myManagers)) {
+                                        $instance->action = APPROVED_ACTION;
+                                        \Approval::ApplyAction_FromManager($instance);
+                                    }else {
+                                        $infoMail = new stdClass();
+                                        $infoMail->approvalid   = $instance->id;
+                                        $infoMail->course       = $instance->fullname;
+
+                                        $infoMail->arguments    = $instance->arguments;
+                                        /* Approve Link */
+                                        $lnkApprove = $CFG->wwwroot . '/enrol/waitinglist/approval/action.php/' . $instance->token . '/' . $instance->approve;
+                                        $infoMail->approve = '<a href="' . $lnkApprove . '">' . get_string('approve_lnk','enrol_waitinglist') . '</br>';
+                                        /* Reject Link  */
+                                        $lnkReject  = $CFG->wwwroot . '/enrol/waitinglist/approval/action.php/' . $instance->token . '/' . $instance->reject;
+                                        $infoMail->reject = '<a href="' . $lnkReject . '">' . get_string('reject_lnk','enrol_waitinglist') . '</br>';
+
+                                        /* Send Mails   */
+                                        $user = get_complete_user_data('id',$instance->userid);
+                                        \Approval::SendNotifications($user,$infoMail,$myManagers);
+
+                                        $instanceApproval = new stdClass();
+                                        $instanceApproval->id           = $instance->id;
+                                        $instanceApproval->timesent     = $time;
+                                        $instanceApproval->timemodified = $time;
+                                        $DB->update_record('enrol_approval',$instanceApproval);
+
+                                        $vacancies = $vacancies - $totalSeats;
+                                    }
+                                }//if_sendNotifications
+                            }//for_rdo_instances_approval
+                        }//if_rdo
+                    }//if_vacancies
+                }//$waitingInstance
+            }//if_instances
 
             $trace->output('waitinglist enrolment check for approval to update - Finished');
             $trace->finished();

@@ -241,3 +241,4 @@ $string['mng_approved_body_two'] = '<p>Vi vil gjerne informere deg om at brukere
 $string['mng_approved_body_end'] = '<p>Dette er en automatisk generert epost fra {$a->site} og du kan ikke svare på eposten.';
 $string['home_page']    = 'Hjemmesider';
 
+$string['approval_occupied'] = 'At the moment, all available seats are occupied.So, your application will be processed as soon as there are available seats.';
