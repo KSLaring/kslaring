@@ -26,6 +26,7 @@ require_login();
 /* Params */
 $url        = new moodle_url('/report/manager/outcome_report/outcome_report.php');
 $return_url = new moodle_url('/report/manager/index.php');
+$urlReports = new moodle_url('/report/manager/reports.php');
 
 $site_context = CONTEXT_SYSTEM::instance();
 $site = get_site();
@@ -60,7 +61,7 @@ $PAGE->verify_https_required();
 /* Print Header */
 echo $OUTPUT->header();
 /* Print tabs at the top */
-$current_tab = 'outcome_report';
+$current_tab = 'manager_reports';
 $show_roles = 1;
 require('../tabs.php');
 
@@ -69,7 +70,10 @@ echo $OUTPUT->heading(get_string('outcome_report', 'report_manager'));
 
 /* Report Levels Links  */
 outcome_report::CleanTemporary();
-CompetenceManager::GetLevelLink_ReportPage($current_tab,$site_context);
+CompetenceManager::GetLevelLink_ReportPage('outcome_report',$site_context);
+
+echo "</br>";
+echo "<a href='" . $urlReports ."' class='button_reports'>" . get_string('back') . "</a>";
 
 /* Print Foot */
 echo $OUTPUT->footer();

@@ -181,9 +181,13 @@ if (!empty($out)) {
     echo $OUTPUT->heading($out);
 }else {
     /* Print tabs at the top */
-    $current_tab = 'course_report_level';
+    $current_tab = 'manager_reports';
     $show_roles = 1;
     require('../tabs.php');
+
+    /* Add Levels Links */
+    $linkLevels = '<a href="' . $return_url . '">' . get_string('select_report_levels','report_manager') . '</a>';
+    echo $OUTPUT->action_link($return_url,get_string('select_report_levels','report_manager'));
 
     $form->display();
 

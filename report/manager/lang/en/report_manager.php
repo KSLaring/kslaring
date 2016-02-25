@@ -460,3 +460,5 @@ $string['title_reporters']  = 'Reporters Structure';
 
 $string['no_managers']      = 'No Managers';
 $string['no_reporters']     = 'No Reporters';
+
+$string['reports_manager']  = 'Competence Manager Reports';

@@ -29,66 +29,36 @@ $top_row    = array();
 /* Info Super Users */
 $superUser  = CompetenceManager::IsSuperUser($USER->id);
 if ($superUser) {
-    $top_row[] = new tabobject('company_structure',
-                               new moodle_url($CFG->wwwroot.'/report/manager/company_structure/company_structure.php'),
-                               get_string('company_structure','report_manager'));
-
     $top_row[] = new tabobject('job_roles',
                                new moodle_url($CFG->wwwroot.'/report/manager/job_role/job_role.php'),
                                get_string('job_roles','report_manager'));
+
+    $top_row[] = new tabobject('reports',
+                               new moodle_url($CFG->wwwroot.'/report/manager/reports.php'),
+                               get_string('tab_reports','report_manager'));
 }else {
     /* Create Tabs */
-    $top_row[] = new tabobject('company_report',
-        new moodle_url($CFG->wwwroot. '/report/manager/index.php'),
-        get_string('company_report', 'report_manager'));
-
-    if ((CompetenceManager::IsReporter($USER->id)) ||
-        (has_capability('report/manager:viewlevel3', $site_context))) {
-
-        $top_row[] = new tabobject('outcome_report',
-                                   new moodle_url($CFG->wwwroot.'/report/manager/outcome_report/outcome_report.php'),
-                                   get_string('outcome_report','report_manager'));
-
-
-        if ($current_tab == 'outcome_report_level') {
-            $second_row = array();
-            $second_row[] = new tabobject('levels',
-                new moodle_url($CFG->wwwroot.'/report/manager/outcome_report/outcome_report.php'),
-                get_string('select_report_levels','report_manager'));
-            $current_tab = 'outcome_report';
-        }
-
-        $top_row[] = new tabobject('course_report',
-            new moodle_url($CFG->wwwroot.'/report/manager/course_report/course_report.php'),
-            get_string('course_report','report_manager'));
-
-        if ($current_tab == 'course_report_level') {
-            $second_row = array();
-            $second_row[] = new tabobject('levels',
-                new moodle_url($CFG->wwwroot.'/report/manager/course_report/course_report.php'),
-                get_string('select_report_levels','report_manager'));
-            $current_tab = 'course_report';
-
-        }
-    }//if_level3
+    $top_row[] = new tabobject('manager_reports',
+                               new moodle_url($CFG->wwwroot. '/report/manager/index.php'),
+                               get_string('reports_manager', 'report_manager'));
 
     /* Only for admins */
     if (has_capability('report/manager:manage', $site_context)) {
         $top_row[] = new tabobject('company_structure',
-            new moodle_url($CFG->wwwroot.'/report/manager/company_structure/company_structure.php'),
-            get_string('company_structure','report_manager'));
+                                   new moodle_url($CFG->wwwroot.'/report/manager/company_structure/company_structure.php'),
+                                   get_string('company_structure','report_manager'));
 
         $top_row[] = new tabobject('job_roles',
-            new moodle_url($CFG->wwwroot.'/report/manager/job_role/job_role.php'),
-            get_string('job_roles','report_manager'));
+                                   new moodle_url($CFG->wwwroot.'/report/manager/job_role/job_role.php'),
+                                   get_string('job_roles','report_manager'));
 
         $top_row[] = new tabobject('outcomes',
-            new moodle_url($CFG->wwwroot.'/report/manager/outcome/outcome.php'),
-            get_string('outcome','report_manager'));
+                                   new moodle_url($CFG->wwwroot.'/report/manager/outcome/outcome.php'),
+                                   get_string('outcome','report_manager'));
 
         $top_row[] = new tabobject('spuser',
-            new moodle_url($CFG->wwwroot.'/report/manager/super_user/spuser.php'),
-            get_string('spuser','report_manager'));
+                                   new moodle_url($CFG->wwwroot.'/report/manager/super_user/spuser.php'),
+                                   get_string('spuser','report_manager'));
     }//if_admin
 }
 
