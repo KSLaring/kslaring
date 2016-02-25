@@ -27,7 +27,6 @@ require_login();
 /* Params */
 $url        = new moodle_url('/report/manager/course_report/course_report.php');
 $return_url = new moodle_url('/report/manager/index.php');
-$urlReports = new moodle_url('/report/manager/reports.php');
 
 $site_context = CONTEXT_SYSTEM::instance();
 $site = get_site();
@@ -74,7 +73,7 @@ course_report::CleanTemporary();
 CompetenceManager::GetLevelLink_ReportPage('course_report',$site_context);
 
 echo "</br>";
-echo "<a href='" . $urlReports ."' class='button_reports'>" . get_string('back') . "</a>";
+echo "<a href='" . $return_url ."' class='button_reports'>" . get_string('back') . "</a>";
 
 /* Print Fo>r */
 echo $OUTPUT->footer();
