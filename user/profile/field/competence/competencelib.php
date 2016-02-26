@@ -236,7 +236,9 @@ class Competence {
                         JOIN	{report_gen_company_relation}   cr_zero	ON 	cr_zero.companyid 		= cr_one.parentid
                         JOIN	{report_gen_companydata}		co_zero	ON 	co_zero.id 				= cr_zero.parentid
                                                                         AND co_zero.hierarchylevel 	= 0
-                     WHERE		uicd.userid = :user ";
+                     WHERE		uicd.userid   = :user
+                        AND     uicd.rejected = 0
+                        AND     uicd.approved = 1 ";
 
             if ($competence_data && $competence) {
                 $params['competence_data']  = $competence_data;
@@ -282,159 +284,6 @@ class Competence {
         }//try_catch
     }//Get_CompetenceData
 
-    /**
-     * @param           $userId
-     * @param           $hierarchy
-     *
-     * @return          bool
-     * @throws          Exception
-     *
-     * @creationDate    21/01/2016
-     * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Check if the user is manager or not
-     */
-    private static function IsManager($userId,$hierarchy) {
-        /* Variables */
-        global $DB;
-        $rdo    = null;
-        $sql    = null;
-        $params = null;
-        $zero   = null;
-        $one    = null;
-        $two    = null;
-
-        try {
-            /* Search Criteria  */
-            $params = array();
-            $params['user']     = $userId;
-            $params['three']    = $hierarchy->levelThree;
-            $zero               = $hierarchy->levelZero;
-            $one                = $hierarchy->levelOne;
-            $two                = $hierarchy->levelTwo;
-
-            /* SQL Instruction */
-            $sql = " SELECT	ma.id
-                     FROM	{report_gen_company_manager}	ma
-                     WHERE	ma.managerid = :user
-                            AND
-                            (
-                             (ma.hierarchylevel = 0	AND	ma.levelzero = '". $zero . "' AND ma.levelone IS NULL AND ma.leveltwo IS NULL AND ma.levelthree IS NULL)
-                             OR
-                             (ma.hierarchylevel = 1	AND	ma.levelzero = '". $zero . "' AND ma.levelone = '". $one . "'  AND ma.leveltwo IS NULL AND ma.levelthree IS NULL)
-                             OR
-                             (ma.hierarchylevel = 2	AND	ma.levelzero = '". $zero . "' AND ma.levelone = '". $one . "'  AND ma.leveltwo = '". $two . "'  AND ma.levelthree IS NULL)
-                             OR
-                             (ma.hierarchylevel = 3	AND	ma.levelzero = '". $zero . "' AND ma.levelone = '". $one . "'  AND ma.leveltwo = '". $two . "'  AND ma.levelthree = :three)
-                            ) ";
-
-            /* Execute */
-            $rdo = $DB->get_record_sql($sql,$params);
-            if ($rdo) {
-                return true;
-            }else {
-                return false;
-            }
-        }catch (Exception $ex) {
-            throw $ex;
-        }//try_catch
-    }//IsManager
-
-    /**
-     * @param           $userId
-     * @param           $hierarchy
-     *
-     * @return          bool
-     * @throws          Exception
-     *
-     * @creationDate    21/01/2016
-     * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Check if the user is reporter or not
-     */
-    private static function IsReporter($userId,$hierarchy) {
-        /* Variables */
-        global $DB;
-        $rdo    = null;
-        $sql    = null;
-        $params = null;
-        $zero   = null;
-        $one    = null;
-        $two    = null;
-
-        try {
-            /* Search Criteria  */
-            $params = array();
-            $params['user']     = $userId;
-            $params['three']    = $userId;
-            $zero               = $hierarchy->levelZero;
-            $one                = $hierarchy->levelOne;
-            $two                = $hierarchy->levelTwo;
-
-            /* SQL Instruction */
-            $sql = " SELECT	re.id
-                     FROM	{report_gen_company_reporter}	re
-                     WHERE	re.reporterid = :user
-                            AND
-                            (
-                             (re.hierarchylevel = 0	AND	re.levelzero = '". $zero . "' AND re.levelone IS NULL AND re.leveltwo IS NULL AND re.levelthree IS NULL)
-                             OR
-                             (re.hierarchylevel = 1	AND	re.levelzero = '". $zero . "' AND re.levelone = '". $one . "'  AND re.leveltwo IS NULL AND re.levelthree IS NULL)
-                             OR
-                             (re.hierarchylevel = 2	AND	re.levelzero = '". $zero . "' AND re.levelone = '". $one . "'  AND re.leveltwo = '". $two . "'  AND re.levelthree IS NULL)
-                             OR
-                             (re.hierarchylevel = 3	AND	re.levelzero = '". $zero . "' AND re.levelone = '". $one . "'  AND re.leveltwo = '". $two . "'  AND re.levelthree = :three)
-                            ) ";
-
-            /* Execute */
-            $rdo = $DB->get_record_sql($sql,$params);
-            if ($rdo) {
-                return true;
-            }else {
-                return false;
-            }//if_else
-        }catch (Exception $ex) {
-            throw $ex;
-        }//try_catch
-    }//IsReporter
-
-    /**
-     * @param           $hierarchy
-     * @return          string
-     * @throws          Exception
-     *
-     * @creationDate    29/01/2015
-     * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Get the hierarchy path
-     */
-    private static function GetHierarchyPath($hierarchy) {
-        /* Variables    */
-        $hierarchyPath      = null;
-        $companies_name     = null;
-        $levelZero          = null;
-        $levelOne           = null;
-        $levelTwo           = null;
-
-        try {
-            /* Get Companies Name   */
-            $companies = $hierarchy->levelThree . ',' . $hierarchy->levelTwo . ',' . $hierarchy->levelOne . ',' . $hierarchy->levelZero;
-
-            $companies_name = self::Get_CompanyName($companies);
-
-            $hierarchyPath   = $companies_name[$hierarchy->levelZero]  . '/' .
-                               $companies_name[$hierarchy->levelOne]   . '/' .
-                               $companies_name[$hierarchy->levelTwo]   . '/' .
-                               $companies_name[$hierarchy->levelThree];
-
-            return $hierarchyPath;
-        }catch (Exception $ex) {
-            throw $ex;
-        }//try_catch
-    }//GetHierarchyPath
 
     /**
      * @param           $level
@@ -687,6 +536,7 @@ class Competence {
         $infoCompetenceData     = null;
         $infoData               = null;
         $myRoles                = null;
+        $managers               = null;
 
         /* Begin Transaction    */
         $trans = $DB->start_delegated_transaction();
@@ -713,7 +563,10 @@ class Competence {
             $infoCompetenceData->userid             = $infoCompetence->userid;
             $infoCompetenceData->companyid          = $data->level_3;
             $infoCompetenceData->editable           = 1;
+            $infoCompetenceData->approved           = 1;
             $infoCompetenceData->level              = 3;
+            $infoCompetenceData->token              = self::GenerateToken($data->id,$data->level_3);
+
             /* Job Roles */
             if (isset($data->job_roles) && $data->job_roles) {
                 $infoCompetenceData->jobroles         = implode(',',$data->job_roles);
@@ -734,6 +587,15 @@ class Competence {
                 /* Execute  */
                 $DB->insert_record('user_info_data',$infoData);
             }//create_new_entrance
+
+            /* Send Mail Manager to reject it if it's necessary */
+            $managers = self::GetManagersUser($data->level_0,$data->level_1,$data->level_2,$data->level_3);
+            if ($managers) {
+                /* Send Notification    */
+                foreach($managers as $manager) {
+                    self::SendNotificationManager($manager,$infoCompetenceData->token);
+                }//if_managers
+            }//if_managers
 
             /* Commit   */
             $trans->allow_commit();
@@ -841,6 +703,67 @@ class Competence {
             throw $ex;
         }//try_Catch
     }//DeleteCompetence
+
+    /**
+     * @param           $token
+     *
+     * @return          mixed
+     * @throws          Exception
+     *
+     * @creationDate    26/02/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Get competence request connected with ticket
+     */
+    public static function CompetenceRequest($token) {
+        /* Variables */
+
+        try {
+            return self::GetCompetenceRequest($token);
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//CompetenceRequest
+
+    /**
+     * @param           $competenceRequest
+     *
+     * @return          bool
+     * @throws          Exception
+     *
+     * @creationDate    26/02/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Reject the competence
+     */
+    public static function RejectCompetence(&$competenceRequest) {
+        /* Variables    */
+        global $DB;
+        $time = null;
+
+        try {
+            /* Local time   */
+            $time = time();
+
+            /* Reject   */
+            $competenceRequest->rejected = 1;
+            $competenceRequest->approved = 0;
+            $competenceRequest->timerejected   = $time;
+            $competenceRequest->timemodified   = $time;
+
+            /* Execute  */
+            $DB->update_record('user_info_competence_data',$competenceRequest);
+
+            /* Send Notification to the user    */
+            self::SendNotificationUser($competenceRequest);
+
+            return true;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//RejectCompetence
 
     /**
      * @param           $myCompetence
@@ -965,6 +888,505 @@ class Competence {
         }//try_catch
     }//GetJobRoles_Name
 
+
+    /**
+     * @param           $userId
+     * @param           $hierarchy
+     *
+     * @return          bool
+     * @throws          Exception
+     *
+     * @creationDate    21/01/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Check if the user is manager or not
+     */
+    private static function IsManager($userId,$hierarchy) {
+        /* Variables */
+        global $DB;
+        $rdo    = null;
+        $sql    = null;
+        $params = null;
+        $zero   = null;
+        $one    = null;
+        $two    = null;
+
+        try {
+            /* Search Criteria  */
+            $params = array();
+            $params['user']     = $userId;
+            $params['three']    = $hierarchy->levelThree;
+            $zero               = $hierarchy->levelZero;
+            $one                = $hierarchy->levelOne;
+            $two                = $hierarchy->levelTwo;
+
+            /* SQL Instruction */
+            $sql = " SELECT	ma.id
+                     FROM	{report_gen_company_manager}	ma
+                     WHERE	ma.managerid = :user
+                            AND
+                            (
+                             (ma.hierarchylevel = 0	AND	ma.levelzero = '". $zero . "' AND ma.levelone IS NULL AND ma.leveltwo IS NULL AND ma.levelthree IS NULL)
+                             OR
+                             (ma.hierarchylevel = 1	AND	ma.levelzero = '". $zero . "' AND ma.levelone = '". $one . "'  AND ma.leveltwo IS NULL AND ma.levelthree IS NULL)
+                             OR
+                             (ma.hierarchylevel = 2	AND	ma.levelzero = '". $zero . "' AND ma.levelone = '". $one . "'  AND ma.leveltwo = '". $two . "'  AND ma.levelthree IS NULL)
+                             OR
+                             (ma.hierarchylevel = 3	AND	ma.levelzero = '". $zero . "' AND ma.levelone = '". $one . "'  AND ma.leveltwo = '". $two . "'  AND ma.levelthree = :three)
+                            ) ";
+
+            /* Execute */
+            $rdo = $DB->get_record_sql($sql,$params);
+            if ($rdo) {
+                return true;
+            }else {
+                return false;
+            }
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//IsManager
+
+    /**
+     * @param           $userId
+     * @param           $hierarchy
+     *
+     * @return          bool
+     * @throws          Exception
+     *
+     * @creationDate    21/01/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Check if the user is reporter or not
+     */
+    private static function IsReporter($userId,$hierarchy) {
+        /* Variables */
+        global $DB;
+        $rdo    = null;
+        $sql    = null;
+        $params = null;
+        $zero   = null;
+        $one    = null;
+        $two    = null;
+
+        try {
+            /* Search Criteria  */
+            $params = array();
+            $params['user']     = $userId;
+            $params['three']    = $userId;
+            $zero               = $hierarchy->levelZero;
+            $one                = $hierarchy->levelOne;
+            $two                = $hierarchy->levelTwo;
+
+            /* SQL Instruction */
+            $sql = " SELECT	re.id
+                     FROM	{report_gen_company_reporter}	re
+                     WHERE	re.reporterid = :user
+                            AND
+                            (
+                             (re.hierarchylevel = 0	AND	re.levelzero = '". $zero . "' AND re.levelone IS NULL AND re.leveltwo IS NULL AND re.levelthree IS NULL)
+                             OR
+                             (re.hierarchylevel = 1	AND	re.levelzero = '". $zero . "' AND re.levelone = '". $one . "'  AND re.leveltwo IS NULL AND re.levelthree IS NULL)
+                             OR
+                             (re.hierarchylevel = 2	AND	re.levelzero = '". $zero . "' AND re.levelone = '". $one . "'  AND re.leveltwo = '". $two . "'  AND re.levelthree IS NULL)
+                             OR
+                             (re.hierarchylevel = 3	AND	re.levelzero = '". $zero . "' AND re.levelone = '". $one . "'  AND re.leveltwo = '". $two . "'  AND re.levelthree = :three)
+                            ) ";
+
+            /* Execute */
+            $rdo = $DB->get_record_sql($sql,$params);
+            if ($rdo) {
+                return true;
+            }else {
+                return false;
+            }//if_else
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//IsReporter
+
+    /**
+     * @param           $hierarchy
+     * @return          string
+     * @throws          Exception
+     *
+     * @creationDate    29/01/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Get the hierarchy path
+     */
+    private static function GetHierarchyPath($hierarchy) {
+        /* Variables    */
+        $hierarchyPath      = null;
+        $companies_name     = null;
+        $levelZero          = null;
+        $levelOne           = null;
+        $levelTwo           = null;
+
+        try {
+            /* Get Companies Name   */
+            $companies = $hierarchy->levelThree . ',' . $hierarchy->levelTwo . ',' . $hierarchy->levelOne . ',' . $hierarchy->levelZero;
+
+            $companies_name = self::Get_CompanyName($companies);
+
+            $hierarchyPath   = $companies_name[$hierarchy->levelZero]  . '/' .
+                $companies_name[$hierarchy->levelOne]   . '/' .
+                $companies_name[$hierarchy->levelTwo]   . '/' .
+                $companies_name[$hierarchy->levelThree];
+
+            return $hierarchyPath;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//GetHierarchyPath
+
+    /**
+     * @param           $manager
+     * @param           $token
+     *
+     * @throws          Exception
+     *
+     * @creationDate    26/02/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Send Notification to the manager
+     */
+    private static function SendNotificationManager($manager,$token) {
+        /* Variables    */
+        global $SITE,$CFG;
+        $strBody    = null;
+        $strSubject = null;
+        $bodyText   = null;
+        $bodyHtml   = null;
+        $infoMail   = null;
+        $lnkReject  = null;
+        $user       = null;
+
+        try {
+            /* Manager  */
+            $user = get_complete_user_data('id',$manager->id);
+
+            /* Extra Info   */
+            $infoMail = new stdClass();
+            $infoMail->company  = $manager->company;
+            $infoMail->user     = fullname($user);
+            $infoMail->site     = $SITE->shortname;
+            /* Reject Link  */
+            $lnkReject  = $CFG->wwwroot . '/user/profile/field/competence/actions/reject.php/' . $token;
+            $infoMail->reject = '<a href="' . $lnkReject . '">' . get_string('reject_lnk','profilefield_competence') . '</br>';
+
+            /* Mail */
+            $strSubject = get_string('msg_subject_manager','profilefield_competence',$infoMail);
+            $strBody    = get_string('msg_body_manager','profilefield_competence',$infoMail);
+
+            /* Content Mail         */
+            $bodyText = null;
+            $bodyHtml = null;
+            if (strpos($strBody, '<') === false) {
+                // Plain text only.
+                $bodyText = $strBody;
+                $bodyHtml = text_to_html($bodyText, null, false, true);
+            } else {
+                // This is most probably the tag/newline soup known as FORMAT_MOODLE.
+                $bodyHtml = format_text($strBody, FORMAT_MOODLE);
+                $bodyText = html_to_text($bodyHtml);
+            }
+
+            /* Send Mail    */
+            email_to_user($user, $SITE->shortname, $strSubject, $bodyText,$bodyHtml);
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//SendNotificationManager
+
+    /**
+     * @param           $competenceRequest
+     *
+     * @throws          Exception
+     *
+     * @creationDate    26/02/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Send notification to the user
+     */
+    private static function SendNotificationUser($competenceRequest) {
+        /* Variables    */
+        global $SITE,$CFG;
+        $strBody    = null;
+        $strSubject = null;
+        $bodyText   = null;
+        $bodyHtml   = null;
+        $infoMail   = null;
+        $user       = null;
+
+        try {
+            /* Get Info User    */
+            $user = get_complete_user_data('id',$competenceRequest->userid);
+
+            /* Extra Info   */
+            $infoMail = new stdClass();
+            $infoMail->company  = $competenceRequest->company;
+            $infoMail->user     = fullname($user);
+            $infoMail->site     = $SITE->shortname;
+
+            /* Mail */
+            $strSubject = get_string('msg_subject_rejected','profilefield_competence',$infoMail);
+            $strBody    = get_string('msg_body_rejected','profilefield_competence',$infoMail);
+
+            /* Content Mail         */
+            $bodyText = null;
+            $bodyHtml = null;
+            if (strpos($strBody, '<') === false) {
+                // Plain text only.
+                $bodyText = $strBody;
+                $bodyHtml = text_to_html($bodyText, null, false, true);
+            } else {
+                // This is most probably the tag/newline soup known as FORMAT_MOODLE.
+                $bodyHtml = format_text($strBody, FORMAT_MOODLE);
+                $bodyText = html_to_text($bodyHtml);
+            }
+
+            /* Send Mail    */
+            email_to_user($user, $SITE->shortname, $strSubject, $bodyText,$bodyHtml);
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//SendNotificationUser
+
+    /**
+     * @param           $levelZero
+     * @param           $levelOne
+     * @param           $levelTwo
+     * @param           $levelThree
+     *
+     * @return          array
+     * @throws          Exception
+     *
+     * @creationDate    26/02/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Get the managers connected with the user to send a notification
+     */
+    private static function GetManagersUser($levelZero,$levelOne,$levelTwo,$levelThree) {
+        /* Variables */
+        global $DB;
+        $rdo            = null;
+        $sql            = null;
+        $params         = null;
+        $managers       = array();
+
+        try {
+            /* Search Criteria  */
+            $params = array();
+            $params['zero']     = $levelZero;
+            $params['hz']       = 0;
+            $params['one']      = $levelOne;
+            $params['ho']       = 1;
+            $params['two']      = $levelTwo;
+            $params['ht']       = 2;
+            $params['three']    = $levelThree;
+            $params['hth']      = 3;
+
+            /* SQL Instruction  */
+            $sql = " SELECT	  DISTINCT 	u.id,
+                                        CONCAT(co_zero.name,'/',co_one.name,'/',co_two.name,'/',co_tre.name) as 'company'
+                     FROM	    {report_gen_company_manager} rm
+                        JOIN	{user}						 u        ON 	u.id 					= rm.managerid
+                                                                      AND	u.deleted 				= 0
+                        -- LEVEL ZERO
+                        JOIN 	{report_gen_companydata}	 co_zero  ON 	co_zero.id 				= rm.levelzero
+                                                                      AND	co_zero.hierarchylevel 	= :hz
+                        -- LEVEL ONE
+                        JOIN	{report_gen_companydata}	 co_one	  ON	co_one.id				= rm.levelone
+                                                                      AND	co_one.hierarchylevel	= :ho
+                        -- LEVEL TWO
+                        JOIN	{report_gen_companydata}     co_two	  ON	co_two.id				= rm.leveltwo
+                                                                      AND   co_two.hierarchylevel	= :ht
+                        -- LEVEL THREE
+                        JOIN	{report_gen_companydata}	 co_tre   ON 	co_tre.id 				= rm.levelthree
+                                                                      AND   co_tre.hierarchylevel 	= :hth
+                     WHERE    (rm.levelzero = :zero AND  rm.levelone = :one  AND rm.leveltwo = :two AND rm.levelthree = :three) ";
+
+
+            /* Execute */
+            $rdo = $DB->get_records_sql($sql,$params);
+            if ($rdo) {
+                foreach ($rdo as $instance) {
+                    /* Add Manager  */
+                    $managers[$instance->id] = $instance;
+                }//for_rdo
+            }//if_Rdo
+
+            return $managers;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//GetManagersUser
+
+
+    /**
+     * @param           $token
+     *
+     * @return          mixed
+     * @throws          Exception
+     *
+     * @creationDate    26/02/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Get competence request connected with token
+     */
+    private static function GetCompetenceRequest($token) {
+        /* Variables */
+        global $DB;
+        $competenceRequest  = null;
+        $companies          = null;
+
+        try {
+            /* Execute  */
+            $competenceRequest = $DB->get_record('user_info_competence_data',array('token' => $token));
+
+            /* Get Company Name */
+            $companies = self::Get_CompanyName($competenceRequest->companyid);
+            $competenceRequest->company   = $companies[$competenceRequest->companyid];
+
+            return $competenceRequest;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//GetCompetenceRequest
+
+    /**
+     * @param           $userId
+     * @param           $company
+     *
+     * @return          mixed
+     * @throws          Exception
+     *
+     * @creationDate    26/02/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Generate the token connected with
+     */
+    private static function GenerateToken($userId,$company) {
+        /* Variables    */
+        global $DB;
+        $ticket = null;
+        $token  = null;
+
+
+        try {
+            /* Ticket - Something long and Unique   */
+            $ticket     = uniqid(mt_rand(),1);
+            $ticket     = random_string() . $userId . '_' . time() . '_' . $company . '_' . $ticket . random_string();
+            $token      = str_replace('/', '.', self::GenerateHash($ticket));
+
+            /* Check if justs exist for other user  */
+            while ($DB->record_exists('user_info_competence_data',array('companyid' => $company,'token' => $token))) {
+                /* Ticket - Something long and Unique   */
+                $ticket     = uniqid(mt_rand(),1);
+                $ticket     = random_string() . $userId . '_' . time() . '_' . $company . '_' . $ticket . random_string();
+                $token      = str_replace('/', '.', self::GenerateHash($ticket));
+            }//while
+
+            return $token;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//GenerateToken
+
+    /**
+     * @param           $value
+     *
+     * @return          bool|string
+     * @throws          Exception
+     *
+     * @creationDate    24/12/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Generate a hash for sensitive values
+     */
+    private static function GenerateHash($value) {
+        /* Variables    */
+        $cost               = 10;
+        $required_salt_len  = 22;
+        $buffer             = '';
+        $buffer_valid       = false;
+        $hash_format        = null;
+        $salt               = null;
+        $ret                = null;
+        $hash               = null;
+
+        try {
+            /* Generate hash    */
+            $hash_format        = sprintf("$2y$%02d$", $cost);
+            $raw_length         = (int) ($required_salt_len * 3 / 4 + 1);
+
+            if (function_exists('mcrypt_create_iv')) {
+                $buffer = mcrypt_create_iv($raw_length, MCRYPT_DEV_URANDOM);
+                if ($buffer) {
+                    $buffer_valid = true;
+                }
+            }
+
+            if (!$buffer_valid && function_exists('openssl_random_pseudo_bytes')) {
+                $buffer = openssl_random_pseudo_bytes($raw_length);
+                if ($buffer) {
+                    $buffer_valid = true;
+                }
+            }
+
+            if (!$buffer_valid && file_exists('/dev/urandom')) {
+                $f = @fopen('/dev/urandom', 'r');
+                if ($f) {
+                    $read = strlen($buffer);
+                    while ($read < $raw_length) {
+                        $buffer .= fread($f, $raw_length - $read);
+                        $read = strlen($buffer);
+                    }
+                    fclose($f);
+                    if ($read >= $raw_length) {
+                        $buffer_valid = true;
+                    }
+                }
+            }
+
+            if (!$buffer_valid || strlen($buffer) < $raw_length) {
+                $bl = strlen($buffer);
+                for ($i = 0; $i < $raw_length; $i++) {
+                    if ($i < $bl) {
+                        $buffer[$i] = $buffer[$i] ^ chr(mt_rand(0, 255));
+                    } else {
+                        $buffer .= chr(mt_rand(0, 255));
+                    }
+                }
+            }
+
+            $salt = str_replace('+', '.', base64_encode($buffer));
+
+            $salt = substr($salt, 0, $required_salt_len);
+
+            $hash = $hash_format . $salt;
+
+            $ret = crypt($value, $hash);
+
+            if (!is_string($ret) || strlen($ret) <= 13) {
+                return false;
+            }
+
+            return $ret;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_Catch
+    }//GenerateHash
 
     /**
      * @return          string

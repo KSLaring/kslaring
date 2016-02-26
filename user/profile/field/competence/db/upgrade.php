@@ -19,10 +19,12 @@
 function xmldb_profilefield_competence_upgrade($old_version) {
     /* Variables    */
     global $DB;
-    $fieldLevel     = null;
-    $fieldEditable  = null;
-    $fieldApproved  = null;
-    $fieldRejected  = null;
+    $fieldLevel         = null;
+    $fieldEditable      = null;
+    $fieldApproved      = null;
+    $fieldRejected      = null;
+    $fieldToken         = null;
+    $fieldTimeReject    = null;
 
     try {
         /* Manager  */
@@ -130,6 +132,30 @@ function xmldb_profilefield_competence_upgrade($old_version) {
                 }
             }
         }//if_old_version_2016012600
+
+        if ($old_version < 2016022602) {
+            if ($db_man->table_exists('user_info_competence_data')) {
+                $tblCompetenceData = new xmldb_table('user_info_competence_data');
+
+                $rdo = $DB->get_records('user_info_competence_data',null,'id','id,approved');
+                foreach ($rdo as $instance) {
+                    $instance->approved = 1;
+                    $DB->update_record('user_info_competence_data',$instance);
+                }
+
+                /* Token */
+                $fieldToken = new xmldb_field('token', XMLDB_TYPE_CHAR, '100', null, null, null,null,'rejected');
+                if (!$db_man->field_exists($tblCompetenceData, $fieldToken)) {
+                    $db_man->add_field($tblCompetenceData, $fieldToken);
+                }//if_exists_token
+
+                /* Time Rejected    */
+                $fieldTimeReject = new xmldb_field('timerejected', XMLDB_TYPE_INTEGER, '10', null, null, null,null,'token');
+                if (!$db_man->field_exists($tblCompetenceData, $fieldTimeReject)) {
+                    $db_man->add_field($tblCompetenceData, $fieldTimeReject);
+                }//if_exists_timerejected
+            }//if_Exists
+        }//if_old_version
 
         return true;
     }catch (Exception $ex) {

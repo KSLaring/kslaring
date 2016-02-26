@@ -54,3 +54,23 @@ $string['btn_edit_users']       = 'Edit company';
 
 $string['manager']  = 'Manager';
 $string['reporter'] = 'Reporter';
+
+$string['msg_subject_manager']  = '{$a->site}: Notification new employee in {$a->company}';
+$string['msg_body_manager']     = '<p>We send you this notification, because of you are set as manager for the company <strong>{$a->company}</strong></p>
+                                   <p>We would like to inform you that the user <strong>{$a->user}</strong> is a new employee.</p>
+                                   </br>
+                                   <p>If the user does not belong to your company, you must reject it by this link {$a->reject}. </p>
+                                   </br></br>
+                                   <p>This is an automatic generated email from {$a->site} and you cannot answer this email.</p>';
+
+$string['msg_subject_rejected'] = '{$a->site}: Notification from {$a->company}';
+$string['msg_body_rejected']    = 'We would like to inform you that your membership to <strong>{$a->company}</strong> has been rejected';
+
+$string['err_link']     = 'Sorry, link not valid. Please, contact with administrator. ';
+$string['reject_lnk']   = 'Reject';
+
+$string['err_process']  = 'Sorry, It has been an error during the process. Please, try it later or contact with administrator.';
+
+$string['request_rejected']      = 'The request for the company <strong>{$a->company}</strong> and for the user <strong>{$a->user}</strong> has been rejected successfully.';
+
+$string['request_just_rejected'] = 'The request for the company <strong>{$a->company}</strong> and for the user <strong>{$a->user}</strong> has already been rejected.';
