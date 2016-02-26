@@ -90,6 +90,10 @@ class CompetenceProfile_Install {
                 $table_competence_data->add_field('approved',XMLDB_TYPE_INTEGER,'2',null, null, null,null);
                 /* Rejected */
                 $table_competence_data->add_field('rejected',XMLDB_TYPE_INTEGER,'2',null, null, null,null);
+                /* Token            */
+                $table_competence_data->add_field('token',XMLDB_TYPE_CHAR,'100',null, null, null,null);
+                /* Time Rejected    */
+                $table_competence_data->add_field('timerejected',XMLDB_TYPE_INTEGER,'10',null, null, null,null);
                 /* Time modified    -->     The last changes    */
                 $table_competence_data->add_field('timemodified',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, null,null);
 
