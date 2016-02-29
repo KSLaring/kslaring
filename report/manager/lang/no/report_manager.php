@@ -468,4 +468,4 @@ $string['title_reporters']  = 'Rapporttilgangstruktur';
 $string['no_managers']      = 'Ingen ledere';
 $string['no_reporters']     = 'Ingen med rapporttilgang';
 
-$string['reports_manager']  = 'Competence Manager Reports';
+$string['reports_manager']  = 'Kompetansestyringsrapporter';
