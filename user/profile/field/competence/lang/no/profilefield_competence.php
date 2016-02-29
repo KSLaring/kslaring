@@ -55,21 +55,21 @@ $string['btn_edit_users']       = 'Rediger arbeidssted';
 $string['manager']  = 'Leder';
 $string['reporter'] = 'Rapporttilgang';
 
-$string['msg_subject_manager']  = '{$a->site}: Notification new employee in {$a->company}';
-$string['msg_body_manager']     = '<p>We send you this notification, because of you are set as manager for the company <b>{$a->company}</b></p>
-                                   <p>We would like to inform you that the user <b>{$a->user}</b> is a new employee.</p>
+$string['msg_subject_manager']  = '{$a->site}: Melding om ny medarbeider for arbeidsstedet: {$a->company}';
+$string['msg_body_manager']     = '<p>Vi sender deg denne meldingen siden du er leder for dette arbeidsstedet: <b>{$a->company}</b></p>
+                                   <p>Brukeren <b>{$a->user}</b> har nå lagt til seg selv som en av dine medarbeidere.</p>
                                    </br>
-                                   <p>If the user does not belong to your company, you must reject it by this link {$a->reject}. </p>
+                                   <p>Hvis brukeren ikke hører til på ditt arbeidssted kan du fjerne dette arbeidsstedet fra brukerens profil ved å klikke her: {$a->reject}. </p>
                                    </br></br>
-                                   <p>This is an automatic generated email from {$a->site} and you cannot answer this email.</p>';
+                                   <p>Dette er en automatisk generert epost fra {$a->site}. Du kan ikke svare på denne e-posten.</p>';
 
-$string['msg_subject_rejected'] = '{$a->site}: Notification from {$a->company}';
-$string['msg_body_rejected']    = 'We would like to inform you that your membership to <strong>{$a->company}</strong> has been rejected';
+$string['msg_subject_rejected'] = '{$a->site}: Melding fra {$a->company}';
+$string['msg_body_rejected']    = 'Vi vil gjerne informere deg om at arbeidsstedet <strong>{$a->company}</strong> du la til i din brukerprofil er blitt fjernet av lederen for dette arbeidsstedet. Ta kontakt med lederen for arbeidsstedet dersom du mener at dette er feil.';
 
-$string['err_link'] = 'Sorry, link not valid. Please, contact with administrator. ';
+$string['err_link'] = 'Beklager, men lenken er ikke gyldig. Vennligst ta kontakt med administrator.';
 
-$string['err_process']  = 'Sorry, It has been an error during the process. Please, try it later or contact with administrator.';
+$string['err_process']  = 'Beklager, men det har skjedd en feil i prosessen. Vennligst prøv igjen senere eller kontakt administrator om det vedvarer.';
 
-$string['request_rejected'] = 'The request for the company <strong>{$a->company}</strong> and for the user <strong>{$a->user}</strong> has been rejected successfully.';
+$string['request_rejected'] = 'Arbeidsstedet <strong>{$a->company}</strong> brukeren <strong>{$a->user}</strong> registrerte på seg selv er nå fjernet.';
 
-$string['request_just_rejected'] = 'The request for the company <strong>{$a->company}</strong> and for the user <strong>{$a->user}</strong> has already been rejected.';
+$string['request_just_rejected'] = 'Du har allerede avslått at <strong>{$a->company}</strong> skal registreres på  <strong>{$a->user}</strong>.';
