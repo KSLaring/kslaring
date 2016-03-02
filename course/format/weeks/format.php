@@ -54,7 +54,7 @@ if ($course->coursedisplay && $course->numsections) {
     if ($displaysection) {
         $renderer->print_single_section_page($course, null, null, null, null, $displaysection);
     }else {
-        $renderer->print_single_section_page($course, null, null, null, null, 0);
+        $renderer->print_single_section_page($course, null, null, null, null, 1);
     }
 }else {
     $renderer->print_multiple_section_page($course, null, null, null, null);
