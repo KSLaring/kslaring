@@ -113,8 +113,8 @@ $pdf->SetTextColor(0, 0, 0);
 certificate_print_text($pdf, $x, $y + 142, 'C', $fontsans, 'B', 24,
     format_string($course->fullname));
 
-// Set the line height in the style of a wrapping p tag.
-$customtext =  '<p style="line-height: 28pt">' . $certificate->customtext . '</p>';
+// Set the line height in the style of a tag entered in the customtext field in the settings.
+$customtext =  $certificate->customtext;
 certificate_print_text($pdf, 46, $y + 164, 'L', $fontsans, '', 16,
     $customtext, 210 - (46 * 2));
 
