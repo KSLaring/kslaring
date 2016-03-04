@@ -60,7 +60,7 @@ class local_friadmin_usercourselist_table_sql_model extends local_friadmin_widge
                            # Get the deadline from enrol
                            JOIN (
                                     SELECT	e.courseid,
-                                            IFNULL(MAX(e.customint1), 0) AS deadline
+                                            IFNULL(MAX(e.customint1), 0) AS 'deadline'
                                     FROM 	{enrol} e
                                     WHERE 	e.status = 0
                                     GROUP BY e.courseid

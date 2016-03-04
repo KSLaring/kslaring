@@ -719,8 +719,8 @@ class course_page  {
         $out .= '<h5 class="title_ratings chp-title">' . get_string('ratings_avg','local_course_page') . '</h5>';
 
         $out .= '<div class="rating_total clearfix chp-content">';
-        $out .= '<div class="rating_total_title">' . '<img src="'. $url_avg . '" .  alt="average ratings"/>' . '</div>';
-        $out .= '<div class="rating_total_value">' . $total_rates . '</div>';
+            $out .= '<div class="rating_total_title">' . '<img src="'. $url_avg . '" .  alt="average ratings"/>' . '</div>';
+            $out .= '<div class="rating_total_value">' . $total_rates . '</div>';
         $out .= '</div>';
 
         return $out;
@@ -1834,6 +1834,90 @@ class course_page  {
     }//GetLocation
 
     /**
+     * @param           $sectorsLst
+     * @return          null
+     * @throws          Exception
+     *
+     * @creationDate    11/05/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Get the sectors name. List Format
+     */
+    public static function Get_SectorsName($sectorsLst) {
+        /* Variables    */
+        global $DB;
+        $sectorsName = null;
+        $sql         = null;
+        $rdo         = null;
+        try {
+            /* SQL Instruction  */
+            $sql = " SELECT		GROUP_CONCAT(DISTINCT CONCAT(rgc.industrycode,' - ', rgc.name) ORDER BY rgc.industrycode, rgc.name SEPARATOR ', ') as 'sectors'
+                     FROM		{report_gen_companydata}	rgc
+                     WHERE      rgc.id IN ($sectorsLst) ";
+
+            /* Execute*/
+            $rdo = $DB->get_record_sql($sql);
+            if ($rdo) {
+                $sectorsName = $rdo->sectors;
+            }//if_rdo
+
+            return $sectorsName;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//Get_SectorsName
+
+    /**
+     * @param           $courseId
+     *
+     * @return          null
+     * @throws          Exception
+     *
+     * @creationDate    04/03/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Get the deadline course
+     */
+    public static function DeadLineCourse($courseId) {
+        /* Variables */
+        global $DB;
+        $sql    = null;
+        $params = null;
+        $rdo    = null;
+
+        try {
+            /* Search Criteria  */
+            $params = array();
+            $params['course']   = $courseId;
+            $params['enrol']    = 'waitinglist';
+
+            /* SQL Instruction */
+            $sql = " SELECT	e.courseid,
+                            IFNULL(e.customint1, 0) AS 'deadline'
+                     FROM 	{enrol} e
+                     WHERE 	e.status 	= 0
+                        AND	e.enrol 	= :enrol
+                        AND	e.courseid 	= :course  ";
+
+            /* Execute */
+            $rdo = $DB->get_record_sql($sql,$params);
+            if ($rdo) {
+                return $rdo->deadline;
+            }else {
+                return null;
+            }//if_rdo
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//DeadLineCourse
+
+    /***********/
+    /* PRIVATE */
+    /***********/
+
+    /**
      * @param           $coursesLst
      *
      * @return          array
@@ -1873,43 +1957,6 @@ class course_page  {
             throw $ex;
         }//try_catch
     }//GetCourses
-
-    /**
-     * @param           $sectorsLst
-     * @return          null
-     * @throws          Exception
-     *
-     * @creationDate    11/05/2015
-     * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Get the sectors name. List Format
-     */
-    public static function Get_SectorsName($sectorsLst) {
-        /* Variables    */
-        global $DB;
-        $sectorsName = null;
-        $sql         = null;
-        $rdo         = null;
-        try {
-            /* SQL Instruction  */
-            $sql = " SELECT		GROUP_CONCAT(DISTINCT CONCAT(rgc.industrycode,' - ', rgc.name) ORDER BY rgc.industrycode, rgc.name SEPARATOR ', ') as 'sectors'
-                     FROM		{report_gen_companydata}	rgc
-                     WHERE      rgc.id IN ($sectorsLst) ";
-
-            /* Execute*/
-            $rdo = $DB->get_record_sql($sql);
-            if ($rdo) {
-                $sectorsName = $rdo->sectors;
-            }//if_rdo
-
-            return $sectorsName;
-        }catch (Exception $ex) {
-            throw $ex;
-        }//try_catch
-    }//Get_SectorsName
-
-    /* PRIVATE          */
 }//course_page
 
 class home_page_form extends moodleform {

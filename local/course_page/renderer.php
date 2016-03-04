@@ -225,6 +225,12 @@ class local_course_page_renderer extends plugin_renderer_base {
      *
      * Description
      * Check if the course has to be add the course ratings block
+     *
+     * @updateDate      04/03/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Add deadline course
      */
     private function addBlockTwo_homePage($course,$format_options) {
         /* Variables    */
@@ -242,7 +248,10 @@ class local_course_page_renderer extends plugin_renderer_base {
             $block_two .= $this->addExtra_DurationBlock($course->format,$format_options);
             /* Block Course Type    */
             $block_two .= $this->addExtra_TypeCourseBlock($course->format);
+            /* Block Available seats    */
             $block_two .= $this->addAvailable_Seats_Block($format_options);
+            /* Block Deadline       */
+            $block_two .= $this->addDeadlineCourse_Block($course->id);
             $block_two .= html_writer::end_tag('div');//go-left
 
             /* Block Ratings        */
@@ -256,7 +265,6 @@ class local_course_page_renderer extends plugin_renderer_base {
 
         return $block_two;
     }//addBlockTwo_homePage
-
 
     /**
      * @param           $course
@@ -643,7 +651,7 @@ class local_course_page_renderer extends plugin_renderer_base {
 
 
     /**
-     * @param           $course_format
+     * @param           $format_options
      * @return          string
      *
      * @creationDate    2015-12-06
@@ -667,6 +675,39 @@ class local_course_page_renderer extends plugin_renderer_base {
 
         return $out;
     }//addAvailable_Seats_Block
+
+    /**
+     * @param           $courseId
+     *
+     * @return          string
+     * @throws          Exception
+     *
+     * @creationDate    04/03/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Add deadline course block
+     */
+    protected function addDeadlineCourse_Block($courseId) {
+        /* Variables */
+        $out        = '';
+        $deadLine   = null;
+
+        try {
+            /* Get deadline connected with */
+            $deadLine = course_page::DeadLineCourse($courseId);
+            if ($deadLine) {
+                $out .= html_writer::start_tag('div',array('class' => 'extra chp-block'));
+                    $out .= '<h5 class="title_home chp-title">' . get_string('home_deadline','local_course_page') . '</h5>';
+                    $out .= '<div class="extra_home chp-content">' . userdate($deadLine,'%d.%m.%Y', 99, false) . '</div>';
+                $out .=  html_writer::end_tag('div');//extra
+            }//if_deadline
+
+            return $out;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//addDeadlineCourse_Block
 
     /**
      * @param           $course_id
