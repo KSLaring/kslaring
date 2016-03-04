@@ -141,7 +141,7 @@ class enrol_waitinglist_plugin extends enrol_plugin {
 		}//end of if has capability
 
         /* Add Report Invoice Link */
-        if (has_capability('enrol/waitinglist:manage', $context) || has_capability('enrol/waitinglist:manage', $context)) {
+        if ((has_capability('enrol/waitinglist:manage', $context) || has_capability('enrol/waitinglist:manage', $context)) && $instance->{ENROL_WAITINGLIST_FIELD_INVOICE}) {
             $parent_node        = $instancesnode->parent;
             $parent_node        = $parent_node->parent;
             $str_title          = get_string('report_link', 'enrol_invoice');
@@ -161,7 +161,7 @@ class enrol_waitinglist_plugin extends enrol_plugin {
         }//Invoice_Link
 
         /* Add Approval Requests Link */
-        if (has_capability('enrol/waitinglist:manage', $context)) {
+        if ((has_capability('enrol/waitinglist:manage', $context)) && ($instance->{ENROL_WAITINGLIST_FIELD_APPROVAL} == APPROVAL_REQUIRED)) {
             $parent_node        = $instancesnode->parent;
             $parent_node        = $parent_node->parent;
             $str_title          = get_string('lnk_approval', 'enrol_waitinglist');
