@@ -126,7 +126,6 @@ class enrol_waitinglist_renderer extends plugin_renderer_base {
 			 echo $datarow . $newline;
 		}
         exit();
-        break;
 	}
 
 
