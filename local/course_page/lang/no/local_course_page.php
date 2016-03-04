@@ -56,3 +56,5 @@ $string['available_seats'] 			= 'Ledige plasser';
 $string['no_minimum_rates']         = 'Beklager, men det er ikke mange nok som har vurdert dette kurset ennå.';
 
 $string['view_detail'] = 'Vis detaljer';
+
+$string['home_deadline']    = 'Påmeldingsfrist';
