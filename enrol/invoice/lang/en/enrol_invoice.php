@@ -132,3 +132,4 @@ $string['rpt_course_info']      = 'Course Info';
 $string['rpt_invoices_info']    = 'Invoices Info';
 
 $string['rpt_seats'] = 'Seats';
+$string['rpt_price'] = 'Price';

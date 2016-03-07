@@ -62,6 +62,16 @@ class enrol_waitinglist_edit_form extends moodleform {
 		$mform->setDefault(ENROL_WAITINGLIST_FIELD_WAITLISTSIZE, $plugin->get_config('waitlistsize'));
 
         /**
+         * @updateDate  04/03/2016
+         * @author      eFaktor     (fbv)
+         *
+         * Description
+         * Add the price of the course
+         */
+        $mform->addElement('text',ENROL_WAITINGLIST_FIELD_PRICE,  get_string('price', 'enrol_waitinglist'), array('size' => '8'));
+        $mform->setType(ENROL_WAITINGLIST_FIELD_PRICE,PARAM_TEXT);
+
+        /**
          * @updateDate  28/10/2015
          * @author      eFaktor     (fbv)
          *

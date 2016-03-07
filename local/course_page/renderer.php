@@ -231,6 +231,7 @@ class local_course_page_renderer extends plugin_renderer_base {
      *
      * Description
      * Add deadline course
+     * Add price of the course
      */
     private function addBlockTwo_homePage($course,$format_options) {
         /* Variables    */
@@ -240,18 +241,18 @@ class local_course_page_renderer extends plugin_renderer_base {
 
         $block_two .= html_writer::start_tag('div',array('class' => 'home_page_block_two'));
             $block_two .= html_writer::start_tag('div',array('class' => 'go-left clearfix'));
-            /* Block Prerequisites  */
-            $block_two .= $this->addExtra_PrerequisitesBlock($course,$format_options,$manager);
-            /* Block Coordinator    */
-            $block_two .= $this->addCoordinatorBlock($course->id,$manager);
-            /* Block Duration       */
-            $block_two .= $this->addExtra_DurationBlock($course->format,$format_options);
-            /* Block Course Type    */
-            $block_two .= $this->addExtra_TypeCourseBlock($course->format);
-            /* Block Available seats    */
-            $block_two .= $this->addAvailable_Seats_Block($format_options);
-            /* Block Deadline       */
-            $block_two .= $this->addDeadlineCourse_Block($course->id);
+                /* Block Prerequisites  */
+                $block_two .= $this->addExtra_PrerequisitesBlock($course,$format_options,$manager);
+                /* Block Coordinator    */
+                $block_two .= $this->addCoordinatorBlock($course->id,$manager);
+                /* Block Duration       */
+                $block_two .= $this->addExtra_DurationBlock($course->format,$format_options,$course->id);
+                /* Block Course Type    */
+                $block_two .= $this->addExtra_TypeCourseBlock($course->format);
+                /* Block Available seats    */
+                $block_two .= $this->addAvailable_Seats_Block($format_options);
+                /* Block Deadline       */
+                $block_two .= $this->addDeadlineCourse_Block($course->id);
             $block_two .= html_writer::end_tag('div');//go-left
 
             /* Block Ratings        */
@@ -366,6 +367,8 @@ class local_course_page_renderer extends plugin_renderer_base {
     /**
      * @param           $course_format
      * @param           $format_options
+     * @param           $courseId
+     *
      * @return          string
      *
      * @creationDate    05/09/2014
@@ -391,8 +394,14 @@ class local_course_page_renderer extends plugin_renderer_base {
      *
      * Description
      * Course Location -- Classroom format
+     *
+     * @updateDate      04/03/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Add the course price
      */
-    protected function addExtra_DurationBlock($course_format,$format_options) {
+    protected function addExtra_DurationBlock($course_format,$format_options,$courseId) {
         /* Variables */
         $out = '';
         $strLocationName    = null;
@@ -406,6 +415,16 @@ class local_course_page_renderer extends plugin_renderer_base {
         $outTime            = null;
         $outLength          = null;
         $outEffort          = null;
+        $outPrice           = null;
+
+        /* Get course price */
+        $price = course_page::PriceCourse($courseId);
+        if ($price) {
+            $outPrice .= html_writer::start_tag('div',array('class' => 'extra chp-block'));
+                $outPrice .= '<h5 class="title_home chp-title">' . get_string('home_price','local_course_page') . '</h5>';
+                $outPrice .= '<div class="extra_home chp-content">' . $price. '</div>';
+            $outPrice .=  html_writer::end_tag('div');//extra
+        }//if_price
 
         $out .= html_writer::start_tag('div',array('class' => 'extra chp-block'));
             switch ($course_format) {
@@ -482,7 +501,7 @@ class local_course_page_renderer extends plugin_renderer_base {
                         }//if_effort
                     }//for_format_options
 
-                    $out .= $outLocation . $outSector . $outTime .$outLength . $outEffort;
+                    $out .= $outLocation . $outSector  . $outTime . $outPrice . $outLength . $outEffort;
                     break;
                 default:
                     break;

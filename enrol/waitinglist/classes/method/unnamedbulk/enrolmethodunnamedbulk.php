@@ -49,7 +49,7 @@ class enrolmethodunnamedbulk extends \enrol_waitinglist\method\enrolmethodbase {
 	//const DFIELD_SEATS = 'customint1';
 	const QFIELD_ASSIGNEDSEATS = 'allocseats';
 	const QFIELD_SEATS = 'seats';
-	
+    const MFIELD_PRICE                  = 'customtext3';
 	
 	public $course = 0;
     public $waitlist = 0;
@@ -309,6 +309,7 @@ class enrolmethodunnamedbulk extends \enrol_waitinglist\method\enrolmethodbase {
                         \Approval::ApplyAction_FromManager($infoApproval);
                     }else {
                         /* Send Mails   */
+                        $infoMail->price = $waitinglist->{static::MFIELD_PRICE};
                         \Approval::SendNotifications($USER,$infoMail,$this->myManagers);
                     }
                 }//if_vacancies

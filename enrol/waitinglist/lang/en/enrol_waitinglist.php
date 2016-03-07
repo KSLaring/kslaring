@@ -186,12 +186,12 @@ $string['arguments']        = 'Arguments';
 $string['not_managers'] = 'Sorry, you cannot apply for the course because of there is no manager connected with you.';
 
 $string['mng_subject']  = '{$a->site}: Application for enrolment in course {$a->course}';
-$string['mng_body']     = '<p>We would like to inform you that you are manager for <b>{$a->user}</b>, and the <b>{$a->user}</b> has just applied for the course <b>{$a->course}</b>.</p><p>The arguments of the user are:</p><p>{$a->arguments}</p>
+$string['mng_body']     = '<p>We would like to inform you that you are manager for <b>{$a->user}</b>, and the <b>{$a->user}</b> has just applied for the course <b>{$a->course}</b> and price <b>{$a->price}</b>.</p><p>The arguments of the user are:</p><p>{$a->arguments}</p>
                            <p>To approve it You must use this link: {$a->approve}.</p>
                            <p>To reject it You must use this link: {$a->reject}.</p>';
 
 $string['subject_reminder'] = '{$a->site}: Application for enrolment in course {$a->course}. REMINDER';
-$string['body_reminder']    = '<p>We would like to <b><u>reminder</u></b> you that you are manager for <b>{$a->user}</b>, and the <b>{$a->user}</b> has just applied for the course <b>{$a->course}</b>.</p><p>The arguments of the user are:</p><p>{$a->arguments}</p>
+$string['body_reminder']    = '<p>We would like to <b><u>reminder</u></b> you that you are manager for <b>{$a->user}</b>, and the <b>{$a->user}</b> has just applied for the course <b>{$a->course}</b> and price <b>{$a->price}</b>.</p><p>The arguments of the user are:</p><p>{$a->arguments}</p>
                                <p>You should approve or reject the request as soon as possible.</p>
                                <p>To approve it You must use this link: {$a->approve}.</p>
                                <p>To reject it You must use this link: {$a->reject}.</p>';
@@ -241,10 +241,13 @@ $string['mng_approved_body_two'] = '<p>We would like to inform you that the <b>{
                                         <li><u>Course date</u>: {$a->date}</li>
                                         <li><u>Instructor</u>: {$a->instructor}</li>
                                         <li><u>Location</u>: {$a->location}</li>
+                                        <li><u>Price</u>: {$a->price}</li>
                                         <li>More information about the course in {$a->homepage}</li>
                                     </ul>';
 $string['mng_approved_body_end'] = '<p>This is an automatic generated email from {$a->site} and you cannot answer this email.';
 $string['home_page']    = 'Course home page';
 
 $string['approval_occupied'] = 'At the moment, all available seats are occupied.So, your application will be processed as soon as there are available seats.';
+
+$string['price'] = 'Price';
 

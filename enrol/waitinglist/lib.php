@@ -36,6 +36,7 @@ define('ENROL_WAITINGLIST_TABLE_QUEUE', 'enrol_waitinglist_queue');
 define('ENROL_WAITINGLIST_TABLE_METHODS', 'enrol_waitinglist_method');
 define('ENROL_WAITINGLIST_FIELD_INVOICE','customint8');
 define('ENROL_WAITINGLIST_FIELD_APPROVAL','customint7');
+define('ENROL_WAITINGLIST_FIELD_PRICE','customtext3');
 
 define('APPROVAL_NONE',0);
 define('APPROVAL_REQUIRED',1);
@@ -520,6 +521,12 @@ class enrol_waitinglist_plugin extends enrol_plugin {
      *
      * Description
      * Add Invoice Information Option
+     *
+     * @updateDate  04/03/2016
+     * @author      eFaktor (fbv)
+     *
+     * Description
+     * Add price of the course
      */
     public function add_default_instance($course) {
         $expirynotify = $this->get_config('expirynotify', 0);
@@ -541,7 +548,8 @@ class enrol_waitinglist_plugin extends enrol_plugin {
                         ENROL_WAITINGLIST_FIELD_WAITLISTSIZE        => $this->get_config('waitlistsize'),
                         'expirythreshold'                           => $this->get_config('expirythreshold', 86400),
                         ENROL_WAITINGLIST_FIELD_INVOICE             => 0,
-                        ENROL_WAITINGLIST_FIELD_APPROVAL            => 0
+                        ENROL_WAITINGLIST_FIELD_APPROVAL            => 0,
+                        ENROL_WAITINGLIST_FIELD_PRICE               => 0,
                        );
         $waitinglistid = $this->add_instance($course, $fields);
 
@@ -756,6 +764,7 @@ class enrol_waitinglist_plugin extends enrol_plugin {
                                           ea.userid,
                                           ea.courseid,
                                           c.fullname,
+                                          e.customtext3 as 'price',
                                           ea.arguments,
                                           ea.seats,
                                           ea.token,
@@ -812,7 +821,7 @@ class enrol_waitinglist_plugin extends enrol_plugin {
                                         $infoMail = new stdClass();
                                         $infoMail->approvalid   = $instance->id;
                                         $infoMail->course       = $instance->fullname;
-
+                                        $infoMail->price        = $instance->price;
                                         $infoMail->arguments    = $instance->arguments;
                                         /* Approve Link */
                                         $lnkApprove = $CFG->wwwroot . '/enrol/waitinglist/approval/action.php/' . $instance->token . '/' . $instance->approve;
