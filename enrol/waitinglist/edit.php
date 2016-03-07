@@ -77,6 +77,14 @@ if ($instances = $DB->get_records('enrol', array('courseid'=>$course->id, 'enrol
      */
     $instance->{ENROL_WAITINGLIST_FIELD_INVOICE}          = 0;
     $instance->{ENROL_WAITINGLIST_FIELD_APPROVAL}         = 0;
+    /**
+     * @updateDate      04/03/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Add the price of the course
+     */
+    $instance->{ENROL_WAITINGLIST_FIELD_PRICE} = 0;
 }
 
 $mform = new enrol_waitinglist_edit_form(null, array($instance, $plugin, $context));
@@ -124,6 +132,14 @@ if ($mform->is_cancelled()) {
          * Add the approval request option
          */
         $instance->{ENROL_WAITINGLIST_FIELD_APPROVAL} = $data->{ENROL_WAITINGLIST_FIELD_APPROVAL};
+        /**
+         * @updateDate      04/03/2016
+         * @author          eFaktor (fbv)
+         *
+         * Description
+         * Add the price of the course
+         */
+        $instance->{ENROL_WAITINGLIST_FIELD_PRICE} = $data->{ENROL_WAITINGLIST_FIELD_PRICE};
 
         $DB->update_record('enrol', $instance);
 
@@ -163,9 +179,17 @@ if ($mform->is_cancelled()) {
                          * Description
                          * Add the approval request option
                          */
-                        ENROL_WAITINGLIST_FIELD_APPROVAL => $data->{ENROL_WAITINGLIST_FIELD_APPROVAL}
+                        ENROL_WAITINGLIST_FIELD_APPROVAL => $data->{ENROL_WAITINGLIST_FIELD_APPROVAL},
+                        /**
+                         * @updateDate      04/03/2016
+                         * @author          eFaktor     (fbv)
+                         *
+                         * Description
+                         * Add the price of the course
+                         */
+                        ENROL_WAITINGLIST_FIELD_PRICE => $data->{ENROL_WAITINGLIST_FIELD_PRICE}
 		               );
-       $waitinglistid =  $plugin->add_instance($course, $fields);
+        $waitinglistid =  $plugin->add_instance($course, $fields);
 
        //add default methods
         //add an instance of each of the methods, if the waitinglist instance was created ok

@@ -60,4 +60,5 @@ $string['no_minimum_rates']         = 'Sorry, but there are not enough ratings t
 
 $string['view_detail'] = 'View detail';
 
-$string['home_deadline']      = 'Deadline';
+$string['home_deadline']    = 'Deadline';
+$string['home_price']       = 'Price';

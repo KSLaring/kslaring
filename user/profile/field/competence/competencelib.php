@@ -237,7 +237,9 @@ class Competence {
                         JOIN	{report_gen_companydata}		co_zero	ON 	co_zero.id 				= cr_zero.parentid
                                                                         AND co_zero.hierarchylevel 	= 0
                      WHERE		uicd.userid   = :user
-                        AND     uicd.rejected = 0
+                        AND     (uicd.rejected = 0
+                                 OR
+                                 uicd.rejected IS NULL)
                         AND     uicd.approved = 1 ";
 
             if ($competence_data && $competence) {
@@ -564,6 +566,7 @@ class Competence {
             $infoCompetenceData->companyid          = $data->level_3;
             $infoCompetenceData->editable           = 1;
             $infoCompetenceData->approved           = 1;
+            $infoCompetenceData->rejected           = 0;
             $infoCompetenceData->level              = 3;
             $infoCompetenceData->token              = self::GenerateToken($data->id,$data->level_3);
 

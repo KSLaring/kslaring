@@ -20,6 +20,8 @@ define('AVG_RATING',3);
 define('POOR_RATING',2);
 define('BAD_RATING',1);
 
+define('FILED_COURSE_PRICE','customtext3');
+
 class course_page  {
     /* GET FUNCTIONS    */
 
@@ -1912,6 +1914,44 @@ class course_page  {
             throw $ex;
         }//try_catch
     }//DeadLineCourse
+
+    /**
+     * @param           $courseId
+     *
+     * @return          null
+     * @throws          Exception
+     *
+     * @creationDate    04/03/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Get price of the course
+     */
+    public static function PriceCourse($courseId) {
+        /* Variables */
+        global $DB;
+        $sql    = null;
+        $params = null;
+        $rdo    = null;
+
+        try {
+            /* Search Criteria  */
+            $params = array();
+            $params['courseid']     = $courseId;
+            $params['enrol']        = 'waitinglist';
+            $params['status']       = 0;
+
+            /* Execute  */
+            $rdo = $DB->get_record('enrol',$params,'id,' . FILED_COURSE_PRICE);
+            if ($rdo) {
+                return $rdo->{FILED_COURSE_PRICE};
+            }else {
+                return null;
+            }//if_else
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//PriceCourse
 
     /***********/
     /* PRIVATE */

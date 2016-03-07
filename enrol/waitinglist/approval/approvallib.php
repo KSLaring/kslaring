@@ -193,7 +193,7 @@ Class Approval {
             $infoMail = new stdClass();
             $infoMail->approvalid   = $infoApproval->id;
             $infoMail->course       = $course->fullname;
-
+            $infoMail->price        = null;
             $infoMail->arguments    = $infoApproval->arguments;
             /* Approve Link */
             $lnkApprove = $CFG->wwwroot . '/enrol/waitinglist/approval/action.php/' . $infoApproval->token . '/' . $infoApproveAct->token;
@@ -701,8 +701,12 @@ Class Approval {
                             u.lastname,
                             u.email,
                             hp.value as 'homepage',
-                            hv.value as 'homevisible'
+                            hv.value as 'homevisible',
+                            e.customtext3 as 'price'
                      FROM			{course}					c
+                        JOIN        {enrol}                     e   ON  e.courseid = c.id
+                                                                    AND e.status   = 0
+                                                                    AND e.enrol    = 'waitinglist'
                         -- Instructors
                         LEFT JOIN	{course_format_options}		ci 	ON 	ci.courseid = c.id
                                                                     AND	ci.name		= 'manager'
@@ -725,6 +729,7 @@ Class Approval {
             if ($rdo) {
                 /* Course Info  */
                 $infoNotification->course   = $rdo->fullname;
+                $infoNotification->price    = $rdo->price;
                 $infoNotification->summary  = $rdo->summary;
                 if (($rdo->homepage) && ($rdo->homevisible)) {
                     /* Course Home Page */

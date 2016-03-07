@@ -58,3 +58,4 @@ $string['no_minimum_rates']         = 'Beklager, men det er ikke mange nok som h
 $string['view_detail'] = 'Vis detaljer';
 
 $string['home_deadline']    = 'Påmeldingsfrist';
+$string['home_price']       = 'Price';

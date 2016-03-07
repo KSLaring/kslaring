@@ -130,3 +130,4 @@ $string['rpt_course_info']      = 'Kursinfo';
 $string['rpt_invoices_info']    = 'Brannvernkurs';
 
 $string['rpt_seats'] = 'Forespurte';
+$string['rpt_price'] = 'Price';

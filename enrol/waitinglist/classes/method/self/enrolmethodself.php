@@ -36,15 +36,16 @@ class enrolmethodself extends \enrol_waitinglist\method\enrolmethodbase{
 	const METHODTYPE='self';
 	protected $active = false;
 	
-	const QFIELD_ENROLPASSWORD='customtext1';
-	const MFIELD_GROUPKEY = 'customint1';
-	const MFIELD_LONGTIMENOSEE = 'customint2';
-	const MFIELD_MAXENROLLED = 'customint3';
-	const MFIELD_SENDWAITLISTMESSAGE = 'customint4';
-	const MFIELD_COHORTONLY = 'customint5';
-	const MFIELD_NEWENROLS = 'customint6';
-	const MFIELD_WAITLISTMESSAGE = 'customtext1';
-	
+	const QFIELD_ENROLPASSWORD          ='customtext1';
+	const MFIELD_GROUPKEY               = 'customint1';
+	const MFIELD_LONGTIMENOSEE          = 'customint2';
+	const MFIELD_MAXENROLLED            = 'customint3';
+	const MFIELD_SENDWAITLISTMESSAGE    = 'customint4';
+	const MFIELD_COHORTONLY             = 'customint5';
+	const MFIELD_NEWENROLS              = 'customint6';
+	const MFIELD_WAITLISTMESSAGE        = 'customtext1';
+	const MFIELD_PRICE                  = 'customtext3';
+
 	public  $course             = 0;
     public  $waitlist           = 0;
 	public  $maxseats           = 0;
@@ -316,6 +317,7 @@ class enrolmethodself extends \enrol_waitinglist\method\enrolmethodbase{
                         \Approval::ApplyAction_FromManager($infoApproval);
                     }else {
                         /* Send Mails   */
+                        $infoMail->price = $waitinglist->{static::MFIELD_PRICE};
                         \Approval::SendNotifications($USER,$infoMail,$this->myManagers);
                     }
                 }//if_vacancies

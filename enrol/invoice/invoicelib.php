@@ -400,7 +400,8 @@ class Invoices {
                                 c.fullname,
                                 ca.name			as 'category',
                                 e.name			as 'enrol',
-                                e.customint3	as 'max_enrolled'
+                                e.customint3	as 'max_enrolled',
+                                e.customtext3   as 'price'
                      FROM		{course}				c
                         JOIN	{course_categories}	    ca		ON 	ca.id 		= c.category
                         JOIN	{enrol}				    e		ON	e.courseid	= c.id
@@ -416,6 +417,7 @@ class Invoices {
                 $course_info->category      = $rdo->category;
                 $course_info->enrol         = $rdo->enrol;
                 $course_info->max_enrolled  = $rdo->max_enrolled;
+                $course_info->price         = $rdo->price;
             }//if_rdo
 
             return $course_info;
@@ -518,6 +520,14 @@ class Invoices {
         $header_info .= html_writer::end_div();//left
         $header_info .= html_writer::start_div('block_invoices_course_two');
             $header_info .= '<p class="info_course_value">' . $course_info->max_enrolled . '</p>';
+        $header_info .= html_writer::end_div();//right
+
+        /* Price Course */
+        $header_info .= html_writer::start_div('block_invoices_course_one');
+            $header_info .= '<label class="label_info_course">' . get_string('rpt_price','enrol_invoice') . '</label>';
+        $header_info .= html_writer::end_div();//left
+        $header_info .= html_writer::start_div('block_invoices_course_two');
+            $header_info .= '<p class="info_course_value">' . number_format($course_info->price,2,',','.') . '</p>';
         $header_info .= html_writer::end_div();//right
 
         return $header_info;
@@ -726,6 +736,7 @@ class Invoices {
         $str_course         = get_string('course');
         $str_category       = get_string('category');
         $str_participants   = get_string('participants','enrol_invoice');
+        $strPrice           = get_string('rpt_price','enrol_invoice');
 
         try {
             $my_xls = $export->add_worksheet(get_string('rpt_course_info','enrol_invoice'));
@@ -758,6 +769,17 @@ class Invoices {
             $my_xls->set_row($row,20);
             $col = $col + 6;
             $my_xls->write($row, $col,$course_info->max_enrolled ,array('size'=>12, 'name'=>'Arial','text_wrap'=>true,'v_align'=>'left','align' => 'right'));
+            $my_xls->merge_cells($row,$col,$row,$col+5);
+            $my_xls->set_row($row,20);
+
+            /* Price    */
+            $row ++;
+            $col = 0;
+            $my_xls->write($row, $col, $strPrice,array('size'=>12, 'name'=>'Arial','bold'=>'1','bg_color'=>'#efefef','text_wrap'=>true,'v_align'=>'left'));
+            $my_xls->merge_cells($row,$col,$row,$col+5);
+            $my_xls->set_row($row,20);
+            $col = $col + 6;
+            $my_xls->write($row, $col,$course_info->price ,array('size'=>12, 'name'=>'Arial','text_wrap'=>true,'v_align'=>'left','align' => 'right'));
             $my_xls->merge_cells($row,$col,$row,$col+5);
             $my_xls->set_row($row,20);
 
