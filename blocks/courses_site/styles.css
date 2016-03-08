@@ -1,0 +1,208 @@
+#page-site-index.empty-region-side-pre #region-bs-main-and-pre.span9 #region-main,
+#page-site-index.jsenabled.docked-region-side-pre #region-bs-main-and-pre.span9 #region-main {
+  width: 100%;
+}
+@media all and (max-width: 680px) {
+  #page-site-index {
+    padding-right: 1%;
+    padding-left: 1%;
+  }
+  #page-site-index .navbar-fixed-top,
+  #page-site-index .navbar-fixed-bottom,
+  #page-site-index .navbar-static-top {
+    margin-right: -1%;
+    margin-left: -1%;
+  }
+}
+.block_courses_site .coursebox {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+}
+.block_courses_site.block .content {
+  padding: 0;
+}
+.block_courses_site .bcs-course {
+  border-top: 2px solid #F2F2F3;
+  float: left;
+  height: 470px;
+  padding: 1.5em 0 1em;
+  width: 100%;
+}
+@media all and (min-width: 681px) {
+  .block_courses_site .bcs-course {
+    width: 50%;
+  }
+}
+@media all and (min-width: 991px) {
+  .block_courses_site .bcs-course {
+    width: 33.33%;
+  }
+}
+.block_courses_site .bcs-info {
+  overflow: hidden;
+}
+.block_courses_site .bcs-info,
+.block_courses_site .bcs-type,
+.block_courses_site .course-type {
+  margin-right: 2%;
+  margin-left: 2%;
+}
+@media all and (min-width: 681px) {
+  .block_courses_site .bcs-info,
+  .block_courses_site .bcs-type,
+  .block_courses_site .course-type {
+    margin-right: 4%;
+    margin-left: 4%;
+  }
+}
+@media all and (min-width: 991px) {
+  .block_courses_site .bcs-info,
+  .block_courses_site .bcs-type,
+  .block_courses_site .course-type {
+    margin-right: 8%;
+    margin-left: 8%;
+  }
+}
+.block_courses_site .course-type {
+  margin-bottom: 0;
+}
+.block_courses_site .img-site {
+  display: block;
+  margin-bottom: .5em;
+}
+.block_courses_site .graphic-site {
+  image-rendering: crisp-edges;
+  margin-bottom: 10px;
+  /* Responsive images (ensure images don't scale beyond their parents) */
+  max-width: 100%;
+  /* Part 1: Set a maxium relative to the parent */
+  width: auto \9;
+  /* IE7-8 need help adjusting responsive images */
+  height: auto;
+  /* Part 2: Scale the height according to the width, otherwise you get stretching */
+  -ms-interpolation-mode: bicubic;
+}
+.block_courses_site .title-site {
+  color: #0e7b9e;
+  display: block;
+  font-size: 1.2em;
+  min-height: 2.3em;
+  margin-top: 0;
+  margin-bottom: .5em;
+  padding: 0;
+  text-align: left;
+  text-justify: inter-word;
+}
+.block_courses_site .label-header {
+  display: block;
+  margin-bottom: 0;
+  min-height: 4.5em;
+  text-justify: inter-word;
+  word-wrap: break-word;
+}
+.block_courses_site .course-extra {
+  display: block;
+  margin-bottom: .5em;
+}
+.block_courses_site .course-extra .col-one {
+  color: #0E7B9E;
+  display: block;
+  float: left;
+  text-align: left;
+  width: 41%;
+}
+.block_courses_site .course-extra .col-two {
+  display: block;
+  width: 1%;
+}
+.block_courses_site .course-extra .col-three {
+  display: block;
+  float: right;
+  font-weight: normal;
+  text-align: right;
+  width: 54%;
+}
+.block_courses_site .course-extra .col-three p {
+  margin: 0;
+}
+.block_courses_site .button-site {
+  background-color: #0e7b9e;
+  margin-right: 0;
+  margin-left: 0;
+  padding: 5px;
+}
+.block_courses_site .course-type {
+  display: block;
+}
+.block_courses_site .course-type .left {
+  color: #0E7B9E;
+  float: left;
+  margin-right: 10px;
+  text-align: left;
+  max-width: 50%;
+}
+.block_courses_site .course-type .right {
+  float: right;
+  font-weight: normal;
+  text-align: right;
+}
+.block_courses_site .course-type .right .icon {
+  height: 50px;
+  margin: 0;
+  padding: 0;
+  width: 50px;
+}
+
+.block_courses_site_one {
+    float: none;
+    width: 100%;
+    display: block;
+}
+.block_courses_site_two {
+    float: none;
+    width: 100%;
+    display: block;
+}
+.block_courses_site_three {
+    float: none;
+    width: 100%;
+    display: block;
+}
+
+@media (min-width: 976px) and (max-width: 1090px) {
+    .block_courses_site_type {
+        height: 90px;
+    }
+}
+@media (max-width: 767px) {
+    .block_courses_site_type {
+        height: 80px;
+    }
+}
+@media (min-width: 767px) and (max-width: 849px) {
+    .block_courses_site_one {
+        float: none;
+        width: 100%;
+        display: block;
+    }
+    .block_courses_site_two {
+        float: none;
+        width: 100%;
+        display: block;
+    }
+    .block_courses_site_three {
+        float: none;
+        width: 100%;
+        display: block;
+    }
+
+    .block_courses_site_type {
+        height: 60px;
+    }
+}
+@media (min-width: 850px) and (max-width: 978px) {
+    .block_courses_site_type {
+        height: 80px;
+    }
+}
