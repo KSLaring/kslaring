@@ -26,6 +26,12 @@ $string['choosereadme'] = 'Hey, I\'m kommit';
 
 $string['configtitle'] = 'kommit';
 
+$string['genericsettings'] = 'Generic settings';
+$string['frontpagesettings'] = 'Frontpage settings';
+
+$string['heroimage'] = 'Big image';
+$string['heroimagedesc'] = 'Please upload the big image shown on the frontpage.';
+
 $string['customcss'] = 'Custom CSS';
 $string['customcssdesc'] = 'Whatever CSS rules you add to this textarea will be reflected in every page, making for easier customization of this theme.';
 

@@ -732,7 +732,7 @@ EOT;
      *
      * @return string The CSS background image style
      */
-    protected function get_bgimg_style($context) {
+    protected function get_bgimg_style_o($context) {
         // img background
         $bgimg = $this->bgimg_get_img(1, 1);
 
@@ -743,6 +743,23 @@ EOT;
                 $context->id, 'local_background_image', 'picture', 1,
                 '/', $bgimg->imagepath);
         }
+        if (!empty($bgimgurl)) {
+            $imgstyle = "background-image: url('" . $bgimgurl . "');";
+        }
+
+        return $imgstyle;
+    }
+
+    /**
+     * Get the background image style with the Moodle URL.
+     *
+     * @param $context object The Moodle context
+     *
+     * @return string The CSS background image style
+     */
+    protected function get_bgimg_style($context) {
+        $bgimgurl  = $this->page->theme->setting_file_url('heroimg', 'heroimg');
+        $imgstyle = '';
         if (!empty($bgimgurl)) {
             $imgstyle = "background-image: url('" . $bgimgurl . "');";
         }
