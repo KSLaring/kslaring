@@ -74,3 +74,5 @@ $string['err_process']  = 'Sorry, It has been an error during the process. Pleas
 $string['request_rejected']      = 'The request for the company <strong>{$a->company}</strong> and for the user <strong>{$a->user}</strong> has been rejected successfully.';
 
 $string['request_just_rejected'] = 'The request for the company <strong>{$a->company}</strong> and for the user <strong>{$a->user}</strong> has already been rejected.';
+
+$string['alert_approve'] = 'Please be aware that you add yourself to the correct Company. The manager for this company can reject you  if your membership is wrong.';

@@ -30,6 +30,7 @@ $data           = array();
 $options        = array();
 $jobRoles       = array();
 $infoJR         = null;
+$managers       = null;
 
 $context        = CONTEXT_SYSTEM::instance();
 $url            = new moodle_url('/user/profile/field/competence/actions/jobrole.php');
@@ -44,7 +45,7 @@ require_sesskey();
 echo $OUTPUT->header();
 
 /* Get Data */
-$data       = array('jr' => array());
+$data       = array('jr' => array(),'toApprove' => 0);
 
 /* Get Job Roles    */
 $options[0] = get_string('select_level_list','report_manager');
@@ -57,6 +58,11 @@ if ($levelThree) {
     }//if_isPublic
 
     Competence::GetJobRoles_Hierarchy($options,$levelZero,$levelOne,$levelTwo,$levelThree);
+
+    $managers = Competence::GetManagersCompany($levelZero,$levelOne,$levelTwo,$levelThree);
+    if ($managers) {
+        $data['toApprove']  = 1;
+    }
 }//if_level_three
 
 foreach ($options as $id => $jr) {

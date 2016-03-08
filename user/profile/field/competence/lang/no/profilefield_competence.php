@@ -73,3 +73,5 @@ $string['err_process']  = 'Beklager, men det har skjedd en feil i prosessen. Ven
 $string['request_rejected'] = 'Arbeidsstedet <strong>{$a->company}</strong> brukeren <strong>{$a->user}</strong> registrerte på seg selv er nå fjernet.';
 
 $string['request_just_rejected'] = 'Du har allerede avslått at <strong>{$a->company}</strong> skal registreres på  <strong>{$a->user}</strong>.';
+
+$string['alert_approve'] = 'Please be aware that you add yourself to the correct Company. The manager for this company can reject you  if your membership is wrong.';
