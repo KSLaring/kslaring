@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Viewport test</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style type="text/css">
+        @media all and (min-width: 960px) {
+            body:after {
+                /* http://adactio.com/journal/5429/ */
+                content: 'widescreen';
+                display: none;
+            }
+        }
+
+        .yui3-moodle-local_lightbox-lightbox-hidden {
+            display: none;
+        }
+
+        .yui3-moodle-local_lightbox-lightbox {
+            background-color: #fff;
+        }
+    </style>
+    <script src="http://yui.yahooapis.com/3.17.2/build/yui/yui-min.js"></script>
+</head>
+<body>
+<div id="page-content">
+    <h1>YUI widget centered on viewport</h1>
+    <a href="http://www.visualfractions.com/IdentifyLines/identifylines.html"
+       rel="lightbox" target="_blank">Identify Lines</a>
+</div>
+<dl id="demo">
+    <dt>Window size</dt>
+    <dd class="yui3-data-win">Click me to find out</dd>
+    <dt>Document size</dt>
+    <dd class="yui3-data-doc">Click me to find out</dd>
+</dl>
+<div class="moodle-dialogue-base"></div>
+<script>
+    // Create a YUI sandbox on your page.
+    YUI({
+        modules: {
+            'lightbox': {
+                fullpath: 'yui/build/moodle-local_lightbox-lightbox/moodle-local_lightbox-lightbox-debug.js',
+                requires: [
+                    "panel",
+                    "dd-plugin",
+                    "node",
+                    "event-resize"
+                ]
+            }
+        }
+    }).use('lightbox', 'moodle-local_lightbox-lightbox', function (Y) {
+        console.log('YUI running ...');
+        M.local_lightbox.lightbox.init_lightbox();
+    });
+    YUI().use('node', function (Y) {
+        var onClick = function (e) {
+            var target = e.target,
+                    h, w;
+
+            console.log(target);
+            if (target.test('dd')) {
+                if (target.test('.yui3-data-win')) {
+                    h = target.get('winHeight');
+                    w = target.get('winWidth');
+                } else if (target.test('.yui3-data-doc')) {
+                    h = target.get('docHeight');
+                    w = target.get('docWidth');
+
+                }
+                target.set('innerHTML', 'width: ' + w + ' height: ' + h);
+            }
+        };
+
+        Y.one('#demo').on('click', onClick);
+    });
+</script>
+</body>
+</html>
