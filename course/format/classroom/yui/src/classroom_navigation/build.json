@@ -1,0 +1,10 @@
+{
+  "name": "moodle-format_classroom-classroom_navigation",
+  "builds": {
+    "moodle-format_classroom-classroom_navigation": {
+      "jsfiles": [
+        "classroom_navigation.js"
+      ]
+    }
+  }
+}

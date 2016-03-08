@@ -1,0 +1,46 @@
+.block_classroom .content{
+    display:block;
+    height:auto;
+}
+
+.block_classroom  .summary {
+    display: inline-block;
+    height:auto;
+}
+
+.block_classroom  .summary .summary_content {
+    width: 100%;
+    display:inline-block;
+    margin-bottom: 0px;
+    margin-top: 0px;
+    text-justify:inter-word;
+    white-space: -moz-pre-wrap !important;  /* Mozilla, since 1999 */
+    white-space: -pre-wrap;      /* Opera 4-6 */
+    white-space: -o-pre-wrap;    /* Opera 7 */
+    white-space: pre-wrap;       /* css-3 */
+    word-wrap: break-word;       /* Internet Explorer 5.5+ */
+    white-space: normal;
+
+}
+
+label.title {
+    text-align: left;
+    display: inline-block;
+    font-weight: bold;
+    color: #666666;
+    cursor: default;
+    margin-bottom: 0px;
+    padding-top: 0px;
+}
+
+label.value {
+    text-align: left;
+    display: inline-block;
+    cursor: default;
+    word-wrap: break-word;
+    text-justify:inter-word;
+    margin-bottom: 10px;
+    padding-top: 0px;
+}
+
+

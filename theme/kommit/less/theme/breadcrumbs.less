@@ -1,0 +1,61 @@
+@import "inc/variables.less";
+
+//
+// Breadcrumbs
+// --------------------------------------------------
+
+// hide breadcrumbs on home page
+// -----------------------------
+
+#page-site-index .breadcrumb {
+  display: none;
+}
+
+.breadcrumb-nav {
+  padding: 18px 0px 0px 0px;
+}
+
+.breadcrumb-nav .breadcrumb {
+
+}
+
+.breadcrumb-button {
+  float: right;
+  padding: 10px 20px 10px 0;
+
+}
+
+.breadcrumb>li>a {
+  color: #666666 !important;
+  text-decoration: none;
+}
+
+ul.breadcrumb {
+  background: none;
+}
+
+.breadcrumb {
+  background: pink;
+  padding: 0;
+  margin: 0 0 @baseLineHeight;
+  list-style: none;
+  > li {
+    color: #7a6b7e;
+    //font-size: @fontSizeSmall;
+    line-height: 16px;
+    text-decoration: none;
+    display: inline-block;
+    padding: 0 5px;
+    .ie7-inline-block();
+    > .divider {
+      padding: 0 5px;
+      color: #666666;
+    }
+
+  }
+  > .active {
+    color: #666666;
+  }
+
+}
+

@@ -1,0 +1,43 @@
+.ie-scrollbar-white {
+  scrollbar-shadow-color: #FFFFFF;
+  scrollbar-highlight-color: #FFFFFF;
+  scrollbar-face-color: #FFFFFF;
+  scrollbar-3dlight-color: #FFFFFF;
+  scrollbar-darkshadow-color: #FFFFFF;
+  scrollbar-track-color: #FFFFFF;
+  scrollbar-arrow-color: #FFFFFF;
+}
+.logo-area {
+  height: inherit;
+  margin: 14px 0;
+  width: auto;
+}
+@media (max-width: 767px) {
+  .logo-area {
+    margin-left: 20px;
+    padding: 0;
+  }
+  .logo-area img.logo {
+    height: 53px;
+  }
+}
+@media (max-width: 639px) {
+  .logo-area {
+    margin-left: 20px;
+  }
+}
+.header-background {
+  height: auto;
+}
+.header-background .header-right .muni-logo {
+  padding: 14px 30px;
+}
+@media (max-width: 767px) {
+  .header-background .header-right {
+    height: auto;
+    min-height: inherit;
+  }
+}
+#page-footer {
+  padding-bottom: .6em;
+}

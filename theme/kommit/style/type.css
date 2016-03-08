@@ -1,0 +1,21 @@
+.ie-scrollbar-white {
+  scrollbar-shadow-color: #FFFFFF;
+  scrollbar-highlight-color: #FFFFFF;
+  scrollbar-face-color: #FFFFFF;
+  scrollbar-3dlight-color: #FFFFFF;
+  scrollbar-darkshadow-color: #FFFFFF;
+  scrollbar-track-color: #FFFFFF;
+  scrollbar-arrow-color: #FFFFFF;
+}
+p {
+  color: #333333;
+  margin: 0 0 10.5px;
+}
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  color: #7e7e7e;
+}

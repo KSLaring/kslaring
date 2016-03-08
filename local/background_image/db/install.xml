@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<XMLDB PATH="local/background_image/db" VERSION="20141119" COMMENT="XMLDB file for Moodle local/background_image"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
+>
+  <TABLES>
+    <TABLE NAME="background_image" COMMENT="Background image">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="false" SEQUENCE="true" NEXT="imagepath"/>
+        <FIELD NAME="imagepath" TYPE="text" LENGTH="small" NOTNULL="false" SEQUENCE="false" PREVIOUS="id" NEXT="imagewidth"/>
+        <FIELD NAME="imagewidth" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="false" SEQUENCE="false" PREVIOUS="imagepath" NEXT="imageheight"/>
+        <FIELD NAME="imageheight" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="false" SEQUENCE="false" PREVIOUS="imagewidth" NEXT="sectionid"/>
+        <FIELD NAME="sectionid" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="false" SEQUENCE="false" PREVIOUS="imageheight" NEXT="courseid"/>
+        <FIELD NAME="courseid" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="false" SEQUENCE="false" COMMENT="Needed to identify records when deleting a course - see lib.php format_grid_delete_course" PREVIOUS="sectionid"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="section" UNIQUE="true" FIELDS="sectionid"/>
+      </INDEXES>
+    </TABLE>
+  </TABLES>
+</XMLDB>
