@@ -1,0 +1,42 @@
+//
+// Hero unit
+// --------------------------------------------------
+
+.hero-unit {
+    background-color: @kommitGrayLight;
+    background-image: url(~"[[pix:theme|banner_image]]");
+    background-repeat: no-repeat;
+    background-position: 50% 50%;
+    color: @heroUnitLeadColor;
+    height: 420px;
+    line-height: @baseLineHeight * 1.5;
+    margin: 0 auto;
+    padding: 0px;
+    .border-radius(0px);
+
+    .editbgimg {
+        background-color: rgba(255, 255, 255, .5);
+        padding: .3em .5em;
+    }
+    h1 {
+        color: @heroUnitHeadingColor;
+        font-family: @heroFontFamily;
+        font-weight: normal;
+        margin-bottom: 0;
+    }
+    li {
+        line-height: @baseLineHeight * 1.5; // Reset since we specify in type.less
+    }
+    .texts {
+        //background-color: rgba(189, 189, 189, 0.75);
+        color: white !important;
+        font-family: @heroFontFamily;
+        display: block;
+        line-height: normal;
+        margin-top: 10%;
+        padding: 15px;
+        text-align: left;
+        vertical-align: middle;
+        width: 50%;
+    }
+}
