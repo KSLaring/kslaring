@@ -1,0 +1,177 @@
+#fgroup_id_grp_InvoiceType .fitemtitle {
+    width: 10px;
+    margin-right: 5px;
+}
+
+
+#fgroup_id_grp_InvoiceType fieldset.felement.fgroup {
+    margin-left: 5px;
+}
+
+input#id_invoice_type_ACCOUNT,
+input#id_invoice_type_ADDRESS {
+    width: 20px;
+}
+
+.label_download {
+    float: right;
+    margin-right: 50px;
+}
+
+label.invoice_info {
+    color: #8c8c8c;
+    margin-bottom: 15px;
+    margin-left: 5px;
+    cursor: auto;
+}
+
+#fgroup_id_grp_InvoiceType .account,
+#fgroup_id_grp_InvoiceType .address {
+    margin-left: 20px;
+}
+
+#fgroup_id_grp_InvoiceType  .accesshide {
+    position:relative;
+    left: 0px;
+    padding-right:5px;
+    display: inline-block;
+    width: 200px;
+    text-align: right;
+}
+
+.block_enrol_invoices {
+    width:100%;
+    display:block;
+}
+.block_enrol_invoices .block_invoices {
+    width: 90%;
+    display:block;
+    margin-bottom: 25px;
+    margin-top: 10px;
+}
+
+.block_enrol_invoices .block_invoices label.header_course {
+    width: 95%;
+    text-align: left;
+    display:inline-block;
+    color:  #757474;
+    font:bold 12px Verdana,Verdana Pro,sans-serif;
+    text-indent: 1px;
+    cursor: default;
+    margin-top: 10px;
+    margin-bottom: 20px;
+    height: 25px;
+    line-height: 25px;
+    text-transform: uppercase;
+    background-color: #f2f2f2;
+}
+
+.block_enrol_invoices .block_invoices .block_invoices_course {
+    min-height: 30px;
+    float: none;
+}
+
+.block_enrol_invoices .block_invoices .block_invoices_course_one {
+    float:none;
+    /* min-width: 35%;
+    max-width: 35%;*/
+    width: 50%;
+    text-justify:inter-word;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    min-height: 20px;
+    border-bottom: 1px solid white;
+    background-color:  #f2f2f2;
+}
+
+.block_enrol_invoices .block_invoices .block_invoices_course_two {
+    float:none;
+    /* min-width: 35%;
+    max-width: 35%;*/
+    width: 50%;
+    text-justify:inter-word;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    min-height: 10px;
+    border-bottom: 1px solid white;
+}
+
+.block_enrol_invoices .block_invoices label.label_info_course {
+    font:bold 12px Verdana,Verdana Pro,sans-serif;
+    cursor: default;
+    text-justify:inter-word;
+    white-space: pre-line;
+    word-break: break-all;
+    padding-right: 5px;
+    padding-top: 5px;
+}
+
+.block_enrol_invoices .block_invoices .info_course_value {
+    font:12px Verdana,Verdana Pro,sans-serif;
+    text-justify:inter-word;
+    white-space: pre-line;
+    word-break: break-all;
+    padding-right: 5px;
+    padding-top: 5px;
+}
+
+.block_enrol_invoices .block_invoices  table {
+    width: 100%;
+    border-collapse:collapse;
+    margin-bottom: 0;
+    display: table;
+}
+
+.block_enrol_invoices .block_invoices  tr.header_invoice {
+    background-color:  #f2f2f2;
+    color:  #000;
+    padding: 0;
+    margin-bottom: 0;
+    font:bold 12px Verdana,Verdana Pro,sans-serif;
+    border-bottom: 2px solid #d8d8d8;
+    vertical-align: middle;
+    height: 30px;
+}
+
+.block_enrol_invoices .block_invoices  td.user,
+.block_enrol_invoices .block_invoices  th.user {
+    width: 25%;
+    text-align: left;
+    text-justify:inter-word;
+    padding: 0px 10px 0px 0px;
+}
+
+.block_enrol_invoices .block_invoices  th.info,
+.block_enrol_invoices .block_invoices  td.info {
+    width: 25%;
+    text-align: left;
+    text-justify:inter-word;
+    padding: 0px 10px 0px 0px;
+}
+
+.block_enrol_invoices .block_invoices  th.type,
+.block_enrol_invoices .block_invoices  td.type {
+    width: 17%;
+    text-align: left;
+    text-justify:inter-word;
+    padding: 0px 10px 0px 0px;
+}
+
+.block_enrol_invoices .block_invoices  th.seats,
+.block_enrol_invoices .block_invoices  td.seats {
+    width: 5%;
+    text-align: left;
+    text-justify:inter-word;
+    padding: 0px 10px 0px 0px;
+}
+
+.block_enrol_invoices .block_invoices td.user,
+.block_enrol_invoices .block_invoices td.info,
+.block_enrol_invoices .block_invoices td.type,
+.block_enrol_invoices .block_invoices td.seats {
+    background-color: white;
+    white-space: pre-line;
+    word-break: break-all;
+}
+
+

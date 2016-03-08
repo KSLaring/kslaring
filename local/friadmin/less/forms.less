@@ -1,0 +1,68 @@
+#mform-coursefilter {
+    margin-bottom: 1.5em;
+
+    .fitem_fgroup {
+        .fitemtitle {
+            margin-right: 1em;
+            text-align: left;
+            width: 14%;
+        }
+        .felement {
+            margin-left: 0;
+        }
+        .fgroup {
+            select {
+                max-width: 30%;
+            }
+        }
+        &.femptylabel {
+            .fitemtitle {
+                display: none;
+            }
+            .felement {
+                margin-left: 0;
+            }
+            .fgroup {
+                select {
+                    max-width: 30%;
+                }
+            }
+        }
+        .group-spacer {
+            padding: 0 1.5%;
+        }
+    }
+    .fdate_selector {
+        white-space: nowrap;
+    }
+    input[type="submit"] {
+        float: right;
+        margin: 0;
+    }
+    input[type="text"] {
+        margin: 0;
+    }
+}
+
+body {
+    #region-main {
+        #mform-coursefilter {
+            &:not(.unresponsive) {
+                .femptylabel {
+                    .fgroup {
+                        width: 100%;
+                    }
+                    .fitemtitle {
+                        display: none;
+                    }
+                }
+            }
+        }
+    }
+}
+
+#page-local-friadmin-courselist {
+    div#dateselector-calendar-panel {
+        z-index: 5100;
+    }
+}
