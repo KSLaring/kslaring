@@ -163,3 +163,12 @@ a.lnk_disabled {
     pointer-events: none;
     cursor: default;
 }
+
+.no_visible {
+    visibility: hidden;
+    /* Top, Right, Bottom, Left */
+    padding: 8px 8px 8px 0px;
+    margin: 0;
+    font-weight: bold;
+    margin-left: 265px;
+}
