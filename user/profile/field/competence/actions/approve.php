@@ -1,6 +1,6 @@
 <?php
 /**
- * Extra Profile Field Competence - Reject Competence
+ * Extra Profile Field Competence - Approve Competence
  *
  * Description
  *
@@ -8,7 +8,7 @@
  * @subpackage      field/competence
  * @copyright       2014        eFaktor {@link http://www.efaktor.no}
  *
- * @creationDate    26/02/2016
+ * @creationDate    09/03/2016
  * @author          eFaktor     (fbv)
  *
  */
@@ -20,7 +20,7 @@ require_once($CFG->libdir . '/adminlib.php');
 /* PARAMS */
 $contextSystem      = CONTEXT_SYSTEM::instance();
 $returnUrl          = $CFG->wwwroot . '/index.php';
-$url                = new moodle_url('/user/profile/field/competence/actions/reject.php');
+$url                = new moodle_url('/user/profile/field/competence/actions/approve.php');
 $competenceRequest  = null;
 $info               = null;
 $user               = null;
@@ -40,14 +40,14 @@ echo $OUTPUT->header();
 
 if (count($args) != 2) {
     echo html_writer::start_tag('div',array('class' => 'loginerrors'));
-        echo $OUTPUT->error_text('<h4>' . get_string('err_link','profilefield_competence') . '</h4>');
+    echo $OUTPUT->error_text('<h4>' . get_string('err_link','profilefield_competence') . '</h4>');
     echo html_writer::end_tag('div');
 }else {
     $competenceRequest = Competence::CompetenceRequest($args[0]);
 
     if (!$competenceRequest) {
         echo html_writer::start_tag('div',array('class' => 'loginerrors'));
-            echo $OUTPUT->error_text('<h4>' . get_string('err_link','profilefield_competence') . '</h4>');
+        echo $OUTPUT->error_text('<h4>' . get_string('err_link','profilefield_competence') . '</h4>');
         echo html_writer::end_tag('div');
     }else {
         /* User Info    */
@@ -56,18 +56,18 @@ if (count($args) != 2) {
         $info->company  = $competenceRequest->company;
         $info->user     = fullname($user);
 
-        if ($competenceRequest->rejected) {
+        if ($competenceRequest->approved) {
             echo html_writer::start_tag('div');
-                echo '<h4>' . get_string('request_just_rejected','profilefield_competence',$info)  . '</h4>';
+            echo '<h4>' . get_string('request_just_approved','profilefield_competence',$info)  . '</h4>';
             echo html_writer::end_tag('div');
         }else {
-            if (Competence::RejectCompetence($competenceRequest,$args[1])) {
+            if (Competence::ApproveCompetence($competenceRequest)) {
                 echo html_writer::start_tag('div');
-                    echo '<h4>' . get_string('request_rejected','profilefield_competence',$info)  . '</h4>';
+                echo '<h4>' . get_string('request_approved','profilefield_competence',$info)  . '</h4>';
                 echo html_writer::end_tag('div');
             }else {
                 echo html_writer::start_tag('div');
-                    echo '<h4>' . get_string('err_process','profilefield_competence')  . '</h4>';
+                echo '<h4>' . get_string('err_process','profilefield_competence')  . '</h4>';
                 echo html_writer::end_tag('div');
             }
         }//if_rejected

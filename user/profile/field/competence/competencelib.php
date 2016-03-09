@@ -12,6 +12,8 @@
  * @author          eFaktor     (fbv)
  *
  */
+define('REQUEST_APPROVED',0);
+define('REQUEST_REJECTED',1);
 
 class Competence {
     /*************/
@@ -731,6 +733,7 @@ class Competence {
 
     /**
      * @param           $competenceRequest
+     * @param           $managerId
      *
      * @return          bool
      * @throws          Exception
@@ -741,7 +744,7 @@ class Competence {
      * Description
      * Reject the competence
      */
-    public static function RejectCompetence(&$competenceRequest) {
+    public static function RejectCompetence(&$competenceRequest,$managerId) {
         /* Variables    */
         global $DB;
         $time = null;
@@ -760,13 +763,55 @@ class Competence {
             $DB->update_record('user_info_competence_data',$competenceRequest);
 
             /* Send Notification to the user    */
-            self::SendNotificationUser($competenceRequest);
+            self::SendNotificationUser($competenceRequest,REQUEST_REJECTED);
+
+            /* Send Notification Manager to revert the situation    */
+            self::SendNotification_ToRevert($competenceRequest,$managerId);
 
             return true;
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
     }//RejectCompetence
+
+    /**
+     * @param           $competenceRequest
+     *
+     * @return          bool
+     * @throws          Exception
+     *
+     * @creationDate    09/03/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Approve competence
+     */
+    public static function ApproveCompetence(&$competenceRequest) {
+        /* Variables    */
+        global $DB;
+        $time = null;
+
+        try {
+            /* Local time   */
+            $time = time();
+
+            /* Reject   */
+            $competenceRequest->rejected = 0;
+            $competenceRequest->approved = 1;
+            $competenceRequest->timerejected   = $time;
+            $competenceRequest->timemodified   = $time;
+
+            /* Execute  */
+            $DB->update_record('user_info_competence_data',$competenceRequest);
+
+            /* Send Notification to the user    */
+            self::SendNotificationUser($competenceRequest,REQUEST_APPROVED);
+
+            return true;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//ApproveCompetence
 
     /**
      * @param           $levelZero
@@ -1150,7 +1195,7 @@ class Competence {
             $infoMail->user     = fullname($user);
             $infoMail->site     = $SITE->shortname;
             /* Reject Link  */
-            $lnkReject  = $CFG->wwwroot . '/user/profile/field/competence/actions/reject.php/' . $infoCompetenceData->token;
+            $lnkReject  = $CFG->wwwroot . '/user/profile/field/competence/actions/reject.php/' . $infoCompetenceData->token . '/' . $manager->id;
             $infoMail->reject = '<a href="' . $lnkReject . '">' . get_string('reject_lnk','profilefield_competence') . '</br>';
 
             /* Mail */
@@ -1177,8 +1222,11 @@ class Competence {
         }//try_catch
     }//SendNotificationManager
 
+
+
     /**
      * @param           $competenceRequest
+     * @param           $action
      *
      * @throws          Exception
      *
@@ -1188,7 +1236,7 @@ class Competence {
      * Description
      * Send notification to the user
      */
-    private static function SendNotificationUser($competenceRequest) {
+    private static function SendNotificationUser($competenceRequest,$action) {
         /* Variables    */
         global $SITE,$CFG;
         $strBody    = null;
@@ -1209,8 +1257,18 @@ class Competence {
             $infoMail->site     = $SITE->shortname;
 
             /* Mail */
-            $strSubject = get_string('msg_subject_rejected','profilefield_competence',$infoMail);
-            $strBody    = get_string('msg_body_rejected','profilefield_competence',$infoMail);
+            switch ($action) {
+                case REQUEST_APPROVED:
+                    $strSubject = get_string('msg_subject_rejected','profilefield_competence',$infoMail);
+                    $strBody    = get_string('msg_body_approved','profilefield_competence',$infoMail);
+
+                    break;
+                case REQUEST_REJECTED:
+                    $strSubject = get_string('msg_subject_rejected','profilefield_competence',$infoMail);
+                    $strBody    = get_string('msg_body_rejected','profilefield_competence',$infoMail);
+
+                    break;
+            }//switch
 
             /* Content Mail         */
             $bodyText = null;
@@ -1232,6 +1290,69 @@ class Competence {
         }//try_catch
     }//SendNotificationUser
 
+    /**
+     * @param           $competenceRequest
+     * @param           $managerId
+     *
+     * @throws          Exception
+     *
+     * @creationDate    08/03/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Send a notification to revert the situation
+     */
+    private static function SendNotification_ToRevert($competenceRequest,$managerId) {
+        /* Variables */
+        global $SITE,$CFG;
+        $strBody    = null;
+        $strSubject = null;
+        $bodyText   = null;
+        $bodyHtml   = null;
+        $infoMail   = null;
+        $user       = null;
+        $manager    = null;
+        $lnkRevert  = null;
+
+        try {
+            /* Get Info User    */
+            $user   = get_complete_user_data('id',$competenceRequest->userid);
+
+            /* Get Info Manager */
+            $manager = get_complete_user_data('id',$managerId);
+
+            /* Extra Info   */
+            $infoMail = new stdClass();
+            $infoMail->company  = $competenceRequest->company;
+            $infoMail->user     = fullname($user);
+            $infoMail->site     = $SITE->shortname;
+            /* Revert Link  */
+            $lnkRevert  = $CFG->wwwroot . '/user/profile/field/competence/actions/approve.php/' . $competenceRequest->token . '/' . $managerId;
+            $infoMail->revert = '<a href="' . $lnkRevert . '">' . get_string('approve_lnk','profilefield_competence') . '</br>';
+
+            /* Mail */
+            $strSubject = get_string('msg_subject_rejected','profilefield_competence',$infoMail);
+            $strBody    = get_string('msg_boy_reverted','profilefield_competence',$infoMail);
+
+            /* Content Mail         */
+            $bodyText = null;
+            $bodyHtml = null;
+            if (strpos($strBody, '<') === false) {
+                // Plain text only.
+                $bodyText = $strBody;
+                $bodyHtml = text_to_html($bodyText, null, false, true);
+            } else {
+                // This is most probably the tag/newline soup known as FORMAT_MOODLE.
+                $bodyHtml = format_text($strBody, FORMAT_MOODLE);
+                $bodyText = html_to_text($bodyHtml);
+            }
+
+            /* Send Mail    */
+            email_to_user($manager, $SITE->shortname, $strSubject, $bodyText,$bodyHtml);
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//SendNotification_ToRevert
 
     /**
      * @param           $token
