@@ -12,6 +12,8 @@
  * @author          eFaktor     (fbv)
  *
  */
+define('REQUEST_APPROVED',0);
+define('REQUEST_REJECTED',1);
 
 class Competence {
     /*************/
@@ -592,11 +594,11 @@ class Competence {
             }//create_new_entrance
 
             /* Send Mail Manager to reject it if it's necessary */
-            $managers = self::GetManagersUser($data->level_0,$data->level_1,$data->level_2,$data->level_3);
+            $managers = self::GetManagersCompany($data->level_0,$data->level_1,$data->level_2,$data->level_3);
             if ($managers) {
                 /* Send Notification    */
                 foreach($managers as $manager) {
-                    self::SendNotificationManager($manager,$infoCompetenceData->token);
+                    self::SendNotificationManager($manager,$infoCompetenceData);
                 }//if_managers
             }//if_managers
 
@@ -731,6 +733,7 @@ class Competence {
 
     /**
      * @param           $competenceRequest
+     * @param           $managerId
      *
      * @return          bool
      * @throws          Exception
@@ -741,7 +744,7 @@ class Competence {
      * Description
      * Reject the competence
      */
-    public static function RejectCompetence(&$competenceRequest) {
+    public static function RejectCompetence(&$competenceRequest,$managerId) {
         /* Variables    */
         global $DB;
         $time = null;
@@ -760,13 +763,126 @@ class Competence {
             $DB->update_record('user_info_competence_data',$competenceRequest);
 
             /* Send Notification to the user    */
-            self::SendNotificationUser($competenceRequest);
+            self::SendNotificationUser($competenceRequest,REQUEST_REJECTED);
+
+            /* Send Notification Manager to revert the situation    */
+            self::SendNotification_ToRevert($competenceRequest,$managerId);
 
             return true;
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
     }//RejectCompetence
+
+    /**
+     * @param           $competenceRequest
+     *
+     * @return          bool
+     * @throws          Exception
+     *
+     * @creationDate    09/03/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Approve competence
+     */
+    public static function ApproveCompetence(&$competenceRequest) {
+        /* Variables    */
+        global $DB;
+        $time = null;
+
+        try {
+            /* Local time   */
+            $time = time();
+
+            /* Reject   */
+            $competenceRequest->rejected = 0;
+            $competenceRequest->approved = 1;
+            $competenceRequest->timerejected   = $time;
+            $competenceRequest->timemodified   = $time;
+
+            /* Execute  */
+            $DB->update_record('user_info_competence_data',$competenceRequest);
+
+            /* Send Notification to the user    */
+            self::SendNotificationUser($competenceRequest,REQUEST_APPROVED);
+
+            return true;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//ApproveCompetence
+
+    /**
+     * @param           $levelZero
+     * @param           $levelOne
+     * @param           $levelTwo
+     * @param           $levelThree
+     *
+     * @return          array
+     * @throws          Exception
+     *
+     * @creationDate    26/02/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Get the managers connected with the user to send a notification
+     */
+    public static function GetManagersCompany($levelZero,$levelOne,$levelTwo,$levelThree) {
+        /* Variables */
+        global $DB;
+        $rdo            = null;
+        $sql            = null;
+        $params         = null;
+        $managers       = array();
+
+        try {
+            /* Search Criteria  */
+            $params = array();
+            $params['zero']     = $levelZero;
+            $params['hz']       = 0;
+            $params['one']      = $levelOne;
+            $params['ho']       = 1;
+            $params['two']      = $levelTwo;
+            $params['ht']       = 2;
+            $params['three']    = $levelThree;
+            $params['hth']      = 3;
+
+            /* SQL Instruction  */
+            $sql = " SELECT	  DISTINCT 	u.id,
+                                        CONCAT(co_zero.name,'/',co_one.name,'/',co_two.name,'/',co_tre.name) as 'company'
+                     FROM	    {report_gen_company_manager} rm
+                        JOIN	{user}						 u        ON 	u.id 					= rm.managerid
+                                                                      AND	u.deleted 				= 0
+                        -- LEVEL ZERO
+                        JOIN 	{report_gen_companydata}	 co_zero  ON 	co_zero.id 				= rm.levelzero
+                                                                      AND	co_zero.hierarchylevel 	= :hz
+                        -- LEVEL ONE
+                        JOIN	{report_gen_companydata}	 co_one	  ON	co_one.id				= rm.levelone
+                                                                      AND	co_one.hierarchylevel	= :ho
+                        -- LEVEL TWO
+                        JOIN	{report_gen_companydata}     co_two	  ON	co_two.id				= rm.leveltwo
+                                                                      AND   co_two.hierarchylevel	= :ht
+                        -- LEVEL THREE
+                        JOIN	{report_gen_companydata}	 co_tre   ON 	co_tre.id 				= rm.levelthree
+                                                                      AND   co_tre.hierarchylevel 	= :hth
+                     WHERE    (rm.levelzero = :zero AND  rm.levelone = :one  AND rm.leveltwo = :two AND rm.levelthree = :three) ";
+
+
+            /* Execute */
+            $rdo = $DB->get_records_sql($sql,$params);
+            if ($rdo) {
+                foreach ($rdo as $instance) {
+                    /* Add Manager  */
+                    $managers[$instance->id] = $instance;
+                }//for_rdo
+            }//if_Rdo
+
+            return $managers;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//GetManagersCompany
 
     /**
      * @param           $myCompetence
@@ -1048,7 +1164,7 @@ class Competence {
 
     /**
      * @param           $manager
-     * @param           $token
+     * @param           $infoCompetenceData
      *
      * @throws          Exception
      *
@@ -1058,7 +1174,7 @@ class Competence {
      * Description
      * Send Notification to the manager
      */
-    private static function SendNotificationManager($manager,$token) {
+    private static function SendNotificationManager($manager,$infoCompetenceData) {
         /* Variables    */
         global $SITE,$CFG;
         $strBody    = null;
@@ -1071,7 +1187,7 @@ class Competence {
 
         try {
             /* Manager  */
-            $user = get_complete_user_data('id',$manager->id);
+            $user = get_complete_user_data('id',$infoCompetenceData->userid);
 
             /* Extra Info   */
             $infoMail = new stdClass();
@@ -1079,7 +1195,7 @@ class Competence {
             $infoMail->user     = fullname($user);
             $infoMail->site     = $SITE->shortname;
             /* Reject Link  */
-            $lnkReject  = $CFG->wwwroot . '/user/profile/field/competence/actions/reject.php/' . $token;
+            $lnkReject  = $CFG->wwwroot . '/user/profile/field/competence/actions/reject.php/' . $infoCompetenceData->token . '/' . $manager->id;
             $infoMail->reject = '<a href="' . $lnkReject . '">' . get_string('reject_lnk','profilefield_competence') . '</br>';
 
             /* Mail */
@@ -1106,8 +1222,11 @@ class Competence {
         }//try_catch
     }//SendNotificationManager
 
+
+
     /**
      * @param           $competenceRequest
+     * @param           $action
      *
      * @throws          Exception
      *
@@ -1117,7 +1236,7 @@ class Competence {
      * Description
      * Send notification to the user
      */
-    private static function SendNotificationUser($competenceRequest) {
+    private static function SendNotificationUser($competenceRequest,$action) {
         /* Variables    */
         global $SITE,$CFG;
         $strBody    = null;
@@ -1138,8 +1257,18 @@ class Competence {
             $infoMail->site     = $SITE->shortname;
 
             /* Mail */
-            $strSubject = get_string('msg_subject_rejected','profilefield_competence',$infoMail);
-            $strBody    = get_string('msg_body_rejected','profilefield_competence',$infoMail);
+            switch ($action) {
+                case REQUEST_APPROVED:
+                    $strSubject = get_string('msg_subject_rejected','profilefield_competence',$infoMail);
+                    $strBody    = get_string('msg_body_approved','profilefield_competence',$infoMail);
+
+                    break;
+                case REQUEST_REJECTED:
+                    $strSubject = get_string('msg_subject_rejected','profilefield_competence',$infoMail);
+                    $strBody    = get_string('msg_body_rejected','profilefield_competence',$infoMail);
+
+                    break;
+            }//switch
 
             /* Content Mail         */
             $bodyText = null;
@@ -1162,76 +1291,68 @@ class Competence {
     }//SendNotificationUser
 
     /**
-     * @param           $levelZero
-     * @param           $levelOne
-     * @param           $levelTwo
-     * @param           $levelThree
+     * @param           $competenceRequest
+     * @param           $managerId
      *
-     * @return          array
      * @throws          Exception
      *
-     * @creationDate    26/02/2016
+     * @creationDate    08/03/2016
      * @author          eFaktor     (fbv)
      *
      * Description
-     * Get the managers connected with the user to send a notification
+     * Send a notification to revert the situation
      */
-    private static function GetManagersUser($levelZero,$levelOne,$levelTwo,$levelThree) {
+    private static function SendNotification_ToRevert($competenceRequest,$managerId) {
         /* Variables */
-        global $DB;
-        $rdo            = null;
-        $sql            = null;
-        $params         = null;
-        $managers       = array();
+        global $SITE,$CFG;
+        $strBody    = null;
+        $strSubject = null;
+        $bodyText   = null;
+        $bodyHtml   = null;
+        $infoMail   = null;
+        $user       = null;
+        $manager    = null;
+        $lnkRevert  = null;
 
         try {
-            /* Search Criteria  */
-            $params = array();
-            $params['zero']     = $levelZero;
-            $params['hz']       = 0;
-            $params['one']      = $levelOne;
-            $params['ho']       = 1;
-            $params['two']      = $levelTwo;
-            $params['ht']       = 2;
-            $params['three']    = $levelThree;
-            $params['hth']      = 3;
+            /* Get Info User    */
+            $user   = get_complete_user_data('id',$competenceRequest->userid);
 
-            /* SQL Instruction  */
-            $sql = " SELECT	  DISTINCT 	u.id,
-                                        CONCAT(co_zero.name,'/',co_one.name,'/',co_two.name,'/',co_tre.name) as 'company'
-                     FROM	    {report_gen_company_manager} rm
-                        JOIN	{user}						 u        ON 	u.id 					= rm.managerid
-                                                                      AND	u.deleted 				= 0
-                        -- LEVEL ZERO
-                        JOIN 	{report_gen_companydata}	 co_zero  ON 	co_zero.id 				= rm.levelzero
-                                                                      AND	co_zero.hierarchylevel 	= :hz
-                        -- LEVEL ONE
-                        JOIN	{report_gen_companydata}	 co_one	  ON	co_one.id				= rm.levelone
-                                                                      AND	co_one.hierarchylevel	= :ho
-                        -- LEVEL TWO
-                        JOIN	{report_gen_companydata}     co_two	  ON	co_two.id				= rm.leveltwo
-                                                                      AND   co_two.hierarchylevel	= :ht
-                        -- LEVEL THREE
-                        JOIN	{report_gen_companydata}	 co_tre   ON 	co_tre.id 				= rm.levelthree
-                                                                      AND   co_tre.hierarchylevel 	= :hth
-                     WHERE    (rm.levelzero = :zero AND  rm.levelone = :one  AND rm.leveltwo = :two AND rm.levelthree = :three) ";
+            /* Get Info Manager */
+            $manager = get_complete_user_data('id',$managerId);
 
+            /* Extra Info   */
+            $infoMail = new stdClass();
+            $infoMail->company  = $competenceRequest->company;
+            $infoMail->user     = fullname($user);
+            $infoMail->site     = $SITE->shortname;
+            /* Revert Link  */
+            $lnkRevert  = $CFG->wwwroot . '/user/profile/field/competence/actions/approve.php/' . $competenceRequest->token . '/' . $managerId;
+            $infoMail->revert = '<a href="' . $lnkRevert . '">' . get_string('approve_lnk','profilefield_competence') . '</br>';
 
-            /* Execute */
-            $rdo = $DB->get_records_sql($sql,$params);
-            if ($rdo) {
-                foreach ($rdo as $instance) {
-                    /* Add Manager  */
-                    $managers[$instance->id] = $instance;
-                }//for_rdo
-            }//if_Rdo
+            /* Mail */
+            $strSubject = get_string('msg_subject_rejected','profilefield_competence',$infoMail);
+            $strBody    = get_string('msg_boy_reverted','profilefield_competence',$infoMail);
 
-            return $managers;
+            /* Content Mail         */
+            $bodyText = null;
+            $bodyHtml = null;
+            if (strpos($strBody, '<') === false) {
+                // Plain text only.
+                $bodyText = $strBody;
+                $bodyHtml = text_to_html($bodyText, null, false, true);
+            } else {
+                // This is most probably the tag/newline soup known as FORMAT_MOODLE.
+                $bodyHtml = format_text($strBody, FORMAT_MOODLE);
+                $bodyText = html_to_text($bodyHtml);
+            }
+
+            /* Send Mail    */
+            email_to_user($manager, $SITE->shortname, $strSubject, $bodyText,$bodyHtml);
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//GetManagersUser
-
+    }//SendNotification_ToRevert
 
     /**
      * @param           $token

@@ -65,12 +65,23 @@ $string['msg_body_manager']     = '<p>We send you this notification, because of 
 
 $string['msg_subject_rejected'] = '{$a->site}: Notification from {$a->company}';
 $string['msg_body_rejected']    = 'We would like to inform you that your membership to <strong>{$a->company}</strong> has been rejected';
+$string['msg_body_approved']    = 'We would like to inform you that your membership to <strong>{$a->company}</strong> has been approved';
+
+$string['msg_boy_reverted']     = '<p>We send you this notification, because of you are set as manager for the company <strong>{$a->company}</strong></p>
+                                   <p>We would like to inform you that you have just rejected the membership for the user <strong>{$a->user}</strong>.</p>
+                                   </br>
+                                   <p>If you would like to revert this situation, because of a mistake or other reason, please click on this link {$a->revert}</p>';
 
 $string['err_link']     = 'Sorry, link not valid. Please, contact with administrator. ';
 $string['reject_lnk']   = 'Reject';
+$string['approve_lnk']  = 'Approve';
 
 $string['err_process']  = 'Sorry, It has been an error during the process. Please, try it later or contact with administrator.';
 
 $string['request_rejected']      = 'The request for the company <strong>{$a->company}</strong> and for the user <strong>{$a->user}</strong> has been rejected successfully.';
+$string['request_approved']      = 'The request for the company <strong>{$a->company}</strong> and for the user <strong>{$a->user}</strong> has been approved successfully.';
 
 $string['request_just_rejected'] = 'The request for the company <strong>{$a->company}</strong> and for the user <strong>{$a->user}</strong> has already been rejected.';
+$string['request_just_approved'] = 'The request for the company <strong>{$a->company}</strong> and for the user <strong>{$a->user}</strong> has already been approved.';
+
+$string['alert_approve'] = 'Please be aware that you add yourself to the correct Company. The manager for this company can reject you  if your membership is wrong.';

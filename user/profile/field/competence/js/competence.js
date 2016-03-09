@@ -297,6 +297,7 @@ var level_structure = {
         var jobRoles;
         var indexJR;
         var infoJR;
+        var toApprove;
 
         // Clear out the existing options, keeping any ones that are already selected.
         for (index in data.results) {
@@ -329,6 +330,16 @@ var level_structure = {
                     option.removeAttribute('selected');
                 }
             });
+
+            toApprove = jrSelector.toApprove;
+            if (toApprove) {
+                document.getElementById('approval').removeAttribute('visibility');
+                document.getElementById('approval').style.visibility = 'inherit';
+                //alert('1');
+            }else {
+                document.getElementById('approval').setAttribute('visibility','hidden');
+                document.getElementById('approval').style.visibility = 'hidden'
+            }
         }//for_level
     },
 

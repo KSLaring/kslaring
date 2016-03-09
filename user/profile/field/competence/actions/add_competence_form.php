@@ -44,6 +44,8 @@ class competence_add_competence_form extends moodleform {
         /* Level Three  */
         $this->Add_CompanyLevel(3,$form,$my_companies);
 
+        $form->addElement('html','<div id="approval" class="no_visible">'. get_string('alert_approve','profilefield_competence') .'</div>');
+
         /* Job Roles            */
         $form->addElement('header', 'header_jr', get_string('job_roles', 'report_manager'));
         $form->setExpanded('header_jr',true);

@@ -456,7 +456,7 @@ class local_course_page_renderer extends plugin_renderer_base {
                                 $strLocationTitle   = get_string('home_title_location',$str_format);
 
                                 /* Get Lightbox to add*/
-                                $lightBox = self::AddLightBox_Location($infoLocation);
+                                $lightBox = self::AddLightBox_Location($infoLocation,$courseId);
 
                                 $this->page->requires->yui_module('moodle-local_course_page-location','M.local_course_page.location',array(array('header' => $strLocationTitle,'content' => $lightBox)));
 
@@ -513,6 +513,7 @@ class local_course_page_renderer extends plugin_renderer_base {
 
     /**
      * @param           $location
+     * @param           $courseId
      *
      * @return          string
      * @throws          Exception
@@ -523,24 +524,46 @@ class local_course_page_renderer extends plugin_renderer_base {
      * Description
      * Add lightbox panel to the location
      */
-    private static function AddLightBox_Location($location) {
+    private static function AddLightBox_Location($location,$courseId) {
         /* Variables */
         $lightBox       = null;
         $strDetail      = null;
         $strCourses     = null;
+        $strDescription = null;
         $strComments    = null;
         $strAddress     = null;
         $strContact     = null;
+        $strMap         = null;
 
         try {
             /* Sub titles */
             $strDetail          = get_string('location_detail','local_friadmin');
-            $strCourses         = get_string('courses');
+            $strCourses         = get_string('course');
+            $strDescription     = get_string('location_desc','local_friadmin');
             $strComments        = get_string('location_comments','local_friadmin');
             $strAddress         = get_string('location_address','local_friadmin');
             $strContact         = get_string('location_contact_inf','local_friadmin');
+            $strMap             = get_string('location_map','local_friadmin');
 
             $lightBox   = '<div class="location_panel">';
+                /* Courses  */
+                $lightBox  .= '<div class="location_sub_panel">';
+                    $lightBox .= '<div class="location_review_title">' . '<h4>' . $strCourses  . '</h4>' . '</div>';
+                    $lightBox .= '<div class="location_review_value">';
+                        $lightBox .= '<h5>' . $location->courses[$courseId] . '</h5>';
+                        $lightBox .= '<hr class="line_rating">';
+                    $lightBox .= '</div>';
+                $lightBox  .= '</div>';//location_sub_panel
+
+                /* Address  */
+                $lightBox  .= '<div class="location_sub_panel">';
+                    $lightBox .= '<div class="location_review_title">' . '<h4>' . $strAddress    . '</h4>' . '</div>';
+                    $lightBox .= '<div class="location_review_value">';
+                            $lightBox .= '<h5>' . $location->address . '</h5>';
+                            $lightBox .= '<hr class="line_rating">';
+                    $lightBox .= '</div>';
+                $lightBox  .= '</div>';//location_sub_panel
+
                 /* Detail   */
                 $lightBox   .= '<div class="location_sub_panel">';
                     $lightBox .= '<div class="location_review_title">' . '<h4>' . $strDetail . '</h4>' . '</div>';
@@ -550,20 +573,11 @@ class local_course_page_renderer extends plugin_renderer_base {
                     $lightBox .= '</div>';
                 $lightBox  .= '</div>';//location_sub_panel
 
-                /* Address  */
-                $lightBox  .= '<div class="location_sub_panel">';
-                    $lightBox .= '<div class="location_review_title">' . '<h4>' . $strAddress    . '</h4>' . '</div>';
+                /* Description  */
+                $lightBox   .= '<div class="location_sub_panel">';
+                    $lightBox .= '<div class="location_review_title">' . '<h4>' . $strDescription . '</h4>' . '</div>';
                     $lightBox .= '<div class="location_review_value">';
-                        $lightBox .= '<h5>' . $location->address . '</h5>';
-                        $lightBox .= '<hr class="line_rating">';
-                    $lightBox .= '</div>';
-                $lightBox  .= '</div>';//location_sub_panel
-
-                /* Courses  */
-                $lightBox  .= '<div class="location_sub_panel">';
-                    $lightBox .= '<div class="location_review_title">' . '<h4>' . $strCourses  . '</h4>' . '</div>';
-                    $lightBox .= '<div class="location_review_value">';
-                        $lightBox .= '<h5>' . $location->courses . '</h5>';
+                        $lightBox .=  '<h5>' . $location->description . '</h5>';
                         $lightBox .= '<hr class="line_rating">';
                     $lightBox .= '</div>';
                 $lightBox  .= '</div>';//location_sub_panel
@@ -583,6 +597,15 @@ class local_course_page_renderer extends plugin_renderer_base {
                     $lightBox .= '<div class="location_review_value">';
                         $lightBox .= '<h5>' . $location->contact . '</h5>';
                         $lightBox .= '<hr class="line_rating">';
+                    $lightBox .= '</div>';
+                $lightBox  .= '</div>';//location_sub_panel
+
+                /* Url Map  */
+                $lightBox  .= '<div class="location_sub_panel">';
+                    $lightBox .= '<div class="location_review_title">' . '<h4>' . $strMap   . '</h4>' . '</div>';
+                        $lightBox .= '<div class="location_review_value">';
+                            $lightBox .= '<h5>' . '<a href="' . $location->map. '" target="_blank">' . $location->map . '</a></h5>';
+                            $lightBox .= '<hr class="line_rating">';
                     $lightBox .= '</div>';
                 $lightBox  .= '</div>';//location_sub_panel
             $lightBox  .= '</div>';//location_panel

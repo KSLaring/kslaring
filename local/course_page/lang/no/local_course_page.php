@@ -31,7 +31,7 @@ $string['home_graphicstitle']       = 'Hjemmesidegrafikk title';
 $string['home_page']                = 'Kursets hjemmeside';
 $string['home_published']           = 'Sist oppdatert';
 $string['home_ratings']             = 'Kursvurderinger';
-$string['home_register']            = 'Meld deg på';
+$string['home_register']            = 'Gå til påmelding';
 $string['home_start']               = 'Gå til kurset';
 $string['home_teachers']            = 'Instruktører';
 $string['home_type']                = 'Kurstype';
@@ -58,4 +58,4 @@ $string['no_minimum_rates']         = 'Beklager, men det er ikke mange nok som h
 $string['view_detail'] = 'Vis detaljer';
 
 $string['home_deadline']    = 'Påmeldingsfrist';
-$string['home_price']       = 'Price';
+$string['home_price']       = 'Pris';
