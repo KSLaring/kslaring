@@ -41,7 +41,7 @@ class Express_Login {
             $infoProfile = $DB->get_record('user_info_field',array('datatype' => 'express'));
             if ($infoProfile) {
                 /* SQL Instruction  */
-                $sql = " UPDATE	mdl_user_info_data
+                $sql = " UPDATE	{user_info_data}
                                 SET	data = 1
                             WHERE userid IN ($users)
                               AND fieldid = " . $infoProfile->id;
