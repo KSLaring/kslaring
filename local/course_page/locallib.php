@@ -1786,6 +1786,8 @@ class course_page  {
                             cl.phone,
                             cl.email,
                             cl.comments,
+                            cl.description,
+                            cl.urlmap,
                             GROUP_CONCAT(DISTINCT cfo.courseid ORDER BY cfo.courseid) as 'courses'
                      FROM		    {course_locations}		    cl
                         JOIN	    {report_gen_companydata}	levelone	ON  levelone.id 	= cl.levelone
@@ -1811,15 +1813,19 @@ class course_page  {
                 $infoLocation->address    .= "</br>";
                 $infoLocation->address    .= $rdo->postcode . ' ' . $rdo->city;
                 $infoLocation->address    .= "</br>";
-                $infoLocation->address    .= $rdo->muni;
+                //$infoLocation->address    .= $rdo->muni;
+                /* URL Map */
+                $infoLocation->map         = $rdo->urlmap;
                 /* Courses  */
-                $infoLocation->courses     = implode(',',self::GetCoursesNames($rdo->courses));
+                $infoLocation->courses     = self::GetCoursesNames($rdo->courses);
                 /* Comments */
                 $infoLocation->comments    = $rdo->comments;
+                /* Description  */
+                $infoLocation->description = $rdo->description;
                 /* Contact  */
                 $infoLocation->contact     = $rdo->contact;
                 if ($infoLocation->contact) {
-                    $infoLocation->contact    .= "</br>";
+                    $infoLocation->contact .= "</br>";
                 }
                 $infoLocation->contact    .= $rdo->email;
                 if ($infoLocation->contact) {
