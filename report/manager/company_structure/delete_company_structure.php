@@ -82,30 +82,33 @@ $returnUrl = new moodle_url('/report/manager/company_structure/company_structure
 echo $OUTPUT->header();
 
 if ($confirmed) {
-    /* Check If the company can be removed */
-    if (company_structure::Company_HasEmployees($company_id)) {
+    /* Remove */
+    if (company_structure::Company_HasChildren($company_id)) {
         /* Not Remove */
-        echo $OUTPUT->notification(get_string('error_deleting_company_employees','report_manager'), 'notifysuccess');
+        echo $OUTPUT->notification(get_string('error_deleting_company_structure','report_manager'), 'notifysuccess');
         echo $OUTPUT->continue_button($returnUrl);
     }else {
         /* Remove */
-        if (company_structure::Company_HasChildren($company_id)) {
-            /* Not Remove */
-            echo $OUTPUT->notification(get_string('error_deleting_company_structure','report_manager'), 'notifysuccess');
+        if (company_structure::Delete_Company($company_id)) {
+            echo $OUTPUT->notification(get_string('deleted_company_structure','report_manager'), 'notifysuccess');
             echo $OUTPUT->continue_button($returnUrl);
-        }else {
-            /* Remove */
-            if (company_structure::Delete_Company($company_id)) {
-                echo $OUTPUT->notification(get_string('deleted_company_structure','report_manager'), 'notifysuccess');
-                echo $OUTPUT->continue_button($returnUrl);
-            }
-        }//if_deleted
+        }
     }//if_deleted
 }else {
     /* First Confirm    */
+    $strMessages = null;
+
     $company_name   = company_structure::Get_CompanyName($company_id);
     $confirm_url    = new moodle_url('/report/manager/company_structure/delete_company_structure.php',array('level' => $level,'id' => $company_id, 'confirm' => true));
-    echo $OUTPUT->confirm(get_string('delete_company_structure_are_you_sure','report_manager',$company_name),$confirm_url,$returnUrl);
+
+    /* With/Without employees */
+    if (company_structure::Company_HasEmployees($company_id)) {
+        $strMessages = get_string('delete_company_structure_employees_are_you_sure','report_manager',$company_name);
+    }else {
+        $strMessages = get_string('delete_company_structure_are_you_sure','report_manager',$company_name);
+    }
+
+    echo $OUTPUT->confirm($strMessages,$confirm_url,$returnUrl);
 }//if_confirm_delte_company
 
 /* Print Footer */

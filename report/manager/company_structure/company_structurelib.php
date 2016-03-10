@@ -68,7 +68,7 @@ class company_structure {
                     $action = 'submit';
                     $level = -1;
                 } else if (strpos($key, 'btn-') !== false) {
-                    $action = substr($key, 4, -1);
+                    $action = substr($key, 4,-1);
                     $level = (int)substr($key, -1);
                 }
             }//for
@@ -484,34 +484,6 @@ class company_structure {
 
     /**
      * @static
-     * @param           $company_id
-     * @param           $parent_id
-     * @throws          Exception
-     *
-     * @creationDate    23/10/2014
-     * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Unlink Company and Parent
-     */
-    public static function Unlink_Company($company_id,$parent_id) {
-        /* Variables    */
-        global $DB;
-
-        try {
-            /* Delete company relation between Company and Parent   */
-            /* Criteria    */
-            $params = array();
-            $params['companyid'] = $company_id;
-            $params['parentid']  = $parent_id;
-            $DB->delete_records('report_gen_company_relation',$params);
-        }catch (Exception $ex) {
-            throw $ex;
-        }//try_catch
-    }//Unlink_Company
-
-    /**
-     * @static
      * @param           $data
      * @param           $level
      * @throws          Exception
@@ -611,6 +583,10 @@ class company_structure {
     public static function Delete_Company($company_id) {
         /* Variables    */
         global $DB;
+        $trans = null;
+
+        /* Start Transaction   */
+        $trans = $DB->start_delegated_transaction();
 
         try {
             $DB->delete_records('report_gen_companydata',array('id'=>$company_id));
@@ -619,11 +595,53 @@ class company_structure {
                 $DB->delete_records('report_gen_company_relation',array('id'=>$rdo->id));
             }//if
 
+            /* Delete Employees */
+            $DB->delete_records('user_info_competence_data',array('companyid' => $company_id));
+
+            /* Commit */
+            $trans->allow_commit();
+
             return true;
         }catch (Exception $ex) {
+            /* Rollback */
+            $trans->rollback($ex);
+
             throw $ex;
         }//try_catch
     }//Delete_Company
+
+
+    /**
+     * @param           $companyId
+     *
+     * @throws          Exception
+     *
+     * @creationDate    10/03/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Delete employees connected with
+     */
+    public static function DeleteEmployees($companyId) {
+        /* Variables */
+        global $DB;
+        $trans = null;
+
+        /* Start Transaction   */
+        $trans = $DB->start_delegated_transaction();
+
+        try {
+            $DB->delete_records('user_info_competence_data',array('companyid' => $companyId));
+
+            /* Commit */
+            $trans->allow_commit();
+        }catch (Exception $ex) {
+            /* Rollback */
+            $trans->rollback($ex);
+
+            throw $ex;
+        }//try_catch
+    }//DeleteEmployees
 
     /************/
     /* PRIVATE  */
