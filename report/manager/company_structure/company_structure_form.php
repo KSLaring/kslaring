@@ -306,11 +306,6 @@ class manager_company_structure_form extends moodleform {
         $button[] = $form->createElement('submit','btn-' . REPORT_MANAGER_MANAGERS_SELECTED . $level,get_string('btn_managers','report_manager'),$button_array_attr);
         /* Reporter Button */
         $button[] = $form->createElement('submit','btn-' . REPORT_MANAGER_REPORTERS_SELECTED . $level,get_string('btn_reporters','report_manager'),$button_array_attr);
-        /* Unlink Button --> Level > 0  */
-        if ($level) {
-            /* Unlink Button    */
-            $button[] = $form->createElement('submit','btn-' . REPORT_MANAGER_UNLINK_SELECTED . $level,get_string('unlink_selected','report_manager'),$unlink_btn);
-        }//if_level
 
         /* Add Buttons  */
         $form->addElement('html', '<div class="btn-wrapper">');

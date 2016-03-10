@@ -471,15 +471,9 @@ class company_structure {
                     break;
                 default:
                     $instance->public = $data->public_parent;
-                    /* New Company or Link Company  */
-                    if ($data->name) {
-                        /* New Company  */
-                        $instance->name     = $data->name;
-                        self::Insert_CompanyLevel($instance,$parents[$level-1]);
-                    }else {
-                       /* Link Company  */
-                        self::Link_CompanyLevel($data->other_company,$parents[$level-1]);
-                    }//if_else_name
+                    /* New Company  */
+                    $instance->name     = $data->name;
+                    self::Insert_CompanyLevel($instance,$parents[$level-1]);
 
                     break;
             }//switch
@@ -671,38 +665,6 @@ class company_structure {
             throw $ex;
         }//try_catch
     }//Insert_CompanyLevel
-
-    /**
-     * @static
-     * @param           $company_to_link
-     * @param           $parent
-     * @return          bool
-     * @throws          Exception
-     *
-     * @creationDate    23/10/2014
-     * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Link a company
-     */
-    private static function Link_CompanyLevel($company_to_link,$parent) {
-        /* Variables    */
-        global $DB;
-        $company_relation = null;
-
-        try {
-            $company_relation = new stdClass();
-            $company_relation->companyid = $company_to_link;
-            $company_relation->parentid = $parent;
-            $company_relation->modified = time();
-
-            $company_relation->id = $DB->insert_record('report_gen_company_relation',$company_relation);
-
-            return true;
-        }catch (Exception $ex) {
-            throw $ex;
-        }//try_catch
-    }//Link_CompanyLevel
 
     /**
      * @param           $levelZero
