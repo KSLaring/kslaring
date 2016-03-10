@@ -197,8 +197,8 @@ class course_report {
                     $USER->courseReport = $course_id;
 
                     /* Get Info Course   */
-                    if (isset($data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'3']) && $data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'3']) {
-                        $levelThree = $data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'3'];
+                    if (!in_array(0,$data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'3'])) {
+                        $levelThree = array_flip($data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'3']);
                     }
                     self::GetUsers_EnrolledIn($course_id,$course_report->job_roles,$levelThree);
                     self::GetUsers_NotEnrolIn($course_id,$course_report->job_roles,$levelThree);

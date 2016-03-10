@@ -453,14 +453,12 @@ var level_structure = {
                     Y.one('#id_btn-reporters_selected1').setAttribute('disabled','disabled');
                     Y.one('#id_btn-rename_selected1').setAttribute('disabled','disabled');
                     Y.one('#id_btn-delete_selected1').setAttribute('disabled','disabled');
-                    Y.one('#id_btn-unlink_selected1').setAttribute('disabled','disabled');
                     Y.one('#id_btn-add_item2').setAttribute('disabled','disabled');
                 }else {
                     Y.one('#id_btn-managers_selected1').removeAttribute('disabled');
                     Y.one('#id_btn-reporters_selected1').removeAttribute('disabled');
                     Y.one('#id_btn-rename_selected1').removeAttribute('disabled');
                     Y.one('#id_btn-delete_selected1').removeAttribute('disabled');
-                    Y.one('#id_btn-unlink_selected1').removeAttribute('disabled');
                     Y.one('#id_btn-add_item2').removeAttribute('disabled');
                 }
 
@@ -470,14 +468,12 @@ var level_structure = {
                     Y.one('#id_btn-reporters_selected2').setAttribute('disabled','disabled');
                     Y.one('#id_btn-rename_selected2').setAttribute('disabled','disabled');
                     Y.one('#id_btn-delete_selected2').setAttribute('disabled','disabled');
-                    Y.one('#id_btn-unlink_selected2').setAttribute('disabled','disabled');
                     Y.one('#id_btn-add_item3').setAttribute('disabled','disabled');
                 }else {
                     Y.one('#id_btn-managers_selected2').removeAttribute('disabled');
                     Y.one('#id_btn-reporters_selected2').removeAttribute('disabled');
                     Y.one('#id_btn-rename_selected2').removeAttribute('disabled');
                     Y.one('#id_btn-delete_selected2').removeAttribute('disabled');
-                    Y.one('#id_btn-unlink_selected2').removeAttribute('disabled');
                     Y.one('#id_btn-add_item3').removeAttribute('disabled');
                 }
 
@@ -487,13 +483,11 @@ var level_structure = {
                     Y.one('#id_btn-reporters_selected3').setAttribute('disabled','disabled');
                     Y.one('#id_btn-rename_selected3').setAttribute('disabled','disabled');
                     Y.one('#id_btn-delete_selected3').setAttribute('disabled','disabled');
-                    Y.one('#id_btn-unlink_selected3').setAttribute('disabled','disabled');
                 }else {
                     Y.one('#id_btn-managers_selected3').removeAttribute('disabled');
                     Y.one('#id_btn-reporters_selected3').removeAttribute('disabled');
                     Y.one('#id_btn-rename_selected3').removeAttribute('disabled');
                     Y.one('#id_btn-delete_selected3').removeAttribute('disabled');
-                    Y.one('#id_btn-unlink_selected3').removeAttribute('disabled');
                 }
             }
         }//ifbtnActions
@@ -517,7 +511,6 @@ var level_structure = {
         Y.one('#id_btn-add_item1').setAttribute('disabled','disabled');
         Y.one('#id_btn-rename_selected1').setAttribute('disabled','disabled');
         Y.one('#id_btn-delete_selected1').setAttribute('disabled','disabled');
-        Y.one('#id_btn-unlink_selected1').setAttribute('disabled','disabled');
         Y.one('#id_btn-managers_selected1').setAttribute('disabled','disabled');
         Y.one('#id_btn-reporters_selected1').setAttribute('disabled','disabled');
 
@@ -525,7 +518,6 @@ var level_structure = {
         Y.one('#id_btn-add_item2').setAttribute('disabled','disabled');
         Y.one('#id_btn-rename_selected2').setAttribute('disabled','disabled');
         Y.one('#id_btn-delete_selected2').setAttribute('disabled','disabled');
-        Y.one('#id_btn-unlink_selected2').setAttribute('disabled','disabled');
         Y.one('#id_btn-managers_selected2').setAttribute('disabled','disabled');
         Y.one('#id_btn-reporters_selected2').setAttribute('disabled','disabled');
 
@@ -533,7 +525,6 @@ var level_structure = {
         Y.one('#id_btn-add_item3').setAttribute('disabled','disabled');
         Y.one('#id_btn-rename_selected3').setAttribute('disabled','disabled');
         Y.one('#id_btn-delete_selected3').setAttribute('disabled','disabled');
-        Y.one('#id_btn-unlink_selected3').setAttribute('disabled','disabled');
         Y.one('#id_btn-managers_selected3').setAttribute('disabled','disabled');
         Y.one('#id_btn-reporters_selected3').setAttribute('disabled','disabled');
 
@@ -550,14 +541,12 @@ var level_structure = {
                     Y.one('#id_btn-reporters_selected1').setAttribute('disabled','disabled');
                     Y.one('#id_btn-rename_selected1').setAttribute('disabled','disabled');
                     Y.one('#id_btn-delete_selected1').setAttribute('disabled','disabled');
-                    Y.one('#id_btn-unlink_selected1').setAttribute('disabled','disabled');
                     Y.one('#id_btn-add_item2').setAttribute('disabled','disabled');
                 }else {
                     Y.one('#id_btn-managers_selected1').removeAttribute('disabled');
                     Y.one('#id_btn-reporters_selected1').removeAttribute('disabled');
                     Y.one('#id_btn-rename_selected1').removeAttribute('disabled');
                     Y.one('#id_btn-delete_selected1').removeAttribute('disabled');
-                    Y.one('#id_btn-unlink_selected1').removeAttribute('disabled');
                     Y.one('#id_btn-add_item2').removeAttribute('disabled');
                 }
             }
@@ -573,14 +562,12 @@ var level_structure = {
                     Y.one('#id_btn-reporters_selected2').setAttribute('disabled','disabled');
                     Y.one('#id_btn-rename_selected2').setAttribute('disabled','disabled');
                     Y.one('#id_btn-delete_selected2').setAttribute('disabled','disabled');
-                    Y.one('#id_btn-unlink_selected2').setAttribute('disabled','disabled');
                     Y.one('#id_btn-add_item3').setAttribute('disabled','disabled');
                 }else {
                     Y.one('#id_btn-managers_selected2').removeAttribute('disabled');
                     Y.one('#id_btn-reporters_selected2').removeAttribute('disabled');
                     Y.one('#id_btn-rename_selected2').removeAttribute('disabled');
                     Y.one('#id_btn-delete_selected2').removeAttribute('disabled');
-                    Y.one('#id_btn-unlink_selected2').removeAttribute('disabled');
                     Y.one('#id_btn-add_item3').removeAttribute('disabled');
                 }
             }
@@ -597,13 +584,11 @@ var level_structure = {
                     Y.one('#id_btn-reporters_selected3').setAttribute('disabled','disabled');
                     Y.one('#id_btn-rename_selected3').setAttribute('disabled','disabled');
                     Y.one('#id_btn-delete_selected3').setAttribute('disabled','disabled');
-                    Y.one('#id_btn-unlink_selected3').setAttribute('disabled','disabled');
                 }else {
                     Y.one('#id_btn-managers_selected3').removeAttribute('disabled');
                     Y.one('#id_btn-reporters_selected3').removeAttribute('disabled');
                     Y.one('#id_btn-rename_selected3').removeAttribute('disabled');
                     Y.one('#id_btn-delete_selected3').removeAttribute('disabled');
-                    Y.one('#id_btn-unlink_selected3').removeAttribute('disabled');
                 }
             }
         }
