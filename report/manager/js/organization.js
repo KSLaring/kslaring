@@ -44,6 +44,8 @@ var level_structure = {
     /* Outcome Selector */
     outcomeLst : Y.one('#id_' + outcomeSel) || null,
 
+    delEmployees : Y.one('#id_btn-delete_employees3'),
+
     /* Super User   */
     sp_user     : superUser,
     /* Level Access */
@@ -73,6 +75,7 @@ var level_structure = {
         /* Level Three  */
         if (this.employeeLst) {
             this.levelThree.on('change', this.Load_Employees, this);
+            this.delEmployees.on('click',this.Delete_Employees,this);
         }else if (this.outcomeLst) {
             this.levelThree.on('change', this.Load_Outcomes, this);
         }
@@ -110,6 +113,12 @@ var level_structure = {
         //  Trigger an ajax search after a delay.
         this.cancel_timeout();
         this.timeoutid = Y.later(this.querydelay * 1000, e, function(obj){obj.send_query_employees(false)}, this);
+    },
+
+    Delete_Employees : function (e) {
+        //  Trigger an ajax search after a delay.
+        this.cancel_timeout();
+        this.timeoutid = Y.later(this.querydelay * 1000, e, function(obj){obj.send_query_delete_employees(false)}, this);
     },
 
     Load_Outcomes : function (e) {
@@ -278,6 +287,52 @@ var level_structure = {
             }
         );
         this.iotransactions[iotrans.id] = iotrans;
+    },
+
+    send_query_delete_employees : function(forceresearch) {
+        var valueThree  = 0;
+
+        // Cancel any pending timeout.
+        this.cancel_timeout();
+
+        // Try to cancel existing transactions.
+        Y.Object.each(this.iotransactions, function(trans) {
+            trans.abort();
+        });
+
+        /* Level Three */
+        valueThree = this.levelThree.get('value');
+
+        var iotrans = Y.io(M.cfg.wwwroot + '/report/manager/company_structure/employees.php',
+            {
+                method: 'POST',
+                data: 'levelThree=' + valueThree + '&sesskey=' + M.cfg.sesskey + '&delete=1',
+                on: {
+                    complete: this.handle_responseDeleteEmployees
+                },
+                context:this
+            }
+        );
+        this.iotransactions[iotrans.id] = iotrans;
+    },
+
+    handle_responseDeleteEmployees : function(requestid, response) {
+        try {
+            delete this.iotransactions[requestid];
+            if (!Y.Object.isEmpty(this.iotransactions)) {
+                // More searches pending. Wait until they are all done.
+                return;
+            }
+            var data = Y.JSON.parse(response.responseText);
+            if (data.error) {
+                this.levelThree.addClass('error');
+                return new M.core.ajaxException(data);
+            }
+            this.send_query_employees();
+        } catch (e) {
+            this.levelThree.addClass('error');
+            return new M.core.exception(e);
+        }
     },
 
     /**
@@ -483,11 +538,13 @@ var level_structure = {
                     Y.one('#id_btn-reporters_selected3').setAttribute('disabled','disabled');
                     Y.one('#id_btn-rename_selected3').setAttribute('disabled','disabled');
                     Y.one('#id_btn-delete_selected3').setAttribute('disabled','disabled');
+                    Y.one('#id_btn-delete_employees3').setAttribute('disabled','disabled');
                 }else {
                     Y.one('#id_btn-managers_selected3').removeAttribute('disabled');
                     Y.one('#id_btn-reporters_selected3').removeAttribute('disabled');
                     Y.one('#id_btn-rename_selected3').removeAttribute('disabled');
                     Y.one('#id_btn-delete_selected3').removeAttribute('disabled');
+                    Y.one('#id_btn-delete_employees3').removeAttribute('disabled');
                 }
             }
         }//ifbtnActions
@@ -527,6 +584,7 @@ var level_structure = {
         Y.one('#id_btn-delete_selected3').setAttribute('disabled','disabled');
         Y.one('#id_btn-managers_selected3').setAttribute('disabled','disabled');
         Y.one('#id_btn-reporters_selected3').setAttribute('disabled','disabled');
+        Y.one('#id_btn-delete_employees3').setAttribute('disabled','disabled');
 
         if (this.levelZero.get('value') != 0) {
             /* Get Level Zero   */
@@ -584,11 +642,13 @@ var level_structure = {
                     Y.one('#id_btn-reporters_selected3').setAttribute('disabled','disabled');
                     Y.one('#id_btn-rename_selected3').setAttribute('disabled','disabled');
                     Y.one('#id_btn-delete_selected3').setAttribute('disabled','disabled');
+                    Y.one('#id_btn-delete_employees3').setAttribute('disabled','disabled');
                 }else {
                     Y.one('#id_btn-managers_selected3').removeAttribute('disabled');
                     Y.one('#id_btn-reporters_selected3').removeAttribute('disabled');
                     Y.one('#id_btn-rename_selected3').removeAttribute('disabled');
                     Y.one('#id_btn-delete_selected3').removeAttribute('disabled');
+                    Y.one('#id_btn-delete_employees3').removeAttribute('disabled');
                 }
             }
         }

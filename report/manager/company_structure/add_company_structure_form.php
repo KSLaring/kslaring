@@ -77,6 +77,8 @@ class manager_add_company_structure_form extends moodleform {
             $m_form->addElement('hidden','public_parent');
             $m_form->setDefault('public_parent',$parent_info->public);
             $m_form->setType('public_parent',PARAM_INT);
+        }else {
+            $m_form->setDefault('public',1);
         }
 
         $m_form->addElement('hidden','level');

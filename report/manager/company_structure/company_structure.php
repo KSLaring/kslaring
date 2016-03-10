@@ -96,13 +96,6 @@ if ($form->is_cancelled()) {
             $redirect_url    = new moodle_url('/report/manager/company_structure/delete_company_structure.php',array('id'=>$company_id, 'level'=>$level));
 
             break;
-        case REPORT_MANAGER_UNLINK_SELECTED:
-            $select     = COMPANY_STRUCTURE_LEVEL . $level;
-            $company_id = $data->$select;
-
-            $redirect_url    = new moodle_url('/report/manager/company_structure/unlink_company_structure.php',array('id'=>$company_id));
-
-            break;
         case REPORT_MANAGER_MANAGERS_SELECTED:
             $redirect_url    = new moodle_url('/report/manager/company_structure/manager/manager.php',array('le'=>$level));
 
@@ -112,6 +105,7 @@ if ($form->is_cancelled()) {
 
             break;
         default:
+
             break;
     }//$action
 
