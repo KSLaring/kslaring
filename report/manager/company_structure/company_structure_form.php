@@ -68,6 +68,14 @@ class manager_company_structure_form extends moodleform {
                                 'size = 10');
             /* Options */
             $m_form->disabledIf(REPORT_MANAGER_EMPLOYEE_LIST,COMPANY_STRUCTURE_LEVEL . '3','eq',0);
+
+            /* Variables    */
+            $button = array();
+            $button_array_attr = array('class' => 'submit-btn');
+
+            /* Delete Employees   */
+            $button[] = $m_form->createElement('button','btn-' . REPORT_MANAGER_DELETE_EMPLOYEES . '3',get_string('remove'),$button_array_attr);
+            $m_form->addGroup($button, 'btn' . REPORT_MANAGER_DELETE_EMPLOYEES, '&nbsp;', '&nbsp;', false);
         $m_form->addElement('html', '</div>');
 
         /* Cancel Button */
@@ -306,11 +314,6 @@ class manager_company_structure_form extends moodleform {
         $button[] = $form->createElement('submit','btn-' . REPORT_MANAGER_MANAGERS_SELECTED . $level,get_string('btn_managers','report_manager'),$button_array_attr);
         /* Reporter Button */
         $button[] = $form->createElement('submit','btn-' . REPORT_MANAGER_REPORTERS_SELECTED . $level,get_string('btn_reporters','report_manager'),$button_array_attr);
-        /* Unlink Button --> Level > 0  */
-        if ($level) {
-            /* Unlink Button    */
-            $button[] = $form->createElement('submit','btn-' . REPORT_MANAGER_UNLINK_SELECTED . $level,get_string('unlink_selected','report_manager'),$unlink_btn);
-        }//if_level
 
         /* Add Buttons  */
         $form->addElement('html', '<div class="btn-wrapper">');

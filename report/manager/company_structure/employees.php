@@ -20,6 +20,7 @@ require_once('company_structurelib.php');
 
 /* PARAMS   */
 $levelThree     = optional_param('levelThree',0,PARAM_TEXT);
+$delete         = optional_param('delete',0,PARAM_INT);
 
 $json           = array();
 $data           = array();
@@ -37,27 +38,30 @@ require_sesskey();
 
 echo $OUTPUT->header();
 
-
 /* Get Employees    */
 if ($levelThree) {
     $levelThree = str_replace('#',',',$levelThree);
 }
-$employees = company_structure::Get_EmployeeLevel($levelThree);
+if ($delete) {
+    company_structure::DeleteEmployees($levelThree);
+}else {
+    $employees = company_structure::Get_EmployeeLevel($levelThree);
 
-/* GEt Employees Info to Send */
-$employeesInfo = array();
-foreach ($employees as $id=>$user) {
-    /* Info */
-    $info = new stdClass();
-    $info->id   = $id;
-    $info->name = $user;
+    /* GEt Employees Info to Send */
+    $employeesInfo = array();
+    foreach ($employees as $id=>$user) {
+        /* Info */
+        $info = new stdClass();
+        $info->id   = $id;
+        $info->name = $user;
 
-    /* Add Employee Info    */
-    $employeesInfo[$id] = $info;
-}
-/* Get Data */
-$data           =  array('users' => array());
-$data['users']  = $employeesInfo;
+        /* Add Employee Info    */
+        $employeesInfo[$id] = $info;
+    }
+    /* Get Data */
+    $data           =  array('users' => array());
+    $data['users']  = $employeesInfo;
+}//if_delete
 
 /* Encode and Send */
 $json[] = $data;
