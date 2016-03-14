@@ -11,11 +11,11 @@
  *
  */
 /* Fellesdata Services  */
-define('TRADIS_FS_COMPANIES','v_leka_org_enheteruten_seksjon');
+define('TRADIS_FS_COMPANIES','V_LEKA_OREN_TRE_NIVAA');
 define('TRADIS_FS_USERS','');
 define('TRADIS_FS_JOBROLES','');
-define('TRADIS_FS_USERS_COMPANIES','v_leka_org_enhet_tilgaang_uten_seksjon');
-define('TRADIS_FS_USERS_JOBROLES','vleka_ressurs_stillinger');
+define('TRADIS_FS_USERS_COMPANIES','V_LEKA_OREN_TILGANG');
+define('TRADIS_FS_USERS_JOBROLES','V_LEKA_RESSURS_STILLING');
 
 /* KS Services  */
 define('KS_SYNC_FS_COMPANY','wsFSCompany');
@@ -1806,6 +1806,7 @@ class FS {
             /* Info Competence      */
             $infoCompetenceJR = new stdClass();
             $infoCompetenceJR->fodselsnr        = trim($newEntry->fodselsnr);
+            $infoCompetenceJR->stillingsnr      = trim($newEntry->stillingsnr);
             $infoCompetenceJR->fornavn          = trim($newEntry->fornavn);
             $infoCompetenceJR->etternavn        = trim($newEntry->etternavn);
             $infoCompetenceJR->epost            = trim($newEntry->epost);
