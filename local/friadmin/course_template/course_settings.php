@@ -21,10 +21,11 @@ require_once('../../../course/lib.php');
 
 /* PARAMS   */
 $courseId       = required_param('id',PARAM_INT);
+$courseTemplate = required_param('ct',PARAM_INT);
 $contextCourse  = CONTEXT_COURSE::instance($courseId);
-$url            = new moodle_url('/local/friadmin/course_template/course_settings.php',array('id' => $courseId));
+$url            = new moodle_url('/local/friadmin/course_template/course_settings.php',array('id' => $courseId,'ct' => $courseTemplate));
 $returnUrl      = new moodle_url('/local/friadmin/courselist.php');
-$enrolUrl       = new moodle_url('/local/friadmin/course_template/course_enrolment.php',array('id' => $courseId));
+$enrolUrl       = new moodle_url('/local/friadmin/course_template/course_enrolment.php',array('id' => $courseId,'ct' => $courseTemplate));
 
 $strTitle       = get_string('coursetemplate_title', 'local_friadmin');
 $strSubTitle    = get_string('coursetemplate_settings', 'local_friadmin');
@@ -80,7 +81,7 @@ $category = CourseTemplate::GetCategoryName($course->category);
 
 /* Form */
 try {
-    $form = new ct_settings_form(null, array($course,$category,$editorOpt));
+    $form = new ct_settings_form(null, array($course,$category,$editorOpt,$courseTemplate));
     if ($form->is_cancelled()) {
         if ($fakepermission) {
             CourseTemplate::Delete_FakePermission($fakepermission->id);

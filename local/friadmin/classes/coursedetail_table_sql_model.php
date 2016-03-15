@@ -59,22 +59,23 @@ class local_friadmin_coursedetail_table_sql_model extends local_friadmin_widget 
      * Add 'Time From To'
      *
      */
-    protected $sql = " SELECT	c.id        as 'courseid',
-                                c.fullname  as 'name',
-                                c.summary   as 'summary',
-                                '-'         as 'targetgroup',
-                                c.startdate as 'date',
-                                cft.value   as 'time',
-                                cln.value  	as 'length',
-                                rgcmu.name  as 'municipality',
-                                rgcse.name  as 'sector',
-                                cl.name     as 'location',
-                                cmn.value 	as 'responsible',
-                                '-'         as 'teacher',
-                                '-'         as 'priceinternal',
-                                '-'         as 'priceexternal',
-                                '-'         as 'seats',
-                                e.deadline  as 'deadline'
+    protected $sql = " SELECT	c.id            as 'courseid',
+                                c.fullname      as 'name',
+                                c.summary       as 'summary',
+                                '-'             as 'targetgroup',
+                                c.startdate     as 'date',
+                                cft.value       as 'time',
+                                cln.value  	    as 'length',
+                                rgcmu.name      as 'municipality',
+                                rgcse.name      as 'sector',
+                                cl.name         as 'location',
+                                cmn.value 	    as 'responsible',
+                                '-'             as 'teacher',
+                                '-'             as 'priceinternal',
+                                '-'             as 'priceexternal',
+                                ep.customtext3 	as 'price',
+                                '-'             as 'seats',
+                                e.deadline      as 'deadline'
                        FROM 	{course} c
                           # Get the deadline from enrol
                           JOIN (
@@ -84,6 +85,10 @@ class local_friadmin_coursedetail_table_sql_model extends local_friadmin_widget 
                                  WHERE 	e.status = 0
                                  GROUP BY e.courseid
                                ) e ON e.courseid = c.id
+	                      # Get price
+                          LEFT JOIN	{enrol} 					ep 		ON 	ep.courseid = c.id
+														                AND	ep.status 	= 0
+                                                                        AND ep.enrol 	= 'waitinglist'
                           # Get the Time From - To
                           LEFT JOIN {course_format_options}	    cft		ON	cft.courseid	= c.id
 													                    AND cft.name		= 'time'

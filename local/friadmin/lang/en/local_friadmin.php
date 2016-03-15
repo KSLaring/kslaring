@@ -35,6 +35,7 @@ $string['course_responsible']   = 'In charge';
 $string['course_teacher']       = 'Teacher';
 $string['course_priceinternal'] = 'Price internal';
 $string['course_priceexternal'] = 'Price external';
+$string['course_price']         = 'Price';
 $string['course_link']          = 'Link';
 $string['course_edit']          = '';
 

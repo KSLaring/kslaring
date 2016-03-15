@@ -27,7 +27,7 @@ class ct_settings_form extends moodleform {
         $PAGE->requires->yui_module('moodle-course-formatchooser', 'M.course.init_formatchooser',
                                     array(array('formid' => $form->getAttribute('id'))));
 
-        list($course,$category,$editor) = $this->_customdata;
+        list($course,$category,$editor,$ct) = $this->_customdata;
 
         /* Context */
         $courseContext  = CONTEXT_COURSE::instance($course->id);
@@ -143,6 +143,10 @@ class ct_settings_form extends moodleform {
 
         $form->addElement('hidden', 'id', null);
         $form->setType('id', PARAM_INT);
+
+        $form->addElement('hidden', 'ct', $ct);
+        $form->setType('ct', PARAM_INT);
+
 
         // Finally set the current form data
         $this->set_data($course);
