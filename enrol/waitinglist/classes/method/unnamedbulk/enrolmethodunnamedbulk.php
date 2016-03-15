@@ -309,7 +309,6 @@ class enrolmethodunnamedbulk extends \enrol_waitinglist\method\enrolmethodbase {
                         \Approval::ApplyAction_FromManager($infoApproval);
                     }else {
                         /* Send Mails   */
-                        $infoMail->price = $waitinglist->{static::MFIELD_PRICE};
                         \Approval::SendNotifications($USER,$infoMail,$this->myManagers);
                     }
                 }//if_vacancies
