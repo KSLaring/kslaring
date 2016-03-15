@@ -189,12 +189,9 @@ Class Approval {
             $DB->insert_record('enrol_approval_action',$infoRejectAct);
 
             /* Info To Send */
-            $course = get_course($courseId);
-            $infoMail = new stdClass();
-            $infoMail->approvalid   = $infoApproval->id;
-            $infoMail->course       = $course->fullname;
-            $infoMail->price        = null;
+            $infoMail = self::Info_NotificationApproved($userId,$courseId);
             $infoMail->arguments    = $infoApproval->arguments;
+            $infoMail->approvalid   = $infoApproval->id;
             /* Approve Link */
             $lnkApprove = $CFG->wwwroot . '/enrol/waitinglist/approval/action.php/' . $infoApproval->token . '/' . $infoApproveAct->token;
             $infoMail->approve = '<a href="' . $lnkApprove . '">' . get_string('approve_lnk','enrol_waitinglist') . '</br>';
