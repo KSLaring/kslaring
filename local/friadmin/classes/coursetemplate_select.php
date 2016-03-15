@@ -95,7 +95,7 @@ class local_friadmin_coursetemplate_select extends local_friadmin_widget impleme
                  * Description
                  * Redirect the user to course settings to be able to complete it
                  */
-                $urlSettings = new moodle_url('/local/friadmin/course_template/course_settings.php',array('id' => $this->newcourseid));
+                $urlSettings = new moodle_url('/local/friadmin/course_template/course_settings.php',array('id' => $this->newcourseid,'ct' => (int)$this->fromform->seltemplate));
                 redirect($urlSettings);
             }//if_get_data
         } catch (Exception $ex) {

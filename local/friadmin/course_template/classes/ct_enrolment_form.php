@@ -17,7 +17,7 @@ require_once($CFG->dirroot.'/lib/formslib.php');
 class ct_enrolment_form extends moodleform {
     function definition () {
         /* Variables */
-        $course = $this->_customdata;
+        list($course,$ct) = $this->_customdata;
 
         /* Form         */
         $form   = $this->_form;
@@ -32,6 +32,11 @@ class ct_enrolment_form extends moodleform {
         $form->setType('id', PARAM_INT);
         $form->setDefault('id',$course);
 
+        /* Course Template */
+        $form->addElement('hidden', 'ct');
+        $form->setType('ct', PARAM_INT);
+        $form->setDefault('ct',$ct);
+
         $this->add_action_buttons(true,get_string('continue'));
     }//definition
 }//ct_enrolment_form
@@ -39,7 +44,7 @@ class ct_enrolment_form extends moodleform {
 class ct_enrolment_settings_form extends moodleform {
     function definition() {
         /* Variables */
-        list($course,$enrolMethod,$instance) = $this->_customdata;
+        list($course,$enrolMethod,$instance,$ct) = $this->_customdata;
 
         /* Form     */
         $form   = $this->_form;
@@ -78,14 +83,30 @@ class ct_enrolment_settings_form extends moodleform {
         /**
          * Approval
          */
-        $form->addElement('advcheckbox', 'approval', get_string('approval', 'enrol_waitinglist'));
+        /* None Option              */
+        $form->addElement('radio','approval',get_string('none_approval','enrol_waitinglist'),'',CT_APPROVAL_NONE);
+        /* Approval required by manager */
+        $form->addElement('radio','approval',get_string('approval','enrol_waitinglist'),'',CT_APPROVAL_REQUIRED);
+        /* Mail to manager option   */
+        $form->addElement('radio','approval',get_string('approval_message','enrol_waitinglist'),'',CT_APPROVAL_MESSAGE);
         $form->setDefault('approval',$instance->approval);
-        $form->addHelpButton('approval', 'approval', 'enrol_waitinglist');
+
+        /**
+         * Price
+         */
+        $form->addElement('text','price',  get_string('price', 'enrol_waitinglist'), array('size' => '8'));
+        $form->setType('price',PARAM_TEXT);
+        $form->setDefault('price',$instance->price);
 
         /* Course Id */
         $form->addElement('hidden', 'id');
         $form->setType('id', PARAM_INT);
         $form->setDefault('id',$course);
+
+        /* Course Template */
+        $form->addElement('hidden', 'ct');
+        $form->setType('ct', PARAM_INT);
+        $form->setDefault('ct',$ct);
 
         /* Enrol Method Selected */
         $form->addElement('hidden', 'waitinglist');

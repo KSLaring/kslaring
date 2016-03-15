@@ -21,9 +21,14 @@ define('METHOD_FIELD_MAXENROLMENTS','customint3');
 define('ENROL_FIELD_WAITLISTSIZE', 'customint6');
 define('ENROL_FIELD_SENDWELCOMEMESSAGE', 'customint4');
 define('ENROL_FIELD_SENDWAITLISTMESSAGE', 'customint5');
+define('ENROL_FIELD_PRICE','customtext3');
 define('SETTINGS_DEFAULT_SIZE',100);
 define('ACTION_ENROLMENT',1);
 define('ACTION_SHOW_COURSE',0);
+
+define('CT_APPROVAL_NONE',0);
+define('CT_APPROVAL_REQUIRED',1);
+define('CT_APPROVAL_MESSAGE',2);
 
 class CourseTemplate {
     /**********/
@@ -177,6 +182,7 @@ class CourseTemplate {
 
     /**
      * @param           $courseId
+     * @param           $courseTemplate
      *
      * @return          mixed|stdClass
      * @throws          Exception
@@ -187,7 +193,7 @@ class CourseTemplate {
      * Description
      * Get enrol instance connected with the method
      */
-    public static function GetEnrolInstance($courseId) {
+    public static function GetEnrolInstance($courseId,$courseTemplate) {
         /* Variables */
         global $DB;
         $params     = null;
@@ -211,6 +217,7 @@ class CourseTemplate {
                             e.customint6 	                as 'list_size',
                             e.customint8 	                as 'invoice',
                             e.customint7 	                as 'approval',
+                            e.customtext3                   as 'price',
                             es.id							as 'selfid',
                             un.id							as 'bulkid'
                      FROM		{enrol}						e
@@ -231,19 +238,36 @@ class CourseTemplate {
             if ($rdo) {
                 return $rdo;
             }else {
-                $instance = new stdClass();
-                $instance->id               = null;
-                $instance->selfid           = null;
-                $instance->bulkid           = null;
-                $instance->courseid         = $courseId;
-                $instance->date_off         = 0;
-                $instance->max_enrolled     = 0;
-                $instance->list_size        = SETTINGS_DEFAULT_SIZE;
-                $instance->invoice          = 0;
-                $instance->approval         = 0;
+                /* Check Course Template */
+                $params['courseid']     = $courseTemplate;
 
-                return $instance;
-            }
+                /* Execute */
+                $rdo = $DB->get_record_sql($sql,$params);
+                if ($rdo) {
+
+                    $rdo->id        = null;
+                    $rdo->selfid    = null;
+                    $rdo->bulkid    = null;
+                    $rdo->courseid  = $courseId;
+
+                    return $rdo;
+                }else {
+                    /* Instance */
+                    $instance = new stdClass();
+                    $instance->id               = null;
+                    $instance->selfid           = null;
+                    $instance->bulkid           = null;
+                    $instance->courseid         = $courseId;
+                    $instance->date_off         = 0;
+                    $instance->max_enrolled     = 0;
+                    $instance->list_size        = SETTINGS_DEFAULT_SIZE;
+                    $instance->invoice          = 0;
+                    $instance->approval         = 0;
+                    $instance->price            = 0;
+
+                    return $instance;
+                }//if_rdo_courseTemplate
+            }//if_rdo_course
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
@@ -286,6 +310,8 @@ class CourseTemplate {
             $enrolInstance->{ENROL_FIELD_MAXENROLMENTS} = $data->max_enrolled;
             $enrolInstance->{ENROL_FIELD_INVOICE}       = $data->invoice;
             $enrolInstance->{ENROL_FIELD_APPROVAL}      = $data->approval;
+            $enrolInstance->{ENROL_FIELD_PRICE}         = $data->price;
+
             $enrolInstance->timemodified                = $time;
             /* Execute  */
             $DB->update_record('enrol',$enrolInstance);

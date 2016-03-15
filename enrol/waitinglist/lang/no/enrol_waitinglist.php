@@ -181,12 +181,32 @@ $string['arguments']        = 'Begrunnelse';
 $string['not_managers'] = 'Beklager, men du kan ikke melde deg på dette kurset siden vi ikke vet hvem som er lederen din. Vennligst kontakt din lokale administrator.';
 
 $string['mng_subject']  = '{$a->site}: Søknad om kursplass for kurset {$a->course}';
-$string['mng_body']     = '<p>Du får denne forespørselsen om godkjenning siden du er oppført som lederen for <b>{$a->user}</b>.<br /><b>{$a->user}</b> nettopp har søkt om plass på kurset  <b>{$a->course}</b> and price <b>{$a->price}</b>.</p><p>Begrunnelsen for søknaden om plass på kurset er:</p><p>{$a->arguments}</p>
+$string['mng_body']     = '<p>Du får denne forespørselsen om godkjenning siden du er oppført som lederen for <b>{$a->user}</b>.<br /><b>{$a->user}</b> nettopp har søkt om plass på kurset  <b>{$a->course}</b>.</p><p>Begrunnelsen for søknaden om plass på kurset er:</p><p>{$a->arguments}</p>
+                           </br>
+                           <p>Kursinformasjon:</p>
+                           <ul>
+                                <li><u>Kursdato</u>: {$a->date}</li>
+                                <li><u>Instruktør</u>: {$a->instructor}</li>
+                                <li><u>Sted</u>: {$a->location}</li>
+                                <li><u>Pris</u>: {$a->price}</li>
+                                <li>Mer informasjon om kurset kan du få på kursets hjemmeside: {$a->homepage}</li>
+                           </ul>
+                           </br>
                            <p>For å godkjenne denne søknaden kan du klikke her: {$a->approve}.</p>
                            <p>For å avslå denne søknaden kan du klikke her: {$a->reject}.</p>';
 
 $string['subject_reminder'] = '{$a->site}: Søknad om påmelding til kurset: {$a->course}. PÅMINNELSE';
-$string['body_reminder']    = '<p>Vi vil bare minne deg om at du er lederen for <b>{$a->user}</b>, og at <b>{$a->user}</b> nylig har søkt om plass på kurset: <b>{$a->course}</b> and price <b>{$a->price}</b>.</p><p>Brukerens begrunnelse for søknaden er:</p><p>{$a->arguments}</p>
+$string['body_reminder']    = '<p>Vi vil bare minne deg om at du er lederen for <b>{$a->user}</b>, og at <b>{$a->user}</b> nylig har søkt om plass på kurset: <b>{$a->course}</b>.</p><p>Brukerens begrunnelse for søknaden er:</p><p>{$a->arguments}</p>
+                               </br>
+                               <p>Kursinformasjon:</p>
+                               <ul>
+                                    <li><u>Kursdato</u>: {$a->date}</li>
+                                    <li><u>Instruktør</u>: {$a->instructor}</li>
+                                    <li><u>Sted</u>: {$a->location}</li>
+                                    <li><u>Pris</u>: {$a->price}</li>
+                                    <li>Mer informasjon om kurset kan du få på kursets hjemmeside: {$a->homepage}</li>
+                               </ul>
+                               </br>
                                <p>Du bør ta stilling til denne søknaden så raskt som mulig.</p>
                                <p>For å godkjenne denne søknaden kan du klikke her:  {$a->approve}.</p>
                                <p>TFor å avslå denne søknaden kan du klikke her:  {$a->reject}.</p>';
@@ -236,12 +256,12 @@ $string['mng_approved_body_two'] = '<p>Vi vil gjerne informere deg om at brukere
                                         <li><u>Kursdato</u>: {$a->date}</li>
                                         <li><u>Instruktør</u>: {$a->instructor}</li>
                                         <li><u>Sted</u>: {$a->location}</li>
-                                        <li><u>Price</u>: {$a->price}</li>
+                                        <li><u>Pris</u>: {$a->price}</li>
                                         <li>Mer informasjon om kurset kan du få på kursets hjemmeside: {$a->homepage}</li>
                                     </ul>';
 $string['mng_approved_body_end'] = '<p>Dette er en automatisk generert epost fra {$a->site} og du kan ikke svare på eposten.';
 $string['home_page']    = 'Hjemmesider';
 
-$string['approval_occupied'] = 'At the moment, all available seats are occupied.So, your application will be processed as soon as there are available seats.';
+$string['approval_occupied'] = 'Det er i øyeblikket ingen ledige plasser. Søknaden om kursplass vil derfor bli behandlet straks det er ledige plasser på kurset.';
 
-$string['price'] = 'Price';
+$string['price'] = 'Pris';

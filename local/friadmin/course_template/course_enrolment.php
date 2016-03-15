@@ -23,9 +23,10 @@ require_login();
 
 /* PARAMS   */
 $courseId       = required_param('id',PARAM_INT);
+$courseTemplate = required_param('ct',PARAM_INT);
 $waitinglist    = optional_param('waitinglist',0,PARAM_INT);
 $contextCourse  = CONTEXT_COURSE::instance($courseId);
-$url            = new moodle_url('/local/friadmin/course_template/course_enrolment.php',array('id' => $courseId));
+$url            = new moodle_url('/local/friadmin/course_template/course_enrolment.php',array('id' => $courseId,'ct' => $courseTemplate));
 $returnUrl = new moodle_url('/local/friadmin/course_template/course_template.php',array('id' => $courseId));
 
 $course         = get_course($courseId);
@@ -54,10 +55,10 @@ $PAGE->navbar->add($strSubTitle);
 /* Form */
 if ($waitinglist) {
     /* Get Enrol Instance */
-    $instance   = CourseTemplate::GetEnrolInstance($courseId);
-    $form       = new ct_enrolment_settings_form(null,array($courseId,$waitinglist,$instance));
+    $instance   = CourseTemplate::GetEnrolInstance($courseId,$courseTemplate);
+    $form       = new ct_enrolment_settings_form(null,array($courseId,$waitinglist,$instance,$courseTemplate));
 }else {
-    $form = new ct_enrolment_form(null,$courseId);
+    $form = new ct_enrolment_form(null,array($courseId,$courseTemplate));
 }
 
 if ($form->is_cancelled()) {
@@ -68,7 +69,6 @@ if ($form->is_cancelled()) {
     $_POST = array();
     redirect($returnUrl);
 }else if ($data = $form->get_data()) {
-
     if ($waitinglist) {
         if ($data->instanceid) {
             /* Update   */
