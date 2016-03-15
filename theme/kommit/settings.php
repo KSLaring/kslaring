@@ -88,5 +88,41 @@ if (is_siteadmin()) {
     $setting->set_updatedcallback('theme_reset_all_caches');
     $temp->add($setting);
 
+    // Hero headline.
+    $name = 'theme_kommit/heroheadline';
+    $title = get_string('heroheadline', 'theme_kommit');
+    $description = get_string('heroheadlinedesc', 'theme_kommit');
+    $default = '';
+    $setting = new admin_setting_configtext($name, $title, $description, $default);
+    $setting->set_updatedcallback('theme_reset_all_caches');
+    $temp->add($setting);
+
+    // Hero headlead.
+    $name = 'theme_kommit/herolead';
+    $title = get_string('herolead', 'theme_kommit');
+    $description = get_string('heroleaddesc', 'theme_kommit');
+    $default = '';
+    $setting = new admin_setting_configtextarea($name, $title, $description, $default);
+    $setting->set_updatedcallback('theme_reset_all_caches');
+    $temp->add($setting);
+
+    // Hero herolinktext.
+    $name = 'theme_kommit/herolinktext';
+    $title = get_string('herolinktext', 'theme_kommit');
+    $description = get_string('herolinktextdesc', 'theme_kommit');
+    $default = '';
+    $setting = new admin_setting_configtext($name, $title, $description, $default);
+    $setting->set_updatedcallback('theme_reset_all_caches');
+    $temp->add($setting);
+
+    // Hero herolink.
+    $name = 'theme_kommit/herolink';
+    $title = get_string('herolink', 'theme_kommit');
+    $description = get_string('herolinkdesc', 'theme_kommit');
+    $default = '';
+    $setting = new admin_setting_configtext($name, $title, $description, $default);
+    $setting->set_updatedcallback('theme_reset_all_caches');
+    $temp->add($setting);
+
     $ADMIN->add('theme_kommit', $temp);
 }

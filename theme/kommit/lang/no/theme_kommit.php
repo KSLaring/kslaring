@@ -31,6 +31,18 @@ $string['frontpagesettings'] = 'Frontpage settings';
 
 $string['heroimage'] = 'Big image';
 $string['heroimagedesc'] = 'Please upload the big image shown on the frontpage.';
+$string['heroheadline'] = 'Hero headline';
+$string['heroheadlinedesc'] = 'Please add the tile which is shown on the frontpage
+on top of the image.';
+$string['herolead'] = 'Hero lead';
+$string['heroleaddesc'] = 'Please add the lead which is shown on the frontpage
+on top of the image.';
+$string['herolinktext'] = 'Hero button text';
+$string['herolinktextdesc'] = 'Please add the link text which is shown on the frontpage
+on top of the image.';
+$string['herolink'] = 'Hero link';
+$string['herolinkdesc'] = 'Please add the link for the button which is shown on the frontpage
+on top of the image.';
 
 $string['customcss'] = 'Egendefinert CSS';
 $string['customcssdesc'] = 'All CSS du legger til her vil benyttes på alle sider og gjør det lettere å gjøre mindre endringer i dette designet.';
