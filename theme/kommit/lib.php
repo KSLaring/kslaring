@@ -244,6 +244,42 @@ function theme_kommit_get_html_for_settings(renderer_base $output, moodle_page $
         }
     }
 
+    if ($page->pagetype === 'site-index') {
+        $return = theme_kommit_frontpage_html_for_settings($output, $page, $return);
+    }
+
+    return $return;
+}
+
+/**
+ * Returns an object containing HTML for the areas affected by settings.
+ *
+ * @param renderer_base $output Pass in $OUTPUT.
+ * @param moodle_page $page Pass in $PAGE.
+ * @return stdClass An object with the filled properties.
+ */
+function theme_kommit_frontpage_html_for_settings(renderer_base $output, moodle_page $page, $return) {
+    $return->heroheadline = '';
+    $return->herolead = '';
+    $return->herolinktext = '';
+    $return->herolink = '';
+
+    if (!empty($page->theme->settings->heroheadline)) {
+        $return->heroheadline = format_text($page->theme->settings->heroheadline);
+    }
+
+    if (!empty($page->theme->settings->herolead)) {
+        $return->herolead = format_text($page->theme->settings->herolead);
+    }
+
+    if (!empty($page->theme->settings->herolinktext)) {
+        $return->herolinktext = format_text($page->theme->settings->herolinktext);
+    }
+
+    if (!empty($page->theme->settings->herolink)) {
+        $return->herolink = $page->theme->settings->herolink;
+    }
+
     return $return;
 }
 
