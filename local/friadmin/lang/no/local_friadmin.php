@@ -35,6 +35,7 @@ $string['course_responsible']   = 'Ansvarlig';
 $string['course_teacher']       = 'Kurslærer';
 $string['course_priceinternal'] = 'Internpris';
 $string['course_priceexternal'] = 'Eksternpris';
+$string['course_price']         = 'Pris';
 $string['course_link']          = 'Lenke';
 $string['course_edit']          = '';
 
