@@ -574,8 +574,9 @@ class Activity_Mode {
             $params['course_id'] = $course;
 
             /* SQL Instruction  */
-            $sql = " SELECT		DISTINCT ue.userid,
-                                ue.timestart
+            $sql = " SELECT		DISTINCT  ue.id,
+                                          ue.userid,
+                                          ue.timestart
                      FROM		{user_enrolments}	ue
                         JOIN	{enrol}				e	ON 	e.id 		= ue.enrolid
                                                         AND	e.courseid 	= :course_id
