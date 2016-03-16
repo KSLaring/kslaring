@@ -12,6 +12,8 @@
  */
 
 class Activity_ModeCron {
+    const CONST_ACTIVITY_MODE = 2;
+
     /**
      * @return          bool
      * @throws          Exception
@@ -35,6 +37,16 @@ class Activity_ModeCron {
         try {
             mtrace('Start Activity Mode Cron Campaigns: ' . time() );
 
+            /* Add new users */
+            mtrace('Start Add New Users');
+            $toAddUsers = self::GetActivityCampaignToAddNewUsers();
+            if ($toAddUsers) {
+                foreach ($toAddUsers as $campaign) {
+                    self::AddNewUsers($campaign->id,$campaign->users);
+                }
+            }//if_toAddUsers
+            mtrace('Finish Add New Users');
+
             /* Get Deliveries Activity Mode   */
             $activitiesDeliveries = self::GetDeliveriesActivity();
             if ($activitiesDeliveries) {
@@ -46,6 +58,7 @@ class Activity_ModeCron {
             }//if_ActivitiesDeliveries
 
             mtrace('Finish Activity Mode Cron Campaigns: ' . time() );
+
             return true;
         }catch (Exception $ex) {
             throw $ex;
@@ -55,6 +68,217 @@ class Activity_ModeCron {
     /***********/
     /* PRIVATE */
     /***********/
+
+    /**
+     * @return          array
+     * @throws          Exception
+     *
+     * @creationDate    16/03/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Get campaigns where have to be added a new users
+     */
+    private static function GetActivityCampaignToAddNewUsers() {
+        /* Variables */
+        global $DB;
+        $params     = null;
+        $rdo        = null;
+        $sql        = null;
+        $campaigns  = array();
+        $info       = null;
+
+        try {
+            /* Search Criteria  */
+            $params = array();
+            $params['users'] = 1;
+            $params['mode']  = self::CONST_ACTIVITY_MODE;
+
+            /* SQL Instruction  */
+            $sql = " SELECT 	mi.id,
+                                mi.courseid
+                     FROM			{microlearning}		          mi
+                        JOIN		{microlearning_activity_mode} ma  ON ma.microid 	= mi.id
+                        JOIN		{enrol}				          e	  ON  e.courseid  = mi.courseid
+                                                                      AND e.status    = 0
+                        JOIN		{user_enrolments}	          ue  ON  ue.enrolid  = e.id
+                        JOIN		{user_express}		          ex  ON  ex.userid   = ue.userid
+                        JOIN		{user}				          u	  ON  u.id 		  = ex.userid
+                                                                      AND u.deleted   = 0
+                                                                      AND u.username != 'guest'
+                        LEFT JOIN	{microlearning_users}         mu  ON  mu.microid  = mi.id
+                                                                      AND mu.userid   = u.id
+                     WHERE 	  mi.addusers = :users
+                        AND	  mi.type 	  = :mode
+                        AND   mu.userid IS NULL
+                     GROUP BY mi.id ";
+
+            /* Execute */
+            $rdo = $DB->get_records_sql($sql,$params);
+            if ($rdo) {
+                foreach ($rdo as $instance) {
+                    /* Info Campaign    */
+                    $info = new stdClass();
+                    $info->id       = $instance->id;
+                    $info->course   = $instance->courseid;
+                    $info->users    = self::GetUsers_ToAdd($instance->id,$instance->courseid);
+
+                    /* Add Campaign     */
+                    $campaigns[$instance->id] = $info;
+                }//for_rdo
+            }//if_rdo
+
+            return $campaigns;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//GetActivityCampaignToAddNewUsers
+
+    /**
+     * @param           $campaign
+     * @param           $courseId
+     *
+     * @return          array
+     * @throws          Exception
+     *
+     * @creationDate    16/03/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Get the users that have to be added to the campaign
+     */
+    private static function GetUsers_ToAdd($campaign,$courseId) {
+        /* Variables */
+        global $DB;
+        $params     = null;
+        $sql        = null;
+        $rdo        = null;
+        $newUsers   = array();
+        $info       = null;
+
+        try {
+            /* Search Criteria */
+            $params = array();
+            $params['course']   = $courseId;
+            $params['micro']    = $campaign;
+
+            /* SQL Instruction  */
+            $sql = " SELECT			u.id,
+                                    MAX(ue.timestart) as 'timestart'
+                     FROM			{user}				    u
+                        JOIN		{user_express}		    ex	ON	ex.userid 	= u.id
+                        JOIN		{user_enrolments}	    ue	ON 	ue.userid 	= ex.userid
+                        JOIN		{enrol}				    e	ON 	e.id 		= ue.enrolid
+                                                                AND e.status	= 0
+                                                                AND	e.courseid	= :course
+                        LEFT JOIN	{microlearning_users}	mu	ON	mu.userid   = ue.userid
+                                                                AND mu.microid  = :micro
+                     WHERE	u.deleted 	= 0
+                        AND	u.username != 'guest'
+                        AND mu.userid IS NULL
+                     GROUP BY u.id ";
+
+            /* Execute */
+            $rdo = $DB->get_records_sql($sql,$params);
+            if ($rdo) {
+              foreach ($rdo as $instance) {
+                  /* Info User  */
+                  $info = new stdClass();
+                  $info->id         = $instance->id;
+                  $info->timestart  = $instance->timestart;
+
+                  /* Add user   */
+                  $newUsers[$instance->id] = $info;
+              }//for_rdo
+            }//if_Rdo
+
+            return $newUsers;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//GetUsers_ToAdd
+
+    /**
+     * @param           $campaign
+     * @param           $newUsers
+     *
+     * @throws          Exception
+     *
+     * @creationDate    16/03/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Add new users to the campaign
+     */
+    private static function AddNewUsers($campaign,$newUsers) {
+        /* Variables */
+        global $DB;
+        $params     = null;
+        $rdo        = null;
+        $delivery   = null;
+        $instance   = null;
+        $trans      = null;
+
+        /* Start transaction */
+        $trans = $DB->start_delegated_transaction();
+
+        try {
+            /* Search criteria */
+            $params = array();
+            $params['microid'] = $campaign;
+
+            /* Get Deliveries connected with campaign    */
+            $activitiesDelivery = $DB->get_records('microlearning_activity_mode',$params,'id,microid,afterenrol,aftercompletion,tocomplete,afternotcompletion,notcomplete');
+
+            /* First Add users to campaign               */
+            foreach ($newUsers as $userId => $user) {
+                /* New Microlearning User Instance */
+                $instance = new stdClass();
+                $instance->microid = $campaign;
+                $instance->userid  = $userId;
+
+                /* Execute */
+                $DB->insert_record('microlearning_users',$instance);
+
+                /* Add the user to the deliveries   */
+                foreach ($activitiesDelivery as $activityMode) {
+                    /* Third add users to the deliveries                */
+                    $delivery = new stdClass();
+                    $delivery->microid      = $activityMode->microid;
+                    $delivery->micromodeid  = $activityMode->id;
+                    $delivery->userid       = $user->id;
+                    $delivery->sent         = 0;
+
+                    if ($activityMode->afterenrol) {
+                        /* Date to send the delivery    */
+                        $days = 60*60*24*$activityMode->afterenrol;
+                        $date = $user->timestart +  $days;
+
+                        $delivery->timetosend = $date;
+                    }////if_afterenrol
+
+                    if ($activityMode->afternotcompletion) {
+                        /* Date to send the delivery    */
+                        $days = 60*60*24*$activityMode->afternotcompletion;
+                        $date = $user->timestart +  $days;
+
+                        $delivery->timetosend = $date;
+                    }//if_aftercompletion
+
+                    $DB->insert_record('microlearning_deliveries',$delivery);
+                }//for_deliveries
+            }//for_each_user
+
+            /* Commit */
+            $trans->allow_commit();
+        }catch (Exception $ex) {
+            /* Rollback */
+            $trans->rollback($ex);
+
+            throw $ex;
+        }//try_catch
+    }//AddNewUsers
+
 
     /**
      * @return          array
@@ -101,7 +325,8 @@ class Activity_ModeCron {
                                             mi_am.subject,
                                             mi_am.body,
                                             GROUP_CONCAT(DISTINCT mi_a.activityid ORDER BY mi_a.activityid SEPARATOR ',') 	as 	'activities',
-                                            mi.courseid
+                                            mi.courseid,
+                                            mi.addusers
                      FROM			{microlearning_activity_mode}	mi_am
                         JOIN		{microlearning}					mi		ON		mi.id 				= mi_am.microid
                                                                             AND		mi.activate			= :activate

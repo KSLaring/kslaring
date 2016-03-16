@@ -87,6 +87,7 @@ class microlearning_users_selector_form extends moodleform {
             $schoices[-1] = get_string('noselectedusers', 'bulkusers');
         }
 
+
         $form->addElement('header', 'users', get_string('usersinlist', 'bulkusers'));
 
         $form->addElement('html','<div class="micro_learning_users">');
@@ -128,6 +129,12 @@ class microlearning_users_selector_form extends moodleform {
                 $form->setType('addselect_searchtext',PARAM_TEXT);
             $form->addElement('html','</div>');//sel_users_right
         $form->addElement('html','</div>');//micro_learning_users
+
+        /* Add automatically users*/
+        if ($mode_learning == ACTIVITY_MODE) {
+            $form->addElement('checkbox', 'add_users', get_string('add_users', 'local_microlearning'));
+            $form->setDefault('add_users',Micro_Users::GetStatus_AutomaticallyUsers($campaign_id,$course_id,$mode_learning));
+        }//if_activity_mode
 
         $this->add_action_buttons(true, get_string('btn_next','local_microlearning'));
 

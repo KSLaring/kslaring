@@ -105,3 +105,5 @@ $string['micro_too_many']   = 'For mange brukere {$a}';
 $string['micro_use_filter'] = 'Vennligst avgrens søket med et filter';
 
 $string['alert_campaign']   = 'Denne kampanjen vil stå som deaktivert siden alle utsendingsepostene med tilhørende aktiviteter ikke er definert ferdig ennå.';
+
+$string['add_users'] = 'Add automatically new users';
