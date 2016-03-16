@@ -35,6 +35,17 @@ a.active {
   color: #0d4c6c;
   text-decoration: none;
 }
+a.btn {
+  color: #fff;
+}
+a.btn:visited,
+a.btn:hover,
+a.btn:focus,
+a.btn:active,
+a.btn.active {
+  color: #fff;
+  text-decoration: none;
+}
 .logo h1 span {
   font-size: .5em;
 }

@@ -29,6 +29,8 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+require_once(__DIR__ . '/../kommit/lib.php');
+
 /**
  * Let the theme modify the page object before the page is generated.
  *
@@ -39,49 +41,7 @@
  * @param moodle_page $page
  */
 function theme_bergen_page_init(moodle_page $page) {
-    global $CFG;
-
-    $jshead = <<<EOT
-    <script type='text/javascript' src="//wurfl.io/wurfl.js"></script>
-EOT;
-
-    if (!empty($CFG->additionalhtmlhead)) {
-        $CFG->additionalhtmlhead .= $jshead;
-    } else {
-        $CFG->additionalhtmlhead = $jshead;
-    }
-
-    $jsbodyopen = <<<EOT
-    <script type='text/javascript'>
-        YUI().use('node', function(Y) {
-            var bd = Y.one('body');
-            if (bd && WURFL) {
-                if (WURFL.is_mobile) {
-                    bd.addClass('is-mobile');
-                }
-                if (WURFL.form_factor === 'Desktop') {
-                    bd.addClass('is-desktop');
-                }
-            }
-        });
-    </script>
-EOT;
-
-    if (!empty($CFG->additionalhtmltopofbody)) {
-        $CFG->additionalhtmltopofbody .= $jsbodyopen;
-    } else {
-        $CFG->additionalhtmltopofbody = $jsbodyopen;
-    }
-
-    if (function_exists('course_get_format')) {
-        $courseformat = course_get_format($page->course);
-
-        // Call a hook in the course format class to enable page manipulation
-        // in the course format.
-        if (method_exists($courseformat, 'page_init')) {
-            $courseformat->page_init($page);
-        }
-    }
+    theme_kommit_page_init($page);
 }
 
 /**
@@ -95,44 +55,14 @@ EOT;
  * @return string The parsed CSS The parsed CSS.
  */
 function theme_bergen_process_css($css, $theme) {
-
-    // Set the background image for the logo.
-    $logo = $theme->setting_file_url('logo', 'logo');
-    $css = theme_bergen_set_logo($css, $logo);
-
-    // Set custom CSS.
-    if (!empty($theme->settings->customcss)) {
-        $customcss = $theme->settings->customcss;
-    } else {
-        $customcss = null;
-    }
-    $css = theme_bergen_set_customcss($css, $customcss);
-
-    $css = theme_bergen_set_fontwww($css);
-
-    return $css;
+    return theme_kommit_process_css($css, $theme);
 }
 
 /**
  * Include the Awesome Font.
  */
 function theme_bergen_set_fontwww($css) {
-    global $CFG, $PAGE;
-    if (empty($CFG->themewww)) {
-        $themewww = $CFG->wwwroot . "/theme";
-    } else {
-        $themewww = $CFG->themewww;
-    }
-    $tag = '[[setting:fontwww]]';
-
-    $theme = theme_config::load('bergen');
-    if (!empty($theme->settings->bootstrapcdn)) {
-        $css = str_replace($tag, '//netdna.bootstrapcdn.com/font-awesome/4.0.0/fonts/', $css);
-    } else {
-        $css = str_replace($tag, $themewww . '/bergen/fonts/', $css);
-    }
-
-    return $css;
+    return theme_kommit_set_fontwww($css);
 }
 
 /**
@@ -144,15 +74,7 @@ function theme_bergen_set_fontwww($css) {
  * @return string The parsed CSS
  */
 function theme_bergen_set_logo($css, $logo) {
-    $tag = '[[setting:logo]]';
-    $replacement = $logo;
-    if (is_null($replacement)) {
-        $replacement = '';
-    }
-
-    $css = str_replace($tag, $replacement, $css);
-
-    return $css;
+    return theme_kommit_set_logo($css, $logo);
 }
 
 /**
@@ -168,14 +90,16 @@ function theme_bergen_set_logo($css, $logo) {
  *
  * @return bool
  */
-function theme_bergen_pluginfile($course, $cm, $context, $filearea, $args, $forcedownload, array $options = array()) {
-    if ($context->contextlevel == CONTEXT_SYSTEM and $filearea === 'logo') {
-        $theme = theme_config::load('bergen');
+function theme_bergen_pluginfile($course, $cm, $context, $filearea, $args, $forcedownload,
+    array $options = array()) {
+    static $theme;
 
-        return $theme->setting_file_serve('logo', $args, $forcedownload, $options);
-    } else {
-        send_file_not_found();
+    if (empty($theme)) {
+        $theme = theme_config::load('bergen');
     }
+
+    return theme_kommit_pluginfile_serve($course, $cm, $context, $filearea, $args,
+        $forcedownload, $options, $theme);
 }
 
 /**
@@ -187,15 +111,7 @@ function theme_bergen_pluginfile($course, $cm, $context, $filearea, $args, $forc
  * @return string The CSS which now contains our custom CSS.
  */
 function theme_bergen_set_customcss($css, $customcss) {
-    $tag = '[[setting:customcss]]';
-    $replacement = $customcss;
-    if (is_null($replacement)) {
-        $replacement = '';
-    }
-
-    $css = str_replace($tag, $replacement, $css);
-
-    return $css;
+    return theme_kommit_set_customcss($css, $customcss);
 }
 
 /**
@@ -218,6 +134,27 @@ function theme_bergen_get_html_for_settings(renderer_base $output, moodle_page $
     $strfooterhelpurl = get_string('footerhelpurl', 'theme_bergen');
     $strhelp = get_string('help');
     $footerbrukerhelp = get_string('footerbrukerhelp', 'theme_bergen');
+    $return->heroheadline = '';
+
+    $return->herolead = '';
+    $return->herolinktext = '';
+    $return->herolink = '';
+
+    if (!empty($page->theme->settings->heroheadline)) {
+        $return->heroheadline = format_text($page->theme->settings->heroheadline);
+    }
+
+    if (!empty($page->theme->settings->herolead)) {
+        $return->herolead = format_text($page->theme->settings->herolead);
+    }
+
+    if (!empty($page->theme->settings->herolinktext)) {
+        $return->herolinktext = format_text($page->theme->settings->herolinktext);
+    }
+
+    if (!empty($page->theme->settings->herolink)) {
+        $return->herolink = $page->theme->settings->herolink;
+    }
 
     $return->navbarclass = '';
     if (!empty($page->theme->settings->invert)) {
@@ -235,7 +172,7 @@ function theme_bergen_get_html_for_settings(renderer_base $output, moodle_page $
 
     $footerhelp = '';
     $footerhelp .= '<a href="' . $strfooterhelpurl . '">';
-    $footerhelp .= '<img class="help icon" src="' . $output->pix_url('help') .'"/>';
+    $footerhelp .= '<img class="help icon" src="' . $output->pix_url('help') . '"/>';
     $footerhelp .= '&nbsp;' . $strhelp . '<br/>' . $footerbrukerhelp;
     $footerhelp .= '</a>';
     $return->footerhelp = $footerhelp;
@@ -259,40 +196,5 @@ function theme_bergen_get_html_for_settings(renderer_base $output, moodle_page $
  * @return bool
  */
 function theme_bergen_show_hidden_blocks() {
-    global $COURSE;
-    $return = false;
-
-    $coursecontext = context_course::instance($COURSE->id);
-    if (has_capability('theme/bergen:viewhiddenblocks', $coursecontext)) {
-        $return = true;
-    }
-
-    return $return;
-}
-
-/**
- * All theme functions should start with theme_bergen_
- *
- * @deprecated since 2.5.1
- */
-function bergen_process_css() {
-    throw new coding_exception('Please call theme_' . __FUNCTION__ . ' instead of ' . __FUNCTION__);
-}
-
-/**
- * All theme functions should start with theme_bergen_
- *
- * @deprecated since 2.5.1
- */
-function bergen_set_logo() {
-    throw new coding_exception('Please call theme_' . __FUNCTION__ . ' instead of ' . __FUNCTION__);
-}
-
-/**
- * All theme functions should start with theme_bergen_
- *
- * @deprecated since 2.5.1
- */
-function bergen_set_customcss() {
-    throw new coding_exception('Please call theme_' . __FUNCTION__ . ' instead of ' . __FUNCTION__);
+    return theme_kommit_show_hidden_blocks();
 }

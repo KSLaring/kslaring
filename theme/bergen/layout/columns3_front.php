@@ -60,13 +60,14 @@ echo $OUTPUT->doctype() ?>
 
     <div class="hero-unit" style="<?php echo $OUTPUT->hero_img(); ?>">
         <div class="container-fluid">
-            <?php echo $OUTPUT->edit_hero_img(); ?>
             <div class="texts">
-                <h1>Ny læringsarena</h1>
+                <h1><?php echo $html->heroheadline; ?></h1>
 
-                <div class="lead">Kurs når det passer deg. Ressurser alltid tilgjengelig</div>
+                <div class="lead"><?php echo $html->herolead; ?></div>
                 <div class="buttons">
-                    <a href="<?php echo $url_course_lst;?>"><button>Finn kurs og dokumentasjon</button></a>
+                    <a class="btn" href="<?php echo $html->herolink; ?>">
+                        <?php echo $html->herolinktext; ?>
+                    </a>
                 </div>
             </div>
         </div>
