@@ -152,7 +152,7 @@ function theme_kommit_set_logo($css, $logo) {
 }
 
 /**
- * Serves any files associated with the theme settings.
+ * Serves any files associated with the theme settings - theme/childtheme wrapper.
  *
  * @param stdClass $course
  * @param stdClass $cm
@@ -171,6 +171,36 @@ function theme_kommit_pluginfile($course, $cm, $context, $filearea, $args,
     if (empty($theme)) {
         $theme = theme_config::load('kommit');
     }
+
+    if ($context->contextlevel == CONTEXT_SYSTEM) {
+        if (preg_match("/^(logo|heroimg)$/", $filearea)) {
+            return $theme->setting_file_serve($filearea, $args, $forcedownload, $options);
+        } else {
+            send_file_not_found();
+        }
+    } else {
+        send_file_not_found();
+    }
+
+    return theme_kommit_pluginfile_serve($course, $cm, $context, $filearea, $args,
+        $forcedownload, $options, $theme);
+}
+
+/**
+ * Serves any files associated with the theme settings.
+ *
+ * @param stdClass $course
+ * @param stdClass $cm
+ * @param context  $context
+ * @param string   $filearea
+ * @param array    $args
+ * @param bool     $forcedownload
+ * @param array    $options
+ *
+ * @return bool
+ */
+function theme_kommit_pluginfile_serve($course, $cm, $context, $filearea, $args,
+    $forcedownload, array $options = array(), $theme) {
 
     if ($context->contextlevel == CONTEXT_SYSTEM) {
         if (preg_match("/^(logo|heroimg)$/", $filearea)) {
