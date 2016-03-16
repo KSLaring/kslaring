@@ -21,6 +21,7 @@ function xmldb_local_microlearning_upgrade($oldVersion) {
     $fieldMessage           = null;
     $tblMicrolearning       = null;
     $fieldDuplicatefrom     = null;
+    $fieldAddUsers          = null;
 
     try {
         /* Get Manager  */
@@ -48,6 +49,14 @@ function xmldb_local_microlearning_upgrade($oldVersion) {
                 $db_man->add_field($tblMicrolearning, $fieldDuplicatefrom);
             }//if_exists
         }//if_oldVersion
+
+        if ($oldVersion < 2016031600) {
+            $tblMicrolearning   = new xmldb_table('microlearning');
+            $fieldAddUsers = new xmldb_field('addusers', XMLDB_TYPE_INTEGER, 1, null, XMLDB_NOTNULL, null,0,'duplicated_from');
+            if (!$db_man->field_exists($tblMicrolearning, $fieldAddUsers)) {
+                $db_man->add_field($tblMicrolearning, $fieldAddUsers);
+            }//if_exists
+        }//if_oldVersion_2016031600
 
         return true;
     }catch (Exception $ex) {

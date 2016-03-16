@@ -120,12 +120,22 @@ if ($selector_users->is_cancelled()) {
 
     /* Next Action  */
     if ((isset($data->submitbutton) && $data->submitbutton)) {
+        if (isset($data->add_users)) {
+            if ($data->add_users) {
+                Micro_Learning::Activate_AddNewUsers($campaign_id,$course_id,$mode_learning,1);
+            }else {
+                Micro_Learning::Activate_AddNewUsers($campaign_id,$course_id,$mode_learning,0);
+            }//if_add_new_users
+        }else {
+            Micro_Learning::Activate_AddNewUsers($campaign_id,$course_id,$mode_learning,0);
+        }//if_add_new_users
+
         $_POST = array();
         redirect($return_url);
     }//if_submitbutton_next
 
     // reset the form selections
-    $user_list = Micro_Users::Get_SelectiorUsers_Filter($user_filter,$course_id,$mode_learning,$campaign_id,$started,$addSearch,$removeSearch);
+    $user_list      = Micro_Users::Get_SelectiorUsers_Filter($user_filter,$course_id,$mode_learning,$campaign_id,$started,$addSearch,$removeSearch);
     $selector_users = new microlearning_users_selector_form(null, $user_list);
 }//if_form
 

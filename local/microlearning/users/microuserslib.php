@@ -513,6 +513,43 @@ class Micro_Users {
         }//try_catch
     }//DeleteAllUsers_Campaign
 
+
+    /**
+     * @param           $campaignId
+     * @param           $courseId
+     * @param           $mode
+     *
+     * @return          int
+     * @throws          Exception
+     *
+     * Description
+     * Get status for adding automatically new users
+     */
+    public static function GetStatus_AutomaticallyUsers($campaignId,$courseId,$mode) {
+        /* Variables */
+        global $DB;
+        $params = null;
+        $rdo    = null;
+
+        try {
+            /* Search Criteria  */
+            $params = array();
+            $params['courseid']     = $courseId;
+            $params['id']           = $campaignId;
+            $params['type']         = $mode;
+
+            /* Execute  */
+            $rdo = $DB->get_record('microlearning',$params,'id,addusers');
+            if ($rdo) {
+                return $rdo->addusers;
+            }else {
+                return 0;
+            }
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//GetStatus_AutomaticallyUsers
+
     /************/
     /* PRIVATE */
     /***********/
