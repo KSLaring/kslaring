@@ -456,6 +456,53 @@ class Micro_Learning {
         }//try_catch
     }//ChangeStatus_Campaign
 
+    /**
+     * @param           $campaignId
+     * @param           $courseId
+     * @param           $mode
+     * @param           $add
+     *
+     * @return          bool
+     * @throws          Exception
+     *
+     * @creationDate    16/03/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Add new users automatically
+     */
+    public static function Activate_AddNewUsers($campaignId,$courseId,$mode,$add) {
+        /* Variables */
+        global $DB;
+        $params = null;
+        $sql    = null;
+        $rdo    = null;
+
+        try {
+            /* Search Criteria  */
+            $params = array();
+            $params['course']   = $courseId;
+            $params['campaign'] = $campaignId;
+            $params['type']     = $mode;
+
+            /* SQL Instruction */
+            $sql = " UPDATE {microlearning}
+                        SET addusers = $add
+                     WHERE  id        = :campaign
+                        AND courseid  = :course
+                        AND type      = :type ";
+
+            /* Execute */
+            $DB->execute($sql,$params);
+
+            return true;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//Activate_AddNewUsers
+
+
+
     /* ******************* */
     /* TABLES              */
     /* ******************* */

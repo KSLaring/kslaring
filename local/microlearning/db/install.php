@@ -91,6 +91,8 @@ class MicroInstall {
         $tbl_micro_learning->add_field('activate',XMLDB_TYPE_INTEGER,'1',null, XMLDB_NOTNULL, null,1);
         /* Duplicated From  */
         $tbl_micro_learning->add_field('duplicated_from',XMLDB_TYPE_INTEGER,'10',null, null, null,null);
+        /* Add automatically new users  */
+        $tbl_micro_learning->add_field('addusers',XMLDB_TYPE_INTEGER,1,null,XMLDB_NOTNULL,null,0);
         /* Timecreated          -->     Date Created                        */
         $tbl_micro_learning->add_field('timecreated',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, null,null);
 
