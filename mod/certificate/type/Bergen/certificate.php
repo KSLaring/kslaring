@@ -82,8 +82,10 @@ $fontsans = get_config('certificate', 'fontsans');
 // the fonts directory from »lib/tcpdf/fonts« needs to be copied to »moodledata/fonts«.
 // Moodle TCPDF reads the fonts from the moodledata fonts directory if present. Then copy
 // the font file to be used into the »moodledata/fonts« directory.
-$fontserif = $pdf->addTTFfont($CFG->dataroot . '/fonts/segoeprb.ttf', 'TrueTypeUnicode',
-    '', 32, $CFG->dataroot . '/fonts/');
+//$fontserif = $pdf->addTTFfont($CFG->dataroot . '/fonts/segoeprb.ttf', 'TrueTypeUnicode',
+//    '', 32, $CFG->dataroot . '/fonts/');
+
+$fontserif = get_config('certificate', 'fontserif');
 
 // Add images and lines
 certificate_print_image($pdf, $certificate, CERT_IMAGE_BORDER, $brdrx, $brdry, $brdrw, $brdrh);
