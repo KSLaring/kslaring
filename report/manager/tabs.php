@@ -29,13 +29,13 @@ $top_row    = array();
 /* Info Super Users */
 $superUser  = CompetenceManager::IsSuperUser($USER->id);
 if ($superUser) {
+    $top_row[] = new tabobject('company_structure',
+                               new moodle_url($CFG->wwwroot.'/report/manager/company_structure/company_structure.php'),
+                               get_string('company_structure','report_manager'));
+
     $top_row[] = new tabobject('job_roles',
                                new moodle_url($CFG->wwwroot.'/report/manager/job_role/job_role.php'),
                                get_string('job_roles','report_manager'));
-
-    $top_row[] = new tabobject('reports',
-                               new moodle_url($CFG->wwwroot.'/report/manager/reports.php'),
-                               get_string('tab_reports','report_manager'));
 }else {
     /* Create Tabs */
     $top_row[] = new tabobject('manager_reports',
