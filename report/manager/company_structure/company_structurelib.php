@@ -500,8 +500,11 @@ class company_structure {
         global $DB;
         $instance   = null;
         $index      = null;
-        $hierarchyLevelZero = null;
-        $toUpdate           = '';
+        $levelOne   = null;
+        $levelTwo   = null;
+        $levelTre   = null;
+
+
 
         /* Begin Transaction    */
         $trans = $DB->start_delegated_transaction();
@@ -524,38 +527,48 @@ class company_structure {
             $DB->update_record('report_gen_companydata',$instance);
             /* Second Update the status company for the hierarchy of level Zero */
             if ($level == 0) {
-                /* Get My Hierarchy */
-                $hierarchyLevelZero = self::GetHierarchy_LevelZero($data->company);
-                if ($hierarchyLevelZero) {
-                    $toUpdate = $instance->id;
+                /* Params           */
+                $params = array();
+                $params['parent_public'] = $instance->public;
 
-                    /* Add Level One    */
-                    if ($hierarchyLevelZero->levelOne) {
-                        $toUpdate .= ',' . $hierarchyLevelZero->levelOne;
-                    }//if_levelOne
-
-                    /* Add Level Two    */
-                    if ($hierarchyLevelZero->levelTwo) {
-                        $toUpdate .= $hierarchyLevelZero->levelTwo;
-                    }//if_levelTwo
-
-                    /* Add Level Three  */
-                    if ($hierarchyLevelZero->levelThree) {
-                        $toUpdate .= $hierarchyLevelZero->levelThree;
-                    }//if_levelThree
-
-                    /* Params           */
-                    $params = array();
-                    $params['parent_public'] = $instance->public;
-
-                    /* SQL Instruction  */
+                /* Level One */
+                $levelOne = CompetenceManager::GetCompanies_LevelList(1,$data->company);
+                unset($levelOne[0]);
+                $levelOne = implode(',',array_keys($levelOne));
+                if ($levelOne) {
                     $sqlUpdate = " UPDATE {report_gen_companydata}
                                    SET    public = :parent_public
-                                   WHERE  id IN ($toUpdate) ";
+                                   WHERE  id IN ($levelOne) ";
 
                     /* Execute  */
                     $DB->execute($sqlUpdate,$params);
-                }//if_hierarchy
+
+                    /* Level Two */
+                    $levelTwo = CompetenceManager::GetCompanies_LevelList(2,$levelOne);
+                    unset($levelTwo[0]);
+                    $levelTwo = implode(',',array_keys($levelTwo));
+                    if ($levelTwo) {
+                        $sqlUpdate = " UPDATE {report_gen_companydata}
+                                          SET public = :parent_public
+                                       WHERE  id IN ($levelTwo) ";
+
+                        /* Execute  */
+                        $DB->execute($sqlUpdate,$params);
+
+                        /* Level Tre */
+                        $levelTre = CompetenceManager::GetCompanies_LevelList(3,$levelTwo);
+                        unset($levelTre[0]);
+                        $levelTre = implode(',',array_keys($levelTre));
+                        if ($levelTre) {
+                            $sqlUpdate = " UPDATE {report_gen_companydata}
+                                              SET public = :parent_public
+                                           WHERE  id IN ($levelTre) ";
+
+                            /* Execute  */
+                            $DB->execute($sqlUpdate,$params);
+                        }//if_levelTre
+                    }//if_levelTwo
+                }//if_levelOne
             }//if_levelZero
 
             /* Commit   */
@@ -683,54 +696,5 @@ class company_structure {
             throw $ex;
         }//try_catch
     }//Insert_CompanyLevel
-
-    /**
-     * @param           $levelZero
-     * @return          null|stdClass
-     * @throws          Exception
-     *
-     * @creationDate    03/02/2015
-     * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Get all the companies connected with a specific level zero
-     */
-    private static function GetHierarchy_LevelZero($levelZero) {
-        /* Variables    */
-        global $DB;
-        $hierarchyLevelZero   = null;
-
-        try {
-            /* SEARCH Criteria  */
-            $params = array();
-            $params['levelzero'] = $levelZero;
-
-            /* SQL Instruction  */
-            $sql = " SELECT			GROUP_CONCAT(DISTINCT level_one.companyid ORDER BY level_one.companyid SEPARATOR ',') 		as 'level_one',
-                                    GROUP_CONCAT(DISTINCT level_two.companyid ORDER BY level_two.companyid SEPARATOR ',') 		as 'level_two',
-                                    GROUP_CONCAT(DISTINCT level_three.companyid ORDER BY level_three.companyid SEPARATOR ',') 	as 'level_three'
-                     FROM			{report_gen_companydata}			co
-                        LEFT JOIN 	{report_gen_company_relation} 	    level_one 	ON level_one.parentid 	= co.id
-                        LEFT JOIN	{report_gen_company_relation}		level_two	ON level_two.parentid	= level_one.companyid
-                        LEFT JOIN	{report_gen_company_relation}		level_three	ON level_three.parentid = level_two.companyid
-                     WHERE			co.hierarchylevel = 0
-                        AND			co.id             = :levelzero ";
-
-            /* Execute  */
-            $rdo = $DB->get_record_sql($sql,$params);
-            if ($rdo) {
-                /* Hierarchy Level Zero */
-                $hierarchyLevelZero = new stdClass();
-                $hierarchyLevelZero->levelZero  = $levelZero;
-                $hierarchyLevelZero->levelOne   = $rdo->level_one;
-                $hierarchyLevelZero->levelTwo   = $rdo->level_two;
-                $hierarchyLevelZero->levelThree = $rdo->level_three;
-            }//if_rdo
-
-            return $hierarchyLevelZero;
-        }catch (Exception $ex) {
-            throw $ex;
-        }//try_catch
-    }//GetHierarchy_LevelZero
 }//class_company_structure
 
