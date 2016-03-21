@@ -760,6 +760,7 @@ class format_netcourse extends format_base {
                 case 'homesummary':
                 case 'pagegraphics':
                 case 'pagevideo':
+                case 'manager':
                     course_page::addCourseHomePage_Section($mform, $optionname);
 
                     break;
