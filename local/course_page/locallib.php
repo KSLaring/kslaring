@@ -91,6 +91,46 @@ class course_page  {
     }//Init_Manager_Selector
 
     /**
+     * @throws          Exception
+     *
+     * @creationDate    21/03/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Initialize the sector selector
+     */
+    public static function Init_LocationsSector() {
+        /* Variables    */
+        global $PAGE;
+        $jsModule   = null;
+        $name       = null;
+        $path       = null;
+        $requires   = null;
+
+        try {
+            /* Initialise variables */
+            $name       = 'sectors';
+            $path       = '/local/course_page/YUI/sectors.js';
+            $requires   = array('node', 'event-custom', 'datasource', 'json', 'moodle-core-notification');
+
+            /* Initialise js module */
+            $jsModule = array('name'        => $name,
+                              'fullpath'    => $path,
+                              'requires'    => $requires,
+                              'strings'     => null
+                             );
+
+            $PAGE->requires->js_init_call('M.core_coursepage.init_sectors',
+                                           array('course_location','course_sector'),
+                                           false,
+                                           $jsModule
+                                         );
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//
+
+    /**
      * @param           $itemid
      * @return          moodle_url|null
      * @throws          Exception
@@ -1251,6 +1291,7 @@ class course_page  {
         $lstManager     = null;
         $lstLocations   = null;
         $lstSectors     = null;
+        $location       = null;
 
         try {
             $str_format = 'format_' . $format;
@@ -1270,8 +1311,8 @@ class course_page  {
                         $form->setDefault('course_location',$value);
                         break;
                     case 'course_sector':
-                        $lstLocations   = course_page::Get_CourseLocationsList($USER->id);
-                        $lstSectors     = course_page::Get_SectorsLocationsList(implode(',',array_keys($lstLocations)));;
+                        $location = self::GetCourseLocation($COURSE->id);
+                        $lstSectors     = course_page::Get_SectorsLocationsList($location);
                         $form->addElement('select','course_sector',get_string('home_sector',$str_format),$lstSectors,'multiple');
                         $form->setDefault('course_sector',$value);
                         break;
@@ -1597,6 +1638,45 @@ class course_page  {
             throw $ex;
         }//try_catch
     }//filePluginfile_HomePage
+
+    /**
+     * @param           $courseId
+     *
+     * @return          null
+     * @throws          Exception
+     *
+     * @creationDate    21/06/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Get course location connected with the course
+     */
+    public static function GetCourseLocation($courseId) {
+        /* Variables    */
+        global $DB;
+        $params     = null;
+        $rdo        = null;
+        $location   = null;
+
+        try {
+            /* Search Criteria  */
+            $params = array();
+            $params['name']     = 'course_location';
+            $params['courseid'] = $courseId;
+
+            /* Execute */
+            $rdo = $DB->get_record('course_format_options',$params,'value');
+            if ($rdo) {
+                if ($rdo->value) {
+                    $location = $rdo->value;
+                }
+            }//if_Rdo
+
+            return $location;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//GetCourseLocation
 
     /**
      * @param           $userId
@@ -2049,6 +2129,7 @@ class home_page_form extends moodleform {
         $form->setExpanded('courseformathdr');
 
         /* Course Format Section    */
+        course_page::Init_LocationsSector();
         $format_options = course_get_format($course)->get_format_options();
         foreach ($format_options as $name=>$option) {
             course_page::addCourseHomePage_Section($form,$name,true);

@@ -539,10 +539,11 @@ class format_classroom extends format_base {
      */
     public function course_format_options($foreditform = false) {
         /* Variables    */
-        global $USER;
+        global $USER,$COURSE;
         $lstManager     = null;
         $lstLocations   = null;
         $lstSectors     = null;
+        $location       = null;
 
         /**
          * @updateDate  14/05/2014
@@ -568,8 +569,20 @@ class format_classroom extends format_base {
          *
          * Description
          * Get the sectors connected with locations
+         *
+         * @updateDate  21/03/2016
+         * @author      eFaktor     (fbv)
+         *
+         * Description
+         * Sectors based on the location. Uses javascript
          */
-        $lstSectors = course_page::Get_SectorsLocationsList(implode(',',array_keys($lstLocations)));
+        $location = course_page::GetCourseLocation($COURSE->id);
+        if ($location) {
+            $lstSectors = course_page::Get_SectorsLocationsList($location);
+        }else {
+            $lstSectors = array();
+            $lstSectors[0] = get_string('sel_sector','local_friadmin');
+        }//if_location
 
         static $courseformatoptions = false;
         if ($courseformatoptions === false) {
@@ -785,6 +798,12 @@ class format_classroom extends format_base {
      *
      * Description
      * Add the 'ratings' option format
+     *
+     * @updateDate  21/03/2016
+     * @author      eFaktor     (fbv)
+     *
+     * Description
+     * The value of sectors selectors depends on the location chosen. Uses javascript
      */
     public function create_edit_form_elements(&$mform, $forsection = false) {
         //$elements = parent::create_edit_form_elements($mform, $forsection);
@@ -803,10 +822,13 @@ class format_classroom extends format_base {
                 case 'homesummary':
                 case 'pagegraphics':
                 case 'pagevideo':
+                case 'manager':
                     course_page::addCourseHomePage_Section($mform, $optionname);
 
                     break;
                 default:
+                    course_page::Init_LocationsSector();
+
                     if (!isset($option['element_type'])) {
                         $option['element_type'] = 'text';
                     }
