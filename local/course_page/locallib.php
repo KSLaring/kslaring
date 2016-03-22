@@ -110,7 +110,7 @@ class course_page  {
         try {
             /* Initialise variables */
             $name       = 'sectors';
-            $path       = '/local/course_page/YUI/sectors.js';
+            $path       = '/local/course_page/yui/sectors.js';
             $requires   = array('node', 'event-custom', 'datasource', 'json', 'moodle-core-notification');
 
             /* Initialise js module */
