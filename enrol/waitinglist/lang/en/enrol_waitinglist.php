@@ -271,4 +271,3 @@ $string['approval_occupied'] = 'At the moment, all available seats are occupied.
 
 $string['price'] = 'Price';
 
-
