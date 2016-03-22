@@ -69,13 +69,7 @@ $string['status_desc'] = 'Allow course access of internally enrolled users. This
 $string['status_help'] = 'This setting determines whether users can be enrolled waitinglistly, via a link in the course administration settings, by a user with appropriate permissions such as a teacher.';
 $string['statusenabled'] = 'Enabled';
 $string['statusdisabled'] = 'Disabled';
-/*
-$string['unenrol'] = 'Unenrol user';
-$string['unenrolselectedusers'] = 'Unenrol selected users';
-$string['unenrolselfconfirm'] = 'Do you really want to unenrol yourself from course "{$a}"?';
-$string['unenroluser'] = 'Do you really want to unenrol "{$a->user}" from course "{$a->course}"?';
-$string['unenrolusers'] = 'Unenrol users';
-*/
+
 $string['wscannotenrol'] = 'Waitlinglist instance cannot enrol a user in the course id = {$a->courseid}';
 $string['wsnoinstance'] = 'Waitinglist enrolment plugin instance doesn\'t exist or is disabled for the course (id = {$a->courseid})';
 $string['wsusercannotassign'] = 'You don\'t have the permission to assign this role ({$a->roleid}) to this user ({$a->userid}) in this course({$a->courseid}).';
@@ -200,6 +194,7 @@ $string['mng_body']     = '<p>We would like to inform you that you are manager f
                            <p>To approve it You must use this link: {$a->approve}.</p>
                            <p>To reject it You must use this link: {$a->reject}.</p>';
 
+
 $string['subject_reminder'] = '{$a->site}: Application for enrolment in course {$a->course}. REMINDER';
 $string['body_reminder']    = '<p>We would like to <b><u>reminder</u></b> you that you are manager for <b>{$a->user}</b>, and the <b>{$a->user}</b> has just applied for the course <b>{$a->course}</b>.</p><p>The arguments of the user are:</p><p>{$a->arguments}</p>
                                </br>
@@ -215,6 +210,7 @@ $string['body_reminder']    = '<p>We would like to <b><u>reminder</u></b> you th
                                <p>You should approve or reject the request as soon as possible.</p>
                                <p>To approve it You must use this link: {$a->approve}.</p>
                                <p>To reject it You must use this link: {$a->reject}.</p>';
+
 
 $string['std_body']     = 'Your application will be reviewed as soon as possible. We will send you another email when your enrolement is activated.';
 
@@ -264,6 +260,8 @@ $string['mng_approved_body_two'] = '<p>We would like to inform you that the <b>{
                                         <li><u>Price</u>: {$a->price}</li>
                                         <li>More information about the course in {$a->homepage}</li>
                                     </ul>';
+
+
 $string['mng_approved_body_end'] = '<p>This is an automatic generated email from {$a->site} and you cannot answer this email.';
 $string['home_page']    = 'Course home page';
 
