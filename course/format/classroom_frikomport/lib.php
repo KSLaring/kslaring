@@ -510,7 +510,7 @@ class format_classroom_frikomport extends format_base {
 
                     break;
                 default:
-                    //course_page::Init_LocationsSector();
+                    course_page::Init_LocationsSector();
 
                     if (!isset($option['element_type'])) {
                         $option['element_type'] = 'text';
