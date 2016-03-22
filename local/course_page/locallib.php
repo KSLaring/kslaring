@@ -130,6 +130,8 @@ class course_page  {
         }//try_catch
     }//
 
+
+
     /**
      * @param           $itemid
      * @return          moodle_url|null
