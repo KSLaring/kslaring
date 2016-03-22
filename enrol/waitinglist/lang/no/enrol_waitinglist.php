@@ -250,7 +250,7 @@ $string['mng_approved_subject']  = '{$a->site}: Søknad om plass på kurset: {$a
 $string['mng_approved_body_one'] = '<p>Vi sender deg denne bekreftelsen fordi du er oppgitt som leder for følgende arbeidssted(er): </p>';
 $string['mng_approved_body_two'] = '<p>Vi vil gjerne informere deg om at brukeren <b>{$a->user}</b>, som hører til følgende arbeidssted(er): </p>
                                     {$a->companies_user}
-                                    <p> nettopp er blitt påmeldt kurset: <b>{$a->course}</b>.</p>
+                                    <p> nettopp meld seg på/reservert plasser på kurset: <b>{$a->course}</b>.</p>
                                     <p>Kursinformasjon:</p>
                                     <ul>
                                         <li><u>Kursdato</u>: {$a->date}</li>
