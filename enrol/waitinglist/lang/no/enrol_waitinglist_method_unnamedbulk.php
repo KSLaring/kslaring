@@ -23,13 +23,15 @@
  */
 
 $string['unnamedbulk_displayname'] = 'Bulkpåmelding';
-$string['unnamedbulk_menutitle'] = 'Reserver kursplasser';
+$string['unnamedbulk_menutitle'] = 'Reserver kursplasser for deg selv og andre';
 $string['waitlistmessagetitle_unnamedbulk'] = 'Kursplasser er lagt til i ventelisten for: {$a}';
 $string['waitlistmessagetext_unnamedbulk'] = '{$a->queueseats} kursplasser er lagt til i ventelisten for: {$a->coursename}
 
 Dine reserverte kursplasser er i øyeblikket nummer {$a->queueno} på ventelisten.
 
-Du kan når som helst redigere reservasjonen din her: {$a->editenrolurl}';
+Du kan når som helst redigere reservasjonen din her: {$a->editenrolurl}
+
+Ta derfor vare på denne eposten!';
 $string['waitlistmessagetitleconfirmation_unnamedbulk'] = 'Bekreftede bulk kursplasser for kurset: {$a}';
 $string['sendconfirmmessage'] ='Send epost når kursplassene er bekreftet';
 $string['sendconfirmmessage_help'] ='Når kursplasser blir ledige i kurset, og de er lagt til i køen for denne påmeldingsmetoden, og de har tilgang til å reservere kursplasser med denne metoden, send en epost til vedkommende som har reservert kursplassene på seg.';
