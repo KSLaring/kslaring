@@ -265,4 +265,3 @@ $string['home_page']    = 'Hjemmesider';
 $string['approval_occupied'] = 'Det er i øyeblikket ingen ledige plasser. Søknaden om kursplass vil derfor bli behandlet straks det er ledige plasser på kurset.';
 
 $string['price'] = 'Pris';
-
