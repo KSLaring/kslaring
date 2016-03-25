@@ -31,7 +31,7 @@
 
 defined('MOODLE_INTERNAL') || die;
 
-$plugin->version = 2015111700;
+$plugin->version = 2016031600;
 $plugin->requires = 2013110500;
 $plugin->component = 'theme_bergen';
 $plugin->dependencies = array(

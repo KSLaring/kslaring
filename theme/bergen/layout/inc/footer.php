@@ -7,12 +7,12 @@
 </footer>
 <footer id="sub-footer" class="container-fluid">
     <div class="row-fluid">
-        <p class="text span12">
-            Bergen kommune benytter KS Læring for kursadministrasjon og
-            nettlæring.<br/>
-            Systemeier: HR-avdelingen. For brukerstøtte kontakt Helpdesk eller «Meld
-            feil»
-        </p>
+        <div class="text span10">
+            <?php echo $html->footertext ?>
+        </div>
+        <div class="help-link span2">
+            <?php echo $html->footerhelp ?>
+        </div>
 
         <?php echo $OUTPUT->return_to_role(); ?>
     </div>

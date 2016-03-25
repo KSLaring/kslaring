@@ -31,39 +31,13 @@
 
 defined('MOODLE_INTERNAL') || die;
 
-if ($ADMIN->fulltree) {
+$settings = null;
+$themename = 'theme_bergen';
 
-    // Invert Navbar to dark background.
-    $name = 'theme_bergen/invert';
-    $title = get_string('invert', 'theme_bergen');
-    $description = get_string('invertdesc', 'theme_bergen');
-    $setting = new admin_setting_configcheckbox($name, $title, $description, 0);
-    $setting->set_updatedcallback('theme_reset_all_caches');
-    $settings->add($setting);
+if (is_siteadmin()) {
+    $ADMIN->add('themes', new admin_category($themename, 'Bergen'));
 
-    // Logo file setting.
-    $name = 'theme_bergen/logo';
-    $title = get_string('logo','theme_bergen');
-    $description = get_string('logodesc', 'theme_bergen');
-    $setting = new admin_setting_configstoredfile($name, $title, $description, 'logo');
-    $setting->set_updatedcallback('theme_reset_all_caches');
-    $settings->add($setting);
-
-    // Custom CSS file.
-    $name = 'theme_bergen/customcss';
-    $title = get_string('customcss', 'theme_bergen');
-    $description = get_string('customcssdesc', 'theme_bergen');
-    $default = '';
-    $setting = new admin_setting_configtextarea($name, $title, $description, $default);
-    $setting->set_updatedcallback('theme_reset_all_caches');
-    $settings->add($setting);
-
-    // Footnote setting.
-    $name = 'theme_bergen/footnote';
-    $title = get_string('footnote', 'theme_bergen');
-    $description = get_string('footnotedesc', 'theme_bergen');
-    $default = '';
-    $setting = new admin_setting_confightmleditor($name, $title, $description, $default);
-    $setting->set_updatedcallback('theme_reset_all_caches');
-    $settings->add($setting);
+    // Load the parent theme settings.
+    //require_once ($CFG->dirroot . '/theme/kommit/settings/settings_base.php');
+    require (__DIR__ . '/../kommit/settings/settings_base.php');
 }

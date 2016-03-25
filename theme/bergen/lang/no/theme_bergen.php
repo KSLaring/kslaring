@@ -82,3 +82,9 @@ $string['bergen:frontpageviewhiddenblocks'] = 'View hidden frontpage blocks';
 /* Set my home page */
 $string['sethome']      = 'Angi som startside';
 $string['resethome']    = 'Bruk standard startside';
+
+/* Footer text */
+$string['footertext']    = 'Bergen kommune benytter KS Læring for kursadministrasjon og nettlæring.<br>
+Systemeier: HR-avdelingen. For brukerstøtte kontakt Helpdesk eller «Meld feil»';
+$string['footerhelpurl']    = 'http://www.performit.no/performitplayer/html/v-2-0/bk-laering/bk-laering.how2';
+$string['footerbrukerhelp']    = 'Brukerveiledning';
