@@ -31,98 +31,11 @@
 defined('MOODLE_INTERNAL') || die;
 
 $settings = null;
+$themename = 'theme_kommit';
 
 if (is_siteadmin()) {
-    $ADMIN->add('themes', new admin_category('theme_kommit', 'KommIT'));
+    $ADMIN->add('themes', new admin_category($themename, 'KommIT'));
 
-    /* Generic Settings */
-    $temp = new admin_settingpage('theme_kommit_generic',
-        get_string('genericsettings', 'theme_kommit'));
-
-    // Invert Navbar to dark background.
-    $name = 'theme_kommit/invert';
-    $title = get_string('invert', 'theme_kommit');
-    $description = get_string('invertdesc', 'theme_kommit');
-    $setting = new admin_setting_configcheckbox($name, $title, $description, 0);
-    $setting->set_updatedcallback('theme_reset_all_caches');
-    $temp->add($setting);
-
-    // Logo file setting.
-    $name = 'theme_kommit/logo';
-    $title = get_string('logo', 'theme_kommit');
-    $description = get_string('logodesc', 'theme_kommit');
-    $setting = new admin_setting_configstoredfile($name, $title, $description, 'logo');
-    $setting->set_updatedcallback('theme_reset_all_caches');
-    $temp->add($setting);
-
-    // Custom CSS file.
-    $name = 'theme_kommit/customcss';
-    $title = get_string('customcss', 'theme_kommit');
-    $description = get_string('customcssdesc', 'theme_kommit');
-    $default = '';
-    $setting = new admin_setting_configtextarea($name, $title, $description, $default);
-    $setting->set_updatedcallback('theme_reset_all_caches');
-    $temp->add($setting);
-
-    // Footnote setting.
-    $name = 'theme_kommit/footnote';
-    $title = get_string('footnote', 'theme_kommit');
-    $description = get_string('footnotedesc', 'theme_kommit');
-    $default = '';
-    $setting = new admin_setting_confightmleditor($name, $title, $description, $default);
-    $setting->set_updatedcallback('theme_reset_all_caches');
-    $temp->add($setting);
-
-    $ADMIN->add('theme_kommit', $temp);
-
-
-    /* Frontpage Settings */
-    $temp = new admin_settingpage('theme_kommit_frontpage',
-        get_string('frontpagesettings', 'theme_kommit'));
-
-    // Hero Image.
-    $name = 'theme_kommit/heroimg';
-    $title = get_string('heroimage', 'theme_kommit');
-    $description = get_string('heroimagedesc', 'theme_kommit');
-    $setting = new admin_setting_configstoredfile($name, $title, $description, 'heroimg');
-    $setting->set_updatedcallback('theme_reset_all_caches');
-    $temp->add($setting);
-
-    // Hero headline.
-    $name = 'theme_kommit/heroheadline';
-    $title = get_string('heroheadline', 'theme_kommit');
-    $description = get_string('heroheadlinedesc', 'theme_kommit');
-    $default = '';
-    $setting = new admin_setting_configtext($name, $title, $description, $default);
-    $setting->set_updatedcallback('theme_reset_all_caches');
-    $temp->add($setting);
-
-    // Hero headlead.
-    $name = 'theme_kommit/herolead';
-    $title = get_string('herolead', 'theme_kommit');
-    $description = get_string('heroleaddesc', 'theme_kommit');
-    $default = '';
-    $setting = new admin_setting_configtextarea($name, $title, $description, $default);
-    $setting->set_updatedcallback('theme_reset_all_caches');
-    $temp->add($setting);
-
-    // Hero herolinktext.
-    $name = 'theme_kommit/herolinktext';
-    $title = get_string('herolinktext', 'theme_kommit');
-    $description = get_string('herolinktextdesc', 'theme_kommit');
-    $default = '';
-    $setting = new admin_setting_configtext($name, $title, $description, $default);
-    $setting->set_updatedcallback('theme_reset_all_caches');
-    $temp->add($setting);
-
-    // Hero herolink.
-    $name = 'theme_kommit/herolink';
-    $title = get_string('herolink', 'theme_kommit');
-    $description = get_string('herolinkdesc', 'theme_kommit');
-    $default = '';
-    $setting = new admin_setting_configtext($name, $title, $description, $default);
-    $setting->set_updatedcallback('theme_reset_all_caches');
-    $temp->add($setting);
-
-    $ADMIN->add('theme_kommit', $temp);
+    // Load the theme settings.
+    require (__DIR__ . '/settings/settings_base.php');
 }
