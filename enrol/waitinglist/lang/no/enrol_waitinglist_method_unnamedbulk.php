@@ -40,7 +40,7 @@ $string['confirmedmessagetext_unnamedbulk'] = 'Kursplasser reservert for: {$a->c
 
 {$a->allocatedseats} av dine {$a->queueseats} reserverte kursplasser på ventelisten for kurset {$a->coursename} er nå blitt bekreftet.
 
-Vennlist meld brukerne inn i kurset og juster antall kursplasser tilsvarende her: {$a->editenrolurl}';
+Har det skjedd endringer i behovet kan du justere antall kursplasser tilsvarende her: {$a->editenrolurl}';
 $string['customconfirmedmessage'] = 'Melding ved bekreftet kursplass';
 $string['customconfirmedmessage_help'] = 'En egendefinert melding kan legges til som ren tekst eller i Moodles auto-format, inkludert HTML-tagger og flerspråk-tagger.
 
@@ -56,8 +56,8 @@ Følgende plassholdere kan brukes i meldingen:
 * Link til påmeldingssiden {$a->editenrolurl}';
 $string['reserveseatcount'] = 'Ønsket antall kursplasser';
 $string['reserveseats'] = 'Reservere kursplasser på kurset';
-$string['unnamedbulk_enrolformintro'] = 'Bruk dette skjemaet til å reservere kursplasser på dette kurset. Du vil bli varslet straks plassene er bekreftet. Når du har meldt inn brukerne kan du gå tilbake her for å justere ned antall kursplasser.';
+$string['unnamedbulk_enrolformintro'] = 'Bruk dette skjemaet til å reservere/endre reserverte kursplasser på dette kurset. Du vil bli varslet straks plassene er bekreftet. Har det skjedd endringer i behovet kan du justere ned antall kursplasser.';
 $string['unnamedbulk_enrolformqueuestatus'] = 'Du har søkt om å reservere {$a->seats} kursplasser og er tildelt {$a->assignedseats} kursplasser. 
 
-Din søknad er i øyeblikket nummer {$a->queueposition} på listen.';
+Din søknad er i øyeblikket nummer {$a->queueposition} på listen. (-0- betyr at du er først)';
 $string['unnamedbulk_enrolformqueuestatus_label'] = 'Gjeldende reservasjon';
