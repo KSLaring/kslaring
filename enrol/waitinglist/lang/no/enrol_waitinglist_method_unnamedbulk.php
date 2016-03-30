@@ -55,7 +55,7 @@ Følgende plassholdere kan brukes i meldingen:
 * Link til kurset {$a->courseurl}
 * Link til påmeldingssiden {$a->editenrolurl}';
 $string['reserveseatcount'] = 'Ønsket antall kursplasser';
-$string['reserveseats'] = 'Reservere kursplasser på kurset';
+$string['reserveseats'] = 'Reserver/oppdater antall kursplasser';
 $string['unnamedbulk_enrolformintro'] = 'Bruk dette skjemaet til å reservere/endre reserverte kursplasser på dette kurset. Du vil bli varslet straks plassene er bekreftet. Har det skjedd endringer i behovet kan du justere ned antall kursplasser.';
 $string['unnamedbulk_enrolformqueuestatus'] = 'Du har søkt om å reservere {$a->seats} kursplasser og er tildelt {$a->assignedseats} kursplasser. 
 
