@@ -34,4 +34,4 @@ $plugin->requires  = 2014050800;              // Requires this Moodle version
 $plugin->component = 'format_single_frikomport'; // Full name of the plugin (used for diagnostics)
 
 /* Dependencies */
-$plugin->dependencies = array('local_course_page' => 2016030700);
+$plugin->dependencies = array('local_course_page' => 2016033100);

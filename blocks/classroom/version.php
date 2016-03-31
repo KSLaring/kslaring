@@ -18,6 +18,6 @@ $plugin->component  = 'block_classroom';    // Full name of the plugin (used for
 
 
 /* Dependencies */
-$plugin->dependencies = array('local_course_page'               => 2016030700,
+$plugin->dependencies = array('local_course_page'               => 2016033100,
                               'format_classroom_frikomport'    => 2016030700
                              );
