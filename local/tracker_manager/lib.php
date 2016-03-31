@@ -72,4 +72,4 @@ function local_tracker_manager_extend_settings_navigation($settingsnav, $context
             $settingNode->add_node($competenceNode);
         }//if_node_before
     }//if_usercurrentsettings
-}//local_microlearning_extends_settings_navigation
+}//local_microlearning_extend_settings_navigation

@@ -28,5 +28,5 @@ defined('MOODLE_INTERNAL') || die;
 
 if ($ADMIN->fulltree) {
         $settings->add(new admin_setting_configcheckbox('completionreport/requiremodintro',
-            get_string('requiremodintro', 'admin'), get_string('configrequiremodintro', 'admin'), 0));
+            get_string('requiremodintro', 'admin'), get_string('requiremodintro_desc', 'admin'), 0));
 }

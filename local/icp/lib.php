@@ -41,4 +41,4 @@ function local_icp_extend_settings_navigation($settingsnav, $context) {
         }
     }
 
-}//local_icp_extends_settings_navigation
+}//local_icp_extend_settings_navigation

@@ -50,4 +50,4 @@ function local_course_page_extend_settings_navigation($settingsnav, $context) {
             $settingnode->add_node($home_node,'editsettings');
         }//if_settingnode
     }
-}//local_course_page_extends_settings_navigation
+}//local_course_page_extends_setting_navigation

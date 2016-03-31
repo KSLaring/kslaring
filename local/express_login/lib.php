@@ -36,7 +36,7 @@ function local_express_login_extend_settings_navigation($settingsnav, $context) 
             }//if_usercurrentsettings
         }
     }//if_activate
-}//local_express_login_extends_settings_navigation
+}//local_express_login_extend_settings_navigation
 
 /**
  * @creationDate    15/06/2015
