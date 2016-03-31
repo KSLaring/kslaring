@@ -70,13 +70,7 @@ $string['status_desc'] = 'Tillat kurstilgang fra internt påmeldte brukere. Dett
 $string['status_help'] = 'Denne innstillingen bestemmer hvorvidt brukere kan meldt på via påmelding med venteliste, via en link i kursadministrasjonsinnstillingene, og av en bruker med tillatelse til dette, f.eks. en lærer.';
 $string['statusenabled'] = 'Aktivert';
 $string['statusdisabled'] = 'Deaktivert';
-/*
-$string['unenrol'] = 'Unenrol user';
-$string['unenrolselectedusers'] = 'Unenrol selected users';
-$string['unenrolselfconfirm'] = 'Do you really want to unenrol yourself from course "{$a}"?';
-$string['unenroluser'] = 'Do you really want to unenrol "{$a->user}" from course "{$a->course}"?';
-$string['unenrolusers'] = 'Unenrol users';
-*/
+
 $string['wscannotenrol'] = 'Ventelisteinstansen kan ikke melde brukeren inn i kurset med id: {$a->courseid}';
 $string['wsnoinstance'] = 'Ventelisteinstansen eksisterer ikke eller er deaktivert for kurset (id = {$a->courseid})';
 $string['wsusercannotassign'] = 'Du har ikke tillatelse til å tildele ({$a->roleid}) rollen til denne brukeren: ({$a->userid}) i kurset ({$a->courseid}).';
@@ -195,6 +189,7 @@ $string['mng_body']     = '<p>Du får denne forespørselsen om godkjenning siden
                            <p>For å godkjenne denne søknaden kan du klikke her: {$a->approve}.</p>
                            <p>For å avslå denne søknaden kan du klikke her: {$a->reject}.</p>';
 
+
 $string['subject_reminder'] = '{$a->site}: Søknad om påmelding til kurset: {$a->course}. PÅMINNELSE';
 $string['body_reminder']    = '<p>Vi vil bare minne deg om at du er lederen for <b>{$a->user}</b>, og at <b>{$a->user}</b> nylig har søkt om plass på kurset: <b>{$a->course}</b>.</p><p>Brukerens begrunnelse for søknaden er:</p><p>{$a->arguments}</p>
                                </br>
@@ -210,6 +205,7 @@ $string['body_reminder']    = '<p>Vi vil bare minne deg om at du er lederen for 
                                <p>Du bør ta stilling til denne søknaden så raskt som mulig.</p>
                                <p>For å godkjenne denne søknaden kan du klikke her:  {$a->approve}.</p>
                                <p>TFor å avslå denne søknaden kan du klikke her:  {$a->reject}.</p>';
+
 
 $string['std_body']     = 'Søknaden om påmelding vil bli behandlet så raskt som mulig. Vi sender deg en epost med varsel om resultatet av behandlingen fra din leder.';
 
@@ -259,6 +255,7 @@ $string['mng_approved_body_two'] = '<p>Vi vil gjerne informere deg om at brukere
                                         <li><u>Pris</u>: {$a->price}</li>
                                         <li>Mer informasjon om kurset kan du få på kursets hjemmeside: {$a->homepage}</li>
                                     </ul>';
+
 $string['mng_approved_body_end'] = '<p>Dette er en automatisk generert epost fra {$a->site} og du kan ikke svare på eposten.';
 $string['home_page']    = 'Hjemmesider';
 
