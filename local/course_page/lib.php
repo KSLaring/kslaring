@@ -12,7 +12,7 @@
  * @author          eFaktor     (fbv)
  *
  */
-function local_course_page_extends_settings_navigation($settingsnav, $context) {
+function local_course_page_extend_settings_navigation($settingsnav, $context) {
     global $PAGE;
 
     // Only add this settings item on non-site course pages.

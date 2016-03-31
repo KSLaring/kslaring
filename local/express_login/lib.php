@@ -10,7 +10,7 @@
  * @author          eFaktor     (fbv)
  */
 
-function local_express_login_extends_settings_navigation($settingsnav, $context) {
+function local_express_login_extend_settings_navigation($settingsnav, $context) {
     /* Plugin Info */
     $plugin     = get_config('local_express_login');
     if (($plugin) && (isset($plugin->activate_express))) {

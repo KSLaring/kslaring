@@ -2,7 +2,7 @@
 
 require_once($CFG->dirroot . '/report/manager/managerlib.php');
 
-function local_tracker_manager_extends_navigation(global_navigation $navigation) {
+function local_tracker_manager_extend_navigation(global_navigation $navigation) {
     /* Variables    */
     global $USER,$CFG;
 
@@ -39,7 +39,7 @@ function local_tracker_manager_extends_navigation(global_navigation $navigation)
  * Description
  * Add to 'My Profile Settings Menu' the link to the competence user info profile
  */
-function local_tracker_manager_extends_settings_navigation($settingsnav, $context) {
+function local_tracker_manager_extend_settings_navigation($settingsnav, $context) {
     /* Variables    */
     global $USER,$ADMIN;
     $url                = null;
