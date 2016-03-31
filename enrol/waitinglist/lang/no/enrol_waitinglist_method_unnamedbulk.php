@@ -60,4 +60,4 @@ $string['unnamedbulk_enrolformintro'] = 'Bruk dette skjemaet til å reservere/en
 $string['unnamedbulk_enrolformqueuestatus'] = 'Du har søkt om å reservere {$a->seats} kursplasser og er tildelt {$a->assignedseats} kursplasser. 
 
 Din søknad er i øyeblikket nummer {$a->queueposition} på listen. (-0- betyr at du er først)';
-$string['unnamedbulk_enrolformqueuestatus_label'] = 'Gjeldende reservasjon';
+$string['unnamedbulk_enrolformqueuestatus_label'] = 'Din reservasjon';
