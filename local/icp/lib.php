@@ -9,7 +9,7 @@
  * @creationDate    25/05/2015
  * @author          eFaktor     (fbv)
  */
-function local_icp_extends_settings_navigation($settingsnav, $context) {
+function local_icp_extend_settings_navigation($settingsnav, $context) {
     global $PAGE;
 
     // Only add this settings item on non-site course pages.
