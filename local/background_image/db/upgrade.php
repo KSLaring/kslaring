@@ -2,7 +2,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-function xmldb_format_vertical_upgrade($oldversion = 0) {
+function xmldb_local_background_image_upgrade($oldversion = 0) {
     global $DB;
 
     $dbman = $DB->get_manager();
