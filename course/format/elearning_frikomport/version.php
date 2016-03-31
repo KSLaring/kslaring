@@ -37,4 +37,4 @@ $plugin->component = 'format_elearning_frikomport';    // Full name of the plugi
 
 
 /* Dependencies */
-$plugin->dependencies = array('local_course_page' => 2016030700);
+$plugin->dependencies = array('local_course_page' => 2016033100);
