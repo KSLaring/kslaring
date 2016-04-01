@@ -17,8 +17,9 @@
 /**
  * Renderers to align Moodle's HTML with that expected by kommit
  *
- * @package    theme_kommit
- * @copyright  2014
+ * @package    theme_frikomport
+ * @copyright  2016 eFaktor
+ * @author     Urs Hunkler {@link urs.hunkler@unodo.de}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class theme_frikomport_core_renderer extends core_renderer {

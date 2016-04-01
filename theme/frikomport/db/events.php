@@ -19,7 +19,7 @@
  *
  * @package   theme_frikomport
  * @category  event
- * @copyright 2015 eFaktor
+ * @copyright 2016 eFaktor
  * @author    Urs Hunkler {@link urs.hunkler@unodo.de}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
