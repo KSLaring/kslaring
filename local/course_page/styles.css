@@ -260,6 +260,8 @@
 .extra_home .mdl-left {
     margin-top: 10px;
 }
+
+
 .location_panel {
     display: block;
     height: auto;
@@ -338,6 +340,8 @@
   width: 20%;
 }
 
+
+
 @media (max-width: 767px) {
   .home_page {
     padding: 0 5px;
@@ -354,4 +358,84 @@
   .home_page_block_two {
     border-left: none;
   }
+
+    div#location.yui3-widget.yui3-panel.moodle-dialogue.yui3-widget-positioned.yui3-widget-modal.yui3-widget-stacked.moodle-has-zindex {
+        left: 25px;
+        top: 50px;
+        bottom: 0;
+        width: 70%;
+        position: fixed;
+    }
+
+    div#ratings.yui3-widget.yui3-panel.moodle-dialogue.yui3-widget-positioned.yui3-widget-modal.yui3-widget-stacked.moodle-has-zindex {
+        left: 25px;
+        width: 70%;
+        position:fixed;
+    }
+}
+
+@media (min-width: 850px) and (max-width: 978px) {
+    .home_page {
+        padding: 0 5px;
+    }
+    .home_page .header {
+        word-break: break-all;
+    }
+    .home_page .graphic {
+        width: 96%;
+    }
+    .home_page_block_one {
+        width: 100%;
+    }
+    .home_page_block_two {
+        border-left: none;
+    }
+
+    div#location.yui3-widget.yui3-panel.moodle-dialogue.yui3-widget-positioned.yui3-widget-modal.yui3-widget-stacked.moodle-has-zindex {
+        left: 25px;
+        top: 50px;
+        bottom: 0;
+        width: 70%;
+        position:fixed;
+    }
+
+    div#ratings.yui3-widget.yui3-panel.moodle-dialogue.yui3-widget-positioned.yui3-widget-modal.yui3-widget-stacked.moodle-has-zindex {
+        left: 25px;
+        bottom: -50px;
+        width: 70%;
+        position:fixed;
+    }
+}
+
+@media (min-width: 767px) and (max-width: 849px) {
+    .home_page {
+        padding: 0 5px;
+    }
+    .home_page .header {
+        word-break: break-all;
+    }
+    .home_page .graphic {
+        width: 96%;
+    }
+    .home_page_block_one {
+        width: 100%;
+    }
+    .home_page_block_two {
+        border-left: none;
+    }
+
+    div#location.yui3-widget.yui3-panel.moodle-dialogue.yui3-widget-positioned.yui3-widget-modal.yui3-widget-stacked.moodle-has-zindex {
+        left: 25px;
+        top: 50px;
+        bottom: 0;
+        width: 70%;
+        position:fixed;
+    }
+
+    div#ratings.yui3-widget.yui3-panel.moodle-dialogue.yui3-widget-positioned.yui3-widget-modal.yui3-widget-stacked.moodle-has-zindex {
+        left: 25px;
+        bottom: -50px;
+        width: 70%;
+        position:fixed;
+    }
 }
