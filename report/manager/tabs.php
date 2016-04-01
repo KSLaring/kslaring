@@ -28,7 +28,15 @@ $top_row    = array();
 
 /* Info Super Users */
 $superUser  = CompetenceManager::IsSuperUser($USER->id);
+$isReporter = CompetenceManager::IsReporter($USER->id);
 if ($superUser) {
+    if ($isReporter) {
+        /* Create Tabs */
+        $top_row[] = new tabobject('manager_reports',
+                                   new moodle_url($CFG->wwwroot. '/report/manager/index.php'),
+                                   get_string('reports_manager', 'report_manager'));
+    }
+
     $top_row[] = new tabobject('company_structure',
                                new moodle_url($CFG->wwwroot.'/report/manager/company_structure/company_structure.php'),
                                get_string('company_structure','report_manager'));
