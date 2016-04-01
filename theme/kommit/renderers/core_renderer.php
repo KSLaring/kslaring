@@ -18,7 +18,8 @@
  * Renderers to align Moodle's HTML with that expected by kommit
  *
  * @package    theme_kommit
- * @copyright  2014
+ * @copyright  2016 eFaktor
+ * @author     Urs Hunkler {@link urs.hunkler@unodo.de}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class theme_kommit_core_renderer extends core_renderer {
@@ -284,7 +285,7 @@ EOT;
      * always shown, even if no menu items are configured in the global
      * theme settings page.
      */
-    public function user_menu($user = null, $withlinks = null) {
+    public function user_menu($user = NULL, $withlinks = NULL) {
         global $CFG;
         $usermenu = new custom_menu('', current_language());
 

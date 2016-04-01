@@ -13333,8 +13333,8 @@ body {
 }
 .block_navigation .fa-circle,
 .block_settings .fa-circle {
-  margin-left: -1.7em;
-  padding-right: .7em;
+  margin-left: 0.2em;
+  padding-right: .8em;
 }
 .calendar-event-panel .yui3-overlay-content h2.eventtitle {
   font-size: 1em;

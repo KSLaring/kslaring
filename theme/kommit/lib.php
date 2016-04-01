@@ -23,9 +23,10 @@
  * For full information about creating Moodle themes, see:
  * http://docs.moodle.org/dev/Themes_2.0
  *
- * @package   theme_kommit
- * @copyright 2013 Moodle, moodle.org
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package    theme_kommit
+ * @copyright  2016 eFaktor
+ * @author     Urs Hunkler {@link urs.hunkler@unodo.de}
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 /**
@@ -152,7 +153,7 @@ function theme_kommit_set_logo($css, $logo) {
 }
 
 /**
- * Serves any files associated with the theme settings.
+ * Serves any files associated with the theme settings - theme/childtheme wrapper.
  *
  * @param stdClass $course
  * @param stdClass $cm
@@ -171,6 +172,36 @@ function theme_kommit_pluginfile($course, $cm, $context, $filearea, $args,
     if (empty($theme)) {
         $theme = theme_config::load('kommit');
     }
+
+    if ($context->contextlevel == CONTEXT_SYSTEM) {
+        if (preg_match("/^(logo|heroimg)$/", $filearea)) {
+            return $theme->setting_file_serve($filearea, $args, $forcedownload, $options);
+        } else {
+            send_file_not_found();
+        }
+    } else {
+        send_file_not_found();
+    }
+
+    return theme_kommit_pluginfile_serve($course, $cm, $context, $filearea, $args,
+        $forcedownload, $options, $theme);
+}
+
+/**
+ * Serves any files associated with the theme settings.
+ *
+ * @param stdClass $course
+ * @param stdClass $cm
+ * @param context  $context
+ * @param string   $filearea
+ * @param array    $args
+ * @param bool     $forcedownload
+ * @param array    $options
+ *
+ * @return bool
+ */
+function theme_kommit_pluginfile_serve($course, $cm, $context, $filearea, $args,
+    $forcedownload, array $options = array(), $theme) {
 
     if ($context->contextlevel == CONTEXT_SYSTEM) {
         if (preg_match("/^(logo|heroimg)$/", $filearea)) {
@@ -242,6 +273,42 @@ function theme_kommit_get_html_for_settings(renderer_base $output, moodle_page $
         ) {
             $return->manualcompletionhtml = $courseformat->get_manualcompletionhtml();
         }
+    }
+
+    if ($page->pagetype === 'site-index') {
+        $return = theme_kommit_frontpage_html_for_settings($output, $page, $return);
+    }
+
+    return $return;
+}
+
+/**
+ * Returns an object containing HTML for the areas affected by settings.
+ *
+ * @param renderer_base $output Pass in $OUTPUT.
+ * @param moodle_page $page Pass in $PAGE.
+ * @return stdClass An object with the filled properties.
+ */
+function theme_kommit_frontpage_html_for_settings(renderer_base $output, moodle_page $page, $return) {
+    $return->heroheadline = '';
+    $return->herolead = '';
+    $return->herolinktext = '';
+    $return->herolink = '';
+
+    if (!empty($page->theme->settings->heroheadline)) {
+        $return->heroheadline = format_text($page->theme->settings->heroheadline);
+    }
+
+    if (!empty($page->theme->settings->herolead)) {
+        $return->herolead = format_text($page->theme->settings->herolead);
+    }
+
+    if (!empty($page->theme->settings->herolinktext)) {
+        $return->herolinktext = format_text($page->theme->settings->herolinktext);
+    }
+
+    if (!empty($page->theme->settings->herolink)) {
+        $return->herolink = $page->theme->settings->herolink;
     }
 
     return $return;
