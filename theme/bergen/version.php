@@ -31,9 +31,12 @@
 
 defined('MOODLE_INTERNAL') || die;
 
-$plugin->version   = 2016040100;
-$plugin->requires  = 2015111602;
+$plugin->version = 2016040101;
+$plugin->release = '3.0.0';
+$plugin->maturity = MATURITY_STABLE;
+$plugin->requires = 2015111602;
 $plugin->component = 'theme_bergen';
 $plugin->dependencies = array(
-    'theme_bootstrapbase'  => 2015111600,
+    'theme_bootstrapbase' => 2015111600,
+    'theme_kommit' => 2016040100,
 );
