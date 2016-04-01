@@ -281,7 +281,7 @@ Class Approval {
      */
     public static function GetNotificationSent($userId,$courseId) {
         /* Variables    */
-        global $DB,$CFG;
+        global $DB,$CFG,$SITE;
         $rdo                = null;
         $sql                = null;
         $params             = null;
@@ -289,8 +289,11 @@ Class Approval {
         $course             = null;
 
         try {
-            /* Info Course */
-            $course = get_course($courseId);
+            /* Info Notification    */
+            $infoNotification = new stdClass();
+            $infoNotification->site     = $SITE->shortname;
+            /* Add Info Course      */
+            self::GetInfoCourse_Notification($courseId,$infoNotification);
 
             /* Search Criteria  */
             $params = array();
@@ -318,13 +321,9 @@ Class Approval {
             $rdo = $DB->get_record_sql($sql,$params);
             if ($rdo) {
                 /* Info Notification */
-                $infoNotification = new stdClass();
                 $infoNotification->approvalid   = $rdo->id;
-                $infoNotification->course       = $course->fullname;
                 $infoNotification->arguments    = $rdo->arguments;
                 $infoNotification->timesent     = userdate($rdo->timesent,'%d.%m.%Y', 99, false);
-                $infoNotification->user         = null;
-                $infoNotification->site         = null;
                 $infoNotification->approve      = $CFG->wwwroot . '/enrol/waitinglist/approval/action.php/' . $rdo->token;
                 $infoNotification->reject       = $CFG->wwwroot . '/enrol/waitinglist/approval/action.php/' . $rdo->token;
             }//if_rdo
