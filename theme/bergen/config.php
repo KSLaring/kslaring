@@ -30,6 +30,10 @@
  */
 
 $THEME->name = 'bergen';
+$parentthemname = 'kommit';
+
+// Load the parent theme config to be able to use the identical config settings.
+$parentconfig = theme_config::load($parentthemname);
 
 /////////////////////////////////
 // The only thing you need to change in this file when copying it to
@@ -38,7 +42,7 @@ $THEME->name = 'bergen';
 //////////////////////////////////
 //
 $THEME->doctype = 'html5';
-$THEME->parents = array('kommit', 'bootstrapbase');
+$THEME->parents = array($parentthemname, 'bootstrapbase');
 $THEME->sheets = array('theme', 'custom');
 $THEME->supportscssoptimisation = false;
 $THEME->yuicssmodules = array();
@@ -48,31 +52,15 @@ $THEME->enable_dock = false;
 //---------------------------------
 $CFG->allowframembedding = true;
 
-$THEME->parents_exclude_sheets = array(
-    'bootstrapbase' => array(
-        'moodle',
-        'editor'
-    )
-);
-
-$THEME->plugins_exclude_sheets = array(
-    'block' => array(
-        'html',
-    ),
-    'gradereport' => array(
-        'grader',
-    )
-);
+$THEME->parents_exclude_sheets = $parentconfig->parents_exclude_sheets;
+$THEME->plugins_exclude_sheets = $parentconfig->plugins_exclude_sheets;
+$THEME->blockrtlmanipulations = $parentconfig->blockrtlmanipulations;
 
 $THEME->rendererfactory = 'theme_overridden_renderer_factory';
 $THEME->csspostprocess = 'theme_bergen_process_css';
 
-$THEME->blockrtlmanipulations = array(
-    'side-pre' => 'side-post',
-    'side-post' => 'side-pre'
-);
-
-//$THEME->layouts is used from the kommit theme.
+// Use the parent layouts.
+$THEME->layouts = $parentconfig->layouts;
 
 // For the lesson pages force the default region to 'content-bottom'
 // to place the 'Linked media' fake block away from the left column below the content.
