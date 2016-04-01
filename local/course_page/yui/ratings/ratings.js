@@ -11,21 +11,25 @@
 
 YUI.add('moodle-local_course_page-ratings', function(Y) {
 
-
     M.local_course_page = M.local_course_page || {};
     M.local_course_page.ratings = function(params) {
         var self = this;
         Y.delegate('click', function(e){
             var panel = new M.core.dialogue({
-                toolbars: false,
-                modal: true,
+                id : 'ratings',
                 headerContent: params['header'],
                 bodyContent:params['content'],
-                visible: true, //by default it is not displayed
-                lightbox : true,
-                closeButtonTitle: 'Close',
-                width: 800
+                draggable: true,
+                visible: true,
+                modal: true,
+                render:true,
+                width: '80%'
             });
+
+            Y.one('#ratings').setStyle('left','25px');
+            Y.one('#ratings').setStyle('bottom','-50px');
+            Y.one('#ratings').setStyle('width','80%');
+            Y.one('#location').setStyle('position','fixed');
 
             panel.show();
 

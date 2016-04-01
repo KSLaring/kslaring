@@ -11,24 +11,29 @@
 
 YUI.add('moodle-local_course_page-location', function(Y) {
 
-
     M.local_course_page = M.local_course_page || {};
     M.local_course_page.location = function(params) {
         var self = this;
         Y.delegate('click', function(e){
             var panel = new M.core.dialogue({
-                toolbars: false,
-                modal: true,
+                id: 'location',
                 headerContent: params['header'],
                 bodyContent:params['content'],
-                visible: true, //by default it is not displayed
-                lightbox : true,
-                closeButtonTitle: 'Close',
-                width: 800
+                draggable: true,
+                visible: true,
+                center: false,
+                modal: true,
+                render:true,
+                width: '70%'
             });
 
-            panel.show();
+            Y.one('#location').setStyle('left','25px');
+            Y.one('#location').setStyle('top','50px');
+            Y.one('#location').setStyle('bottom','0px');
+            Y.one('#location').setStyle('width','70%');
+            Y.one('#location').setStyle('position','fixed');
 
+            panel.show();
         },Y.one(document.body), '#show_location');
-    }
+    };
 });
