@@ -59,7 +59,7 @@ function saml_hook_attribute_filter(&$saml_attributes) {
 
     // Pasamos el uid como eduPersonPrincipalName o como eduPersonTargetedID
     if(!isset($saml_attributes['eduPersonPrincipalName'])) {
-        if(!isset($saml_attributes['uid'])) {
+        if(isset($saml_attributes['uid'])) {
             $saml_attributes['eduPersonPrincipalName'] = $saml_attributes['uid'];
         }
         else if (isset($saml_attributes['eduPersonTargetedID'])) {
@@ -74,7 +74,7 @@ function saml_hook_attribute_filter(&$saml_attributes) {
     // Pasamos el uid como eduPersonPrincipalName
 
     if(!isset($saml_attributes['eduPersonPrincipalName'])) {
-        if(!isset($saml_attributes['uid'])) {
+        if(isset($saml_attributes['uid'])) {
             $saml_attributes['eduPersonPrincipalName'] = $saml_attributes['uid'];
         }
         else if (isset($saml_attributes['mail'])) {

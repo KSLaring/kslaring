@@ -1,5 +1,7 @@
 <?php
 
+$string['auth_saml_loginusing'] = 'Login here using your username and password';
+
 $string['auth_samltitle']  = 'SAML Authentication';
 $string['auth_samldescription'] = 'SSO Authentication using SimpleSAML';
 
@@ -26,6 +28,11 @@ $string['auth_saml_username_not_found'] = "IdP returned a set of data that no co
 $string['auth_saml_supportcourses'] = 'SAML support courses';
 $string['auth_saml_supportcourses_description'] = 'Select Internal or External to have Moodle auto enrol users in courses (Use External if your course/role mapping is in an external DB)';
 
+$string['auth_saml_syncusersfrom'] = 'Syncronize users from module';
+$string['auth_saml_syncusersfrom_description'] = 'Syncronize users into Moodle using another module. The users will be created with auth = \'saml\', even though they are actually synchronized by another module. 
+This allows you to create, update and delete users from for example LDAP, but log them in via SAML. Note that the module you wish to sync from must be enabled, and all sync settings should be controlled from that module, not from SAML. 
+To run the synchronization, add auth/saml/cli/sync_users.php to your CRON.';
+
 $string['auth_saml_courses'] = 'SAML courses mapping';
 $string['auth_saml_courses_description'] = 'SAML attribute that contains courses data (default to schacUserStatus)';
 $string['auth_saml_courses_not_found'] = "IdP returned a set of data that no contain the SAML courses mapping field ({\$a}). This field is required to enrol the user";
@@ -39,6 +46,9 @@ $string['auth_saml_logo_path_description'] = 'Image path for the SAML login butt
 
 $string['auth_saml_logo_info'] = 'SAML login description';
 $string['auth_saml_logo_info_description'] = 'Description that will be shown below the SAML login button';
+
+$string['auth_saml_autologin'] = 'SAML automatic login';
+$string['auth_saml_autologin_description'] = 'Automatically redirect to SAML idP without showing a login form';
 
 $string['auth_saml_ignoreinactivecourses'] = 'Ignore Inactive Courses';
 $string['auth_saml_ignoreinactivecourses_description'] = "If not checked the plugin will unenroll the 'inactive' courses";
@@ -107,5 +117,8 @@ $string['auth_saml_samlhookfile_description'] = 'Set a path if you want to use a
 $string['auth_saml_errorbadhook'] = "Incorrect SAML plugin hook file: {\$a}";
 
 $string['pluginname'] = 'SAML Authentication';
+$string['pluginnotenabled'] = 'Plugin not enabled!';
+$string['syncfromnotenabled'] = 'No external plugin selected. SAML cannot synchronize users on its own.';
+$string['unknownplugin'] = 'SAML does not know how to invoke the sync_users method of the specified plugin: ';
 
 $string['btn_feide']    = 'Log In via FEIDE';

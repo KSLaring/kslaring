@@ -1,7 +1,7 @@
 <?php
 
-$plugin->version    = 2016030700;
-$plugin->requires   = 2010112400;;
-$plugin->release    = 2013110701;
-$plugin->maturity   = 100;
+$plugin->version = 2016040400;
+$plugin->requires = 2012062500;
+$plugin->release = 'auth/saml version of 29-07-2015';
+$plugin->maturity = MATURITY_BETA;
 $plugin->component = 'auth_saml';
