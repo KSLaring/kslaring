@@ -2,17 +2,32 @@
 
 define('SAML_INTERNAL', 1);
 
-    // In order to avoid session problems we first do the SAML issues and then
-    // we log in and register the attributes of user
-
     try{
+
+        // In order to avoid session problems we first do the SAML issues and then
+        // we log in and register the attributes of user, but we need to read the value of the $CFG->dataroot
+        $dataroot = null;
+        if (file_exists('../../config.php')) {
+            $config_content =  file_get_contents('../../config.php');
+
+            $matches = array();
+            if (preg_match("/[\$]CFG->dataroot[\s]*[\=][\s]*'([\w\/\-\_]*)'/i", $config_content, $matches)) {
+                $dataroot = $matches[1];
+            }
+        }
+
         // We read saml parameters from a config file instead from the database
         // due we can not operate with the moodle database without load all
         // moodle session issue.
-        if(!file_exists('saml_config.php')) {
+        if(isset($dataroot) && file_exists($dataroot.'/saml_config.php')) {
+            $contentfile = file_get_contents($dataroot.'/saml_config.php');
+        }
+        else if (file_exists('saml_config.php')) {
+            $contentfile = file_get_contents('saml_config.php');
+        } else {
             throw(new Exception('SAML config params are not set.'));
         }
-		$contentfile = file_get_contents('saml_config.php');
+
     	$saml_param = json_decode($contentfile);
 
         if(!file_exists($saml_param->samllib.'/_autoload.php')) {
@@ -30,7 +45,7 @@ define('SAML_INTERNAL', 1);
                 $urltogo = $_SERVER['HTTP_REFERER'];
             }
             else{
-                $urltogo = $CFG->wwwroot . '/index.php';
+                $urltogo = '/';
             }
 
             if($saml_param->dosinglelogout) {
@@ -50,7 +65,7 @@ define('SAML_INTERNAL', 1);
         require_once('../../config.php');
         require_once('error.php');
 
-        global $CFG, $err, $PAGE, $OUTPUT;
+        global $err, $PAGE, $OUTPUT;
         $PAGE->set_url('/auth/saml/index.php');
         $PAGE->set_context(CONTEXT_SYSTEM::instance());
 
@@ -59,9 +74,10 @@ define('SAML_INTERNAL', 1);
         if($CFG->wwwroot[strlen($CFG->wwwroot)-1] != '/') {
             $urltogo .= '/';
         }
+
         $err['login'] = $e->getMessage();
-        log_saml_error('Moodle SAML module:'. $err['login'], $pluginconfig->samllogfile);;
-        saml_error($err['login'], $urltogo, $pluginconfig->samllogfile);
+        auth_saml_log_error('Moodle SAML module:'. $err['login'], $pluginconfig->samllogfile);;
+        auth_saml_error($err['login'], $urltogo, $pluginconfig->samllogfile);
     }
 
     // Now we close simpleSAMLphp session
@@ -69,7 +85,7 @@ define('SAML_INTERNAL', 1);
 
     // We load all moodle config and libs
     require_once('../../config.php');
-    require_once('error.php');    
+    require_once('error.php');
 
     global $CFG, $USER, $SAML_COURSE_INFO, $SESSION, $err, $DB, $PAGE;
 
@@ -80,6 +96,11 @@ define('SAML_INTERNAL', 1);
     if($CFG->wwwroot[strlen($CFG->wwwroot)-1] != '/') {
         $urltogo .= '/';
     }
+
+     // set return rul from wantsurl
+     if(isset($_REQUEST['wantsurl'])) {
+        $urltogo = $_REQUEST['wantsurl'];
+     }
 
     // Get the plugin config for saml
     $pluginconfig = get_config('auth/saml');
@@ -92,7 +113,7 @@ define('SAML_INTERNAL', 1);
             $as->requireAuth();
         } catch (Exception $e) {
             $err['login'] = $e->getMessage();
-            saml_error($err['login'], $urltogo, $pluginconfig->samllogfile);
+            auth_saml_error($err['login'], $urltogo, $pluginconfig->samllogfile);
         }
     } else {
         // Valid session. Register or update user in Moodle, log him on, and redirect to Moodle front
@@ -105,11 +126,11 @@ define('SAML_INTERNAL', 1);
         }
 
         // We require the plugin to know that we are now doing a saml login in hook puser_login
-        $GLOBALS['saml_login'] = TRUE;
+        $SESSION->auth_saml_login = TRUE;
 
         // Make variables accessible to saml->get_userinfo. Information will be
         // requested from authenticate_user_login -> create_user_record / update_user_record
-        $GLOBALS['saml_login_attributes'] = $saml_attributes;
+        $SESSION->auth_saml_login_attributes = $saml_attributes;
 
         if (isset($pluginconfig->username) && $pluginconfig->username != '') {
             $username_field = $pluginconfig->username;
@@ -119,18 +140,18 @@ define('SAML_INTERNAL', 1);
 
         if(!isset($saml_attributes[$username_field])) {
             $err['login'] = get_string("auth_saml_username_not_found", "auth_saml", $username_field);
-            saml_error($err['login'], '?logout', $pluginconfig->samllogfile);
+            auth_saml_error($err['login'], '?logout', $pluginconfig->samllogfile);
         }
         $username = $saml_attributes[$username_field][0];
-        $username = trim(textlib::strtolower($username));
+        $username = trim(core_text::strtolower($username));
 
         $saml_courses = array();
         if($pluginconfig->supportcourses != 'nosupport' && isset($pluginconfig->samlcourses)) {
             if(!isset($saml_attributes[$pluginconfig->samlcourses])) {
                 $err['login'] = get_string("auth_saml_courses_not_found", "auth_saml", $pluginconfig->samlcourses);
-                saml_error($err['login'], '?logout', $pluginconfig->samllogfile);
+                auth_saml_error($err['login'], '?logout', $pluginconfig->samllogfile);
             }
-            $saml_courses = $saml_attributes[$pluginconfig->samlcourses];            
+            $saml_courses = $saml_attributes[$pluginconfig->samlcourses];
         }
 
         // Obtain the course_mapping. Now $USER->mapped_courses have the mapped courses and $USER->mapped_roles the roles
@@ -167,23 +188,23 @@ define('SAML_INTERNAL', 1);
 
         if (!$authorize_user) {
             $err['login'] = "<p>" . $authorize_error . "</p>";
-	    saml_error($err, '?logout', $pluginconfig->samllogfile);
+	    auth_saml_error($err, '?logout', $pluginconfig->samllogfile);
         }
         
         // Just passes time as a password. User will never log in directly to moodle with this password anyway or so we hope?
         $user = authenticate_user_login($username, time());
         if ($user === false) {
             $err['login'] = get_string("auth_saml_error_authentication_process", "auth_saml", $username);
-            saml_error($err['login'], '?logout', $pluginconfig->samllogfile);
+            auth_saml_error($err['login'], '?logout', $pluginconfig->samllogfile);
         }
 
         // Complete the user login sequence
         $user = get_complete_user_data('id', $user->id);
         if ($user === false) {
             $err['login'] = get_string("auth_saml_error_complete_user_data", "auth_saml", $username);
-            saml_error($err['login'], '?logout', $pluginconfig->samllogfile);
+            auth_saml_error($err['login'], '?logout', $pluginconfig->samllogfile);
         }
-	
+
         $USER = complete_user_login($user);
 
         if (function_exists('saml_hook_post_user_created')) {
@@ -191,7 +212,7 @@ define('SAML_INTERNAL', 1);
         }
 
         if (isset($SESSION->wantsurl) && !empty($SESSION->wantsurl)) {
-             $urltogo = $SESSION->wantsurl;        	
+             $urltogo = $SESSION->wantsurl;
         }
 
         $USER->loggedin = true;
@@ -199,7 +220,7 @@ define('SAML_INTERNAL', 1);
         set_moodle_cookie($USER->username);
 
         if(isset($err) && !empty($err)) {
-            saml_error($err, $urltogo, $pluginconfig->samllogfile);
+            auth_saml_error($err, $urltogo, $pluginconfig->samllogfile);
         }
 
         /**

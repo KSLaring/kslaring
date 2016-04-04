@@ -7,6 +7,19 @@ global $CFG, $PAGE, $OUTPUT;
 //HTTPS is required in this page when $CFG->loginhttps enabled
 $PAGE->https_required();
 
+// get wantsurl from session and pass to the samlUrl
+$samlUrl = "index.php";
+if(isset($SESSION->wantsurl)) {
+    $samlUrl = $samlUrl . "?wantsurl=" . urlencode($SESSION->wantsurl);
+}
+
+// if autologin is enabled redirect to the idp without showing the login form
+$saml_config = get_config('auth/saml');
+if(isset($saml_config->autologin)  && $saml_config->autologin)
+{
+       header('Location: '.$samlUrl);
+       exit;
+}
 
 $context = CONTEXT_SYSTEM::instance();
 $PAGE->set_url("$CFG->httpswwwroot/auth/saml/login.php");
@@ -17,6 +30,12 @@ $PAGE->set_pagelayout('login');
 /// Define variables used in page
 $site = get_site();
 
+if (!empty($CFG->registerauth) or is_enabled_auth('none') or !empty($CFG->auth_instructions)) {
+    $show_instructions = true;
+} else {
+    $show_instructions = false;
+}
+
 $loginsite = get_string("loginsite");
 $PAGE->navbar->add($loginsite);
 
@@ -25,7 +44,6 @@ $PAGE->set_heading("$site->fullname");
 
 echo $OUTPUT->header();
 
-$show_instructions = false;
 if ($show_instructions) {
     $columns = 'twocolumns';
 } else {
@@ -52,25 +70,23 @@ if (empty($CFG->xmlstrictheaders) and !empty($CFG->loginpasswordautocomplete)) {
 $saml_config = get_config('auth/saml');
 $authsequence = get_enabled_auth_plugins(true);
 
+$frm = data_submitted();
+
 echo '<center>';
 
 if (in_array('saml', $authsequence)){
     if (isset($saml_config->samllogoimage) && $saml_config->samllogoimage != NULL) {
-        echo '<div href="index.php" class="login-logo"><img src="'.$saml_config->samllogoimage.'" border="0" alt="SAML login" ></div>';
+        echo '<a href="' . $samlUrl . '"><img src="'.$saml_config->samllogoimage.'" border="0" alt="SAML login" ></a>';
     }
     if (isset($saml_config->samllogoinfo)) {
         //echo "<div class='desc'>$saml_config->samllogoinfo</div>";
-
-        // echo '<i class="fa fa-chevron-circle-right fa-2x"></i>';
 
         echo '<a href="index.php" class="btn-login">'
             . '<span class="login-icon"><i class="fa fa-arrow-right"></i></span>'
             . $saml_config->samllogoinfo .
             '</a>';
-
-
-
     }
+
     /**
      * @updateDate  21/09/2015
      * @author      eFaktor     (fbv)
@@ -88,26 +104,15 @@ if (in_array('saml', $authsequence)){
         $btnFeide .= '</a>';
         echo $btnFeide;
     }//_if_activate_button
-
-
-    /* ADD Button to log in via ADFS */
 }
 echo '</center>';
 
 ?>
-
-      <div class="admin-toggle">
-          <button id="toggle" type="image" >
-              <img src="<?php echo $CFG->wwwroot ?>/auth/saml/resources/images/ui-icons_admin.png">
-              <?php  echo (get_string('adminlogin' ,'theme_kommit')) ?>
-
-          </button>
-
-      </div>
-
       <div class="subcontent loginsub">
         <div class="desc">
           <?php
+            print_string("auth_saml_loginusing", "auth_saml");
+            echo '<br/>';
             echo '('.get_string("cookiesenabled").')';
             echo $OUTPUT->help_icon('cookiesenabled');
            ?>
@@ -123,10 +128,7 @@ echo '</center>';
           <div class="loginform">
             <div class="form-label"><label for="username"><?php print_string("username") ?></label></div>
             <div class="form-input">
-              <input type="text" name="username" id="username" size="15" value="<?php
-                if (isset($frm) && isset($frm->username)) {
-                    p(trim($frm->username));
-                }?>" />
+              <input type="text" name="username" id="username" size="15" value="<?php echo isset($frm->username)? $frm->username: ''; ?>" />
             </div>
             <div class="clearer"><!-- --></div>
             <div class="form-label"><label for="password"><?php print_string("password") ?></label></div>
@@ -138,14 +140,7 @@ echo '</center>';
             <div class="clearer"><!-- --></div>
               <?php if (isset($CFG->rememberusername) and $CFG->rememberusername == 2) { ?>
               <div class="rememberpass">
-                  <input type="checkbox" name="rememberusername" id="rememberusername" value="1"
-                      <?php
-                        if (isset($frm) && isset($frm->username)) {
-                            if ($frm->username) {
-                                echo 'checked="checked"';
-                            }
-                        }
-                      ?> />
+                  <input type="checkbox" name="rememberusername" id="rememberusername" value="1" <?php if (isset($frm->username)) {echo 'checked="checked"';} ?> />
                   <label for="rememberusername"><?php print_string('rememberusername', 'admin') ?></label>
               </div>
               <?php } ?>
@@ -153,13 +148,6 @@ echo '</center>';
           <div class="forgetpass"><a href="<?php echo $CFG->httpswwwroot; ?>/login/forgot_password.php"><?php print_string("forgotten") ?></a></div>
         </form>
       </div>
-
-
-      <?php
-
-      // link to JS toggle file
-      $PAGE->requires->js( new moodle_url($CFG->wwwroot . '/auth/saml/resources/login_toggle.js') );?>
-
 
 <?php if ($CFG->guestloginbutton and !isguestuser()) {  ?>
       <div class="subcontent guestsub">
