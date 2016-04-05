@@ -56,7 +56,7 @@ if ($delete) {
         $info->name = $user;
 
         /* Add Employee Info    */
-        $employeesInfo[$id] = $info;
+        $employeesInfo[$info->name] = $info;
     }
     /* Get Data */
     $data           =  array('users' => array());

@@ -300,7 +300,8 @@ class SuperUser {
                         LEFT JOIN   {report_gen_super_user}	sp	ON sp.userid = u.id " . $sqlLeft .
                    "
                      WHERE	u.deleted = 0
-                        AND	sp.id IS NULL ";
+                        AND	sp.id IS NULL
+                        AND u.username != 'guest' ";
 
             /* Search   */
             if ($search) {

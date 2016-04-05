@@ -61,7 +61,7 @@ foreach ($outcome_lst as $id => $outcome) {
     $info->name      = $outcome;
 
     /* Add Company*/
-    $outcomes[$id] = $info;
+    $outcomes[$info->name] = $info;
 }
 
 /* Encode and Send */

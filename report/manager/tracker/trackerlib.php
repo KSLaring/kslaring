@@ -626,7 +626,7 @@ class TrackerManager {
                     }//if_completed_not_completed
                     $outcome->not_enrol = self::GetTracker_CoursesNotEnrol($outcome->courses,$coursesEnrol);
 
-                    if ($outcome->completed && $outcome->not_completed && $outcome->not_enrol) {
+                    if (!$outcome->completed && !$outcome->not_completed && !$outcome->not_enrol) {
                         unset($competence->outcomes[$id]);
                     }else {
                         $competence->outcomes[$id] = $outcome;
