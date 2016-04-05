@@ -72,7 +72,48 @@ $THEME->blockrtlmanipulations = array(
     'side-post' => 'side-pre'
 );
 
-//$THEME->layouts is used from the kommit theme.
+// additional block regions
+$THEME->layouts = array(
+    // Main course page.
+    'course' => array(
+        'file' => 'columns3.php',
+        'regions' => array('side-pre', 'side-post', 'top', 'content-top', 'content-bottom', 'hidden-dock'),
+        'defaultregion' => 'side-pre',
+        'options' => array('langmenu'=>true),
+    ),
+    'incourse' => array(
+        'file' => 'columns3.php',
+        'regions' => array('content-top', 'content-bottom', 'side-pre', 'side-post', 'top', 'hidden-dock'),
+        'defaultregion' => 'side-pre',
+        'options' => array('langmenu'=>true),
+    ),
+    'coursehomepage' => array(
+        'file' => 'columns3.php',
+        'regions' => array('content-top', 'content-bottom', 'side-pre', 'side-post', 'top', 'hidden-dock'),
+        'defaultregion' => 'side-pre',
+        'options' => array('langmenu'=>true, 'nonavbar'=>true),
+    ),
+    // The site home page.
+    'frontpage' => array(
+        'file' => 'columns3_front.php',
+        'regions' => array('side-pre', 'side-post', 'top', 'content-top', 'hidden-dock'),
+        'defaultregion' => 'side-pre',
+        'options' => array('nonavbar'=>true),
+    ),
+    // My dashboard page.
+    'mydashboard' => array(
+        'file' => 'columns3.php',
+        'regions' => array('content-top', 'content-bottom', 'side-pre', 'side-post', 'top', 'hidden-dock'),
+        'defaultregion' => 'side-pre',
+        'options' => array('langmenu' => true),
+    ),
+    // Blocks at the bottom.
+    'blocksatbottom' => array(
+        'file' => 'columns3blocksbottom.php',
+        'regions' => array('side-pre', 'side-post', 'top', 'content-top', 'content-bottom', 'hidden-dock'),
+        'defaultregion' => 'side-pre',
+    )
+);
 
 // For the lesson pages force the default region to 'content-bottom'
 // to place the 'Linked media' fake block away from the left column below the content.
