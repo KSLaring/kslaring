@@ -72,7 +72,7 @@ foreach ($options as $id => $jr) {
     $infoJR->name      = $jr;
 
     /* Add Company*/
-    $jobRoles[$id] = $infoJR;
+    $jobRoles[$infoJR->name] = $infoJR;
 }
 
 $data['jr'] = $jobRoles;

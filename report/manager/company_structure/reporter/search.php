@@ -101,7 +101,7 @@ foreach ($results as $groupName => $reporters) {
         if (!empty($user->infobelow)) {
             $output->infobelow = $user->infobelow;
         }
-        $groupData['users'][] = $output;
+        $groupData['users'][$output->name] = $output;
     }
 
     $json[] = $groupData;
