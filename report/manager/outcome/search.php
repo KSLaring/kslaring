@@ -69,7 +69,7 @@ foreach ($results as $id => $jobRole) {
     $info->id   = $id;
     $info->name = $jobRole;
 
-    $jobRoles[$id] = $info;
+    $jobRoles[$info->name] = $info;
 }
 $data['jr'] = $jobRoles;
 $json[] = $data;

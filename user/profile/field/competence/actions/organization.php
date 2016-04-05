@@ -91,7 +91,7 @@ foreach ($options as $companyId => $company) {
     $infoCompany->name      = $company;
 
     /* Add Company*/
-    $data['items'][] = $infoCompany;
+    $data['items'][$infoCompany->name] = $infoCompany;
 }
 
 /* Encode and Send */
