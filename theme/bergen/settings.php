@@ -40,4 +40,7 @@ if (is_siteadmin()) {
     // Load the parent theme settings.
     //require_once ($CFG->dirroot . '/theme/kommit/settings/settings_base.php');
     require (__DIR__ . '/../kommit/settings/settings_base.php');
+
+    // Load the slideshow theme settings.
+    require (__DIR__ . '/../kommit/settings/settings_slideshow.php');
 }

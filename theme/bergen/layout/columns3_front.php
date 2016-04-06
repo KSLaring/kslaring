@@ -23,9 +23,10 @@
  * For full information about creating Moodle themes, see:
  * http://docs.moodle.org/dev/Themes_2.0
  *
- * @package   theme_bergen
- * @copyright 2013 Moodle, moodle.org
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package    theme_bergen
+ * @copyright  2016 eFaktor
+ * @author     Urs Hunkler {@link urs.hunkler@unodo.de}
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 // Get the HTML for the settings bits.
@@ -39,6 +40,8 @@ if (right_to_left()) {
     $regionbsid = 'region-bs-main-and-pre';
 }
 
+$frontpage = $PAGE->pagetype === 'site-index';
+
 // Get the URL for the logo link
 $url = new moodle_url('/', array('redirect' => 0));
 $url_course_lst = new moodle_url('/course/index.php');
@@ -51,33 +54,22 @@ echo $OUTPUT->doctype() ?>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 
-
 <body <?php echo $OUTPUT->body_attributes(); ?>>
 
-<?php echo $OUTPUT->standard_top_of_body_html() ?>
+    <?php echo $OUTPUT->standard_top_of_body_html() ?>
 
-<?php include 'inc/header.php'; ?>
+    <?php include 'inc/header.php'; ?>
 
-    <div class="hero-unit" style="<?php echo $OUTPUT->hero_img(); ?>">
-        <div class="container-fluid">
-            <div class="texts">
-                <h1><?php echo $html->heroheadline; ?></h1>
-
-                <div class="lead"><?php echo $html->herolead; ?></div>
-                <div class="buttons">
-                    <a class="btn" href="<?php echo $html->herolink; ?>">
-                        <?php echo $html->herolinktext; ?>
-                    </a>
-                </div>
-            </div>
-        </div>
-    </div>
+    <?php if ($frontpage) {
+        include(__DIR__ . '/../../kommit/layout/inc/carousel.php');
+    } ?>
 
     <div id="page" class="container-fluid">
         <header id="page-header" class="clearfix">
             <div id="page-navbar" class="clearfix">
                 <div class="breadcrumb-nav"><?php echo $OUTPUT->navbar(); ?></div>
-                <nav class="breadcrumb-button"><?php echo $OUTPUT->page_heading_button(); ?></nav>
+                <nav
+                    class="breadcrumb-button"><?php echo $OUTPUT->page_heading_button(); ?></nav>
             </div>
 
             <div id="course-header">
@@ -106,16 +98,16 @@ echo $OUTPUT->doctype() ?>
         </div>
 
         <?php if ($show_hidden_blocks) : ?>
-        <div id="hidden-blocks-admin" class="clearfix">
-            <h4><?php echo $str_visibleadminonly; ?></h4>
-            <?php echo $OUTPUT->blocks('hidden-dock', 'hidden-dock-blocks', 'div'); ?>
-        </div>
+            <div id="hidden-blocks-admin" class="clearfix">
+                <h4><?php echo $str_visibleadminonly; ?></h4>
+                <?php echo $OUTPUT->blocks('hidden-dock', 'hidden-dock-blocks', 'div'); ?>
+            </div>
         <?php endif ?>
     </div>
 
-<?php include 'inc/footer.php'; ?>
+    <?php include 'inc/footer.php'; ?>
 
-<?php echo $OUTPUT->standard_end_of_body_html() ?>
+    <?php echo $OUTPUT->standard_end_of_body_html() ?>
 
 </body>
 </html>
