@@ -37,6 +37,9 @@ $themename = 'theme_kommit';
 if (is_siteadmin()) {
     $ADMIN->add('themes', new admin_category($themename, 'KommIT'));
 
-    // Load the theme settings.
+    // Load the basic theme settings.
     require (__DIR__ . '/settings/settings_base.php');
+
+    // Load the slideshow theme settings.
+    require (__DIR__ . '/settings/settings_slideshow.php');
 }

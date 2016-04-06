@@ -23,9 +23,10 @@
  * For full information about creating Moodle themes, see:
  * http://docs.moodle.org/dev/Themes_2.0
  *
- * @package   theme_kommit
- * @copyright 2013 Moodle, moodle.org
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package    theme_kommit
+ * @copyright  2016 eFaktor
+ * @author     Urs Hunkler {@link urs.hunkler@unodo.de}
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 // Get the HTML for the settings bits.
@@ -38,6 +39,8 @@ if (right_to_left()) {
 } else {
     $regionbsid = 'region-bs-main-and-pre';
 }
+
+$frontpage = $PAGE->pagetype === 'site-index';
 
 // Get the URL for the logo link
 $url = new moodle_url('/', array('redirect' => 0));
@@ -58,20 +61,9 @@ echo $OUTPUT->doctype() ?>
 
 <?php include 'inc/header.php'; ?>
 
-    <div class="hero-unit" style="<?php echo $OUTPUT->hero_img(); ?>">
-        <div class="container-fluid">
-            <div class="texts">
-                <h1><?php echo $html->heroheadline; ?></h1>
-
-                <div class="lead"><?php echo $html->herolead; ?></div>
-                <div class="buttons">
-                    <a class="btn" href="<?php echo $html->herolink; ?>">
-                        <?php echo $html->herolinktext; ?>
-                    </a>
-                </div>
-            </div>
-        </div>
-    </div>
+<?php if ($frontpage) {
+    include(__DIR__ . '/inc/carousel.php');
+} ?>
 
     <div id="page" class="container-fluid">
         <header id="page-header" class="clearfix">

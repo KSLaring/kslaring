@@ -18,7 +18,7 @@
     }
 
     .hero-unit {
-        background-image: url([[pix:theme|banner_image]]);
+        background-image: url(~"[[pix:theme|banner_image]]");
         max-height: 250px;
         min-height: 250px;
         background-repeat: no-repeat;
@@ -29,6 +29,7 @@
         .texts {
             width: 85%;
             margin-top: 1%;
+            padding-left: 7%;
         }
         .lead {
             margin-top: 1%;
@@ -49,7 +50,8 @@
     }
 
     // word break for headinsg in course categrory
-    #page-course-index-category .generalbox.info h1, h2, {
+    #page-course-index-category .generalbox.info h1,
+    #page-course-index-category .generalbox.info h2 {
         word-break: break-all;
     }
 
@@ -70,25 +72,24 @@
 
     // fixes for small screens course home page
     // -----------------------------------------------
+    .course_extra .col_one {
+        float: left;
+        text-align: left;
+        width: 100%;
+        display: block;
+    }
 
+    .course_extra .col_three {
+        float: left;
+        text-align: left;
+        width: 100%;
+        display: block;
+    }
 
-  .course_extra .col_one {
-    float: left;
-    text-align: left;
-    width: 100%;
-    display: block;
-  }
-
-  .course_extra .col_three {
-    float: left;
-    text-align: left;
-    width: 100%;
-    display: block;
-  }
-  .course_extra .col_two {
-    width: 100%;
-    display: block;
-  }
+    .course_extra .col_two {
+        width: 100%;
+        display: block;
+    }
 
 }
 
@@ -141,48 +142,49 @@
     // adjust margin on smaller screens
     // -------------------------------
     .format-netcourse.path-mod-lesson .progress_bar {
-      margin-left: 20px;
+        margin-left: 20px;
     }
 
     // adjust tabbed navigation on net course format
     // -------------------------------
     .classroom-header,
     .netcourse-header {
-      margin-left: -10px;
-      margin-right: -10px;
-      border-bottom: none;
-      .btn-toolbar {
-        border: none;
-        margin: 0;
-        padding: 0;
-        .btn-primary:active, .btn-primary.active, {
-          border: none;
+        margin-left: -10px;
+        margin-right: -10px;
+        border-bottom: none;
+        .btn-toolbar {
+            border: none;
+            margin: 0;
+            padding: 0;
+            .btn-primary:active,
+            .btn-primary.active {
+                border: none;
+            }
+            .btn {
+                box-shadow: none;
+                border: none;
+                outline: 1px solid darken(@kommitGrayLight, 10%);
+                #gradient .vertical(lighten(@kommitGrayLight, 2%), darken(@kommitGrayLight, 7%));
+            }
+            .btn:first-child {
+                width: 100%;
+                margin: 0;
+                padding-left: 0;
+                padding-right: 0;
+            }
+            .btn:nth-child(n+2) {
+                width: 50%;
+                margin: 0;
+                padding-left: 0;
+                padding-right: 0;
+            }
+            .btn:nth-child(4) {
+                width: 100%;
+                margin: 0;
+                padding-left: 0;
+                padding-right: 0;
+            }
         }
-        .btn {
-          box-shadow: none;
-          border: none;
-          outline: 1px solid darken(@kommitGrayLight, 10%);
-          #gradient .vertical(lighten(@kommitGrayLight, 2%), darken(@kommitGrayLight, 7%));
-        }
-        .btn:first-child {
-          width: 100%;
-          margin: 0;
-          padding-left: 0;
-          padding-right: 0;
-        }
-        .btn:nth-child(n+2) {
-          width: 50%;
-          margin: 0;
-          padding-left: 0;
-          padding-right: 0;
-        }
-        .btn:nth-child(4) {
-          width: 100%;
-          margin: 0;
-          padding-left: 0;
-          padding-right: 0;
-        }
-      }
     }
 }
 
@@ -191,6 +193,7 @@
         margin-right: -20px;
         margin-left: -20px;
     }
+
     .logo-area {
         float: left;
         padding-left: 20px;
@@ -198,11 +201,11 @@
 }
 
 @media (min-width: 767px) and (max-width: 849px) {
-  // adjust height of featured courses
-  // -------------------------------
-  .label_header {
-    min-height: 70px;
-  }
+    // adjust height of featured courses
+    // -------------------------------
+    .label_header {
+        min-height: 70px;
+    }
 }
 
 @media (min-width: 850px) and (max-width: 978px) {
@@ -223,7 +226,7 @@
     }
 
     .navbar-fixed-top {
-        margin-bottom: 0px;
+        margin-bottom: 0;
     }
 
     .header-right {
@@ -235,7 +238,7 @@
     }
 
     .navbar-fixed-top .navbar-inner, .navbar-fixed-bottom .navbar-inner {
-        padding: 0px;
+        padding: 0;
     }
 
     // Lesson Module - Set min-height on lesson pages

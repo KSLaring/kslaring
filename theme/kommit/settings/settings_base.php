@@ -31,8 +31,6 @@
 
 defined('MOODLE_INTERNAL') || die;
 
-//$ADMIN->add('themes', new admin_category($themename, 'KommIT'));
-
 /* Generic Settings */
 $temp = new admin_settingpage($themename . '_generic',
     get_string('genericsettings', 'theme_kommit'));

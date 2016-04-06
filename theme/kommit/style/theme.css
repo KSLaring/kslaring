@@ -59,9 +59,9 @@
 }
 .fa {
   margin-left: -1.4em;
-  padding-right: 0.4em;
   min-width: 1em;
   text-align: center;
+  padding-right: .4em;
 }
 .fa-circle {
   font-size: .7em;
@@ -1640,6 +1640,204 @@ div.editor_atto_content .kitable3.table-lines th,
 div.editor_atto_content .kitable3.table-lines td {
   border: 1px solid #b5c5da;
 }
+#kslCarousel {
+  margin: 0 -120px;
+  line-height: 31.5px;
+  padding: 0;
+  -webkit-border-radius: 0;
+  -moz-border-radius: 0;
+  border-radius: 0;
+}
+@media all and (max-width: 1399px) {
+  #kslCarousel {
+    margin: 0 -20px;
+  }
+}
+@media all and (max-width: 680px) {
+  #kslCarousel {
+    margin: 0 -8px;
+  }
+}
+.carousel-inner {
+  background: #1a1a1a;
+  padding-bottom: 30%;
+  width: 100%;
+}
+@media all and (min-width: 501px) and (max-width: 767px) {
+  .carousel-inner {
+    padding-bottom: 65%;
+  }
+}
+@media all and (min-width: 401px) and (max-width: 500px) {
+  .carousel-inner {
+    padding-bottom: 70%;
+  }
+}
+@media all and (min-width: 341px) and (max-width: 400px) {
+  .carousel-inner {
+    padding-bottom: 85%;
+  }
+}
+@media all and (min-width: 281px) and (max-width: 340px) {
+  .carousel-inner {
+    padding-bottom: 100%;
+  }
+}
+@media all and (max-width: 280px) {
+  .carousel-inner {
+    padding-bottom: 110%;
+  }
+}
+.carousel-inner > .item {
+  min-height: 5em;
+  right: 0;
+  bottom: 0;
+  height: 100%;
+  width: 100%;
+  position: absolute;
+}
+.carousel-inner > .item > .bgimg {
+  max-width: 100%;
+}
+.carousel-control {
+  background: #fff;
+  color: #7e7e7e;
+  left: 0;
+  top: 50%;
+  -webkit-border-radius: 0;
+  -moz-border-radius: 0;
+  border-radius: 0;
+}
+@media all and (min-width: 640px) and (max-width: 767px) {
+  .carousel-control {
+    top: 45%;
+  }
+}
+@media all and (min-width: 501px) and (max-width: 639px) {
+  .carousel-control {
+    top: 45%;
+  }
+}
+@media all and (min-width: 401px) and (max-width: 500px) {
+  .carousel-control {
+    top: 42%;
+  }
+}
+@media all and (min-width: 341px) and (max-width: 400px) {
+  .carousel-control {
+    top: 34%;
+  }
+}
+@media all and (min-width: 281px) and (max-width: 340px) {
+  .carousel-control {
+    top: 29%;
+  }
+}
+@media all and (max-width: 280px) {
+  .carousel-control {
+    top: 26%;
+  }
+}
+.carousel-control.right {
+  left: auto;
+  right: 0;
+}
+.carousel-control:hover,
+.carousel-control:focus {
+  color: #0e7b9e;
+}
+.carousel-caption {
+  background: transparent;
+  color: #fff;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 8%;
+  padding: 5% 45% 15px 0;
+}
+.carousel-caption h1,
+.carousel-caption p {
+  color: #fff;
+}
+.carousel-caption .text_to_html {
+  font-size: 24px;
+}
+.carousel-caption h1 {
+  margin-bottom: .5em;
+}
+.carousel-caption h1,
+.carousel-caption h1 > .text_to_html {
+  color: #fff;
+  font-family: 'clan_otbook', Calibri, Candara, Segoe, "Segoe UI", Optima, Arial, sans-serif;
+  font-weight: normal;
+  font-size: 48px;
+  line-height: 1.2;
+}
+.carousel-caption a {
+  margin-top: 1em;
+}
+.carousel-caption a,
+.carousel-caption a > .text_to_html {
+  font-size: 18.016px;
+  line-height: 1.2;
+}
+.carousel-caption a div,
+.carousel-caption a > .text_to_html div {
+  display: inline-block;
+}
+@media all and (min-width: 980px) and (max-width: 1399px) {
+  .carousel-caption h1,
+  .carousel-caption h1 > .text_to_html {
+    font-size: 32px;
+  }
+}
+@media all and (min-width: 768px) and (max-width: 979px) {
+  .carousel-caption {
+    padding-right: 30%;
+  }
+  .carousel-caption h1,
+  .carousel-caption h1 > .text_to_html {
+    font-size: 28.32px;
+  }
+  .carousel-caption .text_to_html {
+    font-size: 16px;
+    line-height: 1.2;
+  }
+  .carousel-caption a,
+  .carousel-caption a > .text_to_html {
+    font-size: 16px;
+  }
+}
+@media all and (max-width: 767px) {
+  .carousel-caption {
+    height: 100%;
+    padding-right: 5%;
+    padding-left: 5%;
+    position: static;
+  }
+  .carousel-caption h1,
+  .carousel-caption h1 > .text_to_html {
+    font-size: 28.32px;
+    line-height: 1.2;
+  }
+  .carousel-caption .text_to_html {
+    font-size: 16px;
+    line-height: 1.2;
+  }
+  .carousel-caption a {
+    margin-top: 1em;
+  }
+  .carousel-caption a,
+  .carousel-caption a > .text_to_html {
+    font-size: 16px;
+  }
+}
+@media all and (max-width: 639px) {
+  .carousel-caption h1,
+  .carousel-caption h1 > .text_to_html {
+    font-size: 24px;
+  }
+}
 @media (max-width: 600px) {
   .logo-area {
     padding: 20px 19px;
@@ -1663,6 +1861,7 @@ div.editor_atto_content .kitable3.table-lines td {
   .hero-unit .texts {
     width: 85%;
     margin-top: 1%;
+    padding-left: 7%;
   }
   .hero-unit .lead {
     margin-top: 1%;
@@ -1675,7 +1874,7 @@ div.editor_atto_content .kitable3.table-lines td {
     width: 100%;
   }
   #page-course-index-category .generalbox.info h1,
-  h2 {
+  #page-course-index-category .generalbox.info h2 {
     word-break: break-all;
   }
   .edit-label {
@@ -1821,7 +2020,7 @@ div.editor_atto_content .kitable3.table-lines td {
     text-align: left;
   }
   .navbar-fixed-top {
-    margin-bottom: 0px;
+    margin-bottom: 0;
   }
   .header-right {
     width: 60%;
@@ -1832,7 +2031,7 @@ div.editor_atto_content .kitable3.table-lines td {
   }
   .navbar-fixed-top .navbar-inner,
   .navbar-fixed-bottom .navbar-inner {
-    padding: 0px;
+    padding: 0;
   }
   #page-footer #page-footer-inner .column {
     float: none;

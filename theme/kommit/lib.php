@@ -89,8 +89,9 @@ EOT;
  *
  * This function can make alterations and replace patterns within the CSS.
  *
- * @param string $css The CSS
+ * @param string       $css   The CSS
  * @param theme_config $theme The theme config object.
+ *
  * @return string The parsed CSS The parsed CSS.
  */
 function theme_kommit_process_css($css, $theme) {
@@ -117,8 +118,8 @@ function theme_kommit_process_css($css, $theme) {
  */
 function theme_kommit_set_fontwww($css) {
     global $CFG, $PAGE;
-    if(empty($CFG->themewww)){
-        $themewww = $CFG->wwwroot."/theme";
+    if (empty($CFG->themewww)) {
+        $themewww = $CFG->wwwroot . "/theme";
     } else {
         $themewww = $CFG->themewww;
     }
@@ -126,18 +127,20 @@ function theme_kommit_set_fontwww($css) {
 
     $theme = theme_config::load('kommit');
     if (!empty($theme->settings->bootstrapcdn)) {
-    	$css = str_replace($tag, '//netdna.bootstrapcdn.com/font-awesome/4.0.0/fonts/', $css);
+        $css = str_replace($tag, '//netdna.bootstrapcdn.com/font-awesome/4.0.0/fonts/', $css);
     } else {
-    	$css = str_replace($tag, $themewww.'/kommit/fonts/', $css);
+        $css = str_replace($tag, $themewww . '/kommit/fonts/', $css);
     }
+
     return $css;
 }
 
 /**
  * Adds the logo to CSS.
  *
- * @param string $css The CSS.
+ * @param string $css  The CSS.
  * @param string $logo The URL of the logo.
+ *
  * @return string The parsed CSS
  */
 function theme_kommit_set_logo($css, $logo) {
@@ -174,7 +177,7 @@ function theme_kommit_pluginfile($course, $cm, $context, $filearea, $args,
     }
 
     if ($context->contextlevel == CONTEXT_SYSTEM) {
-        if (preg_match("/^(logo|heroimg)$/", $filearea)) {
+        if (preg_match("/^(logo|slide|heroimg|slide[0-9]{1,2}image)$/", $filearea)) {
             return $theme->setting_file_serve($filearea, $args, $forcedownload, $options);
         } else {
             send_file_not_found();
@@ -204,7 +207,7 @@ function theme_kommit_pluginfile_serve($course, $cm, $context, $filearea, $args,
     $forcedownload, array $options = array(), $theme) {
 
     if ($context->contextlevel == CONTEXT_SYSTEM) {
-        if (preg_match("/^(logo|heroimg)$/", $filearea)) {
+        if (preg_match("/^(logo|slide|heroimg|slide[0-9]{1,2}image)$/", $filearea)) {
             return $theme->setting_file_serve($filearea, $args, $forcedownload, $options);
         } else {
             send_file_not_found();
@@ -219,8 +222,9 @@ function theme_kommit_pluginfile_serve($course, $cm, $context, $filearea, $args,
 /**
  * Adds any custom CSS to the CSS before it is cached.
  *
- * @param string $css The original CSS.
+ * @param string $css       The original CSS.
  * @param string $customcss The custom CSS to add.
+ *
  * @return string The CSS which now contains our custom CSS.
  */
 function theme_kommit_set_customcss($css, $customcss) {
@@ -239,10 +243,12 @@ function theme_kommit_set_customcss($css, $customcss) {
  * Returns an object containing HTML for the areas affected by settings.
  *
  * @param renderer_base $output Pass in $OUTPUT.
- * @param moodle_page $page Pass in $PAGE.
+ * @param moodle_page   $page   Pass in $PAGE.
+ *
  * @return stdClass An object with the following properties:
  *      - navbarclass A CSS class to use on the navbar. By default ''.
- *      - heading HTML to use for the heading. A logo if one is selected or the default heading.
+ *      - heading HTML to use for the heading. A logo if one is selected or the default
+ *      heading.
  *      - footnote HTML to use as a footnote. By default ''.
  */
 function theme_kommit_get_html_for_settings(renderer_base $output, moodle_page $page) {
@@ -262,7 +268,7 @@ function theme_kommit_get_html_for_settings(renderer_base $output, moodle_page $
 
     $return->footnote = '';
     if (!empty($page->theme->settings->footnote)) {
-        $return->footnote = '<div class="footnote text-center">'.$page->theme->settings->footnote.'</div>';
+        $return->footnote = '<div class="footnote text-center">' . $page->theme->settings->footnote . '</div>';
     }
 
     $return->manualcompletionhtml = '';
@@ -286,7 +292,8 @@ function theme_kommit_get_html_for_settings(renderer_base $output, moodle_page $
  * Returns an object containing HTML for the areas affected by settings.
  *
  * @param renderer_base $output Pass in $OUTPUT.
- * @param moodle_page $page Pass in $PAGE.
+ * @param moodle_page   $page   Pass in $PAGE.
+ *
  * @return stdClass An object with the filled properties.
  */
 function theme_kommit_frontpage_html_for_settings(renderer_base $output, moodle_page $page, $return) {
@@ -326,6 +333,7 @@ function theme_kommit_frontpage_html_for_settings(renderer_base $output, moodle_
  *   non-editing teacher
  *
  * @param moodle_page $page Pass in $PAGE.
+ *
  * @return bool
  */
 function theme_kommit_show_hidden_blocks() {
@@ -342,24 +350,27 @@ function theme_kommit_show_hidden_blocks() {
 
 /**
  * All theme functions should start with theme_kommit_
+ *
  * @deprecated since 2.5.1
  */
 function kommit_process_css() {
-    throw new coding_exception('Please call theme_'.__FUNCTION__.' instead of '.__FUNCTION__);
+    throw new coding_exception('Please call theme_' . __FUNCTION__ . ' instead of ' . __FUNCTION__);
 }
 
 /**
  * All theme functions should start with theme_kommit_
+ *
  * @deprecated since 2.5.1
  */
 function kommit_set_logo() {
-    throw new coding_exception('Please call theme_'.__FUNCTION__.' instead of '.__FUNCTION__);
+    throw new coding_exception('Please call theme_' . __FUNCTION__ . ' instead of ' . __FUNCTION__);
 }
 
 /**
  * All theme functions should start with theme_kommit_
+ *
  * @deprecated since 2.5.1
  */
 function kommit_set_customcss() {
-    throw new coding_exception('Please call theme_'.__FUNCTION__.' instead of '.__FUNCTION__);
+    throw new coding_exception('Please call theme_' . __FUNCTION__ . ' instead of ' . __FUNCTION__);
 }

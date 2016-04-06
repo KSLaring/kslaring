@@ -28,6 +28,7 @@ $string['choosereadme'] = 'Hey, I\'m kommit';
 $string['configtitle'] = 'kommit';
 
 $string['genericsettings'] = 'Generic settings';
+$string['slideshowsettings'] = 'Slideshow settings';
 $string['frontpagesettings'] = 'Frontpage settings';
 
 $string['heroimage'] = 'Big image';
@@ -58,6 +59,50 @@ $string['logo'] = 'Logo';
 $string['logodesc'] = 'Please upload your custom logo here if you want to add it to the header.<br>
 If the height of your logo is more than 75px add the following CSS rule to the Custom CSS box below.<br>
 a.logo {height: 100px;} or whatever height in pixels the logo is.';
+
+// Slide show.
+$string['slideshowsettings'] = 'Slide show settings';
+
+$string['toggleslideshow'] = 'Toggle slide show display';
+$string['toggleslideshowdesc'] = 'Choose if you wish to hide or show the slide show.';
+
+$string['numberofslides'] = 'Number of slides';
+$string['numberofslides_desc'] = 'Number of slides on the slider.';
+
+$string['alwaysdisplay'] = 'Always show';
+$string['displaybeforelogin'] = 'Show before login only';
+$string['displayafterlogin'] = 'Show after login only';
+$string['dontdisplay'] = 'Never show';
+
+$string['hideonphone'] = 'Hide slide show on mobiles';
+$string['hideonphonedesc'] = 'Choose if you wish to disable slide show on mobiles.';
+
+$string['hideontablet'] = 'Hide slide show on tablets';
+$string['hideontabletdesc'] = 'Choose if you wish to disable the slide show on tablets.';
+
+$string['readmore'] = 'Read more';
+
+$string['slideinterval'] = 'Slide interval';
+$string['slideintervaldesc'] = 'Slide transition interval in milliseconds.';
+
+$string['slideno'] = 'Slide {$a->slide}';
+$string['slidenodesc'] = 'Enter the settings for slide {$a->slide}.';
+$string['noslidetitle'] = 'No title for slide {$a->slide}';
+$string['slideimage'] = 'Slide image';
+$string['slideimagedesc'] = 'The image must be of the size 1400px x 420px.';
+$string['slidecaptiontitle'] = 'Slide title';
+$string['slidecaptiontitledesc'] = 'Enter the title to use for the slide.';
+$string['slidecaption'] = 'Slide text';
+$string['slidecaptiondesc'] = 'Enter the text to use for the slide.';
+$string['slidelinktext'] = 'Slide button text';
+$string['slidelinktextdesc'] = 'Enter text shown in the button on your slide.';
+$string['slideurl'] = 'Slide link';
+$string['slideurldesc'] = 'Enter the target destination URL of the slide\'s image link.';
+$string['slideurltarget'] = 'Link target';
+$string['slideurltargetdesc'] = 'Choose how the link should be opened.';
+$string['slideurltargetself'] = 'Current page';
+$string['slideurltargetnew'] = 'New page';
+$string['slideurltargetparent'] = 'Parent frame';
 
 $string['pluginname'] = 'kommit';
 

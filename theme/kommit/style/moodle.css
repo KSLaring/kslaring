@@ -13380,9 +13380,9 @@ body {
   padding: 0;
   border: none;
   background: none;
-  -webkit-border-radius: 0px;
-  -moz-border-radius: 0px;
-  border-radius: 0px;
+  -webkit-border-radius: 0;
+  -moz-border-radius: 0;
+  border-radius: 0;
 }
 #page-site-index .block_html.block .header {
   background: none;

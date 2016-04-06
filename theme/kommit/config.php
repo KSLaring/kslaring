@@ -77,6 +77,7 @@ $THEME->blockrtlmanipulations = array(
     'side-pre' => 'side-post',
     'side-post' => 'side-pre'
 );
+
 // additional block regions
 $THEME->layouts = array(
     // Main course page.
