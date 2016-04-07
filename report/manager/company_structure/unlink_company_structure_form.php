@@ -35,8 +35,8 @@ class unlink_company_structure_form extends moodleform {
         /* Parent List  */
         $parent_lst = company_structure::Company_GetParentList($company_id);
         $m_form->addElement('select','parent_sel',get_string('unlink_from','report_manager'),$parent_lst);
-        $m_form->addRule('parent_sel', null, 'required', null, 'client');
-        $m_form->addRule('parent_sel', get_string('required'), 'nonzero', null, 'client');
+        $m_form->addRule('parent_sel', get_string('required','report_manager'), 'required', null, 'client');
+        $m_form->addRule('parent_sel', get_string('required','report_manager'), 'nonzero', null, 'client');
 
         $m_form->addElement('hidden','id');
         $m_form->setDefault('id',$company_id);

@@ -37,7 +37,7 @@ class manager_import_structure_form extends moodleform {
         /* Level to Import  */
         $options = Import_Companies::GetLevel_To_Import();
         $form->addElement('select', 'import_level',get_string('level_to_import','report_manager'),$options);
-        $form->addRule('import_level', null, 'required', null, 'client');
+        $form->addRule('import_level', get_string('required','report_manager'), 'required', null, 'client');
         if (isset($_COOKIE['parentImportLevel']) && ($_COOKIE['parentImportLevel'])) {
             $form->setDefault('import_level',$_COOKIE['parentImportLevel']);
             $level = $_COOKIE['parentImportLevel'];
@@ -127,7 +127,7 @@ class manager_import_structure_form extends moodleform {
 
         /* Import File */
         $form->addElement('filepicker', 'import_structure', get_string('import_file','report_manager'));
-        $form->addRule('import_structure', null, 'required',null,'client');
+        $form->addRule('import_structure', get_string('required','report_manager'), 'required',null,'client');
 
         $choices = csv_import_reader::get_delimiter_list();
         $form->addElement('select', 'delimiter_name', get_string('csvdelimiter', 'report_manager'), $choices);
@@ -165,8 +165,8 @@ class manager_import_structure_form extends moodleform {
      */
     function Add_SelectParentImport($level,$parent,$options,&$form) {
         $form->addElement('select', $parent,get_string('comp_parent','report_manager',$level),$options);
-        $form->addRule($parent, null, 'required', null, 'client');
-        $form->addRule($parent, 'required', 'nonzero', null, 'client');
+        $form->addRule($parent, get_string('required','report_manager'), 'required', null, 'client');
+        $form->addRule($parent, get_string('required','report_manager'), 'nonzero', null, 'client');
     }//Add_CallParentImport
 
 }//manager_import_structure_form

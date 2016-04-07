@@ -61,12 +61,12 @@ class manager_add_company_structure_form extends moodleform {
         /* New Item / Company */
         $m_form->addElement('text', 'name', get_string('add_company_level','report_manager'), $text_attr);
         $m_form->setType('name',PARAM_TEXT);
-        $m_form->addRule('name','required','required', null, 'client');
+        $m_form->addRule('name',get_string('required','report_manager'),'required', null, 'client');
 
         /* Industry Code        */
         $m_form->addElement('text', 'industry_code', get_string('industry_code','report_manager'), $text_attr);
         $m_form->setType('industry_code',PARAM_TEXT);
-        $m_form->addRule('industry_code','required','required', null, 'client');
+        $m_form->addRule('industry_code',get_string('required','report_manager'),'required', null, 'client');
 
         /* Public Check Box     */
         $m_form->addElement('checkbox', 'public','',get_string('public', 'report_manager'));

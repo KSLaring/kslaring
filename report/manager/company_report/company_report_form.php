@@ -74,8 +74,8 @@ class manager_company_report_form extends moodleform {
                              );
             $this->setLevelDefault($form,$level);
 
-            $form->addRule(COMPANY_STRUCTURE_LEVEL . $level, null, 'required', null, 'client');
-            $form->addRule(COMPANY_STRUCTURE_LEVEL . $level, 'required', 'nonzero', null, 'client');
+            $form->addRule(COMPANY_STRUCTURE_LEVEL . $level, get_string('required','report_manager'), 'required', null, 'client');
+            $form->addRule(COMPANY_STRUCTURE_LEVEL . $level, get_string('required','report_manager'), 'nonzero', null, 'client');
         $form->addElement('html', '</div>');
     }//AddLevel
 
