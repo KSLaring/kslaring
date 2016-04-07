@@ -208,19 +208,18 @@ class outcome_report {
                 $outcome_report->completed_before   = $data_form[REPORT_MANAGER_COMPLETED_LIST];
 
                 /* Get My Companies by Level    */
-                if (!$IsReporter) {
+                if (($IsReporter) && !is_siteadmin($USER->id)) {
+                    $inZero  = $my_hierarchy->competence->levelZero;
+                    $inOne   = $my_hierarchy->competence->levelOne;
+                    $inTwo   = $my_hierarchy->competence->levelTwo;
+                    $inThree = $my_hierarchy->competence->levelThree;
+                }else {
                     list($inZero,$inOne,$inTwo,$inThree) = CompetenceManager::GetMyCompanies_By_Level($my_hierarchy->competence,$my_hierarchy->my_level);
                     $inZero     = implode(',',$inZero);
                     $inOne      = implode(',',$inOne);
                     $inTwo      = implode(',',$inTwo);
                     $inThree    = implode(',',$inThree);
-                }else {
-                    $inZero  = $my_hierarchy->competence->levelZero;
-                    $inOne   = $my_hierarchy->competence->levelOne;
-                    $inTwo   = $my_hierarchy->competence->levelTwo;
-                    $inThree = $my_hierarchy->competence->levelThree;
-                }//if_IsReporter
-
+                }//is_reporter
 
                 /* Job Roles Selected   */
                 $outcome_report->job_roles = self::Get_JobRolesOutcome_Report($outcome_id,$data_form);
@@ -264,9 +263,12 @@ class outcome_report {
                         if ($outcome_report->courses) {
                             /* Courses  */
                             $courses = implode(',',array_keys($outcome_report->courses));
-                            if (!in_array(0,$data_form[MANAGER_OUTCOME_STRUCTURE_LEVEL .'3'])) {
-                                $levelThree = array_flip($data_form[MANAGER_OUTCOME_STRUCTURE_LEVEL .'3']);
-                            }
+                            if (isset($data_form[MANAGER_OUTCOME_STRUCTURE_LEVEL .'3'])) {
+                                if (!in_array(0,$data_form[MANAGER_OUTCOME_STRUCTURE_LEVEL .'3'])) {
+                                    $levelThree = array_flip($data_form[MANAGER_OUTCOME_STRUCTURE_LEVEL .'3']);
+                                }
+                            }//if_outcome
+
                             self::GetUsers_EnrolledIn($outcome_id,$courses,$outcome_report->job_roles,$levelThree);
                             self::GetUsers_NotEnrolIn($outcome_id,$outcome_report->courses,$outcome_report->job_roles,$levelThree);
                         }//if_courses
