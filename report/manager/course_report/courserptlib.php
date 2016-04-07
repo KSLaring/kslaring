@@ -147,7 +147,7 @@ class course_report {
                 $course_report->completed_before   = $data_form[REPORT_MANAGER_COMPLETED_LIST];
 
                 /* Get My Companies by Level    */
-                if ($IsReporter) {
+                if (($IsReporter) && !is_siteadmin($USER->id)) {
                     $inZero  = $my_hierarchy->competence->levelZero;
                     $inOne   = $my_hierarchy->competence->levelOne;
                     $inTwo   = $my_hierarchy->competence->levelTwo;
@@ -158,7 +158,7 @@ class course_report {
                     $inOne      = implode(',',$inOne);
                     $inTwo      = implode(',',$inTwo);
                     $inThree    = implode(',',$inThree);
-                }
+                }//if_reporter
 
                 /* Job Roles Selected   */
                 $course_report->job_roles = self::Get_JobRolesCourse_Report($data_form);
@@ -197,9 +197,12 @@ class course_report {
                     $USER->courseReport = $course_id;
 
                     /* Get Info Course   */
-                    if (!in_array(0,$data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'3'])) {
-                        $levelThree = array_flip($data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'3']);
+                    if (isset($data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'3'])) {
+                        if (!in_array(0,$data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'3'])) {
+                            $levelThree = array_flip($data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'3']);
+                        }
                     }
+
                     self::GetUsers_EnrolledIn($course_id,$course_report->job_roles,$levelThree);
                     self::GetUsers_NotEnrolIn($course_id,$course_report->job_roles,$levelThree);
 

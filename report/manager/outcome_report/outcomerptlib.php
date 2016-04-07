@@ -219,7 +219,7 @@ class outcome_report {
                     $inOne      = implode(',',$inOne);
                     $inTwo      = implode(',',$inTwo);
                     $inThree    = implode(',',$inThree);
-                }
+                }//is_reporter
 
                 /* Job Roles Selected   */
                 $outcome_report->job_roles = self::Get_JobRolesOutcome_Report($outcome_id,$data_form);
@@ -268,7 +268,7 @@ class outcome_report {
                                     $levelThree = array_flip($data_form[MANAGER_OUTCOME_STRUCTURE_LEVEL .'3']);
                                 }
                             }//if_outcome
-                            
+
                             self::GetUsers_EnrolledIn($outcome_id,$courses,$outcome_report->job_roles,$levelThree);
                             self::GetUsers_NotEnrolIn($outcome_id,$outcome_report->courses,$outcome_report->job_roles,$levelThree);
                         }//if_courses
