@@ -77,6 +77,7 @@ $my_hierarchy = CompetenceManager::get_MyHierarchyLevel($USER->id,$site_context,
 $user_filter = new company_report_filtering(null,$url,null);
 /* Set My Companies         */
 if ($my_hierarchy->competence) {
+    echo "1";
     if ($IsReporter) {
         $user_filter->set_MyCompanies(implode(',',$my_hierarchy->competence->levelThree));
     }else {
@@ -84,6 +85,7 @@ if ($my_hierarchy->competence) {
         $user_filter->set_MyCompanies(implode(',',array_keys($myCompanies)));
     }//if_IsReporter
 }else {
+    echo "2";
     $user_filter->set_MyCompanies(null);
 }
 /* Selector User Form   */

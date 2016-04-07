@@ -1074,14 +1074,7 @@ class CompetenceManager {
             /* Execute  */
             $rdo = $DB->get_records_sql($sql,$params);
             if ($rdo) {
-                echo "1";
-                foreach ($rdo as $instance) {
-                    echo $instance->id . "</br>";
-                }
                 $my_users = implode(',',array_keys($rdo));
-
-                echo "My Users: " . $my_users . "</br>";
-
             }//if_rdo
 
             return $my_users;
