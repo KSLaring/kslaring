@@ -99,12 +99,6 @@ if (empty($CFG->loginhttps)) {
     $secure_www_root = str_replace('http:','https:',$CFG->wwwroot);
 }//if_security
 
-if (empty($CFG->loginhttps)) {
-    $secure_www_root = $CFG->wwwroot;
-} else {
-    $secure_www_root = str_replace('http:','https:',$CFG->wwwroot);
-}//if_security
-
 /* Start the page */
 $PAGE->verify_https_required();
 
