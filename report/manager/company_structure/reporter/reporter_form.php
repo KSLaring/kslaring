@@ -104,14 +104,14 @@ class report_manager_reporters_form extends moodleform {
         /* Check there are users to add */
         if ((isset($data['add_sel']) && $data['add_sel'])) {
             if (!isset($data['addselect']))  {
-                $errors['addselect'] = get_string('required');
+                $errors['addselect'] = get_string('required','report_manager');
             }//if_addselect
         }//if_add_sel
 
         /* Check there are users to remove  */
         if ((isset($data['remove_sel']) && $data['remove_sel'])) {
             if (!isset($data['removeselect'])) {
-                $errors['removeselect'] = get_string('required');
+                $errors['removeselect'] = get_string('required','report_manager');
             }//if_removeselect
         }//if_remove_sel
 

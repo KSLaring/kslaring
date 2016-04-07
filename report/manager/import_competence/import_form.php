@@ -23,7 +23,7 @@ class import_competence_form extends moodleform {
 
         /* Import File */
         $form->addElement('filepicker', 'import_competence', get_string('import_file','report_manager'));
-        $form->addRule('import_competence', null, 'required',null,'client');
+        $form->addRule('import_competence', get_string('required','report_manager'), 'required',null,'client');
 
         $choices = csv_import_reader::get_delimiter_list();
         $form->addElement('select', 'delimiter_name', get_string('csvdelimiter', 'report_manager'), $choices);
