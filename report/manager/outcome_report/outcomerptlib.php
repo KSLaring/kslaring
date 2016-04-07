@@ -263,9 +263,12 @@ class outcome_report {
                         if ($outcome_report->courses) {
                             /* Courses  */
                             $courses = implode(',',array_keys($outcome_report->courses));
-                            if (!in_array(0,$data_form[MANAGER_OUTCOME_STRUCTURE_LEVEL .'3'])) {
-                                $levelThree = array_flip($data_form[MANAGER_OUTCOME_STRUCTURE_LEVEL .'3']);
-                            }
+                            if (isset($data_form[MANAGER_OUTCOME_STRUCTURE_LEVEL .'3'])) {
+                                if (!in_array(0,$data_form[MANAGER_OUTCOME_STRUCTURE_LEVEL .'3'])) {
+                                    $levelThree = array_flip($data_form[MANAGER_OUTCOME_STRUCTURE_LEVEL .'3']);
+                                }
+                            }//if_outcome
+                            
                             self::GetUsers_EnrolledIn($outcome_id,$courses,$outcome_report->job_roles,$levelThree);
                             self::GetUsers_NotEnrolIn($outcome_id,$outcome_report->courses,$outcome_report->job_roles,$levelThree);
                         }//if_courses
