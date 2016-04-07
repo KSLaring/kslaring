@@ -23,8 +23,9 @@ require_once($CFG->libdir . '/gradelib.php');
 require_login();
 
 /* PARAMS */
-$url = new moodle_url('/report/manager/index.php');
+$url        = new moodle_url('/report/manager/index.php');
 $return_url = new moodle_url('/report/manager/index.php');
+$IsReporter = false;
 
 /* Start the page */
 $site_context = CONTEXT_SYSTEM::instance();
@@ -41,9 +42,12 @@ $PAGE->navbar->add(get_string('company_report','report_manager'),$url);
 unset($SESSION->parents);
 
 /* ADD require_capability */
-$IsReporter = CompetenceManager::IsReporter($USER->id);
-if (!$IsReporter) {
-    require_capability('report/manager:viewlevel4', $site_context);
+$site_context = CONTEXT_SYSTEM::instance();
+if (!is_siteadmin($USER->id)) {
+    $IsReporter = CompetenceManager::IsReporter($USER->id);
+    if (!$IsReporter) {
+        require_capability('report/manager:viewlevel4', $site_context,$USER->id);
+    }
 }
 
 if (empty($CFG->loginhttps)) {
