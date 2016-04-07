@@ -44,13 +44,13 @@ class manager_edit_job_role_form extends moodleform {
         $m_form->addElement('text', 'job_role_name', get_string('job_role_name', 'report_manager'));
         $m_form->setDefault('job_role_name',$jr_info->name);
         $m_form->setType('job_role_name',PARAM_TEXT);
-        $m_form->addRule('job_role_name','required','required', null, 'client');
+        $m_form->addRule('job_role_name',get_string('required','report_manager'),'required', null, 'client');
 
         /* Add Industry Code (Required) */
         $m_form->addElement('text', 'industry_code', get_string('industry_code','report_manager'), $text_attr);
         $m_form->setDefault('industry_code',$jr_info->industry_code);
         $m_form->setType('industry_code',PARAM_TEXT);
-        $m_form->addRule('industry_code', 'required', 'required', null, 'client');
+        $m_form->addRule('industry_code', get_string('required','report_manager'), 'required', null, 'client');
         /* Companies Levels Connected With  */
         $m_form->addElement('header', 'levels_connected', get_string('jr_connected', 'report_manager'));
         $m_form->setExpanded('levels_connected',true);
@@ -354,23 +354,23 @@ class manager_edit_job_role_form extends moodleform {
         if ($myAccess) {
             $selZero = COMPANY_STRUCTURE_LEVEL . 0;
             if (!$data[$selZero]) {
-                $errors[$selZero]  = get_string('required');
+                $errors[$selZero]  = get_string('required','report_manager');
             }else {
                 $levelZero  = $myAccess[$data[$selZero]];
                 if ($levelZero->levelOne) {
                     $selOne     = COMPANY_STRUCTURE_LEVEL . 1;
                     if (!$data[$selOne]) {
-                        $errors[$selOne]  = get_string('required');
+                        $errors[$selOne]  = get_string('required','report_manager');
                     }else {
                         if ($levelZero->levelTwo) {
                             $selTwo     = COMPANY_STRUCTURE_LEVEL . 2;
                             if (!$data[$selTwo]) {
-                                $errors[$selTwo]  = get_string('required');
+                                $errors[$selTwo]  = get_string('required','report_manager');
                             }else {
                                 if ($levelZero->levelThree) {
                                     $selThree     = COMPANY_STRUCTURE_LEVEL . 3;
                                     if (!$data[$selThree]) {
-                                        $errors[$selTwo]  = get_string('required');
+                                        $errors[$selTwo]  = get_string('required','report_manager');
                                     }
                                 }
                             }
