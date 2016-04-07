@@ -433,13 +433,13 @@ class CompetenceManager {
 
         /* Create links - It's depend on View permissions */
         $out = '<ul class="unlist report-selection">' . "\n";
-        if (self::IsReporter($USER->id,0)) {
+        if ((self::IsReporter($USER->id,0)) || is_siteadmin($USER->id)) {
             $out .= self::Get_ZeroLevelLink($tab);
-        }else if (self::IsReporter($USER->id,1)) {
+        }else if ((self::IsReporter($USER->id,1) || is_siteadmin($USER->id))) {
             $out .= self::Get_FirstLevelLink($tab);
-        }else if (self::IsReporter($USER->id,2)) {
+        }else if ((self::IsReporter($USER->id,2) || is_siteadmin($USER->id))) {
             $out .= self::Get_SecondLevelLink($tab);
-        }else if (self::IsReporter($USER->id,3)) {
+        }else if ((self::IsReporter($USER->id,3) || is_siteadmin($USER->id))) {
             $out .= self::Get_ThirdLevelLink($tab);
         }else {
             if (has_capability('report/manager:viewlevel0', $site_context)) {
