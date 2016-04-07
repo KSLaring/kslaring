@@ -180,6 +180,7 @@ $string['mng_body']     = '<p>Du får denne forespørselsen om godkjenning siden
                            <p>Kursinformasjon:</p>
                            <ul>
                                 <li><u>Kursdato</u>: {$a->date}</li>
+                                <li><u>Instruktør</u>: {$a->instructor}</li>
                                 <li><u>Sted</u>: {$a->location}</li>
                                 <li><u>Pris</u>: {$a->price}</li>
                                 <li>Mer informasjon om kurset kan du få på kursets hjemmeside: {$a->homepage}</li>
@@ -195,6 +196,7 @@ $string['body_reminder']    = '<p>Vi vil bare minne deg om at du er lederen for 
                                <p>Kursinformasjon:</p>
                                <ul>
                                     <li><u>Kursdato</u>: {$a->date}</li>
+                                    <li><u>Instruktør</u>: {$a->instructor}</li>
                                     <li><u>Sted</u>: {$a->location}</li>
                                     <li><u>Pris</u>: {$a->price}</li>
                                     <li>Mer informasjon om kurset kan du få på kursets hjemmeside: {$a->homepage}</li>
@@ -217,7 +219,8 @@ $string['err_link'] = 'OOPS - søknaden er allerede behandlet. Lenken du klikket
 
 $string['request_approved']   = 'Din søknad om kurset {$a->homepage} ble godkjent av din leder {$a->sent}. 
 	(Dette er en automatisk generert e-post fra {$a->site} og du kan ikke svare på e-posten.)';
-$string['request_rejected']   = 'Din søknad om kurset {$a->homepage} ble avslått {$a->sent}.
+$string['request_rejected']   = '<p>Din søknad om kurset {$a->homepage} ble avslått {$a->sent}.</p>
+                                <p>Please contact with your manager if there is wrong and if you can apply again if it is necessary.</p>
 		(Dette er en automatisk generert e-post fra {$a->site} og du kan ikke svare på e-posten.)';
 
 $string['approved_mnd'] = 'Søknaden om kursplass på kurset: {$a->homepage} for brukeren: <b>{$a->user}</b> er nå godkjent.';
@@ -250,6 +253,7 @@ $string['mng_approved_body_two'] = '<p>Vi vil gjerne informere deg om at brukere
                                     <p>Kursinformasjon:</p>
                                     <ul>
                                         <li><u>Kursdato</u>: {$a->date}</li>
+                                        <li><u>Instruktør</u>: {$a->instructor}</li>
                                         <li><u>Sted</u>: {$a->location}</li>
                                         <li><u>Pris</u>: {$a->price}</li>
                                         <li>Mer informasjon om kurset kan du få på kursets hjemmeside: {$a->homepage}</li>

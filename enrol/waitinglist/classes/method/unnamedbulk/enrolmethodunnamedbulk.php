@@ -116,7 +116,7 @@ class enrolmethodunnamedbulk extends \enrol_waitinglist\method\enrolmethodbase {
 			$oldrecord = $DB->get_record_sql("SELECT * FROM {".self::TABLE."} WHERE courseid = " . 
 		 		$courseid .  " AND " .$DB->sql_compare_text('methodtype') . "='". static::METHODTYPE ."'");
 			if($oldrecord){
-				$DB->delete_record(self::TABLE, array( 'id'=>$oldrecord->id));
+				$DB->delete_records(self::TABLE, array( 'id'=>$oldrecord->id));
 			}
 			
 			$id = $DB->insert_record(self::TABLE,$rec);

@@ -50,8 +50,8 @@ class manager_employee_report_form extends moodleform {
             }//IF_COOKIE
 
             $form->addElement('select',REPORT_MANAGER_OUTCOME_LIST,get_string('select_outcome_to_report', 'report_manager'),$outcome_lst);
-            $form->addRule(REPORT_MANAGER_OUTCOME_LIST, null, 'required', null, 'client');
-            $form->addRule(REPORT_MANAGER_OUTCOME_LIST, 'required', 'nonzero', null, 'client');
+            $form->addRule(REPORT_MANAGER_OUTCOME_LIST, get_string('required','report_manager'), 'required', null, 'client');
+            $form->addRule(REPORT_MANAGER_OUTCOME_LIST, get_string('required','report_manager'), 'nonzero', null, 'client');
 
             /* Completed List   */
             $options = CompetenceManager::GetCompletedList();
@@ -84,8 +84,8 @@ class manager_employee_report_form extends moodleform {
             );
             $this->setLevelDefault($form,$level);
 
-            $form->addRule(COMPANY_STRUCTURE_LEVEL . $level, null, 'required', null, 'client');
-            $form->addRule(COMPANY_STRUCTURE_LEVEL . $level, 'required', 'nonzero', null, 'client');
+            $form->addRule(COMPANY_STRUCTURE_LEVEL . $level, get_string('required','report_manager'), 'required', null, 'client');
+            $form->addRule(COMPANY_STRUCTURE_LEVEL . $level, get_string('required','report_manager'), 'nonzero', null, 'client');
         $form->addElement('html', '</div>');
     }//AddLevel
 

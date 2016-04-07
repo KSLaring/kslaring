@@ -38,8 +38,8 @@ class manager_course_report_level_form extends moodleform {
             $options = course_report::Get_CoursesList();
             $form->addElement('select',REPORT_MANAGER_COURSE_LIST,get_string('select_course_to_report', 'report_manager'),$options);
             $form->setDefault(REPORT_MANAGER_COURSE_LIST,0);
-            $form->addRule(REPORT_MANAGER_COURSE_LIST, 'required', 'required', 'nonzero', 'client');
-            $form->addRule(REPORT_MANAGER_COURSE_LIST, 'required', 'nonzero', null, 'client');
+            $form->addRule(REPORT_MANAGER_COURSE_LIST, get_string('required','report_manager'), 'required', 'nonzero', 'client');
+            $form->addRule(REPORT_MANAGER_COURSE_LIST, get_string('required','report_manager'), 'nonzero', null, 'client');
         $form->addElement('html', '</div>');
 
         /* Company Hierarchy - Levels */
@@ -115,8 +115,8 @@ class manager_course_report_level_form extends moodleform {
                 $select->setSize(10);
                 $form->addElement('html', '<p class="helptext">' . get_string('help_multi_select', 'report_manager') . '</p>');
             }else {
-                $form->addRule(COMPANY_STRUCTURE_LEVEL . $level, null, 'required', null, 'client');
-                $form->addRule(COMPANY_STRUCTURE_LEVEL . $level, 'required', 'nonzero', null, 'client');
+                $form->addRule(COMPANY_STRUCTURE_LEVEL . $level, get_string('required','report_manager'), 'required', null, 'client');
+                $form->addRule(COMPANY_STRUCTURE_LEVEL . $level, get_string('required','report_manager'), 'nonzero', null, 'client');
             }//if_level_three
 
         $form->addElement('html', '</div>');

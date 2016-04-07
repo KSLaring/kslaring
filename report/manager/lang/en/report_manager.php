@@ -340,7 +340,7 @@ $string['sel_parent']       = 'Select one parent';
 $string['import_file']      = 'File';
 $string['csvdelimiter']     = 'CSV delimiter';
 $string['encoding']         = 'Encoding';
-$string['required']         = 'This field is required';
+$string['required']         = 'Required';
 $string['btn_import']       = 'Import';
 
 $string['csv_load_error']           = 'Error occur during loading CSV file!. Please review the settings or the content of the file.';

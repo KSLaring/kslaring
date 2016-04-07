@@ -347,7 +347,7 @@ $string['sel_parent']       = 'Velg et overordnet nivå';
 $string['import_file']      = 'Fil';
 $string['csvdelimiter']     = 'CSV-skilletegn';
 $string['encoding']         = 'Kodesett';
-$string['required']         = 'Dette feltet er obligatorisk';
+$string['required']         = 'Obligatorisk';
 $string['btn_import']       = 'Importer';
 
 $string['csv_load_error']           = 'Feil ved lasting av CSV-fila. Vennligst sjekk innstillingene eller csv-filas innhold.';
