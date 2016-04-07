@@ -208,19 +208,18 @@ class outcome_report {
                 $outcome_report->completed_before   = $data_form[REPORT_MANAGER_COMPLETED_LIST];
 
                 /* Get My Companies by Level    */
-                if (!$IsReporter) {
+                if (($IsReporter) && !is_siteadmin($USER->id)) {
+                    $inZero  = $my_hierarchy->competence->levelZero;
+                    $inOne   = $my_hierarchy->competence->levelOne;
+                    $inTwo   = $my_hierarchy->competence->levelTwo;
+                    $inThree = $my_hierarchy->competence->levelThree;
+                }else {
                     list($inZero,$inOne,$inTwo,$inThree) = CompetenceManager::GetMyCompanies_By_Level($my_hierarchy->competence,$my_hierarchy->my_level);
                     $inZero     = implode(',',$inZero);
                     $inOne      = implode(',',$inOne);
                     $inTwo      = implode(',',$inTwo);
                     $inThree    = implode(',',$inThree);
-                }else {
-                    $inZero  = $my_hierarchy->competence->levelZero;
-                    $inOne   = $my_hierarchy->competence->levelOne;
-                    $inTwo   = $my_hierarchy->competence->levelTwo;
-                    $inThree = $my_hierarchy->competence->levelThree;
-                }//if_IsReporter
-
+                }
 
                 /* Job Roles Selected   */
                 $outcome_report->job_roles = self::Get_JobRolesOutcome_Report($outcome_id,$data_form);
