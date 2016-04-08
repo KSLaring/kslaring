@@ -626,6 +626,8 @@ class company_structure {
 
     /**
      * @param           $companyId
+     * @param           $employees
+     * @param           $all
      *
      * @throws          Exception
      *
@@ -635,16 +637,34 @@ class company_structure {
      * Description
      * Delete employees connected with
      */
-    public static function DeleteEmployees($companyId) {
+    public static function DeleteEmployees($companyId,$employees,$all=false) {
         /* Variables */
         global $DB;
-        $trans = null;
+        $sql    = null;
+        $params = null;
+        $trans  = null;
 
         /* Start Transaction   */
         $trans = $DB->start_delegated_transaction();
 
         try {
-            $DB->delete_records('user_info_competence_data',array('companyid' => $companyId));
+            /* Search Criteria  */
+            $params = array();
+            $params['companyid'] = $companyId;
+
+            /* Deleted Employees  */
+            if ($all) {
+                $DB->delete_records('user_info_competence_data',$params);
+            }else {
+                /* SQL Instruction */
+                $sql = " DELETE
+                         FROM   {user_info_competence_data}
+                         WHERE  companyid = :companyid
+                            AND userid IN ($employees) ";
+
+                /* Execute */
+                $DB->execute($sql,$params);
+            }//if_all
 
             /* Commit */
             $trans->allow_commit();

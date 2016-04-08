@@ -65,7 +65,7 @@ class manager_company_structure_form extends moodleform {
                                 REPORT_MANAGER_EMPLOYEE_LIST,
                                 get_string('company_structure_employees', 'report_manager'),
                                 $options,
-                                'size = 10');
+                                'size = 10 multiple="true"');
             /* Options */
             $m_form->disabledIf(REPORT_MANAGER_EMPLOYEE_LIST,COMPANY_STRUCTURE_LEVEL . '3','eq',0);
 
@@ -75,6 +75,8 @@ class manager_company_structure_form extends moodleform {
 
             /* Delete Employees   */
             $button[] = $m_form->createElement('button','btn-' . REPORT_MANAGER_DELETE_EMPLOYEES . '3',get_string('remove'),$button_array_attr);
+            /* Delete All Employees */
+            $button[] = $m_form->createElement('button','btn-' . REPORT_MANAGER_DELETE_ALL_EMPLOYEES . '3',get_string('removeall', 'bulkusers') ,$button_array_attr);
             $m_form->addGroup($button, 'btn' . REPORT_MANAGER_DELETE_EMPLOYEES, '&nbsp;', '&nbsp;', false);
         $m_form->addElement('html', '</div>');
 
