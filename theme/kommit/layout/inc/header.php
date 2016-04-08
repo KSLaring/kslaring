@@ -30,7 +30,7 @@ if ($loggedin) {
                                                                      src="<?php echo
                                                                      $OUTPUT->pix_url('logo', 'theme'); ?>"></a>
         </div>
-        
+
         <div class="header-right">
             <?php
             /**
@@ -88,4 +88,4 @@ ed24ChatObj = {
                 ,'windowSettings':'width=600,height=800,status=0,scrollbars=0,titlebar=0'
 };
 </script>
-<script src="http://login.edialog24.com/ChatClient3/EntrypointScript4.js" type="text/javascript"></script>
+<script src="https://login.edialog24.com/ChatClient3/EntrypointScript4.js" type="text/javascript"></script>
