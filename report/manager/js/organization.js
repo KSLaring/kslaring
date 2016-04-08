@@ -46,6 +46,8 @@ var level_structure = {
 
     delEmployees : Y.one('#id_btn-delete_employees3'),
 
+    delAllEmployees : Y.one('#id_btn-delete_all_employees3'),
+
     /* Super User   */
     sp_user     : superUser,
     /* Level Access */
@@ -76,6 +78,7 @@ var level_structure = {
         if (this.employeeLst) {
             this.levelThree.on('change', this.Load_Employees, this);
             this.delEmployees.on('click',this.Delete_Employees,this);
+            this.delAllEmployees.on('click',this.Delete_All_Employees,this);
         }else if (this.outcomeLst) {
             this.levelThree.on('change', this.Load_Outcomes, this);
         }
@@ -119,6 +122,12 @@ var level_structure = {
         //  Trigger an ajax search after a delay.
         this.cancel_timeout();
         this.timeoutid = Y.later(this.querydelay * 1000, e, function(obj){obj.send_query_delete_employees(false)}, this);
+    },
+
+    Delete_All_Employees : function (e) {
+        //  Trigger an ajax search after a delay.
+        this.cancel_timeout();
+        this.timeoutid = Y.later(this.querydelay * 1000, e, function(obj){obj.send_query_delete_all_employees(false)}, this);
     },
 
     Load_Outcomes : function (e) {
@@ -291,6 +300,45 @@ var level_structure = {
 
     send_query_delete_employees : function(forceresearch) {
         var valueThree  = 0;
+        var selEmployees    = 0;
+
+        // Cancel any pending timeout.
+        this.cancel_timeout();
+
+        // Try to cancel existing transactions.
+        Y.Object.each(this.iotransactions, function(trans) {
+            trans.abort();
+        });
+
+        /* Level Three */
+        valueThree = this.levelThree.get('value');
+
+        /* Get Employees  */
+        this.employeeLst.all('option').each(function(option){
+            if (option.get('selected') && (option.get('value') != 0)) {
+                if (selEmployees == 0) {
+                    selEmployees = option.get('value');
+                }else {
+                    selEmployees = selEmployees + '#' + option.get('value');
+                }
+            }//seleted
+        });
+
+        var iotrans = Y.io(M.cfg.wwwroot + '/report/manager/company_structure/employees.php',
+            {
+                method: 'POST',
+                data: 'levelThree=' + valueThree + '&sesskey=' + M.cfg.sesskey + '&delete=1' + '&employees=' + selEmployees,
+                on: {
+                    complete: this.handle_responseDeleteEmployees
+                },
+                context:this
+            }
+        );
+        this.iotransactions[iotrans.id] = iotrans;
+    },
+
+    send_query_delete_all_employees : function(forceresearch) {
+        var valueThree      = 0;
 
         // Cancel any pending timeout.
         this.cancel_timeout();
@@ -306,7 +354,7 @@ var level_structure = {
         var iotrans = Y.io(M.cfg.wwwroot + '/report/manager/company_structure/employees.php',
             {
                 method: 'POST',
-                data: 'levelThree=' + valueThree + '&sesskey=' + M.cfg.sesskey + '&delete=1',
+                data: 'levelThree=' + valueThree + '&sesskey=' + M.cfg.sesskey + '&deleteAll=1',
                 on: {
                     complete: this.handle_responseDeleteEmployees
                 },
@@ -539,12 +587,14 @@ var level_structure = {
                     Y.one('#id_btn-rename_selected3').setAttribute('disabled','disabled');
                     Y.one('#id_btn-delete_selected3').setAttribute('disabled','disabled');
                     Y.one('#id_btn-delete_employees3').setAttribute('disabled','disabled');
+                    Y.one('#id_btn-delete_all_employees3').setAttribute('disabled','disabled');
                 }else {
                     Y.one('#id_btn-managers_selected3').removeAttribute('disabled');
                     Y.one('#id_btn-reporters_selected3').removeAttribute('disabled');
                     Y.one('#id_btn-rename_selected3').removeAttribute('disabled');
                     Y.one('#id_btn-delete_selected3').removeAttribute('disabled');
                     Y.one('#id_btn-delete_employees3').removeAttribute('disabled');
+                    Y.one('#id_btn-delete_all_employees3').removeAttribute('disabled');
                 }
             }
         }//ifbtnActions
@@ -585,6 +635,7 @@ var level_structure = {
         Y.one('#id_btn-managers_selected3').setAttribute('disabled','disabled');
         Y.one('#id_btn-reporters_selected3').setAttribute('disabled','disabled');
         Y.one('#id_btn-delete_employees3').setAttribute('disabled','disabled');
+        Y.one('#id_btn-delete_all_employees3').setAttribute('disabled','disabled');
 
         if (this.levelZero.get('value') != 0) {
             /* Get Level Zero   */
@@ -643,12 +694,14 @@ var level_structure = {
                     Y.one('#id_btn-rename_selected3').setAttribute('disabled','disabled');
                     Y.one('#id_btn-delete_selected3').setAttribute('disabled','disabled');
                     Y.one('#id_btn-delete_employees3').setAttribute('disabled','disabled');
+                    Y.one('#id_btn-delete_all_employees3').setAttribute('disabled','disabled');
                 }else {
                     Y.one('#id_btn-managers_selected3').removeAttribute('disabled');
                     Y.one('#id_btn-reporters_selected3').removeAttribute('disabled');
                     Y.one('#id_btn-rename_selected3').removeAttribute('disabled');
                     Y.one('#id_btn-delete_selected3').removeAttribute('disabled');
                     Y.one('#id_btn-delete_employees3').removeAttribute('disabled');
+                    Y.one('#id_btn-delete_all_employees3').removeAttribute('disabled');
                 }
             }
         }
