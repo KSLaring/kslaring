@@ -20,7 +20,9 @@ require_once('company_structurelib.php');
 
 /* PARAMS   */
 $levelThree     = optional_param('levelThree',0,PARAM_TEXT);
+$employees      = optional_param('employees',0,PARAM_TEXT);
 $delete         = optional_param('delete',0,PARAM_INT);
+$deleteAll      = optional_param('deleteAll',0,PARAM_INT);
 
 $json           = array();
 $data           = array();
@@ -38,12 +40,18 @@ require_sesskey();
 
 echo $OUTPUT->header();
 
-/* Get Employees    */
+/* Get Company */
 if ($levelThree) {
     $levelThree = str_replace('#',',',$levelThree);
 }
-if ($delete) {
-    company_structure::DeleteEmployees($levelThree);
+/* Get Employees */
+if ($employees) {
+    $employees = str_replace('#',',',$employees);
+}
+if ($deleteAll) {
+    company_structure::DeleteEmployees($levelThree,$employees,true);
+}else if ($delete) {
+    company_structure::DeleteEmployees($levelThree,$employees);
 }else {
     $employees = company_structure::Get_EmployeeLevel($levelThree);
 
