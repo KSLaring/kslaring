@@ -207,12 +207,12 @@ $string['body_reminder']    = '<p>Vi vil bare minne deg om at du er lederen for 
                                <p>TFor å avslå denne søknaden kan du klikke her:  {$a->reject}.</p>';
 
 
-$string['std_body']     = 'Søknaden om påmelding vil bli behandlet så raskt som mulig. Vi sender deg en epost med varsel om resultatet av behandlingen fra din leder. <p>Dette er en automatisk generert e-post fra {$a->site} og du kan ikke svare på e-posten.</p>';
+$string['std_body']     = 'Søknaden din om plass på kurset vil bli behandlet så raskt som mulig. Vi sender deg en epost med varsel om resultatet av behandlingen fra din leder. <p>Dette er en automatisk generert e-post fra {$a->site} og du kan ikke svare på e-posten.</p>';
 
 $string['approve_lnk']  = 'Godkjenn søknaden';
 $string['reject_lnk']   = 'Avslå søknaden';
 
-$string['request_sent']         = 'Søknaden din om plass på kurset vil bli behandlet så raskt som mulig. Vi sender deg en epost når søknaden din er behandlet. <p>Dette er en automatisk generert e-post fra {$a->site} og du kan ikke svare på e-posten.</p>';
+$string['request_sent']         = 'Søknaden din om plass på kurset vil bli behandlet så raskt som mulig. Vi sender deg en epost når søknaden din er behandlet.';
 $string['request_remainder']    = 'Søknaden din ble innsendt <b>{$a}</b>. Den er ennå ikke behandlet av din leder. Ønsker du å sende en påminnelse til lederen din?';
 
 $string['err_link'] = 'OOPS - søknaden er allerede behandlet. Lenken du klikket på kan bare benyttes en gang.';
@@ -220,8 +220,7 @@ $string['err_link'] = 'OOPS - søknaden er allerede behandlet. Lenken du klikket
 $string['request_approved']   = 'Din søknad om kurset {$a->homepage} ble godkjent av din leder {$a->sent}. 
 	(Dette er en automatisk generert e-post fra {$a->site} og du kan ikke svare på e-posten.)';
 $string['request_rejected']   = '<p>Din søknad om kurset {$a->homepage} ble avslått {$a->sent}.</p>
-                                <p>Please contact with your manager if there is wrong and if you can apply again if it is necessary.</p>
-		(Dette er en automatisk generert e-post fra {$a->site} og du kan ikke svare på e-posten.)';
+                                <p>Om søknaden ble avslått ved en feil, bør du ta kontakt med lederen din og søke på nytt.</p><p>(Dette er en automatisk generert e-post fra {$a->site} og du kan ikke svare på e-posten.)</p>';
 
 $string['approved_mnd'] = 'Søknaden om kursplass på kurset: {$a->homepage} for brukeren: <b>{$a->user}</b> er nå godkjent.';
 $string['rejected_mnd'] = 'Søknaden om kursplass på kurset: {$a->homepage} for brukeren: <b>{$a->user}</b> er nå avslått.';
