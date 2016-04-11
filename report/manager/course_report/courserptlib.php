@@ -630,7 +630,7 @@ class course_report {
                                                                     AND	u.deleted	= 0
                         JOIN		{user_info_competence_data}	uic	ON 	uic.userid 	= u.id
                         LEFT JOIN	{course_completions}		cc	ON 	cc.userid	= uic.userid
-                                                                    AND cc.id 		= e.courseid ";
+                                                                    AND cc.course 	= e.courseid ";
 
             /* Companies Criteria    */
             if ($companies) {
