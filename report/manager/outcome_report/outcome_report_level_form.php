@@ -391,7 +391,7 @@ class manager_outcome_report_level_form extends moodleform {
                     /* Level Three  */
                     if (is_array($levelThree)) {
                         if (in_array('0',$levelThree)) {
-                            $levelThree = $SESSION->selection[MANAGER_COURSE_STRUCTURE_LEVEL . $level];
+                            $levelThree = $SESSION->selection[MANAGER_OUTCOME_STRUCTURE_LEVEL . $level];
                         }//if_levleThree
                     }//if_levelThree
                 }//if_session
