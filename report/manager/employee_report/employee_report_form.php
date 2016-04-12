@@ -38,10 +38,10 @@ class manager_employee_report_form extends moodleform {
         $form->addElement('header', 'outcome', 'Filter');
 
         $form->addElement('html', '<div class="level-wrapper">');
-            $levelZero  = optional_param(COMPANY_STRUCTURE_LEVEL . 0, 0, PARAM_INT);
-            $levelOne   = optional_param(COMPANY_STRUCTURE_LEVEL . 1, 0, PARAM_INT);
-            $levelTwo   = optional_param(COMPANY_STRUCTURE_LEVEL . 2, 0, PARAM_INT);
-            $levelThree = optional_param(COMPANY_STRUCTURE_LEVEL . 3, 0, PARAM_INT);
+            $levelZero  = optional_param(EMPLOYEE_REPORT_STRUCTURE_LEVEL . 0, 0, PARAM_INT);
+            $levelOne   = optional_param(EMPLOYEE_REPORT_STRUCTURE_LEVEL . 1, 0, PARAM_INT);
+            $levelTwo   = optional_param(EMPLOYEE_REPORT_STRUCTURE_LEVEL . 2, 0, PARAM_INT);
+            $levelThree = optional_param(EMPLOYEE_REPORT_STRUCTURE_LEVEL . 3, 0, PARAM_INT);
             if ($levelThree) {
                 $outcome_lst = EmployeeReport::GetOutcomes_EmployeeReport($levelZero,$levelOne,$levelTwo,$levelThree);
             }else {
@@ -78,14 +78,14 @@ class manager_employee_report_form extends moodleform {
         $form->addElement('html', '<div class="level-wrapper">');
             /* Add Company List */
             $options = $this->getCompanyList($level,$my_hierarchy,$IsReporter);
-            $form->addElement('select',COMPANY_STRUCTURE_LEVEL . $level,
+            $form->addElement('select',EMPLOYEE_REPORT_STRUCTURE_LEVEL . $level,
                               get_string('select_company_structure_level', 'report_manager', $level),
                               $options
             );
             $this->setLevelDefault($form,$level);
 
-            $form->addRule(COMPANY_STRUCTURE_LEVEL . $level, get_string('required','report_manager'), 'required', null, 'client');
-            $form->addRule(COMPANY_STRUCTURE_LEVEL . $level, get_string('required','report_manager'), 'nonzero', null, 'client');
+            $form->addRule(EMPLOYEE_REPORT_STRUCTURE_LEVEL . $level, get_string('required','report_manager'), 'required', null, 'client');
+            $form->addRule(EMPLOYEE_REPORT_STRUCTURE_LEVEL . $level, get_string('required','report_manager'), 'nonzero', null, 'client');
         $form->addElement('html', '</div>');
     }//AddLevel
 
@@ -109,7 +109,7 @@ class manager_employee_report_form extends moodleform {
      */
     function getCompanyList($level,$myHierarchy,$IsReporter) {
         /* Variables    */
-        global $USER;
+        global $USER,$SESSION;
         $levelThree     = null;
         $levelTwo       = null;
         $levelOne       = null;
@@ -129,7 +129,13 @@ class manager_employee_report_form extends moodleform {
 
 
         /* Parent*/
-        $parent     = optional_param(COMPANY_STRUCTURE_LEVEL . ($level-1), 0, PARAM_INT);
+        if ($level) {
+            $parent     = optional_param(EMPLOYEE_REPORT_STRUCTURE_LEVEL . ($level-1), 0, PARAM_INT);
+            if ((!$parent) && isset($SESSION->selection)) {
+                $parent = $SESSION->selection[EMPLOYEE_REPORT_STRUCTURE_LEVEL . ($level-1)];
+            }
+        }//if_level
+
         switch ($level) {
             case 0:
                 /* Only My Companies    */
@@ -193,13 +199,17 @@ class manager_employee_report_form extends moodleform {
      */
     function setLevelDefault(&$form,$level) {
         /* Variables    */
+        global $SESSION;
         $default    = null;
         $parent     = null;
 
         /* Get Default Value    */
-        $default = optional_param(COMPANY_STRUCTURE_LEVEL . $level, 0, PARAM_INT);
+        $default = optional_param(EMPLOYEE_REPORT_STRUCTURE_LEVEL . $level, 0, PARAM_INT);
+        if ((!$default) && isset($SESSION->selection)) {
+            $default = $SESSION->selection[EMPLOYEE_REPORT_STRUCTURE_LEVEL . $level];
+        }//if_session
 
         /* Set Default  */
-        $form->setDefault(COMPANY_STRUCTURE_LEVEL . $level,$default);
+        $form->setDefault(EMPLOYEE_REPORT_STRUCTURE_LEVEL . $level,$default);
     }//setLevelDefault
 }//manager_employee_report_form

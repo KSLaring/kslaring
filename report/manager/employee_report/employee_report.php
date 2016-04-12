@@ -68,11 +68,20 @@ $myHierarchy = CompetenceManager::get_MyHierarchyLevel($USER->id,$site_context,$
 /* Show Form    */
 $form = new manager_employee_report_form(null,array($myHierarchy,$IsReporter));
 if ($form->is_cancelled()) {
+    unset($SESSION->selection);
+
     $_POST = array();
     redirect($return);
 }else if($data = $form->get_data()) {
     /* Get Data */
     $data_form = (Array)$data;
+
+    /* Keep selection data --> when it returns to the main page */
+    $SESSION->selection = array();
+    $SESSION->selection[EMPLOYEE_REPORT_STRUCTURE_LEVEL . '0']   = (isset($data_form[EMPLOYEE_REPORT_STRUCTURE_LEVEL . '0']) ? $data_form[EMPLOYEE_REPORT_STRUCTURE_LEVEL . '0'] : 0);
+    $SESSION->selection[EMPLOYEE_REPORT_STRUCTURE_LEVEL . '1']   = (isset($data_form[EMPLOYEE_REPORT_STRUCTURE_LEVEL . '1']) ? $data_form[EMPLOYEE_REPORT_STRUCTURE_LEVEL . '1'] : 0);
+    $SESSION->selection[EMPLOYEE_REPORT_STRUCTURE_LEVEL . '2']   = (isset($data_form[EMPLOYEE_REPORT_STRUCTURE_LEVEL . '2']) ? $data_form[EMPLOYEE_REPORT_STRUCTURE_LEVEL . '2'] : 0);
+    $SESSION->selection[EMPLOYEE_REPORT_STRUCTURE_LEVEL . '3']   = (isset($data_form[EMPLOYEE_REPORT_STRUCTURE_LEVEL . '3']) ? $data_form[EMPLOYEE_REPORT_STRUCTURE_LEVEL . '3'] : 0);
 
     /* Get Company Tracker Info */
     $company        = $data_form[EMPLOYEE_REPORT_STRUCTURE_LEVEL . '3'];
