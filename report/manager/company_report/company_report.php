@@ -137,6 +137,8 @@ $out = '';
 
 if ($form->is_cancelled()) {
     $_POST = array();
+    $SESSION->bulk_users= array();
+
     redirect($return_url);
 }else if($data = $form->get_data()) {
     /* Get Data */
@@ -168,6 +170,8 @@ if ($form->is_cancelled()) {
         default:
             break;
     }//switch
+
+    $SESSION->bulk_users = array();
 }//if_else
 
 /* Print Header */
