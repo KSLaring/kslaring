@@ -42,6 +42,7 @@ $PAGE->navbar->add(get_string('report_manager','local_tracker_manager'),$return_
 $PAGE->navbar->add(get_string('outcome_report', 'report_manager'),$url);
 
 unset($SESSION->parents);
+unset($SESSION->selection);
 
 /* ADD require_capability */
 if (!CompetenceManager::IsReporter($USER->id)) {

@@ -100,11 +100,12 @@ class manager_company_report_form extends moodleform {
      */
     function getCompanyList($level,$myHierarchy,$IsReporter) {
         /* Variables    */
-        global $USER;
+        global $USER,$SESSION;
         $levelThree     = null;
         $levelTwo       = null;
         $levelOne       = null;
         $levelZero      = null;
+        $parent         = null;
         $companies_in   = null;
         $options        = array();
 
@@ -119,7 +120,13 @@ class manager_company_report_form extends moodleform {
         }//if_IsReporter
 
         /* Parent*/
-        $parent     = optional_param(COMPANY_STRUCTURE_LEVEL . ($level-1), 0, PARAM_INT);
+        if ($level) {
+            $parent     = optional_param(COMPANY_STRUCTURE_LEVEL . ($level-1), 0, PARAM_INT);
+            if ((!$parent) && isset($SESSION->selection)) {
+                $parent = $SESSION->selection[COMPANY_STRUCTURE_LEVEL . ($level-1)];
+            }
+        }//if_level
+
         switch ($level) {
             case 0:
                 /* Only My Companies    */
@@ -183,11 +190,16 @@ class manager_company_report_form extends moodleform {
      */
     function setLevelDefault(&$form,$level) {
         /* Variables    */
+        global $SESSION;
         $default    = null;
         $parent     = null;
 
         /* Get Default Value    */
         $default = optional_param(COMPANY_STRUCTURE_LEVEL . $level, 0, PARAM_INT);
+        if ((!$default) && isset($SESSION->selection)) {
+            $default = $SESSION->selection[COMPANY_STRUCTURE_LEVEL . $level];
+        }//if_session
+
         /* Set Default  */
         $form->setDefault(COMPANY_STRUCTURE_LEVEL . $level,$default);
     }//setLevelDefault

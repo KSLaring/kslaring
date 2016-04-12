@@ -131,6 +131,7 @@ class EmployeeReport {
     /**
      * @param           $employeeTracker
      * @param           $completed_list
+     *
      * @return          string
      * @throws          Exception
      *
@@ -159,8 +160,8 @@ class EmployeeReport {
      */
     public static function Print_EmployeeTracker($employeeTracker,$completed_list) {
         /* Variables    */
-        $out_report         = '';
-        $return_url         = null;
+        $out_report = '';
+        $return_url = null;
 
         try {
             /* Url To Back  */
@@ -199,7 +200,6 @@ class EmployeeReport {
                     /* Return To Selection Page */
                     $out_report .= html_writer::link($return_url,get_string('company_overview_return_selection','report_manager'),array('class' => 'link_return'));
                 }//if_not_users
-
 
                 /* Employee Report - Content      */
                 if ($employeeTracker->users) {
