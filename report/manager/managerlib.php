@@ -285,6 +285,7 @@ class CompetenceManager {
         $grpTwo     = null;
         $grpThree   = null;
         $sp         = null;
+        $delEmployees   = null;
 
         try {
             /* Initialise variables */
@@ -302,8 +303,15 @@ class CompetenceManager {
                              );
 
             $sp = ($superUser ? 1 : 0);
+
+            /* Window Confirm parameters    */
+            $delEmployees = array();
+            $delEmployees['title']      = get_string('del_title','report_manager');
+            $delEmployees['question']   = get_string('delete_all_employees','report_manager');
+            $delEmployees['yes']        = get_string('del_yes','report_manager');
+            $delEmployees['no']         = get_string('del_no','report_manager');
             $PAGE->requires->js_init_call('M.core_user.init_organization',
-                                          array($selector,$employeeSel,$outcomeSel,$sp,$myAccess,$btnActions),
+                                          array($selector,$employeeSel,$outcomeSel,$sp,$myAccess,$btnActions,$delEmployees),
                                           false,
                                           $jsModule
                                          );

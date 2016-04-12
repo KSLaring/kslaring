@@ -463,3 +463,12 @@ $string['no_managers']      = 'No Managers';
 $string['no_reporters']     = 'No Reporters';
 
 $string['reports_manager']  = 'Competence Manager Reports';
+
+$string['btn_move']     = 'Move item';
+$string['move_from']    = 'Move from';
+$string['move_to']      = 'Move to';
+
+$string['delete_all_employees'] = 'You are going to delete all employees connected with. Do you want to continue?';
+$string['del_title']            = 'Confirmation';
+$string['del_yes']              = 'Yes';
+$string['del_no']               = 'No';
