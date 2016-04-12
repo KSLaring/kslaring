@@ -254,6 +254,7 @@ class CompanyReport {
 
     /**
      * @param           $companyTracker
+     *
      * @return          string
      * @throws          Exception
      *

@@ -31,6 +31,8 @@ require_once($CFG->libdir.'/formslib.php');
 /* Outcome Report Level - Form  */
 class manager_outcome_report_level_form extends moodleform {
     function definition() {
+        global $SESSION;
+        $default = 0;
         /* General Settings */
         $level_select_attr = array('class' => REPORT_MANAGER_COMPANY_STRUCTURE_LEVEL,
             'size' => '10'
@@ -44,6 +46,10 @@ class manager_outcome_report_level_form extends moodleform {
         $form->addElement('html', '<div class="level-wrapper">');
             $options = outcome_report::Get_OutcomesList();
             $form->addElement('select',REPORT_MANAGER_OUTCOME_LIST,get_string('select_outcome_to_report', 'report_manager'),$options);
+            if (isset($SESSION->selection)) {
+                $default = $SESSION->selection[REPORT_MANAGER_OUTCOME_LIST];
+            }//if_selection
+            $form->setDefault(REPORT_MANAGER_OUTCOME_LIST,$default);
             $form->addRule(REPORT_MANAGER_OUTCOME_LIST, get_string('required','report_manager'), 'required', 'nonzero', 'client');
             $form->addRule(REPORT_MANAGER_OUTCOME_LIST, get_string('required','report_manager'), 'nonzero', null, 'client');
         $form->addElement('html', '</div>');
@@ -110,7 +116,7 @@ class manager_outcome_report_level_form extends moodleform {
             /* Add Company List */
             $options = $this->getCompanyList($level,$my_hierarchy,$IsReporter);
             $select = &$form->addElement('select',
-                                         COMPANY_STRUCTURE_LEVEL . $level,
+                                         MANAGER_OUTCOME_STRUCTURE_LEVEL . $level,
                                          get_string('select_company_structure_level', 'report_manager', $level),
                                          $options);
             $this->setLevelDefault($form,$level);
@@ -121,8 +127,8 @@ class manager_outcome_report_level_form extends moodleform {
                 $select->setSize(10);
                 $form->addElement('html', '<p class="helptext">' . get_string('help_multi_select', 'report_manager') . '</p>');
             }else {
-                $form->addRule(COMPANY_STRUCTURE_LEVEL . $level, get_string('required','report_manager'), 'required', null, 'client');
-                $form->addRule(COMPANY_STRUCTURE_LEVEL . $level, get_string('required','report_manager'), 'nonzero', null, 'client');
+                $form->addRule(MANAGER_OUTCOME_STRUCTURE_LEVEL . $level, get_string('required','report_manager'), 'required', null, 'client');
+                $form->addRule(MANAGER_OUTCOME_STRUCTURE_LEVEL . $level, get_string('required','report_manager'), 'nonzero', null, 'client');
             }//if_level_three
         $form->addElement('html', '</div>');
     }//AddLevel
@@ -141,7 +147,7 @@ class manager_outcome_report_level_form extends moodleform {
      */
     function getCompanyList($level,$myHierarchy,$IsReporter) {
         /* Variables    */
-        global $USER;
+        global $USER,$SESSION;
         $levelThree     = null;
         $levelTwo       = null;
         $levelOne       = null;
@@ -160,7 +166,13 @@ class manager_outcome_report_level_form extends moodleform {
         }//if_IsReporter
 
         /* Parent*/
-        $parent     = optional_param(COMPANY_STRUCTURE_LEVEL . ($level-1), 0, PARAM_INT);
+        if ($level) {
+            $parent     = optional_param(MANAGER_OUTCOME_STRUCTURE_LEVEL . ($level-1), 0, PARAM_INT);
+            if ((!$parent) && isset($SESSION->selection)) {
+                $parent = $SESSION->selection[MANAGER_OUTCOME_STRUCTURE_LEVEL . ($level-1)];
+            }
+        }//if_level
+
         switch ($level) {
             case 0:
                 /* Only My Companies    */
@@ -226,18 +238,22 @@ class manager_outcome_report_level_form extends moodleform {
      */
     function setLevelDefault(&$form,$level) {
         /* Variables    */
+        global $SESSION;
         $default    = null;
         $parent     = null;
 
         /* Get Default Value    */
         if ($level == 3) {
-            $default = optional_param_array(COMPANY_STRUCTURE_LEVEL . $level, 0, PARAM_INT);
+            $default = optional_param_array(MANAGER_OUTCOME_STRUCTURE_LEVEL . $level, 0, PARAM_INT);
         }else {
-            $default = optional_param(COMPANY_STRUCTURE_LEVEL . $level, 0, PARAM_INT);
+            $default = optional_param(MANAGER_OUTCOME_STRUCTURE_LEVEL . $level, 0, PARAM_INT);
         }
 
         /* Set Default  */
-        $form->setDefault(COMPANY_STRUCTURE_LEVEL . $level,$default);
+        if ((!$default) && isset($SESSION->selection)) {
+            $default = $SESSION->selection[MANAGER_OUTCOME_STRUCTURE_LEVEL . $level];
+        }
+        $form->setDefault(MANAGER_OUTCOME_STRUCTURE_LEVEL . $level,$default);
     }//setLevelDefault
 
     /**
@@ -252,6 +268,7 @@ class manager_outcome_report_level_form extends moodleform {
      */
     function Add_JobRoleLevel(&$form,$level) {
         /* Variables    */
+        global $SESSION;
         $levelZero  = null;
         $levelOne   = null;
         $levelTwo   = null;
@@ -264,7 +281,12 @@ class manager_outcome_report_level_form extends moodleform {
         switch ($level) {
             case 0:
                 /* Level Zero   */
-                $levelZero = optional_param(COMPANY_STRUCTURE_LEVEL . $level, 0, PARAM_INT);
+                $levelZero = optional_param(MANAGER_OUTCOME_STRUCTURE_LEVEL . $level, 0, PARAM_INT);
+
+                /* Check old selection */
+                if ((!$levelZero) && isset($SESSION->selection)) {
+                    $levelZero = $SESSION->selection[MANAGER_OUTCOME_STRUCTURE_LEVEL . $level];
+                }
 
                 /* Job Roles connected with level   */
                 if ($levelZero) {
@@ -279,9 +301,20 @@ class manager_outcome_report_level_form extends moodleform {
                 break;
             case 1:
                 /* Level Zero   */
-                $levelZero = optional_param(COMPANY_STRUCTURE_LEVEL . ($level-1), 0, PARAM_INT);
+                $levelZero = optional_param(MANAGER_OUTCOME_STRUCTURE_LEVEL . ($level-1), 0, PARAM_INT);
                 /* Level One */
-                $levelOne = optional_param(COMPANY_STRUCTURE_LEVEL . $level, 0, PARAM_INT);
+                $levelOne = optional_param(MANAGER_OUTCOME_STRUCTURE_LEVEL . $level, 0, PARAM_INT);
+
+                /* Check old selection */
+                if (isset($SESSION->selection)) {
+                    if (!$levelZero) {
+                        $levelZero = $SESSION->selection[MANAGER_OUTCOME_STRUCTURE_LEVEL . ($level - 1)];
+                    }//if_levelZero
+
+                    if (!$levelOne) {
+                        $levelOne = $SESSION->selection[MANAGER_OUTCOME_STRUCTURE_LEVEL . $level];
+                    }//if_levleone
+                }//if_session
 
                 /* Job Roles connected with level   */
                 if ($levelOne) {
@@ -297,11 +330,26 @@ class manager_outcome_report_level_form extends moodleform {
                 break;
             case 2:
                 /* Level Zero   */
-                $levelZero = optional_param(COMPANY_STRUCTURE_LEVEL . ($level-2), 0, PARAM_INT);
+                $levelZero = optional_param(MANAGER_OUTCOME_STRUCTURE_LEVEL . ($level-2), 0, PARAM_INT);
                 /* Level One    */
-                $levelOne = optional_param(COMPANY_STRUCTURE_LEVEL . ($level-1), 0, PARAM_INT);
+                $levelOne = optional_param(MANAGER_OUTCOME_STRUCTURE_LEVEL . ($level-1), 0, PARAM_INT);
                 /* Level Two    */
-                $levelTwo = optional_param(COMPANY_STRUCTURE_LEVEL . $level, 0, PARAM_INT);
+                $levelTwo = optional_param(MANAGER_OUTCOME_STRUCTURE_LEVEL . $level, 0, PARAM_INT);
+
+                /* Check old selection */
+                if (isset($SESSION->selection)) {
+                    if (!$levelZero) {
+                        $levelZero = $SESSION->selection[MANAGER_OUTCOME_STRUCTURE_LEVEL . ($level - 2)];
+                    }//if_levelZero
+
+                    if (!$levelOne) {
+                        $levelOne = $SESSION->selection[MANAGER_OUTCOME_STRUCTURE_LEVEL . ($level - 1)];
+                    }//if_levleone
+
+                    if (!$levelTwo) {
+                        $levelTwo = $SESSION->selection[MANAGER_OUTCOME_STRUCTURE_LEVEL . $level];
+                    }//if_levelTwo
+                }//if_session
 
                 /* Job Roles connected with level   */
                 if ($levelTwo) {
@@ -318,15 +366,37 @@ class manager_outcome_report_level_form extends moodleform {
                 break;
             case 3:
                 /* Level Zero   */
-                $levelZero  = optional_param(COMPANY_STRUCTURE_LEVEL . ($level-3), 0, PARAM_INT);
+                $levelZero  = optional_param(MANAGER_OUTCOME_STRUCTURE_LEVEL . ($level-3), 0, PARAM_INT);
                 /* Level One    */
-                $levelOne   = optional_param(COMPANY_STRUCTURE_LEVEL . ($level-2), 0, PARAM_INT);
+                $levelOne   = optional_param(MANAGER_OUTCOME_STRUCTURE_LEVEL . ($level-2), 0, PARAM_INT);
                 /* Level Two    */
-                $levelTwo   = optional_param(COMPANY_STRUCTURE_LEVEL . ($level-1), 0, PARAM_INT);
+                $levelTwo   = optional_param(MANAGER_OUTCOME_STRUCTURE_LEVEL . ($level-1), 0, PARAM_INT);
                 /* Level Three  */
-                $levelThree = optional_param_array(COMPANY_STRUCTURE_LEVEL . $level, 0, PARAM_INT);
+                $levelThree = (Array)optional_param_array(MANAGER_OUTCOME_STRUCTURE_LEVEL . $level, 0, PARAM_INT);
 
-                if ($levelThree) {
+                /* Check old selection */
+                if (isset($SESSION->selection)) {
+                    if (!$levelZero) {
+                        $levelZero = $SESSION->selection[MANAGER_OUTCOME_STRUCTURE_LEVEL . ($level - 3)];
+                    }//if_levelZero
+
+                    if (!$levelOne) {
+                        $levelOne = $SESSION->selection[MANAGER_OUTCOME_STRUCTURE_LEVEL . ($level - 2)];
+                    }//if_levleone
+
+                    if (!$levelTwo) {
+                        $levelTwo = $SESSION->selection[MANAGER_OUTCOME_STRUCTURE_LEVEL . ($level - 1)];
+                    }//if_levelTwo
+
+                    /* Level Three  */
+                    if (is_array($levelThree)) {
+                        if (in_array('0',$levelThree)) {
+                            $levelThree = $SESSION->selection[MANAGER_COURSE_STRUCTURE_LEVEL . $level];
+                        }//if_levleThree
+                    }//if_levelThree
+                }//if_session
+
+                if (!in_array('0',$levelThree)) {
                     /* Add Generics --> Only Public Job Roles   */
                     if (CompetenceManager::IsPublic($levelTwo)) {
                         CompetenceManager::GetJobRoles_Generics($options);
