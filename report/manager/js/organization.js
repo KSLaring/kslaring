@@ -24,7 +24,7 @@ M.core_user.get_level_structure = function (name) {
     return this.organization[name] || null;
 };
 
-M.core_user.init_organization = function (Y,name,employeeSel,outcomeSel,superUser,myAccess,btnActions) {
+M.core_user.init_organization = function (Y,name,employeeSel,outcomeSel,superUser,myAccess,btnActions,delString) {
 var level_structure = {
     /** Number of seconds to delay before submitting a query request */
     querydelay : 0.5,
@@ -127,7 +127,7 @@ var level_structure = {
     Delete_All_Employees : function (e) {
         //  Trigger an ajax search after a delay.
         this.cancel_timeout();
-        this.timeoutid = Y.later(this.querydelay * 1000, e, function(obj){obj.send_query_delete_all_employees(false)}, this);
+        this.timeoutid = Y.later(this.querydelay * 1000, e, function(obj){obj.confirm_delete_all_employees(false)}, this);
     },
 
     Load_Outcomes : function (e) {
@@ -337,8 +337,21 @@ var level_structure = {
         this.iotransactions[iotrans.id] = iotrans;
     },
 
-    send_query_delete_all_employees : function(forceresearch) {
-        var valueThree      = 0;
+    confirm_delete_all_employees: function (forceresearch) {
+        var s = M.str.role, confirmation = {
+            modal:  true,
+            visible  :  true,
+            centered :  true,
+            title    : delString['title'],
+            question : delString['question'],
+            yesLabel : delString['yes'],
+            noLabel  : delString['no']
+        };
+        new M.core.confirm(confirmation).on('complete-yes', this.send_query_delete_all_employees,this);
+    },
+
+    send_query_delete_all_employees : function(e) {
+        var valueThree;
 
         // Cancel any pending timeout.
         this.cancel_timeout();

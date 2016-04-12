@@ -294,6 +294,7 @@ class CompanyReport {
      */
     public static function PrintReport_CompanyTracker($companyTracker) {
         /* Variables    */
+        global $SESSION;
         $out_report         = null;
         $url_img            = null;
         $toggleUser         = null;
@@ -304,6 +305,9 @@ class CompanyReport {
         try {
             /* Url to Back  */
             $return_url = new moodle_url('/report/manager/company_report/company_report.php');
+            if ($SESSION->user_filtering) {
+                $return_url->param('advanced',1);
+            }
 
             /* Company Tracker Report   */
             $out_report .= html_writer::start_div('company_rpt_div');
