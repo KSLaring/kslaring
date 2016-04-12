@@ -116,6 +116,14 @@ if ($company_id) {
     $data_form[REPORT_MANAGER_OUTCOME_LIST]             = $USER->outcomeReport;
     $data_form[REPORT_MANAGER_COMPLETED_LIST]           = $completed_option;
 
+    /* Keep selection data --> when it returns to the main page */
+    $SESSION->selection = array();
+    $SESSION->selection[MANAGER_OUTCOME_STRUCTURE_LEVEL . '0']   = $USER->levelZero;
+    $SESSION->selection[MANAGER_OUTCOME_STRUCTURE_LEVEL . '1']   = $parentOne;
+    $SESSION->selection[MANAGER_OUTCOME_STRUCTURE_LEVEL . '2']   = $parentTwo;
+    $SESSION->selection[MANAGER_OUTCOME_STRUCTURE_LEVEL . '3']   = array($company_id => $company_id);
+    $SESSION->selection[REPORT_MANAGER_OUTCOME_LIST]             = $USER->outcomeReport;
+
     /* Get the data to the report   */
     $outcome_report = outcome_report::Get_OutcomeReportLevel($data_form,$my_hierarchy,$IsReporter);
     $out = outcome_report::Print_OutcomeReport_Screen($outcome_report,$data_form[REPORT_MANAGER_COMPLETED_LIST]);
@@ -123,6 +131,8 @@ if ($company_id) {
 
 $form = new manager_outcome_report_level_form(null,array($report_level,$my_hierarchy,$IsReporter ));
 if ($form->is_cancelled()) {
+    unset($SESSION->selection);
+
     $_POST = array();
     redirect($return_url);
 }else if($data = $form->get_data()) {
@@ -130,6 +140,14 @@ if ($form->is_cancelled()) {
     $data_form = (Array)$data;
 
     $outcome_report = outcome_report::Get_OutcomeReportLevel($data_form,$my_hierarchy,$IsReporter);
+
+    /* Keep selection data --> when it returns to the main page */
+    $SESSION->selection = array();
+    $SESSION->selection[MANAGER_OUTCOME_STRUCTURE_LEVEL . '0']   = (isset($data_form[MANAGER_OUTCOME_STRUCTURE_LEVEL . '0']) ? $data_form[MANAGER_OUTCOME_STRUCTURE_LEVEL . '0'] : 0);
+    $SESSION->selection[MANAGER_OUTCOME_STRUCTURE_LEVEL . '1']   = (isset($data_form[MANAGER_OUTCOME_STRUCTURE_LEVEL . '1']) ? $data_form[MANAGER_OUTCOME_STRUCTURE_LEVEL . '1'] : 0);
+    $SESSION->selection[MANAGER_OUTCOME_STRUCTURE_LEVEL . '2']   = (isset($data_form[MANAGER_OUTCOME_STRUCTURE_LEVEL . '2']) ? $data_form[MANAGER_OUTCOME_STRUCTURE_LEVEL . '2'] : 0);
+    $SESSION->selection[MANAGER_OUTCOME_STRUCTURE_LEVEL . '3']   = (isset($data_form[MANAGER_OUTCOME_STRUCTURE_LEVEL . '3']) ? $data_form[MANAGER_OUTCOME_STRUCTURE_LEVEL . '3'] : 0);
+    $SESSION->selection[REPORT_MANAGER_OUTCOME_LIST]             = (isset($data_form[REPORT_MANAGER_OUTCOME_LIST]) ? $data_form[REPORT_MANAGER_OUTCOME_LIST] : 0);
 
     if ($outcome_report) {
         /* Screen / Excel   */

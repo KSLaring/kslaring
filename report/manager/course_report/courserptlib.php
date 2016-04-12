@@ -358,6 +358,7 @@ class course_report {
     /**
      * @param           $course_report
      * @param           $completed_option
+     *
      * @return          string
      * @throws          Exception
      *
