@@ -50,7 +50,7 @@ require_sesskey();
 echo $OUTPUT->header();
 
 /* Get Companies connected with super user  */
-$IsReporter = CompetenceManager::IsManager($USER->id);
+$IsReporter = CompetenceManager::IsReporter($USER->id);
 if ($superUser) {
     $myAccess   = CompetenceManager::Get_MyAccess($USER->id);
 }else {
