@@ -78,7 +78,16 @@ $user_filter = new company_report_filtering(null,$url,null);
 /* Set My Companies         */
 if ($my_hierarchy->competence) {
     if (($IsReporter) && !is_siteadmin($USER->id)) {
-        $user_filter->set_MyCompanies(implode(',',$my_hierarchy->competence->levelThree));
+        $myLevelThree = null;
+        foreach($my_hierarchy->competence as $key => $competence) {
+            if ($myLevelThree) {
+                $myLevelThree .= ',' . implode(',',$competence->levelThree);
+            }else {
+                $myLevelThree = implode(',',$competence->levelThree);
+            }//if_lvelThree
+        }//for_competence
+
+        $user_filter->set_MyCompanies($myLevelThree);
     }else {
         $myCompanies = CompanyReport::Get_MyCompanies($my_hierarchy->competence,$my_hierarchy->my_level);
         $user_filter->set_MyCompanies(implode(',',array_keys($myCompanies)));

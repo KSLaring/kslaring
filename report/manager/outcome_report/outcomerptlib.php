@@ -209,13 +209,11 @@ class outcome_report {
 
                 /* Get My Companies by Level    */
                 if (($IsReporter) && !is_siteadmin($USER->id)) {
-                    $inZero  = $my_hierarchy->competence->levelZero;
-                    $inOne   = $my_hierarchy->competence->levelOne;
-                    $inTwo   = $my_hierarchy->competence->levelTwo;
-                    $inThree = $my_hierarchy->competence->levelThree;
+                    $inOne   = $my_hierarchy->competence[$data_form[MANAGER_OUTCOME_STRUCTURE_LEVEL .'0']]->levelOne;
+                    $inTwo   = $my_hierarchy->competence[$data_form[MANAGER_OUTCOME_STRUCTURE_LEVEL .'0']]->levelTwo;
+                    $inThree = $my_hierarchy->competence[$data_form[MANAGER_OUTCOME_STRUCTURE_LEVEL .'0']]->levelThree;
                 }else {
                     list($inZero,$inOne,$inTwo,$inThree) = CompetenceManager::GetMyCompanies_By_Level($my_hierarchy->competence,$my_hierarchy->my_level);
-                    $inZero     = implode(',',$inZero);
                     $inOne      = implode(',',$inOne);
                     $inTwo      = implode(',',$inTwo);
                     $inThree    = implode(',',$inThree);
@@ -1290,7 +1288,7 @@ class outcome_report {
 
         try {
             /* Url To Back  */
-            $return_url     = new moodle_url('/report/manager/outcome_report/outcome_report_level.php',array('rpt' => $outcome_report->rpt));
+            $return_url = new moodle_url('/report/manager/outcome_report/outcome_report_level.php',array('rpt' => $outcome_report->rpt));
             $indexUrl   = new moodle_url('/report/manager/index.php');
 
             /* Outcome Report   */
@@ -1429,7 +1427,7 @@ class outcome_report {
 
         try {
             /* Url To Back  */
-            $return_url     = new moodle_url('/report/manager/outcome_report/outcome_report_level.php',array('rpt' => $outcome_report->rpt));
+            $return_url = new moodle_url('/report/manager/outcome_report/outcome_report_level.php',array('rpt' => $outcome_report->rpt));
             $indexUrl   = new moodle_url('/report/manager/index.php');
 
             /* Outcome Report   */
@@ -1563,7 +1561,7 @@ class outcome_report {
 
         try {
             /* Url To Back  */
-            $return_url     = new moodle_url('/report/manager/outcome_report/outcome_report_level.php',array('rpt' => $outcome_report->rpt));
+            $return_url = new moodle_url('/report/manager/outcome_report/outcome_report_level.php',array('rpt' => $outcome_report->rpt));
             $indexUrl   = new moodle_url('/report/manager/index.php');
 
             /* Outcome Report   */
@@ -1692,7 +1690,7 @@ class outcome_report {
 
         try {
             /* Url To Back  */
-            $return_url     = new moodle_url('/report/manager/outcome_report/outcome_report_level.php',array('rpt' => $outcome_report->rpt));
+            $return_url = new moodle_url('/report/manager/outcome_report/outcome_report_level.php',array('rpt' => $outcome_report->rpt));
             $indexUrl   = new moodle_url('/report/manager/index.php');
 
             /* Outcome Report   */

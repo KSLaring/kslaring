@@ -109,7 +109,6 @@ class EmployeeReport {
             /* My Users     */
             $my_users = CompetenceManager::GetUsers_MyCompanies($company,$USER->id);
 
-
             /* Employee Tracker */
             $employeeTracker = new stdClass();
             $employeeTracker->levelThree         = $company;

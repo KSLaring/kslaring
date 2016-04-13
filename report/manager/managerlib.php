@@ -274,17 +274,17 @@ class CompetenceManager {
     public static function Init_Organization_Structure($selector,$employeeSel,$outcomeSel,$superUser,$myAccess,$btnActions) {
         /* Variables    */
         global $PAGE;
-        $options    = null;
-        $hash       = null;
-        $jsModule   = null;
-        $name       = null;
-        $path       = null;
-        $requires   = null;
-        $strings    = null;
-        $grpOne     = null;
-        $grpTwo     = null;
-        $grpThree   = null;
-        $sp         = null;
+        $options        = null;
+        $hash           = null;
+        $jsModule       = null;
+        $name           = null;
+        $path           = null;
+        $requires       = null;
+        $strings        = null;
+        $grpOne         = null;
+        $grpTwo         = null;
+        $grpThree       = null;
+        $sp             = null;
         $delEmployees   = null;
 
         try {
@@ -1288,42 +1288,53 @@ class CompetenceManager {
             $params = array();
             $params['user']  = $userId;
 
-            $sql = " SELECT GROUP_CONCAT(DISTINCT re.levelzero  ORDER BY re.levelzero SEPARATOR ',')    as 'levelzero',
+            $sql = " SELECT re.levelzero as 'levelzero',
                             GROUP_CONCAT(DISTINCT re.levelone  	ORDER BY re.levelone 	SEPARATOR ',') 	as 'levelone',
                             GROUP_CONCAT(DISTINCT re.leveltwo  	ORDER BY re.leveltwo 	SEPARATOR ',') 	as 'leveltwo',
-                            GROUP_CONCAT(DISTINCT re.levelthree ORDER BY re.levelthree	SEPARATOR ',') 	as 'levelthree'
+                            GROUP_CONCAT(DISTINCT re.levelthree ORDER BY re.levelthree	SEPARATOR ',') 	as 'levelthree',
+                            re.hierarchylevel
                      FROM	{report_gen_company_reporter} re
-                     WHERE	re.reporterid 		= :user  ";
+                     WHERE	re.reporterid 		= :user
+                     GROUP BY re.levelzero ";
 
             /* Execute  */
-            $rdo = $DB->get_record_sql($sql,$params);
+            $rdo = $DB->get_records_sql($sql,$params);
             if ($rdo) {
-                /* Hierarchy */
-                $myCompetence = new stdClass();
-                $myCompetence->levelZero   = explode(',',$rdo->levelzero);
-                /* Level One    */
-                if ($rdo->levelone) {
-                    $myCompetence->levelOne    = explode(',',$rdo->levelone);
-                }else {
-                    $levelOne = self::GetCompanies_LevelList(1,$rdo->levelzero);
-                    unset($levelOne[0]);
-                    $myCompetence->levelOne = array_keys($levelOne);
-                }
-                /* Level Two    */
-                if ($rdo->leveltwo) {
-                    $myCompetence->levelTwo    = explode(',',$rdo->leveltwo);
-                }else {
-                    $levelTwo = self::GetCompanies_LevelList(2,$rdo->levelone);
-                    unset($levelTwo[0]);
-                    $myCompetence->levelTwo = array_keys($levelTwo);
-                }
-                /* Level Three */
-                if ($rdo->levelthree) {
-                    $myCompetence->levelThree    = explode(',',$rdo->levelthree);
-                }else {
-                    $levelThree = self::GetCompanies_LevelList(3,$rdo->leveltwo);
-                    unset($levelThree[0]);
-                    $myCompetence->levelThree = array_keys($levelThree);
+                foreach ($rdo as $instance) {
+                    $infoHierarchy = new stdClass();
+                    $infoHierarchy->levelZero   = $instance->levelzero;
+                    /* Level One */
+                    if ($instance->levelone) {
+                        $infoHierarchy->levelOne    = explode(',',$instance->levelone);
+                    }else {
+                        $levelOne = self::GetCompanies_LevelList(1,$instance->levelzero);
+                        unset($levelOne[0]);
+                        $infoHierarchy->levelOne = array_keys($levelOne);
+                    }//if_levelone
+
+                    /* Level Two    */
+                    if ($instance->leveltwo) {
+                        $infoHierarchy->levelTwo    = explode(',',$instance->leveltwo);
+                    }else {
+                        $levelTwo = self::GetCompanies_LevelList(2,$instance->levelone);
+                        unset($levelTwo[0]);
+                        $infoHierarchy->levelTwo = array_keys($levelTwo);
+                    }//if_leveltwo
+
+                    /* Level Three  */
+                    if ($instance->levelthree) {
+                        $infoHierarchy->levelThree  = explode(',',$instance->levelthree);
+                    }else {
+                        $levelThree = self::GetCompanies_LevelList(3,$instance->leveltwo);
+                        unset($levelThree[0]);
+                        $infoHierarchy->levelThree = array_keys($levelThree);
+                    }//if_levelThree
+
+                    /* Hierarchy level */
+                    $infoHierarchy->level      = $instance->hierarchylevel;
+
+                    /* Add Competence */
+                    $myCompetence[$instance->levelzero] = $infoHierarchy;
                 }
             }//if_rdo
 

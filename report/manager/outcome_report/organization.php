@@ -105,10 +105,10 @@ $data['clean'] = $toClean;
 $IsReporter = CompetenceManager::IsReporter($USER->id);
 $myHierarchy = CompetenceManager::get_MyHierarchyLevel($USER->id,$context,$IsReporter,$reportLevel);
 if ($IsReporter) {
-    $myLevelZero  = $myHierarchy->competence->levelZero;
-    $myLevelOne   = $myHierarchy->competence->levelOne;
-    $myLevelTwo   = $myHierarchy->competence->levelTwo;
-    $myLevelThree = $myHierarchy->competence->levelThree;
+    $myLevelZero  = array_keys($myHierarchy->competence);
+    $myLevelOne   = $myHierarchy->competence[$levelZero]->levelOne;
+    $myLevelTwo   = $myHierarchy->competence[$levelZero]->levelTwo;
+    $myLevelThree = $myHierarchy->competence[$levelZero]->levelThree;
 }else {
     list($myLevelZero,$myLevelOne,$myLevelTwo,$myLevelThree) = CompetenceManager::GetMyCompanies_By_Level($myHierarchy->competence,$myHierarchy->my_level);
 }//if_IsReporter
