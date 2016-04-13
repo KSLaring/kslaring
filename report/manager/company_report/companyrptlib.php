@@ -335,8 +335,10 @@ class CompanyReport {
                     $url_img  = new moodle_url('/pix/t/expanded.png');
                     $total = count($companyTracker->users);
                     $i = 0;
-                    $out_report .= html_writer::start_tag('div',array('class' => 'company_content'));
+
                         foreach ($companyTracker->users as $id=>$user) {
+                            $out_report .= html_writer::start_tag('div');
+
                             /* User Header - Toogle               */
                             $toggleUser = 'YUI_' . $id;
                             $out_report .= self::Add_UserHeader_Screen($user->name,$toggleUser,$url_img);
@@ -345,7 +347,7 @@ class CompanyReport {
                             $out_report .= self::Add_UserJobRoles_Header_Screen($user->job_roles_names);
 
                             /* User List    */
-                            $out_report .= html_writer::start_div('user_list',array('id' => $toggleUser . '_div'));
+                            $out_report .= html_writer::start_div('tracker_list',array('id' => $toggleUser . '_div'));
                                 /* Outcome Courses      */
                                 if ($user->outcomes) {
                                     foreach ($user->outcomes as $outcome) {
@@ -366,8 +368,11 @@ class CompanyReport {
                                     $out_report .= '<hr class="line_rpt">';
                                 }//if_total
                             $out_report .= html_writer::end_div('');//user_list
+
+
+                            $out_report .= html_writer::end_tag('div');//company_content
                         }//for_Each_user
-                    $out_report .= html_writer::end_tag('div');//company_content
+
                 }//if_users
             $out_report .= html_writer::end_div();//company_rpt_div
 
@@ -1072,7 +1077,7 @@ class CompanyReport {
         /* Header Table         */
         $out_individual .= self::AddHeader_CoursesTable($toggleIndividual,$img,true);
         /* Content Table        */
-        $out_individual .= html_writer::start_tag('div',array('class' => 'course_list course_list_content','id' => $toggleIndividual . '_div'));
+        $out_individual .= html_writer::start_tag('div',array('class' => 'course_list','id' => $toggleIndividual . '_div'));
             $out_individual .= self::AddContent_IndividualCoursesTable($completed,$not_completed);
         $out_individual .= html_writer::end_div('');//course_list
 
@@ -1101,7 +1106,7 @@ class CompanyReport {
         /* Header Table         */
         $out_outcome .= self::AddHeader_CoursesTable($toggleOutcome,$img);
         /* Content Table        */
-        $out_outcome .= html_writer::start_tag('div',array('class' => 'course_list course_list_content','id' => $toggleOutcome . '_div'));
+        $out_outcome .= html_writer::start_tag('div',array('class' => 'course_list','id' => $toggleOutcome . '_div'));
             $out_outcome .= self::AddContent_OutcomesCoursesTable($outcome);
         $out_outcome .= html_writer::end_div('');//course_list
 
