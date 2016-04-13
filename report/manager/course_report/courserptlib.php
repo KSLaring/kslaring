@@ -148,13 +148,11 @@ class course_report {
 
                 /* Get My Companies by Level    */
                 if (($IsReporter) && !is_siteadmin($USER->id)) {
-                    $inZero  = $my_hierarchy->competence->levelZero;
-                    $inOne   = $my_hierarchy->competence->levelOne;
-                    $inTwo   = $my_hierarchy->competence->levelTwo;
-                    $inThree = $my_hierarchy->competence->levelThree;
+                    $inOne   = $my_hierarchy->competence[$data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'0']]->levelOne;
+                    $inTwo   = $my_hierarchy->competence[$data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'0']]->levelTwo;
+                    $inThree = $my_hierarchy->competence[$data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'0']]->levelThree;
                 }else {
                     list($inZero,$inOne,$inTwo,$inThree) = CompetenceManager::GetMyCompanies_By_Level($my_hierarchy->competence,$my_hierarchy->my_level);
-                    $inZero     = implode(',',$inZero);
                     $inOne      = implode(',',$inOne);
                     $inTwo      = implode(',',$inTwo);
                     $inThree    = implode(',',$inThree);
@@ -1229,7 +1227,7 @@ class course_report {
 
         try {
             /* Url to back */
-            $return_url  = new moodle_url('/report/manager/course_report/course_report_level.php',array('rpt' => $course_report->rpt));
+            $return_url = new moodle_url('/report/manager/course_report/course_report_level.php',array('rpt' => $course_report->rpt));
             $indexUrl   = new moodle_url('/report/manager/index.php');
 
             /* Course Report    */
@@ -1383,7 +1381,7 @@ class course_report {
 
         try {
             /* Url to back */
-            $return_url  = new moodle_url('/report/manager/course_report/course_report_level.php',array('rpt' => $course_report->rpt));
+            $return_url = new moodle_url('/report/manager/course_report/course_report_level.php',array('rpt' => $course_report->rpt));
             $indexUrl   = new moodle_url('/report/manager/index.php');
 
             /* Course Report    */
@@ -1535,7 +1533,7 @@ class course_report {
 
         try {
             /* Url to back */
-            $return_url  = new moodle_url('/report/manager/course_report/course_report_level.php',array('rpt' => $course_report->rpt));
+            $return_url = new moodle_url('/report/manager/course_report/course_report_level.php',array('rpt' => $course_report->rpt));
             $indexUrl   = new moodle_url('/report/manager/index.php');
 
             /* Course Report    */
@@ -1677,7 +1675,7 @@ class course_report {
 
         try {
             /* Url to back */
-            $return_url  = new moodle_url('/report/manager/course_report/course_report_level.php',array('rpt' => $course_report->rpt));
+            $return_url = new moodle_url('/report/manager/course_report/course_report_level.php',array('rpt' => $course_report->rpt));
             $indexUrl   = new moodle_url('/report/manager/index.php');
 
             /* Course Report    */
