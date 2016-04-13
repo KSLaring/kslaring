@@ -763,10 +763,12 @@
     font: 12px Verdana,Verdana Pro,sans-serif;
 }
 
-
 .link_return {
     text-align: left;
     font: 14px Verdana,Verdana Pro,sans-serif;
+    margin-right: 30px;
+    word-wrap: normal;
+    word-break: normal;
 }
 
 .r0 {
@@ -1006,6 +1008,19 @@ a.lnk_disabled {
     }
     .userselector .sel_users_right select {
         width: 100%;
+    }
+
+    .employee_detail_rpt .expiration,
+    .outcome_detail_rpt .expiration {
+        position: relative;
+        float: left;
+        width: 95%;
+        font: bold 13px Arial;
+        text-decoration: none;
+        background-color: #edf2fa;
+        color: #004b93;
+        padding: 8px 8px 8px 8px;
+        margin-left: 0px;
     }
 }
 

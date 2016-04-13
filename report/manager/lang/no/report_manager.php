@@ -480,3 +480,5 @@ $string['delete_all_employees'] = 'You are going to delete all employees connect
 $string['del_title']            = 'Confirmation';
 $string['del_yes']              = 'Yes';
 $string['del_no']               = 'No';
+
+$string['return_main_report'] = 'Return to the main report page';
