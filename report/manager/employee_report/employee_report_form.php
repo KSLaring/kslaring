@@ -23,6 +23,7 @@ require_once($CFG->libdir.'/formslib.php');
 
 class manager_employee_report_form extends moodleform {
     function  definition(){
+        global $SESSION;
         $form = $this->_form;
 
         list($my_hierarchy,$IsReporter)  = $this->_customdata;
@@ -42,6 +43,26 @@ class manager_employee_report_form extends moodleform {
             $levelOne   = optional_param(EMPLOYEE_REPORT_STRUCTURE_LEVEL . 1, 0, PARAM_INT);
             $levelTwo   = optional_param(EMPLOYEE_REPORT_STRUCTURE_LEVEL . 2, 0, PARAM_INT);
             $levelThree = optional_param(EMPLOYEE_REPORT_STRUCTURE_LEVEL . 3, 0, PARAM_INT);
+
+            /* Check old selection */
+            if (isset($SESSION->selection)) {
+                if (!$levelZero) {
+                    $levelZero = $SESSION->selection[EMPLOYEE_REPORT_STRUCTURE_LEVEL . '0'];
+                }//if_levelZero
+
+                if (!$levelOne) {
+                    $levelOne = $SESSION->selection[EMPLOYEE_REPORT_STRUCTURE_LEVEL . '1'];
+                }//if_levelOne
+
+                if (!$levelTwo) {
+                    $levelTwo = $SESSION->selection[EMPLOYEE_REPORT_STRUCTURE_LEVEL . '2'];
+                }//if_levleTwo
+
+                if (!$levelThree) {
+                    $levelThree = $SESSION->selection[EMPLOYEE_REPORT_STRUCTURE_LEVEL . '3'];
+                }
+            }//if_selection
+
             if ($levelThree) {
                 $outcome_lst = EmployeeReport::GetOutcomes_EmployeeReport($levelZero,$levelOne,$levelTwo,$levelThree);
             }else {
