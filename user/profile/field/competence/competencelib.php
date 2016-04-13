@@ -1094,7 +1094,7 @@ class Competence {
             /* Search Criteria  */
             $params = array();
             $params['user']     = $userId;
-            $params['three']    = $userId;
+            $params['three']    = $hierarchy->levelThree;
             $zero               = $hierarchy->levelZero;
             $one                = $hierarchy->levelOne;
             $two                = $hierarchy->levelTwo;
