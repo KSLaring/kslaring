@@ -1291,6 +1291,7 @@ class outcome_report {
         try {
             /* Url To Back  */
             $return_url     = new moodle_url('/report/manager/outcome_report/outcome_report_level.php',array('rpt' => $outcome_report->rpt));
+            $indexUrl   = new moodle_url('/report/manager/index.php');
 
             /* Outcome Report   */
             $out_report .= html_writer::start_div('outcome_rpt_div');
@@ -1339,6 +1340,7 @@ class outcome_report {
                 }else {
                     /* Return To Selection Page */
                     $out_report .= html_writer::link($return_url,get_string('outcome_return_to_selection','report_manager'),array('class' => 'link_return'));
+                    $out_report .= html_writer::link($indexUrl,get_string('return_main_report','report_manager'),array('class' => 'link_return'));
 
                     /* Report Info */
                     /* Toggle   */
@@ -1392,6 +1394,7 @@ class outcome_report {
 
             /* Return To Selection Page */
             $out_report .= html_writer::link($return_url,get_string('outcome_return_to_selection','report_manager'),array('class' => 'link_return'));
+            $out_report .= html_writer::link($indexUrl,get_string('return_main_report','report_manager'),array('class' => 'link_return'));
 
             $out_report .= '<hr class="line_rpt_lnk">';
 
@@ -1427,6 +1430,7 @@ class outcome_report {
         try {
             /* Url To Back  */
             $return_url     = new moodle_url('/report/manager/outcome_report/outcome_report_level.php',array('rpt' => $outcome_report->rpt));
+            $indexUrl   = new moodle_url('/report/manager/index.php');
 
             /* Outcome Report   */
             $out_report .= html_writer::start_div('outcome_rpt_div');
@@ -1481,6 +1485,7 @@ class outcome_report {
                 }else {
                     /* Return To Selection Page */
                     $out_report .= html_writer::link($return_url,get_string('outcome_return_to_selection','report_manager'),array('class' => 'link_return'));
+                    $out_report .= html_writer::link($indexUrl,get_string('return_main_report','report_manager'),array('class' => 'link_return'));
 
                     /* Report Info  */
                     $out_report .= html_writer::start_tag('div',array('class' => 'outcome_content'));
@@ -1523,6 +1528,7 @@ class outcome_report {
 
             /* Return To Selection Page */
             $out_report .= html_writer::link($return_url,get_string('outcome_return_to_selection','report_manager'),array('class' => 'link_return'));
+            $out_report .= html_writer::link($indexUrl,get_string('return_main_report','report_manager'),array('class' => 'link_return'));
 
             $out_report .= '<hr class="line_rpt_lnk">';
 
@@ -1558,6 +1564,7 @@ class outcome_report {
         try {
             /* Url To Back  */
             $return_url     = new moodle_url('/report/manager/outcome_report/outcome_report_level.php',array('rpt' => $outcome_report->rpt));
+            $indexUrl   = new moodle_url('/report/manager/index.php');
 
             /* Outcome Report   */
             $out_report .= html_writer::start_div('outcome_rpt_div');
@@ -1619,6 +1626,7 @@ class outcome_report {
                 }else {
                     /* Return To Selection Page */
                     $out_report .= html_writer::link($return_url,get_string('outcome_return_to_selection','report_manager'),array('class' => 'link_return'));
+                    $out_report .= html_writer::link($indexUrl,get_string('return_main_report','report_manager'),array('class' => 'link_return'));
 
                     /* Report Info  */
                     if ($levelThree) {
@@ -1649,6 +1657,7 @@ class outcome_report {
 
             /* Return To Selection Page */
             $out_report .= html_writer::link($return_url,get_string('outcome_return_to_selection','report_manager'),array('class' => 'link_return'));
+            $out_report .= html_writer::link($indexUrl,get_string('return_main_report','report_manager'),array('class' => 'link_return'));
 
             $out_report .= '<hr class="line_rpt_lnk">';
 
@@ -1684,6 +1693,7 @@ class outcome_report {
         try {
             /* Url To Back  */
             $return_url     = new moodle_url('/report/manager/outcome_report/outcome_report_level.php',array('rpt' => $outcome_report->rpt));
+            $indexUrl   = new moodle_url('/report/manager/index.php');
 
             /* Outcome Report   */
             $out_report .= html_writer::start_div('outcome_rpt_div');
@@ -1745,6 +1755,7 @@ class outcome_report {
                 }else {
                     /* Return To Selection Page */
                     $out_report .= html_writer::link($return_url,get_string('outcome_return_to_selection','report_manager'),array('class' => 'link_return'));
+                    $out_report .= html_writer::link($indexUrl,get_string('return_main_report','report_manager'),array('class' => 'link_return'));
 
                     /* REport Info  */
                     $out_report .= html_writer::start_tag('div',array('class' => 'outcome_content'));
@@ -1784,6 +1795,7 @@ class outcome_report {
 
             /* Return To Selection Page */
             $out_report .= html_writer::link($return_url,get_string('outcome_return_to_selection','report_manager'),array('class' => 'link_return'));
+            $out_report .= html_writer::link($indexUrl,get_string('return_main_report','report_manager'),array('class' => 'link_return'));
 
             $out_report .= '<hr class="line_rpt_lnk">';
 
