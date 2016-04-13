@@ -51,7 +51,7 @@ class manager_course_report_level_form extends moodleform {
         $form->addElement('header', 'company', get_string('company', 'report_manager'));
         $form->setExpanded('company',true);
         for ($i = 0; $i <= $report_level; $i++) {
-            $this->AddLevel($form,$i,$myHierarchy,$IsReporter);
+            $this->AddLevel($form,$i,$myHierarchy,$IsReporter,$report_level);
         }//for_levels
 
         /* Job Roles    */
@@ -96,6 +96,7 @@ class manager_course_report_level_form extends moodleform {
      * @param           $level
      * @param           $myHierarchy
      * @param           $IsReporter
+     * @param           $report_level
      *
      * @creationDate    17/03/2015
      * @author          eFaktor     (fbv)
@@ -103,16 +104,23 @@ class manager_course_report_level_form extends moodleform {
      * Description
      * Add Level Company Structure
      */
-    function AddLevel(&$form,$level,$myHierarchy,$IsReporter){
-
+    function AddLevel(&$form,$level,$myHierarchy,$IsReporter,$report_level){
+        $onlyOne = 0;
         $form->addElement('html', '<div class="level-wrapper">');
             /* Add Company List */
-            $options = $this->getCompanyList($level,$myHierarchy,$IsReporter);
+            $options = $this->getCompanyList($level,$myHierarchy,$IsReporter,$report_level);
             $select = &$form->addElement('select',
                                          MANAGER_COURSE_STRUCTURE_LEVEL . $level,
                                          get_string('select_company_structure_level', 'report_manager', $level),
                                          $options);
-            $this->setLevelDefault($form,$level);
+
+            /* Check Only One Company */
+            $onlyOne = $options;
+            unset($onlyOne[0]);
+            if (count($onlyOne) == 1) {
+                $onlyOne = implode(',',array_keys($onlyOne));
+            }
+            $this->setLevelDefault($form,$level,$onlyOne);
 
             /* Multiple Selection - Level 3 */
             if ($level == 3) {
@@ -131,6 +139,7 @@ class manager_course_report_level_form extends moodleform {
      * @param           $level
      * @param           $myHierarchy
      * @param           $IsReporter
+     * @param           $report_level
      *
      * @return          array
      *
@@ -140,7 +149,7 @@ class manager_course_report_level_form extends moodleform {
      * Description
      * Get the company List
      */
-    function getCompanyList($level,$myHierarchy,$IsReporter) {
+    function getCompanyList($level,$myHierarchy,$IsReporter,$report_level) {
         /* Variables    */
         global $USER,$SESSION;
         $levelThree     = null;
@@ -149,13 +158,41 @@ class manager_course_report_level_form extends moodleform {
         $levelZero      = null;
         $companies_in   = null;
         $options        = array();
+        $parentZero     = null;
+        $parent         = null;
 
         /* Get My Companies by Level    */
         if (($IsReporter) && (!is_siteadmin($USER->id))) {
-            $levelZero  = $myHierarchy->competence->levelZero;
-            $levelOne   = $myHierarchy->competence->levelOne;
-            $levelTwo   = $myHierarchy->competence->levelTwo;
-            $levelThree = $myHierarchy->competence->levelThree;
+            $levelZero  = array_keys($myHierarchy->competence);
+
+            /* Get the right companies based on the report level access */
+            $aux = array();
+            foreach ($levelZero as $zero) {
+                if ($myHierarchy->competence[$zero]->level <= $report_level) {
+                    $aux[$zero] = $zero;
+                }
+            }//for_each
+            if ($aux) {
+                $levelZero = $aux;
+            }//if_aux
+
+            /* If only one company */
+            if (count($levelZero) == 1) {
+                $parentZero = implode(',',$levelZero);
+            }else {
+                $parentZero = optional_param(MANAGER_COURSE_STRUCTURE_LEVEL . 0, 0, PARAM_INT);
+                if ((!$parentZero) && isset($SESSION->selection)) {
+                    $parentZero = $SESSION->selection[MANAGER_COURSE_STRUCTURE_LEVEL . 0];
+                }
+            }//if_onlyOne
+
+            if ($parentZero) {
+                if ($myHierarchy->competence[$parentZero]->level <= $report_level) {
+                    $levelOne   = $myHierarchy->competence[$parentZero]->levelOne;
+                    $levelTwo   = $myHierarchy->competence[$parentZero]->levelTwo;
+                    $levelThree = $myHierarchy->competence[$parentZero]->levelThree;
+                }
+            }
         }else {
             list($levelZero,$levelOne,$levelTwo,$levelThree) = CompetenceManager::GetMyCompanies_By_Level($myHierarchy->competence,$myHierarchy->my_level);
         }//if_IsReporter
@@ -186,7 +223,12 @@ class manager_course_report_level_form extends moodleform {
                 if ($parent) {
                     $options = CompetenceManager::GetCompanies_LevelList($level,$parent,$companies_in);
                 }else {
-                    $options[0] = get_string('select_level_list','report_manager');
+                    /* If there is only one company */
+                    if (count($levelZero) == 1) {
+                        $options = CompetenceManager::GetCompanies_LevelList($level,implode(',',$levelZero),$companies_in);
+                    }else {
+                        $options[0] = get_string('select_level_list','report_manager');
+                    }
                 }//if_parent
 
                 break;
@@ -199,7 +241,12 @@ class manager_course_report_level_form extends moodleform {
                 if ($parent) {
                     $options = CompetenceManager::GetCompanies_LevelList($level,$parent,$companies_in);
                 }else {
-                    $options[0] = get_string('select_level_list','report_manager');
+                    /* If there is only one company */
+                    if ((count($levelZero) == 1) && (count($levelOne) == 1)) {
+                        $options = CompetenceManager::GetCompanies_LevelList($level,implode(',',$levelOne),$companies_in);
+                    }else {
+                        $options[0] = get_string('select_level_list','report_manager');
+                    }
                 }//if_parent
 
                 break;
@@ -212,7 +259,12 @@ class manager_course_report_level_form extends moodleform {
                 if ($parent) {
                     $options = CompetenceManager::GetCompanies_LevelList($level,$parent,$companies_in);
                 }else {
-                    $options[0] = get_string('select_level_list','report_manager');
+                    /* If there is only one company */
+                    if ((count($levelZero) == 1) && (count($levelOne) == 1) && (count($levelTwo) == 1)) {
+                        $options = CompetenceManager::GetCompanies_LevelList($level,implode(',',$levelTwo),$companies_in);
+                    }else {
+                        $options[0] = get_string('select_level_list','report_manager');
+                    }
                 }//if_parent
 
                 break;
@@ -224,6 +276,8 @@ class manager_course_report_level_form extends moodleform {
     /**
      * @param           $form
      * @param           $level
+     * @param           $onlyOne
+     *
      * @return          string
      *
      * @creationDate    17/03/2015
@@ -232,23 +286,26 @@ class manager_course_report_level_form extends moodleform {
      * Description
      * Set the company selected
      */
-    function setLevelDefault(&$form,$level) {
+    function setLevelDefault(&$form,$level,$onlyOne) {
         /* Variables    */
         global $SESSION;
         $default    = null;
         $parent     = null;
 
         /* Get Default Value    */
-        if ($level == 3) {
-            $default = optional_param_array(MANAGER_COURSE_STRUCTURE_LEVEL . $level, 0, PARAM_INT);
+        if (isset($SESSION->selection)) {
+            $default = $SESSION->selection[MANAGER_COURSE_STRUCTURE_LEVEL . $level];
+        }else if ($onlyOne) {
+            $default = $onlyOne;
         }else {
-            $default = optional_param(MANAGER_COURSE_STRUCTURE_LEVEL . $level, 0, PARAM_INT);
+            if ($level == 3) {
+                $default = optional_param_array(MANAGER_COURSE_STRUCTURE_LEVEL . $level, 0, PARAM_INT);
+            }else {
+                $default = optional_param(MANAGER_COURSE_STRUCTURE_LEVEL . $level, 0, PARAM_INT);
+            }
         }
 
         /* Set Default  */
-        if ((!$default) && isset($SESSION->selection)) {
-            $default = $SESSION->selection[MANAGER_COURSE_STRUCTURE_LEVEL . $level];
-        }
         $form->setDefault(MANAGER_COURSE_STRUCTURE_LEVEL . $level,$default);
     }//setLevelDefault
 
