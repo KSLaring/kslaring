@@ -190,9 +190,9 @@ class course_report {
 
                     /* Get information to display by level          */
                     /* Level zero    - That's common for all levels  */
-                    $course_report->levelZero = $data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'0'];
-                    $USER->levelZero    = $course_report->levelZero;
-                    $USER->courseReport = $course_id;
+                    $course_report->levelZero   = $data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'0'];
+                    $USER->levelZero            = $course_report->levelZero;
+                    $USER->courseReport         = $course_id;
 
                     /* Get Info Course   */
                     if (isset($data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'3'])) {
@@ -1126,7 +1126,7 @@ class course_report {
                     $company_info->name       = $company;
                     $company_info->id         = $id;
                     /* Users Completed, Not Completed && Not Enrol          */
-                    list($company_info->completed,$company_info->not_completed,$company_info->not_enrol) = self::GetUsers_CompanyCourse($id,$course_report->id);
+                    list($company_info->completed,$company_info->not_completed,$company_info->not_enrol) = self::GetUsers_CompanyCourse($id,$course_report->id,$course_report->completed_before);
 
                     /* Add Level Three  */
                     if ($company_info->completed || $company_info->not_completed || $company_info->not_enrol) {
@@ -1144,6 +1144,7 @@ class course_report {
     /**
      * @param           $company
      * @param           $course
+     * @param           $completedLast
      *
      * @return          array
      * @throws          Exception
@@ -1154,35 +1155,57 @@ class course_report {
      * Description
      * Get users by Company and Course. Classified completed, not completed and not enrol.
      */
-    private static function GetUsers_CompanyCourse($company,$course) {
+    private static function GetUsers_CompanyCourse($company,$course,$completedLast) {
         /* Variables    */
         global $DB;
-        $rdo            = null;
-        $sql            = null;
-        $params         = null;
-        $infoUser       = null;
-        $completed      = array();
-        $notCompleted   = array();
-        $notEnrol       = array();
+        $rdo                = null;
+        $sql                = null;
+        $sqlCompleted       = null;
+        $sqlNotCompleted    = null;
+        $sqlNotEnrol        = null;
+        $params             = null;
+        $infoUser           = null;
+        $completed          = array();
+        $notCompleted       = array();
+        $notEnrol           = array();
+        $timeCompleted      = null;
 
         try {
+            /* Get time for the filter  */
+            $timeCompleted = CompetenceManager::Get_CompletedDate_Timestamp($completedLast);
+
             /* Search Criteria  */
             $params = array();
             $params['manager']      = $_SESSION['USER']->sesskey;
-            $params['courseid']     = $course;
-            $params['companyid']    = $company;
+            $params['course']       = $course;
+            $params['company']      = $company;
             $params['report']       = 'course';
+            $params['today']        = time();
+            $params['last']         = $timeCompleted;
 
-            /* Execute  */
-            $rdo = $DB->get_records('report_gen_temp',$params);
+            /* SQL Instruction  */
+            $sql = " SELECT	*
+                     FROM 	{report_gen_temp}
+                     WHERE	report 		= :report
+                        AND manager		= :manager
+                        AND	companyid	= :company
+                        AND courseid	= :course ";
+
+            /* Execute  - Get Completed */
+            $sqlCompleted = $sql . "  AND timecompleted IS NOT NULL
+                                      AND timecompleted != 0
+                                      AND timecompleted BETWEEN :last AND :today ";
+            $rdo = $DB->get_records_sql($sqlCompleted,$params);
             if ($rdo) {
                 foreach ($rdo as $instance) {
                     $infoUser = new stdClass();
                     $infoUser->name = $instance->name;
 
+                    $infoUser->completed = $instance->timecompleted;
+                    $completed[$instance->userid] = $infoUser;
+
                     if ($instance->timecompleted) {
-                        $infoUser->completed = $instance->timecompleted;
-                        $completed[$instance->userid] = $infoUser;
+
                     }else {
                         if ($instance->notenrol) {
                             $notEnrol[$instance->userid] = $infoUser;
@@ -1190,6 +1213,36 @@ class course_report {
                             $notCompleted[$instance->userid] = $infoUser;
                         }
                     }
+                }//for_rdo
+            }//if_rdo
+
+            /* Not Completed    */
+            $params['notcompleted'] = 1;
+            $sqlNotCompleted = $sql . " AND notcompleted 	= :notcompleted";
+            /* Execute    */
+            $rdo = $DB->get_records_sql($sqlNotCompleted,$params);
+            if ($rdo) {
+                foreach ($rdo as $instance) {
+                    $infoUser = new stdClass();
+                    $infoUser->name = $instance->name;
+
+                    $infoUser->completed = 0;
+                    $notCompleted[$instance->userid] = $infoUser;
+                }//for_rdo
+            }//if_rdo
+
+            /* Not Enrolled */
+            $params['notenrol'] = 1;
+            $sqlNotEnrol = $sql . " AND notenrol 	= :notenrol";
+            /* Execute    */
+            $rdo = $DB->get_records_sql($sqlNotEnrol,$params);
+            if ($rdo) {
+                foreach ($rdo as $instance) {
+                    $infoUser = new stdClass();
+                    $infoUser->name = $instance->name;
+
+                    $infoUser->completed = 0;
+                    $notEnrol[$instance->userid] = $infoUser;
                 }//for_rdo
             }//if_rdo
 
@@ -1672,6 +1725,7 @@ class course_report {
         $levelOne           = null;
         $levelTwo           = null;
         $levelThree         = null;
+        $data               = false;
 
         try {
             /* Url to back */
@@ -1755,20 +1809,29 @@ class course_report {
                     /* Report Info  */
                     $out_report .= html_writer::start_tag('div',array('class' => 'outcome_content'));
                         foreach ($levelThree as $id=>$company) {
-                            /* Toggle   */
-                            $url_img  = new moodle_url('/pix/t/expanded.png');
-                            $id_toggle = 'YUI_' . $id;
-                            $out_report .= self::Add_CompanyHeader_Screen($company->name,$id_toggle,$url_img);
+                            if ($company->completed) {
+                                $data = true;
+                                /* Toggle   */
+                                $url_img  = new moodle_url('/pix/t/expanded.png');
+                                $id_toggle = 'YUI_' . $id;
+                                $out_report .= self::Add_CompanyHeader_Screen($company->name,$id_toggle,$url_img);
 
-                            /* Info company - Users */
-                            $out_report .= html_writer::start_tag('div',array('class' => 'course_list','id'=> $id_toggle . '_div'));
+                                /* Info company - Users */
+                                $out_report .= html_writer::start_tag('div',array('class' => 'course_list','id'=> $id_toggle . '_div'));
                                 /* Header Table     */
                                 $out_report .= self::Add_HeaderTable_LevelThree_Screen();
                                 /* Content Table    */
                                 $out_report .= self::Add_ContentTable_LevelThree_Screen($company);
-                            $out_report .= html_writer::end_tag('div');//courses_list
+                                $out_report .= html_writer::end_tag('div');//courses_list
+                            }
                         }//for_level_three
                     $out_report .= html_writer::end_tag('div');//outcome_content
+
+                    if (!$data) {
+                        $out_report .= '<h3>';
+                            $out_report .= get_string('no_completed', 'report_manager',  $options[$course_report->completed_before]);
+                        $out_report .= '</h3>';
+                    }
                 }//if_levelThree
             $out_report .= html_writer::end_div();//outcome_rpt_div
 
@@ -2012,7 +2075,7 @@ class course_report {
             if ($completed) {
                 foreach ($completed as $user) {
 
-                    $content .= html_writer::start_tag('tr',array('class' => 'completed'));
+                    $content .= html_writer::start_tag('tr',array('class'));
                         /* Empty Col   */
                         $content .= html_writer::start_tag('td',array('class' => 'first'));
                         $content .= html_writer::end_tag('td');
@@ -2032,56 +2095,6 @@ class course_report {
                     $content .= html_writer::end_tag('tr');
                 }//for_completed
             }//if_completed
-
-            /* Not Completed - In progress  */
-            $not_completed = $company_info->not_completed;
-            if ($not_completed) {
-                foreach ($not_completed as $user) {
-                    $content .= html_writer::start_tag('tr');
-                        /* Empty Col   */
-                        $content .= html_writer::start_tag('td',array('class' => 'first'));
-                        $content .= html_writer::end_tag('td');
-                        /* User Col   */
-                        $content .= html_writer::start_tag('td',array('class' => 'course'));
-                            $content .= $user->name;
-                        $content .= html_writer::end_tag('td');
-                        /* Status Col   */
-                        $content .= html_writer::start_tag('td',array('class' => 'status'));
-                            $content .= get_string('outcome_course_started','local_tracker_manager');
-                        $content .= html_writer::end_tag('td');
-
-                        /* Completion Col   */
-                        $content .= html_writer::start_tag('td',array('class' => 'status'));
-                            $content .= '-';
-                        $content .= html_writer::end_tag('td');
-                    $content .= html_writer::end_tag('tr');
-                }//for_not_enrol
-            }//if_not_completed
-
-            /* Not Enrol    */
-            $not_enrol = $company_info->not_enrol;
-            if ($not_enrol) {
-                foreach ($not_enrol as $user) {
-                    $content .= html_writer::start_tag('tr',array('class' => 'not_enroll'));
-                        /* Empty Col   */
-                        $content .= html_writer::start_tag('td',array('class' => 'first'));
-                        $content .= html_writer::end_tag('td');
-                        /* User Col   */
-                        $content .= html_writer::start_tag('td',array('class' => 'course'));
-                            $content .= $user->name;
-                        $content .= html_writer::end_tag('td');
-                        /* Status Col   */
-                        $content .= html_writer::start_tag('td',array('class' => 'status'));
-                            $content .= get_string('outcome_course_not_enrolled','local_tracker_manager');
-                        $content .= html_writer::end_tag('td');
-
-                        /* Completion Col   */
-                        $content .= html_writer::start_tag('td',array('class' => 'status'));
-                            $content .= '-';
-                        $content .= html_writer::end_tag('td');
-                    $content .= html_writer::end_tag('tr');
-                }//for_not_enrol
-            }//if_not_enrol
         $content .= html_writer::end_tag('table');
 
         return $content;
