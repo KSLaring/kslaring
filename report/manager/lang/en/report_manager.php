@@ -475,3 +475,4 @@ $string['del_no']               = 'No';
 
 $string['return_main_report'] = 'Return to main report page';
 $string['no_completed']         = 'No one has completed the course during the last {$a}';
+$string['no_out_completed']     = 'No one expires  during the next {$a}';

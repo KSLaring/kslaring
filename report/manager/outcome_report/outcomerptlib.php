@@ -1181,7 +1181,7 @@ class outcome_report {
                         $course_info = new stdClass();
                         $course_info->name          = $course;
                         /* Completed,Not Completed, Not Enrol      */
-                        list($course_info->completed,$course_info->not_completed,$course_info->not_enrol) = self::GetUsers_CompanyCourse($id,$id_course,$outcome_report->id);
+                        list($course_info->completed,$course_info->not_completed,$course_info->not_enrol) = self::GetUsers_CompanyCourse($id,$id_course,$outcome_report->id,$outcome_report->completed_before,$outcome_report->expiration);
 
                         /* Add Course Info  */
                         if ($course_info->completed || $course_info->not_completed || $course_info->not_enrol) {
@@ -1216,43 +1216,90 @@ class outcome_report {
      * Description
      * Get users by Company and Course. Classified completed, not completed and not enrol.
      */
-    private static function GetUsers_CompanyCourse($company,$course,$outcome) {
+    private static function GetUsers_CompanyCourse($company,$course,$outcome,$completedNext,$expiration) {
         /* Variables    */
         global $DB;
-        $rdo            = null;
-        $sql            = null;
-        $params         = null;
-        $infoUser       = null;
-        $completed      = array();
-        $notCompleted   = array();
-        $notEnrol       = array();
+        $rdo                = null;
+        $sql                = null;
+        $sqlCompleted       = null;
+        $sqlNotCompleted    = null;
+        $sqlNotEnrol        = null;
+        $params             = null;
+        $infoUser           = null;
+        $completed          = array();
+        $notCompleted       = array();
+        $notEnrol           = array();
+        $timeIni            = null;
+        $timeFin            = null;
 
         try {
+            /* Get Interval dates   */
+            list($timeIni,$timeFin) = self::GetExpirationIntervalsTime($completedNext);
+
             /* Search Criteria  */
             $params = array();
-            $params['manager']      = $_SESSION['USER']->sesskey;
-            $params['courseid']     = $course;
-            $params['companyid']    = $company;
-            $params['outcomeid']    = $outcome;
-            $params['report']       = 'outcome';
+            $params['manager']  = $_SESSION['USER']->sesskey;
+            $params['course']   = $course;
+            $params['company']  = $company;
+            $params['outcome']  = $outcome;
+            $params['report']   = 'outcome';
 
-            /* Execute  */
-            $rdo = $DB->get_records('report_gen_temp',$params);
+            /* SQL Instruction */
+            $sql = " SELECT	*
+                     FROM	{report_gen_temp}
+                     WHERE	outcomeid 	= :outcome
+                        AND	courseid	= :course
+                        AND	companyid	= :company
+                        AND report		= :report ";
+
+            /* Completed */
+            $params['ini'] = $timeIni;
+            $params['end'] = $timeFin;
+            $sqlCompleted = $sql . "AND completed	= 1
+                                    AND date_add(FROM_UNIXTIME(timecompleted), INTERVAL $expiration MONTH) BETWEEN FROM_UNIXTIME(:ini) AND FROM_UNIXTIME(:end)";
+            /* Execute */
+            $rdo = $DB->get_records_sql($sqlCompleted,$params);
             if ($rdo) {
                 foreach ($rdo as $instance) {
                     $infoUser = new stdClass();
-                    $infoUser->name = $instance->name;
+                    $infoUser->name         = $instance->name;
+                    $infoUser->completed    = $instance->timecompleted;
 
-                    if ($instance->timecompleted) {
-                        $infoUser->completed = $instance->timecompleted;
-                        $completed[$instance->userid] = $infoUser;
-                    }else {
-                        if ($instance->notenrol) {
-                            $notEnrol[$instance->userid] = $infoUser;
-                        }else {
-                            $notCompleted[$instance->userid] = $infoUser;
-                        }
-                    }
+                    /* Add User */
+                    $completed[$instance->userid] = $infoUser;
+                }//for_rdo
+            }//if_Rdo
+
+            /* Not completed    */
+            $params['notcompleted'] = 1;
+            $sqlNotCompleted = $sql . " AND notcompleted = :notcompleted ";
+            /* Execute */
+            $rdo = $DB->get_records_sql($sqlNotCompleted,$params);
+            if ($rdo) {
+                foreach ($rdo as $instance) {
+                    $infoUser = new stdClass();
+                    $infoUser->name         = $instance->name;
+                    $infoUser->completed    = 0;
+
+                    /* Add User */
+                    $notCompleted[$instance->userid] = $infoUser;
+                }//for_rdo
+            }//if_rdo
+
+
+            /* Not Enrolled     */
+            $params['notenrol'] = 1;
+            $sqlNotEnrol = $sql . " AND notenrol = :notenrol ";
+            /* Execute */
+            $rdo = $DB->get_records_sql($sqlNotEnrol,$params);
+            if ($rdo) {
+                foreach ($rdo as $instance) {
+                    $infoUser = new stdClass();
+                    $infoUser->name         = $instance->name;
+                    $infoUser->completed    = 0;
+
+                    /* Add User */
+                    $notEnrol[$instance->userid] = $infoUser;
                 }//for_rdo
             }//if_rdo
 
@@ -1261,6 +1308,107 @@ class outcome_report {
             throw $ex;
         }//try_catch
     }//GetUsers_CompanyCourse
+
+    /**
+     * @param           $index
+     *
+     * @return          array
+     * @throws          Exception
+     *
+     * @creationDate    15/04/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Get expiration intervals dates
+     */
+    private static function GetExpirationIntervalsTime($index) {
+        /* Variables    */
+        $timeIni    = null;
+        $timeFin    = null;
+        $time       = null;
+
+        try {
+            /* Local Time   */
+            $time = usertime(time());
+
+            /* Gets start and end time */
+            $timeIni = strtotime('today', $time);
+
+            switch ($index) {
+                case 0:
+                    /* Expired in one day       */
+                    $timeFin = strtotime(1  . ' day', $timeIni);
+
+                    break;
+                case 1:
+                    /* Expired in 1 week        */
+                    $timeFin = strtotime(1  . ' week', $timeIni);
+
+                    break;
+                case 2:
+                    /* Expired in two weeks     */
+                    $timeFin = strtotime(2  . ' weeks', $timeIni);
+
+                    break;
+                case 3:
+                    /* Expired in 3 weeks       */
+                    $timeFin = strtotime(3  . ' weeks', $timeIni);
+
+
+                    break;
+                case 4:
+                    /* Expired in 1 month       */
+                    $timeFin = strtotime(1  . ' month', $timeIni);
+                    //$timeIni = strtotime('first day of', $time);
+                    //$timeFin = strtotime(1  . ' month', $timeIni);
+                    //$timeFin = strtotime('last day of', $timeFin);
+
+                    break;
+                case 5:
+                    /* Expired in 2 months      */
+                    $timeFin = strtotime(2  . ' month', $timeIni);
+
+                    break;
+                case 6:
+                    /* Expired in 3 months      */
+                    $timeFin = strtotime(3  . ' month', $timeIni);
+
+                    break;
+                case 7:
+                    /* Expired in four months   */
+                    $timeFin = strtotime(4  . ' month', $timeIni);
+
+                    break;
+                case 8:
+                    /* Expired in 5 months      */
+                    $timeFin = strtotime(5  . ' month', $timeIni);
+
+                    break;
+                case 9:
+                    /* Expired in 6 months      */
+                    $timeFin = strtotime(6  . ' month', $timeIni);
+
+                    break;
+                case 10:
+                    /* Expired next year        */
+                    $timeFin = strtotime(1  . ' year', $timeIni);
+
+                    break;
+                case 11:
+                    /* Expired in two years        */
+                    $timeFin = strtotime(2  . ' years', $timeIni);
+
+                    break;
+                default:
+                    $timeIni    = 0;
+                    $timeFin    = 0;
+            }//index
+
+            return array($timeIni,$timeFin);
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//GetExpirationIntervalsTime
 
     /**
      * @param           $outcome_report
@@ -1687,6 +1835,7 @@ class outcome_report {
         $levelTwo           = null;
         $levelThree         = null;
         $courses            = null;
+        $data               = false;
 
         try {
             /* Url To Back  */
@@ -1755,7 +1904,7 @@ class outcome_report {
                     $out_report .= html_writer::link($return_url,get_string('outcome_return_to_selection','report_manager'),array('class' => 'link_return'));
                     $out_report .= html_writer::link($indexUrl,get_string('return_main_report','report_manager'),array('class' => 'link_return'));
 
-                    /* REport Info  */
+                    /* Report Info  */
                     $out_report .= html_writer::start_tag('div',array('class' => 'outcome_content'));
                         foreach ($levelThree as $id=>$company) {
                             /* Company  Info    */
@@ -1771,23 +1920,31 @@ class outcome_report {
                                 $out_report .= html_writer::start_tag('div',array('class' => 'course_list','id'=> $id_toggle . '_div'));
                                     $courses = $company->courses;
                                     foreach ($courses as $id_course=>$course) {
-                                        $id_toggle_course = $id_toggle . '_'. $id_course;
-                                        /* Header Table     */
-                                        $out_report .= self::Add_CourseHeader_Screen($course->name,$id_toggle_course,$url_img);
-                                        /* Users            */
-                                        $out_report .= html_writer::start_tag('div',array('class' => 'user_list','id'=> $id_toggle_course . '_div'));
-                                            $out_report .= html_writer::start_tag('table');
-                                                /* Header Table     */
-                                                $out_report .= self::Add_HeaderTable_LevelThree_Screen();
-                                                /* Content Table    */
-                                                $out_report .= self::Add_ContentTable_LevelThree_Screen($course,$outcome_report->expiration);
-                                            $out_report .= html_writer::end_tag('table');
-                                        $out_report .= html_writer::end_tag('div');//user_list
+                                        if ($course->completed) {
+                                            $id_toggle_course = $id_toggle . '_'. $id_course;
+                                            /* Header Table     */
+                                            $out_report .= self::Add_CourseHeader_Screen($course->name,$id_toggle_course,$url_img);
+                                            /* Users            */
+                                            $out_report .= html_writer::start_tag('div',array('class' => 'user_list','id'=> $id_toggle_course . '_div'));
+                                                $out_report .= html_writer::start_tag('table');
+                                                    /* Header Table     */
+                                                    $out_report .= self::Add_HeaderTable_LevelThree_Screen();
+                                                    /* Content Table    */
+                                                    $out_report .= self::Add_ContentTable_LevelThree_Screen($course,$outcome_report->expiration);
+                                                $out_report .= html_writer::end_tag('table');
+                                            $out_report .= html_writer::end_tag('div');//user_list
+                                        }
                                     }//for_courses
                                 $out_report .= html_writer::end_tag('div');//courses_list
                             }//if_courses
                         }//for_level_three
                     $out_report .= html_writer::end_tag('div');//company_content
+
+                    if (!$data) {
+                        $out_report .= '<h3>';
+                            $out_report .= get_string('no_out_completed', 'report_manager',  $options[$outcome_report->completed_before]);
+                        $out_report .= '</h3>';
+                    }
                 }//if_levelThree
             $out_report .= html_writer::end_div();//outcome_rpt_div
 
@@ -2137,66 +2294,6 @@ class outcome_report {
                 $content .= html_writer::end_tag('tr');
             }//for_completed
         }//if_completed
-
-        /* Not Completed - In progress  */
-        $not_completed = $course_info->not_completed;
-        if ($not_completed) {
-            foreach ($not_completed as $user) {
-                $content .= html_writer::start_tag('tr');
-                    /* Empty Col   */
-                    $content .= html_writer::start_tag('td',array('class' => 'first'));
-                    $content .= html_writer::end_tag('td');
-                    /* User Col   */
-                    $content .= html_writer::start_tag('td',array('class' => 'course'));
-                        $content .= $user->name;
-                    $content .= html_writer::end_tag('td');
-                    /* Status Col   */
-                    $content .= html_writer::start_tag('td',array('class' => 'status'));
-                        $content .= get_string('outcome_course_started','local_tracker_manager');
-                    $content .= html_writer::end_tag('td');
-
-                    /* Completion Col   */
-                    $content .= html_writer::start_tag('td',array('class' => 'status'));
-                        $content .= '-';
-                    $content .= html_writer::end_tag('td');
-
-                    /* Valid Until  */
-                    $content .= html_writer::start_tag('td',array('class' => 'status'));
-                        $content .= '-';
-                    $content .= html_writer::end_tag('td');
-                $content .= html_writer::end_tag('tr');
-            }//for_not_enrol
-        }//if_not_completed
-
-        /* Not Enrol    */
-        $not_enrol = $course_info->not_enrol;
-        if ($not_enrol) {
-            foreach ($not_enrol as $user) {
-                $content .= html_writer::start_tag('tr',array('class' => 'not_enroll'));
-                    /* Empty Col   */
-                    $content .= html_writer::start_tag('td',array('class' => 'first'));
-                    $content .= html_writer::end_tag('td');
-                    /* User Col   */
-                    $content .= html_writer::start_tag('td',array('class' => 'course'));
-                        $content .= $user->name;
-                    $content .= html_writer::end_tag('td');
-                    /* Status Col   */
-                    $content .= html_writer::start_tag('td',array('class' => 'status'));
-                        $content .= get_string('outcome_course_not_enrolled','local_tracker_manager');
-                    $content .= html_writer::end_tag('td');
-
-                    /* Completion Col   */
-                    $content .= html_writer::start_tag('td',array('class' => 'status'));
-                        $content .= '-';
-                    $content .= html_writer::end_tag('td');
-
-                    /* Valid Until  */
-                    $content .= html_writer::start_tag('td',array('class' => 'status'));
-                        $content .= '-';
-                    $content .= html_writer::end_tag('td');
-                $content .= html_writer::end_tag('tr');
-            }//for_not_enrol
-        }//if_not_enrol
 
         return $content;
     }//Add_ContentTable_LevelThree_Screen
@@ -2881,68 +2978,6 @@ class outcome_report {
                             $row++;
                         }//courses_completed
                     }//if_completed
-
-                    /* In Progress  */
-                    if ($course->not_completed) {
-                        foreach ($course->not_completed as $user_info) {
-                            $col = 0;
-                            /* Course  */
-                            $my_xls->write($row, $col, $course->name,array('size'=>12, 'name'=>'Arial','align'=>'left','v_align'=>'center'));
-                            $my_xls->merge_cells($row,$col,$row,$col+5);
-                            $my_xls->set_row($row,20);
-
-                            /* User     */
-                            $col = $col + 6;
-                            $my_xls->write($row, $col, $user_info->name,array('size'=>12, 'name'=>'Arial','align'=>'left','v_align'=>'center'));
-                            $my_xls->merge_cells($row,$col,$row,$col+5);
-                            $my_xls->set_row($row,20);
-
-                            /* State        */
-                            $col = $col + 6;
-                            $my_xls->write($row, $col, get_string('outcome_course_started','local_tracker_manager'),array('size'=>12, 'name'=>'Arial','align'=>'center','v_align'=>'center'));
-                            $my_xls->merge_cells($row,$col,$row,$col+2);
-                            $my_xls->set_row($row,20);
-
-                            /* Completion   */
-                            $col = $col + 3;
-                            $my_xls->write($row, $col, ' - ',array('size'=>12, 'name'=>'Arial','align'=>'center','v_align'=>'center'));
-                            $my_xls->merge_cells($row,$col,$row,$col+2);
-                            $my_xls->set_row($row,20);
-
-                            $row++;
-                        }//courses_not_completed
-                    }//if_not_completed
-
-                    /* Not Enrol    */
-                    if ($course->not_enrol) {
-                        foreach ($course->not_enrol as $user_info) {
-                            $col = 0;
-                            /* Course  */
-                            $my_xls->write($row, $col, $course->name,array('size'=>12, 'name'=>'Arial','bg_color'=>'#fcf8e3','align'=>'left','v_align'=>'center'));
-                            $my_xls->merge_cells($row,$col,$row,$col+5);
-                            $my_xls->set_row($row,20);
-
-                            /* User     */
-                            $col = $col + 6;
-                            $my_xls->write($row, $col, $user_info->name,array('size'=>12, 'name'=>'Arial','bg_color'=>'#fcf8e3','align'=>'left','v_align'=>'center'));
-                            $my_xls->merge_cells($row,$col,$row,$col+5);
-                            $my_xls->set_row($row,20);
-
-                            /* State        */
-                            $col = $col + 6;
-                            $my_xls->write($row, $col, get_string('outcome_course_not_enrolled','local_tracker_manager'),array('size'=>12, 'name'=>'Arial','bg_color'=>'#fcf8e3','align'=>'center','v_align'=>'center'));
-                            $my_xls->merge_cells($row,$col,$row,$col+2);
-                            $my_xls->set_row($row,20);
-
-                            /* Completion   */
-                            $col = $col + 3;
-                            $my_xls->write($row, $col, ' - ',array('size'=>12, 'name'=>'Arial','bg_color'=>'#fcf8e3','align'=>'center','v_align'=>'center'));
-                            $my_xls->merge_cells($row,$col,$row,$col+2);
-                            $my_xls->set_row($row,20);
-
-                            $row++;
-                        }//not_enrol
-                    }//if_not_enrol
 
                     $my_xls->merge_cells($row,0,$row,16);
                     $row ++;

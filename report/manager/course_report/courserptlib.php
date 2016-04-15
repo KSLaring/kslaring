@@ -1192,27 +1192,19 @@ class course_report {
                         AND courseid	= :course ";
 
             /* Execute  - Get Completed */
-            $sqlCompleted = $sql . "  AND timecompleted IS NOT NULL
+            $sqlCompleted = $sql . "  AND completed = 1
+                                      AND timecompleted IS NOT NULL
                                       AND timecompleted != 0
                                       AND timecompleted BETWEEN :last AND :today ";
             $rdo = $DB->get_records_sql($sqlCompleted,$params);
             if ($rdo) {
                 foreach ($rdo as $instance) {
                     $infoUser = new stdClass();
-                    $infoUser->name = $instance->name;
+                    $infoUser->name         = $instance->name;
+                    $infoUser->completed    = $instance->timecompleted;
 
-                    $infoUser->completed = $instance->timecompleted;
+                    /* Add User */
                     $completed[$instance->userid] = $infoUser;
-
-                    if ($instance->timecompleted) {
-
-                    }else {
-                        if ($instance->notenrol) {
-                            $notEnrol[$instance->userid] = $infoUser;
-                        }else {
-                            $notCompleted[$instance->userid] = $infoUser;
-                        }
-                    }
                 }//for_rdo
             }//if_rdo
 
@@ -1224,9 +1216,10 @@ class course_report {
             if ($rdo) {
                 foreach ($rdo as $instance) {
                     $infoUser = new stdClass();
-                    $infoUser->name = $instance->name;
+                    $infoUser->name         = $instance->name;
+                    $infoUser->completed    = 0;
 
-                    $infoUser->completed = 0;
+                    /* Add User */
                     $notCompleted[$instance->userid] = $infoUser;
                 }//for_rdo
             }//if_rdo
@@ -1239,9 +1232,10 @@ class course_report {
             if ($rdo) {
                 foreach ($rdo as $instance) {
                     $infoUser = new stdClass();
-                    $infoUser->name = $instance->name;
+                    $infoUser->name         = $instance->name;
+                    $infoUser->completed    = 0;
 
-                    $infoUser->completed = 0;
+                    /* Add User */
                     $notEnrol[$instance->userid] = $infoUser;
                 }//for_rdo
             }//if_rdo
@@ -2687,75 +2681,25 @@ class course_report {
                     $col = 0;
 
                     /* User     */
-                    $my_xls->write($row, $col, $user->name,array('size'=>12, 'name'=>'Arial','bg_color'=>'#dff0d8','align'=>'left','v_align'=>'center'));
-                    $my_xls->merge_cells($row,$col,$row,$col+5);
-                    $my_xls->set_row($row,20);
-
-                    /* State        */
-                    $col = $col + 6;
-                    $my_xls->write($row, $col, get_string('outcome_course_finished','local_tracker_manager'),array('size'=>12, 'name'=>'Arial','bg_color'=>'#dff0d8','align'=>'center','v_align'=>'center'));
-                    $my_xls->merge_cells($row,$col,$row,$col+2);
-                    $my_xls->set_row($row,20);
-
-                    /* Completion   */
-                    $col = $col + 3;
-                    $my_xls->write($row, $col, userdate($user->completed,'%d.%m.%Y', 99, false),array('size'=>12, 'name'=>'Arial','bg_color'=>'#dff0d8','align'=>'center','v_align'=>'center'));
-                    $my_xls->merge_cells($row,$col,$row,$col+2);
-                    $my_xls->set_row($row,20);
-
-                    $row++;
-                }//courses_completed
-            }//if_completed
-
-            /* In Progress      */
-            if ($company_info->not_completed) {
-                foreach ($company_info->not_completed as $user) {
-                    $col = 0;
-                    /* User     */
                     $my_xls->write($row, $col, $user->name,array('size'=>12, 'name'=>'Arial','align'=>'left','v_align'=>'center'));
                     $my_xls->merge_cells($row,$col,$row,$col+5);
                     $my_xls->set_row($row,20);
 
                     /* State        */
                     $col = $col + 6;
-                    $my_xls->write($row, $col, get_string('outcome_course_started','local_tracker_manager'),array('size'=>12, 'name'=>'Arial','align'=>'center','v_align'=>'center'));
+                    $my_xls->write($row, $col, get_string('outcome_course_finished','local_tracker_manager'),array('size'=>12, 'name'=>'Arial','align'=>'center','v_align'=>'center'));
                     $my_xls->merge_cells($row,$col,$row,$col+2);
                     $my_xls->set_row($row,20);
 
                     /* Completion   */
                     $col = $col + 3;
-                    $my_xls->write($row, $col, ' - ',array('size'=>12, 'name'=>'Arial','align'=>'center','v_align'=>'center'));
+                    $my_xls->write($row, $col, userdate($user->completed,'%d.%m.%Y', 99, false),array('size'=>12, 'name'=>'Arial','align'=>'center','v_align'=>'center'));
                     $my_xls->merge_cells($row,$col,$row,$col+2);
                     $my_xls->set_row($row,20);
 
                     $row++;
                 }//courses_completed
-            }//if_not_completed
-
-            /* Not Enrol        */
-            if ($company_info->not_enrol) {
-                foreach ($company_info->not_enrol as $user) {
-                    $col = 0;
-                    /* User     */
-                    $my_xls->write($row, $col, $user->name,array('size'=>12, 'name'=>'Arial','bg_color'=>'#fcf8e3','align'=>'left','v_align'=>'center'));
-                    $my_xls->merge_cells($row,$col,$row,$col+5);
-                    $my_xls->set_row($row,20);
-
-                    /* State        */
-                    $col = $col + 6;
-                    $my_xls->write($row, $col, get_string('outcome_course_not_enrolled','local_tracker_manager'),array('size'=>12, 'name'=>'Arial','bg_color'=>'#fcf8e3','align'=>'center','v_align'=>'center'));
-                    $my_xls->merge_cells($row,$col,$row,$col+2);
-                    $my_xls->set_row($row,20);
-
-                    /* Completion   */
-                    $col = $col + 3;
-                    $my_xls->write($row, $col, ' - ',array('size'=>12, 'name'=>'Arial','bg_color'=>'#fcf8e3','align'=>'center','v_align'=>'center'));
-                    $my_xls->merge_cells($row,$col,$row,$col+2);
-                    $my_xls->set_row($row,20);
-
-                    $row++;
-                }//not_enrol
-            }//if_not_enrol
+            }//if_completed
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
