@@ -180,14 +180,13 @@ $string['mng_body']     = '<p>Du får denne forespørselsen om godkjenning siden
                            <p>Kursinformasjon:</p>
                            <ul>
                                 <li><u>Kursdato</u>: {$a->date}</li>
-                                <li><u>Instruktør</u>: {$a->instructor}</li>
                                 <li><u>Sted</u>: {$a->location}</li>
                                 <li><u>Pris</u>: {$a->price}</li>
                                 <li>Mer informasjon om kurset kan du få på kursets hjemmeside: {$a->homepage}</li>
                            </ul>
                            </br>
                            <p>For å godkjenne denne søknaden kan du klikke her: {$a->approve}.</p>
-                           <p>For å avslå denne søknaden kan du klikke her: {$a->reject}.</p>';
+                           <p>For å avslå denne søknaden kan du klikke her: {$a->reject}.</p><p>Dette er en automatisk generert e-post fra {$a->site} og du kan ikke svare på e-posten.</p>';
 
 
 $string['subject_reminder'] = '{$a->site}: Søknad om påmelding til kurset: {$a->course}. PÅMINNELSE';
@@ -196,7 +195,6 @@ $string['body_reminder']    = '<p>Vi vil bare minne deg om at du er lederen for 
                                <p>Kursinformasjon:</p>
                                <ul>
                                     <li><u>Kursdato</u>: {$a->date}</li>
-                                    <li><u>Instruktør</u>: {$a->instructor}</li>
                                     <li><u>Sted</u>: {$a->location}</li>
                                     <li><u>Pris</u>: {$a->price}</li>
                                     <li>Mer informasjon om kurset kan du få på kursets hjemmeside: {$a->homepage}</li>
@@ -204,24 +202,23 @@ $string['body_reminder']    = '<p>Vi vil bare minne deg om at du er lederen for 
                                </br>
                                <p>Du bør ta stilling til denne søknaden så raskt som mulig.</p>
                                <p>For å godkjenne denne søknaden kan du klikke her:  {$a->approve}.</p>
-                               <p>TFor å avslå denne søknaden kan du klikke her:  {$a->reject}.</p>';
+                               <p>For å avslå denne søknaden kan du klikke her:  {$a->reject}.</p><p>Dette er en automatisk generert e-post fra {$a->site} og du kan ikke svare på e-posten.</p>';
 
 
-$string['std_body']     = 'Søknaden om påmelding vil bli behandlet så raskt som mulig. Vi sender deg en epost med varsel om resultatet av behandlingen fra din leder. <p>Dette er en automatisk generert e-post fra {$a->site} og du kan ikke svare på e-posten.</p>';
+$string['std_body']     = 'Søknaden din om plass på kurset er sendt din leder for behandling. Vi sender deg en epost med varsel om resultatet av behandlingen fra din leder. <p>Dette er en automatisk generert e-post fra {$a->site} og du kan ikke svare på e-posten.</p>';
 
 $string['approve_lnk']  = 'Godkjenn søknaden';
 $string['reject_lnk']   = 'Avslå søknaden';
 
-$string['request_sent']         = 'Søknaden din om plass på kurset vil bli behandlet så raskt som mulig. Vi sender deg en epost når søknaden din er behandlet. <p>Dette er en automatisk generert e-post fra {$a->site} og du kan ikke svare på e-posten.</p>';
+$string['request_sent']         = 'Søknaden din om plass på kurset er sendt din leder for behandling. Vi sender deg en epost når søknaden din er behandlet.';
 $string['request_remainder']    = 'Søknaden din ble innsendt <b>{$a}</b>. Den er ennå ikke behandlet av din leder. Ønsker du å sende en påminnelse til lederen din?';
 
 $string['err_link'] = 'OOPS - søknaden er allerede behandlet. Lenken du klikket på kan bare benyttes en gang.';
 
-$string['request_approved']   = 'Din søknad om kurset {$a->homepage} ble godkjent av din leder {$a->sent}. 
+$string['request_approved']   = 'Din søknad om kurset {$a->homepage} ble godkjent av lederen din {$a->sent}. 
 	(Dette er en automatisk generert e-post fra {$a->site} og du kan ikke svare på e-posten.)';
-$string['request_rejected']   = '<p>Din søknad om kurset {$a->homepage} ble avslått {$a->sent}.</p>
-                                <p>Please contact with your manager if there is wrong and if you can apply again if it is necessary.</p>
-		(Dette er en automatisk generert e-post fra {$a->site} og du kan ikke svare på e-posten.)';
+$string['request_rejected']   = '<p>Din søknad om kurset {$a->homepage} ble avslått av lederen din {$a->sent}.</p>
+                                <p>Om søknaden ble avslått ved en feil, bør du ta kontakt med lederen din og søke på nytt.</p><p>(Dette er en automatisk generert e-post fra {$a->site} og du kan ikke svare på e-posten.)</p>';
 
 $string['approved_mnd'] = 'Søknaden om kursplass på kurset: {$a->homepage} for brukeren: <b>{$a->user}</b> er nå godkjent.';
 $string['rejected_mnd'] = 'Søknaden om kursplass på kurset: {$a->homepage} for brukeren: <b>{$a->user}</b> er nå avslått.';
@@ -253,7 +250,6 @@ $string['mng_approved_body_two'] = '<p>Vi vil gjerne informere deg om at brukere
                                     <p>Kursinformasjon:</p>
                                     <ul>
                                         <li><u>Kursdato</u>: {$a->date}</li>
-                                        <li><u>Instruktør</u>: {$a->instructor}</li>
                                         <li><u>Sted</u>: {$a->location}</li>
                                         <li><u>Pris</u>: {$a->price}</li>
                                         <li>Mer informasjon om kurset kan du få på kursets hjemmeside: {$a->homepage}</li>

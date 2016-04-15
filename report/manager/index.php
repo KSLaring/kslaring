@@ -40,6 +40,7 @@ $PAGE->set_heading($SITE->fullname);
 $PAGE->navbar->add(get_string('company_report','report_manager'),$url);
 
 unset($SESSION->parents);
+unset($SESSION->selection);
 
 /* ADD require_capability */
 $site_context = CONTEXT_SYSTEM::instance();

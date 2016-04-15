@@ -50,17 +50,17 @@ require_sesskey();
 echo $OUTPUT->header();
 
 /* Get Companies connected with super user  */
-$IsReporter = CompetenceManager::IsManager($USER->id);
+$IsReporter = CompetenceManager::IsReporter($USER->id);
 if ($superUser) {
     $myAccess   = CompetenceManager::Get_MyAccess($USER->id);
 }else {
     /* My Hierarchy */
     $myHierarchy = CompetenceManager::get_MyHierarchyLevel($USER->id,$context,$IsReporter,0);
     if (($IsReporter) && (!is_siteadmin($user_id))) {
-        $myLevelZero  = $myHierarchy->competence->levelZero;
-        $myLevelOne   = $myHierarchy->competence->levelOne;
-        $myLevelTwo   = $myHierarchy->competence->levelTwo;
-        $myLevelThree = $myHierarchy->competence->levelThree;
+        $myLevelZero  = array_keys($myHierarchy->competence);
+        $myLevelOne   = $myHierarchy->competence[$levelZero]->levelOne;
+        $myLevelTwo   = $myHierarchy->competence[$levelZero]->levelTwo;
+        $myLevelThree = $myHierarchy->competence[$levelZero]->levelThree;
     }else {
         list($myLevelZero,$myLevelOne,$myLevelTwo,$myLevelThree) = CompetenceManager::GetMyCompanies_By_Level($myHierarchy->competence,$myHierarchy->my_level);
     }//if_IsReporter

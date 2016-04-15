@@ -78,7 +78,16 @@ $user_filter = new company_report_filtering(null,$url,null);
 /* Set My Companies         */
 if ($my_hierarchy->competence) {
     if (($IsReporter) && !is_siteadmin($USER->id)) {
-        $user_filter->set_MyCompanies(implode(',',$my_hierarchy->competence->levelThree));
+        $myLevelThree = null;
+        foreach($my_hierarchy->competence as $key => $competence) {
+            if ($myLevelThree) {
+                $myLevelThree .= ',' . implode(',',$competence->levelThree);
+            }else {
+                $myLevelThree = implode(',',$competence->levelThree);
+            }//if_lvelThree
+        }//for_competence
+
+        $user_filter->set_MyCompanies($myLevelThree);
     }else {
         $myCompanies = CompanyReport::Get_MyCompanies($my_hierarchy->competence,$my_hierarchy->my_level);
         $user_filter->set_MyCompanies(implode(',',array_keys($myCompanies)));
@@ -136,7 +145,11 @@ $form = new manager_company_report_form(null,array($my_hierarchy,$show_advanced,
 $out = '';
 
 if ($form->is_cancelled()) {
+    unset($SESSION->selection);
+
     $_POST = array();
+    $SESSION->bulk_users= array();
+
     redirect($return_url);
 }else if($data = $form->get_data()) {
     /* Get Data */
@@ -158,6 +171,13 @@ if ($form->is_cancelled()) {
 
     $companyTracker = CompanyReport::Get_CompanyTracker($company,$users_lst);
 
+    /* Keep selection data --> when it returns to the main page */
+    $SESSION->selection = array();
+    $SESSION->selection[COMPANY_STRUCTURE_LEVEL . '0']   = (isset($data_form[COMPANY_STRUCTURE_LEVEL . '0']) ? $data_form[COMPANY_STRUCTURE_LEVEL . '0'] : 0);
+    $SESSION->selection[COMPANY_STRUCTURE_LEVEL . '1']   = (isset($data_form[COMPANY_STRUCTURE_LEVEL . '1']) ? $data_form[COMPANY_STRUCTURE_LEVEL . '1'] : 0);
+    $SESSION->selection[COMPANY_STRUCTURE_LEVEL . '2']   = (isset($data_form[COMPANY_STRUCTURE_LEVEL . '2']) ? $data_form[COMPANY_STRUCTURE_LEVEL . '2'] : 0);
+    $SESSION->selection[COMPANY_STRUCTURE_LEVEL . '3']   = (isset($data_form[COMPANY_STRUCTURE_LEVEL . '3']) ? $data_form[COMPANY_STRUCTURE_LEVEL . '3'] : 0);
+
     switch ($data_form[COMPANY_REPORT_FORMAT_LIST]) {
         case COMPANY_REPORT_FORMAT_SCREEN:
             $out = CompanyReport::PrintReport_CompanyTracker($companyTracker);
@@ -168,6 +188,8 @@ if ($form->is_cancelled()) {
         default:
             break;
     }//switch
+
+    $SESSION->bulk_users = array();
 }//if_else
 
 /* Print Header */

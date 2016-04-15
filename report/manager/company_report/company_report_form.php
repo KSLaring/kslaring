@@ -72,12 +72,59 @@ class manager_company_report_form extends moodleform {
                               get_string('select_company_structure_level', 'report_manager', $level),
                               $options
                              );
+
+            /* Check Only One Company */
+            $this->SetOnlyOneCompany($level,$options);
+
+            /* Set default value    */
             $this->setLevelDefault($form,$level);
 
             $form->addRule(COMPANY_STRUCTURE_LEVEL . $level, get_string('required','report_manager'), 'required', null, 'client');
             $form->addRule(COMPANY_STRUCTURE_LEVEL . $level, get_string('required','report_manager'), 'nonzero', null, 'client');
         $form->addElement('html', '</div>');
     }//AddLevel
+
+    /**
+     * @param           $level
+     * @param           $companiesLst
+     *
+     * @throws          Exception
+     *
+     * @creationDate    14/04/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * If there is only one company connected, saved it because it will be selected by default.
+     */
+    function SetOnlyOneCompany($level,$companiesLst) {
+        /* Variables    */
+        global $SESSION;
+        $aux            = null;
+        $onlyCompany    = null;
+
+        try {
+            /* Check if there is only one company   */
+            $aux = $companiesLst;
+            unset($aux[0]);
+            if (count($aux) == 1) {
+                $onlyCompany = implode(',',array_keys($aux));
+            }
+
+            /* Save Company */
+            if ($onlyCompany) {
+                if (!isset($SESSION->onlyCompany)) {
+                    $SESSION->onlyCompany = array();
+                }
+
+                /* Set the company */
+                $SESSION->onlyCompany[$level] = $onlyCompany;
+            }else {
+                unset($SESSION->onlyCompany);
+            }//if_oneCompany
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//SetOnlyOneCompany
 
     /**
      * @param           $level
@@ -100,26 +147,47 @@ class manager_company_report_form extends moodleform {
      */
     function getCompanyList($level,$myHierarchy,$IsReporter) {
         /* Variables    */
-        global $USER;
+        global $USER,$SESSION;
         $levelThree     = null;
         $levelTwo       = null;
         $levelOne       = null;
         $levelZero      = null;
+        $parent         = null;
+        $parentZero     = null;
         $companies_in   = null;
         $options        = array();
 
         /* Get My Companies by Level    */
         if (($IsReporter) && (!is_siteadmin($USER->id))) {
-            $levelZero  = $myHierarchy->competence->levelZero;
-            $levelOne   = $myHierarchy->competence->levelOne;
-            $levelTwo   = $myHierarchy->competence->levelTwo;
-            $levelThree = $myHierarchy->competence->levelThree;
+            $levelZero  = array_keys($myHierarchy->competence);
+
+            if (count($levelZero) == 1) {
+                $parentZero = implode(',',$levelZero);
+            }else {
+                $parentZero = optional_param(COMPANY_STRUCTURE_LEVEL . 0, 0, PARAM_INT);
+                if ((!$parentZero) && isset($SESSION->selection)) {
+                    $parentZero = $SESSION->selection[COMPANY_STRUCTURE_LEVEL . 0];
+                }
+            }//if_onlyOne
+
+            if ($parentZero) {
+                $levelOne   = $myHierarchy->competence[$parentZero]->levelOne;
+                $levelTwo   = $myHierarchy->competence[$parentZero]->levelTwo;
+                $levelThree = $myHierarchy->competence[$parentZero]->levelThree;
+            }
         }else {
             list($levelZero,$levelOne,$levelTwo,$levelThree) = CompetenceManager::GetMyCompanies_By_Level($myHierarchy->competence,$myHierarchy->my_level);
         }//if_IsReporter
 
         /* Parent*/
-        $parent     = optional_param(COMPANY_STRUCTURE_LEVEL . ($level-1), 0, PARAM_INT);
+        if ($level) {
+            $parent     = optional_param(COMPANY_STRUCTURE_LEVEL . ($level-1), 0, PARAM_INT);
+
+            if ((!$parent) && isset($SESSION->selection)) {
+                $parent = $SESSION->selection[COMPANY_STRUCTURE_LEVEL . ($level-1)];
+            }//if_selection
+        }//if_level
+
         switch ($level) {
             case 0:
                 /* Only My Companies    */
@@ -136,10 +204,15 @@ class manager_company_report_form extends moodleform {
                     $companies_in = implode(',',$levelOne);
                 }//if_level_One
 
-                if ($parent) {
+               if ($parent) {
                     $options = CompetenceManager::GetCompanies_LevelList($level,$parent,$companies_in);
                 }else {
-                    $options[0] = get_string('select_level_list','report_manager');
+                   /* Check if there is only one company */
+                   if (isset($SESSION->onlyCompany)) {
+                       $options = CompetenceManager::GetCompanies_LevelList($level,$SESSION->onlyCompany[$level-1],$companies_in);
+                   }else {
+                       $options[0] = get_string('select_level_list','report_manager');
+                   }
                 }//IF_COOKIE
                 break;
             case 2:
@@ -151,7 +224,12 @@ class manager_company_report_form extends moodleform {
                 if ($parent) {
                     $options = CompetenceManager::GetCompanies_LevelList($level,$parent,$companies_in);
                 }else {
-                    $options[0] = get_string('select_level_list','report_manager');
+                    /* If there is only one company */
+                    if (isset($SESSION->onlyCompany)) {
+                        $options = CompetenceManager::GetCompanies_LevelList($level,$SESSION->onlyCompany[$level-1],$companies_in);
+                    }else {
+                        $options[0] = get_string('select_level_list','report_manager');
+                    }
                 }//IF_COOKIE
 
                 break;
@@ -163,7 +241,12 @@ class manager_company_report_form extends moodleform {
                 if ($parent) {
                     $options = CompetenceManager::GetCompanies_LevelList($level,$parent,$companies_in);
                 }else {
-                    $options[0] = get_string('select_level_list','report_manager');
+                    /* If there is only one company */
+                    if (isset($SESSION->onlyCompany)) {
+                        $options = CompetenceManager::GetCompanies_LevelList($level,$SESSION->onlyCompany[$level-1],$companies_in);
+                    }else {
+                        $options[0] = get_string('select_level_list','report_manager');
+                    }
                 }//IF_COOKIE
                 break;
         }//level
@@ -183,11 +266,19 @@ class manager_company_report_form extends moodleform {
      */
     function setLevelDefault(&$form,$level) {
         /* Variables    */
+        global $SESSION;
         $default    = null;
         $parent     = null;
 
         /* Get Default Value    */
-        $default = optional_param(COMPANY_STRUCTURE_LEVEL . $level, 0, PARAM_INT);
+        if (isset($SESSION->selection)) {
+            $default = $SESSION->selection[COMPANY_STRUCTURE_LEVEL . $level];
+        }else if (isset($SESSION->onlyCompany)) {
+            $default = $SESSION->onlyCompany[$level];
+        }else {
+            $default = optional_param(COMPANY_STRUCTURE_LEVEL . $level, 0, PARAM_INT);
+        }
+
         /* Set Default  */
         $form->setDefault(COMPANY_STRUCTURE_LEVEL . $level,$default);
     }//setLevelDefault

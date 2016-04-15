@@ -123,6 +123,14 @@ if ($company_id) {
     $data_form[REPORT_MANAGER_COURSE_LIST]          = $USER->courseReport;
     $data_form[REPORT_MANAGER_COMPLETED_LIST]       = $completed_option;
 
+    /* Keep selection data --> when it returns to the main page */
+    $SESSION->selection = array();
+    $SESSION->selection[MANAGER_COURSE_STRUCTURE_LEVEL . '0']   = $USER->levelZero;
+    $SESSION->selection[MANAGER_COURSE_STRUCTURE_LEVEL . '1']   = $parentOne;
+    $SESSION->selection[MANAGER_COURSE_STRUCTURE_LEVEL . '2']   = $parentTwo;
+    $SESSION->selection[MANAGER_COURSE_STRUCTURE_LEVEL . '3']   = array($company_id => $company_id);
+    $SESSION->selection[REPORT_MANAGER_COURSE_LIST]             = $USER->courseReport;
+
     /* Get the data to the report   */
     $course_report = course_report::Get_CourseReportLevel($data_form,$myHierarchy,$IsReporter);
     $out = course_report::Print_CourseReport_Screen($course_report,$data_form[REPORT_MANAGER_COMPLETED_LIST]);
@@ -130,6 +138,7 @@ if ($company_id) {
 
 $form = new manager_course_report_level_form(null,array($report_level,$myHierarchy,$IsReporter));
 if ($form->is_cancelled()) {
+    unset($SESSION->selection);
 
     $_POST = array();
     redirect($return_url);
@@ -141,10 +150,19 @@ if ($form->is_cancelled()) {
     $course_report = course_report::Get_CourseReportLevel($data_form,$myHierarchy,$IsReporter);
 
     if (isset($data_form[REPORT_MANAGER_JOB_ROLE_LIST]) && $data_form[REPORT_MANAGER_JOB_ROLE_LIST]) {
+        unset($SESSION->job_roles);
         $SESSION->job_roles = $data_form[REPORT_MANAGER_JOB_ROLE_LIST];
     }else {
         unset($SESSION->job_roles);
     }
+
+    /* Keep selection data --> when it returns to the main page */
+    $SESSION->selection = array();
+    $SESSION->selection[MANAGER_COURSE_STRUCTURE_LEVEL . '0']   = (isset($data_form[MANAGER_COURSE_STRUCTURE_LEVEL . '0']) ? $data_form[MANAGER_COURSE_STRUCTURE_LEVEL . '0'] : 0);
+    $SESSION->selection[MANAGER_COURSE_STRUCTURE_LEVEL . '1']   = (isset($data_form[MANAGER_COURSE_STRUCTURE_LEVEL . '1']) ? $data_form[MANAGER_COURSE_STRUCTURE_LEVEL . '1'] : 0);
+    $SESSION->selection[MANAGER_COURSE_STRUCTURE_LEVEL . '2']   = (isset($data_form[MANAGER_COURSE_STRUCTURE_LEVEL . '2']) ? $data_form[MANAGER_COURSE_STRUCTURE_LEVEL . '2'] : 0);
+    $SESSION->selection[MANAGER_COURSE_STRUCTURE_LEVEL . '3']   = (isset($data_form[MANAGER_COURSE_STRUCTURE_LEVEL . '3']) ? $data_form[MANAGER_COURSE_STRUCTURE_LEVEL . '3'] : 0);
+    $SESSION->selection[REPORT_MANAGER_COURSE_LIST]             = (isset($data_form[REPORT_MANAGER_COURSE_LIST]) ? $data_form[REPORT_MANAGER_COURSE_LIST] : 0);
 
     if ($course_report) {
         /* Screen / Excel   */

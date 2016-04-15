@@ -5,6 +5,7 @@
     margin-top: 5px;
     margin-bottom: 5px;
     text-indent: 10px;
+    display:block;
 }
 
 .line_rpt_lnk {
@@ -408,7 +409,8 @@
     word-wrap: break-word;
 }
 
-.company_rpt_div .user_list {
+.company_rpt_div .user_list,
+.company_rpt_div .tracker_list {
     width: 100%;
     height: auto;
     padding: 0;
@@ -416,14 +418,15 @@
     margin-bottom: 10px;
 }
 
-.company_rpt_div .user_list .course_list {
+.company_rpt_div .user_list .course_list,
+.company_rpt_div .user_list .course_list_content {
     width: 100%;
     height: auto;
-    padding: 0;
-    margin-bottom: 10px;
+    padding-bottom: 30px;
 }
 
-.company_rpt_div .user_list .course_list table {
+.company_rpt_div .user_list .course_list table,
+.company_rpt_div .tracker_list .course_list table{
     float:left;
     width: 98%;
     margin-left: 2%;
@@ -452,14 +455,14 @@
     margin-bottom: 1px;
 }
 
-.company_rpt_div .user_list .header_individual_outcome_rpt {
+.header_individual_outcome_rpt {
     height: 25px;
     display:block;
 }
 
 .company_rpt_div .header_user_rpt .col_one,
 .company_rpt_div .header_user_job_roles_rpt .col_one,
-.company_rpt_div .user_list .header_individual_outcome_rpt .col_one {
+.header_individual_outcome_rpt .col_one {
     height: 25px;
     line-height: 10px;
     /* Top Right Bottom LEft:   */
@@ -479,7 +482,7 @@
     word-wrap: break-word;
 }
 
-.company_rpt_div .user_list .header_individual_outcome_rpt .col_two {
+.header_individual_outcome_rpt .col_two {
     height: 25px;
     line-height: 10px;
     /* Top Right Bottom LEft:   */
@@ -492,7 +495,7 @@
 
 .company_rpt_div .header_user_rpt .col_two h5,
 .company_rpt_div .header_user_job_roles_rpt .col_two h6,
-.company_rpt_div .user_list .header_individual_outcome_rpt .col_two h5 {
+.header_individual_outcome_rpt .col_two h5 {
     /* Top Right Bottom LEft:   */
     margin: 1px 0px;
     padding: 0px;
@@ -763,10 +766,12 @@
     font: 12px Verdana,Verdana Pro,sans-serif;
 }
 
-
 .link_return {
     text-align: left;
     font: 14px Verdana,Verdana Pro,sans-serif;
+    margin-right: 30px;
+    word-wrap: normal;
+    word-break: normal;
 }
 
 .r0 {
@@ -1006,6 +1011,19 @@ a.lnk_disabled {
     }
     .userselector .sel_users_right select {
         width: 100%;
+    }
+
+    .employee_detail_rpt .expiration,
+    .outcome_detail_rpt .expiration {
+        position: relative;
+        float: left;
+        width: 95%;
+        font: bold 13px Arial;
+        text-decoration: none;
+        background-color: #edf2fa;
+        color: #004b93;
+        padding: 8px 8px 8px 8px;
+        margin-left: 0px;
     }
 }
 
