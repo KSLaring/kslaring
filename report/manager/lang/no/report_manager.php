@@ -472,15 +472,15 @@ $string['no_reporters']     = 'Ingen med rapporttilgang';
 
 $string['reports_manager']  = 'Kompetansestyringsrapporter';
 
-$string['btn_move']     = 'Move item';
-$string['move_from']    = 'Move from';
-$string['move_to']      = 'Move to';
+$string['btn_move']     = 'Flytt';
+$string['move_from']    = 'Flytt fra';
+$string['move_to']      = 'Flytt til';
 
-$string['delete_all_employees'] = 'You are going to delete all employees connected with. Do you want to continue?';
-$string['del_title']            = 'Confirmation';
-$string['del_yes']              = 'Yes';
-$string['del_no']               = 'No';
+$string['delete_all_employees'] = 'Du er i ferd med å slette dette arbeidsstedet fra alle disse medarbeidernes profiler. Ønsker du å fortsette?';
+$string['del_title']            = 'Bekreft';
+$string['del_yes']              = 'Ja';
+$string['del_no']               = 'Nei';
 
-$string['return_main_report']   = 'Return to the main report page';
-$string['no_completed']         = 'No one has completed the course during the last {$a}';
-$string['no_out_completed']     = 'No one expires  during the next {$a}';
+$string['return_main_report']   = '<< Tilbake til Arbeidsstedsrapporter';
+$string['no_completed']         = 'Det er ingen som har fullført kurset de siste {$a}';
+$string['no_out_completed']     = 'Det er ingen som utløper neste {$a}';
