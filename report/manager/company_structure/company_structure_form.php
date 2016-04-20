@@ -312,6 +312,11 @@ class manager_company_structure_form extends moodleform {
         $button[] = $form->createElement('submit','btn-' . REPORT_MANAGER_RENAME_SELECTED . $level,get_string('rename_selected','report_manager'),$button_array_attr);
         /* Delete Level */
         $button[] = $form->createElement('submit','btn-' . REPORT_MANAGER_DELETE_SELECTED . $level,get_string('delete_selected','report_manager'),$button_array_attr);
+        /* Move Company to other level */
+        if ($level > 0) {
+            $button[] = $form->createElement('submit','btn-' . REPORT_MANAGER_MOVED_SELECTED . $level,get_string('btn_move','report_manager'),$button_array_attr);
+        }//if_level
+
         /* Manager Button   */
         $button[] = $form->createElement('submit','btn-' . REPORT_MANAGER_MANAGERS_SELECTED . $level,get_string('btn_managers','report_manager'),$button_array_attr);
         /* Reporter Button */

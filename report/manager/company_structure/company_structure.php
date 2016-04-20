@@ -104,6 +104,13 @@ if ($form->is_cancelled()) {
             $redirect_url    = new moodle_url('/report/manager/company_structure/reporter/reporter.php',array('le'=>$level));
 
             break;
+        case REPORT_MANAGER_MOVED_SELECTED:
+            $select     = COMPANY_STRUCTURE_LEVEL . $level;
+            $company_id = $data->$select;
+
+            $redirect_url    = new moodle_url('/report/manager/company_structure/move_company_structure.php',array('id'=>$company_id,'le' => $level));
+
+            break;
         default:
 
             break;
