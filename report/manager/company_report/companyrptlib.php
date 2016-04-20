@@ -447,9 +447,9 @@ class CompanyReport {
             /* Outcome Courses      */
             if ($companyTracker->outcomes) {
                 foreach ($companyTracker->outcomes as $outcome) {
-                    if ($outcome->users) {
+                    if ($companyTracker->users) {
                         self::AddSheet_OutcomeCourses($export,$my_xls,$companyTracker->name,$companyTracker->users,$outcome);
-                    }//if_users
+                   }//if_users
                 }//for_Each_outcome
             }//if_outcomes
 
@@ -1217,96 +1217,103 @@ class CompanyReport {
         try {
             $content .= html_writer::start_tag('table');
                 /* Not Completed    */
-                if ($outcome->not_completed) {
-                    $not_completed = $outcome->not_completed;
-                    foreach ($not_completed as $course) {
-                        $content .= html_writer::start_tag('tr');
-                            /* Empty Col   */
-                            $content .= html_writer::start_tag('td',array('class' => 'first'));
-                            $content .= html_writer::end_tag('td');
-                            /* Course           */
-                            $content .= html_writer::start_tag('td',array('class' => 'course'));
-                                $content .= $course->name;
-                            $content .= html_writer::end_tag('td');
-                            /* Status        */
-                            $content .= html_writer::start_tag('td',array('class' => 'status'));
-                                $content .= get_string('outcome_course_started','local_tracker_manager');
-                            $content .= html_writer::end_tag('td');
-                            /* Completion    */
-                            $content .= html_writer::start_tag('td',array('class' => 'status'));
-                                $content .= '-';
-                            $content .= html_writer::end_tag('td');
-                            /* Valid        */
-                            $content .= html_writer::start_tag('td',array('class' => 'status'));
-                                $content .= '&nbsp;';
-                            $content .= html_writer::end_tag('td');
-                        $content .= html_writer::end_tag('tr');
-                    }//for_each_course_not_completed
-                }//if_not_completed
+                if (isset($outcome->not_compelted)) {
+                    if ($outcome->not_completed) {
+                        $not_completed = $outcome->not_completed;
+                        foreach ($not_completed as $course) {
+                            $content .= html_writer::start_tag('tr');
+                                /* Empty Col   */
+                                $content .= html_writer::start_tag('td',array('class' => 'first'));
+                                $content .= html_writer::end_tag('td');
+                                /* Course           */
+                                $content .= html_writer::start_tag('td',array('class' => 'course'));
+                                    $content .= $course->name;
+                                $content .= html_writer::end_tag('td');
+                                /* Status        */
+                                $content .= html_writer::start_tag('td',array('class' => 'status'));
+                                    $content .= get_string('outcome_course_started','local_tracker_manager');
+                                $content .= html_writer::end_tag('td');
+                                /* Completion    */
+                                $content .= html_writer::start_tag('td',array('class' => 'status'));
+                                    $content .= '-';
+                                $content .= html_writer::end_tag('td');
+                                /* Valid        */
+                                $content .= html_writer::start_tag('td',array('class' => 'status'));
+                                    $content .= '&nbsp;';
+                                $content .= html_writer::end_tag('td');
+                            $content .= html_writer::end_tag('tr');
+                        }//for_each_course_not_completed
+                    }//if_not_completed
+                }//if_not_compelted
+
 
                 /* Not Enrol        */
-                if ($outcome->not_enrol) {
-                    $not_enrol = $outcome->not_enrol;
-                    foreach ($not_enrol as $course) {
-                        $content .= html_writer::start_tag('tr',array('class' => 'not_enroll'));
-                            /* Empty Col   */
-                            $content .= html_writer::start_tag('td',array('class' => 'first'));
-                            $content .= html_writer::end_tag('td');
-                            /* Course           */
-                            $content .= html_writer::start_tag('td',array('class' => 'course'));
-                                $content .= $course->name;
-                            $content .= html_writer::end_tag('td');
-                            /* Status        */
-                            $content .= html_writer::start_tag('td',array('class' => 'status'));
-                                $content .= get_string('outcome_course_not_enrolled','local_tracker_manager');
-                            $content .= html_writer::end_tag('td');
-                            /* Completion    */
-                            $content .= html_writer::start_tag('td',array('class' => 'status'));
-                                $content .= '-';
-                            $content .= html_writer::end_tag('td');
-                            /* Valid        */
-                            $content .= html_writer::start_tag('td',array('class' => 'status'));
-                                $content .= '&nbsp;';
-                            $content .= html_writer::end_tag('td');
-                        $content .= html_writer::end_tag('tr');
-                    }//for_each_course_not_enrol
+                if (isset($outcome->not_enrol)) {
+                    if ($outcome->not_enrol) {
+                        $not_enrol = $outcome->not_enrol;
+                        foreach ($not_enrol as $course) {
+                            $content .= html_writer::start_tag('tr',array('class' => 'not_enroll'));
+                                /* Empty Col   */
+                                $content .= html_writer::start_tag('td',array('class' => 'first'));
+                                $content .= html_writer::end_tag('td');
+                                /* Course           */
+                                $content .= html_writer::start_tag('td',array('class' => 'course'));
+                                    $content .= $course->name;
+                                $content .= html_writer::end_tag('td');
+                                /* Status        */
+                                $content .= html_writer::start_tag('td',array('class' => 'status'));
+                                    $content .= get_string('outcome_course_not_enrolled','local_tracker_manager');
+                                $content .= html_writer::end_tag('td');
+                                /* Completion    */
+                                $content .= html_writer::start_tag('td',array('class' => 'status'));
+                                    $content .= '-';
+                                $content .= html_writer::end_tag('td');
+                                /* Valid        */
+                                $content .= html_writer::start_tag('td',array('class' => 'status'));
+                                    $content .= '&nbsp;';
+                                $content .= html_writer::end_tag('td');
+                            $content .= html_writer::end_tag('tr');
+                        }//for_each_course_not_enrol
+                    }//if_not_enrol
                 }//if_not_enrol
 
                 /* Completed        */
-                if ($outcome->completed) {
-                    $completed = $outcome->completed;
-                    foreach ($completed as $course) {
-                        $ts = strtotime($outcome->expiration  . ' month', $course->completed);
-                        if ($ts < time()) {
-                            $class = 'expired';
-                            $label = get_string('outcome_course_expired','local_tracker_manager');
-                        }else {
-                            $class = 'completed';
-                            $label = get_string('outcome_course_finished','local_tracker_manager');
-                        }
+                if (isset($outcome->compelted)) {
+                    if ($outcome->completed) {
+                        $completed = $outcome->completed;
+                        foreach ($completed as $course) {
+                            $ts = strtotime($outcome->expiration  . ' month', $course->completed);
+                            if ($ts < time()) {
+                                $class = 'expired';
+                                $label = get_string('outcome_course_expired','local_tracker_manager');
+                            }else {
+                                $class = 'completed';
+                                $label = get_string('outcome_course_finished','local_tracker_manager');
+                            }
 
-                        $content .= html_writer::start_tag('tr',array('class' => $class));
-                            /* Empty Col   */
-                            $content .= html_writer::start_tag('td',array('class' => 'first'));
-                            $content .= html_writer::end_tag('td');
-                            /* Course           */
-                            $content .= html_writer::start_tag('td',array('class' => 'course'));
-                                $content .= $course->name;
-                            $content .= html_writer::end_tag('td');
-                            /* Status        */
-                            $content .= html_writer::start_tag('td',array('class' => 'status'));
-                                $content .= $label;
-                            $content .= html_writer::end_tag('td');
-                            /* Completion    */
-                            $content .= html_writer::start_tag('td',array('class' => 'status'));
-                                $content .= userdate($course->completed,'%d.%m.%Y', 99, false);
-                            $content .= html_writer::end_tag('td');
-                            /* Valid        */
-                            $content .= html_writer::start_tag('td',array('class' => 'status'));
-                                $content .= userdate($ts,'%d.%m.%Y', 99, false);
-                            $content .= html_writer::end_tag('td');
-                        $content .= html_writer::end_tag('tr');
-                    }//for_each_course_completed
+                            $content .= html_writer::start_tag('tr',array('class' => $class));
+                                /* Empty Col   */
+                                $content .= html_writer::start_tag('td',array('class' => 'first'));
+                                $content .= html_writer::end_tag('td');
+                                /* Course           */
+                                $content .= html_writer::start_tag('td',array('class' => 'course'));
+                                    $content .= $course->name;
+                                $content .= html_writer::end_tag('td');
+                                /* Status        */
+                                $content .= html_writer::start_tag('td',array('class' => 'status'));
+                                    $content .= $label;
+                                $content .= html_writer::end_tag('td');
+                                /* Completion    */
+                                $content .= html_writer::start_tag('td',array('class' => 'status'));
+                                    $content .= userdate($course->completed,'%d.%m.%Y', 99, false);
+                                $content .= html_writer::end_tag('td');
+                                /* Valid        */
+                                $content .= html_writer::start_tag('td',array('class' => 'status'));
+                                    $content .= userdate($ts,'%d.%m.%Y', 99, false);
+                                $content .= html_writer::end_tag('td');
+                            $content .= html_writer::end_tag('tr');
+                        }//for_each_course_completed
+                    }//if_completed
                 }//if_completed
             $content .= html_writer::end_tag('table');
 
@@ -1401,7 +1408,7 @@ class CompanyReport {
      * @param           $excel
      * @param           $my_xls
      * @param           $company
-     * @param           $users
+     * @param           $trackerUsers
      * @param           $outcome
      * @throws          Exception
      *
@@ -1411,7 +1418,7 @@ class CompanyReport {
      * Description
      * Add a new sheet for one outcome
      */
-    private static function AddSheet_OutcomeCourses(&$excel,&$my_xls,$company,$users,$outcome) {
+    private static function AddSheet_OutcomeCourses(&$excel,&$my_xls,$company,$trackerUsers,$outcome) {
         /* Variables    */
         $row = 0;
 
@@ -1423,11 +1430,13 @@ class CompanyReport {
             self::AddHeaderSheet_CompanyTracker($my_xls,$row,$company,$outcome->name,false);
 
             /* Add Content  */
-            foreach ($outcome->users as $user) {
-                self::AddContentSheet_OutcomeCourses($my_xls,$row,$users[$user]->name,$users[$user]->outcomes[$outcome->id]);
+            foreach ($trackerUsers as $user) {
+                if (isset($user->outcomes) && isset($user->outcomes[$outcome->id])) {
+                    self::AddContentSheet_OutcomeCourses($my_xls,$row,$user->name,$user->outcomes[$outcome->id]);
 
-                $my_xls->merge_cells($row,0,$row,17);
-                $row ++;
+                    $my_xls->merge_cells($row,0,$row,17);
+                    $row ++;
+                }//if_outcome
             }//for_Each_user
         }catch (Exception $ex) {
             throw $ex;
@@ -1578,131 +1587,138 @@ class CompanyReport {
 
         try {
             /* Not Completed    */
-            if ($outcome->not_completed) {
-                $state          = get_string('outcome_course_started','local_tracker_manager');
-                $not_completed  = $outcome->not_completed;
-                foreach ($not_completed as $course) {
-                    $col = 0;
-                    /* User     */
-                    $my_xls->write($row, $col, $user,array('size'=>12, 'name'=>'Arial','align'=>'left','v_align'=>'center'));
-                    $my_xls->merge_cells($row,$col,$row,$col+2);
-                    $my_xls->set_row($row,20);
+            if (isset($outcome->not_completed)) {
+                if ($outcome->not_completed) {
+                    $state          = get_string('outcome_course_started','local_tracker_manager');
+                    $not_completed  = $outcome->not_completed;
+                    foreach ($not_completed as $course) {
+                        $col = 0;
+                        /* User     */
+                        $my_xls->write($row, $col, $user,array('size'=>12, 'name'=>'Arial','align'=>'left','v_align'=>'center'));
+                        $my_xls->merge_cells($row,$col,$row,$col+2);
+                        $my_xls->set_row($row,20);
 
-                    /* Course   */
-                    $col = $col + 3;
-                    $my_xls->write($row, $col, $course->name,array('size'=>12, 'name'=>'Arial','align'=>'left','v_align'=>'center'));
-                    $my_xls->merge_cells($row,$col,$row,$col+5);
-                    $my_xls->set_row($row,20);
+                        /* Course   */
+                        $col = $col + 3;
+                        $my_xls->write($row, $col, $course->name,array('size'=>12, 'name'=>'Arial','align'=>'left','v_align'=>'center'));
+                        $my_xls->merge_cells($row,$col,$row,$col+5);
+                        $my_xls->set_row($row,20);
 
-                    /* State    */
-                    $col = $col + 6;
-                    $my_xls->write($row, $col, $state,array('size'=>12, 'name'=>'Arial','align'=>'center','v_align'=>'center'));
-                    $my_xls->merge_cells($row,$col,$row,$col+2);
-                    $my_xls->set_row($row,20);
+                        /* State    */
+                        $col = $col + 6;
+                        $my_xls->write($row, $col, $state,array('size'=>12, 'name'=>'Arial','align'=>'center','v_align'=>'center'));
+                        $my_xls->merge_cells($row,$col,$row,$col+2);
+                        $my_xls->set_row($row,20);
 
-                    /* Completion   */
-                    $col = $col + 3;
-                    $my_xls->write($row, $col, ' - ',array('size'=>12, 'name'=>'Arial','align'=>'center','v_align'=>'center'));
-                    $my_xls->merge_cells($row,$col,$row,$col+2);
-                    $my_xls->set_row($row,20);
+                        /* Completion   */
+                        $col = $col + 3;
+                        $my_xls->write($row, $col, ' - ',array('size'=>12, 'name'=>'Arial','align'=>'center','v_align'=>'center'));
+                        $my_xls->merge_cells($row,$col,$row,$col+2);
+                        $my_xls->set_row($row,20);
 
-                    /* Valid Until  */
-                    $col = $col + 3;
-                    $my_xls->write($row, $col, ' - ',array('size'=>12, 'name'=>'Arial','align'=>'center','v_align'=>'center'));
-                    $my_xls->merge_cells($row,$col,$row,$col+2);
-                    $my_xls->set_row($row,20);
+                        /* Valid Until  */
+                        $col = $col + 3;
+                        $my_xls->write($row, $col, ' - ',array('size'=>12, 'name'=>'Arial','align'=>'center','v_align'=>'center'));
+                        $my_xls->merge_cells($row,$col,$row,$col+2);
+                        $my_xls->set_row($row,20);
 
-                    $row ++;
-                }//for_course
+                        $row ++;
+                    }//for_course
+                }//if_not_completed
             }//if_not_completed
 
+
             /* Not Enrol        */
-            if ($outcome->not_enrol) {
-                $state      = get_string('outcome_course_not_enrolled','local_tracker_manager');
-                $bg_color   = '#fcf8e3';
-                $not_enrol  = $outcome->not_enrol;
-                foreach ($not_enrol as $course) {
-                    $col = 0;
-                    /* User     */
-                    $my_xls->write($row, $col, $user,array('size'=>12, 'name'=>'Arial','bg_color'=>$bg_color,'align'=>'left','v_align'=>'center'));
-                    $my_xls->merge_cells($row,$col,$row,$col+2);
-                    $my_xls->set_row($row,20);
+            if (isset($outcome->not_enrol)) {
+                if ($outcome->not_enrol) {
+                    $state      = get_string('outcome_course_not_enrolled','local_tracker_manager');
+                    $bg_color   = '#fcf8e3';
+                    $not_enrol  = $outcome->not_enrol;
+                    foreach ($not_enrol as $course) {
+                        $col = 0;
+                        /* User     */
+                        $my_xls->write($row, $col, $user,array('size'=>12, 'name'=>'Arial','bg_color'=>$bg_color,'align'=>'left','v_align'=>'center'));
+                        $my_xls->merge_cells($row,$col,$row,$col+2);
+                        $my_xls->set_row($row,20);
 
-                    /* Course   */
-                    $col = $col + 3;
-                    $my_xls->write($row, $col, $course->name,array('size'=>12, 'name'=>'Arial','bg_color'=>$bg_color,'align'=>'left','v_align'=>'center'));
-                    $my_xls->merge_cells($row,$col,$row,$col+5);
-                    $my_xls->set_row($row,20);
+                        /* Course   */
+                        $col = $col + 3;
+                        $my_xls->write($row, $col, $course->name,array('size'=>12, 'name'=>'Arial','bg_color'=>$bg_color,'align'=>'left','v_align'=>'center'));
+                        $my_xls->merge_cells($row,$col,$row,$col+5);
+                        $my_xls->set_row($row,20);
 
-                    /* State    */
-                    $col = $col + 6;
-                    $my_xls->write($row, $col, $state,array('size'=>12, 'name'=>'Arial','bg_color'=>$bg_color,'align'=>'center','v_align'=>'center'));
-                    $my_xls->merge_cells($row,$col,$row,$col+2);
-                    $my_xls->set_row($row,20);
+                        /* State    */
+                        $col = $col + 6;
+                        $my_xls->write($row, $col, $state,array('size'=>12, 'name'=>'Arial','bg_color'=>$bg_color,'align'=>'center','v_align'=>'center'));
+                        $my_xls->merge_cells($row,$col,$row,$col+2);
+                        $my_xls->set_row($row,20);
 
-                    /* Completion   */
-                    $col = $col + 3;
-                    $my_xls->write($row, $col, ' - ',array('size'=>12, 'name'=>'Arial','bg_color'=>$bg_color,'align'=>'center','v_align'=>'center'));
-                    $my_xls->merge_cells($row,$col,$row,$col+2);
-                    $my_xls->set_row($row,20);
+                        /* Completion   */
+                        $col = $col + 3;
+                        $my_xls->write($row, $col, ' - ',array('size'=>12, 'name'=>'Arial','bg_color'=>$bg_color,'align'=>'center','v_align'=>'center'));
+                        $my_xls->merge_cells($row,$col,$row,$col+2);
+                        $my_xls->set_row($row,20);
 
-                    /* Valid Until  */
-                    $col = $col + 3;
-                    $my_xls->write($row, $col, ' - ',array('size'=>12, 'name'=>'Arial','bg_color'=>$bg_color,'align'=>'center','v_align'=>'center'));
-                    $my_xls->merge_cells($row,$col,$row,$col+2);
-                    $my_xls->set_row($row,20);
+                        /* Valid Until  */
+                        $col = $col + 3;
+                        $my_xls->write($row, $col, ' - ',array('size'=>12, 'name'=>'Arial','bg_color'=>$bg_color,'align'=>'center','v_align'=>'center'));
+                        $my_xls->merge_cells($row,$col,$row,$col+2);
+                        $my_xls->set_row($row,20);
 
-                    $row ++;
-                }//for_Each_not_enrol
+                        $row ++;
+                    }//for_Each_not_enrol
+                }//if_not_enrol
             }//if_not_enrol
 
             /* Completed        */
-            if ($outcome->completed) {
-                $completed = $outcome->completed;
-                foreach ($completed as $course) {
-                    $col = 0;
+            if (isset($outcome->completed)) {
+                if ($outcome->completed) {
+                    $completed = $outcome->completed;
+                    foreach ($completed as $course) {
+                        $col = 0;
 
-                    $ts = strtotime($outcome->expiration  . ' month', $course->completed);
-                    if ($ts < time()) {
-                        $bg_color = '#f2dede';
-                        $state = get_string('outcome_course_expired','local_tracker_manager');
-                    }else {
-                        $bg_color = '#dff0d8';
-                        $state = get_string('outcome_course_finished','local_tracker_manager');
-                    }
+                        $ts = strtotime($outcome->expiration  . ' month', $course->completed);
+                        if ($ts < time()) {
+                            $bg_color = '#f2dede';
+                            $state = get_string('outcome_course_expired','local_tracker_manager');
+                        }else {
+                            $bg_color = '#dff0d8';
+                            $state = get_string('outcome_course_finished','local_tracker_manager');
+                        }
 
-                    $col = 0;
-                    /* User     */
-                    $my_xls->write($row, $col, $user,array('size'=>12, 'name'=>'Arial','bg_color'=>$bg_color,'align'=>'left','v_align'=>'center'));
-                    $my_xls->merge_cells($row,$col,$row,$col+2);
-                    $my_xls->set_row($row,20);
+                        $col = 0;
+                        /* User     */
+                        $my_xls->write($row, $col, $user,array('size'=>12, 'name'=>'Arial','bg_color'=>$bg_color,'align'=>'left','v_align'=>'center'));
+                        $my_xls->merge_cells($row,$col,$row,$col+2);
+                        $my_xls->set_row($row,20);
 
-                    /* Course   */
-                    $col = $col + 3;
-                    $my_xls->write($row, $col, $course->name,array('size'=>12, 'name'=>'Arial','bg_color'=>$bg_color,'align'=>'left','v_align'=>'center'));
-                    $my_xls->merge_cells($row,$col,$row,$col+5);
-                    $my_xls->set_row($row,20);
+                        /* Course   */
+                        $col = $col + 3;
+                        $my_xls->write($row, $col, $course->name,array('size'=>12, 'name'=>'Arial','bg_color'=>$bg_color,'align'=>'left','v_align'=>'center'));
+                        $my_xls->merge_cells($row,$col,$row,$col+5);
+                        $my_xls->set_row($row,20);
 
-                    /* State    */
-                    $col = $col + 6;
-                    $my_xls->write($row, $col, $state,array('size'=>12, 'name'=>'Arial','bg_color'=>$bg_color,'align'=>'center','v_align'=>'center'));
-                    $my_xls->merge_cells($row,$col,$row,$col+2);
-                    $my_xls->set_row($row,20);
+                        /* State    */
+                        $col = $col + 6;
+                        $my_xls->write($row, $col, $state,array('size'=>12, 'name'=>'Arial','bg_color'=>$bg_color,'align'=>'center','v_align'=>'center'));
+                        $my_xls->merge_cells($row,$col,$row,$col+2);
+                        $my_xls->set_row($row,20);
 
-                    /* Completion   */
-                    $col = $col + 3;
-                    $my_xls->write($row, $col, ' - ',array('size'=>12, 'name'=>'Arial','bg_color'=>$bg_color,'align'=>'center','v_align'=>'center'));
-                    $my_xls->merge_cells($row,$col,$row,$col+2);
-                    $my_xls->set_row($row,20);
+                        /* Completion   */
+                        $col = $col + 3;
+                        $my_xls->write($row, $col, userdate($course->completed,'%d.%m.%Y', 99, false),array('size'=>12, 'name'=>'Arial','bg_color'=>$bg_color,'align'=>'center','v_align'=>'center'));
+                        $my_xls->merge_cells($row,$col,$row,$col+2);
+                        $my_xls->set_row($row,20);
 
-                    /* Valid Until  */
-                    $col = $col + 3;
-                    $my_xls->write($row, $col, ' - ',array('size'=>12, 'name'=>'Arial','bg_color'=>$bg_color,'align'=>'center','v_align'=>'center'));
-                    $my_xls->merge_cells($row,$col,$row,$col+2);
-                    $my_xls->set_row($row,20);
+                        /* Valid Until  */
+                        $col = $col + 3;
+                        $my_xls->write($row, $col, userdate($ts,'%d.%m.%Y', 99, false),array('size'=>12, 'name'=>'Arial','bg_color'=>$bg_color,'align'=>'center','v_align'=>'center'));
+                        $my_xls->merge_cells($row,$col,$row,$col+2);
+                        $my_xls->set_row($row,20);
 
-                    $row ++;
-                }//for_Each_completed
+                        $row ++;
+                    }//for_Each_completed
+                }//if_completed
             }//if_completed
         }catch (Exception $ex) {
             throw $ex;
