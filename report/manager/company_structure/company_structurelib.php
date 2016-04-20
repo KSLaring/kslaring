@@ -676,6 +676,46 @@ class company_structure {
         }//try_catch
     }//DeleteEmployees
 
+    /**
+     * @param           $companyId
+     * @param           $moveFrom
+     * @param           $moveTo
+     *
+     * @throws          Exception
+     *
+     * @creationDate    20/04/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Move one company from one parent to other different parent
+     */
+    public static function MoveFrom_To($companyId,$moveFrom,$moveTo) {
+        /* Variables */
+        global  $DB;
+        $rdo    = null;
+        $params = null;
+
+        try {
+            /* First Original Record    */
+            /* Criteria */
+            $params = array();
+            $params['companyid'] = $companyId;
+            $params['parentid']  = $moveFrom;
+
+            /* Execute */
+            $rdo = $DB->get_record('report_gen_company_relation',$params);
+            if ($rdo) {
+                /* Update to the new parent */
+                $rdo->parentid = $moveTo;
+
+                /* Execute */
+                $DB->update_record('report_gen_company_relation',$rdo);
+            }//if_rdo
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//MoveFrom_To
+
     /************/
     /* PRIVATE  */
     /************/
