@@ -205,7 +205,7 @@ if (!empty($out)) {
     require('../tabs.php');
 
     if ($show_advanced) {
-        $out  = html_writer::start_tag('div',array('class' => 'advance_set'));
+        $out  = html_writer::start_tag('div',array('class' => 'advance_set_rpt'));
         $out .= html_writer::link(new moodle_url('/report/manager/company_report/company_report.php',array('advanced' => '0')),get_string('hideadvancedsettings'));
         $out .= html_writer::end_tag('div'); //div_expiration
         echo $out;
@@ -217,7 +217,7 @@ if (!empty($out)) {
 
         $selector_users->display();
     }else {
-        $out  = html_writer::start_tag('div',array('class' => 'advance_set'));
+        $out  = html_writer::start_tag('div',array('class' => 'advance_set_rpt'));
         $out .= html_writer::link(new moodle_url('/report/manager/company_report/company_report.php',array('advanced' => '1')),get_string('showadvancedsettings'));
         $out .= html_writer::end_tag('div'); //div_expiration
         echo $out;
