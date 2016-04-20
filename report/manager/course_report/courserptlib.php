@@ -291,10 +291,11 @@ class course_report {
                             /* Get Info connected with the level three  */
                             $levelThree = CompetenceManager::GetCompanies_LevelList(3,$data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'2'],$inThree);
                             unset($levelThree[0]);
-                            $selectorThree = array_flip($data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'3']);
-                            unset($selectorThree[0]);
+                            $selectorThree = $data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'3'];
+
                             if ($selectorThree) {
-                                $companies      = array_intersect($data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'3'],$levelThree);
+                                $company_keys   = array_keys($levelThree);
+                                $companies      = array_intersect($data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'3'],$company_keys);
                                 $companies      = array_fill_keys($companies,null);
                                 $levelThree     = array_intersect_key($levelThree,$companies);
                             }
@@ -1816,6 +1817,8 @@ class course_report {
                                 /* Content Table    */
                                 $out_report .= self::Add_ContentTable_LevelThree_Screen($company);
                                 $out_report .= html_writer::end_tag('div');//courses_list
+
+                                $data = true;
                             }
                         }//for_level_three
                     $out_report .= html_writer::end_tag('div');//outcome_content
@@ -2415,7 +2418,7 @@ class course_report {
         $col = 0;
         $title_course           = get_string('course');
         $title_outcomes         = get_string('outcomes', 'report_manager');
-        $str_outcomes           = null;
+        $str_outcomes           = array();
         $title_expiration       = str_replace(' ...',' : ',get_string('completed_list','report_manager')) . $completed_before;
         $title_level_zero       = get_string('company_structure_level', 'report_manager', 0) . ': ' . $level_zero;
         $title_level_one        = null;
@@ -2445,8 +2448,8 @@ class course_report {
             $my_xls->set_row($row,25);
             $row++;
             if ($outcomes) {
-                foreach ($outcomes as $outcome) {
-                    $str_outcomes[] = $outcome->name;
+                foreach ($outcomes as $key=>$outcome) {
+                    $str_outcomes[$key] = $outcome->name;
                     $str_outcomes = implode(', ',$str_outcomes);
                 }//for_outcomes
             }
