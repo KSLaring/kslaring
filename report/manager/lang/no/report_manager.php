@@ -472,7 +472,7 @@ $string['no_reporters']     = 'Ingen med rapporttilgang';
 
 $string['reports_manager']  = 'Kompetansestyringsrapporter';
 
-$string['btn_move']     = 'Flytt';
+$string['btn_move']     = 'Flytt element';
 $string['move_from']    = 'Flytt fra';
 $string['move_to']      = 'Flytt til';
 
