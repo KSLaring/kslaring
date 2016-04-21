@@ -83,29 +83,29 @@ class WS_DOSKOM {
         $url = null;
 
         try {
-            /* Check if the user already exists */
-            $user_id = self::checkUser($userSSO['id'],$userSSO,$result);
-            if ($user_id) {
-                /* Update User  */
-                self::updateUser($user_id,$userSSO,$result);
-            }else {
-                /* Create New User  */
-                $user_id = self::createUser($userSSO,$result);
-            }//if_user_exist
+                /* Check if the user already exists */
+                $user_id = self::checkUser($userSSO['id'],$userSSO,$result);
+                if ($user_id) {
+                    /* Update User  */
+                    self::updateUser($user_id,$userSSO,$result);
+                }else {
+                    /* Create New User  */
+                    $user_id = self::createUser($userSSO,$result);
+                }//if_user_exist
 
-            /* Assign Rol   */
-            self::assignRol($user_id,$userSSO['UserRoles'],$result);
+                /* Assign Rol   */
+                self::assignRol($user_id,$userSSO['UserRoles'],$result);
 
-            /* Check if the user has been enrolled or not   */
-            $action = strtolower($userSSO['RedirectPage']);
-            if (($action == ENROL) && ($userSSO['course'])) {
-                self::assignRolCourse($user_id,$userSSO['companyId'],$userSSO['UserRoles'],$userSSO['course'],$result);
-            }//if_Action_enrol
+                /* Check if the user has been enrolled or not   */
+                $action = strtolower($userSSO['RedirectPage']);
+                if (($action == ENROL) && ($userSSO['course'])) {
+                    self::assignRolCourse($user_id,$userSSO['companyId'],$userSSO['UserRoles'],$userSSO['course'],$result);
+                }//if_Action_enrol
 
-            /* We need to generate  the URL */
-            $url = self::generateResponse($user_id,$userSSO,$result);
+                /* We need to generate  the URL */
+                $url = self::generateResponse($user_id,$userSSO,$result);
 
-            $result['url'] = $url;
+                $result['url'] = $url;
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
@@ -389,6 +389,12 @@ class WS_DOSKOM {
      *
      * Description
      * Checks if the user already exists
+     *
+     * @updateDate      21/04/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * The ssn es unique for each user. It has not to check the company
      */
     private static function checkUser($userID,$userSSO,&$result) {
         /* Variables    */
@@ -404,8 +410,8 @@ class WS_DOSKOM {
             /* SQL Instruction */
             $sql = " SELECT		u.id
                      FROM		{user} 				u
-                      JOIN	    {user_company}		uc	    ON 	uc.userid 		= u.id
-                                                            AND	uc.companyid 	= :company
+                      -- JOIN	    {user_company}		uc	    ON 	uc.userid 		= u.id
+                                                            -- AND	uc.companyid 	= :company
                      WHERE		u.secret    = :secret
                         AND     u.username  = :username ";
 
