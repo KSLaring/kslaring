@@ -389,6 +389,12 @@ class WS_DOSKOM {
      *
      * Description
      * Checks if the user already exists
+     *
+     * @updateDate      21/04/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * The ssn es unique for each user. It has not to check the company
      */
     private static function checkUser($userID,$userSSO,&$result) {
         /* Variables    */
@@ -404,8 +410,8 @@ class WS_DOSKOM {
             /* SQL Instruction */
             $sql = " SELECT		u.id
                      FROM		{user} 				u
-                      JOIN	    {user_company}		uc	    ON 	uc.userid 		= u.id
-                                                            AND	uc.companyid 	= :company
+                      -- JOIN	    {user_company}		uc	    ON 	uc.userid 		= u.id
+                                                            -- AND	uc.companyid 	= :company
                      WHERE		u.secret    = :secret
                         AND     u.username  = :username ";
 
