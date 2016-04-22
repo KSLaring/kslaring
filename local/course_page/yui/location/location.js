@@ -36,7 +36,7 @@ YUI.add('moodle-local_course_page-location', function(Y) {
         }, Y.one(document.body), '#show_location');
 
         // On window-resize change the width
-        // and the center property depending on screen width.
+        // and the center property depending on screen height.
         Y.use('event-resize', function(Y) {
             Y.on('windowresize', function () {
                 var panelCenter = null;
