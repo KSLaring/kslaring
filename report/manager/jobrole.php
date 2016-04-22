@@ -65,26 +65,26 @@ switch ($level) {
 
         break;
     case 1:
+        /* Add Generics --> Only Public Job Roles   */
+        if (CompetenceManager::IsPublic($levelZero)) {
+            CompetenceManager::GetJobRoles_Generics($options);
+        }//if_isPublic
+
         /* Job Roles connected with level   */
         if ($levelOne) {
-            /* Add Generics --> Only Public Job Roles   */
-            if (CompetenceManager::IsPublic($levelOne)) {
-                CompetenceManager::GetJobRoles_Generics($options);
-            }//if_isPublic
-
             CompetenceManager::GetJobRoles_Hierarchy($options,$level-1,$levelZero);
             CompetenceManager::GetJobRoles_Hierarchy($options,$level,$levelZero,$levelOne);
         }//if_level_One
 
         break;
     case 2:
+        /* Add Generics --> Only Public Job Roles   */
+        if (CompetenceManager::IsPublic($levelOne)) {
+            CompetenceManager::GetJobRoles_Generics($options);
+        }//if_isPublic
+
         /* Job Roles connected with level   */
         if ($levelTwo) {
-            /* Add Generics --> Only Public Job Roles   */
-            if (CompetenceManager::IsPublic($levelTwo)) {
-                CompetenceManager::GetJobRoles_Generics($options);
-            }//if_isPublic
-
             CompetenceManager::GetJobRoles_Hierarchy($options,$level-2,$levelZero);
             CompetenceManager::GetJobRoles_Hierarchy($options,$level-1,$levelZero,$levelOne);
             CompetenceManager::GetJobRoles_Hierarchy($options,$level,$levelZero,$levelOne,$levelTwo);
@@ -92,12 +92,13 @@ switch ($level) {
 
         break;
     case 3:
-        if ($levelThree) {
-            /* Add Generics --> Only Public Job Roles   */
-            if (CompetenceManager::IsPublic($levelTwo)) {
-                CompetenceManager::GetJobRoles_Generics($options);
-            }//if_isPublic
+        /* Add Generics --> Only Public Job Roles   */
+        if (CompetenceManager::IsPublic($levelTwo)) {
+            CompetenceManager::GetJobRoles_Generics($options);
+        }//if_isPublic
 
+        /* Job Roles connected with level   */
+        if ($levelThree) {
             $levelThree = str_replace('#',',',$levelThree);
             CompetenceManager::GetJobRoles_Hierarchy($options,$level,$levelZero,$levelOne,$levelTwo,$levelThree);
         }else {
@@ -112,10 +113,10 @@ switch ($level) {
 /* Only the Job Roles connected to the outcome and level    */
 if ($outcome) {
     $jrOutcomes = outcome_report::Outcome_JobRole_List($outcome);
-   if ($jrOutcomes) {
+    if ($jrOutcomes) {
         $jrOutcomes[0] = 0;
         $options = array_intersect_key($options,$jrOutcomes);
-   }//if_jr_outcomes
+    }//if_jr_outcomes
 }//if_outcome_selected
 
 foreach ($options as $id => $jr) {
