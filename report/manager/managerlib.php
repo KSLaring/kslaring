@@ -573,6 +573,11 @@ class CompetenceManager {
     }//GetMyCompanies_By_Level
 
     /**
+     * @param           $levelZero
+     * @param           $levelOne
+     * @param           $levelTwo
+     * @param           $levelThree
+     *
      * @return          null|stdClass
      * @throws          Exception
      *
@@ -582,14 +587,33 @@ class CompetenceManager {
      * Description
      * Get companies with employees
      */
-    public static function GetCompanies_WithEmployees() {
+    public static function GetCompanies_WithEmployees($levelZero,$levelOne=null,$levelTwo=null,$levelThree=null) {
         /* Variables    */
         global $DB;
+        $params     = null;
         $sql        = null;
+        $sqlTwo     = '';
+        $sqlOne     = '';
         $rdo        = null;
         $companies  = null;
 
         try {
+
+            /* Search Criteria  */
+            $params = array();
+            $params['zero'] = $levelZero;
+
+            /* Criteria Level One   */
+            if ($levelOne) {
+                $params['one'] = $levelOne;
+                $sqlOne = ' AND co_one.id = :one ';
+            }//if_levelOne
+
+            /* Criteria Level Two   */
+            if ($levelTwo) {
+                $params['two'] = $levelTwo;
+                $sqlTwo = ' AND co_two.id = :two ';
+            }
             /* SQL Instruction  */
             $sql = " SELECT		GROUP_CONCAT(DISTINCT uicd.companyid  	ORDER BY uicd.companyid SEPARATOR ',') 		as 'levelthree',
                                 GROUP_CONCAT(DISTINCT cr_two.parentid  	ORDER BY cr_two.parentid SEPARATOR ',') 	as 'leveltwo',
@@ -600,23 +624,31 @@ class CompetenceManager {
                         JOIN	{report_gen_company_relation}   	cr_two	ON 	cr_two.companyid 		= uicd.companyid
                         JOIN	{report_gen_companydata}			co_two	ON 	co_two.id 				= cr_two.parentid
                                                                             AND co_two.hierarchylevel 	= 2
+                                                                            $sqlTwo
                         -- LEVEL ONE
                         JOIN	{report_gen_company_relation}   	cr_one	ON 	cr_one.companyid 		= cr_two.parentid
                         JOIN	{report_gen_companydata}			co_one	ON 	co_one.id 				= cr_one.parentid
                                                                             AND co_one.hierarchylevel 	= 1
+                                                                            $sqlOne
                         -- LEVEL ZERO
                         JOIN	{report_gen_company_relation} 	    cr_zero	ON 	cr_zero.companyid 		= cr_one.parentid
                         JOIN	{report_gen_companydata}			co_zero	ON 	co_zero.id 				= cr_zero.parentid
-                                                                            AND co_zero.hierarchylevel 	= 0 ";
+                                                                            AND co_zero.hierarchylevel 	= 0
+                                                                            AND co_zero.id = :zero ";
+
+            /* Filter companies */
+            if ($levelThree) {
+                $sql .= " WHERE uicd.companyid IN ($levelThree) ";
+            }//if_levelThree
 
             /* EXecute  */
-            $rdo = $DB->get_record_sql($sql);
+            $rdo = $DB->get_record_sql($sql,$params);
             if ($rdo) {
                 $companies = new stdClass();
-                $companies->levelZero   = explode(',',$rdo->levelzero);
-                $companies->levelOne    = explode(',',$rdo->levelone);
-                $companies->levelTwo    = explode(',',$rdo->leveltwo);
-                $companies->levelThree  = explode(',',$rdo->levelthree);
+                $companies->levelZero   = $rdo->levelzero;
+                $companies->levelOne    = $rdo->levelone;
+                $companies->levelTwo    = $rdo->leveltwo;
+                $companies->levelThree  = $rdo->levelthree;
             }//if_rdo
 
             return $companies;
@@ -624,6 +656,47 @@ class CompetenceManager {
             throw $ex;
         }//try_catch
     }//GetCompanies_WithEmployees
+
+    /**
+     * @param           $companyLst
+     *
+     * @return          null
+     * @throws          Exception
+     *
+     * @creationDate    22/04/2016
+     * @author          eFaktor     (fbv)
+     *
+     */
+    public static function GetCompaniesInfo($companyLst) {
+        /* Variables */
+        global $DB;
+        $sql = null;
+        $rdo = null;
+        $infoCompany = null;
+        $companies = null;
+
+        try {
+            /* SQL Instruction  */
+            $sql = " SELECT c.id,
+                            c.name
+                     FROM   {report_gen_companydata} c
+                     WHERE  c.id IN ($companyLst)
+                     ORDER BY c.name ";
+
+            /* Execute */
+            $rdo = $DB->get_records_sql($sql);
+            if ($rdo) {
+                foreach ($rdo as $instance) {
+                    /* Add Company  */
+                    $companies[$instance->id] = $instance->name;
+                }//for_rdo
+            }//if_rdo
+
+            return $companies;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//trY_catch
+    }
 
     /**
      * @return          array
