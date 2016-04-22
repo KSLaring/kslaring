@@ -831,9 +831,9 @@ class CompanyReport {
             $params['user'] = $user_id;
 
             /* SQL Instruction  */
-            $sql = " SELECT	c.id,
-                            c.fullname,
-                            IF (cc.timecompleted,cc.timecompleted,0) as 'completed'
+            $sql = " SELECT	DISTINCT c.id,
+                                     c.fullname,
+                                    IF (cc.timecompleted,cc.timecompleted,0) as 'completed'
                      FROM			{course}				c
                         JOIN		{enrol}				    e	ON		e.courseid 	= c.id
                                                                 AND		e.status	= 0
@@ -1217,103 +1217,97 @@ class CompanyReport {
         try {
             $content .= html_writer::start_tag('table');
                 /* Not Completed    */
-                if (isset($outcome->not_compelted)) {
-                    if ($outcome->not_completed) {
-                        $not_completed = $outcome->not_completed;
-                        foreach ($not_completed as $course) {
-                            $content .= html_writer::start_tag('tr');
-                                /* Empty Col   */
-                                $content .= html_writer::start_tag('td',array('class' => 'first'));
-                                $content .= html_writer::end_tag('td');
-                                /* Course           */
-                                $content .= html_writer::start_tag('td',array('class' => 'course'));
-                                    $content .= $course->name;
-                                $content .= html_writer::end_tag('td');
-                                /* Status        */
-                                $content .= html_writer::start_tag('td',array('class' => 'status'));
-                                    $content .= get_string('outcome_course_started','local_tracker_manager');
-                                $content .= html_writer::end_tag('td');
-                                /* Completion    */
-                                $content .= html_writer::start_tag('td',array('class' => 'status'));
-                                    $content .= '-';
-                                $content .= html_writer::end_tag('td');
-                                /* Valid        */
-                                $content .= html_writer::start_tag('td',array('class' => 'status'));
-                                    $content .= '&nbsp;';
-                                $content .= html_writer::end_tag('td');
-                            $content .= html_writer::end_tag('tr');
-                        }//for_each_course_not_completed
-                    }//if_not_completed
-                }//if_not_compelted
+                if ($outcome->not_completed) {
+                    $not_completed = $outcome->not_completed;
+                    foreach ($not_completed as $course) {
+                        $content .= html_writer::start_tag('tr');
+                            /* Empty Col   */
+                            $content .= html_writer::start_tag('td',array('class' => 'first'));
+                            $content .= html_writer::end_tag('td');
+                            /* Course           */
+                            $content .= html_writer::start_tag('td',array('class' => 'course'));
+                                $content .= $course->name;
+                            $content .= html_writer::end_tag('td');
+                            /* Status        */
+                            $content .= html_writer::start_tag('td',array('class' => 'status'));
+                                $content .= get_string('outcome_course_started','local_tracker_manager');
+                            $content .= html_writer::end_tag('td');
+                            /* Completion    */
+                            $content .= html_writer::start_tag('td',array('class' => 'status'));
+                                $content .= '-';
+                            $content .= html_writer::end_tag('td');
+                            /* Valid        */
+                            $content .= html_writer::start_tag('td',array('class' => 'status'));
+                                $content .= '&nbsp;';
+                            $content .= html_writer::end_tag('td');
+                        $content .= html_writer::end_tag('tr');
+                    }//for_each_course_not_completed
+                }//if_not_completed
 
 
                 /* Not Enrol        */
-                if (isset($outcome->not_enrol)) {
-                    if ($outcome->not_enrol) {
-                        $not_enrol = $outcome->not_enrol;
-                        foreach ($not_enrol as $course) {
-                            $content .= html_writer::start_tag('tr',array('class' => 'not_enroll'));
-                                /* Empty Col   */
-                                $content .= html_writer::start_tag('td',array('class' => 'first'));
-                                $content .= html_writer::end_tag('td');
-                                /* Course           */
-                                $content .= html_writer::start_tag('td',array('class' => 'course'));
-                                    $content .= $course->name;
-                                $content .= html_writer::end_tag('td');
-                                /* Status        */
-                                $content .= html_writer::start_tag('td',array('class' => 'status'));
-                                    $content .= get_string('outcome_course_not_enrolled','local_tracker_manager');
-                                $content .= html_writer::end_tag('td');
-                                /* Completion    */
-                                $content .= html_writer::start_tag('td',array('class' => 'status'));
-                                    $content .= '-';
-                                $content .= html_writer::end_tag('td');
-                                /* Valid        */
-                                $content .= html_writer::start_tag('td',array('class' => 'status'));
-                                    $content .= '&nbsp;';
-                                $content .= html_writer::end_tag('td');
-                            $content .= html_writer::end_tag('tr');
-                        }//for_each_course_not_enrol
-                    }//if_not_enrol
+                if ($outcome->not_enrol) {
+                    $not_enrol = $outcome->not_enrol;
+                    foreach ($not_enrol as $course) {
+                        $content .= html_writer::start_tag('tr',array('class' => 'not_enroll'));
+                            /* Empty Col   */
+                            $content .= html_writer::start_tag('td',array('class' => 'first'));
+                            $content .= html_writer::end_tag('td');
+                            /* Course           */
+                            $content .= html_writer::start_tag('td',array('class' => 'course'));
+                                $content .= $course->name;
+                            $content .= html_writer::end_tag('td');
+                            /* Status        */
+                            $content .= html_writer::start_tag('td',array('class' => 'status'));
+                                $content .= get_string('outcome_course_not_enrolled','local_tracker_manager');
+                            $content .= html_writer::end_tag('td');
+                            /* Completion    */
+                            $content .= html_writer::start_tag('td',array('class' => 'status'));
+                                $content .= '-';
+                            $content .= html_writer::end_tag('td');
+                            /* Valid        */
+                            $content .= html_writer::start_tag('td',array('class' => 'status'));
+                                $content .= '&nbsp;';
+                            $content .= html_writer::end_tag('td');
+                        $content .= html_writer::end_tag('tr');
+                    }//for_each_course_not_enrol
                 }//if_not_enrol
 
                 /* Completed        */
-                if (isset($outcome->compelted)) {
-                    if ($outcome->completed) {
-                        $completed = $outcome->completed;
-                        foreach ($completed as $course) {
-                            $ts = strtotime($outcome->expiration  . ' month', $course->completed);
-                            if ($ts < time()) {
-                                $class = 'expired';
-                                $label = get_string('outcome_course_expired','local_tracker_manager');
-                            }else {
-                                $class = 'completed';
-                                $label = get_string('outcome_course_finished','local_tracker_manager');
-                            }
+                if ($outcome->completed) {
+                    $completed = $outcome->completed;
+                    foreach ($completed as $course) {
+                        $ts = strtotime($outcome->expiration  . ' month', $course->completed);
+                        if ($ts < time()) {
+                            $class = 'expired';
+                            $label = get_string('outcome_course_expired','local_tracker_manager');
+                        }else {
+                            $class = 'completed';
+                            $label = get_string('outcome_course_finished','local_tracker_manager');
+                        }
 
-                            $content .= html_writer::start_tag('tr',array('class' => $class));
-                                /* Empty Col   */
-                                $content .= html_writer::start_tag('td',array('class' => 'first'));
-                                $content .= html_writer::end_tag('td');
-                                /* Course           */
-                                $content .= html_writer::start_tag('td',array('class' => 'course'));
-                                    $content .= $course->name;
-                                $content .= html_writer::end_tag('td');
-                                /* Status        */
-                                $content .= html_writer::start_tag('td',array('class' => 'status'));
-                                    $content .= $label;
-                                $content .= html_writer::end_tag('td');
-                                /* Completion    */
-                                $content .= html_writer::start_tag('td',array('class' => 'status'));
-                                    $content .= userdate($course->completed,'%d.%m.%Y', 99, false);
-                                $content .= html_writer::end_tag('td');
-                                /* Valid        */
-                                $content .= html_writer::start_tag('td',array('class' => 'status'));
-                                    $content .= userdate($ts,'%d.%m.%Y', 99, false);
-                                $content .= html_writer::end_tag('td');
-                            $content .= html_writer::end_tag('tr');
-                        }//for_each_course_completed
-                    }//if_completed
+                        $content .= html_writer::start_tag('tr',array('class' => $class));
+                            /* Empty Col   */
+                            $content .= html_writer::start_tag('td',array('class' => 'first'));
+                            $content .= html_writer::end_tag('td');
+                            /* Course           */
+                            $content .= html_writer::start_tag('td',array('class' => 'course'));
+                                $content .= $course->name;
+                            $content .= html_writer::end_tag('td');
+                            /* Status        */
+                            $content .= html_writer::start_tag('td',array('class' => 'status'));
+                                $content .= $label;
+                            $content .= html_writer::end_tag('td');
+                            /* Completion    */
+                            $content .= html_writer::start_tag('td',array('class' => 'status'));
+                                $content .= userdate($course->completed,'%d.%m.%Y', 99, false);
+                            $content .= html_writer::end_tag('td');
+                            /* Valid        */
+                            $content .= html_writer::start_tag('td',array('class' => 'status'));
+                                $content .= userdate($ts,'%d.%m.%Y', 99, false);
+                            $content .= html_writer::end_tag('td');
+                        $content .= html_writer::end_tag('tr');
+                    }//for_each_course_completed
                 }//if_completed
             $content .= html_writer::end_tag('table');
 
