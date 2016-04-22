@@ -374,7 +374,6 @@ class manager_course_report_level_form extends moodleform {
                 $levelZero = optional_param(MANAGER_COURSE_STRUCTURE_LEVEL . $level, 0, PARAM_INT);
 
                 /* Check old selection */
-
                 if ((!$levelZero) && isset($SESSION->selection)) {
                     $levelZero = $SESSION->selection[MANAGER_COURSE_STRUCTURE_LEVEL . $level];
                 }else if ((!$levelZero) && isset($SESSION->onlyCompany)) {
@@ -417,13 +416,14 @@ class manager_course_report_level_form extends moodleform {
                     }//if_levleone
                 }//if_session
 
+
+                /* Add Generics --> Only Public Job Roles   */
+                if (CompetenceManager::IsPublic($levelZero)) {
+                    CompetenceManager::GetJobRoles_Generics($options);
+                }//if_isPublic
+
                 /* Job Roles connected with level   */
                 if ($levelOne) {
-                    /* Add Generics --> Only Public Job Roles   */
-                    if (CompetenceManager::IsPublic($levelOne)) {
-                        CompetenceManager::GetJobRoles_Generics($options);
-                    }//if_isPublic
-
                     CompetenceManager::GetJobRoles_Hierarchy($options,$level-1,$levelZero);
                     CompetenceManager::GetJobRoles_Hierarchy($options,$level,$levelZero,$levelOne);
                 }//if_level_One
@@ -464,13 +464,13 @@ class manager_course_report_level_form extends moodleform {
                     }//if_levelTwo
                 }//if_session
 
+                /* Add Generics --> Only Public Job Roles   */
+                if (CompetenceManager::IsPublic($levelOne)) {
+                    CompetenceManager::GetJobRoles_Generics($options);
+                }//if_isPublic
+
                 /* Job Roles connected with level   */
                 if ($levelTwo) {
-                    /* Add Generics --> Only Public Job Roles   */
-                    if (CompetenceManager::IsPublic($levelTwo)) {
-                        CompetenceManager::GetJobRoles_Generics($options);
-                    }//if_isPublic
-
                     CompetenceManager::GetJobRoles_Hierarchy($options,$level-2,$levelZero);
                     CompetenceManager::GetJobRoles_Hierarchy($options,$level-1,$levelZero,$levelOne);
                     CompetenceManager::GetJobRoles_Hierarchy($options,$level,$levelZero,$levelOne,$levelTwo);
@@ -528,12 +528,13 @@ class manager_course_report_level_form extends moodleform {
                     }//if_levelThree
                 }//if_session
 
-                if (!in_array('0',$levelThree)) {
-                    /* Add Generics --> Only Public Job Roles   */
-                    if (CompetenceManager::IsPublic($levelTwo)) {
-                        CompetenceManager::GetJobRoles_Generics($options);
-                    }//if_isPublic
+                /* Add Generics --> Only Public Job Roles   */
+                if (CompetenceManager::IsPublic($levelTwo)) {
+                    CompetenceManager::GetJobRoles_Generics($options);
+                }//if_isPublic
 
+                /* Job roles connected with the level */
+                if (!in_array('0',$levelThree)) {
                     $levelThree = implode(',',$levelThree);
                     CompetenceManager::GetJobRoles_Hierarchy($options,$level,$levelZero,$levelOne,$levelTwo,$levelThree);
                 }else {
