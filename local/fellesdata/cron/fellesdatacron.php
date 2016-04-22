@@ -500,6 +500,7 @@ class FELLESDATA_CRON {
                 return null;
             }else {
                 echo "NOT NULL " . "</br>";
+                echo "--> --> " . $response . "</br>";
                 $response = json_decode($response);
                 echo "RESPONSE " . "</br>";
                 echo "--> " . $response . "</br>";
