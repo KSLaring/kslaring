@@ -487,8 +487,8 @@ class FELLESDATA_CRON {
             curl_setopt($ch, CURLOPT_HTTPHEADER, array(
                                                         'User-Agent: Moodle 1.0',
                                                         'Content-Type: application/json',
-                                                        'USER: ' . $pluginInfo->fs_username,
-                                                        'PASSWORD: ' . $pluginInfo->fs_password)
+                                                        'username: ' . $pluginInfo->fs_username,
+                                                        'password: ' . $pluginInfo->fs_password)
             );
 
             $response   = curl_exec( $ch );
