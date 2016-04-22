@@ -31,7 +31,7 @@ class FELLESDATA_CRON {
             //self::ImportKS($pluginInfo);
 
             /* Import Fellesdata        */
-            //self::ImportFellesdata($pluginInfo);
+            self::ImportFellesdata($pluginInfo);
 
             /* SYNCHRONIZATION  */
             /* Synchronization Users Accounts   */
@@ -44,13 +44,13 @@ class FELLESDATA_CRON {
             //self::JobRolesFS_Synchronization($pluginInfo,$fstExecution);
 
             /* Synchronization Comeptence   */
-            if (!$fstExecution) {
+            //if (!$fstExecution) {
                 /* Synchronization User Competence Company  */
-                //self::UserCompetence_Synchronization($pluginInfo,IMP_COMPETENCE_COMP,KS_USER_COMPETENCE_CO);
+            //    self::UserCompetence_Synchronization($pluginInfo,IMP_COMPETENCE_COMP,KS_USER_COMPETENCE_CO);
 
                 /* Synchronization User Competence JobRole  */
-                //self::UserCompetence_Synchronization($pluginInfo,IMP_COMPETENCE_JR,KS_USER_COMPETENCE_JR);
-            }
+            //    self::UserCompetence_Synchronization($pluginInfo,IMP_COMPETENCE_JR,KS_USER_COMPETENCE_JR);
+            //}
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
@@ -282,19 +282,19 @@ class FELLESDATA_CRON {
 
         try {
             /* Import FS Users              */
-            self::ImportFSUsers($pluginInfo);
+            //self::ImportFSUsers($pluginInfo);
 
             /* Import FS Companies          */
             self::ImportFSOrgStructure($pluginInfo);
 
             /* Import FS Job roles  */
-            self::ImportFSJobRoles($pluginInfo);
+            //self::ImportFSJobRoles($pluginInfo);
 
             /* Import FS User Competence    */
-            self::ImportFSUserCompetence($pluginInfo);
+            //self::ImportFSUserCompetence($pluginInfo);
 
             /* Import FS User Competence JR */
-           self::ImportFSUserCompetenceJR($pluginInfo);
+            //self::ImportFSUserCompetenceJR($pluginInfo);
 
             /* Log  */
             $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' FINISH Import Fellesdata . ' . "\n";
@@ -351,11 +351,13 @@ class FELLESDATA_CRON {
         $fsResponse = null;
 
         try {
+            echo "1" . "</br>";
             /* Call Web service */
             $fsResponse = self::ProcessTradisService($pluginInfo,TRADIS_FS_COMPANIES);
-
+            echo "2" . "</br>";
+            echo "Data : " . $fsResponse . "</br>";
             /* Import/Save data in Temporary tables */
-            FS::SaveTemporary_Felllesdata($fsResponse,IMP_COMPANIES);
+            //FS::SaveTemporary_Felllesdata($fsResponse,IMP_COMPANIES);
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
@@ -472,7 +474,9 @@ class FELLESDATA_CRON {
                 $fromDate = date('c',0);
             }
             /* Build url end point  */
-            $urlTradis = $pluginInfo->fs_point . '/' . $service .'?' . $fromDate . '&' . $toDate;
+            $urlTradis = $pluginInfo->fs_point . '/tardis/fellesdata/' . $service .'?fromDate=' . $fromDate . '&toDate=' . $toDate;
+
+            echo "</br></br>" . "URL " . $urlTradis . "</br></br>";
 
             /* Call Web Service     */
             $ch = curl_init($urlTradis);
@@ -481,8 +485,10 @@ class FELLESDATA_CRON {
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true );
             curl_setopt($ch, CURLOPT_POST, false );
             curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-                    'User-Agent: Moodle 1.0',
-                    'Content-Type: application/json ')
+                                                        'User-Agent: Moodle 1.0',
+                                                        'Content-Type: application/json',
+                                                        'USER: ' . $pluginInfo->fs_username,
+                                                        'PASSWORD: ' . $pluginInfo->fs_password)
             );
 
             $response   = curl_exec( $ch );
@@ -490,9 +496,14 @@ class FELLESDATA_CRON {
 
             /* Format Data  */
             if ($response === false) {
+                echo "NULL" . "</br>";
                 return null;
             }else {
+                echo "NOT NULL " . "</br>";
                 $response = json_decode($response);
+                echo "RESPONSE " . "</br>";
+                echo "--> " . $response . "</br>";
+
                 if (isset($response->status)) {
                     mtrace($response->msg);
                     return null;

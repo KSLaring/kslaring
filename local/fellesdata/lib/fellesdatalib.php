@@ -12,8 +12,8 @@
  */
 /* Fellesdata Services  */
 define('TRADIS_FS_COMPANIES','V_LEKA_OREN_TRE_NIVAA');
-define('TRADIS_FS_USERS','');
-define('TRADIS_FS_JOBROLES','');
+define('TRADIS_FS_USERS','V_LEKA_RESSURS');
+define('TRADIS_FS_JOBROLES','V_LEKA_STILLING');
 define('TRADIS_FS_USERS_COMPANIES','V_LEKA_OREN_TILGANG');
 define('TRADIS_FS_USERS_JOBROLES','V_LEKA_RESSURS_STILLING');
 
@@ -1630,7 +1630,7 @@ class FS {
             $infoUser = new stdClass();
             $infoUser->personalnumber   = trim($newEntry->fodselsnr);
             $infoUser->firstname        = trim($newEntry->fornavn);
-            $infoUser->lastname         = trim($newEntry->etternavn);
+            $infoUser->lastname         = trim($newEntry->mellomnavn) . trim($newEntry->etternavn);
             $infoUser->email            = trim($newEntry->epost);
             $infoUser->action           = $action;
             $infoUser->imported         = 0;
@@ -1718,7 +1718,7 @@ class FS {
             $infoFS = new stdClass();
             $infoFS->stillingskode      = trim($newEntry->stillingskode);
             $infoFS->stillingstekst     = trim($newEntry->stillingstekst);
-            $infoFS->alternative        = trim($newEntry->alternative);
+            $infoFS->alternative        = trim($newEntry->stillingstekst_alternativ);
             $infoFS->action             = $action;
             $infoFS->imported           = 0;
 

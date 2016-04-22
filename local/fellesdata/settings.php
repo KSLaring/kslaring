@@ -40,9 +40,11 @@ if ($hassiteconfig) {
     $settings->add(new admin_setting_configselect('local_fellesdata/fs_source',
                                                 get_string('fellesdata_source','local_fellesdata'),
                                                 get_string('fellesdata_source_desc','local_fellesdata'),0,$srcOptions));
+    /* User / Password  */
+    $settings->add(new admin_setting_configpasswordunmask('local_fellesdata/fs_username',get_String('username'),'',''));
+    $settings->add(new admin_setting_configpasswordunmask('local_fellesdata/fs_password',get_string('password'),'',''));
 
-    /* Personal Number  */
-    $settings->add(new admin_setting_configtext('local_fellesdata/idnumber_point',get_string('idnumber_end','local_fellesdata'),'','',PARAM_TEXT,50));
+
 
     /* KS Læring Heading    */
     $settings->add(new admin_setting_heading('local_fellesdata_KS_settings', '', get_string('ks_settings', 'local_fellesdata')));
@@ -53,6 +55,7 @@ if ($hassiteconfig) {
 
     /* Municipality */
     $settings->add(new admin_setting_configtext('local_fellesdata/ks_muni',get_string('ks_municipality','local_fellesdata'),'','',PARAM_TEXT,50));
+
     ///* Hierarchy Municipality   */
     //$settings->add(new admin_setting_configtext('local_fellesdata/ks_muni_level',get_string('ks_hierarchy','local_fellesdata'),'','',PARAM_TEXT,50));
 }//if_config
