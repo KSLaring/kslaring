@@ -1142,10 +1142,10 @@ class TrackerManager {
                         $content .= html_writer::end_tag('td');
                         /* Course           */
                         $content .= html_writer::start_tag('td',array('class' => 'course'));
-                            if (strlen($course->name) <= 30) {
+                            if (strlen($course->name) <= 45) {
                                 $content .= $course->name;
                             }else {
-                                $nameTruncate = substr($course->name,0,30);
+                                $nameTruncate = substr($course->name,0,80);
                                 $index = strrpos($nameTruncate,' ');
                                 $nameTruncate = substr($nameTruncate,0,$index) . ' ...';
                                 $content .= $nameTruncate;
@@ -1195,10 +1195,10 @@ class TrackerManager {
                         $content .= html_writer::end_tag('td');
                         /* Course           */
                         $content .= html_writer::start_tag('td',array('class' => 'course'));
-                            if (strlen($course->name) <= 30) {
+                            if (strlen($course->name) <= 45) {
                                 $content .= $course->name;
                             }else {
-                                $nameTruncate = substr($course->name,0,30);
+                                $nameTruncate = substr($course->name,0,80);
                                 $index = strrpos($nameTruncate,' ');
                                 $nameTruncate = substr($nameTruncate,0,$index) . ' ...';
                                 $content .= $nameTruncate;
@@ -1385,10 +1385,10 @@ class TrackerManager {
                             $content .= html_writer::end_tag('td');
                             /* Course           */
                             $content .= html_writer::start_tag('td',array('class' => 'course'));
-                                if (strlen($course->name) <= 30) {
+                                if (strlen($course->name) <= 45) {
                                     $content .= $course->name;
                                 }else {
-                                    $nameTruncate = substr($course->name,0,30);
+                                    $nameTruncate = substr($course->name,0,80);
                                     $index = strrpos($nameTruncate,' ');
                                     $nameTruncate = substr($nameTruncate,0,$index) . ' ...';
                                     $content .= $nameTruncate;
