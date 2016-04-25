@@ -895,14 +895,18 @@ class course_page  {
 
         // Add enrolled users.
         /* Get Instance Enrolment Waiting List  */
-        $instance = $DB->get_record('enrol', array('courseid' => $course_id,
-            'enrol' => 'waitinglist'));
+        $instance = $DB->get_record('enrol', array('courseid' => $course_id,'enrol' => 'waitinglist'));
         if ($instance) {
             /* Get Seats    */
             require_once($CFG->dirroot . '/enrol/waitinglist/lib.php');
-            $enrolWaitingList = new enrol_waitinglist_plugin();
-            $avail = $enrolWaitingList->get_vacancy_count($instance) . '/' .
-                $instance->{ENROL_WAITINGLIST_FIELD_MAXENROLMENTS};
+
+            if ($instance->{ENROL_WAITINGLIST_FIELD_MAXENROLMENTS}) {
+                $enrolWaitingList = new enrol_waitinglist_plugin();
+                $avail = $enrolWaitingList->get_vacancy_count($instance) . '/' . $instance->{ENROL_WAITINGLIST_FIELD_MAXENROLMENTS};
+            }else {
+                $avail = get_string('unlimited_seats','local_course_page');
+            }
+
         }//if_instance
 
         $field = new stdClass();
