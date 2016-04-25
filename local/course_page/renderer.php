@@ -708,8 +708,7 @@ class local_course_page_renderer extends plugin_renderer_base {
 
         /* Get Extra Options    */
         $out .= html_writer::start_tag('div', array('class' => 'extra chp-block'));
-        $out .= '<h5 class="title_home chp-title">' .
-            get_string('available_seats', 'local_course_page') . '</h5>';
+            $out .= '<h5 class="title_home chp-title">' . get_string('available_seats', 'local_course_page') . '</h5>';
         $out .= '<div class="extra_home chp-content">';
         $out .= $format_options['enrolledusers']->value;
         $out .= '</div>';//extra_home
