@@ -55,7 +55,7 @@ $string['single']                   = 'Single Activity';
 $string['btn_more']                 = 'More';
 $string['not_comments']             = 'No comments';
 $string['available_seats'] 			= 'Available seats';
-
+$string['unlimited_seats']          = 'Unlimited';
 $string['no_minimum_rates']         = 'Sorry, but there are not enough ratings to publish the results for this course.';
 
 $string['view_detail'] = 'View detail';
