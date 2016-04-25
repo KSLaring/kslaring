@@ -895,7 +895,7 @@ class course_page  {
 
         // Add enrolled users.
         /* Get Instance Enrolment Waiting List  */
-        $instance = $DB->get_record('enrol', array('courseid' => $course_id,'enrol' => 'waitinglist'));
+        $instance = $DB->get_record('enrol', array('courseid' => $course_id,'enrol' => 'waitinglist','status' => '0'));
         if ($instance) {
             /* Get Seats    */
             require_once($CFG->dirroot . '/enrol/waitinglist/lib.php');
@@ -907,6 +907,8 @@ class course_page  {
                 $avail = get_string('unlimited_seats','local_course_page');
             }
 
+        }else {
+            $avail = 'hide';
         }//if_instance
 
         $field = new stdClass();
