@@ -293,14 +293,17 @@ class format_netcourse extends format_base {
             $thismod = $page->cm;
             $completionicon = false;
             $output = '';
-            $completionactivated = false;
-            $completioncriteria = $completioninfo->get_criteria(COMPLETION_CRITERIA_TYPE_ACTIVITY);
-            foreach ($completioncriteria as $completioncriterium) {
-                if ($completioncriterium->moduleinstance == $thismod->id) {
-                    $completionactivated = true;
-                    break;
-                }
-            }
+            $completionactivated = true;
+
+            // The check for the completioncriteria is only needed for course completion.
+            //$completionactivated = false;
+            //$completioncriteria = $completioninfo->get_criteria(COMPLETION_CRITERIA_TYPE_ACTIVITY);
+            //foreach ($completioncriteria as $completioncriterium) {
+            //    if ($completioncriterium->moduleinstance == $thismod->id) {
+            //        $completionactivated = true;
+            //        break;
+            //    }
+            //}
 
             if ($completionactivated && $cancomplete &&
                 $completioninfo->is_enabled($thismod) != COMPLETION_TRACKING_NONE) {
