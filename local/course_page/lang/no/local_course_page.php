@@ -52,7 +52,7 @@ $string['single']                   = 'Enkeltaktivitet';
 $string['title_reviews']            = 'Revisjon';
 $string['whitepaper']               = 'Dokumentformat';
 $string['available_seats'] 			= 'Ledige plasser';
-$string['unlimited_seats']          = 'Unlimited';
+$string['unlimited_seats']          = 'Ubegrenset';
 $string['no_minimum_rates']         = 'Beklager, men det er ikke mange nok som har vurdert dette kurset ennå.';
 
 $string['view_detail'] = 'Vis detaljer';
