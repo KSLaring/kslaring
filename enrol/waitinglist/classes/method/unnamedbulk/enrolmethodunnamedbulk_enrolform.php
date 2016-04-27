@@ -180,17 +180,19 @@ class enrolmethodunnamedbulk_enrolform extends \moodleform {
         $queuestatus = $this->queuestatus;
         $waitinglist = $this->waitinglist;
 
-	   $availabletouser = ($queuestatus->waitlistsize - $queuestatus->queueposition) +
-	   		($queuestatus->vacancies + $queuestatus->assignedseats);
 
-       //if($queuestatus->waitlistsize && $queuestatus->waitlistsize  < ($queuestatus->queueposition + $data['seats'])){
-       if($availabletouser  < $data['seats']){
-      		$available = $queuestatus->waitlistsize - $queuestatus->queueposition - $queuestatus->waitingseats;
-      		$a = new \stdClass;
-       		$a->available = $available;
-       		$a->vacancies =  $queuestatus->vacancies;
-        	$errors['seats'] = get_string('nomoreseats', 'enrol_waitinglist', $a);
-        	return $errors;
+        if ($waitinglist->{ENROL_WAITINGLIST_FIELD_MAXENROLMENTS}) {
+            $availabletouser = ($queuestatus->waitlistsize - $queuestatus->queueposition) +
+                ($queuestatus->vacancies + $queuestatus->assignedseats);
+
+            if($availabletouser  < $data['seats']){
+                $available = $queuestatus->waitlistsize - $queuestatus->queueposition - $queuestatus->waitingseats;
+                $a = new \stdClass;
+                $a->available = $available;
+                $a->vacancies =  $queuestatus->vacancies;
+                $errors['seats'] = get_string('nomoreseats', 'enrol_waitinglist', $a);
+                return $errors;
+            }
         }
 
         /**
