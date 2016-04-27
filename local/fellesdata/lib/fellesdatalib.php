@@ -11,7 +11,7 @@
  *
  */
 /* Fellesdata Services  */
-define('TRADIS_FS_COMPANIES','V_LEKA_OREN_TRE_NIVAA');
+define('TRADIS_FS_COMPANIES','v_leka_oren_tre_nivaa');
 define('TRADIS_FS_USERS','V_LEKA_RESSURS');
 define('TRADIS_FS_JOBROLES','V_LEKA_STILLING');
 define('TRADIS_FS_USERS_COMPANIES','V_LEKA_OREN_TILGANG');
