@@ -483,14 +483,15 @@ class FELLESDATA_CRON {
             curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false );
             curl_setopt($ch, CURLOPT_SSL_VERIFYHOST,2 );
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true );
-            curl_setopt($ch, CURLOPT_POST, false );
+            curl_setopt($ch, CURLOPT_POST, true );
+            curl_setopt($ch, CURLOPT_USERPWD, $pluginInfo->fs_username . ":" . $pluginInfo->fs_password);
             curl_setopt($ch, CURLOPT_HTTPHEADER, array(
                                                         'User-Agent: Moodle 1.0',
-                                                        'Content-Type: application/json',
-                                                        'user: '     . $pluginInfo->fs_username,
-                                                        'password: ' . $pluginInfo->fs_password)
+                                                        'Content-Type: application/json')
             );
 
+            //'username: '     . $pluginInfo->fs_username,
+            //                                            'password: ' . $pluginInfo->fs_password;
             $response   = curl_exec( $ch );
             curl_close( $ch );
 
