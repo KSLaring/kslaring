@@ -289,6 +289,12 @@ Class Approval {
         $course             = null;
 
         try {
+            /* Info Notification    */
+            $infoNotification = new stdClass();
+            $infoNotification->site     = $SITE->shortname;
+            /* Add Info Course      */
+            self::GetInfoCourse_Notification($courseId,$infoNotification);
+
             /* Search Criteria  */
             $params = array();
             $params['user']     = $userId;
@@ -314,13 +320,6 @@ Class Approval {
             /* Execute */
             $rdo = $DB->get_record_sql($sql,$params);
             if ($rdo) {
-                /* Info Notification    */
-                $infoNotification = new stdClass();
-                $infoNotification->site     = $SITE->shortname;
-
-                /* Add Info Course      */
-                self::GetInfoCourse_Notification($courseId,$infoNotification);
-
                 /* Info Notification */
                 $infoNotification->approvalid   = $rdo->id;
                 $infoNotification->arguments    = $rdo->arguments;
@@ -1194,6 +1193,7 @@ Class Approval {
     private static function RejectAction($infoRequest) {
         /* Variables */
         global $DB,$SITE;
+        $instanceReject = null;
         $infoMail       = null;
         $strBody        = null;
         $strSubject     = null;
@@ -1202,26 +1202,24 @@ Class Approval {
         $user           = null;
         $course         = null;
         $time           = null;
-        $trans          = null;
-
-        /* Start transaction */
-        $trans = $DB->start_delegated_transaction();
 
         try {
             /* Local Time   */
             $time = time();
 
-            /* Delete from enrol_approval */
-            $params = array();
-            $params['id']               = $infoRequest->id;
-            $params['userid']           = $infoRequest->userid;
-            $params['courseid']         = $infoRequest->courseid;
-            $params['waitinglistid']    = $infoRequest->waitinglistid;
+            /* Instance Reject  */
+            $instanceReject = new stdClass();
+            $instanceReject->id             = $infoRequest->id;
+            $instanceReject->userid         = $infoRequest->userid;
+            $instanceReject->courseid       = $infoRequest->courseid;
+            $instanceReject->waitinglistid  = $infoRequest->waitinglistid;
+            $instanceReject->methodtype     = $infoRequest->methodtype;
+            $instanceReject->approved       = 0;
+            $instanceReject->rejected       = 1;
+            $instanceReject->timemodified   = $time;
 
-            $DB->delete_records('enrol_approval',$params);
-
-            /* Delete Approval actions */
-            $DB->delete_records('enrol_approval_action',array('approvalid' => $infoRequest->id));
+            /* Execute */
+            $DB->update_record('enrol_approval',$instanceReject);
 
             /* Send mail to the user */
             $user   = get_complete_user_data('id',$infoRequest->userid);
@@ -1264,14 +1262,8 @@ Class Approval {
             /* Send Mail    */
             email_to_user($user, $SITE->shortname, $strSubject, $bodyText,$bodyHtml);
 
-            /* Commit */
-            $trans->allow_commit();
-
             return true;
         }catch (Exception $ex) {
-            /* Rollback */
-            $trans->rollback($ex);
-
             throw $ex;
         }//try_catch
     }//RejectAction
