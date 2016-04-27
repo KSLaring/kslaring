@@ -12,10 +12,10 @@
  */
 /* Fellesdata Services  */
 define('TRADIS_FS_COMPANIES','v_leka_oren_tre_nivaa');
-define('TRADIS_FS_USERS','V_LEKA_RESSURS');
-define('TRADIS_FS_JOBROLES','V_LEKA_STILLING');
-define('TRADIS_FS_USERS_COMPANIES','V_LEKA_OREN_TILGANG');
-define('TRADIS_FS_USERS_JOBROLES','V_LEKA_RESSURS_STILLING');
+define('TRADIS_FS_USERS','v_leka_ressurs');
+define('TRADIS_FS_JOBROLES','v_leka_stilling');
+define('TRADIS_FS_USERS_COMPANIES','v_leka_oren_tilgang');
+define('TRADIS_FS_USERS_JOBROLES','v_leka_ressurs_stilling');
 
 /* KS Services  */
 define('KS_SYNC_FS_COMPANY','wsFSCompany');
