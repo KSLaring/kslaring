@@ -476,20 +476,27 @@ class FELLESDATA_CRON {
             $fromDate   = "2016-04-26";
             $toDate     = "2016-04-27";
 
-            $urlTradis = $pluginInfo->fs_point . '/tardis/fellesdata/' . $service . '?fromDate=' . $fromDate . '&toDate=' . $toDate;
+            $urlTradis = $pluginInfo->fs_point . '/tardis/fellesdata/' . $service ; //. '?fromDate=' . $fromDate . '&toDate=' . $toDate;
 
             echo "</br></br>" . "URL " . $urlTradis . "</br></br>";
 
             /* Call Web Service     */
+            $notification = array();
+            $notification['toDate']     = "2016-04-27T00:00:00";
+            $notification['fromDate']   = "2016-04-26T00:00:00";
+            $notification_STR                 = json_encode($notification);
+            
             $ch = curl_init($urlTradis);
             curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false );
             curl_setopt($ch, CURLOPT_SSL_VERIFYHOST,2 );
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true );
             curl_setopt($ch, CURLOPT_POST, false );
+            curl_setopt($ch, CURLOPT_POSTFIELDS,        $notification_STR);
             curl_setopt($ch, CURLOPT_USERPWD, $pluginInfo->fs_username . ":" . $pluginInfo->fs_password);
             curl_setopt($ch, CURLOPT_HTTPHEADER, array(
                                                         'User-Agent: Moodle 1.0',
-                                                        'Content-Type: application/json')
+                                                        'Content-Type: application/json',
+                'Content-Length: '      . strlen($notification_STR))
             );
 
             //'username: '     . $pluginInfo->fs_username,
