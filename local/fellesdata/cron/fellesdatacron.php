@@ -475,7 +475,7 @@ class FELLESDATA_CRON {
             /* Build url end point  */
             $fromDate   = "1461628800000";
             $toDate     = "1461715200000";
-            
+
             $urlTradis = $pluginInfo->fs_point . '/tardis/fellesdata/' . $service .'?fromDate=' . $fromDate . '&toDate=' . $toDate;
 
             echo "</br></br>" . "URL " . $urlTradis . "</br></br>";
@@ -506,7 +506,6 @@ class FELLESDATA_CRON {
                 echo "--> --> " . $response . "</br>";
                 $response = json_decode($response);
                 echo "RESPONSE " . "</br>";
-                echo "--> " . $response . "</br>";
 
                 if (isset($response->status)) {
                     mtrace($response->msg);
