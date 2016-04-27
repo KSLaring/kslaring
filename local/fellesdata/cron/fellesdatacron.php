@@ -355,7 +355,6 @@ class FELLESDATA_CRON {
             /* Call Web service */
             $fsResponse = self::ProcessTradisService($pluginInfo,TRADIS_FS_COMPANIES);
             echo "2" . "</br>";
-            echo "Data : " . $fsResponse . "</br>";
             /* Import/Save data in Temporary tables */
             //FS::SaveTemporary_Felllesdata($fsResponse,IMP_COMPANIES);
         }catch (Exception $ex) {
@@ -483,7 +482,7 @@ class FELLESDATA_CRON {
             curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false );
             curl_setopt($ch, CURLOPT_SSL_VERIFYHOST,2 );
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true );
-            curl_setopt($ch, CURLOPT_POST, true );
+            curl_setopt($ch, CURLOPT_POST, false );
             curl_setopt($ch, CURLOPT_USERPWD, $pluginInfo->fs_username . ":" . $pluginInfo->fs_password);
             curl_setopt($ch, CURLOPT_HTTPHEADER, array(
                                                         'User-Agent: Moodle 1.0',
