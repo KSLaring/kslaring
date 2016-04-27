@@ -473,8 +473,8 @@ class FELLESDATA_CRON {
                 $fromDate = date('c',0);
             }
             /* Build url end point  */
-            $fromDate   = "2016-04-26 00:00:00";
-            $toDate     = "2016-04-27 00:00:00";
+            $fromDate   = "2016-04-26";
+            $toDate     = "2016-04-27";
 
             $urlTradis = $pluginInfo->fs_point . '/tardis/fellesdata/' . $service . '?fromDate=' . $fromDate . '&toDate=' . $toDate;
 
