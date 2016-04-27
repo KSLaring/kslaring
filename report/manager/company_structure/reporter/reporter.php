@@ -15,6 +15,7 @@
 
 require_once('../../../../config.php');
 require_once( 'reporterlib.php');
+require_once( '../../managerlib.php');
 require_once( '../company_structurelib.php');
 require_once('reporter_form.php');
 require_once($CFG->libdir . '/adminlib.php');
@@ -27,6 +28,7 @@ $url            = new moodle_url('/report/manager/company_structure/reporter/rep
 $returnUrl      = new moodle_url('/report/manager/company_structure/company_structure.php');
 $parents        = $SESSION->parents;
 $params         = array();
+$superUser      = false;
 
 /* Start the page */
 $siteContext = context_system::instance();
@@ -43,7 +45,10 @@ $PAGE->navbar->add(get_string('title_reporters','report_manager'));
 $PAGE->verify_https_required();
 
 /* ADD require_capability */
-require_capability('report/manager:edit', $siteContext);
+$superUser  = CompetenceManager::IsSuperUser($USER->id);
+if (!$superUser) {
+    require_capability('report/manager:edit', $siteContext);
+}
 
 /* Return Url   */
 $levelZero  = 'level_' . 0;
