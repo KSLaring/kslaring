@@ -462,23 +462,23 @@ class FELLESDATA_CRON {
 
         try {
             /* Get Parameters service    */
-            $toDate     = getdate();
-            $toDate     = date('c',mktime(0,0,0,$toDate['mon'],$toDate['mday'],$toDate['year']));
-            if (isset($pluginInfo->lastcron) && $pluginInfo->lastcron) {
+            $toDate     = mktime(1, 60, 0, date("m"), date("d"), date("Y"));
+            $toDate     = gmdate('Y-m-d\TH:i:s\Z',$toDate);
+            if (isset($pluginInfo->lastexecution) && $pluginInfo->lastexecution) {
                 /* No First Execution   */
-                $fromDate   = getdate(strtotime('-1 day'));
-                $fromDate   = date('c',mktime(0,0,0,$fromDate['mon'],$fromDate['mday'],$fromDate['year']));
+                $fromDate   = mktime(1, 60, 0, date("m"), date("d"), date("Y"));
+                $fromDate   = gmdate('Y-m-d\TH:i:s\Z',$fromDate);
             }else {
                 /* First Execution      */
-                $fromDate = date('c',0);
+                $fromDate = gmdate('Y-m-d\TH:i:s\Z',0);
             }
-            /* Build url end point  */
-            $fromDate   = "1970-04-26T01:00:00Z";
-            $toDate     = "2016-04-27T23:00:00Z";
 
+            /* Build url end point  */
             $urlTradis = $pluginInfo->fs_point . '/tardis/fellesdata/' . $service . '?fromDate=' . $fromDate . '&toDate=' . $toDate;
 
-            echo "</br></br>" . "URL " . $urlTradis . "</br></br>";
+
+            echo "From: " . $fromDate . "</br>";
+            echo "To: " . $toDate . "</br>";
 
             /* Call Web Service     */
             $ch = curl_init($urlTradis);
