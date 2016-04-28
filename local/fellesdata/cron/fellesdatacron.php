@@ -291,10 +291,10 @@ class FELLESDATA_CRON {
             //self::ImportFSJobRoles($pluginInfo);
 
             /* Import FS User Competence    */
-            self::ImportFSUserCompetence($pluginInfo);
+            //self::ImportFSUserCompetence($pluginInfo);
 
             /* Import FS User Competence JR */
-            //self::ImportFSUserCompetenceJR($pluginInfo);
+            self::ImportFSUserCompetenceJR($pluginInfo);
 
             /* Log  */
             $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' FINISH Import Fellesdata . ' . "\n";
@@ -504,10 +504,11 @@ class FELLESDATA_CRON {
             if ($response === false) {
                 return null;
             }else {
-                $response = "[" . $response . "]";
-                $response = str_replace('{"change',',{"change',$response);
-                $response = str_replace('[,{','[{',$response);
+                //$response = "[" . $response . "]";
+                //$response = str_replace('{"change',',{"change',$response);
+                //$response = str_replace('[,{','[{',$response);
 
+                echo "REsponse: " . $response . "</br>";
                 $response = json_decode($response);
                 if (isset($response->error)) {
                     mtrace($response->message);
