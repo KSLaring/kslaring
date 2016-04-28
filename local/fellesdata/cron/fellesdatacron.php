@@ -481,10 +481,10 @@ class FELLESDATA_CRON {
                 /* First Execution      */
                 //$fromDate = gmdate('Y-m-d\TH:i:s\Z',0);
 
-                $toDate     = mktime(1, 60, 0, 12, 31, 2001);
+                $toDate     = mktime(1, 60, 0, 12, 31, 2002);
                 $toDate     = gmdate('Y-m-d\TH:i:s\Z',$toDate);
 
-                $fromDate   = mktime(1, 60, 0, 1, 1, 2001);
+                $fromDate   = mktime(1, 60, 0, 1, 1, 2002);
                 $fromDate   = gmdate('Y-m-d\TH:i:s\Z',$fromDate);
             }
 
