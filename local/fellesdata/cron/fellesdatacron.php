@@ -351,12 +351,10 @@ class FELLESDATA_CRON {
         $fsResponse = null;
 
         try {
-            echo "1" . "</br>";
             /* Call Web service */
             $fsResponse = self::ProcessTradisService($pluginInfo,TRADIS_FS_COMPANIES);
-            echo "2" . "</br>";
             /* Import/Save data in Temporary tables */
-            //FS::SaveTemporary_Felllesdata($fsResponse,IMP_COMPANIES);
+            FS::SaveTemporary_Felllesdata($fsResponse,IMP_COMPANIES);
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
@@ -497,13 +495,9 @@ class FELLESDATA_CRON {
 
             /* Format Data  */
             if ($response === false) {
-                echo "NULL" . "</br>";
                 return null;
             }else {
-                echo "NOT NULL " . "</br>";
-                echo "--> --> " . $response . "</br>";
                 $response = json_decode($response);
-                echo "RESPONSE " . "</br>";
 
                 if (isset($response->status)) {
                     mtrace($response->message);
