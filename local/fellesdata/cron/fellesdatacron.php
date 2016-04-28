@@ -329,7 +329,9 @@ class FELLESDATA_CRON {
             $fsResponse = self::ProcessTradisService($pluginInfo,TRADIS_FS_USERS);
 
             /* Import/Save data in Temporary tables */
-            FS::SaveTemporary_Felllesdata($fsResponse,IMP_USERS);
+            if ($fsResponse) {
+                FS::SaveTemporary_Felllesdata($fsResponse,IMP_USERS);
+            }
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
@@ -355,7 +357,9 @@ class FELLESDATA_CRON {
             $fsResponse = self::ProcessTradisService($pluginInfo,TRADIS_FS_COMPANIES);
 
             /* Import/Save data in Temporary tables */
-            FS::SaveTemporary_Felllesdata($fsResponse,IMP_COMPANIES);
+            if ($fsResponse) {
+                FS::SaveTemporary_Felllesdata($fsResponse,IMP_COMPANIES);
+            }
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
@@ -381,7 +385,9 @@ class FELLESDATA_CRON {
             $fsResponse = self::ProcessTradisService($pluginInfo,TRADIS_FS_JOBROLES);
 
             /* Import/Save data in temporary tables */
-            //FS::SaveTemporary_Felllesdata($fsResponse,IMP_JOBROLES);
+            if ($fsResponse) {
+                FS::SaveTemporary_Felllesdata($fsResponse,IMP_JOBROLES);
+            }
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
@@ -407,7 +413,9 @@ class FELLESDATA_CRON {
             $usersCompetence = self::ProcessTradisService($pluginInfo,TRADIS_FS_USERS_COMPANIES);
 
             /* Import/Save in temporary tables  */
-            FS::SaveTemporary_Felllesdata($usersCompetence,IMP_COMPETENCE_COMP);
+            if ($usersCompetence) {
+                FS::SaveTemporary_Felllesdata($usersCompetence,IMP_COMPETENCE_COMP);
+            }
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
@@ -434,7 +442,9 @@ class FELLESDATA_CRON {
             $usersCompetenceJR = self::ProcessTradisService($pluginInfo,TRADIS_FS_USERS_JOBROLES);
 
             /* Import/Save in temporary tables */
-            FS::SaveTemporary_Felllesdata($usersCompetenceJR,IMP_COMPETENCE_JR);
+            if ($usersCompetenceJR) {
+                FS::SaveTemporary_Felllesdata($usersCompetenceJR,IMP_COMPETENCE_JR);
+            }
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
@@ -504,7 +514,7 @@ class FELLESDATA_CRON {
                     mtrace($response->message);
                     return null;
                 }else {
-                    echo $response ;
+                    echo "--> " . $response ;
                     //$response = "[" . $response . "]";
                     //$response = str_replace('{"change',',{"change',$response);
                     //$response = str_replace('[,{','[{',$response);
