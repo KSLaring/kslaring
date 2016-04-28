@@ -1810,7 +1810,7 @@ class FS {
             $infoCompetenceJR->fornavn          = trim($newEntry->FORNAVN);
             $infoCompetenceJR->etternavn        = trim($newEntry->ETTERNAVN);
             $infoCompetenceJR->epost            = trim($newEntry->EPOST);
-            $infoCompetenceJR->org_enhet_id     = trim($newEntry->ORG_ENHET);
+            $infoCompetenceJR->org_enhet_id     = trim($newEntry->ORG_ENHET_ID);
             $infoCompetenceJR->stillingskode    = trim($newEntry->STILLINGSKODE);
             $infoCompetenceJR->stillingstekst   = trim($newEntry->STILLINGSTEKST);
             $infoCompetenceJR->alternative      = trim($newEntry->ALTERNATIVE);
