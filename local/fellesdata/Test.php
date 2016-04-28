@@ -27,6 +27,30 @@ echo " TESTING FELLESDATA CRON " . "</br>";
 echo " Import KS Data " . "</br>";
 echo "Start ... " . "</br>";
 
+//$response = '{"changeType": "add", "newRecord": {"ORG_ENHET_ID": 18, "ORG_NIVAA": 2, "ORG_NAVN": "Byrådsleders avdeling", "ORG_ENHET_OVER": 10}}
+//             {"changeType": "add", "newRecord": {"ORG_ENHET_ID": 19, "ORG_NIVAA": 2, "ORG_NAVN": "Byrådsavd. for finans, eiendom og eierskap", "ORG_ENHET_OVER": 10}}
+//             {"changeType": "add", "newRecord": {"ORG_ENHET_ID": 20, "ORG_NIVAA": 2, "ORG_NAVN": "Byrådsavd. for helse og omsorg", "ORG_ENHET_OVER": 10}}
+//             {"changeType": "add", "newRecord": {"ORG_ENHET_ID": 21, "ORG_NIVAA": 2, "ORG_NAVN": "Byrådsavd. for barnehage, skole og idrett", "ORG_ENHET_OVER": 10}} ';
+
+//try {
+//    $response = "[" . $response . "]";
+//    echo $response . "</br>";
+//    $response = str_replace('{"change',',{"change',$response);
+//    $response = str_replace('[,{','[{',$response);
+//    echo "</br>---</br>";
+ //   echo $response . "</br>";
+
+//    $response = json_decode($response);
+
+//    foreach ($response as $request) {
+//        echo $request->changeType . "</br>";
+//    }
+//}catch (Exception $ex) {
+//throw $ex;
+//}
+//echo $response->changeType . "</br>";
+//echo $response->newRecord->ORG_ENHET_ID . "</br>";
+
 FELLESDATA_CRON::cron(false);
 
 /* Plugin Info      */
