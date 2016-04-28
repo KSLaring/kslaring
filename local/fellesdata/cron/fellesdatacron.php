@@ -505,7 +505,7 @@ class FELLESDATA_CRON {
                 return null;
             }else {
                 $response = json_decode($response);
-                if ($response->error != "200") {
+                if (isset($response->error)) {
                     mtrace($response->message);
                     echo "</br>";
                     return null;
