@@ -328,7 +328,7 @@ class FELLESDATA_CRON {
             /* Call Web service */
             $fsResponse = self::ProcessTradisService($pluginInfo,TRADIS_FS_USERS);
 
-            $response = "[" . $fsResponse . "]";
+            $fsResponse = "[" . $fsResponse . "]";
             $fsResponse = str_replace('{"change',',{"change',$fsResponse);
             $fsResponse = str_replace('[,{','[{',$fsResponse);
 
@@ -502,7 +502,6 @@ class FELLESDATA_CRON {
             if ($response === false) {
                 return null;
             }else {
-                echo $response;
                 //$response = json_decode($response);
 
                 if (isset($response->status)) {
