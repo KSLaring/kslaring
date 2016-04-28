@@ -502,6 +502,7 @@ class FELLESDATA_CRON {
                     mtrace($response->message);
                     return null;
                 }else {
+                    echo $response ;
                     //$response = "[" . $response . "]";
                     //$response = str_replace('{"change',',{"change',$response);
                     //$response = str_replace('[,{','[{',$response);
