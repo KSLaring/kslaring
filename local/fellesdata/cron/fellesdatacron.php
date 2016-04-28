@@ -479,6 +479,8 @@ class FELLESDATA_CRON {
             echo "From: " . $fromDate . "</br>";
             echo "To: " . $toDate . "</br>";
 
+            echo $urlTradis . "</br>";
+            
             /* Call Web Service     */
             $ch = curl_init($urlTradis);
             curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false );
