@@ -329,7 +329,7 @@ class FELLESDATA_CRON {
             $fsResponse = self::ProcessTradisService($pluginInfo,TRADIS_FS_USERS);
 
             /* Import/Save data in Temporary tables */
-            FS::SaveTemporary_Felllesdata($fsResponse,IMP_USERS);
+            //FS::SaveTemporary_Felllesdata($fsResponse,IMP_USERS);
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
@@ -498,6 +498,7 @@ class FELLESDATA_CRON {
             if ($response === false) {
                 return null;
             }else {
+                echo $response;
                 //$response = json_decode($response);
 
                 if (isset($response->status)) {
