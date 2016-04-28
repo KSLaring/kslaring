@@ -481,12 +481,15 @@ class FELLESDATA_CRON {
                 /* First Execution      */
                 //$fromDate = gmdate('Y-m-d\TH:i:s\Z',0);
 
-                $toDate     = mktime(1, 60, 0, 12, 31, 2000);
+                $toDate     = mktime(1, 60, 0, 12, 31, 2001);
                 $toDate     = gmdate('Y-m-d\TH:i:s\Z',$toDate);
 
-                $fromDate   = mktime(1, 60, 0, 1, 1, 2000);
+                $fromDate   = mktime(1, 60, 0, 1, 1, 2001);
                 $fromDate   = gmdate('Y-m-d\TH:i:s\Z',$fromDate);
             }
+
+            echo "From: " . $fromDate . "</br></br>";
+            echo "To:   " . $toDate . "</br></br>";
 
             /* Build url end point  */
             $urlTradis = $pluginInfo->fs_point . '/tardis/fellesdata/' . $service . '?fromDate=' . $fromDate . '&toDate=' . $toDate;
