@@ -301,7 +301,7 @@ class FELLESDATA_CRON {
             error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
         }catch (Exception $ex) {
             /* Log  */
-            $dbLog  = $ex->getMessage() . "\n" . "\n";
+            $dbLog  = "Error: " . $ex->getMessage() . "\n" . "\n";
             $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH Import Fellesdata . ' . "\n";
             error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
 
@@ -500,9 +500,11 @@ class FELLESDATA_CRON {
                 $response = json_decode($response);
 
                 if (isset($response->status)) {
+                    echo "1" . "</br>";
                     mtrace($response->message);
                     return null;
                 }else {
+                    echo "2";
                     return $response;
                 }
             }//if_response
