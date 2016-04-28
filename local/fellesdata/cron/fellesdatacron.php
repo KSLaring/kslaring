@@ -513,10 +513,9 @@ class FELLESDATA_CRON {
             if ($response === false) {
                 return null;
             }else {
-                echo $response;
-                //$response = "[" . $response . "]";
-                //$response = str_replace('{"change',',{"change',$response);
-                //$response = str_replace('[,{','[{',$response);
+                $response = "[" . $response . "]";
+                $response = str_replace('{"change',',{"change',$response);
+                $response = str_replace('[,{','[{',$response);
 
                 $response = json_decode($response);
                 if (isset($response->error)) {
