@@ -328,10 +328,6 @@ class FELLESDATA_CRON {
             /* Call Web service */
             $fsResponse = self::ProcessTradisService($pluginInfo,TRADIS_FS_USERS);
 
-            $fsResponse = "[" . $fsResponse . "]";
-            $fsResponse = str_replace('{"change',',{"change',$fsResponse);
-            $fsResponse = str_replace('[,{','[{',$fsResponse);
-
             /* Import/Save data in Temporary tables */
             FS::SaveTemporary_Felllesdata($fsResponse,IMP_USERS);
         }catch (Exception $ex) {
@@ -502,12 +498,16 @@ class FELLESDATA_CRON {
             if ($response === false) {
                 return null;
             }else {
-                //$response = json_decode($response);
-
                 if (isset($response->status)) {
                     mtrace($response->message);
                     return null;
                 }else {
+                    $response = "[" . $response . "]";
+                    $response = str_replace('{"change',',{"change',$response);
+                    $response = str_replace('[,{','[{',$response);
+
+                    $response = json_decode($response);
+
                     return $response;
                 }
             }//if_response
