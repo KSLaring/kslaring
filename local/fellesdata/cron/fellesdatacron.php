@@ -381,7 +381,7 @@ class FELLESDATA_CRON {
             $fsResponse = self::ProcessTradisService($pluginInfo,TRADIS_FS_JOBROLES);
 
             /* Import/Save data in temporary tables */
-            FS::SaveTemporary_Felllesdata($fsResponse,IMP_JOBROLES);
+            //FS::SaveTemporary_Felllesdata($fsResponse,IMP_JOBROLES);
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
