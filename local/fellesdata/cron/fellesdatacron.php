@@ -282,7 +282,7 @@ class FELLESDATA_CRON {
 
         try {
             /* Import FS Users              */
-            self::ImportFSUsers($pluginInfo);
+            //self::ImportFSUsers($pluginInfo);
 
             /* Import FS Companies          */
             //self::ImportFSOrgStructure($pluginInfo);
@@ -291,7 +291,7 @@ class FELLESDATA_CRON {
             //self::ImportFSJobRoles($pluginInfo);
 
             /* Import FS User Competence    */
-            //self::ImportFSUserCompetence($pluginInfo);
+            self::ImportFSUserCompetence($pluginInfo);
 
             /* Import FS User Competence JR */
             //self::ImportFSUserCompetenceJR($pluginInfo);
