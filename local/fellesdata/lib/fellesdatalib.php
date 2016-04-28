@@ -13,7 +13,7 @@
 /* Fellesdata Services  */
 define('TRADIS_FS_COMPANIES','v_leka_oren_tre_nivaa');
 define('TRADIS_FS_USERS','v_leka_ressurs');
-define('TRADIS_FS_JOBROLES','V_LEKA_STILLING');
+define('TRADIS_FS_JOBROLES','v_leka_stilling');
 define('TRADIS_FS_USERS_COMPANIES','v_leka_oren_tilgang');
 define('TRADIS_FS_USERS_JOBROLES','v_leka_ressurs_stilling');
 
