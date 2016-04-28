@@ -285,10 +285,10 @@ class FELLESDATA_CRON {
             //self::ImportFSUsers($pluginInfo);
 
             /* Import FS Companies          */
-            self::ImportFSOrgStructure($pluginInfo);
+            //self::ImportFSOrgStructure($pluginInfo);
 
             /* Import FS Job roles  */
-            //self::ImportFSJobRoles($pluginInfo);
+            self::ImportFSJobRoles($pluginInfo);
 
             /* Import FS User Competence    */
             //self::ImportFSUserCompetence($pluginInfo);
@@ -502,9 +502,9 @@ class FELLESDATA_CRON {
                     mtrace($response->message);
                     return null;
                 }else {
-                    $response = "[" . $response . "]";
-                    $response = str_replace('{"change',',{"change',$response);
-                    $response = str_replace('[,{','[{',$response);
+                    //$response = "[" . $response . "]";
+                    //$response = str_replace('{"change',',{"change',$response);
+                    //$response = str_replace('[,{','[{',$response);
 
                     $response = json_decode($response);
 
