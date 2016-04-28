@@ -282,13 +282,13 @@ class FELLESDATA_CRON {
 
         try {
             /* Import FS Users              */
-            //self::ImportFSUsers($pluginInfo);
+            self::ImportFSUsers($pluginInfo);
 
             /* Import FS Companies          */
             //self::ImportFSOrgStructure($pluginInfo);
 
             /* Import FS Job roles  */
-            self::ImportFSJobRoles($pluginInfo);
+            //self::ImportFSJobRoles($pluginInfo);
 
             /* Import FS User Competence    */
             //self::ImportFSUserCompetence($pluginInfo);
@@ -485,12 +485,6 @@ class FELLESDATA_CRON {
             /* Build url end point  */
             $urlTradis = $pluginInfo->fs_point . '/tardis/fellesdata/' . $service . '?fromDate=' . $fromDate . '&toDate=' . $toDate;
 
-
-            echo "From: " . $fromDate . "</br>";
-            echo "To: " . $toDate . "</br>";
-
-            echo $urlTradis . "</br>";
-
             /* Call Web Service     */
             $ch = curl_init($urlTradis);
             curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false );
@@ -513,6 +507,7 @@ class FELLESDATA_CRON {
                 $response = json_decode($response);
                 if ($response->error != "200") {
                     mtrace($response->message);
+                    echo "</br>";
                     return null;
                 }else {
                     echo "--> " . $response ;
