@@ -479,13 +479,7 @@ class FELLESDATA_CRON {
                 $fromDate   = gmdate('Y-m-d\TH:i:s\Z',$fromDate);
             }else {
                 /* First Execution      */
-                //$fromDate = gmdate('Y-m-d\TH:i:s\Z',0);
-
-                $toDate     = mktime(1, 60, 0, 12, 31, 2015);
-                $toDate     = gmdate('Y-m-d\TH:i:s\Z',$toDate);
-
-                $fromDate   = mktime(1, 60, 0, 1, 1, 2015);
-                $fromDate   = gmdate('Y-m-d\TH:i:s\Z',$fromDate);
+                $fromDate = gmdate('Y-m-d\TH:i:s\Z',0);
             }
 
             echo "From: " . $fromDate . "</br></br>";
