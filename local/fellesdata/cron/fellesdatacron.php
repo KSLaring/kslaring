@@ -510,7 +510,8 @@ class FELLESDATA_CRON {
             if ($response === false) {
                 return null;
             }else {
-                if (isset($response->status)) {
+                $response = json_decode($response);
+                if ($response->error != "200") {
                     mtrace($response->message);
                     return null;
                 }else {
@@ -518,8 +519,6 @@ class FELLESDATA_CRON {
                     //$response = "[" . $response . "]";
                     //$response = str_replace('{"change',',{"change',$response);
                     //$response = str_replace('[,{','[{',$response);
-
-                    $response = json_decode($response);
 
                     return $response;
                 }
