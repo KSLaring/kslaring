@@ -1628,10 +1628,10 @@ class FS {
         try {
             /* User Info    */
             $infoUser = new stdClass();
-            $infoUser->personalnumber   = trim($newEntry->fodselsnr);
-            $infoUser->firstname        = trim($newEntry->fornavn);
-            $infoUser->lastname         = trim($newEntry->mellomnavn) . trim($newEntry->etternavn);
-            $infoUser->email            = trim($newEntry->epost);
+            $infoUser->personalnumber   = trim($newEntry->FODSELSNR);
+            $infoUser->firstname        = trim($newEntry->FORNAVN);
+            $infoUser->lastname         = trim($newEntry->MELLOMNAVN) . trim($newEntry->ETTERNAVN);
+            $infoUser->email            = trim($newEntry->EPOST);
             $infoUser->action           = $action;
             $infoUser->imported         = 0;
 
@@ -1760,10 +1760,10 @@ class FS {
         try {
             /* Info Competence      */
             $infoCompetence = new stdClass();
-            $infoCompetence->org_enhet_id   = trim($newEntry->org_enhet_id);
-            $infoCompetence->org_nivaa      = trim($newEntry->org_nivaa);
-            $infoCompetence->fodselsnr      = trim($newEntry->fodselsnr);
-            $infoCompetence->prioritet      = trim($newEntry->prioritet);
+            $infoCompetence->org_enhet_id   = trim($newEntry->ORG_ENHET_ID);
+            $infoCompetence->org_nivaa      = trim($newEntry->ORG_NIVAA);
+            $infoCompetence->fodselsnr      = trim($newEntry->FODSELSNR);
+            $infoCompetence->prioritet      = trim($newEntry->PRIORITET);
             $infoCompetence->action         = $action;
             $infoCompetence->imported       = 0;
 
@@ -1805,16 +1805,16 @@ class FS {
         try {
             /* Info Competence      */
             $infoCompetenceJR = new stdClass();
-            $infoCompetenceJR->fodselsnr        = trim($newEntry->fodselsnr);
-            $infoCompetenceJR->stillingsnr      = trim($newEntry->stillingsnr);
-            $infoCompetenceJR->fornavn          = trim($newEntry->fornavn);
-            $infoCompetenceJR->etternavn        = trim($newEntry->etternavn);
-            $infoCompetenceJR->epost            = trim($newEntry->epost);
-            $infoCompetenceJR->org_enhet_id     = trim($newEntry->org_enhet_id);
-            $infoCompetenceJR->stillingskode    = trim($newEntry->stillingskode);
-            $infoCompetenceJR->stillingstekst   = trim($newEntry->stillingstekst);
-            $infoCompetenceJR->alternative      = trim($newEntry->alternative);
-            $infoCompetenceJR->hovedstilling    = trim($newEntry->hovedstilling);
+            $infoCompetenceJR->fodselsnr        = trim($newEntry->FODSELSNR);
+            $infoCompetenceJR->stillingsnr      = trim($newEntry->STILLINGSNR);
+            $infoCompetenceJR->fornavn          = trim($newEntry->FORNAVN);
+            $infoCompetenceJR->etternavn        = trim($newEntry->ETTERNAVN);
+            $infoCompetenceJR->epost            = trim($newEntry->EPOST);
+            $infoCompetenceJR->org_enhet_id     = trim($newEntry->ORG_ENHET);
+            $infoCompetenceJR->stillingskode    = trim($newEntry->STILLINGSKODE);
+            $infoCompetenceJR->stillingstekst   = trim($newEntry->STILLINGSTEKST);
+            $infoCompetenceJR->alternative      = trim($newEntry->ALTERNATIVE);
+            $infoCompetenceJR->hovedstilling    = trim($newEntry->HOVEDSTILLING);
             $infoCompetenceJR->action           = $action;
             $infoCompetenceJR->imported         = 0;
 
