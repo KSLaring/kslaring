@@ -65,7 +65,7 @@ FELLESDATA_CRON::cron(false);
 
 //echo $server;
 
-echo " Finish ... " . "</br>";
+echo "</br> Finish ... " . "</br>";
 
 //echo "Testing WEB LOGIN - FELLESDATA";
 //echo "</br>-----</br>";

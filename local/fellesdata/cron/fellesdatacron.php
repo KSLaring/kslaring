@@ -504,17 +504,15 @@ class FELLESDATA_CRON {
             if ($response === false) {
                 return null;
             }else {
-                echo "Response: " . $response . "</br>";
+                $response = "[" . $response . "]";
+                $response = str_replace('{"change',',{"change',$response);
+                $response = str_replace('[,{','[{',$response);
+
                 $response = json_decode($response);
                 if (isset($response->error)) {
                     mtrace($response->message);
-                    echo "</br>";
                     return null;
                 }else {
-                    //$response = "[" . $response . "]";
-                    //$response = str_replace('{"change',',{"change',$response);
-                    //$response = str_replace('[,{','[{',$response);
-
                     return $response;
                 }
             }//if_response
