@@ -499,6 +499,7 @@ class FELLESDATA_CRON {
             if ($response === false) {
                 return null;
             }else {
+                echo "Response: " . $response . "</br>";
                 $response = json_decode($response);
 
                 if (isset($response->status)) {
