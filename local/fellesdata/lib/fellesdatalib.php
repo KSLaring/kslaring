@@ -1811,9 +1811,11 @@ class FS {
             $infoCompetenceJR->etternavn        = trim($newEntry->ETTERNAVN);
             $infoCompetenceJR->epost            = trim($newEntry->EPOST);
             $infoCompetenceJR->org_enhet_id     = trim($newEntry->ORG_ENHET_ID);
-            $infoCompetenceJR->stillingskode    = trim($newEntry->STILLINGSKODE);
-            $infoCompetenceJR->stillingstekst   = trim($newEntry->STILLINGSTEKST);
-            $infoCompetenceJR->alternative      = trim($newEntry->ALTERNATIVE);
+            $infoCompetenceJR->stillingstekst   = trim($newEntry->OPPGAVE2);
+            //$infoCompetenceJR->stillingskode    = trim($newEntry->STILLINGSKODE);
+            //$infoCompetenceJR->stillingstekst   = trim($newEntry->STILLINGSTEKST);
+            //$infoCompetenceJR->alternative      = trim($newEntry->STILLINGSTEKST_ALTERNATIVE);
+
             $infoCompetenceJR->hovedstilling    = trim($newEntry->HOVEDSTILLING);
             $infoCompetenceJR->action           = $action;
             $infoCompetenceJR->imported         = 0;
