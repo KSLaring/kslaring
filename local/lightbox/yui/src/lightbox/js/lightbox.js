@@ -87,7 +87,7 @@ NS[LIGHTBOX] = Y.Base.create(LIGHTBOXNAME, Y.Panel, [], {
             }
         }
 
-        mdlpage.all(LINKSOURCE.EXTURL.link).each(function(node) {
+        mdlpage.all(LINKSOURCE.EXTURL.link).each(function (node) {
             if (node.hasClass(CSS.INLIGHTBOX)) {
                 var popup = node.getAttribute('onclick');
 
@@ -111,7 +111,7 @@ NS[LIGHTBOX] = Y.Base.create(LIGHTBOXNAME, Y.Panel, [], {
     destructor: function () {
         this.set('bodyContent', '');
         this.get('contentBox').detach('clickoutside');
-        this.clickdelegate.forEach(function(clickdele) {
+        this.clickdelegate.forEach(function (clickdele) {
             Y.log(clickdele);
             clickdele.detach();
         });
@@ -240,22 +240,43 @@ NS[LIGHTBOX] = Y.Base.create(LIGHTBOXNAME, Y.Panel, [], {
     },
 
     /**
-     * Check if the given link source protokoll is https.
+     * Check if the given link source protokoll is HTTPS.
+     *
+     * If the site is a HTTPS site then open in lightbox
+     * _ only internal HTTPS links
+     * _ no external HTTPS links
+     * _ no HTTPS links
+     * else if it is a HTTP site then open in lightbox
+     * _ only HTTP links, internal and external
+     * _ no HTTPS links
      *
      * @param {object} alink   The link source object (link and method)
      */
-    check_https: function(alink) {
+    check_https: function (alink) {
         var mdlpage = Y.one(SELECTORS.MDLPAGE),
             links = mdlpage.all(alink.link);
 
         if (links) {
-            links.each(function(el) {
-                var href = el.getAttribute('href');
+            links.each(function (el) {
+                var href = el.getAttribute('href'),
+                    ishttpslink = (href.indexOf('https') !== -1),
+                    ishttpssite = (M.cfg.wwwroot.indexOf('https') !== -1);
 
-                if (href.indexOf('https') !== -1) {
-                    el.addClass(CSS.INLIGHTBOX);
+                if (ishttpslink) {
+                    // Only show in lightbox when it's a local link.
+                    if (href.indexOf(M.cfg.wwwroot) !== -1) {
+                        el.addClass(CSS.INLIGHTBOX);
+                    } else {
+                        el.addClass(CSS.NOLIGHTBOX);
+                    }
                 } else {
-                    el.addClass(CSS.NOLIGHTBOX);
+                    // It's a http link.
+                    // Show in lightbox when it's not a https site and it's a local link.
+                    if (!ishttpssite && href.indexOf(M.cfg.wwwroot) !== -1) {
+                        el.addClass(CSS.INLIGHTBOX);
+                    } else {
+                        el.addClass(CSS.NOLIGHTBOX);
+                    }
                 }
             });
         }
@@ -298,9 +319,9 @@ NS[LIGHTBOX] = Y.Base.create(LIGHTBOXNAME, Y.Panel, [], {
      */
     handleSCORMLinkClick: function (ele) {
         var src = ele.getAttribute('href'),
-            width =  ele.getAttribute('data-scormwidth'),
-            height =  ele.getAttribute('data-scormheight');
-            //launch =  ele.getAttribute('data-scormlaunch');
+            width = ele.getAttribute('data-scormwidth'),
+            height = ele.getAttribute('data-scormheight');
+        //launch =  ele.getAttribute('data-scormlaunch');
 
         // Change the URL to load the local/scorm_lightbox/player scripts
         // The SCORM parameter "popup" must be changed to load the page into the
@@ -341,8 +362,8 @@ NS[LIGHTBOX] = Y.Base.create(LIGHTBOXNAME, Y.Panel, [], {
      */
     handleURLLinkClick: function (ele) {
         var src = ele.getAttribute('href'),
-            width =  ele.getAttribute('data-width'),
-            height =  ele.getAttribute('data-height');
+            width = ele.getAttribute('data-width'),
+            height = ele.getAttribute('data-height');
 
         if (src !== '') {
             this.set('src', src);
