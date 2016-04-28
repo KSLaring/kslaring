@@ -1,0 +1,97 @@
+.top-border {
+    border-bottom-color: @stavangerBlue;
+}
+.logo-area {
+    float: left;
+    max-width: 85%;
+    height: 52px;
+    margin: 2em 0 1em;
+    padding: 0;
+    width: auto;
+
+    .logo {
+        display: block;
+    }
+    h1 {
+        color: @stavangerBlue;
+        line-height: .7;
+        margin: 0;
+        padding: 0;
+    }
+
+    @media (max-width: 859px) {
+        margin-top: 1.5em;
+    }
+    @media (max-width: (@mediumWidth - 1)) {
+        margin-left: 20px;
+        margin-right: 20px;
+        max-width: inherit;
+    }
+    @media (max-width: 519px) {
+        margin-top: .7em;
+        margin-bottom: .5em;
+    }
+}
+
+.header-right {
+    max-width: 15%;
+    width: auto;
+
+    .muni-logo {
+        img {
+            max-height: 60px;
+            width: auto;
+        }
+    }
+}
+
+#page-footer {
+    background: transparent;
+    border-top: 0;
+    padding-bottom: 0;
+
+    #page-footer-inner {
+        max-width: inherit;
+    }
+
+    @media (max-width: 767px) {
+        margin-right: -20px;
+        margin-left: -20px;
+        padding-right: 0;
+        width: auto;
+    }
+}
+
+.footer-image-container {
+    background-color: transparent;
+    border-bottom: 2px solid @stavangerBlue;
+
+    .footer-image {
+        background: transparent url(~"[[pix:theme|seaside]]") no-repeat 50% 40%;
+        background-size: cover;
+        //height: 0;
+        min-height: 120px;
+        margin: 0;
+        padding-top: 8.3333333333%;
+        width: 100%;
+    }
+}
+
+#sub-footer {
+    .text {
+        color: @grayMid;
+        padding: 1em 0 .5em;
+    }
+    .returntorole {
+        margin-bottom: 1em;
+    }
+    .help-link {
+        padding: .7em 0 0;
+
+        a {
+            float: right;
+            display: table-cell;
+            text-align: center;
+        }
+    }
+}
