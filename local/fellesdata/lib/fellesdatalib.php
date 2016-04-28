@@ -1672,10 +1672,10 @@ class FS {
         try {
             /* FS Company Info  */
             $infoFS = new stdClass();
-            $infoFS->org_enhet_id   = trim($newEntry->org_enhet_id);
-            $infoFS->org_nivaa      = trim($newEntry->org_nivaa);
-            $infoFS->org_navn       = trim($newEntry->org_navn);
-            $infoFS->org_enhet_over = trim($newEntry->org_enhet_over);
+            $infoFS->org_enhet_id   = trim($newEntry->ORG_ENHET_ID);
+            $infoFS->org_nivaa      = trim($newEntry->ORG_NIVAA);
+            $infoFS->org_navn       = trim($newEntry->ORG_NAVN);
+            $infoFS->org_enhet_over = trim($newEntry->ORG_ENHET_OVER);
             $infoFS->action         = $action;
             $infoFS->imported       = 0;
 
@@ -1716,9 +1716,9 @@ class FS {
         try {
             /* FS Job Role Info */
             $infoFS = new stdClass();
-            $infoFS->stillingskode      = trim($newEntry->stillingskode);
-            $infoFS->stillingstekst     = trim($newEntry->stillingstekst);
-            $infoFS->alternative        = trim($newEntry->stillingstekst_alternativ);
+            $infoFS->stillingskode      = trim($newEntry->STILLINGSKODE);
+            $infoFS->stillingstekst     = trim($newEntry->STILLINGSTEKST);
+            $infoFS->alternative        = trim($newEntry->STILLINGSTEKST_ALTERNATIVE);
             $infoFS->action             = $action;
             $infoFS->imported           = 0;
 
