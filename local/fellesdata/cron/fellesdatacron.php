@@ -285,7 +285,7 @@ class FELLESDATA_CRON {
             //self::ImportFSUsers($pluginInfo);
 
             /* Import FS Companies          */
-            //self::ImportFSOrgStructure($pluginInfo);
+            self::ImportFSOrgStructure($pluginInfo);
 
             /* Import FS Job roles  */
             //self::ImportFSJobRoles($pluginInfo);
@@ -294,7 +294,7 @@ class FELLESDATA_CRON {
             //self::ImportFSUserCompetence($pluginInfo);
 
             /* Import FS User Competence JR */
-            self::ImportFSUserCompetenceJR($pluginInfo);
+            //self::ImportFSUserCompetenceJR($pluginInfo);
 
             /* Log  */
             $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' FINISH Import Fellesdata . ' . "\n";
@@ -507,9 +507,14 @@ class FELLESDATA_CRON {
             if ($response === false) {
                 return null;
             }else {
-                $response = "[" . $response . "]";
-                $response = str_replace('{"change',',{"change',$response);
-                $response = str_replace('[,{','[{',$response);
+                //$response = "[" . $response . "]";
+                //$response = str_replace('{"change',',{"change',$response);
+                //$response = str_replace('[,{','[{',$response);
+
+                global $CFG;
+                
+                $file = fopen($CFG->dataroot . '/response.txt','w');
+                fwrite($file,$response);
 
                 $response = json_decode($response);
                 if (isset($response->error)) {
