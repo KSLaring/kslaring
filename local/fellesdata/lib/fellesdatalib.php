@@ -1583,7 +1583,7 @@ class FS {
             if ($dataInsert) {
                 foreach ($dataInsert as $key => $instance) {
                     echo "Name --> " . $key . " -- " . $instance->FODSELSNR . "</br>";
-                    //$instance->id = $DB->insert_record('fs_imp_users_jr',$instance,true,true);
+                    $instance->id = $DB->insert_record('fs_imp_users_jr',$instance,true,true);
                 }
                 //echo "Total Data Insert: " . count($dataInsert) . "</br>";
 
