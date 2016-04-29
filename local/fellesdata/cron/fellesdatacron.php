@@ -455,7 +455,10 @@ class FELLESDATA_CRON {
                 }
                 //FS::SaveTemporary_Felllesdata(IMP_COMPETENCE_JR,TRADIS_FS_USERS_JOBROLES);
 
-                self::SaveToTemporary(TRADIS_FS_USERS_JOBROLES,'ImportTemporary_CompetenceJobRole',count($SESSION->{TRADIS_FS_USERS_JOBROLES}),0,2000);
+                $total = count($SESSION->{TRADIS_FS_USERS_JOBROLES});
+                $ini = 0;
+                $max = 2000;
+                self::SaveToTemporary(TRADIS_FS_USERS_JOBROLES,'ImportTemporary_CompetenceJobRole',$total,$ini,$max);
             }
         }catch (Exception $ex) {
             throw $ex;
@@ -476,7 +479,7 @@ class FELLESDATA_CRON {
             echo "Ini: " . $ini . "</br>";
             echo "Max: " . $max . "</br>";
             echo "</br>---</br>";
-            
+
             if ($total > $max) {
                 $ini += $max +1;
                 self::SaveToTemporary($service,$function,$total,$ini,$max);
