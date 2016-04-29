@@ -1886,24 +1886,27 @@ class FS {
 
         try {
             /* Info Competence      */
-            $infoCompetenceJR = new stdClass();
-            $infoCompetenceJR->fodselsnr        = trim($newEntry->FODSELSNR);
-            $infoCompetenceJR->stillingsnr      = trim($newEntry->STILLINGSNR);
-            $infoCompetenceJR->fornavn          = trim($newEntry->FORNAVN);
-            $infoCompetenceJR->etternavn        = trim($newEntry->ETTERNAVN);
-            $infoCompetenceJR->epost            = trim($newEntry->EPOST);
-            $infoCompetenceJR->org_enhet_id     = trim($newEntry->ORG_ENHET_ID);
-            $infoCompetenceJR->stillingstekst   = trim($newEntry->OPPGAVE2);
-            //$infoCompetenceJR->stillingskode    = trim($newEntry->STILLINGSKODE);
-            //$infoCompetenceJR->stillingstekst   = trim($newEntry->STILLINGSTEKST);
-            //$infoCompetenceJR->alternative      = trim($newEntry->STILLINGSTEKST_ALTERNATIVE);
+            //$infoCompetenceJR = new stdClass();
+            //$infoCompetenceJR->fodselsnr        = trim($newEntry->FODSELSNR);
+            //$infoCompetenceJR->stillingsnr      = trim($newEntry->STILLINGSNR);
+            //$infoCompetenceJR->fornavn          = trim($newEntry->FORNAVN);
+            //$infoCompetenceJR->etternavn        = trim($newEntry->ETTERNAVN);
+            //$infoCompetenceJR->epost            = trim($newEntry->EPOST);
+            //$infoCompetenceJR->org_enhet_id     = trim($newEntry->ORG_ENHET_ID);
+            //$infoCompetenceJR->stillingstekst   = trim($newEntry->OPPGAVE2);
 
-            $infoCompetenceJR->hovedstilling    = trim($newEntry->HOVEDSTILLING);
-            $infoCompetenceJR->action           = $action;
-            $infoCompetenceJR->imported         = 0;
+            ////$infoCompetenceJR->stillingskode    = trim($newEntry->STILLINGSKODE);
+            ////$infoCompetenceJR->stillingstekst   = trim($newEntry->STILLINGSTEKST);
+            ////$infoCompetenceJR->alternative      = trim($newEntry->STILLINGSTEKST_ALTERNATIVE);
+
+            //$infoCompetenceJR->hovedstilling    = trim($newEntry->HOVEDSTILLING);
+            //$infoCompetenceJR->action           = $action;
+            //$infoCompetenceJR->imported         = 0;
 
             /* Execute */
-            $infoCompetenceJR->id = $DB->insert_record('fs_imp_users_jr',$infoCompetenceJR);
+            $newEntry->action = $action;
+            $newEntry->imported = 0;
+            $infoCompetenceJR->id = $DB->insert_record('fs_imp_users_jr',$newEntry);
 
             /* Commit   */
             $trans->allow_commit();
