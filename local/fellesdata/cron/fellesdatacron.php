@@ -577,9 +577,6 @@ class FELLESDATA_CRON {
                     return false;
                 }else {
                     $response = explode(',',str_replace('} {','},{',$response));
-                    foreach ($response as $key => $content) {
-                        $response[$key] = json_decode($content);
-                    }
                     return $response;
                 }
             }//if_response
