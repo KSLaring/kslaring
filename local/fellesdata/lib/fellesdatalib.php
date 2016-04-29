@@ -1542,33 +1542,6 @@ class FS {
         $toSave         = array();
 
         try {
-            //switch ($type) {
-            //    case IMP_USERS:
-                    /* FS Users     */
-                    //self::ImportTemporary_FSUsers($action,$newEntry);
-
-            //        break;
-            //    case IMP_COMPANIES:
-                    /* FS Companies */
-                    //self::ImportTemporary_FSCompany($action,$newEntry);
-
-            //        break;
-            //    case IMP_JOBROLES:
-                    /* FS JOB ROLES */
-                    //self::ImportTemporary_FSJobRoles($action,$newEntry);
-
-            //        break;
-            //    case IMP_COMPETENCE_COMP:
-                    /* Competence Company */
-                    //self::ImportTemporary_CompetenceCompany($action,$newEntry);
-
-            //        break;
-            //    case IMP_COMPETENCE_JR:
-                    /* Competence Job Role  */
-                    //self::ImportTemporary_CompetenceJobRole($action,$newEntry);
-
-            //        break;
-            //}//type
 
             foreach($data as $key=>$line) {
                 $lineContent = json_decode($line);
@@ -1611,41 +1584,6 @@ class FS {
             throw $ex;
         }//try_catch
     }//ExtractData_TemporaryFellesdata
-
-    public static function SaveTemporary_Felllesdata($data,$type) {
-        try {
-            switch ($type) {
-                case IMP_USERS:
-                    /* FS Users     */
-                    //self::ImportTemporary_FSUsers($data);
-
-                    break;
-                case IMP_COMPANIES:
-                    /* FS Companies */
-                    //self::ImportTemporary_FSCompany($action,$newEntry);
-
-                    break;
-                case IMP_JOBROLES:
-                    /* FS JOB ROLES */
-                    //self::ImportTemporary_FSJobRoles($action,$newEntry);
-
-                    break;
-                case IMP_COMPETENCE_COMP:
-                    /* Competence Company */
-                    //self::ImportTemporary_CompetenceCompany($action,$newEntry);
-
-                    break;
-                case IMP_COMPETENCE_JR:
-                    /* Competence Job Role  */
-                    self::ImportTemporary_CompetenceJobRole($data);
-
-                    break;
-            }//type
-        }catch (Exception $ex) {
-            throw $ex;
-        }
-    }//SaveTemporary_Felllesdata
-
 
     public static function SaveTemporary_Felllesdata_old($data,$type) {
         /* variables */
