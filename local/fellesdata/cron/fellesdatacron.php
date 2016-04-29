@@ -480,7 +480,7 @@ class FELLESDATA_CRON {
             echo "Max: " . $max . "</br>";
             echo "</br>---</br>";
 
-            if ($total > $max) {
+            if (($total > $ini) && ($total > $max)) {
                 $ini += $max +1;
                 self::SaveToTemporary($service,$function,$total,$ini,$max);
             }
