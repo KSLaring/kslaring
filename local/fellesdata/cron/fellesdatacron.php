@@ -455,8 +455,8 @@ class FELLESDATA_CRON {
                     /* Get Content */
                     $content = file($pathFile);
 
-                    /* Save Temporary tables    */
-                    $toSave = FS::ExtractData_TemporaryFellesdata($content);
+                    /* Save Temporary tables    IMP_COMPETENCE_JR */
+                    $toSave = FS::ExtractData_TemporaryFellesdata(array_slice($content,0,5));
 
                     $DB->insert_records('fs_imp_users_jr',$toSave);
                 }//if_exists
