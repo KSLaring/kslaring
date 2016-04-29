@@ -1906,7 +1906,7 @@ class FS {
             /* Execute */
             $newEntry->action = $action;
             $newEntry->imported = 0;
-            $infoCompetenceJR->id = $DB->insert_record('fs_imp_users_jr',$newEntry);
+            $newEntry->id = $DB->insert_record('fs_imp_users_jr',$newEntry);
 
             /* Commit   */
             $trans->allow_commit();
