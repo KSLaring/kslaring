@@ -1548,7 +1548,7 @@ class FS {
             /* Open File */
             $pathFile = $CFG->dataroot . '/fellesdata/' . $service . '.txt';
             if (file_exists($pathFile)) {
-                $responseFile = fopen($pathFile,'r');
+                $responseFile = file($pathFile);
 
                 echo "Total Lines: " . count($responseFile) . "</br>";
 
