@@ -33,6 +33,7 @@ class FELLESDATA_CRON {
             //self::ImportKS($pluginInfo);
 
             /* Import Fellesdata        */
+            echo "Ini Cron : " . "</br>";
             self::ImportFellesdata($pluginInfo);
 
 
@@ -495,7 +496,7 @@ class FELLESDATA_CRON {
 
                     /* Save Temporary tables    IMP_COMPETENCE_JR */
                     $DB->insert_records('fs_imp_users_jr',$toSave);
-                    
+
                     //$toSave = FS::ExtractData_TemporaryFellesdata(array_slice($content,0,5));
                 }//if_exists
             }//if_data
