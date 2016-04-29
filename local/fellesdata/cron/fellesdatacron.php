@@ -448,7 +448,7 @@ class FELLESDATA_CRON {
 
             /* Import/Save in temporary tables */
             if ($usersCompetenceJR) {
-                echo $usersCompetenceJR[0] . "</br>";
+                //echo $usersCompetenceJR[0] . "</br>";
                 /* Open File */
                 //$pathFile = $CFG->dataroot . '/fellesdata/' . TRADIS_FS_USERS_JOBROLES . '.txt';
                 //if (file_exists($pathFile)) {
@@ -576,7 +576,9 @@ class FELLESDATA_CRON {
                     mtrace($response->message);
                     return false;
                 }else {
-                    $response = explode('##FES##',str_replace('} {','}##FES##{',$response));
+                    $response = str_replace('} {','}##FES##{',$response);
+
+                    echo $response;
                     return $response;
                 }
             }//if_response
