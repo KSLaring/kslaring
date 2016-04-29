@@ -1587,7 +1587,7 @@ class FS {
                     $max = 2000;
                 }
                 $totalMax = 0;
-                while ($totalMax < $total) {
+                //while ($totalMax < $total) {
                     echo "Total Max: " . $totalMax . "</br>";
                     for ($i=0;$i<$max;$i++) {
                         $lineFile = $responseFile[$i];
@@ -1620,8 +1620,8 @@ class FS {
                         /* Import in the right table   */
                         self::$function($action,$newEntry);
                     }
-                    $totalMax += $max;
-                }
+                //    $totalMax += $max;
+                //}
 
 
             }//if_file_exists
