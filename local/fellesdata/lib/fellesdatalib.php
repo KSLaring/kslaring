@@ -1553,9 +1553,9 @@ class FS {
                 while(!feof($responseFile)) {
                     $lineFile = fgets($responseFile);
 
-                    if ($lineFile) {
+                    //if ($lineFile) {
                         echo "Line : " . $lineFile . "</br>";
-                    }
+                    //}
                     //$lineFile = json_decode($lineFile);
 
                     /* Get New Entry    */
