@@ -1552,8 +1552,10 @@ class FS {
 
                 echo "Total Lines: " . count($responseFile) . "</br>";
 
+                echo "Line 0: " . $responseFile[0] . "</br>";
+                
                 /* Close File   */
-                fclose($responseFile);
+                //fclose($responseFile);
             }//if_file_exists
         }catch (Exception $ex) {
             throw $ex;
