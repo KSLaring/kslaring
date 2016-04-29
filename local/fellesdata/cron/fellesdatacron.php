@@ -285,13 +285,13 @@ class FELLESDATA_CRON {
             //self::ImportFSUsers($pluginInfo);
 
             /* Import FS Companies          */
-            self::ImportFSOrgStructure($pluginInfo);
+            //self::ImportFSOrgStructure($pluginInfo);
 
             /* Import FS Job roles  */
             //self::ImportFSJobRoles($pluginInfo);
 
             /* Import FS User Competence    */
-            //self::ImportFSUserCompetence($pluginInfo);
+            self::ImportFSUserCompetence($pluginInfo);
 
             /* Import FS User Competence JR */
             //self::ImportFSUserCompetenceJR($pluginInfo);
@@ -330,7 +330,7 @@ class FELLESDATA_CRON {
 
             /* Import/Save data in Temporary tables */
             if ($fsResponse) {
-                FS::SaveTemporary_Felllesdata($fsResponse,IMP_USERS);
+                FS::SaveTemporary_Felllesdata(IMP_USERS,TRADIS_FS_USERS);
             }
         }catch (Exception $ex) {
             throw $ex;
@@ -386,7 +386,7 @@ class FELLESDATA_CRON {
 
             /* Import/Save data in temporary tables */
             if ($fsResponse) {
-                FS::SaveTemporary_Felllesdata($fsResponse,IMP_JOBROLES);
+                FS::SaveTemporary_Felllesdata(IMP_JOBROLES,TRADIS_FS_JOBROLES);
             }
         }catch (Exception $ex) {
             throw $ex;
@@ -414,7 +414,7 @@ class FELLESDATA_CRON {
 
             /* Import/Save in temporary tables  */
             if ($usersCompetence) {
-                FS::SaveTemporary_Felllesdata($usersCompetence,IMP_COMPETENCE_COMP);
+                FS::SaveTemporary_Felllesdata(IMP_COMPETENCE_COMP,TRADIS_FS_USERS_COMPANIES);
             }
         }catch (Exception $ex) {
             throw $ex;
@@ -443,7 +443,7 @@ class FELLESDATA_CRON {
 
             /* Import/Save in temporary tables */
             if ($usersCompetenceJR) {
-                FS::SaveTemporary_Felllesdata($usersCompetenceJR,IMP_COMPETENCE_JR);
+                FS::SaveTemporary_Felllesdata(IMP_COMPETENCE_JR,TRADIS_FS_USERS_JOBROLES);
             }
         }catch (Exception $ex) {
             throw $ex;

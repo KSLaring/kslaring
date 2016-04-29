@@ -1523,8 +1523,8 @@ class FS {
     /**********/
 
     /**
-     * @param           $fellesdata
      * @param           $type
+     * @param           $service
      *
      * @throws          Exception
      *
