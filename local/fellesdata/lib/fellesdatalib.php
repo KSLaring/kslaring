@@ -1584,8 +1584,11 @@ class FS {
             }
 
             if ($dataInsert) {
-                echo "Total Data Insert: " . count($dataInsert) . "</br>";
-                $DB->insert_records('fs_imp_users_jr',$dataInsert);
+                foreach ($dataInsert as $instance) {
+                    $DB->insert_record('fs_imp_users_jr',$instance);
+                }
+                //echo "Total Data Insert: " . count($dataInsert) . "</br>";
+                //$DB->insert_records('fs_imp_users_jr',$dataInsert);
             }
         }catch (Exception $ex) {
             throw $ex;
