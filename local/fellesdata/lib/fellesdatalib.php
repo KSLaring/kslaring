@@ -1580,36 +1580,50 @@ class FS {
                 }//type
 
                 /* Decode the content   */
-                foreach ($responseFile as $key => $lineFile) {
-                    $lineFile = json_decode($lineFile);
+                $total = count($responseFile);
+                if ($total <= 2000) {
+                    $max = $total;
+                }else {
+                    $max = 2000;
+                }
+                $totalMax = 0;
+                while ($totalMax < $total) {
+                    echo "Total Max: " . $totalMax . "</br>";
+                    for ($i=0;$i<$max;$i++) {
+                        $lineFile = $responseFile[$i];
+                        $lineFile = json_decode($lineFile);
 
-                    /* Get New Entry    */
-                    $newEntry = $lineFile->newRecord;
+                        /* Get New Entry    */
+                        $newEntry = $lineFile->newRecord;
 
-                    /* Get Action       */
-                    switch (trim($lineFile->changeType)) {
-                        case ADD_ACTION:
-                            $action = 0;
+                        /* Get Action       */
+                        switch (trim($lineFile->changeType)) {
+                            case ADD_ACTION:
+                                $action = 0;
 
-                            break;
-                        case UPDATE_ACTION:
-                            $action = 1;
+                                break;
+                            case UPDATE_ACTION:
+                                $action = 1;
 
-                            break;
-                        case DELETE_ACTION:
-                            /* Old Entry        */
-                            if (isset($lineFile->oldRecord)) {
-                                $newEntry = $lineFile->odlRecord;
-                            }//if_old_record
+                                break;
+                            case DELETE_ACTION:
+                                /* Old Entry        */
+                                if (isset($lineFile->oldRecord)) {
+                                    $newEntry = $lineFile->odlRecord;
+                                }//if_old_record
 
-                            $action = 2;
+                                $action = 2;
 
-                            break;
-                    }//action
+                                break;
+                        }//action
 
-                    /* Import in the right table   */
-                    self::$function($action,$newEntry);
-                }//for_line
+                        /* Import in the right table   */
+                        self::$function($action,$newEntry);
+                    }
+                    $totalMax += $max;
+                }
+
+
             }//if_file_exists
         }catch (Exception $ex) {
             throw $ex;
