@@ -1535,69 +1535,7 @@ class FS {
      * Save in temporary tables. Step before synchronization
      */
     public static function SaveTemporary_Felllesdata($data,$function) {
-        /* variables */
-        global $CFG,$DB;
-        $action         = null;
-        $newEntry       = null;
-        $lineContent    = null;
-        $dataInsert =   array();
-
-        try {
-
-            $trans = $DB->start_delegated_transaction();
-            foreach($data as $key=>$line) {
-                $lineContent = json_decode($line);
-
-                /* Get New Entry    */
-                $newEntry = $lineContent->newRecord;
-
-                /* Get Action       */
-                switch (trim($lineContent->changeType)) {
-                    case ADD_ACTION:
-                        $action = 0;
-
-                        break;
-                    case UPDATE_ACTION:
-                        $action = 1;
-
-                        break;
-                    case DELETE_ACTION:
-                        /* Old Entry        */
-                        if (isset($lineContent->oldRecord)) {
-                            $newEntry = $lineContent->odlRecord;
-                        }//if_old_record
-
-                        $action = 2;
-
-                        break;
-                }//action
-
-                /* Import in the right table   */
-                $newEntry->action = $action;
-                /* Execute */
-                $newEntry->action = $action;
-                $newEntry->imported = 0;
-
-                $newEntry->id = $DB->insert_record('fs_imp_users_jr',$newEntry,true,true);
-
-                $dataInsert[$key] = $newEntry;
-            }
-
-            $trans->allow_commit();
-            if ($dataInsert) {
-                //foreach ($dataInsert as $key => $instance) {
-                //    echo "Name --> " . $key . " -- " . $instance->FODSELSNR . "</br>";
-                //
-                //}
-                //echo "Total Data Insert: " . count($dataInsert) . "</br>";
-
-                //$DB->insert_records('fs_imp_users_jr',$dataInsert);
-            }
-        }catch (Exception $ex) {
-            $trans->rollback($ex);
-            
-            throw $ex;
-        }//try_catch
+        echo "HOLA";
     }//SaveTemporary_Felllesdata
 
 
