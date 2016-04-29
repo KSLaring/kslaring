@@ -576,7 +576,7 @@ class FELLESDATA_CRON {
                     mtrace($response->message);
                     return false;
                 }else {
-                    $response = str_replace('}{','}##FES##{',$response);
+                    $response = str_replace(chr(13).chr(10),'##FES##',$response);
 
                     echo $response;
                     return $response;
