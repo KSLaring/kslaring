@@ -1577,7 +1577,8 @@ class FS {
                 $newEntry->action = $action;
                 $newEntry->imported = 0;
 
-                $dataInsert[] = $newEntry;
+                $newEntry->id = $key;
+                $dataInsert[$key] = $newEntry;
             }
 
             if ($dataInsert) {
