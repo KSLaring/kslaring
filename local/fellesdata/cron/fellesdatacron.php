@@ -465,6 +465,10 @@ class FELLESDATA_CRON {
      */
     private static function ProcessTradisService($pluginInfo,$service) {
         /* Variables    */
+        global $CFG;
+        $dir            = null;
+        $responseFile   = null;
+        $pathFile       = null;
         $urlTradis      = null;
         $fromDate       = null;
         $toDate         = null;
@@ -507,12 +511,27 @@ class FELLESDATA_CRON {
             if ($response === false) {
                 return null;
             }else {
+                /* Check if exists temporary directory */
+                $dir = $CFG->dataroot . '/fellesadata';
+                if (!file_exists($dir)) {
+                    mkdir($dir);
+                }
+
+                /* Clean all response   */
+                $pathFile = $dir . '/' . $service . '.txt';
+                if (file_exists($pathFile)) {
+                    unlink($pathFile);
+                }
+
+                /* Create a new response file */
+                $responseFile = fopen($pathFile,'w');
+                fwrite($responseFile,$response);
+                fclose($responseFile);
+                
                 //$response = "[" . $response . "]";
                 //$response = str_replace('{"change',',{"change',$response);
                 //$response = str_replace('[,{','[{',$response);
 
-                global $CFG;
-                
                 $file = fopen($CFG->dataroot . '/response.txt','w');
                 fwrite($file,$response);
 
