@@ -1523,8 +1523,8 @@ class FS {
     /**********/
 
     /**
+     * @param           $data
      * @param           $type
-     * @param           $service
      *
      * @throws          Exception
      *
@@ -1534,7 +1534,7 @@ class FS {
      * Description
      * Save in temporary tables. Step before synchronization
      */
-    public static function ExtractData_TemporaryFellesdata($data) {
+    public static function SaveTemporary_Fellesdata($data,$type) {
         /* Variables    */
         $action         = null;
         $newEntry       = null;
@@ -1570,77 +1570,46 @@ class FS {
                         break;
                 }//action
 
-                /* Import in the right table   */
-                $newEntry->action = $action;
-                /* Execute */
                 $newEntry->action = $action;
                 $newEntry->imported = 0;
 
+                /* Add Record   */
                 $toSave[$key] = $newEntry;
             }
 
-            return $toSave;
+            if ($toSave) {
+                switch ($type) {
+                    case IMP_USERS:
+                        /* FS Users     */
+                        //self::ImportTemporary_FSUsers($action,$newEntry);
+
+                        break;
+                    case IMP_COMPANIES:
+                        /* FS Companies */
+                        //self::ImportTemporary_FSCompany($action,$newEntry);
+
+                        break;
+                    case IMP_JOBROLES:
+                        /* FS JOB ROLES */
+                        //self::ImportTemporary_FSJobRoles($action,$newEntry);
+
+                        break;
+                    case IMP_COMPETENCE_COMP:
+                        /* Competence Company */
+                        //self::ImportTemporary_CompetenceCompany($action,$newEntry);
+
+                        break;
+                    case IMP_COMPETENCE_JR:
+                        /* Competence Job Role  */
+                        self::ImportTemporary_CompetenceJobRole($toSave);
+
+                        break;
+                }//type
+            }//if_toSave
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
     }//ExtractData_TemporaryFellesdata
-
-    public static function SaveTemporary_Felllesdata_old($data,$type) {
-        /* variables */
-        global $CFG,$DB;
-        $action         = null;
-        $newEntry       = null;
-        $lineContent    = null;
-        $dataInsert =   array();
-
-        try {
-
-
-
-            foreach($data as $key=>$line) {
-                $lineContent = json_decode($line);
-
-                /* Get New Entry    */
-                $newEntry = $lineContent->newRecord;
-
-                /* Get Action       */
-                switch (trim($lineContent->changeType)) {
-                    case ADD_ACTION:
-                        $action = 0;
-
-                        break;
-                    case UPDATE_ACTION:
-                        $action = 1;
-
-                        break;
-                    case DELETE_ACTION:
-                        /* Old Entry        */
-                        if (isset($lineContent->oldRecord)) {
-                            $newEntry = $lineContent->odlRecord;
-                        }//if_old_record
-
-                        $action = 2;
-
-                        break;
-                }//action
-
-                /* Import in the right table   */
-                $newEntry->action = $action;
-                /* Execute */
-                $newEntry->action = $action;
-                $newEntry->imported = 0;
-
-                $dataInsert[$key] = $newEntry;
-            }
-
-            $DB->insert_records('fs_imp_users_jr',$dataInsert);
-            //return $dataInsert;
-        }catch (Exception $ex) {
-
-            throw $ex;
-        }//try_catch
-    }//SaveTemporary_Felllesdata
-
 
     /***********/
     /* PRIVATE */

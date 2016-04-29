@@ -33,7 +33,6 @@ class FELLESDATA_CRON {
             //self::ImportKS($pluginInfo);
 
             /* Import Fellesdata        */
-            echo "Ini Cron : " . "</br>";
             self::ImportFellesdata($pluginInfo);
 
 
@@ -439,7 +438,7 @@ class FELLESDATA_CRON {
      */
     private static function ImportFSUserCompetenceJR($pluginInfo) {
         /* Variables    */
-        global $CFG,$DB;
+        global $CFG;
         $pathFile           = null;
         $usersCompetenceJR  = null;
         $toSave             = null;
@@ -455,49 +454,8 @@ class FELLESDATA_CRON {
                 if (file_exists($pathFile)) {
                     /* Get Content */
                     $content = file($pathFile);
-                    $action = 0;
 
-                    foreach($content as $key=>$line) {
-                        $lineContent = json_decode($line);
-
-                        /* Get New Entry    */
-                        $newEntry = $lineContent->newRecord;
-
-                        /* Get Action       */
-                        switch (trim($lineContent->changeType)) {
-                            case ADD_ACTION:
-                                $action = 0;
-
-                                break;
-                            case UPDATE_ACTION:
-                                $action = 1;
-
-                                break;
-                            case DELETE_ACTION:
-                                /* Old Entry        */
-                                if (isset($lineContent->oldRecord)) {
-                                    $newEntry = $lineContent->odlRecord;
-                                }//if_old_record
-
-                                $action = 2;
-
-                                break;
-                        }//action
-
-                        /* Execute */
-                        $newEntry->action = $action;
-                        $newEntry->imported = 0;
-                        $newEntry->stillingskode    = 0;
-                        $newEntry->alternative      = 0;
-                        $newEntry->hovedstilling    = 0;
-
-                        $toSave[$key] = $newEntry;
-                    }
-
-                    /* Save Temporary tables    IMP_COMPETENCE_JR */
-                    $DB->insert_records('fs_imp_users_jr',$toSave);
-
-                    //$toSave = FS::ExtractData_TemporaryFellesdata(array_slice($content,0,5));
+                    FS::SaveTemporary_Fellesdata($content,IMP_COMPETENCE_JR);
                 }//if_exists
             }//if_data
         }catch (Exception $ex) {
