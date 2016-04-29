@@ -1534,7 +1534,7 @@ class FS {
      * Description
      * Save in temporary tables. Step before synchronization
      */
-    public static function SaveTemporary_Felllesdata($data,$function) {
+    public static function SaveTemporary_Felllesdata($data,$type) {
         /* variables */
         global $CFG,$DB;
         $action         = null;
@@ -1543,6 +1543,8 @@ class FS {
         $dataInsert =   array();
 
         try {
+
+
 
             foreach($data as $key=>$line) {
                 $lineContent = json_decode($line);
@@ -1584,7 +1586,8 @@ class FS {
                 $dataInsert[$key] = $newEntry;
             }
 
-            return $dataInsert;
+            $DB->insert_records('fs_imp_users_jr',$dataInsert);
+            //return $dataInsert;
         }catch (Exception $ex) {
 
             throw $ex;

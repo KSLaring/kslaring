@@ -453,15 +453,16 @@ class FELLESDATA_CRON {
                 if (file_exists($pathFile)) {
 
                     $content = file($pathFile);
+                    //IMP_COMPETENCE_JR;
+                    //echo "Total: " . count($content) . "</br>";
 
-                    echo "Total: " . count($content) . "</br>";
+                    //$toInsert =
+                    FS::SaveTemporary_Felllesdata(array_slice($content,0,5),'ImportTemporary_CompetenceJobRole');
 
-                    $toInsert = FS::SaveTemporary_Felllesdata(array_slice($content,0,5),'ImportTemporary_CompetenceJobRole');
-
-                    if ($toInsert) {
-                        global $DB;
-                        $DB->insert_records('fs_imp_users_jr',$toInsert);
-                    }
+                    //if ($toInsert) {
+                    //    global $DB;
+                    //    $DB->insert_records('fs_imp_users_jr',$toInsert);
+                    //}
                 }
             }
         }catch (Exception $ex) {
