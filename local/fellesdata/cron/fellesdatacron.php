@@ -576,7 +576,7 @@ class FELLESDATA_CRON {
                     mtrace($response->message);
                     return false;
                 }else {
-                    $response = explode('\n',$response);
+                    $response = explode(',',str_replace('} {','},{',$response));
                     return $response;
                 }
             }//if_response
