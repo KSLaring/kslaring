@@ -457,7 +457,7 @@ class FELLESDATA_CRON {
 
                 $total = count($SESSION->{TRADIS_FS_USERS_JOBROLES});
                 $ini = 0;
-                $max = 2000;
+                $max = 1500;
                 self::SaveToTemporary(TRADIS_FS_USERS_JOBROLES,'ImportTemporary_CompetenceJobRole',$total,$ini,$max);
             }
         }catch (Exception $ex) {
@@ -465,7 +465,7 @@ class FELLESDATA_CRON {
         }//try_catch
     }//ImportFSUserCompetenceJR
 
-    private static function SaveToTemporary($service,$function,$total,&$ini=0,$max=2000) {
+    private static function SaveToTemporary($service,$function,$total,&$ini=0,$max) {
         /* Variables */
         global $SESSION;
 
