@@ -66,7 +66,10 @@ try {
 //echo $response->changeType . "</br>";
 //echo $response->newRecord->ORG_ENHET_ID . "</br>";
 
-FELLESDATA_CRON::cron(false);
+/* Plugin Info      */
+$pluginInfo     = get_config('local_fellesdata');
+
+FELLESDATA_CRON::ImportFellesdata($pluginInfo);
 
 /* Plugin Info      */
 //$pluginInfo     = get_config('local_fellesdata');

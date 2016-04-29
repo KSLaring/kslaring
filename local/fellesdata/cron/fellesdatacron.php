@@ -275,7 +275,7 @@ class FELLESDATA_CRON {
      * Description
      * Import data from fellesdata
      */
-    private static function ImportFellesdata($pluginInfo) {
+    public static function ImportFellesdata($pluginInfo) {
         /* Variables    */
         global $CFG;
         $dbLog = null;
