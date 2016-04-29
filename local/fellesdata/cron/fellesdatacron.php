@@ -451,15 +451,18 @@ class FELLESDATA_CRON {
                 /* Open File */
                 $pathFile = $CFG->dataroot . '/fellesdata/' . TRADIS_FS_USERS_JOBROLES . '.txt';
                 if (file_exists($pathFile)) {
+
                     $SESSION->{TRADIS_FS_USERS_JOBROLES} = file($pathFile);
 
-                    $total = count($SESSION->{TRADIS_FS_USERS_JOBROLES});
-                    $ini = 0;
-                    $max = 3000;
-                    self::SaveToTemporary(TRADIS_FS_USERS_JOBROLES,'ImportTemporary_CompetenceJobRole',$total,$ini,$max);
+                    FS::SaveTemporary_Felllesdata(file($pathFile),'ImportTemporary_CompetenceJobRole');
+
+                    //$total = count($SESSION->{TRADIS_FS_USERS_JOBROLES});
+                    //$ini = 0;
+                    //$max = 3000;
+                    //self::SaveToTemporary(TRADIS_FS_USERS_JOBROLES,'ImportTemporary_CompetenceJobRole',$total,$ini,$max);
                 }
 
-                //FS::SaveTemporary_Felllesdata(IMP_COMPETENCE_JR,TRADIS_FS_USERS_JOBROLES);
+
 
 
             }
