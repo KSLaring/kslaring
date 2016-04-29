@@ -1577,17 +1577,16 @@ class FS {
                 $newEntry->action = $action;
                 $newEntry->imported = 0;
 
-                $newEntry->id = $key;
                 $dataInsert[$key] = $newEntry;
             }
 
             if ($dataInsert) {
-                //foreach ($dataInsert as $instance) {
-                //    $DB->insert_record('fs_imp_users_jr',$instance);
-                //}
-                echo "Total Data Insert: " . count($dataInsert) . "</br>";
+                foreach ($dataInsert as $instance) {
+                    $instance->id = $DB->insert_record('fs_imp_users_jr',$instance,true,true);
+                }
+                //echo "Total Data Insert: " . count($dataInsert) . "</br>";
 
-                $DB->insert_records('fs_imp_users_jr',$dataInsert);
+                //$DB->insert_records('fs_imp_users_jr',$dataInsert);
             }
         }catch (Exception $ex) {
             throw $ex;
