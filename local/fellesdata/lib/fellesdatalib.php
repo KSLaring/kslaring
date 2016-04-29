@@ -1535,7 +1535,60 @@ class FS {
      * Save in temporary tables. Step before synchronization
      */
     public static function SaveTemporary_Felllesdata($data,$function) {
-        echo "HOLA";
+        /* variables */
+        global $CFG,$DB;
+        $action         = null;
+        $newEntry       = null;
+        $lineContent    = null;
+        $dataInsert =   array();
+
+        try {
+
+            foreach($data as $key=>$line) {
+                $lineContent = json_decode($line);
+
+                /* Get New Entry    */
+                $newEntry = $lineContent->newRecord;
+
+                /* Get Action       */
+                switch (trim($lineContent->changeType)) {
+                    case ADD_ACTION:
+                        $action = 0;
+
+                        break;
+                    case UPDATE_ACTION:
+                        $action = 1;
+
+                        break;
+                    case DELETE_ACTION:
+                        /* Old Entry        */
+                        if (isset($lineContent->oldRecord)) {
+                            $newEntry = $lineContent->odlRecord;
+                        }//if_old_record
+
+                        $action = 2;
+
+                        break;
+                }//action
+
+                /* Import in the right table   */
+                $newEntry->action = $action;
+                /* Execute */
+                $newEntry->action = $action;
+                $newEntry->imported = 0;
+                $newEntry->stillingskode = 0;
+                $newEntry->alternative = 0;
+                $newEntry->hovedstilling = 0;
+
+
+                $dataInsert[$key] = $newEntry;
+            }
+
+            return $dataInsert;
+        }catch (Exception $ex) {
+
+            throw $ex;
+        }//try_catch
     }//SaveTemporary_Felllesdata
 
 

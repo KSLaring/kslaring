@@ -456,7 +456,12 @@ class FELLESDATA_CRON {
 
                     echo "Total: " . count($content) . "</br>";
 
-                    FS::SaveTemporary_Felllesdata(array_slice($content,0,5),'ImportTemporary_CompetenceJobRole');
+                    $toInsert = FS::SaveTemporary_Felllesdata(array_slice($content,0,5),'ImportTemporary_CompetenceJobRole');
+
+                    if ($toInsert) {
+                        global $DB;
+                        $DB->insert_records('fs_imp_users_jr',$toInsert);
+                    }
                 }
             }
         }catch (Exception $ex) {
