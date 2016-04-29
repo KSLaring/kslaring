@@ -452,9 +452,11 @@ class FELLESDATA_CRON {
                 $pathFile = $CFG->dataroot . '/fellesdata/' . TRADIS_FS_USERS_JOBROLES . '.txt';
                 if (file_exists($pathFile)) {
 
-                    $SESSION->{TRADIS_FS_USERS_JOBROLES} = file($pathFile);
+                    $content = file($pathFile);
 
-                    FS::SaveTemporary_Felllesdata(file($pathFile),'ImportTemporary_CompetenceJobRole');
+                    echo "Total: " . count($content) . "</br>";
+
+                    //FS::SaveTemporary_Felllesdata($content,'ImportTemporary_CompetenceJobRole');
 
                     //$total = count($SESSION->{TRADIS_FS_USERS_JOBROLES});
                     //$ini = 0;
