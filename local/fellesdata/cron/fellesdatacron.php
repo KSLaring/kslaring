@@ -35,6 +35,7 @@ class FELLESDATA_CRON {
             /* Import Fellesdata        */
             self::ImportFellesdata($pluginInfo);
 
+            
             /* SYNCHRONIZATION  */
             /* Synchronization Users Accounts   */
             //self::UsersFS_Synchronization($pluginInfo);
