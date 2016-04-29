@@ -35,7 +35,7 @@ class FELLESDATA_CRON {
             /* Import Fellesdata        */
             self::ImportFellesdata($pluginInfo);
 
-            
+
             /* SYNCHRONIZATION  */
             /* Synchronization Users Accounts   */
             //self::UsersFS_Synchronization($pluginInfo);
@@ -438,7 +438,9 @@ class FELLESDATA_CRON {
      */
     private static function ImportFSUserCompetenceJR($pluginInfo) {
         /* Variables    */
-        $usersCompetenceJR = null;
+        global $CFG,$SESSION;
+        $pathFile           = null;
+        $usersCompetenceJR  = null;
 
         try {
             /* Call Web Service */
@@ -446,12 +448,43 @@ class FELLESDATA_CRON {
 
             /* Import/Save in temporary tables */
             if ($usersCompetenceJR) {
-                FS::SaveTemporary_Felllesdata(IMP_COMPETENCE_JR,TRADIS_FS_USERS_JOBROLES);
+                /* Open File */
+                $pathFile = $CFG->dataroot . '/fellesdata/' . TRADIS_FS_USERS_JOBROLES . '.txt';
+                if (file_exists($pathFile)) {
+                    $SESSION->{TRADIS_FS_USERS_JOBROLES} = file($pathFile);
+                }
+                //FS::SaveTemporary_Felllesdata(IMP_COMPETENCE_JR,TRADIS_FS_USERS_JOBROLES);
+
+                self::SaveToTemporary(TRADIS_FS_USERS_JOBROLES,'ImportTemporary_CompetenceJobRole',count($SESSION->{TRADIS_FS_USERS_JOBROLES}),0,2000);
             }
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
     }//ImportFSUserCompetenceJR
+
+    private static function SaveToTemporary($service,$function,$total,&$ini=0,$max=2000) {
+        /* Variables */
+        global $SESSION;
+        $function = null;
+
+        try {
+
+            $data = array_slice($SESSION->$service,$ini,$max);
+            //FS::SaveTemporary_Felllesdata(IMP_COMPETENCE_JR,$data,$function);
+
+            echo "Total: " . $total . "</br>";
+            echo "Ini: " . $ini . "</br>";
+            echo "Max: " . $max . "</br>";
+            echo "</br>---</br>";
+            
+            if ($total > $max) {
+                $ini += $max +1;
+                self::SaveToTemporary($service,$function,$total,$ini,$max);
+            }
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//SaveToTemporary
 
     /**
      * @param           $pluginInfo

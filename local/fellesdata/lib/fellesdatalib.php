@@ -1534,97 +1534,45 @@ class FS {
      * Description
      * Save in temporary tables. Step before synchronization
      */
-    public static function SaveTemporary_Felllesdata($type,$service) {
+    public static function SaveTemporary_Felllesdata($data) {
         /* variables */
         global $CFG;
-        $pathFile       = null;
-        $responseFile   = null;
-        $lineFile       = null;
         $action         = null;
         $newEntry       = null;
         $function       = null;
+        $lineContent    = null;
 
         try {
-            /* Open File */
-            $pathFile = $CFG->dataroot . '/fellesdata/' . $service . '.txt';
-            if (file_exists($pathFile)) {
-                $responseFile = file($pathFile);
+            foreach($data as $line) {
+                $lineContent = json_decode($line);
 
-                /** Get function */
-                switch ($type) {
-                    case IMP_USERS:
-                        /* FS Users     */
-                        $function = 'ImportTemporary_FSUsers';
+                /* Get New Entry    */
+                $newEntry = $lineContent->newRecord;
 
-                        break;
-                    case IMP_COMPANIES:
-                        /* FS Companies */
-                        $function = 'ImportTemporary_FSCompany';
+                /* Get Action       */
+                switch (trim($lineContent->changeType)) {
+                    case ADD_ACTION:
+                        $action = 0;
 
                         break;
-                    case IMP_JOBROLES:
-                        /* FS JOB ROLES */
-                        $function = 'ImportTemporary_FSJobRoles';
+                    case UPDATE_ACTION:
+                        $action = 1;
 
                         break;
-                    case IMP_COMPETENCE_COMP:
-                        /* Competence Company */
-                        $function = 'ImportTemporary_CompetenceCompany';
+                    case DELETE_ACTION:
+                        /* Old Entry        */
+                        if (isset($lineContent->oldRecord)) {
+                            $newEntry = $lineContent->odlRecord;
+                        }//if_old_record
+
+                        $action = 2;
 
                         break;
-                    case IMP_COMPETENCE_JR:
-                        /* Competence Job Role  */
-                        $function = 'ImportTemporary_CompetenceJobRole';
+                }//action
 
-                        break;
-                }//type
-
-                /* Decode the content   */
-                $total = count($responseFile);
-                if ($total <= 2000) {
-                    $max = $total;
-                }else {
-                    $max = 2000;
-                }
-                $totalMax = 0;
-                //while ($totalMax < $total) {
-                    echo "Total Max: " . $totalMax . "</br>";
-                    for ($i=0;$i<$max;$i++) {
-                        $lineFile = $responseFile[$i];
-                        $lineFile = json_decode($lineFile);
-
-                        /* Get New Entry    */
-                        $newEntry = $lineFile->newRecord;
-
-                        /* Get Action       */
-                        switch (trim($lineFile->changeType)) {
-                            case ADD_ACTION:
-                                $action = 0;
-
-                                break;
-                            case UPDATE_ACTION:
-                                $action = 1;
-
-                                break;
-                            case DELETE_ACTION:
-                                /* Old Entry        */
-                                if (isset($lineFile->oldRecord)) {
-                                    $newEntry = $lineFile->odlRecord;
-                                }//if_old_record
-
-                                $action = 2;
-
-                                break;
-                        }//action
-
-                        /* Import in the right table   */
-                        self::$function($action,$newEntry);
-                    }
-                //    $totalMax += $max;
-                //}
-
-
-            }//if_file_exists
+                /* Import in the right table   */
+                self::$function($action,$newEntry);
+            }
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
