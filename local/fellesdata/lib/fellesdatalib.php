@@ -1534,7 +1534,120 @@ class FS {
      * Description
      * Save in temporary tables. Step before synchronization
      */
+    public static function ExtractData_TemporaryFellesdata($data) {
+        /* Variables    */
+        $action         = null;
+        $newEntry       = null;
+        $lineContent    = null;
+        $toSave         = array();
+
+        try {
+            //switch ($type) {
+            //    case IMP_USERS:
+                    /* FS Users     */
+                    //self::ImportTemporary_FSUsers($action,$newEntry);
+
+            //        break;
+            //    case IMP_COMPANIES:
+                    /* FS Companies */
+                    //self::ImportTemporary_FSCompany($action,$newEntry);
+
+            //        break;
+            //    case IMP_JOBROLES:
+                    /* FS JOB ROLES */
+                    //self::ImportTemporary_FSJobRoles($action,$newEntry);
+
+            //        break;
+            //    case IMP_COMPETENCE_COMP:
+                    /* Competence Company */
+                    //self::ImportTemporary_CompetenceCompany($action,$newEntry);
+
+            //        break;
+            //    case IMP_COMPETENCE_JR:
+                    /* Competence Job Role  */
+                    //self::ImportTemporary_CompetenceJobRole($action,$newEntry);
+
+            //        break;
+            //}//type
+
+            foreach($data as $key=>$line) {
+                $lineContent = json_decode($line);
+
+                /* Get New Entry    */
+                $newEntry = $lineContent->newRecord;
+
+                /* Get Action       */
+                switch (trim($lineContent->changeType)) {
+                    case ADD_ACTION:
+                        $action = 0;
+
+                        break;
+                    case UPDATE_ACTION:
+                        $action = 1;
+
+                        break;
+                    case DELETE_ACTION:
+                        /* Old Entry        */
+                        if (isset($lineContent->oldRecord)) {
+                            $newEntry = $lineContent->odlRecord;
+                        }//if_old_record
+
+                        $action = 2;
+
+                        break;
+                }//action
+
+                /* Import in the right table   */
+                $newEntry->action = $action;
+                /* Execute */
+                $newEntry->action = $action;
+                $newEntry->imported = 0;
+
+                $toSave[$key] = $newEntry;
+            }
+
+            return $toSave;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//ExtractData_TemporaryFellesdata
+
     public static function SaveTemporary_Felllesdata($data,$type) {
+        try {
+            switch ($type) {
+                case IMP_USERS:
+                    /* FS Users     */
+                    //self::ImportTemporary_FSUsers($data);
+
+                    break;
+                case IMP_COMPANIES:
+                    /* FS Companies */
+                    //self::ImportTemporary_FSCompany($action,$newEntry);
+
+                    break;
+                case IMP_JOBROLES:
+                    /* FS JOB ROLES */
+                    //self::ImportTemporary_FSJobRoles($action,$newEntry);
+
+                    break;
+                case IMP_COMPETENCE_COMP:
+                    /* Competence Company */
+                    //self::ImportTemporary_CompetenceCompany($action,$newEntry);
+
+                    break;
+                case IMP_COMPETENCE_JR:
+                    /* Competence Job Role  */
+                    self::ImportTemporary_CompetenceJobRole($data);
+
+                    break;
+            }//type
+        }catch (Exception $ex) {
+            throw $ex;
+        }
+    }//SaveTemporary_Felllesdata
+
+
+    public static function SaveTemporary_Felllesdata_old($data,$type) {
         /* variables */
         global $CFG,$DB;
         $action         = null;
@@ -1578,10 +1691,6 @@ class FS {
                 /* Execute */
                 $newEntry->action = $action;
                 $newEntry->imported = 0;
-                $newEntry->stillingskode = 0;
-                $newEntry->alternative = 0;
-                $newEntry->hovedstilling = 0;
-
 
                 $dataInsert[$key] = $newEntry;
             }
@@ -1787,7 +1896,7 @@ class FS {
      * Description
      * Save User Job Role (FS)  in temporary tables before the synchronization
      */
-    private static function ImportTemporary_CompetenceJobRole($action,$newEntry) {
+    private static function ImportTemporary_CompetenceJobRole($data) {
         /* Variables    */
         global $DB;
         $infoCompetenceJR       = null;
@@ -1817,9 +1926,11 @@ class FS {
             //$infoCompetenceJR->imported         = 0;
 
             /* Execute */
-            $newEntry->action = $action;
-            $newEntry->imported = 0;
-            $newEntry->id = $DB->insert_record('fs_imp_users_jr',$newEntry);
+            //$newEntry->action = $action;
+            //$newEntry->imported = 0;
+            //$newEntry->id = $DB->insert_record('fs_imp_users_jr',$newEntry);
+
+            $DB->insert_records('fs_imp_users_jr',$data);
 
             /* Commit   */
             $trans->allow_commit();

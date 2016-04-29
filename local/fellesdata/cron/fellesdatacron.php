@@ -441,6 +441,7 @@ class FELLESDATA_CRON {
         global $CFG;
         $pathFile           = null;
         $usersCompetenceJR  = null;
+        $toSave             = null;
 
         try {
             /* Call Web Service */
@@ -451,20 +452,14 @@ class FELLESDATA_CRON {
                 /* Open File */
                 $pathFile = $CFG->dataroot . '/fellesdata/' . TRADIS_FS_USERS_JOBROLES . '.txt';
                 if (file_exists($pathFile)) {
-
+                    /* Get Content */
                     $content = file($pathFile);
-                    //IMP_COMPETENCE_JR;
-                    //echo "Total: " . count($content) . "</br>";
 
-                    //$toInsert =
-                    FS::SaveTemporary_Felllesdata(array_slice($content,0,5),'ImportTemporary_CompetenceJobRole');
-
-                    //if ($toInsert) {
-                    //    global $DB;
-                    //    $DB->insert_records('fs_imp_users_jr',$toInsert);
-                    //}
-                }
-            }
+                    /* Save Temporary tables    */
+                    $toSave = FS::ExtractData_TemporaryFellesdata($content);
+                    FS::SaveTemporary_Felllesdata($toSave,IMP_COMPETENCE_JR);
+                }//if_exists
+            }//if_data
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
