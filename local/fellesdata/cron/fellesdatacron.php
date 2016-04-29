@@ -468,14 +468,13 @@ class FELLESDATA_CRON {
     private static function SaveToTemporary($service,$function,$total,&$ini=0,$max=2000) {
         /* Variables */
         global $SESSION;
-        $function = null;
 
         try {
 
             $data = array_slice($SESSION->$service,$ini,$max);
-            //FS::SaveTemporary_Felllesdata(IMP_COMPETENCE_JR,$data,$function);
+            FS::SaveTemporary_Felllesdata(IMP_COMPETENCE_JR,$data,$function);
 
-            
+
             echo "Total: " . $total . "</br>";
             echo "Ini: " . $ini . "</br>";
             echo "Max: " . $max . "</br>";
