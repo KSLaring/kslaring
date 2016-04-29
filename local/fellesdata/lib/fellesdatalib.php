@@ -1544,7 +1544,7 @@ class FS {
 
         try {
 
-            foreach($data as $line) {
+            foreach($data as $key=>$line) {
                 $lineContent = json_decode($line);
 
                 /* Get New Entry    */
@@ -1579,11 +1579,14 @@ class FS {
 
                 //$DB->insert_record('fs_imp_users_jr',$newEntry);
 
-                $dataInsert[] = $newEntry;
+                $dataInsert[$key] = $newEntry;
                 //self::$function($action,$newEntry);
             }
+
             if ($dataInsert) {
-                $DB->insert_records('fs_imp_users_jr',$dataInsert);
+                echo "Total Data Insert: " . count($dataInsert) . "</br>";
+                echo implode(',',array_keys($dataInsert)) . "</br>";
+                //$DB->insert_records('fs_imp_users_jr',$dataInsert);
             }
         }catch (Exception $ex) {
             throw $ex;

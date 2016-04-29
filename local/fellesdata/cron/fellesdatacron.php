@@ -456,7 +456,7 @@ class FELLESDATA_CRON {
 
                     echo "Total: " . count($content) . "</br>";
 
-                    //FS::SaveTemporary_Felllesdata($content,'ImportTemporary_CompetenceJobRole');
+                    FS::SaveTemporary_Felllesdata($content,'ImportTemporary_CompetenceJobRole');
 
                     //$total = count($SESSION->{TRADIS_FS_USERS_JOBROLES});
                     //$ini = 0;
