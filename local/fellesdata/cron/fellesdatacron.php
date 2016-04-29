@@ -512,7 +512,7 @@ class FELLESDATA_CRON {
                 return null;
             }else {
                 /* Check if exists temporary directory */
-                $dir = $CFG->dataroot . '/fellesadata';
+                $dir = $CFG->dataroot . '/fellesdata';
                 if (!file_exists($dir)) {
                     mkdir($dir);
                 }

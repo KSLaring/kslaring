@@ -1546,70 +1546,72 @@ class FS {
         try {
             /* Open File */
             $pathFile = $CFG->dataroot . '/fellesdata/' . $service . '.txt';
-            $responseFile = fopen($pathFile,'r');
+            if (file_exists($pathFile)) {
+                $responseFile = fopen($pathFile,'r');
 
-            /* Import content file into temporary tables    */
-            while(!feof($responseFile)) {
-                $lineFile = fgets($responseFile);
-                $lineFile = json_decode($lineFile);
+                /* Import content file into temporary tables    */
+                while(!feof($responseFile)) {
+                    $lineFile = fgets($responseFile);
+                    $lineFile = json_decode($lineFile);
 
-                /* Get New Entry    */
-                $newEntry = $lineFile->newRecord;
+                    /* Get New Entry    */
+                    $newEntry = $lineFile->newRecord;
 
-                /* Get Action       */
-                switch (trim($lineFile->changeType)) {
-                    case ADD_ACTION:
-                        $action = 0;
+                    /* Get Action       */
+                    switch (trim($lineFile->changeType)) {
+                        case ADD_ACTION:
+                            $action = 0;
 
-                        break;
-                    case UPDATE_ACTION:
-                        $action = 1;
+                            break;
+                        case UPDATE_ACTION:
+                            $action = 1;
 
-                        break;
-                    case DELETE_ACTION:
-                        /* Old Entry        */
-                        if (isset($lineFile->oldRecord)) {
-                            $newEntry = $lineFile->odlRecord;
-                        }//if_old_record
+                            break;
+                        case DELETE_ACTION:
+                            /* Old Entry        */
+                            if (isset($lineFile->oldRecord)) {
+                                $newEntry = $lineFile->odlRecord;
+                            }//if_old_record
 
-                        $action = 2;
+                            $action = 2;
 
-                        break;
-                }//action
+                            break;
+                    }//action
 
-                /* Import in the right table   */
-                switch ($type) {
-                    case IMP_USERS:
-                        /* FS Users     */
-                        //self::ImportTemporary_FSUsers($action,$newEntry);
+                    /* Import in the right table   */
+                    switch ($type) {
+                        case IMP_USERS:
+                            /* FS Users     */
+                            //self::ImportTemporary_FSUsers($action,$newEntry);
 
-                        break;
-                    case IMP_COMPANIES:
-                        /* FS Companies */
-                        self::ImportTemporary_FSCompany($action,$newEntry);
+                            break;
+                        case IMP_COMPANIES:
+                            /* FS Companies */
+                            self::ImportTemporary_FSCompany($action,$newEntry);
 
-                        break;
-                    case IMP_JOBROLES:
-                        /* FS JOB ROLES */
-                        //self::ImportTemporary_FSJobRoles($action,$newEntry);
+                            break;
+                        case IMP_JOBROLES:
+                            /* FS JOB ROLES */
+                            //self::ImportTemporary_FSJobRoles($action,$newEntry);
 
-                        break;
-                    case IMP_COMPETENCE_COMP:
-                        /* Competence Company */
-                        //self::ImportTemporary_CompetenceCompany($action,$newEntry);
+                            break;
+                        case IMP_COMPETENCE_COMP:
+                            /* Competence Company */
+                            //self::ImportTemporary_CompetenceCompany($action,$newEntry);
 
-                        break;
-                    case IMP_COMPETENCE_JR:
-                        /* Competence Job Role  */
-                        //self::ImportTemporary_CompetenceJobRole($action,$newEntry);
+                            break;
+                        case IMP_COMPETENCE_JR:
+                            /* Competence Job Role  */
+                            //self::ImportTemporary_CompetenceJobRole($action,$newEntry);
 
-                        break;
-                }//type
+                            break;
+                    }//type
 
-            }//file
+                }//file
 
-            /* Close File   */
-            fclose($responseFile);
+                /* Close File   */
+                fclose($responseFile);
+            }//if_file_exists
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
