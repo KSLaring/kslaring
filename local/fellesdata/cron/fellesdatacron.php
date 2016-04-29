@@ -448,19 +448,20 @@ class FELLESDATA_CRON {
 
             /* Import/Save in temporary tables */
             if ($usersCompetenceJR) {
-                //echo $usersCompetenceJR[0] . "</br>";
                 /* Open File */
-                //$pathFile = $CFG->dataroot . '/fellesdata/' . TRADIS_FS_USERS_JOBROLES . '.txt';
-                //if (file_exists($pathFile)) {
-                //    $SESSION->{TRADIS_FS_USERS_JOBROLES} = file($pathFile);
-                //}
+                $pathFile = $CFG->dataroot . '/fellesdata/' . TRADIS_FS_USERS_JOBROLES . '.txt';
+                if (file_exists($pathFile)) {
+                    $SESSION->{TRADIS_FS_USERS_JOBROLES} = file($pathFile);
+
+                    $total = count($SESSION->{TRADIS_FS_USERS_JOBROLES});
+                    $ini = 0;
+                    $max = 3000;
+                    self::SaveToTemporary(TRADIS_FS_USERS_JOBROLES,'ImportTemporary_CompetenceJobRole',$total,$ini,$max);
+                }
 
                 //FS::SaveTemporary_Felllesdata(IMP_COMPETENCE_JR,TRADIS_FS_USERS_JOBROLES);
 
-                //$total = count($SESSION->{TRADIS_FS_USERS_JOBROLES});
-                //$ini = 0;
-                //$max = 1500;
-                //self::SaveToTemporary(TRADIS_FS_USERS_JOBROLES,'ImportTemporary_CompetenceJobRole',$total,$ini,$max);
+
             }
         }catch (Exception $ex) {
             throw $ex;
@@ -552,34 +553,27 @@ class FELLESDATA_CRON {
                 return null;
             }else {
                 /* Check if exists temporary directory */
-                //$dir = $CFG->dataroot . '/fellesdata';
-                //if (!file_exists($dir)) {
-                //    mkdir($dir);
-                //}
+                $dir = $CFG->dataroot . '/fellesdata';
+                if (!file_exists($dir)) {
+                    mkdir($dir);
+                }
 
                 /* Clean all response   */
-                //$pathFile = $dir . '/' . $service . '.txt';
-                //if (file_exists($pathFile)) {
-                //    unlink($pathFile);
-                //}
+                $pathFile = $dir . '/' . $service . '.txt';
+                if (file_exists($pathFile)) {
+                    unlink($pathFile);
+                }
 
                 /* Create a new response file */
-                //$responseFile = fopen($pathFile,'w');
-                //fwrite($responseFile,$response);
-                //fclose($responseFile);
+                $responseFile = fopen($pathFile,'w');
+                fwrite($responseFile,$response);
+                fclose($responseFile);
 
-                //$file = fopen($CFG->dataroot . '/response.txt','w');
-                //fwrite($file,$response);
-
-                //$response = json_decode($response);
                 if (isset($response->error)) {
                     mtrace($response->message);
                     return false;
                 }else {
-                    $response = str_replace(chr(13).chr(10),'##FES##',$response);
-
-                    echo $response;
-                    return $response;
+                    return true;
                 }
             }//if_response
         }catch (Exception $ex) {
