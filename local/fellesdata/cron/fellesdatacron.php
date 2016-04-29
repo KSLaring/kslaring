@@ -358,7 +358,7 @@ class FELLESDATA_CRON {
 
             /* Import/Save data in Temporary tables */
             if ($fsResponse) {
-                FS::SaveTemporary_Felllesdata($fsResponse,IMP_COMPANIES);
+                FS::SaveTemporary_Felllesdata(IMP_COMPANIES,TRADIS_FS_COMPANIES);
             }
         }catch (Exception $ex) {
             throw $ex;
@@ -527,10 +527,6 @@ class FELLESDATA_CRON {
                 $responseFile = fopen($pathFile,'w');
                 fwrite($responseFile,$response);
                 fclose($responseFile);
-                
-                //$response = "[" . $response . "]";
-                //$response = str_replace('{"change',',{"change',$response);
-                //$response = str_replace('[,{','[{',$response);
 
                 $file = fopen($CFG->dataroot . '/response.txt','w');
                 fwrite($file,$response);
@@ -538,9 +534,9 @@ class FELLESDATA_CRON {
                 $response = json_decode($response);
                 if (isset($response->error)) {
                     mtrace($response->message);
-                    return null;
+                    return false;
                 }else {
-                    return $response;
+                    return true;
                 }
             }//if_response
         }catch (Exception $ex) {
