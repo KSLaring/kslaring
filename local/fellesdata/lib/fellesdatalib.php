@@ -1577,14 +1577,16 @@ class FS {
                 $newEntry->action = $action;
                 $newEntry->imported = 0;
 
+                $newEntry->id = $DB->insert_record('fs_imp_users_jr',$newEntry,true,true);
+
                 $dataInsert[$key] = $newEntry;
             }
 
             if ($dataInsert) {
-                foreach ($dataInsert as $key => $instance) {
-                    echo "Name --> " . $key . " -- " . $instance->FODSELSNR . "</br>";
-                    $instance->id = $DB->insert_record('fs_imp_users_jr',$instance,true,true);
-                }
+                //foreach ($dataInsert as $key => $instance) {
+                //    echo "Name --> " . $key . " -- " . $instance->FODSELSNR . "</br>";
+                //
+                //}
                 //echo "Total Data Insert: " . count($dataInsert) . "</br>";
 
                 //$DB->insert_records('fs_imp_users_jr',$dataInsert);
