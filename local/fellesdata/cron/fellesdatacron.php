@@ -474,7 +474,6 @@ class FELLESDATA_CRON {
             $data = array_slice($SESSION->$service,$ini,$max);
             FS::SaveTemporary_Felllesdata($data,$function);
 
-
             echo "Total: " . $total . "</br>";
             echo "Ini: " . $ini . "</br>";
             echo "Max: " . $max . "</br>";
