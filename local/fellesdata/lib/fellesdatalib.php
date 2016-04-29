@@ -1534,12 +1534,11 @@ class FS {
      * Description
      * Save in temporary tables. Step before synchronization
      */
-    public static function SaveTemporary_Felllesdata($data) {
+    public static function SaveTemporary_Felllesdata($data,$function) {
         /* variables */
         global $CFG;
         $action         = null;
         $newEntry       = null;
-        $function       = null;
         $lineContent    = null;
 
         try {
