@@ -438,7 +438,7 @@ class FELLESDATA_CRON {
      */
     private static function ImportFSUserCompetenceJR($pluginInfo) {
         /* Variables    */
-        global $CFG,$SESSION;
+        global $CFG;
         $pathFile           = null;
         $usersCompetenceJR  = null;
 
@@ -454,47 +454,19 @@ class FELLESDATA_CRON {
 
                     $content = file($pathFile);
 
-                    echo "Total: " . count($content) . "</br>";
+                    //echo "Total: " . count($content) . "</br>";
 
-                    FS::SaveTemporary_Felllesdata($content,'ImportTemporary_CompetenceJobRole');
-
-                    //$total = count($SESSION->{TRADIS_FS_USERS_JOBROLES});
-                    //$ini = 0;
-                    //$max = 3000;
-                    //self::SaveToTemporary(TRADIS_FS_USERS_JOBROLES,'ImportTemporary_CompetenceJobRole',$total,$ini,$max);
+                    foreach ($content as $key => $line) {
+                        echo "Line : " . $key . " --> " . $line . "</br>";
+                    }
+                    //FS::SaveTemporary_Felllesdata($content,'ImportTemporary_CompetenceJobRole');
                 }
-
-
-
-
             }
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
     }//ImportFSUserCompetenceJR
 
-    private static function SaveToTemporary($service,$function,$total,&$ini=0,$max) {
-        /* Variables */
-        global $SESSION;
-
-        try {
-
-            $data = array_slice($SESSION->$service,$ini,$max);
-            FS::SaveTemporary_Felllesdata($data,$function);
-
-            echo "Total: " . $total . "</br>";
-            echo "Ini: " . $ini . "</br>";
-            echo "Max: " . $max . "</br>";
-            echo "</br>---</br>";
-
-            if (($total > $ini) && ($total > $max)) {
-                $ini += $max +1;
-                self::SaveToTemporary($service,$function,$total,$ini,$max);
-            }
-        }catch (Exception $ex) {
-            throw $ex;
-        }//try_catch
-    }//SaveToTemporary
 
     /**
      * @param           $pluginInfo
