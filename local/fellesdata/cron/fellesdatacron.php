@@ -438,7 +438,7 @@ class FELLESDATA_CRON {
      */
     private static function ImportFSUserCompetenceJR($pluginInfo) {
         /* Variables    */
-        global $CFG;
+        global $CFG,$DB;
         $pathFile           = null;
         $usersCompetenceJR  = null;
         $toSave             = null;
@@ -457,7 +457,8 @@ class FELLESDATA_CRON {
 
                     /* Save Temporary tables    */
                     $toSave = FS::ExtractData_TemporaryFellesdata($content);
-                    FS::SaveTemporary_Felllesdata($toSave,IMP_COMPETENCE_JR);
+
+                    $DB->insert_records('fs_imp_users_jr',$toSave);
                 }//if_exists
             }//if_data
         }catch (Exception $ex) {
