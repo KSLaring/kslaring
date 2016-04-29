@@ -1585,8 +1585,7 @@ class FS {
 
             if ($dataInsert) {
                 echo "Total Data Insert: " . count($dataInsert) . "</br>";
-                echo implode(',',array_keys($dataInsert)) . "</br>";
-                //$DB->insert_records('fs_imp_users_jr',$dataInsert);
+                $DB->insert_records('fs_imp_users_jr',$dataInsert);
             }
         }catch (Exception $ex) {
             throw $ex;
