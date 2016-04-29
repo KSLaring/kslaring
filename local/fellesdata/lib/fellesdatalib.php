@@ -1544,6 +1544,7 @@ class FS {
 
         try {
 
+            $trans = $DB->start_delegated_transaction();
             foreach($data as $key=>$line) {
                 $lineContent = json_decode($line);
 
@@ -1582,6 +1583,7 @@ class FS {
                 $dataInsert[$key] = $newEntry;
             }
 
+            $trans->allow_commit();
             if ($dataInsert) {
                 //foreach ($dataInsert as $key => $instance) {
                 //    echo "Name --> " . $key . " -- " . $instance->FODSELSNR . "</br>";
@@ -1592,6 +1594,8 @@ class FS {
                 //$DB->insert_records('fs_imp_users_jr',$dataInsert);
             }
         }catch (Exception $ex) {
+            $trans->rollback($ex);
+            
             throw $ex;
         }//try_catch
     }//SaveTemporary_Felllesdata
