@@ -454,12 +454,9 @@ class FELLESDATA_CRON {
 
                     $content = file($pathFile);
 
-                    //echo "Total: " . count($content) . "</br>";
+                    echo "Total: " . count($content) . "</br>";
 
-                    foreach ($content as $key => $line) {
-                        echo "Line : " . $key . " --> " . $line . "</br>";
-                    }
-                    //FS::SaveTemporary_Felllesdata($content,'ImportTemporary_CompetenceJobRole');
+                    FS::SaveTemporary_Felllesdata($content,'ImportTemporary_CompetenceJobRole');
                 }
             }
         }catch (Exception $ex) {
