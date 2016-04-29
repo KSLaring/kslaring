@@ -27,6 +27,7 @@ class FELLESDATA_CRON {
             /* Plugin Info      */
             $pluginInfo     = get_config('local_fellesdata');
 
+            ini_set('memory_limit','1024M');
             /* Import KS */
             //self::ImportKS($pluginInfo);
 

@@ -1542,12 +1542,42 @@ class FS {
         $lineFile       = null;
         $action         = null;
         $newEntry       = null;
+        $function       = null;
 
         try {
             /* Open File */
             $pathFile = $CFG->dataroot . '/fellesdata/' . $service . '.txt';
             if (file_exists($pathFile)) {
                 $responseFile = file($pathFile);
+
+                /** Get function */
+                switch ($type) {
+                    case IMP_USERS:
+                        /* FS Users     */
+                        $function = 'ImportTemporary_FSUsers';
+
+                        break;
+                    case IMP_COMPANIES:
+                        /* FS Companies */
+                        $function = 'ImportTemporary_FSCompany';
+
+                        break;
+                    case IMP_JOBROLES:
+                        /* FS JOB ROLES */
+                        $function = 'ImportTemporary_FSJobRoles';
+
+                        break;
+                    case IMP_COMPETENCE_COMP:
+                        /* Competence Company */
+                        $function = 'ImportTemporary_CompetenceCompany';
+
+                        break;
+                    case IMP_COMPETENCE_JR:
+                        /* Competence Job Role  */
+                        $function = 'ImportTemporary_CompetenceJobRole';
+
+                        break;
+                }//type
 
                 /* Decode the content   */
                 foreach ($responseFile as $key => $lineFile) {
@@ -1578,38 +1608,8 @@ class FS {
                     }//action
 
                     /* Import in the right table   */
-                    switch ($type) {
-                        case IMP_USERS:
-                            /* FS Users     */
-                            self::ImportTemporary_FSUsers($action,$newEntry);
-
-                            break;
-                        case IMP_COMPANIES:
-                            /* FS Companies */
-                            self::ImportTemporary_FSCompany($action,$newEntry);
-
-                            break;
-                        case IMP_JOBROLES:
-                            /* FS JOB ROLES */
-                            self::ImportTemporary_FSJobRoles($action,$newEntry);
-
-                            break;
-                        case IMP_COMPETENCE_COMP:
-                            /* Competence Company */
-                            self::ImportTemporary_CompetenceCompany($action,$newEntry);
-
-                            break;
-                        case IMP_COMPETENCE_JR:
-                            /* Competence Job Role  */
-                            self::ImportTemporary_CompetenceJobRole($action,$newEntry);
-
-                            break;
-                    }//type
-
-                }
-
-                /* Close File   */
-                //fclose($responseFile);
+                    self::$function($action,$newEntry);
+                }//for_line
             }//if_file_exists
         }catch (Exception $ex) {
             throw $ex;
@@ -1620,8 +1620,38 @@ class FS {
         /* Variables    */
         $action     = null;
         $newEntry   = null;
+        $function   = null;
 
         try {
+            /** Get function */
+            switch ($type) {
+                case IMP_USERS:
+                    /* FS Users     */
+                    $function = 'ImportTemporary_FSUsers';
+
+                    break;
+                case IMP_COMPANIES:
+                    /* FS Companies */
+                    $function = 'ImportTemporary_FSCompany';
+
+                    break;
+                case IMP_JOBROLES:
+                    /* FS JOB ROLES */
+                    $function = 'ImportTemporary_FSJobRoles';
+
+                    break;
+                case IMP_COMPETENCE_COMP:
+                    /* Competence Company */
+                    $function = 'ImportTemporary_CompetenceCompany';
+
+                    break;
+                case IMP_COMPETENCE_JR:
+                    /* Competence Job Role  */
+                    $function = 'ImportTemporary_CompetenceJobRole';
+
+                    break;
+            }//type
+
             foreach ($fellesdata as $data) {
                 /* Get New Entry    */
                 $newEntry = $data->newRecord;
@@ -1648,33 +1678,7 @@ class FS {
                 }//action
 
                 /* Import in temporary tables   */
-                switch ($type) {
-                    case IMP_USERS:
-                        /* FS Users     */
-                        self::ImportTemporary_FSUsers($action,$newEntry);
-
-                        break;
-                    case IMP_COMPANIES:
-                        /* FS Companies */
-                        self::ImportTemporary_FSCompany($action,$newEntry);
-
-                        break;
-                    case IMP_JOBROLES:
-                        /* FS JOB ROLES */
-                        self::ImportTemporary_FSJobRoles($action,$newEntry);
-
-                        break;
-                    case IMP_COMPETENCE_COMP:
-                        /* Competence Company */
-                        self::ImportTemporary_CompetenceCompany($action,$newEntry);
-
-                        break;
-                    case IMP_COMPETENCE_JR:
-                        /* Competence Job Role  */
-                        self::ImportTemporary_CompetenceJobRole($action,$newEntry);
-
-                        break;
-                }//type
+                self::$function($action,$newEntry);
 
             }
         }catch (Exception $ex) {
