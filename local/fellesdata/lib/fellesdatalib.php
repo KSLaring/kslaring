@@ -1542,7 +1542,6 @@ class FS {
         $lineFile       = null;
         $action         = null;
         $newEntry       = null;
-        $maxLines       = 10000;
 
         try {
             /* Open File */
@@ -1550,10 +1549,65 @@ class FS {
             if (file_exists($pathFile)) {
                 $responseFile = file($pathFile);
 
-                echo "Total Lines: " . count($responseFile) . "</br>";
+                /* Decode the content   */
+                foreach ($responseFile as $key => $lineFile) {
+                    $lineFile = json_decode($lineFile);
 
-                echo "Line 0: " . $responseFile[0] . "</br>";
-                
+                    /* Get New Entry    */
+                    $newEntry = $lineFile->newRecord;
+
+                    /* Get Action       */
+                    switch (trim($lineFile->changeType)) {
+                        case ADD_ACTION:
+                            $action = 0;
+
+                            break;
+                        case UPDATE_ACTION:
+                            $action = 1;
+
+                            break;
+                        case DELETE_ACTION:
+                            /* Old Entry        */
+                            if (isset($lineFile->oldRecord)) {
+                                $newEntry = $lineFile->odlRecord;
+                            }//if_old_record
+
+                            $action = 2;
+
+                            break;
+                    }//action
+
+                    /* Import in the right table   */
+                    switch ($type) {
+                        case IMP_USERS:
+                            /* FS Users     */
+                            self::ImportTemporary_FSUsers($action,$newEntry);
+
+                            break;
+                        case IMP_COMPANIES:
+                            /* FS Companies */
+                            self::ImportTemporary_FSCompany($action,$newEntry);
+
+                            break;
+                        case IMP_JOBROLES:
+                            /* FS JOB ROLES */
+                            self::ImportTemporary_FSJobRoles($action,$newEntry);
+
+                            break;
+                        case IMP_COMPETENCE_COMP:
+                            /* Competence Company */
+                            self::ImportTemporary_CompetenceCompany($action,$newEntry);
+
+                            break;
+                        case IMP_COMPETENCE_JR:
+                            /* Competence Job Role  */
+                            self::ImportTemporary_CompetenceJobRole($action,$newEntry);
+
+                            break;
+                    }//type
+
+                }
+
                 /* Close File   */
                 //fclose($responseFile);
             }//if_file_exists
