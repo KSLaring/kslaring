@@ -472,7 +472,7 @@ class FELLESDATA_CRON {
         try {
 
             $data = array_slice($SESSION->$service,$ini,$max);
-            FS::SaveTemporary_Felllesdata(IMP_COMPETENCE_JR,$data,$function);
+            FS::SaveTemporary_Felllesdata($data,$function);
 
 
             echo "Total: " . $total . "</br>";
