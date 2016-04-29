@@ -490,12 +490,12 @@ class FELLESDATA_CRON {
                         $newEntry->alternative      = 0;
                         $newEntry->hovedstilling    = 0;
 
-                        $DB->insert_record('fs_imp_users_jr',$newEntry);
-
-                        //$toSave[$key] = $newEntry;
+                        $toSave[$key] = $newEntry;
                     }
 
                     /* Save Temporary tables    IMP_COMPETENCE_JR */
+                    $DB->insert_records('fs_imp_users_jr',$toSave);
+                    
                     //$toSave = FS::ExtractData_TemporaryFellesdata(array_slice($content,0,5));
                 }//if_exists
             }//if_data
