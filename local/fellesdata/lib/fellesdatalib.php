@@ -1536,12 +1536,14 @@ class FS {
      */
     public static function SaveTemporary_Felllesdata($data,$function) {
         /* variables */
-        global $CFG;
+        global $CFG,$DB;
         $action         = null;
         $newEntry       = null;
         $lineContent    = null;
+        $dataInsert =   array();
 
         try {
+
             foreach($data as $line) {
                 $lineContent = json_decode($line);
 
@@ -1570,7 +1572,18 @@ class FS {
                 }//action
 
                 /* Import in the right table   */
-                self::$function($action,$newEntry);
+                $newEntry->action = $action;
+                /* Execute */
+                $newEntry->action = $action;
+                $newEntry->imported = 0;
+
+                //$DB->insert_record('fs_imp_users_jr',$newEntry);
+
+                $dataInsert[] = $newEntry;
+                //self::$function($action,$newEntry);
+            }
+            if ($dataInsert) {
+                $DB->insert_records('fs_imp_users_jr',$dataInsert);
             }
         }catch (Exception $ex) {
             throw $ex;
