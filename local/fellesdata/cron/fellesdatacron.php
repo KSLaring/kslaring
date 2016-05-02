@@ -325,7 +325,10 @@ class FELLESDATA_CRON {
      */
     private static function ImportFSUsers($pluginInfo) {
         /* Variables    */
-        $fsUsers = null;
+        global $CFG;
+        $pathFile   = null;
+        $content    = null;
+        $fsUsers    = null;
 
         try {
             /* Call Web service */
@@ -333,7 +336,14 @@ class FELLESDATA_CRON {
 
             /* Import/Save data in Temporary tables */
             if ($fsResponse) {
-                FS::SaveTemporary_Felllesdata(IMP_USERS,TRADIS_FS_USERS);
+                /* Open File */
+                $pathFile = $CFG->dataroot . '/fellesdata/' . TRADIS_FS_USERS . '.txt';
+                if (file_exists($pathFile)) {
+                    /* Get Content */
+                    $content = file($pathFile);
+
+                    FS::SaveTemporary_Fellesdata($content,IMP_USERS);
+                }//if_exists
             }
         }catch (Exception $ex) {
             throw $ex;
@@ -353,6 +363,9 @@ class FELLESDATA_CRON {
      */
     private static function ImportFSOrgStructure($pluginInfo) {
         /* Variables    */
+        global $CFG;
+        $pathFile   = null;
+        $content    = null;
         $fsResponse = null;
 
         try {
@@ -361,7 +374,14 @@ class FELLESDATA_CRON {
 
             /* Import/Save data in Temporary tables */
             if ($fsResponse) {
-                FS::SaveTemporary_Felllesdata(IMP_COMPANIES,TRADIS_FS_COMPANIES);
+                /* Open File */
+                $pathFile = $CFG->dataroot . '/fellesdata/' . TRADIS_FS_COMPANIES . '.txt';
+                if (file_exists($pathFile)) {
+                    /* Get Content */
+                    $content = file($pathFile);
+
+                    FS::SaveTemporary_Fellesdata($content,IMP_COMPANIES);
+                }//if_exists
             }
         }catch (Exception $ex) {
             throw $ex;
@@ -381,6 +401,9 @@ class FELLESDATA_CRON {
      */
     private static function ImportFSJobRoles($pluginInfo) {
         /* Variables    */
+        global $CFG;
+        $pathFile   = null;
+        $content    = null;
         $fsResponse = null;
 
         try {
@@ -389,7 +412,14 @@ class FELLESDATA_CRON {
 
             /* Import/Save data in temporary tables */
             if ($fsResponse) {
-                FS::SaveTemporary_Felllesdata(IMP_JOBROLES,TRADIS_FS_JOBROLES);
+                /* Open File */
+                $pathFile = $CFG->dataroot . '/fellesdata/' . TRADIS_FS_JOBROLES . '.txt';
+                if (file_exists($pathFile)) {
+                    /* Get Content */
+                    $content = file($pathFile);
+
+                    FS::SaveTemporary_Fellesdata($content,IMP_JOBROLES);
+                }//if_exists
             }
         }catch (Exception $ex) {
             throw $ex;
@@ -409,7 +439,10 @@ class FELLESDATA_CRON {
      */
     private static function ImportFSUserCompetence($pluginInfo) {
         /* Variables    */
-        $usersCompetence = null;
+        global $CFG;
+        $pathFile           = null;
+        $content            = null;
+        $usersCompetence    = null;
 
         try {
             /* Call Web Service */
@@ -417,7 +450,14 @@ class FELLESDATA_CRON {
 
             /* Import/Save in temporary tables  */
             if ($usersCompetence) {
-                FS::SaveTemporary_Felllesdata(IMP_COMPETENCE_COMP,TRADIS_FS_USERS_COMPANIES);
+                /* Open File */
+                $pathFile = $CFG->dataroot . '/fellesdata/' . TRADIS_FS_USERS_COMPANIES . '.txt';
+                if (file_exists($pathFile)) {
+                    /* Get Content */
+                    $content = file($pathFile);
+
+                    FS::SaveTemporary_Fellesdata($content,IMP_COMPETENCE_COMP);
+                }//if_exists
             }
         }catch (Exception $ex) {
             throw $ex;
@@ -438,10 +478,10 @@ class FELLESDATA_CRON {
      */
     private static function ImportFSUserCompetenceJR($pluginInfo) {
         /* Variables    */
-        global $CFG,$DB;
+        global $CFG;
         $pathFile           = null;
+        $content            = null;
         $usersCompetenceJR  = null;
-        $toSave             = null;
 
         try {
             /* Call Web Service */
@@ -454,46 +494,8 @@ class FELLESDATA_CRON {
                 if (file_exists($pathFile)) {
                     /* Get Content */
                     $content = file($pathFile);
-                    $action = 0;
 
-                    foreach($content as $key=>$line) {
-                        $lineContent = json_decode($line);
-
-                        /* Get New Entry    */
-                        $newEntry = $lineContent->newRecord;
-
-                        /* Get Action       */
-                        switch (trim($lineContent->changeType)) {
-                            case ADD_ACTION:
-                                $action = 0;
-
-                                break;
-                            case UPDATE_ACTION:
-                                $action = 1;
-
-                                break;
-                            case DELETE_ACTION:
-                                /* Old Entry        */
-                                if (isset($lineContent->oldRecord)) {
-                                    $newEntry = $lineContent->odlRecord;
-                                }//if_old_record
-
-                                $action = 2;
-
-                                break;
-                        }//action
-
-                        /* Execute */
-                        $newEntry->action = $action;
-                        $newEntry->imported = 0;
-
-                        $toSave[$key] = $newEntry;
-                    }
-
-                    /* Save Temporary tables    IMP_COMPETENCE_JR */
-                    $DB->insert_records('fs_imp_users_jr',$toSave);
-
-                    //$toSave = FS::ExtractData_TemporaryFellesdata(array_slice($content,0,5));
+                    FS::SaveTemporary_Fellesdata($content,IMP_COMPETENCE_JR);
                 }//if_exists
             }//if_data
         }catch (Exception $ex) {

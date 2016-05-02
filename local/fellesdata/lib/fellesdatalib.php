@@ -1544,7 +1544,8 @@ class FS {
         try {
 
             foreach($data as $key=>$line) {
-                $lineContent = json_decode($line);
+                $line           = strtolower($line);
+                $lineContent    = json_decode($line);
 
                 /* Get New Entry    */
                 $newEntry = $lineContent->newRecord;
@@ -1570,7 +1571,7 @@ class FS {
                         break;
                 }//action
 
-                $newEntry->action = $action;
+                $newEntry->action   = $action;
                 $newEntry->imported = 0;
 
                 /* Add Record   */
@@ -1581,22 +1582,22 @@ class FS {
                 switch ($type) {
                     case IMP_USERS:
                         /* FS Users     */
-                        //self::ImportTemporary_FSUsers($action,$newEntry);
+                        self::ImportTemporary_FSUsers($data);
 
                         break;
                     case IMP_COMPANIES:
                         /* FS Companies */
-                        //self::ImportTemporary_FSCompany($action,$newEntry);
+                        self::ImportTemporary_FSCompany($toSave);
 
                         break;
                     case IMP_JOBROLES:
                         /* FS JOB ROLES */
-                        //self::ImportTemporary_FSJobRoles($action,$newEntry);
+                        self::ImportTemporary_FSJobRoles($toSave);
 
                         break;
                     case IMP_COMPETENCE_COMP:
                         /* Competence Company */
-                        //self::ImportTemporary_CompetenceCompany($action,$newEntry);
+                        self::ImportTemporary_CompetenceCompany($toSave);
 
                         break;
                     case IMP_COMPETENCE_JR:
@@ -1616,8 +1617,7 @@ class FS {
     /***********/
 
     /**
-     * @param           $action
-     * @param           $newEntry
+     * @param           $data
      *
      * @throws          Exception
      *
@@ -1627,7 +1627,7 @@ class FS {
      * Description
      * Save FS users in temporary tables before the synchronization
      */
-    private static  function ImportTemporary_FSUsers($action,$newEntry) {
+    private static  function ImportTemporary_FSUsers($data) {
         /* Variables    */
         global $DB;
         $infoUser   = null;
@@ -1638,16 +1638,8 @@ class FS {
 
         try {
             /* User Info    */
-            $infoUser = new stdClass();
-            $infoUser->personalnumber   = trim($newEntry->FODSELSNR);
-            $infoUser->firstname        = trim($newEntry->FORNAVN);
-            $infoUser->lastname         = trim($newEntry->MELLOMNAVN) . trim($newEntry->ETTERNAVN);
-            $infoUser->email            = trim($newEntry->EPOST);
-            $infoUser->action           = $action;
-            $infoUser->imported         = 0;
-
             /* Execute  */
-            $infoUser->id = $DB->insert_record('fs_imp_users',$infoUser);
+            $DB->insert_records('fs_imp_users',$data);
 
             /* Commit   */
             $trans->allow_commit();
@@ -1660,8 +1652,7 @@ class FS {
     }//ImportTemporary_FSUsers
 
     /**
-     * @param           $action
-     * @param           $newEntry
+     * @param           $data
      *
      * @throws          Exception
      *
@@ -1671,7 +1662,7 @@ class FS {
      * Description
      * Save FS companies in temporary tables before the synchronization
      */
-    private static function ImportTemporary_FSCompany($action,$newEntry) {
+    private static function ImportTemporary_FSCompany($data) {
         /* Variables    */
         global $DB;
         $infoFS     = null;
@@ -1682,16 +1673,8 @@ class FS {
 
         try {
             /* FS Company Info  */
-            $infoFS = new stdClass();
-            $infoFS->org_enhet_id   = trim($newEntry->ORG_ENHET_ID);
-            $infoFS->org_nivaa      = trim($newEntry->ORG_NIVAA);
-            $infoFS->org_navn       = trim($newEntry->ORG_NAVN);
-            $infoFS->org_enhet_over = trim($newEntry->ORG_ENHET_OVER);
-            $infoFS->action         = $action;
-            $infoFS->imported       = 0;
-
             /* Execute  */
-            $infoFS->id = $DB->insert_record('fs_imp_company',$infoFS);
+            $DB->insert_records('fs_imp_company',$data);
 
             /* Commit   */
             $trans->allow_commit();
@@ -1704,8 +1687,7 @@ class FS {
     }//ImportTemporary_FSCompany
 
     /**
-     * @param               $action
-     * @param               $newEntry
+     * @param               $data
      *
      * @throws              Exception
      *
@@ -1715,7 +1697,7 @@ class FS {
      * Description
      * Save FS Jobroles in temporary tables before the synchronization
      */
-    private static function ImportTemporary_FSJobRoles($action,$newEntry) {
+    private static function ImportTemporary_FSJobRoles($data) {
         /* Variables    */
         global $DB;
         $infoFS = null;
@@ -1726,15 +1708,8 @@ class FS {
 
         try {
             /* FS Job Role Info */
-            $infoFS = new stdClass();
-            $infoFS->stillingskode      = trim($newEntry->STILLINGSKODE);
-            $infoFS->stillingstekst     = trim($newEntry->STILLINGSTEKST);
-            $infoFS->alternative        = trim($newEntry->STILLINGSTEKST_ALTERNATIVE);
-            $infoFS->action             = $action;
-            $infoFS->imported           = 0;
-
             /* Execute  */
-            $infoFS->id = $DB->insert_record('fs_imp_jobroles',$infoFS);
+            $DB->insert_records('fs_imp_jobroles',$data);
 
             /* Commit */
             $trans->allow_commit();
@@ -1747,8 +1722,7 @@ class FS {
     }//ImportTemporary_FSJobRoles
 
     /**
-     * @param           $action
-     * @param           $newEntry
+     * @param           $data
      *
      * @throws          Exception
      *
@@ -1758,7 +1732,7 @@ class FS {
      * Description
      * Save User Company (FS)  in temporary tables before the synchronization
      */
-    private static function ImportTemporary_CompetenceCompany($action,$newEntry) {
+    private static function ImportTemporary_CompetenceCompany($data) {
         /* Variables */
         global $DB;
         $infoCompetence     = null;
@@ -1770,16 +1744,8 @@ class FS {
 
         try {
             /* Info Competence      */
-            $infoCompetence = new stdClass();
-            $infoCompetence->org_enhet_id   = trim($newEntry->ORG_ENHET_ID);
-            $infoCompetence->org_nivaa      = trim($newEntry->ORG_NIVAA);
-            $infoCompetence->fodselsnr      = trim($newEntry->FODSELSNR);
-            $infoCompetence->prioritet      = trim($newEntry->PRIORITET);
-            $infoCompetence->action         = $action;
-            $infoCompetence->imported       = 0;
-
             /* Execute  */
-            $infoCompetence->id = $DB->insert_record('fs_imp_users_company',$infoCompetence);
+            $DB->insert_records('fs_imp_users_company',$data);
 
             /* Commit */
             $trans->allow_commit();
@@ -1792,8 +1758,7 @@ class FS {
     }//ImportTemporary_CompetenceCompany
 
     /**
-     * @param           $action
-     * @param           $newEntry
+     * @param           $data
      *
      * @throws          Exception
      *
@@ -1814,29 +1779,7 @@ class FS {
         $trans = $DB->start_delegated_transaction();
 
         try {
-            /* Info Competence      */
-            //$infoCompetenceJR = new stdClass();
-            //$infoCompetenceJR->fodselsnr        = trim($newEntry->FODSELSNR);
-            //$infoCompetenceJR->stillingsnr      = trim($newEntry->STILLINGSNR);
-            //$infoCompetenceJR->fornavn          = trim($newEntry->FORNAVN);
-            //$infoCompetenceJR->etternavn        = trim($newEntry->ETTERNAVN);
-            //$infoCompetenceJR->epost            = trim($newEntry->EPOST);
-            //$infoCompetenceJR->org_enhet_id     = trim($newEntry->ORG_ENHET_ID);
-            //$infoCompetenceJR->stillingstekst   = trim($newEntry->OPPGAVE2);
-
-            ////$infoCompetenceJR->stillingskode    = trim($newEntry->STILLINGSKODE);
-            ////$infoCompetenceJR->stillingstekst   = trim($newEntry->STILLINGSTEKST);
-            ////$infoCompetenceJR->alternative      = trim($newEntry->STILLINGSTEKST_ALTERNATIVE);
-
-            //$infoCompetenceJR->hovedstilling    = trim($newEntry->HOVEDSTILLING);
-            //$infoCompetenceJR->action           = $action;
-            //$infoCompetenceJR->imported         = 0;
-
             /* Execute */
-            //$newEntry->action = $action;
-            //$newEntry->imported = 0;
-            //$newEntry->id = $DB->insert_record('fs_imp_users_jr',$newEntry);
-
             $DB->insert_records('fs_imp_users_jr',$data);
 
             /* Commit   */
