@@ -195,6 +195,7 @@ class enrolmethodself extends \enrol_waitinglist\method\enrolmethodbase{
         global $DB, $USER, $CFG;
         $rejected = null;
 
+
         if ($waitinglist->{ENROL_WAITINGLIST_FIELD_APPROVAL} == APPROVAL_REQUIRED) {
             $this->myManagers = \Approval::GetManagers($USER->id);
             if (!$this->myManagers) {
@@ -217,7 +218,7 @@ class enrolmethodself extends \enrol_waitinglist\method\enrolmethodbase{
         
         //checking the queue (db calls)
         //to do: turn queuemanager into a singleton, and remove the checkusenrolment condition
-         if ($checkuserenrolment) {
+        if ($checkuserenrolment) {
          	//$entryman =  \enrol_waitinglist\entrymanager::get_by_course($waitinglist->courseid);
          	$queueman =  \enrol_waitinglist\queuemanager::get_by_course($waitinglist->courseid);
     
@@ -442,15 +443,23 @@ class enrolmethodself extends \enrol_waitinglist\method\enrolmethodbase{
 
 		$queueman= \enrol_waitinglist\queuemanager::get_by_course($waitinglist->courseid);
 		$qdetails = $queueman->get_user_queue_details(static::METHODTYPE);
-		if($qdetails->queueposition > 0 && $qdetails->offqueue == 0){
-			$enrolstatus = get_string('yourqueuedetails','enrol_waitinglist', $qdetails);
-		}else{
-			//if user is flagged as cant be a new enrol, then just exit
-			if($flagged){
-				return array(false,'');
-			}
-			$enrolstatus = $this->can_enrol($waitinglist,true);
-		}
+        if ($waitinglist->{ENROL_WAITINGLIST_FIELD_MAXENROLMENTS}) {
+            if($qdetails->queueposition > 0 && $qdetails->offqueue == 0){
+                $enrolstatus = get_string('yourqueuedetails','enrol_waitinglist', $qdetails);
+            }else{
+                //if user is flagged as cant be a new enrol, then just exit
+                if($flagged){
+                    return array(false,'');
+                }
+                $enrolstatus = $this->can_enrol($waitinglist,true);
+            }
+        }else {
+            //if user is flagged as cant be a new enrol, then just exit
+            if($flagged){
+                return array(false,'');
+            }
+            $enrolstatus = $this->can_enrol($waitinglist,true);
+        }
 
         // Don't show enrolment instance form, if user can't enrol using it.
         if (true === $enrolstatus) {
