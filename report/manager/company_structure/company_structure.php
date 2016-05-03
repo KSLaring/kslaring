@@ -61,6 +61,7 @@ if (empty($CFG->loginhttps)) {
 $form = new manager_company_structure_form(null,$myAccess);
 
 if ($form->is_cancelled()) {
+    unset($SESSION->onlyCompany);
 
     $_POST = array();
     redirect($return_url);
