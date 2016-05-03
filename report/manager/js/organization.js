@@ -625,6 +625,10 @@ var level_structure = {
         var accessTwo   = 0;
         var accessThree = 0;
 
+        var spZero  = 0;
+        var spOne   = 0;
+        var spTwo   = 0;
+        var spThree = 0;
 
         /* Level Zero   */
         Y.one('#id_btn-add_item0').setAttribute('disabled','disabled');
@@ -660,55 +664,86 @@ var level_structure = {
         Y.one('#id_btn-move_selected3').setAttribute('disabled','disabled');
 
         if (this.levelZero.get('value') != 0) {
+
             /* Get Level Zero   */
             accessZero = this.myLevelAccess[this.levelZero.get('value')];
 
             /* Get Access Level One */
             accessOne = accessZero.levelOne;
+            /* Get Access Level Two */
+            accessTwo = accessZero.levelTwo;
+            /* Get Access Level Three   */
+            accessThree = accessZero.levelThree;
+
+            /* Activate Buttons level Zero  */
+            if (!accessOne && !accessTwo && !accessThree) {
+                Y.one('#id_btn-managers_selected0').removeAttribute('disabled');
+                Y.one('#id_btn-reporters_selected0').removeAttribute('disabled');
+            }else {
+                Y.one('#id_btn-managers_selected0').setAttribute('disabled','disabled');
+                Y.one('#id_btn-reporters_selected0').setAttribute('disabled','disabled');
+            }
+
+            /* Activate buttons level One   */
             if (accessOne == 0) {
                 Y.one('#id_btn-add_item1').removeAttribute('disabled');
                 if (this.levelOne.get('value') == 0) {
-                    Y.one('#id_btn-managers_selected1').setAttribute('disabled','disabled');
-                    Y.one('#id_btn-reporters_selected1').setAttribute('disabled','disabled');
                     Y.one('#id_btn-rename_selected1').setAttribute('disabled','disabled');
                     Y.one('#id_btn-delete_selected1').setAttribute('disabled','disabled');
                     Y.one('#id_btn-move_selected1').setAttribute('disabled','disabled');
+                    Y.one('#id_btn-rename_selected1').setAttribute('disabled','disabled');
+                    Y.one('#id_btn-delete_selected1').setAttribute('disabled','disabled');
                     Y.one('#id_btn-add_item2').setAttribute('disabled','disabled');
                 }else {
-                    Y.one('#id_btn-managers_selected1').removeAttribute('disabled');
-                    Y.one('#id_btn-reporters_selected1').removeAttribute('disabled');
                     Y.one('#id_btn-rename_selected1').removeAttribute('disabled');
                     Y.one('#id_btn-delete_selected1').removeAttribute('disabled');
                     Y.one('#id_btn-move_selected1').removeAttribute('disabled');
                     Y.one('#id_btn-add_item2').removeAttribute('disabled');
+                    Y.one('#id_btn-managers_selected1').removeAttribute('disabled');
+                    Y.one('#id_btn-reporters_selected1').removeAttribute('disabled');
+                }
+            }else {
+                if (!accessTwo && !accessThree && this.levelOne.get('value') != 0) {
+                    Y.one('#id_btn-managers_selected1').removeAttribute('disabled');
+                    Y.one('#id_btn-reporters_selected1').removeAttribute('disabled');
+                }else {
+                    Y.one('#id_btn-managers_selected1').setAttribute('disabled','disabled');
+                    Y.one('#id_btn-reporters_selected1').setAttribute('disabled','disabled');
                 }
             }
-            /* Get Access Level Two */
-            accessTwo = accessZero.levelTwo;
+
+            /* Activate buttons level Two */
             if (accessTwo == 0) {
                 if (this.levelOne.get('value') != 0) {
                     Y.one('#id_btn-add_item2').removeAttribute('disabled');
                 }
 
                 if (this.levelTwo.get('value') == 0) {
-                    Y.one('#id_btn-managers_selected2').setAttribute('disabled','disabled');
-                    Y.one('#id_btn-reporters_selected2').setAttribute('disabled','disabled');
                     Y.one('#id_btn-rename_selected2').setAttribute('disabled','disabled');
                     Y.one('#id_btn-delete_selected2').setAttribute('disabled','disabled');
                     Y.one('#id_btn-move_selected2').setAttribute('disabled','disabled');
+                    Y.one('#id_btn-rename_selected2').setAttribute('disabled','disabled');
+                    Y.one('#id_btn-delete_selected2').setAttribute('disabled','disabled');
                     Y.one('#id_btn-add_item3').setAttribute('disabled','disabled');
                 }else {
-                    Y.one('#id_btn-managers_selected2').removeAttribute('disabled');
-                    Y.one('#id_btn-reporters_selected2').removeAttribute('disabled');
                     Y.one('#id_btn-rename_selected2').removeAttribute('disabled');
                     Y.one('#id_btn-delete_selected2').removeAttribute('disabled');
                     Y.one('#id_btn-move_selected2').removeAttribute('disabled');
+                    Y.one('#id_btn-managers_selected2').removeAttribute('disabled');
+                    Y.one('#id_btn-reporters_selected2').removeAttribute('disabled');
                     Y.one('#id_btn-add_item3').removeAttribute('disabled');
+                }
+            }else {
+                if (!accessThree && this.levelTwo.get('value') != 0) {
+                    Y.one('#id_btn-managers_selected2').removeAttribute('disabled');
+                    Y.one('#id_btn-reporters_selected2').removeAttribute('disabled');
+                }else {
+                    Y.one('#id_btn-managers_selected2').setAttribute('disabled','disabled');
+                    Y.one('#id_btn-reporters_selected2').setAttribute('disabled','disabled');
                 }
             }
 
-            /* Get Access Level Three   */
-            accessThree = accessZero.levelThree;
+            /* Activate buttons level Three */
             if (accessThree == 0) {
                 if (this.levelTwo.get('value') != 0) {
                     Y.one('#id_btn-add_item3').removeAttribute('disabled');
@@ -730,6 +765,18 @@ var level_structure = {
                     Y.one('#id_btn-move_selected3').removeAttribute('disabled');
                     Y.one('#id_btn-delete_employees3').removeAttribute('disabled');
                     Y.one('#id_btn-delete_all_employees3').removeAttribute('disabled');
+                }
+            }else {
+                if (this.levelThree.get('value') != 0) {
+                    Y.one('#id_btn-managers_selected3').removeAttribute('disabled');
+                    Y.one('#id_btn-reporters_selected3').removeAttribute('disabled');
+                    Y.one('#id_btn-delete_employees3').removeAttribute('disabled');
+                    Y.one('#id_btn-delete_all_employees3').removeAttribute('disabled');
+                }else {
+                    Y.one('#id_btn-managers_selected3').setAttribute('disabled','disabled');
+                    Y.one('#id_btn-reporters_selected3').setAttribute('disabled','disabled');
+                    Y.one('#id_btn-delete_employees3').setAttribute('disabled','disabled');
+                    Y.one('#id_btn-delete_all_employees3').setAttribute('disabled','disabled');
                 }
             }
         }

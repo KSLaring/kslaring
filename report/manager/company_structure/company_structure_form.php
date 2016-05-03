@@ -28,6 +28,7 @@ require_once($CFG->libdir.'/formslib.php');
 /* Levels Company - Form  */
 class manager_company_structure_form extends moodleform {
     function definition() {
+        global $SESSION;
         $m_form = $this->_form;
 
         /* My Access    */
@@ -53,10 +54,12 @@ class manager_company_structure_form extends moodleform {
         $this->AddLevel(3,$m_form,REPORT_MANAGER_IMPORT_3,$myCompanies);
 
         /* Level Four - Employees   */
-        $parentThree  = optional_param(COMPANY_STRUCTURE_LEVEL . 3, 0, PARAM_INT);
-        $options    = array();
+        $parentThree    = optional_param(COMPANY_STRUCTURE_LEVEL . 3, 0, PARAM_INT);
+        $options        = array();
         if ($parentThree) {
             $options = company_structure::Get_EmployeeLevel($parentThree);
+        }else if (isset($SESSION->onlyCompany)) {
+            $options = company_structure::Get_EmployeeLevel($SESSION->onlyCompany[3]);
         }//if
         $m_form->addElement('header', 'employees', get_string('company_structure_employees', 'report_manager'));
         $m_form->setExpanded('employees',true);
@@ -126,6 +129,9 @@ class manager_company_structure_form extends moodleform {
                               get_string('level'.$level,'report_manager'),
                               $options);
 
+            /* Check Only One Company */
+            $this->SetOnlyOneCompany($level,$options);
+
             $unlink_btn = $this->setLevelDefault($level,$form);
             if (($level == 0) && $myCompanies) {
                 $unlink_btn = ' lnk_disabled';
@@ -135,6 +141,49 @@ class manager_company_structure_form extends moodleform {
             $this->AddActionButtons($level,$form,$unlink_btn);
         $form->addElement('html', '</div>');
     }//AddLevel
+
+    /**
+     * @param           $level
+     * @param           $companiesLst
+     *
+     * @throws          Exception
+     *
+     * @creationDate    14/04/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * If there is only one company connected, saved it because it will be selected by default.
+     */
+    function SetOnlyOneCompany($level,$companiesLst) {
+        /* Variables    */
+        global $SESSION;
+        $aux            = null;
+        $onlyCompany    = null;
+
+        try {
+            /* Check if there is only one company   */
+
+            $aux = $companiesLst;
+            unset($aux[0]);
+            if (count($aux) == 1) {
+                $onlyCompany = implode(',',array_keys($aux));
+            }
+
+            /* Save Company */
+            if ($onlyCompany) {
+                if (!isset($SESSION->onlyCompany)) {
+                    $SESSION->onlyCompany = array();
+                }
+
+                /* Set the company */
+                $SESSION->onlyCompany[$level] = $onlyCompany;
+            }else {
+                unset($SESSION->onlyCompany);
+            }//if_oneCompany
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//SetOnlyOneCompany
 
     /**
      * @param               $myAccess
@@ -151,6 +200,7 @@ class manager_company_structure_form extends moodleform {
      */
     function Get_MyLevelAccess($myAccess,$level) {
         /* Variables    */
+        global $SESSION;
         $myLevelAccess  = null;
         $parent         = null;
 
@@ -158,6 +208,10 @@ class manager_company_structure_form extends moodleform {
             if ($myAccess) {
                 $parent     = optional_param(COMPANY_STRUCTURE_LEVEL . 0, 0, PARAM_INT);
 
+                if ((!$parent) && isset($SESSION->onlyCompany)) {
+                    $parent = $SESSION->onlyCompany[0];
+
+                }
                 switch ($level) {
                     case 0:
                         $myLevelAccess = implode(',',array_keys($myAccess));
@@ -167,6 +221,7 @@ class manager_company_structure_form extends moodleform {
                         if ($parent) {
                             $myLevelAccess = $myAccess[$parent]->levelOne;
                         }//if_parent
+
 
                         break;
                     case 2:
@@ -207,6 +262,7 @@ class manager_company_structure_form extends moodleform {
      */
     function getCompanyList($level,$myCompanies) {
         /* Variables    */
+        global $SESSION;
         $options        = array();
 
         /* Get Company List */
@@ -224,7 +280,12 @@ class manager_company_structure_form extends moodleform {
                 if ($parent) {
                     $options = CompetenceManager::GetCompanies_LevelList($level,$parent,$myCompanies);
                 }else {
-                    $options[0] = get_string('select_level_list','report_manager');
+                    /* Check if there is only one company */
+                    if (isset($SESSION->onlyCompany)) {
+                        $options = CompetenceManager::GetCompanies_LevelList($level,$SESSION->onlyCompany[$level-1],$myCompanies);
+                    }else {
+                        $options[0] = get_string('select_level_list','report_manager');
+                    }
                 }//if_parent
 
                 break;
@@ -249,14 +310,21 @@ class manager_company_structure_form extends moodleform {
      */
     function setLevelDefault($level,&$form) {
         /* Variables    */
+        global $SESSION;
         $unlink     = '';
         $default    = null;
         $parent     = null;
 
         /* Get Default Value    */
-        $default = optional_param(COMPANY_STRUCTURE_LEVEL . $level, 0, PARAM_INT);
+        if (isset($SESSION->onlyCompany)) {
+            $default = $SESSION->onlyCompany[$level];
+        }else {
+            $default = optional_param(COMPANY_STRUCTURE_LEVEL . $level, 0, PARAM_INT);
+        }//if_only
 
-        if ($level > 0) {
+        $form->setDefault(COMPANY_STRUCTURE_LEVEL . $level,$default);
+
+        if ($level >0) {
             $parent  = optional_param(COMPANY_STRUCTURE_LEVEL . ($level-1), 0, PARAM_INT);
 
             if ($parent) {
@@ -266,15 +334,13 @@ class manager_company_structure_form extends moodleform {
             }else {
                 $unlink = ' lnk_disabled ';
             }//if_parent
-        }//if_level
-
-        /* Set Default  */
-        $form->setDefault(COMPANY_STRUCTURE_LEVEL . $level,$default);
+        }
 
         /* Deactivate levels    */
         if ($level) {
             $form->disabledIf(COMPANY_STRUCTURE_LEVEL . $level ,COMPANY_STRUCTURE_LEVEL . ($level - 1),'eq',0);
         }//if_elvel
+
 
         return $unlink;
     }//setLevelDefault
