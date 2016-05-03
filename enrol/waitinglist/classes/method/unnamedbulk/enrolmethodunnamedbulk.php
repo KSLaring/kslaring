@@ -480,6 +480,7 @@ class enrolmethodunnamedbulk extends \enrol_waitinglist\method\enrolmethodbase {
             $qstatus->vacancies = $vacancies;
             $qstatus->assignedseats=0;
             $qstatus->queueposition=0;
+            $qstatus->waitingseats =0;
             if($entry){
                 $qstatus->hasentry=true;
                 $qstatus->seats = $entry->seats;

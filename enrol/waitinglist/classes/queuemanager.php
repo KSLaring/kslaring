@@ -350,10 +350,9 @@ class queuemanager  {
      * @return boolean true=list is full | false = not full yet
      */
 	public function is_full(){
-		//echo '<br/>listtotal:' . $this->get_listtotal() ;
-		//echo '<br/>waitlistsize:' . $this->waitinglist->{ENROL_WAITINGLIST_FIELD_WAITLISTSIZE};
-		
-		return $this->get_listtotal() >= $this->waitinglist->{ENROL_WAITINGLIST_FIELD_WAITLISTSIZE};
+        if ($this->waitinglist->{ENROL_WAITINGLIST_FIELD_MAXENROLMENTS}) {
+            return $this->get_listtotal() >= $this->waitinglist->{ENROL_WAITINGLIST_FIELD_WAITLISTSIZE};
+        }
 	}
 	
 	/**

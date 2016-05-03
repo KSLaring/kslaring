@@ -243,15 +243,22 @@ abstract class enrolmethodbase  {
         //there is a wee issue here.
         //if the top entry is blocking (its method is maxed out) it will prevent 
         //immediate enrolments here. But cron will still enrol them
-		if($vacancies && 
-				$queueman->get_listposition($queue_entry)==1 ){
-			if($queue_entry->seats > $vacancies){
-				$giveseats = $vacancies;
-			}else{
-				$giveseats = $queue_entry->seats;
-			}
-			
-			//adjust seats according to max allowed by this enrolment method
+        $position = 0;
+        if (!$waitinglist->{ENROL_WAITINGLIST_FIELD_MAXENROLMENTS}) {
+            $position = 1;
+            $giveseats = $queue_entry->seats;
+        }else if ($vacancies && $queueman->get_listposition($queue_entry)==1) {
+            if($queue_entry->seats > $vacancies){
+                $giveseats = $vacancies;
+            }else{
+                $giveseats = $queue_entry->seats;
+            }
+
+            $position = $queueman->get_listposition($queue_entry);
+        }
+
+		if($position ==1 ){
+            //adjust seats according to max allowed by this enrolment method
 			$method_enrolable = $this->get_max_can_enrol();
 			if($method_enrolable){
 				$method_enroled = $entryman->get_allocated_listtotal_by_method(static::METHODTYPE);
