@@ -27,6 +27,7 @@ $url            = new moodle_url('/local/friadmin/course_locations/index.php');
 $url_view       = new moodle_url('/local/friadmin/course_locations/locations.php');
 $context        = context_system::instance();
 $myCompetence   = null;
+$IsAdmin        = false;
 
 /**
  * @updateDate  22/06/2015
@@ -65,11 +66,14 @@ if (isset($SESSION->act)) {
 setcookie('dir','ASC');
 setcookie('field','');
 
+/* Check if it's admin          */
+$IsAdmin = is_siteadmin($USER->id);
+
 /* Get My Competence Locations  */
 $myCompetence = CourseLocations::Get_MyCompetence($USER->id);
 
 /* Form */
-$form = new locations_search_form(null,array($myCompetence));
+$form = new locations_search_form(null,array($myCompetence,$IsAdmin));
 if($data = $form->get_data()) {
     /* Get Data */
     $dataForm = (Array)$data;
@@ -98,7 +102,11 @@ echo $OUTPUT->header();
 /* Table with locations */
 echo $OUTPUT->heading(get_string('filter','local_friadmin'));
 
-$form->display();
+if (!$myCompetence->levelZero && !$IsAdmin) {
+    echo $OUTPUT->heading(get_string('no_competence_profile', 'local_friadmin'),4);
+}else {
+    $form->display();
+}
 
 /* Footer   */
 echo $OUTPUT->footer();
