@@ -191,3 +191,6 @@ $string['course_enrolment'] = 'Påmeldingsmetoder';
 
 $string['enrol_wait_self']  = 'Egenpåmelding med venteliste';
 $string['enrol_wait_buk']   = 'Bulkpåmelding med venteliste';
+
+$string['no_competence_add_location']   = '<strong>Sorry, you must update your competence profile if you want to set up new locations connected with you competence</strong>';
+$string['no_competence_profile']        = '<strong>Sorry, you must update your competence profile if you want to look up locations connected with you competence</strong>';

@@ -30,6 +30,7 @@ $context        = context_system::instance();
 $edit_options   = null;
 $myCompetence   = null;
 $strTitle       = null;
+$IsAdmin        = false;
 
 /**
  * @updateDate  22/06/2015
@@ -62,8 +63,12 @@ $location_info = new stdClass();
 $location_info->description            = '';
 $location_info->descriptionformat      = FORMAT_HTML;
 $location_info = file_prepare_standard_editor($location_info, 'description', $edit_options,$context, 'local', 'course_locations',0);
+
+/* Check if it's admin          */
+$IsAdmin = is_siteadmin($USER->id);
+
 /* Form */
-$form = new add_location_form(null,array($myCompetence,$edit_options));
+$form = new add_location_form(null,array($myCompetence,$IsAdmin,$edit_options));
 if ($form->is_cancelled()) {
     setcookie('parentCounty',0);
     setcookie('parentMunicipality',0);
@@ -95,7 +100,12 @@ if ($form->is_cancelled()) {
 /* Header   */
 echo $OUTPUT->header();
 
-$form->display();
+if (!$myCompetence->levelZero && !$IsAdmin) {
+    echo $OUTPUT->heading(get_string('no_competence_add_location', 'local_friadmin'),4);
+}else {
+    $form->display();
+}
+
 
 /* Footer   */
 echo $OUTPUT->footer();

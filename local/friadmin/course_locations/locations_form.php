@@ -41,14 +41,17 @@ class locations_search_form extends moodleform {
         $form               = $this->_form;
 
         /* Hierarchy    */
-        list($myCompetence) = $this->_customdata;
+        list($myCompetence,$IsAdmin) = $this->_customdata;
 
         /* Counties                 */
-        if ($myCompetence) {
+        if ($IsAdmin) {
+            $counties   = CourseLocations::Get_Companies(0);
+        }else if ($myCompetence->levelZero) {
             $counties   = CourseLocations::Get_Companies(0,$myCompetence->levelZero);
         }else {
             $counties[0] = get_string('select_level_list','local_friadmin');
         }//if_myCompetence
+
         $form->addElement('select',COURSE_LOCATION_COUNTY,get_string('counties', 'local_friadmin'),$counties);
         if (isset($_COOKIE['parentCounty']) && ($_COOKIE['parentCounty'])) {
             $form->setDefault(COURSE_LOCATION_COUNTY,$_COOKIE['parentCounty']);
@@ -113,18 +116,21 @@ class add_location_form extends moodleform {
         $levelZero      = null;
         $counties       = array();
         $municipalities = array();
+        $disabled       = '';
 
         /* Form         */
         $form               = $this->_form;
 
         /* Hierarchy    */
-        list($myCompetence,$edit_options) = $this->_customdata;
+        list($myCompetence,$IsAdmin,$edit_options) = $this->_customdata;
 
         /* Locations    */
         $form->addElement('header', 'header_location', get_string('location', 'local_friadmin'));
         $form->setExpanded('header_location',true);
         /* Counties                 */
-        if ($myCompetence) {
+        if ($IsAdmin) {
+            $counties   = CourseLocations::Get_Companies(0);
+        }else if ($myCompetence->levelZero) {
             $counties   = CourseLocations::Get_Companies(0,$myCompetence->levelZero);
         }else {
             $counties[0] = get_string('select_level_list','local_friadmin');
@@ -149,7 +155,15 @@ class add_location_form extends moodleform {
         if (isset($_COOKIE['parentMunicipality']) && ($_COOKIE['parentMunicipality'])) {
             $form->setDefault(COURSE_LOCATION_MUNICIPALITY ,$_COOKIE['parentMunicipality']);
         }else {
-            $form->setDefault(COURSE_LOCATION_MUNICIPALITY ,0);
+            $aux = $municipalities;
+            unset($aux[0]);
+            if (count($aux) == 1) {
+                $aux = array_keys($aux);
+                $form->setDefault(COURSE_LOCATION_MUNICIPALITY ,$aux[0]);
+            }else {
+                $form->setDefault(COURSE_LOCATION_MUNICIPALITY ,0);
+            }
+
         }//if_cookie
         $form->disabledIf(COURSE_LOCATION_MUNICIPALITY ,COURSE_LOCATION_COUNTY,'eq',0);
         $form->addRule(COURSE_LOCATION_MUNICIPALITY, 'required', 'required', 'nonzero', 'client');
@@ -159,13 +173,12 @@ class add_location_form extends moodleform {
         $form->addElement('header', 'header_general', get_string('title_general', 'local_friadmin'));
         $form->setExpanded('header_general',true);
         /* Name                 */
-        $form->addElement('text','name',get_string('location_name','local_friadmin'));
+        $form->addElement('text','name',get_string('location_name','local_friadmin'),$disabled);
         $form->addRule('name', 'required', 'required', null, 'client');
         $form->setType('name',PARAM_TEXT);
 
         /* Description          */
-
-        $form->addElement('editor','description_editor',get_string('location_desc','local_friadmin'),'style="width: 90%;" ',$edit_options);
+        $form->addElement('editor','description_editor',get_string('location_desc','local_friadmin'),'' ,$edit_options);
         $form->setType('description_editor',PARAM_RAW);
 
         /* Url More information */
@@ -173,17 +186,17 @@ class add_location_form extends moodleform {
         $form->setType('url_desc',PARAM_URL);
 
         /* Floor                */
-        $form->addElement('text','floor',get_string('location_floor','local_friadmin'),array('size' => 10,'maxlength' => 25));
+        $form->addElement('text','floor',get_string('location_floor','local_friadmin'),array('size' => 10, 'maxlength' => 25));
         $form->addRule('floor', 'required', 'required', null, 'client');
         $form->setType('floor',PARAM_TEXT);
 
         /* Room                 */
-        $form->addElement('text','room',get_string('location_room','local_friadmin'),array('size' => 10,'maxlength' => 25));
+        $form->addElement('text','room',get_string('location_room','local_friadmin'),array('size' => 10, 'maxlength' => 25));
         $form->addRule('room', 'required', 'required', null, 'client');
         $form->setType('room',PARAM_TEXT);
 
         /* Seats                */
-        $form->addElement('text','seats',get_string('location_seats','local_friadmin'),array('size' => 10,'maxlength' => 25));
+        $form->addElement('text','seats',get_string('location_seats','local_friadmin'),array('size' => 10, 'maxlength' => 25));
         $form->addRule('seats', 'required', 'required', null, 'client');
         $form->setType('seats',PARAM_INT);
         $form->setDefault('seats',0);
@@ -203,7 +216,7 @@ class add_location_form extends moodleform {
         $form->setType('city',PARAM_TEXT);
 
         /* Url Map              */
-        $form->addElement('url','url_map',get_string('location_map','local_friadmin'),array('size' => 25));
+        $form->addElement('url','url_map',get_string('location_map','local_friadmin'), array('size' => 25));
         $form->setType('url_map',PARAM_URL);
 
         /* Post Address         */
@@ -223,7 +236,7 @@ class add_location_form extends moodleform {
         $form->setType('mail',PARAM_TEXT);
 
         /* Comments             */
-        $form->addElement('textarea','comments',get_string('location_comments','local_friadmin'),'rows="10" cols="60" style="width: 90%;"');
+        $form->addElement('textarea','comments',get_string('location_comments','local_friadmin'),'rows="10" cols="60" ');
         $form->setType('textarea',PARAM_RAW);
 
         /* Activate             */
