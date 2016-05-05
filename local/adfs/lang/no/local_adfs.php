@@ -11,10 +11,10 @@
  *
  */
 
-$string['pluginname']   = 'ADFS Integration Web Service';
+$string['pluginname']   = 'KS Læring ADFS-webservice';
 
-$string['ks_site']      = 'KS Læring site';
+$string['ks_site']      = 'KS Læring portal';
 
-$string['adfs_settings']    = 'ADFS Settings';
-$string['adfs_service']     = 'ADFS Service';
-$string['adfs_token']       = 'ADFS Token';
+$string['adfs_settings']    = 'ADFS-innstillinger';
+$string['adfs_service']     = 'ADFS-webservice';
+$string['adfs_token']       = 'ADFS-token';
