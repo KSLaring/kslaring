@@ -33,12 +33,12 @@ class FELLESDATA_CRON {
             //self::ImportKS($pluginInfo);
 
             /* Import Fellesdata        */
-            self::ImportFellesdata($pluginInfo);
+            //self::ImportFellesdata($pluginInfo);
 
 
             /* SYNCHRONIZATION  */
             /* Synchronization Users Accounts   */
-            //self::UsersFS_Synchronization($pluginInfo);
+            self::UsersFS_Synchronization($pluginInfo);
 
             /* Synchronization Companies    */
             //self::CompaniesFS_Synchronization($pluginInfo,$fstExecution);
@@ -297,7 +297,7 @@ class FELLESDATA_CRON {
             //self::ImportFSUserCompetence($pluginInfo);
 
             /* Import FS User Competence JR */
-            self::ImportFSUserCompetenceJR($pluginInfo);
+            //self::ImportFSUserCompetenceJR($pluginInfo);
 
             /* Log  */
             $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' FINISH Import Fellesdata . ' . "\n";
@@ -627,10 +627,10 @@ class FELLESDATA_CRON {
                 foreach ($rdo as $instance) {
                     /* Users account info   */
                     $infoUser = new stdClass();
-                    $infoUser->personalnumber   = $instance->personalnumber;
-                    $infoUser->firstname        = $instance->firstname;
-                    $infoUser->lastname         = $instance->lastname;
-                    $infoUser->email            = $instance->email;
+                    $infoUser->personalnumber   = $instance->fodselsnr;
+                    $infoUser->firstname        = $instance->fornavn;
+                    $infoUser->lastname         = $instance->mellomnavn . ' ' . $instance->etternavn;
+                    $infoUser->email            = $instance->epost;
                     $infoUser->action           = $instance->action;
 
                     /* Add User */
