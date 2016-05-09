@@ -335,13 +335,15 @@ class Fellesdata_Install {
             /* Id --> Primary key                   */
             $tblImpUsers->add_field('id',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, XMLDB_SEQUENCE,null);
             /* personalnumber --> Personal number   */
-            $tblImpUsers->add_field('personalnumber',XMLDB_TYPE_CHAR,'50',null, XMLDB_NOTNULL, null,null);
+            $tblImpUsers->add_field('fodselsnr',XMLDB_TYPE_CHAR,'50',null, XMLDB_NOTNULL, null,null);
             /* firstname    --> First name          */
-            $tblImpUsers->add_field('firstname',XMLDB_TYPE_CHAR,'255',null, XMLDB_NOTNULL, null,null);
+            $tblImpUsers->add_field('fornavn',XMLDB_TYPE_CHAR,'255',null, XMLDB_NOTNULL, null,null);
             /* lastname     --> lastname            */
-            $tblImpUsers->add_field('lastname',XMLDB_TYPE_CHAR,'255',null, XMLDB_NOTNULL, null,null);
+            $tblImpUsers->add_field('mellomnavn',XMLDB_TYPE_CHAR,'255',null, XMLDB_NOTNULL, null,null);
+            /* lastname     --> lastname            */
+            $tblImpUsers->add_field('etternavn',XMLDB_TYPE_CHAR,'255',null, XMLDB_NOTNULL, null,null);
             /* eMail        --> eMail               */
-            $tblImpUsers->add_field('email',XMLDB_TYPE_CHAR,'255',null, XMLDB_NOTNULL, null,null);
+            $tblImpUsers->add_field('epost',XMLDB_TYPE_CHAR,'255',null, XMLDB_NOTNULL, null,null);
             /* action   --> Action to apply         */
             $tblImpUsers->add_field('action',XMLDB_TYPE_CHAR,'50',null, XMLDB_NOTNULL, null,null);
             /* Imported                             */
@@ -350,7 +352,7 @@ class Fellesdata_Install {
             /* Keys     */
             $tblImpUsers->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
             /* Index    */
-            $tblImpUsers->add_index('personalnumber',XMLDB_INDEX_NOTUNIQUE,array('personalnumber'));
+            $tblImpUsers->add_index('fodselsnr',XMLDB_INDEX_NOTUNIQUE,array('fodselsnr'));
 
             if (!$dbMan->table_exists('fs_imp_users')) {
                 $dbMan->create_table($tblImpUsers);

@@ -1545,6 +1545,7 @@ class FS {
 
             foreach($data as $key=>$line) {
                 $line           = strtolower($line);
+                echo $line . "</br>";
                 $lineContent    = json_decode($line);
 
                 /* Get New Entry    */
@@ -1639,7 +1640,7 @@ class FS {
         try {
             /* User Info    */
             /* Execute  */
-            $DB->insert_records('fs_imp_users',$data);
+            //$DB->insert_records('fs_imp_users',$data);
 
             /* Commit   */
             $trans->allow_commit();
