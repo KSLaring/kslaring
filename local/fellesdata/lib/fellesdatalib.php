@@ -935,13 +935,10 @@ class FSKS_USERS {
         $objUser    = null;
 
         try {
-            echo "2";
             /* Synchronize users have been imported  */
             foreach ($usersImported as $user) {
                 /* Convert to object */
                 $objUser = (Object)$user;
-
-                echo "Personal Number: " . $objUser->personalnumber . ' Imported : ' . $objUser->imported . '</br>';
 
                 if ($objUser->imported) {
                     /* Get Info User    */

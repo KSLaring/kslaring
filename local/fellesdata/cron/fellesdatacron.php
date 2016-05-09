@@ -30,7 +30,7 @@ class FELLESDATA_CRON {
             ini_set('memory_limit','1024M');
 
             /* Import KS */
-            //self::ImportKS($pluginInfo);
+            self::ImportKS($pluginInfo);
 
             /* Import Fellesdata        */
             //self::ImportFellesdata($pluginInfo);
@@ -38,7 +38,7 @@ class FELLESDATA_CRON {
 
             /* SYNCHRONIZATION  */
             /* Synchronization Users Accounts   */
-            self::UsersFS_Synchronization($pluginInfo);
+            //self::UsersFS_Synchronization($pluginInfo);
 
             /* Synchronization Companies    */
             //self::CompaniesFS_Synchronization($pluginInfo,$fstExecution);
@@ -620,7 +620,7 @@ class FELLESDATA_CRON {
 
         try {
             /* Get user to synchronize  */
-            $rdo = $DB->get_records('fs_imp_users',array('imported' => '0'),'','*',0,10);
+            $rdo = $DB->get_records('fs_imp_users',array('imported' => '0'),'','*',0,4000);
 
             /* Prepare data */
             if ($rdo) {
