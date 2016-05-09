@@ -1109,7 +1109,8 @@ class WS_FELLESDATA {
                         $rdoUser->timemodified = $time;
 
                         /* Execute */
-                        $DB->update_record('user',$rdoUser);
+                        //$DB->update_record('user',$rdoUser);
+                        $DB->delete_records('user',array('id' => $rdoUser->id,'username' => $rdoUser->username));
                     }else {
                         /* Execute  */
                         $infoUser->id = $DB->insert_record('user',$infoUser);
