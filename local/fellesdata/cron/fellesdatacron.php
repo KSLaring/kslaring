@@ -294,10 +294,10 @@ class FELLESDATA_CRON {
             //self::ImportFSJobRoles($pluginInfo);
 
             /* Import FS User Competence    */
-            self::ImportFSUserCompetence($pluginInfo);
+            //self::ImportFSUserCompetence($pluginInfo);
 
             /* Import FS User Competence JR */
-            //self::ImportFSUserCompetenceJR($pluginInfo);
+            self::ImportFSUserCompetenceJR($pluginInfo);
 
             /* Log  */
             $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' FINISH Import Fellesdata . ' . "\n";
