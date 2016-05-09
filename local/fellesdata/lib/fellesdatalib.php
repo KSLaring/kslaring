@@ -1142,7 +1142,7 @@ class FSKS_USERS {
                         $DB->delete_records('user',array('id' => $rdoUser->id,'username' => $rdoUser->username));
                     }else {
                         /* Execute  */
-                        $infoUser->id = $DB->insert_record('user',$infoUser);
+                    //    $infoUser->id = $DB->insert_record('user',$infoUser);
                     }//if_exist
 
                     /* Synchronized */
