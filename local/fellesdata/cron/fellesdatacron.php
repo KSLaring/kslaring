@@ -285,10 +285,10 @@ class FELLESDATA_CRON {
 
         try {
             /* Import FS Users              */
-            self::ImportFSUsers($pluginInfo);
+            //self::ImportFSUsers($pluginInfo);
 
             /* Import FS Companies          */
-            //self::ImportFSOrgStructure($pluginInfo);
+            self::ImportFSOrgStructure($pluginInfo);
 
             /* Import FS Job roles  */
             //self::ImportFSJobRoles($pluginInfo);

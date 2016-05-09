@@ -339,7 +339,7 @@ class Fellesdata_Install {
             /* firstname    --> First name          */
             $tblImpUsers->add_field('fornavn',XMLDB_TYPE_CHAR,'255',null, XMLDB_NOTNULL, null,null);
             /* lastname     --> lastname            */
-            $tblImpUsers->add_field('mellomnavn',XMLDB_TYPE_CHAR,'255',null, XMLDB_NOTNULL, null,null);
+            $tblImpUsers->add_field('mellomnavn',XMLDB_TYPE_CHAR,'255',null, null, null,null);
             /* lastname     --> lastname            */
             $tblImpUsers->add_field('etternavn',XMLDB_TYPE_CHAR,'255',null, XMLDB_NOTNULL, null,null);
             /* eMail        --> eMail               */
