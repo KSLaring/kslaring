@@ -1582,7 +1582,7 @@ class FS {
                 switch ($type) {
                     case IMP_USERS:
                         /* FS Users     */
-                        self::ImportTemporary_FSUsers($data);
+                        self::ImportTemporary_FSUsers($toSave);
 
                         break;
                     case IMP_COMPANIES:
