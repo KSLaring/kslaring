@@ -291,10 +291,10 @@ class FELLESDATA_CRON {
             //self::ImportFSOrgStructure($pluginInfo);
 
             /* Import FS Job roles  */
-            self::ImportFSJobRoles($pluginInfo);
+            //self::ImportFSJobRoles($pluginInfo);
 
             /* Import FS User Competence    */
-            //self::ImportFSUserCompetence($pluginInfo);
+            self::ImportFSUserCompetence($pluginInfo);
 
             /* Import FS User Competence JR */
             //self::ImportFSUserCompetenceJR($pluginInfo);
