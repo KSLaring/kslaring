@@ -69,7 +69,7 @@ try {
 /* Plugin Info      */
 $pluginInfo     = get_config('local_fellesdata');
 
-FELLESDATA_CRON::ImportFellesdata($pluginInfo);
+FELLESDATA_CRON::cron(true);
 
 /* Plugin Info      */
 //$pluginInfo     = get_config('local_fellesdata');
