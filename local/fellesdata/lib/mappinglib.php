@@ -455,9 +455,9 @@ class FS_MAPPING {
                     $infoCompany->matches   = self::GetPossibleOrgMatches($instance->name,$level,$sector);
 
                     /* Add FS Company   */
-                    if ($infoCompany->matches) {
+                    //if ($infoCompany->matches) {
                         $fsCompanies[$instance->fscompany] = $infoCompany;
-                    }//if_matches
+                    //}//if_matches
                 }//for_Rdo
             }//if_rdo
 
@@ -613,9 +613,9 @@ class FS_MAPPING {
                     $infoJR->matches        = self::GetPossiblesJRMatches($infoJR->name,$level,$sector,$generic);
 
                     /* Add Job Role */
-                    if ($infoJR->matches) {
+                    //if ($infoJR->matches) {
                         $fsJobRoles[$instance->fsjobrole] = $infoJR;
-                    }//if_matches
+                    //}//if_matches
                 }//for_rdo
             }//if_Rdo
 
