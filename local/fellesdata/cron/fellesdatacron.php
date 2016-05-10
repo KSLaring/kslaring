@@ -30,7 +30,7 @@ class FELLESDATA_CRON {
             ini_set('memory_limit','1024M');
 
             /* Import KS */
-            //self::ImportKS($pluginInfo);
+            self::ImportKS($pluginInfo);
 
             /* Import Fellesdata        */
             //self::ImportFellesdata($pluginInfo);
@@ -49,7 +49,7 @@ class FELLESDATA_CRON {
             /* Synchronization Comeptence   */
             //if (!$fstExecution) {
                 /* Synchronization User Competence Company  */
-                self::UserCompetence_Synchronization($pluginInfo,IMP_COMPETENCE_COMP,KS_USER_COMPETENCE_CO);
+            //    self::UserCompetence_Synchronization($pluginInfo,IMP_COMPETENCE_COMP,KS_USER_COMPETENCE_CO);
 
                 /* Synchronization User Competence JobRole  */
             //    self::UserCompetence_Synchronization($pluginInfo,IMP_COMPETENCE_JR,KS_USER_COMPETENCE_JR);
