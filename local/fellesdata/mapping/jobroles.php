@@ -26,7 +26,7 @@ $pattern    = null;
 $url        = new moodle_url('/local/fellesdata/mapping/jobroles.php',array('le' => $level,'g' => $generic));
 $return     = new moodle_url('/local/fellesdata/mapping/mapping.php');
 $start      = 0;
-$step       = 2;
+$step       = 5;
 $jrToMap    = null;
 $matched    = false;
 

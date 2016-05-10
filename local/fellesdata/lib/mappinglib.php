@@ -592,6 +592,8 @@ class FS_MAPPING {
                      WHERE	fs_imp.imported = :imported
                         AND fs_imp.action  != :action
                         AND	fs.id IS NULL
+                        AND fs_imp.stillingstekst like '%" . $sector . '%
+                        AND fs_imp.alternative like '%" . $sector . '%
                      ORDER BY fs_imp.stillingstekst
                      LIMIT $start, $length ";
 
