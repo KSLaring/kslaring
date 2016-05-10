@@ -44,16 +44,16 @@ class FELLESDATA_CRON {
             //self::CompaniesFS_Synchronization($pluginInfo,$fstExecution);
 
             /* Synchronization Job Roles    */
-            self::JobRolesFS_Synchronization($pluginInfo,$fstExecution);
+            //self::JobRolesFS_Synchronization($pluginInfo,$fstExecution);
 
             /* Synchronization Comeptence   */
-            //if (!$fstExecution) {
+            if (!$fstExecution) {
                 /* Synchronization User Competence Company  */
-            //    self::UserCompetence_Synchronization($pluginInfo,IMP_COMPETENCE_COMP,KS_USER_COMPETENCE_CO);
+                self::UserCompetence_Synchronization($pluginInfo,IMP_COMPETENCE_COMP,KS_USER_COMPETENCE_CO);
 
                 /* Synchronization User Competence JobRole  */
             //    self::UserCompetence_Synchronization($pluginInfo,IMP_COMPETENCE_JR,KS_USER_COMPETENCE_JR);
-            //}
+           }
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
