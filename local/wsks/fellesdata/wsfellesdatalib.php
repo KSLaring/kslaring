@@ -1112,6 +1112,7 @@ class WS_FELLESDATA {
                         $DB->update_record('user',$rdoUser);
                     }else {
                         /* Execute  */
+                        $infoUser->deleted      = 1;
                         $infoUser->id = $DB->insert_record('user',$infoUser);
                     }//if_infoUsers
 
