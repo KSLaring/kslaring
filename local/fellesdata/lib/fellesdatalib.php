@@ -1976,7 +1976,6 @@ class KS {
                         AND	ks.hierarchylevel = 0 ";
 
             /* Execute  */
-            echo "SQL KS MUNI : " . $sql . "</br>";
             $rdo = $DB->get_records_sql($sql);
             if ($rdo) {
                 $hierarchy = array();

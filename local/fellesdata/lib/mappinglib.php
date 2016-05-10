@@ -741,7 +741,6 @@ class FS_MAPPING {
             $sql .= " AND (" . $sqlMatch . ")";
             $sql .= " ORDER BY jr.industrycode,jr.name ";
 
-            echo "SQL: " . $sql . "</br>";
             $rdo = $DB->get_records_sql($sql);
             if ($rdo) {
                 foreach ($rdo as $instance) {
