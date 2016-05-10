@@ -724,7 +724,8 @@ class FS_MAPPING {
             }//if_sector
 
             /* Search by */
-            $searchBy = explode(' ',$fsJobRole);
+            $fsJobRole  = str_replace('/',' ',$fsJobRole);
+            $searchBy   = explode(' ',$fsJobRole);
             foreach($searchBy as $match) {
                 if ($sqlMatch) {
                     $sqlMatch .= " OR ";
