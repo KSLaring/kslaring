@@ -30,7 +30,7 @@ class FELLESDATA_CRON {
             ini_set('memory_limit','1024M');
 
             /* Import KS */
-            self::ImportKS($pluginInfo);
+            //self::ImportKS($pluginInfo);
 
             /* Import Fellesdata        */
             //self::ImportFellesdata($pluginInfo);
@@ -41,7 +41,7 @@ class FELLESDATA_CRON {
             //self::UsersFS_Synchronization($pluginInfo);
 
             /* Synchronization Companies    */
-            //self::CompaniesFS_Synchronization($pluginInfo,$fstExecution);
+            self::CompaniesFS_Synchronization($pluginInfo,$fstExecution);
 
             /* Synchronization Job Roles    */
             //self::JobRolesFS_Synchronization($pluginInfo,$fstExecution);
@@ -620,7 +620,7 @@ class FELLESDATA_CRON {
 
         try {
             /* Get user to synchronize  */
-            $rdo = $DB->get_records('fs_imp_users',array('imported' => '0'),'','*',0,4000);
+            $rdo = $DB->get_records('fs_imp_users',array('imported' => '0'),'','*');
 
             /* Prepare data */
             if ($rdo) {
@@ -644,7 +644,7 @@ class FELLESDATA_CRON {
                     FSKS_USERS::Synchronize_UsersFS($usersFS,$response['usersAccounts']);
 
                     /* Clean Table*/
-                    //$DB->delete_records('fs_imp_users',array('imported' => '1'));
+                    $DB->delete_records('fs_imp_users',array('imported' => '1'));
                 }//if_no_error
             }//if_Rdo
 
