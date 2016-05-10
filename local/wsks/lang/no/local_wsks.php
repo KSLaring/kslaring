@@ -23,4 +23,4 @@ $string['FEIDE_ERR_PROCESS']    = 'Det har skjedd en feil under innloggingen. Ve
 $string['set_activate']         = 'Activate Feide login';
 $string['set_activate_desc']    = 'Activate Feide login';
 
-$string['ADFS_ERR_PROCESS']    = 'There has been an error during the process. Please, contact your Moodle Administrator.';
+$string['ADFS_ERR_PROCESS']    = 'Det har oppstått en feil i prosessen. Vennligst kontakt administrator.';
