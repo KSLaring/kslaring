@@ -23,7 +23,7 @@ $pattern    = null;
 $url        = new moodle_url('/local/fellesdata/mapping/organization.php',array('le' => $level));
 $return     = new moodle_url('/local/fellesdata/mapping/mapping.php');
 $start      = 0;
-$step       = 2;
+$step       = 5;
 $fsToMap    = null;
 $matched    = false;
 

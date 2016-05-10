@@ -498,7 +498,8 @@ class FS_MAPPING {
             $params['level'] = $level;
 
             /* Search By    */
-            $searchBy = explode(' ',$fscompany);
+            $fscompany  = str_replace('/',' ',$fscompany);
+            $searchBy   = explode(' ',$fscompany);
 
             /* SQL Instruction  */
             $sql = " SELECT	ks.id,
