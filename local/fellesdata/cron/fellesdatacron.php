@@ -41,10 +41,10 @@ class FELLESDATA_CRON {
             //self::UsersFS_Synchronization($pluginInfo);
 
             /* Synchronization Companies    */
-            self::CompaniesFS_Synchronization($pluginInfo,$fstExecution);
+            //self::CompaniesFS_Synchronization($pluginInfo,$fstExecution);
 
             /* Synchronization Job Roles    */
-            //self::JobRolesFS_Synchronization($pluginInfo,$fstExecution);
+            self::JobRolesFS_Synchronization($pluginInfo,$fstExecution);
 
             /* Synchronization Comeptence   */
             //if (!$fstExecution) {

@@ -270,11 +270,11 @@ class jobroles_map_form extends moodleform {
                         $grp = $form->addElement('group', 'grp', null, $options,null , false);
 
                         /* Option new company */
-                        $options   = array();
-                        $index  = 'new';
-                        $options[$index] = $form->createElement('radio', $refFS,'',get_string('new_jr','local_fellesdata'),$index);
-                        $options[$index]->setValue($index);
-                        $grp = $form->addElement('group', 'grp', null, $options,null , false);
+                        //$options   = array();
+                        //$index  = 'new';
+                        //$options[$index] = $form->createElement('radio', $refFS,'',get_string('new_jr','local_fellesdata'),$index);
+                        //$options[$index]->setValue($index);
+                        //$grp = $form->addElement('group', 'grp', null, $options,null , false);
 
                         /* Match Options    */
                         foreach ($fsJR->matches as $match) {
