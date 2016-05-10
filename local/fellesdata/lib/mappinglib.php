@@ -437,6 +437,7 @@ class FS_MAPPING {
                      WHERE	fs_imp.imported  = :imported
                         AND fs_imp.action   != :action
                         AND	fs.id IS NULL
+                        AND fs_imp.org_navn like '%" . $sector . "%'
                      ORDER BY fs_imp.org_navn
                      LIMIT $start, $length ";
 
@@ -528,8 +529,6 @@ class FS_MAPPING {
             $sql .= " AND (" . $sqlMatch . ")";
             $sql .= " ORDER BY ks.industrycode, ks.name ";
 
-
-            echo "SQL: " . $sql . "</br>";
             $rdo = $DB->get_records_sql($sql,$params);
             if ($rdo) {
                 foreach ($rdo as $instance) {
