@@ -49,11 +49,11 @@ $string['header_fellesdata']    = 'Fellesdata-mapping';
 $string['nav_map_org']          = 'Org-struktur mapping';
 $string['nav_map_jr']           = 'Jobbrolle-mapping';
 
-$string['level_map']            = 'Nivå som skal mappes';
+$string['level_map']            = 'Nivå (0-1-2-3) som skal mappes';
 $string['pattern']              = 'Tekstmønster';
 $string['pattern_help']         = 'For eksempel "Skole". Det betyr at du vil mappe alle org-elementer som hører til f.eks. "Skole og oppvekst".';
-$string['to_match']             = 'Å mappe';
-$string['possible_matches']     = 'Mulige treff';
+$string['to_match']             = 'Å mappe fra Fellesdata';
+$string['possible_matches']     = 'Mulige treff i KS Læring';
 
 $string['no_match']             = 'Ikke sikker';
 $string['new_comp']             = 'Nytt org-element';
