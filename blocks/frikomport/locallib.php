@@ -88,16 +88,16 @@ class block_frikomport_menu_manager {
              * Action --> local/friadmin/newcourse.php
              */
             array(
-                'text' => get_string('naddcourse', 'block_frikomport'),
-                'icon' => $settingsicon,
-                'type' => navigation_node::NODETYPE_LEAF,
-                'action' => '/local/friadmin/newcourse.php'
-            ),
-            array(
                 'text' => get_string('naddfromtemplate', 'block_frikomport'),
                 'icon' => $settingsicon,
                 'type' => navigation_node::NODETYPE_LEAF,
                 'action' => '/local/friadmin/coursetemplate.php'
+            ),
+            array(
+                'text' => get_string('naddcourse', 'block_frikomport'),
+                'icon' => $settingsicon,
+                'type' => navigation_node::NODETYPE_LEAF,
+                'action' => '/local/friadmin/newcourse.php'
             )
         );
         $this->add_tree_section($branch);
