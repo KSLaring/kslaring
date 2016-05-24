@@ -211,7 +211,7 @@ $string['approve_lnk']  = 'Godkjenn søknaden';
 $string['reject_lnk']   = 'Avslå søknaden';
 
 $string['request_sent']         = 'Søknaden din om plass på kurset er sendt din leder for behandling. Vi sender deg en epost når søknaden din er behandlet.';
-$string['request_remainder']    = 'Søknaden din ble innsendt <b>{$a}</b>. Den er ennå ikke behandlet av din leder. Ønsker du å sende en påminnelse til lederen din?';
+$string['request_remainder']    = 'Søknaden din er ennå ikke behandlet av din leder. Ønsker du å sende en påminnelse til lederen din?';
 
 $string['err_link'] = 'OOPS - søknaden er allerede behandlet. Lenken du klikket på kan bare benyttes en gang.';
 
