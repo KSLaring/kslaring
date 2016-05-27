@@ -15,9 +15,9 @@
  * Integrate 'Course Locations' plugin into FriAdmin plugin
  */
 
-$string['pluginname']           = 'Frikomport';
+$string['pluginname']           = 'Kursveiviser';
 
-$string['courselist_title']     = 'Frikomport tilgjengelige kurs';
+$string['courselist_title']     = 'Tilgjengelige kurs';
 $string['coursetable_title']    = 'Kursoversikt';
 $string['course_courseid']      = 'Kurs ID';
 $string['course_name']          = 'Navn';
@@ -39,7 +39,7 @@ $string['course_price']         = 'Pris';
 $string['course_link']          = 'Lenke';
 $string['course_edit']          = '';
 
-$string['usercourselist_title']     = 'Frikomport tilgjengelige kurs';
+$string['usercourselist_title']     = 'Tilgjengelige kurs';
 $string['usercoursetable_title']    = 'Kursoversikt';
 $string['usercourse_courseid']      = 'Kurs ID';
 $string['usercourse_name']          = 'Navn';
@@ -62,7 +62,7 @@ $string['usercourse_edit']          = '';
 $string['usercourse_counter']       = 'No';
 $string['usercourse_morecourses']   = 'Det er flere kurs enn vist her som kan være av interesse.<br />Vennligst bruk søkemulighetene over for å avgrense søket.';
 
-$string['coursedetail_title']           = 'Frikomport kursdetaljer';
+$string['coursedetail_title']           = 'Kursveiviser kursdetaljer';
 $string['coursedetail_back']            = 'Tilbake til kursoversikten';
 $string['coursedetail_go']              = 'Gå til kurset';
 $string['coursedetail_settings']        = 'Kursinnstillinger';
@@ -76,7 +76,7 @@ $string['coursedetail_participantlist'] = 'Last ned deltakerliste';
 $string['coursedetail_duplicate']       = 'Dupliser';
 $string['coursedetail_email']           = 'Send epost';
 
-$string['coursetemplate_title']         = 'Frikomport - Legg til fra kursmal';
+$string['coursetemplate_title']         = 'Kursveiviser - Legg til fra kursmal';
 $string['coursetemplate_subtitle']      = 'Opprett et kurs fra en kursmal.';
 $string['coursetemplate_cat']           = 'Kurskategori for kursmaler';
 $string['coursetemplate_cat_desc']      = 'Vennligst velg kurskategorien hvor alle kursmaler skal lagres.';
