@@ -16,10 +16,10 @@
  * Add new strings for location menu
  */
 $string['enabledock']               = 'Tillat brukeren å flytte denne blokken til sidestolpen';
-$string['pluginname']               = 'Frikomport';
+$string['pluginname']               = 'Kursveiviser';
 $string['searchinfrikomport']       = 'Søk';
-$string['frikomport:addinstance']   = 'Legg til en ny Frikomport-blokk';
-$string['frikomport:myaddinstance'] = 'Legg til en ny Frikomport-blokk til Min startside';
+$string['frikomport:addinstance']   = 'Legg til en ny Kursveiviser-blokk';
+$string['frikomport:myaddinstance'] = 'Legg til en ny Kursveiviser-blokk til Min startside';
 $string['frikomport:view'] = 'Vis Friadmin-blokken';
 
 $string['ncourses']                 = 'Kursoversikt';
