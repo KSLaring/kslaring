@@ -1158,12 +1158,36 @@ body {
 .path-admin #explaincaps .rolecap.no td {
   background-color: #fae5e3;
 }
-/* fix for feedback module dropdowns
-// Jon Jack
-*/
 #page-mod-feedback-complete .box .feedback_items .feedback_item_presentation_left ul {
   padding: 0;
-  margin: 0 0 10.5px 0px;
+  margin: 0 0 10.5px 0;
+}
+@media only screen and (min-width: 768px) {
+  #topsearch {
+    float: left;
+  }
+}
+@media only screen and (min-width: 681px) and (max-width: 767px) {
+  #topsearch {
+    float: none;
+    margin-left: 20px;
+  }
+}
+@media only screen and (max-width: 680px) {
+  #topsearch {
+    float: none;
+    margin-left: 5px;
+  }
+}
+#topsearch #shorttopsearchbox {
+  margin-bottom: 0;
+}
+#topsearch .topsearchbox label {
+  display: block;
+  font-size: 1px;
+  line-height: 1px;
+  height: 1px;
+  overflow: hidden;
 }
 .hero-unit {
   background-color: #f2f2f3;

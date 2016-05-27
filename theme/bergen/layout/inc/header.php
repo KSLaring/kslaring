@@ -50,7 +50,9 @@ if ($loggedin) {
                     <span class="icon-bar"></span>
                 </a>
 
-                <?php if (!$loggedin) : ?>
+                <?php echo $OUTPUT->search_form(); ?>
+
+                <?php if (!$loggedin || isguestuser()) : ?>
                     <div class="navbar-text"><?php echo $OUTPUT->login_info() ?></div>
                 <?php endif ?>
 

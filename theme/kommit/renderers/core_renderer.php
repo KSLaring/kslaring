@@ -322,28 +322,28 @@ EOT;
         }
 
         if ($addusermenu) {
-            if (isloggedin()) {
+            if (isguestuser()) {
+                //$strlogin = '(' . get_string('login') . ')';
+                //$menu->add($strlogin, new moodle_url('/login/index.php'),
+                //    $strlogin, 10001);
+            } else if (isloggedin()) {
                 $usermenu = $menu->add(fullname($USER), new moodle_url(''), fullname($USER), 10001);
 
-                $usermenu->add('<i class="fa fa-file"></i>' . get_string('myhome'), new moodle_url('/my/'));
+                $usermenu->add('<i class="fa fa-file"></i>' . get_string('myhome'),
+                    new moodle_url('/my/'));
 
-                $usermenu->add('<i class="fa fa-user"></i>' . get_string('viewprofile'), new moodle_url('/user/profile.php',
-                    array('id' => $USER->id)),
+                $usermenu->add('<i class="fa fa-user"></i>' . get_string('viewprofile'),
+                    new moodle_url('/user/profile.php', array('id' => $USER->id)),
                     get_string('viewprofile'));
 
                 $usermenu->add('<i class="fa fa-cog"></i>' . get_string('editmyprofile'),
-                    new moodle_url('/user/edit.php',
-                        array('id' => $USER->id)),
+                    new moodle_url('/user/edit.php', array('id' => $USER->id)),
                     get_string('editmyprofile'));
 
-                $usermenu->add('<i class="fa fa-lock"></i>' . get_string('logout'), new moodle_url('/login/logout.php',
-                    array('sesskey' => sesskey(), 'alt' => 'logout')),
+                $usermenu->add('<i class="fa fa-lock"></i>' . get_string('logout'),
+                    new moodle_url('/login/logout.php',
+                        array('sesskey' => sesskey(), 'alt' => 'logout')),
                     get_string('logout'));
-
-            } else {
-                /*
-                 * Hide login in custom menu area
-                $usermenu = $menu->add(get_string('login'), new moodle_url('/login/index.php'), get_string('login'), 10001);*/
             }
         }
 
@@ -726,6 +726,39 @@ EOT;
     }
 
     /**
+     * Return the Moodle course search form.
+     *
+     * @return string The HTML for the search form
+     */
+    public function search_form() {
+        global $CFG;
+
+        $out = '';
+        $form = <<<T_END_HEREDOC
+        <form id="topsearch" action="{{baseurl}}/course/search.php" method="get">
+            <fieldset class="topsearchbox invisiblefieldset">
+                <label for="shorttopsearchbox">{{searchlabel}}</label>
+                <input type="text" id="shorttopsearchbox" size="18" name="search"
+                    placeholder="{{placeholder}}" value="">
+                <button type="submit"><i class="fa pull-right fa-search"></i></button>
+            </fieldset>
+        </form>
+        <script type="text/javascript">Y.one('#shorttopsearchbox').focus();</script>
+T_END_HEREDOC;
+        $baseurl = $CFG->wwwroot;
+        $strsearchlabel = 'Search courses: ';
+        $strplaceholder = 'Hva leter du etter?';
+
+        $out = str_replace(
+            array('{{baseurl}}', '{{searchlabel}}', '{{placeholder}}'),
+            array($baseurl, $strsearchlabel, $strplaceholder),
+            $form
+        );
+
+        return $out;
+    }
+
+    /**
      * Get the background image style with the Moodle URL.
      *
      * @param $context object The Moodle context
@@ -758,7 +791,7 @@ EOT;
      * @return string The CSS background image style
      */
     protected function get_bgimg_style($context) {
-        $bgimgurl  = $this->page->theme->setting_file_url('heroimg', 'heroimg');
+        $bgimgurl = $this->page->theme->setting_file_url('heroimg', 'heroimg');
         $imgstyle = '';
         if (!empty($bgimgurl)) {
             $imgstyle = "background-image: url('" . $bgimgurl . "');";

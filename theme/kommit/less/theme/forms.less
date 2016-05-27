@@ -1,14 +1,37 @@
-/* fix for feedback module dropdowns
-// Jon Jack
-*/
-
 #page-mod-feedback-complete {
-  .box .feedback_items {
-     .feedback_item_presentation_left{
-        ul{
-          padding: 0;
-          margin: 0 0 10.5px 0px;
-          }
+    .box .feedback_items {
+        .feedback_item_presentation_left {
+            ul {
+                padding: 0;
+                margin: 0 0 10.5px 0;
+            }
+        }
     }
-  }
+}
+
+#topsearch {
+    @media only screen and (min-width: @mediumWidth) {
+        float: left;
+    }
+    @media only screen and (min-width: 681px) and (max-width: (@mediumWidth - 1)) {
+        float: none;
+        margin-left: 20px;
+    }
+    @media only screen and (max-width: 680px) {
+        float: none;
+        margin-left: 5px;
+    }
+
+    #shorttopsearchbox {
+        margin-bottom: 0;
+    }
+    .topsearchbox {
+        label {
+            display: block;
+            font-size: 1px;
+            line-height: 1px;
+            height: 1px;
+            overflow: hidden;
+        }
+    }
 }
