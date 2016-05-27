@@ -9,11 +9,11 @@
  */
 
 $string['enabledock'] = 'Tillat brukeren å flytte denne blokken til sidestolpen';
-$string['pluginname'] = 'Frikomport kurs liste';
+$string['pluginname'] = 'Kursveiviser - kursliste';
 $string['searchinfrikomport'] = 'Søk';
 $string['morecoursesinfo'] = 'There may be more courses you may be interested in
 than the ones listed in the table. Please use the filters above to specify
 what you are looking for.';
-$string['fri_course_list:addinstance'] = 'Legg til en ny Frikomport-kurs-liste-blokk';
-$string['fri_course_list:myaddinstance'] = 'Legg til en ny Frikomport-kurs-liste-blokk til Min startside';
-$string['fri_course_list:view'] = 'Vis Frikomport-kurs-liste-blokken';
+$string['fri_course_list:addinstance'] = 'Legg til en ny Kursveiviser-kurs-liste-blokk';
+$string['fri_course_list:myaddinstance'] = 'Legg til en ny Kursveiviser-kurs-liste-blokk til Min startside';
+$string['fri_course_list:view'] = 'Vis Kursveiviser-kurs-liste-blokken';
