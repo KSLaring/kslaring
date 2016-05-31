@@ -62,3 +62,5 @@ $string['view_detail'] = 'View detail';
 
 $string['home_deadline']    = 'Deadline';
 $string['home_price']       = 'Price';
+
+$string['url_map'] = 'Click here for the map';
