@@ -604,7 +604,7 @@ class local_course_page_renderer extends plugin_renderer_base {
                 $lightBox  .= '<div class="location_sub_panel">';
                     $lightBox .= '<div class="location_review_title">' . '<h4>' . $strMap   . '</h4>' . '</div>';
                         $lightBox .= '<div class="location_review_value">';
-                            $lightBox .= '<h5>' . '<a href="' . $location->map. '" target="_blank">' . $location->map . '</a></h5>';
+                            $lightBox .= '<h5>' . '<a href="' . $location->map. '" target="_blank">' . get_string('url_map','local_course_page') . '</a></h5>';
                             $lightBox .= '<hr class="line_rating">';
                     $lightBox .= '</div>';
                 $lightBox  .= '</div>';//location_sub_panel

@@ -1084,6 +1084,7 @@ class TrackerManager {
         $not_enrol      = null;
         $class          = null;
         $label          = null;
+        $nameTruncate   = null;
 
         try {
             $content .= html_writer::start_tag('table');
@@ -1091,21 +1092,23 @@ class TrackerManager {
             if ($outcome->not_completed) {
                 $not_completed = $outcome->not_completed;
                 foreach ($not_completed as $course) {
+                    /* Course Url   */
+                    $url     = new moodle_url('/course/view.php',array('id'=>$course->id,'start' =>1));
+
                     $content .= html_writer::start_tag('tr');
                         /* Empty Col   */
                         $content .= html_writer::start_tag('td',array('class' => 'first'));
                         $content .= html_writer::end_tag('td');
                         /* Course           */
                         $content .= html_writer::start_tag('td',array('class' => 'course'));
-                            if (strlen($course->name) <= 45) {
-                                $content .= $course->name;
+                            if (strlen($course->name) <= 30) {
+                                $nameTruncate = $course->name;
                             }else {
-                                $nameTruncate = substr($course->name,0,80);
+                                $nameTruncate = substr($course->name,0,30);
                                 $index = strrpos($nameTruncate,' ');
                                 $nameTruncate = substr($nameTruncate,0,$index) . ' ...';
-                                $content .= $nameTruncate;
                             }
-
+                            $content .= '<a href="'.$url .'">'. $nameTruncate .'</a>';
                         $content .= html_writer::end_tag('td');
                         /* Status        */
                         $content .= html_writer::start_tag('td',array('class' => 'status'));
@@ -1120,7 +1123,6 @@ class TrackerManager {
                             $content .= '&nbsp;';
                         $content .= html_writer::end_tag('td');
                         /* Empty Col    */
-                        $url     = new moodle_url('/course/view.php',array('id'=>$course->id,'start' =>1));
                         $strUrl  = '<a href="'.$url .'">'. get_string('start_course','local_tracker_manager') .'</a>';
                         $content .= html_writer::start_tag('td',array('class' => 'start'));
                             $content .= $strUrl;
@@ -1136,20 +1138,23 @@ class TrackerManager {
             if ($outcome->not_enrol) {
                 $not_enrol = $outcome->not_enrol;
                 foreach ($not_enrol as $course) {
+                    /* Url Course */
+                    $url     = new moodle_url('/course/view.php',array('id'=>$course->id));
+
                     $content .= html_writer::start_tag('tr',array('class' => 'not_enroll'));
                         /* Empty Col   */
                         $content .= html_writer::start_tag('td',array('class' => 'first'));
                         $content .= html_writer::end_tag('td');
                         /* Course           */
                         $content .= html_writer::start_tag('td',array('class' => 'course'));
-                            if (strlen($course->name) <= 45) {
-                                $content .= $course->name;
+                            if (strlen($course->name) <= 30) {
+                                $nameTruncate = $course->name;
                             }else {
-                                $nameTruncate = substr($course->name,0,80);
+                                $nameTruncate = substr($course->name,0,30);
                                 $index = strrpos($nameTruncate,' ');
                                 $nameTruncate = substr($nameTruncate,0,$index) . ' ...';
-                                $content .= $nameTruncate;
                             }
+                            $content .= '<a href="'.$url .'">'. $nameTruncate .'</a>';
                         $content .= html_writer::end_tag('td');
                         /* Status        */
                         $content .= html_writer::start_tag('td',array('class' => 'status'));
@@ -1164,7 +1169,6 @@ class TrackerManager {
                             $content .= '&nbsp;';
                         $content .= html_writer::end_tag('td');
                         /* Empty Col    */
-                        $url     = new moodle_url('/course/view.php',array('id'=>$course->id));
                         $strUrl  = '<a href="'.$url .'">'. get_string('start_course','local_tracker_manager') .'</a>';
                         $content .= html_writer::start_tag('td',array('class' => 'start'));
                             $content .= $strUrl;
@@ -1180,6 +1184,9 @@ class TrackerManager {
             if ($outcome->completed) {
                 $completed = $outcome->completed;
                 foreach ($completed as $course) {
+                    /* Url Course */
+                    $url     = new moodle_url('/course/view.php',array('id'=>$course->id,'start'=>1));
+
                     $ts = strtotime($outcome->expiration  . ' month', $course->completed);
                     if ($ts < time()) {
                         $class = 'expired';
@@ -1195,14 +1202,14 @@ class TrackerManager {
                         $content .= html_writer::end_tag('td');
                         /* Course           */
                         $content .= html_writer::start_tag('td',array('class' => 'course'));
-                            if (strlen($course->name) <= 45) {
-                                $content .= $course->name;
+                            if (strlen($course->name) <= 30) {
+                                $nameTruncate = $course->name;
                             }else {
-                                $nameTruncate = substr($course->name,0,80);
+                                $nameTruncate = substr($course->name,0,30);
                                 $index = strrpos($nameTruncate,' ');
                                 $nameTruncate = substr($nameTruncate,0,$index) . ' ...';
-                                $content .= $nameTruncate;
                             }
+                            $content .= '<a href="'.$url .'">'. $nameTruncate .'</a>';
                         $content .= html_writer::end_tag('td');
                         /* Status        */
                         $content .= html_writer::start_tag('td',array('class' => 'status'));
@@ -1217,7 +1224,6 @@ class TrackerManager {
                             $content .= userdate($ts,'%d.%m.%Y', 99, false);
                         $content .= html_writer::end_tag('td');
                         /* Empty Col    */
-                        $url     = new moodle_url('/course/view.php',array('id'=>$course->id,'start'=>1));
                         $strUrl  = '<a href="'.$url .'">'. get_string('start_course','local_tracker_manager') .'</a>';
                         $content .= html_writer::start_tag('td',array('class' => 'start'));
                             $content .= $strUrl;
@@ -1319,30 +1325,34 @@ class TrackerManager {
      */
     private static function AddContent_IndividualCoursesTable($completed,$not_completed) {
         /* Variables    */
-        $content    = '';
-        $url        = null;
-        $strUrl     = null;
-        $urlUnEnrol = new moodle_url('/report/manager/tracker/unenrol.php');
+        $content        = '';
+        $url            = null;
+        $strUrl         = null;
+        $urlUnEnrol     = new moodle_url('/report/manager/tracker/unenrol.php');
+        $nameTruncate   = null;
 
         try {
             $content .= html_writer::start_tag('table');
                 /* Not Completed    */
                 if ($not_completed) {
                     foreach ($not_completed as $course) {
+                        /* Course Url   */
+                        $url     = new moodle_url('/course/view.php',array('id'=>$course->id,'start'=>1));
+
                         $content .= html_writer::start_tag('tr');
                             /* Empty Col   */
                             $content .= html_writer::start_tag('td',array('class' => 'first'));
                             $content .= html_writer::end_tag('td');
                             /* Course           */
                             $content .= html_writer::start_tag('td',array('class' => 'course'));
-                                if (strlen($course->name) <= 45) {
-                                    $content .= $course->name;
+                                if (strlen($course->name) <= 30) {
+                                    $nameTruncate = $course->name;
                                 }else {
-                                    $nameTruncate = substr($course->name,0,80);
+                                    $nameTruncate = substr($course->name,0,30);
                                     $index = strrpos($nameTruncate,' ');
                                     $nameTruncate = substr($nameTruncate,0,$index) . ' ...';
-                                    $content .= $nameTruncate;
                                 }
+                                $content .= '<a href="'.$url .'">'. $nameTruncate .'</a>';
                             $content .= html_writer::end_tag('td');
                             /* Status        */
                             $content .= html_writer::start_tag('td',array('class' => 'status'));
@@ -1364,7 +1374,6 @@ class TrackerManager {
                                 }//if_unenrol
                             $content .= html_writer::end_tag('td');
                             /* Empty Col    */
-                            $url     = new moodle_url('/course/view.php',array('id'=>$course->id,'start'=>1));
                             $strUrl  = '<a href="'.$url .'">'. get_string('start_course','local_tracker_manager') .'</a>';
                             $content .= html_writer::start_tag('td',array('class' => 'start'));
                                 $content .= $strUrl;
@@ -1379,20 +1388,23 @@ class TrackerManager {
                 /* Completed        */
                 if ($completed) {
                     foreach ($completed as $course) {
+                        /* Course Url */
+                        $url     = new moodle_url('/course/view.php',array('id'=>$course->id,'start'=>1));
+
                         $content .= html_writer::start_tag('tr',array('class' => 'completed'));
                             /* Empty Col   */
                             $content .= html_writer::start_tag('td',array('class' => 'first'));
                             $content .= html_writer::end_tag('td');
                             /* Course           */
                             $content .= html_writer::start_tag('td',array('class' => 'course'));
-                                if (strlen($course->name) <= 45) {
-                                    $content .= $course->name;
+                                if (strlen($course->name) <= 30) {
+                                    $nameTruncate = $course->name;
                                 }else {
-                                    $nameTruncate = substr($course->name,0,80);
+                                    $nameTruncate = substr($course->name,0,30);
                                     $index = strrpos($nameTruncate,' ');
                                     $nameTruncate = substr($nameTruncate,0,$index) . ' ...';
-                                    $content .= $nameTruncate;
                                 }
+                                $content .= '<a href="'.$url .'">'. $nameTruncate .'</a>';
                             $content .= html_writer::end_tag('td');
                             /* Status        */
                             $content .= html_writer::start_tag('td',array('class' => 'status'));
@@ -1414,7 +1426,6 @@ class TrackerManager {
                                 }//if_unenrol
                             $content .= html_writer::end_tag('td');
                             /* Empty Col    */
-                            $url     = new moodle_url('/course/view.php',array('id'=>$course->id,'start'=>1));
                             $strUrl  = '<a href="'.$url .'">'. get_string('start_course','local_tracker_manager') .'</a>';
                             $content .= html_writer::start_tag('td',array('class' => 'start'));
                                 $content .= $strUrl;
