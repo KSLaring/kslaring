@@ -1189,6 +1189,19 @@ body {
   height: 1px;
   overflow: hidden;
 }
+#topsearch .topsearchbox button {
+  font-size: initial;
+  padding-top: .5em;
+  padding-bottom: 0.27em;
+}
+#topsearch .topsearchbox.input-append {
+  margin-bottom: 5px;
+}
+#topsearch .topsearchbox.input-append input {
+  -webkit-border-radius: 0;
+  -moz-border-radius: 0;
+  border-radius: 0;
+}
 .hero-unit {
   background-color: #f2f2f3;
   background-image: url([[pix:theme|banner_image]]);
