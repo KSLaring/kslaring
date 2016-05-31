@@ -736,11 +736,11 @@ EOT;
         $out = '';
         $form = <<<T_END_HEREDOC
         <form id="topsearch" action="{{baseurl}}/course/search.php" method="get">
-            <fieldset class="topsearchbox invisiblefieldset">
+            <fieldset class="topsearchbox invisiblefieldset input-append">
                 <label for="shorttopsearchbox">{{searchlabel}}</label>
-                <input type="text" id="shorttopsearchbox" size="18" name="search"
+                <input type="text" id="shorttopsearchbox" class="input-medium" name="search"
                     placeholder="{{placeholder}}" value="">
-                <button type="submit"><i class="fa pull-right fa-search"></i></button>
+                <button type="submit"><i class="icon-search icon-white"></i></button>
             </fieldset>
         </form>
         <script type="text/javascript">Y.one('#shorttopsearchbox').focus();</script>
