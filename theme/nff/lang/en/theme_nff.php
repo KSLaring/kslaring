@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Theme More lang file.
+ * Theme nff lang file.
  *
  * @package    theme_nff
  * @copyright  2014 Frédéric Massart
@@ -45,10 +45,10 @@ $string['backgroundrepeatrepeatx'] = 'Repeat horizontally';
 $string['backgroundrepeatrepeaty'] = 'Repeat vertically';
 $string['bodybackground'] = 'Background colour';
 $string['bodybackground_desc'] = 'The main colour to use for the background.';
-$string['choosereadme'] = '<p>More is a theme that allows you to easily customise Moodle\'s look and feel directly from the web interface.</p>
+$string['choosereadme'] = '<p>nff is a theme that allows you to easily customise Moodle\'s look and feel directly from the web interface.</p>
 <p>Visit the admin settings to change colours, add an image as a background, add your logo and nff.</p>';
 
-$string['configtitle'] = 'More';
+$string['configtitle'] = 'nff';
 $string['contentbackground'] = 'Main content background colour';
 $string['contentbackground_desc'] = 'The background colour of the main content of the site, leave empty for none.';
 
@@ -66,7 +66,7 @@ $string['linkcolor_desc'] = 'The colour of the links.';
 $string['logo'] = 'Logo';
 $string['logodesc'] = 'The logo is only displayed in the header of the front page and login page.<br /> If the height of your logo is nff than 75px add div.logo {height: 100px;} to the Custom CSS box below, amending accordingly if the height is other than 100px.';
 
-$string['pluginname'] = 'More';
+$string['pluginname'] = 'nff';
 
 $string['region-side-post'] = 'Right';
 $string['region-side-pre'] = 'Left';
