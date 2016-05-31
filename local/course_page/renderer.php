@@ -453,7 +453,7 @@ class local_course_page_renderer extends plugin_renderer_base {
                         if ($option->name == 'course_location') {
                             if ($option->value) {
                                 $infoLocation       = course_page::GetLocationDetail($option->value);
-                                $strLocationTitle   = get_string('home_title_location',$str_format) . ': ' . $infoLocation->name;
+                                $strLocationTitle   = get_string('home_title_location',$str_format);
 
                                 /* Get Lightbox to add*/
                                 $lightBox = self::AddLightBox_Location($infoLocation,$courseId);
