@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Theme More config file.
+ * Theme nff config file.
  *
  * @package    theme_nff
  * @copyright  2014 Frédéric Massart

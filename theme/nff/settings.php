@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Theme More settings.
+ * Theme nff settings.
  *
  * Each setting that is defined in the parent theme Clean should be
  * defined here too, and use the exact same config name. The reason
