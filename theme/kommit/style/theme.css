@@ -413,15 +413,38 @@ h6 {
   border: none;
   border-bottom: 1px dotted #7e7e7e;
 }
+.navbar-menues {
+  position: relative;
+}
 @media only screen and (min-width: 980px) {
   .navbar-menues {
     float: right;
-    width: 75%;
+    width: 70%;
   }
 }
-@media only screen and (max-width: 979px) {
+@media only screen and (min-width: 768px) and (max-width: 979px) {
   .navbar-menues {
     float: right;
+    width: 60%;
+  }
+}
+@media only screen and (min-width: 640px) and (max-width: 767px) {
+  .navbar-menues {
+    float: right;
+    width: 50%;
+  }
+}
+@media only screen and (max-width: 639px) {
+  .navbar-menues {
+    float: none;
+  }
+}
+.navbar-menues .nav-collapse.active {
+  float: right;
+}
+@media only screen and (max-width: 639px) {
+  .navbar-menues .nav-collapse.active {
+    float: none;
   }
 }
 @media only screen and (min-width: 768px) {
@@ -429,12 +452,13 @@ h6 {
     float: left;
   }
 }
-@media only screen and (min-width: 681px) and (max-width: 767px) {
+@media only screen and (min-width: 640px) and (max-width: 767px) {
   #topsearch {
+    float: left;
     margin-left: 20px;
   }
 }
-@media only screen and (max-width: 680px) {
+@media only screen and (max-width: 639px) {
   #topsearch {
     float: none;
     margin-left: 5px;

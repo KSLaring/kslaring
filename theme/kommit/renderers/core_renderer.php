@@ -738,7 +738,7 @@ EOT;
         <form id="topsearch" action="{{baseurl}}/course/search.php" method="get">
             <fieldset class="topsearchbox invisiblefieldset input-append">
                 <label for="shorttopsearchbox">{{searchlabel}}</label>
-                <input type="text" id="shorttopsearchbox" class="input-medium" name="search"
+                <input type="text" id="shorttopsearchbox" class="input-medium-" name="search"
                     placeholder="{{placeholder}}" value="">
                 <button type="submit"><i class="icon-search icon-white"></i></button>
             </fieldset>

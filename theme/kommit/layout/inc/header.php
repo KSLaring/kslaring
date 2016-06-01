@@ -54,6 +54,8 @@ if ($loggedin) {
             class="navbar navbar-fixed-top<?php echo $html->navbarclass ?> moodle-has-zindex">
         <nav role="navigation" class="navbar-inner">
             <div class="container-fluid">
+                <?php echo $OUTPUT->search_form(); ?>
+                
                 <div class="navbar-menues">
                     <a class="btn btn-navbar" data-toggle="workaround-collapse"
                        data-target=".nav-collapse">
@@ -71,8 +73,6 @@ if ($loggedin) {
                         <?php echo $OUTPUT->user_menu(); ?>
                     </div>
                 </div>
-                
-                <?php echo $OUTPUT->search_form(); ?>
             </div>
         </nav>
     </header>
