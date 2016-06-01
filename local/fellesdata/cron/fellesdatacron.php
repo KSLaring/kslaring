@@ -285,10 +285,10 @@ class FELLESDATA_CRON {
 
         try {
             /* Import FS Users              */
-            self::ImportFSUsers($pluginInfo);
+            //self::ImportFSUsers($pluginInfo);
 
             /* Import FS Companies          */
-            //self::ImportFSOrgStructure($pluginInfo);
+            self::ImportFSOrgStructure($pluginInfo);
 
             /* Import FS Job roles  */
             //self::ImportFSJobRoles($pluginInfo);
@@ -369,6 +369,7 @@ class FELLESDATA_CRON {
         $fsResponse = null;
 
         try {
+            echo "Start ImpFSOrgStructure" . "</br>";
             /* Call Web service */
             $fsResponse = self::ProcessTradisService($pluginInfo,TRADIS_FS_COMPANIES);
 
@@ -383,6 +384,7 @@ class FELLESDATA_CRON {
                     FS::SaveTemporary_Fellesdata($content,IMP_COMPANIES);
                 }//if_exists
             }
+            echo "Finish ImpFSOrgStructure" . "</br>";
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
