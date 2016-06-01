@@ -294,10 +294,10 @@ class FELLESDATA_CRON {
             //self::ImportFSJobRoles($pluginInfo);
 
             /* Import FS User Competence    */
-            self::ImportFSUserCompetence($pluginInfo);
+            //self::ImportFSUserCompetence($pluginInfo);
 
             /* Import FS User Competence JR */
-            //self::ImportFSUserCompetenceJR($pluginInfo);
+            self::ImportFSUserCompetenceJR($pluginInfo);
 
             /* Log  */
             $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' FINISH Import Fellesdata . ' . "\n";
@@ -490,6 +490,7 @@ class FELLESDATA_CRON {
         $usersCompetenceJR  = null;
 
         try {
+            echo "Start ImportFSUserCompetenceJR" . "</br>";
             /* Call Web Service */
             $usersCompetenceJR = self::ProcessTradisService($pluginInfo,TRADIS_FS_USERS_JOBROLES);
 
@@ -504,6 +505,7 @@ class FELLESDATA_CRON {
                     FS::SaveTemporary_Fellesdata($content,IMP_COMPETENCE_JR);
                 }//if_exists
             }//if_data
+            echo "Finish ImportFSUserCompetenceJR" . "</br>";
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
