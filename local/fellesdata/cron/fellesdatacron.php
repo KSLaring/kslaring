@@ -30,10 +30,10 @@ class FELLESDATA_CRON {
             ini_set('memory_limit','1024M');
 
             /* Import KS */
-            self::ImportKS($pluginInfo);
+            //self::ImportKS($pluginInfo);
 
             /* Import Fellesdata        */
-            //self::ImportFellesdata($pluginInfo);
+            self::ImportFellesdata($pluginInfo);
 
 
             /* SYNCHRONIZATION  */
@@ -285,7 +285,7 @@ class FELLESDATA_CRON {
 
         try {
             /* Import FS Users              */
-            //self::ImportFSUsers($pluginInfo);
+            self::ImportFSUsers($pluginInfo);
 
             /* Import FS Companies          */
             //self::ImportFSOrgStructure($pluginInfo);
