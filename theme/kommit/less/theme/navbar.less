@@ -30,10 +30,6 @@
     color: @white;
 }
 
-//.navbar .nav > li > a {
-//    border-left: 1px solid @kommitGray;
-//}
-
 /* @group Navbar */
 .navbar {
     margin-bottom: 0;
@@ -81,17 +77,13 @@
     color: @white;
 }
 
-//.nav-collapse .nav > li > a, .nav-collapse .dropdown-menu a {
-//    color: @white;
-//}
-
 .navbar .btn-navbar {
     position: relative;
     float: right;
     //margin-right: 15px;
     padding: 10px 10px;
-    margin-top: 8px;
-    margin-bottom: 8px;
+    margin-top: 4px;
+    margin-bottom: 4px;
     background-color: @kommitBlueLight;
     background-image: none;
     border: 1px solid transparent;
@@ -139,7 +131,7 @@
 .navbar-text {
     text-align: right;
 
-    .logininfo  {
+    .logininfo {
         color: @white;
         float: right;
         margin-right: .5em;
@@ -171,6 +163,55 @@
         border: none;
         border-bottom: 1px dotted @kommitGray;
     }
-//    hr.sep:hover {
-//    }
+}
+
+.navbar-menues {
+    @media only screen and (min-width: @largeWidth) {
+        float: right;
+        width: 75%;
+    }
+    @media only screen and (max-width: (@largeWidth - 1)) {
+        float: right;
+    }
+}
+
+#topsearch {
+    @media only screen and (min-width: @mediumWidth) {
+        float: left;
+    }
+    @media only screen and (min-width: 681px) and (max-width: (@mediumWidth - 1)) {
+        //float: none;
+        margin-left: 20px;
+    }
+    @media only screen and (max-width: 680px) {
+        float: none;
+        margin-left: 5px;
+    }
+
+    #shorttopsearchbox {
+        margin-bottom: 0;
+    }
+    .topsearchbox {
+        label {
+            display: block;
+            font-size: 1px;
+            line-height: 1px;
+            height: 1px;
+            overflow: hidden;
+        }
+        button {
+            // For equal height on different devices.
+            font-family: Georgia, "Times New Roman", Times, serif;
+            font-size: @baseFontSize;
+            padding-top: .5em;
+            padding-bottom: .27em;
+        }
+        &.input-append {
+            margin-bottom: 5px;
+
+            input {
+                .border-radius(0);
+            }
+        }
+    }
 }
