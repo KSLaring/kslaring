@@ -291,10 +291,10 @@ class FELLESDATA_CRON {
             //self::ImportFSOrgStructure($pluginInfo);
 
             /* Import FS Job roles  */
-            self::ImportFSJobRoles($pluginInfo);
+            //self::ImportFSJobRoles($pluginInfo);
 
             /* Import FS User Competence    */
-            //self::ImportFSUserCompetence($pluginInfo);
+            self::ImportFSUserCompetence($pluginInfo);
 
             /* Import FS User Competence JR */
             //self::ImportFSUserCompetenceJR($pluginInfo);
@@ -449,6 +449,7 @@ class FELLESDATA_CRON {
         $usersCompetence    = null;
 
         try {
+            echo "Start ImportFSUserCompetence" . "</br>";
             /* Call Web Service */
             $usersCompetence = self::ProcessTradisService($pluginInfo,TRADIS_FS_USERS_COMPANIES);
 
@@ -463,6 +464,7 @@ class FELLESDATA_CRON {
                     FS::SaveTemporary_Fellesdata($content,IMP_COMPETENCE_COMP);
                 }//if_exists
             }
+            echo "Finist ImportFSUserCompetence" . "</br>";
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
