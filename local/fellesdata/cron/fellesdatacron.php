@@ -33,12 +33,12 @@ class FELLESDATA_CRON {
             //self::ImportKS($pluginInfo);
 
             /* Import Fellesdata        */
-            self::ImportFellesdata($pluginInfo);
+            //self::ImportFellesdata($pluginInfo);
 
 
             /* SYNCHRONIZATION  */
             /* Synchronization Users Accounts   */
-            //self::UsersFS_Synchronization($pluginInfo);
+            self::UsersFS_Synchronization($pluginInfo);
 
             /* Synchronization Companies    */
             //self::CompaniesFS_Synchronization($pluginInfo,$fstExecution);
@@ -285,16 +285,16 @@ class FELLESDATA_CRON {
 
         try {
             /* Import FS Users              */
-            //self::ImportFSUsers($pluginInfo);
+            self::ImportFSUsers($pluginInfo);
 
             /* Import FS Companies          */
-            //self::ImportFSOrgStructure($pluginInfo);
+            self::ImportFSOrgStructure($pluginInfo);
 
             /* Import FS Job roles  */
-            //self::ImportFSJobRoles($pluginInfo);
+            self::ImportFSJobRoles($pluginInfo);
 
             /* Import FS User Competence    */
-            //self::ImportFSUserCompetence($pluginInfo);
+            self::ImportFSUserCompetence($pluginInfo);
 
             /* Import FS User Competence JR */
             self::ImportFSUserCompetenceJR($pluginInfo);
@@ -627,6 +627,7 @@ class FELLESDATA_CRON {
         error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
 
         try {
+            echo "Start UsersFS Synchronization" . "</br>";
             /* Get user to synchronize  */
             $rdo = $DB->get_records('fs_imp_users',array('imported' => '0'),'','*');
 
@@ -660,6 +661,8 @@ class FELLESDATA_CRON {
             $dbLog = $response['message'] . "\n" ."\n";
             $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH Synchronization Users Accoutns . ' . "\n";
             error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
+
+            echo "Finish UsersFS Synchronization" . "</br>";
         }catch (Exception $ex) {
             /* Log  */
             $dbLog = $ex->getMessage() . "\n" ."\n";
