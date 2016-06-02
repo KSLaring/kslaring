@@ -33,12 +33,12 @@ class FELLESDATA_CRON {
             //self::ImportKS($pluginInfo);
 
             /* Import Fellesdata        */
-            //self::ImportFellesdata($pluginInfo);
+            self::ImportFellesdata($pluginInfo);
 
 
             /* SYNCHRONIZATION  */
             /* Synchronization Users Accounts   */
-            self::UsersFS_Synchronization($pluginInfo);
+            //self::UsersFS_Synchronization($pluginInfo);
 
             /* Synchronization Companies    */
             //self::CompaniesFS_Synchronization($pluginInfo,$fstExecution);
@@ -288,16 +288,16 @@ class FELLESDATA_CRON {
             self::ImportFSUsers($pluginInfo);
 
             /* Import FS Companies          */
-            self::ImportFSOrgStructure($pluginInfo);
+            //self::ImportFSOrgStructure($pluginInfo);
 
             /* Import FS Job roles  */
-            self::ImportFSJobRoles($pluginInfo);
+            //self::ImportFSJobRoles($pluginInfo);
 
             /* Import FS User Competence    */
-            self::ImportFSUserCompetence($pluginInfo);
+            //self::ImportFSUserCompetence($pluginInfo);
 
             /* Import FS User Competence JR */
-            self::ImportFSUserCompetenceJR($pluginInfo);
+            //self::ImportFSUserCompetenceJR($pluginInfo);
 
             /* Log  */
             $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' FINISH Import Fellesdata . ' . "\n";
@@ -653,8 +653,11 @@ class FELLESDATA_CRON {
                 $response = self::ProcessKSService($pluginInfo,KS_SYNC_USER_ACCOUNT,$usersFS);
                 if ($response['error'] == '200') {
                     echo "1" . "</br>";
-                    
+
                     /* Synchronize Users Accounts FS    */
+                    if ($response['usersAccounts']) {
+                        echo "HOLA ";
+                    }
                     FSKS_USERS::Synchronize_UsersFS($usersFS,$response['usersAccounts']);
 
                     /* Clean Table*/
