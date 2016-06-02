@@ -936,18 +936,18 @@ class FSKS_USERS {
 
         try {
             /* Synchronize users have been imported  */
-            foreach ($usersImported as $user) {
+            foreach ($usersImported as $key => $user) {
                 /* Convert to object */
                 $objUser = (Object)$user;
 
-                echo $user->imported . "</br>";
+                echo $key . "--> " . $objUser->personalnumber . " - " .$objUser->imported . "</br>";
 
                 if ($objUser->imported) {
                     /* Get Info User    */
-                    $infoUser = $usersFS[$objUser->key];
+                    $infoUser = $usersFS[$key];
 
                     /* Synchronize User */
-                    self::SynchronizeUserFS($infoUser,$objUser->key);
+                    self::SynchronizeUserFS($infoUser,$key);
                 }//if_user_imported
             }//for_userImported
         }catch (Exception $ex) {
