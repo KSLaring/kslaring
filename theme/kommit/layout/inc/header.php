@@ -54,23 +54,24 @@ if ($loggedin) {
             class="navbar navbar-fixed-top<?php echo $html->navbarclass ?> moodle-has-zindex">
         <nav role="navigation" class="navbar-inner">
             <div class="container-fluid">
-
-                <a class="btn btn-navbar" data-toggle="workaround-collapse"
-                   data-target=".nav-collapse">
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </a>
-
                 <?php echo $OUTPUT->search_form(); ?>
+                
+                <div class="navbar-menues">
+                    <a class="btn btn-navbar" data-toggle="workaround-collapse"
+                       data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
 
-                <?php if (!$loggedin || isguestuser()) : ?>
-                    <div class="navbar-text"><?php echo $OUTPUT->login_info() ?></div>
-                <?php endif ?>
+                    <?php if (!$loggedin || isguestuser()) : ?>
+                        <div class="navbar-text"><?php echo $OUTPUT->login_info() ?></div>
+                    <?php endif ?>
 
-                <div id="moodle-navbar" class="nav-collapse collapse">
-                    <?php echo $OUTPUT->custom_menu(); ?>
-                    <?php echo $OUTPUT->user_menu(); ?>
+                    <div id="moodle-navbar" class="nav-collapse collapse">
+                        <?php echo $OUTPUT->custom_menu(); ?>
+                        <?php echo $OUTPUT->user_menu(); ?>
+                    </div>
                 </div>
             </div>
         </nav>
