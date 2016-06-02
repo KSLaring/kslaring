@@ -654,7 +654,7 @@ class FELLESDATA_CRON {
                     FSKS_USERS::Synchronize_UsersFS($usersFS,$response['usersAccounts']);
 
                     /* Clean Table*/
-                    //$DB->delete_records('fs_imp_users',array('imported' => '1'));
+                    $DB->delete_records('fs_imp_users',array('imported' => '1'));
                 }//if_no_error
             }//if_Rdo
 
