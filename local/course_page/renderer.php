@@ -303,8 +303,10 @@ class local_course_page_renderer extends plugin_renderer_base {
              * Description
              * Change Start Date for Modified Date
              */
-            $out .= '<h5 class="title_home chp-title">' . get_string('home_published','local_course_page') . '</h5>';
-            $out.= '<div class="extra_home chp-content">' . userdate($course->timemodified,'%d.%m.%Y', 99, false) . '</div>';
+            if (($course->format != 'classroom') && ($course->format != 'classroom_frikomport')) {
+                $out .= '<h5 class="title_home chp-title">' . get_string('home_published','local_course_page') . '</h5>';
+                $out .= '<div class="extra_home chp-content">' . userdate($course->timemodified,'%d.%m.%Y', 99, false) . '</div>';
+            }
 
             $str_format = 'format_' . $course->format;
             switch ($course->format) {
@@ -644,27 +646,27 @@ class local_course_page_renderer extends plugin_renderer_base {
             $out .= '<div class="extra_home chp-content">';
             switch ($course_format) {
                 case 'netcourse':
-                    $url_img = $OUTPUT->pix_url('i/nettkurs');
-                    $alt        = get_string('net_course','local_course_page');
+                    //$url_img = $OUTPUT->pix_url('i/nettkurs');
+                    //$alt        = get_string('net_course','local_course_page');
 
-                    $out .= html_writer::empty_tag('img', array('src' => $url_img, 'alt' => $alt, 'class' => 'icon'));
+                    //$out .= html_writer::empty_tag('img', array('src' => $url_img, 'alt' => $alt, 'class' => 'icon'));
                     $out .= get_string('net_course','local_course_page');
 
                     break;
                 case 'elearning_frikomport';
-                    $url_img = $OUTPUT->pix_url('i/nettkurs');
-                    $alt        = get_string('elearning','local_course_page');
+                    //$url_img = $OUTPUT->pix_url('i/nettkurs');
+                    //$alt        = get_string('elearning','local_course_page');
 
-                    $out .= html_writer::empty_tag('img', array('src' => $url_img, 'alt' => $alt, 'class' => 'icon'));
+                    //$out .= html_writer::empty_tag('img', array('src' => $url_img, 'alt' => $alt, 'class' => 'icon'));
                     $out .= get_string('elearning','local_course_page');
 
                     break;
                 case 'classroom':
                 case 'classroom_frikomport':
-                    $url_img = $OUTPUT->pix_url('i/classroom');
-                    $alt        = get_string('class_course','local_course_page');
+                    //$url_img = $OUTPUT->pix_url('i/classroom');
+                    //$alt        = get_string('class_course','local_course_page');
 
-                    $out .= html_writer::empty_tag('img', array('src' => $url_img, 'alt' => $alt, 'class' => 'icon'));
+                    //$out .= html_writer::empty_tag('img', array('src' => $url_img, 'alt' => $alt, 'class' => 'icon'));
                     $out .= get_string('class_course','local_course_page');
 
                     break;
