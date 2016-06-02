@@ -937,18 +937,18 @@ class FSKS_USERS {
         try {
             echo "Dins -  Fora bucle" . "</br>";
             /* Synchronize users have been imported  */
-            foreach ($usersImported as $key => $user) {
+            foreach ($usersImported as $user) {
                 /* Convert to object */
                 $objUser = (Object)$user;
 
-                echo $key . "--> " . $objUser->personalnumber . " - " .$objUser->imported . "</br>";
+                echo $user->key . "--> " . $objUser->personalnumber . " - " .$objUser->imported . "</br>";
 
                 if ($objUser->imported) {
                     /* Get Info User    */
-                    $infoUser = $usersFS[$key];
+                    $infoUser = $usersFS[$user->key];
 
                     /* Synchronize User */
-                    self::SynchronizeUserFS($infoUser,$key);
+                    self::SynchronizeUserFS($infoUser,$user->key);
                 }//if_user_imported
             }//for_userImported
         }catch (Exception $ex) {
