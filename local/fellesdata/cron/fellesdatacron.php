@@ -33,12 +33,12 @@ class FELLESDATA_CRON {
             //self::ImportKS($pluginInfo);
 
             /* Import Fellesdata        */
-            self::ImportFellesdata($pluginInfo);
+            //self::ImportFellesdata($pluginInfo);
 
 
             /* SYNCHRONIZATION  */
             /* Synchronization Users Accounts   */
-            //self::UsersFS_Synchronization($pluginInfo);
+            self::UsersFS_Synchronization($pluginInfo);
 
             /* Synchronization Companies    */
             //self::CompaniesFS_Synchronization($pluginInfo,$fstExecution);
@@ -285,7 +285,7 @@ class FELLESDATA_CRON {
 
         try {
             /* Import FS Users              */
-            self::ImportFSUsers($pluginInfo);
+            //self::ImportFSUsers($pluginInfo);
 
             /* Import FS Companies          */
             //self::ImportFSOrgStructure($pluginInfo);
