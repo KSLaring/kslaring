@@ -1047,6 +1047,7 @@ class WS_FELLESDATA {
         global $DB,$CFG;
         $time       = null;
         $infoUser   = null;
+        $userId     = null;
         $rdoUser    = null;
         $trans      = null;
 
@@ -1082,7 +1083,7 @@ class WS_FELLESDATA {
                 case ADD_ACTION:
                     if (!$rdoUser) {
                         /* Execute  */
-                        $infoUser->id = $DB->insert_record('user',$infoUser);
+                        $userId = $DB->insert_record('user',$infoUser);
                     }//if_notExist
 
                     break;
@@ -1096,9 +1097,11 @@ class WS_FELLESDATA {
 
                         /* Execute */
                         $DB->update_record('user',$rdoUser);
+
+                        $userId = $rdoUser->id;
                     }else {
                         /* Execute  */
-                        $infoUser->id = $DB->insert_record('user',$infoUser);
+                        $userId = $DB->insert_record('user',$infoUser);
                     }//if_infoUSer
 
                     break;
@@ -1110,10 +1113,12 @@ class WS_FELLESDATA {
 
                         /* Execute */
                         $DB->update_record('user',$rdoUser);
+
+                        $userId = $rdoUser->id;
                     }else {
                         /* Execute  */
                         $infoUser->deleted      = 1;
-                        $infoUser->id = $DB->insert_record('user',$infoUser);
+                        $userId = $DB->insert_record('user',$infoUser);
                     }//if_infoUsers
 
                     break;
@@ -1122,8 +1127,12 @@ class WS_FELLESDATA {
             /* Commit */
             $trans->allow_commit();
 
-            return $infoUser->id;
+            return $userId;
         }catch (Exception $ex) {
+            /* Log  */
+            $dbLog = 'Error --> ' . $ex->getTraceAsString() . "\n";
+            error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
+
             /* Rollback */
             $trans->rollback($ex);
 
