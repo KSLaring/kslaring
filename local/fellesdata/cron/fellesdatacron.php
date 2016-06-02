@@ -627,10 +627,8 @@ class FELLESDATA_CRON {
         error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
 
         try {
-            echo "Start UsersFS Synchronization" . "</br>";
-
             /* Get user to synchronize  */
-            $rdo = $DB->get_records('fs_imp_users',array('imported' => '0'),'','*',0,2500);
+            $rdo = $DB->get_records('fs_imp_users',array('imported' => '0'),'','*');
 
             /* Prepare data */
             if ($rdo) {
@@ -662,8 +660,6 @@ class FELLESDATA_CRON {
             $dbLog = $response['message'] . "\n" ."\n";
             $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH Synchronization Users Accoutns . ' . "\n";
             error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
-
-            echo "Finish UsersFS Synchronization" . "</br>";
         }catch (Exception $ex) {
             /* Log  */
             $dbLog = $ex->getMessage() . "\n" ."\n";
