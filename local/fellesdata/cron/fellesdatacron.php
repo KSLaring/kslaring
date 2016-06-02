@@ -628,34 +628,37 @@ class FELLESDATA_CRON {
 
         try {
             echo "Start UsersFS Synchronization" . "</br>";
-            /* Get user to synchronize  */
-            $rdo = $DB->get_records('fs_imp_users',array('imported' => '0'),'','*',0,2000);
 
-            /* Prepare data */
-            if ($rdo) {
-                foreach ($rdo as $instance) {
-                    /* Users account info   */
-                    $infoUser = new stdClass();
-                    $infoUser->personalnumber   = $instance->fodselsnr;
-                    $infoUser->firstname        = $instance->fornavn;
-                    $infoUser->lastname         = $instance->mellomnavn . ' ' . $instance->etternavn;
-                    $infoUser->email            = $instance->epost;
-                    $infoUser->action           = $instance->action;
+            do {
+                /* Get user to synchronize  */
+                $rdo = $DB->get_records('fs_imp_users',array('imported' => '0'),'','*',0,2000);
 
-                    /* Add User */
-                    $usersFS[$instance->id] = $infoUser;
-                }//for_rdo
+                /* Prepare data */
+                if ($rdo) {
+                    foreach ($rdo as $instance) {
+                        /* Users account info   */
+                        $infoUser = new stdClass();
+                        $infoUser->personalnumber   = $instance->fodselsnr;
+                        $infoUser->firstname        = $instance->fornavn;
+                        $infoUser->lastname         = $instance->mellomnavn . ' ' . $instance->etternavn;
+                        $infoUser->email            = $instance->epost;
+                        $infoUser->action           = $instance->action;
 
-                /* Call Web Service */
-                $response = self::ProcessKSService($pluginInfo,KS_SYNC_USER_ACCOUNT,$usersFS);
-                if ($response['error'] == '200') {
-                    /* Synchronize Users Accounts FS    */
-                    FSKS_USERS::Synchronize_UsersFS($usersFS,$response['usersAccounts']);
+                        /* Add User */
+                        $usersFS[$instance->id] = $infoUser;
+                    }//for_rdo
 
-                    /* Clean Table*/
-                    $DB->delete_records('fs_imp_users',array('imported' => '1'));
-                }//if_no_error
-            }//if_Rdo
+                    /* Call Web Service */
+                    $response = self::ProcessKSService($pluginInfo,KS_SYNC_USER_ACCOUNT,$usersFS);
+                    if ($response['error'] == '200') {
+                        /* Synchronize Users Accounts FS    */
+                        FSKS_USERS::Synchronize_UsersFS($usersFS,$response['usersAccounts']);
+
+                        /* Clean Table*/
+                        //$DB->delete_records('fs_imp_users',array('imported' => '1'));
+                    }//if_no_error
+                }//if_Rdo
+            }while($rdo);
 
             /* Log  */
             $dbLog = $response['message'] . "\n" ."\n";
