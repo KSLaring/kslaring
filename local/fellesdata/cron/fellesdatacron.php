@@ -659,7 +659,7 @@ class FELLESDATA_CRON {
                 if ($response['error'] == '200') {
                     echo "finish --> Back Web SErvice wsUsersAccounts" . "</br>";
                     /* Synchronize Users Accounts FS    */
-                    //FSKS_USERS::Synchronize_UsersFS($usersFS,$response['usersAccounts']);
+                    FSKS_USERS::Synchronize_UsersFS($usersFS,$response['usersAccounts']);
 
                     /* Clean Table*/
                     //$DB->delete_records('fs_imp_users',array('imported' => '1'));
