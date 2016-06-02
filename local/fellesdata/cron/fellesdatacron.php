@@ -629,7 +629,10 @@ class FELLESDATA_CRON {
         try {
             echo "Start UsersFS Synchronization" . "</br>";
 
+            $i = 0;
             do {
+                echo "I --> " . $i . "</br>";
+
                 /* Get user to synchronize  */
                 $rdo = $DB->get_records('fs_imp_users',array('imported' => '0'),'','*',0,2000);
 
@@ -658,6 +661,8 @@ class FELLESDATA_CRON {
                         //$DB->delete_records('fs_imp_users',array('imported' => '1'));
                     }//if_no_error
                 }//if_Rdo
+
+                $i ++;
             }while($rdo);
 
             /* Log  */
