@@ -1047,9 +1047,9 @@ class TrackerManager {
                         $header .= $strValid;
                     $header .= html_writer::end_tag('td');
                     /* Empty Col    */
-                    $header .= html_writer::start_tag('td',array('class' => 'head_start'));
-                        $header .= '&nbsp;';
-                    $header .= html_writer::end_tag('td');
+                    //$header .= html_writer::start_tag('td',array('class' => 'head_start'));
+                    //    $header .= '&nbsp;';
+                    //$header .= html_writer::end_tag('td');
                     /* Last Col     */
                     $header .= html_writer::start_tag('td',array('class' => 'head_first'));
                         $header .= '&nbsp;';
@@ -1123,10 +1123,10 @@ class TrackerManager {
                             $content .= '&nbsp;';
                         $content .= html_writer::end_tag('td');
                         /* Empty Col    */
-                        $strUrl  = '<a href="'.$url .'">'. get_string('start_course','local_tracker_manager') .'</a>';
-                        $content .= html_writer::start_tag('td',array('class' => 'start'));
-                            $content .= $strUrl;
-                        $content .= html_writer::end_tag('td');
+                        //$strUrl  = '<a href="'.$url .'">'. get_string('start_course','local_tracker_manager') .'</a>';
+                        //$content .= html_writer::start_tag('td',array('class' => 'start'));
+                        //    $content .= $strUrl;
+                        //$content .= html_writer::end_tag('td');
                         /* Last Col */
                         $content .= html_writer::start_tag('td',array('class' => 'first'));
                         $content .= html_writer::end_tag('td');
@@ -1169,10 +1169,10 @@ class TrackerManager {
                             $content .= '&nbsp;';
                         $content .= html_writer::end_tag('td');
                         /* Empty Col    */
-                        $strUrl  = '<a href="'.$url .'">'. get_string('start_course','local_tracker_manager') .'</a>';
-                        $content .= html_writer::start_tag('td',array('class' => 'start'));
-                            $content .= $strUrl;
-                        $content .= html_writer::end_tag('td');
+                        //$strUrl  = '<a href="'.$url .'">'. get_string('start_course','local_tracker_manager') .'</a>';
+                        //$content .= html_writer::start_tag('td',array('class' => 'start'));
+                        //    $content .= $strUrl;
+                        //$content .= html_writer::end_tag('td');
                         /* Last Col */
                         $content .= html_writer::start_tag('td',array('class' => 'first'));
                         $content .= html_writer::end_tag('td');
@@ -1224,10 +1224,10 @@ class TrackerManager {
                             $content .= userdate($ts,'%d.%m.%Y', 99, false);
                         $content .= html_writer::end_tag('td');
                         /* Empty Col    */
-                        $strUrl  = '<a href="'.$url .'">'. get_string('start_course','local_tracker_manager') .'</a>';
-                        $content .= html_writer::start_tag('td',array('class' => 'start'));
-                            $content .= $strUrl;
-                        $content .= html_writer::end_tag('td');
+                        //$strUrl  = '<a href="'.$url .'">'. get_string('start_course','local_tracker_manager') .'</a>';
+                        //$content .= html_writer::start_tag('td',array('class' => 'start'));
+                        //    $content .= $strUrl;
+                        //$content .= html_writer::end_tag('td');
                         /* Last Col */
                         $content .= html_writer::start_tag('td',array('class' => 'first'));
                         $content .= html_writer::end_tag('td');
@@ -1289,9 +1289,9 @@ class TrackerManager {
                         $header .= '&nbsp;';
                     $header .= html_writer::end_tag('td');
                     /* Empty Col    */
-                    $header .= html_writer::start_tag('td',array('class' => 'head_start'));
-                        $header .= '&nbsp;';
-                    $header .= html_writer::end_tag('td');
+                    //$header .= html_writer::start_tag('td',array('class' => 'head_start'));
+                    //    $header .= '&nbsp;';
+                    //$header .= html_writer::end_tag('td');
                     /* Last Col     */
                     $header .= html_writer::start_tag('td',array('class' => 'head_first'));
                         $header .= '&nbsp;';
@@ -1374,10 +1374,10 @@ class TrackerManager {
                                 }//if_unenrol
                             $content .= html_writer::end_tag('td');
                             /* Empty Col    */
-                            $strUrl  = '<a href="'.$url .'">'. get_string('start_course','local_tracker_manager') .'</a>';
-                            $content .= html_writer::start_tag('td',array('class' => 'start'));
-                                $content .= $strUrl;
-                            $content .= html_writer::end_tag('td');
+                            //$strUrl  = '<a href="'.$url .'">'. get_string('start_course','local_tracker_manager') .'</a>';
+                            //$content .= html_writer::start_tag('td',array('class' => 'start'));
+                            //    $content .= $strUrl;
+                            //$content .= html_writer::end_tag('td');
                             /* Last Col */
                             $content .= html_writer::start_tag('td',array('class' => 'first'));
                             $content .= html_writer::end_tag('td');
@@ -1426,10 +1426,10 @@ class TrackerManager {
                                 }//if_unenrol
                             $content .= html_writer::end_tag('td');
                             /* Empty Col    */
-                            $strUrl  = '<a href="'.$url .'">'. get_string('start_course','local_tracker_manager') .'</a>';
-                            $content .= html_writer::start_tag('td',array('class' => 'start'));
-                                $content .= $strUrl;
-                            $content .= html_writer::end_tag('td');
+                            //$strUrl  = '<a href="'.$url .'">'. get_string('start_course','local_tracker_manager') .'</a>';
+                            //$content .= html_writer::start_tag('td',array('class' => 'start'));
+                            //    $content .= $strUrl;
+                            //$content .= html_writer::end_tag('td');
                             /* Last Col */
                             $content .= html_writer::start_tag('td',array('class' => 'first'));
                             $content .= html_writer::end_tag('td');
