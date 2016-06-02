@@ -630,7 +630,7 @@ class FELLESDATA_CRON {
             echo "Start UsersFS Synchronization" . "</br>";
 
             /* Get user to synchronize  */
-            $rdo = $DB->get_records('fs_imp_users',array('imported' => '0'),'','*',0,1);
+            $rdo = $DB->get_records('fs_imp_users',array('imported' => '0'),'','*',0,1500);
 
             /* Prepare data */
             if ($rdo) {
