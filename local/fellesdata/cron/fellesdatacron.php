@@ -636,6 +636,7 @@ class FELLESDATA_CRON {
                      WHERE  imported =0
                         AND fodselsnr IN ('01015740481','01015747621') ";
 
+            $rdo = $DB->get_records_sql($sql);
             /* Prepare data */
             if ($rdo) {
                 foreach ($rdo as $instance) {
