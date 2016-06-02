@@ -941,14 +941,14 @@ class FSKS_USERS {
                 /* Convert to object */
                 $objUser = (Object)$user;
 
-                echo $user->key . "--> " . $objUser->personalnumber . " - " .$objUser->imported . "</br>";
+                echo $objUser->key . "--> " . $objUser->personalnumber . " - " .$objUser->imported . "</br>";
 
                 if ($objUser->imported) {
                     /* Get Info User    */
-                    $infoUser = $usersFS[$user->key];
+                    $infoUser = $usersFS[$objUser->key];
 
                     /* Synchronize User */
-                    self::SynchronizeUserFS($infoUser,$user->key);
+                    self::SynchronizeUserFS($infoUser,$objUser->key);
                 }//if_user_imported
             }//for_userImported
         }catch (Exception $ex) {
