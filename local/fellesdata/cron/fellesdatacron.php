@@ -645,19 +645,12 @@ class FELLESDATA_CRON {
 
                     /* Add User */
                     $usersFS[$instance->id] = $infoUser;
-
-                    echo $instance->id . " - " . $instance->fodselsnr . "</br>";
                 }//for_rdo
 
                 /* Call Web Service */
                 $response = self::ProcessKSService($pluginInfo,KS_SYNC_USER_ACCOUNT,$usersFS);
                 if ($response['error'] == '200') {
-                    echo "1" . "</br>";
-
                     /* Synchronize Users Accounts FS    */
-                    if ($response['usersAccounts']) {
-                        echo "HOLA ";
-                    }
                     FSKS_USERS::Synchronize_UsersFS($usersFS,$response['usersAccounts']);
 
                     /* Clean Table*/

@@ -935,7 +935,6 @@ class FSKS_USERS {
         $objUser    = null;
 
         try {
-            echo "Dins -  Fora bucle" . "</br>";
             /* Synchronize users have been imported  */
             foreach ($usersImported as $user) {
                 /* Convert to object */
