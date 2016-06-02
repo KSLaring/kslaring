@@ -629,7 +629,12 @@ class FELLESDATA_CRON {
         try {
             echo "Start UsersFS Synchronization" . "</br>";
             /* Get user to synchronize  */
-            $rdo = $DB->get_records('fs_imp_users',array('imported' => '0'),'','*');
+            //$rdo = $DB->get_records('fs_imp_users',array('imported' => '0'),'','*');
+
+            $sql = " SELECT *
+                     FROM   {fs_imp_users}
+                     WHERE  imported =0
+                        AND fodselsnr IN ('01015740481','01015747621') ";
 
             /* Prepare data */
             if ($rdo) {
@@ -644,16 +649,19 @@ class FELLESDATA_CRON {
 
                     /* Add User */
                     $usersFS[$instance->id] = $infoUser;
+
+                    echo "User --> " . $instance->fodselsnr . "</br>";
                 }//for_rdo
 
                 /* Call Web Service */
                 $response = self::ProcessKSService($pluginInfo,KS_SYNC_USER_ACCOUNT,$usersFS);
                 if ($response['error'] == '200') {
+                    echo "finish --> Back Web SErvice wsUsersAccounts" . "</br>";
                     /* Synchronize Users Accounts FS    */
-                    FSKS_USERS::Synchronize_UsersFS($usersFS,$response['usersAccounts']);
+                    //FSKS_USERS::Synchronize_UsersFS($usersFS,$response['usersAccounts']);
 
                     /* Clean Table*/
-                    $DB->delete_records('fs_imp_users',array('imported' => '1'));
+                    //$DB->delete_records('fs_imp_users',array('imported' => '1'));
                 }//if_no_error
             }//if_Rdo
 
@@ -700,6 +708,7 @@ class FELLESDATA_CRON {
         error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
 
         try {
+            echo "Start";
             /* Get Notifications    */
             if ($pluginInfo->mail_notification) {
                 $notifyTo   = explode(',',$pluginInfo->mail_notification);
