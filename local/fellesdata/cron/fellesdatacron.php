@@ -653,6 +653,7 @@ class FELLESDATA_CRON {
                 $response = self::ProcessKSService($pluginInfo,KS_SYNC_USER_ACCOUNT,$usersFS);
                 if ($response['error'] == '200') {
                     echo "1" . "</br>";
+                    
                     /* Synchronize Users Accounts FS    */
                     FSKS_USERS::Synchronize_UsersFS($usersFS,$response['usersAccounts']);
 
