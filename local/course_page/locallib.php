@@ -1419,7 +1419,7 @@ class course_page  {
                 $visible['0'] = get_string('hide');
                 $visible['1'] = get_string('show');
                 $home_visible = $form->createElement('select', 'homevisible', get_string('home_visible','local_course_page'), $visible);
-                $form->insertElementBefore($home_visible,'descriptionhdr');
+                $form->insertElementBefore($home_visible,'ratings');
 
                 break;
             case 'homesummary':
