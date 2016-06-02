@@ -1047,7 +1047,7 @@ class WS_FELLESDATA {
         global $DB,$CFG;
         $time       = null;
         $infoUser   = null;
-        $userId     = null;
+        $sync       = null;
         $rdoUser    = null;
         $trans      = null;
 
@@ -1083,7 +1083,10 @@ class WS_FELLESDATA {
                 case ADD_ACTION:
                     if (!$rdoUser) {
                         /* Execute  */
-                        $userId = $DB->insert_record('user',$infoUser);
+                        $infoUser->id = $DB->insert_record('user',$infoUser);
+
+                        /* Synchronized */
+                        $sync = true;
                     }//if_notExist
 
                     break;
@@ -1097,13 +1100,13 @@ class WS_FELLESDATA {
 
                         /* Execute */
                         $DB->update_record('user',$rdoUser);
-
-                        $userId = $rdoUser->id;
                     }else {
                         /* Execute  */
-                        $userId = $DB->insert_record('user',$infoUser);
+                        $infoUser->id = $DB->insert_record('user',$infoUser);
                     }//if_infoUSer
 
+                    /* Synchronized */
+                    $sync = true;
                     break;
                 case DELETE_ACTION:
                     /* Delete User  */
@@ -1113,13 +1116,14 @@ class WS_FELLESDATA {
 
                         /* Execute */
                         $DB->update_record('user',$rdoUser);
-
-                        $userId = $rdoUser->id;
                     }else {
                         /* Execute  */
                         $infoUser->deleted      = 1;
-                        $userId = $DB->insert_record('user',$infoUser);
+                        $infoUser->id = $DB->insert_record('user',$infoUser);
                     }//if_infoUsers
+
+                    /* Synchronized */
+                    $sync = true;
 
                     break;
             }//action
@@ -1127,7 +1131,7 @@ class WS_FELLESDATA {
             /* Commit */
             $trans->allow_commit();
 
-            return $userId;
+            return $sync;
         }catch (Exception $ex) {
             /* Log  */
             $dbLog = 'Error --> ' . $ex->getTraceAsString() . "\n";
