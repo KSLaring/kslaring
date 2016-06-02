@@ -630,7 +630,7 @@ class FELLESDATA_CRON {
             echo "Start UsersFS Synchronization" . "</br>";
 
             /* Get user to synchronize  */
-            $rdo = $DB->get_records('fs_imp_users',array('imported' => '0'),'','*',0,2000);
+            $rdo = $DB->get_records('fs_imp_users',array('imported' => '0'),'','*',0,10);
 
             /* Prepare data */
             if ($rdo) {
@@ -645,11 +645,14 @@ class FELLESDATA_CRON {
 
                     /* Add User */
                     $usersFS[$instance->id] = $infoUser;
+
+                    echo $instance->fodselsnr . "</br>";
                 }//for_rdo
 
                 /* Call Web Service */
                 $response = self::ProcessKSService($pluginInfo,KS_SYNC_USER_ACCOUNT,$usersFS);
                 if ($response['error'] == '200') {
+                    echo "1" . "</br>";
                     /* Synchronize Users Accounts FS    */
                     FSKS_USERS::Synchronize_UsersFS($usersFS,$response['usersAccounts']);
 
