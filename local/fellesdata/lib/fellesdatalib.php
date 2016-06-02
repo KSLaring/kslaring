@@ -940,6 +940,8 @@ class FSKS_USERS {
                 /* Convert to object */
                 $objUser = (Object)$user;
 
+                echo $user->imported . "</br>";
+
                 if ($objUser->imported) {
                     /* Get Info User    */
                     $infoUser = $usersFS[$objUser->key];
