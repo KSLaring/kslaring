@@ -50,3 +50,5 @@ $string['home_producedby']          = 'Produsert av';
 $string['home_length']              = 'Tidsbruk';
 $string['home_effort']              = 'Beregnet arbeidsmengde';
 $string['home_manager']             = 'Kursansvarlig';
+
+$string['home_published']           = 'Sist oppdatert';

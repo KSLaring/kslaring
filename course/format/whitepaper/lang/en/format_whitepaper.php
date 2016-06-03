@@ -40,3 +40,5 @@ $string['warningchangeformat'] = 'When changing the existing course format to "W
 
 $string['home_author']              = 'Author';
 $string['home_licence']             = 'Licence';
+
+$string['home_published']           = 'Last updated';

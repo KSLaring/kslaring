@@ -40,3 +40,5 @@ $string['warningchangeformat'] = 'Når du endrer et eksisterende kursformat til 
 
 $string['home_author']              = 'Forfatter';
 $string['home_licence']             = 'Lisens';
+
+$string['home_published']           = 'Sist oppdatert';
