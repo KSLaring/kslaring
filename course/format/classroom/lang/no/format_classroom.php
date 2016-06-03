@@ -56,3 +56,5 @@ $string['home_effort']              = 'Beregnet arbeidsmengde';
 $string['home_manager']             = 'Kursansvarlig';
 $string['home_time_from_to']        = 'Tid fra - til';
 $string['home_time_from_to_help']   = 'Du kan legge til flere datoer ved å bruke komma som separator';
+
+$string['home_published']           = 'Sist oppdatert';
