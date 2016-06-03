@@ -50,3 +50,5 @@ $string['home_producedby']          = 'Produced by';
 $string['home_length']              = 'Estimated time spent';
 $string['home_effort']              = 'Estimated Effort';
 $string['home_manager']             = 'Course Manager';
+
+$string['home_published']           = 'Last updated';

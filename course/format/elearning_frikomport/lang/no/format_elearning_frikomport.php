@@ -43,3 +43,5 @@ $string['home_producedby']          = 'Produsert av';
 $string['home_length']              = 'Forventet tidsbruk';
 $string['home_effort']              = 'Forventet innsats';
 $string['home_manager']             = 'Kursansvarlig';
+
+$string['home_published']           = 'Sist oppdatert';
