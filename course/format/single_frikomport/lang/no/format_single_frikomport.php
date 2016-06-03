@@ -41,3 +41,5 @@ $string['warningchangeformat'] = 'Når du endrer et eksisterende kurs til Frikom
 
 $string['home_author']              = 'Forfatter';
 $string['home_licence']             = 'Lisens';
+
+$string['home_published']           = 'Sist oppdatert';
