@@ -2030,6 +2030,7 @@ class KS {
                 $infoCompany->name              = $company->name;
                 $infoCompany->industrycode      = $company->industrycode;
                 $infoCompany->hierarchylevel    = $company->level;
+                $infoCompany->parent            = $company->parent;
 
                 /* Execute */
                 $DB->insert_record('ks_company',$infoCompany);
