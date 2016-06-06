@@ -81,6 +81,10 @@ function xmldb_report_manager_upgrade($old_version) {
             CompetenceManager_Update::ManagerReporterTables($db_man);
         }//if_old_version
 
+        /* Add Invoice data */
+        if ($old_version < 2016060602) {
+            CompetenceManager_Update::UpdateInvoiceDataCompany($db_man);
+        }
         return true;
     }catch (Exception $ex) {
         throw $ex;
@@ -484,4 +488,90 @@ class CompetenceManager_Update {
             throw $ex;
         }//try_catch
     }//ManagerReporterTables
+
+    /**
+     * @param           $dbMan
+     *
+     * @throws          Exception
+     *
+     * @creationDate    06/06/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Add invoice data to the company
+     */
+    public static function UpdateInvoiceDataCompany($dbMan) {
+        /* Variables */
+        $tblCompanyData = null;
+        $fldAnsvar      = null;
+        $fldTjeneste    = null;
+        $fldAdreseOne   = null;
+        $fldAdreseTwo   = null;
+        $fldAdreseThree = null;
+        $fldPostnr      = null;
+        $fldPoststed    = null;
+        $fldEPost       = null;
+
+        try {
+            $tblCompanyData = new xmldb_table('report_gen_companydata');
+
+            /* Ansvar Field     */
+            $fldAnsvar      = null;
+            $fldAnsvar      = new xmldb_field('ansvar', XMLDB_TYPE_CHAR, '50', null, XMLDB_NOTNULL, null, null, 'public');
+            if (!$dbMan->field_exists($tblCompanyData, $fldAnsvar)) {
+                $dbMan->add_field($tblCompanyData, $fldAnsvar);
+            }//if_not_exists
+
+            /* Tjeneste Field   */
+            $fldTjeneste    = null;
+            $fldTjeneste    = new xmldb_field('tjeneste', XMLDB_TYPE_CHAR, '50', null, XMLDB_NOTNULL, null, null, 'public');
+            if (!$dbMan->field_exists($tblCompanyData, $fldTjeneste)) {
+                $dbMan->add_field($tblCompanyData, $fldTjeneste);
+            }//if_not_exists
+
+            /* Adresse 1        */
+            $fldAdreseOne   = null;
+            $fldAdreseOne   = new xmldb_field('adresse1', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, null, null, 'public');
+            if (!$dbMan->field_exists($tblCompanyData, $fldAdreseOne)) {
+                $dbMan->add_field($tblCompanyData, $fldAdreseOne);
+            }//if_not_exists
+
+            /* Adresse 2        */
+            $fldAdreseTwo   = null;
+            $fldAdreseTwo   = new xmldb_field('adresse2', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, null, null, 'public');
+            if (!$dbMan->field_exists($tblCompanyData, $fldAdreseTwo)) {
+                $dbMan->add_field($tblCompanyData, $fldAdreseTwo);
+            }//if_not_exists
+
+            /* Adresse 3        */
+            $fldAdreseThree = null;
+            $fldAdreseThree = new xmldb_field('adresse3', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, null, null, 'public');
+            if (!$dbMan->field_exists($tblCompanyData, $fldAdreseThree)) {
+                $dbMan->add_field($tblCompanyData, $fldAdreseThree);
+            }//if_not_exists
+
+            /* Post Number      */
+            $fldPostnr      = null;
+            $fldPostnr      = new xmldb_field('postnr', XMLDB_TYPE_CHAR, '50', null, XMLDB_NOTNULL, null, null, 'public');
+            if (!$dbMan->field_exists($tblCompanyData, $fldPostnr)) {
+                $dbMan->add_field($tblCompanyData, $fldPostnr);
+            }//if_not_exists
+
+            /* Post sted        */
+            $fldPoststed    = null;
+            $fldPoststed    = new xmldb_field('poststed', XMLDB_TYPE_CHAR, '50', null, XMLDB_NOTNULL, null, null, 'public');
+            if (!$dbMan->field_exists($tblCompanyData, $fldPoststed)) {
+                $dbMan->add_field($tblCompanyData, $fldPoststed);
+            }//if_not_exists
+
+            /* ePost            */
+            $fldEPost       = null;
+            $fldEPost       = new xmldb_field('epost', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, null, null, 'public');
+            if (!$dbMan->field_exists($tblCompanyData, $fldEPost)) {
+                $dbMan->add_field($tblCompanyData, $fldEPost);
+            }//if_not_exists
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//UpdateReportGenCompany
 }//CompetenceManager_Update
