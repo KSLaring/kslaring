@@ -79,7 +79,7 @@ class Fellesdata_Update {
 
             /* Private Filed    */
             $fldPrivate     = null;
-            $fldPrivate     = new xmldb_field('private', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, null, 'org_enhet_over');
+            $fldPrivate     = new xmldb_field('privat', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, null, 'org_enhet_over');
             if (!$dbMan->field_exists($tblFSImpComp, $fldPrivate)) {
                 $dbMan->add_field($tblFSImpComp, $fldPrivate);
             }//if_not_exists
@@ -173,7 +173,7 @@ class Fellesdata_Update {
 
             /* Private Filed    */
             $fldPrivate     = null;
-            $fldPrivate     = new xmldb_field('private', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, null, 'parent');
+            $fldPrivate     = new xmldb_field('privat', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, null, 'parent');
             if (!$dbMan->field_exists($tblFSCompany, $fldPrivate)) {
                 $dbMan->add_field($tblFSCompany, $fldPrivate);
             }//if_not_exists

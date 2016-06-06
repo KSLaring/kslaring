@@ -138,7 +138,7 @@ class Fellesdata_Install {
             /* org_enhet_over   --> Parent company                      */
             $tblFSImpComp->add_field('org_enhet_over',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, null,null);
             /* privat --> public */
-            $tblFSImpComp->add_field('private',XMLDB_TYPE_INTEGER,'1',null, XMLDB_NOTNULL, null,null);
+            $tblFSImpComp->add_field('privat',XMLDB_TYPE_INTEGER,'1',null, XMLDB_NOTNULL, null,null);
             /* ansvar   */
             $tblFSImpComp->add_field('ansvar',XMLDB_TYPE_CHAR,'50',null, XMLDB_NOTNULL, null,null);
             /* tjeneste */
@@ -513,7 +513,7 @@ class Fellesdata_Install {
             /* parent       --> Parent of the company                           */
             $tblFSCompany->add_field('parent',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, null,null);
             /* privat --> public */
-            $tblFSCompany->add_field('private',XMLDB_TYPE_INTEGER,'1',null, XMLDB_NOTNULL, null,null);
+            $tblFSCompany->add_field('privat',XMLDB_TYPE_INTEGER,'1',null, XMLDB_NOTNULL, null,null);
             /* ansvar   */
             $tblFSCompany->add_field('ansvar',XMLDB_TYPE_CHAR,'50',null, XMLDB_NOTNULL, null,null);
             /* tjeneste */
