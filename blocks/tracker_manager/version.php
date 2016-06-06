@@ -17,4 +17,4 @@ $plugin->version   = 2016030700;                    // The current plugin versio
 $plugin->component = 'block_tracker_manager';    // Full name of the plugin (used for diagnostics)
 
 /* Dependencies */
-$plugin->dependencies = array('report_manager'  => 2016030700);
+$plugin->dependencies = array('report_manager'  => 2016060602);

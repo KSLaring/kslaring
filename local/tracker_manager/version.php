@@ -12,7 +12,7 @@ $plugin->version  = 2016030700;  // The current module version (Date: YYYYMMDDXX
 $plugin->component = 'local_tracker_manager';
 
 /* Dependencies */
-$plugin->dependencies = array('report_manager'          => 2016030700,
+$plugin->dependencies = array('report_manager'          => 2016060602,
                               'profilefield_competence' => 2016030700);
 
 ?>

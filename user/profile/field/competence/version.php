@@ -26,4 +26,4 @@ $plugin->component = 'profilefield_competence';     // Full name of the plugin (
 
 
 /* Dependencies */
-$plugin->dependencies = array('report_manager' => 2016030700);
+$plugin->dependencies = array('report_manager' => 2016060602);
