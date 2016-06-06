@@ -90,26 +90,31 @@ class FELLESDATA_CRON {
 
                     break;
                 case TEST_FS_USERS:
+                    echo "Import FS Users" . "</br>";
                     /* Import FS Users              */
                     self::ImportFSUsers($pluginInfo);
 
                     break;
                 case TEST_FS_ORG:
+                    echo "Import FS ORG" . "</br>";
                     /* Import FS Companies          */
                     self::ImportFSOrgStructure($pluginInfo);
 
                     break;
                 case TEST_FS_JR:
+                    echo "Import FS job Roles" . "</br>";
                     /* Import FS Job roles  */
                     self::ImportFSJobRoles($pluginInfo);
 
                     break;
                 case TEST_FS_USER_COMP:
+                    echo "Import FS User Competence" . "</br>";
                     /* Import FS User Competence    */
                     self::ImportFSUserCompetence($pluginInfo);
 
                     break;
                 case TEST_FS_USER_COMP_JR:
+                    echo "Import Fs User Competence JR" . "</br>";
                     /* Import FS User Competence JR */
                     self::ImportFSUserCompetenceJR($pluginInfo);
 
