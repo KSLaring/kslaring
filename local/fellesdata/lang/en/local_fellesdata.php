@@ -72,4 +72,6 @@ $string['no_jr_to_map']         = 'There is none job role to map.';
 $string['btn_match']            = 'Match';
 
 $string['menu_title']           = 'Fellesdata';
+$string['map_org']              = 'Mapping Organizations';
+$string['map_jr']               = 'Mapping Job Roles';
 

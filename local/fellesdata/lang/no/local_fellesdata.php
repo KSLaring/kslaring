@@ -72,3 +72,5 @@ $string['no_jr_to_map']         = 'Det finnes ingen jobbroller å mappe.';
 $string['btn_match']        = 'Treff';
 
 $string['menu_title']           = 'Fellesdata';
+$string['map_org']              = 'Mapping Organizations';
+$string['map_jr']               = 'Mapping Job Roles';

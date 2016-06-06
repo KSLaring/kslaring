@@ -16,6 +16,8 @@ define('MAPPING_JR','jr');
 define('ACT_ADD',0);
 define('ACT_UPDATE',1);
 define('ACT_DELETE',2);
+define('FS_LE_2',2);
+define('FS_LE_5',3);
 
 class FS_MAPPING {
     /**********/
@@ -422,10 +424,24 @@ class FS_MAPPING {
         $params         = null;
 
         try {
+
             /* Search Criteria  */
             $params = array();
             $params['imported'] = 0;
             $params['action']   = ACT_DELETE;
+
+            /* Get Level    */
+            switch ($level) {
+                case FS_LE_2:
+                    $params['level'] = 2;
+                    break;
+                case FS_LE_5;
+                    $params['level'] = 5;
+                    break;
+                default:
+                    $params['level'] = '-1';
+                    break;
+            }//level
 
             /* SQL Instruction  */
             $sql = " SELECT DISTINCT fs_imp.id,
@@ -438,6 +454,7 @@ class FS_MAPPING {
                         AND fs_imp.action   != :action
                         AND	fs.id IS NULL
                         AND fs_imp.org_navn like '%" . $sector . "%'
+                        AND	fs_imp.org_nivaa = :level
                      ORDER BY fs_imp.org_navn
                      LIMIT $start, $length ";
 

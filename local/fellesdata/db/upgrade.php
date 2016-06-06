@@ -20,6 +20,8 @@ function xmldb_local_fellesdata_upgrade($oldVersion) {
     /* Imp User JR  */
     $tblImpUsersJR  = null;
     $fldStillins    = null;
+    $tblKSCompany   = null;
+    $fldParent      = null;
 
     /* Get Manager  */
     $dbMan = $DB->get_manager();
@@ -42,6 +44,18 @@ function xmldb_local_fellesdata_upgrade($oldVersion) {
             Fellesdata_Update::Update_FSImpCompany($dbMan);
             Fellesdata_Update::Update_FSCompany($dbMan);
         }//id_oflVersion
+
+        if ($oldVersion < 2016060602) {
+            /* Table        */
+            $tblKSCompany = new xmldb_table('ks_company');
+
+            /* New Field    */
+            $fldParent = new xmldb_field('parent', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null, 'fodselsnr');
+            if (!$dbMan->field_exists($tblKSCompany, $fldParent)) {
+                $dbMan->add_field($tblKSCompany, $fldParent);
+            }//if_not_exists
+        }
+
         return true;
     }catch (Exception $ex) {
         throw $ex;

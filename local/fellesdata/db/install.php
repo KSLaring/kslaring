@@ -467,6 +467,8 @@ class Fellesdata_Install {
             $tblKSCompany->add_field('industrycode',XMLDB_TYPE_CHAR,'50',null, XMLDB_NOTNULL, null,null);
             /* hierarchylevel --> hierarchy inside the organization */
             $tblKSCompany->add_field('hierarchylevel',XMLDB_TYPE_INTEGER,'2',null, XMLDB_NOTNULL, null,null);
+            /* Parent */
+            $tblKSCompany->add_field('parent',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, null,null);
 
             /* Keys     */
             $tblKSCompany->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
