@@ -305,11 +305,13 @@ class local_wsks_external extends external_api {
         $orgId              = new external_value(PARAM_INT,'Level Id');
         $orgHierarchy       = new external_value(PARAM_INT,'Level Hierarchy');
         $orgIndustryCode    = new external_value(PARAM_TEXT,'Industry Code');
+        $orgParent          = new external_value(PARAM_INT,'Parent');
 
         $orgInfo      = new external_single_structure(array('id'            => $orgId,
                                                             'name'          => $orgName,
                                                             'industrycode'  => $orgIndustryCode,
-                                                            'level'         => $orgHierarchy));
+                                                            'level'         => $orgHierarchy,
+                                                            'parent'        => $orgParent));
 
         $existReturn = new external_single_structure(array('error'         => $error,
                                                            'message'       => $msgError,

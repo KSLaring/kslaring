@@ -1525,6 +1525,7 @@ class WS_FELLESDATA {
                     $infoOrganization->name         = $instance->name;
                     $infoOrganization->industrycode = $instance->industrycode;
                     $infoOrganization->level        = $instance->hierarchylevel;
+                    $infoOrganization->parent       = 0;
 
                     /* Add Company */
                     $orgStructure[$instance->id] = $infoOrganization;
@@ -1586,7 +1587,8 @@ class WS_FELLESDATA {
             $sql = " SELECT	  co.id,
                               co.name,
                               co.industrycode,
-                              co.hierarchylevel
+                              co.hierarchylevel,
+                              cr.parentid
                      FROM	  {report_gen_companydata}			co
                         JOIN  {report_gen_company_relation}		cr 	ON 	cr.companyid 	= co.id
                                                                     AND cr.parentid 	IN ($parents)
@@ -1603,6 +1605,7 @@ class WS_FELLESDATA {
                     $infoOrganization->name         = $instance->name;
                     $infoOrganization->industrycode = $instance->industrycode;
                     $infoOrganization->level        = $instance->hierarchylevel;
+                    $infoOrganization->parent       = $instance->parentid;
 
                     /* Add Company */
                     $orgStructure[$instance->id] = $infoOrganization;
