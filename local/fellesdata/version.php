@@ -11,6 +11,6 @@
  *
  */
 
-$plugin->version    =  '2016042200';         /* The plugin current version (DATE: YYYYMMDDXX) */
+$plugin->version    =  '2016060600';         /* The plugin current version (DATE: YYYYMMDDXX) */
 $plugin->component  =  'local_fellesdata';
 $plugin->cron       =  86400;                     // Cron interval 1 day. //60; //(300 secs - 5 min)

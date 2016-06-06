@@ -14,6 +14,13 @@
 define('SYNC_COMP','companies');
 define('SYNC_JR','jobroles');
 
+define('TEST_ORG',1);
+define('TEST_JR',2);
+define('TEST_FS_USERS',3);
+define('TEST_FS_ORG',4);
+define('TEST_FS_JR',5);
+define('TEST_FS_USER_COMP',6);
+define('TEST_FS_USER_COMP_JR',7);
 class FELLESDATA_CRON {
     /**********/
     /* PUBLIC */
@@ -30,10 +37,10 @@ class FELLESDATA_CRON {
             ini_set('memory_limit','1024M');
 
             /* Import KS */
-            //self::ImportKS($pluginInfo);
+            self::ImportKS($pluginInfo);
 
             /* Import Fellesdata        */
-            //self::ImportFellesdata($pluginInfo);
+            self::ImportFellesdata($pluginInfo);
 
 
             /* SYNCHRONIZATION  */
@@ -41,23 +48,79 @@ class FELLESDATA_CRON {
             self::UsersFS_Synchronization($pluginInfo);
 
             /* Synchronization Companies    */
-            //self::CompaniesFS_Synchronization($pluginInfo,$fstExecution);
+            self::CompaniesFS_Synchronization($pluginInfo,$fstExecution);
 
             /* Synchronization Job Roles    */
-            //self::JobRolesFS_Synchronization($pluginInfo,$fstExecution);
+            self::JobRolesFS_Synchronization($pluginInfo,$fstExecution);
 
             /* Synchronization Comeptence   */
-            //if (!$fstExecution) {
+            if (!$fstExecution) {
                 /* Synchronization User Competence Company  */
-            //    self::UserCompetence_Synchronization($pluginInfo,IMP_COMPETENCE_COMP,KS_USER_COMPETENCE_CO);
+                self::UserCompetence_Synchronization($pluginInfo,IMP_COMPETENCE_COMP,KS_USER_COMPETENCE_CO);
 
                 /* Synchronization User Competence JobRole  */
-            //    self::UserCompetence_Synchronization($pluginInfo,IMP_COMPETENCE_JR,KS_USER_COMPETENCE_JR);
-           //}
+                self::UserCompetence_Synchronization($pluginInfo,IMP_COMPETENCE_JR,KS_USER_COMPETENCE_JR);
+           }
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
     }//cron
+
+    public static function cron_manual($fstExecution,$option) {
+        /* Variables    */
+        $pluginInfo = null;
+
+        try {
+            /* Plugin Info      */
+            $pluginInfo     = get_config('local_fellesdata');
+
+            ini_set('memory_limit','1024M');
+
+            switch ($option) {
+                case TEST_ORG:
+                    echo "Organization Structure" . "</br>";
+                    /* Import Organization Structure    */
+                    self::OrganizationStructure($pluginInfo);
+
+                    break;
+                case TEST_JR:
+                    echo "JobRoles" . "</br>";
+                    /* Import Job Roles */
+                    self::ImportKSJobRoles($pluginInfo);
+
+                    break;
+                case TEST_FS_USERS:
+                    /* Import FS Users              */
+                    self::ImportFSUsers($pluginInfo);
+
+                    break;
+                case TEST_FS_ORG:
+                    /* Import FS Companies          */
+                    self::ImportFSOrgStructure($pluginInfo);
+
+                    break;
+                case TEST_FS_JR:
+                    /* Import FS Job roles  */
+                    self::ImportFSJobRoles($pluginInfo);
+
+                    break;
+                case TEST_FS_USER_COMP:
+                    /* Import FS User Competence    */
+                    self::ImportFSUserCompetence($pluginInfo);
+
+                    break;
+                case TEST_FS_USER_COMP_JR:
+                    /* Import FS User Competence JR */
+                    self::ImportFSUserCompetenceJR($pluginInfo);
+
+                    break;
+                default:
+                    break;
+            }//switch_option
+    }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//cron_manual
 
 
     /***********/
@@ -130,7 +193,7 @@ class FELLESDATA_CRON {
             /* Request Web Service */
             $infoLevel = array();
             $infoLevel['company']   = $pluginInfo->ks_muni;
-            $infoLevel['level']     = 0;
+            $infoLevel['level']     = 1;
             /* Don't import all companies over and over */
             $infoLevel['notIn']     = KS::ExistingCompanies();
 
@@ -285,19 +348,19 @@ class FELLESDATA_CRON {
 
         try {
             /* Import FS Users              */
-            //self::ImportFSUsers($pluginInfo);
+            self::ImportFSUsers($pluginInfo);
 
             /* Import FS Companies          */
-            //self::ImportFSOrgStructure($pluginInfo);
+            self::ImportFSOrgStructure($pluginInfo);
 
             /* Import FS Job roles  */
-            //self::ImportFSJobRoles($pluginInfo);
+            self::ImportFSJobRoles($pluginInfo);
 
             /* Import FS User Competence    */
-            //self::ImportFSUserCompetence($pluginInfo);
+            self::ImportFSUserCompetence($pluginInfo);
 
             /* Import FS User Competence JR */
-            //self::ImportFSUserCompetenceJR($pluginInfo);
+            self::ImportFSUserCompetenceJR($pluginInfo);
 
             /* Log  */
             $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' FINISH Import Fellesdata . ' . "\n";

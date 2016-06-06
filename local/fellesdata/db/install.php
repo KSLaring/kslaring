@@ -137,6 +137,24 @@ class Fellesdata_Install {
             $tblFSImpComp->add_field('org_navn',XMLDB_TYPE_CHAR,'255',null, XMLDB_NOTNULL, null,null);
             /* org_enhet_over   --> Parent company                      */
             $tblFSImpComp->add_field('org_enhet_over',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, null,null);
+            /* privat --> public */
+            $tblFSImpComp->add_field('private',XMLDB_TYPE_INTEGER,'1',null, XMLDB_NOTNULL, null,null);
+            /* ansvar   */
+            $tblFSImpComp->add_field('ansvar',XMLDB_TYPE_CHAR,'50',null, XMLDB_NOTNULL, null,null);
+            /* tjeneste */
+            $tblFSImpComp->add_field('tjeneste',XMLDB_TYPE_CHAR,'50',null, XMLDB_NOTNULL, null,null);
+            /* adresse1 */
+            $tblFSImpComp->add_field('adresse1',XMLDB_TYPE_CHAR,'255',null, XMLDB_NOTNULL, null,null);
+            /* adresse2 */
+            $tblFSImpComp->add_field('adresse2',XMLDB_TYPE_CHAR,'255',null, XMLDB_NOTNULL, null,null);
+            /* adresse3 */
+            $tblFSImpComp->add_field('adresse3',XMLDB_TYPE_CHAR,'255',null, XMLDB_NOTNULL, null,null);
+            /* postnr   */
+            $tblFSImpComp->add_field('postnr',XMLDB_TYPE_CHAR,'50',null, XMLDB_NOTNULL, null,null);
+            /* poststed */
+            $tblFSImpComp->add_field('poststed',XMLDB_TYPE_CHAR,'50',null, XMLDB_NOTNULL, null,null);
+            /* epost    */
+            $tblFSImpComp->add_field('epost',XMLDB_TYPE_CHAR,'255',null, XMLDB_NOTNULL, null,null);
             /* action           --> Action to apply                     */
             $tblFSImpComp->add_field('action',XMLDB_TYPE_CHAR,'25',null, XMLDB_NOTNULL, null,null);
             /* Imported         */
@@ -494,6 +512,24 @@ class Fellesdata_Install {
             $tblFSCompany->add_field('level',XMLDB_TYPE_INTEGER,'2',null, XMLDB_NOTNULL, null,null);
             /* parent       --> Parent of the company                           */
             $tblFSCompany->add_field('parent',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, null,null);
+            /* privat --> public */
+            $tblFSCompany->add_field('private',XMLDB_TYPE_INTEGER,'1',null, XMLDB_NOTNULL, null,null);
+            /* ansvar   */
+            $tblFSCompany->add_field('ansvar',XMLDB_TYPE_CHAR,'50',null, XMLDB_NOTNULL, null,null);
+            /* tjeneste */
+            $tblFSCompany->add_field('tjeneste',XMLDB_TYPE_CHAR,'50',null, XMLDB_NOTNULL, null,null);
+            /* adresse1 */
+            $tblFSCompany->add_field('adresse1',XMLDB_TYPE_CHAR,'255',null, XMLDB_NOTNULL, null,null);
+            /* adresse2 */
+            $tblFSCompany->add_field('adresse2',XMLDB_TYPE_CHAR,'255',null, XMLDB_NOTNULL, null,null);
+            /* adresse3 */
+            $tblFSCompany->add_field('adresse3',XMLDB_TYPE_CHAR,'255',null, XMLDB_NOTNULL, null,null);
+            /* postnr   */
+            $tblFSCompany->add_field('postnr',XMLDB_TYPE_CHAR,'50',null, XMLDB_NOTNULL, null,null);
+            /* poststed */
+            $tblFSCompany->add_field('poststed',XMLDB_TYPE_CHAR,'50',null, XMLDB_NOTNULL, null,null);
+            /* epost    */
+            $tblFSCompany->add_field('epost',XMLDB_TYPE_CHAR,'255',null, XMLDB_NOTNULL, null,null);
             /* synchronized                                                     */
             $tblFSCompany->add_field('synchronized',XMLDB_TYPE_INTEGER,'2',null, XMLDB_NOTNULL, null,null);
             /* New  --> To create a new one */

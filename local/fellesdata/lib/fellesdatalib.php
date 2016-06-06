@@ -342,7 +342,7 @@ class FSKS_COMPANY {
         try {
             /* Companies to Synchronize between FS and KS   */
             /* New - Create */
-            self::GetNewCompaniesFS_ToSynchronize($toSynchronize);
+            //self::GetNewCompaniesFS_ToSynchronize($toSynchronize);
             /* New - Update */
             self::GetUpdateCompaniesFS_ToSynchronize($toSynchronize);
 
