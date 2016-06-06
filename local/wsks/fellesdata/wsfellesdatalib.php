@@ -1533,7 +1533,7 @@ class WS_FELLESDATA {
                 /* Get the hierarchy */
                 if ($maxLevel) {
                     $parents = implode(',',array_keys($orgStructure));
-                    for($i=1;$i<=$maxLevel;$i++) {
+                    for($i=2;$i<=$maxLevel;$i++) {
                         /* Get Information About the rest hierarchy */
                         $parents = self::GetMyLevels($parents,$i,$orgStructure,$notIn);
                     }
