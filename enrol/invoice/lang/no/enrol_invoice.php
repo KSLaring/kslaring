@@ -74,12 +74,9 @@ Hvis det er satt en påmeldingsnøkkel må alle brukere som prøver å melde seg
 $string['password_invalid']                     = 'Ugyldig påmeldingsnøkkel, vennligst prøv på nytt';
 $string['password_invalid_hint']                = 'Påmeldingsnøkkelen var ugyldig, vennligst prøv på nytt<br />
 (Ett lite hint - den starter med \'{$a}\')';
-$string['welcome_to_course']                    = 'Velkommen til {$a}';
-$string['welcome_to_course_text']               = 'Velkommen til {$a->coursename}!
-
-Hvis du ikke har gjort det allerede ber vi deg om å redigere profilen din slik at vi kan bli bedre kjent med deg
-
-  {$a->profileurl}';
+$string['welcome_to_course']                    = 'Du er påmeldt {$a} - velkommen!';
+$string['welcome_to_course_text']               = '<p>Du er påmeldt {$a->coursename} – velkommen!</p> <p>Husk å sette av datoen(e) i kalenderen.</p>
+<p>Dette er en automatisk generert e-post. Du kan ikke svare på e-posten.</p>';
 
 $string['enrol_me']                             = 'Meld meg på';
 $string['unenrol']                              = 'Meld av bruker';

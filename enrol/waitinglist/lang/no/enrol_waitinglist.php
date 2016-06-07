@@ -109,11 +109,9 @@ Følgende plassholdere kan legges inn i meldingen:
 
 * Kursnavn {$a->coursename}
 * Link til brukerens profilside {$a->profileurl}';
-$string['welcometocourse'] = 'Velkommen til {$a}';
-$string['welcometocoursetext'] = 'Velkommen til {$a->coursename}!
-
-Hvis du ikke allerede har gjort det, bør du redigere brukerprofilen din slik at vi kan bli bedre kjent med deg:
-  {$a->profileurl}';
+$string['welcometocourse'] = 'Du er påmeldt {$a} - velkommen!';
+$string['welcometocoursetext'] = '<p>Du er påmeldt {$a->coursename} – velkommen!</p> <p>Husk å sette av datoen(e) i kalenderen.</p>
+<p>Dette er en automatisk generert e-post. Du kan ikke svare på e-posten.</p>';
 $string['customwaitlistmessage'] = 'Egendefinert melding for påmelding med venteliste';
 $string['customwaitlistmessage_help'] = 'Du kan legge til en egendefinert melding som ren tekst eller i Moodles auto-format, inkludert HTML-tagger og flerspråktagger.
 
