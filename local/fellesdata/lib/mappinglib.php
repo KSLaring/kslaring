@@ -482,7 +482,8 @@ class FS_MAPPING {
                         LEFT JOIN	{fs_company}	  fs	  ON fs.companyid = fs_imp.org_enhet_id
                      WHERE	fs_imp.imported  = :imported
                         AND fs_imp.action   != :action
-                        AND	fs.id IS NULL ";
+                        AND	fs.id IS NULL
+                        AND	fs_imp.org_nivaa = :level ";
 
             if ($sector) {
                 $sqlMatch = null;
@@ -507,11 +508,9 @@ class FS_MAPPING {
                 $sql .= " AND fs_imp.org_navn like '%" . $sector . "%' ";
             }
 
-            $sql .= " AND	fs_imp.org_nivaa = :level
-                      ORDER BY fs_imp.org_navn
+            /* Order Criteria   */
+            $sql .= " ORDER BY fs_imp.org_navn
                       LIMIT $start, $length ";
-
-            echo $sql . "</br>";
 
             /* Execute  */
             $rdo = $DB->get_records_sql($sql,$params);
