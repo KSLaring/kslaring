@@ -500,10 +500,6 @@ class FS_MAPPING {
                     }//if_sqlMatch
 
                     $sqlMatch .= " fs_imp.org_navn like '%" . $match . "%' ";
-
-                    //$sqlMatch .= " LOCATE('" . $match ."',fs_imp.org_navn) > 0
-                    //               OR
-                    //               LOCATE(fs_imp.org_navn,'" . $match ."') > 0 ";
                 }//for_search
 
                 $sql .= " AND (fs_imp.org_navn like '%" . $sector . "%' OR " . $sqlMatch . ")";
@@ -597,21 +593,24 @@ class FS_MAPPING {
 
             /* Pattern  */
             if ($sector) {
+
+
+                /* Search by */
+                foreach($searchBy as $match) {
+                    if ($sqlMatch) {
+                        $sqlMatch .= " OR ";
+                    }//if_sqlMatch
+                    $sqlMatch .= " LOCATE('" . $match ."',ks.name) > 0
+                               OR
+                               LOCATE(ks.name,'" . $match ."') > 0 ";
+                }//for_search
+
+                $sql .= " AND (ks.name like '%" . $sector . "%' OR " . $sqlMatch . ")";
+            }else {
                 $sql .= " AND ks.name like '%" . $sector . "%'";
             }//if_sector
 
-            /* Search by */
-            foreach($searchBy as $match) {
-                if ($sqlMatch) {
-                    $sqlMatch .= " OR ";
-                }//if_sqlMatch
-                $sqlMatch .= " LOCATE('" . $match ."',ks.name) > 0
-                               OR
-                               LOCATE(ks.name,'" . $match ."') > 0 ";
-            }//for_search
-
             /* Execute  */
-            $sql .= " AND (" . $sqlMatch . ")";
             $sql .= " ORDER BY ks.industrycode, ks.name ";
 
             $rdo = $DB->get_records_sql($sql,$params);
