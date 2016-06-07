@@ -483,16 +483,16 @@ class FS_MAPPING {
                      WHERE	fs_imp.imported  = :imported
                         AND fs_imp.action   != :action
                         AND	fs.id IS NULL
-                        AND fs_imp.org_navn like '%" . $sector . "%' ";
+                         ";
 
             if ($sector) {
                 $sqlMatch = null;
                 $searchBy = null;
                 /* Search By    */
                 $sector     = str_replace(',',' ',$sector);
-                $sector     = str_replace('/',' ',$sector);
                 $sector     = str_replace(' ',' og ',$sector);
                 $sector     = str_replace(' ',' eller ',$sector);
+                $sector     = str_replace('/',' ',$sector);
                 $searchBy   = explode(' ',$sector);
 
                 foreach($searchBy as $match) {
@@ -504,7 +504,7 @@ class FS_MAPPING {
                                    LOCATE(fs_imp.org_navn,'" . $match ."') > 0 ";
                 }//for_search
 
-                $sql .= " AND (" . $sqlMatch . ")";
+                $sql .= " AND (AND fs_imp.org_navn like '%" . $sector . "%' OR " . $sqlMatch . ")";
             }
 
             $sql .= " AND	fs_imp.org_nivaa = :level
