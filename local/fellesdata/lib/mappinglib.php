@@ -579,8 +579,11 @@ class FS_MAPPING {
             $params['level'] = $level;
 
             /* Search By    */
-            $fscompany  = str_replace('/',' ',$fscompany);
-            $searchBy   = explode(' ',$fscompany);
+            $sector  = str_replace(',',' ',$sector);
+            $sector  = str_replace(' og ',' ',$sector);
+            $sector  = str_replace(' eller ',' ',$sector);
+            $sector  = str_replace('/',' ',$sector);
+            $searchBy   = explode(' ',$sector);
 
             /* SQL Instruction  */
             $sql = " SELECT	ks.id,
@@ -601,9 +604,9 @@ class FS_MAPPING {
                     $sqlMatch .= " ks.name like '%" . $match . "%'";
                 }//for_search
 
-                $sql .= " AND (ks.name like '%" . $sector . "%' OR " . $sqlMatch . ")";
+                $sql .= " AND (ks.name like '%" . $fscompany . "%' OR " . $sqlMatch . ")";
             }else {
-                $sql .= " AND ks.name like '%" . $sector . "%'";
+                $sql .= " AND ks.name like '%" . $fscompany . "%'";
             }//if_sector
 
             /* Execute  */
