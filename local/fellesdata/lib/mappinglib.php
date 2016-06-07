@@ -483,11 +483,35 @@ class FS_MAPPING {
                      WHERE	fs_imp.imported  = :imported
                         AND fs_imp.action   != :action
                         AND	fs.id IS NULL
-                        AND fs_imp.org_navn like '%" . $sector . "%'
-                        AND	fs_imp.org_nivaa = :level
-                     ORDER BY fs_imp.org_navn
-                     LIMIT $start, $length ";
+                        AND fs_imp.org_navn like '%" . $sector . "%' ";
 
+            if ($sector) {
+                $sqlMatch = null;
+                $searchBy = null;
+                /* Search By    */
+                $sector     = str_replace(' ',',',$sector);
+                $sector     = str_replace('/',' ',$sector);
+                $sector     = str_replace('',' og ',$sector);
+                $sector     = str_replace('',' eller ',$sector);
+                $searchBy   = explode(' ',$sector);
+
+                foreach($searchBy as $match) {
+                    if ($sqlMatch) {
+                        $sqlMatch .= " OR ";
+                    }//if_sqlMatch
+                    $sqlMatch .= " LOCATE('" . $match ."',fs_imp.org_navn) > 0
+                                   OR
+                                   LOCATE(fs_imp.org_navn,'" . $match ."') > 0 ";
+                }//for_search
+
+                $sql .= $sqlMatch;
+            }
+
+            $sql .= " AND	fs_imp.org_nivaa = :level
+                      ORDER BY fs_imp.org_navn
+                      LIMIT $start, $length ";
+
+            echo $sql . "</br>";
 
             /* Execute  */
             $rdo = $DB->get_records_sql($sql,$params);
@@ -578,8 +602,8 @@ class FS_MAPPING {
                     $sqlMatch .= " OR ";
                 }//if_sqlMatch
                 $sqlMatch .= " LOCATE('" . $match ."',ks.name) > 0
-                              OR
-                              LOCATE(ks.name,'" . $match ."') > 0 ";
+                               OR
+                               LOCATE(ks.name,'" . $match ."') > 0 ";
             }//for_search
 
             /* Execute  */
