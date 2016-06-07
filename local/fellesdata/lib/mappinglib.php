@@ -489,8 +489,8 @@ class FS_MAPPING {
                 $searchBy = null;
                 /* Search By    */
                 $sector     = str_replace(',',' ',$sector);
-                $sector     = str_replace(' ',' og ',$sector);
-                $sector     = str_replace(' ',' eller ',$sector);
+                $sector     = str_replace(' og ',' ',$sector);
+                $sector     = str_replace(' eller ',' ',$sector);
                 $sector     = str_replace('/',' ',$sector);
                 $searchBy   = explode(' ',$sector);
 
@@ -499,11 +499,11 @@ class FS_MAPPING {
                         $sqlMatch .= " OR ";
                     }//if_sqlMatch
 
-                    //$sqlMatch .= " fs_imp.org_navn like '%" . $match . "%' ";
+                    $sqlMatch .= " fs_imp.org_navn like '%" . $match . "%' ";
 
-                    $sqlMatch .= " LOCATE('" . $match ."',fs_imp.org_navn) > 0
-                                   OR
-                                   LOCATE(fs_imp.org_navn,'" . $match ."') > 0 ";
+                    //$sqlMatch .= " LOCATE('" . $match ."',fs_imp.org_navn) > 0
+                    //               OR
+                    //               LOCATE(fs_imp.org_navn,'" . $match ."') > 0 ";
                 }//for_search
 
                 $sql .= " AND (fs_imp.org_navn like '%" . $sector . "%' OR " . $sqlMatch . ")";
