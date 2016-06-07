@@ -280,7 +280,8 @@ class FS_MAPPING {
                 $infoCompany = new stdClass();
                 $infoCompany->companyid     = $fsCompany->fscompany;
                 $infoCompany->name          = $fsCompany->name;
-                $infoCompany->parent        = $fsCompany->parent;
+                $infoCompany->fs_parent     = $fsCompany->fs_parent;
+                $infoCompany->parent        = 0;
                 $infoCompany->level         = $level;
                 /* Invoice Data */
                 $infoCompany->ansvar        = $fsCompany->ansvar;
@@ -357,7 +358,7 @@ class FS_MAPPING {
                 $infoCompany = new stdClass();
                 $infoCompany->companyid     = $fsCompany->fscompany;
                 $infoCompany->name          = $fsCompany->name;
-                $infoCompany->fs_parent     = $fsCompany->parent;
+                $infoCompany->fs_parent     = $fsCompany->fs_parent;
                 $infoCompany->parent        = $ksCompany->parent;
                 /* Invoice Data */
                 $infoCompany->ansvar        = $fsCompany->ansvar;
@@ -377,7 +378,7 @@ class FS_MAPPING {
                 $DB->insert_record('fs_company',$infoCompany);
             }else {
                 $rdo->name          = $fsCompany->name;
-                $rdo->fs_parent     = $fsCompany->parent;
+                $rdo->fs_parent     = $fsCompany->fs_parent;
                 $rdo->parent        = $ksCompany->parent;
                 $rdo->level         = $level;
                 $rdo->synchronized  = 1;
