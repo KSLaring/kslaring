@@ -578,13 +578,6 @@ class FS_MAPPING {
             $params = array();
             $params['level'] = $level;
 
-            /* Search By    */
-            $sector  = str_replace(',',' ',$sector);
-            $sector  = str_replace(' og ',' ',$sector);
-            $sector  = str_replace(' eller ',' ',$sector);
-            $sector  = str_replace('/',' ',$sector);
-            $searchBy   = explode(' ',$sector);
-
             /* SQL Instruction  */
             $sql = " SELECT	ks.id,
                             ks.companyid as 'kscompany',
@@ -596,6 +589,12 @@ class FS_MAPPING {
 
             /* Pattern  */
             if ($sector) {
+                $sector     = str_replace(',',' ',$sector);
+                $sector     = str_replace(' og ',' ',$sector);
+                $sector     = str_replace(' eller ',' ',$sector);
+                $sector     = str_replace('/',' ',$sector);
+                $searchBy   = explode(' ',$sector);
+
                 /* Search by */
                 foreach($searchBy as $match) {
                     if ($sqlMatch) {
@@ -611,7 +610,6 @@ class FS_MAPPING {
 
             /* Execute  */
             $sql .= " ORDER BY ks.industrycode, ks.name ";
-            echo "SQL: " . $sql . "</br>";
             $rdo = $DB->get_records_sql($sql,$params);
             if ($rdo) {
                 foreach ($rdo as $instance) {
