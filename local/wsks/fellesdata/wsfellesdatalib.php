@@ -1337,6 +1337,12 @@ class WS_FELLESDATA {
      *
      * Description
      * Process the company to synchronize
+     *
+     * @updateDate      06/06/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Add invoice data
      */
     private static function ProcessFSCompany($companyInfo) {
         /* Variables */
@@ -1365,6 +1371,17 @@ class WS_FELLESDATA {
             $instanceCompany->name              = $companyInfo->name;
             $instanceCompany->industrycode      = $companyInfo->industry;
             $instanceCompany->hierarchylevel    = $companyInfo->level;
+            $instanceCompany->public            = $companyInfo->public;
+            $instanceCompany->ansvar            = $companyInfo->ansvar;
+            $instanceCompany->tjeneste          = $companyInfo->tjeneste;
+            $instanceCompany->adresse1          = $companyInfo->adresseOne;
+            $instanceCompany->adresse2          = $companyInfo->adresseTwo;
+            $instanceCompany->adresse3          = $companyInfo->adresseThree;
+            $instanceCompany->postnr            = $companyInfo->postnr;
+            $instanceCompany->poststed          = $companyInfo->poststed;
+            $instanceCompany->epost             = $companyInfo->epost;
+
+            /* Invoice Data */
             $instanceCompany->modified          = $time;
 
             /* Apply Action */

@@ -143,6 +143,12 @@ class local_wsks_external extends external_api {
      *
      * Description
      * Parameters of web service to create, updated or delete KS companies from FELLESDATA
+     *
+     * @updateDate      06/06/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Add invoice data
      */
     public static function wsFSCompany_parameters() {
         /* Company Info */
@@ -153,6 +159,17 @@ class local_wsks_external extends external_api {
         $companyLevel           = new external_value(PARAM_INT,'Company Level');
         $companyParent          = new external_value(PARAM_INT,'Company Parent');
         $action                 = new external_value(PARAM_INT,'Action. Add/Update/Delete');
+        /* Public /Private  */
+        $companyPublic          = new external_value(PARAM_INT,'Private or Public');
+        /* Invoice Data */
+        $companyAnsvar          = new external_value(PARAM_TEXT,'Company Ansvar');
+        $companyTjneste         = new external_value(PARAM_TEXT,'Company Tjeneste');
+        $companyAdrOne          = new external_value(PARAM_TEXT,'Adresse 1');
+        $companyAdrTwo          = new external_value(PARAM_TEXT,'Adresse 2');
+        $companyAdrThree        = new external_value(PARAM_TEXT,'Adresse 3');
+        $companyPostNr          = new external_value(PARAM_TEXT,'Post NR');
+        $companyPostSted        = new external_value(PARAM_TEXT,'Post Sted');
+        $companyEPost           = new external_value(PARAM_TEXT,'ePost');
 
         $companiesFS = new external_single_structure(array('fsId'       => $companyFSID,
                                                            'ksId'       => $companyKSID,
@@ -160,6 +177,15 @@ class local_wsks_external extends external_api {
                                                            'industry'   => $companyIndustryCode,
                                                            'level'      => $companyLevel,
                                                            'parent'     => $companyParent,
+                                                            'public'        => $companyPublic,
+                                                            'ansvar'        => $companyAnsvar,
+                                                            'tjeneste'      => $companyTjneste,
+                                                            'adresseOne'    => $companyAdrOne,
+                                                            'adresseTwo'    => $companyAdrTwo,
+                                                            'adresseThree'  => $companyAdrThree,
+                                                            'postnr'        => $companyPostNr,
+                                                            'poststed'      => $companyPostSted,
+                                                            'epost'         => $companyEPost,
                                                            'action'     => $action));
 
         return new external_function_parameters(array('companiesFS'=> new external_multiple_structure($companiesFS)));
