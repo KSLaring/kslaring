@@ -68,42 +68,29 @@ if ($fileOpt) {
 }
 
 $fakePermission = null;
-if (!CourseTemplate::HasCorrectPermissions()) {
-    /* Create a Fake Permission */
-    $fakePermission = new stdClass();
-    $fakePermission->id = CourseTemplate::Add_FakePermission_To_User();
+if  (!isset($SESSION->fakepermission)) {
+    $SESSION->fakepermission = null;
+}
 
-    $SESSION->fakepermission = $fakePermission->id;
+if (!CourseTemplate::HasCorrectPermissions()) {
+    print_error('nopermissions', 'error', '', 'block/frikomport:view');
 }//if_Has_not_permissions
 
 /* Category Name */
 $category = CourseTemplate::GetCategoryName($course->category);
 
 /* Form */
-try {
-    $form = new ct_settings_form(null, array($course,$category,$editorOpt,$courseTemplate));
-    if ($form->is_cancelled()) {
-        if ($fakepermission) {
-            CourseTemplate::Delete_FakePermission($fakepermission->id);
-        }
+$form = new ct_settings_form(null, array($course,$category,$editorOpt,$courseTemplate));
+if ($form->is_cancelled()) {
+    $_POST = array();
+    redirect($returnUrl);
+}else if ($data = $form->get_data()) {
+    /* Update Course */
+    update_course($data, $editorOpt);
 
-        $_POST = array();
-        redirect($returnUrl);
-    }else if ($data = $form->get_data()) {
-        /* Update Course */
-        update_course($data, $editorOpt);
-
-        /* Redirect Enrolment Method*/
-        redirect($enrolUrl);
-    }//if_form
-}catch (Exception $ex) {
-    if ($fakepermission) {
-        CourseTemplate::Delete_FakePermission($fakepermission->id);
-    }
-
-    throw $ex;
-}
-
+    /* Redirect Enrolment Method*/
+    redirect($enrolUrl);
+}//if_form
 
 /* Header   */
 echo $OUTPUT->header();

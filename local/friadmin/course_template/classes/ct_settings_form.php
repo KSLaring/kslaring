@@ -147,7 +147,6 @@ class ct_settings_form extends moodleform {
         $form->addElement('hidden', 'ct', $ct);
         $form->setType('ct', PARAM_INT);
 
-
         // Finally set the current form data
         $this->set_data($course);
     }//definition
@@ -173,8 +172,9 @@ class ct_settings_form extends moodleform {
             }
         }
 
-        $form->setExpanded('homepagehdr');
-
+        if ($form->elementExists('homepagehdr')) {
+            $form->setExpanded('homepagehdr');
+        }
     }
 
 }//ct_settings_form
