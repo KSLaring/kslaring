@@ -535,9 +535,9 @@ class FS_MAPPING {
                     $infoCompany->matches       = self::GetPossibleOrgMatches($instance->name,$level,$sector);
 
                     /* Add FS Company   */
-                    if ($infoCompany->matches) {
+                    //if ($infoCompany->matches) {
                         $fsCompanies[$instance->fscompany] = $infoCompany;
-                    }//if_matches
+                    //}//if_matches
                 }//for_Rdo
             }//if_rdo
 
@@ -600,9 +600,7 @@ class FS_MAPPING {
                     if ($sqlMatch) {
                         $sqlMatch .= " OR ";
                     }//if_sqlMatch
-                    $sqlMatch .= " LOCATE('" . $match ."',ks.name) > 0
-                               OR
-                               LOCATE(ks.name,'" . $match ."') > 0 ";
+                    $sqlMatch .= " ks.name like '%" . $match . "%'";
                 }//for_search
 
                 $sql .= " AND (ks.name like '%" . $sector . "%' OR " . $sqlMatch . ")";
@@ -612,7 +610,7 @@ class FS_MAPPING {
 
             /* Execute  */
             $sql .= " ORDER BY ks.industrycode, ks.name ";
-
+            echo "SQL: " . $sql . "</br>";
             $rdo = $DB->get_records_sql($sql,$params);
             if ($rdo) {
                 foreach ($rdo as $instance) {
