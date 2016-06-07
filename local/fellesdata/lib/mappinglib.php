@@ -593,8 +593,6 @@ class FS_MAPPING {
 
             /* Pattern  */
             if ($sector) {
-
-
                 /* Search by */
                 foreach($searchBy as $match) {
                     if ($sqlMatch) {
