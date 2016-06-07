@@ -89,6 +89,7 @@ class FS_MAPPING {
                         /* Mapping between FSand KS */
                         $infoMatch = explode('#KS#',$data->$refFS);
                         $match = $fsCompany->matches[$infoMatch[1]];
+                        echo "FS Comapny : " . $fsCompany->fscompany . " - " . $fsCompany->fsparent . "</br>";
                         self::MapFSCompany($fsCompany,$match,$data->le);
                     }//if_possible:matches
                 }//if_possibleMatch
@@ -535,6 +536,7 @@ class FS_MAPPING {
 
                     /* Add FS Company   */
                     if ($infoCompany->matches) {
+                        echo "FS Parent --> " . $infoCompany->fs_parent . "</br>";
                         $fsCompanies[$instance->fscompany] = $infoCompany;
                     }//if_matches
                 }//for_Rdo
