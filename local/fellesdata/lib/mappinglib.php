@@ -482,8 +482,7 @@ class FS_MAPPING {
                         LEFT JOIN	{fs_company}	  fs	  ON fs.companyid = fs_imp.org_enhet_id
                      WHERE	fs_imp.imported  = :imported
                         AND fs_imp.action   != :action
-                        AND	fs.id IS NULL
-                         ";
+                        AND	fs.id IS NULL ";
 
             if ($sector) {
                 $sqlMatch = null;
@@ -499,12 +498,17 @@ class FS_MAPPING {
                     if ($sqlMatch) {
                         $sqlMatch .= " OR ";
                     }//if_sqlMatch
+
+                    //$sqlMatch .= " fs_imp.org_navn like '%" . $match . "%' ";
+
                     $sqlMatch .= " LOCATE('" . $match ."',fs_imp.org_navn) > 0
                                    OR
                                    LOCATE(fs_imp.org_navn,'" . $match ."') > 0 ";
                 }//for_search
 
-                $sql .= " AND (AND fs_imp.org_navn like '%" . $sector . "%' OR " . $sqlMatch . ")";
+                $sql .= " AND (fs_imp.org_navn like '%" . $sector . "%' OR " . $sqlMatch . ")";
+            }else {
+                $sql .= " AND fs_imp.org_navn like '%" . $sector . "%' ";
             }
 
             $sql .= " AND	fs_imp.org_nivaa = :level
