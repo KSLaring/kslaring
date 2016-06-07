@@ -82,7 +82,7 @@ class FSKS_JOBROLES {
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//CompaniesFSToSynchronize
+    }//JobRolesFSToSynchronize
 
     /**
      * @param           $toSynchronize
@@ -344,7 +344,7 @@ class FSKS_COMPANY {
             /* New - Create */
             //self::GetNewCompaniesFS_ToSynchronize($toSynchronize);
             /* New - Update */
-            self::GetUpdateCompaniesFS_ToSynchronize($toSynchronize);
+            //self::GetUpdateCompaniesFS_ToSynchronize($toSynchronize);
 
             /* To synchronize Only in FS    */
             if ($toSynchronize) {

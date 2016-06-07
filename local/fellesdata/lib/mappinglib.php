@@ -279,6 +279,15 @@ class FS_MAPPING {
                 $infoCompany->name          = $fsCompany->name;
                 $infoCompany->parent        = $fsCompany->parent;
                 $infoCompany->level         = $level;
+                /* Invoice Data */
+                $infoCompany->ansvar        = $fsCompany->ansvar;
+                $infoCompany->tjeneste      = $fsCompany->tjeneste;
+                $infoCompany->adresse1      = $fsCompany->adresse1;
+                $infoCompany->adresse2      = $fsCompany->adresse2;
+                $infoCompany->adresse3      = $fsCompany->adresse3;
+                $infoCompany->postnr        = $fsCompany->postnr;
+                $infoCompany->poststed      = $fsCompany->poststed;
+                $infoCompany->epost         = $fsCompany->epost;
                 $infoCompany->synchronized  = 0;
                 $infoCompany->new           = 1;
                 $infoCompany->timemodified  = time();
@@ -346,6 +355,15 @@ class FS_MAPPING {
                 $infoCompany->companyid     = $fsCompany->fscompany;
                 $infoCompany->name          = $fsCompany->name;
                 $infoCompany->parent        = $fsCompany->parent;
+                /* Invoice Data */
+                $infoCompany->ansvar        = $fsCompany->ansvar;
+                $infoCompany->tjeneste      = $fsCompany->tjeneste;
+                $infoCompany->adresse1      = $fsCompany->adresse1;
+                $infoCompany->adresse2      = $fsCompany->adresse2;
+                $infoCompany->adresse3      = $fsCompany->adresse3;
+                $infoCompany->postnr        = $fsCompany->postnr;
+                $infoCompany->poststed      = $fsCompany->poststed;
+                $infoCompany->epost         = $fsCompany->epost;
                 $infoCompany->level         = $level;
                 $infoCompany->synchronized  = 1;
                 $infoCompany->new           = 0;
@@ -447,7 +465,15 @@ class FS_MAPPING {
             $sql = " SELECT DISTINCT fs_imp.id,
                                      fs_imp.org_enhet_id  as 'fscompany',
                                      fs_imp.org_navn	  as 'name',
-                                     fs_imp.org_enhet_over
+                                     fs_imp.org_enhet_over,
+                                     fs_imp.ansvar,
+                                     fs_imp.tjeneste,
+                                     fs_imp.adresse1,
+                                     fs_imp.adresse2,
+                                     fs_imp.adresse3,
+                                     fs_imp.postnr,
+                                     fs_imp.poststed,
+                                     fs_imp.epost
                      FROM			{fs_imp_company}  fs_imp
                         LEFT JOIN	{fs_company}	  fs	  ON fs.companyid = fs_imp.org_enhet_id
                      WHERE	fs_imp.imported  = :imported
@@ -469,6 +495,15 @@ class FS_MAPPING {
                     $infoCompany->fscompany = $instance->fscompany;
                     $infoCompany->name      = $instance->name;
                     $infoCompany->parent    = $instance->org_enhet_over;
+                    /* Invoice Data */
+                    $infoCompany->ansvar    = $instance->ansvar;
+                    $infoCompany->tjeneste  = $instance->tjeneste;
+                    $infoCompany->adresse1  = $instance->adresse1;
+                    $infoCompany->adresse2  = $instance->adresse2;
+                    $infoCompany->adresse3  = $instance->adresse3;
+                    $infoCompany->postnr    = $instance->postnr;
+                    $infoCompany->poststed  = $instance->poststed;
+                    $infoCompany->epost     = $instance->epost;
                     $infoCompany->matches   = self::GetPossibleOrgMatches($instance->name,$level,$sector);
 
                     /* Add FS Company   */
@@ -523,7 +558,8 @@ class FS_MAPPING {
             $sql = " SELECT	ks.id,
                             ks.companyid as 'kscompany',
                             ks.name,
-                            ks.industrycode
+                            ks.industrycode,
+                            ks.parent
                     FROM	{ks_company} ks
                     WHERE 	ks.hierarchylevel = :level ";
 
@@ -555,6 +591,7 @@ class FS_MAPPING {
                     $infoMatch->kscompany   = $instance->kscompany;
                     $infoMatch->name        = $instance->name;
                     $infoMatch->industry    = $instance->industrycode;
+                    $infoMatch->parent      = $instance->parent;
 
                     /* Add Match    */
                     $matches[$instance->kscompany] = $infoMatch;
