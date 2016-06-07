@@ -85,8 +85,9 @@ class CourseTemplate {
             /* Search Criteria  */
             $params = array();
             $params['user'] = $USER->id;
-            $params['context'] = '1';
+            //$params['context'] = '1';
             $params['archetype'] = 'manager';
+            $params['level']     = CONTEXT_COURSECAT;
 
             /* SQL Instruction  */
             $sql = " SELECT		ra.id,
@@ -96,8 +97,10 @@ class CourseTemplate {
                         JOIN	{role}				r		ON 	r.id 			= ra.roleid
                                                             AND	r.archetype		= :archetype
                                                             AND r.shortname     = r.archetype
+                        JOIN    {context}           ct      ON  ct.id			= ra.contextid
+                                                            AND ct.contextlevel = :level
                      WHERE		ra.userid     = :user
-                        AND     ra.contextid  = :context ";
+                         ";
 
             /* Execute  */
             $rdo = $DB->get_records_sql($sql, $params);

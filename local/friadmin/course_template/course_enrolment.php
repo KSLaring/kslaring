@@ -51,7 +51,6 @@ $PAGE->navbar->add(get_string('pluginname', 'local_friadmin'));
 $PAGE->navbar->add($strTitle);
 $PAGE->navbar->add($strSubTitle);
 
-
 /* Form */
 if ($waitinglist) {
     /* Get Enrol Instance */
@@ -62,10 +61,6 @@ if ($waitinglist) {
 }
 
 if ($form->is_cancelled()) {
-    if (isset($SESSION->fakepermission)) {
-        CourseTemplate::Delete_FakePermission($SESSION->fakepermission);
-    }
-
     $_POST = array();
     redirect($returnUrl);
 }else if ($data = $form->get_data()) {
@@ -77,10 +72,6 @@ if ($form->is_cancelled()) {
         }else {
             /* New      */
             CourseTemplate::CreateWaitingEnrolment($data);
-        }
-
-        if (isset($SESSION->fakepermission)) {
-            CourseTemplate::Delete_FakePermission($SESSION->fakepermission);
         }
 
         redirect($returnUrl);
