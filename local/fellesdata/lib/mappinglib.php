@@ -72,6 +72,7 @@ class FS_MAPPING {
         $possibleMatch  = null;
         $refFS          = null;
         $infoMatch      = null;
+        $match          = null;
 
         try {
             /* Companies to map */
@@ -87,7 +88,8 @@ class FS_MAPPING {
                     }else {
                         /* Mapping between FSand KS */
                         $infoMatch = explode('#KS#',$data->$refFS);
-                        self::MapFSCompany($fsCompany,$infoMatch[1],$data->le);
+                        $match = $fsCompany->matches[$infoMatch[1]];
+                        self::MapFSCompany($fsCompany,$match,$data->le);
                     }//if_possible:matches
                 }//if_possibleMatch
             }//fs_company
@@ -354,7 +356,8 @@ class FS_MAPPING {
                 $infoCompany = new stdClass();
                 $infoCompany->companyid     = $fsCompany->fscompany;
                 $infoCompany->name          = $fsCompany->name;
-                $infoCompany->parent        = $fsCompany->parent;
+                $infoCompany->fs_parent     = $fsCompany->parent;
+                $infoCompany->parent        = $ksCompany->parent;
                 /* Invoice Data */
                 $infoCompany->ansvar        = $fsCompany->ansvar;
                 $infoCompany->tjeneste      = $fsCompany->tjeneste;
@@ -373,7 +376,8 @@ class FS_MAPPING {
                 $DB->insert_record('fs_company',$infoCompany);
             }else {
                 $rdo->name          = $fsCompany->name;
-                $rdo->parent        = $fsCompany->parent;
+                $rdo->fs_parent     = $fsCompany->parent;
+                $rdo->parent        = $ksCompany->parent;
                 $rdo->level         = $level;
                 $rdo->synchronized  = 1;
                 $rdo->timemodified  = $time;
@@ -386,13 +390,13 @@ class FS_MAPPING {
             /* Check if already exist   */
             $params = array();
             $params['fscompany'] = $fsCompany->fscompany;
-            $params['kscompany'] = $ksCompany;
+            $params['kscompany'] = $ksCompany->kscompany;
             $rdo = $DB->get_record('ksfs_company',$params);
             if (!$rdo) {
                 /* Create Relation  */
                 $infoRelation = new stdClass();
                 $infoRelation->fscompany = $fsCompany->fscompany;
-                $infoRelation->kscompany = $ksCompany;
+                $infoRelation->kscompany = $ksCompany->kscompany;
 
                 /* Execute  */
                 $DB->insert_record('ksfs_company',$infoRelation);
@@ -463,8 +467,8 @@ class FS_MAPPING {
 
             /* SQL Instruction  */
             $sql = " SELECT DISTINCT fs_imp.id,
-                                     fs_imp.org_enhet_id  as 'fscompany',
-                                     fs_imp.org_navn	  as 'name',
+                                     fs_imp.org_enhet_id    as 'fscompany',
+                                     fs_imp.org_navn	    as 'name',
                                      fs_imp.org_enhet_over,
                                      fs_imp.ansvar,
                                      fs_imp.tjeneste,
@@ -491,20 +495,20 @@ class FS_MAPPING {
                 foreach ($rdo as $instance) {
                     /* Info Company */
                     $infoCompany = new stdClass();
-                    $infoCompany->id        = $instance->id;
-                    $infoCompany->fscompany = $instance->fscompany;
-                    $infoCompany->name      = $instance->name;
-                    $infoCompany->parent    = $instance->org_enhet_over;
+                    $infoCompany->id            = $instance->id;
+                    $infoCompany->fscompany     = $instance->fscompany;
+                    $infoCompany->name          = $instance->name;
+                    $infoCompany->fs_parent     = $instance->org_enhet_over;
                     /* Invoice Data */
-                    $infoCompany->ansvar    = $instance->ansvar;
-                    $infoCompany->tjeneste  = $instance->tjeneste;
-                    $infoCompany->adresse1  = $instance->adresse1;
-                    $infoCompany->adresse2  = $instance->adresse2;
-                    $infoCompany->adresse3  = $instance->adresse3;
-                    $infoCompany->postnr    = $instance->postnr;
-                    $infoCompany->poststed  = $instance->poststed;
-                    $infoCompany->epost     = $instance->epost;
-                    $infoCompany->matches   = self::GetPossibleOrgMatches($instance->name,$level,$sector);
+                    $infoCompany->ansvar        = $instance->ansvar;
+                    $infoCompany->tjeneste      = $instance->tjeneste;
+                    $infoCompany->adresse1      = $instance->adresse1;
+                    $infoCompany->adresse2      = $instance->adresse2;
+                    $infoCompany->adresse3      = $instance->adresse3;
+                    $infoCompany->postnr        = $instance->postnr;
+                    $infoCompany->poststed      = $instance->poststed;
+                    $infoCompany->epost         = $instance->epost;
+                    $infoCompany->matches       = self::GetPossibleOrgMatches($instance->name,$level,$sector);
 
                     /* Add FS Company   */
                     if ($infoCompany->matches) {

@@ -22,6 +22,8 @@ function xmldb_local_fellesdata_upgrade($oldVersion) {
     $fldStillins    = null;
     $tblKSCompany   = null;
     $fldParent      = null;
+    $tblFSCompany   = null;
+    $fldFSParent    = null;
 
     /* Get Manager  */
     $dbMan = $DB->get_manager();
@@ -56,6 +58,16 @@ function xmldb_local_fellesdata_upgrade($oldVersion) {
             }//if_not_exists
         }
 
+        if ($oldVersion < 2016060606) {
+            /* Table */
+            $tblFSCompany   = new xmldb_table('fs_company');
+
+            /* New Field */
+            $fldFSParent = new xmldb_field('fs_parent', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null,'parent');
+            if (!$dbMan->field_exists($tblFSCompany, $fldFSParent)) {
+                $dbMan->add_field($tblFSCompany, $fldFSParent);
+            }//if_not_exists
+        }
         return true;
     }catch (Exception $ex) {
         throw $ex;
@@ -100,7 +112,7 @@ class Fellesdata_Update {
 
             /* Ansvar Field     */
             $fldAnsvar      = null;
-            $fldAnsvar      = new xmldb_field('ansvar', XMLDB_TYPE_CHAR, '50', null, null, null, null, 'private');
+            $fldAnsvar      = new xmldb_field('ansvar', XMLDB_TYPE_CHAR, '50', null, null, null, null, 'privat');
             if (!$dbMan->field_exists($tblFSImpComp, $fldAnsvar)) {
                 $dbMan->add_field($tblFSImpComp, $fldAnsvar);
             }//if_not_exists
@@ -194,7 +206,7 @@ class Fellesdata_Update {
 
             /* Ansvar Field     */
             $fldAnsvar      = null;
-            $fldAnsvar      = new xmldb_field('ansvar', XMLDB_TYPE_CHAR, '50', null, null, null, null, 'private');
+            $fldAnsvar      = new xmldb_field('ansvar', XMLDB_TYPE_CHAR, '50', null, null, null, null, 'privat');
             if (!$dbMan->field_exists($tblFSCompany, $fldAnsvar)) {
                 $dbMan->add_field($tblFSCompany, $fldAnsvar);
             }//if_not_exists
