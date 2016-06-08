@@ -466,7 +466,7 @@ class FSKS_COMPANY {
                             ks.parent,
                             IF(fs.privat,0,1)               as 'public',
                             IF(fs.ansvar,fs.ansvar,'')      as 'ansvar',
-                            IF(fs.tjeneste,fs.tjeneste,'')  as 'tjeneste'
+                            IF(fs.tjeneste,fs.tjeneste,'')  as 'tjeneste',
                             IF(fs.adresse1,fs.adresse1,'')  as 'adresse1',
                             IF(fs.adresse2,fs.adresse2,'')  as 'adresse2',
                             IF(fs.adresse3,fs.adresse3,'')  as 'adresse3',
@@ -548,7 +548,7 @@ class FSKS_COMPANY {
                             ks_pa.industrycode,
                             IF(fs.privat,0,1) 	as 'public',
                             IF(fs.ansvar,fs.ansvar,'')      as 'ansvar',
-                            IF(fs.tjeneste,fs.tjeneste,'')  as 'tjeneste'
+                            IF(fs.tjeneste,fs.tjeneste,'')  as 'tjeneste',
                             IF(fs.adresse1,fs.adresse1,'')  as 'adresse1',
                             IF(fs.adresse2,fs.adresse2,'')  as 'adresse2',
                             IF(fs.adresse3,fs.adresse3,'')  as 'adresse3',
