@@ -788,9 +788,6 @@ class FELLESDATA_CRON {
                 /*  Get Info to Synchronize and mail */
                 list($toSynchronize,$synchronizeFS,$toMail) = FSKS_COMPANY::CompaniesFSToSynchronize();
 
-                if ($toSynchronize) {
-                    echo "hola " . "</br>";
-                }
                 /* Send Mail --> Manual Synchronization     */
                 if ($notifyTo) {
                     if ($toMail) {
@@ -804,9 +801,11 @@ class FELLESDATA_CRON {
                     echo "To Synchronize";
                     $response = self::ProcessKSService($pluginInfo,KS_SYNC_FS_COMPANY,$toSynchronize);
                     if ($response['error'] == '200') {
+
                         FSKS_COMPANY::Synchronize_CompaniesKSFS($toSynchronize,$response['companies']);
                     }else {
                         /* Log Error    */
+                        echo "1 - Error" . "</br>";
                     }//if_no_error
                 }//if_toSynchronize
 
