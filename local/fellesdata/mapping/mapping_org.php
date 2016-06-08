@@ -57,7 +57,7 @@ if ($form->is_cancelled()) {
     redirect($return);
 }else if ($data = $form->get_data()) {
     $SESSION->pattern = $data->pattern;
-    
+
     $urlOrg->param('le',$data->level);
     redirect($urlOrg);
 }//if_Else
