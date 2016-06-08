@@ -463,7 +463,7 @@ class FSKS_COMPANY {
                             fs.name,
                             fs.level,
                             ks.industrycode,
-                            ks.parent,
+                            fs.parent,
                             IF(fs.privat,0,1)               as 'public',
                             IF(fs.ansvar,fs.ansvar,'')      as 'ansvar',
                             IF(fs.tjeneste,fs.tjeneste,'')  as 'tjeneste',
@@ -474,7 +474,7 @@ class FSKS_COMPANY {
                             IF(fs.poststed,fs.poststed,'')  as 'poststed',
                             IF(fs.epost,fs.epost,'')        as 'epost'
                      FROM		{fs_company}	fs
-                        JOIN	{ks_company}	ks 	ON ks.parent = fs.parent
+                        JOIN	{ks_company}	ks 	ON ks.companyid = fs.parent
                      WHERE	fs.synchronized = :synchronized
                         AND	fs.new 			= :new ";
 
