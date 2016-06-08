@@ -996,13 +996,13 @@ class FELLESDATA_CRON {
             /* Subject  */
             $subject = (string)new lang_string('subject','local_fellesdata',$SITE->shortname,$USER->lang);
 
-            /* Url Mapping */
-            $urlMapping = new moodle_url('/local/fellesdata/mapping/mapping.php',array('src' => $source));
-
             /* Get Body Message to sent  */
             $info = new stdClass();
             switch ($type) {
                 case SYNC_COMP:
+                    /* Url Mapping */
+                    $urlMapping = new moodle_url('/local/fellesdata/mapping/mapping_org.php');
+
                     if ($toMail) {
                         $info->companies = implode(',',$toMail);
                     }else {
