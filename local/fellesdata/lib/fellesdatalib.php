@@ -534,7 +534,7 @@ class FSKS_COMPANY {
             /* Search Criteria   */
             $params = array();
             $params['new']      = 0;
-            $params['imported'] = 0;
+            $params['imported'] = 1;
 
 
             /* SQL Instruction  */
