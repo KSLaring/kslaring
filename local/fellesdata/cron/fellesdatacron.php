@@ -21,6 +21,8 @@ define('TEST_FS_ORG',4);
 define('TEST_FS_JR',5);
 define('TEST_FS_USER_COMP',6);
 define('TEST_FS_USER_COMP_JR',7);
+define('TEST_FS_SYNC_ORG',8);
+
 class FELLESDATA_CRON {
     /**********/
     /* PUBLIC */
@@ -117,6 +119,14 @@ class FELLESDATA_CRON {
                     echo "Import Fs User Competence JR" . "</br>";
                     /* Import FS User Competence JR */
                     self::ImportFSUserCompetenceJR($pluginInfo);
+
+                    break;
+                case TEST_FS_SYNC_ORG:
+                    echo "Synchronization FS Companies" . "</br>";
+                    /* Synchronization FS Companies */
+                    self::ImportFSUserCompetenceJR($pluginInfo);
+
+                    self::CompaniesFS_Synchronization($pluginInfo,false);
 
                     break;
                 default:
