@@ -805,19 +805,16 @@ class FSKS_COMPANY {
                         }//if_rdo
 
                         /* Update    */
-                        if ($rdoCompany->new) {
-                            /* Get Record */
-                            $rdo = $DB->get_record('ks_company',array('companyid' => $companyKSFS->ksId));
-                            if ($rdo) {
-                                $rdo->companyid         = $companyKSFS->ksId;
-                                $rdo->name              = $companyKSFS->name;
-                                $rdo->industrycode      = $companyKSFS->industry;
-                                $rdo->hierarchylevel    = $companyKSFS->level;
-                                $infoCompany->parent    = $companyKSFS->parent;
+                        $rdo = $DB->get_record('ks_company',array('companyid' => $companyKSFS->ksId));
+                        if ($rdo) {
+                            $rdo->companyid         = $companyKSFS->ksId;
+                            $rdo->name              = $companyKSFS->name;
+                            $rdo->industrycode      = $companyKSFS->industry;
+                            $rdo->hierarchylevel    = $companyKSFS->level;
+                            $infoCompany->parent    = $companyKSFS->parent;
 
-                                $DB->update_record('ks_company',$rdo);
-                            }
-                        }//if_new
+                            $DB->update_record('ks_company',$rdo);
+                        }
 
                         /* Synchronized */
                         $sync = true;
@@ -832,9 +829,7 @@ class FSKS_COMPANY {
                         /* Delete Relations     */
                         $DB->delete_records('ksfs_company',array('fscompany' => $companyKSFS->fsId));
 
-                        if ($rdoCompany->new) {
-                            $DB->delete_records('ks_company',array('companyid' => $companyKSFS->ksId));
-                        }
+                        $DB->delete_records('ks_company',array('companyid' => $companyKSFS->ksId));
                     }//if_company
 
                     /* Synchronized */
