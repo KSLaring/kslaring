@@ -82,19 +82,19 @@ class FELLESDATA_CRON {
                 case TEST_ORG:
                     echo "Organization Structure" . "</br>";
                     /* Import Organization Structure    */
-                    self::OrganizationStructure($pluginInfo);
+                    //self::OrganizationStructure($pluginInfo);
 
                     break;
                 case TEST_JR:
                     echo "JobRoles" . "</br>";
                     /* Import Job Roles */
-                    self::ImportKSJobRoles($pluginInfo);
+                    //self::ImportKSJobRoles($pluginInfo);
 
                     break;
                 case TEST_FS_USERS:
                     echo "Import FS Users" . "</br>";
                     /* Import FS Users              */
-                    self::ImportFSUsers($pluginInfo);
+                    //self::ImportFSUsers($pluginInfo);
 
                     break;
                 case TEST_FS_ORG:
@@ -106,19 +106,19 @@ class FELLESDATA_CRON {
                 case TEST_FS_JR:
                     echo "Import FS job Roles" . "</br>";
                     /* Import FS Job roles  */
-                    self::ImportFSJobRoles($pluginInfo);
+                    //self::ImportFSJobRoles($pluginInfo);
 
                     break;
                 case TEST_FS_USER_COMP:
                     echo "Import FS User Competence" . "</br>";
                     /* Import FS User Competence    */
-                    self::ImportFSUserCompetence($pluginInfo);
+                    //self::ImportFSUserCompetence($pluginInfo);
 
                     break;
                 case TEST_FS_USER_COMP_JR:
                     echo "Import Fs User Competence JR" . "</br>";
                     /* Import FS User Competence JR */
-                    self::ImportFSUserCompetenceJR($pluginInfo);
+                    //self::ImportFSUserCompetenceJR($pluginInfo);
 
                     break;
                 case TEST_FS_SYNC_ORG:
