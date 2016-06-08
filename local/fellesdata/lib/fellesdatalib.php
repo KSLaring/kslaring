@@ -393,7 +393,7 @@ class FSKS_COMPANY {
                     /* Get Company  */
                     $infoCompany = $companiesFSKS[$objCompany->key];
 
-                    
+
                     /* Synchronize Company  */
                     $infoCompany->ksId = $objCompany->ksId;
                     self::SynchronizeCompanyKSFS($infoCompany,$objCompany->key);
@@ -753,7 +753,7 @@ class FSKS_COMPANY {
                         /* Insert KS Company        */
                         /* Check if already exists  */
                         $rdo = $DB->get_record('ks_company',array('companyid' => $companyKSFS->ksId));
-                        if ((!$rdo) && ($rdoCompany->new)) {
+                        if (!$rdo) {
                             $infoCompany = new stdClass();
                             $infoCompany->companyid         = $companyKSFS->ksId;
                             $infoCompany->name              = $companyKSFS->name;
