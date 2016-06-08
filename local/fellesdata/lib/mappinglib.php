@@ -679,6 +679,7 @@ class FS_MAPPING {
 
             /* Update Record as imported    */
             $infoImp = new stdClass();
+            echo
             $infoImp->id            = $fsCompany->id;
             $infoImp->org_enhet_id  = $fsCompany->fscompany;
             $infoImp->imported      = 1;
@@ -915,7 +916,7 @@ class FS_MAPPING {
 
                     /* Add FS Company   */
                     //if ($infoCompany->matches) {
-                        $fsCompanies[$instance->fscompany] = $infoCompany;
+                        $fsCompanies[$instance->id] = $infoCompany;
                     //}//if_matches
                 }//for_Rdo
             }//if_rdo
