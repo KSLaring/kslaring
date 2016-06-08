@@ -557,12 +557,12 @@ class FSKS_COMPANY {
                             fs_imp.action
                      FROM		{fs_company}		fs
                         JOIN	{fs_imp_company}	fs_imp 	ON 	fs_imp.org_enhet_id = fs.companyid
-                                                            AND fs_imp.imported = 0
+                                                            AND fs_imp.imported = :imported
                         -- INFO KS
                         JOIN	{ksfs_company}	    fk 		ON 	fk.fscompany 	= fs.companyid
                         -- INFO PARENT
                         JOIN	{ks_company}		ks_pa	ON 	ks_pa.companyid = fk.kscompany
-                     WHERE	fs.new 			= 0 ";
+                     WHERE	fs.new 			= :new ";
 
             /* Execute  */
             $rdo = $DB->get_records_sql($sql,$params);
