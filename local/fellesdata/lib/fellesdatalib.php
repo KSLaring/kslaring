@@ -333,7 +333,7 @@ class FSKS_COMPANY {
      */
     public static function CompaniesFSToSynchronize() {
         /* Variables    */
-        $toSynchronize  = null;
+        $toSynchronize  = array();
         $synchronizeFS  = null;
         $toUpdate       = null;
         $toMail         = null;
