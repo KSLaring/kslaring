@@ -393,6 +393,7 @@ class FSKS_COMPANY {
                     /* Get Company  */
                     $infoCompany = $companiesFSKS[$objCompany->key];
 
+                    
                     /* Synchronize Company  */
                     $infoCompany->ksId = $objCompany->ksId;
                     self::SynchronizeCompanyKSFS($infoCompany,$objCompany->key);

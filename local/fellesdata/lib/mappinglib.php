@@ -453,19 +453,21 @@ class FS_MAPPING {
                 $refFS = 'FS_' . $fsCompany->fscompany;
 
                 /* Get Possible Match   */
-                $possibleMatch = $data->$refFS;
-                if ($possibleMatch) {
-                    if ($possibleMatch == 'new') {
-                        self::NewMapFSCompany($fsCompany,$data->le);
-                    }else if ($possibleMatch == 'no_sure') {
-                        $notIn[$fsCompany->fscompany] = $fsCompany->fscompany;
-                    }else {
-                        /* Mapping between FSand KS */
-                        $infoMatch = explode('#KS#',$data->$refFS);
-                        $match = $fsCompany->matches[$infoMatch[1]];
-                        self::MapFSCompany($fsCompany,$match,$data->le);
-                    }//if_possible:matches
-                }//if_possibleMatch
+                if (isset($data->$refFS)) {
+                    $possibleMatch = $data->$refFS;
+                    if ($possibleMatch) {
+                        if ($possibleMatch == 'new') {
+                            self::NewMapFSCompany($fsCompany,$data->le);
+                        }else if ($possibleMatch == 'no_sure') {
+                            $notIn[$fsCompany->fscompany] = $fsCompany->fscompany;
+                        }else {
+                            /* Mapping between FSand KS */
+                            $infoMatch = explode('#KS#',$data->$refFS);
+                            $match = $fsCompany->matches[$infoMatch[1]];
+                            self::MapFSCompany($fsCompany,$match,$data->le);
+                        }//if_possible:matches
+                    }//if_possibleMatch
+                }
             }//fs_company
 
             return array(true,$notIn);
