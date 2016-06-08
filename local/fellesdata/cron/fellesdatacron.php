@@ -788,6 +788,9 @@ class FELLESDATA_CRON {
                 /*  Get Info to Synchronize and mail */
                 list($toSynchronize,$synchronizeFS,$toMail) = FSKS_COMPANY::CompaniesFSToSynchronize();
 
+                if ($toSynchronize) {
+                    echo "hola " . "</br>";
+                }
                 /* Send Mail --> Manual Synchronization     */
                 if ($notifyTo) {
                     if ($toMail) {
