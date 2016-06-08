@@ -47,7 +47,7 @@ if (empty($CFG->loginhttps)) {
 $PAGE->verify_https_required();
 
 /* Clean Tables */
-FS_MAPPING::CleanOrganizationMapped();
+//FS_MAPPING::CleanOrganizationMapped();
 unset($SESSION->FS_COMP);
 unset($SESSION->notIn);
 
