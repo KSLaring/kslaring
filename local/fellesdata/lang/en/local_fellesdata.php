@@ -47,6 +47,7 @@ $string['nav_mapping']          = 'Mapping';
 $string['header_fellesdata']    = 'Fellesdata Mapping';
 
 $string['nav_map_org']          = 'Organization Mapping';
+$string['nav_map_org_new']      = 'Organization Mapping - New Companies';
 $string['nav_map_jr']           = 'Job Roles Mapping';
 
 $string['level_map']            = 'Level to map';
@@ -75,3 +76,8 @@ $string['menu_title']           = 'Fellesdata';
 $string['map_org']              = 'Mapping Organizations';
 $string['map_jr']               = 'Mapping Job Roles';
 
+$string['sel_parent']           = 'Select one...';
+$string['header_parent']        = 'Parent connected with the new companies';
+$string['parent']               = 'Parent';
+
+$string['to_connect']           = 'Companies to connect';

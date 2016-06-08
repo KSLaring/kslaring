@@ -25,8 +25,337 @@ class FS_MAPPING {
     /**********/
 
     /**
+     * @param           $ks
+     * @param           $level
+     * @param           $scompaniesSelector
+     * @param           $acompaniesSelector
+     *
+     * @throws          Exception
+     *
+     * @creationDate    08/06/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Ini the selectors
+     */
+    public static function Init_FSCompanies_Selectors($ks,$level,$scompaniesSelector,$acompaniesSelector) {
+        /* Variables    */
+        global $PAGE;
+        $jsModule   = null;
+        $name       = null;
+        $path       = null;
+        $requires   = null;
+        $strings    = null;
+        $grpOne     = null;
+        $grpTwo     = null;
+        $grpThree   = null;
+        $hashAdd    = null;
+        $hashRemove = null;
+
+        try {
+            /* Initialise variables */
+            $name       = 'fs_company';
+            $path       = '/local/fellesdata/js/organization.js';
+            $requires   = array('node', 'event-custom', 'datasource', 'json', 'moodle-core-notification');
+            $grpOne     = array('previouslyselectedusers', 'moodle', '%%SEARCHTERM%%');
+            $grpTwo     = array('nomatchingusers', 'moodle', '%%SEARCHTERM%%');
+            $grpThree   = array('none', 'moodle');
+            $strings    = array($grpOne,$grpTwo,$grpThree);
+
+            /* Initialise js module */
+            $jsModule = array('name'        => $name,
+                              'fullpath'    => $path,
+                              'requires'    => $requires,
+                              'strings'     => $strings);
+
+
+            $PAGE->requires->js_init_call('M.core_user.init_fs_company',
+                array($ks,$level,$scompaniesSelector,$acompaniesSelector),
+                false,
+                $jsModule
+            );
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//Init_SuperUsers_Selectors
+
+    /**
+     * @param           $addSearch
+     * @param           $removeSearch
+     * @param           $level
+     *
+     * @throws          Exception
+     *
+     * @creationDate    08/06/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Init the search selectors
+     */
+    public static function Init_Search_Selectors($addSearch,$removeSearch,$level) {
+        /* Variables */
+        $jsModule   = null;
+        $name       = null;
+        $path       = null;
+        $requires   = null;
+        $strings    = null;
+        $grpOne     = null;
+        $grpTwo     = null;
+        $grpThree   = null;
+        $hashAdd    = null;
+        $hashRemove = null;
+
+        try {
+            /* Initialise variables */
+            $name       = 'search_selector';
+            $path       = '/local/fellesdata/js/search.js';
+            $requires   = array('node', 'event-custom', 'datasource', 'json', 'moodle-core-notification');
+            $grpOne     = array('previouslyselectedusers', 'moodle', '%%SEARCHTERM%%');
+            $grpTwo     = array('nomatchingusers', 'moodle', '%%SEARCHTERM%%');
+            $grpThree   = array('none', 'moodle');
+            $strings    = array($grpOne,$grpTwo,$grpThree);
+
+            /* Initialise js module */
+            $jsModule = array('name'        => $name,
+                              'fullpath'    => $path,
+                              'requires'    => $requires,
+                              'strings'     => $strings
+                             );
+
+            /* Super Users - Add Selector       */
+            self::Init_Search_AddSelector($addSearch,$jsModule,$level);
+            /* Super Users - Remove Selector    */
+            self::Init_Search_RemoveSelector($removeSearch,$jsModule,$level);
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//Init_search_Selectors
+
+    /**
+     * @param           $fsCompanies
+     * @param           $ksParent
+     *
+     * @throws          Exception
+     *
+     * @creationDate    08/06/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Update fs company with the ks parent
+     */
+    public static function UpdateKSParent($fsCompanies,$ksParent) {
+        /* Variables */
+        global $DB;
+        $instance = null;
+
+        try {
+            foreach ($fsCompanies as $fs) {
+                $instance = new stdClass();
+                $instance->id       = $fs;
+                $instance->parent   = $ksParent;
+
+                /* Update */
+                $DB->update_record('fs_company',$instance);
+            }
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//UpdateKSParent
+
+    /**
+     * @param           $level
+     * @param           $parent
+     * @param           $search
+     *
+     * @return          array
+     * @throws          Exception
+     *
+     * @creationDate    07/06/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Companies connected with the parent
+     */
+    public static function FindFSCompanies_WithParent($level,$search,$parent) {
+        /* Variables */
+        global $DB;
+        $rdo            = null;
+        $sql            = null;
+        $sqlExtra       = null;
+        $extra          = null;
+        $locate         = null;
+        $params         = null;
+        $fsCompanies    = array();
+
+        try {
+            /* Search Criteria  */
+            $params = array();
+            $params['level']        = $level;
+            $params['parent']       = $parent;
+            $params['new']          = 1;
+            $params['synchronized'] = 0;
+
+            /* SQL Instruction */
+            $sql = " SELECT	fs.id,
+                            fs.name
+                     FROM	{fs_company} fs
+                     WHERE	fs.parent       = :parent
+                        AND fs.parent       != 0
+                        AND	fs.level 		= :level
+                        AND fs.new 			= :new
+                        AND fs.synchronized = :synchronized ";
+
+            /* Search   */
+            if ($search) {
+                $extra = explode(' ',$search);
+                foreach ($extra as $str) {
+                    if ($locate) {
+                        $locate .= " OR ";
+                    }
+                    $locate .= " LOCATE('" . $str . "',fs.name) > 0";
+                }//if_search_opt
+
+                $sql .= $sqlExtra . " AND ($locate) ";
+            }//if_search
+
+            /* Execute */
+            $sql .= " ORDER By fs.name ";
+
+            $rdo = $DB->get_records_sql($sql,$params);
+            if ($rdo) {
+                foreach ($rdo as $instance) {
+                    $fsCompanies[$instance->id] = $instance->name;
+                }
+            }//if_Rdo
+
+            return $fsCompanies;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_cathc
+    }//FindFSCompanies_WithParent
+
+    /**
+     * @param           $level
+     * @param           $search
+     * @param           $parent
+     *
+     * @return          array
+     * @throws          Exception
+     *
+     * @creationDate    07/06/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * All companies without parents
+     */
+    public static function FindFSCompanies_WithoutParent($level,$search,$parent=0) {
+        /* Variables */
+        global $DB;
+        $rdo            = null;
+        $sql            = null;
+        $sqlExtra       = null;
+        $extra          = null;
+        $locate         = null;
+        $params         = null;
+        $fsCompanies    = array();
+
+
+        try {
+            /* Search Criteria  */
+            $params = array();
+            $params['level']        = $level;
+            $params['new']          = 1;
+            $params['synchronized'] = 0;
+
+            /* SQL Instruction */
+            $sql = " SELECT	fs.id,
+                            fs.name
+                     FROM	{fs_company} fs
+                     WHERE	(fs.parent IS NULL
+                             OR
+                             fs.parent = 0)
+                        AND	fs.level 		= :level
+                        AND fs.new 			= :new
+                        AND fs.synchronized = :synchronized ";
+
+            /* Search   */
+            if ($search) {
+                $extra = explode(' ',$search);
+                foreach ($extra as $str) {
+                    if ($locate) {
+                        $locate .= " OR ";
+                    }
+                    $locate .= " LOCATE('" . $str . "',fs.name) > 0";
+                }//if_search_opt
+
+                $sql .= $sqlExtra . " AND ($locate) ";
+            }//if_search
+
+            /* Execute */
+            $sql .= " ORDER By fs.name ";
+            $rdo = $DB->get_records_sql($sql,$params);
+            if ($rdo) {
+                foreach ($rdo as $instance) {
+                    $fsCompanies[$instance->id] = $instance->name;
+                }
+            }//if_Rdo
+
+            return $fsCompanies;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//FindFSCompanies_WithoutParent
+
+    /**
+     * @param           $level
+     *
+     * @return          null
+     * @throws          Exception
+     *
+     * @creationDate    07/06/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Get parents
+     */
+    public static function GetParents($level) {
+        /* Variables */
+        global $DB;
+        $lstParents = null;
+        $rdo        = null;
+        $params     = null;
+        $pluginInfo = null;
+
+        try {
+            $lstParents[0] = get_string('sel_parent','local_fellesdata');
+            /* Search Criteria  */
+            $params          = array();
+            $params['hierarchylevel'] =  ($level - 1);
+
+            if ($level == FS_LE_2) {
+                /* Plugin Info      */
+                $pluginInfo     = get_config('local_fellesdata');
+                $params['name'] = $pluginInfo->ks_muni;
+            }//if_FS_LE_2
+
+            /* Execute */
+            $rdo = $DB->get_records('ks_company',$params,'industrycode,name');
+            if ($rdo) {
+                foreach ($rdo as $instance) {
+                    $lstParents[$instance->companyid] = $instance->industrycode . ' - ' . $instance->name;
+                }//rdo
+            }//ifR_do
+
+            return $lstParents;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//GetParents
+
+    /**
      * @param           $level
      * @param           $sector
+     * @param           $notIn
      * @param           $start
      * @param           $length
      *
@@ -40,13 +369,13 @@ class FS_MAPPING {
      * Description
      * Get companies to map
      */
-    public static function FSCompaniesToMap($level,$sector,$start,$length) {
+    public static function FSCompaniesToMap($level,$sector,$notIn,$start,$length) {
         /* Variables    */
         $fsCompanies = null;
 
         try {
             /* Get Companies to Map */
-            $fsCompanies = self::GetFSCompaniesToMap($level,$sector,$start,$length);
+            $fsCompanies = self::GetFSCompaniesToMap($level,$sector,$notIn,$start,$length);
 
             return $fsCompanies;
         }catch (Exception $ex) {
@@ -73,6 +402,7 @@ class FS_MAPPING {
         $refFS          = null;
         $infoMatch      = null;
         $match          = null;
+        $notIn          = array();
 
         try {
             /* Companies to map */
@@ -85,6 +415,8 @@ class FS_MAPPING {
                 if ($possibleMatch) {
                     if ($possibleMatch == 'new') {
                         self::NewMapFSCompany($fsCompany,$data->le);
+                    }else if ($possibleMatch == 'no_sure') {
+                        $notIn[$fsCompany->fscompany] = $fsCompany->fscompany;
                     }else {
                         /* Mapping between FSand KS */
                         $infoMatch = explode('#KS#',$data->$refFS);
@@ -94,7 +426,7 @@ class FS_MAPPING {
                 }//if_possibleMatch
             }//fs_company
 
-            return true;
+            return array(true,$notIn);
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
@@ -258,7 +590,7 @@ class FS_MAPPING {
      */
     private static function NewMapFSCompany($fsCompany,$level) {
         /* Variables    */
-        global $DB;
+        global $DB,$SESSION;
         $rdo            = null;
         $params         = null;
         $infoCompany    = null;
@@ -282,6 +614,7 @@ class FS_MAPPING {
                 $infoCompany->fs_parent     = $fsCompany->fs_parent;
                 $infoCompany->parent        = 0;
                 $infoCompany->level         = $level;
+                $infoCompany->private       = 0;
                 /* Invoice Data */
                 $infoCompany->ansvar        = $fsCompany->ansvar;
                 $infoCompany->tjeneste      = $fsCompany->tjeneste;
@@ -296,7 +629,10 @@ class FS_MAPPING {
                 $infoCompany->timemodified  = time();
 
                 /* Execute  */
-                $DB->insert_record('fs_company',$infoCompany);
+                $infoCompany->id = $DB->insert_record('fs_company',$infoCompany);
+
+                /* Save */
+                $SESSION->FS_COMP[] = $infoCompany;
             }//if_rdo
 
             /* Update Record as imported    */
@@ -425,6 +761,7 @@ class FS_MAPPING {
     /**
      * @param           $level
      * @param           $sector
+     * @param           $notIn
      * @param           $start
      * @param           $length
      *
@@ -437,7 +774,7 @@ class FS_MAPPING {
      * Description
      * Get companies to map
      */
-    private static function GetFSCompaniesToMap($level,$sector,$start,$length) {
+    private static function GetFSCompaniesToMap($level,$sector,$notIn,$start,$length) {
         /* Variables    */
         global $DB;
         $fsCompanies    = array();
@@ -447,7 +784,6 @@ class FS_MAPPING {
         $params         = null;
 
         try {
-
             /* Search Criteria  */
             $params = array();
             $params['imported'] = 0;
@@ -484,7 +820,8 @@ class FS_MAPPING {
                      WHERE	fs_imp.imported  = :imported
                         AND fs_imp.action   != :action
                         AND	fs.id IS NULL
-                        AND	fs_imp.org_nivaa = :level ";
+                        AND	fs_imp.org_nivaa = :level
+                        AND fs_imp.org_enhet_id NOT IN ($notIn) ";
 
             if ($sector) {
                 $sqlMatch = null;
@@ -995,4 +1332,82 @@ class FS_MAPPING {
             throw $ex;
         }//try_catch
     }//NewMapFSJobRole
+
+    /**
+     * @param           $search
+     * @param           $jsModule
+     * @param           $level
+     *
+     * @throws          Exception
+     *
+     * @creationDate    07/06/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Init add search selector
+     */
+    private static function Init_Search_AddSelector($search,$jsModule,$level) {
+        /* Variables */
+        global $USER,$PAGE;
+        $options    = null;
+
+        try {
+            /* Initialise Options Selector  */
+            $options = array();
+            $options['class']       = 'FindFSCompanies_WithoutParent';
+            $options['name']        = 'acompanies';
+            $options['multiselect'] = true;
+
+            /* Connect Selector User    */
+            $hash                           = md5(serialize($options));
+            $USER->search_selectors[$hash]  = $options;
+
+            $PAGE->requires->js_init_call('M.core_user.init_search_selector',
+                                          array('acompanies',$hash, $level, $search),
+                                          false,
+                                          $jsModule
+            );
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//Init_Search_AddSelector
+
+    /**
+     * @param           $search
+     * @param           $jsModule
+     * @param           $level
+     *
+     * @throws          Exception
+     *
+     * @creationDate    07/06/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Init remove selector
+     */
+    private static function Init_Search_RemoveSelector($search,$jsModule,$level) {
+        /* Variables */
+        global $USER,$PAGE;
+        $options    = null;
+
+        try {
+            /* Initialise Options Selector  */
+            $options = array();
+            $options['class']       = 'FindFSCompanies_WithParent';
+            $options['name']        = 'scompanies';
+            $options['multiselect'] = true;
+
+            /* Connect Selector User    */
+            $hash                           = md5(serialize($options));
+            $USER->search_selectors[$hash]  = $options;
+
+            $PAGE->requires->js_init_call('M.core_user.init_search_selector',
+                                          array('scompanies',$hash, $level, $search),
+                                          false,
+                                          $jsModule
+            );
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//Init_Managers_RemoveSelector
 }//FS_MAPPING

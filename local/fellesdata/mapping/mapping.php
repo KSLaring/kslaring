@@ -54,6 +54,8 @@ $PAGE->verify_https_required();
 /* Clean Tables */
 FS_MAPPING::CleanOrganizationMapped();
 FS_MAPPING::CleanJobRolesMapped();
+unset($SESSION->FS_COMP);
+unset($SESSION->notIn);
 
 /* FORM */
 $form = new selector_form(null,array($type,$source));

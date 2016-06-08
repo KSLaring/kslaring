@@ -87,3 +87,105 @@
 div.felement.fcheckbox  span{
     margin-left: 25px;
 }
+
+.userselector .sel_comp_left {
+    width:40%;
+    float:left;
+    display: inline-block;
+}
+.userselector .sel_comp_right {
+    width:40%;
+    display: inline-block;
+}
+
+.userselector  .sel_comp_buttons {
+    min-width:15%;
+    float:left;
+    display: inline-block;
+    margin-right: 20px;
+}
+
+#fitem_id_scompanies div.felement.fselect,
+#fitem_scompanies div.felement.fselect,
+#fitem_id_scompanies div.felement.fselect,
+#fitem_scomapnies div.felement.fselectgroups,
+#fitem_id_acompanies div.felement.fselect,
+#fitem_acompanies div.felement.fselect,
+#fitem_id_acompanies div.felement.fselect,
+#fitem_acompanies div.felement.fselectgroups,
+#fitem_id_add_sel div.felement.fsubmit,
+#fitem_id_add_all div.felement.fsubmit,
+#fitem_id_remove_sel div.felement.fsubmit,
+#fitem_id_remove_all div.felement.fsubmit {
+    margin-left: 5px;
+}
+
+#fitem_id_scompanies div.fitemtitle,
+#fitem_scompanies div.fitemtitle,
+#fitem_id_scompanies div.fitemtitle,
+#fitem_id_acompanies div.fitemtitle,
+#fitem_acompanies div.fitemtitle,
+#fitem_id_acompanies div.fitemtitle,
+#fitem_id_add_sel div.fitemtitle,
+#fitem_id_add_all div.fitemtitle,
+#fitem_id_remove_sel div.fitemtitle,
+#fitem_id_remove_all div.fitemtitle {
+    display:none;
+}
+
+#fitem_scompanies_searchtext div.fitemtitle,
+#fitem_acompanies_searchtext div.fitemtitle {
+    text-align: left;
+    margin-left: 5px;
+    width: 70px;
+}
+
+#fitem_scompanies_searchtext div.felement.ftext,
+#fitem_acompanies_searchtext div.felement.ftext {
+    margin-left: 0px;
+}
+
+input#id_add_sel,
+input#id_add_all,
+input#id_remove_sel,
+input#id_remove_all {
+    width: 110px;
+}
+
+.userselector .sel_comp_left select,
+.userselector .sel_comp_right select {
+    width: 90%;
+    margin-left: 0px;
+}
+
+@media (max-width: 767px) {
+    .sel_comp_left,
+    .sel_comp_right,
+    .sel_comp_buttons {
+        float: none;
+        width: 100%;
+        display: block;
+    }
+
+
+   .userselector .sel_comp_left select,
+   .userselector .sel_comp_right select {
+        width: 100%;
+    }
+}
+
+@media (min-width: 850px) and (max-width: 978px) {
+    .sel_comp_left,
+    .sel_comp_right,
+    .sel_comp_buttons {
+        float: none;
+        width: 100%;
+        display: block;
+    }
+
+
+    .userselector .sel_comp_left select,
+    .userselector .sel_comp_right select {
+        width: 100%;
+    }
+}

@@ -21,6 +21,7 @@ require_login();
 $level      = required_param('le',PARAM_INT);
 $pattern    = null;
 $url        = new moodle_url('/local/fellesdata/mapping/organization.php',array('le' => $level));
+$urlNew     = new moodle_url('/local/fellesdata/mapping/organization_new.php',array('le' => $level));
 $return     = new moodle_url('/local/fellesdata/mapping/mapping.php');
 $start      = 0;
 $step       = 5;
@@ -57,22 +58,49 @@ if (isset($SESSION->pattern)) {
     $pattern = $SESSION->pattern;
 }//if_pattern
 
+/* To save the new companies */
+if (!isset($SESSION->FS_COMP)) {
+    $SESSION->FS_COMP = array();
+}//isset
+
+if (!isset($SESSION->notIn)) {
+    $SESSION->notIn = array();
+}
+
 /* Get Companies to Map */
-$fsToMap = FS_MAPPING::FSCompaniesToMap($level,$pattern,$start,$step);
-$form = new organization_map_form(null,array($level,$pattern,$fsToMap));
+$notIn = 0;
+if (($SESSION->notIn) && count($SESSION->notIn)) {
+    $notIn = implode(',',$SESSION->notIn);
+}
+
+$fsToMap = FS_MAPPING::FSCompaniesToMap($level,$pattern,$notIn,$start,$step);
+$form    = new organization_map_form(null,array($level,$pattern,$fsToMap));
 if ($form->is_cancelled()) {
+    unset($SESSION->FS_COMP);
+    unset($SESSION->notIn);
+
     $_POST = array();
     redirect($return);
 }else if ($data = $form->get_data()) {
     /* Matching   */
-    $matched = FS_MAPPING::MappingFSCompanies($fsToMap,$data);
+    list($matched,$notIn) = FS_MAPPING::MappingFSCompanies($fsToMap,$data);
 
     /* Redirect */
     if ($matched) {
+        if (count($notIn)) {
+            $SESSION->notIn = $notIn;
+        }
         redirect($url);
     }//matched
 }//if_Else
 
+if (!$fsToMap) {
+    if (isset($SESSION->FS_COMP)) {
+        if ($SESSION->FS_COMP) {
+            redirect($urlNew);
+        }
+    }//FS_COMP
+}
 /* Header   */
 echo $OUTPUT->header();
 echo $OUTPUT->heading(get_string('nav_map_org', 'local_fellesdata'));

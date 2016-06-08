@@ -144,10 +144,10 @@ class organization_map_form extends moodleform {
                     /* Possible Matches */
                     $form->addElement('html','<div class="area_right">');
                         /* Not Sure Option  */
-                        $options   = array();
-                        $index  = 0;
-                        $options[$index] = $form->createElement('radio', $refFS,'',get_string('no_match','local_fellesdata'),0);
-                        $options[$index]->setValue(0);
+                        $options    = array();
+                        $index      = 'no_sure';
+                        $options[$index] = $form->createElement('radio', $refFS,'',get_string('no_match','local_fellesdata'),$index);
+                        $options[$index]->setValue($index);
                         $grp = $form->addElement('group', 'grp', null, $options,null , false);
 
                         /* Option new company */
@@ -179,6 +179,78 @@ class organization_map_form extends moodleform {
         }//try_catch
     }//MatchOrganization
 }//organization_map_form
+
+class organization_new_map_form extends moodleform {
+    function definition() {
+        /* Variables    */
+        global $OUTPUT;
+        $level      = null;
+        $parent     = optional_param('ks_parent',0,PARAM_INT);
+
+        $form = $this->_form;
+
+        /* Get Extra Info   */
+        list($level,$toMatch,$addSearch,$removeSearch) = $this->_customdata;
+
+
+        $form->addElement('static','header_map',null,get_string('header_parent','local_fellesdata'));
+
+
+        /* Parents */
+        $options = FS_MAPPING::GetParents($level);
+        $form->addElement('select','ks_parent',get_string('parent','local_fellesdata'),$options);
+        //if ($parent > 0) {
+            $form->setDefault('ks_parent',$parent);
+        //}
+        /* Companies */
+        $form->addElement('header','head_companies',get_string('to_connect','local_fellesdata'));
+
+        $form->addElement('html','<div class="userselector" id="addselect_wrapper">');
+            /* Companies with parents */
+            $schoices = FS_MAPPING::FindFSCompanies_WithParent($level,$removeSearch,$parent);
+            $form->addElement('html','<div class="sel_comp_left">');
+                $form->addElement('select','scompanies','',$schoices,'multiple size="15"');
+                $form->addElement('text','scompanies_searchtext',get_string('search'),'id="scompanies_searchtext"');
+                $form->setType('scompanies_searchtext',PARAM_TEXT);
+            $form->addElement('html','</div>');//sel_comp_left
+
+            $form->addElement('html','<div class="sel_comp_buttons">');
+                /* Add Company     */
+                $add_btn    = html_to_text($OUTPUT->larrow() . '&nbsp;'.get_string('add'));
+                $form->addElement('submit','add_sel',$add_btn);
+
+                $form->addElement('html','</br>');
+                $form->addElement('html','</br>');
+
+                /* Remove Company  */
+                $remove_btn = html_to_text(get_string('remove') . '&nbsp;' . $OUTPUT->rarrow());
+                $form->addElement('submit','remove_sel',$remove_btn);
+            $form->addElement('html','</div>');//sel_users_buttons
+
+            /* Companies No Parents */
+            $achoices = FS_MAPPING::FindFSCompanies_WithoutParent($level,$addSearch,$parent);
+            $form->addElement('html','<div class="sel_comp_right">');
+                $form->addElement('select','acompanies','',$achoices,'multiple size="15"');
+                $form->addElement('text','acompanies_searchtext',get_string('search'),'id="acompanies_searchtext"');
+                $form->setType('acompanies_searchtext',PARAM_TEXT);
+            $form->addElement('html','</div>');
+
+        $form->addElement('html','</div>');//mapping_selectors
+
+        /* Level */
+        $form->addElement('hidden','le');
+        $form->setDefault('le',$level);
+        $form->setType('le',PARAM_INT);
+
+        /* BUTTONS  */
+        $buttons = array();
+        $buttons[] = $form->createElement('cancel','btn_back',get_string('back'));
+
+        $form->addGroup($buttons, 'buttonar', '', array(' '), false);
+        $form->setType('buttonar', PARAM_RAW);
+        $form->closeHeaderBefore('buttonar');
+    }//definition
+}//organization_new_map_form
 
 /**
  * Class            jobroles_map_form

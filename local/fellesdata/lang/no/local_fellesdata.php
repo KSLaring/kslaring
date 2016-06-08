@@ -47,6 +47,7 @@ $string['nav_mapping']          = 'Mapping';
 $string['header_fellesdata']    = 'Fellesdata-mapping';
 
 $string['nav_map_org']          = 'Org-struktur mapping';
+$string['nav_map_org_new']      = 'Organization Mapping - New Companies';
 $string['nav_map_jr']           = 'Jobbrolle-mapping';
 
 $string['level_map']            = 'Nivå (0-1-2-3) som skal mappes';
@@ -74,3 +75,9 @@ $string['btn_match']        = 'Treff';
 $string['menu_title']           = 'Fellesdata';
 $string['map_org']              = 'Mapping Organizations';
 $string['map_jr']               = 'Mapping Job Roles';
+
+$string['sel_parent']           = 'Select one...';
+$string['header_parent']        = 'Parent connected with the new companies';
+$string['parent']               = 'Parent';
+
+$string['to_connect']           = 'Companies to connect';
