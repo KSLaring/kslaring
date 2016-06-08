@@ -123,8 +123,6 @@ class FELLESDATA_CRON {
                     break;
                 case TEST_FS_SYNC_ORG:
                     echo "Synchronization FS Companies" . "</br>";
-                    /* Synchronization FS Companies */
-                    self::ImportFSUserCompetenceJR($pluginInfo);
 
                     self::CompaniesFS_Synchronization($pluginInfo,false);
 
@@ -800,6 +798,7 @@ class FELLESDATA_CRON {
                 /* Synchronize Companies FSKS */
                 /* Call web service    */
                 if ($toSynchronize) {
+                    echo "To Synchronize";
                     $response = self::ProcessKSService($pluginInfo,KS_SYNC_FS_COMPANY,$toSynchronize);
                     if ($response['error'] == '200') {
                         FSKS_COMPANY::Synchronize_CompaniesKSFS($toSynchronize,$response['companies']);
@@ -810,11 +809,11 @@ class FELLESDATA_CRON {
 
                 /* Synchronize Companies Only FS */
                 if ($synchronizeFS) {
-                    FSKS_COMPANY::Synchronize_CompaniesFS($synchronizeFS);
+                    //FSKS_COMPANY::Synchronize_CompaniesFS($synchronizeFS);
                 }//if_synchronize
 
                 /* Clean Table*/
-                $DB->delete_records('fs_imp_company',array('imported' => '1'));
+                //$DB->delete_records('fs_imp_company',array('imported' => '1'));
             }//if_else
 
             /* Log  */
