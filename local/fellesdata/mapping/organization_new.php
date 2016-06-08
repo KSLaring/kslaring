@@ -26,7 +26,7 @@ $removeSearch   = optional_param('removeselect_searchtext', '', PARAM_RAW);
 
 $pattern    = null;
 $url        = new moodle_url('/local/fellesdata/mapping/organization_new.php',array('le' => $level));
-$return     = new moodle_url('/local/fellesdata/mapping/mapping.php');
+$return     = new moodle_url('/local/fellesdata/mapping/mapping_org.php');
 $toMatch    = 0;
 
 /* Start the page */

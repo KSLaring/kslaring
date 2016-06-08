@@ -342,15 +342,17 @@ class FSKS_COMPANY {
         try {
             /* Companies to Synchronize between FS and KS   */
             /* New - Create */
-            //self::GetNewCompaniesFS_ToSynchronize($toSynchronize);
+            self::GetNewCompaniesFS_ToSynchronize($toSynchronize);
             /* New - Update */
-            //self::GetUpdateCompaniesFS_ToSynchronize($toSynchronize);
+            self::GetUpdateCompaniesFS_ToSynchronize($toSynchronize);
 
             /* To synchronize Only in FS    */
-            //if ($toSynchronize) {
-            //    $notIn .= ',' . implode(',',array_keys($toSynchronize));
-            //}//if_toSynchronize
-            //$synchronizeFS = self::GetCompaniesFS_ToSynchronizeFS($notIn);
+            if ($toSynchronize) {
+                $notIn .= ',' . implode(',',array_keys($toSynchronize));
+            }//if_toSynchronize
+
+            $notIn .= implode(',',array_keys($toSynchronize));
+            $synchronizeFS = self::GetCompaniesFS_ToSynchronizeFS($notIn);
 
             /* To Mail */
             if ($synchronizeFS) {
@@ -455,17 +457,26 @@ class FSKS_COMPANY {
             $params['new']          = 1;
 
             /* SQL Instruction  */
-            $sql = " SELECT	  fs.id,
-                              fs.companyid,
-                              fs.name,
-                              fs.level,
-                              fk.kscompany as 'parent',
-                              ks.industrycode
-                     FROM	  {fs_company}		fs
-                        JOIN  {ksfs_company}	fk 	ON fk.fscompany = fs.parent
-                        JOIN  {ks_company}		ks	ON ks.companyid = fk.kscompany
+            $sql = " SELECT	DISTINCT fs.id,
+                            fs.companyid,
+                            fs.name,
+                            fs.level,
+                            ks.industrycode,
+                            ks.parent,
+                            if(fs.privat,0,1) as 'public',
+                            fs.ansvar,
+                            fs.tjeneste,
+                            fs.adresse1,
+                            fs.adresse2,
+                            fs.adresse3,
+                            fs.postnr,
+                            fs.poststed,
+                            fs.epost
+                     FROM		{fs_company}	fs
+                        JOIN	{ks_company}	ks 	ON ks.parent = fs.parent
                      WHERE	fs.synchronized = :synchronized
                         AND	fs.new 			= :new ";
+
 
             /* Execute  */
             $rdo = $DB->get_records_sql($sql,$params);
@@ -473,12 +484,21 @@ class FSKS_COMPANY {
                 foreach ($rdo as $instance) {
                     /* Info Company */
                     $infoCompany = new stdClass();
-                    $infoCompany->fsId      = $instance->companyid;
-                    $infoCompany->ksId      = 0;
-                    $infoCompany->name      = $instance->name;
-                    $infoCompany->industry  = $instance->industrycode;
-                    $infoCompany->level     = $instance->level;
-                    $infoCompany->parent    = $instance->parent;
+                    $infoCompany->fsId          = $instance->companyid;
+                    $infoCompany->ksId          = 0;
+                    $infoCompany->name          = $instance->name;
+                    $infoCompany->industry      = $instance->industrycode;
+                    $infoCompany->level         = $instance->level;
+                    $infoCompany->parent        = $instance->parent;
+                    $infoCompany->public        = $instance->public;
+                    $infoCompany->ansvar        = $instance->ansvar;
+                    $infoCompany->tjeneste      = $instance->tjeneste;
+                    $infoCompany->adresseOne    = $instance->adresse1;
+                    $infoCompany->adresseTwo    = $instance->adresse2;
+                    $infoCompany->adresseThree  = $instance->adresse3;
+                    $infoCompany->postnr        = $instance->postnr;
+                    $infoCompany->poststed      = $instance->poststed;
+                    $infoCompany->epost         = $instance->epost;
                     $infoCompany->action    = ADD;
 
                     /* Add Company */
@@ -513,27 +533,36 @@ class FSKS_COMPANY {
         try {
             /* Search Criteria   */
             $params = array();
-            $params['new']      = 1;
+            $params['new']      = 0;
             $params['imported'] = 0;
 
+
             /* SQL Instruction  */
-            $sql = " SELECT	  fs_imp.id,
-                              fs.companyid,
-                              fk.kscompany,
-                              fs_imp.org_navn,
-                              fs.level,
-                              ks_pa.companyid as 'parent',
-                              ks_pa.industrycode,
-                              fs_imp.action
-                     FROM	  {fs_imp_company}	fs_imp
-                        JOIN  {fs_company}		fs		ON 	fs_imp.org_enhet_id = fs.companyid
-                                                        AND	fs.new = :new
+            $sql = " SELECT	fs.id,
+                            fs.companyid,
+                            fk.kscompany,
+                            fs.name,
+                            fs.level,
+                            fs.parent,
+                            ks_pa.industrycode,
+                            if(fs.privat,0,1) 	as 'public',
+                            fs.ansvar,
+                            fs.tjeneste,
+                            fs.adresse1,
+                            fs.adresse2,
+                            fs.adresse3,
+                            fs.postnr,
+                            fs.poststed,
+                            fs.epost,
+                            fs_imp.action
+                     FROM		{fs_company}		fs
+                        JOIN	{fs_imp_company}	fs_imp 	ON 	fs_imp.org_enhet_id = fs.companyid
+                                                            AND fs_imp.imported = 0
                         -- INFO KS
-                        JOIN	{ksfs_company}	fk 		ON 	fk.fscompany 	= fs.companyid
+                        JOIN	{ksfs_company}	    fk 		ON 	fk.fscompany 	= fs.companyid
                         -- INFO PARENT
-                        JOIN	{ksfs_company}	fk_pa 	ON 	fk_pa.fscompany = fs_imp.org_enhet_over
-                        JOIN	{ks_company}	ks_pa	ON 	ks_pa.companyid = fk_pa.kscompany
-                     WHERE		fs_imp.imported = :imported ";
+                        JOIN	{ks_company}		ks_pa	ON 	ks_pa.companyid = fk.kscompany
+                     WHERE	fs.new 			= 0 ";
 
             /* Execute  */
             $rdo = $DB->get_records_sql($sql,$params);
@@ -541,13 +570,22 @@ class FSKS_COMPANY {
                 foreach ($rdo as $instance) {
                     /* Info Company */
                     $infoCompany = new stdClass();
-                    $infoCompany->fsId      = $instance->companyid;
-                    $infoCompany->ksId      = $instance->kscompany;
-                    $infoCompany->name      = $instance->org_navn;
-                    $infoCompany->industry  = $instance->industrycode;
-                    $infoCompany->level     = $instance->level;
-                    $infoCompany->parent    = $instance->parent;
-                    $infoCompany->action    = $instance->action;
+                    $infoCompany->fsId          = $instance->companyid;
+                    $infoCompany->ksId          = $instance->kscompany;
+                    $infoCompany->name          = $instance->name;
+                    $infoCompany->industry      = $instance->industrycode;
+                    $infoCompany->level         = $instance->level;
+                    $infoCompany->parent        = $instance->parent;
+                    $infoCompany->public        = $instance->public;
+                    $infoCompany->ansvar        = $instance->ansvar;
+                    $infoCompany->tjeneste      = $instance->tjeneste;
+                    $infoCompany->adresseOne    = $instance->adresse1;
+                    $infoCompany->adresseTwo    = $instance->adresse2;
+                    $infoCompany->adresseThree  = $instance->adresse3;
+                    $infoCompany->postnr        = $instance->postnr;
+                    $infoCompany->poststed      = $instance->poststed;
+                    $infoCompany->epost         = $instance->epost;
+                    $infoCompany->action        = $instance->action;
 
                     /* Add Company */
                     $toSynchronize[$instance->id] = $infoCompany;

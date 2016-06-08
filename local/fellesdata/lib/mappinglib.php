@@ -656,7 +656,7 @@ class FS_MAPPING {
                 $infoCompany->fs_parent     = $fsCompany->fs_parent;
                 $infoCompany->parent        = 0;
                 $infoCompany->level         = $level;
-                $infoCompany->private       = 0;
+                $infoCompany->privat        = 0;
                 /* Invoice Data */
                 $infoCompany->ansvar        = $fsCompany->ansvar;
                 $infoCompany->tjeneste      = $fsCompany->tjeneste;
