@@ -464,15 +464,15 @@ class FSKS_COMPANY {
                             fs.level,
                             ks.industrycode,
                             ks.parent,
-                            if(fs.privat,0,1) as 'public',
-                            fs.ansvar,
-                            fs.tjeneste,
-                            fs.adresse1,
-                            fs.adresse2,
-                            fs.adresse3,
-                            fs.postnr,
-                            fs.poststed,
-                            fs.epost
+                            IF(fs.privat,0,1)               as 'public',
+                            IF(fs.ansvar,fs.ansvar,'')      as 'ansvar',
+                            IF(fs.tjeneste,fs.tjeneste,'')  as 'tjeneste'
+                            IF(fs.adresse1,fs.adresse1,'')  as 'adresse1',
+                            IF(fs.adresse2,fs.adresse2,'')  as 'adresse2',
+                            IF(fs.adresse3,fs.adresse3,'')  as 'adresse3',
+                            IF(fs.postnr,fs.postnr,'')      as 'postnr',
+                            IF(fs.poststed,fs.poststed,'')  as 'poststed',
+                            IF(fs.epost,fs.epost,'')        as 'epost'
                      FROM		{fs_company}	fs
                         JOIN	{ks_company}	ks 	ON ks.parent = fs.parent
                      WHERE	fs.synchronized = :synchronized
@@ -546,15 +546,15 @@ class FSKS_COMPANY {
                             fs.level,
                             fs.parent,
                             ks_pa.industrycode,
-                            if(fs.privat,0,1) 	as 'public',
-                            fs.ansvar,
-                            fs.tjeneste,
-                            fs.adresse1,
-                            fs.adresse2,
-                            fs.adresse3,
-                            fs.postnr,
-                            fs.poststed,
-                            fs.epost,
+                            IF(fs.privat,0,1) 	as 'public',
+                            IF(fs.ansvar,fs.ansvar,'')      as 'ansvar',
+                            IF(fs.tjeneste,fs.tjeneste,'')  as 'tjeneste'
+                            IF(fs.adresse1,fs.adresse1,'')  as 'adresse1',
+                            IF(fs.adresse2,fs.adresse2,'')  as 'adresse2',
+                            IF(fs.adresse3,fs.adresse3,'')  as 'adresse3',
+                            IF(fs.postnr,fs.postnr,'')      as 'postnr',
+                            IF(fs.poststed,fs.poststed,'')  as 'poststed',
+                            IF(fs.epost,fs.epost,'')        as 'epost',
                             fs_imp.action
                      FROM		{fs_company}		fs
                         JOIN	{fs_imp_company}	fs_imp 	ON 	fs_imp.org_enhet_id = fs.companyid
