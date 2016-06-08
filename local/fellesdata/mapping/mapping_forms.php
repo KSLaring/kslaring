@@ -14,6 +14,29 @@ defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->libdir.'/formslib.php');
 
+class map_org_form extends moodleform {
+    function definition() {
+        /* Variables    */
+        $form       = null;
+
+        $form               = $this->_form;
+
+        /* Options Mapping */
+        $form->addElement('header','header_map',get_string('map_opt','local_fellesdata'));
+        /* Level to Map */
+        /* Change Selector */
+        $options = FS_MAPPING::getLevelsMapping();
+        $form->addElement('select','level',get_string('level_map','local_fellesdata'),$options);
+        $form->addRule('level','required','required', null, 'client');
+        /* Pattern  */
+        $form->addElement('text','pattern',get_string('pattern','local_fellesdata'));
+        $form->addHelpButton('pattern','pattern','local_fellesdata');
+        $form->setType('pattern',PARAM_TEXT);
+
+        /* Add Action Buttons   */
+        $this->add_action_buttons(true,get_string('continue'));
+    }//definition
+}//map_org_form
 class selector_form extends moodleform {
     function definition() {
         /* Variables    */

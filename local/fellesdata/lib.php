@@ -22,7 +22,8 @@ function local_fellesdata_extends_navigation(global_navigation $navigation) {
         if (is_siteadmin($USER->id) || has_capability('local/fellesdata:manage', CONTEXT_SYSTEM::instance())) {
             $nodeTracker = $navigation->add(get_string('menu_title','local_fellesdata'));
 
-            $nodBar = $nodeTracker->add(get_string('header_fellesdata','local_fellesdata'),new moodle_url('/local/fellesdata/mapping/mapping.php'));
+            /* Organization Mapping */
+            $nodBar = $nodeTracker->add(get_string('nav_map_org','local_fellesdata'),new moodle_url('/local/fellesdata/mapping/mapping_org.php'));
         }//if_else
     }
 }

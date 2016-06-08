@@ -353,6 +353,48 @@ class FS_MAPPING {
     }//GetParents
 
     /**
+     * @return          array
+     * @throws          Exception
+     *
+     * @creationDate    08/06/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Get levels
+     */
+    public static function getLevelsMapping() {
+        /* Variables */
+        global $DB;
+        $rdo        = null;
+        $sql        = null;
+        $lstLevels  = array();
+
+        try {
+            /* SQL Instruction  */
+            $sql = "SELECT MAX(hierarchylevel) as max
+                    FROM    {ks_company} ";
+
+            /* Execute */
+            $rdo = $DB->get_record_sql($sql);
+            if ($rdo) {
+                //for ($i=0;$i<=$rdo->max;$i++) {
+                //    $lstLevels[$i] = $i;
+                //}
+            }
+
+            /* Temporary for L5 */
+            $lstLevels[0] = get_string('sel_parent','local_fellesdata');
+            $lstLevels[1] = 1;
+            $lstLevels[2] = 2;
+            $lstLevels[3] = 3;
+
+            return $lstLevels;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//
+    }//getLevelsMapping
+
+    /**
      * @param           $level
      * @param           $sector
      * @param           $notIn
