@@ -765,7 +765,6 @@ class FELLESDATA_CRON {
         error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
 
         try {
-            echo "Start";
             /* Get Notifications    */
             if ($pluginInfo->mail_notification) {
                 $notifyTo   = explode(',',$pluginInfo->mail_notification);

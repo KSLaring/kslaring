@@ -347,10 +347,10 @@ class FSKS_COMPANY {
             //self::GetUpdateCompaniesFS_ToSynchronize($toSynchronize);
 
             /* To synchronize Only in FS    */
-            if ($toSynchronize) {
-                $notIn .= ',' . implode(',',array_keys($toSynchronize));
-            }//if_toSynchronize
-            $synchronizeFS = self::GetCompaniesFS_ToSynchronizeFS($notIn);
+            //if ($toSynchronize) {
+            //    $notIn .= ',' . implode(',',array_keys($toSynchronize));
+            //}//if_toSynchronize
+            //$synchronizeFS = self::GetCompaniesFS_ToSynchronizeFS($notIn);
 
             /* To Mail */
             if ($synchronizeFS) {
