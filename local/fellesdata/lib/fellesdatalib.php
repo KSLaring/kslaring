@@ -759,6 +759,7 @@ class FSKS_COMPANY {
                             $infoCompany->name              = $companyKSFS->name;
                             $infoCompany->industrycode      = $companyKSFS->industry;
                             $infoCompany->hierarchylevel    = $companyKSFS->level;
+                            $infoCompany->parent            = $companyKSFS->parent;
 
                             /* Execute  */
                             $DB->insert_record('ks_company',$infoCompany);
@@ -812,6 +813,7 @@ class FSKS_COMPANY {
                                 $rdo->name              = $companyKSFS->name;
                                 $rdo->industrycode      = $companyKSFS->industry;
                                 $rdo->hierarchylevel    = $companyKSFS->level;
+                                $infoCompany->parent    = $companyKSFS->parent;
 
                                 $DB->update_record('ks_company',$rdo);
                             }

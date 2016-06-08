@@ -811,7 +811,7 @@ class FELLESDATA_CRON {
 
                 /* Synchronize Companies Only FS */
                 if ($synchronizeFS) {
-                    //FSKS_COMPANY::Synchronize_CompaniesFS($synchronizeFS);
+                    FSKS_COMPANY::Synchronize_CompaniesFS($synchronizeFS);
                 }//if_synchronize
 
                 /* Clean Table*/
