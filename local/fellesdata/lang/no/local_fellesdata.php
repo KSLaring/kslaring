@@ -54,6 +54,7 @@ $string['level_map']            = 'Nivå (0-1-2-3) som skal mappes';
 $string['pattern']              = 'Tekstmønster';
 $string['pattern_help']         = 'For eksempel "Skole". Det betyr at du vil mappe alle org-elementer som hører til f.eks. "Skole og oppvekst".';
 $string['to_match']             = 'Å mappe fra Fellesdata';
+$string['remain_match']         = '{$a} Remaining to map';
 $string['possible_matches']     = 'Mulige treff i KS Læring';
 
 $string['no_match']             = 'Ikke sikker';

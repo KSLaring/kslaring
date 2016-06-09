@@ -19,6 +19,7 @@ require_login();
 
 /* PARAMS   */
 $level          = required_param('le',PARAM_INT);
+$org            = optional_param('o',0,PARAM_INT);
 $parent         = optional_param('ks_parent',0,PARAM_INT);
 $removeSelected = optional_param_array('removeselect',0,PARAM_INT);
 $addSearch      = optional_param('addselect_searchtext', '', PARAM_RAW);
@@ -26,7 +27,9 @@ $removeSearch   = optional_param('removeselect_searchtext', '', PARAM_RAW);
 
 $pattern    = null;
 $url        = new moodle_url('/local/fellesdata/mapping/organization_new.php',array('le' => $level));
+$urlOrg     = new moodle_url('/local/fellesdata/mapping/organization.php',array('le' => $level));
 $return     = new moodle_url('/local/fellesdata/mapping/mapping_org.php');
+
 $toMatch    = 0;
 
 /* Start the page */
@@ -61,12 +64,20 @@ if (isset($SESSION->FS_COMP)) {
     }
 }
 
-$form = new organization_new_map_form(null,array($level,$toMatch,$addSearch,$removeSearch));
+$form = new organization_new_map_form(null,array($level,$toMatch,$addSearch,$removeSearch,$org));
 if ($form->is_cancelled()) {
     $_POST = array();
-    unset($SESSION->FS_COMP);
+    /* Check if all elements from FS_COMP has been added */
+    /* Yes -> Nothing   */
+    /* No -> Delete     */
 
-    redirect($return);
+    if ($org) {
+        redirect($urlOrg);
+        unset($SESSION->FS_COMP);
+    }else {
+        redirect($return);
+        unset($SESSION->FS_COMP);
+    }
 }else if($data = $form->get_data()) {
     if (!empty($data->add_sel)) {
         if (isset($data->acompanies)) {
@@ -81,7 +92,6 @@ if ($form->is_cancelled()) {
             FS_MAPPING::UpdateKSParent($data->scompanies,0);
         }//if_addselect
     }
-
 
     $_POST = array();
 }

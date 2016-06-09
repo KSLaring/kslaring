@@ -413,13 +413,16 @@ class FS_MAPPING {
      */
     public static function FSCompaniesToMap($level,$sector,$notIn,$start,$length) {
         /* Variables    */
-        $fsCompanies = null;
+        $fsCompanies    = null;
+        $total          = null;
 
         try {
             /* Get Companies to Map */
             $fsCompanies = self::GetFSCompaniesToMap($level,$sector,$notIn,$start,$length);
+            /* Get Total    */
+            $total = self::GetTotalFSCompaniesToMap($level,$sector,$notIn);
 
-            return $fsCompanies;
+            return array($fsCompanies,$total);
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
@@ -741,6 +744,7 @@ class FS_MAPPING {
                 $infoCompany->fs_parent     = $fsCompany->fs_parent;
                 $infoCompany->parent        = $ksCompany->parent;
                 /* Invoice Data */
+                $infoCompany->privat        = 0;
                 $infoCompany->ansvar        = $fsCompany->ansvar;
                 $infoCompany->tjeneste      = $fsCompany->tjeneste;
                 $infoCompany->adresse1      = $fsCompany->adresse1;
@@ -852,6 +856,7 @@ class FS_MAPPING {
                                      fs_imp.org_enhet_id    as 'fscompany',
                                      fs_imp.org_navn	    as 'name',
                                      fs_imp.org_enhet_over,
+                                     fs_imp.privat,
                                      fs_imp.ansvar,
                                      fs_imp.tjeneste,
                                      fs_imp.adresse1,
@@ -906,6 +911,7 @@ class FS_MAPPING {
                     $infoCompany->name          = $instance->name;
                     $infoCompany->fs_parent     = $instance->org_enhet_over;
                     /* Invoice Data */
+                    $infoCompany->privat        = $instance->privat;
                     $infoCompany->ansvar        = $instance->ansvar;
                     $infoCompany->tjeneste      = $instance->tjeneste;
                     $infoCompany->adresse1      = $instance->adresse1;
@@ -917,9 +923,7 @@ class FS_MAPPING {
                     $infoCompany->matches       = self::GetPossibleOrgMatches($instance->name,$level,$sector);
 
                     /* Add FS Company   */
-                    //if ($infoCompany->matches) {
-                        $fsCompanies[$instance->id] = $infoCompany;
-                    //}//if_matches
+                    $fsCompanies[$instance->id] = $infoCompany;
                 }//for_Rdo
             }//if_rdo
 
@@ -928,6 +932,80 @@ class FS_MAPPING {
             throw $ex;
         }//try_catch
     }//GetFSCompaniesToMap
+
+    private static function GetTotalFSCompaniesToMap($level,$sector,$notIn) {
+        /* Variables    */
+        global $DB;
+        $sql            = null;
+        $rdo            = null;
+        $params         = null;
+
+        try {
+            /* Search Criteria  */
+            $params = array();
+            $params['imported'] = 0;
+            $params['action']   = ACT_DELETE;
+
+            /* Get Level    */
+            switch ($level) {
+                case FS_LE_2:
+                    $params['level'] = 2;
+                    break;
+                case FS_LE_5;
+                    $params['level'] = 5;
+                    break;
+                default:
+                    $params['level'] = '-1';
+                    break;
+            }//level
+
+            /* SQL Instruction  */
+            $sql = " SELECT DISTINCT count(fs_imp.id) as 'total'
+                     FROM			{fs_imp_company}  fs_imp
+                        LEFT JOIN	{fs_company}	  fs	  ON fs.companyid = fs_imp.org_enhet_id
+                     WHERE	fs_imp.imported  = :imported
+                        AND fs_imp.action   != :action
+                        AND	fs.id IS NULL
+                        AND	fs_imp.org_nivaa = :level
+                        AND fs_imp.org_enhet_id NOT IN ($notIn) ";
+
+            if ($sector) {
+                $sqlMatch = null;
+                $searchBy = null;
+                /* Search By    */
+                $sector     = str_replace(',',' ',$sector);
+                $sector     = str_replace(' og ',' ',$sector);
+                $sector     = str_replace(' eller ',' ',$sector);
+                $sector     = str_replace('/',' ',$sector);
+                $searchBy   = explode(' ',$sector);
+
+                foreach($searchBy as $match) {
+                    if ($sqlMatch) {
+                        $sqlMatch .= " OR ";
+                    }//if_sqlMatch
+
+                    $sqlMatch .= " fs_imp.org_navn like '%" . $match . "%' ";
+                }//for_search
+
+                $sql .= " AND (fs_imp.org_navn like '%" . $sector . "%' OR " . $sqlMatch . ")";
+            }else {
+                $sql .= " AND fs_imp.org_navn like '%" . $sector . "%' ";
+            }
+
+            /* Order Criteria   */
+            $sql .= " ORDER BY fs_imp.org_navn ";
+
+            /* Execute  */
+            $rdo = $DB->get_record_sql($sql,$params);
+            if ($rdo) {
+                return $rdo->total;
+            }else {
+                return 0;
+            }//if_rdo
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//GetTotalFSCompaniesToMap
 
     /**
      * @param           $fscompany

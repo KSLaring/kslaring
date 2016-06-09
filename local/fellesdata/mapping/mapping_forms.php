@@ -101,21 +101,32 @@ class selector_form extends moodleform {
 class organization_map_form extends moodleform {
     function definition() {
         /* Variables    */
-        $titleLeft  = get_string('to_match','local_fellesdata');
-        $titleRight = get_string('possible_matches','local_fellesdata');
-        $level      = null;
-        $pattern    = null;
+        $titleLeft      = get_string('to_match','local_fellesdata');
+        $titleRemain    = null;
+        $titleRight     = get_string('possible_matches','local_fellesdata');
+        $level          = null;
+        $pattern        = null;
+        $remain         = 0;
+        $class          = '';
 
         $form = $this->_form;
-        list($level,$pattern,$toMatch) = $this->_customdata;
+        list($level,$pattern,$toMatch,$total) = $this->_customdata;
+
+        $remain = $total - count($toMatch);
 
         $form->addElement('html','<div class="matching_process_title">');
+            if ($remain) {
+                $titleRemain = get_string('remain_match','local_fellesdata',$remain);
+                $titleLeft .= '. ' . $titleRemain;
+            }//if_remain
+
             /* Title        */
-            $form->addElement('html','<div class="area_left title_matching">');
+            $form->addElement('html','<div class="area_left title_matching ">');
                 $form->addElement('html','<h6>' . $titleLeft . '</h6>');
             $form->addElement('html','</div>');//area_left
+
             /* Title Right  */
-            $form->addElement('html','<div class="area_right title_matching">');
+            $form->addElement('html','<div class="area_right title_matching ">');
                 $form->addElement('html','<h6>' . $titleRight . '</h6>');
             $form->addElement('html','</div>');//area_right
         $form->addElement('html','</div>');//matching_process
@@ -213,7 +224,7 @@ class organization_new_map_form extends moodleform {
         $form = $this->_form;
 
         /* Get Extra Info   */
-        list($level,$toMatch,$addSearch,$removeSearch) = $this->_customdata;
+        list($level,$toMatch,$addSearch,$removeSearch,$org) = $this->_customdata;
 
 
         $form->addElement('static','header_map',null,get_string('header_parent','local_fellesdata'));
@@ -264,6 +275,11 @@ class organization_new_map_form extends moodleform {
         $form->addElement('hidden','le');
         $form->setDefault('le',$level);
         $form->setType('le',PARAM_INT);
+
+        /* Back main form or not */
+        $form->addElement('hidden','o');
+        $form->setDefault('o',$org);
+        $form->setType('o',PARAM_INT);
 
         /* BUTTONS  */
         $buttons = array();
