@@ -24,16 +24,18 @@
  * http://docs.moodle.org/dev/Themes_2.0
  *
  * @package    theme_kommit
- * @copyright  2013 Moodle, moodle.org
+ * @copyright  2016 eFaktor
+ * @author     Urs Hunkler {@link urs.hunkler@unodo.de}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die;
 
-$plugin->version        = 2016030700;
-$plugin->requires       = 2013110500;
-$plugin->component      = 'theme_kommit';
-$plugin->dependencies   = array('theme_bootstrapbase'  => 2013110500,
-                                'block_municipality'        => 2016030700,
-                                'local_background_image'    => 2016030700
-                               );
+$plugin->version = 2016060900;
+$plugin->release = '3.0.0';
+$plugin->maturity = MATURITY_STABLE;
+$plugin->requires = 2015111602;
+$plugin->component = 'theme_kommit';
+$plugin->dependencies = array(
+    'theme_bootstrapbase' => 2015111600,
+);
