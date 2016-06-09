@@ -224,7 +224,7 @@ class organization_new_map_form extends moodleform {
         $form = $this->_form;
 
         /* Get Extra Info   */
-        list($level,$toMatch,$addSearch,$removeSearch,$org) = $this->_customdata;
+        list($level,$addSearch,$removeSearch,$org) = $this->_customdata;
 
 
         $form->addElement('static','header_map',null,get_string('header_parent','local_fellesdata'));

@@ -103,13 +103,6 @@ if ($form->is_cancelled()) {
     }//matched
 }//if_Else
 
-if (!$fsToMap) {
-    if (isset($SESSION->FS_COMP)) {
-        if ($SESSION->FS_COMP) {
-
-        }
-    }//FS_COMP
-}
 /* Header   */
 echo $OUTPUT->header();
 echo $OUTPUT->heading(get_string('nav_map_org', 'local_fellesdata'));
@@ -117,8 +110,16 @@ echo $OUTPUT->heading(get_string('nav_map_org', 'local_fellesdata'));
 if ($fsToMap) {
     $form->display();
 }else {
-    echo $OUTPUT->notification(get_string('no_companies_to_map','local_fellesdata'), 'notifysuccess');
-    echo $OUTPUT->continue_button($return);
+    if (($SESSION->notIn) && count($SESSION->notIn)) {
+        unset($SESSION->FS_COMP);
+        unset($SESSION->notIn);
+        redirect($url);
+    }else {
+        unset($SESSION->FS_COMP);
+        unset($SESSION->notIn);
+        echo $OUTPUT->notification(get_string('no_companies_to_map','local_fellesdata'), 'notifysuccess');
+        echo $OUTPUT->continue_button($return);
+    }
 }
 
 /* Footer   */

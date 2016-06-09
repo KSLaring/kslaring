@@ -163,6 +163,92 @@ class FS_MAPPING {
     }//UpdateKSParent
 
     /**
+     * @param           $fsCompanies
+     *
+     * @return          null
+     * @throws          Exception
+     *
+     * @creationDate    09/06/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Get new comapnies that have to be deleted
+     */
+    public static function GetNewCompaniesToDelete($fsCompanies) {
+        /* Variables */
+        global $DB;
+        $toDelete   = null;
+        $rdo        = null;
+        $sql        = null;
+        $params     = null;
+
+        try {
+            /* Search Criteria  */
+            $params = array();
+            $params['new']  = 1;
+            $params['sync'] = 0;
+
+            /* SQL Instruction  */
+            $sql = " SELECT	fs.id,
+                            fs.companyid
+                     FROM	{fs_company}	fs
+                     WHERE	fs.companyid IN ($fsCompanies)
+                        AND	fs.new 			= :new
+                        AND fs.synchronized = :sync
+                        AND parent	 		= 0 ";
+
+            /* Execute */
+            $rdo = $DB->get_records_sql($sql,$params);
+            if ($rdo) {
+                foreach ($rdo as $instance){
+                    $toDelete[$instance->id] = $instance->companyid;
+                }//for_rdo
+            }//if_rdo
+
+            return $toDelete;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//GetNewCompaniesToDelete
+
+    /**
+     * @param           $fsCompanies
+     * @throws          Exception
+     *
+     * @creationDate    09/06/2016
+     * @author          author      (fbv)
+     *
+     * Description
+     * Clean the new companies
+     */
+    public static function CleanNewCompanies($fsCompanies) {
+        /* Variables */
+        global $DB;
+        $in     = null;
+
+        try {
+            /* SQL Instruction */
+            $in = implode(',',array_keys($fsCompanies));
+            $sql = "DELETE FROM {fs_company}
+                    WHERE id IN ($in) ";
+
+            /* Execute */
+            $DB->execute($sql);
+
+            /* Update Imported 0 */
+            $in = implode(',',$fsCompanies);
+            $sql = " UPDATE {fs_imp_company}
+                      SET imported = 0
+                     WHERE org_enhet_id IN ($in) ";
+
+            /* Execute */
+            $DB->execute($sql);
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//CleanNewCompanies
+
+    /**
      * @param           $level
      * @param           $parent
      * @param           $search
@@ -679,12 +765,11 @@ class FS_MAPPING {
                 $infoCompany->id = $DB->insert_record('fs_company',$infoCompany);
 
                 /* Save */
-                $SESSION->FS_COMP[] = $infoCompany;
+                $SESSION->FS_COMP[$infoCompany->companyid] = $infoCompany;
             }//if_rdo
 
             /* Update Record as imported    */
             $infoImp = new stdClass();
-            echo
             $infoImp->id            = $fsCompany->id;
             $infoImp->org_enhet_id  = $fsCompany->fscompany;
             $infoImp->imported      = 1;

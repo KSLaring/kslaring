@@ -58,25 +58,22 @@ if (empty($CFG->loginhttps)) {
 $PAGE->verify_https_required();
 
 /* FORM */
-if (isset($SESSION->FS_COMP)) {
-    if (count($SESSION->FS_COMP)) {
-        $toMatch = implode(',',array_keys($SESSION->FS_COMP));
-    }
-}
-
-$form = new organization_new_map_form(null,array($level,$toMatch,$addSearch,$removeSearch,$org));
+$form = new organization_new_map_form(null,array($level,$addSearch,$removeSearch,$org));
 if ($form->is_cancelled()) {
     $_POST = array();
     /* Check if all elements from FS_COMP has been added */
     /* Yes -> Nothing   */
     /* No -> Delete     */
+    $toDelete = FS_MAPPING::GetNewCompaniesToDelete(implode(',',array_keys($SESSION->FS_COMP)));
+    if ($toDelete) {
+        FS_MAPPING::CleanNewCompanies($toDelete);
+    }
 
+    unset($SESSION->FS_COMP);
     if ($org) {
         redirect($urlOrg);
-        unset($SESSION->FS_COMP);
     }else {
         redirect($return);
-        unset($SESSION->FS_COMP);
     }
 }else if($data = $form->get_data()) {
     if (!empty($data->add_sel)) {
@@ -84,18 +81,16 @@ if ($form->is_cancelled()) {
             /* Update Parent --> Parent */
             FS_MAPPING::UpdateKSParent($data->acompanies,$data->ks_parent);
         }//if_addselect
-    }
+    }//if_add_sel
 
     if (!empty($data->remove_sel)) {
         if (isset($data->scompanies)) {
             /* Update Parent --> 0 */
             FS_MAPPING::UpdateKSParent($data->scompanies,0);
         }//if_addselect
-    }
-
+    }//if_remove_sel
     $_POST = array();
 }
-
 
 /* Header   */
 echo $OUTPUT->header();
