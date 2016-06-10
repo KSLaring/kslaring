@@ -1025,6 +1025,7 @@ class format_classroom extends format_base {
         global $USER, $CFG, $PAGE, $FULLME;
 
         if (!($PAGE->pagetype === 'course-view-classroom' ||
+            $PAGE->pagetype === 'local-course_page-home_page' ||
             strpos($PAGE->pagetype, 'mod-') !== false)) {
             return new format_classroom_specialnav('');
         }
@@ -1118,7 +1119,7 @@ class format_classroom extends format_base {
             $discussactive = ' btn-primary active';
         } else if ($progressurl && $PAGE->url->compare($progressurl, URL_MATCH_EXACT)) {
             $progressactive = ' btn-primary active';
-        } else if ($coursehomepageurl && $PAGE->url->compare($coursehomepageurl, URL_MATCH_EXACT)) {
+        } else if ($coursehomepageurl && $PAGE->url->compare($coursehomepageurl, URL_MATCH_BASE)) {
             $coursehomepactive = ' btn-primary active';
         } else {
             $courseactive = ' btn-primary active';
