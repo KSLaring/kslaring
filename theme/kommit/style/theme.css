@@ -1493,11 +1493,33 @@ a.disabled {
 #page-course-index-category .generalbox.info img {
   margin: 0 !important;
 }
+#page-enrol-index #region-main.span8 {
+  width: 99%;
+}
 #page-enrol-index #block-region-side-pre {
   display: none;
 }
-#page-enrol-index #region-main.span8 {
-  width: 99%;
+#page-enrol-index.format-netcourse .mform {
+  margin: 1em 0 0 1em;
+}
+#page-enrol-index.format-netcourse .mform fieldset .ftoggler {
+  margin-bottom: .5em;
+}
+#page-enrol-index.format-netcourse .mform fieldset .femptylabel {
+  margin-bottom: 0;
+}
+#page-enrol-index.format-netcourse .mform .fitem div.fitemtitle {
+  display: none;
+}
+#page-enrol-index.format-netcourse .mform .fitem .felement {
+  margin-left: 0;
+}
+#page-enrol-index.format-netcourse .mform .fitem .felement input[size] {
+  width: initial;
+}
+#page-enrol-index.format-netcourse .mform .fitem_actionbuttons {
+  background-color: inherit;
+  margin: 0;
 }
 .table-striped tbody > tr:nth-child(odd) > td,
 .table-striped tbody > tr:nth-child(odd) > th {
