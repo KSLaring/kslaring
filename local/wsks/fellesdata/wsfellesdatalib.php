@@ -66,7 +66,7 @@ class WS_FELLESDATA {
 
         try {
             /* Job Roles by Level */
-            $result['jobroles'] = self::Get_JobRolesByLevel($hierarchy['zero'],$hierarchy['notIn']);
+            $result['jobroles'] = self::Get_JobRolesByLevel($hierarchy['top'],$hierarchy['notIn']);
         }catch (Exception $ex) {
             $result['error']    = 409;
             $result['message']  = $ex->getMessage();
@@ -1694,7 +1694,7 @@ class WS_FELLESDATA {
     }//Get_GenericsJobRoles
 
     /**
-     * @param           $levelZero
+     * @param           $top
      * @param           $notIn
      *
      * @return          array
@@ -1706,7 +1706,7 @@ class WS_FELLESDATA {
      * Description
      * Get all job roles connected with a specific level zero
      */
-    private static function Get_JobRolesByLevel($levelZero,$notIn) {
+    private static function Get_JobRolesByLevel($top,$notIn) {
         /* Variables */
         global $DB,$CFG;
         $rdo            = null;
@@ -1729,8 +1729,8 @@ class WS_FELLESDATA {
                             GROUP_CONCAT(DISTINCT jr_re.id 	ORDER BY jr_re.id 	SEPARATOR ',') as 'myrelations'
                      FROM		{report_gen_jobrole}			jr
                         JOIN	{report_gen_jobrole_relation}	jr_re 	ON  jr_re.jobroleid = jr.id
-                                                                        AND jr_re.levelzero IS NOT NULL
-                                                                        AND jr_re.levelzero IN ($levelZero)
+                                                                        AND jr_re.levelone IS NOT NULL
+                                                                        AND jr_re.levelone IN ($top)
                      WHERE  jr.id NOT IN ($notIn)
                      GROUP BY jr.id ";
 

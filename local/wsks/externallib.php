@@ -489,7 +489,7 @@ class local_wsks_external extends external_api {
         $level  = new external_value(PARAM_INT,'Top Level to Import');
         $notIn  = new external_value(PARAM_TEXT,'Not Int');
 
-        $levelTop = new external_single_structure(array('zero'  => $level,
+        $levelTop = new external_single_structure(array('top'  => $level,
                                                         'notIn' => $notIn));
 
         return new external_function_parameters(array('hierarchy'=> $levelTop));
