@@ -88,7 +88,7 @@ class FELLESDATA_CRON {
                 case TEST_JR:
                     echo "JobRoles" . "</br>";
                     /* Import Job Roles */
-                    //self::ImportKSJobRoles($pluginInfo);
+                    self::ImportKSJobRoles($pluginInfo);
 
                     break;
                 case TEST_FS_USERS:
@@ -106,7 +106,7 @@ class FELLESDATA_CRON {
                 case TEST_FS_JR:
                     echo "Import FS job Roles" . "</br>";
                     /* Import FS Job roles  */
-                    //self::ImportFSJobRoles($pluginInfo);
+                    self::ImportFSJobRoles($pluginInfo);
 
                     break;
                 case TEST_FS_USER_COMP:
@@ -275,7 +275,7 @@ class FELLESDATA_CRON {
             $notIn = KS::ExistingJobRoles(false,$hierarchy);
 
             $infoLevel = array('notIn'  => $notIn,
-                               'zero'   => $hierarchy);
+                               'top'    => $hierarchy);
             /* Call Web Service             */
             $response = self::ProcessKSService($pluginInfo,KS_JOBROLES,$infoLevel);
             /* Import Job Roles Generics    */

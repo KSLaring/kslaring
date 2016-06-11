@@ -1966,7 +1966,10 @@ class KS {
                 $sql .= "  AND  jr_re.levelzero IS NULL
                            OR   jr_re.levelzero = 0";
             }else {
-                $sql .= " AND jr_re.levelzero IN ($top) ";
+                if ($top) {
+                    $sql .= " AND jr_re.levelone IN ($top) ";
+                }
+
             }//if_generics
 
             /* Execute  */
@@ -2009,7 +2012,7 @@ class KS {
             $sql = " SELECT ks.companyid
                      FROM	{ks_company} ks
                      WHERE	ks.name like '%". $name . "%'
-                        AND	ks.hierarchylevel = 0 ";
+                        AND	ks.hierarchylevel = 1 ";
 
             /* Execute  */
             $rdo = $DB->get_records_sql($sql);

@@ -18,7 +18,6 @@ class map_org_form extends moodleform {
     function definition() {
         /* Variables    */
         $form       = null;
-
         $form               = $this->_form;
 
         /* Options Mapping */
@@ -37,6 +36,54 @@ class map_org_form extends moodleform {
         $this->add_action_buttons(true,get_string('continue'));
     }//definition
 }//map_org_form
+
+class map_org_jr extends moodleform {
+    function definition() {
+        /* Variables    */
+        $form   = null;
+        $form   = $this->_form;
+
+        $type   = $this->_customdata;
+
+        /* Options Mapping */
+        $form->addElement('header','header_map',get_string('map_opt','local_fellesdata'));
+
+        $form->addElement('radio','jr_no_generic','',get_string('opt_no_generics','local_fellesdata'),GENERIC_JR);
+        /* Job Roles Mapping    */
+        $form->addElement('radio','jr_generic','',get_string('opt_generics','local_fellesdata'),NO_GENERIC_JR);
+
+        /* Level to Map */
+        /* Change Selector */
+        $options = FS_MAPPING::getLevelsMapping();
+        $form->addElement('select','level',get_string('level_map','local_fellesdata'),$options);
+
+        /* Pattern  */
+        $form->addElement('text','pattern',get_string('pattern','local_fellesdata'));
+        $form->addHelpButton('pattern','pattern','local_fellesdata');
+        $form->setType('pattern',PARAM_TEXT);
+
+        $form->addElement('text','type','','style="visibility:hidden"');
+        $form->setDefault('type',$type);
+        $form->setType('type',PARAM_TEXT);
+
+        /* Add Action Buttons   */
+        $this->add_action_buttons(true,get_string('continue'));
+    }//definition
+
+    function validation($data, $files) {
+        global $DB, $CFG, $SESSION;
+        $errors = parent::validation($data, $files);
+
+        if (isset($data['jr_no_generic'])) {
+            if (!$data['level']) {
+                $errors['level'] = 'required';
+            }
+        }
+
+        return $errors;
+    }//validation
+}//map_org_jr
+
 class selector_form extends moodleform {
     function definition() {
         /* Variables    */
@@ -379,13 +426,6 @@ class jobroles_map_form extends moodleform {
                         $options[$index] = $form->createElement('radio', $refFS,'',get_string('no_match','local_fellesdata'),0);
                         $options[$index]->setValue(0);
                         $grp = $form->addElement('group', 'grp', null, $options,null , false);
-
-                        /* Option new company */
-                        //$options   = array();
-                        //$index  = 'new';
-                        //$options[$index] = $form->createElement('radio', $refFS,'',get_string('new_jr','local_fellesdata'),$index);
-                        //$options[$index]->setValue($index);
-                        //$grp = $form->addElement('group', 'grp', null, $options,null , false);
 
                         /* Match Options    */
                         foreach ($fsJR->matches as $match) {

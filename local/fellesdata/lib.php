@@ -24,6 +24,8 @@ function local_fellesdata_extends_navigation(global_navigation $navigation) {
 
             /* Organization Mapping */
             $nodBar = $nodeTracker->add(get_string('nav_map_org','local_fellesdata'),new moodle_url('/local/fellesdata/mapping/mapping_org.php'));
+            /* Job Roles Mapping */
+            //$nodBar = $nodeTracker->add(get_string('nav_map_jr','local_fellesdata'),new moodle_url('/local/fellesdata/mapping/mapping_jr.php'));
         }//if_else
     }
 }

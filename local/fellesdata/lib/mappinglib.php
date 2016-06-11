@@ -13,6 +13,9 @@
 define('MAPPING_CO','co');
 define('MAPPING_JR','jr');
 
+define('GENERIC_JR','ge');
+define('NO_GENERIC_JR','no');
+
 define('ACT_ADD',0);
 define('ACT_UPDATE',1);
 define('ACT_DELETE',2);

@@ -24,7 +24,7 @@ $generic    = required_param('g',PARAM_INT);
 
 $pattern    = null;
 $url        = new moodle_url('/local/fellesdata/mapping/jobroles.php',array('le' => $level,'g' => $generic));
-$return     = new moodle_url('/local/fellesdata/mapping/mapping.php');
+$return     = new moodle_url('/local/fellesdata/mapping/mapping_jr.php');
 $start      = 0;
 $step       = 5;
 $jrToMap    = null;
@@ -60,6 +60,10 @@ if (isset($SESSION->pattern)) {
     $pattern = $SESSION->pattern;
 }//if_pattern
 
+if (!isset($SESSION->notIn)) {
+    $SESSION->notIn = array();
+}
+
 /* Get Job Roles to Map */
 $jrToMap = FS_MAPPING::FSJobRolesToMap($level,$pattern,$generic,$start,$step);
 $form = new jobroles_map_form(null,array($level,$pattern,$generic,$jrToMap));
@@ -83,8 +87,14 @@ echo $OUTPUT->heading(get_string('nav_map_jr', 'local_fellesdata'));
 if ($jrToMap) {
     $form->display();
 }else {
-    echo $OUTPUT->notification(get_string('no_jr_to_map','local_fellesdata'), 'notifysuccess');
-    echo $OUTPUT->continue_button($return);
+    if (($SESSION->notIn) && count($SESSION->notIn)) {
+        unset($SESSION->notIn);
+        redirect($url);
+    }else {
+        unset($SESSION->notIn);
+        echo $OUTPUT->notification(get_string('no_jr_to_map','local_fellesdata'), 'notifysuccess');
+        echo $OUTPUT->continue_button($return);
+    }
 }
 
 /* Footer   */

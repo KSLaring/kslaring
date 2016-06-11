@@ -18,8 +18,9 @@ require_once($CFG->libdir . '/adminlib.php');
 require_login();
 
 /* PARAMS   */
-$url    = new moodle_url('/local/fellesdata/mapping/mapping_org.php');
-$urlOrg = new moodle_url('/local/fellesdata/mapping/organization.php');
+$type   = optional_param('type',0,PARAM_TEXT);
+$url    = new moodle_url('/local/fellesdata/mapping/mapping_jr.php');
+$urlJR  = new moodle_url('/local/fellesdata/mapping/jobroles.php');
 $return = $CFG->wwwroot;
 
 /* Start the page */
@@ -34,6 +35,9 @@ $PAGE->set_context($siteContext);
 $PAGE->set_title($SITE->fullname);
 $PAGE->set_heading($SITE->fullname);
 $PAGE->navbar->add(get_string('nav_mapping','local_fellesdata'));
+
+/* Java Script  */
+$PAGE->requires->js('/local/fellesdata/js/fellesdatajs.js');
 
 /* ADD require_capability */
 require_capability('local/fellesdata:manage', $siteContext);
@@ -50,20 +54,25 @@ $PAGE->verify_https_required();
 unset($SESSION->FS_COMP);
 unset($SESSION->notIn);
 
-$form    = new map_org_form(null,null);
+$form    = new map_org_jr(null,null);
 if ($form->is_cancelled()) {
     $_POST = array();
     redirect($return);
 }else if ($data = $form->get_data()) {
     $SESSION->pattern = $data->pattern;
 
-    $urlOrg->param('le',$data->level);
-    redirect($urlOrg);
+    if (isset($data->jr_generic)) {
+        $urlJR->param('g',1);
+    }else {
+        $urlJR->param('g',0);
+    }
+    $urlJR->param('le',$data->level);
+    redirect($urlJR);
 }//if_Else
 
 /* Header   */
 echo $OUTPUT->header();
-echo $OUTPUT->heading(get_string('nav_map_org', 'local_fellesdata'));
+echo $OUTPUT->heading(get_string('nav_map_jr', 'local_fellesdata'));
 
 $form->display();
 
