@@ -602,9 +602,9 @@ class FS_MAPPING {
     }//CleanOrganizationMapped
 
     /**
-     * @param           $level
      * @param           $sector
      * @param           $generic
+     * @param           $notIn
      * @param           $start
      * @param           $length
      *
@@ -617,15 +617,17 @@ class FS_MAPPING {
      * Description
      * Job roles to map
      */
-    public static function FSJobRolesToMap($level,$sector,$generic,$start,$length) {
+    public static function FSJobRolesToMap($sector,$generic,$notIn,$start,$length) {
         /* Variables    */
         $fsJobRoles = null;
-
+        $total      = 0;
         try {
             /* Get Job Roles to map */
-            $fsJobRoles = self::GetFSJobRolesToMap($level,$sector,$generic,$start,$length);
+            $fsJobRoles = self::GetFSJobRolesToMap($sector,$generic,$notIn,$start,$length);
+            /* Get how many remains to map  */
+            $total = self::GetTotalFSJobRolesToMap($sector,$notIn);
 
-            return $fsJobRoles;
+            return array($fsJobRoles,$total);
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
@@ -646,6 +648,7 @@ class FS_MAPPING {
      */
     public static function MappingFSJobRoles($toMap,$data) {
         /* Variables    */
+        $notIn          = array();
         $possibleMatch  = null;
         $refFS          = null;
         $infoMatch      = null;
@@ -659,17 +662,15 @@ class FS_MAPPING {
                 /* Get Possible Match   */
                 $possibleMatch = $data->$refFS;
                 if ($possibleMatch) {
-                    if ($possibleMatch == 'new') {
-                        self::NewMapFSJobRole($fsJR);
-                    }else {
-                        /* Mapping between FS and KS */
-                        $infoMatch = explode('#KS#',$data->$refFS);
-                        self::MapFSJobRole($fsJR,$infoMatch[1]);
-                    }//if_possible:matches
+                    /* Mapping between FS and KS */
+                    $infoMatch = explode('#KS#',$data->$refFS);
+                    self::MapFSJobRole($fsJR,$infoMatch[1]);
+                }else {
+                    $notIn[$fsJR->fsjobrole] = $fsJR->fsjobrole;
                 }//if_possibleMatch
             }//fs_company
 
-            return true;
+            return array(true,$notIn);
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
@@ -914,6 +915,8 @@ class FS_MAPPING {
     private static function GetFSCompaniesToMap($level,$sector,$notIn,$start,$length) {
         /* Variables    */
         global $DB;
+        $granpa         = false;
+        $granpaName     = null;
         $fsCompanies    = array();
         $infoCompany    = null;
         $sql            = null;
@@ -930,12 +933,16 @@ class FS_MAPPING {
             switch ($level) {
                 case FS_LE_2:
                     $params['level'] = 2;
+
                     break;
                 case FS_LE_5;
                     $params['level'] = 5;
+                    $granpa = true;
+
                     break;
                 default:
                     $params['level'] = '-1';
+
                     break;
             }//level
 
@@ -997,6 +1004,15 @@ class FS_MAPPING {
                     $infoCompany->id            = $instance->id;
                     $infoCompany->fscompany     = $instance->fscompany;
                     $infoCompany->name          = $instance->name;
+
+                    /* Get Name Granpa */
+                    if ($granpa) {
+                        $granpaName = self::GetGranparentName($instance->org_enhet_over);
+                        if ($granpaName) {
+                            $infoCompany->name = $granpaName . ' > ' . $infoCompany->name ;
+                        }
+                    }//if_ganpa
+
                     $infoCompany->fs_parent     = $instance->org_enhet_over;
                     /* Invoice Data */
                     $infoCompany->privat        = $instance->privat;
@@ -1021,6 +1037,63 @@ class FS_MAPPING {
         }//try_catch
     }//GetFSCompaniesToMap
 
+    /**
+     * @param           $parentId
+     *
+     * @return          null
+     * @throws          Exception
+     *
+     * @creationDate    11/06/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Return the granparent name
+     */
+    private static function GetGranparentName($parentId) {
+        /* Variables */
+        global $DB;
+        $name   = null;
+        $sql    = null;
+        $rdo    = null;
+        $params = null;
+
+        try {
+            /* Search Criteria  */
+            $params = array();
+            $params['parent'] = $parentId;
+
+            /* SQL Instruction  */
+            $sql = " SELECT IF(fs_granpa.org_navn,fs_granpa.org_navn,fs_imp.org_navn)		as 'granpa'
+                     FROM			{fs_imp_company}  fs_imp
+                        LEFT JOIN	{fs_imp_company}	fs_granpa	ON fs_granpa.org_enhet_id = fs_imp.org_enhet_over
+                    WHERE	fs_imp.org_enhet_id = :parent ";
+
+            /* Execute */
+            $rdo = $DB->get_record_sql($sql,$params);
+            if ($rdo) {
+                $name = $rdo->granpa;
+            }//IF_RDO
+
+            return $name;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//GetGranparentName
+
+    /**
+     * @param           $level
+     * @param           $sector
+     * @param           $notIn
+     *
+     * @return          int
+     * @throws          Exception
+     *
+     * @creationDate    09/06/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Get total companies to map
+     */
     private static function GetTotalFSCompaniesToMap($level,$sector,$notIn) {
         /* Variables    */
         global $DB;
@@ -1057,6 +1130,7 @@ class FS_MAPPING {
                         AND	fs_imp.org_nivaa = :level
                         AND fs_imp.org_enhet_id NOT IN ($notIn) ";
 
+            /* Sector */
             if ($sector) {
                 $sqlMatch = null;
                 $searchBy = null;
@@ -1078,10 +1152,7 @@ class FS_MAPPING {
                 $sql .= " AND (fs_imp.org_navn like '%" . $sector . "%' OR " . $sqlMatch . ")";
             }else {
                 $sql .= " AND fs_imp.org_navn like '%" . $sector . "%' ";
-            }
-
-            /* Order Criteria   */
-            $sql .= " ORDER BY fs_imp.org_navn ";
+            }//if_patterns
 
             /* Execute  */
             $rdo = $DB->get_record_sql($sql,$params);
@@ -1181,9 +1252,9 @@ class FS_MAPPING {
     }//GetPossibleOrgMatches
 
     /**
-     * @param           $level
      * @param           $sector
      * @param           $generic
+     * @param           $notIn
      * @param           $start
      * @param           $length
      *
@@ -1197,7 +1268,7 @@ class FS_MAPPING {
      * Description
      * GEt job roles to map
      */
-    private static function GetFSJobRolesToMap($level,$sector,$generic,$start,$length) {
+    private static function GetFSJobRolesToMap($sector,$generic,$notIn,$start,$length) {
         /* Variables */
         global $DB;
         $fsJobRoles = array();
@@ -1221,16 +1292,40 @@ class FS_MAPPING {
                         LEFT JOIN	{fs_jobroles} 	    fs		ON fs.jrcode = fs_imp.stillingskode
                      WHERE	fs_imp.imported = :imported
                         AND fs_imp.action  != :action
-                        AND	fs.id IS NULL
-                        AND (fs_imp.stillingstekst like '%" . $sector . "%'
-                             OR
-                             fs_imp.alternative like '%" . $sector . "%'
-                             )
-                     ORDER BY fs_imp.stillingstekst
-                     LIMIT $start, $length ";
+                        AND fs_imp.stillingskode NOT IN ($notIn)
+                        AND	fs.id IS NULL ";
 
 
-            /* Execute  */
+            if ($sector) {
+                $sqlMatch = null;
+                $searchBy = null;
+                /* Search By    */
+                $sector     = str_replace(',',' ',$sector);
+                $sector     = str_replace(' og ',' ',$sector);
+                $sector     = str_replace(' eller ',' ',$sector);
+                $sector     = str_replace('/',' ',$sector);
+                $searchBy   = explode(' ',$sector);
+
+                foreach($searchBy as $match) {
+                    if ($sqlMatch) {
+                        $sqlMatch .= " OR ";
+                    }//if_sqlMatch
+
+                    $sqlMatch .= " (fs_imp.stillingstekst like '%" . $match . "%'
+                                    OR
+                                    fs_imp.alternative like '%" . $match . "%')";
+                }//for_search
+
+                $sql .= " AND " . $sqlMatch . "";
+            }else {
+                $sql .= " AND (fs_imp.stillingstekst like '%" . $sector . "%' OR fs_imp.alternative like '%" . $sector . "%') ";
+            }
+
+            /* Order Criteria  */
+            $sql .= " ORDER BY fs_imp.stillingstekst
+                      LIMIT $start, $length  ";
+
+            /* Execute */
             $rdo = $DB->get_records_sql($sql,$params);
             if ($rdo) {
                 foreach ($rdo as $instance) {
@@ -1240,12 +1335,10 @@ class FS_MAPPING {
                     $infoJR->fsjobrole      = $instance->fsjobrole;
                     $infoJR->name           = $instance->stillingstekst;
                     $infoJR->alternative    = $instance->alternative;
-                    $infoJR->matches        = self::GetPossiblesJRMatches($infoJR->name,$level,$sector,$generic);
+                    $infoJR->matches        = self::GetPossiblesJRMatches($infoJR->name,$sector,$generic);
 
                     /* Add Job Role */
-                    if ($infoJR->matches) {
-                        $fsJobRoles[$instance->fsjobrole] = $infoJR;
-                    }//if_matches
+                    $fsJobRoles[$instance->fsjobrole] = $infoJR;
                 }//for_rdo
             }//if_Rdo
 
@@ -1256,8 +1349,77 @@ class FS_MAPPING {
     }//GetFSJobRolesToMap
 
     /**
+     * @param           $sector
+     * @param           $notIn
+     *
+     * @return          int
+     * @throws          Exception
+     *
+     * Description
+     * gets how main remains to map
+     */
+    private static function GetTotalFSJobRolesToMap($sector,$notIn) {
+        /* Variables */
+        global $DB;
+        $sql        = null;
+        $rdo        = null;
+        $params     = null;
+
+        try {
+            /* Search Criteria  */
+            $params = array();
+            $params['imported'] = 0;
+            $params['action']   = ACT_DELETE;
+
+            /* SQL Instruction  */
+            $sql = " SELECT	DISTINCT  count(fs_imp.id) as 'total'
+                     FROM			{fs_imp_jobroles}	fs_imp
+                        LEFT JOIN	{fs_jobroles} 	    fs		ON fs.jrcode = fs_imp.stillingskode
+                     WHERE	fs_imp.imported = :imported
+                        AND fs_imp.action  != :action
+                        AND fs_imp.stillingskode NOT IN ($notIn)
+                        AND	fs.id IS NULL ";
+
+            /* Pattern */
+            if ($sector) {
+                $sqlMatch = null;
+                $searchBy = null;
+                /* Search By    */
+                $sector     = str_replace(',',' ',$sector);
+                $sector     = str_replace(' og ',' ',$sector);
+                $sector     = str_replace(' eller ',' ',$sector);
+                $sector     = str_replace('/',' ',$sector);
+                $searchBy   = explode(' ',$sector);
+
+                foreach($searchBy as $match) {
+                    if ($sqlMatch) {
+                        $sqlMatch .= " OR ";
+                    }//if_sqlMatch
+
+                    $sqlMatch .= " (fs_imp.stillingstekst like '%" . $match . "%'
+                                    OR
+                                    fs_imp.alternative like '%" . $match . "%')";
+                }//for_search
+
+                $sql .= " AND " . $sqlMatch . "";
+            }else {
+                $sql .= " AND (fs_imp.stillingstekst like '%" . $sector . "%' OR fs_imp.alternative like '%" . $sector . "%') ";
+            }//if_sector
+
+            /* Execute */
+            $rdo = $DB->get_record_sql($sql,$params);
+            if ($rdo) {
+                return $rdo->total;
+            }else {
+                return 0;
+            }//if_Rdo
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//GetTotalFSJobRolesToMap
+
+    /**
      * @param           $fsJobRole
-     * @param           $level
      * @param           $sector
      * @param           $generic
      *
@@ -1270,7 +1432,7 @@ class FS_MAPPING {
      * Description
      * Get possible matches - Job Roles
      */
-    private static function GetPossiblesJRMatches($fsJobRole,$level,$sector,$generic) {
+    private static function GetPossiblesJRMatches($fsJobRole,$sector,$generic) {
         /* Variables    */
         global $DB;
         $sql        = null;
@@ -1293,84 +1455,40 @@ class FS_MAPPING {
 
             /* Add Level    */
             if ($generic) {
-                $sql .= " WHERE jr_rel.levelzero IS NULL ";
+                $sql .= " WHERE (jr_rel.levelzero IS NULL
+                                 OR
+                                 jr_rel.levelzero = 0)";
             }else {
-                /* Plugin Info      */
-                $pluginInfo     = get_config('local_fellesdata');
-                /* Get Top hierarchy for job Roles */
-                $hierarchy = KS::GetHierarchy_JR($pluginInfo->ks_muni);
-
-                switch ($level) {
-                    case '0':
-                        $sql .= " WHERE jr_rel.levelzero IN ($hierarchy) ";
-
-                        break;
-                    case '1':
-                        $sql .= " WHERE ((jr_rel.levelzero IN ($hierarchy)  AND     jr_rel.levelone IS NOT NULL
-                                         AND
-                                         jr_rel.leveltwo IS NULL            AND     jr_rel.levelthree IS NULL)
-                                        OR
-                                        (jr_rel.levelzero IN ($hierarchy)   AND     jr_rel.levelone IS NULL
-                                         AND
-                                         jr_rel.leveltwo IS NULL            AND     jr_rel.levelthree IS NULL))";
-
-                        break;
-                    case '2':
-                        $sql .= " WHERE ((jr_rel.levelzero IN ($hierarchy)  AND     jr_rel.levelone IS NOT NULL
-                                         AND
-                                         jr_rel.leveltwo IS NOT NULL        AND     jr_rel.levelthree IS NULL)
-                                        OR
-                                        (jr_rel.levelzero IN ($hierarchy)   AND     jr_rel.levelone IS NOT NULL
-                                         AND
-                                         jr_rel.leveltwo IS NULL            AND     jr_rel.levelthree IS NULL)
-                                        OR
-                                        (jr_rel.levelzero IN ($hierarchy)   AND     jr_rel.levelone IS NULL
-                                         AND
-                                         jr_rel.leveltwo IS NULL            AND     jr_rel.levelthree IS NULL))";
-                        break;
-                    case '3':
-                        $sql .= " WHERE ((jr_rel.levelzero IN ($hierarchy)  AND     jr_rel.levelone IS NOT NULL
-                                         AND
-                                         jr_rel.leveltwo IS NOT NULL        AND     jr_rel.levelthree IS NOT NULL)
-                                        OR
-                                        (jr_rel.levelzero IN ($hierarchy)   AND     jr_rel.levelone IS NOT NULL
-                                         AND
-                                         jr_rel.leveltwo IS NOT NULL        AND     jr_rel.levelthree IS NULL)
-                                        OR
-                                        (jr_rel.levelzero IN ($hierarchy)   AND     jr_rel.levelone IS NOT NULL
-                                         AND
-                                         jr_rel.leveltwo IS NULL            AND     jr_rel.lelvethree IS NULL)
-                                        OR
-                                        (
-                                         jr_rel.levelzero IN ($hierarchy)   AND     jr_rel.levelone IS NULL
-                                         AND
-                                         jr_rel.leveltwo IS NULL            AND     jr_rel.levelthree IS NULL))";
-                        break;
-                }//level
+                $sql .= " WHERE jr_rel.levelzero IS NOT NULL
+                            AND jr_rel.levelzero != 0 ";
             }//if_generic
 
 
             /* Pattern  */
             if ($sector) {
-                $sql .= " AND jr.name like '%" . $sector . "%'";
+                $sector     = str_replace(',',' ',$sector);
+                $sector     = str_replace(' og ',' ',$sector);
+                $sector     = str_replace(' eller ',' ',$sector);
+                $sector     = str_replace('/',' ',$sector);
+                $searchBy   = explode(' ',$sector);
+
+                /* Search by */
+                foreach($searchBy as $match) {
+                    if ($sqlMatch) {
+                        $sqlMatch .= " OR ";
+                    }//if_sqlMatch
+                    $sqlMatch .= " jr.name like '%" . $match . "%'";
+                }//for_search
+
+                $sql .= " AND (jr.name like '%" . $fsJobRole . "%' OR " . $sqlMatch . ")";
+            }else {
+                $sql .= " AND jr.name like '%" . $fsJobRole . "%'";
             }//if_sector
 
-            /* Search by */
-            $fsJobRole  = str_replace('/',' ',$fsJobRole);
-            $searchBy   = explode(' ',$fsJobRole);
-            foreach($searchBy as $match) {
-                if ($sqlMatch) {
-                    $sqlMatch .= " OR ";
-                }//if_sqlMatch
-                $sqlMatch .= " LOCATE('" . $match ."',jr.name) > 0
-                               OR
-                               LOCATE(jr.name,'" . $match ."') > 0 ";
-            }//for_search
-
-            /* Execute  */
-            $sql .= " AND (" . $sqlMatch . ")";
+            /* Order Criteria  */
             $sql .= " ORDER BY jr.industrycode,jr.name ";
 
+            /* Execute */
             $rdo = $DB->get_records_sql($sql);
             if ($rdo) {
                 foreach ($rdo as $instance) {

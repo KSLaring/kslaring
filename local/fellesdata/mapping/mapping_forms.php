@@ -54,13 +54,14 @@ class map_org_jr extends moodleform {
 
         /* Level to Map */
         /* Change Selector */
-        $options = FS_MAPPING::getLevelsMapping();
-        $form->addElement('select','level',get_string('level_map','local_fellesdata'),$options);
+        //$options = FS_MAPPING::getLevelsMapping();
+        //$form->addElement('select','level',get_string('level_map','local_fellesdata'),$options);
 
         /* Pattern  */
         $form->addElement('text','pattern',get_string('pattern','local_fellesdata'));
         $form->addHelpButton('pattern','pattern','local_fellesdata');
         $form->setType('pattern',PARAM_TEXT);
+        $form->addRule('pattern','required','required', null, 'client');
 
         $form->addElement('text','type','','style="visibility:hidden"');
         $form->setDefault('type',$type);
@@ -69,19 +70,6 @@ class map_org_jr extends moodleform {
         /* Add Action Buttons   */
         $this->add_action_buttons(true,get_string('continue'));
     }//definition
-
-    function validation($data, $files) {
-        global $DB, $CFG, $SESSION;
-        $errors = parent::validation($data, $files);
-
-        if (isset($data['jr_no_generic'])) {
-            if (!$data['level']) {
-                $errors['level'] = 'required';
-            }
-        }
-
-        return $errors;
-    }//validation
 }//map_org_jr
 
 class selector_form extends moodleform {
@@ -159,6 +147,7 @@ class organization_map_form extends moodleform {
         $form = $this->_form;
         list($level,$pattern,$toMatch,$total) = $this->_customdata;
 
+        /* Get how many remains to map */
         $remain = $total - count($toMatch);
 
         $form->addElement('html','<div class="matching_process_title">');
@@ -350,15 +339,25 @@ class organization_new_map_form extends moodleform {
 class jobroles_map_form extends moodleform {
     function definition() {
         /* Variables    */
-        $titleLeft  = get_string('to_match','local_fellesdata');
-        $titleRight = get_string('possible_matches','local_fellesdata');
-        $level      = null;
-        $pattern    = null;
+        $titleLeft      = get_string('to_match','local_fellesdata');
+        $titleRight     = get_string('possible_matches','local_fellesdata');
+        $titleRemain    = null;
+        $remain         = 0;
+        $level          = null;
+        $pattern        = null;
 
         $form = $this->_form;
-        list($level,$pattern,$generic,$toMatch) = $this->_customdata;
+        list($generic,$toMatch,$total) = $this->_customdata;
+
+        /* Get how many remains to map */
+        $remain = $total - count($toMatch);
 
         $form->addElement('html','<div class="matching_process_title">');
+            if ($remain) {
+                $titleRemain = get_string('remain_match','local_fellesdata',$remain);
+                $titleLeft .= '. ' . $titleRemain;
+            }//if_remain
+
             /* Title        */
             $form->addElement('html','<div class="area_left title_matching">');
                 $form->addElement('html','<h6>' . $titleLeft . '</h6>');
@@ -371,11 +370,6 @@ class jobroles_map_form extends moodleform {
 
         /* Add data to Map  */
         $this->MatchJobRoles($toMatch,$form);
-
-        /* Level */
-        $form->addElement('hidden','le');
-        $form->setDefault('le',$level);
-        $form->setType('le',PARAM_INT);
 
         /* Generic */
         $form->addElement('hidden','g');
@@ -422,7 +416,7 @@ class jobroles_map_form extends moodleform {
                     $form->addElement('html','<div class="area_right">');
                         /* Not Sure Option  */
                         $options   = array();
-                        $index  = 0;
+                        $index  = '0';
                         $options[$index] = $form->createElement('radio', $refFS,'',get_string('no_match','local_fellesdata'),0);
                         $options[$index]->setValue(0);
                         $grp = $form->addElement('group', 'grp', null, $options,null , false);

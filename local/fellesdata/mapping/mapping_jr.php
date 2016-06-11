@@ -36,9 +36,6 @@ $PAGE->set_title($SITE->fullname);
 $PAGE->set_heading($SITE->fullname);
 $PAGE->navbar->add(get_string('nav_mapping','local_fellesdata'));
 
-/* Java Script  */
-$PAGE->requires->js('/local/fellesdata/js/fellesdatajs.js');
-
 /* ADD require_capability */
 require_capability('local/fellesdata:manage', $siteContext);
 
@@ -66,7 +63,7 @@ if ($form->is_cancelled()) {
     }else {
         $urlJR->param('g',0);
     }
-    $urlJR->param('le',$data->level);
+
     redirect($urlJR);
 }//if_Else
 

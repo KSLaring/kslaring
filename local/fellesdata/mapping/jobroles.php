@@ -19,15 +19,15 @@ require_once($CFG->libdir . '/adminlib.php');
 require_login();
 
 /* PARAMS   */
-$level      = required_param('le',PARAM_INT);
 $generic    = required_param('g',PARAM_INT);
 
 $pattern    = null;
-$url        = new moodle_url('/local/fellesdata/mapping/jobroles.php',array('le' => $level,'g' => $generic));
+$url        = new moodle_url('/local/fellesdata/mapping/jobroles.php',array('g' => $generic));
 $return     = new moodle_url('/local/fellesdata/mapping/mapping_jr.php');
 $start      = 0;
 $step       = 5;
 $jrToMap    = null;
+$total      = 0;
 $matched    = false;
 
 /* Start the page */
@@ -64,18 +64,30 @@ if (!isset($SESSION->notIn)) {
     $SESSION->notIn = array();
 }
 
+/* Get Companies to Map */
+$notIn = 0;
+if (($SESSION->notIn) && count($SESSION->notIn)) {
+    $notIn = implode(',',$SESSION->notIn);
+}
+
 /* Get Job Roles to Map */
-$jrToMap = FS_MAPPING::FSJobRolesToMap($level,$pattern,$generic,$start,$step);
-$form = new jobroles_map_form(null,array($level,$pattern,$generic,$jrToMap));
+list($jrToMap,$total) = FS_MAPPING::FSJobRolesToMap($pattern,$generic,$notIn,$start,$step);
+$form = new jobroles_map_form(null,array($generic,$jrToMap,$total));
 if ($form->is_cancelled()) {
+    unset($SESSION->notIn);
+
     $_POST = array();
     redirect($return);
 }else if ($data = $form->get_data()) {
     /* Matching   */
-    $matched = FS_MAPPING::MappingFSJobRoles($jrToMap,$data);
+    list($matched,$notIn) = FS_MAPPING::MappingFSJobRoles($jrToMap,$data);
 
     /* Redirect */
     if ($matched) {
+        if (count($notIn)) {
+            $SESSION->notIn = $notIn;
+        }
+
         redirect($url);
     }//matched
 }//if_Else
