@@ -171,12 +171,12 @@ class local_wsks_external extends external_api {
         $companyPostSted        = new external_value(PARAM_TEXT,'Post Sted');
         $companyEPost           = new external_value(PARAM_TEXT,'ePost');
 
-        $companiesFS = new external_single_structure(array('fsId'       => $companyFSID,
-                                                           'ksId'       => $companyKSID,
-                                                           'name'       => $companyName,
-                                                           'industry'   => $companyIndustryCode,
-                                                           'level'      => $companyLevel,
-                                                           'parent'     => $companyParent,
+        $companiesFS = new external_single_structure(array( 'fsId'          => $companyFSID,
+                                                            'ksId'          => $companyKSID,
+                                                            'name'          => $companyName,
+                                                            'industry'      => $companyIndustryCode,
+                                                            'level'         => $companyLevel,
+                                                            'parent'        => $companyParent,
                                                             'public'        => $companyPublic,
                                                             'ansvar'        => $companyAnsvar,
                                                             'tjeneste'      => $companyTjneste,
@@ -186,7 +186,7 @@ class local_wsks_external extends external_api {
                                                             'postnr'        => $companyPostNr,
                                                             'poststed'      => $companyPostSted,
                                                             'epost'         => $companyEPost,
-                                                           'action'     => $action));
+                                                            'action'        => $action));
 
         return new external_function_parameters(array('companiesFS'=> new external_multiple_structure($companiesFS)));
     }//wsFSCompany_parameters
@@ -305,11 +305,13 @@ class local_wsks_external extends external_api {
         $orgId              = new external_value(PARAM_INT,'Level Id');
         $orgHierarchy       = new external_value(PARAM_INT,'Level Hierarchy');
         $orgIndustryCode    = new external_value(PARAM_TEXT,'Industry Code');
+        $orgParent          = new external_value(PARAM_INT,'Parent');
 
         $orgInfo      = new external_single_structure(array('id'            => $orgId,
                                                             'name'          => $orgName,
                                                             'industrycode'  => $orgIndustryCode,
-                                                            'level'         => $orgHierarchy));
+                                                            'level'         => $orgHierarchy,
+                                                            'parent'        => $orgParent));
 
         $existReturn = new external_single_structure(array('error'         => $error,
                                                            'message'       => $msgError,
@@ -487,7 +489,7 @@ class local_wsks_external extends external_api {
         $level  = new external_value(PARAM_INT,'Top Level to Import');
         $notIn  = new external_value(PARAM_TEXT,'Not Int');
 
-        $levelTop = new external_single_structure(array('zero'  => $level,
+        $levelTop = new external_single_structure(array('top'  => $level,
                                                         'notIn' => $notIn));
 
         return new external_function_parameters(array('hierarchy'=> $levelTop));
