@@ -47,14 +47,14 @@ $string['nav_mapping']          = 'Mapping';
 $string['header_fellesdata']    = 'Fellesdata-mapping';
 
 $string['nav_map_org']          = 'Org-struktur mapping';
-$string['nav_map_org_new']      = 'Organization Mapping - New Companies';
+$string['nav_map_org_new']      = 'Mapping av org-strukturen - nye org-elementer';
 $string['nav_map_jr']           = 'Jobbrolle-mapping';
 
 $string['level_map']            = 'Nivå (0-1-2-3) som skal mappes';
 $string['pattern']              = 'Tekstmønster';
 $string['pattern_help']         = 'For eksempel "Skole". Det betyr at du vil mappe alle org-elementer som hører til f.eks. "Skole og oppvekst".';
 $string['to_match']             = 'Å mappe fra Fellesdata';
-$string['remain_match']         = '{$a} Remaining to map';
+$string['remain_match']         = '{$a} igjen å mappe';
 $string['possible_matches']     = 'Mulige treff i KS Læring';
 
 $string['no_match']             = 'Ikke sikker';
@@ -74,11 +74,11 @@ $string['no_jr_to_map']         = 'Det finnes ingen jobbroller å mappe.';
 $string['btn_match']        = 'Treff';
 
 $string['menu_title']           = 'Fellesdata';
-$string['map_org']              = 'Mapping Organizations';
-$string['map_jr']               = 'Mapping Job Roles';
+$string['map_org']              = 'Mapper org-enheter';
+$string['map_jr']               = 'Mapper jobbroller';
 
-$string['sel_parent']           = 'Select one...';
-$string['header_parent']        = 'Parent connected with the new companies';
-$string['parent']               = 'Parent';
+$string['sel_parent']           = 'Velg en...';
+$string['header_parent']        = 'Overordnet nivå for det nye org-elementet';
+$string['parent']               = 'Overordnet nivå';
 
-$string['to_connect']           = 'Companies to connect';
+$string['to_connect']           = 'Arbeidssteder som skal mappes';
