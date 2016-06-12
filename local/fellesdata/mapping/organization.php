@@ -103,23 +103,27 @@ if ($form->is_cancelled()) {
     }//matched
 }//if_Else
 
+if (!$fsToMap) {
+    if (($SESSION->notIn) && count($SESSION->notIn)) {
+        unset($SESSION->FS_COMP);
+        unset($SESSION->notIn);
+        redirect($url);
+    }
+}//if_tomap
+
 /* Header   */
 echo $OUTPUT->header();
 echo $OUTPUT->heading(get_string('nav_map_org', 'local_fellesdata'));
 
 if ($fsToMap) {
+    unset($SESSION->FS_COMP);
+    unset($SESSION->notIn);
     $form->display();
 }else {
-    if (($SESSION->notIn) && count($SESSION->notIn)) {
-        unset($SESSION->FS_COMP);
-        unset($SESSION->notIn);
-        redirect($url);
-    }else {
-        unset($SESSION->FS_COMP);
-        unset($SESSION->notIn);
-        echo $OUTPUT->notification(get_string('no_companies_to_map','local_fellesdata'), 'notifysuccess');
-        echo $OUTPUT->continue_button($return);
-    }
+    unset($SESSION->FS_COMP);
+    unset($SESSION->notIn);
+    echo $OUTPUT->notification(get_string('no_companies_to_map','local_fellesdata'), 'notifysuccess');
+    echo $OUTPUT->continue_button($return);
 }
 
 /* Footer   */
