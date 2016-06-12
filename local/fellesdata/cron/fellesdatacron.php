@@ -25,6 +25,7 @@ define('TEST_FS_SYNC_ORG',8);
 define('TEST_FS_SYNC_JR',9);
 define('TEST_FS_SYNC_COMP_U',10);
 define('TEST_FS_SYNC_COMP_JR',11);
+define('TEST_FS_SYNC_FS_USERS',12);
 
 class FELLESDATA_CRON {
     /**********/
@@ -148,6 +149,11 @@ class FELLESDATA_CRON {
                 case TEST_FS_SYNC_COMP_JR:
                     /* Synchronization User Competence JobRole  */
                     self::UserCompetence_Synchronization($pluginInfo,IMP_COMPETENCE_JR,KS_USER_COMPETENCE_JR);
+
+                    break;
+                case TEST_FS_SYNC_FS_USERS:
+                    /* Synchronization Users Accounts   */
+                    self::UsersFS_Synchronization($pluginInfo);
 
                     break;
                 default:
