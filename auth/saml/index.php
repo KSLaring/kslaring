@@ -234,6 +234,15 @@ define('SAML_INTERNAL', 1);
                 throw $ex;
             }
         }else {
-            redirect($urltogo);
+            /* Validate User */
+            if (KS_ADFS::IsValidUser($USER)) {
+                redirect($urltogo);
+            }else {
+                $urltogo = KS_ADFS::GetErrorURL();
+                redirect($urltogo);
+                require_logout();
+                die;
+            }
+
         }//if_else
     }

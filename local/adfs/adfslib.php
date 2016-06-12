@@ -19,6 +19,67 @@ class KS_ADFS {
     /**********/
 
     /**
+     * @param           $user
+     *
+     * @return          bool
+     * @throws          Exception
+     *
+     * @creationDate    12/06/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Check if it's a valid user
+     */
+    public static function IsValidUser($user) {
+        /* Variables */
+        $valid = false;
+
+        try {
+            if (empty($user->firsname) ||
+                empty($user->lastname) ||
+                empty($user->email)    ) {
+                $valid =false;
+            }else if ($user->username != $user->idnumber) {
+                $valid = false;
+            }else {
+                $valid = true;
+            }
+            return $valid;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//IsValidUser
+
+    /**
+     * @return          moodle_url
+     * @throws          Exception
+     *
+     * @creationDate    12/06/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Get the url where redirect the user
+     */
+    public static function GetErrorURL() {
+        /* Variables */
+        $pluginInfo = null;
+        $redirect   = null;
+
+        try {
+            /* Plugin Info      */
+            $pluginInfo     = get_config('local_adfs');
+
+            /* URL */
+            $redirect = $pluginInfo->ks_point . '/local/wsks/adfs/error.php';
+            $redirect = new moodle_url($redirect,array('er' => 1));
+
+            return $redirect;
+        }catch (Exception $ex) {
+            throw $ex;
+        }
+    }//GetErrorURL
+
+    /**
      * @param           $userId
      *
      * @return          mixed
