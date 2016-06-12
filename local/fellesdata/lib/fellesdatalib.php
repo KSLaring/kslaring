@@ -1755,7 +1755,10 @@ class FS {
         try {
             /* FS Job Role Info */
             /* Execute  */
-            $DB->insert_records('fs_imp_jobroles',$data);
+            $rdo = $DB->get_record('fs_imp_jobroles',array('STILLINGSKODE' => $data->STILLINGSKODE));
+            if (!$rdo) {
+                $DB->insert_records('fs_imp_jobroles',$data);
+            }
 
             /* Commit */
             $trans->allow_commit();
