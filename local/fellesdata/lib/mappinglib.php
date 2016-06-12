@@ -1341,8 +1341,6 @@ class FS_MAPPING {
                       LIMIT $start, $length  ";
 
             /* Execute */
-            echo $sql;
-
             $rdo = $DB->get_records_sql($sql,$params);
             if ($rdo) {
                 foreach ($rdo as $instance) {
