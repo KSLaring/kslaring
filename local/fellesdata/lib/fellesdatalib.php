@@ -1685,13 +1685,10 @@ class FS {
         try {
             /* User Info    */
             /* Execute  */
-            //if (isset($data->FODSELSNR)) {
-                $rdo = $DB->get_record('fs_imp_users',array('FODSELSNR' => $data->FODSELSNR));
-                if (!$rdo) {
-                    $DB->insert_records('fs_imp_users',$data);
-                }//if_rdo
-            //}
-
+            $rdo = $DB->get_record('fs_imp_users',array('FODSELSNR' => $data->FODSELSNR));
+            if (!$rdo) {
+                $DB->insert_records('fs_imp_users',$data);
+            }//if_rdo
             /* Commit   */
             $trans->allow_commit();
         }catch (Exception $ex) {
