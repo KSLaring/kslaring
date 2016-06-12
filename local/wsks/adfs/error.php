@@ -14,6 +14,7 @@
 require( '../../../config.php' );
 
 /* PARAMS   */
+$err = optional_param('er',0,PARAM_INT);
 $returnURL  = $CFG->wwwroot . '/index.php';
 
 $PAGE->set_url("$CFG->httpswwwroot/login/index.php");
@@ -25,8 +26,13 @@ if (isloggedin()) {
     require_logout();
 }//if_log_in
 
+if ($er) {
+    echo $OUTPUT->notification(get_string('ADFS_ERROR_USER','local_wsks'), 'notifysuccess');
+    echo $OUTPUT->continue_button($returnURL);
+}else {
+    echo $OUTPUT->notification(get_string('ADFS_ERR_PROCESS','local_wsks'), 'notifysuccess');
+    echo $OUTPUT->continue_button($returnURL);
+}
 
-echo $OUTPUT->notification(get_string('ADFS_ERR_PROCESS','local_wsks'), 'notifysuccess');
-echo $OUTPUT->continue_button($returnURL);
 
 echo $OUTPUT->footer();
