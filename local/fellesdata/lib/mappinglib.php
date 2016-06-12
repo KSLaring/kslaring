@@ -1349,7 +1349,7 @@ class FS_MAPPING {
                     $infoJR->id             = $instance->id;
                     $infoJR->fsjobrole      = $instance->fsjobrole;
                     $infoJR->name           = $instance->stillingstekst;
-                    $infoJR->alternative    = $instance->alternative;
+                    $infoJR->alternative    = $instance->stillingstekst_alternativ;
                     $infoJR->matches        = self::GetPossiblesJRMatches($infoJR->name,$sector,$generic);
 
                     /* Add Job Role */
