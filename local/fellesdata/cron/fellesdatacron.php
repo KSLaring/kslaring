@@ -62,7 +62,7 @@ class FELLESDATA_CRON {
             self::CompaniesFS_Synchronization($pluginInfo,$fstExecution);
 
             /* Synchronization Job Roles    */
-            self::JobRolesFS_Synchronization($pluginInfo,$fstExecution);
+            //self::JobRolesFS_Synchronization($pluginInfo,$fstExecution);
 
             /* Synchronization Comeptence   */
             if (!$fstExecution) {
@@ -138,7 +138,7 @@ class FELLESDATA_CRON {
                     break;
                 case TEST_FS_SYNC_JR:
                     /* Synchronization Job Roles    */
-                    self::JobRolesFS_Synchronization($pluginInfo,false);
+                    //self::JobRolesFS_Synchronization($pluginInfo,false);
 
                     break;
                 case TEST_FS_SYNC_COMP_U:
