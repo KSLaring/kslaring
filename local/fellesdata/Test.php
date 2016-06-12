@@ -30,6 +30,9 @@ echo " Import KS Data " . "</br>";
 echo "Start ... " . "</br>";
 
 try {
+    if (!isset($SESSION->manual)) {
+        $SESSION->manual = true;
+    }
     /* Plugin Info      */
     $pluginInfo     = get_config('local_fellesdata');
 

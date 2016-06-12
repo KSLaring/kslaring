@@ -22,6 +22,9 @@ define('TEST_FS_JR',5);
 define('TEST_FS_USER_COMP',6);
 define('TEST_FS_USER_COMP_JR',7);
 define('TEST_FS_SYNC_ORG',8);
+define('TEST_FS_SYNC_JR',9);
+define('TEST_FS_SYNC_COMP_U',10);
+define('TEST_FS_SYNC_COMP_JR',11);
 
 class FELLESDATA_CRON {
     /**********/
@@ -30,9 +33,14 @@ class FELLESDATA_CRON {
 
     public static function cron($fstExecution) {
         /* Variables    */
+        global $SESSION;
         $pluginInfo = null;
 
+
         try {
+            if (isset($SESSION->manual)) {
+                unset($SESSION->manual);
+            }
             /* Plugin Info      */
             $pluginInfo     = get_config('local_fellesdata');
 
@@ -82,7 +90,7 @@ class FELLESDATA_CRON {
                 case TEST_ORG:
                     echo "Organization Structure" . "</br>";
                     /* Import Organization Structure    */
-                    //self::OrganizationStructure($pluginInfo);
+                    self::OrganizationStructure($pluginInfo);
 
                     break;
                 case TEST_JR:
@@ -94,7 +102,7 @@ class FELLESDATA_CRON {
                 case TEST_FS_USERS:
                     echo "Import FS Users" . "</br>";
                     /* Import FS Users              */
-                    //self::ImportFSUsers($pluginInfo);
+                    self::ImportFSUsers($pluginInfo);
 
                     break;
                 case TEST_FS_ORG:
@@ -112,19 +120,34 @@ class FELLESDATA_CRON {
                 case TEST_FS_USER_COMP:
                     echo "Import FS User Competence" . "</br>";
                     /* Import FS User Competence    */
-                    //self::ImportFSUserCompetence($pluginInfo);
+                    self::ImportFSUserCompetence($pluginInfo);
 
                     break;
                 case TEST_FS_USER_COMP_JR:
                     echo "Import Fs User Competence JR" . "</br>";
                     /* Import FS User Competence JR */
-                    //self::ImportFSUserCompetenceJR($pluginInfo);
+                    self::ImportFSUserCompetenceJR($pluginInfo);
 
                     break;
                 case TEST_FS_SYNC_ORG:
                     echo "Synchronization FS Companies" . "</br>";
 
                     self::CompaniesFS_Synchronization($pluginInfo,false);
+
+                    break;
+                case TEST_FS_SYNC_JR:
+                    /* Synchronization Job Roles    */
+                    self::JobRolesFS_Synchronization($pluginInfo,false);
+
+                    break;
+                case TEST_FS_SYNC_COMP_U:
+                    /* Synchronization User Competence Company  */
+                    self::UserCompetence_Synchronization($pluginInfo,IMP_COMPETENCE_COMP,KS_USER_COMPETENCE_CO);
+
+                    break;
+                case TEST_FS_SYNC_COMP_JR:
+                    /* Synchronization User Competence JobRole  */
+                    self::UserCompetence_Synchronization($pluginInfo,IMP_COMPETENCE_JR,KS_USER_COMPETENCE_JR);
 
                     break;
                 default:

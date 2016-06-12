@@ -1218,7 +1218,7 @@ class FSKS_USERS {
      */
     private static function GetUsersCompetence_ToSynchronize() {
         /* Variables    */
-        global $DB;
+        global $DB,$SESSION;
         $params     = null;
         $sql        = null;
         $rdo        = null;
@@ -1244,6 +1244,11 @@ class FSKS_USERS {
                         JOIN  {ksfs_company}		  fsk	ON  fsk.fscompany = fs.org_enhet_id
                         JOIN  {ks_company}			  ks	ON	ks.companyid  = fsk.kscompany
                      WHERE	fs.imported	= :imported ";
+
+            /* Check if it's a manual execution */
+            if ($SESSION->manual) {
+                $sql .= " LIMIT 0,2000 ";
+            }//if_manual
 
             /* Execute  */
             $rdo = $DB->get_records_sql($sql,$params);
@@ -1281,7 +1286,7 @@ class FSKS_USERS {
      */
     private static function GetUsersCompetenceJR_ToSynchronize() {
         /* Variables */
-        global $DB;
+        global $DB,$SESSION;
         $params     = null;
         $sql        = null;
         $rdo        = null;
@@ -1316,6 +1321,11 @@ class FSKS_USERS {
                         JOIN 	{ks_jobroles}		ks_jr	ON		ks_jr.jobroleid 	= fsk_jr.ksjobrole
 
                      WHERE		fs_imp.imported = :imported ";
+
+            /* Check if it's a manual execution */
+            if ($SESSION->manual) {
+                $sql .= " LIMIT 0,2000 ";
+            }//if_manual
 
             /* Execute */
             $rdo = $DB->get_records_sql($sql,$params);
