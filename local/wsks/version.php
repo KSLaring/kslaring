@@ -13,6 +13,3 @@
 //$plugin->version    = '2015103000';         /* The plugin current version (DATE: YYYYMMDDXX) */
 $plugin->version    =   '2016060604';
 $plugin->component  =   'local_wsks';
-
-/* Dependencies */
-$plugin->dependencies = array('local_first_access' => 2016030700);
