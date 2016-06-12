@@ -22,7 +22,7 @@ define('TEST_FS_JR',5);
 define('TEST_FS_USER_COMP',6);
 define('TEST_FS_USER_COMP_JR',7);
 define('TEST_FS_SYNC_ORG',8);
-define('TEST_FS_SYNC_JR',9);
+//define('TEST_FS_SYNC_JR',9);
 define('TEST_FS_SYNC_COMP_U',10);
 define('TEST_FS_SYNC_COMP_JR',11);
 define('TEST_FS_SYNC_FS_USERS',12);

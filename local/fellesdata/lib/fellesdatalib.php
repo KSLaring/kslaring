@@ -1685,7 +1685,11 @@ class FS {
         try {
             /* User Info    */
             /* Execute  */
-            $DB->insert_records('fs_imp_users',$data);
+            $rdo = $DB->ge_record('fs_imp_users',array('FODSELSNR' => $data->FODSELSNR));
+            if (!$rdo) {
+                $DB->insert_records('fs_imp_users',$data);
+            }//if_rdo
+
 
             /* Commit   */
             $trans->allow_commit();
