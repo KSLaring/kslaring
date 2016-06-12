@@ -1685,7 +1685,7 @@ class FS {
         try {
             /* User Info    */
             /* Execute  */
-            $rdo = $DB->get_record('fs_imp_users',array('FODSELSNR' => $data->FODSELSNR));
+            $rdo = $DB->get_record('fs_imp_users',array('fodselsnr' => $data->FODSELSNR));
             if (!$rdo) {
                 $DB->insert_records('fs_imp_users',$data);
             }//if_rdo
