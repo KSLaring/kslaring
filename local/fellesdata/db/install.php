@@ -200,7 +200,7 @@ class Fellesdata_Install {
             /* stillingstekst   --> Job Role Name           */
             $tblFSImpJR->add_field('STILLINGSTEKST',XMLDB_TYPE_CHAR,'255',null, XMLDB_NOTNULL, null,null);
             /* alternative      --> alternative name        */
-            $tblFSImpJR->add_field('ALTERNATIVE',XMLDB_TYPE_CHAR,'255',null, XMLDB_NOTNULL, null,null);
+            $tblFSImpJR->add_field('STILLINGSTEKST_ALTERNATIV',XMLDB_TYPE_CHAR,'255',null, XMLDB_NOTNULL, null,null);
             /* action           --> Action to apply         */
             $tblFSImpJR->add_field('action',XMLDB_TYPE_CHAR,'25',null, XMLDB_NOTNULL, null,null);
             /* imported                                     */
@@ -258,7 +258,7 @@ class Fellesdata_Install {
             /* stillingstekst   --> Job Role Name           */
             $tblImpUsersJR->add_field('STILLINGSTEKST',XMLDB_TYPE_CHAR,'255',null, XMLDB_NOTNULL, null,null);
             /* alternative      --> alternative name        */
-            $tblImpUsersJR->add_field('ALTERNATIVE',XMLDB_TYPE_CHAR,'255',null, XMLDB_NOTNULL, null,null);
+            $tblImpUsersJR->add_field('STILLINGSTEKST_ALTERNATIV',XMLDB_TYPE_CHAR,'255',null, XMLDB_NOTNULL, null,null);
             /* hovedstilling    --> Main job role or not    */
             $tblImpUsersJR->add_field('HOVEDSTILLING',XMLDB_TYPE_CHAR,'1',null, XMLDB_NOTNULL, null,null);
             /* action           --> Action to apply         */

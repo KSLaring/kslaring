@@ -142,7 +142,7 @@ class FSKS_JOBROLES {
             $sql = " SELECT	  fs_imp.id,
                               fs_imp.stillingskode,
                               fs_imp.stillingstekst,
-                              fs_imp.alternative,
+                              fs_imp.stillingstekst_alternativ,
                               fs_imp.action
                      FROM	  {fs_imp_jobroles}	fs_imp
                      WHERE	  fs_imp.imported  = :imported
@@ -158,7 +158,7 @@ class FSKS_JOBROLES {
                     $infoJR->id             = $instance->id;
                     $infoJR->jrcode         = $instance->stillingskode;
                     $infoJR->jrname         = $instance->stillingstekst;
-                    $infoJR->jralternative  = $instance->alternative;
+                    $infoJR->jralternative  = $instance->stillingstekst_alternativ;
                     $infoJR->action         = $instance->action;
 
                     /* Add Job Role */
