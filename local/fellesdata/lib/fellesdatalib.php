@@ -1591,7 +1591,6 @@ class FS {
         try {
 
             foreach($data as $key=>$line) {
-                $line           = strtolower($line);
                 $lineContent    = json_decode($line);
 
                 /* Get New Entry    */
