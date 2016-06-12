@@ -1302,7 +1302,7 @@ class FS_MAPPING {
             $sql = " SELECT	DISTINCT  fs_imp.id,
                                       fs_imp.stillingskode as 'fsjobrole',
                                       fs_imp.stillingstekst,
-                                      fs_imp.alternative
+                                      fs_imp.stillingstekst_alternativ
                      FROM			{fs_imp_jobroles}	fs_imp
                         LEFT JOIN	{fs_jobroles} 	    fs		ON fs.jrcode = fs_imp.stillingskode
                      WHERE	fs_imp.imported = :imported
@@ -1328,12 +1328,12 @@ class FS_MAPPING {
 
                     $sqlMatch .= " (fs_imp.stillingstekst like '%" . $match . "%'
                                     OR
-                                    fs_imp.alternative like '%" . $match . "%')";
+                                    fs_imp.stillingstekst_alternativ like '%" . $match . "%')";
                 }//for_search
 
                 $sql .= " AND " . $sqlMatch . "";
             }else {
-                $sql .= " AND (fs_imp.stillingstekst like '%" . $sector . "%' OR fs_imp.alternative like '%" . $sector . "%') ";
+                $sql .= " AND (fs_imp.stillingstekst like '%" . $sector . "%' OR fs_imp.stillingstekst_alternativ like '%" . $sector . "%') ";
             }
 
             /* Order Criteria  */
@@ -1413,12 +1413,12 @@ class FS_MAPPING {
 
                     $sqlMatch .= " (fs_imp.stillingstekst like '%" . $match . "%'
                                     OR
-                                    fs_imp.alternative like '%" . $match . "%')";
+                                    fs_imp.stillingstekst_alternativ like '%" . $match . "%')";
                 }//for_search
 
                 $sql .= " AND " . $sqlMatch . "";
             }else {
-                $sql .= " AND (fs_imp.stillingstekst like '%" . $sector . "%' OR fs_imp.alternative like '%" . $sector . "%') ";
+                $sql .= " AND (fs_imp.stillingstekst like '%" . $sector . "%' OR fs_imp.stillingstekst_alternativ like '%" . $sector . "%') ";
             }//if_sector
 
             /* Execute */
