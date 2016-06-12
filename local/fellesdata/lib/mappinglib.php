@@ -759,7 +759,10 @@ class FS_MAPPING {
                 /* Create Company   */
                 $infoCompany = new stdClass();
                 $infoCompany->companyid     = $fsCompany->fscompany;
-                $infoCompany->name          = $fsCompany->name;
+                if (strpos($fsCompany->name,'>')) {
+
+                }
+                $infoCompany->name          = $fsCompany->real_name;
                 $infoCompany->fs_parent     = $fsCompany->fs_parent;
                 $infoCompany->parent        = 0;
                 $infoCompany->level         = $level;
@@ -841,7 +844,7 @@ class FS_MAPPING {
                 /* FS Company   */
                 $infoCompany = new stdClass();
                 $infoCompany->companyid     = $fsCompany->fscompany;
-                $infoCompany->name          = $fsCompany->name;
+                $infoCompany->name          = $fsCompany->real_name;
                 $infoCompany->fs_parent     = $fsCompany->fs_parent;
                 $infoCompany->parent        = $ksCompany->parent;
                 /* Invoice Data */
@@ -1016,7 +1019,7 @@ class FS_MAPPING {
                     $infoCompany->id            = $instance->id;
                     $infoCompany->fscompany     = $instance->fscompany;
                     $infoCompany->name          = $instance->name;
-
+                    $infoCompany->real_name     = $instance->name;
                     /* Get Name Granpa */
                     if ($granpa) {
                         $granpaName = self::GetGranparentName($instance->org_enhet_over);
