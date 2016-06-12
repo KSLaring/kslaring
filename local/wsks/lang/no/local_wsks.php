@@ -31,3 +31,4 @@ $string['set_activate']         = 'Activate Feide login';
 $string['set_activate_desc']    = 'Activate Feide login';
 
 $string['ADFS_ERR_PROCESS']    = 'There has been an error during the process. Please, contact your Moodle Administrator.';
+$string['ADFS_ERROR_USER']      = 'User not valid.Please, chack that all your main information is filled. Please, contact your Moodle Administrator.';

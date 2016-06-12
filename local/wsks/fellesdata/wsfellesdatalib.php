@@ -66,7 +66,7 @@ class WS_FELLESDATA {
 
         try {
             /* Job Roles by Level */
-            $result['jobroles'] = self::Get_JobRolesByLevel($hierarchy['zero'],$hierarchy['notIn']);
+            $result['jobroles'] = self::Get_JobRolesByLevel($hierarchy['top'],$hierarchy['notIn']);
         }catch (Exception $ex) {
             $result['error']    = 409;
             $result['message']  = $ex->getMessage();
@@ -1525,6 +1525,7 @@ class WS_FELLESDATA {
                     $infoOrganization->name         = $instance->name;
                     $infoOrganization->industrycode = $instance->industrycode;
                     $infoOrganization->level        = $instance->hierarchylevel;
+                    $infoOrganization->parent       = 0;
 
                     /* Add Company */
                     $orgStructure[$instance->id] = $infoOrganization;
@@ -1533,7 +1534,7 @@ class WS_FELLESDATA {
                 /* Get the hierarchy */
                 if ($maxLevel) {
                     $parents = implode(',',array_keys($orgStructure));
-                    for($i=1;$i<=$maxLevel;$i++) {
+                    for($i=2;$i<=$maxLevel;$i++) {
                         /* Get Information About the rest hierarchy */
                         $parents = self::GetMyLevels($parents,$i,$orgStructure,$notIn);
                     }
@@ -1586,7 +1587,8 @@ class WS_FELLESDATA {
             $sql = " SELECT	  co.id,
                               co.name,
                               co.industrycode,
-                              co.hierarchylevel
+                              co.hierarchylevel,
+                              cr.parentid
                      FROM	  {report_gen_companydata}			co
                         JOIN  {report_gen_company_relation}		cr 	ON 	cr.companyid 	= co.id
                                                                     AND cr.parentid 	IN ($parents)
@@ -1603,6 +1605,7 @@ class WS_FELLESDATA {
                     $infoOrganization->name         = $instance->name;
                     $infoOrganization->industrycode = $instance->industrycode;
                     $infoOrganization->level        = $instance->hierarchylevel;
+                    $infoOrganization->parent       = $instance->parentid;
 
                     /* Add Company */
                     $orgStructure[$instance->id] = $infoOrganization;
@@ -1691,7 +1694,7 @@ class WS_FELLESDATA {
     }//Get_GenericsJobRoles
 
     /**
-     * @param           $levelZero
+     * @param           $top
      * @param           $notIn
      *
      * @return          array
@@ -1703,7 +1706,7 @@ class WS_FELLESDATA {
      * Description
      * Get all job roles connected with a specific level zero
      */
-    private static function Get_JobRolesByLevel($levelZero,$notIn) {
+    private static function Get_JobRolesByLevel($top,$notIn) {
         /* Variables */
         global $DB,$CFG;
         $rdo            = null;
@@ -1726,8 +1729,8 @@ class WS_FELLESDATA {
                             GROUP_CONCAT(DISTINCT jr_re.id 	ORDER BY jr_re.id 	SEPARATOR ',') as 'myrelations'
                      FROM		{report_gen_jobrole}			jr
                         JOIN	{report_gen_jobrole_relation}	jr_re 	ON  jr_re.jobroleid = jr.id
-                                                                        AND jr_re.levelzero IS NOT NULL
-                                                                        AND jr_re.levelzero IN ($levelZero)
+                                                                        AND jr_re.levelone IS NOT NULL
+                                                                        AND jr_re.levelone IN ($top)
                      WHERE  jr.id NOT IN ($notIn)
                      GROUP BY jr.id ";
 
