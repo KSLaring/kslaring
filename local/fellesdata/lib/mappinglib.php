@@ -1348,7 +1348,7 @@ class FS_MAPPING {
                     $infoJR = new stdClass();
                     $infoJR->id             = $instance->id;
                     $infoJR->fsjobrole      = $instance->fsjobrole;
-                    $infoJR->name           = $instance->stillingstekst;
+                    $infoJR->name           = $instance->fsjobrole . ' - ' . $instance->stillingstekst;
                     $infoJR->alternative    = $instance->stillingstekst_alternativ;
                     $infoJR->matches        = self::GetPossiblesJRMatches($infoJR->name,$sector,$generic);
 
