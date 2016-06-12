@@ -1594,10 +1594,10 @@ class FS {
                 $lineContent    = json_decode($line);
 
                 /* Get New Entry    */
-                $newEntry = $lineContent->newrecord;
+                $newEntry = $lineContent->newRecord;
 
                 /* Get Action       */
-                switch (trim($lineContent->changetype)) {
+                switch (trim($lineContent->changeType)) {
                     case ADD_ACTION:
                         $action = 0;
 
@@ -1608,8 +1608,8 @@ class FS {
                         break;
                     case DELETE_ACTION:
                         /* Old Entry        */
-                        if (isset($lineContent->oldrecord)) {
-                            $newEntry = $lineContent->odlrecord;
+                        if (isset($lineContent->oldRecord)) {
+                            $newEntry = $lineContent->oldRecord;
                         }//if_old_record
 
                         $action = 2;
