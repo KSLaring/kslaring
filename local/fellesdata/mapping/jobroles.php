@@ -92,6 +92,12 @@ if ($form->is_cancelled()) {
     }//matched
 }//if_Else
 
+if (!$jrToMap) {
+    if (($SESSION->notIn) && count($SESSION->notIn)) {
+        unset($SESSION->notIn);
+        redirect($url);
+    }
+}
 /* Header   */
 echo $OUTPUT->header();
 echo $OUTPUT->heading(get_string('nav_map_jr', 'local_fellesdata'));
@@ -99,14 +105,9 @@ echo $OUTPUT->heading(get_string('nav_map_jr', 'local_fellesdata'));
 if ($jrToMap) {
     $form->display();
 }else {
-    if (($SESSION->notIn) && count($SESSION->notIn)) {
-        unset($SESSION->notIn);
-        redirect($url);
-    }else {
-        unset($SESSION->notIn);
-        echo $OUTPUT->notification(get_string('no_jr_to_map','local_fellesdata'), 'notifysuccess');
-        echo $OUTPUT->continue_button($return);
-    }
+    unset($SESSION->notIn);
+    echo $OUTPUT->notification(get_string('no_jr_to_map','local_fellesdata'), 'notifysuccess');
+    echo $OUTPUT->continue_button($return);
 }
 
 /* Footer   */
