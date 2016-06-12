@@ -532,6 +532,7 @@ class FS_MAPPING {
      */
     public static function MappingFSCompanies($toMap,$data) {
         /* Variables */
+        global $SESSION;
         $possibleMatch  = null;
         $refFS          = null;
         $infoMatch      = null;
@@ -539,6 +540,11 @@ class FS_MAPPING {
         $notIn          = array();
 
         try {
+            /* Check Not In */
+            if (isset($SESSION->notIn)) {
+                $notIn = $SESSION->notIn;
+            }//notIn
+
             /* Companies to map */
             foreach ($toMap as $fsCompany) {
                 /* Reference    */
@@ -648,12 +654,18 @@ class FS_MAPPING {
      */
     public static function MappingFSJobRoles($toMap,$data) {
         /* Variables    */
+        global $SESSION;
         $notIn          = array();
         $possibleMatch  = null;
         $refFS          = null;
         $infoMatch      = null;
 
         try {
+            /* Check Not In */
+            if (isset($SESSION->notIn)) {
+                $notIn = $SESSION->notIn;
+            }//notIn
+
             /* Job roles to map */
             foreach ($toMap as $fsJR) {
                 /* Reference    */

@@ -36,7 +36,7 @@ function xmldb_local_fellesdata_upgrade($oldVersion) {
             $tblImpUsersJR = new xmldb_table('fs_imp_users_jr');
 
             /* New Field    */
-            $fldStillins = new xmldb_field('stillingsnr', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null, 'fodselsnr');
+            $fldStillins = new xmldb_field('STILLINGSNR', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null, 'FODSELSNR');
             if (!$dbMan->field_exists($tblImpUsersJR, $fldStillins)) {
                 $dbMan->add_field($tblImpUsersJR, $fldStillins);
             }//if_not_exists
@@ -105,63 +105,63 @@ class Fellesdata_Update {
 
             /* Private Filed    */
             $fldPrivate     = null;
-            $fldPrivate     = new xmldb_field('privat', XMLDB_TYPE_INTEGER, '1', null, null, null, null, 'org_enhet_over');
+            $fldPrivate     = new xmldb_field('PRIVAT', XMLDB_TYPE_INTEGER, '1', null, null, null, null, 'ORG_ENHET_OVER');
             if (!$dbMan->field_exists($tblFSImpComp, $fldPrivate)) {
                 $dbMan->add_field($tblFSImpComp, $fldPrivate);
             }//if_not_exists
 
             /* Ansvar Field     */
             $fldAnsvar      = null;
-            $fldAnsvar      = new xmldb_field('ansvar', XMLDB_TYPE_CHAR, '50', null, null, null, null, 'privat');
+            $fldAnsvar      = new xmldb_field('ANSVAR', XMLDB_TYPE_CHAR, '50', null, null, null, null, 'PRIVAT');
             if (!$dbMan->field_exists($tblFSImpComp, $fldAnsvar)) {
                 $dbMan->add_field($tblFSImpComp, $fldAnsvar);
             }//if_not_exists
 
             /* Tjeneste Field   */
             $fldTjeneste    = null;
-            $fldTjeneste    = new xmldb_field('tjeneste', XMLDB_TYPE_CHAR, '50', null, null, null, null, 'ansvar');
+            $fldTjeneste    = new xmldb_field('TJENESTE', XMLDB_TYPE_CHAR, '50', null, null, null, null, 'ANSVAR');
             if (!$dbMan->field_exists($tblFSImpComp, $fldTjeneste)) {
                 $dbMan->add_field($tblFSImpComp, $fldTjeneste);
             }//if_not_exists
 
             /* Adresse 1        */
             $fldAdreseOne   = null;
-            $fldAdreseOne   = new xmldb_field('adresse1', XMLDB_TYPE_CHAR, '255', null, null, null, null, 'tjeneste');
+            $fldAdreseOne   = new xmldb_field('ADRESSE1', XMLDB_TYPE_CHAR, '255', null, null, null, null, 'TJENESTE');
             if (!$dbMan->field_exists($tblFSImpComp, $fldAdreseOne)) {
                 $dbMan->add_field($tblFSImpComp, $fldAdreseOne);
             }//if_not_exists
 
             /* Adresse 2        */
             $fldAdreseTwo   = null;
-            $fldAdreseTwo   = new xmldb_field('adresse2', XMLDB_TYPE_CHAR, '255', null, null, null, null, 'adresse1');
+            $fldAdreseTwo   = new xmldb_field('ADRESSE2', XMLDB_TYPE_CHAR, '255', null, null, null, null, 'ADRESSE1');
             if (!$dbMan->field_exists($tblFSImpComp, $fldAdreseTwo)) {
                 $dbMan->add_field($tblFSImpComp, $fldAdreseTwo);
             }//if_not_exists
 
             /* Adresse 3        */
             $fldAdreseThree = null;
-            $fldAdreseThree = new xmldb_field('adresse3', XMLDB_TYPE_CHAR, '255', null, null, null, null, 'adresse2');
+            $fldAdreseThree = new xmldb_field('ADRESSE3', XMLDB_TYPE_CHAR, '255', null, null, null, null, 'ADRESSE2');
             if (!$dbMan->field_exists($tblFSImpComp, $fldAdreseThree)) {
                 $dbMan->add_field($tblFSImpComp, $fldAdreseThree);
             }//if_not_exists
 
             /* Post Number      */
             $fldPostnr      = null;
-            $fldPostnr      = new xmldb_field('postnr', XMLDB_TYPE_CHAR, '50', null, null, null, null, 'adresse3');
+            $fldPostnr      = new xmldb_field('POSTNR', XMLDB_TYPE_CHAR, '50', null, null, null, null, 'ADRESSE3');
             if (!$dbMan->field_exists($tblFSImpComp, $fldPostnr)) {
                 $dbMan->add_field($tblFSImpComp, $fldPostnr);
             }//if_not_exists
 
             /* Post sted        */
             $fldPoststed    = null;
-            $fldPoststed    = new xmldb_field('poststed', XMLDB_TYPE_CHAR, '50', null, null, null, null, 'postnr');
+            $fldPoststed    = new xmldb_field('POSTSTED', XMLDB_TYPE_CHAR, '50', null, null, null, null, 'POSTNR');
             if (!$dbMan->field_exists($tblFSImpComp, $fldPoststed)) {
                 $dbMan->add_field($tblFSImpComp, $fldPoststed);
             }//if_not_exists
 
             /* ePost            */
             $fldEPost       = null;
-            $fldEPost       = new xmldb_field('epost', XMLDB_TYPE_CHAR, '255', null, null, null, null, 'poststed');
+            $fldEPost       = new xmldb_field('EPOST', XMLDB_TYPE_CHAR, '255', null, null, null, null, 'POSTSTED');
             if (!$dbMan->field_exists($tblFSImpComp, $fldEPost)) {
                 $dbMan->add_field($tblFSImpComp, $fldEPost);
             }//if_not_exists

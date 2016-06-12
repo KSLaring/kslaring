@@ -130,31 +130,31 @@ class Fellesdata_Install {
             /* Id               --> Primary key.  */
             $tblFSImpComp->add_field('id',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, XMLDB_SEQUENCE,null);
             /* org_enhet_id     --> Company Id from fellesdata          */
-            $tblFSImpComp->add_field('org_enhet_id',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, null,null);
+            $tblFSImpComp->add_field('ORG_ENHET_ID',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, null,null);
             /* org_nivaa        --> Hierarchy level from fellesdata     */
-            $tblFSImpComp->add_field('org_nivaa',XMLDB_TYPE_INTEGER,'2',null, XMLDB_NOTNULL, null,null);
+            $tblFSImpComp->add_field('ORG_NIVAA',XMLDB_TYPE_INTEGER,'2',null, XMLDB_NOTNULL, null,null);
             /* org_navn         --> Company name                        */
-            $tblFSImpComp->add_field('org_navn',XMLDB_TYPE_CHAR,'255',null, XMLDB_NOTNULL, null,null);
+            $tblFSImpComp->add_field('ORG_NAVN',XMLDB_TYPE_CHAR,'255',null, XMLDB_NOTNULL, null,null);
             /* org_enhet_over   --> Parent company                      */
-            $tblFSImpComp->add_field('org_enhet_over',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, null,null);
+            $tblFSImpComp->add_field('ORG_ENHET_OVER',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, null,null);
             /* privat --> public */
-            $tblFSImpComp->add_field('privat',XMLDB_TYPE_INTEGER,'1',null, null, null,null);
+            $tblFSImpComp->add_field('PRIVAT',XMLDB_TYPE_INTEGER,'1',null, null, null,null);
             /* ansvar   */
-            $tblFSImpComp->add_field('ansvar',XMLDB_TYPE_CHAR,'50',null, null, null,null);
+            $tblFSImpComp->add_field('ANSVAR',XMLDB_TYPE_CHAR,'50',null, null, null,null);
             /* tjeneste */
-            $tblFSImpComp->add_field('tjeneste',XMLDB_TYPE_CHAR,'50',null, null, null,null);
+            $tblFSImpComp->add_field('TJENESTE',XMLDB_TYPE_CHAR,'50',null, null, null,null);
             /* adresse1 */
-            $tblFSImpComp->add_field('adresse1',XMLDB_TYPE_CHAR,'255',null, null, null,null);
+            $tblFSImpComp->add_field('ADRESSE1',XMLDB_TYPE_CHAR,'255',null, null, null,null);
             /* adresse2 */
-            $tblFSImpComp->add_field('adresse2',XMLDB_TYPE_CHAR,'255',null, null, null,null);
+            $tblFSImpComp->add_field('ADRESSE2',XMLDB_TYPE_CHAR,'255',null, null, null,null);
             /* adresse3 */
-            $tblFSImpComp->add_field('adresse3',XMLDB_TYPE_CHAR,'255',null, null, null,null);
+            $tblFSImpComp->add_field('ADRESSE3',XMLDB_TYPE_CHAR,'255',null, null, null,null);
             /* postnr   */
-            $tblFSImpComp->add_field('postnr',XMLDB_TYPE_CHAR,'50',null, null, null,null);
+            $tblFSImpComp->add_field('POSTNR',XMLDB_TYPE_CHAR,'50',null, null, null,null);
             /* poststed */
-            $tblFSImpComp->add_field('poststed',XMLDB_TYPE_CHAR,'50',null, null, null,null);
+            $tblFSImpComp->add_field('POSTSTED',XMLDB_TYPE_CHAR,'50',null, null, null,null);
             /* epost    */
-            $tblFSImpComp->add_field('epost',XMLDB_TYPE_CHAR,'255',null, null, null,null);
+            $tblFSImpComp->add_field('EPOST',XMLDB_TYPE_CHAR,'255',null, null, null,null);
             /* action           --> Action to apply                     */
             $tblFSImpComp->add_field('action',XMLDB_TYPE_CHAR,'25',null, XMLDB_NOTNULL, null,null);
             /* Imported         */
@@ -163,7 +163,7 @@ class Fellesdata_Install {
             /* Keys     */
             $tblFSImpComp->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
             /* Index    */
-            $tblFSImpComp->add_index('org_enhet_id',XMLDB_INDEX_NOTUNIQUE,array('org_enhet_id'));
+            $tblFSImpComp->add_index('ORG_ENHET_ID',XMLDB_INDEX_NOTUNIQUE,array('ORG_ENHET_ID'));
 
             if (!$dbMan->table_exists('fs_imp_company')) {
                 $dbMan->create_table($tblFSImpComp);
@@ -196,11 +196,11 @@ class Fellesdata_Install {
             /* Id --> Primary key                           */
             $tblFSImpJR->add_field('id',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, XMLDB_SEQUENCE,null);
             /* stillingskode    --> Job Role code           */
-            $tblFSImpJR->add_field('stillingskode',XMLDB_TYPE_CHAR,'50',null, XMLDB_NOTNULL, null,null);
+            $tblFSImpJR->add_field('STILLINGSKODE',XMLDB_TYPE_CHAR,'50',null, XMLDB_NOTNULL, null,null);
             /* stillingstekst   --> Job Role Name           */
-            $tblFSImpJR->add_field('stillingstekst',XMLDB_TYPE_CHAR,'255',null, XMLDB_NOTNULL, null,null);
+            $tblFSImpJR->add_field('STILLINGSTEKST',XMLDB_TYPE_CHAR,'255',null, XMLDB_NOTNULL, null,null);
             /* alternative      --> alternative name        */
-            $tblFSImpJR->add_field('alternative',XMLDB_TYPE_CHAR,'255',null, XMLDB_NOTNULL, null,null);
+            $tblFSImpJR->add_field('ALTERNATIVE',XMLDB_TYPE_CHAR,'255',null, XMLDB_NOTNULL, null,null);
             /* action           --> Action to apply         */
             $tblFSImpJR->add_field('action',XMLDB_TYPE_CHAR,'25',null, XMLDB_NOTNULL, null,null);
             /* imported                                     */
@@ -209,7 +209,7 @@ class Fellesdata_Install {
             /* Keys     */
             $tblFSImpJR->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
             /* Index    */
-            $tblFSImpJR->add_index('stillingskode',XMLDB_INDEX_NOTUNIQUE,array('stillingskode'));
+            $tblFSImpJR->add_index('STILLINGSKODE',XMLDB_INDEX_NOTUNIQUE,array('STILLINGSKODE'));
 
             if (!$dbMan->table_exists('fs_imp_jobroles')) {
                 $dbMan->create_table($tblFSImpJR);
@@ -242,25 +242,25 @@ class Fellesdata_Install {
             /* Id --> Primary key                           */
             $tblImpUsersJR->add_field('id',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, XMLDB_SEQUENCE,null);
             /* stillingsnr --> Extra primary key from fellesdata                           */
-            $tblImpUsersJR->add_field('stillingsnr',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, null,null);
+            $tblImpUsersJR->add_field('STILLINGSNR',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, null,null);
             /* fodselsnr    --> Personal number             */
-            $tblImpUsersJR->add_field('fodselsnr',XMLDB_TYPE_CHAR,'50',null, XMLDB_NOTNULL, null,null);
+            $tblImpUsersJR->add_field('FODSELSNR',XMLDB_TYPE_CHAR,'50',null, XMLDB_NOTNULL, null,null);
             /* fornavn      --> First name                  */
-            $tblImpUsersJR->add_field('fornavn',XMLDB_TYPE_CHAR,'255',null, XMLDB_NOTNULL, null,null);
+            $tblImpUsersJR->add_field('FORNAVN',XMLDB_TYPE_CHAR,'255',null, XMLDB_NOTNULL, null,null);
             /* etternavn    --> Last name                   */
-            $tblImpUsersJR->add_field('etternavn',XMLDB_TYPE_CHAR,'255',null, XMLDB_NOTNULL, null,null);
+            $tblImpUsersJR->add_field('ETTERNAVN',XMLDB_TYPE_CHAR,'255',null, XMLDB_NOTNULL, null,null);
             /* epost        --> eMail                       */
-            $tblImpUsersJR->add_field('epost',XMLDB_TYPE_CHAR,'255',null, XMLDB_NOTNULL, null,null);
+            $tblImpUsersJR->add_field('EPOST',XMLDB_TYPE_CHAR,'255',null, XMLDB_NOTNULL, null,null);
             /* org_enhet_id     --> Company id              */
-            $tblImpUsersJR->add_field('org_enhet_id',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, null,null);
+            $tblImpUsersJR->add_field('ORG_ENHET_ID',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, null,null);
             /* stillingskode    --> Job Role code           */
-            $tblImpUsersJR->add_field('stillingskode',XMLDB_TYPE_CHAR,'50',null, XMLDB_NOTNULL, null,null);
+            $tblImpUsersJR->add_field('STILLINGSKODE',XMLDB_TYPE_CHAR,'50',null, XMLDB_NOTNULL, null,null);
             /* stillingstekst   --> Job Role Name           */
-            $tblImpUsersJR->add_field('stillingstekst',XMLDB_TYPE_CHAR,'255',null, XMLDB_NOTNULL, null,null);
+            $tblImpUsersJR->add_field('STILLINGSTEKST',XMLDB_TYPE_CHAR,'255',null, XMLDB_NOTNULL, null,null);
             /* alternative      --> alternative name        */
-            $tblImpUsersJR->add_field('alternative',XMLDB_TYPE_CHAR,'255',null, XMLDB_NOTNULL, null,null);
+            $tblImpUsersJR->add_field('ALTERNATIVE',XMLDB_TYPE_CHAR,'255',null, XMLDB_NOTNULL, null,null);
             /* hovedstilling    --> Main job role or not    */
-            $tblImpUsersJR->add_field('hovedstilling',XMLDB_TYPE_CHAR,'1',null, XMLDB_NOTNULL, null,null);
+            $tblImpUsersJR->add_field('HOVEDSTILLING',XMLDB_TYPE_CHAR,'1',null, XMLDB_NOTNULL, null,null);
             /* action           --> Action to apply         */
             $tblImpUsersJR->add_field('action',XMLDB_TYPE_CHAR,'25',null, XMLDB_NOTNULL, null,null);
             /* imported                                     */
@@ -269,8 +269,8 @@ class Fellesdata_Install {
             /* Keys     */
             $tblImpUsersJR->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
             /* Index    */
-            $tblImpUsersJR->add_index('fodselsnr',XMLDB_INDEX_NOTUNIQUE,array('fodselsnr'));
-            $tblImpUsersJR->add_index('org_enhet_id',XMLDB_INDEX_NOTUNIQUE,array('org_enhet_id'));
+            $tblImpUsersJR->add_index('FODSELSNR',XMLDB_INDEX_NOTUNIQUE,array('FODSELSNR'));
+            $tblImpUsersJR->add_index('ORG_ENHET_ID',XMLDB_INDEX_NOTUNIQUE,array('ORG_ENHET_ID'));
 
             if (!$dbMan->table_exists('fs_imp_users_jr')) {
                 $dbMan->create_table($tblImpUsersJR);
@@ -304,13 +304,13 @@ class Fellesdata_Install {
             /* Id --> Primary key                           */
             $tblImpUsersCompany->add_field('id',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, XMLDB_SEQUENCE,null);
             /* org_enhet_id --> Company id                  */
-            $tblImpUsersCompany->add_field('org_enhet_id',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, null,null);
+            $tblImpUsersCompany->add_field('ORG_ENHET_ID',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, null,null);
             /* org_nivaa --> Hierarchy level of the company */
-            $tblImpUsersCompany->add_field('org_nivaa',XMLDB_TYPE_INTEGER,'2',null, XMLDB_NOTNULL, null,null);
+            $tblImpUsersCompany->add_field('ORG_NIVAA',XMLDB_TYPE_INTEGER,'2',null, XMLDB_NOTNULL, null,null);
             /* fodselsnr --> Personal number                */
-            $tblImpUsersCompany->add_field('fodselsnr',XMLDB_TYPE_CHAR,'50',null, XMLDB_NOTNULL, null,null);
+            $tblImpUsersCompany->add_field('FODSELSNR',XMLDB_TYPE_CHAR,'50',null, XMLDB_NOTNULL, null,null);
             /* prioritet --> Manager or not                 */
-            $tblImpUsersCompany->add_field('prioritet',XMLDB_TYPE_INTEGER,'2',null, XMLDB_NOTNULL, null,null);
+            $tblImpUsersCompany->add_field('PRIORITET',XMLDB_TYPE_INTEGER,'2',null, XMLDB_NOTNULL, null,null);
             /* action --> Action to apply                   */
             $tblImpUsersCompany->add_field('action',XMLDB_TYPE_CHAR,'25',null, XMLDB_NOTNULL, null,null);
             /* imported                                     */
@@ -319,8 +319,8 @@ class Fellesdata_Install {
             /* Keys     */
             $tblImpUsersCompany->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
             /* Index    */
-            $tblImpUsersCompany->add_index('fodselsnr',XMLDB_INDEX_NOTUNIQUE,array('fodselsnr'));
-            $tblImpUsersCompany->add_index('org_enhet_id',XMLDB_INDEX_NOTUNIQUE,array('org_enhet_id'));
+            $tblImpUsersCompany->add_index('FODSELSNR',XMLDB_INDEX_NOTUNIQUE,array('FODSELSNR'));
+            $tblImpUsersCompany->add_index('ORG_ENHET_ID',XMLDB_INDEX_NOTUNIQUE,array('ORG_ENHET_ID'));
 
             if (!$dbMan->table_exists('fs_imp_users_company')) {
                 $dbMan->create_table($tblImpUsersCompany);
@@ -353,15 +353,15 @@ class Fellesdata_Install {
             /* Id --> Primary key                   */
             $tblImpUsers->add_field('id',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, XMLDB_SEQUENCE,null);
             /* personalnumber --> Personal number   */
-            $tblImpUsers->add_field('fodselsnr',XMLDB_TYPE_CHAR,'50',null, XMLDB_NOTNULL, null,null);
+            $tblImpUsers->add_field('FODSELSNR',XMLDB_TYPE_CHAR,'50',null, XMLDB_NOTNULL, null,null);
             /* firstname    --> First name          */
-            $tblImpUsers->add_field('fornavn',XMLDB_TYPE_CHAR,'255',null, XMLDB_NOTNULL, null,null);
+            $tblImpUsers->add_field('FORNAVN',XMLDB_TYPE_CHAR,'255',null, XMLDB_NOTNULL, null,null);
             /* lastname     --> lastname            */
-            $tblImpUsers->add_field('mellomnavn',XMLDB_TYPE_CHAR,'255',null, null, null,null);
+            $tblImpUsers->add_field('MELLOMNAVN',XMLDB_TYPE_CHAR,'255',null, null, null,null);
             /* lastname     --> lastname            */
-            $tblImpUsers->add_field('etternavn',XMLDB_TYPE_CHAR,'255',null, XMLDB_NOTNULL, null,null);
+            $tblImpUsers->add_field('ETTERNAVN',XMLDB_TYPE_CHAR,'255',null, XMLDB_NOTNULL, null,null);
             /* eMail        --> eMail               */
-            $tblImpUsers->add_field('epost',XMLDB_TYPE_CHAR,'255',null, XMLDB_NOTNULL, null,null);
+            $tblImpUsers->add_field('EPOST',XMLDB_TYPE_CHAR,'255',null, XMLDB_NOTNULL, null,null);
             /* action   --> Action to apply         */
             $tblImpUsers->add_field('action',XMLDB_TYPE_CHAR,'50',null, XMLDB_NOTNULL, null,null);
             /* Imported                             */
@@ -370,7 +370,7 @@ class Fellesdata_Install {
             /* Keys     */
             $tblImpUsers->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
             /* Index    */
-            $tblImpUsers->add_index('fodselsnr',XMLDB_INDEX_NOTUNIQUE,array('fodselsnr'));
+            $tblImpUsers->add_index('FODSELSNR',XMLDB_INDEX_NOTUNIQUE,array('FODSELSNR'));
 
             if (!$dbMan->table_exists('fs_imp_users')) {
                 $dbMan->create_table($tblImpUsers);
