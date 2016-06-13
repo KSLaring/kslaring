@@ -59,7 +59,7 @@ class Fellesdata_Install {
 
             self::ImpUsersJR_FSTable($dbMan);
 
-            self::ImpUsersCompany_FSTable($dbMan);
+            self::ImpManagersReporters_FSTable($dbMan);
 
             self::ImpUsers_FSTable($dbMan);
         }catch (Exception $ex) {
@@ -290,40 +290,40 @@ class Fellesdata_Install {
      * @author          eFaktor     (fbv)
      *
      * Description
-     * Create table mdl_fs_imp_users_company
+     * Create table mdl_fs_imp_managers_reporters
      */
-    private static function ImpUsersCompany_FSTable($dbMan) {
+    private static function ImpManagersReporters_FSTable($dbMan) {
         /* Variables */
-        $tblImpUsersCompany = null;
+        $tblImpManagersReporters = null;
 
         try {
-            /* mdl_fs_imp_users_company     */
-            $tblImpUsersCompany = new xmldb_table('fs_imp_users_company');
+            /* mdl_fs_imp_managers_reporters     */
+            $tblImpManagersReporters = new xmldb_table('fs_imp_managers_reporters');
 
             /* Fields   */
             /* Id --> Primary key                           */
-            $tblImpUsersCompany->add_field('id',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, XMLDB_SEQUENCE,null);
+            $tblImpManagersReporters->add_field('id',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, XMLDB_SEQUENCE,null);
             /* org_enhet_id --> Company id                  */
-            $tblImpUsersCompany->add_field('org_enhet_id',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, null,null);
+            $tblImpManagersReporters->add_field('org_enhet_id',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, null,null);
             /* org_nivaa --> Hierarchy level of the company */
-            $tblImpUsersCompany->add_field('org_nivaa',XMLDB_TYPE_INTEGER,'2',null, XMLDB_NOTNULL, null,null);
+            $tblImpManagersReporters->add_field('org_nivaa',XMLDB_TYPE_INTEGER,'2',null, XMLDB_NOTNULL, null,null);
             /* fodselsnr --> Personal number                */
-            $tblImpUsersCompany->add_field('fodselnr',XMLDB_TYPE_CHAR,'50',null, XMLDB_NOTNULL, null,null);
+            $tblImpManagersReporters->add_field('fodselnr',XMLDB_TYPE_CHAR,'50',null, XMLDB_NOTNULL, null,null);
             /* prioritet --> Manager or not                 */
-            $tblImpUsersCompany->add_field('prioritet',XMLDB_TYPE_INTEGER,'2',null, XMLDB_NOTNULL, null,null);
+            $tblImpManagersReporters->add_field('prioritet',XMLDB_TYPE_INTEGER,'2',null, XMLDB_NOTNULL, null,null);
             /* action --> Action to apply                   */
-            $tblImpUsersCompany->add_field('action',XMLDB_TYPE_CHAR,'25',null, XMLDB_NOTNULL, null,null);
+            $tblImpManagersReporters->add_field('action',XMLDB_TYPE_CHAR,'25',null, XMLDB_NOTNULL, null,null);
             /* imported                                     */
-            $tblImpUsersCompany->add_field('imported',XMLDB_TYPE_INTEGER,'2',null, XMLDB_NOTNULL, null,null);
+            $tblImpManagersReporters->add_field('imported',XMLDB_TYPE_INTEGER,'2',null, XMLDB_NOTNULL, null,null);
 
             /* Keys     */
-            $tblImpUsersCompany->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+            $tblImpManagersReporters->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
             /* Index    */
-            $tblImpUsersCompany->add_index('fodselnr',XMLDB_INDEX_NOTUNIQUE,array('fodselnr'));
-            $tblImpUsersCompany->add_index('org_enhet_id',XMLDB_INDEX_NOTUNIQUE,array('org_enhet_id'));
+            $tblImpManagersReporters->add_index('fodselnr',XMLDB_INDEX_NOTUNIQUE,array('fodselnr'));
+            $tblImpManagersReporters->add_index('org_enhet_id',XMLDB_INDEX_NOTUNIQUE,array('org_enhet_id'));
 
-            if (!$dbMan->table_exists('fs_imp_users_company')) {
-                $dbMan->create_table($tblImpUsersCompany);
+            if (!$dbMan->table_exists('fs_imp_managers_reporters')) {
+                $dbMan->create_table($tblImpManagersReporters);
             }//if_exists
         }catch (Exception $ex) {
             throw $ex;
@@ -394,11 +394,11 @@ class Fellesdata_Install {
      */
     public static function DeleteFellesdata_Tables($dbMan) {
         /* Variables    */
-        $tblFSImpComp           = null;
-        $tblFSImpJR             = null;
-        $tblImpUsersJR          = null;
-        $tblImpUsersCompany     = null;
-        $tblImpUsers            = null;
+        $tblFSImpComp               = null;
+        $tblFSImpJR                 = null;
+        $tblImpUsersJR              = null;
+        $tblImpManagersReporters    = null;
+        $tblImpUsers                = null;
 
         try {
             /* Tables   */
@@ -423,6 +423,10 @@ class Fellesdata_Install {
                 $dbMan->drop_table($tblImpUsersCompany);
             }//if_exists
 
+            $tblImpManagersReporters = new xmldb_table('fs_imp_managers_reporters');
+            if ($dbMan->table_exists('fs_imp_managers_reporters')) {
+                $dbMan->drop_table($tblImpManagersReporters);
+            }//if_exists
 
             $tblImpUsers = new xmldb_table('fs_imp_users');
             if ($dbMan->table_exists('fs_imp_users')) {

@@ -68,6 +68,11 @@ function xmldb_local_fellesdata_upgrade($oldVersion) {
                 $dbMan->add_field($tblFSCompany, $fldFSParent);
             }//if_not_exists
         }
+
+        if ($oldVersion < 2016061204) {
+            Fellesdata_Update::Update_FSImpManagersReporters($dbMan);
+        }
+
         return true;
     }catch (Exception $ex) {
         throw $ex;
@@ -75,6 +80,49 @@ function xmldb_local_fellesdata_upgrade($oldVersion) {
 }//xmldb_local_fellesdata_upgrade
 
 class Fellesdata_Update {
+    public static function Update_FSImpManagersReporters($dbMan) {
+        /* Variables */
+        $tblImpManagersReporters = null;
+
+        try {
+            /* mdl_fs_imp_managers_reporters     */
+            $tblImpManagersReporters = new xmldb_table('fs_imp_managers_reporters');
+
+            /* Fields   */
+            /* Id --> Primary key                           */
+            $tblImpManagersReporters->add_field('id',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, XMLDB_SEQUENCE,null);
+            /* org_enhet_id --> Company id                  */
+            $tblImpManagersReporters->add_field('org_enhet_id',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, null,null);
+            /* org_nivaa --> Hierarchy level of the company */
+            $tblImpManagersReporters->add_field('org_nivaa',XMLDB_TYPE_INTEGER,'2',null, XMLDB_NOTNULL, null,null);
+            /* fodselsnr --> Personal number                */
+            $tblImpManagersReporters->add_field('fodselnr',XMLDB_TYPE_CHAR,'50',null, XMLDB_NOTNULL, null,null);
+            /* prioritet --> Manager or not                 */
+            $tblImpManagersReporters->add_field('prioritet',XMLDB_TYPE_INTEGER,'2',null, XMLDB_NOTNULL, null,null);
+            /* action --> Action to apply                   */
+            $tblImpManagersReporters->add_field('action',XMLDB_TYPE_CHAR,'25',null, XMLDB_NOTNULL, null,null);
+            /* imported                                     */
+            $tblImpManagersReporters->add_field('imported',XMLDB_TYPE_INTEGER,'2',null, XMLDB_NOTNULL, null,null);
+
+            /* Keys     */
+            $tblImpManagersReporters->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+            /* Index    */
+            $tblImpManagersReporters->add_index('fodselnr',XMLDB_INDEX_NOTUNIQUE,array('fodselnr'));
+            $tblImpManagersReporters->add_index('org_enhet_id',XMLDB_INDEX_NOTUNIQUE,array('org_enhet_id'));
+
+            if (!$dbMan->table_exists('fs_imp_managers_reporters')) {
+                $dbMan->create_table($tblImpManagersReporters);
+            }//if_exists
+
+            $tblImpUsersCompany = new xmldb_table('fs_imp_users_company');
+            if ($dbMan->table_exists('fs_imp_users_company')) {
+                $dbMan->drop_table($tblImpUsersCompany);
+            }//if_exists
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//Update_FSImpManagersReporters
+
     /**
      * @param           $dbMan
      * @throws          Exception

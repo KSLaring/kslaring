@@ -14,7 +14,7 @@
 define('TRADIS_FS_COMPANIES','v_leka_oren_tre_nivaa');
 define('TRADIS_FS_USERS','v_leka_ressurs');
 define('TRADIS_FS_JOBROLES','v_leka_stilling');
-define('TRADIS_FS_USERS_COMPANIES','v_leka_oren_tilgang');
+define('TRADIS_FS_MANAGERS_REPORTERS','v_leka_oren_tilgang');
 define('TRADIS_FS_USERS_JOBROLES','v_leka_ressurs_stilling');
 
 /* KS Services  */
@@ -39,7 +39,7 @@ define('DELETE',2);
 define('IMP_USERS',0);
 define('IMP_COMPANIES',1);
 define('IMP_JOBROLES',2);
-define('IMP_COMPETENCE_COMP',3);
+define('IMP_MANAGERS_REPORTERS',3);
 define('IMP_COMPETENCE_JR',4);
 
 /***********************/
@@ -1641,9 +1641,9 @@ class FS {
                         self::ImportTemporary_FSJobRoles($toSave);
 
                         break;
-                    case IMP_COMPETENCE_COMP:
-                        /* Competence Company */
-                        self::ImportTemporary_CompetenceCompany($toSave);
+                    case IMP_MANAGERS_REPORTERS:
+                        /* Managers Reporters */
+                        self::ImportTemporary_ManagersReporters($toSave);
 
                         break;
                     case IMP_COMPETENCE_JR:
@@ -1784,29 +1784,38 @@ class FS {
 
     /**
      * @param           $data
-     *
      * @throws          Exception
      *
-     * @creationDate    02/02/2016
+     * @creationDate    13/06/2016
      * @author          eFaktor     (fbv)
      *
      * Description
-     * Save User Company (FS)  in temporary tables before the synchronization
+     * Import Temporary ManagersReporters
      */
-    private static function ImportTemporary_CompetenceCompany($data) {
+    private static function ImportTemporary_ManagersReporters($data) {
         /* Variables */
         global $DB;
-        $infoCompetence     = null;
-        $infoOldCompetence  = null;
-        $trans              = null;
+        $info   = null;
+        $trans  = null;
+        $params = null;
 
         /* Start transaction */
         $trans = $DB->start_delegated_transaction();
 
         try {
-            /* Info Competence      */
-            /* Execute  */
-            $DB->insert_records('fs_imp_users_company',$data);
+            $params = array();
+
+            foreach ($data as $key => $info) {
+                $params['org_enhet_id'] = $info->ORG_ENHET_ID;
+                $params['org_nivaa']    = $info->ORG_NIVAA;
+                $params['fodselnr']     = $info->FODSELNR;
+                $params['prioritet']    = $info->PRIORITET;
+
+                $rdo = $DB->get_record('fs_imp_managers_reporters',$params);
+                if (!$rdo) {
+                    $DB->insert_record('fs_imp_managers_reporters',$info);
+                }//if_rdo
+            }
 
             /* Commit */
             $trans->allow_commit();
@@ -1816,7 +1825,7 @@ class FS {
 
             throw $ex;
         }//try_catch
-    }//ImportTemporary_CompetenceCompany
+    }//ImportTemporary_ManagersReporters
 
     /**
      * @param           $data

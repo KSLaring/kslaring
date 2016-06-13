@@ -19,7 +19,8 @@ define('TEST_JR',2);
 define('TEST_FS_USERS',3);
 define('TEST_FS_ORG',4);
 define('TEST_FS_JR',5);
-define('TEST_FS_USER_COMP',6);
+define('TEST_FS_MANAGERS_REPORTERS',6);
+
 define('TEST_FS_USER_COMP_JR',7);
 define('TEST_FS_SYNC_ORG',8);
 define('TEST_FS_SYNC_JR',9);
@@ -116,10 +117,10 @@ class FELLESDATA_CRON {
                     self::ImportFSJobRoles($pluginInfo);
 
                     break;
-                case TEST_FS_USER_COMP:
-                    echo "Import FS User Competence" . "</br>";
+                case TEST_FS_MANAGERS_REPORTERS:
+                    echo "Import FS Managers USrs" . "</br>";
                     /* Import FS User Competence    */
-                    self::ImportFSUserCompetence($pluginInfo);
+                    self::ImportFSManagersReporters($pluginInfo);
 
                     break;
                 case TEST_FS_USER_COMP_JR:
@@ -397,7 +398,7 @@ class FELLESDATA_CRON {
             self::ImportFSJobRoles($pluginInfo);
 
             /* Import FS User Competence    */
-            self::ImportFSUserCompetence($pluginInfo);
+            self::ImportFSManagersReporters($pluginInfo);
 
             /* Import FS User Competence JR */
             self::ImportFSUserCompetenceJR($pluginInfo);
@@ -535,43 +536,43 @@ class FELLESDATA_CRON {
 
     /**
      * @param           $pluginInfo
-     *
      * @throws          Exception
      *
-     * @creationDate    02/02/2016
+     * @creationDate    13/06/2016
      * @author          eFaktor     (fbv)
      *
      * Description
-     * Import all User - Competence Company from fellesdata
+     * Import Managers Reporters
      */
-    private static function ImportFSUserCompetence($pluginInfo) {
+    private static function ImportFSManagersReporters($pluginInfo) {
         /* Variables    */
         global $CFG;
-        $pathFile           = null;
-        $content            = null;
-        $usersCompetence    = null;
+        $pathFile               = null;
+        $content                = null;
+        $fsManagersReporters    = null;
 
         try {
-            echo "Start ImportFSUserCompetence" . "</br>";
+            echo "Start ImportFSManagersReporters" . "</br>";
             /* Call Web Service */
-            $usersCompetence = self::ProcessTradisService($pluginInfo,TRADIS_FS_USERS_COMPANIES);
+            $fsManagersReporters = self::ProcessTradisService($pluginInfo,TRADIS_FS_MANAGERS_REPORTERS);
 
             /* Import/Save in temporary tables  */
-            if ($usersCompetence) {
+            if ($fsManagersReporters) {
                 /* Open File */
-                $pathFile = $CFG->dataroot . '/fellesdata/' . TRADIS_FS_USERS_COMPANIES . '.txt';
+                $pathFile = $CFG->dataroot . '/fellesdata/' . TRADIS_FS_MANAGERS_REPORTERS . '.txt';
                 if (file_exists($pathFile)) {
                     /* Get Content */
                     $content = file($pathFile);
 
-                    FS::SaveTemporary_Fellesdata($content,IMP_COMPETENCE_COMP);
+                    FS::SaveTemporary_Fellesdata($content,IMP_MANAGERS_REPORTERS);
                 }//if_exists
             }
-            echo "Finist ImportFSUserCompetence" . "</br>";
+
+            echo "Finish ImportFSManagersReporters" . "</br>";
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//ImportFSUserCompetence
+    }//ImportFSManagersReporters
 
 
     /**
