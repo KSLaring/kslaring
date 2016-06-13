@@ -1684,13 +1684,13 @@ class FS {
 
         try {
             /* User Info    */
-            foreach ($data as $key => $info) {
+            foreach ($data as $key => $infoUser) {
                 /* Execute  */
-                $rdo = $DB->get_record('fs_imp_users',array('FODSELSNR' => $info->FODSELSNR));
+                $rdo = $DB->get_record('fs_imp_users',array('FODSELSNR' => $infoUser->FODSELSNR));
                 if (!$rdo) {
-                    $DB->insert_record('fs_imp_users',$info);
+                    $DB->insert_record('fs_imp_users',$infoUser);
                 }//if_rdo
-            }
+            }//ofr_each
 
             /* Commit   */
             $trans->allow_commit();
@@ -1724,8 +1724,13 @@ class FS {
 
         try {
             /* FS Company Info  */
-            /* Execute  */
-            $DB->insert_records('fs_imp_company',$data);
+            foreach($data as $key => $infoFS) {
+                /* Execute  */
+                $rdo = $DB->get_record('fs_imp_company',array('ORG_ENHET_ID' => $infoFS->ORG_ENHET_ID));
+                if (!$rdo) {
+                    $DB->insert_record('fs_imp_company',$infoFS);
+                }//if_rdo
+            }//for_each
 
             /* Commit   */
             $trans->allow_commit();
