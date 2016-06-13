@@ -32,7 +32,7 @@ class FELLESDATA_CRON {
     /* PUBLIC */
     /**********/
 
-    public static function cronXXXX($fstExecution) {
+    public static function cron($fstExecution) {
         /* Variables    */
         global $SESSION;
         $pluginInfo = null;
@@ -84,8 +84,6 @@ class FELLESDATA_CRON {
         try {
             /* Plugin Info      */
             $pluginInfo     = get_config('local_fellesdata');
-
-            ini_set('memory_limit','1024M');
 
             switch ($option) {
                 case TEST_ORG:
