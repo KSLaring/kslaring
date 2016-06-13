@@ -96,7 +96,7 @@ class Fellesdata_Update {
             /* org_nivaa --> Hierarchy level of the company */
             $tblImpManagersReporters->add_field('org_nivaa',XMLDB_TYPE_INTEGER,'2',null, XMLDB_NOTNULL, null,null);
             /* fodselsnr --> Personal number                */
-            $tblImpManagersReporters->add_field('fodselnr',XMLDB_TYPE_CHAR,'50',null, XMLDB_NOTNULL, null,null);
+            $tblImpManagersReporters->add_field('fodselsnr',XMLDB_TYPE_CHAR,'50',null, XMLDB_NOTNULL, null,null);
             /* prioritet --> Manager or not                 */
             $tblImpManagersReporters->add_field('prioritet',XMLDB_TYPE_INTEGER,'2',null, XMLDB_NOTNULL, null,null);
             /* action --> Action to apply                   */
@@ -107,7 +107,7 @@ class Fellesdata_Update {
             /* Keys     */
             $tblImpManagersReporters->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
             /* Index    */
-            $tblImpManagersReporters->add_index('fodselnr',XMLDB_INDEX_NOTUNIQUE,array('fodselnr'));
+            $tblImpManagersReporters->add_index('fodselsnr',XMLDB_INDEX_NOTUNIQUE,array('fodselsnr'));
             $tblImpManagersReporters->add_index('org_enhet_id',XMLDB_INDEX_NOTUNIQUE,array('org_enhet_id'));
 
             if (!$dbMan->table_exists('fs_imp_managers_reporters')) {

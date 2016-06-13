@@ -1808,7 +1808,7 @@ class FS {
             foreach ($data as $key => $info) {
                 $params['ORG_ENHET_ID'] = $info->ORG_ENHET_ID;
                 $params['ORG_NIVAA']    = $info->ORG_NIVAA;
-                $params['FODSELNR']     = $info->FODSELNR;
+                $params['FODSELSNR']     = $info->FODSELSNR;
                 $params['PRIORITET']    = $info->PRIORITET;
 
                 $rdo = $DB->get_record('fs_imp_managers_reporters',$params);
