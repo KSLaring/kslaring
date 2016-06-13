@@ -1764,11 +1764,13 @@ class FS {
 
         try {
             /* FS Job Role Info */
-            /* Execute  */
-            $rdo = $DB->get_record('fs_imp_jobroles',array('STILLINGSKODE' => $data->STILLINGSKODE));
-            if (!$rdo) {
-                $DB->insert_records('fs_imp_jobroles',$data);
-            }
+            foreach($data as $key => $infoFS) {
+                /* Execute  */
+                $rdo = $DB->get_record('fs_imp_jobroles',array('STILLINGSKODE' => $infoFS->STILLINGSKODE));
+                if (!$rdo) {
+                    $DB->insert_record('fs_imp_jobroles',$infoFS);
+                }//if_rdo
+            }//for_each
 
             /* Commit */
             $trans->allow_commit();
