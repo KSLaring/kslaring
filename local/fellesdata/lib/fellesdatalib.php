@@ -1806,10 +1806,10 @@ class FS {
             $params = array();
 
             foreach ($data as $key => $info) {
-                $params['org_enhet_id'] = $info->ORG_ENHET_ID;
-                $params['org_nivaa']    = $info->ORG_NIVAA;
-                $params['fodselnr']     = $info->FODSELNR;
-                $params['prioritet']    = $info->PRIORITET;
+                $params['ORG_ENHET_ID'] = $info->ORG_ENHET_ID;
+                $params['ORG_NIVAA']    = $info->ORG_NIVAA;
+                $params['FODSELNR']     = $info->FODSELNR;
+                $params['PRIORITET']    = $info->PRIORITET;
 
                 $rdo = $DB->get_record('fs_imp_managers_reporters',$params);
                 if (!$rdo) {
