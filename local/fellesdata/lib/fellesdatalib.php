@@ -1591,7 +1591,6 @@ class FS {
         try {
 
             foreach($data as $key=>$line) {
-                echo $line . "</br>";
                 $lineContent    = json_decode($line);
 
                 /* Get New Entry    */
@@ -1685,13 +1684,15 @@ class FS {
 
         try {
             /* User Info    */
-            /* Execute  */
-            //$rdo = $DB->get_record('fs_imp_users',array('FODSELSNR' => $data->FODSELSNR));
-            //if (!$rdo) {
-            //    $DB->insert_records('fs_imp_users',$data);
-            //}//if_rdo
+            foreach ($data as $key => $info) {
+                /* Execute  */
+                $rdo = $DB->get_record('fs_imp_users',array('FODSELSNR' => $info->FODSELSNR));
+                if (!$rdo) {
+                    $DB->insert_record('fs_imp_users',$info);
+                }//if_rdo
+            }
 
-            @/* Commit   */
+            /* Commit   */
             $trans->allow_commit();
         }catch (Exception $ex) {
             /* Rollback */
