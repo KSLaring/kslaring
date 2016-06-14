@@ -1516,7 +1516,7 @@ class FSKS_USERS {
                 foreach ($fsJobRoles as $fsJR) {
                     if (array_key_exists($fsJR,$myFSJobroles)) {
                         unset($myFSJobroles[$fsJR]);
-                        $rdo->jobrole = implode(',',array_keys($myFSJobroles));
+                        $rdo->jrcode = implode(',',array_keys($myFSJobroles));
                     }
                 }
 
@@ -1524,7 +1524,7 @@ class FSKS_USERS {
                 $DB->update_record('fs_users_competence',$rdo);
 
                 /* To know it has to be deleted */
-                if (!$rdo->jobrole) {
+                if (!$rdo->jrcode) {
                     $toDeleteFromKS = true;
                 }
             }
