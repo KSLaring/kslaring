@@ -1509,10 +1509,9 @@ class FSKS_USERS {
 
         try {
             /* Get Info User Job Role (FS) */
-            echo $competenceFS->personalNumber . " - CO: " . $competenceFS->fsId . "  - ksjrcode : " . $competenceFS->jobrole;
             $params = array();
             $params['personalnumber']   = $competenceFS->personalNumber;
-            $params['companyid']        = $competenceFS->fsId;
+            $params['companyid']        = $competenceFS->company;
             $params['ksjrcode']         = $competenceFS->jobrole;
             $rdo = $DB->get_record('fs_users_competence',$params);
 
@@ -1531,12 +1530,11 @@ class FSKS_USERS {
                         /* Synchronized */
                         $sync = true;
                     }else {
-                        echo "1 - NEW " . "</br>";
                         /* Create */
                         /* New Entry    */
                         $infoCompetence = new stdClass();
                         $infoCompetence->personalnumber = $competenceFS->personalNumber;
-                        $infoCompetence->companyid      = $competenceFS->companyid;
+                        $infoCompetence->companyid      = $competenceFS->company;
                         $infoCompetence->jrcode         = $competenceFS->fsjobroles;
                         $infoCompetence->ksjrcode       = $competenceFS->jobrole;
                         $infoCompetence->synchronized   = 1;
