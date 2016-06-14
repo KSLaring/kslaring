@@ -1524,6 +1524,7 @@ class FSKS_USERS {
         $myFSJobroles   = null;
         $fsJobRoles     = null;
         $toDeleteFromKS = false;
+        $impKeys        = null;
 
         try {
             /* Search criteria */
@@ -1550,6 +1551,16 @@ class FSKS_USERS {
                 /* To know it has to be deleted */
                 if (!$rdo->jrcode) {
                     $toDeleteFromKS = true;
+                }else {
+                    $impKeys = explode(',',$competence->impkeys);
+
+                    foreach ($impKeys as $fsKey) {
+                        $instance = new stdClass();
+                        $instance->id       = $fsKey;
+                        $instance->imported = 1;
+
+                        $DB->update_record('fs_imp_users_jr',$instance);
+                    }
                 }
             }
 
