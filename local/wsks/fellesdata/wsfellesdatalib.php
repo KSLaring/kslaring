@@ -301,133 +301,6 @@ class WS_FELLESDATA {
         }//try_catch
     }//Synchronize_UsersAccounts
 
-    /**
-     * @param           $usersCompetenceJR
-     * @param           $result
-     *
-     * @throws          Exception
-     *
-     * @creationDate    29701/2016
-     * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Synchronization of competences job roles between FS and KS
-     */
-    public static function Synchronize_UserCompetenceJobRole($usersCompetenceJR,&$result) {
-        /* Variables */
-        global $CFG;
-        $objCompetence      = null;
-        $competenceDataID   = null;
-        $infoImported       = null;
-        $imported           = array();
-        $dbLog              = null;
-
-        /* Log  */
-        $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' START Synchronization User Competence Job Roles  . ' . "\n";
-        error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
-
-        try {
-            /* Synchronization of job roles competence between FS and KS */
-            foreach ($usersCompetenceJR as $key => $competenceJR) {
-                /* Convert to object    */
-                $objCompetence = (Object)$competenceJR;
-
-                /* Process the competence */
-                $competenceDataID = self::ProcessUserCompetenceJobRole($objCompetence);
-
-                /* Marked as imported */
-                if ($competenceDataID) {
-                    $infoImported = new stdClass();
-                    $infoImported->personalNumber   = $objCompetence->personalNumber;
-                    $infoImported->imported         = 1;
-                    $infoImported->key              = $key;
-
-                    $imported[$key] = $infoImported;
-                }//if_competenceDataID
-            }//for_competences
-
-            $result['usersCompetence'] = $imported;
-
-            /* Log  */
-            $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' FINISH Synchronization User Competence Job Roles  . ' . "\n";
-            error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
-        }catch (Exception $ex) {
-            /* Log  */
-            $dbLog = $ex->getMessage() . "\n\n";
-            $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH ERROR Synchronization User Competence Job Roles  . ' . "\n";
-            error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
-
-            $result['error']            = 409;
-            $result['message']          = $ex->getMessage();
-            $result['usersCompetence']  = $imported;
-
-            throw $ex;
-        }//try_catch
-    }//Synchronize_UserCompetenceJobRole
-
-    /**
-     * @param           $usersCompetence
-     * @param           $result
-     *
-     * @throws          Exception
-     *
-     * @creationDate    29/01/2016
-     * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Synchronize users competences between FS and KS
-     */
-    public static function Synchronize_UserCompetenceCompany($usersCompetence,&$result) {
-        /* Variables */
-        global $CFG;
-        $objCompetence      = null;
-        $competenceDataID   = null;
-        $infoImported       = null;
-        $imported           = array();
-        $dbLog              = null;
-
-        /* Log  */
-        $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' START Synchronization User Competence Company  . ' . "\n";
-        error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
-
-        try {
-            /* Synchronize user competences between FS and KS */
-            foreach ($usersCompetence as $key => $competenceUser) {
-                /* Convert to object    */
-                $objCompetence = (Object)$competenceUser;
-
-                /* Process user competence */
-                $competenceDataID = self::ProcessUserCompetenceCompany($objCompetence);
-
-                /* Marked as imported */
-                if ($competenceDataID) {
-                    $infoImported = new stdClass();
-                    $infoImported->personalNumber   = $objCompetence->personalNumber;
-                    $infoImported->imported         = 1;
-                    $infoImported->key              = $key;
-
-                    $imported[$key] = $infoImported;
-                }//if_competenceData
-            }//for_competences
-
-            $result['usersCompetence'] = $imported;
-
-            /* Log  */
-            $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' Finish Synchronization User Competence Company  . ' . "\n";
-            error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
-        }catch (Exception $ex) {
-            /* Log  */
-            $dbLog  = $ex->getMessage() . "\n" . "\n";
-            $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' Finish ERROR Synchronization User Competence Company  . ' . "\n";
-            error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
-
-            $result['error']            = 409;
-            $result['message']          = $ex->getMessage();
-            $result['usersCompetence']  = $imported;
-
-            throw $ex;
-        }//try_catch
-    }//Synchronize_UserCompetenceCompany
 
     /**
      * @param           $userManagerReporter
@@ -493,6 +366,58 @@ class WS_FELLESDATA {
             throw $ex;
         }//try_catch
     }//Synchronize_UserManagerReporter
+
+    public static function Synchronize_UserCompetence($usersCompetence,&$result) {
+        /* Variables */
+        global $CFG;
+        $objCompetence      = null;
+        $competenceDataID   = null;
+        $infoImported       = null;
+        $imported           = array();
+        $dbLog              = null;
+
+        /* Log  */
+        $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' START Synchronization User Competence. ' . "\n";
+        error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
+
+        try {
+            /* Synchronization competence between FS and KS */
+            foreach ($usersCompetence as $key => $competence) {
+                /* Convert to object    */
+                $objCompetence = (Object)$competence;
+
+                /* Process the competence */
+                $competenceDataID = self::ProcessUserCompetence($objCompetence);
+
+                /* Marked as imported */
+                if ($competenceDataID) {
+                    $infoImported = new stdClass();
+                    $infoImported->personalNumber   = $objCompetence->personalNumber;
+                    $infoImported->imported         = 1;
+                    $infoImported->key              = $key;
+
+                    $imported[$key] = $infoImported;
+                }//if_competenceDataID
+            }//for_competences
+
+            $result['usersCompetence'] = $imported;
+
+            /* Log  */
+            $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' FINISH Synchronization User Competence. ' . "\n";
+            error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
+        }catch (Exception $ex) {
+            /* Log  */
+            $dbLog = $ex->getMessage() . "\n\n";
+            $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH ERROR Synchronization User Competence. ' . "\n";
+            error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
+
+            $result['error']            = 409;
+            $result['message']          = $ex->getMessage();
+            $result['usersCompetence']  = $imported;
+
+            throw $ex;
+        }//try_catch
+    }//Synchronize_UserCompetence
 
     /***********/
     /* PRIVATE */
@@ -651,130 +576,6 @@ class WS_FELLESDATA {
             throw $ex;
         }//try_catch
     }//ProcessUserManagerReporter
-
-    /**
-     * @param           $userCompetence
-     *
-     * @return          bool|int|null
-     * @throws          Exception
-     *
-     * @creationDate    29/01/2016
-     * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Process the user competence company to synchronize
-     */
-    private static function ProcessUserCompetenceCompany($userCompetence) {
-        /* Variables */
-        global $DB;
-        $time                   = null;
-        $infoManager            = null;
-        $infoReporter           = null;
-        $infoCompetenceData     = null;
-        $infoCompetence         = null;
-        $competenceId           = null;
-        $competenceData         = null;
-        $user                   = null;
-        $rdo                    = null;
-        $params                 = null;
-        $sync                   = null;
-        $trans                  = null;
-
-        /* Start Transaction */
-        $trans = $DB->start_delegated_transaction();
-
-        try {
-            /* Local Time */
-            $time = time();
-
-            /* Get User data */
-            $user = $DB->get_record('user',array('username' => $userCompetence->personalNumber,'deleted' => '0'),'id');
-
-            if ($user) {
-                /* Competence Reference */
-                $rdo = $DB->get_record('user_info_competence',array('userid' => $user->id),'id');
-                if ($rdo) {
-                    $competenceId = $rdo->id;
-                }else {
-                    /* Competence */
-                    $infoCompetence = new stdClass();
-                    $infoCompetence->userid         = $user->id;
-                    $infoCompetence->timemodified   = $time;
-
-                    $competenceId = $DB->insert_record('user_info_competence',$infoCompetence);
-                }//if_Rdo
-
-                /* Checks if the competence data already exists */
-                $params = array();
-                $params['userid']       = $user->id;
-                $params['competenceid'] = $competenceId;
-                $params['companyid']    = $userCompetence->ksId;
-                $params['level']        = $userCompetence->level;
-
-                /* Execute */
-                $competenceData = $DB->get_record('user_info_competence_data',$params,'id,jobroles');
-
-                /* Extract Data */
-                $infoCompetenceData = new stdClass();
-                $infoCompetenceData->userid         = $user->id;
-                $infoCompetenceData->competenceid   = $competenceId;
-                $infoCompetenceData->companyid      = $userCompetence->ksId;
-                $infoCompetenceData->level          = $userCompetence->level;
-                $infoCompetenceData->editable       = 0;
-                $infoCompetenceData->approved       = 1;
-                $infoCompetenceData->rejected       = 0;
-                $infoCompetenceData->timemodified   = $time;
-
-                /* Apply Action */
-                switch ($userCompetence->action) {
-                    case ADD_ACTION:
-                        /* New Competence data */
-                        if (!$competenceData) {
-                            /* Execute          */
-                            $infoCompetenceData->id = $DB->insert_record('user_info_competence_data',$infoCompetenceData);
-                        }//if_not_competenceData
-
-                        /* Synchronized */
-                        $sync = true;
-
-                        break;
-                    case UPDATE_ACTION:
-                        /* New One  */
-                        if (!$competenceData) {
-                            /* Competence Data  */
-                            $infoCompetenceData->competenceid = $competenceId;
-                            /* Execute          */
-                            $infoCompetenceData->id = $DB->insert_record('user_info_competence_data',$infoCompetenceData);
-                        }//if_not_competenceData
-
-                        /* Synchronized */
-                        $sync = true;
-
-                        break;
-                    case DELETE_ACTION:
-                        if ($competenceData) {
-                            /* Delete */
-                            $DB->delete_records('user_info_competence_data',array('id' => $competenceData->id));
-
-                            /* Synchronized */
-                            $sync = true;
-                        }//if_competenceData
-
-                        break;
-                }//action
-            }//if_sue
-
-            /* Commit */
-            $trans->allow_commit();
-
-            return $sync;
-        }catch (Exception $ex) {
-            /* Rollback */
-            $trans->rollback($ex);
-
-            throw $ex;
-        }//try_catch
-    }//ProcessUserCompetenceCompany
 
     /**
      * @param           $company
@@ -1062,23 +863,13 @@ class WS_FELLESDATA {
         }//try_catch
     }//IsManagerReporter
 
-    /**
-     * @param           $userJRCompetence
-     *
-     * @return          bool|int|null
-     * @throws          Exception
-     *
-     * @creationDate    29/01/2016
-     * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Process the user competence, job role, to synchronize
-     */
-    private static function ProcessUserCompetenceJobRole($userJRCompetence) {
+
+    private static function ProcessUserCompetence($userCompetence) {
         /* Variables */
         global $DB;
         $time               = null;
         $myJobRoles         = null;
+        $competenceId       = null;
         $infoCompetenceData = null;
         $infoCompetence     = null;
         $competenceData     = null;
@@ -1088,6 +879,7 @@ class WS_FELLESDATA {
         $sync               = null;
         $trans              = null;
 
+
         /* Begin Transaction */
         $trans = $DB->start_delegated_transaction();
 
@@ -1096,84 +888,77 @@ class WS_FELLESDATA {
             $time = time();
 
             /* Get data user */
-            $user = $DB->get_record('user',array('username' => $userJRCompetence->personalNumber,'deleted' => '0'),'id');
+            $user = $DB->get_record('user',array('username' => $userCompetence->personalNumber,'deleted' => '0'),'id');
 
+            /* Check if user exists */
             if ($user) {
                 /* Competence Reference */
                 $rdo = $DB->get_record('user_info_competence',array('userid' => $user->id),'id');
                 if ($rdo) {
-                    /* Checks if the competence data already exists */
-                    $params = array();
-                    $params['userid']       = $user->id;
-                    $params['competenceid'] = $rdo->id;
-                    $params['companyid']    = $userJRCompetence->company;
-                    $params['level']        = $userJRCompetence->level;
+                    $competenceId = $rdo->id;
+                }else {
+                    /* Competence */
+                    $infoCompetence = new stdClass();
+                    $infoCompetence->userid         = $user->id;
+                    $infoCompetence->timemodified   = $time;
 
-                    /* Execute */
-                    $competenceData = $DB->get_record('user_info_competence_data',$params,'id,jobroles');
-                }//if-rdo
+                    $competenceId = $DB->insert_record('user_info_competence',$infoCompetence);
+                }//if_Rdo
 
-                /* Check if exist User Competence Profile */
-                if ($competenceData) {
-                    /* Extract data */
-                    $competenceData->editable       = 0;
-                    $competenceData->approved       = 1;
-                    $competenceData->rejected       = 0;
-                    $competenceData->timemodified   = $time;
+                /* Extract Data */
+                $infoCompetenceData = new stdClass();
+                $infoCompetenceData->userid         = $user->id;
+                $infoCompetenceData->competenceid   = $competenceId;
+                $infoCompetenceData->companyid      = $userCompetence->ksId;
+                $infoCompetenceData->level          = $userCompetence->level;
+                $infoCompetenceData->jobroles       = $userCompetence->ksjobrole;
+                $infoCompetenceData->editable       = 0;
+                $infoCompetenceData->approved       = 1;
+                $infoCompetenceData->rejected       = 0;
+                $infoCompetenceData->timemodified   = $time;
 
-                    /* Apply Action */
-                    switch ($userJRCompetence->action) {
-                        case ADD_ACTION:
-                        case UPDATE_ACTION:
-                            /* Check if user is already connected with the job roles    */
-                            if ($competenceData->jobroles) {
-                                /* Extract current job roles */
-                                $myJobRoles = explode(',',$competenceData->jobroles);
-                                if (!in_array($userJRCompetence->jobrole,$myJobRoles)) {
-                                    /* Add Job role */
-                                    $competenceData->jobroles .= ',' . $userJRCompetence->jobrole;
+                /* Checks if the competence data already exists */
+                $params = array();
+                $params['userid']       = $user->id;
+                $params['competenceid'] = $rdo->id;
+                $params['companyid']    = $userCompetence->company;
+                $params['level']        = $userCompetence->level;
 
-                                    /* Execute */
-                                    $DB->update_record('user_info_competence_data',$competenceData);
+                /* Execute */
+                $competenceData = $DB->get_record('user_info_competence_data',$params);
 
-                                    /* Synchronized */
-                                    $sync = true;
-                                }//if_no_exist
-                            }else {
-                                $competenceData->jobroles = $userJRCompetence->jobrole;
+
+                /* Apply Action */
+                switch ($userCompetence->action) {
+                    case ADD_ACTION:
+                    case UPDATE_ACTION:
+                        if ($competenceData) {
+                            /* Update */
+                            /* Extract current job roles */
+                            $myJobRoles = explode(',',$competenceData->jobroles);
+
+                            if (!in_array($userCompetence->ksjobrole,$myJobRoles)) {
+                                /* Add Job role */
+                                $competenceData->jobroles .= ',' . $userCompetence->ksjobrole;
 
                                 /* Execute */
                                 $DB->update_record('user_info_competence_data',$competenceData);
 
                                 /* Synchronized */
                                 $sync = true;
-                            }//if_jobrole
+                            }//if_no_exist
+                        }else {
+                            /* Create New   */
+                            $infoCompetenceData->id = $DB->insert_record('user_info_competence_data',$infoCompetenceData);
 
-                            break;
-                        case DELETE_ACTION:
-                            /* Delete if exists */
-                            if ($competenceData->jobroles) {
-                                /* Extract current job roles */
-                                $myJobRoles = explode(',',$competenceData->jobroles);
-                                if (in_array($userJRCompetence->jobrole,$myJobRoles)) {
-                                    /* Delete job role from the competence */
-                                    $myJobRoles = array_flip($myJobRoles);
-                                    unset($myJobRoles[$userJRCompetence->jobrole]);
-                                    $myJobRoles = array_flip($myJobRoles);
+                            /* Synchronized */
+                            $sync = true;
+                        }
 
-                                    $competenceData->jobroles = implode(',',$myJobRoles);
-
-                                    /* Execute */
-                                    $DB->update_record('user_info_competence_data',$competenceData);
-
-                                    /* Synchronized */
-                                    $sync = true;
-                                }//if_exists
-                            }//if_competenceData
-
-                            break;
-                    }//switch
-                }//if_competenceData
+                        break;
+                    case DELETE_ACTION:
+                        break;
+                }//switch
             }//if_user
 
             /* Commit */
@@ -1186,7 +971,8 @@ class WS_FELLESDATA {
 
             throw $ex;
         }//try_catch
-    }//ProcessUserCompetenceJobRole
+    }//ProcessUserCompetence
+
 
     /**
      * @param           $userAccount

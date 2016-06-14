@@ -107,28 +107,15 @@ $fonManagerReporterConfig       = array(
 );
 
 /* User Competence Profile  */
-/* Competence Company   */
-$fonCompetenceCompany           = 'wsUserCompetenceCompany';
-$fonCompetenceCompanyConfig     = array(
-                                        'classname'     => $className,
-                                        'methodname'    => $fonCompetenceCompany,
-                                        'classpath'     => $classPath,
-                                        'description'   => 'Fellesdata Integration. User Competence Company',
-                                        'type'          => 'write',
-                                        'capabilities'  => ''
-                                       );
-
-/* Competence JobRole   */
-$fonCompetenceJobRole       = 'wsUserCompetenceJobRole';
-$fonCompetenceJobRoleConfig = array(
-                                    'classname'     => $className,
-                                    'methodname'    => $fonCompetenceJobRole,
-                                    'classpath'     => $classPath,
-                                    'description'   => 'Fellesdata Integration. User Competence Job Roles',
-                                    'type'          => 'write',
-                                    'capabilities'  => ''
-                                   );
-
+$fonUserCompetence             = 'wsUserCompetence';
+$fonUserCompetenceConfig       = array(
+                                       'classname'     => $className,
+                                       'methodname'    => $fonUserCompetence,
+                                       'classpath'     => $classPath,
+                                       'description'   => 'Fellesdata Integration. User Competence',
+                                       'type'          => 'write',
+                                       'capabilities'  => ''
+);
 
 
 /* USER */
@@ -155,8 +142,7 @@ $functions = array(
                     $fonKSJobRoles	        => $fonKSJobRolesConfig,
                     $fonKSJobRolesGenerics	=> $fonKSJobRolesGenericsConfig,
                     $fonManagerReporter     => $fonManagerReporterConfig,
-                    $fonCompetenceCompany	=> $fonCompetenceCompanyConfig,
-                    $fonCompetenceJobRole	=> $fonCompetenceJobRoleConfig,
+                    $fonUserCompetence      => $fonUserCompetenceConfig,
                     $fonUsersAccounts		=> $fonUsersAccountsConfig);
 
 /**
@@ -174,7 +160,7 @@ $serviceADFSConfig  = array(
  */
 $serviceFS        = 'fellesdata';
 $serviceFSConfig  = array(
-                          'functions'         => array($fonCompany,$fonHierarchy,$fonFSJobRoles,$fonKSJobRoles,$fonKSJobRolesGenerics,$fonManagerReporter,$fonCompetenceCompany,$fonCompetenceJobRole,$fonUsersAccounts),
+                          'functions'         => array($fonCompany,$fonHierarchy,$fonFSJobRoles,$fonKSJobRoles,$fonKSJobRolesGenerics,$fonManagerReporter,$fonUserCompetence,$fonUsersAccounts),
                           'restrictedusers'   => 1,
                           'enabled'           => 1
 );

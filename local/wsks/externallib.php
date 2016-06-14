@@ -658,6 +658,15 @@ class local_wsks_external extends external_api {
     /* wsManagerReporter */
     /*********************/
 
+    /**
+     * @return          external_function_parameters
+     *
+     * @creationDate    14/06/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Web service to synchronize managers reporters between FS and KS - Parameters
+     */
     public static function wsManagerReporter_parameters() {
         /* Manager Reporter Info */
         $personalNumber = new external_value(PARAM_TEXT,'Personal Number');
@@ -678,6 +687,15 @@ class local_wsks_external extends external_api {
         return new external_function_parameters(array('managerReporter'=> new external_multiple_structure($userManagerReporter)));
     }//wsManagerReporter_parameters
 
+    /**
+     * @return              external_single_structure
+     *
+     * @creationDate    14/06/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Web service to synchronize managers reporters between FS and KS - Returns
+     */
     public static function wsManagerReporter_returns() {
         $error      = new external_value(PARAM_INT,'Error. True/False');
         $msgError   = new external_value(PARAM_TEXT,'Error Description');
@@ -699,7 +717,16 @@ class local_wsks_external extends external_api {
         return $existReturn;
     }//wsManagerReporter_returns
 
-
+    /**
+     * @param           $userManagerReporter
+     * @return          array
+     *
+     * @creationDate    14/06/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Web service to synchronize managers reporters between FS and KS
+     */
     public static function wsManagerReporter($userManagerReporter) {
         /* Variables    */
         global $CFG;
@@ -714,7 +741,7 @@ class local_wsks_external extends external_api {
         $result['managerReporter']  = array();
 
         try {
-            /* Synchronize Users Competences */
+            /* Synchronize Managers Reporters */
             WS_FELLESDATA::Synchronize_UserManagerReporter($userManagerReporter,$result);
 
             return $result;
@@ -728,124 +755,24 @@ class local_wsks_external extends external_api {
         }//try_catch
     }//wsManagerReporter
 
-    /****************************/
-    /* wsUserCompetenceCompany  */
-    /****************************/
+    /********************/
+    /* wsUserCompetence */
+    /********************/
 
     /**
      * @return          external_function_parameters
      *
-     * @creationDate    26/01/2016
+     * @creationDate    14/06/2016
      * @author          eFaktor     (fbv)
      *
      * Description
-     * Parameters - Web service to synchronize user competence company between KS Læring and FELLESDATA
+     * Web service to synchronize user competence between FS and KS - Parameters
      */
-    public static function wsUserCompetenceCompany_parameters() {
-        /* User Competence Company Info */
-        $personalNumber = new external_value(PARAM_TEXT,'Personal Number');
-        $fsId           = new external_value(PARAM_INT,'FS Company Id');
-        $companyID      = new external_value(PARAM_INT,'Company Id KS');
-        $level          = new external_value(PARAM_INT,'Level');
-        $manager        = new external_value(PARAM_INT,'Manager');
-        $action         = new external_value(PARAM_INT,'Action. Add/Update/Delete');
-
-        $userCompetence = new external_single_structure(array('personalNumber'  => $personalNumber,
-                                                              'fsId'            => $fsId,
-                                                              'ksId'            => $companyID,
-                                                              'level'           => $level,
-                                                              'manager'         => $manager,
-                                                              'action'          => $action));
-
-        return new external_function_parameters(array('usersCompetence'=> new external_multiple_structure($userCompetence)));
-    }//wsUserCompetenceCompany_parameters
-
-    /**
-     * @return          external_single_structure
-     *
-     * @creationDate    26/01/2016
-     * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Response fro the web service. Competences imported
-     */
-    public static function wsUserCompetenceCompany_returns() {
-        $error      = new external_value(PARAM_INT,'Error. True/False');
-        $msgError   = new external_value(PARAM_TEXT,'Error Description');
-
-        /* User Competence Company Info */
-        $personalNumber = new external_value(PARAM_TEXT,'Personal Number');
-        $imported       = new external_value(PARAM_INT,'True/False');
-        $key            = new external_value(PARAM_INT,'Key Id record imported');
-
-        $userCompetence = new external_single_structure(array('personalNumber'  => $personalNumber,
-                                                              'imported'        => $imported,
-                                                              'key'             => $key));
-
-        $existReturn = new external_single_structure(array('error'              => $error,
-                                                           'message'            => $msgError,
-                                                           'usersCompetence'    => new external_multiple_structure($userCompetence)));
-
-        return $existReturn;
-    }//wsUserCompetenceCompany_returns
-
-    /**
-     * @param           $usersCompetence
-     *
-     * @return          array
-     *
-     * @creationDate    26/01/2016
-     * @author          eFaktor     (fbv)
-     *
-     * Description
-     * To synchronize user competence company between KS Læring and FELLESDATA
-     */
-    public static function wsUserCompetenceCompany($usersCompetence) {
-        /* Variables    */
-        global $CFG;
-        $result     = array();
-
-        /* Parameter Validation */
-        $params = self::validate_parameters(self::wsUserCompetenceCompany_parameters(), array('usersCompetence' => $usersCompetence));
-
-        /* Web Service response */
-        $result['error']            = 200;
-        $result['message']          = '';
-        $result['usersCompetence']  = array();
-
-        try {
-            /* Synchronize Users Competences */
-            WS_FELLESDATA::Synchronize_UserCompetenceCompany($usersCompetence,$result);
-
-            return $result;
-        }catch (Exception $ex) {
-            if ($result['error'] == '200') {
-                $result['error']    = 500;
-                $result['message']  = $ex->getMessage() . ' ' . $ex->getTraceAsString();
-            }//if_error
-
-            return $result;
-        }//try_catch
-    }//wsUserCompetenceCompany
-
-    /****************************/
-    /* wsUserCompetenceJobRole  */
-    /****************************/
-
-    /**
-     * @return          external_function_parameters
-     *
-     * @creationDate    26/01/2016
-     * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Parameters - Web service to synchronize user competence job roles between KS Læring and FELLESDATA
-     */
-    public static function wsUserCompetenceJobRole_parameters() {
-        /* User Competence Job Role Info */
+    public static function wsUserCompetence_parameters() {
+        /* User Competence Info */
         $personalNumber = new external_value(PARAM_TEXT,'Personal Number');
         $jobRoleID      = new external_value(PARAM_TEXT,'Job Roles Id');
-        $jobRoleFSId    = new external_value(PARAM_TEXT,'FS Job Role Id');
+        $jobRoles       = new external_value(PARAM_TEXT,'FS Job Roles');
         $companyID      = new external_value(PARAM_INT,'Company Id');
         $fsId           = new external_value(PARAM_INT,'FS Comapny Id');
         $level          = new external_value(PARAM_INT,'Level');
@@ -853,25 +780,25 @@ class local_wsks_external extends external_api {
 
         $userCompetence = new external_single_structure(array('personalNumber'  => $personalNumber,
                                                               'jobrole'         => $jobRoleID,
-                                                              'fsJrId'          => $jobRoleFSId,
+                                                              'fsJobroles'      => $jobRoles,
                                                               'company'         => $companyID,
                                                               'fsId'            => $fsId,
                                                               'level'           => $level,
                                                               'action'          => $action));
 
         return new external_function_parameters(array('usersCompetence'=> new external_multiple_structure($userCompetence)));
-    }//wsUserCompetenceJobRole_parameters
+    }//wsUserCompetence_parameters
 
     /**
      * @return          external_single_structure
      *
-     * @creationDate    26/01/2016
+     * @creationDate    14/06/2016
      * @author          eFaktor     (fbv)
      *
      * Description
-     * Response of the web service. Competences imported.
+     * Web service to synchronize user competence between FS and KS - Returns
      */
-    public static function wsUserCompetenceJobRole_returns() {
+    public static function wsUserCompetence_returns() {
         $error      = new external_value(PARAM_INT,'Error. True/False');
         $msgError   = new external_value(PARAM_TEXT,'Error Description');
 
@@ -889,26 +816,25 @@ class local_wsks_external extends external_api {
                                                            'usersCompetence'    => new external_multiple_structure($userCompetence)));
 
         return $existReturn;
-    }//wsUserCompetenceJobRole_returns
+    }//wsUserCompetence_returns
 
     /**
      * @param           $usersCompetence
-     *
      * @return          array
      *
-     * @creationDate    26/01/2016
+     * @creationDate    14/06/2016
      * @author          eFaktor     (fbv)
      *
      * Description
-     * To synchronize user competence job roles between KS Læring and FELLESDATA
+     * Web service to synchronize user competence between FS and KS
      */
-    public static function wsUserCompetenceJobRole($usersCompetence) {
+    public static function wsUserCompetence($usersCompetence) {
         /* Variables    */
         global $CFG;
         $result     = array();
 
         /* Parameter Validation */
-        $params = self::validate_parameters(self::wsUserCompetenceJobRole_parameters(), array('usersCompetence' => $usersCompetence));
+        $params = self::validate_parameters(self::wsUserCompetence_parameters(), array('usersCompetence' => $usersCompetence));
 
         /* Web Service Response */
         $result['error']            = 200;
@@ -917,7 +843,7 @@ class local_wsks_external extends external_api {
 
         try {
             /* Synchronization */
-            WS_FELLESDATA::Synchronize_UserCompetenceJobRole($usersCompetence,$result);
+            WS_FELLESDATA::Synchronize_UserManagerReporter($usersCompetence,$result);
 
             return $result;
         }catch (Exception $ex) {
