@@ -1087,8 +1087,6 @@ class FSKS_USERS {
         }//try_catch
     }//UserCompetence_ToSynchronize
 
-
-
     /**
      * @param           $usersTo
      * @param           $competencesImported
@@ -1125,6 +1123,43 @@ class FSKS_USERS {
             throw $ex;
         }//try_catch
     }//Synchronize_ManagerReporterFS
+
+    /**
+     * @param           $usersCompetence
+     * @param           $competencesImported
+     *
+     * @throws          Exception
+     *
+     * @creationDate    14/06/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Synchronization User Competence between FS and KS
+     */
+    public static function Synchronize_UserCompetenceFS($usersCompetence, $competencesImported) {
+        /* Variables    */
+        $infoUser       = null;
+        $objCompetence  = null;
+
+        try {
+
+            /* Synchronize User Competence */
+            foreach ($competencesImported as $competence) {
+                /* Convert to object    */
+                $objCompetence = (Object)$competence;
+
+                if ($objCompetence->imported) {
+                    /* Get Info */
+                    $infoUser = $usersCompetence[$objCompetence->key];
+
+                    /* Synchronize User Competence */
+                    self::SynchronizeCompetenceFS($infoUser);
+                }//if_imported
+            }//for_competencesImported
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//Synchronize_UserCompetenceFS
 
     /***********/
     /* PRIVATE */
@@ -1360,6 +1395,18 @@ class FSKS_USERS {
         }//try_catch
     }//SynchronizeManagerReporterFS
 
+    /**
+     * @param           $toDelete
+     *
+     * @return          array|null
+     * @throws          Exception
+     *
+     * @creationDate    14/06/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Get user competence to synchronize
+     */
     private static function GetUsersCompetence_ToSynchronize($toDelete) {
         /* Variables */
         global $DB,$SESSION;
@@ -1417,11 +1464,12 @@ class FSKS_USERS {
                     $infoComp = new stdClass();
                     $infoComp->personalNumber   = $instance->fodselsnr;
                     $infoComp->jobrole          = $instance->ksjobrole;
+                    $infoComp->fsjobroles       = $instance->fsjobroles;
                     $infoComp->fsId             = $instance->fscompany;
                     $infoComp->company          = $instance->companyid;
                     $infoComp->level            = $instance->hierarchylevel;
                     $infoComp->impkeys          = $instance->impkeys;
-                    $infoComp->action           = $instance->action;
+                    $infoComp->action           = ACT_ADD;
 
                     /* Add competence */
                     $usersComp[] = $infoComp;
@@ -1434,6 +1482,99 @@ class FSKS_USERS {
         }//try_catch
     }//GetUsersCompetence_ToSynchronize
 
+    /**
+     * @param           $competenceFS
+     * @throws          Exception
+     *
+     * @creationDate    14/06/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Synchronize between user competence between FS and KS
+     */
+    private static function SynchronizeCompetenceFS($competenceFS) {
+        /* Variables */
+        global $DB;
+        $params         = null;
+        $rdo            = null;
+        $sync           = null;
+        $infoCompetence = null;
+        $trans          = null;
+        $fsKey          = null;
+        $impKeys        = null;
+
+
+        /* Start transaction    */
+        $trans = $DB->start_delegated_transaction();
+
+        try {
+            /* Get Info User Job Role (FS) */
+            $params = array();
+            $params['personalnumber']   = $competenceFS->personalNumber;
+            $params['companyid']        = $competenceFS->fsId;
+            $params['ksjrcode']         = $competenceFS->jobrole;
+            $rdo = $DB->get_record('fs_users_competence',$params);
+
+            /* Apply Action */
+            switch ($competenceFS->action) {
+                /* Check if already exists  */
+                case ADD:
+                case UPDATE:
+                    if ($rdo) {
+                        /* Update */
+                        $rdo->synchronized = 1;
+                        $rdo->ksjrcode       = $competenceFS->jobrole;
+                        /* Execute */
+                        $DB->update_record('fs_users_competence',$rdo);
+
+                        /* Synchronized */
+                        $sync = true;
+                    }else {
+                        /* Create */
+                        /* New Entry    */
+                        $infoCompetence = new stdClass();
+                        $infoCompetence->personalnumber = $competenceFS->personalNumber;
+                        $infoCompetence->companyid      = $competenceFS->fsId;
+                        $infoCompetence->jrcode         = $competenceFS->fsjobroles;
+                        $infoCompetence->ksjrcode       = $competenceFS->jobrole;
+                        $infoCompetence->synchronized   = 1;
+
+                        /* Execute */
+                        $DB->insert_record('fs_users_competence',$infoCompetence);
+
+                        /* Synchronized */
+                        $sync = true;
+                    }
+
+                    break;
+                case DELETE:
+                    break;
+                default:
+                    break;
+            }//action
+
+            /* Synchronized */
+            if ($sync) {
+                $impKeys = explode(',',$competenceFS->impkeys);
+
+                foreach ($impKeys as $fsKey) {
+                    $instance = new stdClass();
+                    $instance->id       = $fsKey;
+                    $instance->imported = 1;
+
+                    $DB->update_record('fs_imp_users_jr',$instance);
+                }
+            }//if_sync
+
+            /* Commit */
+            $trans->allow_commit();
+        }catch (Exception $ex) {
+            /* Rollback    */
+            $trans->rollback($ex);
+
+            throw $ex;
+        }//try_catch
+    }//SynchronizeCompetenceFS
 }//FSKS_USERS
 
 /************/
