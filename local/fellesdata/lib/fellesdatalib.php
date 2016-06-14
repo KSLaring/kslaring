@@ -1473,7 +1473,7 @@ class FSKS_USERS {
                 $instance->id       = $fsKey;
                 $instance->imported = 1;
 
-                $DB->update_record('fs_imp_users_company',$instance);
+                $DB->update_record('fs_imp_managers_reporters',$instance);
             }//if_sync
 
             /* Commit */
