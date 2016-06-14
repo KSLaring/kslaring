@@ -1534,7 +1534,7 @@ class FSKS_USERS {
                         /* New Entry    */
                         $infoCompetence = new stdClass();
                         $infoCompetence->personalnumber = $competenceFS->personalNumber;
-                        $infoCompetence->companyid      = $competenceFS->fsId;
+                        $infoCompetence->companyid      = $competenceFS->companyid;
                         $infoCompetence->jrcode         = $competenceFS->fsjobroles;
                         $infoCompetence->ksjrcode       = $competenceFS->jobrole;
                         $infoCompetence->synchronized   = 1;
