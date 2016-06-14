@@ -429,10 +429,228 @@ class WS_FELLESDATA {
         }//try_catch
     }//Synchronize_UserCompetenceCompany
 
+    /**
+     * @param           $userManagerReporter
+     * @param           $result
+     *
+     * @throws          Exception
+     *
+     * @creationDate    14/06/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Synchronize managers reporters from fellesdata
+     */
+    public static function Synchronize_UserManagerReporter($userManagerReporter,&$result) {
+        /* Variables */
+        global $CFG;
+        $objManagerReporter     = null;
+        $managerReporter        = null;
+        $synchronized           = null;
+        $infoImported           = null;
+        $imported               = array();
+        $dbLog                  = null;
+
+        /* Log  */
+        $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' START Synchronization User Manager Reporter  . ' . "\n";
+        error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
+
+        try {
+            /* Synchronize user manager reporter between FS and KS */
+            foreach ($userManagerReporter as $key => $managerReporter) {
+                /* Convert to object    */
+                $objManagerReporter = (Object)$managerReporter;
+
+                /* Process user Manager Reporter */
+                $synchronized = self::ProcessUserManagerReporter($objManagerReporter);
+
+                /* Marked as imported */
+                if ($synchronized) {
+                    $infoImported = new stdClass();
+                    $infoImported->personalNumber   = $objManagerReporter->personalNumber;
+                    $infoImported->imported         = 1;
+                    $infoImported->key              = $key;
+
+                    $imported[$key] = $infoImported;
+                }//if_competenceData
+            }//for_competences
+
+            $result['managerReporter'] = $imported;
+
+            /* Log  */
+            $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' Finish Synchronization User Manager Reporter  . ' . "\n";
+            error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
+        }catch (Exception $ex) {
+            /* Log  */
+            $dbLog  = $ex->getMessage() . "\n" . "\n";
+            $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' Finish ERROR Synchronization User Manager Reporter  . ' . "\n";
+            error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
+
+            $result['error']            = 409;
+            $result['message']          = $ex->getMessage();
+            $result['managerReporter']  = $imported;
+
+            throw $ex;
+        }//try_catch
+    }//Synchronize_UserManagerReporter
 
     /***********/
     /* PRIVATE */
     /***********/
+
+    /**
+     * @param           $managerReporter
+     *
+     * @return          bool|null
+     * @throws          Exception
+     *
+     * @creationDate    14/06/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Process user Manager Reporter from Fellesdata
+     */
+    private static function ProcessUserManagerReporter($managerReporter) {
+        /* Variables */
+        global $DB;
+        $time                   = null;
+        $infoManager            = null;
+        $infoReporter           = null;
+        $manager                = 0;
+        $reporter               = 0;
+
+        $user                   = null;
+        $rdo                    = null;
+        $params                 = null;
+        $sync                   = null;
+        $trans                  = null;
+
+
+        /* Start Transaction */
+        $trans = $DB->start_delegated_transaction();
+
+        try {
+            /* Get User data */
+            $user = $DB->get_record('user',array('username' => $managerReporter->personalNumber,'deleted' => '0'),'id');
+
+            /* Check If Exist */
+            if ($user) {
+                /* Manager && Reporter  */
+                if (($managerReporter->prioritet == 1) ||
+                    ($managerReporter->prioritet == 2)) {
+                    $manager = 1;
+                    $reporter = 1;
+                }//Manager&&Reporter
+                /* Reporter */
+                if (($managerReporter->prioritet != 1) &&
+                    ($managerReporter->prioritet != 2)) {
+                    $reporter  = 1;
+                }//Manager&&Reporter
+
+                /* Get Info Manager */
+                list($infoManager,$infoReporter) = self::GetInfoManager($managerReporter->ksId,$managerReporter->level,$user->id);
+
+                /* Apply Action */
+                switch ($managerReporter->action) {
+                    case ADD_ACTION:
+
+                        /* Add the user as manager if it's the case */
+                        if ($manager) {
+                            /* Check if the user is already manager or not */
+                            $IsManager = self::IsManagerReporter($infoManager,MANAGER);
+                            if (!$IsManager) {
+                                /* Create   */
+                                $DB->insert_record('report_gen_company_manager',$infoManager);
+                            }//if_manager
+
+                            /* Check if the user is already reporter or not */
+                            $IsReporter = self::IsManagerReporter($infoReporter,REPORTER);
+                            if (!$IsReporter) {
+                                /* Create */
+                                $DB->insert_record('report_gen_company_reporter',$infoReporter);
+                            }//if_reporter
+                        }else if($reporter) {
+                            /* Check if the user is already reporter or not */
+                            $IsReporter = self::IsManagerReporter($infoReporter,REPORTER);
+                            if (!$IsReporter) {
+                                /* Create */
+                                $DB->insert_record('report_gen_company_reporter',$infoReporter);
+                            }//if_reporter
+                        }
+
+                        /* Synchronized */
+                        $sync = true;
+
+                        break;
+                    case UPDATE_ACTION:
+
+                        /* Add the user as manager if it's the case */
+                        if ($manager) {
+                            /* Check if the user is already manager or not */
+                            $IsManager = self::IsManagerReporter($infoManager,MANAGER);
+                            if (!$IsManager) {
+                                /* Create   */
+                                $DB->insert_record('report_gen_company_manager',$infoManager);
+                            }//if_manager
+
+                            /* Check if the user is already reporter or not */
+                            $IsReporter = self::IsManagerReporter($infoReporter,REPORTER);
+                            if (!$IsReporter) {
+                                /* Create */
+                                $DB->insert_record('report_gen_company_reporter',$infoReporter);
+                            }//if_reporter
+                        }else if ($reporter) {
+                            /* Check if the user is already reporter or not */
+                            $IsReporter = self::IsManagerReporter($infoReporter,REPORTER);
+                            if (!$IsReporter) {
+                                /* Create */
+                                $DB->insert_record('report_gen_company_reporter',$infoReporter);
+                            }//if_reporter
+                        }
+
+                        /* Synchronized */
+                        $sync = true;
+
+                        break;
+                    case DELETE_ACTION:
+                        /* Delete From Manager  */
+                        if ($manager) {
+                            $IsManager = self::IsManagerReporter($infoManager,MANAGER);
+                            if ($IsManager) {
+                                $DB->delete_records('report_gen_company_manager',array('id' => $IsManager));
+                            }//if_Manager
+
+                            /* Delete From Reporter */
+                            $IsReporter = self::IsManagerReporter($infoReporter,REPORTER);
+                            if ($IsReporter) {
+                                $DB->delete_records('report_gen_company_reporter',array('id' => $IsReporter));
+                            }//if_reporter
+                        }else if ($reporter) {
+                            /* Delete From Reporter */
+                            $IsReporter = self::IsManagerReporter($infoReporter,REPORTER);
+                            if ($IsReporter) {
+                                $DB->delete_records('report_gen_company_reporter',array('id' => $IsReporter));
+                            }//if_reporter
+                        }//if_manager
+
+                        /* Synchronized */
+                        $sync = true;
+
+                        break;
+                }//action
+            }//if_user
+
+            /* Commit */
+            $trans->allow_commit();
+
+            return $sync;
+        }catch (Exception $ex) {
+            /* Rollback */
+            $trans->rollback($ex);
+
+            throw $ex;
+        }//try_catch
+    }//ProcessUserManagerReporter
 
     /**
      * @param           $userCompetence
@@ -507,9 +725,6 @@ class WS_FELLESDATA {
                 $infoCompetenceData->rejected       = 0;
                 $infoCompetenceData->timemodified   = $time;
 
-                /* Get Info Manager */
-                list($infoManager,$infoReporter) = self::GetInfoManager($userCompetence->ksId,$userCompetence->level,$user->id);
-
                 /* Apply Action */
                 switch ($userCompetence->action) {
                     case ADD_ACTION:
@@ -518,23 +733,6 @@ class WS_FELLESDATA {
                             /* Execute          */
                             $infoCompetenceData->id = $DB->insert_record('user_info_competence_data',$infoCompetenceData);
                         }//if_not_competenceData
-
-                        /* Add the user as manager if it's the case */
-                        if ($userCompetence->manager) {
-                            /* Check if the user is already manager or not */
-                            $IsManager = self::IsManagerReporter($infoManager,MANAGER);
-                            if (!$IsManager) {
-                                /* Create   */
-                                $DB->insert_record('report_gen_company_manager',$infoManager);
-                            }//if_manager
-
-                            /* Check if the user is already reporter or not */
-                            $IsReporter = self::IsManagerReporter($infoReporter,REPORTER);
-                            if (!$IsReporter) {
-                                /* Create */
-                                $DB->insert_record('report_gen_company_reporter',$infoReporter);
-                            }//if_reporter
-                        }//if_manager
 
                         /* Synchronized */
                         $sync = true;
@@ -549,34 +747,6 @@ class WS_FELLESDATA {
                             $infoCompetenceData->id = $DB->insert_record('user_info_competence_data',$infoCompetenceData);
                         }//if_not_competenceData
 
-                        /* Check if the user is already manager or not */
-                        $IsManager = self::IsManagerReporter($infoManager,MANAGER);
-
-                        /* Check if the user is already reporter or not */
-                        $IsReporter = self::IsManagerReporter($infoReporter,REPORTER);
-
-                        /* Add the user as manager if it's the case */
-                        if ($userCompetence->manager) {
-                            if (!$IsManager) {
-                                /* Create   */
-                                $DB->insert_record('report_gen_company_manager',$infoManager);
-                            }//if_manager
-
-                            if (!$IsReporter) {
-                                /* Create */
-                                $DB->insert_record('report_gen_company_reporter',$infoReporter);
-                            }//if_reporter
-                        }else {
-                            /* Delete */
-                            if ($IsManager) {
-                                $DB->delete_records('report_gen_company_manager',array('id' => $IsManager));
-                            }//if_manager
-
-                            if ($IsReporter) {
-                                $DB->delete_records('report_gen_company_reporter',array('id' => $IsReporter));
-                            }//if_reporter
-                        }//if_manager
-
                         /* Synchronized */
                         $sync = true;
 
@@ -585,18 +755,6 @@ class WS_FELLESDATA {
                         if ($competenceData) {
                             /* Delete */
                             $DB->delete_records('user_info_competence_data',array('id' => $competenceData->id));
-
-                            /* Delete From Manager  */
-                            $IsManager = self::IsManagerReporter($infoManager,MANAGER);
-                            if ($IsManager) {
-                                $DB->delete_records('report_gen_company_manager',array('id' => $IsManager));
-                            }//if_Manager
-
-                            /* Delete From Reporter */
-                            $IsReporter = self::IsManagerReporter($infoReporter,REPORTER);
-                            if ($IsReporter) {
-                                $DB->delete_records('report_gen_company_reporter',array('id' => $IsReporter));
-                            }//if_reporter
 
                             /* Synchronized */
                             $sync = true;

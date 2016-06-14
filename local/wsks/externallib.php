@@ -654,6 +654,80 @@ class local_wsks_external extends external_api {
         }//try_catch
     }//wsKSJobRolesGenerics
 
+    /**********************/
+    /* wsManagerReporter */
+    /*********************/
+
+    public static function wsManagerReporter_parameters() {
+        /* Manager Reporter Info */
+        $personalNumber = new external_value(PARAM_TEXT,'Personal Number');
+        $fsId           = new external_value(PARAM_INT,'FS Company Id');
+        $companyID      = new external_value(PARAM_INT,'Company Id KS');
+        $level          = new external_value(PARAM_INT,'Level');
+        $priority       = new external_value(PARAM_INT,'prioritet');
+        $action         = new external_value(PARAM_INT,'Action. Add/Update/Delete');
+
+        /* Manager Reporter */
+        $userManagerReporter = new external_single_structure(array('personalNumber'  => $personalNumber,
+                                                                   'fsId'            => $fsId,
+                                                                   'ksId'            => $companyID,
+                                                                   'level'           => $level,
+                                                                   'prioritet'         => $priority,
+                                                                   'action'          => $action));
+
+        return new external_function_parameters(array('managerReporter'=> new external_multiple_structure($userManagerReporter)));
+    }//wsManagerReporter_parameters
+
+    public static function wsManagerReporter_returns() {
+        $error      = new external_value(PARAM_INT,'Error. True/False');
+        $msgError   = new external_value(PARAM_TEXT,'Error Description');
+
+        /* Manager Reporter Info */
+        $personalNumber = new external_value(PARAM_TEXT,'Personal Number');
+        $imported       = new external_value(PARAM_INT,'True/False');
+        $key            = new external_value(PARAM_INT,'Key Id record imported');
+
+        /* Manager Reporter */
+        $userManagerReporter = new external_single_structure(array('personalNumber'  => $personalNumber,
+                                                                   'imported'        => $imported,
+                                                                   'key'             => $key));
+
+        $existReturn = new external_single_structure(array('error'              => $error,
+                                                           'message'            => $msgError,
+                                                           'managerReporter'    => new external_multiple_structure($userManagerReporter)));
+
+        return $existReturn;
+    }//wsManagerReporter_returns
+
+
+    public static function wsManagerReporter($userManagerReporter) {
+        /* Variables    */
+        global $CFG;
+        $result     = array();
+
+        /* Parameter Validation */
+        $params = self::validate_parameters(self::wsManagerReporter_parameters(), array('managerReporter' => $userManagerReporter));
+
+        /* Web Service response */
+        $result['error']            = 200;
+        $result['message']          = '';
+        $result['managerReporter']  = array();
+
+        try {
+            /* Synchronize Users Competences */
+            WS_FELLESDATA::Synchronize_UserManagerReporter($userManagerReporter,$result);
+
+            return $result;
+        }catch (Exception $ex) {
+            if ($result['error'] == '200') {
+                $result['error']    = 500;
+                $result['message']  = $ex->getMessage() . ' ' . $ex->getTraceAsString();
+            }//if_error
+
+            return $result;
+        }//try_catch
+    }//wsManagerReporter
+
     /****************************/
     /* wsUserCompetenceCompany  */
     /****************************/

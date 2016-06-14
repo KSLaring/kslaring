@@ -95,6 +95,17 @@ $fonKSJobRolesGenericsConfig = array(
                                     );
 
 
+/* User Manager Reporter        */
+$fonManagerReporter             = 'wsManagerReporter';
+$fonManagerReporterConfig       = array(
+                                        'classname'     => $className,
+                                        'methodname'    => $fonManagerReporter,
+                                        'classpath'     => $classPath,
+                                        'description'   => 'Fellesdata Integration. Manager Reporter',
+                                        'type'          => 'write',
+                                        'capabilities'  => ''
+);
+
 /* User Competence Profile  */
 /* Competence Company   */
 $fonCompetenceCompany           = 'wsUserCompetenceCompany';
@@ -143,6 +154,7 @@ $functions = array(
                     $fonFSJobRoles			=> $fonFSJobRolesConfig,
                     $fonKSJobRoles	        => $fonKSJobRolesConfig,
                     $fonKSJobRolesGenerics	=> $fonKSJobRolesGenericsConfig,
+                    $fonManagerReporter     => $fonManagerReporterConfig,
                     $fonCompetenceCompany	=> $fonCompetenceCompanyConfig,
                     $fonCompetenceJobRole	=> $fonCompetenceJobRoleConfig,
                     $fonUsersAccounts		=> $fonUsersAccountsConfig);
@@ -162,7 +174,7 @@ $serviceADFSConfig  = array(
  */
 $serviceFS        = 'fellesdata';
 $serviceFSConfig  = array(
-                          'functions'         => array($fonCompany,$fonHierarchy,$fonFSJobRoles,$fonKSJobRoles,$fonKSJobRolesGenerics,$fonCompetenceCompany,$fonCompetenceJobRole,$fonUsersAccounts),
+                          'functions'         => array($fonCompany,$fonHierarchy,$fonFSJobRoles,$fonKSJobRoles,$fonKSJobRolesGenerics,$fonManagerReporter,$fonCompetenceCompany,$fonCompetenceJobRole,$fonUsersAccounts),
                           'restrictedusers'   => 1,
                           'enabled'           => 1
 );
