@@ -1022,7 +1022,7 @@ class FSKS_USERS {
                             ks.hierarchylevel,
                             fs.prioritet,
                             fs.action
-                     FROM	  {fs_imp_users_company}  fs
+                     FROM	  {fs_imp_managers_reporters}  fs
                         JOIN  {user}				  u 	ON  u.username    = fs.fodselsnr
                                                             AND u.deleted     = 0
                         JOIN  {ksfs_company}		  fsk	ON  fsk.fscompany = fs.org_enhet_id
