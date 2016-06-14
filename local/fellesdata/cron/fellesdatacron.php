@@ -20,11 +20,13 @@ define('TEST_FS_USERS',3);
 define('TEST_FS_ORG',4);
 define('TEST_FS_JR',5);
 define('TEST_FS_MANAGERS_REPORTERS',6);
-
 define('TEST_FS_USER_COMP_JR',7);
+
 define('TEST_FS_SYNC_ORG',8);
 define('TEST_FS_SYNC_JR',9);
-define('TEST_FS_SYNC_COMP_U',10);
+
+define('TEST_FS_SYNC_MANAGERS_REPORTERS',10);
+
 define('TEST_FS_SYNC_COMP_JR',11);
 define('TEST_FS_SYNC_FS_USERS',12);
 
@@ -140,9 +142,10 @@ class FELLESDATA_CRON {
                     //self::JobRolesFS_Synchronization($pluginInfo,false);
 
                     break;
-                case TEST_FS_SYNC_COMP_U:
-                    /* Synchronization User Competence Company  */
-                    self::UserCompetence_Synchronization($pluginInfo,IMP_COMPETENCE_COMP,KS_USER_COMPETENCE_CO);
+                case TEST_FS_SYNC_MANAGERS_REPORTERS:
+                    echo "Synchronization Manager Reporters";
+                    /* Synchronization Managers && Reporters    */
+                    self::ManagerReporter_Synchronization($pluginInfo,KS_MANAGER_REPORTER);
 
                     break;
                 case TEST_FS_SYNC_COMP_JR:
@@ -997,6 +1000,45 @@ class FELLESDATA_CRON {
             throw $ex;
         }//try_catch
     }//UserCompetence_Synchronization
+
+    private static function ManagerReporter_Synchronization($pluginInfo,$service) {
+        /* Variables    */
+        global $DB,$CFG;
+        $toSynchronize  = null;
+        $response       = null;
+        $dbLog          = null;
+
+        /* Log  */
+        $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' Start  Manager Reporter Synchronization . ' . "\n";
+        error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
+
+        try {
+            /* Get Info to Synchronize  */
+            $toSynchronize = FSKS_USERS::GetManagersReporters_ToSynchronize();
+
+            /* Call Web Service  */
+            if ($toSynchronize) {
+                $response = self::ProcessKSService($pluginInfo,$service,$toSynchronize);
+                if ($response['error'] == '200') {
+                    /* Synchronize Users Competence    */
+                    FSKS_USERS::Synchronize_ManagerReporterFS($toSynchronize,$response['users']);
+
+                    //$DB->delete_records('fs_imp_managers_reporters',array('imported' => '1'));
+                }//if_no_error
+            }//if_toSynchronize
+
+            /* Log  */
+            $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' Finish  Manager Reporter Synchronization . ' . "\n";
+            error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
+        }catch (Exception $ex) {
+            /* Log  */
+            $dbLog  = $ex->getMessage() . "\n" . "\n";
+            $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' Finish ERROR Manaer Reporter Synchronization . ' . "\n";
+            error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
+
+            throw $ex;
+        }//try_catch
+    }//ManagerReporter_Synchronization
 
     /*******************/
     /* Extra Functions */

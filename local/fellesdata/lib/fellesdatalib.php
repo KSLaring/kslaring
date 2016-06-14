@@ -23,6 +23,7 @@ define('KS_ORG_STRUCTURE','wsKSOrganizationStructure');
 define('KS_SYNC_FS_JOBROLES','wsFSJobRoles');
 define('KS_JOBROLES','wsKSJobRoles');
 define('KS_JOBROLES_GENERICS','wsKSJobRolesGenerics');
+define('KS_MANAGER_REPORTER','wsManagerReporter');
 define('KS_USER_COMPETENCE_CO','wsUserCompetenceCompany');
 define('KS_USER_COMPETENCE_JR','wsUserCompetenceJobRole');
 define('KS_USER_MANAGER','wsManagerCompany');
@@ -990,6 +991,73 @@ class FSKS_USERS {
     }//UsersFS_To_Synchronize
 
     /**
+     * @return          array
+     * @throws          Exception
+     *
+     * @creationDate    14/06/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Get User Managers/Reporters to synchronize
+     */
+    public static function GetManagersReporters_ToSynchronize() {
+        /* Variables    */
+        global $DB,$SESSION;
+        $params             = null;
+        $sql                = null;
+        $rdo                = null;
+        $managersReporters  = array();
+        $info               = null;
+
+        try {
+            /* Search criteria */
+            $params = array();
+            $params['imported'] = 0;
+
+            /* SQL Instruction  */
+            $sql = " SELECT	fs.id,
+                            fs.fodselsnr,
+                            fsk.fscompany,
+                            fsk.kscompany,
+                            ks.hierarchylevel,
+                            fs.prioritet,
+                            fs.action
+                     FROM	  {fs_imp_users_company}  fs
+                        JOIN  {user}				  u 	ON  u.username    = fs.fodselsnr
+                                                            AND u.deleted     = 0
+                        JOIN  {ksfs_company}		  fsk	ON  fsk.fscompany = fs.org_enhet_id
+                        JOIN  {ks_company}			  ks	ON	ks.companyid  = fsk.kscompany
+                     WHERE	fs.imported	= :imported ";
+
+            /* Check if it's a manual execution */
+            if ($SESSION->manual) {
+                $sql .= " LIMIT 0,2000 ";
+            }//if_manual
+
+            /* Execute  */
+            $rdo = $DB->get_records_sql($sql,$params);
+            if ($rdo) {
+                foreach ($rdo as $instance) {
+                    /* Info Competence  */
+                    $info = new stdClass();
+                    $info->personalNumber   = $instance->fodselsnr;
+                    $info->ksId             = $instance->kscompany;
+                    $info->fsId             = $instance->fscompany;
+                    $info->level            = $instance->hierarchylevel;
+                    $info->prioritet        = $instance->prioritet;
+                    $info->action           = $instance->action;
+                    /* Add Competence   */
+                    $managersReporters[$instance->id] = $info;
+                }//for_Rdo
+            }//if_rdo
+
+            return $managersReporters;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//GetManagersReporters_ToSynchronize
+
+    /**
      * @param           $competenceType
      *
      * @return          array
@@ -1009,10 +1077,6 @@ class FSKS_USERS {
         try {
             /* Get Users Competence  to synchronize  */
             switch ($competenceType) {
-                case IMP_COMPETENCE_COMP:
-                    $toSynchronize = self::GetUsersCompetence_ToSynchronize();
-
-                    break;
                 case IMP_COMPETENCE_JR:
                     $toSynchronize = self::GetUsersCompetenceJR_ToSynchronize();
 
@@ -1048,10 +1112,6 @@ class FSKS_USERS {
         try {
             /* Competence Type  */
             switch ($competenceType) {
-                case IMP_COMPETENCE_COMP:
-                    $functionName = 'SynchronizeCompetenceCompanyFS';
-
-                    break;
                 case IMP_COMPETENCE_JR:
                     $functionName = 'SynchronizeCompetenceJobRolesFS';
 
@@ -1076,6 +1136,43 @@ class FSKS_USERS {
         }//try_catch
     }//Synchronize_UsersCompetenceFS
 
+
+    /**
+     * @param           $usersTo
+     * @param           $competencesImported
+     *
+     * @throws          Exception
+     *
+     * @creationDate    14/06/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Synchronize Manager && Reporters
+     */
+    public static function Synchronize_ManagerReporterFS($usersTo,$competencesImported) {
+        /* Variables    */
+        $infoUser       = null;
+        $objCompetence  = null;
+
+        try {
+
+            /* Synchronize Manager&&Reporter */
+            foreach ($competencesImported as $competence) {
+                /* Convert to object    */
+                $objCompetence = (Object)$competence;
+
+                if ($objCompetence->imported) {
+                    /* Get Info */
+                    $infoUser = $usersTo[$objCompetence->key];
+
+                    /* Synchronize Manager&&Reporter */
+                    self::SynchronizeManagerReporterFS($infoUser,$objCompetence->key);
+                }//if_imported
+            }//for_competencesImported
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//Synchronize_ManagerReporterFS
 
     /***********/
     /* PRIVATE */
@@ -1207,74 +1304,6 @@ class FSKS_USERS {
     }//SynchronizeUserFS
 
     /**
-     * @return          array
-     * @throws          Exception
-     *
-     * @creationDate    11/02/2016
-     * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Get User Competences Companies to synchronize
-     */
-    private static function GetUsersCompetence_ToSynchronize() {
-        /* Variables    */
-        global $DB,$SESSION;
-        $params     = null;
-        $sql        = null;
-        $rdo        = null;
-        $usersComp  = array();
-        $infoComp   = null;
-
-        try {
-            /* Search criteria */
-            $params = array();
-            $params['imported'] = 0;
-
-            /* SQL Instruction  */
-            $sql = " SELECT	fs.id,
-                            fs.fodselsnr,
-                            fsk.fscompany,
-                            fsk.kscompany,
-                            ks.hierarchylevel,
-                            fs.prioritet,
-                            fs.action
-                     FROM	  {fs_imp_users_company}  fs
-                        JOIN  {user}				  u 	ON  u.username    = fs.fodselsnr
-                                                            AND u.deleted     = 0
-                        JOIN  {ksfs_company}		  fsk	ON  fsk.fscompany = fs.org_enhet_id
-                        JOIN  {ks_company}			  ks	ON	ks.companyid  = fsk.kscompany
-                     WHERE	fs.imported	= :imported ";
-
-            /* Check if it's a manual execution */
-            if ($SESSION->manual) {
-                $sql .= " LIMIT 0,2000 ";
-            }//if_manual
-
-            /* Execute  */
-            $rdo = $DB->get_records_sql($sql,$params);
-            if ($rdo) {
-                foreach ($rdo as $instance) {
-                    /* Info Competence  */
-                    $infoComp = new stdClass();
-                    $infoComp->personalNumber   = $instance->fodselsnr;
-                    $infoComp->ksId             = $instance->kscompany;
-                    $infoComp->fsId             = $instance->fscompany;
-                    $infoComp->level            = $instance->hierarchylevel;
-                    $infoComp->manager          = ($instance->prioritet == 1 ? 1 : 0);
-                    $infoComp->action           = $instance->action;
-
-                    /* Add Competence   */
-                    $usersComp[$instance->id] = $infoComp;
-                }//for_Rdo
-            }//if_rdo
-
-            return $usersComp;
-        }catch (Exception $ex) {
-            throw $ex;
-        }//try_catch
-    }//GetUsersCompetence_ToSynchronize
-
-    /**
      * @return          null
      * @throws          Exception
      *
@@ -1353,21 +1382,21 @@ class FSKS_USERS {
     }//GetUsersCompetenceJR_ToSynchronize
 
     /**
-     * @param           $competenceFS
+     * @param           $infoUserFS
      * @param           $fsKey
      *
      * @throws          Exception
      *
-     * @creationDate    11/02/2016
+     * @creationDate    14/06/2016
      * @author          eFaktor     (fbv)
      *
      * Description
-     * Synchronize user competence company in FS
+     * Synchronization Manager&&Reporters from fellesdata
      */
-    private static function SynchronizeCompetenceCompanyFS($competenceFS,$fsKey) {
+    private static function SynchronizeManagerReporterFS($infoUserFS,$fsKey) {
         /* Variables    */
         global $DB;
-        $infoCompetence = null;
+        $infoFS = null;
         $rdo            = null;
         $params         = null;
         $sync           = null;
@@ -1379,12 +1408,12 @@ class FSKS_USERS {
         try {
             /* GEt info fs_user_company     */
             $params = array();
-            $params['personalnumber']    = $competenceFS->personalNumber;
-            $params['companyid']         = $competenceFS->fsId;
+            $params['personalnumber']    = $infoUserFS->personalNumber;
+            $params['companyid']         = $infoUserFS->fsId;
             $rdo = $DB->get_record('fs_users_company',$params);
 
             /* Apply action */
-            switch ($competenceFS->action) {
+            switch ($infoUserFS->action) {
                 case ADD:
                     /* Check if already exists  */
                     if ($rdo) {
@@ -1394,15 +1423,15 @@ class FSKS_USERS {
                         $DB->update_record('fs_users_company',$rdo);
                     }else {
                         /* Create Entry */
-                        $infoCompetence = new stdClass();
-                        $infoCompetence->companyid          = $competenceFS->fsId;
-                        $infoCompetence->personalnumber     = $competenceFS->personalNumber;
-                        $infoCompetence->level              = $competenceFS->level;
-                        $infoCompetence->priority           = ($competenceFS->manager ? 1 : 99);
-                        $infoCompetence->synchronized       = 1;
+                        $infoFS = new stdClass();
+                        $infoFS->companyid          = $infoUserFS->fsId;
+                        $infoFS->personalnumber     = $infoUserFS->personalNumber;
+                        $infoFS->level              = $infoUserFS->level;
+                        $infoFS->priority           = $infoUserFS->prioritet;
+                        $infoFS->synchronized       = 1;
 
                         /* Execute  */
-                        $DB->insert_record('fs_users_company',$infoCompetence);
+                        $DB->insert_record('fs_users_company',$infoFS);
                     }//if_exists
 
                     /* Synchronized */
@@ -1412,10 +1441,10 @@ class FSKS_USERS {
                 case UPDATE:
                     /* Update if exists */
                     if ($rdo) {
-                        $rdo->companyid          = $competenceFS->fsId;
-                        $rdo->personalnumber     = $competenceFS->personalNumber;
-                        $rdo->level              = $competenceFS->level;
-                        $rdo->priority           = ($competenceFS->manager ? 1 : 99);
+                        $rdo->companyid          = $infoUserFS->fsId;
+                        $rdo->personalnumber     = $infoUserFS->personalNumber;
+                        $rdo->level              = $infoUserFS->level;
+                        $rdo->priority           = $infoUserFS->prioritet;
                         $rdo->synchronized       = 1;
 
                         /* Execute  */
@@ -1455,7 +1484,7 @@ class FSKS_USERS {
 
             throw $ex;
         }//try_catch
-    }//SynchronizeCompetenceCompanyFS
+    }//SynchronizeManagerReporterFS
 
     /**
      * @param           $competenceFS
