@@ -1021,7 +1021,7 @@ class FELLESDATA_CRON {
                 $response = self::ProcessKSService($pluginInfo,$service,$toSynchronize);
                 if ($response['error'] == '200') {
                     /* Synchronize Users Competence    */
-                    FSKS_USERS::Synchronize_ManagerReporterFS($toSynchronize,$response['users']);
+                    FSKS_USERS::Synchronize_ManagerReporterFS($toSynchronize,$response['managerReporter']);
 
                     //$DB->delete_records('fs_imp_managers_reporters',array('imported' => '1'));
                 }//if_no_error
