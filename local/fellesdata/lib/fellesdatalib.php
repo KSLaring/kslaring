@@ -1466,7 +1466,19 @@ class FSKS_USERS {
                         $toDeleteFromKS = self::DeleteFromCompetenceFS($instance);
 
                         if ($toDeleteFromKS) {
-                            echo "Call Web Service";
+                            /* Info Competence JR   */
+                            $infoComp = new stdClass();
+                            $infoComp->personalNumber   = $instance->fodselsnr;
+                            $infoComp->jobrole          = $instance->ksjobrole;
+                            $infoComp->fsjobroles       = $instance->fsjobroles;
+                            $infoComp->fsId             = $instance->fscompany;
+                            $infoComp->company          = $instance->companyid;
+                            $infoComp->level            = $instance->hierarchylevel;
+                            $infoComp->impkeys          = $instance->impkeys;
+                            $infoComp->action           = DELETE;
+
+                            /* Add competence */
+                            $usersComp[] = $infoComp;
                         }
                     }else {
                         /* Info Competence JR   */
