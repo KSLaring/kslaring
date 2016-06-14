@@ -1499,8 +1499,8 @@ class FSKS_USERS {
             /* Search criteria */
             $params = array();
             $params['personalnumber']   = $competence->fodselsnr;
-            $params['companyid']        = $competence->company;
-            $params['ksjrcode']         = $competence->jobrole;
+            $params['companyid']        = $competence->companyid;
+            $params['ksjrcode']         = $competence->ksjobrole;
 
             /* Execute  */
             $rdo = $DB->get_record_sql('fs_users_competence',$params);
