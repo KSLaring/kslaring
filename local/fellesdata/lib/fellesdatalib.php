@@ -1503,7 +1503,7 @@ class FSKS_USERS {
             $params['ksjrcode']         = $competence->ksjobrole;
 
             /* Execute  */
-            $rdo = $DB->get_record_sql('fs_users_competence',$params);
+            $rdo = $DB->get_record('fs_users_competence',$params);
             if ($rdo) {
                 $myFSJobroles   = array_flip(explode(',',$rdo->jrcode));
                 $fsJobRoles     = explode(',',$competence->fsjobroles);
