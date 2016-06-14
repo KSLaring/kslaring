@@ -772,6 +772,7 @@ class local_wsks_external extends external_api {
         /* User Competence Info */
         $personalNumber = new external_value(PARAM_TEXT,'Personal Number');
         $jobRole        = new external_value(PARAM_TEXT,'Job Roles Id');
+        $fsjobRoles     = new external_value(PARAM_TEXT,'FS job roles');
         $companyID      = new external_value(PARAM_INT,'Company Id');
         $fsId           = new external_value(PARAM_INT,'FS Company Id');
         $level          = new external_value(PARAM_INT,'Level');
@@ -780,6 +781,7 @@ class local_wsks_external extends external_api {
 
         $userCompetence = new external_single_structure(array('personalNumber'  => $personalNumber,
                                                               'jobrole'         => $jobRole,
+                                                              'fsjobroles'      => $fsjobRoles,
                                                               'company'         => $companyID,
                                                               'fsId'            => $fsId,
                                                               'level'           => $level,
