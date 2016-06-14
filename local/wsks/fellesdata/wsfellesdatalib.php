@@ -968,6 +968,26 @@ class WS_FELLESDATA {
 
                         break;
                     case DELETE_ACTION:
+                        /* Delete if exists */
+                        if ($competenceData->jobroles) {
+                            /* Extract current job roles */
+                            $myJobRoles = explode(',',$competenceData->jobroles);
+                            if (in_array($userCompetence->jobrole,$myJobRoles)) {
+                                /* Delete job role from the competence */
+                                $myJobRoles = array_flip($myJobRoles);
+                                unset($myJobRoles[$userCompetence->jobrole]);
+                                $myJobRoles = array_flip($myJobRoles);
+
+                                $competenceData->jobroles = implode(',',$myJobRoles);
+
+                                /* Execute */
+                                $DB->update_record('user_info_competence_data',$competenceData);
+
+                                /* Synchronized */
+                                $sync = true;
+                            }//if_exists
+                        }//if_competenceData
+
                         break;
                 }//switch
             }//if_user
