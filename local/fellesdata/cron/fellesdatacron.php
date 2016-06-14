@@ -750,7 +750,7 @@ class FELLESDATA_CRON {
                     FSKS_USERS::Synchronize_UsersFS($usersFS,$response['usersAccounts']);
 
                     /* Clean Table*/
-                    $DB->delete_records('fs_imp_users',array('imported' => '1'));
+                    //$DB->delete_records('fs_imp_users',array('imported' => '1'));
                 }//if_no_error
             }//if_Rdo
 
@@ -836,7 +836,7 @@ class FELLESDATA_CRON {
                 }//if_synchronize
 
                 /* Clean Table*/
-                $DB->delete_records('fs_imp_company',array('imported' => '1'));
+                //$DB->delete_records('fs_imp_company',array('imported' => '1'));
             }//if_else
 
             /* Log  */
@@ -887,7 +887,7 @@ class FELLESDATA_CRON {
                     /* Synchronize Manager Reporters   */
                     FSKS_USERS::Synchronize_UserCompetenceFS($toSynchronize,$response['usersCompetence']);
 
-                    $DB->delete_records('fs_users_competence',array('imported' => '1'));
+                    //$DB->delete_records('fs_users_competence',array('imported' => '1'));
                 }//if_no_error
             }//if_toSynchronize
 
@@ -938,7 +938,7 @@ class FELLESDATA_CRON {
                     /* Synchronize Manager Reporters   */
                     FSKS_USERS::Synchronize_ManagerReporterFS($toSynchronize,$response['managerReporter']);
 
-                    $DB->delete_records('fs_imp_managers_reporters',array('imported' => '1'));
+                    //$DB->delete_records('fs_imp_managers_reporters',array('imported' => '1'));
                 }//if_no_error
             }//if_toSynchronize
 
