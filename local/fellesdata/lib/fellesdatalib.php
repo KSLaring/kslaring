@@ -1509,6 +1509,7 @@ class FSKS_USERS {
 
         try {
             /* Get Info User Job Role (FS) */
+            echo $competenceFS->personalNumber . " - CO: " . $competenceFS->fsId . "  - ksjrcode : " . $competenceFS->jobrole;
             $params = array();
             $params['personalnumber']   = $competenceFS->personalNumber;
             $params['companyid']        = $competenceFS->fsId;
@@ -1530,6 +1531,7 @@ class FSKS_USERS {
                         /* Synchronized */
                         $sync = true;
                     }else {
+                        echo "1 - NEW " . "</br>";
                         /* Create */
                         /* New Entry    */
                         $infoCompetence = new stdClass();
