@@ -49,29 +49,26 @@ class FELLESDATA_CRON {
             $pluginInfo     = get_config('local_fellesdata');
 
             /* Import KS */
-            //self::ImportKS($pluginInfo);
+            self::ImportKS($pluginInfo);
 
             /* Import Fellesdata        */
-            //self::ImportFellesdata($pluginInfo);
+            self::ImportFellesdata($pluginInfo);
 
 
             /* SYNCHRONIZATION  */
             /* Synchronization Users Accounts   */
-            //self::UsersFS_Synchronization($pluginInfo);
+            self::UsersFS_Synchronization($pluginInfo);
 
             /* Synchronization Companies    */
-            //self::CompaniesFS_Synchronization($pluginInfo,$fstExecution);
-
-            /* Synchronization Job Roles    */
-            //self::JobRolesFS_Synchronization($pluginInfo,$fstExecution);
+            self::CompaniesFS_Synchronization($pluginInfo,$fstExecution);
 
             /* Synchronization Comeptence   */
             if (!$fstExecution) {
                 /* Synchronization User Competence JobRole  -- Add/Update */
-                //self::UserCompetence_Synchronization($pluginInfo,KS_USER_COMPETENCE);
+                self::UserCompetence_Synchronization($pluginInfo,KS_USER_COMPETENCE);
 
                 /* Synchronization User Competence JobRole  -- Delete */
-                //self::UserCompetence_Synchronization($pluginInfo,KS_USER_COMPETENCE,true);
+                self::UserCompetence_Synchronization($pluginInfo,KS_USER_COMPETENCE,true);
            }
         }catch (Exception $ex) {
             throw $ex;
@@ -135,11 +132,6 @@ class FELLESDATA_CRON {
                     self::CompaniesFS_Synchronization($pluginInfo,false);
 
                     break;
-                case TEST_FS_SYNC_JR:
-                    /* Synchronization Job Roles    */
-                    //self::JobRolesFS_Synchronization($pluginInfo,false);
-
-                    break;
                 case TEST_FS_SYNC_MANAGERS_REPORTERS:
                     echo "Synchronization Manager Reporters";
                     /* Synchronization Managers && Reporters    */
@@ -147,6 +139,7 @@ class FELLESDATA_CRON {
 
                     break;
                 case TEST_FS_SYNC_COMPETENCE:
+                    echo "Synchronization User Competence";
                     /* Synchronization User Competence JobRole  -- Add/Update */
                     self::UserCompetence_Synchronization($pluginInfo,KS_USER_COMPETENCE);
 
@@ -155,6 +148,7 @@ class FELLESDATA_CRON {
 
                     break;
                 case TEST_FS_SYNC_FS_USERS:
+                    echo "Synchronization Users FS";
                     /* Synchronization Users Accounts   */
                     self::UsersFS_Synchronization($pluginInfo);
 
@@ -477,7 +471,6 @@ class FELLESDATA_CRON {
         $fsResponse = null;
 
         try {
-            echo "Start ImpFSOrgStructure" . "</br>";
             /* Call Web service */
             $fsResponse = self::ProcessTradisService($pluginInfo,TRADIS_FS_COMPANIES);
 
@@ -492,7 +485,6 @@ class FELLESDATA_CRON {
                     FS::SaveTemporary_Fellesdata($content,IMP_COMPANIES);
                 }//if_exists
             }
-            echo "Finish ImpFSOrgStructure" . "</br>";
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
@@ -517,7 +509,6 @@ class FELLESDATA_CRON {
         $fsResponse = null;
 
         try {
-            echo "Start ImportFSJobRoles" . "</br>";
             /* Call Web Service */
             $fsResponse = self::ProcessTradisService($pluginInfo,TRADIS_FS_JOBROLES);
 
@@ -532,7 +523,6 @@ class FELLESDATA_CRON {
                     FS::SaveTemporary_Fellesdata($content,IMP_JOBROLES);
                 }//if_exists
             }
-            echo "Finish ImportFSJobroles" . "</br>";
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
@@ -556,7 +546,6 @@ class FELLESDATA_CRON {
         $fsManagersReporters    = null;
 
         try {
-            echo "Start ImportFSManagersReporters" . "</br>";
             /* Call Web Service */
             $fsManagersReporters = self::ProcessTradisService($pluginInfo,TRADIS_FS_MANAGERS_REPORTERS);
 
@@ -571,8 +560,6 @@ class FELLESDATA_CRON {
                     FS::SaveTemporary_Fellesdata($content,IMP_MANAGERS_REPORTERS);
                 }//if_exists
             }
-
-            echo "Finish ImportFSManagersReporters" . "</br>";
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
@@ -598,7 +585,6 @@ class FELLESDATA_CRON {
         $usersCompetenceJR  = null;
 
         try {
-            echo "Start ImportFSUserCompetenceJR" . "</br>";
             /* Call Web Service */
             $usersCompetenceJR = self::ProcessTradisService($pluginInfo,TRADIS_FS_USERS_JOBROLES);
 
@@ -613,7 +599,6 @@ class FELLESDATA_CRON {
                     FS::SaveTemporary_Fellesdata($content,IMP_COMPETENCE_JR);
                 }//if_exists
             }//if_data
-            echo "Finish ImportFSUserCompetenceJR" . "</br>";
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
@@ -765,7 +750,7 @@ class FELLESDATA_CRON {
                     FSKS_USERS::Synchronize_UsersFS($usersFS,$response['usersAccounts']);
 
                     /* Clean Table*/
-                    //$DB->delete_records('fs_imp_users',array('imported' => '1'));
+                    $DB->delete_records('fs_imp_users',array('imported' => '1'));
                 }//if_no_error
             }//if_Rdo
 
@@ -835,14 +820,13 @@ class FELLESDATA_CRON {
                 /* Synchronize Companies FSKS */
                 /* Call web service    */
                 if ($toSynchronize) {
-                    echo "To Synchronize";
                     $response = self::ProcessKSService($pluginInfo,KS_SYNC_FS_COMPANY,$toSynchronize);
                     if ($response['error'] == '200') {
-
                         FSKS_COMPANY::Synchronize_CompaniesKSFS($toSynchronize,$response['companies']);
                     }else {
-                        /* Log Error    */
-                        echo "1 - Error" . "</br>";
+                        /* Log  */
+                        $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' Finish ERROR Companies FS/KS Synchronization . ' . "\n";
+                        error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
                     }//if_no_error
                 }//if_toSynchronize
 
@@ -852,7 +836,7 @@ class FELLESDATA_CRON {
                 }//if_synchronize
 
                 /* Clean Table*/
-                //$DB->delete_records('fs_imp_company',array('imported' => '1'));
+                $DB->delete_records('fs_imp_company',array('imported' => '1'));
             }//if_else
 
             /* Log  */
@@ -861,82 +845,12 @@ class FELLESDATA_CRON {
         }catch (Exception $ex) {
             /* Log  */
             $dbLog  = $ex->getMessage() . "\n" . "\n";
-            $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' Finish Companies FS/KS Synchronization . ' . "\n";
+            $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' Finish ERROR Companies FS/KS Synchronization . ' . "\n";
             error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
 
             throw $ex;
         }//try_catch
     }//CompaniesFS_Synchronization
-
-    /**
-     * @param           $pluginInfo
-     * @param           $fstExecution
-     *
-     * @throws          Exception
-     *
-     * @creationDate    10/02/2016
-     * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Synchronization of job roles
-     */
-    private static function JobRolesFS_Synchronization($pluginInfo,$fstExecution) {
-        /* Variables    */
-        global $DB,$CFG;
-        $toSynchronize  = null;
-        $toMail         = null;
-        $notifyTo       = null;
-        $response       = null;
-        $dbLog          = null;
-
-        /* Log  */
-        $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' START Job Roles Synchronization . ' . "\n";
-        error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
-
-        try {
-            /* Get Notifications    */
-            if ($pluginInfo->mail_notification) {
-                $notifyTo   = explode(',',$pluginInfo->mail_notification);
-            }//if_mail_notifications
-
-            /* First Execution */
-            if ($fstExecution) {
-                /* Send eMail --> Manual synchronization    */
-                if ($notifyTo) {
-                    self::SendNotifications(SYNC_JR,null,$notifyTo,$pluginInfo->fs_source);
-                }//if_notify
-            }else {
-                /*  Get Info to Synchronize and mail */
-                list($toSynchronize,$toMail) = FSKS_JOBROLES::JobRolesFSToSynchronize();
-
-                /* Send Mail --> Manual Synchronization     */
-                if ($notifyTo) {
-                    if ($toMail) {
-                        self::SendNotifications(SYNC_JR,$toMail,$notifyTo,$pluginInfo->fs_source);
-                    }//if_toMail
-                }//if_notify
-
-                /* Synchronize Job Roles Only FS */
-                if ($toSynchronize) {
-                    FSKS_JOBROLES::Synchronize_JobRoles($toSynchronize);
-                }//if_synchronize
-
-                /* Clean Table*/
-                //$DB->delete_records('fs_imp_jobroles',array('imported' => '1'));
-            }//if_else
-
-            /* Log  */
-            $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' Finish Job Roles Synchronization . ' . "\n";
-            error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
-        }catch (Exception $ex) {
-            /* Log  */
-            $dbLog  = $ex->getMessage() . "\n" . "\n";
-            $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' Finish Job Roles Synchronization . ' . "\n";
-            error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
-
-            throw $ex;
-        }//try_catch
-    }//JobRolesFS_Synchronization
 
     /**
      * @param           $pluginInfo
@@ -973,7 +887,7 @@ class FELLESDATA_CRON {
                     /* Synchronize Manager Reporters   */
                     FSKS_USERS::Synchronize_UserCompetenceFS($toSynchronize,$response['usersCompetence']);
 
-                    //$DB->delete_records('fs_users_competence',array('imported' => '1'));
+                    $DB->delete_records('fs_users_competence',array('imported' => '1'));
                 }//if_no_error
             }//if_toSynchronize
 
@@ -1024,7 +938,7 @@ class FELLESDATA_CRON {
                     /* Synchronize Manager Reporters   */
                     FSKS_USERS::Synchronize_ManagerReporterFS($toSynchronize,$response['managerReporter']);
 
-                    //$DB->delete_records('fs_imp_managers_reporters',array('imported' => '1'));
+                    $DB->delete_records('fs_imp_managers_reporters',array('imported' => '1'));
                 }//if_no_error
             }//if_toSynchronize
 
