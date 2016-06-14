@@ -1461,19 +1461,23 @@ class FSKS_USERS {
             $rdo = $DB->get_records_sql($sql,$params);
             if ($rdo) {
                 foreach ($rdo as $instance) {
-                    /* Info Competence JR   */
-                    $infoComp = new stdClass();
-                    $infoComp->personalNumber   = $instance->fodselsnr;
-                    $infoComp->jobrole          = $instance->ksjobrole;
-                    $infoComp->fsjobroles       = $instance->fsjobroles;
-                    $infoComp->fsId             = $instance->fscompany;
-                    $infoComp->company          = $instance->companyid;
-                    $infoComp->level            = $instance->hierarchylevel;
-                    $infoComp->impkeys          = $instance->impkeys;
-                    $infoComp->action           = ADD;
+                    if ($toDelete) {
+                        self::DeleteFromCompetenceFS($instance);
+                    }else {
+                        /* Info Competence JR   */
+                        $infoComp = new stdClass();
+                        $infoComp->personalNumber   = $instance->fodselsnr;
+                        $infoComp->jobrole          = $instance->ksjobrole;
+                        $infoComp->fsjobroles       = $instance->fsjobroles;
+                        $infoComp->fsId             = $instance->fscompany;
+                        $infoComp->company          = $instance->companyid;
+                        $infoComp->level            = $instance->hierarchylevel;
+                        $infoComp->impkeys          = $instance->impkeys;
+                        $infoComp->action           = ADD;
 
-                    /* Add competence */
-                    $usersComp[] = $infoComp;
+                        /* Add competence */
+                        $usersComp[] = $infoComp;
+                    }//id_delte
                 }//for_rdo
             }//if_Rdo
 
@@ -1482,6 +1486,40 @@ class FSKS_USERS {
             throw $ex;
         }//try_catch
     }//GetUsersCompetence_ToSynchronize
+
+    private static function DeleteFromCompetenceFS($competence) {
+        /* Variables */
+        global $DB;
+        $rdo            = null;
+        $params         = null;
+        $myFSJobroles   = null;
+        $fsJobRoles     = null;
+
+        try {
+            /* Search criteria */
+            $params = array();
+            $params['personalnumber']   = $competence->fodselsnr;
+            $params['companyid']        = $competence->company;
+            $params['ksjrcode']         = $competence->jobrole;
+
+            /* Execute  */
+            $rdo = $DB->get_record_sql('fs_users_competence',$params);
+            if ($rdo) {
+                $myFSJobroles   = array_flip(explode(',',$rdo->jrcode));
+                $fsJobRoles     = explode(',',$competence->fsjobroles);
+                foreach ($fsJobRoles as $fsJR) {
+                    if (array_key_exists($fsJR,$myFSJobroles)) {
+                        unset($myFSJobroles[$fsJR]);
+                        $rdo->jobrole = implode(',',array_keys($myFSJobroles));
+                    }
+                }
+
+                echo "rdo->jobrole : " . $rdo->jobrole;
+            }
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//DeleteFromCompetenceFS
 
     /**
      * @param           $competenceFS

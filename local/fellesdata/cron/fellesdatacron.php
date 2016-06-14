@@ -148,10 +148,10 @@ class FELLESDATA_CRON {
                     break;
                 case TEST_FS_SYNC_COMPETENCE:
                     /* Synchronization User Competence JobRole  -- Add/Update */
-                    self::UserCompetence_Synchronization($pluginInfo,KS_USER_COMPETENCE);
+                    //self::UserCompetence_Synchronization($pluginInfo,KS_USER_COMPETENCE);
 
                     /* Synchronization User Competence JobRole  -- Delete */
-                    //self::UserCompetence_Synchronization($pluginInfo,KS_USER_COMPETENCE,true);
+                    self::UserCompetence_Synchronization($pluginInfo,KS_USER_COMPETENCE,true);
 
                     break;
                 case TEST_FS_SYNC_FS_USERS:
@@ -968,10 +968,10 @@ class FELLESDATA_CRON {
 
             /* Call Web Service  */
             if ($toSynchronize) {
-                $response = self::ProcessKSService($pluginInfo,$service,$toSynchronize);
+                //$response = self::ProcessKSService($pluginInfo,$service,$toSynchronize);
                 if ($response['error'] == '200') {
                     /* Synchronize Manager Reporters   */
-                    FSKS_USERS::Synchronize_UserCompetenceFS($toSynchronize,$response['usersCompetence']);
+                //    FSKS_USERS::Synchronize_UserCompetenceFS($toSynchronize,$response['usersCompetence']);
 
                     //$DB->delete_records('fs_users_competence',array('imported' => '1'));
                 }//if_no_error
