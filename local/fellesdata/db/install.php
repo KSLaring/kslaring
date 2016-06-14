@@ -94,7 +94,7 @@ class Fellesdata_Install {
             self::KSJobRoles_Relation_Table($dbMan);
             self::JR_KSFS_Relation_Table($dbMan);
 
-            self::UsersFSJobRoles_Table($dbMan);
+            self::UsersFSCompetence_Table($dbMan);
         }catch (Exception $ex) {
             /* Delete tables */
             self::Delete_SynchronizationTables($dbMan);
@@ -832,15 +832,15 @@ class Fellesdata_Install {
      * @author          eFaktor     (fbv)
      *
      * Description
-     * Create table mdl_fs_users_jobroles
+     * Create table mdl_fs_users_competence
      */
-    private static function UsersFSJobRoles_Table($dbMan) {
+    private static function UsersFSCompetence_Table($dbMan) {
         /* Variables */
         $tblUsersFSJR = null;
 
         try {
-            /* mdl_fs_users_jobroles    */
-            $tblUsersFSJR = new xmldb_table('fs_users_jobroles');
+            /* mdl_fs_users_competence    */
+            $tblUsersFSJR = new xmldb_table('fs_users_competence');
 
             /* Fields */
             /* Id               --> Primary Key                     */
@@ -851,6 +851,8 @@ class Fellesdata_Install {
             $tblUsersFSJR->add_field('companyid',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, null,null);
             /* jrcode           --> Job role Id from fellesdata     */
             $tblUsersFSJR->add_field('jrcode',XMLDB_TYPE_CHAR,'50',null, XMLDB_NOTNULL, null,null);
+            /* ksjrcode           --> Job role Id from ks     */
+            $tblUsersFSJR->add_field('ksjrcode',XMLDB_TYPE_CHAR,'50',null, XMLDB_NOTNULL, null,null);
             /* synchronized                                         */
             $tblUsersFSJR->add_field('synchronized',XMLDB_TYPE_INTEGER,'2',null, XMLDB_NOTNULL, null,null);
 
@@ -860,13 +862,13 @@ class Fellesdata_Install {
             $tblUsersFSJR->add_key('personalnumber',XMLDB_KEY_FOREIGN,array('personalnumber'), 'user', array('username'));
             /* Index    */
 
-            if (!$dbMan->table_exists('fs_users_jobroles')) {
+            if (!$dbMan->table_exists('fs_users_competence')) {
                 $dbMan->create_table($tblUsersFSJR);
             }//if_exists
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//UsersFSJobRoles_Table
+    }//UsersFSCompetence_Table
 
 
     /**
@@ -932,9 +934,9 @@ class Fellesdata_Install {
                 $dbMan->drop_table($tblKSFS_JR);
             }//if_exists
 
-            /* mdl_fs_users_jobroles    */
-            $tblUsersFSJR = new xmldb_table('fs_users_jobroles');
-            if ($dbMan->table_exists('fs_users_jobroles')) {
+            /* mdl_fs_users_competence    */
+            $tblUsersFSJR = new xmldb_table('fs_users_competence');
+            if ($dbMan->table_exists('fs_users_competence')) {
                 $dbMan->drop_table($tblUsersFSJR);
             }//if_exists
         }catch (Exception $ex) {

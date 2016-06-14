@@ -24,8 +24,11 @@ define('KS_SYNC_FS_JOBROLES','wsFSJobRoles');
 define('KS_JOBROLES','wsKSJobRoles');
 define('KS_JOBROLES_GENERICS','wsKSJobRolesGenerics');
 define('KS_MANAGER_REPORTER','wsManagerReporter');
-define('KS_USER_COMPETENCE_CO','wsUserCompetenceCompany');
-define('KS_USER_COMPETENCE_JR','wsUserCompetenceJobRole');
+define('KS_USER_COMPETENCE','wsUserCompetence');
+
+define('KS_USER_COMPETENCE_CO','wsUserCompetenceCompany'); //DELETE
+define('KS_USER_COMPETENCE_JR','wsUserCompetenceJobRole'); //DELETE
+
 define('KS_USER_MANAGER','wsManagerCompany');
 define('KS_SYNC_USER_ACCOUNT','wsUsersAccounts');
 

@@ -69,9 +69,15 @@ function xmldb_local_fellesdata_upgrade($oldVersion) {
             }//if_not_exists
         }
 
+        /* Managers Reporters Temporary Table */
         if ($oldVersion < 2016061204) {
             Fellesdata_Update::Update_FSImpManagersReporters($dbMan);
-        }
+        }//managersReporters
+
+        /* User Competence Table */
+        if ($oldVersion < 2016061400) {
+            Fellesdata_Update::Update_FSUserCompetence($dbMan);
+        }//UserCompetence
 
         return true;
     }catch (Exception $ex) {
@@ -80,6 +86,62 @@ function xmldb_local_fellesdata_upgrade($oldVersion) {
 }//xmldb_local_fellesdata_upgrade
 
 class Fellesdata_Update {
+    /**
+     * @param           $dbMan
+     * @throws          Exception
+     *
+     * @creationDate    14/06/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Update User Competence
+     */
+    public static function Update_FSUserCompetence($dbMan) {
+        /* Variables */
+        $tblUserCompetence = null;
+
+        try {
+            /* mdl_fs_users_competence    */
+            $tblUsersFSJR = new xmldb_table('fs_users_competence');
+
+            /* Fields */
+            /* Id               --> Primary Key                     */
+            $tblUsersFSJR->add_field('id',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, XMLDB_SEQUENCE,null);
+            /* personalnumber   --> Personal number                 */
+            $tblUsersFSJR->add_field('personalnumber',XMLDB_TYPE_CHAR,'50',null, XMLDB_NOTNULL, null,null);
+            /* companyid        --> Company Id from fellesdata.       */
+            $tblUsersFSJR->add_field('companyid',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, null,null);
+            /* jrcode           --> Job role Id from fellesdata     */
+            $tblUsersFSJR->add_field('jrcode',XMLDB_TYPE_CHAR,'50',null, XMLDB_NOTNULL, null,null);
+            /* ksjrcode           --> Job role Id from ks     */
+            $tblUsersFSJR->add_field('ksjrcode',XMLDB_TYPE_CHAR,'50',null, XMLDB_NOTNULL, null,null);
+            /* synchronized                                         */
+            $tblUsersFSJR->add_field('synchronized',XMLDB_TYPE_INTEGER,'2',null, XMLDB_NOTNULL, null,null);
+
+            /* Keys     */
+            $tblUsersFSJR->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+            $tblUsersFSJR->add_key('companyid',XMLDB_KEY_FOREIGN,array('companyid'), 'fs_company', array('companyid'));
+            $tblUsersFSJR->add_key('personalnumber',XMLDB_KEY_FOREIGN,array('personalnumber'), 'user', array('username'));
+            /* Index    */
+
+            if (!$dbMan->table_exists('fs_users_competence')) {
+                $dbMan->create_table($tblUsersFSJR);
+            }//if_exists
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//Update_FSUserCompetence
+
+    /**
+     * @param           $dbMan
+     * @throws          Exception
+     *
+     * @creationDate    13/06/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Create managers reportes temporary table
+     */
     public static function Update_FSImpManagersReporters($dbMan) {
         /* Variables */
         $tblImpManagersReporters = null;

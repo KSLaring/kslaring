@@ -16,6 +16,7 @@ define('SYNC_JR','jobroles');
 
 define('TEST_ORG',1);
 define('TEST_JR',2);
+
 define('TEST_FS_USERS',3);
 define('TEST_FS_ORG',4);
 define('TEST_FS_JR',5);
@@ -24,10 +25,9 @@ define('TEST_FS_USER_COMP_JR',7);
 
 define('TEST_FS_SYNC_ORG',8);
 define('TEST_FS_SYNC_JR',9);
-
 define('TEST_FS_SYNC_MANAGERS_REPORTERS',10);
 
-define('TEST_FS_SYNC_COMP_JR',11);
+define('TEST_FS_SYNC_COMPETENCE',11);
 define('TEST_FS_SYNC_FS_USERS',12);
 
 class FELLESDATA_CRON {
@@ -148,9 +148,9 @@ class FELLESDATA_CRON {
                     self::ManagerReporter_Synchronization($pluginInfo,KS_MANAGER_REPORTER);
 
                     break;
-                case TEST_FS_SYNC_COMP_JR:
+                case TEST_FS_SYNC_COMPETENCE:
                     /* Synchronization User Competence JobRole  */
-                    self::UserCompetence_Synchronization($pluginInfo,IMP_COMPETENCE_JR,KS_USER_COMPETENCE_JR);
+                    //self::UserCompetence_Synchronization($pluginInfo,);
 
                     break;
                 case TEST_FS_SYNC_FS_USERS:
@@ -1001,6 +1001,18 @@ class FELLESDATA_CRON {
         }//try_catch
     }//UserCompetence_Synchronization
 
+    /**
+     * @param           $pluginInfo
+     * @param           $service
+     *
+     * @throws          Exception
+     *
+     * @creationDate    14/06/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Synchronization Managers Reporters between Fellesdata and KS
+     */
     private static function ManagerReporter_Synchronization($pluginInfo,$service) {
         /* Variables    */
         global $DB,$CFG;
@@ -1020,7 +1032,7 @@ class FELLESDATA_CRON {
             if ($toSynchronize) {
                 $response = self::ProcessKSService($pluginInfo,$service,$toSynchronize);
                 if ($response['error'] == '200') {
-                    /* Synchronize Users Competence    */
+                    /* Synchronize Manager Reporters   */
                     FSKS_USERS::Synchronize_ManagerReporterFS($toSynchronize,$response['managerReporter']);
 
                     //$DB->delete_records('fs_imp_managers_reporters',array('imported' => '1'));
