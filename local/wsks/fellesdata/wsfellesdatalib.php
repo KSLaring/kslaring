@@ -939,7 +939,6 @@ class WS_FELLESDATA {
                 /* Execute */
                 $competenceData = $DB->get_record('user_info_competence_data',$params);
 
-
                 /* Apply Action */
                 switch ($userCompetence->action) {
                     case ADD_ACTION:
