@@ -1410,11 +1410,12 @@ class FSKS_USERS {
     private static function GetUsersCompetence_ToSynchronize($toDelete) {
         /* Variables */
         global $DB,$SESSION;
-        $params     = null;
-        $sql        = null;
-        $rdo        = null;
-        $usersComp  = null;
-        $infoComp   = null;
+        $params         = null;
+        $sql            = null;
+        $rdo            = null;
+        $usersComp      = null;
+        $infoComp       = null;
+        $toDeleteFromKS = false;
 
         try {
             /* Search Criteria  */
@@ -1462,7 +1463,11 @@ class FSKS_USERS {
             if ($rdo) {
                 foreach ($rdo as $instance) {
                     if ($toDelete) {
-                        self::DeleteFromCompetenceFS($instance);
+                        $toDeleteFromKS = self::DeleteFromCompetenceFS($instance);
+
+                        if ($toDeleteFromKS) {
+                            echo "Call Web Service";
+                        }
                     }else {
                         /* Info Competence JR   */
                         $infoComp = new stdClass();
@@ -1494,6 +1499,7 @@ class FSKS_USERS {
         $params         = null;
         $myFSJobroles   = null;
         $fsJobRoles     = null;
+        $toDeleteFromKS = false;
 
         try {
             /* Search criteria */
@@ -1514,8 +1520,16 @@ class FSKS_USERS {
                     }
                 }
 
-                echo "rdo->jobrole : " . $rdo->jobrole;
+                /* Update */
+                $DB->update_record('fs_users_competence',$rdo);
+
+                /* To know it has to be deleted */
+                if (!$rdo->jobrole) {
+                    $toDeleteFromKS = true;
+                }
             }
+
+            return $toDeleteFromKS;
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
