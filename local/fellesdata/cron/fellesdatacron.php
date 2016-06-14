@@ -48,8 +48,6 @@ class FELLESDATA_CRON {
             /* Plugin Info      */
             $pluginInfo     = get_config('local_fellesdata');
 
-            ini_set('memory_limit','1024M');
-
             /* Import KS */
             //self::ImportKS($pluginInfo);
 
@@ -69,11 +67,11 @@ class FELLESDATA_CRON {
 
             /* Synchronization Comeptence   */
             if (!$fstExecution) {
-                /* Synchronization User Competence Company  */
-                //self::UserCompetence_Synchronization($pluginInfo,IMP_COMPETENCE_COMP,KS_USER_COMPETENCE_CO);
+                /* Synchronization User Competence JobRole  -- Add/Update */
+                //self::UserCompetence_Synchronization($pluginInfo,KS_USER_COMPETENCE);
 
-                /* Synchronization User Competence JobRole  */
-                //self::UserCompetence_Synchronization($pluginInfo,IMP_COMPETENCE_JR,KS_USER_COMPETENCE_JR);
+                /* Synchronization User Competence JobRole  -- Delete */
+                //self::UserCompetence_Synchronization($pluginInfo,KS_USER_COMPETENCE,true);
            }
         }catch (Exception $ex) {
             throw $ex;
@@ -149,8 +147,11 @@ class FELLESDATA_CRON {
 
                     break;
                 case TEST_FS_SYNC_COMPETENCE:
-                    /* Synchronization User Competence JobRole  */
-                    //self::UserCompetence_Synchronization($pluginInfo,);
+                    /* Synchronization User Competence JobRole  -- Add/Update */
+                    self::UserCompetence_Synchronization($pluginInfo,KS_USER_COMPETENCE);
+
+                    /* Synchronization User Competence JobRole  -- Delete */
+                    self::UserCompetence_Synchronization($pluginInfo,KS_USER_COMPETENCE,true);
 
                     break;
                 case TEST_FS_SYNC_FS_USERS:
@@ -950,51 +951,41 @@ class FELLESDATA_CRON {
      * Description
      * Synchronization User Competence Companies
      */
-    private static function UserCompetence_Synchronization($pluginInfo,$competenceType,$service) {
+
+
+    private static function UserCompetence_Synchronization($pluginInfo,$service,$toDelete = false) {
         /* Variables    */
         global $DB,$CFG;
         $toSynchronize  = null;
         $response       = null;
-        $tblCompetence  = null;
         $dbLog          = null;
 
         /* Log  */
-        $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' Start  User Competence '  . $competenceType . ' Synchronization . ' . "\n";
+        $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' Start  User Competence Synchronization . ' . "\n";
         error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
 
         try {
-            /* Get Info to Synchronize  */
-            $toSynchronize = FSKS_USERS::UserCompetenceToSynchronize($competenceType);
+            /* Get Info to Synchronize */
+            $toSynchronize = FSKS_USERS::UserCompetence_ToSynchronize($toDelete);
 
             /* Call Web Service  */
             if ($toSynchronize) {
                 $response = self::ProcessKSService($pluginInfo,$service,$toSynchronize);
                 if ($response['error'] == '200') {
-                    /* Synchronize Users Competence    */
-                    FSKS_USERS::Synchronize_UsersCompetenceFS($toSynchronize,$response['usersCompetence'],$competenceType);
+                    /* Synchronize Manager Reporters   */
+                    FSKS_USERS::Synchronize_ManagerReporterFS($toSynchronize,$response['managerReporter']);
 
-                    /* Clean Table*/
-                    switch ($competenceType) {
-                        case IMP_COMPETENCE_COMP:
-                            $tblCompetence = 'fs_imp_users_company';
-
-                            break;
-                        case IMP_COMPETENCE_JR;
-                            $tblCompetence = 'fs_imp_users_jr';
-
-                            break;
-                    }
-                    //$DB->delete_records($tblCompetence,array('imported' => '1'));
+                    //$DB->delete_records('fs_users_competence',array('imported' => '1'));
                 }//if_no_error
             }//if_toSynchronize
 
             /* Log  */
-            $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' Finish  User Competence ' . $competenceType . ' Synchronization . ' . "\n";
+            $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' Finish  User Competence Synchronization . ' . "\n";
             error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
         }catch (Exception $ex) {
             /* Log  */
             $dbLog  = $ex->getMessage() . "\n" . "\n";
-            $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' Finish ERROR User Competence ' . $competenceType . ' Synchronization . ' . "\n";
+            $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' Finish ERROR User Competence Synchronization . ' . "\n";
             error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
 
             throw $ex;

@@ -1060,84 +1060,33 @@ class FSKS_USERS {
         }//try_catch
     }//GetManagersReporters_ToSynchronize
 
+
     /**
-     * @param           $competenceType
+     * @param       bool $toDelete
      *
-     * @return          array
-     * @throws          Exception
+     * @return           null
+     * @throws           Exception
      *
-     * @creationDate    11/02/2016
+     * @creationDate    14/06/2016
      * @author          eFaktor     (fbv)
      *
      * Description
-     * Get users competences to synchronize
-     * companies or Job Roles
+     * User competence to synchronize
      */
-    public static function UserCompetenceToSynchronize($competenceType) {
+    public static function UserCompetence_ToSynchronize($toDelete = false) {
         /* Variables    */
         $toSynchronize = null;
 
         try {
             /* Get Users Competence  to synchronize  */
-            switch ($competenceType) {
-                case IMP_COMPETENCE_JR:
-                    $toSynchronize = self::GetUsersCompetenceJR_ToSynchronize();
-
-                    break;
-            }//competenceType
+            $toSynchronize = self::GetUsersCompetence_ToSynchronize($toDelete);
 
             return $toSynchronize;
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//UserCompetenceToSynchronize
+    }//UserCompetence_ToSynchronize
 
-    /**
-     * @param           $usersCompetence
-     * @param           $competencesImported
-     * @param           $competenceType
-     *
-     * @throws          Exception
-     *
-     * @creationDate    11/02/2016
-     * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Synchronize User Competence in FS Site
-     * Companies or job roles
-     */
-    public static function Synchronize_UsersCompetenceFS($usersCompetence, $competencesImported,$competenceType) {
-        /* Variables    */
-        $infoCompetence = null;
-        $objCompetence  = null;
-        $functionName   = null;
-
-        try {
-            /* Competence Type  */
-            switch ($competenceType) {
-                case IMP_COMPETENCE_JR:
-                    $functionName = 'SynchronizeCompetenceJobRolesFS';
-
-                    break;
-            }//competence_type
-
-            /* Synchronize User Competence Company */
-            foreach ($competencesImported as $competence) {
-                /* Convert to object    */
-                $objCompetence = (Object)$competence;
-
-                if ($objCompetence->imported) {
-                    /* Get Info Competence */
-                    $infoCompetence = $usersCompetence[$objCompetence->key];
-
-                    /* Synchronize Competence Company */
-                    self::$functionName($infoCompetence,$objCompetence->key);
-                }//if_imported
-            }//for_competencesImported
-        }catch (Exception $ex) {
-            throw $ex;
-        }//try_catch
-    }//Synchronize_UsersCompetenceFS
 
 
     /**
@@ -1307,84 +1256,6 @@ class FSKS_USERS {
     }//SynchronizeUserFS
 
     /**
-     * @return          null
-     * @throws          Exception
-     *
-     * @creationDate    12/02/2016
-     * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Get Users Competence Job Role to synchronize
-     */
-    private static function GetUsersCompetenceJR_ToSynchronize() {
-        /* Variables */
-        global $DB,$SESSION;
-        $params     = null;
-        $sql        = null;
-        $rdo        = null;
-        $usersComp  = null;
-        $infoComp   = null;
-
-        try {
-            /* Search Criteria  */
-            $params = array();
-            $params['imported'] = 0;
-
-            /* SQL Instruction  */
-            $sql = " SELECT	  fs_imp.id,
-                              fs_imp.fodselsnr,
-                              fsk_jr.fsjobrole,
-                              ks_jr.jobroleid,
-                              fsk_co.fscompany,
-                              ks_co.companyid,
-                              ks_co.hierarchylevel,
-                              fs_imp.action
-                     FROM	    {fs_imp_users_jr}	fs_imp
-                        JOIN	{user}				u		ON 		u.username 			= fs_imp.fodselsnr
-                                                            AND     u.deleted           = 0
-                        -- CHECK USER COMPETENCE COMAPNY
-                        JOIN	{fs_users_company}	uco		ON		uco.personalnumber	= u.username
-                                                            AND		uco.companyid		= fs_imp.org_enhet_id
-                        -- CHECK COMPANY
-                        JOIN	{ksfs_company}		fsk_co	ON 		fsk_co.fscompany	= uco.companyid
-                        JOIN	{ks_company}		ks_co	ON		ks_co.companyid		= fsk_co.kscompany
-                        -- CHECK JOB ROLE
-                        JOIN	{ksfs_jobroles}		fsk_jr 	ON 		fsk_jr.fsjobrole 	= fs_imp.stillingskode
-                        JOIN 	{ks_jobroles}		ks_jr	ON		ks_jr.jobroleid 	= fsk_jr.ksjobrole
-
-                     WHERE		fs_imp.imported = :imported ";
-
-            /* Check if it's a manual execution */
-            if ($SESSION->manual) {
-                $sql .= " LIMIT 0,2000 ";
-            }//if_manual
-
-            /* Execute */
-            $rdo = $DB->get_records_sql($sql,$params);
-            if ($rdo) {
-                foreach ($rdo as $instance) {
-                    /* Info Competence JR   */
-                    $infoComp = new stdClass();
-                    $infoComp->personalNumber   = $instance->fodselsnr;
-                    $infoComp->fsJrId           = $instance->fsjobrole;
-                    $infoComp->jobrole          = $instance->jobroleid;
-                    $infoComp->fsId             = $instance->fscompany;
-                    $infoComp->company          = $instance->companyid;
-                    $infoComp->level            = $instance->hierarchylevel;
-                    $infoComp->action           = $instance->action;
-
-                    /* Add competence */
-                    $usersComp[$instance->id] = $infoComp;
-                }//for_rdo
-            }//if_Rdo
-
-            return $usersComp;
-        }catch (Exception $ex) {
-            throw $ex;
-        }//try_catch
-    }//GetUsersCompetenceJR_ToSynchronize
-
-    /**
      * @param           $infoUserFS
      * @param           $fsKey
      *
@@ -1489,107 +1360,79 @@ class FSKS_USERS {
         }//try_catch
     }//SynchronizeManagerReporterFS
 
-    /**
-     * @param           $competenceFS
-     * @param           $fsKey
-     *
-     * @throws          Exception
-     *
-     * @creationDate    12/02/2016
-     * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Synchronize user competence job role in FS
-     */
-    private static function SynchronizeCompetenceJobRolesFS($competenceFS,$fsKey) {
+    private static function GetUsersCompetence_ToSynchronize($toDelete) {
         /* Variables */
-        global $DB;
-        $params         = null;
-        $rdo            = null;
-        $sync           = null;
-        $infoCompetence = null;
-        $trans          = null;
-
-        /* Start transaction    */
-        $trans = $DB->start_delegated_transaction();
+        global $DB,$SESSION;
+        $params     = null;
+        $sql        = null;
+        $rdo        = null;
+        $usersComp  = null;
+        $infoComp   = null;
 
         try {
-            /* Get Info User Job Role (FS) */
+            /* Search Criteria  */
             $params = array();
-            $params['personalnumber']   = $competenceFS->personalNumber;
-            $params['companyid']        = $competenceFS->fsId;
-            $params['jrcode']           = $competenceFS->fsJrId;
-            $rdo = $DB->get_record('fs_users_jobroles',$params);
+            $params['imported'] = 0;
+            $params['action']   = ACT_DELETE;
 
-            /* Apply Action */
-            switch ($competenceFS->action) {
-                case ADD:
-                    /* Check if already exists  */
-                    if ($rdo) {
-                        $rdo->synchronized = 1;
+            /* SQL Instruction  */
+            $sql = " SELECT		ksfs.fscompany,
+                                fs.fodselsnr,
+                                ks.companyid,
+                                ks.hierarchylevel,
+                                fsk_jr.ksjobrole,
+                                GROUP_CONCAT(DISTINCT fs.stillingskode ORDER BY fs.stillingskode SEPARATOR ',') as 'fsjobroles',
+                                GROUP_CONCAT(DISTINCT fs.id ORDER BY fs.id SEPARATOR ',') as 'impkeys'
+                     FROM	    {fs_imp_users_jr}	  fs
+                        JOIN	{user}				  u			ON 		u.username 			= fs.fodselsnr
+                                                                AND     u.deleted           = 0
+                        -- COMPANY
+                        JOIN	{ksfs_company}		  ksfs 		ON 		ksfs.fscompany 		= fs.ORG_ENHET_ID
+                        JOIN	{ks_company}		  ks	    ON		ks.companyid		= ksfs.kscompany
+                        -- JOB ROLE
+                        JOIN	{ksfs_jobroles}		  fsk_jr 	ON 		fsk_jr.fsjobrole 	= fs.stillingskode
+                     WHERE		fs.imported = :imported ";
 
-                        /* Execute */
-                        $DB->update_record('fs_users_jobroles',$rdo);
-                    }else {
-                        /* New Entry    */
-                        $infoCompetence = new stdClass();
-                        $infoCompetence->personalnumber = $competenceFS->personalNumber;
-                        $infoCompetence->companyid      = $competenceFS->fsId;
-                        $infoCompetence->jrcode         = $competenceFS->fsJrId;
-                        $infoCompetence->synchronized   = 1;
+            /* To Delete    */
+            if ($toDelete) {
+                $sql .= " AND fs.action = :action ";
+            }else {
+                $sql .= " AND fs.action != :action ";
+            }//if_delte
 
-                        /* Execute */
-                        $DB->insert_record('fs_users_jobroles',$infoCompetence);
-                    }//if_else
+            /* GROUP / ORDER    */
+            $sql .= " GROUP BY fs.fodselsnr,ksfs.fscompany
+                      ORDER BY fs.fodselsnr ";
 
-                    /* Synchronized */
-                    $sync = true;
+            /* Check if it's a manual execution */
+            if ($SESSION->manual) {
+                $sql .= " LIMIT 0,2000 ";
+            }//if_manual
 
-                    break;
-                case UPDATE:
-                    /* Check if already exists  */
-                    if ($rdo) {
-                        /* Update */
-                        $rdo->synchronized   = 1;
+            /* Execute */
+            $rdo = $DB->get_records_sql($sql,$params);
+            if ($rdo) {
+                foreach ($rdo as $instance) {
+                    /* Info Competence JR   */
+                    $infoComp = new stdClass();
+                    $infoComp->personalNumber   = $instance->fodselsnr;
+                    $infoComp->jobrole          = $instance->ksjobrole;
+                    $infoComp->fsId             = $instance->fscompany;
+                    $infoComp->company          = $instance->companyid;
+                    $infoComp->level            = $instance->hierarchylevel;
+                    $infoComp->impkeys          = $instance->impkeys;
+                    $infoComp->action           = $instance->action;
 
-                        /* Execute */
-                        $DB->update_record('fs_users_jobroles',$rdo);
+                    /* Add competence */
+                    $usersComp[] = $infoComp;
+                }//for_rdo
+            }//if_Rdo
 
-                        /* Synchronized */
-                        $sync = true;
-                    }//if_exist
-
-                    break;
-                case DELETE:
-                    /* Delete if exists  */
-                    if ($rdo) {
-                        $DB->delete_records('fs_users_jobroles',array('id' => $rdo->id));
-
-                        /* Synchronized */
-                        $sync = true;
-                    }//if_exits
-
-                    break;
-            }//switch_action
-
-            /* Synchronized */
-            if ($sync) {
-                $instance = new stdClass();
-                $instance->id       = $fsKey;
-                $instance->imported = 1;
-
-                $DB->update_record('fs_imp_users_jr',$instance);
-            }//if_sync
-
-            /* Commit */
-            $trans->allow_commit();
+            return $usersComp;
         }catch (Exception $ex) {
-            /* Rollback    */
-            $trans->rollback($ex);
-
             throw $ex;
         }//try_catch
-    }//SynchronizeCompetenceJobRolesFS
+    }//GetUsersCompetence_ToSynchronize
 
 }//FSKS_USERS
 
