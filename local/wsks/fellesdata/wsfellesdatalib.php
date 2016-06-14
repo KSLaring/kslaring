@@ -923,7 +923,7 @@ class WS_FELLESDATA {
                 $infoCompetenceData->competenceid   = $competenceId;
                 $infoCompetenceData->companyid      = $userCompetence->company;
                 $infoCompetenceData->level          = $userCompetence->level;
-                $infoCompetenceData->jobroles       = $userCompetence->ksjobrole;
+                $infoCompetenceData->jobroles       = $userCompetence->jobrole;
                 $infoCompetenceData->editable       = 0;
                 $infoCompetenceData->approved       = 1;
                 $infoCompetenceData->rejected       = 0;
@@ -948,9 +948,9 @@ class WS_FELLESDATA {
                             /* Extract current job roles */
                             $myJobRoles = explode(',',$competenceData->jobroles);
 
-                            if (!in_array($userCompetence->ksjobrole,$myJobRoles)) {
+                            if (!in_array($userCompetence->jobrole,$myJobRoles)) {
                                 /* Add Job role */
-                                $competenceData->jobroles .= ',' . $userCompetence->ksjobrole;
+                                $competenceData->jobroles .= ',' . $userCompetence->jobrole;
 
                                 /* Execute */
                                 $DB->update_record('user_info_competence_data',$competenceData);
