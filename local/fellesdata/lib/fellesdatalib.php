@@ -1423,8 +1423,9 @@ class FSKS_USERS {
             $params['action']   = DELETE;
 
             /* SQL Instruction  */
-            $sql = " SELECT		ksfs.fscompany,
-                                fs.fodselsnr,
+            $sql = " SELECT		concat(fs.fodselsnr,'_',ksfs.fscompany) as 'id',
+			                    fs.fodselsnr,
+			                    ksfs.fscompany,
                                 ks.companyid,
                                 ks.hierarchylevel,
                                 fsk_jr.ksjobrole,
