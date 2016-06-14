@@ -921,7 +921,7 @@ class WS_FELLESDATA {
                 $infoCompetenceData = new stdClass();
                 $infoCompetenceData->userid         = $user->id;
                 $infoCompetenceData->competenceid   = $competenceId;
-                $infoCompetenceData->companyid      = $userCompetence->ksId;
+                $infoCompetenceData->companyid      = $userCompetence->company;
                 $infoCompetenceData->level          = $userCompetence->level;
                 $infoCompetenceData->jobroles       = $userCompetence->ksjobrole;
                 $infoCompetenceData->editable       = 0;
