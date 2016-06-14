@@ -771,19 +771,19 @@ class local_wsks_external extends external_api {
     public static function wsUserCompetence_parameters() {
         /* User Competence Info */
         $personalNumber = new external_value(PARAM_TEXT,'Personal Number');
-        $jobRoleID      = new external_value(PARAM_TEXT,'Job Roles Id');
-        $jobRoles       = new external_value(PARAM_TEXT,'FS Job Roles');
+        $jobRole        = new external_value(PARAM_TEXT,'Job Roles Id');
         $companyID      = new external_value(PARAM_INT,'Company Id');
-        $fsId           = new external_value(PARAM_INT,'FS Comapny Id');
+        $fsId           = new external_value(PARAM_INT,'FS Company Id');
         $level          = new external_value(PARAM_INT,'Level');
+        $impKeys        = new external_value(PARAM_TEXT,'KEYS IMP FS JR');
         $action         = new external_value(PARAM_INT,'Action. Add/Update/Delete');
 
         $userCompetence = new external_single_structure(array('personalNumber'  => $personalNumber,
-                                                              'jobrole'         => $jobRoleID,
-                                                              'fsJobroles'      => $jobRoles,
+                                                              'jobrole'         => $jobRole,
                                                               'company'         => $companyID,
                                                               'fsId'            => $fsId,
                                                               'level'           => $level,
+                                                              'impkeys'         => $impKeys,
                                                               'action'          => $action));
 
         return new external_function_parameters(array('usersCompetence'=> new external_multiple_structure($userCompetence)));
@@ -843,7 +843,7 @@ class local_wsks_external extends external_api {
 
         try {
             /* Synchronization */
-            WS_FELLESDATA::Synchronize_UserManagerReporter($usersCompetence,$result);
+            WS_FELLESDATA::Synchronize_UserCompetence($usersCompetence,$result);
 
             return $result;
         }catch (Exception $ex) {

@@ -367,6 +367,18 @@ class WS_FELLESDATA {
         }//try_catch
     }//Synchronize_UserManagerReporter
 
+    /**
+     * @param           $usersCompetence
+     * @param           $result
+     *
+     * @throws          Exception
+     *
+     * @creationDate    14/06/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Synchronize user competence between FS and KS
+     */
     public static function Synchronize_UserCompetence($usersCompetence,&$result) {
         /* Variables */
         global $CFG;
