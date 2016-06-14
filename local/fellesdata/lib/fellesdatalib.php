@@ -1492,6 +1492,18 @@ class FSKS_USERS {
         }//try_catch
     }//GetUsersCompetence_ToSynchronize
 
+    /**
+     * @param           $competence
+     *
+     * @return          bool
+     * @throws          Exception
+     *
+     * @creationDate    14/06/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Delete competence from FS
+     */
     private static function DeleteFromCompetenceFS($competence) {
         /* Variables */
         global $DB;
@@ -1601,6 +1613,14 @@ class FSKS_USERS {
 
                     break;
                 case DELETE:
+                    /* Delete if exists  */
+                    if ($rdo) {
+                        $DB->delete_records('fs_users_competence',array('id' => $rdo->id));
+
+                        /* Synchronized */
+                        $sync = true;
+                    }//if_exits
+
                     break;
                 default:
                     break;
