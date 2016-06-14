@@ -1420,7 +1420,7 @@ class FSKS_USERS {
             /* Search Criteria  */
             $params = array();
             $params['imported'] = 0;
-            $params['action']   = ACT_DELETE;
+            $params['action']   = DELETE;
 
             /* SQL Instruction  */
             $sql = " SELECT		ksfs.fscompany,
@@ -1469,7 +1469,7 @@ class FSKS_USERS {
                     $infoComp->company          = $instance->companyid;
                     $infoComp->level            = $instance->hierarchylevel;
                     $infoComp->impkeys          = $instance->impkeys;
-                    $infoComp->action           = ACT_ADD;
+                    $infoComp->action           = ADD;
 
                     /* Add competence */
                     $usersComp[] = $infoComp;
