@@ -201,6 +201,12 @@ class format_elearning_frikomport extends format_base {
      *
      * Description
      * Add the 'ratings' option format
+     *
+     * @updateDate  15/06/2016
+     * @author      eFaktor     (fbv)
+     *
+     * Description
+     * Remove page video
      */
     public function course_format_options($foreditform = false) {
         /**
@@ -262,11 +268,6 @@ class format_elearning_frikomport extends format_base {
                 ),
                 'pagegraphics' => array(
                     'label' => 'pagegraphics',
-                    'element_type' => 'hidden',
-                    'default' => 0,
-                ),
-                'pagevideo' => array(
-                    'label' => 'pagevideo',
                     'element_type' => 'hidden',
                     'default' => 0,
                 ),
@@ -406,6 +407,12 @@ class format_elearning_frikomport extends format_base {
      *
      * Description
      * Add the 'ratings' option format
+     *
+     * @updateDate      15/06/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Remove page video
      */
     public function create_edit_form_elements(&$mform, $forsection = false) {
         //$elements = parent::create_edit_form_elements($mform, $forsection);
@@ -423,7 +430,6 @@ class format_elearning_frikomport extends format_base {
                 case 'homevisible':
                 case 'homesummary':
                 case 'pagegraphics':
-                case 'pagevideo':
                 case 'manager':
                     course_page::addCourseHomePage_Section($mform, $optionname);
 
