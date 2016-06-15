@@ -889,7 +889,7 @@ class course_page  {
      * Description
      * Add the available seats to the fields/options connected with course format.
      */
-    public static function getAvailSeats($course_id, $format_options) {
+    public static function getAvailSeatsFormatOption($course_id, $format_options) {
         global $CFG, $DB;
         $avail = '-';
 
@@ -902,7 +902,7 @@ class course_page  {
 
             if ($instance->{ENROL_WAITINGLIST_FIELD_MAXENROLMENTS}) {
                 $enrolWaitingList = new enrol_waitinglist_plugin();
-                $avail = $enrolWaitingList->get_vacancy_count($instance) . '/' . $instance->{ENROL_WAITINGLIST_FIELD_MAXENROLMENTS};
+                $avail = $enrolWaitingList->get_vacancy_count($instance) . ' ' . get_string('of','local_course_page') . ' '. $instance->{ENROL_WAITINGLIST_FIELD_MAXENROLMENTS};
             }else {
                 $avail = get_string('unlimited_seats','local_course_page');
             }
@@ -918,7 +918,50 @@ class course_page  {
         $format_options['enrolledusers'] = $field;
 
         return $format_options;
-    }
+    }//getAvailSeatsFormatOption
+
+    /***
+     * @param           $courseID
+     *
+     * @return          int
+     * @throws          Exception
+     *
+     * @creationDate    15/06/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Get how many seats are available
+     */
+    public static function getAvailSeats($courseID) {
+        /* Variables */
+        global $CFG, $DB;
+        $instance   = null;
+        $seats      = 0;
+
+        try {
+            /* Get Instance Enrolment Waiting List  */
+            $instance = $DB->get_record('enrol', array('courseid' => $courseID,'enrol' => 'waitinglist','status' => '0'));
+            if ($instance) {
+                /* Get Seats    */
+                require_once($CFG->dirroot . '/enrol/waitinglist/lib.php');
+
+                if ($instance->{ENROL_WAITINGLIST_FIELD_MAXENROLMENTS}) {
+                    $enrolWaitingList = new enrol_waitinglist_plugin();
+                    $seats = $enrolWaitingList->get_vacancy_count($instance);
+                }else {
+                    $seats = 1;
+                }
+
+            }else {
+                $seats = 1;
+            }//if_instance
+
+            return $seats;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//getAvailSeats
+
 
     /**
      * @return          array

@@ -61,3 +61,6 @@ $string['home_deadline']    = 'Påmeldingsfrist';
 $string['home_price']       = 'Pris';
 
 $string['url_map'] = 'Click here for the map';
+
+$string['of']       = 'of';
+$string['on_wait']  = 'Put me on the wait list';
