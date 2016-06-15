@@ -69,7 +69,7 @@ require('../tabs.php');
 
 
 /* Get Job Role List */
-$job_roles = job_role::JobRole_With_Outcomes($superUser);
+$job_roles = job_role::JobRole_With_Outcomes($superUser,$myAccess);
 
 if (empty($job_roles)) {
     /* Print Title */
