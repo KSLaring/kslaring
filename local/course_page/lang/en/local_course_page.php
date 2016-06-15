@@ -64,3 +64,6 @@ $string['home_deadline']    = 'Deadline';
 $string['home_price']       = 'Price';
 
 $string['url_map'] = 'Click here for the map';
+
+$string['of']       = 'of';
+$string['on_wait']  = 'Put me on the wait list';
