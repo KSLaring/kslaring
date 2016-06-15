@@ -28,8 +28,88 @@ class job_role {
     /*********************/
 
     /**
+     * @param           $myAccess
+     * @param           $jobRole
+     *
+     * @return          bool
+     * @throws          Exception
+     *
+     * @creationDate    15/06/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Check if the user has access to this job role
+     */
+    public static function CheckJobRoleAccess($myAccess,$jobRole) {
+        /* Variables    */
+        global $DB;
+        $params     = null;
+        $sql        = null;
+        $sqlLevel   = null;
+        $sqlExtra   = null;
+        $rdo        = null;
+
+        try {
+            /* Search Criteria  */
+            $params = array();
+            $params['jobrole'] = $jobRole;
+
+            /* SQL Instruction  */
+            $sql = " SELECT		jr.id
+                     FROM  		{report_gen_jobrole}		    jr
+                        JOIN	{report_gen_jobrole_relation}	jr_rel	ON jr_rel.jobroleid = jr.id";
+
+            /* CRITERIA */
+            /* Add search criteria  */
+            foreach ($myAccess as $infoLevel) {
+                /* Add Level Zero   */
+                $sqlLevel = "jr_rel.levelzero IN ($infoLevel->levelZero) ";
+
+                /* Level One    */
+                if ($infoLevel->levelOne) {
+                    /* Add Level One */
+                    $sqlLevel .= " AND jr_rel.levelone IN ($infoLevel->levelOne)";
+
+                    /* Level Two*/
+                    if ($infoLevel->levelTwo) {
+                        /* Add Level Two */
+                        $sqlLevel .= " AND jr_rel.leveltwo IN ($infoLevel->levelTwo)";
+
+                        /* Level Three */
+                        if ($infoLevel->levelThree) {
+                            /* Add Level Three  */
+                            $sqlLevel .= " AND jr_rel.levelthree IN ($infoLevel->levelThree)";
+                        }//levelThree
+                    }//levelTwo
+
+                    /* Add Criteria */
+                    if ($sqlExtra) {
+                        $sqlExtra .= ' OR ';
+                    }
+
+                    $sqlExtra .= '(' . $sqlLevel . ')';
+                }//levelOne
+            }//for
+
+            $sql .= " AND (" . $sqlExtra . ")";
+            $sql .= " WHERE jr.id = :jobrole ";
+
+            /* Execute */
+            $rdo = $DB->get_record_sql($sql,$params);
+            if ($rdo) {
+                return true;
+            }else {
+                return false;
+            }//if_rdo
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_Catch
+    }//MyJobroles
+
+    /**
      * @static
      * @param       $superUser
+     * @param       $myAccess
      *
      * @return      array       List of all job roles and their outcomes connected with them.
      * @throws      Exception
@@ -40,26 +120,24 @@ class job_role {
      * Description
      * Get a list of all job roles and their outcomes connected with them.
      */
-    public static function JobRole_With_Outcomes($superUser=false){
+    public static function JobRole_With_Outcomes($superUser=false,$myAccess = null){
         /* Variables    */
-        global $DB,$USER;
+        global $DB;
         $job_roles  = array();
         $sql        = null;
-        $params     = null;
         $rdo        = null;
         $info       = null;
+        $sqlExtra   = null;
+        $sqlLevel   = null;
 
         try {
-            /* Search Criteria  */
-            $params = array();
-            $params['user'] = $USER->id;
-
             /* SQL Instruction  */
             $sql = " SELECT		jr.id,
                                 jr.name,
                                 jr.industrycode,
                                 oc.outcomename as 'outcome_name'
                      FROM  		{report_gen_jobrole}				jr
+                        -- OUTCOMES
                         LEFT JOIN (SELECT   GROUP_CONCAT(go.fullname ORDER BY go.fullname ASC SEPARATOR ', ') as 'outcomename',
                                             ojrel.jobroleid
                                    FROM     	{report_gen_outcome_jobrole}  ojrel
@@ -70,19 +148,49 @@ class job_role {
 
             /* Only Job Roles Connected with super user */
             if ($superUser) {
-                $sql .= "   JOIN	{report_gen_jobrole_relation}	jr_rel	ON jr_rel.jobroleid = jr.id
-                            JOIN	{report_gen_super_user}			sp		ON 	IF(sp.levelzero,sp.levelzero,0) 	= IF(jr_rel.levelzero,jr_rel.levelzero,0)
-                                                                            AND IF(sp.levelone,sp.levelone,0)		= IF(jr_rel.levelone,jr_rel.levelone,0)
-                                                                            AND	IF(sp.leveltwo,sp.leveltwo,0) 		= IF(jr_rel.leveltwo,jr_rel.leveltwo,0)
-                                                                            AND IF(sp.levelthree,sp.levelthree,0) 	= IF(jr_rel.levelthree,jr_rel.levelthree,0)
-                                                                            AND sp.userid = :user ";
+                $sql .= " JOIN	{report_gen_jobrole_relation}	jr_rel	ON jr_rel.jobroleid = jr.id ";
+
+                /* Add search criteria  */
+                foreach ($myAccess as $infoLevel) {
+                    /* Add Level Zero   */
+                    $sqlLevel = "jr_rel.levelzero IN ($infoLevel->levelZero) ";
+
+                    /* Level One    */
+                    if ($infoLevel->levelOne) {
+                        /* Add Level One */
+                        $sqlLevel .= " AND jr_rel.levelone IN ($infoLevel->levelOne)";
+
+                        /* Level Two*/
+                        if ($infoLevel->levelTwo) {
+                            /* Add Level Two */
+                            $sqlLevel .= " AND jr_rel.leveltwo IN ($infoLevel->levelTwo)";
+
+                            /* Level Three */
+                            if ($infoLevel->levelThree) {
+                                /* Add Level Three  */
+                                $sqlLevel .= " AND jr_rel.levelthree IN ($infoLevel->levelThree)";
+                            }//levelThree
+                        }//levelTwo
+
+                        /* Add Criteria */
+                        if ($sqlExtra) {
+                            $sqlExtra .= ' OR ';
+                        }
+
+                        $sqlExtra .= '(' . $sqlLevel . ')';
+                    }//levelOne
+                }//for
+
+                $sql .= " AND (" . $sqlExtra . ")";
             }//if_superUser
+
 
             /* Order By */
             $sql .= " ORDER BY	jr.industrycode, jr.name ASC ";
 
+
             /* Execute */
-            if ($rdo = $DB->get_records_sql($sql,$params)) {
+            if ($rdo = $DB->get_records_sql($sql)) {
                 foreach ($rdo as $instance) {
                     /* Info Job Role    */
                     $info = new stdClass();
@@ -468,7 +576,7 @@ class job_role {
      */
     public static function JobRoles_table($job_roles,$superUser=false){
         /* Variables    */
-        global $CFG;
+        global $CFG,$OUTPUT;
         $context        = CONTEXT_SYSTEM::instance();
         $can_edit       = has_capability('report/manager:edit', $context);
         /* Column Tables    */
@@ -483,8 +591,6 @@ class job_role {
         $table->attributes  = array('width' => '60%');
 
         foreach ($job_roles as $job_role) {
-            global $OUTPUT;
-
             /* Rows */
             $row = array();
             /* Buttons */
