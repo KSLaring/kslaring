@@ -97,14 +97,14 @@ if ($show) {
             redirect($url);
         }else {
             $format_options = course_page::getFormatFields($course->id);
-            $format_options = course_page::getAvailSeats($course->id, $format_options);
+            $format_options = course_page::getAvailSeatsFormatOption($course->id, $format_options);
             $renderer = $PAGE->get_renderer('local_course_page');
             echo $renderer->display_home_page($course,$format_options);
             echo $renderer->footer();
         }
     }else {
         $format_options = course_page::getFormatFields($course->id);
-        $format_options = course_page::getAvailSeats($course->id, $format_options);
+        $format_options = course_page::getAvailSeatsFormatOption($course->id, $format_options);
         $renderer = $PAGE->get_renderer('local_course_page');
         echo $renderer->display_home_page($course,$format_options);
         echo $renderer->footer();

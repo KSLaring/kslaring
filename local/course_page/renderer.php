@@ -123,13 +123,19 @@ class local_course_page_renderer extends plugin_renderer_base {
      *
      * Description
      * Add the summary. Short Description/Button Register/Graphics
+     *
+     * @updateDate      15/06/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Change the labe for the button §Go course' when there are none seats available
      */
     protected function addSummary_HomePage($course,$home_graphics,$home_graphicstitle) {
         /* Variables   */
         global $USER;
-        $disabled = '';
-
-        $out = '';
+        $disabled   = '';
+        $btnString  = null;
+        $out        = '';
 
         /* Graphics */
         if ($home_graphics) {
@@ -151,7 +157,14 @@ class local_course_page_renderer extends plugin_renderer_base {
         $out .= html_writer::start_tag('div',array('class' => 'buttons'));
             if (!course_page::IsUserEnrol($course->id,$USER->id)) {
                 $url_start = new moodle_url('/course/view.php',array('id' => $course->id,'start' => 1));
-                $out .= '<a href="' . $url_start . '"><button ' . $disabled . '>' . get_string('home_register','local_course_page') . '</button></a>';
+                /* Check if there are seats available */
+                if (course_page::getAvailSeats($course->id)) {
+                    $btnString = get_string('home_register','local_course_page');
+                }else {
+                    $btnString = get_string('on_wait','local_course_page');
+                }//if_seats
+
+                $out .= '<a href="' . $url_start . '"><button ' . $disabled . '>' . $btnString . '</button></a>';
             }else {
                 $url_start = new moodle_url('/course/view.php',array('id' => $course->id,'start' => 1));
                 $out .= '<a href="' . $url_start . '"><button ' . $disabled .'>' . get_string('home_start','local_course_page') . '</button></a>';
