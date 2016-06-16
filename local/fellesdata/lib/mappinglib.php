@@ -1002,8 +1002,6 @@ class FS_MAPPING {
                 }//for_search
 
                 $sql .= " AND (fs_imp.org_navn like '%" . $sector . "%' OR " . $sqlMatch . ")";
-            }else {
-                $sql .= " AND fs_imp.org_navn like '%" . $sector . "%' ";
             }
 
             /* Order Criteria   */
@@ -1165,8 +1163,6 @@ class FS_MAPPING {
                 }//for_search
 
                 $sql .= " AND (fs_imp.org_navn like '%" . $sector . "%' OR " . $sqlMatch . ")";
-            }else {
-                $sql .= " AND fs_imp.org_navn like '%" . $sector . "%' ";
             }//if_patterns
 
             /* Execute  */
@@ -1332,8 +1328,6 @@ class FS_MAPPING {
                 }//for_search
 
                 $sql .= " AND " . $sqlMatch . "";
-            }else {
-                $sql .= " AND (fs_imp.stillingstekst like '%" . $sector . "%' OR fs_imp.stillingstekst_alternativ like '%" . $sector . "%') ";
             }
 
             /* Order Criteria  */
@@ -1350,7 +1344,7 @@ class FS_MAPPING {
                     $infoJR->fsjobrole      = $instance->fsjobrole;
                     $infoJR->name           = $instance->fsjobrole . ' - ' . $instance->stillingstekst;
                     $infoJR->alternative    = $instance->stillingstekst_alternativ;
-                    $infoJR->matches        = self::GetPossiblesJRMatches($infoJR->name,$sector,$generic);
+                    $infoJR->matches        = self::GetPossiblesJRMatches($instance->stillingstekst,$sector,$generic);
 
                     /* Add Job Role */
                     $fsJobRoles[$instance->fsjobrole] = $infoJR;
@@ -1417,8 +1411,6 @@ class FS_MAPPING {
                 }//for_search
 
                 $sql .= " AND " . $sqlMatch . "";
-            }else {
-                $sql .= " AND (fs_imp.stillingstekst like '%" . $sector . "%' OR fs_imp.stillingstekst_alternativ like '%" . $sector . "%') ";
             }//if_sector
 
             /* Execute */

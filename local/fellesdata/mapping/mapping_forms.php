@@ -61,7 +61,7 @@ class map_org_jr extends moodleform {
         $form->addElement('text','pattern',get_string('pattern','local_fellesdata'));
         $form->addHelpButton('pattern','pattern','local_fellesdata');
         $form->setType('pattern',PARAM_TEXT);
-        $form->addRule('pattern','required','required', null, 'client');
+        //$form->addRule('pattern','required','required', null, 'client');
 
         $form->addElement('text','type','','style="visibility:hidden"');
         $form->setDefault('type',$type);
