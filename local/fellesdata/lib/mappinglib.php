@@ -1497,12 +1497,13 @@ class FS_MAPPING {
 
                 /* Search by */
                 foreach($searchBy as $match) {
-                    if ($sqlMatch) {
-                        $sqlMatch .= " OR ";
-                    }//if_sqlMatch
-                    if (count($match) >1) {
-                        $sqlMatch .= " jr.name like '%" . $match . "%'";
 
+                    if (strlen($match) >1) {
+                        if ($sqlMatch) {
+                            $sqlMatch .= " OR ";
+                        }//if_sqlMatch
+
+                        $sqlMatch .= " jr.name like '%" . $match . "%'";
                     }
                 }//for_search
 
