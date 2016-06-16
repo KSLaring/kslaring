@@ -82,6 +82,12 @@ class block_navigation_renderer extends plugin_renderer_base {
                 continue;
             }
 
+            // start change uh 2016-06-10
+            if ($item->key === 'mycourses') {
+                $item->forceopen = false;
+            }
+            // end change uh
+
             $hasicon = ((!$isbranch || $item->type == navigation_node::TYPE_ACTIVITY || $item->type == navigation_node::TYPE_RESOURCE) && $item->icon instanceof renderable);
 
             if ($hasicon) {
