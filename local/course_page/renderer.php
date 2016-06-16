@@ -827,10 +827,18 @@ class local_course_page_renderer extends plugin_renderer_base {
      *
      * Description
      * Add coordinator's email
+     *
+     * @updateDate      16/06/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Replace mail of coordinator by 'Send a message'
      */
     protected function addCoordinatorBlock($course_id,$manager) {
         /* Variables    */
         global $OUTPUT,$DB;
+        $urlMessage = null;
+        $lnkMessage = null;
         $out = '';
 
         $out .= html_writer::start_tag('div',array('class' => 'manager chp-block clearfix'));
@@ -845,7 +853,10 @@ class local_course_page_renderer extends plugin_renderer_base {
                 $out .= '<div class="user_profile chp-content clearfix">';
                     $out .= '<div class="user_picture">' . $OUTPUT->user_picture($user, array('size'=>150)) . '</div>';
                     $out .= '<div class="user"><a href="' . $url_user . '">' . fullname($user) . '</a>';
-                    $out .= '<div class="extra_home chp-content">'. $user->email . '</div>';
+
+                    $urlMessage = new moodle_url('/message/index.php',array('id' => $user->id));
+                    $lnkMessage = "<a href='". $urlMessage."'>" . get_string('messageselectadd') . "</a>";
+                    $out .= '<div class="extra_home chp-content">'. $lnkMessage  . '</div>';
                     $out .= '<div class="extra_coordinator">' . $user->description . '</div>'  . '</div>';
                 $out .= '</div>';
                 }//if_user
