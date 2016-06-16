@@ -60,7 +60,7 @@ $string['view_detail'] = 'Vis detaljer';
 $string['home_deadline']    = 'Påmeldingsfrist';
 $string['home_price']       = 'Pris';
 
-$string['url_map'] = 'Click here for the map';
+$string['url_map'] = 'Klikk for å vise i kart';
 
-$string['of']       = 'of';
-$string['on_wait']  = 'Put me on the wait list';
+$string['of']       = 'av';
+$string['on_wait']  = 'Gå til venteliste';
