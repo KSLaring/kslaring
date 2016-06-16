@@ -1509,6 +1509,8 @@ class FS_MAPPING {
 
                 if ($sqlMatch) {
                     $sql .= " AND (jr.name like '%" . $fsJobRole . "%' OR " . $sqlMatch . ")";
+                }else {
+                    $sql .= " AND (jr.name like '%" . $fsJobRole . "%')";
                 }
             }//if_sector
 
