@@ -129,6 +129,12 @@ class local_course_page_renderer extends plugin_renderer_base {
      *
      * Description
      * Change the labe for the button §Go course' when there are none seats available
+     *
+     * @updateDate      16/06/2016
+     * @author          eFaktor (fbv)
+     *
+     * Description
+     * Remove start course button
      */
     protected function addSummary_HomePage($course,$home_graphics,$home_graphicstitle) {
         /* Variables   */
@@ -147,29 +153,6 @@ class local_course_page_renderer extends plugin_renderer_base {
         }//home_graphics
 
         $out .=  '<p>' . trim($course->summary) . '</p>';
-
-        /* The course Visible   */
-        if (!$course->visible) {
-            $disabled = 'disabled';
-        }//if_visible
-
-        /* Check if the user is enrolled    */
-        $out .= html_writer::start_tag('div',array('class' => 'buttons'));
-            if (!course_page::IsUserEnrol($course->id,$USER->id)) {
-                $url_start = new moodle_url('/course/view.php',array('id' => $course->id,'start' => 1));
-                /* Check if there are seats available */
-                if (course_page::getAvailSeats($course->id)) {
-                    $btnString = get_string('home_register','local_course_page');
-                }else {
-                    $btnString = get_string('on_wait','local_course_page');
-                }//if_seats
-
-                $out .= '<a href="' . $url_start . '"><button ' . $disabled . '>' . $btnString . '</button></a>';
-            }else {
-                $url_start = new moodle_url('/course/view.php',array('id' => $course->id,'start' => 1));
-                $out .= '<a href="' . $url_start . '"><button ' . $disabled .'>' . get_string('home_start','local_course_page') . '</button></a>';
-            }//if_else
-        $out .= html_writer::end_tag('div'); //buttons
 
         return $out;
     }//addSummary_HomePage
@@ -245,15 +228,24 @@ class local_course_page_renderer extends plugin_renderer_base {
      * Description
      * Add deadline course
      * Add price of the course
+     *
+     * @updateDate      16/06/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Add the course button
      */
     private function addBlockTwo_homePage($course,$format_options) {
         /* Variables    */
-        global $DB;
+        global $DB,$USER;
         $manager        = 0;
         $block_two      = '';
+        $disabled       = '';
 
         $block_two .= html_writer::start_tag('div',array('class' => 'home_page_block_two'));
             $block_two .= html_writer::start_tag('div',array('class' => 'go-left clearfix'));
+                /* Start Course Button */
+                $block_two .= $this->BlockCourseButton($course);
                 /* Block Prerequisites  */
                 $block_two .= $this->addExtra_PrerequisitesBlock($course,$format_options,$manager);
                 /* Block Coordinator    */
@@ -279,6 +271,56 @@ class local_course_page_renderer extends plugin_renderer_base {
 
         return $block_two;
     }//addBlockTwo_homePage
+
+    /**
+     * @param           $course
+     *
+     * @return          string
+     * @throws          Exception
+     *
+     * @creationDate    16/06/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Get the course button block
+     */
+    private static function BlockCourseButton($course) {
+        /* Variables */
+        global $USER;
+        $out        = '';
+        $disabled   = '';
+
+        try {
+            /* The course Visible   */
+            if (!$course->visible) {
+                $disabled = 'disabled';
+            }//if_visible
+
+            /* Check if the user is enrolled    */
+            $out .= html_writer::start_tag('div',array('class' => 'buttons'));
+            if (!course_page::IsUserEnrol($course->id,$USER->id)) {
+                $url_start = new moodle_url('/course/view.php',array('id' => $course->id,'start' => 1));
+                /* Check if there are seats available */
+                if (course_page::getAvailSeats($course->id)) {
+                    $btnString = get_string('home_register','local_course_page');
+                }else {
+                    $btnString = get_string('on_wait','local_course_page');
+                }//if_seats
+
+                $out .= '<a href="' . $url_start . '"><button ' . $disabled . '>' . $btnString . '</button></a>';
+            }else {
+                $url_start = new moodle_url('/course/view.php',array('id' => $course->id,'start' => 1));
+                $out .= '<a href="' . $url_start . '"><button ' . $disabled .'>' . get_string('home_start','local_course_page') . '</button></a>';
+            }//if_else
+            $out .= html_writer::end_tag('div'); //buttons
+
+            $out .= "</br>";
+
+            return $out;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//BlockCourseButton
 
     /**
      * @param           $course
