@@ -1078,8 +1078,8 @@ class FS_MAPPING {
             $params['parent'] = $parentId;
 
             /* SQL Instruction  */
-            $sql = " SELECT IF(fs_granpa.org_navn,fs_granpa.org_navn,fs_imp.org_navn)		as 'granpa'
-                     FROM			{fs_imp_company}  fs_imp
+            $sql = " SELECT         fs_granpa.org_navn		as 'granpa'
+                     FROM	        {fs_imp_company}    fs_imp
                         LEFT JOIN	{fs_imp_company}	fs_granpa	ON fs_granpa.org_enhet_id = fs_imp.org_enhet_over
                     WHERE	fs_imp.org_enhet_id = :parent ";
 
