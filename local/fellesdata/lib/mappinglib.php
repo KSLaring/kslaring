@@ -1504,13 +1504,11 @@ class FS_MAPPING {
                         $sqlMatch .= " jr.name like '%" . $match . "%'";
 
                     }
-                    if ($sqlMatch) {
-                        $sql .= " AND (jr.name like '%" . $fsJobRole . "%' OR " . $sqlMatch . ")";
-                    }
-
                 }//for_search
 
-
+                if ($sqlMatch) {
+                    $sql .= " AND (jr.name like '%" . $fsJobRole . "%' OR " . $sqlMatch . ")";
+                }
             }//if_sector
 
             /* Order Criteria  */
