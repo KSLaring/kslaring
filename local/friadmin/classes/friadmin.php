@@ -409,6 +409,10 @@ class friadmin {
         global $DB, $USER;
 
         try {
+            if (is_siteadmin($USER->id)) {
+                return true;
+            }
+
             /* Search Criteria  */
             $params = array();
             $params['user']         = $USER->id;

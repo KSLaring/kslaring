@@ -67,11 +67,6 @@ if ($fileOpt) {
     file_prepare_standard_filemanager($course, 'overviewfiles', $fileOpt, $contextCourse, 'course', 'overviewfiles', 0);
 }
 
-$fakePermission = null;
-if  (!isset($SESSION->fakepermission)) {
-    $SESSION->fakepermission = null;
-}
-
 if (!CourseTemplate::HasCorrectPermissions()) {
     print_error('nopermissions', 'error', '', 'block/frikomport:view');
 }//if_Has_not_permissions

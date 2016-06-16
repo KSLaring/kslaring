@@ -81,6 +81,10 @@ class CourseTemplate {
         global $DB, $USER;
 
         try {
+            if (is_siteadmin($USER->id)) {
+                return true;
+            }
+
             /* Fist, check if the user has the correct permissions  */
             /* Search Criteria  */
             $params = array();
