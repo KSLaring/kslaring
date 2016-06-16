@@ -1489,7 +1489,21 @@ class FS_MAPPING {
 
                 $sql .= " AND (jr.name like '%" . $fsJobRole . "%' OR " . $sqlMatch . ")";
             }else {
-                $sql .= " AND jr.name like '%" . $fsJobRole . "%'";
+                $sector     = str_replace(',',' ',$fsJobRole);
+                $sector     = str_replace(' og ',' ',$sector);
+                $sector     = str_replace(' eller ',' ',$sector);
+                $sector     = str_replace('/',' ',$sector);
+                $searchBy   = explode(' ',$sector);
+
+                /* Search by */
+                foreach($searchBy as $match) {
+                    if ($sqlMatch) {
+                        $sqlMatch .= " OR ";
+                    }//if_sqlMatch
+                    $sqlMatch .= " jr.name like '%" . $match . "%'";
+                }//for_search
+
+                $sql .= " AND (jr.name like '%" . $fsJobRole . "%' OR " . $sqlMatch . ")";
             }//if_sector
 
             /* Order Criteria  */
