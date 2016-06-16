@@ -611,19 +611,14 @@ class TrackerManager {
             if ($outcomesTracker) {
                 foreach ($outcomesTracker as $id=>$outcome) {
                     /* Get Courses Completed and Not Completed       */
-                    list($outcome->completed,$outcome->not_completed) = self::GetTracker_CoursesEnrol($user_id,$outcome->courses);
+                    list($coursesEnrol,$outcome->completed,$outcome->not_completed) = self::GetTracker_CoursesEnrol($user_id,$outcome->courses);
 
                     /* Get Courses Not Enrol        */
-                    if ($outcome->completed && $outcome->not_completed) {
-                        $coursesEnrol = implode(',',array_keys($outcome->completed));
-                        $coursesEnrol .= implode(',',array_keys($outcome->not_completed));
+                    if ($coursesEnrol) {
+                        $coursesEnrol = implode(',',$coursesEnrol);
                     }else {
-                        if ($outcome->completed) {
-                            $coursesEnrol = implode(',',array_keys($outcome->completed));
-                        }else {
-                            $coursesEnrol = implode(',',array_keys($outcome->not_completed));
-                        }//if_completed
-                    }//if_completed_not_completed
+                        $coursesEnrol = 0;
+                    }
                     $outcome->not_enrol = self::GetTracker_CoursesNotEnrol($outcome->courses,$coursesEnrol);
 
                     if (!$outcome->completed && !$outcome->not_completed && !$outcome->not_enrol) {
@@ -661,6 +656,7 @@ class TrackerManager {
         global $DB;
         $completed      = array();
         $not_completed  = array();
+        $enrol          = array();
         $info           = null;
 
         try {
@@ -700,10 +696,13 @@ class TrackerManager {
                     }else {
                         $not_completed[$instance->id] = $info;
                     }//if_time_Completed
+
+                    /* Enrol */
+                    $enrol[$instance->id] = $instance->id;
                 }//for_instance_courses
             }//if_rdo
 
-            return array($completed,$not_completed);
+            return array($enrol,$completed,$not_completed);
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
