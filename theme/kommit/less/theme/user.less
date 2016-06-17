@@ -23,13 +23,27 @@
         color: @headingsColor;
     }
     .description {
-        margin-bottom: 0px;
-        padding: 0 10px 0 10px;
+        background-color: @white;
+        margin-bottom: 0;
+        padding: .5em 10px 0 10px;
+
+        @media (min-width: 1200px) {
+            margin-left: 265px;
+        }
+        @media (min-width: 980px) and (max-width: 1199px) {
+            margin-left: 220px;
+        }
+        @media (min-width: 767px) and (max-width: 997px) {
+            margin-left: 200px;
+        }
+        @media (max-width: 767px) {
+            margin-left: 0;
+        }
     }
     dl {
         background: @grayLighter;
-        margin-bottom: 0px;
-        margin-top: 0px;
+        margin-bottom: 0;
+        margin-top: 0;
 
         &.list {
             dt {
