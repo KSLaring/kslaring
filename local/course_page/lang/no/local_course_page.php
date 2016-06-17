@@ -64,3 +64,5 @@ $string['url_map'] = 'Klikk for å vise i kart';
 
 $string['of']       = 'av';
 $string['on_wait']  = 'Gå til venteliste';
+
+$string['home_participant'] = 'Participant List';

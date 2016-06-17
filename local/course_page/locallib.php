@@ -1262,13 +1262,8 @@ class course_page  {
 
                         break;
                     case 'pagegraphics':
-                        if (isset($data->deletepicture) && ($data->deletepicture)) {
-                            $delete = true;
-                        }else {
-                            $delete = false;
-                        }//if_delete
                         /* Get Id Graphic file  */
-                        $graphic_id = course_page::getHomeGraphicsVideo($data->$field,$field,$data->pagegraphics_filemanager,$delete);
+                        $graphic_id = course_page::getHomeGraphicsVideo($data->$field,$field,$data->pagegraphics_filemanager,false);
                         if ($graphic_id) {
                             $option->value = $graphic_id;
                             $DB->update_record('course_format_options',$option);
@@ -1458,6 +1453,15 @@ class course_page  {
                 }//if_exists
 
                 break;
+            case 'participant':
+                $home_participant = $form->createElement('checkbox','participant',get_string('home_participant','local_course_page'));
+                $form->insertElementBefore($home_participant,'descriptionhdr');
+                $format_options = course_get_format($COURSE->id)->get_format_options();
+                if (!array_key_exists('participant',$format_options)) {
+                    $form->setDefault('participant',1);
+                }//if_exists
+
+                break;
             case 'homevisible':
                 $visible['0'] = get_string('hide');
                 $visible['1'] = get_string('show');
@@ -1483,24 +1487,11 @@ class course_page  {
 
                 break;
             case 'pagegraphics':
-                $current_graphic = $form->createElement('static', 'current_graphic', get_string('current_graphic','local_course_page'));
-                $form->insertElementBefore($current_graphic,'courseformathdr');
-
-                $delete_picture = $form->createElement('checkbox', 'deletepicture', get_string('delete'));
-                $form->insertElementBefore($delete_picture,'courseformathdr');
-                $form->setDefault('deletepicture',0);
-
                 /* Get FileManager   */
                 list($file_options,$context) = self::get_file_options();
                 $file_editor['accepted_types'] = array('image','web_image');
                 $file_editor = self::prepareFileManagerHomeGraphicsVideo($file_options,$context,'pagegraphics');
 
-                if ($file_editor->pagegraphics) {
-                    /* URL IMAGE */
-                    $img = '<img src="'  . self::getUrlPageGraphicsVideo($file_editor->pagegraphics) . '" width="75" height="75" />';
-
-                    $form->setDefault('current_graphic',$img);
-                }//if_pagegraphics
 
                 $page_graphics = $form->createElement('filemanager', 'pagegraphics_filemanager', get_string('home_graphics','local_course_page'), null, $file_options);
                 $form->insertElementBefore($page_graphics,'courseformathdr');
