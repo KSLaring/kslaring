@@ -25,7 +25,7 @@ $string['frikomport:view'] = 'Vis Friadmin-blokken';
 $string['ncourses']                 = 'Kursoversikt';
 $string['nnewcourses']              = 'Opprett nytt kurs';
 $string['naddcourse']               = 'Opprett nytt kurs';
-$string['naddfromtemplate']         = 'Opprett fra en kursmal';
+$string['naddfromtemplate']         = 'Nytt kurs fra en kursmal';
 
 $string['norgstructure']            = 'Organisasjonsstruktur';
 $string['nvirksomheter']            = 'Virksomheter';
