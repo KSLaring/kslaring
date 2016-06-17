@@ -107,7 +107,7 @@ class local_friadmin_courselist_filter_form extends \moodleform {
         $elementgroup = array();
         $classRoom      = $mform->createElement('checkbox','classroom','',get_string('only_classroom','local_friadmin'));
         $elementgroup[] = $classRoom;
-        $mform->setDefault('classroom', $customdata['classroom']);
+        $mform->setDefault('classroom', false);
         /**
          * @updateDate  02/12/2015
          * @author      eFaktor     (fbv)
@@ -117,7 +117,7 @@ class local_friadmin_courselist_filter_form extends \moodleform {
          */
         $eLearning      = $mform->createElement('checkbox','elearning','',get_string('only_elearning','local_friadmin'));
         $elementgroup[] = $eLearning;
-        $mform->setDefault('elearning', $customdata['elearning']);
+        $mform->setDefault('elearning', false);
 
         $elementgroup[] = $mform->createElement('submit', 'submitbutton',get_string('selsubmit', 'local_friadmin'));
 
