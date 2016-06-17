@@ -36,8 +36,10 @@ require_once($CFG->dirroot . '/enrol/waitinglist/lib.php');
 class local_friadmin_courselist_table extends local_friadmin_widget implements renderable {
 
     // The table column names
-    protected $colnames = array("edit", "name", "date", "seats", "deadline", "length",
-                                "municipality", "sector", "location");
+    //protected $colnames = array("edit", "name", "date", "seats", "deadline", "length",
+    //                            "municipality", "sector", "location");
+    protected $colnames = array("edit", "name", "date", "seats", "deadline",
+                                "municipality", "location");
 
     // The table column titles
     protected $colheaders = array();
