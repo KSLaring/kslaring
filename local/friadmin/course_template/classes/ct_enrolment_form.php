@@ -129,6 +129,33 @@ class ct_enrolment_settings_form extends moodleform {
         $form->setType('bulkid', PARAM_INT);
         $form->setDefault('bulkid',$instance->bulkid);
 
+        /**
+         * @updateDate  17/06/2016
+         * @author      eFaktor     (fbv)
+         *
+         * Description
+         * Add informatin about welcome messages
+         */
+        /* Welcome Message */
+        $form->addElement('hidden', 'welcome_message');
+        $form->setType('welcome_message', PARAM_TEXT);
+        $form->setDefault('welcome_message',$instance->welcome_message);
+
+        /* Self Waiting Welcome Message */
+        $form->addElement('hidden', 'self_waiting_message');
+        $form->setType('self_waiting_message', PARAM_TEXT);
+        $form->setDefault('self_waiting_message',$instance->self_waiting_message);
+
+        /* Bulk Waiting Welcome Message */
+        $form->addElement('hidden', 'bulk_waiting_message');
+        $form->setType('bulk_waiting_message', PARAM_TEXT);
+        $form->setDefault('bulk_waiting_message',$instance->bulk_waiting_message);
+
+        /* Bulk Renovation Message */
+        $form->addElement('hidden', 'bulk_renovation_message');
+        $form->setType('bulk_renovation_message', PARAM_TEXT);
+        $form->setDefault('bulk_renovation_message',$instance->bulk_renovation_message);
+
         $this->add_action_buttons(true,get_string('continue'));
     }//definition
 }//ct_enrolment_settings_form

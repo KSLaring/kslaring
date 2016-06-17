@@ -22,6 +22,11 @@ define('ENROL_FIELD_WAITLISTSIZE', 'customint6');
 define('ENROL_FIELD_SENDWELCOMEMESSAGE', 'customint4');
 define('ENROL_FIELD_SENDWAITLISTMESSAGE', 'customint5');
 define('ENROL_FIELD_PRICE','customtext3');
+define('ENROL_FIELD_WELCOME_MESSAGE','customtext1');
+define('ENROL_FIELD_SELF_WAITING_MESSAGE','customtext1');
+define('ENROL_FIELD_BULK_WAITING_MESSAGE','customtext1');
+define('ENROL_FIELD_BULK_RENOVATION_MESSAGE','customtext2');
+
 define('SETTINGS_DEFAULT_SIZE',100);
 define('ACTION_ENROLMENT',1);
 define('ACTION_SHOW_COURSE',0);
@@ -199,19 +204,26 @@ class CourseTemplate {
      *
      * Description
      * Get enrol instance connected with the method
+     *
+     * @updateDate      17/06/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * et the right information from the template, if the instance exists
      */
     public static function GetEnrolInstance($courseId,$courseTemplate) {
         /* Variables */
         global $DB;
-        $params     = null;
-        $rdo        = null;
-        $sql        = null;
-        $instance   = null;
+        $params         = null;
+        $rdoCourse      = null;
+        $rdoTemplate    = null;
+        $sql            = null;
+        $instance       = null;
 
         try {
             /* Search Criteria  */
             $params = array();
-            $params['courseid']     = $courseId;
+
             $params['enrol']        = 'waitinglist';
             $params['self']         = 'self';
             $params['bulk']         = 'unnamedbulk';
@@ -220,6 +232,10 @@ class CourseTemplate {
             $sql = " SELECT	e.id,
                             e.courseid,
                             IF(e.customint1,e.customint1,0)	as 'date_off',
+                            e.customtext1                   as 'welcome_message',
+                            es.customtext1                  as 'self_waiting_message',
+                            un.customtext1                  as 'bulk_waiting_message',
+                            un.customtext2                  as 'bulk_renovation_message',
                             e.customint2 	                as 'max_enrolled',
                             e.customint6 	                as 'list_size',
                             e.customint8 	                as 'invoice',
@@ -239,42 +255,48 @@ class CourseTemplate {
                      WHERE	e.enrol 	= :enrol
                         AND	e.courseid 	= :courseid ";
 
+            /* Execute Course */
+            $params['courseid']     = $courseId;
+            $rdoCourse = $DB->get_record_sql($sql,$params);
 
-            /* Execute  */
-            $rdo = $DB->get_record_sql($sql,$params);
-            if ($rdo) {
-                return $rdo;
+            /* Execute Template */
+            $params['courseid']     = $courseTemplate;
+            $rdoTemplate = $DB->get_record_sql($sql,$params);
+
+            /* Return the right instance    */
+            if ($rdoCourse && $rdoTemplate) {
+                /* Course && Template */
+                $rdoTemplate->id        = $rdoCourse->id;
+                $rdoTemplate->selfid    = $rdoCourse->selfid;
+                $rdoTemplate->bulkid    = $rdoCourse->bulkid;
+                $rdoTemplate->courseid  = $courseId;
+
+                return $rdoTemplate;
+            }else if ($rdoTemplate && !$rdoCourse) {
+                /* Template but no course   */
+                $rdoTemplate->id        = null;
+                $rdoTemplate->selfid    = null;
+                $rdoTemplate->bulkid    = null;
+                $rdoTemplate->courseid  = $courseId;
+
+                return $rdoTemplate;
             }else {
-                /* Check Course Template */
-                $params['courseid']     = $courseTemplate;
+                /* No Template No Course    */
+                /* Instance */
+                $instance = new stdClass();
+                $instance->id               = null;
+                $instance->selfid           = null;
+                $instance->bulkid           = null;
+                $instance->courseid         = $courseId;
+                $instance->date_off         = 0;
+                $instance->max_enrolled     = 0;
+                $instance->list_size        = SETTINGS_DEFAULT_SIZE;
+                $instance->invoice          = 0;
+                $instance->approval         = 0;
+                $instance->price            = 0;
 
-                /* Execute */
-                $rdo = $DB->get_record_sql($sql,$params);
-                if ($rdo) {
-
-                    $rdo->id        = null;
-                    $rdo->selfid    = null;
-                    $rdo->bulkid    = null;
-                    $rdo->courseid  = $courseId;
-
-                    return $rdo;
-                }else {
-                    /* Instance */
-                    $instance = new stdClass();
-                    $instance->id               = null;
-                    $instance->selfid           = null;
-                    $instance->bulkid           = null;
-                    $instance->courseid         = $courseId;
-                    $instance->date_off         = 0;
-                    $instance->max_enrolled     = 0;
-                    $instance->list_size        = SETTINGS_DEFAULT_SIZE;
-                    $instance->invoice          = 0;
-                    $instance->approval         = 0;
-                    $instance->price            = 0;
-
-                    return $instance;
-                }//if_rdo_courseTemplate
-            }//if_rdo_course
+                return $instance;
+            }//if
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
@@ -310,59 +332,59 @@ class CourseTemplate {
 
             /* Enrol Instance   */
             $enrolInstance = new stdClass();
-            $enrolInstance->id                          = $data->instanceid;
-            $enrolInstance->courseid                    = $data->id;
-            $enrolInstance->{ENROL_FIELD_CUTOFFDATE}    = $data->date_off;
-            $enrolInstance->{ENROL_FIELD_WAITLISTSIZE}  = $data->list_size;
-            $enrolInstance->{ENROL_FIELD_MAXENROLMENTS} = $data->max_enrolled;
-            $enrolInstance->{ENROL_FIELD_INVOICE}       = $data->invoice;
-            $enrolInstance->{ENROL_FIELD_APPROVAL}      = $data->approval;
-            $enrolInstance->{ENROL_FIELD_PRICE}         = $data->price;
+            $enrolInstance->id                              = $data->instanceid;
+            $enrolInstance->courseid                        = $data->id;
+            if ($data->welcome_message) {
+                $enrolInstance->{ENROL_FIELD_WELCOME_MESSAGE}   = $data->welcome_message;
+            }
+            $enrolInstance->{ENROL_FIELD_CUTOFFDATE}        = $data->date_off;
+            $enrolInstance->{ENROL_FIELD_WAITLISTSIZE}      = $data->list_size;
+            $enrolInstance->{ENROL_FIELD_MAXENROLMENTS}     = $data->max_enrolled;
+            $enrolInstance->{ENROL_FIELD_INVOICE}           = $data->invoice;
+            $enrolInstance->{ENROL_FIELD_APPROVAL}          = $data->approval;
+            $enrolInstance->{ENROL_FIELD_PRICE}             = $data->price;
 
-            $enrolInstance->timemodified                = $time;
+            $enrolInstance->timemodified                    = $time;
             /* Execute  */
             $DB->update_record('enrol',$enrolInstance);
+
+            /* Self Method  */
+            $methodSelf = new stdClass();
+            $methodSelf->id                                 = $data->selfid;
+            $methodSelf->status                             = 1;
+            $methodSelf->timemodified                       = $time;
+            $methodSelf->password                           = $data->password;
+            $methodSelf->{ENROL_FIELD_SELF_WAITING_MESSAGE} = $data->self_waiting_message;
+
+            /* Bulk Method  */
+            $methodBulk = new stdClass();
+            $methodBulk->id                                     = $data->bulkid;
+            $methodBulk->timemodified                           = $time;
+            $methodBulk->{ENROL_FIELD_BULK_WAITING_MESSAGE}     = $data->bulk_waiting_message;
+            $methodBulk->{ENROL_FIELD_BULK_RENOVATION_MESSAGE}  = $data->bulk_renovation_message;
 
             /* Method Enrol Instance    */
             switch ($data->waitinglist) {
                 case ENROL_WAITING_SELF:
                     /* Self Method  */
-                    $methodSelf = new stdClass();
-                    $methodSelf->id             = $data->selfid;
-                    $methodSelf->status         = 1;
-                    $methodSelf->timemodified   = $time;
-                    $methodSelf->password       = $data->password;
-                    /* Update  */
-                    $DB->update_record('enrol_waitinglist_method',$methodSelf);
-
+                    $methodSelf->status = 1;
                     /* Bulk Method  */
-                    $methodBulk = new stdClass();
-                    $methodBulk->id             = $data->bulkid;
-                    $methodBulk->status         = 0;
-                    $methodBulk->timemodified   = $time;
-                    /* Update  */
-                    $DB->update_record('enrol_waitinglist_method',$methodBulk);
+                    $methodBulk->status = 0;
 
                     break;
                 case ENROL_WAITING_BULK:
                     /* Self Method  */
-                    $methodSelf = new stdClass();
-                    $methodSelf->id             = $data->selfid;
-                    $methodSelf->status         = 0;
-                    $methodSelf->timemodified   = $time;
-                    /* Update  */
-                    $DB->update_record('enrol_waitinglist_method',$methodSelf);
-
+                    $methodSelf->status = 0;
                     /* Bulk Method  */
-                    $methodBulk = new stdClass();
-                    $methodBulk->id             = $data->bulkid;
-                    $methodBulk->status         = 1;
-                    $methodBulk->timemodified   = $time;
-                    /* Update  */
-                    $DB->update_record('enrol_waitinglist_method',$methodBulk);
+                    $methodBulk->status = 1;
 
                     break;
             }//switch
+
+            /* Update - Self method */
+            $DB->update_record('enrol_waitinglist_method',$methodSelf);
+            /* Update - Bulk method */
+            $DB->update_record('enrol_waitinglist_method',$methodBulk);
 
             /* Commit */
             $trans->allow_commit();
