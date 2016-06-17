@@ -101,13 +101,15 @@ class local_friadmin_usercourselist_filter_form extends \moodleform {
         $textinput->setHiddenLabel(false);
         $mform->setType('selname', PARAM_TEXT);
         $elementgroup[] = $textinput;
-        $mform->addGroup($elementgroup, 'selectrowthree',get_string('coursename', 'local_friadmin'),'<span class="group-spacer"> </span>', false);
+        $mform->addGroup($elementgroup, 'selectrowthree', get_string('coursename', 'local_friadmin'),
+            '<span class="group-spacer"> </span>', false);
         $mform->addHelpButton('selectrowthree', 'coursename', 'local_friadmin');
 
         $elementgroup = array();
-        $classRoom = $mform->createElement('checkbox', 'classroom', '',get_string('only_classroom', 'local_friadmin'));
+        $classRoom = $mform->createElement('checkbox', 'classroom', '',
+            get_string('only_classroom', 'local_friadmin'));
         $elementgroup[] = $classRoom;
-        $mform->setDefault('classroom', $customdata['classroom']);
+        $mform->setDefault('classroom', false);
         /**
          * @updateDate  02/12/2015
          * @author      eFaktor     (fbv)
@@ -115,14 +117,16 @@ class local_friadmin_usercourselist_filter_form extends \moodleform {
          * Description
          * Add checkbox -- Only eLearnign Course
          */
-        $eLearning      = $mform->createElement('checkbox','elearning','',get_string('only_elearning','local_friadmin'));
+        $eLearning = $mform->createElement('checkbox', 'elearning', '',
+            get_string('only_elearning', 'local_friadmin'));
         $elementgroup[] = $eLearning;
-        $mform->setDefault('elearning', $customdata['elearning']);
+        $mform->setDefault('elearning', false);
 
         $elementgroup[] = $mform->createElement('submit', 'submitbutton',
             get_string('selsubmit', 'local_friadmin'));
 
-        $mform->addGroup($elementgroup, 'selectrowthree','&nbsp;&nbsp;&nbsp;&nbsp;','<span class="group-spacer"> </span>', false);
+        $mform->addGroup($elementgroup, 'selectrowthree', '&nbsp;&nbsp;&nbsp;&nbsp;',
+            '<span class="group-spacer"> </span>', false);
 
     }
 

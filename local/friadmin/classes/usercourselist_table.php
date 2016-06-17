@@ -38,8 +38,8 @@ class local_friadmin_usercourselist_table extends local_friadmin_widget implemen
     // The table column names
     //protected $colnames = array("counter", "name", "date", "seats", "deadline", "length",
     //    "municipality", "sector", "location", "edit");
-    protected $colnames = array("name", "date", "seats", "deadline", "length",
-        "municipality", "sector", "location", "edit");
+    protected $colnames = array("name", "date", "seats", "deadline",
+        "municipality", "location", "edit");
 
     // The table column titles
     protected $colheaders = array();
