@@ -62,18 +62,15 @@ class local_friadmin_coursetemplate_linklist extends local_friadmin_widget imple
 
         try {
             /* Set Up strings   */
-            $str_another    = get_string('coursetemplate_another', 'local_friadmin');
             $str_settings   = get_string('coursetemplate_settings', 'local_friadmin');
             $str_go         = get_string('coursetemplate_go', 'local_friadmin');
 
             /* Set up Url       */
-            $url_another    = new moodle_url('/local/friadmin/coursetemplate.php');
             $url_settings   = new moodle_url('/course/edit.php',array('id' => $courseId));
             $url_go         = new moodle_url('/course/view.php',array('id' => $courseId));
 
             /* Set Up List 1    */
             $list1 = '<ul class="unlist buttons-linklist">
-                        <a class="btn" href="' . $url_another . '">' . $str_another . '</a>
                         <a class="btn" href="' . $url_go . '">' . $str_go . '</a>
                         <a class="btn" href="' . $url_settings . '">' . $str_settings . '</a>
                       </ul>';
