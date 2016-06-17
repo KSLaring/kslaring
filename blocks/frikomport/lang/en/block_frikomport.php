@@ -41,7 +41,7 @@ $string['frikomport:view'] = 'View the frikomport block';
 $string['ncourses']                 = 'Course list';
 $string['nnewcourses']              = 'Create new courses';
 $string['naddcourse']               = 'Add a new course';
-$string['naddfromtemplate']         = 'Add from template';
+$string['naddfromtemplate']         = 'New course from template';
 
 $string['norgstructure']            = 'Organization structure';
 $string['nvirksomheter']            = 'Virksomheter';

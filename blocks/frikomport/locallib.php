@@ -73,34 +73,14 @@ class block_frikomport_menu_manager {
         $subnode = new navigation_node($item);
         $this->nodes->add_node($subnode);
 
-        // Create and add the course creation links in a submenu
-        $branch = array(
-            array(
-                'text' => get_string('nnewcourses', 'block_frikomport'),
-                'type' => navigation_node::NODETYPE_BRANCH
-            ),
-            /**
-             * @updateDate  24/06/2015
-             * @author      eFaktor     (fbv)
-             *
-             * Description
-             * Add a new course --> First the user has to select the category where the course belong
-             * Action --> local/friadmin/newcourse.php
-             */
-            array(
-                'text' => get_string('naddcourse', 'block_frikomport'),
-                'icon' => $settingsicon,
-                'type' => navigation_node::NODETYPE_LEAF,
-                'action' => '/local/friadmin/newcourse.php'
-            ),
-            array(
-                'text' => get_string('naddfromtemplate', 'block_frikomport'),
-                'icon' => $settingsicon,
-                'type' => navigation_node::NODETYPE_LEAF,
-                'action' => '/local/friadmin/coursetemplate.php'
-            )
+        $item = array(
+            'text' => get_string('naddfromtemplate', 'block_frikomport'),
+            'icon' => $settingsicon,
+            'type' => navigation_node::NODETYPE_LEAF,
+            'action' => '/local/friadmin/coursetemplate.php'
         );
-        $this->add_tree_section($branch);
+        $subnode = new navigation_node($item);
+        $this->nodes->add_node($subnode);
 
         /**
          * @updateDate      27/04/2015
