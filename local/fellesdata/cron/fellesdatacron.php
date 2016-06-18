@@ -722,7 +722,7 @@ class FELLESDATA_CRON {
         try {
             /* Get user to synchronize  */
             if ($SESSION->manual) {
-                $rdo = $DB->get_records('fs_imp_users',array('imported' => '0'),'','*',0,500);
+                $rdo = $DB->get_records('fs_imp_users',array('imported' => '0'),'','*',0,1);
             }else {
                 $rdo = $DB->get_records('fs_imp_users',array('imported' => '0'),'','*');
             }//if_manual
@@ -735,7 +735,7 @@ class FELLESDATA_CRON {
                     $infoUser = new stdClass();
                     $infoUser->personalnumber   = $instance->fodselsnr;
                     $infoUser->firstname        = $instance->fornavn;
-                    $infoUser->lastname         = $instance->mellomnavn . ' ' . $instance->etternavn;
+                    $infoUser->lastname         = ($instance->mellomnavn . ' ' . $instance->etternavn;
                     $infoUser->email            = $instance->epost;
                     $infoUser->action           = $instance->action;
 
