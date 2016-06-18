@@ -751,6 +751,8 @@ class FELLESDATA_CRON {
 
                     /* Clean Table*/
                     //$DB->delete_records('fs_imp_users',array('imported' => '1'));
+                }else {
+                    echo $response['message'] . "</br>";
                 }//if_no_error
             }//if_Rdo
 
