@@ -82,3 +82,6 @@ $string['header_parent']        = 'Parent connected with the new companies';
 $string['parent']               = 'Parent';
 
 $string['to_connect']           = 'Companies to connect';
+
+$string['header_jobroles']      = 'Parent connected with';
+$string['jr_to_connect']        = 'Job roles to connect';

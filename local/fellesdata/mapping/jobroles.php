@@ -19,11 +19,11 @@ require_once($CFG->libdir . '/adminlib.php');
 require_login();
 
 /* PARAMS   */
-$generic    = required_param('g',PARAM_INT);
+$jobrole        = optional_param('ks_jobrole',0,PARAM_INT);
+$addSearch      = optional_param('ajobroles_searchtext', '', PARAM_RAW);
+$removeSearch   = optional_param('sjobroles_searchtext', '', PARAM_RAW);
 
-$pattern    = null;
-$url        = new moodle_url('/local/fellesdata/mapping/jobroles.php',array('g' => $generic));
-$return     = new moodle_url('/local/fellesdata/mapping/mapping_jr.php');
+$url        = new moodle_url('/local/fellesdata/mapping/jobroles.php');
 $start      = 0;
 $step       = 5;
 $jrToMap    = null;
@@ -41,7 +41,7 @@ $PAGE->set_url($url);
 $PAGE->set_context($siteContext);
 $PAGE->set_title($SITE->fullname);
 $PAGE->set_heading($SITE->fullname);
-$PAGE->navbar->add(get_string('nav_mapping','local_fellesdata'),$return);
+$PAGE->navbar->add(get_string('nav_mapping','local_fellesdata'));
 $PAGE->navbar->add(get_string('nav_map_jr','local_fellesdata'));
 
 /* ADD require_capability */
@@ -55,61 +55,33 @@ if (empty($CFG->loginhttps)) {
 
 $PAGE->verify_https_required();
 
-/* Get Search Pattern   */
-if (isset($SESSION->pattern)) {
-    $pattern = $SESSION->pattern;
-}//if_pattern
-
-if (!isset($SESSION->notIn)) {
-    $SESSION->notIn = array();
-}
-
-/* Get Companies to Map */
-$notIn = 0;
-if (($SESSION->notIn) && count($SESSION->notIn)) {
-    $notIn = implode(',',$SESSION->notIn);
-}
-
-/* Get Job Roles to Map */
-list($jrToMap,$total) = FS_MAPPING::FSJobRolesToMap($pattern,$generic,$notIn,$start,$step);
-$form = new jobroles_map_form(null,array($generic,$jrToMap,$total));
+/* FORM */
+$form = new jobrole_map_form(null,array($addSearch,$removeSearch));
 if ($form->is_cancelled()) {
-    unset($SESSION->notIn);
-
     $_POST = array();
-    redirect($return);
-}else if ($data = $form->get_data()) {
-    /* Matching   */
-    list($matched,$notIn) = FS_MAPPING::MappingFSJobRoles($jrToMap,$data);
+}else if($data = $form->get_data()) {
+    if (!empty($data->add_sel)) {
+        if (isset($data->ajobroles)) {
+            FS_MAPPING::MappingFSJobRoles($data->ajobroles,$data->ks_jobrole,MAP);
+        }//if_addselect
+    }//if_add_sel
 
-    /* Redirect */
-    if ($matched) {
-        if (count($notIn)) {
-            $SESSION->notIn = $notIn;
-        }
-
-        redirect($url);
-    }//matched
-}//if_Else
-
-if (!$jrToMap) {
-    if (($SESSION->notIn) && count($SESSION->notIn)) {
-        unset($SESSION->notIn);
-        redirect($url);
-    }
+    if (!empty($data->remove_sel)) {
+        if (isset($data->sjobroles)) {
+            FS_MAPPING::MappingFSJobRoles($data->sjobroles,$data->ks_jobrole,UNMAP);
+        }//if_addselect
+    }//if_remove_sel
+    $_POST = array();
 }
 /* Header   */
 echo $OUTPUT->header();
 echo $OUTPUT->heading(get_string('nav_map_jr', 'local_fellesdata'));
 
-if ($jrToMap) {
-    $form->display();
-}else {
-    unset($SESSION->notIn);
-    echo $OUTPUT->notification(get_string('no_jr_to_map','local_fellesdata'), 'notifysuccess');
-    echo $OUTPUT->continue_button($return);
-}
+$form->display();
 
+/* INI SELECTORS    */
+FS_MAPPING::Ini_FSJobroles_Selectors('ks_jobrole','sjobroles','ajobroles');
+FS_MAPPING::Init_Search_Jobroles($addSearch,$removeSearch);
 /* Footer   */
 echo $OUTPUT->footer();
 

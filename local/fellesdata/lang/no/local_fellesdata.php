@@ -82,3 +82,6 @@ $string['header_parent']        = 'Overordnet nivå for det nye org-elementet';
 $string['parent']               = 'Overordnet nivå';
 
 $string['to_connect']           = 'Arbeidssteder som skal mappes';
+
+$string['header_jobroles']      = 'Parent connected with';
+$string['jr_to_connect']        = 'Job roles to connect';

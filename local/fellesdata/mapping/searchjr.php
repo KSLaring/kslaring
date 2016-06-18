@@ -1,6 +1,6 @@
 <?php
 /**
- * Fellesdata Mapping Companies Search
+ * Fellesdata aMapping Job roles Seach
  *
  * Description
  *
@@ -9,7 +9,7 @@
  * @copyright       2010 eFaktor
  * @licence         http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  *
- * @creationDate    15/06/2016
+ * @creationDate    18/06/2016
  * @author          eFaktor     (fbv)
  *
  */
@@ -20,8 +20,7 @@ require_once('../lib/mappinglib.php');
 require_once($CFG->libdir . '/adminlib.php');
 
 /* PARAMS   */
-$parent         = optional_param('parent',0,PARAM_INT);
-$level          = required_param('level',PARAM_INT);
+$jobrole        = optional_param('ks_jobrole',0,PARAM_INT);
 $search         = optional_param('search',null,PARAM_TEXT);
 $selectorId     = required_param('selectorid',PARAM_ALPHANUM);
 
@@ -29,10 +28,10 @@ $optSelector    = null;
 $class          = null;
 $json           = array();
 $data           = array();
-$infoCompany    = null;
+$infoJR         = null;
 
 $context        = CONTEXT_SYSTEM::instance();
-$url            = new moodle_url('/local/fellesdata/mapping/search.php');
+$url            = new moodle_url('/local/fellesdata/mapping/searchjr.php');
 
 $PAGE->set_context($context);
 $PAGE->set_url($url);
@@ -55,16 +54,16 @@ $optSelector = $USER->search_selectors[$selectorId];
 $class = $optSelector['class'];
 
 /* Get Data */
-$data       = array('name' => $optSelector['name'], 'comp' => array());
-$results = FS_MAPPING::$class($level,$search,$parent);
+$data    = array('name' => $optSelector['name'], 'jr' => array());
+$results = FS_MAPPING::$class($jobrole,$search);
 foreach ($results as $key => $name) {
-    /* Info Company */
-    $infoCompany            = new stdClass;
-    $infoCompany->id        = $key;
-    $infoCompany->name      = $name;
+    /* Info Job role */
+    $infoJR            = new stdClass;
+    $infoJR->id        = $key;
+    $infoJR->name      = $name;
 
     /* FS Company - With Parents */
-    $data['comp'][$infoCompany->name] = $infoCompany;
+    $data['jr'][$infoJR->name] = $infoJR;
 }
 
 /* Encode and Send */

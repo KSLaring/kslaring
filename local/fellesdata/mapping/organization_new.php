@@ -22,8 +22,8 @@ $level          = required_param('le',PARAM_INT);
 $org            = optional_param('o',0,PARAM_INT);
 $parent         = optional_param('ks_parent',0,PARAM_INT);
 $removeSelected = optional_param_array('removeselect',0,PARAM_INT);
-$addSearch      = optional_param('addselect_searchtext', '', PARAM_RAW);
-$removeSearch   = optional_param('removeselect_searchtext', '', PARAM_RAW);
+$addSearch      = optional_param('acompanies_searchtext', '', PARAM_RAW);
+$removeSearch   = optional_param('scompanies_searchtext', '', PARAM_RAW);
 
 $pattern    = null;
 $url        = new moodle_url('/local/fellesdata/mapping/organization_new.php',array('le' => $level));

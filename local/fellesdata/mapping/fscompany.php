@@ -1,11 +1,11 @@
 <?php
 /**
- * Report Competence Manager - Super User - Company Structure
+ * Fellesdata mapping companies
  *
  * Description
  *
- * @package         report
- * @subpackage      manager/super_user
+ * @package         local
+ * @subpackage      fellesdata/mapping
  * @copyright       2010 eFaktor
  * @licence         http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  *

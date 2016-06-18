@@ -37,41 +37,6 @@ class map_org_form extends moodleform {
     }//definition
 }//map_org_form
 
-class map_org_jr extends moodleform {
-    function definition() {
-        /* Variables    */
-        $form   = null;
-        $form   = $this->_form;
-
-        $type   = $this->_customdata;
-
-        /* Options Mapping */
-        $form->addElement('header','header_map',get_string('map_opt','local_fellesdata'));
-
-        $form->addElement('radio','jr_no_generic','',get_string('opt_no_generics','local_fellesdata'),GENERIC_JR);
-        /* Job Roles Mapping    */
-        $form->addElement('radio','jr_generic','',get_string('opt_generics','local_fellesdata'),NO_GENERIC_JR);
-
-        /* Level to Map */
-        /* Change Selector */
-        //$options = FS_MAPPING::getLevelsMapping();
-        //$form->addElement('select','level',get_string('level_map','local_fellesdata'),$options);
-
-        /* Pattern  */
-        $form->addElement('text','pattern',get_string('pattern','local_fellesdata'));
-        $form->addHelpButton('pattern','pattern','local_fellesdata');
-        $form->setType('pattern',PARAM_TEXT);
-        //$form->addRule('pattern','required','required', null, 'client');
-
-        $form->addElement('text','type','','style="visibility:hidden"');
-        $form->setDefault('type',$type);
-        $form->setType('type',PARAM_TEXT);
-
-        /* Add Action Buttons   */
-        $this->add_action_buttons(true,get_string('continue'));
-    }//definition
-}//map_org_jr
-
 class selector_form extends moodleform {
     function definition() {
         /* Variables    */
@@ -262,16 +227,13 @@ class organization_new_map_form extends moodleform {
         /* Get Extra Info   */
         list($level,$addSearch,$removeSearch,$org) = $this->_customdata;
 
-
         $form->addElement('static','header_map',null,get_string('header_parent','local_fellesdata'));
-
 
         /* Parents */
         $options = FS_MAPPING::GetParents($level);
         $form->addElement('select','ks_parent',get_string('parent','local_fellesdata'),$options);
-        //if ($parent > 0) {
-            $form->setDefault('ks_parent',$parent);
-        //}
+        $form->setDefault('ks_parent',$parent);
+
         /* Companies */
         $form->addElement('header','head_companies',get_string('to_connect','local_fellesdata'));
 
@@ -304,7 +266,6 @@ class organization_new_map_form extends moodleform {
                 $form->addElement('text','acompanies_searchtext',get_string('search'),'id="acompanies_searchtext"');
                 $form->setType('acompanies_searchtext',PARAM_TEXT);
             $form->addElement('html','</div>');
-
         $form->addElement('html','</div>');//mapping_selectors
 
         /* Level */
@@ -327,120 +288,66 @@ class organization_new_map_form extends moodleform {
     }//definition
 }//organization_new_map_form
 
-/**
- * Class            jobroles_map_form
- *
- * @creationDate    08/02/2016
- * @author          eFaktor     (fbv)
- *
- * Description
- * Form to map job roles
- */
-class jobroles_map_form extends moodleform {
+class jobrole_map_form extends moodleform {
     function definition() {
         /* Variables    */
-        $titleLeft      = get_string('to_match','local_fellesdata');
-        $titleRight     = get_string('possible_matches','local_fellesdata');
-        $titleRemain    = null;
-        $remain         = 0;
-        $level          = null;
-        $pattern        = null;
+        global $OUTPUT;
+        $level      = null;
+        $jobrole    = optional_param('ks_jobrole',0,PARAM_INT);
 
         $form = $this->_form;
-        list($generic,$toMatch,$total) = $this->_customdata;
 
-        /* Get how many remains to map */
-        $remain = $total - count($toMatch);
+        /* Get Extra Info   */
+        list($addSearch,$removeSearch) = $this->_customdata;
 
-        $form->addElement('html','<div class="matching_process_title">');
-            if ($remain) {
-                $titleRemain = get_string('remain_match','local_fellesdata',$remain);
-                $titleLeft .= '. ' . $titleRemain;
-            }//if_remain
+        $form->addElement('static','header_map',null,get_string('header_jobroles','local_fellesdata'));
 
-            /* Title        */
-            $form->addElement('html','<div class="area_left title_matching">');
-                $form->addElement('html','<h6>' . $titleLeft . '</h6>');
-            $form->addElement('html','</div>');//area_left
-            /* Title Right  */
-            $form->addElement('html','<div class="area_right title_matching">');
-                $form->addElement('html','<h6>' . $titleRight . '</h6>');
-            $form->addElement('html','</div>');//area_right
-        $form->addElement('html','</div>');//matching_process
+        /* Job Roles */
+        $options = FS_MAPPING::GetKSJobroles();
+        $form->addElement('select','ks_jobrole',get_string('opt_jr','local_fellesdata'),$options);
+        $form->setDefault('ks_jobrole',$jobrole);
 
-        /* Add data to Map  */
-        $this->MatchJobRoles($toMatch,$form);
+        /* Job roles fellesdata */
+        $form->addElement('header','head_fellesdata',get_string('jr_to_connect','local_fellesdata'));
 
-        /* Generic */
-        $form->addElement('hidden','g');
-        $form->setDefault('g',$generic);
-        $form->setType('g',PARAM_INT);
 
-        /* Add Action Buttons   */
-        $this->add_action_buttons(true,get_string('btn_match','local_fellesdata'));
+        $form->addElement('html','<div class="userselector" id="addselect_wrapper">');
+            /* Job roles mapped */
+            $schoices = FS_MAPPING::FindFSJobroles_Mapped($jobrole,$removeSearch);
+            $form->addElement('html','<div class="sel_comp_left">');
+                $form->addElement('select','sjobroles','',$schoices,'multiple size="15"');
+                    $form->addElement('text','sjobroles_searchtext',get_string('search'),'id="sjobroles_searchtext"');
+                $form->setType('sjobroles_searchtext',PARAM_TEXT);
+            $form->addElement('html','</div>');//sel_comp_left
+
+            $form->addElement('html','<div class="sel_comp_buttons">');
+                /* Add Job roles     */
+                $add_btn    = html_to_text($OUTPUT->larrow() . '&nbsp;'.get_string('add'));
+                $form->addElement('submit','add_sel',$add_btn);
+
+                $form->addElement('html','</br>');
+                $form->addElement('html','</br>');
+
+                /* Remove Job Role  */
+                $remove_btn = html_to_text(get_string('remove') . '&nbsp;' . $OUTPUT->rarrow());
+                $form->addElement('submit','remove_sel',$remove_btn);
+            $form->addElement('html','</div>');//sel_users_buttons
+
+            /* Job roles no mapped */
+            $achoices = FS_MAPPING::FindFSJobroles_NO_Mapped($jobrole,$addSearch);
+            $form->addElement('html','<div class="sel_comp_right">');
+                $form->addElement('select','ajobroles','',$achoices,'multiple size="15"');
+                    $form->addElement('text','ajobroles_searchtext',get_string('search'),'id="ajobroles_searchtext"');
+                $form->setType('ajobroles_searchtext',PARAM_TEXT);
+            $form->addElement('html','</div>');
+        $form->addElement('html','</div>');//mapping_selectors
+
+        /* BUTTONS  */
+        $buttons = array();
+        $buttons[] = $form->createElement('cancel','btn_back',get_string('back'));
+
+        $form->addGroup($buttons, 'buttonar', '', array(' '), false);
+        $form->setType('buttonar', PARAM_RAW);
+        $form->closeHeaderBefore('buttonar');
     }//definition
-
-    /**
-     * @param           $jrToMap
-     * @param           $form
-     *
-     * @throws          Exception
-     *
-     * @creationDate    09/02/2016
-     * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Possible matches Job roles
-     */
-    function MatchJobRoles($jrToMap, &$form) {
-        /* Variables    */
-        $refFS      = null;
-        $refKS      = null;
-        $name       = null;
-        $options    = null;
-        $title      = null;
-
-        try {
-            /* FS job Role  */
-            foreach ($jrToMap as $fsJR) {
-                /* Reference    */
-                $refFS = "FS_" . $fsJR->fsjobrole;
-
-                /* Display  */
-                $form->addElement('html','<div class="matching_process ">');
-                    /* To Match */
-                    $form->addElement('html','<div class="area_left ">');
-                        $form->addElement('html',$fsJR->name);
-                    $form->addElement('html','</div>');//area_left
-                    /* Possible Matches*/
-                    $form->addElement('html','<div class="area_right">');
-                        /* Not Sure Option  */
-                        $options   = array();
-                        $index  = '0';
-                        $options[$index] = $form->createElement('radio', $refFS,'',get_string('no_match','local_fellesdata'),0);
-                        $options[$index]->setValue(0);
-                        $grp = $form->addElement('group', 'grp', null, $options,null , false);
-
-                        /* Match Options    */
-                        foreach ($fsJR->matches as $match) {
-                            /* Data to match    */
-                            $options = array();
-                            $refKS = $fsJR->fsjobrole . "#KS#" . $match->jobrole;
-
-                            $title = $match->industry . " - " . $match->name;
-                            $options[$refKS] = $form->createElement('radio', $refFS,'',$title,$refKS);
-                            $options[$refKS]->setValue($refKS);
-
-                            $grp = $form->addElement('group', 'grp', null, $options,null , false);
-                        }//for_matches
-                    $form->addElement('html','</div>');//area_right
-                $form->addElement('html','</div>');//matching_process
-
-                /* Line */
-                $form->addElement('html','<hr class="line_rpt_matching">');
-            }//for_to_map
-        }catch (Exception $ex) {
-            throw $ex;
-        }//try_catch
-    }//MatchJobRoles
-}//jobroles_map_form
+}//jobrole_map_form

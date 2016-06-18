@@ -22,6 +22,9 @@ define('ACT_DELETE',2);
 define('FS_LE_2',2);
 define('FS_LE_5',3);
 
+define('MAP',1);
+define('UNMAP',2);
+
 class FS_MAPPING {
     /**********/
     /* PUBLIC */
@@ -73,10 +76,10 @@ class FS_MAPPING {
 
 
             $PAGE->requires->js_init_call('M.core_user.init_fs_company',
-                array($ks,$level,$scompaniesSelector,$acompaniesSelector),
-                false,
-                $jsModule
-            );
+                                          array($ks,$level,$scompaniesSelector,$acompaniesSelector),
+                                          false,
+                                          $jsModule
+                                         );
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
@@ -133,6 +136,111 @@ class FS_MAPPING {
             throw $ex;
         }//try_catch
     }//Init_search_Selectors
+
+    /**
+     * @param           $ks_jobrole
+     * @param           $sjobrole
+     * @param           $ajobrole
+     *
+     * @throws          Exception
+     *
+     * @creationDate    18/06/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Initialize jobroles selector
+     */
+    public static function Ini_FSJobroles_Selectors($ks_jobrole,$sjobrole,$ajobrole) {
+        /* Variables    */
+        global $PAGE;
+        $jsModule   = null;
+        $name       = null;
+        $path       = null;
+        $requires   = null;
+        $strings    = null;
+        $grpOne     = null;
+        $grpTwo     = null;
+        $grpThree   = null;
+        $hashAdd    = null;
+        $hashRemove = null;
+
+        try {
+            /* Initialise variables */
+            $name       = 'fs_jobrole';
+            $path       = '/local/fellesdata/js/jobroles.js';
+            $requires   = array('node', 'event-custom', 'datasource', 'json', 'moodle-core-notification');
+            $grpOne     = array('previouslyselectedusers', 'moodle', '%%SEARCHTERM%%');
+            $grpTwo     = array('nomatchingusers', 'moodle', '%%SEARCHTERM%%');
+            $grpThree   = array('none', 'moodle');
+            $strings    = array($grpOne,$grpTwo,$grpThree);
+
+            /* Initialise js module */
+            $jsModule = array('name'        => $name,
+                'fullpath'    => $path,
+                'requires'    => $requires,
+                'strings'     => $strings);
+
+
+            $PAGE->requires->js_init_call('M.core_user.init_fs_company',
+                array($ks_jobrole,$sjobrole,$ajobrole),
+                false,
+                $jsModule
+            );
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//Ini_FSJobroles_Selectors
+
+    /**
+     * @param           $addSearch
+     * @param           $removeSearch
+     *
+     * @throws          Exception
+     *
+     * @creationDate    18/06/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Initialize the selector for searching
+     */
+    public static function Init_Search_Jobroles($addSearch,$removeSearch) {
+        /* Variables */
+        $jsModule   = null;
+        $name       = null;
+        $path       = null;
+        $requires   = null;
+        $strings    = null;
+        $grpOne     = null;
+        $grpTwo     = null;
+        $grpThree   = null;
+        $hashAdd    = null;
+        $hashRemove = null;
+
+        try {
+            /* Initialise variables */
+            $name       = 'search_jobrole';
+            $path       = '/local/fellesdata/js/searchjr.js';
+            $requires   = array('node', 'event-custom', 'datasource', 'json', 'moodle-core-notification');
+            $grpOne     = array('previouslyselectedusers', 'moodle', '%%SEARCHTERM%%');
+            $grpTwo     = array('nomatchingusers', 'moodle', '%%SEARCHTERM%%');
+            $grpThree   = array('none', 'moodle');
+            $strings    = array($grpOne,$grpTwo,$grpThree);
+
+            /* Initialise js module */
+            $jsModule = array('name'        => $name,
+                              'fullpath'    => $path,
+                              'requires'    => $requires,
+                              'strings'     => $strings
+                             );
+
+            /* Add Jobrole Selector       */
+            self::Init_Search_AddJobrole($addSearch,$jsModule);
+            /* Remove Job role Selector    */
+            self::Init_Search_RemoveJobrole($removeSearch,$jsModule);
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//Init_Search_Jobroles
 
     /**
      * @param           $fsCompanies
@@ -442,6 +550,171 @@ class FS_MAPPING {
     }//GetParents
 
     /**
+     * @param           $ks_jobrole
+     * @param           $search
+     *
+     * @return          null
+     * @throws          Exception
+     *
+     * @creationDate    17/06/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Find job roles have not been mapped to job role
+     */
+    public static function FindFSJobroles_NO_Mapped($ks_jobrole,$search) {
+        /* Variables */
+        global $DB;
+        $sql        = null;
+        $sqlExtra   = null;
+        $locate     = null;
+        $rdo        = null;
+        $params     = null;
+        $fsJobroles = null;
+
+        try {
+            /* Search criteria */
+            $params = array();
+            $params['job_role'] = $ks_jobrole;
+
+            /* SQL Instruction  */
+            $sql = " SELECT 	fs.stillingskode,
+                                fs.stillingstekst
+                     FROM			{fs_imp_jobroles}	fs
+                        LEFT JOIN	{ksfs_jobroles}		ksfs	ON 	ksfs.fsjobrole = fs.stillingskode
+                                                                AND	ksfs.ksjobrole = :job_role
+                     WHERE  	ksfs.id IS NULL ";
+
+            /* Search   */
+            if ($search) {
+                $extra = explode(' ',$search);
+                foreach ($extra as $str) {
+                    if ($locate) {
+                        $locate .= " OR ";
+                    }
+                    $locate .= " (
+                                    LOCATE('" . $str . "',fs.stillingstekst) > 0
+                                    OR
+                                    LOCATE('" . $str . "',fs.stillingstekst_alternativ) > 0
+                                 )";
+                }//if_search_opt
+
+                $sql .= " AND ($locate) ";
+            }//if_search
+
+            /* Execute */
+            $sql .= " ORDER BY   fs.stillingskode,fs.stillingstekst ";
+            $rdo = $DB->get_records_sql($sql,$params);
+            if ($rdo) {
+                foreach ($rdo as $instance) {
+                    $fsJobroles[$instance->stillingskode] = $instance->stillingskode . " - " . $instance->stillingstekst;
+                }
+            }//if_rdo
+
+            return $fsJobroles;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//FindFSJobroles_NO_Mapped
+
+    /**
+     * @param           $ks_jobrole
+     * @param           $search
+     *
+     * @return          null
+     * @throws          Exception
+     *
+     * @creationDate    17/06/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Find job roles have been mapped to job role
+     */
+    public static function FindFSJobroles_Mapped($ks_jobrole,$search) {
+        /* Variables */
+        global $DB;
+        $sql        = null;
+        $sqlExtra   = null;
+        $locate     = null;
+        $rdo        = null;
+        $params     = null;
+        $fsJobroles = null;
+
+        try {
+            /* Search criteria */
+            $params = array();
+            $params['job_role'] = $ks_jobrole;
+
+            /* SQL Instruction  */
+            $sql = " SELECT   fs.jrcode,
+                              fs.jrname
+                     FROM	  {fs_jobroles}		fs
+                        JOIN  {ksfs_jobroles}	ksfs	ON 	ksfs.fsjobrole = fs.jrcode
+                                                        AND	ksfs.ksjobrole = :job_role ";
+
+            /* Search   */
+            if ($search) {
+                $extra = explode(' ',$search);
+                foreach ($extra as $str) {
+                    if ($locate) {
+                        $locate .= " OR ";
+                    }
+                    $locate .= " LOCATE('" . $str . "',fs.jrname) > 0";
+                }//if_search_opt
+
+                $sql .= " WHERE ($locate) ";
+            }//if_search
+
+            /* Execute */
+            $sql .= " ORDER BY fs.jrcode,fs.jrname ";
+            $rdo = $DB->get_records_sql($sql,$params);
+            if ($rdo) {
+                foreach ($rdo as $instance) {
+                    $fsJobroles[$instance->jrcode] = $instance->jrcode . " - " . $instance->jrname;
+                }
+            }//if_rdo
+
+            return $fsJobroles;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//FindFSJobroles_Mapped
+
+    /**
+     * @return          null
+     * @throws          Exception
+     *
+     * @creationDate    17/06/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Get job roles from fellesdata
+     */
+    public static function GetKSJobroles() {
+        /* Variables */
+        global $DB;
+        $lstParents = null;
+        $rdo        = null;
+        $params     = null;
+
+        try {
+            $lstParents[0] = get_string('sel_parent','local_fellesdata');
+
+            /* Execute */
+            $rdo = $DB->get_records('ks_jobroles',null,'jobroleid,industrycode,name');
+            if ($rdo) {
+                foreach ($rdo as $instance) {
+                    $lstParents[$instance->jobroleid] = $instance->name;
+                }//rdo
+            }//if_rdo
+
+            return $lstParents;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//GetKSJobroles
+
+    /**
      * @return          array
      * @throws          Exception
      *
@@ -608,81 +881,52 @@ class FS_MAPPING {
     }//CleanOrganizationMapped
 
     /**
-     * @param           $sector
-     * @param           $generic
-     * @param           $notIn
-     * @param           $start
-     * @param           $length
-     *
-     * @return          array
-     * @throws          Exception
-     *
-     * @creationDate    08/02/2016
-     * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Job roles to map
-     */
-    public static function FSJobRolesToMap($sector,$generic,$notIn,$start,$length) {
-        /* Variables    */
-        $fsJobRoles = null;
-        $total      = 0;
-        try {
-            /* Get Job Roles to map */
-            $fsJobRoles = self::GetFSJobRolesToMap($sector,$generic,$notIn,$start,$length);
-            /* Get how many remains to map  */
-            $total = self::GetTotalFSJobRolesToMap($sector,$notIn);
-
-            return array($fsJobRoles,$total);
-        }catch (Exception $ex) {
-            throw $ex;
-        }//try_catch
-    }//FSJobRolesToMap
-
-    /**
      * @param           $toMap
-     * @param           $data
+     * @param           $ksJobRole
+     * @param           $action
      *
      * @return          bool
      * @throws          Exception
      *
      * @creationDate    09/02/2016
+     * @updateDate      18/06/2016
      * @author          eFaktor     (fbv)
      *
      * Description
-     * Mapping Job Roles
+     * Mapping/Unmapping jobroles
      */
-    public static function MappingFSJobRoles($toMap,$data) {
+    public static function MappingFSJobRoles($toMap,$ksJobRole,$action) {
         /* Variables    */
-        global $SESSION;
-        $notIn          = array();
-        $possibleMatch  = null;
-        $refFS          = null;
-        $infoMatch      = null;
+        global $DB;
+        $rdo        = null;
+        $infoFS     = null;
+        $function   = null;
 
         try {
-            /* Check Not In */
-            if (isset($SESSION->notIn)) {
-                $notIn = $SESSION->notIn;
-            }//notIn
+            /* Get action   */
+            switch ($action) {
+                case MAP:
+                    $function = "MapFSJobRole";
 
-            /* Job roles to map */
-            foreach ($toMap as $fsJR) {
-                /* Reference    */
-                $refFS = "FS_" . $fsJR->fsjobrole;
+                    break;
+                case UNMAP:
+                    $function = "UnMapFSJobRole";
 
-                /* Get Possible Match   */
-                $possibleMatch = $data->$refFS;
-                if ($possibleMatch) {
-                    /* Mapping between FS and KS */
-                    $infoMatch = explode('#KS#',$data->$refFS);
-                    self::MapFSJobRole($fsJR,$infoMatch[1]);
-                }else {
-                    $notIn[$fsJR->fsjobrole] = $fsJR->fsjobrole;
-                }//if_possibleMatch
-            }//fs_company
+                    break;
+            }
 
-            return array(true,$notIn);
+            /* Map/UnMap FS Job Roles */
+            foreach ($toMap as $fs) {
+                /* Get Info FS Job role */
+                $rdo = $DB->get_record('fs_imp_jobroles',array('stillingskode' => $fs));
+                /* Mapping */
+                if ($rdo) {
+
+                    self::$function($rdo,$ksJobRole);
+                }//if_rdo
+            }//for_fs_jobrole
+
+            return true;
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
@@ -1262,282 +1506,6 @@ class FS_MAPPING {
         }//try_catch
     }//GetPossibleOrgMatches
 
-    /**
-     * @param           $sector
-     * @param           $generic
-     * @param           $notIn
-     * @param           $start
-     * @param           $length
-     *
-     * @return          array
-     *
-     * @throws          Exception
-     *
-     * @creationDate    08/02/2016
-     * @author          eFaktor     (fbv)
-     *
-     * Description
-     * GEt job roles to map
-     */
-    private static function GetFSJobRolesToMap($sector,$generic,$notIn,$start,$length) {
-        /* Variables */
-        global $DB;
-        $fsJobRoles = array();
-        $infoJR     = null;
-        $sql        = null;
-        $rdo        = null;
-        $params     = null;
-
-        try {
-            /* Search Criteria  */
-            $params = array();
-            $params['imported'] = 0;
-            $params['action']   = ACT_DELETE;
-
-            /* SQL Instruction  */
-            $sql = " SELECT	DISTINCT  fs_imp.id,
-                                      fs_imp.stillingskode as 'fsjobrole',
-                                      fs_imp.stillingstekst,
-                                      fs_imp.stillingstekst_alternativ
-                     FROM			{fs_imp_jobroles}	fs_imp
-                        LEFT JOIN	{fs_jobroles} 	    fs		ON fs.jrcode = fs_imp.stillingskode
-                     WHERE	fs_imp.imported = :imported
-                        AND fs_imp.action  != :action
-                        AND fs_imp.stillingskode NOT IN ($notIn)
-                        AND	fs.id IS NULL ";
-
-
-            if ($sector) {
-                $sqlMatch = null;
-                $searchBy = null;
-                /* Search By    */
-                $sector     = str_replace(',',' ',$sector);
-                $sector     = str_replace(' og ',' ',$sector);
-                $sector     = str_replace(' eller ',' ',$sector);
-                $sector     = str_replace('/',' ',$sector);
-                $searchBy   = explode(' ',$sector);
-
-                foreach($searchBy as $match) {
-                    if ($sqlMatch) {
-                        $sqlMatch .= " OR ";
-                    }//if_sqlMatch
-
-                    $sqlMatch .= " (fs_imp.stillingstekst like '%" . $match . "%'
-                                    OR
-                                    fs_imp.stillingstekst_alternativ like '%" . $match . "%')";
-                }//for_search
-
-                $sql .= " AND " . $sqlMatch . "";
-            }
-
-            /* Order Criteria  */
-            $sql .= " ORDER BY fs_imp.stillingstekst
-                      LIMIT $start, $length  ";
-
-            /* Execute */
-            $rdo = $DB->get_records_sql($sql,$params);
-            if ($rdo) {
-                foreach ($rdo as $instance) {
-                    /* Info Job Role */
-                    $infoJR = new stdClass();
-                    $infoJR->id             = $instance->id;
-                    $infoJR->fsjobrole      = $instance->fsjobrole;
-                    $infoJR->name           = $instance->fsjobrole . ' - ' . $instance->stillingstekst;
-                    $infoJR->alternative    = $instance->stillingstekst_alternativ;
-                    $infoJR->matches        = self::GetPossiblesJRMatches($instance->stillingstekst,$sector,$generic);
-
-                    /* Add Job Role */
-                    $fsJobRoles[$instance->fsjobrole] = $infoJR;
-                }//for_rdo
-            }//if_Rdo
-
-            return $fsJobRoles;
-        }catch (Exception $ex) {
-            throw $ex;
-        }//try_catch
-    }//GetFSJobRolesToMap
-
-    /**
-     * @param           $sector
-     * @param           $notIn
-     *
-     * @return          int
-     * @throws          Exception
-     *
-     * Description
-     * gets how main remains to map
-     */
-    private static function GetTotalFSJobRolesToMap($sector,$notIn) {
-        /* Variables */
-        global $DB;
-        $sql        = null;
-        $rdo        = null;
-        $params     = null;
-
-        try {
-            /* Search Criteria  */
-            $params = array();
-            $params['imported'] = 0;
-            $params['action']   = ACT_DELETE;
-
-            /* SQL Instruction  */
-            $sql = " SELECT	DISTINCT  count(fs_imp.id) as 'total'
-                     FROM			{fs_imp_jobroles}	fs_imp
-                        LEFT JOIN	{fs_jobroles} 	    fs		ON fs.jrcode = fs_imp.stillingskode
-                     WHERE	fs_imp.imported = :imported
-                        AND fs_imp.action  != :action
-                        AND fs_imp.stillingskode NOT IN ($notIn)
-                        AND	fs.id IS NULL ";
-
-            /* Pattern */
-            if ($sector) {
-                $sqlMatch = null;
-                $searchBy = null;
-                /* Search By    */
-                $sector     = str_replace(',',' ',$sector);
-                $sector     = str_replace(' og ',' ',$sector);
-                $sector     = str_replace(' eller ',' ',$sector);
-                $sector     = str_replace('/',' ',$sector);
-                $searchBy   = explode(' ',$sector);
-
-                foreach($searchBy as $match) {
-                    if ($sqlMatch) {
-                        $sqlMatch .= " OR ";
-                    }//if_sqlMatch
-
-                    $sqlMatch .= " (fs_imp.stillingstekst like '%" . $match . "%'
-                                    OR
-                                    fs_imp.stillingstekst_alternativ like '%" . $match . "%')";
-                }//for_search
-
-                $sql .= " AND " . $sqlMatch . "";
-            }//if_sector
-
-            /* Execute */
-            $rdo = $DB->get_record_sql($sql,$params);
-            if ($rdo) {
-                return $rdo->total;
-            }else {
-                return 0;
-            }//if_Rdo
-        }catch (Exception $ex) {
-            throw $ex;
-        }//try_catch
-    }//GetTotalFSJobRolesToMap
-
-    /**
-     * @param           $fsJobRole
-     * @param           $sector
-     * @param           $generic
-     *
-     * @return          array
-     * @throws          Exception
-     *
-     * @creationDate    08/02/2016
-     * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Get possible matches - Job Roles
-     */
-    private static function GetPossiblesJRMatches($fsJobRole,$sector,$generic) {
-        /* Variables    */
-        global $DB;
-        $sql        = null;
-        $sqlMatch   = null;
-        $rdo        = null;
-        $searchBy   = null;
-        $matches    = array();
-        $infoMatch  = null;
-        $pluginInfo = null;
-        $hierarchy  = null;
-
-        try {
-            /* SQL Instruction */
-            $sql = " SELECT DISTINCT jr.id,
-                                     jr.jobroleid,
-                                     jr.name,
-                                     jr.industrycode
-                      FROM		{ks_jobroles} 			jr
-                        JOIN	{ks_jobroles_relation}	jr_rel ON jr_rel.jobroleid = jr.jobroleid ";
-
-            /* Add Level    */
-            if ($generic) {
-                $sql .= " WHERE (jr_rel.levelzero IS NULL
-                                 OR
-                                 jr_rel.levelzero = 0)";
-            }else {
-                $sql .= " WHERE jr_rel.levelzero IS NOT NULL
-                            AND jr_rel.levelzero != 0 ";
-            }//if_generic
-
-
-            /* Pattern  */
-            if ($sector) {
-                $sector     = str_replace(',',' ',$sector);
-                $sector     = str_replace(' og ',' ',$sector);
-                $sector     = str_replace(' eller ',' ',$sector);
-                $sector     = str_replace('/',' ',$sector);
-                $searchBy   = explode(' ',$sector);
-
-                /* Search by */
-                foreach($searchBy as $match) {
-                    if ($sqlMatch) {
-                        $sqlMatch .= " OR ";
-                    }//if_sqlMatch
-                    $sqlMatch .= " jr.name like '%" . $match . "%'";
-                }//for_search
-
-                $sql .= " AND (jr.name like '%" . $fsJobRole . "%' OR " . $sqlMatch . ")";
-            }else {
-                $sector     = str_replace(',',' ',$fsJobRole);
-                $sector     = str_replace(' og ',' ',$sector);
-                $sector     = str_replace(' eller ',' ',$sector);
-                $sector     = str_replace('/',' ',$sector);
-                $searchBy   = explode(' ',$sector);
-
-                /* Search by */
-                foreach($searchBy as $match) {
-
-                    if (strlen($match) >1) {
-                        if ($sqlMatch) {
-                            $sqlMatch .= " OR ";
-                        }//if_sqlMatch
-
-                        $sqlMatch .= " jr.name like '%" . $match . "%'";
-                    }
-                }//for_search
-
-                if ($sqlMatch) {
-                    $sql .= " AND (jr.name like '%" . $fsJobRole . "%' OR " . $sqlMatch . ")";
-                }else {
-                    $sql .= " AND (jr.name like '%" . $fsJobRole . "%')";
-                }
-            }//if_sector
-
-            /* Order Criteria  */
-            $sql .= " ORDER BY jr.industrycode,jr.name ";
-
-            /* Execute */
-            $rdo = $DB->get_records_sql($sql);
-            if ($rdo) {
-                foreach ($rdo as $instance) {
-                    /* Info Match   */
-                    $infoMatch = new stdClass();
-                    $infoMatch->id          = $instance->id;
-                    $infoMatch->jobrole     = $instance->jobroleid;
-                    $infoMatch->name        = $instance->name;
-                    $infoMatch->industry    = $instance->industrycode;
-
-                    /* Add Match    */
-                    $matches[$instance->jobroleid] = $infoMatch;
-                }//for_Rdo
-            }//if_rdo
-
-            return $matches;
-        }catch (Exception $ex) {
-            throw $ex;
-        }//try_catch
-    }//GetPossiblesJRMatches
 
     /**
      * @param           $fsJobRole
@@ -1571,15 +1539,15 @@ class FS_MAPPING {
 
             /* Check if already exists  */
             $params = array();
-            $params['jrcode'] = $fsJobRole->fsjobrole;
+            $params['jrcode'] = $fsJobRole->stillingskode;
             $rdo = $DB->get_record('fs_jobroles',$params);
 
             if (!$rdo) {
                 /* New Entry    */
                 $infoJobRole = new stdClass();
-                $infoJobRole->jrcode            = $fsJobRole->fsjobrole;
-                $infoJobRole->jrname            = $fsJobRole->name;
-                $infoJobRole->jrjralternative   = $fsJobRole->alternative;
+                $infoJobRole->jrcode            = $fsJobRole->stillingskode;
+                $infoJobRole->jrname            = $fsJobRole->stillingstekst;
+                $infoJobRole->jrjralternative   = $fsJobRole->stillingstekst_alternativ;
                 $infoJobRole->synchronized      = 1;
                 $infoJobRole->new               = 0;
                 $infoJobRole->timemodified      = $time;
@@ -1587,8 +1555,8 @@ class FS_MAPPING {
                 /* Execute  */
                 $DB->insert_record('fs_jobroles',$infoJobRole);
             }else {
-                $rdo->jrname            = $fsJobRole->name;
-                $rdo->jrjralternative   = $fsJobRole->alternative;
+                $rdo->jrname            = $fsJobRole->stillingstekst;
+                $rdo->jrjralternative   = $fsJobRole->stillingstekst_alternativ;
                 $rdo->synchronized      = 1;
                 $rdo->timemodified      = $time;
 
@@ -1599,13 +1567,13 @@ class FS_MAPPING {
             /* Relation */
             /* Check if already exists  */
             $params = array();
-            $params['fsjobrole'] = $fsJobRole->fsjobrole;
+            $params['fsjobrole'] = $fsJobRole->stillingskode;
             $params['ksjobrole'] = $ksJobRole;
             $rdo = $DB->get_record('ksfs_jobroles',$params);
             if (!$rdo) {
                 /* Create Relation  */
                 $infoRelation = new stdClass();
-                $infoRelation->fsjobrole = $fsJobRole->fsjobrole;
+                $infoRelation->fsjobrole = $fsJobRole->stillingskode;
                 $infoRelation->ksjobrole = $ksJobRole;
 
                 /* Execute  */
@@ -1615,7 +1583,7 @@ class FS_MAPPING {
             /* Updated record as imported   */
             $infoImp = new stdClass();
             $infoImp->id            = $fsJobRole->id;
-            $infoImp->stillingskode = $fsJobRole->fsjobrole;
+            $infoImp->stillingskode = $fsJobRole->stillingskode;
             $infoImp->imported      = 1;
             /* Execute  */
             $DB->update_record('fs_imp_jobroles',$infoImp);
@@ -1630,58 +1598,57 @@ class FS_MAPPING {
         }//try_catch
     }//MapFSJobRole
 
-    /**
-     * @param           $fsJR
-     *
-     * @throws          Exception
-     *
-     * @creationDate    09/02/2016
-     * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Map a FS Job role with the 'new' option
-     */
-    private static function NewMapFSJobRole($fsJR) {
+    private static function UnMapFSJobRole($fsJobRole,$ksJobRole) {
         /* Variables    */
         global $DB;
+        $infoImp        = null;
+        $infoJobRole    = null;
+        $infoRelation   = null;
         $rdo            = null;
         $params         = null;
-        $infoJobRole    = null;
-        $infoImp        = null;
+        $time           = null;
         $trans          = null;
 
-        /* Start transaction    */
+        /* Start transaction */
         $trans = $DB->start_delegated_transaction();
 
         try {
+            /* Local Time   */
+            $time = time();
+
+            /* Relation */
             /* Check if already exists  */
             $params = array();
-            $params['jrcode'] = $fsJR->fsjobrole;
-            $rdo = $DB->get_record('fs_jobroles',$params);
+            $params['fsjobrole'] = $fsJobRole->stillingskode;
+            $params['ksjobrole'] = $ksJobRole;
+            $rdo = $DB->get_record('ksfs_jobroles',$params);
+            if ($rdo) {
+                $DB->delete_records('ksfs_jobroles',array('id' => $rdo->id));
 
-            if (!$rdo) {
-                /* New Entry    */
-                $infoJobRole = new stdClass();
-                $infoJobRole->jrcode            = $fsJR->fsjobrole;
-                $infoJobRole->jrname            = $fsJR->name;
-                $infoJobRole->jrjralternative   = $fsJR->alternative;
-                $infoJobRole->synchronized      = 0;
-                $infoJobRole->new               = 1;
-                $infoJobRole->timemodified      = time();
+                /* Check if is connected with other job roles   */
+                $params = array();
+                $params['fsjobrole'] = $fsJobRole->stillingskode;
+                $rdo = $DB->get_record('ksfs_jobroles',$params);
+                if (!$rdo) {
+                    /* Deleted  */
+                    $params = array();
+                    $params['jrcode'] = $fsJobRole->stillingskode;
+                    $rdo = $DB->get_record('fs_jobroles',$params);
+                    if ($rdo) {
+                        $DB->delete_records('fs_jobroles',array('id' => $rdo->id));
+                    }//if_rdo
+                }///if_Rdo
+            }//if_rdo
 
-                /* Execute  */
-                $DB->insert_record('fs_jobroles',$infoJobRole);
-            }//if_not_exists
-
-            /* Update record as imported    */
+            /* Updated record as imported   */
             $infoImp = new stdClass();
-            $infoImp->id            = $fsJR->id;
-            $infoImp->stillingskode = $fsJR->fsjobrole;
-            $infoImp->imported      = 1;
+            $infoImp->id            = $fsJobRole->id;
+            $infoImp->stillingskode = $fsJobRole->stillingskode;
+            $infoImp->imported      = 0;
             /* Execute  */
             $DB->update_record('fs_imp_jobroles',$infoImp);
 
-            /* Commit   */
+            /* Commit */
             $trans->allow_commit();
         }catch (Exception $ex) {
             /* Rollback */
@@ -1689,7 +1656,7 @@ class FS_MAPPING {
 
             throw $ex;
         }//try_catch
-    }//NewMapFSJobRole
+    }//UnMapFSJobRole
 
     /**
      * @param           $search
@@ -1764,6 +1731,83 @@ class FS_MAPPING {
                                           false,
                                           $jsModule
             );
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//Init_Managers_RemoveSelector
+
+    /**
+     * @param           $search
+     * @param           $jsModule
+     *
+     * @throws          Exception
+     *
+     * @creationDate    18/06/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Initialize add jobrole selector
+     */
+    private static function Init_Search_AddJobrole($search,$jsModule) {
+        /* Variables */
+        global $USER,$PAGE;
+        $options    = null;
+
+        try {
+            /* Initialise Options Selector  */
+            $options = array();
+            $options['class']       = 'FindFSJobroles_NO_Mapped';
+            $options['name']        = 'ajobroles';
+            $options['multiselect'] = true;
+
+
+            /* Connect Selector User    */
+            $hash                           = md5(serialize($options));
+            $USER->search_selectors[$hash]  = $options;
+
+            $PAGE->requires->js_init_call('M.core_user.init_search_jobrole',
+                                          array('ajobroles','ks_jobrole',$hash, $search),
+                                          false,
+                                          $jsModule
+                                         );
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//Init_Search_AddJobrole
+
+    /**
+     * @param           $search
+     * @param           $jsModule
+     *
+     * @throws          Exception
+     *
+     * @creationDate    18/06/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Iniatialize remove jobrole selector
+     */
+    private static function Init_Search_RemoveJobrole($search,$jsModule) {
+        /* Variables */
+        global $USER,$PAGE;
+        $options    = null;
+
+        try {
+            /* Initialise Options Selector  */
+            $options = array();
+            $options['class']       = 'FindFSJobroles_Mapped';
+            $options['name']        = 'sjobroles';
+            $options['multiselect'] = true;
+
+            /* Connect Selector User    */
+            $hash                           = md5(serialize($options));
+            $USER->search_selectors[$hash]  = $options;
+
+            $PAGE->requires->js_init_call('M.core_user.init_search_jobrole',
+                                          array('sjobroles','ks_jobrole',$hash, $search),
+                                          false,
+                                          $jsModule
+                                         );
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
