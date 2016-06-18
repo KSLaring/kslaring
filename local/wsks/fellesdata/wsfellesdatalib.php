@@ -1059,10 +1059,10 @@ class WS_FELLESDATA {
                     if (!$rdoUser) {
                         /* Execute  */
                         $infoUser->id = $DB->insert_record('user',$infoUser);
-
-                        /* Synchronized */
-                        $sync = true;
                     }//if_notExist
+
+                    /* Synchronized */
+                    $sync = true;
 
                     break;
                 case UPDATE_ACTION:
