@@ -64,6 +64,9 @@ class FELLESDATA_CRON {
 
             /* Synchronization Comeptence   */
             if (!$fstExecution) {
+                /* Synchronization Managers && Reporters    */
+                self::ManagerReporter_Synchronization($pluginInfo,KS_MANAGER_REPORTER);
+                
                 /* Synchronization User Competence JobRole  -- Add/Update */
                 self::UserCompetence_Synchronization($pluginInfo,KS_USER_COMPETENCE);
 
