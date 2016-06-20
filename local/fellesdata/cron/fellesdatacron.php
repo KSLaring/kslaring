@@ -66,7 +66,7 @@ class FELLESDATA_CRON {
             if (!$fstExecution) {
                 /* Synchronization Managers && Reporters    */
                 self::ManagerReporter_Synchronization($pluginInfo,KS_MANAGER_REPORTER);
-                
+
                 /* Synchronization User Competence JobRole  -- Add/Update */
                 self::UserCompetence_Synchronization($pluginInfo,KS_USER_COMPETENCE);
 
@@ -78,6 +78,7 @@ class FELLESDATA_CRON {
         }//try_catch
     }//cron
 
+    /* MANUAL EXECUTION */
     public static function cron_manual($fstExecution,$option) {
         /* Variables    */
         $pluginInfo = null;
