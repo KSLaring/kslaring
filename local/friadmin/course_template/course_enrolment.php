@@ -27,13 +27,12 @@ $courseTemplate = required_param('ct',PARAM_INT);
 $waitinglist    = optional_param('waitinglist',0,PARAM_INT);
 $contextCourse  = CONTEXT_COURSE::instance($courseId);
 $url            = new moodle_url('/local/friadmin/course_template/course_enrolment.php',array('id' => $courseId,'ct' => $courseTemplate));
-$returnUrl = new moodle_url('/local/friadmin/course_template/course_template.php',array('id' => $courseId));
+$returnUrl = new moodle_url('/local/friadmin/course_template/course_teacher.php',array('id' => $courseId,'ct' => $courseTemplate));
 
 $course         = get_course($courseId);
 $strTitle       = get_string('coursetemplate_title', 'local_friadmin');
 $strSubTitle    = get_string('course_enrolment', 'local_friadmin');
 $instance       = null;
-
 
 /* Check Permissions/Capability */
 if (!has_capability('local/friadmin:view',CONTEXT_SYSTEM::instance())) {
