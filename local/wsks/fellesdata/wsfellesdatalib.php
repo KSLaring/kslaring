@@ -620,15 +620,23 @@ class WS_FELLESDATA {
 
             /* Info Manager */
             $infoManager = new stdClass();
+            $infoManager->levelzero         = 0;
+            $infoManager->levelone          = null;
+            $infoManager->leveltwo          = null;
+            $infoManager->levelthree        = null;
             $infoManager->managerid         = $userId;
             $infoManager->hierarchylevel    = $level;
             $infoManager->timecreated       = $time;
 
             /* Info Reporter    */
             $infoReporter = new stdClass();
-            $infoReporter->reporterid       = $userId;
-            $infoReporter->hierarchylevel   = $level;
-            $infoReporter->timecreated      = $time;
+            $infoReporter->reporterid        = $userId;
+            $infoReporter->levelzero         = 0;
+            $infoReporter->levelone          = null;
+            $infoReporter->leveltwo          = null;
+            $infoReporter->levelthree        = null;
+            $infoReporter->hierarchylevel    = $level;
+            $infoReporter->timecreated       = $time;
 
             /* Search Criteria  */
             $params = array();
