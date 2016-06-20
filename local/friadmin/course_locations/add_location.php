@@ -52,6 +52,7 @@ $PAGE->set_title($SITE->fullname);
 $PAGE->set_heading($SITE->fullname);
 $PAGE->navbar->add(get_string('plugin_course_locations','local_friadmin'),$return_url);
 $PAGE->navbar->add(get_string('new_location','local_friadmin'),$url);
+$PAGE->requires->js('/local/friadmin/course_locations/js/locations.js');
 
 /* Get My Competence Locations  */
 $myCompetence = CourseLocations::Get_MyCompetence($USER->id);

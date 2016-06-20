@@ -70,11 +70,19 @@ class locations_search_form extends moodleform {
         $form->addRule(COURSE_LOCATION_COUNTY, 'required', 'nonzero', null, 'client');
 
         /* Municipalities          */
-        if ($myCompetence) {
-            $municipalities = GetMunicipalities($myCompetence->levelOne,$levelZero);
+        if ($IsAdmin) {
+            if (isset($_COOKIE['parentCounty']) && ($_COOKIE['parentCounty'])) {
+                $municipalities = CourseLocations::Get_Companies(1,null,$_COOKIE['parentCounty']);
+            }else {
+                $municipalities[0] = get_string('select_level_list','local_friadmin');
+            }
         }else {
-            $municipalities[0] = get_string('select_level_list','local_friadmin');
-        }//if_myCompetence
+            if ($myCompetence) {
+                $municipalities = GetMunicipalities($myCompetence->levelOne);
+            }else {
+                $municipalities[0] = get_string('select_level_list','local_friadmin');
+            }//if_myCompetence
+        }
         $form->addElement('select',COURSE_LOCATION_MUNICIPALITY,get_string('municipality', 'local_friadmin'),$municipalities);
         if (isset($_COOKIE['parentMunicipality']) && ($_COOKIE['parentMunicipality'])) {
             $form->setDefault(COURSE_LOCATION_MUNICIPALITY ,$_COOKIE['parentMunicipality']);
@@ -146,11 +154,20 @@ class add_location_form extends moodleform {
         $form->addRule(COURSE_LOCATION_COUNTY, 'required', 'nonzero', null, 'client');
 
         /* Municipalities          */
-        if ($myCompetence) {
-            $municipalities = GetMunicipalities($myCompetence->levelOne);
+        if ($IsAdmin) {
+            if (isset($_COOKIE['parentCounty']) && ($_COOKIE['parentCounty'])) {
+                $municipalities = CourseLocations::Get_Companies(1,null,$_COOKIE['parentCounty']);
+            }else {
+                $municipalities[0] = get_string('select_level_list','local_friadmin');
+            }
         }else {
-            $municipalities[0] = get_string('select_level_list','local_friadmin');
-        }//if_myCompetence
+            if ($myCompetence) {
+                $municipalities = GetMunicipalities($myCompetence->levelOne);
+            }else {
+                $municipalities[0] = get_string('select_level_list','local_friadmin');
+            }//if_myCompetence
+        }
+
         $form->addElement('select',COURSE_LOCATION_MUNICIPALITY,get_string('municipality', 'local_friadmin'),$municipalities);
         if (isset($_COOKIE['parentMunicipality']) && ($_COOKIE['parentMunicipality'])) {
             $form->setDefault(COURSE_LOCATION_MUNICIPALITY ,$_COOKIE['parentMunicipality']);
@@ -360,6 +377,7 @@ class edit_location_form extends moodleform {
 /**
  * @param           $levelOne
  * @param           $levelZero
+ *
  * @return          array
  *
  * @creationDate    28/04/2015
