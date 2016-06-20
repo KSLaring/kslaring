@@ -1026,8 +1026,6 @@ class FSKS_USERS {
                             fs.prioritet,
                             fs.action
                      FROM	  {fs_imp_managers_reporters}  fs
-                        -- JOIN  {user}				  u 	ON  u.username    = fs.fodselsnr
-                           --                                  AND u.deleted     = 0
                         JOIN  {ksfs_company}		  fsk	ON  fsk.fscompany = fs.org_enhet_id
                         JOIN  {ks_company}			  ks	ON	ks.companyid  = fsk.kscompany
                      WHERE	fs.imported	= :imported ";
