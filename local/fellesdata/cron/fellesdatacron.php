@@ -148,7 +148,7 @@ class FELLESDATA_CRON {
                     self::UserCompetence_Synchronization($pluginInfo,KS_USER_COMPETENCE);
 
                     /* Synchronization User Competence JobRole  -- Delete */
-                    self::UserCompetence_Synchronization($pluginInfo,KS_USER_COMPETENCE,true);
+                    //self::UserCompetence_Synchronization($pluginInfo,KS_USER_COMPETENCE,true);
 
                     break;
                 case TEST_FS_SYNC_FS_USERS:
