@@ -955,16 +955,14 @@ class WS_FELLESDATA {
                                 /* Execute */
                                 $DB->update_record('user_info_competence_data',$competenceData);
 
-                                /* Synchronized */
-                                $sync = true;
                             }//if_no_exist
                         }else {
                             /* Create New   */
                             $infoCompetenceData->id = $DB->insert_record('user_info_competence_data',$infoCompetenceData);
-
-                            /* Synchronized */
-                            $sync = true;
                         }
+
+                        /* Synchronized */
+                        $sync = true;
 
                         break;
                     case DELETE_ACTION:
