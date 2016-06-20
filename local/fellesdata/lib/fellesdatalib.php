@@ -1111,6 +1111,8 @@ class FSKS_USERS {
                 /* Convert to object    */
                 $objCompetence = (Object)$competence;
 
+                echo " USers " . $objCompetence->personalNumber . "</br>";
+
                 if ($objCompetence->imported) {
                     /* Get Info */
                     $infoUser = $usersTo[$objCompetence->key];
