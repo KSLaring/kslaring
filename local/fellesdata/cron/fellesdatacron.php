@@ -895,6 +895,8 @@ class FELLESDATA_CRON {
                     FSKS_USERS::Synchronize_UserCompetenceFS($toSynchronize,$response['usersCompetence']);
 
                     //$DB->delete_records('fs_users_competence',array('imported' => '1'));
+                }else {
+                    echo "NO";
                 }//if_no_error
             }//if_toSynchronize
 
