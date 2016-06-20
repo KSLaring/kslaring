@@ -1034,7 +1034,7 @@ class FSKS_USERS {
 
             /* Check if it's a manual execution */
             if ($SESSION->manual) {
-                $sql .= " LIMIT 0,500 ";
+                $sql .= " LIMIT 0,5 ";
             }//if_manual
 
             /* Execute  */
