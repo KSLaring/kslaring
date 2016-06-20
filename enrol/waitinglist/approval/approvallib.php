@@ -326,9 +326,11 @@ Class Approval {
                 $infoNotification->timesent     = userdate($rdo->timesent,'%d.%m.%Y', 99, false);
                 $infoNotification->approve      = $CFG->wwwroot . '/enrol/waitinglist/approval/action.php/' . $rdo->token;
                 $infoNotification->reject       = $CFG->wwwroot . '/enrol/waitinglist/approval/action.php/' . $rdo->token;
-            }//if_rdo
 
-            return $infoNotification;
+                return $infoNotification;
+            }else {
+                return null;
+            }//if_rdo
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
