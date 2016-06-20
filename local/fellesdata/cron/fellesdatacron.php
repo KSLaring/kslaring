@@ -945,6 +945,8 @@ class FELLESDATA_CRON {
                     FSKS_USERS::Synchronize_ManagerReporterFS($toSynchronize,$response['managerReporter']);
 
                     //$DB->delete_records('fs_imp_managers_reporters',array('imported' => '1'));
+                }else {
+                    echo $response['message'] . "</br>";
                 }//if_no_error
             }//if_toSynchronize
 
