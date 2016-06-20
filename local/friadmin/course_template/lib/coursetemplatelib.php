@@ -28,6 +28,7 @@ define('ENROL_FIELD_BULK_WAITING_MESSAGE','customtext1');
 define('ENROL_FIELD_BULK_RENOVATION_MESSAGE','customtext2');
 
 define('SETTINGS_DEFAULT_SIZE',100);
+define('MAX_TEACHERS_PAGE',100);
 define('ACTION_ENROLMENT',1);
 define('ACTION_SHOW_COURSE',0);
 
@@ -39,6 +40,333 @@ class CourseTemplate {
     /**********/
     /* PUBLIC */
     /**********/
+
+    /**
+     * @param           $addSearch
+     * @param           $removeSearch
+     * @param           $course
+     *
+     * @throws          Exception
+     *
+     * @creationDate    20/06/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Initialize both selector for teachers
+     */
+    public static function Init_Teachers_Selectors($addSearch,$removeSearch,$course) {
+        /* Variables */
+        $jsModule   = null;
+        $name       = null;
+        $path       = null;
+        $requires   = null;
+        $strings    = null;
+        $grpOne     = null;
+        $grpTwo     = null;
+        $grpThree   = null;
+        $hashAdd    = null;
+        $hashRemove = null;
+
+        try {
+            /* Initialise variables */
+            $name       = 'teacher_selector';
+            $path       = '/local/friadmin/course_template/js/search.js';
+            $requires   = array('node', 'event-custom', 'datasource', 'json', 'moodle-core-notification');
+            $grpOne     = array('previouslyselectedusers', 'moodle', '%%SEARCHTERM%%');
+            $grpTwo     = array('nomatchingusers', 'moodle', '%%SEARCHTERM%%');
+            $grpThree   = array('none', 'moodle');
+            $strings    = array($grpOne,$grpTwo,$grpThree);
+
+            /* Initialise js module */
+            $jsModule = array('name'        => $name,
+                              'fullpath'    => $path,
+                              'requires'    => $requires,
+                              'strings'     => $strings
+                             );
+
+            /* Teachers - Add Selector       */
+            self::Init_Teachers_AddSelector($addSearch,$jsModule,$course);
+            /* Teachers - Remove Selector    */
+            self::Init_Teachers_RemoveSelector($removeSearch,$jsModule,$course);
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//Init_Managers_Selectors
+
+    /**
+     * @param           $courseId
+     * @param           $search
+     *
+     * @return          array
+     * @throws          Exception
+     *
+     * @creationDate    20/06/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Find the current teachers connected with the course
+     */
+    public static function FindTeachers_Selectors($courseId,$search) {
+        /* Variables */
+        global $DB;
+        $params             = null;
+        $sql                = null;
+        $sqlSearch          = null;
+        $rdo                = null;
+        $context            = null;
+        $teachers           = array();
+        $currentTeachers    = array();
+        $groupName          = null;
+
+        try {
+            /* Context  */
+            $context = CONTEXT_COURSE::instance($courseId);
+
+            /* Search Criteria  */
+            $params = array();
+            $params['context']      = $context->id;
+            $params['archetype']    = 'teacher';
+
+            /* SQL Instruction  */
+            $sql = " SELECT		DISTINCT u.id,
+                                         u.firstname,
+                                         u.lastname,
+                                         u.email
+                     FROM		{user}					u
+                        JOIN	{role_assignments}		ra		ON		ra.userid 		= u.id
+                                                                AND     ra.contextid    = :context
+                        JOIN	{role}					r		ON		r.id 			= ra.roleid
+                                                                AND		r.archetype 	= :archetype
+
+                     WHERE		u.deleted = 0
+                     ";
+
+            /* Search   */
+            if ($search) {
+                $extra = explode(' ',$search);
+                foreach ($extra as $str) {
+                    if ($sqlSearch) {
+                        $sqlSearch .= ") AND (";
+                    }
+                    $sqlSearch .= " LOCATE('" . $str . "',u.firstname)
+                                    OR
+                                    LOCATE('" . $str . "',u.lastname)
+                                    OR
+                                    LOCATE('" . $str . "',CONCAT(u.firstname,' ',u.lastname))
+                                    OR
+                                    LOCATE('" . $str . "',u.email) ";
+                }//if_search_opt
+
+                $sql .=  " AND ($sqlSearch) ";
+            }//if_search
+
+            /* Order Criteria */
+            $sql .= "  ORDER BY 	u.firstname, u.lastname ";
+
+            /* Execute */
+            $rdo = $DB->get_records_sql($sql,$params);
+            if ($rdo) {
+                if ($search) {
+                    $groupName = get_string('current_teachers_matching', 'local_friadmin', $search);
+                }else {
+                    $groupName = get_string('current_teachers', 'local_friadmin');
+                }//if_serach
+
+                /* Get Teachers    */
+                foreach ($rdo as $instance) {
+                    $teachers[$instance->id] = $instance->firstname . " " . $instance->lastname . "(" . $instance->email . ")";
+                }//for_Rdo
+
+                /* Add users    */
+                $currentTeachers[$groupName] = $teachers;
+            }else {
+                /* Info to return */
+                $groupName = get_string('no_teachers','local_friadmin');
+                $currentTeachers[$groupName]  = array('');
+            }//if_rdo
+
+            return $currentTeachers;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//FindTeachers_Selectors
+
+    /**
+     * @param           $courseId
+     * @param           $search
+     *
+     * @return          array
+     * @throws          Exception
+     *
+     * @creationDate    20/06/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Find potential teachers fro the course
+     */
+    public static function FindPotentialTeachers_Selector($courseId,$search) {
+        /* Variables */
+        global $DB;
+        $params             = null;
+        $sql                = null;
+        $sqlSearch          = null;
+        $rdo                = null;
+        $context            = null;
+        $teachers           = array();
+        $potentialTeachers  = array();
+        $groupName          = null;
+        $total              = null;
+
+        try {
+            /* Context  */
+            $context = CONTEXT_COURSE::instance($courseId);
+
+            /* Search Criteria  */
+            $params = array();
+            $params['context']      = $context->id;
+
+            /* SQL Instruction */
+            $sql = " SELECT	u.id,
+                            u.firstname,
+                            u.lastname,
+                            u.email
+                     FROM		mdl_user	u
+                        -- NO ENROLLED AS STUDENTS AND TEACHER
+                         LEFT JOIN (
+                                    SELECT		ra.userid
+                                    FROM		{role_assignments}	ra
+                                        JOIN	{role}				r		ON 		r.id 			= ra.roleid
+                                                                            AND		r.archetype 	IN ('student','teacher','editingteacher')
+                                    WHERE		ra.contextid    = :context
+                                  ) ra ON ra.userid = u.id
+                     WHERE 	u.deleted = 0
+                        AND	u.username != 'guest'
+                        AND ra.userid IS NULL ";
+
+            /* Search   */
+            if ($search) {
+                $extra = explode(' ',$search);
+                foreach ($extra as $str) {
+                    if ($sqlSearch) {
+                        $sqlSearch .= ") AND (";
+                    }
+                    $sqlSearch .= " LOCATE('" . $str . "',u.firstname)
+                                    OR
+                                    LOCATE('" . $str . "',u.lastname)
+                                    OR
+                                    LOCATE('" . $str . "',CONCAT(u.firstname,' ',u.lastname))
+                                    OR
+                                    LOCATE('" . $str . "',u.email) ";
+                }//if_search_opt
+
+                $sql .=  " AND ($sqlSearch) ";
+            }//if_search
+
+            /* Order Criteria */
+            $sql .= "  ORDER BY 	u.firstname, u.lastname ";
+
+            /* Execute */
+            $rdo = $DB->get_records_sql($sql,$params);
+            if($rdo) {
+                $total = count($rdo);
+                if ($total > MAX_TEACHERS_PAGE) {
+                    $potentialTeachers = self::TooMany_TeachersSelector($search,$total);
+
+                }else {
+                    if ($search) {
+                        $groupName = get_string('pot_teachers_matching', 'local_friadmin', $search);
+                    }else {
+                        $groupName = get_string('pot_teachers', 'local_friadmin');
+                    }//if_serach
+
+                    /* Get Teachers    */
+                    foreach ($rdo as $instance) {
+                        $teachers[$instance->id] = $instance->firstname . " " . $instance->lastname . "(" . $instance->email . ")";
+                    }//for_Rdo
+
+                    /* Add Users */
+                    $potentialTeachers[$groupName] = $teachers;
+                }//if_tooMany
+            }//if_rdo
+
+            return $potentialTeachers;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//FindPotentialTeachers_Selector
+
+    /**
+     * @param           $courseId
+     * @param           $teachers
+     *
+     * @throws          Exception
+     *
+     * @creationDate    20/06/0216
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Assign/Enrol user as a teacher
+     */
+    public static function AssignTeacher($courseId,$teachers) {
+        /* Variables */
+        global $DB;
+        $rdo        = null;
+        $plugin     = null;
+
+        try {
+            /* Plugin Info  */
+            $plugin = enrol_get_plugin('manual');
+
+            /* Get Role Id for teacher  */
+            $rdo = $DB->get_record('role',array('archetype' => 'teacher'));
+            if ($rdo) {
+                $instance = $DB->get_record('enrol',array('courseid' => $courseId,'enrol' => 'manual'));
+                /* Assign teacher role  */
+                foreach ($teachers as $teacher) {
+                    /* Enrol user as a teacher */
+                    $plugin->enrol_user($instance,$teacher,$rdo->id);
+                }//for_each
+            }//if_rdo
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//AssignTeacher
+
+    /**
+     * @param           $courseId
+     * @param           $teachers
+     *
+     * @throws          Exception
+     *
+     * @creationDate    20/06/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Unassign the user as a teacher. Unenrol
+     */
+    public static function UnassignTeacher($courseId,$teachers) {
+        /* Variables */
+        global $DB;
+        $rdo        = null;
+        $plugin     = null;
+
+        try {
+            /* Plugin Info  */
+            $plugin = enrol_get_plugin('manual');
+
+            /* Get Role Id for teacher  */
+            $rdo = $DB->get_record('role',array('archetype' => 'teacher'));
+            if ($rdo) {
+                $instance = $DB->get_record('enrol',array('courseid' => $courseId,'enrol' => 'manual'));
+                /* Unassign teacher role  */
+                foreach ($teachers as $teacher) {
+                    $plugin->unenrol_user($instance,$teacher);
+                }//for_each
+            }//if_rdo
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//UnassignTeacher
 
     /**
      * @param           $categoryId
@@ -473,4 +801,129 @@ class CourseTemplate {
     /***********/
     /* PRIVATE */
     /***********/
+
+    /**
+     * @param           $search
+     * @param           $total
+     *
+     * @return          array
+     * @throws          Exception
+     *
+     * @creationDate    20/06/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Get the options to show when there are too many teachers
+     */
+    private static function TooMany_TeachersSelector($search,$total) {
+        /* Variables    */
+        $availableTeachers  = array();
+        $info               = null;
+        $tooMany            = null;
+        $searchMore         = null;
+
+        try {
+            if ($search) {
+                /* Info too many    */
+                $info = new stdClass();
+                $info->count    = $total;
+                $info->search   = $search;
+
+                /* Get Info to show  */
+                $tooMany    = get_string('toomanyusersmatchsearch', '', $info);
+                $searchMore = get_string('pleasesearchmore');
+
+            }else {
+                /* Get Info to show */
+                $tooMany    = get_string('toomanyuserstoshow', '', $total);
+                $searchMore = get_string('pleaseusesearch');
+            }//if_search
+
+            /* Info to return   */
+            $availableTeachers[$tooMany]       = array('');
+            $availableTeachers[$searchMore]    = array('');
+
+            return $availableTeachers;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//TooMany_TeachersSelector
+
+    /**
+     * @param           $search
+     * @param           $jsModule
+     * @param           $course
+     *
+     * @throws          Exception
+     *
+     * @creationDate    20/06/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Initialize selector for adding teachers
+     */
+    private static function Init_Teachers_AddSelector($search,$jsModule,$course) {
+        /* Variables */
+        global $USER,$PAGE;
+        $options    = null;
+
+        try {
+            /* Initialise Options Selector  */
+            $options = array();
+            $options['class']       = 'FindPotentialTeachers_Selector';
+            $options['name']        = 'addselect';
+            $options['multiselect'] = true;
+
+            /* Connect Teacher Selector    */
+            $hash                           = md5(serialize($options));
+            $USER->teacher_selectors[$hash] = $options;
+
+            $PAGE->requires->js_init_call('M.core_user.init_teachers_selector',
+                                          array('addselect',$hash, $course, $search),
+                                          false,
+                                          $jsModule
+                                         );
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//Init_Teachers_AddSelector
+
+    /**
+     * @param           $search
+     * @param           $jsModule
+     * @param           $course
+     *
+     * @throws          Exception
+     *
+     * @creationDate    20/06/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * initialize selector for removing teachers
+     */
+    private static function Init_Teachers_RemoveSelector($search,$jsModule,$course) {
+        /* Variables */
+        global $USER,$PAGE;
+        $options    = null;
+
+        try {
+            /* Initialise Options Selector  */
+            $options = array();
+            $options['class']       = 'FindTeachers_Selectors';
+            $options['name']        = 'removeselect';
+            $options['multiselect'] = true;
+
+            /* Connect Teacher Selector    */
+            $hash                           = md5(serialize($options));
+            $USER->teacher_selectors[$hash] = $options;
+
+            $PAGE->requires->js_init_call('M.core_user.init_teachers_selector',
+                array('removeselect',$hash, $course, $search),
+                false,
+                $jsModule
+            );
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//Init_Teachers_RemoveSelector
 }//CourseTemplate
