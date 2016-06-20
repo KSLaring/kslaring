@@ -1149,6 +1149,8 @@ class FSKS_USERS {
                 $objCompetence = (Object)$competence;
 
                 if ($objCompetence->imported) {
+                    echo "Imported : " . $objCompetence->personalNumber . "</br>";
+
                     /* Get Info */
                     $infoUser = $usersCompetence[$objCompetence->key];
 
@@ -1482,6 +1484,7 @@ class FSKS_USERS {
                         }
                     }else {
                         /* Info Competence JR   */
+                        echo "User : " . $instance->fodselsnr . "</br>";
                         $infoComp = new stdClass();
                         $infoComp->personalNumber   = $instance->fodselsnr;
                         $infoComp->jobrole          = $instance->ksjobrole;

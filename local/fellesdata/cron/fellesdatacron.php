@@ -890,13 +890,10 @@ class FELLESDATA_CRON {
             if ($toSynchronize) {
                 $response = self::ProcessKSService($pluginInfo,$service,$toSynchronize);
                 if ($response['error'] == '200') {
-                    echo "DENTRO";
                     /* Synchronize Manager Reporters   */
                     FSKS_USERS::Synchronize_UserCompetenceFS($toSynchronize,$response['usersCompetence']);
 
                     //$DB->delete_records('fs_users_competence',array('imported' => '1'));
-                }else {
-                    echo "NO";
                 }//if_no_error
             }//if_toSynchronize
 
