@@ -918,7 +918,7 @@ class FS_MAPPING {
             /* Map/UnMap FS Job Roles */
             foreach ($toMap as $fs) {
                 /* Get Info FS Job role */
-                $rdo = $DB->get_record('fs_imp_jobroles',array('stillingskode' => $fs));
+                $rdo = $DB->get_record('fs_imp_jobroles',array('STILLINGSKODE' => $fs));
                 /* Mapping */
                 if ($rdo) {
 
