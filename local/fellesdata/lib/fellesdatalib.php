@@ -1706,34 +1706,36 @@ class FS {
                 $lineContent    = json_decode($line);
 
                 /* Get New Entry    */
-                $newEntry = $lineContent->newRecord;
+                if ($lineContent) {
+                    $newEntry = $lineContent->newRecord;
 
-                /* Get Action       */
-                switch (trim($lineContent->changeType)) {
-                    case ADD_ACTION:
-                        $action = 0;
+                    /* Get Action       */
+                    switch (trim($lineContent->changeType)) {
+                        case ADD_ACTION:
+                            $action = 0;
 
-                        break;
-                    case UPDATE_ACTION:
-                        $action = 1;
+                            break;
+                        case UPDATE_ACTION:
+                            $action = 1;
 
-                        break;
-                    case DELETE_ACTION:
-                        /* Old Entry        */
-                        if (isset($lineContent->oldRecord)) {
-                            $newEntry = $lineContent->oldRecord;
-                        }//if_old_record
+                            break;
+                        case DELETE_ACTION:
+                            /* Old Entry        */
+                            if (isset($lineContent->oldRecord)) {
+                                $newEntry = $lineContent->oldRecord;
+                            }//if_old_record
 
-                        $action = 2;
+                            $action = 2;
 
-                        break;
-                }//action
+                            break;
+                    }//action
 
-                $newEntry->action   = $action;
-                $newEntry->imported = 0;
+                    $newEntry->action   = $action;
+                    $newEntry->imported = 0;
 
-                /* Add Record   */
-                $toSave[$key] = $newEntry;
+                    /* Add Record   */
+                    $toSave[$key] = $newEntry;
+                }//ifLineContent
             }
 
             if ($toSave) {
