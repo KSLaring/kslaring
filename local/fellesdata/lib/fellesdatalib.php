@@ -1149,8 +1149,6 @@ class FSKS_USERS {
                 $objCompetence = (Object)$competence;
 
                 if ($objCompetence->imported) {
-                    echo "Imported : " . $objCompetence->personalNumber . "</br>";
-
                     /* Get Info */
                     $infoUser = $usersCompetence[$objCompetence->key];
 
@@ -1457,7 +1455,7 @@ class FSKS_USERS {
 
             /* Check if it's a manual execution */
             if ($SESSION->manual) {
-                $sql .= " LIMIT 0,2 ";
+                $sql .= " LIMIT 0,2000 ";
             }//if_manual
 
             /* Execute */
@@ -1484,7 +1482,6 @@ class FSKS_USERS {
                         }
                     }else {
                         /* Info Competence JR   */
-                        echo "User : " . $instance->fodselsnr . "</br>";
                         $infoComp = new stdClass();
                         $infoComp->personalNumber   = $instance->fodselsnr;
                         $infoComp->jobrole          = $instance->ksjobrole;
