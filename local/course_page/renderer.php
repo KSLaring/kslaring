@@ -475,14 +475,26 @@ class local_course_page_renderer extends plugin_renderer_base {
         $outLength          = null;
         $outEffort          = null;
         $outPrice           = null;
+        $price              = null;
 
         /* Get course price */
         $price = course_page::PriceCourse($courseId);
         if ($price) {
-            $outPrice .= html_writer::start_tag('div',array('class' => 'extra chp-block'));
-                $outPrice .= '<h5 class="title_home chp-title">' . get_string('home_price','local_course_page') . '</h5>';
-                $outPrice .= '<div class="extra_home chp-content">' . $price. '</div>';
-            $outPrice .=  html_writer::end_tag('div');//extra
+            /* Internal Price */
+            if ($price->internal) {
+                $outPrice .= html_writer::start_tag('div',array('class' => 'extra chp-block'));
+                    $outPrice .= '<h5 class="title_home chp-title">' . get_string('home_int_price','local_course_page') . '</h5>';
+                    $outPrice .= '<div class="extra_home chp-content">' . $price->internal. '</div>';
+                $outPrice .=  html_writer::end_tag('div');//extra
+            }//if_internal
+
+            /* External Price */
+            if ($price->external) {
+                $outPrice .= html_writer::start_tag('div',array('class' => 'extra chp-block'));
+                    $outPrice .= '<h5 class="title_home chp-title">' . get_string('home_ext_price','local_course_page') . '</h5>';
+                    $outPrice .= '<div class="extra_home chp-content">' . $price->external. '</div>';
+                $outPrice .=  html_writer::end_tag('div');//extra
+            }//if_external
         }//if_price
 
         $out .= html_writer::start_tag('div',array('class' => 'extra chp-block'));

@@ -181,7 +181,8 @@ $string['mng_body']     = '<p>Du får denne forespørselsen om godkjenning siden
                            <ul>
                                 <li><u>Kursdato</u>: {$a->date}</li>
                                 <li><u>Sted</u>: {$a->location}</li>
-                                <li><u>Pris</u>: {$a->price}</li>
+                                <li><u>Intern pris: {$a->internal}</u></li>
+                                <li><u>Ekstern pris: {$a->external}</u></li>
                                 <li>Mer informasjon om kurset kan du få på kursets hjemmeside: {$a->homepage}</li>
                            </ul>
                            </br>
@@ -196,7 +197,8 @@ $string['body_reminder']    = '<p>Vi vil bare minne deg om at du er lederen for 
                                <ul>
                                     <li><u>Kursdato</u>: {$a->date}</li>
                                     <li><u>Sted</u>: {$a->location}</li>
-                                    <li><u>Pris</u>: {$a->price}</li>
+                                    <li><u>Intern pris: {$a->internal}</u></li>
+                                    <li><u>Ekstern pris: {$a->external}</u></li>
                                     <li>Mer informasjon om kurset kan du få på kursets hjemmeside: {$a->homepage}</li>
                                </ul>
                                </br>
@@ -250,7 +252,8 @@ $string['mng_approved_body_two'] = '<p>Vi vil gjerne informere deg om at brukere
                                     <ul>
                                         <li><u>Kursdato</u>: {$a->date}</li>
                                         <li><u>Sted</u>: {$a->location}</li>
-                                        <li><u>Pris</u>: {$a->price}</li>
+                                        <li><u>Intern pris: {$a->internal}</u></li>
+                                        <li><u>Ekstern pris: {$a->external}</u></li>
                                         <li>Mer informasjon om kurset kan du få på kursets hjemmeside: {$a->homepage}</li>
                                     </ul>';
 
@@ -260,3 +263,5 @@ $string['home_page']    = 'Hjemmesider';
 $string['approval_occupied'] = 'Det er i øyeblikket ingen ledige plasser. Søknaden om kursplass vil derfor bli behandlet straks det er ledige plasser på kurset.';
 
 $string['price'] = 'Pris';
+$string['in_price']     = 'Intern pris';
+$string['ext_price']    = 'Ekstern pris';

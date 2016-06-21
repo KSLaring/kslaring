@@ -66,3 +66,6 @@ $string['of']       = 'of';
 $string['on_wait']  = 'Put me on the wait list';
 
 $string['home_participant'] = 'Participant List';
+
+$string['home_in_price']     = 'Intern pris';
+$string['home_ext_price']    = 'Ekstern pris';

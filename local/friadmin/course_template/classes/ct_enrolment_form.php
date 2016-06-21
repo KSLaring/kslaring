@@ -90,13 +90,21 @@ class ct_enrolment_settings_form extends moodleform {
         /* Mail to manager option   */
         $form->addElement('radio','approval',get_string('approval_message','enrol_waitinglist'),'',CT_APPROVAL_MESSAGE);
         $form->setDefault('approval',$instance->approval);
-
         /**
-         * Price
+         * @updateDate      21/06/2016
+         * @author          eFaktor     (fbv)
+         *
+         * Description
+         * Internal & External Price
          */
-        $form->addElement('text','price',  get_string('price', 'enrol_waitinglist'), array('size' => '8'));
-        $form->setType('price',PARAM_TEXT);
-        $form->setDefault('price',$instance->price);
+        /* Internal */
+        $form->addElement('text','price_int',  get_string('in_price', 'enrol_waitinglist'), array('size' => '8'));
+        $form->setType('price_int',PARAM_TEXT);
+        $form->setDefault('price_int',$instance->priceinternal);
+        /* External */
+        $form->addElement('text','price_ext',  get_string('ext_price', 'enrol_waitinglist'), array('size' => '8'));
+        $form->setType('price_ext',PARAM_TEXT);
+        $form->setDefault('price_ext',$instance->priceexternal);
 
         /* Course Id */
         $form->addElement('hidden', 'id');

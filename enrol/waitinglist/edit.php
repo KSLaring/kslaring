@@ -78,13 +78,15 @@ if ($instances = $DB->get_records('enrol', array('courseid'=>$course->id, 'enrol
     $instance->{ENROL_WAITINGLIST_FIELD_INVOICE}          = 0;
     $instance->{ENROL_WAITINGLIST_FIELD_APPROVAL}         = 0;
     /**
-     * @updateDate      04/03/2016
-     * @author          eFaktor     (fbv)
+     * @updateDate  21/06/2016
+     * @author      eFaktor     (fbv)
      *
      * Description
-     * Add the price of the course
+     * Internal && External Price
      */
-    $instance->{ENROL_WAITINGLIST_FIELD_PRICE} = 0;
+    $instance->{ENROL_WAITINGLIST_FIELD_INTERNAL_PRICE} = 0;
+    $instance->{ENROL_WAITINGLIST_FIELD_EXTERNAL_PRICE} = 0;
+
 }
 
 $mform = new enrol_waitinglist_edit_form(null, array($instance, $plugin, $context));
@@ -132,14 +134,16 @@ if ($mform->is_cancelled()) {
          * Add the approval request option
          */
         $instance->{ENROL_WAITINGLIST_FIELD_APPROVAL} = $data->{ENROL_WAITINGLIST_FIELD_APPROVAL};
+
         /**
-         * @updateDate      04/03/2016
-         * @author          eFaktor (fbv)
+         * @updateDate  21/06/2016
+         * @author      eFaktor     (fbv)
          *
          * Description
-         * Add the price of the course
+         * Internal && External price
          */
-        $instance->{ENROL_WAITINGLIST_FIELD_PRICE} = $data->{ENROL_WAITINGLIST_FIELD_PRICE};
+        $instance->{ENROL_WAITINGLIST_FIELD_INTERNAL_PRICE} = $data->{ENROL_WAITINGLIST_FIELD_INTERNAL_PRICE};
+        $instance->{ENROL_WAITINGLIST_FIELD_EXTERNAL_PRICE} = $data->{ENROL_WAITINGLIST_FIELD_EXTERNAL_PRICE};
 
         $DB->update_record('enrol', $instance);
 
@@ -181,13 +185,14 @@ if ($mform->is_cancelled()) {
                          */
                         ENROL_WAITINGLIST_FIELD_APPROVAL => $data->{ENROL_WAITINGLIST_FIELD_APPROVAL},
                         /**
-                         * @updateDate      04/03/2016
-                         * @author          eFaktor     (fbv)
+                         * @updateDate  21/06/2016
+                         * @author      eFaktor     (fbv)
                          *
                          * Description
-                         * Add the price of the course
+                         * Internal && External price
                          */
-                        ENROL_WAITINGLIST_FIELD_PRICE => $data->{ENROL_WAITINGLIST_FIELD_PRICE}
+                        ENROL_WAITINGLIST_FIELD_INTERNAL_PRICE => $data->{ENROL_WAITINGLIST_FIELD_INTERNAL_PRICE},
+                        ENROL_WAITINGLIST_FIELD_EXTERNAL_PRICE => $data->{ENROL_WAITINGLIST_FIELD_EXTERNAL_PRICE}
 		               );
         $waitinglistid =  $plugin->add_instance($course, $fields);
 
