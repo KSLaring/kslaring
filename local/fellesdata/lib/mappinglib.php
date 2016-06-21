@@ -596,6 +596,8 @@ class FS_MAPPING {
                                     LOCATE('" . $str . "',fs.stillingstekst) > 0
                                     OR
                                     LOCATE('" . $str . "',fs.stillingstekst_alternativ) > 0
+                                    OR
+                                    LOCATE('" . $str . "',fs.stillingskode) > 0
                                  )";
                 }//if_search_opt
 
@@ -659,7 +661,9 @@ class FS_MAPPING {
                     if ($locate) {
                         $locate .= " OR ";
                     }
-                    $locate .= " LOCATE('" . $str . "',fs.jrname) > 0";
+                    $locate .= " LOCATE('" . $str . "',fs.jrname) > 0
+                                 OR
+                                 LOCATE('" . $str . "',fs.jrcode) > 0 ";
                 }//if_search_opt
 
                 $sql .= " WHERE ($locate) ";
