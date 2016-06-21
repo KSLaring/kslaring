@@ -467,6 +467,7 @@ class FS_MAPPING {
 
             /* SQL Instruction */
             $sql = " SELECT	fs.id,
+                            fs.companyid,
                             fs.name
                      FROM	{fs_company} fs
                      WHERE	(fs.parent IS NULL
@@ -494,7 +495,7 @@ class FS_MAPPING {
             $rdo = $DB->get_records_sql($sql,$params);
             if ($rdo) {
                 foreach ($rdo as $instance) {
-                    $granpaName = self::GetGranparentName($instance->org_enhet_over);
+                    $granpaName = self::GetGranparentName($instance->companyid);
                     if ($granpaName) {
                         $name = $granpaName . ' > ' . $instance->name ;
                     }else {
