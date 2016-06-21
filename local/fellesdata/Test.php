@@ -37,64 +37,9 @@ try {
     $pluginInfo     = get_config('local_fellesdata');
 
     if ($option) {
-
-        /* Admin */
-        $admin      = get_admin();
-        $now        = time();
-        $timezone   = $admin->timezone;
-        $cronHour   = $pluginInfo->fs_auto_time;
-        $cronMin    = $pluginInfo->fs_auto_time_minute;
-        $date       = usergetdate($now, $timezone);
-
-        //FELLESDATA_CRON::cron($fstExecution);
-        //set_config('lastexecution', $now, 'local_microlearning');
-
-        /* Check if has to be run it    */
-        if (isset($pluginInfo->lastcron)) {
-            /* Calculate when it has to be triggered it */
-            $timeYesterday  = mktime($cronHour, $cronMin, 0, $date['mon'], $date['mday'] - 1, $date['year']);
-
-            echo "Last Execution : " . userdate($pluginInfo->lastexecution,'%d.%m.%Y', 99, false) . "</br>";
-            echo "Yesterday: " . userdate($timeYesterday,'%d.%m.%Y', 99, false) . "</br>";
-
-            if (($pluginInfo->lastexecution <= $timeYesterday)) {
-                $fstExecution = false;
-                echo "Yes";
-            }else {
-                echo "No";
-            }
-        }
-
         FELLESDATA_CRON::cron_manual(true,$option);
     }else {
         //FELLESDATA_CRON::cron(true);
-
-        /* Admin */
-        $admin      = get_admin();
-        $now        = time();
-        $timezone   = $admin->timezone;
-        $cronHour   = $pluginInfo->fs_auto_time;
-        $cronMin    = $pluginInfo->fs_auto_time_minute;
-        $date       = usergetdate($now, $timezone);
-
-        //FELLESDATA_CRON::cron($fstExecution);
-        //set_config('lastexecution', $now, 'local_microlearning');
-
-        /* Check if has to be run it    */
-        if (isset($pluginInfo->lastcron)) {
-            /* Calculate when it has to be triggered it */
-            $timeYesterday  = mktime($cronHour, $cronMin, 0, $date['mon'], $date['mday'] - 1, $date['year']);
-
-            echo "Last Execution : " . userdate($pluginInfo->lastexecution,'%d.%m.%Y', 99, false) . "</br>";
-            echo "Yesterday: " . userdate($timeYesterday,'%d.%m.%Y', 99, false) . "</br>";
-
-            if (($pluginInfo->lastexecution <= $timeYesterday)) {
-                $fstExecution = false;
-                echo "Yes";
-            }else {
-                echo "No";
-            }
-        }//
     }
 }catch (Exception $ex) {
     throw $ex;
