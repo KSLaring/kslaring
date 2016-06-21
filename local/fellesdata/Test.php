@@ -36,20 +36,6 @@ try {
     /* Plugin Info      */
     $pluginInfo     = get_config('local_fellesdata');
 
-    $toDate     = mktime(1, 60, 0, date("m"), date("d"), date("Y"));
-    $toDate     = gmdate('Y-m-d\TH:i:s\Z',$toDate);
-    if (isset($pluginInfo->lastexecution) && $pluginInfo->lastexecution) {
-        /* No First Execution   */
-        //$fromDate   = mktime(1, 60, 0, date("m"), date("d"), date("Y"));
-        $fromDate   = gmdate('Y-m-d\TH:i:s\Z',$pluginInfo->lastexecution);
-    }else {
-        /* First Execution      */
-        $fromDate = gmdate('Y-m-d\TH:i:s\Z',0);
-    }
-
-    echo "From: " . $fromDate . "</br></br>";
-    echo "To:   " . $toDate . "</br></br>";
-    
     if ($option) {
         FELLESDATA_CRON::cron_manual(true,$option);
     }else {

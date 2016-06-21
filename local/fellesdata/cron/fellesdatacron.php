@@ -680,8 +680,7 @@ class FELLESDATA_CRON {
             $toDate     = gmdate('Y-m-d\TH:i:s\Z',$toDate);
             if (isset($pluginInfo->lastexecution) && $pluginInfo->lastexecution) {
                 /* No First Execution   */
-                $fromDate   = mktime(1, 60, 0, date("m"), date("d"), date("Y"));
-                $fromDate   = gmdate('Y-m-d\TH:i:s\Z',$fromDate);
+                $fromDate   = gmdate('Y-m-d\TH:i:s\Z',$pluginInfo->lastexecution);
             }else {
                 /* First Execution      */
                 $fromDate = gmdate('Y-m-d\TH:i:s\Z',0);
