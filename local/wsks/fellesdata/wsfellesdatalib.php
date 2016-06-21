@@ -620,15 +620,23 @@ class WS_FELLESDATA {
 
             /* Info Manager */
             $infoManager = new stdClass();
+            $infoManager->levelzero         = 0;
+            $infoManager->levelone          = null;
+            $infoManager->leveltwo          = null;
+            $infoManager->levelthree        = null;
             $infoManager->managerid         = $userId;
             $infoManager->hierarchylevel    = $level;
             $infoManager->timecreated       = $time;
 
             /* Info Reporter    */
             $infoReporter = new stdClass();
-            $infoReporter->reporterid       = $userId;
-            $infoReporter->hierarchylevel   = $level;
-            $infoReporter->timecreated      = $time;
+            $infoReporter->reporterid        = $userId;
+            $infoReporter->levelzero         = 0;
+            $infoReporter->levelone          = null;
+            $infoReporter->leveltwo          = null;
+            $infoReporter->levelthree        = null;
+            $infoReporter->hierarchylevel    = $level;
+            $infoReporter->timecreated       = $time;
 
             /* Search Criteria  */
             $params = array();
@@ -955,16 +963,14 @@ class WS_FELLESDATA {
                                 /* Execute */
                                 $DB->update_record('user_info_competence_data',$competenceData);
 
-                                /* Synchronized */
-                                $sync = true;
                             }//if_no_exist
                         }else {
                             /* Create New   */
                             $infoCompetenceData->id = $DB->insert_record('user_info_competence_data',$infoCompetenceData);
-
-                            /* Synchronized */
-                            $sync = true;
                         }
+
+                        /* Synchronized */
+                        $sync = true;
 
                         break;
                     case DELETE_ACTION:

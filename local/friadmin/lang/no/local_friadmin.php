@@ -194,3 +194,13 @@ $string['enrol_wait_buk']   = 'Bulkpåmelding med venteliste';
 
 $string['no_competence_add_location']   = '<strong>Sorry, you must update your competence profile if you want to set up new locations connected with you competence</strong>';
 $string['no_competence_profile']        = '<strong>Sorry, you must update your competence profile if you want to look up locations connected with you competence</strong>';
+
+$string['course_teachers']              = 'Adding Teachers';
+$string['av_teachers']                  = 'Available teachers';
+$string['no_teachers']                  = 'None teachers';
+$string['sel_teachers']                 = 'Selected teachers';
+
+$string['pot_teachers']                = 'Potential teachers';
+$string['pot_teachers_matching']       = 'Potential matching teachers';
+$string['current_teachers']            = 'Current teachers';
+$string['current_teachers_matching']   = 'Current teachers matching';

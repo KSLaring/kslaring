@@ -83,7 +83,7 @@ if (in_array('saml', $authsequence)){
 
         echo '<a href="index.php" class="btn-login">'
             . '<span class="login-icon"><i class="fa fa-arrow-right"></i></span>'
-            . $saml_config->samllogoinfo .
+            . $saml_config->samllogoinfo . '<img src="idporten_logo.png" width="35" align="right" style="margin-top:-15px;">' .
             '</a>';
     }
 
