@@ -248,6 +248,10 @@ class FELLESDATA_CRON {
                 KS::ImportKSOrganization($response['structure']);
             }else {
                 /* Log Error    */
+                /* Log  */
+                $dbLog = "ERROR SERVICE: " . $response['message'] . "\n" . "\n";
+                $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH Fellesdata CRON Ks Organization Structure . ' . "\n";
+                error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
             }//if_no_error
 
             /* Log  */
@@ -298,6 +302,9 @@ class FELLESDATA_CRON {
                 KS::KSJobRoles($response['jobroles'],true);
             }else {
                 /* Log Error    */
+                $dbLog = "ERROR: " . $response['message'] . "\n" . "\n";
+                $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH ERROR Fellesdata CRON KS Job Roles . ' . "\n";
+                error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
             }//if_no_error
 
             /* Job Roles No Generics    */
@@ -311,6 +318,11 @@ class FELLESDATA_CRON {
             /* Import Job Roles Generics    */
             if ($response['error'] == '200') {
                 KS::KSJobRoles($response['jobroles']);
+            }else {
+                /* Log Error    */
+                $dbLog = "ERROR: " . $response['message'] . "\n" . "\n";
+                $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH ERROR Fellesdata CRON KS Job Roles . ' . "\n";
+                error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
             }//if_no_error
 
             /* Log  */
@@ -319,8 +331,8 @@ class FELLESDATA_CRON {
             error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
         }catch (Exception $ex) {
             /* Log  */
-            $dbLog = $ex->getMessage() . "\n" . "\n";
-            $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH Fellesdata CRON KS Job Roles . ' . "\n";
+            $dbLog = "ERROR: " . $ex->getMessage() . "\n" . "\n";
+            $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH ERROR Fellesdata CRON KS Job Roles . ' . "\n";
             error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
 
             throw $ex;
@@ -343,6 +355,7 @@ class FELLESDATA_CRON {
      */
     private static function ProcessKSService($pluginInfo,$service,$params) {
         /* Variables    */
+        global $CFG;
         $domain         = null;
         $token          = null;
         $server         = null;
@@ -361,6 +374,10 @@ class FELLESDATA_CRON {
 
             return $response;
         }catch (Exception $ex) {
+            /* Log Error    */
+            $dbLog = "ERROR: " . $ex->getMessage() . "\n\n";
+            $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' Error calling web service . ' . "\n";
+            error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
             throw $ex;
         }//try_catch
     }//ProcessKSService
@@ -452,6 +469,11 @@ class FELLESDATA_CRON {
                 }//if_exists
             }
         }catch (Exception $ex) {
+            /* Log  */
+            $dbLog  = "Error: " . $ex->getMessage() . "\n" . "\n";
+            $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' ERROR Import FS Users . ' . "\n";
+            error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
+
             throw $ex;
         }//try_catch
     }//ImportFSUsers
@@ -490,6 +512,11 @@ class FELLESDATA_CRON {
                 }//if_exists
             }
         }catch (Exception $ex) {
+            /* Log  */
+            $dbLog  = "Error: " . $ex->getMessage() . "\n" . "\n";
+            $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' ERROR Import FS ORG Structure . ' . "\n";
+            error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
+
             throw $ex;
         }//try_catch
     }//ImportFSOrgStructure
@@ -528,6 +555,11 @@ class FELLESDATA_CRON {
                 }//if_exists
             }
         }catch (Exception $ex) {
+            /* Log  */
+            $dbLog  = "Error: " . $ex->getMessage() . "\n" . "\n";
+            $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' ERROR Import FS Job Roles . ' . "\n";
+            error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
+
             throw $ex;
         }//try_catch
     }//ImportFSJobRoles
@@ -565,6 +597,11 @@ class FELLESDATA_CRON {
                 }//if_exists
             }
         }catch (Exception $ex) {
+            /* Log  */
+            $dbLog  = "Error: " . $ex->getMessage() . "\n" . "\n";
+            $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' ERROR Import FS Managers Reporters . ' . "\n";
+            error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
+
             throw $ex;
         }//try_catch
     }//ImportFSManagersReporters
@@ -604,6 +641,11 @@ class FELLESDATA_CRON {
                 }//if_exists
             }//if_data
         }catch (Exception $ex) {
+            /* Log  */
+            $dbLog  = "Error: " . $ex->getMessage() . "\n" . "\n";
+            $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' ERROR Import FS User Competence . ' . "\n";
+            error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
+
             throw $ex;
         }//try_catch
     }//ImportFSUserCompetenceJR
