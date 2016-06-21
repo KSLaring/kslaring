@@ -37,11 +37,15 @@ class FELLESDATA_CRON {
 
     public static function cron($fstExecution) {
         /* Variables    */
-        global $SESSION;
+        global $SESSION,$CFG;
         $pluginInfo = null;
 
 
         try {
+            /* Log  */
+            $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' START FELLESDATA CRON . ' . "\n";
+            error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
+
             if (isset($SESSION->manual)) {
                 unset($SESSION->manual);
             }
@@ -49,28 +53,45 @@ class FELLESDATA_CRON {
             $pluginInfo     = get_config('local_fellesdata');
 
             /* Import KS */
+            /* Log  */
+            $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' START Import KS. ' . "\n";
+            error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
             self::ImportKS($pluginInfo);
 
             /* Import Fellesdata        */
+            /* Log  */
+            $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' START Import Fellesdata. ' . "\n";
+            error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
             self::ImportFellesdata($pluginInfo);
 
 
             /* SYNCHRONIZATION  */
             /* Synchronization Users Accounts   */
+            /* Log  */
+            $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' START Users FS Synchronization. ' . "\n";
+            error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
             self::UsersFS_Synchronization($pluginInfo);
 
             /* Synchronization Companies    */
+            $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' START Companies FS Synchronization. ' . "\n";
+            error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
             self::CompaniesFS_Synchronization($pluginInfo,$fstExecution);
 
             /* Synchronization Comeptence   */
             if (!$fstExecution) {
                 /* Synchronization Managers && Reporters    */
+                $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' START  Managers/Reporters FS Synchronization. ' . "\n";
+                error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
                 self::ManagerReporter_Synchronization($pluginInfo,KS_MANAGER_REPORTER);
 
                 /* Synchronization User Competence JobRole  -- Add/Update */
+                $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' START Users competence FS Synchronization. ' . "\n";
+                error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
                 self::UserCompetence_Synchronization($pluginInfo,KS_USER_COMPETENCE);
 
                 /* Synchronization User Competence JobRole  -- Delete */
+                $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' START Users Competence to delete FS Synchronization. ' . "\n";
+                error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
                 self::UserCompetence_Synchronization($pluginInfo,KS_USER_COMPETENCE,true);
            }
         }catch (Exception $ex) {
@@ -186,20 +207,12 @@ class FELLESDATA_CRON {
         global $CFG;
         $dbLog          = null;
 
-        /* Log  */
-        $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' START Import KS . ' . "\n";
-        error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
-
         try {
             /* Import Organization Structure    */
             self::OrganizationStructure($pluginInfo);
 
             /* Import Job Roles */
             self::ImportKSJobRoles($pluginInfo);
-
-            /* Log  */
-            $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' FINISH Import KS . ' . "\n";
-            error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
         }catch (Exception $ex) {
             /* Log  */
             $dbLog  = $ex->getMessage() . "\n\n";
@@ -228,10 +241,6 @@ class FELLESDATA_CRON {
         $response       = null;
         $dbLog          = null;
 
-        /* Log  */
-        $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' START Fellesdata CRON Ks Organization Structure . ' . "\n";
-        error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
-
         try {
             /* Request Web Service */
             $infoLevel = array();
@@ -253,10 +262,6 @@ class FELLESDATA_CRON {
                 $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH Fellesdata CRON Ks Organization Structure . ' . "\n";
                 error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
             }//if_no_error
-
-            /* Log  */
-            $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' FINISH Fellesdata CRON Ks Organization Structure . ' . "\n";
-            error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
         }catch (Exception $ex) {
             /* Log  */
             $dbLog = "ERROR: " . $ex->getMessage() . "\n" . "\n";
@@ -286,10 +291,6 @@ class FELLESDATA_CRON {
         $notIn      = null;
         $hierarchy  = null;
         $jobRoles   = null;
-
-        /* Log  */
-        $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' START Fellesdata CRON KS Job Roles . ' . "\n";
-        error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
 
         try {
             /* Job Roles Generics       */
@@ -324,11 +325,6 @@ class FELLESDATA_CRON {
                 $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH ERROR Fellesdata CRON KS Job Roles . ' . "\n";
                 error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
             }//if_no_error
-
-            /* Log  */
-            $dbLog = $response['message'] . "\n" . "\n";
-            $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH Fellesdata CRON KS Job Roles . ' . "\n";
-            error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
         }catch (Exception $ex) {
             /* Log  */
             $dbLog = "ERROR: " . $ex->getMessage() . "\n" . "\n";
@@ -402,10 +398,6 @@ class FELLESDATA_CRON {
         global $CFG;
         $dbLog = null;
 
-        /* Log  */
-        $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' START Import Fellesdata . ' . "\n";
-        error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
-
         try {
             /* Import FS Users              */
             self::ImportFSUsers($pluginInfo);
@@ -421,10 +413,6 @@ class FELLESDATA_CRON {
 
             /* Import FS User Competence JR */
             self::ImportFSUserCompetenceJR($pluginInfo);
-
-            /* Log  */
-            $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' FINISH Import Fellesdata . ' . "\n";
-            error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
         }catch (Exception $ex) {
             /* Log  */
             $dbLog  = "Error: " . $ex->getMessage() . "\n" . "\n";
@@ -760,10 +748,6 @@ class FELLESDATA_CRON {
         $response   = null;
         $dbLog      = null;
 
-        /* Log  */
-        $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' START Synchronization Users Accoutns . ' . "\n";
-        error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
-
         try {
             /* Get user to synchronize  */
             if ($SESSION->manual) {
@@ -797,18 +781,16 @@ class FELLESDATA_CRON {
                     /* Clean Table*/
                     //$DB->delete_records('fs_imp_users',array('imported' => '1'));
                 }else {
-                    echo $response['message'] . "</br>";
+                    /* Log  */
+                    $dbLog = "Error WS: " . $response['message'] . "\n" ."\n";
+                    $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH ERROR Synchronization Users Accoutns . ' . "\n";
+                    error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
                 }//if_no_error
             }//if_Rdo
-
-            /* Log  */
-            $dbLog = $response['message'] . "\n" ."\n";
-            $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH Synchronization Users Accoutns . ' . "\n";
-            error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
         }catch (Exception $ex) {
             /* Log  */
             $dbLog = $ex->getMessage() . "\n" ."\n";
-            $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH Synchronization Users Accoutns . ' . "\n";
+            $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH ERROR Synchronization Users Accoutns . ' . "\n";
             error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
 
             throw $ex;
@@ -836,10 +818,6 @@ class FELLESDATA_CRON {
         $notifyTo       = null;
         $response       = null;
         $dbLog          = null;
-
-        /* Log  */
-        $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' START Companies FS/KS Synchronization . ' . "\n";
-        error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
 
         try {
             /* Get Notifications    */
@@ -872,6 +850,7 @@ class FELLESDATA_CRON {
                         FSKS_COMPANY::Synchronize_CompaniesKSFS($toSynchronize,$response['companies']);
                     }else {
                         /* Log  */
+                        $dbLog  = "ERROR WS: " . $response['error'] . "\n\n";
                         $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' Finish ERROR Companies FS/KS Synchronization . ' . "\n";
                         error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
                     }//if_no_error
@@ -885,10 +864,6 @@ class FELLESDATA_CRON {
                 /* Clean Table*/
                 //$DB->delete_records('fs_imp_company',array('imported' => '1'));
             }//if_else
-
-            /* Log  */
-            $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' Finish Companies FS/KS Synchronization . ' . "\n";
-            error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
         }catch (Exception $ex) {
             /* Log  */
             $dbLog  = $ex->getMessage() . "\n" . "\n";
@@ -919,10 +894,6 @@ class FELLESDATA_CRON {
         $response       = null;
         $dbLog          = null;
 
-        /* Log  */
-        $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' Start  User Competence Synchronization . ' . "\n";
-        error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
-
         try {
             /* Get Info to Synchronize */
             $toSynchronize = FSKS_USERS::UserCompetence_ToSynchronize($toDelete);
@@ -935,12 +906,13 @@ class FELLESDATA_CRON {
                     FSKS_USERS::Synchronize_UserCompetenceFS($toSynchronize,$response['usersCompetence']);
 
                     //$DB->delete_records('fs_users_competence',array('imported' => '1'));
+                }else {
+                    /* Log  */
+                    $dbLog  = "ERROR WS: " . $response['message'] . "\n" . "\n";
+                    $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' Finish ERROR User Competence Synchronization . ' . "\n";
+                    error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
                 }//if_no_error
             }//if_toSynchronize
-
-            /* Log  */
-            $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' Finish  User Competence Synchronization . ' . "\n";
-            error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
         }catch (Exception $ex) {
             /* Log  */
             $dbLog  = $ex->getMessage() . "\n" . "\n";
@@ -970,10 +942,6 @@ class FELLESDATA_CRON {
         $response       = null;
         $dbLog          = null;
 
-        /* Log  */
-        $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' Start  Manager Reporter Synchronization . ' . "\n";
-        error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
-
         try {
             /* Get Info to Synchronize  */
             $toSynchronize = FSKS_USERS::GetManagersReporters_ToSynchronize();
@@ -987,13 +955,12 @@ class FELLESDATA_CRON {
 
                     //$DB->delete_records('fs_imp_managers_reporters',array('imported' => '1'));
                 }else {
-                    echo $response['message'] . "</br>";
+                    /* Log  */
+                    $dbLog  = "ERROR WS: " . $response['message'] . "\n" . "\n";
+                    $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' Finish ERROR Manaer Reporter Synchronization . ' . "\n";
+                    error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
                 }//if_no_error
             }//if_toSynchronize
-
-            /* Log  */
-            $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' Finish  Manager Reporter Synchronization . ' . "\n";
-            error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
         }catch (Exception $ex) {
             /* Log  */
             $dbLog  = $ex->getMessage() . "\n" . "\n";
@@ -1024,7 +991,7 @@ class FELLESDATA_CRON {
      */
     private static function SendNotifications($type,$toMail,$notifyTo,$source) {
         /* Variables    */
-        global $USER,$SITE;
+        global $USER,$SITE,$CFG;
         $urlMapping = null;
         $subject    = null;
         $body       = null;
@@ -1071,6 +1038,10 @@ class FELLESDATA_CRON {
                 email_to_user($USER, $SITE->shortname, $subject, $body,$body);
             }//for_Each
         }catch (Exception $ex) {
+            /* Log  */
+            $dbLog  = $ex->getMessage() . "\n\n";
+            $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH ERROR Send Notification . ' . "\n";
+            error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
             throw $ex;
         }//try_catch
     }//SendNotifications
