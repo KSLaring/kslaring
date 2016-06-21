@@ -54,10 +54,14 @@ try {
             /* Calculate when it has to be triggered it */
             $timeYesterday  = mktime($cronHour, $cronMin, 0, $date['mon'], $date['mday'] - 1, $date['year']);
 
+            echo "Last Execution : " . userdate($pluginInfo->lastexecution,'%d.%m.%Y', 99, false) . "</br>";
+            echo "Yesterday: " . userdate($timeYesterday,'%d.%m.%Y', 99, false) . "</br>";
+
             if (($pluginInfo->lastexecution <= $timeYesterday)) {
                 $fstExecution = false;
                 echo "Yes";
-
+            }else {
+                echo "No";
             }
         }
 
