@@ -11,6 +11,12 @@
  * @updateDate      28/04/2014
  * @author          eFaktor     (fbv)
  *
+ * @updateDate      21/06/2016
+ * @author          eFaktor     (fbv)
+ *
+ * Description
+ * Internal && External prices
+ *
  */
 require_once($CFG->libdir.'/formslib.php');
 
@@ -20,7 +26,8 @@ define('AVG_RATING',3);
 define('POOR_RATING',2);
 define('BAD_RATING',1);
 
-define('FILED_COURSE_PRICE','customtext3');
+define('FILED_COURSE_INTERNAL_PRICE','customtext3');
+define('FILED_COURSE_EXTERNAL_PRICE','customtext4');
 
 class course_page  {
     /* GET FUNCTIONS    */
@@ -2058,11 +2065,18 @@ class course_page  {
     public static function PriceCourse($courseId) {
         /* Variables */
         global $DB;
-        $sql    = null;
-        $params = null;
-        $rdo    = null;
+        $sql        = null;
+        $params     = null;
+        $rdo        = null;
+        $infoPrice  = null;
+        $fields     = null;
 
         try {
+            /* Price */
+            $infoPrice = new stdClass();
+            $infoPrice->internal = 0;
+            $infoPrice->external = 0;
+
             /* Search Criteria  */
             $params = array();
             $params['courseid']     = $courseId;
@@ -2070,12 +2084,14 @@ class course_page  {
             $params['status']       = 0;
 
             /* Execute  */
-            $rdo = $DB->get_record('enrol',$params,'id,' . FILED_COURSE_PRICE);
+            $fields = ' id, ' . FILED_COURSE_INTERNAL_PRICE  . ', ' . FILED_COURSE_EXTERNAL_PRICE;
+            $rdo = $DB->get_record('enrol',$params, $fields);
             if ($rdo) {
-                return $rdo->{FILED_COURSE_PRICE};
-            }else {
-                return null;
-            }//if_else
+                $infoPrice->internal = $rdo->{FILED_COURSE_INTERNAL_PRICE};
+                $infoPrice->external = $rdo->{FILED_COURSE_EXTERNAL_PRICE};
+            }//if_ro
+
+            return $infoPrice;
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch

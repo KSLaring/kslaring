@@ -700,7 +700,8 @@ Class Approval {
                             u.email,
                             hp.value as 'homepage',
                             hv.value as 'homevisible',
-                            e.customtext3 as 'price'
+                            e.customtext3 as 'priceinternal',
+                            e.customtext4 as 'priceexternal'
                      FROM			{course}					c
                         JOIN        {enrol}                     e   ON  e.courseid = c.id
                                                                     AND e.status   = 0
@@ -726,9 +727,10 @@ Class Approval {
             $rdo = $DB->get_record_sql($sql,$params);
             if ($rdo) {
                 /* Course Info  */
-                $infoNotification->course   = $rdo->fullname;
-                $infoNotification->price    = $rdo->price;
-                $infoNotification->summary  = $rdo->summary;
+                $infoNotification->course       = $rdo->fullname;
+                $infoNotification->internal     = $rdo->priceinternal;
+                $infoNotification->external     = $rdo->priceexternal;
+                $infoNotification->summary      = $rdo->summary;
                 if (($rdo->homepage) && ($rdo->homevisible)) {
                     /* Course Home Page */
                     $urlHome = new moodle_url('/local/course_page/home_page.php',array('id' => $courseId));

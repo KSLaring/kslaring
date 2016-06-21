@@ -61,15 +61,20 @@ class enrol_waitinglist_edit_form extends moodleform {
 		$mform->setDefault(ENROL_WAITINGLIST_FIELD_MAXENROLMENTS, $plugin->get_config('maxenrolments'));
 		$mform->setDefault(ENROL_WAITINGLIST_FIELD_WAITLISTSIZE, $plugin->get_config('waitlistsize'));
 
+
         /**
-         * @updateDate  04/03/2016
+         * @updateDate  21/06/2016
          * @author      eFaktor     (fbv)
          *
          * Description
-         * Add the price of the course
+         * Internal && External Price
          */
-        $mform->addElement('text',ENROL_WAITINGLIST_FIELD_PRICE,  get_string('price', 'enrol_waitinglist'), array('size' => '8'));
-        $mform->setType(ENROL_WAITINGLIST_FIELD_PRICE,PARAM_TEXT);
+        /* Internal price */
+        $mform->addElement('text',ENROL_WAITINGLIST_FIELD_INTERNAL_PRICE,  get_string('in_price', 'enrol_waitinglist'), array('size' => '8'));
+        $mform->setType(ENROL_WAITINGLIST_FIELD_INTERNAL_PRICE,PARAM_TEXT);
+        /* External price */
+        $mform->addElement('text',ENROL_WAITINGLIST_FIELD_EXTERNAL_PRICE,  get_string('ext_price', 'enrol_waitinglist'), array('size' => '8'));
+        $mform->setType(ENROL_WAITINGLIST_FIELD_EXTERNAL_PRICE,PARAM_TEXT);
 
         /**
          * @updateDate  28/10/2015

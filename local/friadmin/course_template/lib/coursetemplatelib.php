@@ -568,7 +568,8 @@ class CourseTemplate {
                             e.customint6 	                as 'list_size',
                             e.customint8 	                as 'invoice',
                             e.customint7 	                as 'approval',
-                            e.customtext3                   as 'price',
+                            e.customtext3                   as 'priceinternal',
+                            e.customtext4                   as 'priceexternal',
                             es.id							as 'selfid',
                             un.id							as 'bulkid'
                      FROM		{enrol}						e
@@ -621,7 +622,8 @@ class CourseTemplate {
                 $instance->list_size        = SETTINGS_DEFAULT_SIZE;
                 $instance->invoice          = 0;
                 $instance->approval         = 0;
-                $instance->price            = 0;
+                $instance->priceinternal    = 0;
+                $instance->priceexternal    = 0;
 
                 return $instance;
             }//if
@@ -670,7 +672,8 @@ class CourseTemplate {
             $enrolInstance->{ENROL_FIELD_MAXENROLMENTS}     = $data->max_enrolled;
             $enrolInstance->{ENROL_FIELD_INVOICE}           = $data->invoice;
             $enrolInstance->{ENROL_FIELD_APPROVAL}          = $data->approval;
-            $enrolInstance->{ENROL_FIELD_PRICE}             = $data->price;
+            $enrolInstance->{FILED_COURSE_INTERNAL_PRICE}   = $data->priceinternal;
+            $enrolInstance->{FILED_COURSE_EXTERNAL_PRICE}   = $data->priceexternal;
 
             $enrolInstance->timemodified                    = $time;
             /* Execute  */
