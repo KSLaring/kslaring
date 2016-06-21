@@ -187,7 +187,8 @@ $string['mng_body']     = '<p>We would like to inform you that you are manager f
                                 <li><u>Course date</u>: {$a->date}</li>
                                 <li><u>Instructor</u>: {$a->instructor}</li>
                                 <li><u>Location</u>: {$a->location}</li>
-                                <li><u>Price</u>: {$a->price}</li>
+                                <li><u>Internal price: {$a->internal}</u></li>
+                                <li><u>External price: {$a->external}</u></li>
                                 <li>More information about the course in {$a->homepage}</li>
                            </ul>
                            </br>
@@ -203,7 +204,8 @@ $string['body_reminder']    = '<p>We would like to <b><u>reminder</u></b> you th
                                     <li><u>Course date</u>: {$a->date}</li>
                                     <li><u>Instructor</u>: {$a->instructor}</li>
                                     <li><u>Location</u>: {$a->location}</li>
-                                    <li><u>Price</u>: {$a->price}</li>
+                                    <li><u>Internal price: {$a->internal}</u></li>
+                                    <li><u>External price: {$a->external}</u></li>
                                     <li>More information about the course in {$a->homepage}</li>
                                </ul>
                                </br>
@@ -258,7 +260,8 @@ $string['mng_approved_body_two'] = '<p>We would like to inform you that the <b>{
                                         <li><u>Course date</u>: {$a->date}</li>
                                         <li><u>Instructor</u>: {$a->instructor}</li>
                                         <li><u>Location</u>: {$a->location}</li>
-                                        <li><u>Price</u>: {$a->price}</li>
+                                        <li><u>Internal price: {$a->internal}</u></li>
+                                        <li><u>External price: {$a->external}</u></li>
                                         <li>More information about the course in {$a->homepage}</li>
                                     </ul>';
 
@@ -269,4 +272,7 @@ $string['home_page']    = 'Course home page';
 $string['approval_occupied'] = 'At the moment, all available seats are occupied.So, your application will be processed as soon as there are available seats.';
 
 $string['price'] = 'Price';
+
+$string['in_price']     = 'Internal price';
+$string['ext_price']    = 'External price';
 

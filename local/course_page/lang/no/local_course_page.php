@@ -66,3 +66,6 @@ $string['of']       = 'av';
 $string['on_wait']  = 'Gå til venteliste';
 
 $string['home_participant'] = 'Participant List';
+
+$string['home_in_price']     = 'Intern pris';
+$string['home_ext_price']    = 'Ekstern pris';

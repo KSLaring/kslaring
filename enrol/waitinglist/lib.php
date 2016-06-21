@@ -36,7 +36,15 @@ define('ENROL_WAITINGLIST_TABLE_QUEUE', 'enrol_waitinglist_queue');
 define('ENROL_WAITINGLIST_TABLE_METHODS', 'enrol_waitinglist_method');
 define('ENROL_WAITINGLIST_FIELD_INVOICE','customint8');
 define('ENROL_WAITINGLIST_FIELD_APPROVAL','customint7');
-define('ENROL_WAITINGLIST_FIELD_PRICE','customtext3');
+/**
+ * @updateDate  21/06/2016
+ * @author      eFaktor (fbv)
+ *
+ * Description
+ * Course price split in internal and external prices.
+ */
+define('ENROL_WAITINGLIST_FIELD_INTERNAL_PRICE','customtext3');
+define('ENROL_WAITINGLIST_FIELD_EXTERNAL_PRICE','customtext4');
 
 define('APPROVAL_NONE',0);
 define('APPROVAL_REQUIRED',1);
@@ -527,6 +535,12 @@ class enrol_waitinglist_plugin extends enrol_plugin {
      *
      * Description
      * Add price of the course
+     *
+     * @updateDate  21/06/2016
+     * @author      eFaktor     (fbv)
+     *
+     * Description
+     * Internal && External prices
      */
     public function add_default_instance($course) {
         $expirynotify = $this->get_config('expirynotify', 0);
@@ -549,7 +563,8 @@ class enrol_waitinglist_plugin extends enrol_plugin {
                         'expirythreshold'                           => $this->get_config('expirythreshold', 86400),
                         ENROL_WAITINGLIST_FIELD_INVOICE             => 0,
                         ENROL_WAITINGLIST_FIELD_APPROVAL            => 0,
-                        ENROL_WAITINGLIST_FIELD_PRICE               => 0,
+                        ENROL_WAITINGLIST_FIELD_INTERNAL_PRICE      => 0,
+                        ENROL_WAITINGLIST_FIELD_EXTERNAL_PRICE      => 0
                        );
         $waitinglistid = $this->add_instance($course, $fields);
 

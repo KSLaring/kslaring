@@ -71,9 +71,8 @@ class local_friadmin_coursedetail_table_sql_model extends local_friadmin_widget 
                                 cl.name         as 'location',
                                 cmn.value 	    as 'responsible',
                                 '-'             as 'teacher',
-                                '-'             as 'priceinternal',
-                                '-'             as 'priceexternal',
-                                ep.customtext3 	as 'price',
+                                IF(ep.customtext3,ep.customtext3,0)  as 'priceinternal',
+                                IF(ep.customtext4,ep.customtext4,0)  as 'priceexternal',
                                 '-'             as 'seats',
                                 e.deadline      as 'deadline'
                        FROM 	{course} c
