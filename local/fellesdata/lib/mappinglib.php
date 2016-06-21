@@ -455,7 +455,8 @@ class FS_MAPPING {
         $locate         = null;
         $params         = null;
         $fsCompanies    = array();
-
+        $granpaName     = null;
+        $name           = null;
 
         try {
             /* Search Criteria  */
@@ -493,7 +494,14 @@ class FS_MAPPING {
             $rdo = $DB->get_records_sql($sql,$params);
             if ($rdo) {
                 foreach ($rdo as $instance) {
-                    $fsCompanies[$instance->id] = $instance->name;
+                    $granpaName = self::GetGranparentName($instance->org_enhet_over);
+                    if ($granpaName) {
+                        $name = $granpaName . ' > ' . $instance->name ;
+                    }else {
+                        $name = $instance->name;
+                    }
+
+                    $fsCompanies[$instance->id] = $name;
                 }
             }//if_Rdo
 
