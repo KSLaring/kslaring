@@ -2120,7 +2120,6 @@ class KS {
             }//if_generics
 
             /* Execute  */
-            echo $sql . "</br>";
             $rdo = $DB->get_records_sql($sql);
             if ($rdo) {
                 foreach ($rdo as $instance) {
