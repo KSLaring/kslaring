@@ -53,15 +53,13 @@ class FELLESDATA_CRON {
             /* Log  */
             $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' START Import KS. ' . "\n";
             error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
-            self::ImportKS($pluginInfo);
-            $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' FINISH Import KS. ' . "\n";
-            error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
+            //self::ImportKS($pluginInfo);
 
             /* Import Fellesdata        */
             /* Log  */
             $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' START Import Fellesdata. ' . "\n";
             error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
-            self::ImportFellesdata($pluginInfo);
+            //self::ImportFellesdata($pluginInfo);
 
 
             /* SYNCHRONIZATION  */
@@ -69,12 +67,12 @@ class FELLESDATA_CRON {
             /* Log  */
             $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' START Users FS Synchronization. ' . "\n";
             error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
-            self::UsersFS_Synchronization($pluginInfo);
+            //self::UsersFS_Synchronization($pluginInfo);
 
             /* Synchronization Companies    */
             $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' START Companies FS Synchronization. ' . "\n";
             error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
-            self::CompaniesFS_Synchronization($pluginInfo,$fstExecution);
+            //self::CompaniesFS_Synchronization($pluginInfo,$fstExecution);
 
             /* Synchronization Comeptence   */
             if (!$fstExecution) {
@@ -252,9 +250,6 @@ class FELLESDATA_CRON {
             $response = self::ProcessKSService($pluginInfo,KS_ORG_STRUCTURE,$infoLevel);
 
             if ($response['error'] == '200') {
-                $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' START Import KS Organization. ' . "\n";
-                error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
-
                 /* Import Organization Structure    */
                 KS::ImportKSOrganization($response['structure']);
             }else {
