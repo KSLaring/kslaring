@@ -355,16 +355,9 @@ class FSKS_COMPANY {
                 $notIn .= ',' . implode(',',array_keys($toSynchronize));
             }//if_toSynchronize
 
-            $notIn .= implode(',',array_keys($toSynchronize));
-            $synchronizeFS = self::GetCompaniesFS_ToSynchronizeFS($notIn);
-
-            /* To Mail */
-            if ($synchronizeFS) {
-                $notIn .= ',' . implode(',',array_keys($synchronizeFS));
-            }//fi_synchronize
             $toMail = self::GetCompaniesFS_ToMail($notIn);
 
-            return array($toSynchronize,$synchronizeFS,$toMail);
+            return array($toSynchronize,$toMail);
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
@@ -408,8 +401,6 @@ class FSKS_COMPANY {
     }//Synchronize_CompaniesKSFS
 
     /**
-     * @param           $companiesFS
-     *
      * @throws          Exception
      *
      * @creationDate    10/02/2016
@@ -418,10 +409,14 @@ class FSKS_COMPANY {
      * Description
      * Synchronize companies only on FS site.
      */
-    public static function Synchronize_CompaniesFS($companiesFS) {
+    public static function Synchronize_CompaniesFS() {
         /* Variables    */
+        $companiesFS = null;
 
         try {
+            /* Get Companies to synchronize only in FS  */
+            $companiesFS = self::GetCompaniesFS_ToSynchronizeFS();
+
             /* Synchronize /update  FS Company  */
             foreach ($companiesFS as $company) {
                 self::SynchronizeCompanyFs($company);
@@ -601,8 +596,6 @@ class FSKS_COMPANY {
     }//GetUpdateCompaniesFS_ToSynchronize
 
     /**
-     * @param           $notIn
-     *
      * @return          array
      *
      * @throws          Exception
@@ -613,7 +606,7 @@ class FSKS_COMPANY {
      * Description
      * Get all companies that have to be updated or deleted only in the FS site
      */
-    private static function GetCompaniesFS_ToSynchronizeFS($notIn) {
+    private static function GetCompaniesFS_ToSynchronizeFS() {
         /* Variables    */
         global $DB;
         $synchronizeFS  = array();
@@ -635,9 +628,8 @@ class FSKS_COMPANY {
                               fs.org_enhet_over as 'parent',
                               fs.action
                      FROM	    {fs_imp_company}	fs
-                     WHERE	fs.action 	!= :add
-                        AND	fs.imported  = :imported
-                        AND fs.id NOT IN ($notIn) ";
+                     WHERE	fs.action 	 != :add
+                        AND	fs.imported  = :imported ";
 
             /* Execute  */
             $rdo = $DB->get_records_sql($sql,$params);
@@ -1862,7 +1854,6 @@ class FS {
                 }else {
                     if ($infoUser->action != ADD) {
                         $infoUser->id       = $rdo->id;
-                        $infoUser->imported = $rdo->imported;
                         $DB->update_record('fs_imp_users',$infoUser);
                     }
                 }//if_rdo
@@ -1912,7 +1903,6 @@ class FS {
                 }else {
                     if ($infoFS->action != ADD) {
                         $infoFS->id         = $rdo->id;
-                        $infoFS->imported   = $rdo->imported;
                         $DB->update_record('fs_imp_company',$infoFS);
                     }
                 }//if_rdo
@@ -1958,7 +1948,6 @@ class FS {
                 }else {
                     if ($infoFS->action != ADD) {
                         $infoFS->id         = $rdo->id;
-                        $infoFS->imported   = $rdo->imported;
                         $DB->update_record('fs_imp_jobroles',$infoFS);
                     }
                 }//if_rdo
@@ -2009,7 +1998,6 @@ class FS {
                 }else {
                     if ($info->action != ADD) {
                         $info->id       = $rdo->id;
-                        $info->imported = $rdo->imported;
                         $DB->update_record('fs_imp_managers_reporters',$info);
                     }
                 }//if_rdo

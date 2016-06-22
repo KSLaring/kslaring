@@ -825,8 +825,11 @@ class FELLESDATA_CRON {
                     self::SendNotifications(SYNC_COMP,null,$notifyTo,$pluginInfo->fs_source);
                 }//if_notify
             }else {
+                /* Synchronize Companies Only FS */
+                FSKS_COMPANY::Synchronize_CompaniesFS();
+
                 /*  Get Info to Synchronize and mail */
-                list($toSynchronize,$synchronizeFS,$toMail) = FSKS_COMPANY::CompaniesFSToSynchronize();
+                list($toSynchronize,$toMail) = FSKS_COMPANY::CompaniesFSToSynchronize();
 
                 /* Send Mail --> Manual Synchronization     */
                 if ($notifyTo) {
@@ -848,11 +851,6 @@ class FELLESDATA_CRON {
                         error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
                     }//if_no_error
                 }//if_toSynchronize
-
-                /* Synchronize Companies Only FS */
-                if ($synchronizeFS) {
-                    FSKS_COMPANY::Synchronize_CompaniesFS($synchronizeFS);
-                }//if_synchronize
 
                 /* Clean Table*/
                 //$DB->delete_records('fs_imp_company',array('imported' => '1'));
