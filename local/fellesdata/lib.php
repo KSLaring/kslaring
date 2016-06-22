@@ -47,6 +47,7 @@ function local_fellesdata_cron() {
     $pluginInfo     = get_config('local_fellesdata');
 
     if ($pluginInfo->cron_active) {
+        mtrace('... FELLESDATA CRON STARTING');
         require_once('cron/fellesdatacron.php');
 
         /* Admin */
@@ -59,10 +60,12 @@ function local_fellesdata_cron() {
 
         /* Check if has to be run it    */
         if (isset($pluginInfo->lastcron)) {
+            mtrace('... FELLESDATA CRON LAST CRON');
             /* Calculate when it has to be triggered it */
             $timeYesterday  = mktime($cronHour, $cronMin, 0, $date['mon'], $date['mday'] - 1, $date['year']);
 
             if (($pluginInfo->lastexecution <= $timeYesterday)) {
+                mtrace('... FELLESDATA CRON  NO FIRS TIME');
                 $fstExecution = false;
                 FELLESDATA_CRON::cron($fstExecution);
                 set_config('lastexecution', $now, 'local_microlearning');
