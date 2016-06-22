@@ -898,23 +898,29 @@ class FELLESDATA_CRON {
 
         try {
             /* Get Info to Synchronize */
-            $toSynchronize = FSKS_USERS::UserCompetence_ToSynchronize($toDelete);
+            $total = FSKS_USERS::GetTotalUsersCompetence_ToSynchronize($toDelete);
+            for ($i=0;$i<=$total;$i=$i+100) {
+                $start = $i;
+                $limit = $i+100;
 
-            /* Call Web Service  */
-            if ($toSynchronize) {
-                $response = self::ProcessKSService($pluginInfo,$service,$toSynchronize);
-                if ($response['error'] == '200') {
-                    /* Synchronize Manager Reporters   */
-                    FSKS_USERS::Synchronize_UserCompetenceFS($toSynchronize,$response['usersCompetence']);
+                mtrace("FELLESDATA START LIMIT " . $start . " -- " . $limit);
+                $toSynchronize = FSKS_USERS::UserCompetence_ToSynchronize($toDelete,$start,$limit);
+                /* Call Web Service  */
+                if ($toSynchronize) {
+                    $response = self::ProcessKSService($pluginInfo,$service,$toSynchronize);
+                    if ($response['error'] == '200') {
+                        /* Synchronize Manager Reporters   */
+                        FSKS_USERS::Synchronize_UserCompetenceFS($toSynchronize,$response['usersCompetence']);
 
-                    //$DB->delete_records('fs_users_competence',array('imported' => '1'));
-                }else {
-                    /* Log  */
-                    $dbLog  = "ERROR WS: " . $response['message'] . "\n" . "\n";
-                    $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' Finish ERROR User Competence Synchronization . ' . "\n";
-                    error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
-                }//if_no_error
-            }//if_toSynchronize
+                        //$DB->delete_records('fs_users_competence',array('imported' => '1'));
+                    }else {
+                        /* Log  */
+                        $dbLog  = "ERROR WS: " . $response['message'] . "\n" . "\n";
+                        $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' Finish ERROR User Competence Synchronization . ' . "\n";
+                        error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
+                    }//if_no_error
+                }//if_toSynchronize
+            }
         }catch (Exception $ex) {
             /* Log  */
             $dbLog  = $ex->getMessage() . "\n" . "\n";

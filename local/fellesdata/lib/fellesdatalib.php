@@ -1063,6 +1063,8 @@ class FSKS_USERS {
 
     /**
      * @param       bool $toDelete
+     * @param            $start
+     * @param            $limit
      *
      * @return           null
      * @throws           Exception
@@ -1073,7 +1075,7 @@ class FSKS_USERS {
      * Description
      * User competence to synchronize
      */
-    public static function UserCompetence_ToSynchronize($toDelete = false) {
+    public static function UserCompetence_ToSynchronize($toDelete = false,$start,$limit) {
         /* Variables    */
         $toSynchronize = null;
 
@@ -1407,7 +1409,7 @@ class FSKS_USERS {
      * Description
      * Get user competence to synchronize
      */
-    private static function GetUsersCompetence_ToSynchronize($toDelete) {
+    private static function GetUsersCompetence_ToSynchronize($toDelete,$start,$limit) {
         /* Variables */
         global $DB,$SESSION;
         $params         = null;
@@ -1455,7 +1457,7 @@ class FSKS_USERS {
 
             /* Check if it's a manual execution */
             //if ($SESSION->manual) {
-            //    $sql .= " LIMIT 0,300";
+                $sql .= " LIMIT $start,$limit";
             //}//if_manual
 
             /* Execute */
@@ -1503,6 +1505,57 @@ class FSKS_USERS {
             throw $ex;
         }//try_catch
     }//GetUsersCompetence_ToSynchronize
+
+    public static function GetTotalUsersCompetence_ToSynchronize($toDelete) {
+        /* Variables */
+        global $DB,$SESSION;
+        $params         = null;
+        $sql            = null;
+        $rdo            = null;
+        $usersComp      = null;
+        $infoComp       = null;
+        $toDeleteFromKS = false;
+
+        try {
+            /* Search Criteria  */
+            $params = array();
+            $params['imported'] = 0;
+            $params['action']   = DELETE;
+
+            /* SQL Instruction  */
+            $sql = " SELECT		DISTINCT fs.id
+                     FROM	    {fs_imp_users_jr}	  fs
+                        JOIN    {user}                u         ON      u.username = fs.fodselsnr
+                                                                AND     u.deleted  = 0
+                        -- COMPANY
+                        JOIN	{ksfs_company}		  ksfs 		ON 		ksfs.fscompany 		= fs.ORG_ENHET_ID
+                        JOIN	{ks_company}		  ks	    ON		ks.companyid		= ksfs.kscompany
+                        -- JOB ROLE
+                        JOIN	{ksfs_jobroles}		  fsk_jr 	ON 		fsk_jr.fsjobrole 	= fs.stillingskode
+                     WHERE		fs.imported = :imported ";
+
+            /* To Delete    */
+            if ($toDelete) {
+                $sql .= " AND fs.action = :action ";
+            }else {
+                $sql .= " AND fs.action != :action ";
+            }//if_delte
+
+            /* GROUP / ORDER    */
+            $sql .= " GROUP BY fs.fodselsnr,ksfs.fscompany
+                      ORDER BY fs.fodselsnr ";
+
+            /* Execute */
+            $rdo = $DB->get_record_sql($sql,$params);
+            if ($rdo) {
+                return count($rdo);
+            }else {
+                return null;
+            }//if_Rdo;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//GetTotalUsersCompetence_ToSynchronize
 
     /**
      * @param           $competence
