@@ -699,6 +699,7 @@ class FSKS_COMPANY {
                      FROM	{fs_imp_company}	fs
                      WHERE	fs.imported = 0
                         AND fs.id NOT IN ($notIn)
+                        AND fs.org_nivaa != 4
                      ORDER BY fs.org_navn
                      LIMIT 0,5 ";
 
