@@ -74,12 +74,12 @@ function local_fellesdata_cron() {
                 mtrace('... FELLESDATA CRON  NO FIRS TIME');
                 $fstExecution = false;
                 FELLESDATA_CRON::cron($fstExecution);
-                set_config('lastexecution', $now, 'local_microlearning');
+                set_config('lastexecution', $now, 'local_fellesdata');
             }
         }else {
             $fstExecution = true;
             FELLESDATA_CRON::cron($fstExecution);
-            set_config('lastexecution', $now, 'local_microlearning');
+            set_config('lastexecution', $now, 'local_fellesdata');
         }//if_else_lastcron
     }else {
         mtrace('... FELLESDATA CRON DISABLE');
