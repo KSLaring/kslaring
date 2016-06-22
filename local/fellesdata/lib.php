@@ -61,17 +61,11 @@ function local_fellesdata_cron() {
 
         /* Check if has to be run it    */
         if (isset($pluginInfo->lastcron)) {
-            mtrace('... FELLESDATA CRON LAST CRON');
+            mtrace('... FELLESDATA CRON START');
             /* Calculate when it has to be triggered it */
             $timeYesterday  = mktime($cronHour, $cronMin, 0, $date['mon'], $date['mday'] - 1, $date['year']);
 
             if (($pluginInfo->lastexecution <= $timeYesterday)) {
-                global $CFG;
-
-                $dbLog = "Last Execution " . $now . "\n";
-                error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
-
-                mtrace('... FELLESDATA CRON  NO FIRS TIME');
                 $fstExecution = false;
                 FELLESDATA_CRON::cron($fstExecution);
                 set_config('lastexecution', $now, 'local_fellesdata');

@@ -53,13 +53,13 @@ class FELLESDATA_CRON {
             /* Log  */
             $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' START Import KS. ' . "\n";
             error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
-            //self::ImportKS($pluginInfo);
+            self::ImportKS($pluginInfo);
 
             /* Import Fellesdata        */
             /* Log  */
             $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' START Import Fellesdata. ' . "\n";
             error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
-            //self::ImportFellesdata($pluginInfo);
+            self::ImportFellesdata($pluginInfo);
 
 
             /* SYNCHRONIZATION  */
@@ -67,19 +67,19 @@ class FELLESDATA_CRON {
             /* Log  */
             $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' START Users FS Synchronization. ' . "\n";
             error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
-            //self::UsersFS_Synchronization($pluginInfo);
+            self::UsersFS_Synchronization($pluginInfo);
 
             /* Synchronization Companies    */
             $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' START Companies FS Synchronization. ' . "\n";
             error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
-            //self::CompaniesFS_Synchronization($pluginInfo,$fstExecution);
+            self::CompaniesFS_Synchronization($pluginInfo,$fstExecution);
 
             /* Synchronization Comeptence   */
             if (!$fstExecution) {
                 /* Synchronization Managers && Reporters    */
                 $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' START  Managers/Reporters FS Synchronization. ' . "\n";
                 error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
-                //self::ManagerReporter_Synchronization($pluginInfo,KS_MANAGER_REPORTER);
+                self::ManagerReporter_Synchronization($pluginInfo,KS_MANAGER_REPORTER);
 
                 /* Synchronization User Competence JobRole  -- Add/Update */
                 $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' START Users competence FS Synchronization. ' . "\n";
@@ -675,9 +675,6 @@ class FELLESDATA_CRON {
                 $fromDate = gmdate('Y-m-d\TH:i:s\Z',0);
             }
 
-            echo "From: " . $fromDate . "</br></br>";
-            echo "To:   " . $toDate . "</br></br>";
-
             /* Build url end point  */
             $urlTradis = $pluginInfo->fs_point . '/tardis/fellesdata/' . $service . '?fromDate=' . $fromDate . '&toDate=' . $toDate;
 
@@ -742,7 +739,7 @@ class FELLESDATA_CRON {
      */
     private static function UsersFS_Synchronization($pluginInfo) {
         /* Variables    */
-        global $DB,$CFG,$SESSION;
+        global $DB,$CFG;
         $rdo        = null;
         $usersFS    = array();
         $infoUser   = null;
@@ -751,12 +748,7 @@ class FELLESDATA_CRON {
 
         try {
             /* Get user to synchronize  */
-            //if (isset($SESSION->manual) ) {
-            //    $rdo = $DB->get_records('fs_imp_users',array('imported' => '0'),'','*',0,3000);
-            //}else {
-                $rdo = $DB->get_records('fs_imp_users',array('imported' => '0'),'','*');
-            //}//if_manual
-
+            $rdo = $DB->get_records('fs_imp_users',array('imported' => '0'),'','*');
 
             /* Prepare data */
             if ($rdo) {
@@ -903,13 +895,15 @@ class FELLESDATA_CRON {
             $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' Finish ERROR User Competence Synchronization . ' . "\n";
             error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
 
-            for ($i=0;$i<=$total;$i=$i+100) {
+
+            for ($i=0;$i<=$total;$i=$i+10) {
                 $start = 0;
-                $limit = 25;
+                $limit = 10;
 
                 $dbLog  = "Start : " . $start . " Limit : " . $limit  . "\n" . "\n";
                 $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' Finish ERROR User Competence Synchronization . ' . "\n";
                 error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
+
 
                 $toSynchronize = FSKS_USERS::UserCompetence_ToSynchronize($toDelete,$start,$limit);
                 /* Call Web Service  */
