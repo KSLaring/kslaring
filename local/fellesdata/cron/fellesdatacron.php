@@ -72,7 +72,7 @@ class FELLESDATA_CRON {
             /* Synchronization Companies    */
             $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' START Companies FS Synchronization. ' . "\n";
             error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
-            //self::CompaniesFS_Synchronization($pluginInfo,$fstExecution);
+            self::CompaniesFS_Synchronization($pluginInfo,$fstExecution);
 
             /* Synchronization Comeptence   */
             if (!$fstExecution) {

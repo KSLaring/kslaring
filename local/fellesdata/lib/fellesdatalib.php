@@ -1859,6 +1859,12 @@ class FS {
                 $rdo = $DB->get_record('fs_imp_users',array('FODSELSNR' => $infoUser->FODSELSNR));
                 if (!$rdo) {
                     $DB->insert_record('fs_imp_users',$infoUser);
+                }else {
+                    if ($infoUser->action != ADD) {
+                        $infoUser->id       = $rdo->id;
+                        $infoUser->imported = $rdo->imported;
+                        $DB->update_record('fs_imp_users',$infoUser);
+                    }
                 }//if_rdo
             }//ofr_each
 
@@ -1904,8 +1910,11 @@ class FS {
                 if (!$rdo) {
                     $DB->insert_record('fs_imp_company',$infoFS);
                 }else {
-                    $infoFS->id = $rdo->id;
-                    $DB->update_record('fs_imp_company',$infoFS);
+                    if ($infoFS->action != ADD) {
+                        $infoFS->id         = $rdo->id;
+                        $infoFS->imported   = $rdo->imported;
+                        $DB->update_record('fs_imp_company',$infoFS);
+                    }
                 }//if_rdo
             }//for_each
 
@@ -1946,6 +1955,12 @@ class FS {
                 $rdo = $DB->get_record('fs_imp_jobroles',array('STILLINGSKODE' => $infoFS->STILLINGSKODE));
                 if (!$rdo) {
                     $DB->insert_record('fs_imp_jobroles',$infoFS);
+                }else {
+                    if ($infoFS->action != ADD) {
+                        $infoFS->id         = $rdo->id;
+                        $infoFS->imported   = $rdo->imported;
+                        $DB->update_record('fs_imp_jobroles',$infoFS);
+                    }
                 }//if_rdo
             }//for_each
 
@@ -1991,6 +2006,12 @@ class FS {
                 $rdo = $DB->get_record('fs_imp_managers_reporters',$params);
                 if (!$rdo) {
                     $DB->insert_record('fs_imp_managers_reporters',$info);
+                }else {
+                    if ($info->action != ADD) {
+                        $info->id       = $rdo->id;
+                        $info->imported = $rdo->imported;
+                        $DB->update_record('fs_imp_managers_reporters',$info);
+                    }
                 }//if_rdo
             }
 
