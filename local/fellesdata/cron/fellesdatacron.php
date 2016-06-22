@@ -904,8 +904,8 @@ class FELLESDATA_CRON {
             error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
 
             for ($i=0;$i<=$total;$i=$i+100) {
-                $start = $i;
-                $limit = $i+100;
+                $start = 0;
+                $limit = 25;
 
                 $dbLog  = "Start : " . $start . " Limit : " . $limit  . "\n" . "\n";
                 $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' Finish ERROR User Competence Synchronization . ' . "\n";
