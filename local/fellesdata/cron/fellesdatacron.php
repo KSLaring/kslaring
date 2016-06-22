@@ -79,7 +79,7 @@ class FELLESDATA_CRON {
                 /* Synchronization Managers && Reporters    */
                 $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' START  Managers/Reporters FS Synchronization. ' . "\n";
                 error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
-                self::ManagerReporter_Synchronization($pluginInfo,KS_MANAGER_REPORTER);
+                //self::ManagerReporter_Synchronization($pluginInfo,KS_MANAGER_REPORTER);
 
                 /* Synchronization User Competence JobRole  -- Add/Update */
                 $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' START Users competence FS Synchronization. ' . "\n";
