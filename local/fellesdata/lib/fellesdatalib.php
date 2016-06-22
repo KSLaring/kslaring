@@ -1891,11 +1891,7 @@ class FS {
 
         try {
             /* FS Company Info  */
-            global $CFG;
             foreach($data as $key => $infoFS) {
-                $dbLog  = "Action : " . $infoFS->action . "\n" . "\n";
-                error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
-
                 /* Execute  */
                 $rdo = $DB->get_record('fs_imp_company',array('ORG_ENHET_ID' => $infoFS->ORG_ENHET_ID));
                 if (!$rdo) {
