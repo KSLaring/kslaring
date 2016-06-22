@@ -401,19 +401,19 @@ class FELLESDATA_CRON {
 
         try {
             /* Import FS Users              */
-            //self::ImportFSUsers($pluginInfo);
+            self::ImportFSUsers($pluginInfo);
 
             /* Import FS Companies          */
             self::ImportFSOrgStructure($pluginInfo);
 
             /* Import FS Job roles  */
-            //self::ImportFSJobRoles($pluginInfo);
+            self::ImportFSJobRoles($pluginInfo);
 
             /* Import FS User Competence    */
-            //self::ImportFSManagersReporters($pluginInfo);
+            self::ImportFSManagersReporters($pluginInfo);
 
             /* Import FS User Competence JR */
-            //self::ImportFSUserCompetenceJR($pluginInfo);
+            self::ImportFSUserCompetenceJR($pluginInfo);
         }catch (Exception $ex) {
             /* Log  */
             $dbLog  = "Error: " . $ex->getMessage() . "\n" . "\n";
