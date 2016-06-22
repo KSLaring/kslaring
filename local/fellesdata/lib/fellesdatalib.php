@@ -885,6 +885,7 @@ class FSKS_COMPANY {
     private static function SynchronizeCompanyFs($companyFS) {
         /* Variables    */
         global $DB;
+        $infoCompany    = null;
         $rdoCompany     = null;
         $params         = null;
         $sync           = null;
@@ -907,11 +908,13 @@ class FSKS_COMPANY {
             switch ($companyFS->action) {
                 case UPDATE:
                     if ($rdoCompany) {
-                        $companyFS->synchronized  = 1;
-                        $companyFS->timemodified  = $time;
+                        $infoCompany = $companyFS;
+                        $infoCompany->id = $rdoCompany->id;
+                        $infoCompany->synchronized  = 1;
+                        $infoCompany->timemodified  = $time;
 
                         /* Execute */
-                        $DB->update_record('fs_company',$companyFS);
+                        $DB->update_record('fs_company',$infoCompany);
 
                         /* Synchronized */
                         $sync = true;
