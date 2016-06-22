@@ -1081,7 +1081,7 @@ class FSKS_USERS {
 
         try {
             /* Get Users Competence  to synchronize  */
-            $toSynchronize = self::GetUsersCompetence_ToSynchronize($toDelete);
+            $toSynchronize = self::GetUsersCompetence_ToSynchronize($toDelete,$start,$limit);
 
             return $toSynchronize;
         }catch (Exception $ex) {
@@ -1464,6 +1464,7 @@ class FSKS_USERS {
             $rdo = $DB->get_records_sql($sql,$params);
             if ($rdo) {
                 foreach ($rdo as $instance) {
+                    echo "Personal Number --> " . $instance->fodselsnr . " COmpany : " . $instance->companyid . "</br>";
                     if ($toDelete) {
                         $toDeleteFromKS = self::DeleteFromCompetenceFS($instance);
 
