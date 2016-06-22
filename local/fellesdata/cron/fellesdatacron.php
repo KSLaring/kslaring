@@ -834,16 +834,16 @@ class FELLESDATA_CRON {
                 /* Send Mail --> Manual Synchronization     */
                 if ($notifyTo) {
                     if ($toMail) {
-                        self::SendNotifications(SYNC_COMP,$toMail,$notifyTo,$pluginInfo->fs_source);
+                        //self::SendNotifications(SYNC_COMP,$toMail,$notifyTo,$pluginInfo->fs_source);
                     }//if_toMail
                 }//if_notify
 
                 /* Synchronize Companies FSKS */
                 /* Call web service    */
                 if ($toSynchronize) {
-                    $response = self::ProcessKSService($pluginInfo,KS_SYNC_FS_COMPANY,$toSynchronize);
+                    //$response = self::ProcessKSService($pluginInfo,KS_SYNC_FS_COMPANY,$toSynchronize);
                     if ($response['error'] == '200') {
-                        FSKS_COMPANY::Synchronize_CompaniesKSFS($toSynchronize,$response['companies']);
+                        //FSKS_COMPANY::Synchronize_CompaniesKSFS($toSynchronize,$response['companies']);
                     }else {
                         /* Log  */
                         $dbLog  = "ERROR WS: " . $response['error'] . "\n\n";
