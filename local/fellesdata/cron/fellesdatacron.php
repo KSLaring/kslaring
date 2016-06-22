@@ -91,6 +91,10 @@ class FELLESDATA_CRON {
                 error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
                 self::UserCompetence_Synchronization($pluginInfo,KS_USER_COMPETENCE,true);
            }
+
+            /* Log  */
+            $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' FINISH FELLESDATA CRON . ' . "\n";
+            error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
@@ -894,17 +898,19 @@ class FELLESDATA_CRON {
         try {
             /* Get Info to Synchronize */
             $total = FSKS_USERS::GetTotalUsersCompetence_ToSynchronize($toDelete);
-            echo "Total: " . $total . "</br>";
-            echo "Delete : " . $toDelete . "</br>";
 
-            mtrace("Fellesdata User Compentence Total: " . $total);
-            mtrace('Fellesdata USer Competence Delete: ' . $toDelete);
-            
+            $dbLog  = "TOtal : " . $total . " TODELETE : " . $toDelete  . "\n" . "\n";
+            $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' Finish ERROR User Competence Synchronization . ' . "\n";
+            error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
+
             for ($i=0;$i<=$total;$i=$i+100) {
                 $start = $i;
                 $limit = $i+100;
 
-                mtrace("FELLESDATA START LIMIT " . $start . " -- " . $limit);
+                $dbLog  = "Start : " . $start . " Limit : " . $limit  . "\n" . "\n";
+                $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' Finish ERROR User Competence Synchronization . ' . "\n";
+                error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
+                
                 $toSynchronize = FSKS_USERS::UserCompetence_ToSynchronize($toDelete,$start,$limit);
                 /* Call Web Service  */
                 if ($toSynchronize) {
