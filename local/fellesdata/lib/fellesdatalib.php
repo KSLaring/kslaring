@@ -1766,6 +1766,7 @@ class FS {
                         $newEntry = $lineContent->newRecord;
 
                         /* Get Action       */
+                        mtrace("Action: " . $lineContent->changeType);
                         switch (trim($lineContent->changeType)) {
                             case ADD_ACTION:
                                 $action = 0;
@@ -1785,7 +1786,7 @@ class FS {
 
                                 break;
                         }//action
-
+                        mtrace("Action: " . $action);
                         $newEntry->action   = $action;
                         $newEntry->imported = 0;
 

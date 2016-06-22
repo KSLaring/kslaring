@@ -53,7 +53,7 @@ class FELLESDATA_CRON {
             /* Log  */
             $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' START Import KS. ' . "\n";
             error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
-            self::ImportKS($pluginInfo);
+            //self::ImportKS($pluginInfo);
 
             /* Import Fellesdata        */
             /* Log  */
@@ -67,29 +67,29 @@ class FELLESDATA_CRON {
             /* Log  */
             $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' START Users FS Synchronization. ' . "\n";
             error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
-            self::UsersFS_Synchronization($pluginInfo);
+            //self::UsersFS_Synchronization($pluginInfo);
 
             /* Synchronization Companies    */
             $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' START Companies FS Synchronization. ' . "\n";
             error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
-            self::CompaniesFS_Synchronization($pluginInfo,$fstExecution);
+            //self::CompaniesFS_Synchronization($pluginInfo,$fstExecution);
 
             /* Synchronization Comeptence   */
             if (!$fstExecution) {
                 /* Synchronization Managers && Reporters    */
                 $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' START  Managers/Reporters FS Synchronization. ' . "\n";
                 error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
-                self::ManagerReporter_Synchronization($pluginInfo,KS_MANAGER_REPORTER);
+                //self::ManagerReporter_Synchronization($pluginInfo,KS_MANAGER_REPORTER);
 
                 /* Synchronization User Competence JobRole  -- Add/Update */
                 $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' START Users competence FS Synchronization. ' . "\n";
                 error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
-                self::UserCompetence_Synchronization($pluginInfo,KS_USER_COMPETENCE);
+                //self::UserCompetence_Synchronization($pluginInfo,KS_USER_COMPETENCE);
 
                 /* Synchronization User Competence JobRole  -- Delete */
                 $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' START Users Competence to delete FS Synchronization. ' . "\n";
                 error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
-                self::UserCompetence_Synchronization($pluginInfo,KS_USER_COMPETENCE,true);
+                //self::UserCompetence_Synchronization($pluginInfo,KS_USER_COMPETENCE,true);
            }
 
             /* Log  */
@@ -401,19 +401,19 @@ class FELLESDATA_CRON {
 
         try {
             /* Import FS Users              */
-            self::ImportFSUsers($pluginInfo);
+            //self::ImportFSUsers($pluginInfo);
 
             /* Import FS Companies          */
             self::ImportFSOrgStructure($pluginInfo);
 
             /* Import FS Job roles  */
-            self::ImportFSJobRoles($pluginInfo);
+            //self::ImportFSJobRoles($pluginInfo);
 
             /* Import FS User Competence    */
-            self::ImportFSManagersReporters($pluginInfo);
+            //self::ImportFSManagersReporters($pluginInfo);
 
             /* Import FS User Competence JR */
-            self::ImportFSUserCompetenceJR($pluginInfo);
+            //self::ImportFSUserCompetenceJR($pluginInfo);
         }catch (Exception $ex) {
             /* Log  */
             $dbLog  = "Error: " . $ex->getMessage() . "\n" . "\n";
