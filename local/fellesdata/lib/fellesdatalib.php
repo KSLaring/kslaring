@@ -1785,11 +1785,6 @@ class FS {
 
                                 break;
                         }//action
-                        global $CFG;
-                        mtrace("Action: " . $lineContent->changeType);
-                        $dbLog  = "Action : " . $lineContent->changeType . ' - ' . $action . "\n" . "\n";
-
-                        error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
                         $newEntry->action   = $action;
                         $newEntry->imported = 0;
 
@@ -1899,11 +1894,19 @@ class FS {
 
         try {
             /* FS Company Info  */
+            global $CFG;
             foreach($data as $key => $infoFS) {
+                $dbLog  = "Action : " . $infoFS->action . "\n" . "\n";
+
+                error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
+
                 /* Execute  */
                 $rdo = $DB->get_record('fs_imp_company',array('ORG_ENHET_ID' => $infoFS->ORG_ENHET_ID));
                 if (!$rdo) {
                     $DB->insert_record('fs_imp_company',$infoFS);
+                }else {
+                    $infoFS->id = $rdo->id;
+                    $DB->update_record('fs_imp_company',$infoFS);
                 }//if_rdo
             }//for_each
 
