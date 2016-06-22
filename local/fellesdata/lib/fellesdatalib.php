@@ -1033,9 +1033,9 @@ class FSKS_USERS {
                      WHERE	fs.imported	= :imported ";
 
             /* Check if it's a manual execution */
-            if ($SESSION->manual) {
-                $sql .= " LIMIT 0,500 ";
-            }//if_manual
+            //if ($SESSION->manual) {
+            //    $sql .= " LIMIT 0,500 ";
+            //}//if_manual
 
             /* Execute  */
             $rdo = $DB->get_records_sql($sql,$params);
@@ -1454,9 +1454,9 @@ class FSKS_USERS {
                       ORDER BY fs.fodselsnr ";
 
             /* Check if it's a manual execution */
-            if ($SESSION->manual) {
-                $sql .= " LIMIT 0,300";
-            }//if_manual
+            //if ($SESSION->manual) {
+            //    $sql .= " LIMIT 0,300";
+            //}//if_manual
 
             /* Execute */
             $rdo = $DB->get_records_sql($sql,$params);
@@ -1707,34 +1707,36 @@ class FS {
 
                 /* Get New Entry    */
                 if ($lineContent) {
-                    $newEntry = $lineContent->newRecord;
+                    if (isset($lineContent->newRecord)) {
+                        $newEntry = $lineContent->newRecord;
 
-                    /* Get Action       */
-                    switch (trim($lineContent->changeType)) {
-                        case ADD_ACTION:
-                            $action = 0;
+                        /* Get Action       */
+                        switch (trim($lineContent->changeType)) {
+                            case ADD_ACTION:
+                                $action = 0;
 
-                            break;
-                        case UPDATE_ACTION:
-                            $action = 1;
+                                break;
+                            case UPDATE_ACTION:
+                                $action = 1;
 
-                            break;
-                        case DELETE_ACTION:
-                            /* Old Entry        */
-                            if (isset($lineContent->oldRecord)) {
-                                $newEntry = $lineContent->oldRecord;
-                            }//if_old_record
+                                break;
+                            case DELETE_ACTION:
+                                /* Old Entry        */
+                                if (isset($lineContent->oldRecord)) {
+                                    $newEntry = $lineContent->oldRecord;
+                                }//if_old_record
 
-                            $action = 2;
+                                $action = 2;
 
-                            break;
-                    }//action
+                                break;
+                        }//action
 
-                    $newEntry->action   = $action;
-                    $newEntry->imported = 0;
+                        $newEntry->action   = $action;
+                        $newEntry->imported = 0;
 
-                    /* Add Record   */
-                    $toSave[$key] = $newEntry;
+                        /* Add Record   */
+                        $toSave[$key] = $newEntry;
+                    }
                 }//ifLineContent
             }
 

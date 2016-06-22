@@ -46,9 +46,6 @@ class FELLESDATA_CRON {
             $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' START FELLESDATA CRON . ' . "\n";
             error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
 
-            if (isset($SESSION->manual)) {
-                unset($SESSION->manual);
-            }
             /* Plugin Info      */
             $pluginInfo     = get_config('local_fellesdata');
 
@@ -755,11 +752,11 @@ class FELLESDATA_CRON {
 
         try {
             /* Get user to synchronize  */
-            if ($SESSION->manual) {
-                $rdo = $DB->get_records('fs_imp_users',array('imported' => '0'),'','*',0,3000);
-            }else {
+            //if (isset($SESSION->manual) ) {
+            //    $rdo = $DB->get_records('fs_imp_users',array('imported' => '0'),'','*',0,3000);
+            //}else {
                 $rdo = $DB->get_records('fs_imp_users',array('imported' => '0'),'','*');
-            }//if_manual
+            //}//if_manual
 
 
             /* Prepare data */
