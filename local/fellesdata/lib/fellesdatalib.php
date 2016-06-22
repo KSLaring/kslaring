@@ -908,13 +908,22 @@ class FSKS_COMPANY {
             switch ($companyFS->action) {
                 case UPDATE:
                     if ($rdoCompany) {
-                        $infoCompany = $companyFS;
-                        $infoCompany->id = $rdoCompany->id;
-                        $infoCompany->synchronized  = 1;
-                        $infoCompany->timemodified  = $time;
+                        $rdoCompany->name           = $companyFS->name;
+                        $rdoCompany->parent         = $companyFS->parent;
+                        $rdoCompany->privat         = $companyFS->privat;
+                        $rdoCompany->ansvar         = $companyFS->ansvar;
+                        $rdoCompany->tjeneste       = $companyFS->tjeneste;
+                        $rdoCompany->adresse1       = $companyFS->adresse1;
+                        $rdoCompany->adresse2       = $companyFS->adresse2;
+                        $rdoCompany->adresse3       = $companyFS->adresse3;
+                        $rdoCompany->postnr         = $companyFS->postnr;
+                        $rdoCompany->poststed       = $companyFS->poststed;
+                        $rdoCompany->epost          = $companyFS->epost;
+                        $rdoCompany->synchronized   = 1;
+                        $rdoCompany->timemodified   = $time;
 
                         /* Execute */
-                        $DB->update_record('fs_company',$infoCompany);
+                        $DB->update_record('fs_company',$rdoCompany);
 
                         /* Synchronized */
                         $sync = true;
