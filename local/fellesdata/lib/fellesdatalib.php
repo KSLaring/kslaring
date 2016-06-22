@@ -626,7 +626,17 @@ class FSKS_COMPANY {
                               fs.org_enhet_id   as 'companyid',
                               fs.org_navn       as 'name',
                               fs.org_enhet_over as 'parent',
+                              fs.privat,
+                              fs.ansvar,
+                              fs.tjeneste,
+                              fs.adresse1,
+                              fs.adresse2,
+                              fs.adresse3,
+                              fs.postnr,
+                              fs.poststed,
+                              fs.epost,
                               fs.action
+
                      FROM	    {fs_imp_company}	fs
                      WHERE	fs.action 	 != :add
                         AND	fs.imported  = :imported ";
@@ -641,6 +651,15 @@ class FSKS_COMPANY {
                     $infoCompany->fscompany = $instance->companyid;
                     $infoCompany->name      = $instance->name;
                     $infoCompany->parent    = $instance->parent;
+                    $infoCompany->privat    = $instance->privat;
+                    $infoCompany->ansvar    = $instance->ansvar;
+                    $infoCompany->tjeneste  = $instance->tjeneste;
+                    $infoCompany->adresse1  = $instance->adresse1;
+                    $infoCompany->adresse2  = $instance->adresse2;
+                    $infoCompany->adresse3  = $instance->adresse3;
+                    $infoCompany->postnr    = $instance->postnr;
+                    $infoCompany->poststed  = $instance->poststed;
+                    $infoCompany->epost     = $instance->epost;
                     $infoCompany->action    = $instance->action;
 
                     /* Add company  */
@@ -888,13 +907,11 @@ class FSKS_COMPANY {
             switch ($companyFS->action) {
                 case UPDATE:
                     if ($rdoCompany) {
-                        $rdoCompany->name          = $companyFS->name;
-                        $rdoCompany->parent        = $companyFS->parent;
-                        $rdoCompany->synchronized  = 1;
-                        $rdoCompany->timemodified  = $time;
+                        $companyFS->synchronized  = 1;
+                        $companyFS->timemodified  = $time;
 
                         /* Execute */
-                        $DB->update_record('fs_company',$rdoCompany);
+                        $DB->update_record('fs_company',$companyFS);
 
                         /* Synchronized */
                         $sync = true;
