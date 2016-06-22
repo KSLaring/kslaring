@@ -1897,7 +1897,6 @@ class FS {
             global $CFG;
             foreach($data as $key => $infoFS) {
                 $dbLog  = "Action : " . $infoFS->action . "\n" . "\n";
-
                 error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
 
                 /* Execute  */
