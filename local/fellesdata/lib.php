@@ -49,7 +49,8 @@ function local_fellesdata_cron() {
     if ($pluginInfo->cron_active) {
         mtrace('... FELLESDATA CRON STARTING');
         require_once('cron/fellesdatacron.php');
-
+        require_once('lib/fellesdatalib.php');
+        
         /* Admin */
         $admin      = get_admin();
         $now        = time();
