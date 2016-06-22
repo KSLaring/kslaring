@@ -532,8 +532,9 @@ class FSKS_COMPANY {
         try {
             /* Search Criteria   */
             $params = array();
-            $params['new']      = 0;
-            $params['imported'] = 1;
+            $params['new']          = 0;
+            $params['imported']     = 1;
+            $params['synchronized'] = 0;
 
 
             /* SQL Instruction  */
@@ -561,7 +562,8 @@ class FSKS_COMPANY {
                         JOIN	{ksfs_company}	    fk 		ON 	fk.fscompany 	= fs.companyid
                         -- INFO PARENT
                         JOIN	{ks_company}		ks_pa	ON 	ks_pa.companyid = fk.kscompany
-                     WHERE	fs.new 			= :new ";
+                     WHERE	fs.new 			= :new
+                        AND fs.synchronized = :synchronized ";
 
             /* Execute  */
             $rdo = $DB->get_records_sql($sql,$params);
@@ -920,7 +922,7 @@ class FSKS_COMPANY {
                         $rdoCompany->postnr         = $companyFS->postnr;
                         $rdoCompany->poststed       = $companyFS->poststed;
                         $rdoCompany->epost          = $companyFS->epost;
-                        $rdoCompany->synchronized   = 1;
+                        $rdoCompany->synchronized   = 0;
                         $rdoCompany->timemodified   = $time;
 
                         /* Execute */
