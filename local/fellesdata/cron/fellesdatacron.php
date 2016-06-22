@@ -895,6 +895,7 @@ class FELLESDATA_CRON {
             /* Get Info to Synchronize */
             $total = FSKS_USERS::GetTotalUsersCompetence_ToSynchronize($toDelete);
             echo "Total: " . $total . "</br>";
+            echo "Delete : " . $toDelete . "</br>";
             //for ($i=0;$i<=$total;$i=$i+100) {
                 $start = 0;//$i;
                 $limit = 5;//$i+100;
