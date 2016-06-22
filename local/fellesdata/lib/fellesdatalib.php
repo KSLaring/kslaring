@@ -1547,7 +1547,7 @@ class FSKS_USERS {
                       ORDER BY fs.fodselsnr ";
 
             /* Execute */
-            $rdo = $DB->get_record_sql($sql,$params);
+            $rdo = $DB->get_records_sql($sql,$params);
             if ($rdo) {
                 return count($rdo);
             }else {
