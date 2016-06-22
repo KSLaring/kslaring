@@ -896,14 +896,9 @@ class FELLESDATA_CRON {
             error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
 
 
-            for ($i=0;$i<=$total;$i=$i+10) {
+            for ($i=0;$i<=$total;$i=$i+400) {
                 $start = 0;
-                $limit = 10;
-
-                $dbLog  = "Start : " . $start . " Limit : " . $limit  . "\n" . "\n";
-                $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' Finish ERROR User Competence Synchronization . ' . "\n";
-                error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
-
+                $limit = 400;
 
                 $toSynchronize = FSKS_USERS::UserCompetence_ToSynchronize($toDelete,$start,$limit);
                 /* Call Web Service  */
