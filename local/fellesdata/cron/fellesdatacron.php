@@ -889,11 +889,6 @@ class FELLESDATA_CRON {
             /* Get Info to Synchronize */
             $total = FSKS_USERS::GetTotalUsersCompetence_ToSynchronize($toDelete);
 
-            $dbLog  = "TOtal : " . $total . " TODELETE : " . $toDelete  . "\n" . "\n";
-            $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' Finish User Competence Synchronization . ' . "\n";
-            error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
-
-
             for ($i=0;$i<=$total;$i=$i+400) {
                 $start = 0;
                 $limit = 400;

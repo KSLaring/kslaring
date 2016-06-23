@@ -11,8 +11,6 @@
  *
  */
 
-//
-
 
 function local_fellesdata_extends_navigation(global_navigation $navigation) {
     /* Variables    */

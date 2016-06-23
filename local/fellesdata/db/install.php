@@ -26,6 +26,9 @@ function xmldb_local_fellesdata_install() {
         /* Create table for the synchronization between KS and FS */
         Fellesdata_Install::FellesdataTables($dbMan);
         Fellesdata_Install::SynchronizationTables($dbMan);
+
+        /* Last time executed   */
+        set_config('lastexecution', 0, 'local_fellesdata');
     }catch (Exception $ex) {
         /* Delete Tables created    */
         Fellesdata_Install::DeleteFellesdata_Tables($dbMan);

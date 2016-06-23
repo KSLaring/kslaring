@@ -33,11 +33,9 @@ try {
     if (!isset($SESSION->manual)) {
         $SESSION->manual = true;
     }
-    /* Plugin Info      */
-    $pluginInfo     = get_config('local_fellesdata');
 
     if ($option) {
-        FELLESDATA_CRON::cron_manual(true,$option);
+        //FELLESDATA_CRON::cron_manual(true,$option);
     }else {
         //FELLESDATA_CRON::cron(true);
     }
