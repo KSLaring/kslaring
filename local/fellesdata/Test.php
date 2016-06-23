@@ -37,6 +37,10 @@ try {
     if ($option) {
         FELLESDATA_CRON::cron_manual(true,$option);
     }else {
+        $last = get_config('local_fellesdata','lastexecution');
+
+        echo "Last Execution  : " . userdate($last,'%d.%m.%Y', 99, false);
+
         //FELLESDATA_CRON::cron(true);
     }
 }catch (Exception $ex) {
