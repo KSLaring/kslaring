@@ -497,7 +497,7 @@ class FSKS_COMPANY {
                     $infoCompany->postnr        = ($instance->postnr    ? $instance->postnr     : '');
                     $infoCompany->poststed      = ($instance->poststed  ? $instance->poststed   : '');
                     $infoCompany->epost         = ($instance->epost     ? $instance->epost      : '');
-                    $infoCompany->action        = ADD;
+                    $infoCompany->action        = UPDATE;//ADD;
 
                     /* Add Company */
                     $toSynchronize[$instance->id] = $infoCompany;
