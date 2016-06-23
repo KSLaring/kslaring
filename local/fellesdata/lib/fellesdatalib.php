@@ -382,15 +382,19 @@ class FSKS_COMPANY {
 
         try {
             /* Synchronize companies that have been imported    */
-            foreach ($companiesImported as $key => $company) {
+            foreach ($companiesImported as  $company) {
                 /* Convert to object */
                 $objCompany = (Object)$company;
 
                 if ($objCompany->imported) {
                     /* Get Company  */
                     $infoCompany = $companiesFSKS[$objCompany->key];
+
+                    echo " OBJ Key : " . $objCompany->key . "</br>";
+                    echo " Company: " . $infoCompany->ksId . "</br>";
+                    echo " Name : " . $infoCompany->name . "</br>";
+                    echo " Parent:  " . $infoCompany->parent . "</br>";
                     
-                    echo "Company Key: " . $key . " OBJ Key : " . $objCompany->key;
                     /* Synchronize Company  */
                     //$infoCompany->ksId = $objCompany->ksId;
                     //self::SynchronizeCompanyKSFS($infoCompany,$objCompany->key);
