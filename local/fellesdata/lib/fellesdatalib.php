@@ -382,6 +382,7 @@ class FSKS_COMPANY {
 
         try {
             /* Synchronize companies that have been imported    */
+            echo "HOLA ";
             foreach ($companiesImported as $company) {
                 /* Convert to object */
                 $objCompany = (Object)$company;
