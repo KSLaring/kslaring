@@ -470,7 +470,7 @@ class FSKS_COMPANY {
                             fs.adresse3,
                             fs.postnr,
                             fs.poststed,
-                            fs.epost,
+                            fs.epost
                      FROM		{fs_company}	fs
                         JOIN	{ks_company}	ks 	ON ks.companyid = fs.parent
                      WHERE	fs.synchronized = :synchronized
