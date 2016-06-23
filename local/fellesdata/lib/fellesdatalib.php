@@ -945,6 +945,7 @@ class FSKS_COMPANY {
                         /* Execute  */
                         $DB->delete_records('ksfs_company',$params);
 
+
                         /* Synchronized */
                         $sync = true;
                     }//if_exists
@@ -1053,7 +1054,8 @@ class FSKS_USERS {
                                                                       AND     u.deleted  = 0
                         JOIN  {ksfs_company}		        fsk	ON  fsk.fscompany = fs.org_enhet_id
                         JOIN  {ks_company}			        ks	ON	ks.companyid  = fsk.kscompany
-                     WHERE	fs.imported	= :imported ";
+                     WHERE	fs.imported	= :imported
+                     LIMIT 0,1";
 
             /* Execute  */
             $rdo = $DB->get_records_sql($sql,$params);
@@ -1069,6 +1071,8 @@ class FSKS_USERS {
                     $info->action           = $instance->action;
                     /* Add Competence   */
                     $managersReporters[$instance->id] = $info;
+
+                    echo "Person: " . $instance->fodselsnr . " Company : " . $instance->kscompany;
                 }//for_Rdo
             }//if_rdo
 
