@@ -35,7 +35,7 @@ try {
     }
 
     if ($option) {
-        //FELLESDATA_CRON::cron_manual(true,$option);
+        FELLESDATA_CRON::cron_manual(true,$option);
     }else {
         //FELLESDATA_CRON::cron(true);
     }

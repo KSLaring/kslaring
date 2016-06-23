@@ -40,7 +40,8 @@ function local_fellesdata_cron() {
     $date           = null;
     $timeYesterday  = null;
     $fstExecution   = null;
-
+    $lastexecution  = null;
+    
     /* Plugins Info */
     $pluginInfo     = get_config('local_fellesdata');
 
@@ -63,7 +64,8 @@ function local_fellesdata_cron() {
             /* Calculate when it has to be triggered it */
             $timeYesterday  = mktime($cronHour, $cronMin, 0, $date['mon'], $date['mday'] - 1, $date['year']);
 
-            if (($pluginInfo->lastexecution <= $timeYesterday)) {
+            $lastexecution = get_config('local_fellesdata','lastexecution');
+            if (($lastexecution <= $timeYesterday)) {
                 $fstExecution = false;
                 FELLESDATA_CRON::cron($fstExecution);
                 set_config('lastexecution', $now, 'local_fellesdata');
