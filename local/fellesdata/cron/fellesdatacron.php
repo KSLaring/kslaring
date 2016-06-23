@@ -843,7 +843,6 @@ class FELLESDATA_CRON {
                 if ($toSynchronize) {
                     $response = self::ProcessKSService($pluginInfo,KS_SYNC_FS_COMPANY,$toSynchronize);
                     if ($response['error'] == '200') {
-                        echo "Dentor ";
                         FSKS_COMPANY::Synchronize_CompaniesKSFS($toSynchronize,$response['companies']);
                     }else {
                         /* Log  */

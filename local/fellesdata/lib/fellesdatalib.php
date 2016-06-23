@@ -386,6 +386,7 @@ class FSKS_COMPANY {
                 /* Convert to object */
                 $objCompany = (Object)$company;
 
+                echo " Company : " . $objCompany->ksId . " _ " . " Imported : " . $objCompany->imported;
                 if ($objCompany->imported) {
                     /* Get Company  */
                     $infoCompany = $companiesFSKS[$objCompany->key];
