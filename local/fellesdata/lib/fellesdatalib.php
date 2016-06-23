@@ -382,12 +382,10 @@ class FSKS_COMPANY {
 
         try {
             /* Synchronize companies that have been imported    */
-            echo "HOLA ";
             foreach ($companiesImported as $company) {
                 /* Convert to object */
                 $objCompany = (Object)$company;
 
-                echo " Company : " . $objCompany->ksId . " _ " . " Imported : " . $objCompany->imported;
                 if ($objCompany->imported) {
                     /* Get Company  */
                     $infoCompany = $companiesFSKS[$objCompany->key];
@@ -571,7 +569,6 @@ class FSKS_COMPANY {
             $rdo = $DB->get_records_sql($sql,$params);
             if ($rdo) {
                 foreach ($rdo as $instance) {
-                    echo " Company : " . $instance->companyid . " KS : " . $instance->kscompany . "</br>";
                     /* Info Company */
                     $infoCompany = new stdClass();
                     $infoCompany->fsId          = $instance->companyid;
@@ -589,7 +586,7 @@ class FSKS_COMPANY {
                     $infoCompany->postnr        = $instance->postnr;
                     $infoCompany->poststed      = $instance->poststed;
                     $infoCompany->epost         = $instance->epost;
-                    $infoCompany->action        = $instance->action;
+                    $infoCompany->action        = UPDATE;///$instance->action;
 
                     /* Add Company */
                     $toSynchronize[$instance->id] = $infoCompany;
