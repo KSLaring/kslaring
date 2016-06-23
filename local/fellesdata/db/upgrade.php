@@ -79,10 +79,6 @@ function xmldb_local_fellesdata_upgrade($oldVersion) {
             Fellesdata_Update::Update_FSUserCompetence($dbMan);
         }//UserCompetence
 
-        if ($oldVersion < 2016062204) {
-            /* Last time executed   */
-            set_config('lastexecution', 0, 'local_fellesdata');
-        }
         return true;
     }catch (Exception $ex) {
         throw $ex;
