@@ -569,6 +569,7 @@ class FSKS_COMPANY {
             $rdo = $DB->get_records_sql($sql,$params);
             if ($rdo) {
                 foreach ($rdo as $instance) {
+                    echo " Company : " . $instance->companyid . " KS : " . $instance->kscompany . "</br>";
                     /* Info Company */
                     $infoCompany = new stdClass();
                     $infoCompany->fsId          = $instance->companyid;
