@@ -391,7 +391,7 @@ class FSKS_COMPANY {
                     $infoCompany = $companiesFSKS[$objCompany->key];
 
                     /* Synchronize Company  */
-                    $infoCompany->ksId = $objCompany->ksId;
+                    //$infoCompany->ksId = $objCompany->ksId;
                     self::SynchronizeCompanyKSFS($infoCompany,$objCompany->key);
                 }//if_imported
             }//for_companiesFS
@@ -463,14 +463,14 @@ class FSKS_COMPANY {
                             ks.industrycode,
                             fs.parent,
                             IF(fs.privat,0,1)               as 'public',
-                            IF(fs.ansvar,fs.ansvar,'')      as 'ansvar',
-                            IF(fs.tjeneste,fs.tjeneste,'')  as 'tjeneste',
-                            IF(fs.adresse1,fs.adresse1,'')  as 'adresse1',
-                            IF(fs.adresse2,fs.adresse2,'')  as 'adresse2',
-                            IF(fs.adresse3,fs.adresse3,'')  as 'adresse3',
-                            IF(fs.postnr,fs.postnr,'')      as 'postnr',
-                            IF(fs.poststed,fs.poststed,'')  as 'poststed',
-                            IF(fs.epost,fs.epost,'')        as 'epost'
+                            fs.ansvar,
+                            fs.tjeneste,
+                            fs.adresse1,
+                            fs.adresse2,
+                            fs.adresse3,
+                            fs.postnr,
+                            fs.poststed,
+                            fs.epost,
                      FROM		{fs_company}	fs
                         JOIN	{ks_company}	ks 	ON ks.companyid = fs.parent
                      WHERE	fs.synchronized = :synchronized
@@ -490,15 +490,15 @@ class FSKS_COMPANY {
                     $infoCompany->level         = $instance->level;
                     $infoCompany->parent        = $instance->parent;
                     $infoCompany->public        = $instance->public;
-                    $infoCompany->ansvar        = $instance->ansvar;
-                    $infoCompany->tjeneste      = $instance->tjeneste;
-                    $infoCompany->adresseOne    = $instance->adresse1;
-                    $infoCompany->adresseTwo    = $instance->adresse2;
-                    $infoCompany->adresseThree  = $instance->adresse3;
-                    $infoCompany->postnr        = $instance->postnr;
-                    $infoCompany->poststed      = $instance->poststed;
-                    $infoCompany->epost         = $instance->epost;
-                    $infoCompany->action    = ADD;
+                    $infoCompany->ansvar        = ($instance->ansvar    ? $instance->ansvar     : '');
+                    $infoCompany->tjeneste      = ($instance->tjeneste  ? $instance->tjeneste   : '');
+                    $infoCompany->adresseOne    = ($instance->adresse1  ? $instance->adresse1   : '');
+                    $infoCompany->adresseTwo    = ($instance->adresse2  ? $instance->adresse2   : '');
+                    $infoCompany->adresseThree  = ($instance->adresse3  ? $instance->adresse3   : '');
+                    $infoCompany->postnr        = ($instance->postnr    ? $instance->postnr     : '');
+                    $infoCompany->poststed      = ($instance->poststed  ? $instance->poststed   : '');
+                    $infoCompany->epost         = ($instance->epost     ? $instance->epost      : '');
+                    $infoCompany->action        = ADD;
 
                     /* Add Company */
                     $toSynchronize[$instance->id] = $infoCompany;
@@ -546,14 +546,14 @@ class FSKS_COMPANY {
                             fs.parent,
                             ks_pa.industrycode,
                             IF(fs.privat,0,1) 	as 'public',
-                            IF(fs.ansvar,fs.ansvar,'')      as 'ansvar',
-                            IF(fs.tjeneste,fs.tjeneste,'')  as 'tjeneste',
-                            IF(fs.adresse1,fs.adresse1,'')  as 'adresse1',
-                            IF(fs.adresse2,fs.adresse2,'')  as 'adresse2',
-                            IF(fs.adresse3,fs.adresse3,'')  as 'adresse3',
-                            IF(fs.postnr,fs.postnr,'')      as 'postnr',
-                            IF(fs.poststed,fs.poststed,'')  as 'poststed',
-                            IF(fs.epost,fs.epost,'')        as 'epost',
+                            fs.ansvar,
+                            fs.tjeneste,
+                            fs.adresse1,
+                            fs.adresse2,
+                            fs.adresse3,
+                            fs.postnr,
+                            fs.poststed,
+                            fs.epost,
                             fs_imp.action
                      FROM		{fs_company}		fs
                         JOIN	{fs_imp_company}	fs_imp 	ON 	fs_imp.org_enhet_id = fs.companyid
@@ -578,14 +578,14 @@ class FSKS_COMPANY {
                     $infoCompany->level         = $instance->level;
                     $infoCompany->parent        = $instance->parent;
                     $infoCompany->public        = $instance->public;
-                    $infoCompany->ansvar        = $instance->ansvar;
-                    $infoCompany->tjeneste      = $instance->tjeneste;
-                    $infoCompany->adresseOne    = $instance->adresse1;
-                    $infoCompany->adresseTwo    = $instance->adresse2;
-                    $infoCompany->adresseThree  = $instance->adresse3;
-                    $infoCompany->postnr        = $instance->postnr;
-                    $infoCompany->poststed      = $instance->poststed;
-                    $infoCompany->epost         = $instance->epost;
+                    $infoCompany->ansvar        = ($instance->ansvar    ? $instance->ansvar     : '');
+                    $infoCompany->tjeneste      = ($instance->tjeneste  ? $instance->tjeneste   : '');
+                    $infoCompany->adresseOne    = ($instance->adresse1  ? $instance->adresse1   : '');
+                    $infoCompany->adresseTwo    = ($instance->adresse2  ? $instance->adresse2   : '');
+                    $infoCompany->adresseThree  = ($instance->adresse3  ? $instance->adresse3   : '');
+                    $infoCompany->postnr        = ($instance->postnr    ? $instance->postnr     : '');
+                    $infoCompany->poststed      = ($instance->poststed  ? $instance->poststed   : '');
+                    $infoCompany->epost         = ($instance->epost     ? $instance->epost      : '');
                     $infoCompany->action        = UPDATE;///$instance->action;
 
                     /* Add Company */
