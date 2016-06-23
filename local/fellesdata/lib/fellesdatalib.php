@@ -382,17 +382,18 @@ class FSKS_COMPANY {
 
         try {
             /* Synchronize companies that have been imported    */
-            foreach ($companiesImported as $company) {
+            foreach ($companiesImported as $key => $company) {
                 /* Convert to object */
                 $objCompany = (Object)$company;
 
                 if ($objCompany->imported) {
                     /* Get Company  */
                     $infoCompany = $companiesFSKS[$objCompany->key];
-
+                    
+                    echo "Company Key: " . $key . " OBJ Key : " . $objCompany->key;
                     /* Synchronize Company  */
                     //$infoCompany->ksId = $objCompany->ksId;
-                    self::SynchronizeCompanyKSFS($infoCompany,$objCompany->key);
+                    //self::SynchronizeCompanyKSFS($infoCompany,$objCompany->key);
                 }//if_imported
             }//for_companiesFS
         }catch (Exception $ex) {
@@ -569,7 +570,6 @@ class FSKS_COMPANY {
             $rdo = $DB->get_records_sql($sql,$params);
             if ($rdo) {
                 foreach ($rdo as $instance) {
-                    echo "Company : " . $instance->kscompany . " Parent : " . $instance->parent . "</br>";
                     /* Info Company */
                     $infoCompany = new stdClass();
                     $infoCompany->fsId          = $instance->companyid;
@@ -1055,8 +1055,7 @@ class FSKS_USERS {
                                                                       AND     u.deleted  = 0
                         JOIN  {ksfs_company}		        fsk	ON  fsk.fscompany = fs.org_enhet_id
                         JOIN  {ks_company}			        ks	ON	ks.companyid  = fsk.kscompany
-                     WHERE	fs.imported	= :imported
-                     LIMIT 0,1";
+                     WHERE	fs.imported	= :imported ";
 
             /* Execute  */
             $rdo = $DB->get_records_sql($sql,$params);
@@ -1072,8 +1071,6 @@ class FSKS_USERS {
                     $info->action           = $instance->action;
                     /* Add Competence   */
                     $managersReporters[$instance->id] = $info;
-
-                    echo "Person: " . $instance->fodselsnr . " Company : " . $instance->kscompany;
                 }//for_Rdo
             }//if_rdo
 
