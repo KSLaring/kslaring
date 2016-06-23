@@ -390,14 +390,8 @@ class FSKS_COMPANY {
                     /* Get Company  */
                     $infoCompany = $companiesFSKS[$objCompany->key];
 
-                    echo " OBJ Key : " . $objCompany->key . "</br>";
-                    echo " Company: " . $infoCompany->ksId . "</br>";
-                    echo " Name : " . $infoCompany->name . "</br>";
-                    echo " Parent:  " . $infoCompany->parent . "</br>";
-                    
                     /* Synchronize Company  */
-                    //$infoCompany->ksId = $objCompany->ksId;
-                    //self::SynchronizeCompanyKSFS($infoCompany,$objCompany->key);
+                    self::SynchronizeCompanyKSFS($infoCompany,$objCompany->key);
                 }//if_imported
             }//for_companiesFS
         }catch (Exception $ex) {
@@ -833,7 +827,7 @@ class FSKS_COMPANY {
                             $rdo->name              = $companyKSFS->name;
                             $rdo->industrycode      = $companyKSFS->industry;
                             $rdo->hierarchylevel    = $companyKSFS->level;
-                            $infoCompany->parent    = $companyKSFS->parent;
+                            $rdo->parent            = $companyKSFS->parent;
 
                             $DB->update_record('ks_company',$rdo);
                         }
