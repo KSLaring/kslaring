@@ -24,8 +24,10 @@ function test_cron(){
         $date       = usergetdate($now, $timezone);
 
         $dbLog .= " Cron Hour: " . $cronHour . " Cron Minute: " . $cronMin . "\n\n";
-        error_log($dbLog, 3, $CFG->dataroot . "/LOCAL_TEST.log");
+
+    }else {
+        $dbLog .= "No Active " . "\n\n";
     }//if_cronactivate
 
-
+    error_log($dbLog, 3, $CFG->dataroot . "/LOCAL_TEST.log");
 }
