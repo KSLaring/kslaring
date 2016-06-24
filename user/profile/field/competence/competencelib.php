@@ -1216,7 +1216,8 @@ class Competence {
             }
 
             /* Send Mail    */
-            email_to_user($user, $SITE->shortname, $strSubject, $bodyText,$bodyHtml);
+            $manager = get_complete_user_data('id',$manager->id);
+            email_to_user($manager, $SITE->shortname, $strSubject, $bodyText,$bodyHtml);
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
