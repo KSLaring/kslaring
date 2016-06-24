@@ -21,7 +21,7 @@ class cron_task extends \core\task\scheduled_task {
      * @return string
      */
     public function get_name() {
-        return get_string('crontask', 'local_test');
+        return get_string('crontask', 'local_fellesdata');
     }
 
     /**
