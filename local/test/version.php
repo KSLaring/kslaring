@@ -6,5 +6,5 @@
  * Time: 09:48
  */
 
-$plugin->version    =  '2016062402';         /* The plugin current version (DATE: YYYYMMDDXX) */
+$plugin->version    =  '2016062406';         /* The plugin current version (DATE: YYYYMMDDXX) */
 $plugin->component  =  'local_test';
