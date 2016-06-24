@@ -13,6 +13,7 @@
 
 $string['pluginname']           = 'Fellesdata-integrasjon';
 
+$string['crontask']             = 'Fellesdata Synchronization Cron Task';
 $string['fellesdata:manage']    = 'Administrere Fellesdata-integrasjonen';
 
 $string['fellesdata_settings']      = 'Fellesdata-innstillinger';

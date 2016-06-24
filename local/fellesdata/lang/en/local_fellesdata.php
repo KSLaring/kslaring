@@ -13,6 +13,7 @@
 
 $string['pluginname']           = 'Fellesdata Integration';
 
+$string['crontask']             = 'Fellesdata Synchronization Cron Task';
 $string['fellesdata:manage']    = 'Manage Fellesdata Integration';
 
 $string['fellesdata_settigns']      = 'Fellesdata Services';
