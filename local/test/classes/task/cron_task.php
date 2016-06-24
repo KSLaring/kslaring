@@ -16,7 +16,7 @@ class cron_task extends \core\task\scheduled_task {
      * @return string
      */
     public function get_name() {
-        return get_string('crontask', 'mod_forum');
+        return get_string('crontask', 'local_test');
     }
 
     /**
@@ -24,8 +24,8 @@ class cron_task extends \core\task\scheduled_task {
      */
     public function execute() {
         global $CFG;
-        require_once('../../lib.php');
-        test_cron();
+        require_once($CFG->dirroot . '/local/test/lib.php');
+        forum_cron();
     }
 
 }

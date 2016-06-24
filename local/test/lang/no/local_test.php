@@ -18,5 +18,7 @@ $string['test:manage']    = 'Local Test';
 $string['cron_activate']            = 'Enabled';
 $string['cron_deactivate']          = 'Disabled';
 
+$string['crontask'] = 'Local TEst Cron';
+
 
 
