@@ -6,6 +6,8 @@
  * Time: 09:53
  */
 
+namespace local_test\task;
+
 class cron_task extends \core\task\scheduled_task {
 
     /**
@@ -22,7 +24,7 @@ class cron_task extends \core\task\scheduled_task {
      */
     public function execute() {
         global $CFG;
-        require_once('../../cron.php');
+        require_once('../../lib.php');
         test_cron();
     }
 
