@@ -541,6 +541,10 @@ class Competence {
         $infoData               = null;
         $myRoles                = null;
         $managers               = null;
+        $levelZero              = null;
+        $levelOne               = null;
+        $levelTwo               = null;
+        $levelThree             = null;
 
         /* Begin Transaction    */
         $trans = $DB->start_delegated_transaction();
@@ -594,13 +598,18 @@ class Competence {
             }//create_new_entrance
 
             /* Send Mail Manager to reject it if it's necessary */
-            $managers = self::GetManagersCompany($data->level_0,$data->level_1,$data->level_2,$data->level_3);
-            if ($managers) {
+            $levelZero  = $data->level_0;
+            $levelOne   = $data->level_1;
+            $levelTwo   = $data->level_2;
+            $levelThree = $data->level_3;
+
+            if (self::ManagersConnected($levelZero,$levelOne,$levelTwo,$levelThree)) {
+                $managers = self::GetManagersCompany($levelZero,$levelOne,$levelTwo,$levelThree);
                 /* Send Notification    */
                 foreach($managers as $manager) {
                     self::SendNotificationManager($manager,$infoCompetenceData);
                 }//if_managers
-            }//if_managers
+            }//if_manager
 
             /* Commit   */
             $trans->allow_commit();
@@ -819,6 +828,50 @@ class Competence {
      * @param           $levelTwo
      * @param           $levelThree
      *
+     * @return          bool
+     * @throws          Exception
+     *
+     * @creationDate    24/06/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Check if there are managers conencted
+     */
+    public static function ManagersConnected($levelZero,$levelOne,$levelTwo,$levelThree) {
+        /* Variables */
+        global $DB;
+        $sql = null;
+        $rdo = null;
+
+        try {
+            /* SQL Instruction  */
+            $sql = " SELECT	  DISTINCT 	u.id
+                     FROM	    {report_gen_company_manager} rm
+                        JOIN	{user}						 u        ON 	u.id 					= rm.managerid
+                                                                      AND	u.deleted 				= 0
+                     WHERE    (rm.levelzero = $levelZero AND  rm.levelone = $levelOne  AND rm.leveltwo = $levelTwo AND rm.levelthree = $levelThree) 
+                              OR 
+                              (rm.levelzero = $levelZero AND  rm.levelone = $levelOne  AND rm.leveltwo = $levelTwo AND rm.levelthree IS NULL) ";
+
+
+            /* Execute */
+            $rdo = $DB->get_records_sql($sql);
+            if ($rdo) {
+                return true;
+            }else {
+                return false;
+            }//if_Rdo
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//ManagersConnected
+
+    /**
+     * @param           $levelZero
+     * @param           $levelOne
+     * @param           $levelTwo
+     * @param           $levelThree
+     *
      * @return          array
      * @throws          Exception
      *
@@ -827,6 +880,12 @@ class Competence {
      *
      * Description
      * Get the managers connected with the user to send a notification
+     *
+     * @updateDate      24/06/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * The managers from the ast level of the hierarchy or from the previous level
      */
     public static function GetManagersCompany($levelZero,$levelOne,$levelTwo,$levelThree) {
         /* Variables */
@@ -837,41 +896,30 @@ class Competence {
         $managers       = array();
 
         try {
+            /* First find managers in level three */
+            /* no mangers level three -_> find managers in level two */
+
             /* Search Criteria  */
             $params = array();
-            $params['zero']     = $levelZero;
             $params['hz']       = 0;
-            $params['one']      = $levelOne;
             $params['ho']       = 1;
-            $params['two']      = $levelTwo;
             $params['ht']       = 2;
-            $params['three']    = $levelThree;
             $params['hth']      = 3;
 
+            /* First Find Managers in Level Three */
             /* SQL Instruction  */
-            $sql = " SELECT	  DISTINCT 	u.id,
-                                        CONCAT(co_zero.name,'/',co_one.name,'/',co_two.name,'/',co_tre.name) as 'company'
-                     FROM	    {report_gen_company_manager} rm
-                        JOIN	{user}						 u        ON 	u.id 					= rm.managerid
-                                                                      AND	u.deleted 				= 0
-                        -- LEVEL ZERO
-                        JOIN 	{report_gen_companydata}	 co_zero  ON 	co_zero.id 				= rm.levelzero
-                                                                      AND	co_zero.hierarchylevel 	= :hz
-                        -- LEVEL ONE
-                        JOIN	{report_gen_companydata}	 co_one	  ON	co_one.id				= rm.levelone
-                                                                      AND	co_one.hierarchylevel	= :ho
-                        -- LEVEL TWO
-                        JOIN	{report_gen_companydata}     co_two	  ON	co_two.id				= rm.leveltwo
-                                                                      AND   co_two.hierarchylevel	= :ht
-                        -- LEVEL THREE
-                        JOIN	{report_gen_companydata}	 co_tre   ON 	co_tre.id 				= rm.levelthree
-                                                                      AND   co_tre.hierarchylevel 	= :hth
-                     WHERE    (rm.levelzero = :zero AND  rm.levelone = :one  AND rm.leveltwo = :two AND rm.levelthree = :three) ";
-
-
+            $sql = self::GetSQLManagersCompanyByHierarchy($levelZero,$levelOne,$levelTwo,$levelThree,3);
             /* Execute */
             $rdo = $DB->get_records_sql($sql,$params);
             if ($rdo) {
+                foreach ($rdo as $instance) {
+                    /* Add Manager  */
+                    $managers[$instance->id] = $instance;
+                }//for_rdo
+            }else {
+                /* Managers In Level Two */
+                $sql = self::GetSQLManagersCompanyByHierarchy($levelZero,$levelOne,$levelTwo,$levelThree,2);
+                $rdo = $DB->get_records_sql($sql,$params);
                 foreach ($rdo as $instance) {
                     /* Add Manager  */
                     $managers[$instance->id] = $instance;
@@ -966,6 +1014,109 @@ class Competence {
     /*************/
     /*  PRIVATE  */
     /*************/
+
+    /**
+     * @param           $levelZero
+     * @param           $levelOne
+     * @param           $levelTwo
+     * @param           $levelThree
+     * @param           $hierarchy
+     *
+     * @return          null|string
+     * @throws          Exception
+     *
+     * @creationDate    24/06/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Get the right sql to get all manages connected with a specific level of the hierarchy
+     */
+    private static function GetSQLManagersCompanyByHierarchy($levelZero,$levelOne,$levelTwo,$levelThree,$hierarchy) {
+        /* Variables */
+        $sql = null;
+
+        try {
+            /* SQL by Hierarchy */
+            switch ($hierarchy) {
+                case 0:
+                    /* SQL Instruction */
+                    $sql = " SELECT	  DISTINCT 	u.id,
+                                                co_zero.name as 'company'
+                             FROM	    {report_gen_company_manager} rm
+                                JOIN	{user}						 u        ON 	u.id 					= rm.managerid
+                                                                              AND	u.deleted 				= 0
+                                -- LEVEL ZERO
+                                JOIN 	{report_gen_companydata}	 co_zero  ON 	co_zero.id 				= rm.levelzero
+                                                                              AND	co_zero.hierarchylevel 	= :hz
+                                -- LEVEL ONE
+                                JOIN	{report_gen_companydata}	 co_one	  ON	co_one.id				= rm.levelone
+                                                                              AND	co_one.hierarchylevel	= :ho
+                             WHERE    (rm.levelzero = $levelZero AND  rm.levelone IS NULL  AND rm.leveltwo IS NULL AND rm.levelthree IS NULL) ";
+
+                    break;
+                case 1:
+                    /* SQL Instruction */
+                    $sql = " SELECT	  DISTINCT 	u.id,
+                                        CONCAT(co_zero.name,'/',co_one.name) as 'company'
+                             FROM	    {report_gen_company_manager} rm
+                                JOIN	{user}						 u        ON 	u.id 					= rm.managerid
+                                                                              AND	u.deleted 				= 0
+                                -- LEVEL ZERO
+                                JOIN 	{report_gen_companydata}	 co_zero  ON 	co_zero.id 				= rm.levelzero
+                                                                              AND	co_zero.hierarchylevel 	= :hz
+                                -- LEVEL ONE
+                                JOIN	{report_gen_companydata}	 co_one	  ON	co_one.id				= rm.levelone
+                                                                              AND	co_one.hierarchylevel	= :ho
+                             WHERE    (rm.levelzero = $levelZero AND  rm.levelone = $levelOne  AND rm.leveltwo IS NULL AND rm.levelthree IS NULL) ";
+
+                    break;
+                case 2:
+                    /* SQL Instruction */
+                    $sql = " SELECT	  DISTINCT 	u.id,
+                                        CONCAT(co_zero.name,'/',co_one.name,'/',co_two.name) as 'company'
+                             FROM	    {report_gen_company_manager} rm
+                                JOIN	{user}						 u        ON 	u.id 					= rm.managerid
+                                                                              AND	u.deleted 				= 0
+                                -- LEVEL ZERO
+                                JOIN 	{report_gen_companydata}	 co_zero  ON 	co_zero.id 				= rm.levelzero
+                                                                              AND	co_zero.hierarchylevel 	= :hz
+                                -- LEVEL ONE
+                                JOIN	{report_gen_companydata}	 co_one	  ON	co_one.id				= rm.levelone
+                                                                              AND	co_one.hierarchylevel	= :ho
+                                -- LEVEL TWO
+                                JOIN	{report_gen_companydata}     co_two	  ON	co_two.id				= rm.leveltwo
+                                                                              AND   co_two.hierarchylevel	= :ht
+                             WHERE    (rm.levelzero = $levelZero AND  rm.levelone = $levelOne  AND rm.leveltwo = $levelTwo AND rm.levelthree IS NULL) ";
+                    break;
+                case 3:
+                    /* SQL Instruction */
+                    $sql = " SELECT	  DISTINCT 	u.id,
+                                        CONCAT(co_zero.name,'/',co_one.name,'/',co_two.name,'/',co_tre.name) as 'company'
+                             FROM	    {report_gen_company_manager} rm
+                                JOIN	{user}						 u        ON 	u.id 					= rm.managerid
+                                                                              AND	u.deleted 				= 0
+                                -- LEVEL ZERO
+                                JOIN 	{report_gen_companydata}	 co_zero  ON 	co_zero.id 				= rm.levelzero
+                                                                              AND	co_zero.hierarchylevel 	= :hz
+                                -- LEVEL ONE
+                                JOIN	{report_gen_companydata}	 co_one	  ON	co_one.id				= rm.levelone
+                                                                              AND	co_one.hierarchylevel	= :ho
+                                -- LEVEL TWO
+                                JOIN	{report_gen_companydata}     co_two	  ON	co_two.id				= rm.leveltwo
+                                                                              AND   co_two.hierarchylevel	= :ht
+                                -- LEVEL THREE
+                                JOIN	{report_gen_companydata}	 co_tre   ON 	co_tre.id 				= rm.levelthree
+                                                                              AND   co_tre.hierarchylevel 	= :hth
+                             WHERE    (rm.levelzero = $levelZero AND  rm.levelone = $levelOne  AND rm.leveltwo = $levelTwo AND rm.levelthree = $levelThree) ";
+
+                    break;
+            }//hierarchy
+
+            return $sql;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//GetManagersCompanyByHierarchy
 
     /**
      * @param               $jr_lst
