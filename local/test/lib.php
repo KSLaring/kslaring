@@ -13,7 +13,7 @@ function test_cron(){
     $pluginInfo     = get_config('local_test');
 
     $dbLog  = "START SCHEDULE LOCAL TEST CRON." . "\n"."\n";
-
+    $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). "\n\n";
     if ($pluginInfo->cron_active) {
         /* Admin */
         $admin      = get_admin();
