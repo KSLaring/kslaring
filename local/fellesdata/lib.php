@@ -30,7 +30,7 @@ function local_fellesdata_extends_navigation(global_navigation $navigation) {
 
 function local_fellesdata_cron() {
     /* Variables */
-    global $DB;
+    global $DB,$CFG;
     $pluginInfo     = null;
     $admin          = null;
     $now            = null;
@@ -60,16 +60,23 @@ function local_fellesdata_cron() {
 
         /* Check if has to be run it    */
         if (isset($pluginInfo->lastcron)) {
+            /* Log  */
+            $dbLog  = "START CRON FELLEADATA."  . "\n\n" ." LAST CRON WS: " . userdate($pluginInfo->lastcron,'%d.%m.%Y', 99, false) . "\n";
+
             mtrace('... FELLESDATA CRON START');
             /* Calculate when it has to be triggered it */
             $timeYesterday  = mktime($cronHour, $cronMin, 0, $date['mon'], $date['mday'] - 1, $date['year']);
 
             $lastexecution = get_config('local_fellesdata','lastexecution');
+            $dbLog  .= "LAST EXECUTION WS: " . userdate($lastexecution,'%d.%m.%Y', 99, false) . "\n";
             if (($lastexecution <= $timeYesterday)) {
                 $fstExecution = false;
                 FELLESDATA_CRON::cron($fstExecution);
                 set_config('lastexecution', $now, 'local_fellesdata');
+                $dbLog  .= "NEW EXECUTION WS: " . userdate($now,'%d.%m.%Y', 99, false) . "\n\n";
             }
+
+            error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
         }else {
             $fstExecution = true;
             FELLESDATA_CRON::cron($fstExecution);
