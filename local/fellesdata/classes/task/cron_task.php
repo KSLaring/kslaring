@@ -47,6 +47,11 @@ class cron_task extends \core\task\scheduled_task {
         }
 
         \FELLESDATA_CRON::cron($fstExecution);
+
+        $lastexecution = get_config('local_fellesdata','lastexecution');
+        $dbLog  = "LAST EXECUTION WS: " . userdate($lastexecution,'%d.%m.%Y', 99, false) . "\n";
+        $dbLog  .= "NEW EXECUTION WS: " . userdate($now,'%d.%m.%Y', 99, false) . "\n\n";
+        
         set_config('lastexecution', $now, 'local_fellesdata');
     }
 

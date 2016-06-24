@@ -28,7 +28,7 @@ function local_fellesdata_extends_navigation(global_navigation $navigation) {
     }
 }
 
-function local_fellesdata_cron() {
+function local_fellesdata_cron_old() {
     /* Variables */
     global $DB,$CFG;
     $pluginInfo     = null;
