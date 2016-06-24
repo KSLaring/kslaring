@@ -59,7 +59,7 @@ if ($levelThree) {
 
     Competence::GetJobRoles_Hierarchy($options,$levelZero,$levelOne,$levelTwo,$levelThree);
 
-    $managers = Competence::GetManagersCompany($levelZero,$levelOne,$levelTwo,$levelThree);
+    $managers = Competence::ManagersConnected($levelZero,$levelOne,$levelTwo,$levelThree);
     if ($managers) {
         $data['toApprove']  = 1;
     }
