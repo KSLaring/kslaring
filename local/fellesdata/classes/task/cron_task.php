@@ -34,8 +34,8 @@ class cron_task extends \core\task\scheduled_task {
         $fstExecution   = null;
 
         /* Library */
-        require_once('../../cron/fellesdatacron.php');
-        require_once('../../lib/fellesdatalib.php');
+        require_once($CFG->dirroot . '/cron/fellesdatacron.php');
+        require_once($CFG->dirroot . '/lib/fellesdatalib.php');
 
 
         /* First execution or no */
