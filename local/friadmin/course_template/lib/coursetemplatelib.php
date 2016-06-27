@@ -452,186 +452,97 @@ class CourseTemplate {
     }//HasCorrectPermissions
 
     /**
-     * @return          bool|int
-     * @throws          Exception
-     *
-     * @creationDate    12/01/2016
-     * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Add a fake permission, temporary permission, to the user.
-     * So, the user will be able to create a new course from the template
-     */
-    public static function Add_FakePermission_To_User() {
-        /* Variables    */
-        global $DB, $USER;
-        $fakePermission = null;
-        $context = null;
-        $role = null;
-
-        try {
-            /* Context System   */
-            $context = CONTEXT_SYSTEM::instance();
-            /* Role Id      */
-            $role = $DB->get_record('role', array('archetype' => 'manager', 'shortname' => 'manager'));
-
-            /* New Fake Permission  */
-            $fakePermission = new stdClass();
-            $fakePermission->userid = $USER->id;
-            $fakePermission->roleid = $role->id;
-            $fakePermission->contextid = $context->id;
-            $fakePermission->timemodified = time();
-
-            /* Insert   */
-            $fakePermission->id = $DB->insert_record('role_assignments', $fakePermission);
-
-            /* Reload All Capabilities  */
-            reload_all_capabilities();
-
-            return $fakePermission->id;
-        } catch (Exception $ex) {
-            throw $ex;
-        }//try_catch
-    }//Add_FakePermission_To_User
-
-    /**
-     * @param           $fakePermissionId
-     *
-     * @throws          Exception
-     *
-     * @creationDate    12/01/2016
-     * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Delete the fake permission have been created for the user
-     */
-    public static function Delete_FakePermission($fakePermissionId) {
-        /* Variables    */
-        global $DB;
-
-        try {
-            /* Delete Fake Permission   */
-            $DB->delete_records('role_assignments', array('id' => $fakePermissionId));
-
-            /* Reload All Capabilities  */
-            reload_all_capabilities();
-        } catch (Exception $ex) {
-            throw $ex;
-        }//try_catch
-    }//Delete_FakePermission
-
-    /**
      * @param           $courseId
      * @param           $courseTemplate
+     * @param           $format
      *
-     * @return          mixed|stdClass
+     * @return          mixed|null|stdClass
      * @throws          Exception
      *
-     * @creationDate    12/01/2016
+     * @creationDate    27/06/2016
      * @author          eFaktor     (fbv)
      *
      * Description
-     * Get enrol instance connected with the method
-     *
-     * @updateDate      17/06/2016
-     * @author          eFaktor     (fbv)
-     *
-     * Description
-     * et the right information from the template, if the instance exists
+     * Enrol instance
      */
-    public static function GetEnrolInstance($courseId,$courseTemplate) {
+    public static function GetEnrolInstance($courseId,$courseTemplate,$format) {
         /* Variables */
-        global $DB;
-        $params         = null;
-        $rdoCourse      = null;
-        $rdoTemplate    = null;
-        $sql            = null;
-        $instance       = null;
+        $instance = null;
 
         try {
-            /* Search Criteria  */
-            $params = array();
+            switch ($format) {
+                case 'classroom':
+                case 'classroom_frikomport':
+                    $instance = self::GetWaitingEnrolInstance($courseId,$courseTemplate);
 
-            $params['enrol']        = 'waitinglist';
-            $params['self']         = 'self';
-            $params['bulk']         = 'unnamedbulk';
+                    break;
+                case 'elearning_frikomport':
+                case 'netcourse':
+                    $instance = self::GetSelfEnrolInstance($courseId,$courseTemplate);
 
-            /* SQL Instruction */
-            $sql = " SELECT	e.id,
-                            e.courseid,
-                            IF(e.customint1,e.customint1,0)	as 'date_off',
-                            e.customtext1                   as 'welcome_message',
-                            es.customtext1                  as 'self_waiting_message',
-                            un.customtext1                  as 'bulk_waiting_message',
-                            un.customtext2                  as 'bulk_renovation_message',
-                            e.customint2 	                as 'max_enrolled',
-                            e.customint6 	                as 'list_size',
-                            e.customint8 	                as 'invoice',
-                            e.customint7 	                as 'approval',
-                            e.customtext3                   as 'priceinternal',
-                            e.customtext4                   as 'priceexternal',
-                            es.id							as 'selfid',
-                            un.id							as 'bulkid'
-                     FROM		{enrol}						e
-                        -- SELF METHOD
-                        JOIN 	{enrol_waitinglist_method}	es	ON 	es.waitinglistid 	= e.id
-                                                                AND es.courseid 		= e.courseid
-                                                                AND	es.methodtype		= :self
-                        -- UNNAMED METHOD
-                        JOIN 	{enrol_waitinglist_method}	un	ON 	un.waitinglistid 	= e.id
-                                                                AND un.courseid 		= e.courseid
-                                                                AND	un.methodtype		= :bulk
-                     WHERE	e.enrol 	= :enrol
-                        AND	e.courseid 	= :courseid ";
+                    break;
+            }//format
 
-            /* Execute Course */
-            $params['courseid']     = $courseId;
-            $rdoCourse = $DB->get_record_sql($sql,$params);
+            return $instance;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_Catch
+    }//GetEnrolInstance
 
-            /* Execute Template */
-            $params['courseid']     = $courseTemplate;
-            $rdoTemplate = $DB->get_record_sql($sql,$params);
+    /**
+     * @param           $data
+     * @param           $action
+     *
+     * @throws          Exception
+     *
+     * @creationDate    27/06/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Update the self-enrolment instance for the new course
+     */
+    public static function SelfEnrolment($data,$action) {
+        /* Variables */
+        global $DB;
+        $instance = null;
 
-            /* Return the right instance    */
-            if ($rdoCourse && $rdoTemplate) {
-                /* Course && Template */
-                $rdoTemplate->id        = $rdoCourse->id;
-                $rdoTemplate->selfid    = $rdoCourse->selfid;
-                $rdoTemplate->bulkid    = $rdoCourse->bulkid;
-                $rdoTemplate->courseid  = $courseId;
+        try {
+            /* Data */
+            $instance = new stdClass();
+            $instance->enrol            = 'self';
+            $instance->courseid         = $data->id;
+            $instance->name             = $data->name;
+            $instance->status           = $data->status;
+            $instance->customint6       = $data->customint6;
+            $instance->password         = $data->password;
+            $instance->customint1       = $data->customint1;
+            $instance->roleid           = $data->roleid;
+            $instance->enrolperiod      = $data->enrolperiod;
+            $instance->expirynotify     = $data->expirynotify;
+            $instance->expirythreshold  = $data->expirythreshold;
+            $instance->enrolstartdate   = $data->enrolstartdate;
+            $instance->enrolenddate     = $data->enrolenddate;
+            $instance->customint2       = $data->customint2;
+            $instance->customint3       = $data->customint3;
+            $instance->customint5       = $data->customint5;
+            $instance->customtext1      = $data->customtext1;
 
-                return $rdoTemplate;
-            }else if ($rdoTemplate && !$rdoCourse) {
-                /* Template but no course   */
-                $rdoTemplate->id        = null;
-                $rdoTemplate->selfid    = null;
-                $rdoTemplate->bulkid    = null;
-                $rdoTemplate->courseid  = $courseId;
+            switch ($action) {
+                case 'add':
+                    $DB->insert_record('enrol',$instance);
 
-                return $rdoTemplate;
-            }else {
-                /* No Template No Course    */
-                /* Instance */
-                $instance = new stdClass();
-                $instance->id               = null;
-                $instance->selfid           = null;
-                $instance->bulkid           = null;
-                $instance->courseid         = $courseId;
-                $instance->date_off         = 0;
-                $instance->max_enrolled     = 0;
-                $instance->list_size        = SETTINGS_DEFAULT_SIZE;
-                $instance->invoice          = 0;
-                $instance->approval         = 0;
-                $instance->priceinternal    = 0;
-                $instance->priceexternal    = 0;
+                    break;
+                case 'update':
+                    $instance->id = $data->instanceid;
+                    $DB->update_record('enrol',$instance);
 
-                return $instance;
-            }//if
+                    break;
+            }//action
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//GetEnrolInstance
-
+    }//SelfEnrolment
+    
     /**
      * @param           $data
      *
@@ -804,6 +715,180 @@ class CourseTemplate {
     /***********/
     /* PRIVATE */
     /***********/
+
+    /**
+     * @param           $courseId
+     * @param           $courseTemplate
+     *
+     * @return          mixed|null|stdClass
+     * @throws          Exception
+     *
+     * @creationDate    27/06/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Get the enrolment instance for self enrolment method
+     */
+    private static function GetSelfEnrolInstance($courseId,$courseTemplate) {
+        /* Variables */
+        global $DB;
+        $params         = null;
+        $rdoCourse      = null;
+        $rdoTemplate    = null;
+        $sql            = null;
+        $instance       = null;
+
+        try {
+            /* Search Criteria  */
+            $params = array();
+            $params['enrol']        = 'self';
+
+            /* Execute Course */
+            $params['courseid']     = $courseId;
+            $rdoCourse = $DB->get_record('enrol',$params);
+
+            /* Execute Template */
+            $params['courseid']     = $courseTemplate;
+            $rdoTemplate = $DB->get_record('enrol',$params);
+
+            /* Return the right instance    */
+            if ($rdoCourse && $rdoTemplate) {
+                /* Course && Template */
+                $rdoTemplate->id        = $rdoCourse->id;
+                $rdoTemplate->courseid  = $courseId;
+
+                return $rdoTemplate;
+            }else if ($rdoTemplate && !$rdoCourse) {
+                /* Template but no course   */
+                $rdoTemplate->id        = null;
+                $rdoTemplate->courseid  = $courseId;
+
+                return $rdoTemplate;
+            }else {
+                /* No Template No Course    */
+                /* Instance */
+                $instance = new stdClass();
+                $instance->id               = null;
+                $instance->courseid         = $courseId;
+
+                return $instance;
+            }//if
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//GetSelfEnrolInstance
+
+    /**
+     * @param           $courseId
+     * @param           $courseTemplate
+     *
+     * @return          mixed|stdClass
+     * @throws          Exception
+     *
+     * @creationDate    12/01/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Get enrol instance connected with the method
+     *
+     * @updateDate      17/06/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Get the right information from the template, if the instance exists
+     */
+    private static function GetWaitingEnrolInstance($courseId,$courseTemplate) {
+        /* Variables */
+        global $DB;
+        $params         = null;
+        $rdoCourse      = null;
+        $rdoTemplate    = null;
+        $sql            = null;
+        $instance       = null;
+
+        try {
+            /* Search Criteria  */
+            $params = array();
+            $params['enrol']        = 'waitinglist';
+            $params['self']         = 'self';
+            $params['bulk']         = 'unnamedbulk';
+
+            /* SQL Instruction */
+            $sql = " SELECT	e.id,
+                            e.courseid,
+                            IF(e.customint1,e.customint1,0)	as 'date_off',
+                            e.customtext1                   as 'welcome_message',
+                            es.customtext1                  as 'self_waiting_message',
+                            un.customtext1                  as 'bulk_waiting_message',
+                            un.customtext2                  as 'bulk_renovation_message',
+                            e.customint2 	                as 'max_enrolled',
+                            e.customint6 	                as 'list_size',
+                            e.customint8 	                as 'invoice',
+                            e.customint7 	                as 'approval',
+                            e.customtext3                   as 'priceinternal',
+                            e.customtext4                   as 'priceexternal',
+                            es.id							as 'selfid',
+                            un.id							as 'bulkid'
+                     FROM		{enrol}						e
+                        -- SELF METHOD
+                        JOIN 	{enrol_waitinglist_method}	es	ON 	es.waitinglistid 	= e.id
+                                                                AND es.courseid 		= e.courseid
+                                                                AND	es.methodtype		= :self
+                        -- UNNAMED METHOD
+                        JOIN 	{enrol_waitinglist_method}	un	ON 	un.waitinglistid 	= e.id
+                                                                AND un.courseid 		= e.courseid
+                                                                AND	un.methodtype		= :bulk
+                     WHERE	e.enrol 	= :enrol
+                        AND	e.courseid 	= :courseid ";
+
+            /* Execute Course */
+            $params['courseid']     = $courseId;
+            $rdoCourse = $DB->get_record_sql($sql,$params);
+
+            /* Execute Template */
+            $params['courseid']     = $courseTemplate;
+            $rdoTemplate = $DB->get_record_sql($sql,$params);
+
+            /* Return the right instance    */
+            if ($rdoCourse && $rdoTemplate) {
+                /* Course && Template */
+                $rdoTemplate->id        = $rdoCourse->id;
+                $rdoTemplate->selfid    = $rdoCourse->selfid;
+                $rdoTemplate->bulkid    = $rdoCourse->bulkid;
+                $rdoTemplate->courseid  = $courseId;
+
+                return $rdoTemplate;
+            }else if ($rdoTemplate && !$rdoCourse) {
+                /* Template but no course   */
+                $rdoTemplate->id        = null;
+                $rdoTemplate->selfid    = null;
+                $rdoTemplate->bulkid    = null;
+                $rdoTemplate->courseid  = $courseId;
+
+                return $rdoTemplate;
+            }else {
+                /* No Template No Course    */
+                /* Instance */
+                $instance = new stdClass();
+                $instance->id               = null;
+                $instance->selfid           = null;
+                $instance->bulkid           = null;
+                $instance->courseid         = $courseId;
+                $instance->date_off         = 0;
+                $instance->max_enrolled     = 0;
+                $instance->list_size        = SETTINGS_DEFAULT_SIZE;
+                $instance->invoice          = 0;
+                $instance->approval         = 0;
+                $instance->priceinternal    = 0;
+                $instance->priceexternal    = 0;
+
+                return $instance;
+            }//if
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//GetWaitingEnrolInstance
+
 
     /**
      * @param           $search

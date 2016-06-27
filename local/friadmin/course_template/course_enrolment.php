@@ -27,12 +27,13 @@ $courseTemplate = required_param('ct',PARAM_INT);
 $waitinglist    = optional_param('waitinglist',0,PARAM_INT);
 $contextCourse  = CONTEXT_COURSE::instance($courseId);
 $url            = new moodle_url('/local/friadmin/course_template/course_enrolment.php',array('id' => $courseId,'ct' => $courseTemplate));
-$returnUrl = new moodle_url('/local/friadmin/course_template/course_teacher.php',array('id' => $courseId,'ct' => $courseTemplate));
+$returnUrl      = new moodle_url('/local/friadmin/course_template/course_teacher.php',array('id' => $courseId,'ct' => $courseTemplate));
 
 $course         = get_course($courseId);
 $strTitle       = get_string('coursetemplate_title', 'local_friadmin');
 $strSubTitle    = get_string('course_enrolment', 'local_friadmin');
 $instance       = null;
+$action         = null;
 
 /* Check Permissions/Capability */
 if (!has_capability('local/friadmin:view',CONTEXT_SYSTEM::instance())) {
@@ -51,30 +52,67 @@ $PAGE->navbar->add($strTitle);
 $PAGE->navbar->add($strSubTitle);
 
 /* Form */
-if ($waitinglist) {
-    /* Get Enrol Instance */
-    $instance   = CourseTemplate::GetEnrolInstance($courseId,$courseTemplate);
-    $form       = new ct_enrolment_settings_form(null,array($courseId,$waitinglist,$instance,$courseTemplate));
-}else {
-    $form = new ct_enrolment_form(null,array($courseId,$courseTemplate));
+/**
+ * @updateDate      27/06/2016
+ * @author          eFaktor     (fbv)
+ * 
+ * Description
+ * Different enrolment method based on course format
+ */
+switch ($course->format) {
+    case 'classroom':
+    case 'classroom_frikomport':
+        if ($waitinglist) {
+            /* Get Enrol Instance */
+            $instance   = CourseTemplate::GetEnrolInstance($courseId,$courseTemplate,$course->format);
+            $form       = new ct_enrolment_settings_form(null,array($courseId,$waitinglist,$instance,$courseTemplate));
+        }else {
+            $form = new ct_enrolment_form(null,array($courseId,$courseTemplate));
+        }
+
+        break;
+    case 'elearning_frikomport':
+    case 'netcourse':
+        /* Get Enrol Instance */
+        $instance   = CourseTemplate::GetEnrolInstance($courseId,$courseTemplate,$course->format);
+        $form       = new ct_self_enrolment_settings_form(null,array($courseId,$instance,$courseTemplate));
+
+        break;
 }
+
 
 if ($form->is_cancelled()) {
     $_POST = array();
     redirect($returnUrl);
 }else if ($data = $form->get_data()) {
-    if ($waitinglist) {
-        if ($data->instanceid) {
-            /* Update   */
-            CourseTemplate::UpdateWaitingEnrolment($data);
+    switch ($course->format) {
+        case 'classroom':
+        case 'classroom_frikomport':
+            if ($waitinglist) {
+                if ($data->instanceid) {
+                    /* Update   */
+                    CourseTemplate::UpdateWaitingEnrolment($data);
+                }else {
+                    /* New      */
+                    CourseTemplate::CreateWaitingEnrolment($data);
+                }
+                redirect($returnUrl);
+            }
+            break;
+        case 'elearning_frikomport':
+        case 'netcourse':
+            if ($data->instanceid) {
+                $action = 'update';
+            }else {
+                $action = 'add';
+            }
+            /* Update /Create Instance */
+            CourseTemplate::SelfEnrolment($data,$action);
 
-        }else {
-            /* New      */
-            CourseTemplate::CreateWaitingEnrolment($data);
-        }
+            redirect($returnUrl);
 
-        redirect($returnUrl);
-    }
+            break;
+    }//course_format
 }
 
 /* Header   */
