@@ -66,7 +66,7 @@ class local_friadmin_coursedetail_table_datalist_model extends local_efaktor_mod
             /* Add Fields   */
             $this->fields = array('courseid', 'name', 'summary', 'targetgroup', 'date',
                                   'time', 'length', 'municipality', 'sector', 'location', 'responsible',
-                                  'teacher', 'priceinternal', 'priceexternal', 'price','seats', 'deadline');
+                                  'teacher', 'priceinternal', 'priceexternal', 'priceinternal','priceexternal','seats', 'deadline');
         }catch (Exception $ex) {
             throw $ex;
         }//try_Catch
