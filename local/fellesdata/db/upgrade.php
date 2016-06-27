@@ -17,6 +17,7 @@ defined('MOODLE_INTERNAL') || die();
 function xmldb_local_fellesdata_upgrade($oldVersion) {
     /* Variables */
     global $DB;
+    global $DB;
     /* Imp User JR  */
     $tblImpUsersJR  = null;
     $fldStillins    = null;
