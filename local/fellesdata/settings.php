@@ -18,9 +18,9 @@ if ($hassiteconfig) {
     $ADMIN->add('localplugins', $settings);
 
     // Cron Activate/Deactivate.
-    //$options = array('0' => get_string('cron_deactivate','local_fellesdata'),
-    //                 '1' => get_string('cron_activate','local_fellesdata'));
-    //$settings->add(new admin_setting_configselect('local_fellesdata/cron_active', new lang_string('active'),  '', 1, $options));
+    $options = array('0' => get_string('cron_deactivate','local_fellesdata'),
+                     '1' => get_string('cron_activate','local_fellesdata'));
+    $settings->add(new admin_setting_configselect('local_fellesdata/cron_active', new lang_string('active'),  '', 1, $options));
 
     //Time
     //$settings->add(new admin_setting_configtime('local_fellesdata/fs_auto_time','fs_auto_time_minute', new lang_string('executeat'), '', array('h' => 0, 'm' => 0)));
