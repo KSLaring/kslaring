@@ -13,6 +13,7 @@
  * Course create form template. General settings
  */
 require_once($CFG->dirroot.'/lib/formslib.php');
+require_once($CFG->dirroot . '/local/course_page/locallib.php');
 
 class ct_settings_form extends moodleform {
     function definition () {
@@ -40,47 +41,10 @@ class ct_settings_form extends moodleform {
         $form->addElement('text','fullname', get_string('fullnamecourse'),'maxlength="254" size="50" readonly');
         $form->setType('fullname', PARAM_TEXT);
 
-        /* Short Name       */
-        $form->addElement('text', 'shortname', get_string('shortnamecourse'), 'maxlength="100" size="20" readonly');
-        $form->setType('shortname', PARAM_TEXT);
-
         /* Category         */
         $form->addElement('text', 'categoryName', get_string('coursecategory'), 'maxlength="100" size="20" readonly');
         $form->setType('categoryName', PARAM_TEXT);
         $form->setDefault('categoryName',$category);
-
-        /* Visble   */
-        $choices = array();
-        $choices['0'] = get_string('hide');
-        $choices['1'] = get_string('show');
-        $form->addElement('select', 'visible', get_string('visible'), $choices);
-        $form->addHelpButton('visible', 'visible');
-        $form->setDefault('visible', $course->visible);
-        if (!empty($course->id)) {
-            if (!has_capability('moodle/course:visibility', $courseContext)) {
-                $form->hardFreeze('visible');
-                $form->setConstant('visible', $course->visible);
-            }
-        } else {
-            if (!guess_if_creator_will_have_course_capability('moodle/course:visibility', $catContext)) {
-                $form->hardFreeze('visible');
-                $form->setConstant('visible', $course->visible);
-            }
-        }
-
-        /* Start Date   */
-        $form->addElement('date_selector', 'startdate', get_string('startdate'));
-        $form->addHelpButton('startdate', 'startdate');
-        $form->setDefault('startdate', time() + 3600 * 24);
-
-        /* Id Number    */
-        $form->addElement('text','idnumber', get_string('idnumbercourse'),'maxlength="100"  size="10"');
-        $form->addHelpButton('idnumber', 'idnumbercourse');
-        $form->setType('idnumber', PARAM_RAW);
-        if (!empty($course->id) and !has_capability('moodle/course:changeidnumber', $courseContext)) {
-            $form->hardFreeze('idnumber');
-            $form->setConstants('idnumber', $course->idnumber);
-        }
 
         // Description.
         $form->addElement('header', 'descriptionhdr', get_string('description'));
@@ -134,7 +98,11 @@ class ct_settings_form extends moodleform {
         $form->addElement('hidden', 'addcourseformatoptionshere');
         $form->setType('addcourseformatoptionshere', PARAM_BOOL);
 
-
+        $format_options = course_get_format($course)->get_format_options();
+        foreach ($format_options as $name=>$option) {
+            $this->AddCourseFormat($form,$name,$option,$course->format,$course->id);
+        }
+        
         // Appearance.
         $form->addElement('hidden', 'appearancehdr', get_string('appearance'));
         $form->setType('appearancehdr', PARAM_RAW);
@@ -152,29 +120,83 @@ class ct_settings_form extends moodleform {
     }//definition
 
     /**
-     * Fill in the current page data for this course.
+     * @param           $form
+     * @param           $option
+     * @param           $value
+     * @param           $format
+     * @param           $courseId
+     *
+     * @throws          Exception
+     * @throws          coding_exception
+     *
+     * @creationDate    27/06/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Add course format
      */
-    function definition_after_data() {
-        global $DB;
+    function AddCourseFormat(&$form,$option,$value,$format,$courseId) {
+        global $USER;
+        
+        $str_format = 'format_' . $format;
+        switch ($option) {
+            case 'prerequisities':
+                $form->addElement('textarea','prerequisities',get_string('home_prerequisities',$str_format),'rows="5" style="width:95%;"');
+                $form->setDefault('prerequisities',$value);
+                break;
+            case 'producedby':
+                $form->addElement('text','producedby',get_string('home_producedby',$str_format),'style="width:95%;"');
+                $form->setDefault('producedby',$value);
+                $form->setType('producedby',PARAM_TEXT);
+                break;
+            case 'course_location':
+                $lstLocations = course_page::Get_CourseLocationsList($USER->id);
+                $form->addElement('select','course_location',get_string('home_location',$str_format),$lstLocations);
+                $form->setDefault('course_location',$value);
+                break;
+            case 'course_sector':
+                $location = course_page::GetCourseLocation($courseId);
+                $lstSectors     = course_page::Get_SectorsLocationsList($location);
+                $form->addElement('select','course_sector',get_string('home_sector',$str_format),$lstSectors,'multiple');
+                $form->setDefault('course_sector',$value);
+                break;
+            case 'time':
+                $form->addElement('textarea','time',get_string('home_time_from_to',$str_format),'rows="5" style="width:95%;"');
+                $form->setDefault('time',$value);
+                break;
+            case 'length':
+                $form->addElement('text','length',get_string('home_length',$str_format),'style="width:95%;"');
+                $form->setDefault('length',$value);
+                $form->setType('length',PARAM_TEXT);
+                break;
+            case 'effort':
+                $form->addElement('text','effort',get_string('home_effort',$str_format),'style="width:95%;"');
+                $form->setDefault('effort',$value);
+                $form->setType('effort',PARAM_TEXT);
+                break;
+            case 'manager':
+                $lst_manager = course_page::getCourseManager();
+                $form->addElement('select','manager',get_string('home_manager',$str_format),$lst_manager);
+                $form->setDefault('manager',$value);
 
-        $form = $this->_form;
+                $form->addElement('static', 'serach-description', '', 'enter the first letters to reduce the list');
+                $form->addElement('text','manager_search' ,'','size = 25');
+                $form->setType('manager_search',PARAM_TEXT);
 
-
-        // add course format options
-        $formatvalue = $form->getElementValue('format');
-        if (is_array($formatvalue) && !empty($formatvalue)) {
-            $courseformat = course_get_format((object)array('format' => $formatvalue[0]));
-
-            $elements = $courseformat->create_edit_form_elements($form);
-            for ($i = 0; $i < count($elements); $i++) {
-                $form->insertElementBefore($form->removeElement($elements[$i]->getName(), false),
-                    'addcourseformatoptionshere');
-            }
-        }
-
-        if ($form->elementExists('homepagehdr')) {
-            $form->setExpanded('homepagehdr');
-        }
+                course_page::Init_Manager_Selector('manager',null,$courseId);
+                break;
+            case 'author':
+                $form->addElement('text','author',get_string('home_author',$str_format),'style="width:95%;"');
+                $form->setDefault('author',$value);
+                $form->setType('author',PARAM_TEXT);
+                break;
+            case 'licence':
+                $form->addElement('text','licence',get_string('home_licence',$str_format),'style="width:95%;"');
+                $form->setDefault('licence',$value);
+                $form->setType('licence',PARAM_TEXT);
+                break;
+            default:
+                break;
+        }//switch
     }
-
 }//ct_settings_form
