@@ -20,19 +20,19 @@ function xmldb_local_fellesdata_install() {
     $dbMan = $DB->get_manager();
 
     try {
-        Fellesdata_Install::DeleteFellesdata_Tables($dbMan);
-        Fellesdata_Install::Delete_SynchronizationTables($dbMan);
+        //Fellesdata_Install::DeleteFellesdata_Tables($dbMan);
+        //Fellesdata_Install::Delete_SynchronizationTables($dbMan);
 
         /* Create table for the synchronization between KS and FS */
-        Fellesdata_Install::FellesdataTables($dbMan);
-        Fellesdata_Install::SynchronizationTables($dbMan);
+        //Fellesdata_Install::FellesdataTables($dbMan);
+        //Fellesdata_Install::SynchronizationTables($dbMan);
 
         /* Last time executed   */
         set_config('lastexecution', 0, 'local_fellesdata');
     }catch (Exception $ex) {
         /* Delete Tables created    */
-        Fellesdata_Install::DeleteFellesdata_Tables($dbMan);
-        Fellesdata_Install::Delete_SynchronizationTables($dbMan);
+        //Fellesdata_Install::DeleteFellesdata_Tables($dbMan);
+        //Fellesdata_Install::Delete_SynchronizationTables($dbMan);
         throw $ex;
     }
 }//xmldb_local_fellesdata_install
