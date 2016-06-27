@@ -35,30 +35,25 @@ function fellesdata_cron() {
     $fstExecution   = null;
 
     try {
-        /* Library */
-        require_once('cron/fellesdatacron.php');
-        require_once('lib/fellesdatalib.php');
+            /* Library */
+            require_once('cron/fellesdatacron.php');
+            require_once('lib/fellesdatalib.php');
 
+            /* First execution or no */
+            $activate = get_config('local_fellesdata','cron_active');
+            if ($activate) {
+            $lastexecution = get_config('local_fellesdata','lastexecution');
+            if ($lastexecution) {
+                $fstExecution = false;
+            }else {
+                $fstExecution = true;
+            }
+            \FELLESDATA_CRON::cron($fstExecution);
 
-        /* First execution or no */
-        $activate = get_config('local_fellesdata','cron_active');
-        //if ($activate) {
-        $lastexecution = get_config('local_fellesdata','lastexecution');
-        if ($lastexecution) {
-            $fstExecution = false;
-        }else {
-            $fstExecution = true;
-        }
-
-        \FELLESDATA_CRON::cron($fstExecution);
-
-        $lastexecution = get_config('local_fellesdata','lastexecution');
-        $dbLog  = "LAST EXECUTION WS: " . userdate($lastexecution,'%d.%m.%Y', 99, false) . "\n";
-        $dbLog  .= "NEW EXECUTION WS: " . userdate($now,'%d.%m.%Y', 99, false) . "\n\n";
-        error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
+            $lastexecution = get_config('local_fellesdata','lastexecution');
         
-        set_config('lastexecution', $now, 'local_fellesdata');
-        //}    
+            set_config('lastexecution', $now, 'local_fellesdata');
+        }
     }catch (Exception $ex) {
         throw $ex;
     }
