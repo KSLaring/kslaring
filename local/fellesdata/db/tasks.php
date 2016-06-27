@@ -17,8 +17,8 @@ $tasks = array(
     array(
         'classname' => 'local_fellesdata\task\cron_task',
         'blocking' => 0,
-        'minute' => '30',
-        'hour' => '6',
+        'minute' => '*',
+        'hour' => '*',
         'day' => '*',
         'month' => '*',
         'dayofweek' => '*'
