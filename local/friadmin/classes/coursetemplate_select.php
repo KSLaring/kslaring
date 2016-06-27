@@ -177,8 +177,7 @@ class local_friadmin_coursetemplate_select extends local_friadmin_widget impleme
 
             /* Result Structure */
             $result = array('categories' => array(),
-                'templates' => array()
-            );
+                            'templates' => array());
 
             /* Get Categories   */
             $result['categories'] = coursecat::make_categories_list('moodle/category:manage');
@@ -191,7 +190,19 @@ class local_friadmin_coursetemplate_select extends local_friadmin_widget impleme
                     $courseCat = coursecat::get($templateCatId, MUST_EXIST, true);
 
                     /* Get Courses category */
-                    $templateCourses = $courseCat->get_courses();
+                    $sql = " SELECT c.id,
+                                    c.fullname,
+                                    c.visible
+                             FROM   {course} c 
+                             WHERE  (c.format like '%classroom%' 
+                                     OR  
+                                     c.format like '%elearning%'
+                                     OR  
+                                     c.format like '%netcourse%')
+                                    AND c.category = $templateCatId ";
+
+                    global $DB;
+                    $templateCourses = $DB->get_records_sql($sql);//$courseCat->get_courses();
 
                     /* Add to result Structure  */
                     foreach ($templateCourses as $templateCo) {
@@ -247,13 +258,6 @@ class local_friadmin_coursetemplate_select extends local_friadmin_widget impleme
         $admin = get_admin();
 
         try {
-            /* First, it checks if the user has the correct permissions */
-            if (!self::HasCorrectPermissions()) {
-                /* Create a Fake Permission */
-                $fakePermission = new stdClass();
-                $fakePermission->id = self::Add_FakePermission_To_User();
-            }//if_Has_not_permissions
-
             $coursedata = array(
                 'userid' => $admin->id,
                 'sourcedir' => $CFG->dataroot . '/temp/test/',
@@ -288,17 +292,8 @@ class local_friadmin_coursetemplate_select extends local_friadmin_widget impleme
                 $result .= $error;
             }
 
-            /* Finally, remove the fake permission that have been added */
-            if ($fakePermission) {
-                self::Delete_FakePermission($fakePermission->id);
-            }//if_fakePermission
-
             return $result;
         } catch (Exception $ex) {
-            /* Remove the fake permission that have been added */
-            if ($fakePermission) {
-                self::Delete_FakePermission($fakePermission->id);
-            }//if_fakePermission
 
             throw $ex;
         }//try_Catch
@@ -447,7 +442,7 @@ class local_friadmin_coursetemplate_select extends local_friadmin_widget impleme
 
         $coursecontext = context_course::instance($cid);
         $fs = get_file_storage();
-
+        
         if ($fs->is_area_empty($coursecontext->id, $component, $filearea)) {
             $course = $DB->get_record('course', array('id' => $cid), '*', MUST_EXIST);
             if ($course) {
