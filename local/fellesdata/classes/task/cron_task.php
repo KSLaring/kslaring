@@ -29,33 +29,8 @@ class cron_task extends \core\task\scheduled_task {
      */
     public function execute() {
         global $CFG;
-        $pluginInfo     = null;
-        $now            = time();
-        $fstExecution   = null;
-
-        /* Library */
-        require_once($CFG->dirroot . '/cron/fellesdatacron.php');
-        require_once($CFG->dirroot . '/lib/fellesdatalib.php');
-
-
-        /* First execution or no */
-        $activate = get_config('local_fellesdata','cron_active');
-        //if ($activate) {
-            $lastexecution = get_config('local_fellesdata','lastexecution');
-            if ($lastexecution) {
-                $fstExecution = false;
-            }else {
-                $fstExecution = true;
-            }
-
-            \FELLESDATA_CRON::cron($fstExecution);
-
-            $lastexecution = get_config('local_fellesdata','lastexecution');
-            $dbLog  = "LAST EXECUTION WS: " . userdate($lastexecution,'%d.%m.%Y', 99, false) . "\n";
-            $dbLog  .= "NEW EXECUTION WS: " . userdate($now,'%d.%m.%Y', 99, false) . "\n\n";
-
-            set_config('lastexecution', $now, 'local_fellesdata');            
-        //}
+        require_once($CFG->dirroot . '/local/fellesdata/lib.php');
+        fellesdata_cron();
     }
 
 }

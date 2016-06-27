@@ -28,6 +28,42 @@ function local_fellesdata_extends_navigation(global_navigation $navigation) {
     }
 }
 
+function fellesdata_cron() {
+    global $CFG;
+    $pluginInfo     = null;
+    $now            = time();
+    $fstExecution   = null;
+
+    try {
+        /* Library */
+        require_once('cron/fellesdatacron.php');
+        require_once('lib/fellesdatalib.php');
+
+
+        /* First execution or no */
+        $activate = get_config('local_fellesdata','cron_active');
+        //if ($activate) {
+        $lastexecution = get_config('local_fellesdata','lastexecution');
+        if ($lastexecution) {
+            $fstExecution = false;
+        }else {
+            $fstExecution = true;
+        }
+
+        \FELLESDATA_CRON::cron($fstExecution);
+
+        $lastexecution = get_config('local_fellesdata','lastexecution');
+        $dbLog  = "LAST EXECUTION WS: " . userdate($lastexecution,'%d.%m.%Y', 99, false) . "\n";
+        $dbLog  .= "NEW EXECUTION WS: " . userdate($now,'%d.%m.%Y', 99, false) . "\n\n";
+        error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
+        
+        set_config('lastexecution', $now, 'local_fellesdata');
+        //}    
+    }catch (Exception $ex) {
+        throw $ex;
+    }
+}//fellesdata_cron
+
 function local_fellesdata_cron_OLD() {
     /* Variables */
     global $DB,$CFG;
