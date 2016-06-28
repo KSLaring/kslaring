@@ -78,13 +78,16 @@ class local_friadmin_courselist_filter extends local_friadmin_widget implements 
          * Clean code.
          * Get values filter but default and set up
          */
-        $customdata     = $this->get_user_locationdata();
-        $this->fromform = $customdata;
         if (!isset($SESSION->filterData)) {
             $SESSION->filterData = array();
         }//if_filterData_SESSION
 
-        $mform = new local_friadmin_courselist_filter_form(null, $customdata, 'post', '',array('id' => 'mform-coursefilter'));
+        // Get the filtered user locationdata.
+        $customdata     = $this->get_user_locationdata();
+        $this->fromform = $customdata;
+
+        $mform = new local_friadmin_courselist_filter_form(null, $customdata, 'post', '',
+            array('id' => 'mform-coursefilter'));
 
         /**
          * @updateDate  23/06/2015
@@ -180,7 +183,7 @@ class local_friadmin_courselist_filter extends local_friadmin_widget implements 
      */
     public function get_user_locationdata($userId = null) {
         /* Variables    */
-        global $USER;
+        global $USER, $SESSION;
         $result                 = null;
         $leveloneobjs           = null;
         $leveloneobjsfiltered   = array();
@@ -211,6 +214,15 @@ class local_friadmin_courselist_filter extends local_friadmin_widget implements 
             // id, name and industrycode properties.
             $leveloneobjs = local_friadmin_helper::get_levelone_municipalities($userId);
 
+            // Check if a new municipality has been selected by the user which is not
+            // yet saved in the session. The session data is saved after the form is
+            // created.
+            $sessionselmunicipality = 0;
+            if (!empty($SESSION->filterData['selmunicipality'])) {
+                $sessionselmunicipality = $SESSION->filterData['selmunicipality'];
+            }
+            $selmunicipality = optional_param('selmunicipality', $sessionselmunicipality, PARAM_INT);
+
             /**
              * @updateDate  17/06/2015
              * @author      eFaktor     (fbv)
@@ -221,7 +233,15 @@ class local_friadmin_courselist_filter extends local_friadmin_widget implements 
             foreach ($leveloneobjs as $obj) {
                 $result['municipality'][$obj->id] = $obj->name;
                 $this->userleveloneids[] = $obj->id;
-                $leveloneobjsfiltered[] = $obj;
+
+                // If a municipality has been selected then use only that one.
+                if ($selmunicipality) {
+                    if ($selmunicipality == $obj->id) {
+                        $leveloneobjsfiltered[] = $obj;
+                    }
+                } else {
+                    $leveloneobjsfiltered[] = $obj;
+                }
             }//for_levelone_obj
 
             /**
@@ -234,7 +254,7 @@ class local_friadmin_courselist_filter extends local_friadmin_widget implements 
             $this->myCategories = local_friadmin_helper::getMyCategories();
 
             if (!empty($leveloneobjsfiltered)) {
-                // Get the sectors for the relevant municipalities via inustrycodes
+                // Get the sectors for the relevant municipalities via industrycodes.
                 $leveltwoobjs = local_friadmin_helper::get_leveltwo_sectors($leveloneobjsfiltered);
 
                 foreach ($leveltwoobjs as $obj) {
