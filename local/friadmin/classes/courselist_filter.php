@@ -34,7 +34,7 @@ defined('MOODLE_INTERNAL') || die;
 class local_friadmin_courselist_filter extends local_friadmin_widget implements renderable {
 
     /* Level One    */
-    protected $userleveloneids  = array();
+    protected $userleveloneids = array();
     /**
      * @var         array
      *
@@ -44,7 +44,7 @@ class local_friadmin_courselist_filter extends local_friadmin_widget implements 
      * Description
      * Categories connected with user
      */
-    protected  $myCategories    = array();
+    protected $myCategories = array();
 
     // The Moodle form
     protected $mform = null;
@@ -83,7 +83,7 @@ class local_friadmin_courselist_filter extends local_friadmin_widget implements 
         }//if_filterData_SESSION
 
         // Get the filtered user locationdata.
-        $customdata     = $this->get_user_locationdata();
+        $customdata = $this->get_user_locationdata();
         $this->fromform = $customdata;
 
         $mform = new local_friadmin_courselist_filter_form(null, $customdata, 'post', '',
@@ -98,9 +98,9 @@ class local_friadmin_courselist_filter extends local_friadmin_widget implements 
          */
         $this->mform = $mform;
         if ($fromform = $mform->get_data()) {
-            $SESSION->filterData    = (Array)$fromform;
-            $this->fromform         = $SESSION->filterData;
-        }else if($SESSION->filterData) {
+            $SESSION->filterData = (Array)$fromform;
+            $this->fromform = $SESSION->filterData;
+        } else if ($SESSION->filterData) {
             if (!isset($SESSION->filterData['classroom'])) {
                 $SESSION->filterData['classroom'] = false;
             }
@@ -166,6 +166,7 @@ class local_friadmin_courselist_filter extends local_friadmin_widget implements 
 
     /**
      * @param       null $userId
+     *
      * @return           array
      * @throws           Exception
      *
@@ -175,8 +176,8 @@ class local_friadmin_courselist_filter extends local_friadmin_widget implements 
      * Description
      * Get the user related location data
      *
-     * @updateDate  22/06/2015
-     * @author      eFaktor     (fbv)
+     * @updateDate      22/06/2015
+     * @author          eFaktor     (fbv)
      *
      * Description
      * Add a new parameter in the filter -- classroom format
@@ -184,9 +185,9 @@ class local_friadmin_courselist_filter extends local_friadmin_widget implements 
     public function get_user_locationdata($userId = null) {
         /* Variables    */
         global $USER, $SESSION;
-        $result                 = null;
-        $leveloneobjs           = null;
-        $leveloneobjsfiltered   = array();
+        $result = null;
+        $leveloneobjs = null;
+        $leveloneobjsfiltered = array();
         try {
             /* Result Structure */
             /**
@@ -196,13 +197,13 @@ class local_friadmin_courselist_filter extends local_friadmin_widget implements 
              * Description
              * Add option only eLearning courses
              */
-            $result = array('municipality'  => array(),
-                            'sector'        => array(),
-                            'location'      => array(),
-                            'from'          => null,
-                            'to'            => null,
-                            'classroom'     => true,
-                            'elearning'     => true,
+            $result = array('municipality' => array(),
+                'sector' => array(),
+                'location' => array(),
+                'from' => null,
+                'to' => null,
+                'classroom' => true,
+                'elearning' => true,
             );
 
             if (is_null($userId)) {
@@ -263,8 +264,23 @@ class local_friadmin_courselist_filter extends local_friadmin_widget implements 
                     }
                 }
 
-                // Get the locations for the relevant municipalities via levelone ids
-                $locationsobjs = $this->get_locations($leveloneobjsfiltered);
+                // Check if a new sector has been selected by the user which is not
+                // yet saved in the session. The session data is saved after the form is
+                // created.
+                $sessionsectorid = 0;
+                $locationsobjs = array();
+                if (!empty($SESSION->filterData['selsector'])) {
+                    $sessionsectorid = $SESSION->filterData['selsector'];
+                }
+                $sectorid = optional_param('selsector', $sessionsectorid, PARAM_INT);
+
+                if (!$sectorid) {
+                    // Get the locations for the relevant municipalities via levelone ids
+                    $locationsobjs = $this->get_locations($leveloneobjsfiltered);
+                } else {
+                    $locationsobjs = $this->get_locations_for_sector($sectorid);
+                }
+
                 foreach ($locationsobjs as $obj) {
                     if (!in_array($obj->id, $result['location'])) {
                         $result['location'][$obj->id] = $obj->name;
@@ -273,7 +289,7 @@ class local_friadmin_courselist_filter extends local_friadmin_widget implements 
             }//obj_filteref
 
             return $result;
-        }catch (Exception $ex) {
+        } catch (Exception $ex) {
             throw $ex;
         }//try_catch
     }//get_user_locationdata
@@ -287,6 +303,7 @@ class local_friadmin_courselist_filter extends local_friadmin_widget implements 
      */
     /**
      * @param        $leveloneobjsfiltered
+     *
      * @return       array|null
      * @throws       Exception
      *
@@ -297,10 +314,10 @@ class local_friadmin_courselist_filter extends local_friadmin_widget implements 
      * Add comments, exception...
      */
     protected function get_locations($leveloneobjsfiltered) {
-       /* Variables */
+        /* Variables */
         global $DB;
-        $ids        = array();
-        $locations  = null;
+        $ids = array();
+        $locations = null;
 
         try {
             if ($leveloneobjsfiltered) {
@@ -328,8 +345,52 @@ class local_friadmin_courselist_filter extends local_friadmin_widget implements 
             }//if_leveloneobjsfiltered
 
             return $locations;
-        }catch (Exception $ex) {
+        } catch (Exception $ex) {
             throw $ex;
         }//try_catch
     }//get_locations
+
+    /**
+     * Get the locations for the given sectors with id, name
+     *
+     * @param int $sectorid The selected sector id
+     *
+     * @return mixed Array|null The array with the sector objects
+     *
+     * @throws  Exception
+     */
+    protected function get_locations_for_sector($sectorid) {
+        global $DB;
+        $locations = null;
+
+        try {
+            if ($sectorid) {
+                // Get the location ids and names for the given sector id.
+                $sql = "SELECT	lo.id,
+                                lo.name
+                        FROM {course_locations} lo
+                        -- LEVLE TWO
+                        JOIN {report_gen_company_relation}	cr_two	
+                          ON cr_two.parentid = lo.levelone
+                          AND cr_two.companyid = :sector_selected
+                        JOIN {report_gen_companydata}	co_two 
+                          ON co_two.id = cr_two.companyid
+                        -- LEVEL ONE
+                        JOIN {report_gen_company_relation}	cr_one 
+                          ON cr_one.companyid = cr_two.parentid
+                        -- LEVEL ZERO
+                        JOIN {report_gen_company_relation}	cr_zero 
+                          ON cr_zero.companyid = cr_one.companyid  ";
+
+                // Get search criteria.
+                $params = array('sector_selected' => $sectorid);
+
+                $locations = $DB->get_records_sql($sql, $params);
+            }
+
+            return $locations;
+        } catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//get_locations_for_sector
 }
