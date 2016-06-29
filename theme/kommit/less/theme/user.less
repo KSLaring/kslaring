@@ -59,3 +59,39 @@
         }
     }
 }
+
+.userlist {
+    table.controls {
+        background-color: @white;
+
+        tr {
+            vertical-align: bottom;
+        }
+        td {
+            //width: 25%;
+            padding-bottom: .3em;
+        }
+        .lastcol {
+            text-align: left;
+        }
+        .singleselect {
+            max-width: 100%;
+
+            @media (max-width: 479px) {
+                width: 6em;
+            }
+        }
+    }
+}
+
+.used-region-side-pre.used-region-side-post {
+    .userlist {
+        table.controls {
+            .singleselect {
+                @media (min-width: @mediumWidth) and (max-width: (@largeWidth - 1)) {
+                    width: 6em;
+                }
+            }
+        }
+    }
+}
