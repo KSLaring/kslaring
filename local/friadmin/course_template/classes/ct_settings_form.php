@@ -31,8 +31,8 @@ class ct_settings_form extends moodleform {
         list($course,$category,$editor,$ct) = $this->_customdata;
 
         /* Context */
-        $courseContext  = CONTEXT_COURSE::instance($course->id);
-        $catContext     = CONTEXT_COURSECAT::instance($course->category);
+        $courseContext  = context_course::instance($course->id);
+        $catContext     = context_coursecat::instance($course->category);
 
         /* General Header */
         $form->addElement('header','general', get_string('general', 'form'));

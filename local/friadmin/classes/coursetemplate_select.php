@@ -312,92 +312,107 @@ class local_friadmin_coursetemplate_select extends local_friadmin_widget impleme
      * @throws dml_transaction_exception
      * @throws restore_controller_exception
      */
-    protected function restore_course($cid, $options) {
-        global $CFG, $DB;
-
-        $error = '';
-        $courseid = null;
-        $component = 'backup';
-        $filearea = 'course';
-        $itemid = '0';
+    protected function restore_course($cid,$options) {
+        /* Variables */
+        global $CFG,$DB;
+        $error      = '';
+        $courseid   = null;
+        $component  = 'backup';
+        $filearea   = 'course';
+        $itemid     = '0';
         $sourcefile = null;
 
-        require_once($CFG->dirroot . '/backup/util/includes/restore_includes.php');
+        try {
+            require_once($CFG->dirroot . '/backup/util/includes/restore_includes.php');
 
-        $coursecontext = context_course::instance($cid);
-        $fs = get_file_storage();
+            $coursecontext  = context_course::instance($cid);
+            $fs             = get_file_storage();
 
-        $backupid = $this->create_backup_if_needed($cid);
+            $backupid = $this->create_backup_if_needed($cid);
 
-        $browser = get_file_browser();
-        $fileinfo = $browser->get_file_info($coursecontext, $component, $filearea, $itemid);
+            /**
+             * @updateDate      29/06/2016
+             * @author          eFaktor     (fbv)
+             *
+             * Description
+             * Remove get_file_inof because it compares with course = 1
+             */
+            //$browser    = get_file_browser();
+            //$fileinfo   = $browser->get_file_info($coursecontext, $component, $filearea, $itemid);
 
-        if (is_a($fileinfo, 'file_info_stored')) {
-            $files = $fs->get_area_files($coursecontext->id, $component, $filearea, $itemid);
-            $sourcefile = $this->newest_stored_file($files);
-        }
+            //if (is_a($fileinfo, 'file_info_stored')) {
+                $files      = $fs->get_area_files($coursecontext->id, $component, $filearea, $itemid);
+                $sourcefile = $this->newest_stored_file($files);
+            //}
 
-        if (is_null($sourcefile)) {
-            $error .= 'No backupfile found for course id ' . $cid . "<br>\n";
-            return array($courseid, $error);
-        }
-
-        // Extract the file.
-        $packer = get_file_packer('application/vnd.moodle.backup');
-        $backupid = restore_controller::get_tempdir_name(SITEID, $options['userid']);
-        $path = "$CFG->tempdir/backup/$backupid/";
-        if (!$packer->extract_to_pathname($sourcefile, $path)) {
-            $error .= 'Invalid backup file ' . $sourcefile->get_filename() . "<br>\n";
-            return array($courseid, $error);
-        }
-
-        // Start delegated transaction.
-        $transaction = $DB->start_delegated_transaction();
-
-        // Create new course.
-        $courseid = restore_dbops::create_new_course(fix_utf8($sourcefile->get_filename()),
-            'restored-' . $backupid, $options['categoryid']);
-
-        // Restore backup into course.
-        $controller = new restore_controller($backupid, $courseid, backup::INTERACTIVE_NO,
-            backup::MODE_SAMESITE, $options['userid'], backup::TARGET_NEW_COURSE);
-
-        if ($controller->execute_precheck()) {
-            $controller->execute_plan();
-        } else {
-            $error .= 'Precheck fails for ' . $sourcefile->get_filename() . ' ... skipping' . "<br>\n";
-            $results = $controller->get_precheck_results();
-            foreach ($results as $type => $messages) {
-                foreach ($messages as $index => $message) {
-                    $error .= 'precheck ' . $type . '[' . $index . '] = ' . $message . "<br>\n";
-                }
-            }
-            try {
-                $transaction->rollback(new Exception('Prechecked failed'));
-            } catch (Exception $e) {
-                unset($transaction);
-                $controller->destroy();
-                unset($controller);
-
+            if (is_null($sourcefile)) {
+                $error .= 'No backupfile found for course id ' . $cid . "<br>\n";
                 return array($courseid, $error);
             }
-        }
 
-        // Commit and clean up.
-        $transaction->allow_commit();
-        unset($transaction);
-        $controller->destroy();
-        unset($controller);
+            // Extract the file.
+            $packer     = get_file_packer('application/vnd.moodle.backup');
+            $backupid   = restore_controller::get_tempdir_name(SITEID, $options['userid']);
+            $path       = "$CFG->tempdir/backup/$backupid/";
+            if (!$packer->extract_to_pathname($sourcefile, $path)) {
+                $error .= 'Invalid backup file ' . $sourcefile->get_filename() . "<br>\n";
+                return array($courseid, $error);
+            }
 
-        // Set the course name choosen by the user
-        $course = new stdClass;
-        $course->id = $courseid;
-        $course->fullname = fix_utf8($options['fullname']);
-        $course->shortname = $options['shortname'];
-        $DB->update_record('course', $course);
+            // Start delegated transaction.
+            $transaction = $DB->start_delegated_transaction();
 
-        return array($courseid, $error);
-    }
+            // Create new course.
+            $courseid = restore_dbops::create_new_course(fix_utf8($sourcefile->get_filename()),
+                                                         'restored-' . $backupid, $options['categoryid']);
+
+            // Restore backup into course.
+            $controller = new restore_controller($backupid,
+                                                 $courseid,
+                                                 backup::INTERACTIVE_NO,
+                                                 backup::MODE_SAMESITE,
+                                                 $options['userid'],
+                                                 backup::TARGET_NEW_COURSE);
+
+            if ($controller->execute_precheck()) {
+                $controller->execute_plan();
+            } else {
+                $error .= 'Precheck fails for ' . $sourcefile->get_filename() . ' ... skipping' . "<br>\n";
+                $results = $controller->get_precheck_results();
+                foreach ($results as $type => $messages) {
+                    foreach ($messages as $index => $message) {
+                        $error .= 'precheck ' . $type . '[' . $index . '] = ' . $message . "<br>\n";
+                    }
+                }
+                try {
+                    $transaction->rollback(new Exception('Prechecked failed'));
+                } catch (Exception $e) {
+                    unset($transaction);
+                    $controller->destroy();
+                    unset($controller);
+
+                    return array($courseid, $error);
+                }
+            }
+
+            // Commit and clean up.
+            $transaction->allow_commit();
+            unset($transaction);
+            $controller->destroy();
+            unset($controller);
+
+            // Set the course name choosen by the user
+            $course = new stdClass;
+            $course->id = $courseid;
+            $course->fullname = fix_utf8($options['fullname']);
+            $course->shortname = $options['shortname'];
+            $DB->update_record('course', $course);
+
+            return array($courseid, $error);
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//restore_course
 
     /**
      * Get the newest file in the file area.
@@ -432,164 +447,60 @@ class local_friadmin_coursetemplate_select extends local_friadmin_widget impleme
      *
      * @return int|null The backup id if success, null if failure
      */
+    /**
+     * @param       $cid        The course id
+     *
+     * @return      null        The backup id if success, null if failure
+     * @throws      Exception
+     */
     protected function create_backup_if_needed($cid) {
+        /* Variables */
         global $CFG, $DB;
+        $result     = null;
+        $component  = 'backup';
+        $filearea   = 'course';
+        $itemid     = '0';
 
-        $result = null;
-        $component = 'backup';
-        $filearea = 'course';
-        $itemid = '0';
+        try {
+            $coursecontext  = context_course::instance($cid);
+            $fs             = get_file_storage();
 
-        $coursecontext = context_course::instance($cid);
-        $fs = get_file_storage();
-        
-        if ($fs->is_area_empty($coursecontext->id, $component, $filearea)) {
-            $course = $DB->get_record('course', array('id' => $cid), '*', MUST_EXIST);
-            if ($course) {
-                $admin = get_admin();
-                require_once($CFG->dirroot . '/backup/util/includes/backup_includes.php');
-                $bc = new backup_controller(backup::TYPE_1COURSE, $cid, backup::FORMAT_MOODLE,
-                    backup::INTERACTIVE_NO, backup::MODE_SAMESITE, $admin->id);
+            if ($fs->is_area_empty($coursecontext->id, $component, $filearea)) {
+                $course = $DB->get_record('course', array('id' => $cid), '*', MUST_EXIST);
+                if ($course) {
+                    $admin = get_admin();
+                    require_once($CFG->dirroot . '/backup/util/includes/backup_includes.php');
+                    $bc = new backup_controller(backup::TYPE_1COURSE, $cid, backup::FORMAT_MOODLE,
+                        backup::INTERACTIVE_NO, backup::MODE_SAMESITE, $admin->id);
 
-                // Set the default filename.
-                $format = $bc->get_format();
-                $type = $bc->get_type();
-                $id = $bc->get_id();
-                $users = $bc->get_plan()->get_setting('users')->get_value();
-                $anonymised = $bc->get_plan()->get_setting('anonymize')->get_value();
-                $filename = backup_plan_dbops::get_default_backup_filename($format, $type,
-                    $id, $users, $anonymised);
-                $bc->get_plan()->get_setting('filename')->set_value($filename);
+                    // Set the default filename.
+                    $format = $bc->get_format();
+                    $type = $bc->get_type();
+                    $id = $bc->get_id();
+                    $users = $bc->get_plan()->get_setting('users')->get_value();
+                    $anonymised = $bc->get_plan()->get_setting('anonymize')->get_value();
+                    $filename = backup_plan_dbops::get_default_backup_filename($format, $type,
+                        $id, $users, $anonymised);
+                    $bc->get_plan()->get_setting('filename')->set_value($filename);
 
-                // Backup the course.
-                $bc->set_status(backup::STATUS_AWAITING);
-                $bc->execute_plan();
+                    // Backup the course.
+                    $bc->set_status(backup::STATUS_AWAITING);
+                    $bc->execute_plan();
 
-                // Get the results.
-                $backupid = $bc->get_backupid();
-                //$results = $bc->get_results();
+                    // Get the results.
+                    $backupid = $bc->get_backupid();
+                    //$results = $bc->get_results();
 
-                $bc->destroy();
+                    $bc->destroy();
 
-                $result = $backupid;
+                    $result = $backupid;
+                }
             }
-        }
 
-        return $result;
+            return $result;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+
     }
-
-    /**
-     * @return          bool
-     * @throws          Exception
-     *
-     * @creationDate    23/06/2015
-     * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Check if the user has the correct permissions to create a new course from the
-     * template
-     */
-    private function HasCorrectPermissions() {
-        /* Variables    */
-        global $DB, $USER;
-
-        try {
-            /* Fist, check if the user has the correct permissions  */
-            /* Search Criteria  */
-            $params = array();
-            $params['user'] = $USER->id;
-            $params['context'] = '1';
-            $params['archetype'] = 'manager';
-
-            /* SQL Instruction  */
-            $sql = " SELECT		ra.id,
-                                ra.contextid,
-                                ra.userid
-                     FROM		{role_assignments}	ra
-                        JOIN	{role}				r		ON 	r.id 			= ra.roleid
-                                                            AND	r.archetype		= :archetype
-                                                            AND r.shortname     = r.archetype
-                     WHERE		ra.userid     = :user
-                        AND     ra.contextid  = :context ";
-
-            /* Execute  */
-            $rdo = $DB->get_records_sql($sql, $params);
-            if ($rdo) {
-                return true;
-            } else {
-                return false;
-            }//if_rdo
-        } catch (Exception $ex) {
-            throw $ex;
-        }//try_catch
-    }//HasCorrectPermissions
-
-    /**
-     * @return          bool|int
-     * @throws          Exception
-     *
-     * @creationDate    23/06/2015
-     * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Add a fake permission, temporary permission, to the user.
-     * So, the user will be able to create a new course from the template
-     */
-    private function Add_FakePermission_To_User() {
-        /* Variables    */
-        global $DB, $USER;
-        $fakePermission = null;
-        $context = null;
-        $role = null;
-
-        try {
-            /* Context System   */
-            $context = CONTEXT_SYSTEM::instance();
-            /* Role Id      */
-            $role = $DB->get_record('role', array('archetype' => 'manager', 'shortname' => 'manager'));
-
-            /* New Fake Permission  */
-            $fakePermission = new stdClass();
-            $fakePermission->userid = $USER->id;
-            $fakePermission->roleid = $role->id;
-            $fakePermission->contextid = $context->id;
-            $fakePermission->timemodified = time();
-
-            /* Insert   */
-            $fakePermission->id = $DB->insert_record('role_assignments', $fakePermission);
-
-            /* Reload All Capabilities  */
-            reload_all_capabilities();
-
-            return $fakePermission->id;
-        } catch (Exception $ex) {
-            throw $ex;
-        }//try_catch
-    }//Add_FakePermission_To_User
-
-    /**
-     * @param           $fakePermissionId
-     *
-     * @throws          Exception
-     *
-     * @creationDate    23/06/2015
-     * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Delete the fake permission have been created for the user
-     */
-    private function Delete_FakePermission($fakePermissionId) {
-        /* Variables    */
-        global $DB;
-
-        try {
-            /* Delete Fake Permission   */
-            $DB->delete_records('role_assignments', array('id' => $fakePermissionId));
-
-            /* Reload All Capabilities  */
-            reload_all_capabilities();
-        } catch (Exception $ex) {
-            throw $ex;
-        }//try_catch
-    }//Delete_FakePermission
 }
