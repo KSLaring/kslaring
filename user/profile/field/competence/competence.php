@@ -19,6 +19,11 @@ require_once($CFG->libdir . '/adminlib.php');
 
 require_login();
 
+// Guest can not edit.
+if (isguestuser()) {
+    print_error('guestnoeditprofile');
+}
+
 /* PARAMS */
 $user_id        = required_param('id',PARAM_INT);
 $my_competence  = null;
