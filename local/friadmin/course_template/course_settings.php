@@ -22,7 +22,7 @@ require_once('../../../course/lib.php');
 /* PARAMS   */
 $courseId       = required_param('id',PARAM_INT);
 $courseTemplate = required_param('ct',PARAM_INT);
-$contextCourse  = CONTEXT_COURSE::instance($courseId);
+$contextCourse  = context_course::instance($courseId);
 $url            = new moodle_url('/local/friadmin/course_template/course_settings.php',array('id' => $courseId,'ct' => $courseTemplate));
 $returnUrl      = new moodle_url('/local/friadmin/courselist.php');
 $enrolUrl       = new moodle_url('/local/friadmin/course_template/course_enrolment.php',array('id' => $courseId,'ct' => $courseTemplate));
@@ -39,7 +39,7 @@ $fileOpt        = null;
 require_login($course);
 
 /* Check Permissions/Capability */
-if (!has_capability('local/friadmin:view',CONTEXT_SYSTEM::instance())) {
+if (!has_capability('local/friadmin:view',context_system::instance())) {
     if (!local_friadmin_helper::CheckCapabilityFriAdmin()) {
         print_error('nopermissions', 'error', '', 'block/frikomport:view');
     }//if_superuser
