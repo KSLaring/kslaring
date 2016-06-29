@@ -662,14 +662,21 @@ class FELLESDATA_CRON {
         $urlTradis      = null;
         $fromDate       = null;
         $toDate         = null;
-
+        $date           = null;
+        $admin          = null;
+        
         try {
             /* Get Parameters service    */
             $toDate     = mktime(1, 60, 0, date("m"), date("d"), date("Y"));
             $toDate     = gmdate('Y-m-d\TH:i:s\Z',$toDate);
             if (isset($pluginInfo->lastexecution) && $pluginInfo->lastexecution) {
                 /* No First Execution   */
-                $fromDate   = gmdate('Y-m-d\TH:i:s\Z',$pluginInfo->lastexecution);
+                $admin      = get_admin();
+                $timezone   = $admin->timezone;
+                $date       = usergetdate($pluginInfo->lastexecution, $admin->timezone);
+                $fromDate   = mktime(0, 0, 0, $date['mon'], $date['mday'] - 3, $date['year']);
+                
+                $fromDate   = gmdate('Y-m-d\TH:i:s\Z',$fromDate);
             }else {
                 /* First Execution      */
                 $fromDate = gmdate('Y-m-d\TH:i:s\Z',0);
