@@ -1171,6 +1171,31 @@ body {
   padding: 6px 10px 6px 10px;
   font-weight: normal;
 }
+.userlist table.controls {
+  background-color: #fff;
+}
+.userlist table.controls tr {
+  vertical-align: bottom;
+}
+.userlist table.controls td {
+  padding-bottom: .3em;
+}
+.userlist table.controls .lastcol {
+  text-align: left;
+}
+.userlist table.controls .singleselect {
+  max-width: 100%;
+}
+@media (max-width: 479px) {
+  .userlist table.controls .singleselect {
+    width: 6em;
+  }
+}
+@media (min-width: 768px) and (max-width: 979px) {
+  .used-region-side-pre.used-region-side-post .userlist table.controls .singleselect {
+    width: 6em;
+  }
+}
 .path-admin #explaincaps .rolecap.yes th,
 .path-admin #explaincaps .rolecap.yes td {
   background-color: #e6f4e6;
