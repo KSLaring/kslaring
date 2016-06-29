@@ -104,13 +104,13 @@ class ct_enrolment_settings_form extends moodleform {
          * Internal & External Price
          */
         /* Internal */
-        $form->addElement('text','price_int',  get_string('in_price', 'enrol_waitinglist'), array('size' => '8'));
-        $form->setType('price_int',PARAM_TEXT);
-        $form->setDefault('price_int',$instance->priceinternal);
+        $form->addElement('text','priceinternal',  get_string('in_price', 'enrol_waitinglist'), array('size' => '8'));
+        $form->setType('priceinternal',PARAM_TEXT);
+        $form->setDefault('priceinternal',$instance->priceinternal);
         /* External */
-        $form->addElement('text','price_ext',  get_string('ext_price', 'enrol_waitinglist'), array('size' => '8'));
-        $form->setType('price_ext',PARAM_TEXT);
-        $form->setDefault('price_ext',$instance->priceexternal);
+        $form->addElement('text','priceexternal',  get_string('ext_price', 'enrol_waitinglist'), array('size' => '8'));
+        $form->setType('priceexternal',PARAM_TEXT);
+        $form->setDefault('priceexternal',$instance->priceexternal);
 
         /* Course Id */
         $form->addElement('hidden', 'id');

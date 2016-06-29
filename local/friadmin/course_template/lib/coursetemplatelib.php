@@ -27,6 +27,9 @@ define('ENROL_FIELD_SELF_WAITING_MESSAGE','customtext1');
 define('ENROL_FIELD_BULK_WAITING_MESSAGE','customtext1');
 define('ENROL_FIELD_BULK_RENOVATION_MESSAGE','customtext2');
 
+define('ENROL_FILED_COURSE_INTERNAL_PRICE','customtext3');
+define('ENROL_FILED_COURSE_EXTERNAL_PRICE','customtext4');
+
 define('SETTINGS_DEFAULT_SIZE',100);
 define('MAX_TEACHERS_PAGE',100);
 define('ACTION_ENROLMENT',1);
@@ -422,8 +425,6 @@ class CourseTemplate {
             /* Search Criteria  */
             $params = array();
             $params['user'] = $USER->id;
-            //$params['context'] = '1';
-            $params['archetype'] = 'manager';
             $params['level']     = CONTEXT_COURSECAT;
 
             /* SQL Instruction  */
@@ -432,7 +433,7 @@ class CourseTemplate {
                                 ra.userid
                      FROM		{role_assignments}	ra
                         JOIN	{role}				r		ON 	r.id 			= ra.roleid
-                                                            AND	r.archetype		= :archetype
+                                                            AND	r.archetype		IN ('manager')
                                                             AND r.shortname     = r.archetype
                         JOIN    {context}           ct      ON  ct.id			= ra.contextid
                                                             AND ct.contextlevel = :level
@@ -583,8 +584,8 @@ class CourseTemplate {
             $enrolInstance->{ENROL_FIELD_MAXENROLMENTS}     = $data->max_enrolled;
             $enrolInstance->{ENROL_FIELD_INVOICE}           = $data->invoice;
             $enrolInstance->{ENROL_FIELD_APPROVAL}          = $data->approval;
-            $enrolInstance->{FILED_COURSE_INTERNAL_PRICE}   = $data->priceinternal;
-            $enrolInstance->{FILED_COURSE_EXTERNAL_PRICE}   = $data->priceexternal;
+            $enrolInstance->{ENROL_FILED_COURSE_INTERNAL_PRICE}     = $data->priceinternal;
+            $enrolInstance->{ENROL_FILED_COURSE_EXTERNAL_PRICE}     = $data->priceexternal;
 
             $enrolInstance->timemodified                    = $time;
             /* Execute  */
