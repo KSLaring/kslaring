@@ -18,7 +18,7 @@ require_once('../../../course/lib.php');
 /* PARAMS   */
 $courseId       = required_param('id',PARAM_INT);
 $course         = get_course($courseId);
-$contextCourse  = CONTEXT_COURSE::instance($courseId);
+$contextCourse  = context_course::instance($courseId);
 $url            = new moodle_url('/local/friadmin/course_template/course_template.php',array('id' => $courseId));
 
 $strTitle       = get_string('coursetemplate_title', 'local_friadmin');
@@ -27,7 +27,7 @@ $strSubTitle    = get_string('course_enrolment', 'local_friadmin');
 require_login($course);
 
 /* Check Permissions/Capability */
-if (!has_capability('local/friadmin:view',CONTEXT_SYSTEM::instance())) {
+if (!has_capability('local/friadmin:view',context_system::instance())) {
     if (!local_friadmin_helper::CheckCapabilityFriAdmin()) {
         print_error('nopermissions', 'error', '', 'block/frikomport:view');
     }//if_superuser

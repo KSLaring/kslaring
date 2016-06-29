@@ -114,8 +114,6 @@ class local_friadmin_helper {
 
             /* Search Criteria  */
             $params = array();
-            $params['archetype']    = 'manager';
-            $params['context']      = null;
             $params['user']         = $USER->id;
             $params['level']        = CONTEXT_COURSECAT;
 
@@ -123,17 +121,16 @@ class local_friadmin_helper {
             $sql = " SELECT		ra.id
                      FROM		{role_assignments}	ra
                         JOIN	{role}				r		ON 		r.id			= ra.roleid
-                                                            AND		r.archetype		= :archetype
+                                                            AND		r.archetype		IN ('manager')
                                                             AND     r.shortname     = r.archetype
                         JOIN    {context}           ct      ON      ct.id			= ra.contextid
                                                             AND     ct.contextlevel = :level
-                     WHERE		ra.userid 		= :user
-                        AND		ra.contextid 	= :context ";
+                     WHERE		ra.userid 		= :user ";
 
             /* For each Category checks if the user has permissions */
             foreach ($categoriesLst as $category) {
                 /* Get Context Category */
-                $contextCat = CONTEXT_COURSECAT::instance($category->id);
+                $contextCat = context_coursecat::instance($category->id);
                 /**
                  * @updateDate      22/06/2015
                  * @author          eFaktor     (fbv)
@@ -258,7 +255,7 @@ class local_friadmin_helper {
                                     rc.industrycode
                           FROM      {report_gen_companydata}        rc
                               JOIN  {report_gen_company_relation}   rcr ON    rcr.companyid = rc.id
-                                                                    AND   rcr.parentid  IN ($parents)
+                                                                        AND   rcr.parentid  IN ($parents)
                           WHERE     rc.hierarchylevel = 2
                               AND   rcr.parentid ";
 
