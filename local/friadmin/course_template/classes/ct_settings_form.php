@@ -140,6 +140,26 @@ class ct_settings_form extends moodleform {
         
         $str_format = 'format_' . $format;
         switch ($option) {
+            case 'homepage':
+                $home_page = $form->createElement('checkbox','homepage',get_string('checkbox_home','local_course_page'));
+                $form->insertElementBefore($home_page,'descriptionhdr');
+                $form->setDefault('homepage',$value);
+
+                break;
+            case 'ratings':
+                $home_ratings = $form->createElement('checkbox','ratings',get_string('home_ratings','local_course_page'));
+                $form->insertElementBefore($home_ratings,'descriptionhdr');
+                $form->setDefault('ratings',$value);
+
+                break;
+            case 'homevisible':
+                $visible['0'] = get_string('hide');
+                $visible['1'] = get_string('show');
+                $home_visible = $form->createElement('select', 'homevisible', get_string('home_visible','local_course_page'), $visible);
+                $form->insertElementBefore($home_visible,'ratings');
+                $form->setDefault('homevisible',$value);
+
+                break;
             case 'prerequisities':
                 $form->addElement('textarea','prerequisities',get_string('home_prerequisities',$str_format),'rows="5" style="width:95%;"');
                 $form->setDefault('prerequisities',$value);
