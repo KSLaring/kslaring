@@ -24,9 +24,6 @@ class ct_settings_form extends moodleform {
 
         /* Form         */
         $form               = $this->_form;
-        /* Java script for Course Format selector */
-        $PAGE->requires->yui_module('moodle-course-formatchooser', 'M.course.init_formatchooser',
-                                    array(array('formid' => $form->getAttribute('id'))));
 
         list($course,$category,$editor,$ct) = $this->_customdata;
 
@@ -60,12 +57,6 @@ class ct_settings_form extends moodleform {
             $form->addElement('filemanager', 'overviewfiles_filemanager', get_string('courseoverviewfiles'), null, $overviewfilesoptions);
             $form->addHelpButton('overviewfiles_filemanager', 'courseoverviewfiles');
             $summaryfields .= ',overviewfiles_filemanager';
-        }
-
-        if (!empty($course->id) and !has_capability('moodle/course:changesummary', $courseContext)) {
-            // Remove the description header it does not contain anything any more.
-            $form->removeElement('descriptionhdr');
-            $form->hardFreeze($summaryfields);
         }
 
         // Course format.

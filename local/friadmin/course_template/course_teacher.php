@@ -25,7 +25,7 @@ $courseId       = required_param('id',PARAM_INT);
 $courseTemplate = required_param('ct',PARAM_INT);
 $addSearch      = optional_param('addselect_searchtext', '', PARAM_RAW);
 $removeSearch   = optional_param('removeselect_searchtext', '', PARAM_RAW);
-$contextCourse  = CONTEXT_COURSE::instance($courseId);
+$contextCourse  = context_course::instance($courseId);
 $url            = new moodle_url('/local/friadmin/course_template/course_teacher.php',array('id' => $courseId,'ct' => $courseTemplate));
 $returnUrl      = new moodle_url('/local/friadmin/course_template/course_template.php',array('id' => $courseId));
 
@@ -35,7 +35,7 @@ $strSubTitle    = get_string('course_teachers', 'local_friadmin');
 $instance       = null;
 
 /* Check Permissions/Capability */
-if (!has_capability('local/friadmin:view',CONTEXT_SYSTEM::instance())) {
+if (!has_capability('local/friadmin:view',context_system::instance())) {
     if (!local_friadmin_helper::CheckCapabilityFriAdmin()) {
         print_error('nopermissions', 'error', '', 'block/frikomport:view');
     }//if_superuser

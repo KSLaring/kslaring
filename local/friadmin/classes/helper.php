@@ -48,28 +48,28 @@ class local_friadmin_helper {
     public static function CheckCapabilityFriAdmin() {
         /* Variables    */
         global $DB, $USER;
-        $params = null;
-        $rdo    = null;
-        $sql    = null;
+        $contextCat     = null;
+        $contextCourse  = null;
+        $contextSystem  = null;
+        $params         = null;
+        $rdo            = null;
+        $sql            = null;
 
         try {
-            if (is_siteadmin($USER->id)) {
-                return true;
-            }
-            
             /* Search Criteria  */
             $params = array();
             $params['user']         = $USER->id;
-            $params['level']        = CONTEXT_COURSECAT;
-            $params['archetype']    = 'manager';
-
+            $contextCat             = CONTEXT_COURSECAT;
+            $contextCourse          = CONTEXT_COURSE;
+            $contextSystem          = CONTEXT_SYSTEM;
+            
             /* SQL Instruction  */
             $sql = " SELECT		ra.id
                      FROM		{role_assignments}	ra
                         JOIN	{role}				r		ON 		r.id			= ra.roleid
-                                                            AND		r.archetype		= :archetype
+                                                            AND		r.archetype		IN ('manager','coursecreator')
                         JOIN	{context}		    ct		ON		ct.id			= ra.contextid
-                                                            AND		ct.contextlevel	= :level
+                                                            AND		ct.contextlevel	IN ($contextCat,$contextCourse,$contextSystem)
                      WHERE		ra.userid 		= :user ";
 
             /* Execute  */
@@ -106,7 +106,10 @@ class local_friadmin_helper {
         global $DB,$USER;
         $myCategories   = null;
         $categoriesLst  = null;
+        $context        = null;
         $contextCat     = null;
+        $contextCourse  = null;
+        $contextSystem  = null;
 
         try {
             /* Get all the categories   */
@@ -114,23 +117,27 @@ class local_friadmin_helper {
 
             /* Search Criteria  */
             $params = array();
-            $params['user']         = $USER->id;
-            $params['level']        = CONTEXT_COURSECAT;
+            $params['user']     = $USER->id;
+            $contextCat         = CONTEXT_COURSECAT;
+            $contextCourse      = CONTEXT_COURSE;
+            $contextSystem      = CONTEXT_SYSTEM;
 
             /* SQL Instruction  */
             $sql = " SELECT		ra.id
                      FROM		{role_assignments}	ra
-                        JOIN	{role}				r		ON 		r.id			= ra.roleid
-                                                            AND		r.archetype		IN ('manager')
-                                                            AND     r.shortname     = r.archetype
-                        JOIN    {context}           ct      ON      ct.id			= ra.contextid
-                                                            AND     ct.contextlevel = :level
-                     WHERE		ra.userid 		= :user ";
+                        JOIN	{role}				r		ON 	r.id			= ra.roleid
+                                                            AND	r.archetype		IN ('manager','coursecreator')
+                                                            AND r.shortname     = r.archetype
+                        JOIN    {context}           ct      ON  ct.id			= ra.contextid
+                                                            AND	ct.contextlevel	IN ($contextCat,$contextCourse,$contextSystem)
+                     WHERE		ra.userid 		= :user
+                        AND		ra.contextid 	= :context ";
 
             /* For each Category checks if the user has permissions */
             foreach ($categoriesLst as $category) {
                 /* Get Context Category */
-                $contextCat = context_coursecat::instance($category->id);
+                $context = context_coursecat::instance($category->id);
+
                 /**
                  * @updateDate      22/06/2015
                  * @author          eFaktor     (fbv)
@@ -138,9 +145,11 @@ class local_friadmin_helper {
                  * Description
                  * Admin site can see everything
                  */
-                if (!has_capability('moodle/category:manage', $contextCat)) {
+                if (!has_capability('moodle/category:manage', $context)
+                    &&
+                    !has_capability('moodle/course:create', $context)) {
                     /* Execute   */
-                    $params['context'] = $contextCat->id;
+                    $params['context'] = $context->id;
                     $rdo = $DB->get_record_sql($sql,$params);
                     if ($rdo) {
                         /* Add Category */

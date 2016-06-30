@@ -159,6 +159,12 @@ class local_friadmin_coursetemplate_select extends local_friadmin_widget impleme
      * Add exception
      * clean code
      * rename variables
+     *
+     * @updateDate  30/06/2016
+     * @auhtor      eFaktor     (fbv)
+     *
+     * Description
+     * Show only categories connected with you
      */
     protected function get_popup_data() {
         /* Variables    */
@@ -180,14 +186,13 @@ class local_friadmin_coursetemplate_select extends local_friadmin_widget impleme
                             'templates' => array());
 
             /* Get Categories   */
-            $result['categories'] = coursecat::make_categories_list('moodle/category:manage');
+            $result['categories'] = local_friadmin_helper::getMyCategories();
 
             /* Fill the data    */
             if ($pluginInfo) {
                 if (isset($pluginInfo->template_category) && ($pluginInfo->template_category)) {
                     /* Get Template Category && Course Category */
                     $templateCatId = $pluginInfo->template_category;
-                    $courseCat = coursecat::get($templateCatId, MUST_EXIST, true);
 
                     /* Get Courses category */
                     $sql = " SELECT c.id,
@@ -202,12 +207,11 @@ class local_friadmin_coursetemplate_select extends local_friadmin_widget impleme
                                     AND c.category = $templateCatId ";
 
                     global $DB;
-                    $templateCourses = $DB->get_records_sql($sql);//$courseCat->get_courses();
+                    $templateCourses = $DB->get_records_sql($sql);
 
                     /* Add to result Structure  */
                     foreach ($templateCourses as $templateCo) {
                         if ($templateCo->visible) {
-                            //$result['templates'][$templateCo->shortname] = $templateCo->fullname;
                             $result['templates'][$templateCo->id] = $templateCo->fullname;
                         }//if_visible
                     }//for_templatesCourse

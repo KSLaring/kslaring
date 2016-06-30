@@ -415,17 +415,18 @@ class CourseTemplate {
     public static function HasCorrectPermissions() {
         /* Variables    */
         global $DB, $USER;
-
+        $contextCat     = null;
+        $contextCourse  = null;
+        $contextSystem  = null;
+        
         try {
-            if (is_siteadmin($USER->id)) {
-                return true;
-            }
-
             /* Fist, check if the user has the correct permissions  */
             /* Search Criteria  */
             $params = array();
-            $params['user'] = $USER->id;
-            $params['level']     = CONTEXT_COURSECAT;
+            $params['user']     = $USER->id;
+            $contextCat         = CONTEXT_COURSECAT;
+            $contextCourse      = CONTEXT_COURSE;
+            $contextSystem      = CONTEXT_SYSTEM;
 
             /* SQL Instruction  */
             $sql = " SELECT		ra.id,
@@ -433,10 +434,10 @@ class CourseTemplate {
                                 ra.userid
                      FROM		{role_assignments}	ra
                         JOIN	{role}				r		ON 	r.id 			= ra.roleid
-                                                            AND	r.archetype		IN ('manager')
+                                                            AND	r.archetype		IN ('manager','coursecreator')
                                                             AND r.shortname     = r.archetype
                         JOIN    {context}           ct      ON  ct.id			= ra.contextid
-                                                            AND ct.contextlevel = :level
+                                                            AND	ct.contextlevel	IN ($contextCat,$contextCourse,$contextSystem)
                      WHERE		ra.userid     = :user
                          ";
 
@@ -574,16 +575,16 @@ class CourseTemplate {
 
             /* Enrol Instance   */
             $enrolInstance = new stdClass();
-            $enrolInstance->id                              = $data->instanceid;
-            $enrolInstance->courseid                        = $data->id;
+            $enrolInstance->id                                      = $data->instanceid;
+            $enrolInstance->courseid                                = $data->id;
             if ($data->welcome_message) {
-                $enrolInstance->{ENROL_FIELD_WELCOME_MESSAGE}   = $data->welcome_message;
+                $enrolInstance->{ENROL_FIELD_WELCOME_MESSAGE}       = $data->welcome_message;
             }
-            $enrolInstance->{ENROL_FIELD_CUTOFFDATE}        = $data->date_off;
-            $enrolInstance->{ENROL_FIELD_WAITLISTSIZE}      = $data->list_size;
-            $enrolInstance->{ENROL_FIELD_MAXENROLMENTS}     = $data->max_enrolled;
-            $enrolInstance->{ENROL_FIELD_INVOICE}           = $data->invoice;
-            $enrolInstance->{ENROL_FIELD_APPROVAL}          = $data->approval;
+            $enrolInstance->{ENROL_FIELD_CUTOFFDATE}                = $data->date_off;
+            $enrolInstance->{ENROL_FIELD_WAITLISTSIZE}              = $data->list_size;
+            $enrolInstance->{ENROL_FIELD_MAXENROLMENTS}             = $data->max_enrolled;
+            $enrolInstance->{ENROL_FIELD_INVOICE}                   = $data->invoice;
+            $enrolInstance->{ENROL_FIELD_APPROVAL}                  = $data->approval;
             $enrolInstance->{ENROL_FILED_COURSE_INTERNAL_PRICE}     = $data->priceinternal;
             $enrolInstance->{ENROL_FILED_COURSE_EXTERNAL_PRICE}     = $data->priceexternal;
 
@@ -674,7 +675,10 @@ class CourseTemplate {
 
             $course = get_course($data->id);
 
-            $data->instanceid = $plugin->add_default_instance($course);
+            /* Add the instance */
+            $plugin->add_default_instance($course);
+            /* Get the id */
+            $enrol = $DB->get_record('enrol',array('courseid'=>$course->id, 'enrol'=>'waitinglist'),'id');
 
             /* Insert Default instance*/
             $sql = " SELECT *
@@ -682,10 +686,10 @@ class CourseTemplate {
                      WHERE  waitinglistid = :courseid
                         AND courseid      = :waitinglistid";
 
-            $rdo = $DB->get_records_sql($sql,array('waitinglistid' => $data->instanceid,'courseid' => $data->id));
+            $rdo = $DB->get_records_sql($sql,array('waitinglistid' => $enrol->id,'courseid' => $data->id));
             if ($rdo) {
                 foreach ($rdo as $instance) {
-                    $instance->waitinglistid    = $data->instanceid;
+                    $instance->waitinglistid    = $enrol->id;
                     $instance->courseid         = $data->id;
                     $instance->timecreated      = $time;
 
@@ -699,6 +703,7 @@ class CourseTemplate {
                 }
             }
 
+            $data->instanceid = $enrol->id;
             self::UpdateWaitingEnrolment($data);
 
             /* Commit */
