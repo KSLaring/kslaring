@@ -228,26 +228,36 @@ class block_frikomport extends block_base {
      *
      * Description
      * Check if the user is a super user
+     *
+     * @updateDate      30/06/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Permissions for managers and course creators
      */
     private static function CheckCapability_FriAdmin() {
         /* Variables    */
         global $DB, $USER;
-
+        $contextCat     = null;
+        $contextCourse  = null;
+        $contextSystem  = null;
+        
         try {
             /* Search Criteria  */
             $params = array();
             $params['user']         = $USER->id;
-            $params['level']        = CONTEXT_COURSECAT;
-            $params['archetype']    = 'manager';
+            $contextCat             = CONTEXT_COURSECAT;
+            $contextCourse          = CONTEXT_COURSE;
+            $contextSystem          = CONTEXT_SYSTEM;
 
             /* SQL Instruction  */
             $sql = " SELECT		ra.id
                      FROM		{role_assignments}	ra
                         JOIN	{role}				r		ON 		r.id			= ra.roleid
-                                                            AND		r.archetype		= :archetype
+                                                            AND		r.archetype		IN ('manager','coursecreator')
                                                             AND     r.shortname     = r.archetype
                         JOIN	{context}		    ct		ON		ct.id			= ra.contextid
-                                                            AND		ct.contextlevel	= :level
+                                                            AND		ct.contextlevel	IN ($contextCat,$contextCourse,$contextSystem)
                      WHERE		ra.userid 		= :user ";
 
             /* Execute  */

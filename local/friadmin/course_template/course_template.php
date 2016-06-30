@@ -15,6 +15,8 @@ require_once('../../../config.php');
 require_once('lib/coursetemplatelib.php');
 require_once('../../../course/lib.php');
 
+require_login();
+
 /* PARAMS   */
 $courseId       = required_param('id',PARAM_INT);
 $course         = get_course($courseId);
@@ -23,8 +25,6 @@ $url            = new moodle_url('/local/friadmin/course_template/course_templat
 
 $strTitle       = get_string('coursetemplate_title', 'local_friadmin');
 $strSubTitle    = get_string('course_enrolment', 'local_friadmin');
-
-require_login($course);
 
 /* Check Permissions/Capability */
 if (!has_capability('local/friadmin:view',context_system::instance())) {
@@ -64,3 +64,4 @@ echo $linkLst->getContentListLink();
 
 /* Footer   */
 echo $OUTPUT->footer();
+
