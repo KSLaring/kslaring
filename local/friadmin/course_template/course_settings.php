@@ -19,6 +19,8 @@ require_once('lib/coursetemplatelib.php');
 require_once('classes/ct_settings_form.php');
 require_once('../../../course/lib.php');
 
+require_login();
+
 /* PARAMS   */
 $courseId       = required_param('id',PARAM_INT);
 $courseTemplate = required_param('ct',PARAM_INT);
@@ -35,8 +37,6 @@ $course         = course_get_format($course)->get_course();
 $category       = null;
 $editorOpt      = null;
 $fileOpt        = null;
-
-require_login($course);
 
 /* Check Permissions/Capability */
 if (!has_capability('local/friadmin:view',context_system::instance())) {

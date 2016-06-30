@@ -25,7 +25,7 @@ require_login();
 $courseId       = required_param('id',PARAM_INT);
 $courseTemplate = required_param('ct',PARAM_INT);
 $waitinglist    = optional_param('waitinglist',0,PARAM_INT);
-$contextCourse  = CONTEXT_COURSE::instance($courseId);
+$contextCourse  = context_course::instance($courseId);
 $url            = new moodle_url('/local/friadmin/course_template/course_enrolment.php',array('id' => $courseId,'ct' => $courseTemplate));
 $returnUrl      = new moodle_url('/local/friadmin/course_template/course_teacher.php',array('id' => $courseId,'ct' => $courseTemplate));
 
@@ -36,7 +36,7 @@ $instance       = null;
 $action         = null;
 
 /* Check Permissions/Capability */
-if (!has_capability('local/friadmin:view',CONTEXT_SYSTEM::instance())) {
+if (!has_capability('local/friadmin:view',context_system::instance())) {
     if (!local_friadmin_helper::CheckCapabilityFriAdmin()) {
         print_error('nopermissions', 'error', '', 'block/frikomport:view');
     }//if_superuser
