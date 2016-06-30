@@ -407,25 +407,25 @@ class friadmin {
     private static function CheckCapability_FriAdmin() {
         /* Variables    */
         global $DB, $USER;
+        $contextCat     = null;
+        $contextCourse  = null;
+        $contextSystem  = null;
 
         try {
-            if (is_siteadmin($USER->id)) {
-                return true;
-            }
-
             /* Search Criteria  */
             $params = array();
             $params['user']         = $USER->id;
-            $params['level']        = CONTEXT_COURSECAT;
-            $params['archetype']    = 'manager';
+            $contextCat             = CONTEXT_COURSECAT;
+            $contextCourse          = CONTEXT_COURSE;
+            $contextSystem          = CONTEXT_SYSTEM;
 
             /* SQL Instruction  */
             $sql = " SELECT		ra.id
                      FROM		{role_assignments}	ra
                         JOIN	{role}				r		ON 		r.id			= ra.roleid
-                                                            AND		r.archetype		= :archetype
+                                                            AND		r.archetype		IN ('manager','coursecreator')
                         JOIN	{context}		    ct		ON		ct.id			= ra.contextid
-                                                            AND		ct.contextlevel	= :level
+                                                            AND		ct.contextlevel	IN ($contextCat,$contextCourse,$contextSystem)
                      WHERE		ra.userid 		= :user ";
 
             /* Execute  */

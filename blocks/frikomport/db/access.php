@@ -31,7 +31,8 @@ $capabilities = array(
         'captype' => 'write',
         'contextlevel' => CONTEXT_SYSTEM,
         'archetypes' => array(
-            'manager' => CAP_ALLOW
+            'manager'       => CAP_ALLOW,
+            'coursecreator' => CAP_ALLOW
         ),
 
         'clonepermissionsfrom' => 'moodle/my:manageblocks'
@@ -43,7 +44,8 @@ $capabilities = array(
         'captype' => 'write',
         'contextlevel' => CONTEXT_BLOCK,
         'archetypes' => array(
-            'manager' => CAP_ALLOW
+            'manager'       => CAP_ALLOW,
+            'coursecreator' => CAP_ALLOW
         ),
 
         'clonepermissionsfrom' => 'moodle/site:manageblocks'
@@ -55,7 +57,8 @@ $capabilities = array(
         'captype' => 'view',
         'contextlevel' => CONTEXT_BLOCK,
         'archetypes' => array(
-            'manager' => CAP_ALLOW
+            'manager'       => CAP_ALLOW,
+            'coursecreator' => CAP_ALLOW
         ),
 
         'clonepermissionsfrom' => 'moodle/site:manageblocks'
