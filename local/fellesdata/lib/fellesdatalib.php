@@ -626,7 +626,7 @@ class FSKS_COMPANY {
             $sql = " SELECT   fs.id,
                               fs.org_enhet_id   as 'companyid',
                               fs.org_navn       as 'name',
-                              fs.org_enhet_over as 'parent',
+                              fs.org_enhet_over as 'fs_parent',
                               fs.privat,
                               fs.ansvar,
                               fs.tjeneste,
@@ -648,20 +648,20 @@ class FSKS_COMPANY {
                 foreach ($rdo as $instance) {
                     /* Info Company */
                     $infoCompany = new stdClass();
-                    $infoCompany->id        = $instance->id;
-                    $infoCompany->fscompany = $instance->companyid;
-                    $infoCompany->name      = $instance->name;
-                    $infoCompany->parent    = $instance->parent;
-                    $infoCompany->privat    = $instance->privat;
-                    $infoCompany->ansvar    = $instance->ansvar;
-                    $infoCompany->tjeneste  = $instance->tjeneste;
-                    $infoCompany->adresse1  = $instance->adresse1;
-                    $infoCompany->adresse2  = $instance->adresse2;
-                    $infoCompany->adresse3  = $instance->adresse3;
-                    $infoCompany->postnr    = $instance->postnr;
-                    $infoCompany->poststed  = $instance->poststed;
-                    $infoCompany->epost     = $instance->epost;
-                    $infoCompany->action    = $instance->action;
+                    $infoCompany->id            = $instance->id;
+                    $infoCompany->fscompany     = $instance->companyid;
+                    $infoCompany->name          = $instance->name;
+                    $infoCompany->fs_parent     = $instance->fs_parent;
+                    $infoCompany->privat        = $instance->privat;
+                    $infoCompany->ansvar        = $instance->ansvar;
+                    $infoCompany->tjeneste      = $instance->tjeneste;
+                    $infoCompany->adresse1      = $instance->adresse1;
+                    $infoCompany->adresse2      = $instance->adresse2;
+                    $infoCompany->adresse3      = $instance->adresse3;
+                    $infoCompany->postnr        = $instance->postnr;
+                    $infoCompany->poststed      = $instance->poststed;
+                    $infoCompany->epost         = $instance->epost;
+                    $infoCompany->action        = $instance->action;
 
                     /* Add company  */
                     $synchronizeFS[$instance->id] = $infoCompany;
@@ -911,7 +911,7 @@ class FSKS_COMPANY {
                 case UPDATE:
                     if ($rdoCompany) {
                         $rdoCompany->name           = $companyFS->name;
-                        $rdoCompany->parent         = $companyFS->parent;
+                        $rdoCompany->fs_parent      = $companyFS->fs_parent;
                         $rdoCompany->privat         = $companyFS->privat;
                         $rdoCompany->ansvar         = $companyFS->ansvar;
                         $rdoCompany->tjeneste       = $companyFS->tjeneste;
