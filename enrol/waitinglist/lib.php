@@ -454,6 +454,7 @@ class enrol_waitinglist_plugin extends enrol_plugin {
             require_once('approval/approvallib.php');
             /* Send Notification Manager Approved   */
             $infoNotification = \Approval::Info_NotificationApproved($userid,$instance->courseid);
+
             \Approval::SendApprovedNotification_Managers($infoNotification);
         }
     }
