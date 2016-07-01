@@ -887,6 +887,7 @@ class course_page  {
      * @static
      * @param           $course_id
      * @param           $format_options
+     * 
      * @return          $format_options
      * @throws          Exception
      *
@@ -980,7 +981,7 @@ class course_page  {
      * Description
      * Return the edit_options
      */
-    public static function get_edit_options() {
+    public static function get_edit_options($courseId = null) {
         /* Variables    */
         global $CFG,$COURSE;
         $context        = null;
@@ -989,9 +990,11 @@ class course_page  {
         try {
             /* Get the context  */
             if ($COURSE->id) {
-                $context        = CONTEXT_COURSE::instance($COURSE->id);
+                $context        = context_course::instance($COURSE->id);
+            }elseif ($courseId) {
+                $context        = context_course::instance($COURSE->id);
             }else {
-                $context = CONTEXT_COURSECAT::instance(0);
+                $context        = context_coursecat::instance(0);
             }//if_else_course
 
             $edit_options   = array('maxfiles' => EDITOR_UNLIMITED_FILES, 'maxbytes'=>$CFG->maxbytes, 'trusttext'=>false, 'noclean'=>true, 'context' => $context);
@@ -1013,7 +1016,7 @@ class course_page  {
      * Description
      * Return the file_options
      */
-    public static function get_file_options() {
+    public static function get_file_options($courseId = null) {
         /* Variables    */
         global $CFG,$COURSE;
         $context        = null;
@@ -1022,9 +1025,11 @@ class course_page  {
         try {
             /* Get the context  */
             if ($COURSE->id) {
-                $context        = CONTEXT_COURSE::instance($COURSE->id);
+                $context        = context_course::instance($COURSE->id);
+            }else if ($courseId) {
+                $context        = context_course::instance($courseId);
             }else {
-                $context = CONTEXT_COURSECAT::instance(0);
+                $context        = context_coursecat::instance(0);
             }//if_else_course
 
             $file_options   = array('maxfiles' => 1, 'maxbytes'=>$CFG->maxbytes, 'subdirs' => 0, 'context' => $context);
@@ -1048,7 +1053,7 @@ class course_page  {
      * Description
      * Prepare the Standard Video
      */
-    public static function prepareStandardHomeSummaryEditor($edit_options,$context) {
+    public static function prepareStandardHomeSummaryEditor($edit_options,$context,$courseId = null) {
         /* Variables  */
         global $COURSE;
         $editor         = null;
@@ -1064,6 +1069,9 @@ class course_page  {
             // When changes are made during a new course setup the $COURSE global
             // is set to the site, therefore we need to check if courseid is set
             // and if it is greater than 1.
+            if ($courseId) {
+                $COURSE->id = $courseId;
+            }
             if (isset($COURSE->id) && $COURSE->id > 1) {
                 $format_options = course_get_format($COURSE->id)->get_format_options();
                 if (array_key_exists('homesummary',$format_options)) {
@@ -1097,7 +1105,7 @@ class course_page  {
      * Description
      * Prepare the File Manager
      */
-    public static function prepareFileManagerHomeGraphicsVideo($file_options,$context,$field) {
+    public static function prepareFileManagerHomeGraphicsVideo($file_options,$context,$field,$courseId = null) {
         /* Variables */
         global $COURSE;
         $file_editor    = null;
@@ -1109,6 +1117,9 @@ class course_page  {
             $file_editor->$field  = 0;
 
             /* Prepare Standard Editor */
+            if ($courseId) {
+                $COURSE->id = $courseId;
+            }
             if ($COURSE->id) {
                 $format_options = course_get_format($COURSE->id)->get_format_options();
                 if (array_key_exists($field,$format_options)) {
