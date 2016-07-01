@@ -43,6 +43,25 @@ class ct_settings_form extends moodleform {
         $form->setType('categoryName', PARAM_TEXT);
         $form->setDefault('categoryName',$category);
 
+        /* Visble   */
+        $choices = array();
+        $choices['0'] = get_string('hide');
+        $choices['1'] = get_string('show');
+        $form->addElement('select', 'visible', get_string('visible'), $choices);
+        $form->addHelpButton('visible', 'visible');
+        $form->setDefault('visible', $course->visible);
+        if (!empty($course->id)) {
+            if (!has_capability('moodle/course:visibility', $courseContext)) {
+                $form->hardFreeze('visible');
+                $form->setConstant('visible', $course->visible);
+            }
+        } else {
+            if (!guess_if_creator_will_have_course_capability('moodle/course:visibility', $catContext)) {
+                $form->hardFreeze('visible');
+                $form->setConstant('visible', $course->visible);
+            }
+        }
+        
         // Description.
         $form->addElement('header', 'descriptionhdr', get_string('description'));
         $form->setExpanded('descriptionhdr');
@@ -93,7 +112,9 @@ class ct_settings_form extends moodleform {
         foreach ($format_options as $name=>$option) {
             $this->AddCourseFormat($form,$name,$option,$course->format,$course->id);
         }
-        
+
+        $form->setExpanded('homepagehdr');
+
         // Appearance.
         $form->addElement('hidden', 'appearancehdr', get_string('appearance'));
         $form->setType('appearancehdr', PARAM_RAW);
@@ -128,9 +149,46 @@ class ct_settings_form extends moodleform {
      */
     function AddCourseFormat(&$form,$option,$value,$format,$courseId) {
         global $USER;
-        
+
         $str_format = 'format_' . $format;
         switch ($option) {
+            case 'homesummary':
+                $home_page_header = $form->createElement('header', 'homepagehdr',get_string('home_page','local_course_page'));
+                $form->insertElementBefore($home_page_header,'courseformathdr');
+
+                $form->addElement('hidden','homesummary');
+                $form->setType('homesummary',PARAM_RAW);
+
+                /* Get Editor   */
+                list($edit_options,$context) = course_page::get_edit_options();
+                $editor = course_page::prepareStandardHomeSummaryEditor($edit_options,$context,$courseId);
+
+                /* Editor */
+                $home_summay = $form->createElement('editor','homesummary_editor',get_string('home_desc','local_course_page'),null,$edit_options);
+                $form->insertElementBefore($home_summay,'courseformathdr');
+                $form->setType('homesummary_editor',PARAM_RAW);
+                $form->setDefault('homesummary_editor',$editor->homesummary_editor);
+
+                break;
+            case 'pagegraphics':
+                /* Get FileManager   */
+                list($file_options,$context) = course_page::get_file_options($courseId);
+                $file_editor['accepted_types'] = array('image','web_image');
+                $file_editor = course_page::prepareFileManagerHomeGraphicsVideo($file_options,$context,'pagegraphics');
+
+
+                $page_graphics = $form->createElement('filemanager', 'pagegraphics_filemanager', get_string('home_graphics','local_course_page'), null, $file_options);
+                $form->insertElementBefore($page_graphics,'courseformathdr');
+                $form->setDefault('pagegraphics_filemanager',$file_editor->pagegraphics);
+
+                $form->addElement('hidden','pagegraphics');
+                $form->setType('pagegraphics',PARAM_RAW);
+                $format_options = course_get_format($courseId)->get_format_options();
+                if (array_key_exists('pagegraphics',$format_options)) {
+                    $form->setDefault('pagegraphics',$format_options['pagegraphics']);
+                }//if_exists
+
+                break;
             case 'homepage':
                 $home_page = $form->createElement('checkbox','homepage',get_string('checkbox_home','local_course_page'));
                 $form->insertElementBefore($home_page,'descriptionhdr');
