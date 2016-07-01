@@ -112,7 +112,7 @@ class ct_settings_form extends moodleform {
         foreach ($format_options as $name=>$option) {
             $this->AddCourseFormat($form,$name,$option,$course->format,$course->id);
         }
-        
+
         $form->setExpanded('homepagehdr');
 
         // Appearance.
@@ -149,7 +149,7 @@ class ct_settings_form extends moodleform {
      */
     function AddCourseFormat(&$form,$option,$value,$format,$courseId) {
         global $USER;
-        
+
         $str_format = 'format_' . $format;
         switch ($option) {
             case 'homesummary':
@@ -183,10 +183,7 @@ class ct_settings_form extends moodleform {
 
                 $form->addElement('hidden','pagegraphics');
                 $form->setType('pagegraphics',PARAM_RAW);
-                $format_options = course_get_format($courseId)->get_format_options();
-                if (array_key_exists('pagegraphics',$format_options)) {
-                    $form->setDefault('pagegraphics',$format_options['pagegraphics']);
-                }//if_exists
+                $form->setDefault('pagegraphics',$value);
 
                 break;
             case 'homepage':
