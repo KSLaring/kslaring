@@ -32,16 +32,17 @@
  * Add new strings for location menu
  */
 $string['enabledock']               = 'Allow the user to dock this block';
-$string['pluginname']               = 'Frikomport';
+$string['pluginname']               = 'Course Wizard';
 $string['searchinfrikomport']       = 'Search';
-$string['frikomport:addinstance']   = 'Add a new frikomport block';
-$string['frikomport:myaddinstance'] = 'Add a new frikomport block to My home';
-$string['frikomport:view'] = 'View the frikomport block';
+$string['frikomport:addinstance']   = 'Add a new Course Wizard block';
+$string['frikomport:myaddinstance'] = 'Add a new Course Wizard block to My home';
+$string['frikomport:view'] = 'View the Course Wizard block';
 
-$string['ncourses']                 = 'Course list';
-$string['nnewcourses']              = 'Create new courses';
-$string['naddcourse']               = 'Add a new course';
-$string['naddfromtemplate']         = 'New course from template';
+$string['ncourses']                     = 'Course list';
+$string['nnewcourses']                  = 'Create new courses';
+$string['naddcourse']                   = 'New course';
+$string['naddfromtemplate']             = 'New event';
+$string['naddfromnectcoursetemplate']   = 'New netcourse';
 
 $string['norgstructure']            = 'Organization structure';
 $string['nvirksomheter']            = 'Virksomheter';
@@ -50,6 +51,8 @@ $string['nvirksomhetsrader']        = 'Virksomhetsområder';
 $string['nlocations']       = 'Locations';
 $string['lst_locations']    = 'Browse list of locations';
 $string['new_location']     = 'New Location';
+
+$string['nmysettings']      = 'My settings';
 
 $string['nreports']         = 'Reports';
 $string['nparticipants']    = 'Participants list';

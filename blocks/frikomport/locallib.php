@@ -47,6 +47,9 @@ class block_frikomport_menu_manager {
      * Add sections - a branch with leaves - with the »add_tree_section« method
      */
     protected function build_tree() {
+        global $CFG;
+        require_once ($CFG->dirroot . '/local/friadmin/lib.php');
+
         $settingsicon = new pix_icon('i/settings', '');
 
         // Create the root node
@@ -77,7 +80,16 @@ class block_frikomport_menu_manager {
             'text' => get_string('naddfromtemplate', 'block_frikomport'),
             'icon' => $settingsicon,
             'type' => navigation_node::NODETYPE_LEAF,
-            'action' => '/local/friadmin/coursetemplate.php'
+            'action' => '/local/friadmin/coursetemplate.php?type=' . TEMPLATE_TYPE_EVENT
+        );
+        $subnode = new navigation_node($item);
+        $this->nodes->add_node($subnode);
+
+        $item = array(
+            'text' => get_string('naddfromnectcoursetemplate', 'block_frikomport'),
+            'icon' => $settingsicon,
+            'type' => navigation_node::NODETYPE_LEAF,
+            'action' => '/local/friadmin/coursetemplate.php?type=' . TEMPLATE_TYPE_NETCOURSE
         );
         $subnode = new navigation_node($item);
         $this->nodes->add_node($subnode);
@@ -116,6 +128,15 @@ class block_frikomport_menu_manager {
             )
         );
         $this->add_tree_section($branch);
+
+        $item = array(
+            'text' => get_string('nmysettings', 'block_frikomport'),
+            'icon' => $settingsicon,
+            'type' => navigation_node::NODETYPE_LEAF,
+            'action' => '/local/friadmin/mysettings.php'
+        );
+        $subnode = new navigation_node($item);
+        $this->nodes->add_node($subnode);
     }
 
     /**
