@@ -35,13 +35,25 @@ class local_friadmin_coursetemplate_page extends local_friadmin_widget implement
 
     /**
      * Construct the coursetemplate_page renderable.
+     *
+     * @param int $type The course type
      */
-    public function __construct() {
+    public function __construct($type) {
         // Create the data object and set the first values
         parent::__construct();
 
         $this->data->url = new moodle_url('/local/friadmin/coursetemplate.php');
-        $this->data->title = get_string('coursetemplate_title', 'local_friadmin');
-        $this->data->subtitle = get_string('coursetemplate_subtitle', 'local_friadmin');
+
+        $this->data->title = '';
+        $this->data->subtitle = '';
+        $this->data->errormissingcat = '';
+
+        if ($type == TEMPLATE_TYPE_EVENT) {
+            $this->data->title = get_string('eventtemplate_title', 'local_friadmin');
+            $this->data->subtitle = get_string('eventtemplate_subtitle', 'local_friadmin');
+        } else if ($type == TEMPLATE_TYPE_NETCOURSE) {
+            $this->data->title = get_string('netcoursetemplate_title', 'local_friadmin');
+            $this->data->subtitle = get_string('netcoursetemplate_subtitle', 'local_friadmin');
+        }
     }
 }

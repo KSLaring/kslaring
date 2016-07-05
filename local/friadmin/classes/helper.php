@@ -62,7 +62,7 @@ class local_friadmin_helper {
             $contextCat             = CONTEXT_COURSECAT;
             $contextCourse          = CONTEXT_COURSE;
             $contextSystem          = CONTEXT_SYSTEM;
-            
+
             /* SQL Instruction  */
             $sql = " SELECT		ra.id
                      FROM		{role_assignments}	ra
@@ -277,6 +277,140 @@ class local_friadmin_helper {
             throw $ex;
         }//try_catch
     }//get_leveltwo_sectors
+
+    /**
+     * Get the user's local template category.
+     *
+     * @return int The category id
+     */
+    public static function get_localtempcategory() {
+        global $DB, $USER;
+
+        $categoryid = 0;
+
+        if ($record = $DB->get_record('friadmin_local_templates', array('userid' => $USER->id))) {
+            $categoryid = $record->categoryid;
+        }
+
+        return $categoryid;
+    }
+
+    /**
+     * Check if the user selected template category exists.
+     *
+     * @return bool True or false
+     */
+    public static function localtempcategory_exists($catid = 0) {
+        global $DB;
+
+        return $DB->record_exists('course_categories', array('id' => $catid));
+    }
+
+    /**
+     * Get the user's local template category.
+     *
+     * @return array The course ids for the two template types.
+     */
+    public static function get_preftemplate_selection() {
+        global $DB, $USER;
+
+        $preferredtemplates = array(
+            TEMPLATE_TYPE_EVENT => 0,
+            TEMPLATE_TYPE_NETCOURSE => 0
+        );
+
+        if ($result = $DB->get_records('friadmin_preferred_template', array('userid' => $USER->id))) {
+            foreach ($result as $row) {
+                if ($row->type == TEMPLATE_TYPE_EVENT) {
+                    $preferredtemplates[TEMPLATE_TYPE_EVENT] = $row->courseid;
+                } else if ($row->type == TEMPLATE_TYPE_NETCOURSE) {
+                    $preferredtemplates[TEMPLATE_TYPE_NETCOURSE] = $row->courseid;
+                }
+            }
+        }
+
+        return $preferredtemplates;
+    }
+
+    /**
+     * Get the user managed categories and the template list
+     *
+     * @return      array       An array with the two popup lists
+     * @throws      Exception
+     */
+    public static function get_usercategories_data() {
+        /* Variables    */
+        global $CFG;
+        $result = null;
+        $pluginInfo = null;
+        $templateCatId = null;
+        $courseCat = null;
+        $templateCourses = null;
+
+        try {
+            require_once($CFG->libdir . '/coursecatlib.php');
+
+            /* Plugin Info      */
+            $pluginInfo = get_config('local_friadmin');
+            $localtempcategory = self::get_localtempcategory();
+
+            /* Result Structure */
+            $result = array(
+                'localtempcategory' => $localtempcategory,
+                'localtempcategoryexists' => self::localtempcategory_exists($localtempcategory),
+                'preftemplates' => self::get_preftemplate_selection(),
+                'categories' => array(),
+                'eventtemplates' => array(),
+                'netcoursetemplates' => array()
+            );
+
+            /* Get Categories   */
+            $result['categories'] = self::getMyCategories();
+
+            /* Fill the data    */
+            if ($pluginInfo) {
+                if (isset($pluginInfo->template_category) && ($pluginInfo->template_category)) {
+                    /* Get Template Category && Course Category */
+                    $templateCatId = $pluginInfo->template_category;
+
+                    /* Get Courses category */
+                    $sql = " SELECT c.id,
+                                    c.fullname,
+                                    c.format,
+                                    c.visible
+                             FROM   {course} c 
+                             WHERE  (c.format like '%classroom%' 
+                                     OR  
+                                     #c.format like '%elearning%'
+                                     #OR  
+                                     c.format like '%netcourse%')
+                                     AND 
+                                     (c.category = $templateCatId
+                                     OR
+                                     c.category =  $localtempcategory
+                                     )";
+
+                    global $DB;
+                    $templateCourses = $DB->get_records_sql($sql);
+
+                    /* Add to result Structure  */
+                    foreach ($templateCourses as $templateCo) {
+                        if ($templateCo->visible) {
+                            if (strpos($templateCo->format, 'classroom') !== false) {
+                                $result['eventtemplates'][$templateCo->id] = $templateCo->fullname;
+                            } else {
+                                $result['netcoursetemplates'][$templateCo->id] = $templateCo->fullname;
+                            }
+                        }//if_visible
+                    }//for_templatesCourse
+                }//if_template_category
+            }//if_pluginInfo
+
+            return $result;
+        } catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//get_popup_data
 
     /*********************/
     /* PRIVATE FUNCTIONS */

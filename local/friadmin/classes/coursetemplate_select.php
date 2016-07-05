@@ -33,19 +33,22 @@ defined('MOODLE_INTERNAL') || die;
  */
 class local_friadmin_coursetemplate_select extends local_friadmin_widget implements renderable {
 
-    // The form feeback - for debugging
+    // The form feeback - for debugging.
     protected $formdatadump = null;
 
-    // The course creation process result
+    // The course creation process result.
     protected $coursecreationresult = null;
 
-    // The Moodle form
+    // The Moodle form.
     protected $mform = null;
 
-    // The returned form data
+    // The returned form data.
     protected $fromform = null;
 
-    // The id of the created course
+    // Does the user selected local template category exisist.
+    protected $localtempcategoryexists = null;
+
+    // The id of the created course.
     protected $newcourseid = null;
 
     /**
@@ -64,7 +67,7 @@ class local_friadmin_coursetemplate_select extends local_friadmin_widget impleme
      * Description
      * Redirect to Course Settings
      */
-    public function __construct() {
+    public function __construct($type) {
         /* Variables    */
         $customdata     = null;
         $urlSettings    = null;
@@ -74,17 +77,33 @@ class local_friadmin_coursetemplate_select extends local_friadmin_widget impleme
             parent::__construct();
 
             /* custom data used */
-            $customdata = $this->get_popup_data();
+            $customdata = local_friadmin_helper::get_usercategories_data();
+
+            $this->localtempcategoryexists = $customdata['localtempcategoryexists'];
+
+            $customdata['templates'] = array();
+
+            if ($type == TEMPLATE_TYPE_EVENT) {
+                $customdata['templates'] = $customdata['eventtemplates'];
+                $customdata['preftemplate'] = $customdata['preftemplates'][TEMPLATE_TYPE_EVENT];
+                $customdata['seltemplate'] = 'seleventtemplate';
+            } else if ($type == TEMPLATE_TYPE_NETCOURSE) {
+                $customdata['templates'] = $customdata['netcoursetemplates'];
+                $customdata['preftemplate'] = $customdata['preftemplates'][TEMPLATE_TYPE_NETCOURSE];
+                $customdata['seltemplate'] = 'selnetcoursetemplate';
+            }
 
             /* Create form  */
-            $mform = new local_friadmin_coursetemplate_select_form(null, $customdata, 'post', '', array('id' => 'mform-coursetemplate-select'));
+            $mform = new local_friadmin_coursetemplate_select_form(null, $customdata,
+                'post', '', array('id' => 'mform-coursetemplate-select'));
             $this->mform = $mform;
 
             /* Collect the input data and create the new course */
             if ($fromform = $mform->get_data()) {
                 $this->fromform = $fromform;
 
-                $this->formdatadump = '<div class="form-data"><h4>Form data</h4><pre>' . var_export($fromform, true) . '</pre></div>';
+                $this->formdatadump = '<div class="form-data"><h4>Form data</h4><pre>' .
+                    var_export($fromform, true) . '</pre></div>';
 
                 /* Create the course    */
                 $this->coursecreationresult = $this->create_course();
@@ -95,7 +114,8 @@ class local_friadmin_coursetemplate_select extends local_friadmin_widget impleme
                  * Description
                  * Redirect the user to course settings to be able to complete it
                  */
-                $urlSettings = new moodle_url('/local/friadmin/course_template/course_settings.php',array('id' => $this->newcourseid,'ct' => (int)$this->fromform->seltemplate));
+                $urlSettings = new moodle_url('/local/friadmin/course_template/course_settings.php',
+                    array('id' => $this->newcourseid,'ct' => (int)$this->fromform->seltemplate));
                 redirect($urlSettings);
             }//if_get_data
         } catch (Exception $ex) {
@@ -125,13 +145,19 @@ class local_friadmin_coursetemplate_select extends local_friadmin_widget impleme
     }
 
     /**
-     * Render the form and set the data
+     * Render the form and save the rendered HTML, add an error message
+     * when the selected local template directory does not exist.
      */
     public function render() {
+        $this->data->content = '';
+
         if (is_null($this->coursecreationresult)) {
-            $this->data->content = $this->mform->render();
+            if (!$this->localtempcategoryexists) {
+                $this->data->content .= $this->missing_localtempcategory_message();
+            }
+            $this->data->content .= $this->mform->render();
         } else {
-            $this->data->content = $this->coursecreationresult;
+            $this->data->content .= $this->coursecreationresult;
         }
     }
 
@@ -140,11 +166,15 @@ class local_friadmin_coursetemplate_select extends local_friadmin_widget impleme
      *
      * The associative $defaults: array 'elementname' => 'defaultvalue'
      *
-     * @param Array $defaults The default values
+     * @param array $defaults The default values
      */
     public function set_defaults($defaults = array()) {
         $this->mform->set_defaults($defaults);
     }
+
+    /*********************/
+    /* PRIVATE FUNCTIONS */
+    /*********************/
 
     /**
      * Get the user managed categories and the template list
@@ -303,9 +333,6 @@ class local_friadmin_coursetemplate_select extends local_friadmin_widget impleme
         }//try_Catch
     }//create_course
 
-    /**********************/
-    /* PRIVATE FUNCTIONS */
-    /*********************/
     /**
      * Restore a backup course file with the given parameters for the new course.
      *
@@ -506,5 +533,22 @@ class local_friadmin_coursetemplate_select extends local_friadmin_widget impleme
             throw $ex;
         }//try_catch
 
+    }
+
+    /**
+     * Create the missing local template category message.
+     *
+     * @return string HTML for the error message
+     * @throws coding_exception
+     */
+    protected function missing_localtempcategory_message() {
+        $out = '';
+        $link = new moodle_url('/local/friadmin/mysettings.php');
+        $strmissinglocaltempcategory = get_string('missinglocaltempcategory', 'local_friadmin',
+            $link->out());
+
+        $out .= '<div class="alert alert-error">' . $strmissinglocaltempcategory . '</div>';
+
+        return $out;
     }
 }

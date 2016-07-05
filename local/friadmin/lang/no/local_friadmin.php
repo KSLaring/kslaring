@@ -76,8 +76,12 @@ $string['coursedetail_participantlist'] = 'Last ned deltakerliste';
 $string['coursedetail_duplicate']       = 'Dupliser';
 $string['coursedetail_email']           = 'Send epost';
 
-$string['coursetemplate_title']         = 'Kursveiviser - Legg til fra kursmal';
-$string['coursetemplate_subtitle']      = 'Opprett et kurs fra en kursmal.';
+$string['eventtemplate_title']          = 'Arrangement';
+$string['eventtemplate_subtitle']       = 'Opprett fra en kursmal.';
+$string['netcoursetemplate_title']      = 'Nettkurs';
+$string['netcoursetemplate_subtitle']   = 'Opprett fra en kursmal.';
+//$string['coursetemplate_title']         = 'Kursveiviser - Legg til fra kursmal';
+//$string['coursetemplate_subtitle']      = 'Opprett et kurs fra en kursmal.';
 $string['coursetemplate_cat']           = 'Kurskategori for kursmaler';
 $string['coursetemplate_cat_desc']      = 'Vennligst velg kurskategorien hvor alle kursmaler skal lagres.';
 $string['coursetemplate_cat_select']    = 'Velg kurskategori for kursmaler ...';
@@ -90,6 +94,23 @@ id: <strong>{$a->id}</strong>, kortnavn: "<strong>{$a->shortname}</strong>",
 Fullt navn: "<strong>{$a->fullname}</strong>".';
 $string['coursetemplate_error']         = 'Kurset kunne ikke opprettes.';
 
+$string['mysettings_title']                 = 'My settings';
+$string['seltemplcategory']                 = 'Select course template category ...';
+$string['seltemplcategorylabel']            = 'Local template category';
+$string['seltemplcategorydesc']             = 'Please select the course category where all 
+your local template courses are stored.';
+$string['missingseltemplcategory']          = 'Missing local template category';
+$string['selpreftemplate']                  = 'Select preferred template ...';
+$string['selpreftemplatelabel']             = 'Preferred template';
+$string['selpreftemplatedesc']              = 'Please select your preferred event template.';
+$string['selprefnetcoursetemplate']         = 'Select preferred netcourse template ...';
+$string['selprefnetcoursetemplatelabel']    = 'Preferred netcourse template';
+$string['selprefnetcoursetemplatedesc']     = 'Please select your preferred netcourse template.';
+$string['selmysetingssave']                 = 'Save settings';
+$string['missinglocaltempcategory']         = 'Your selected course template forlder is missing. 
+Please select a new folder for your course templates in <a href="{$a}">My settings</a> 
+in the Course wizard.';
+
 $string['locationline']         = 'Sted: ';
 $string['fromto']               = 'Fra - til: ';
 $string['coursename']           = 'Kursnavn: ';
@@ -100,6 +121,8 @@ $string['selname']              = 'Kursnavn';
 $string['selcategory']          = 'Lagres i kategorien';
 $string['missingselcategory']   = 'Mangler målkategori';
 $string['seltemplate']          = 'Kursmal';
+$string['seleventtemplate']     = 'Kursmal';
+$string['selnetcoursetemplate'] = 'Nettkurs kursmal';
 $string['missingseltemplate']   = 'Mangler kursmal';
 $string['selsubmit']            = 'Søk';
 $string['selsubmitcreate']      = 'Opprett kurs';

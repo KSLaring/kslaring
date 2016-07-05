@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -15,24 +14,33 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+//namespace local_friadmin;
+
+defined('MOODLE_INTERNAL') || die;
+
+//use renderable;
+//use renderer_base;
+//use stdClass;
+
 /**
- * The course list page
+ * Class containing data for the local_friadmin mysettings page
  *
  * @package         local
  * @subpackage      friadmin
- * @copyright       2015 eFaktor
+ * @copyright       2016 eFaktor
  * @author          Urs Hunkler {@link urs.hunkler@unodo.de}
  * @license         http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-/**
- * @updateDate      16/06/2015
- * @author          eFaktor     (fbv)
- *
- * Description
- * Integrate the Course Loction plugin
- */
-defined('MOODLE_INTERNAL') || die;
+class local_friadmin_mysettings_page extends local_friadmin_widget implements renderable {
 
-$plugin->version    = 2016070500;       /* The current plugin version (Date: YYYYMMDDXX)  */
-$plugin->requires   = 2014051205;       /* Requires this Moodle version                   */
-$plugin->component  = 'local_friadmin'; /* Full name of the plugin (used for diagnostics) */
+    /**
+     * Construct the coursetemplate_page renderable.
+     */
+    public function __construct() {
+        // Create the data object and set the first values
+        parent::__construct();
+
+        $this->data->url = new moodle_url('/local/friadmin/mysettings.php');
+        $this->data->title = get_string('mysettings_title', 'local_friadmin');
+    }
+}
