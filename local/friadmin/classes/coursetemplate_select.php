@@ -69,6 +69,7 @@ class local_friadmin_coursetemplate_select extends local_friadmin_widget impleme
      */
     public function __construct($type) {
         /* Variables    */
+        global $CFG,$USER;
         $customdata     = null;
         $urlSettings    = null;
 
@@ -107,6 +108,22 @@ class local_friadmin_coursetemplate_select extends local_friadmin_widget impleme
 
                 /* Create the course    */
                 $this->coursecreationresult = $this->create_course();
+
+                /**
+                 * @updateDate  07/06/2016
+                 * @author      eFaktor     (fbv)
+                 *
+                 * Description
+                 * Enrol the course creator. This is the normal behaviour in Moodle
+                 */
+                // Get the context of the newly created course.
+                $context = context_course::instance($this->newcourseid, MUST_EXIST);
+
+                if (!empty($CFG->creatornewroleid) and !is_viewing($context, NULL, 'moodle/role:assign') and !is_enrolled($context, NULL, 'moodle/role:assign')) {
+                    // Deal with course creators - enrol them internally with default role.
+                    enrol_try_internal_enrol($this->newcourseid, $USER->id, $CFG->creatornewroleid);
+                }
+
                 /**
                  * @updateDate  07/01/2016
                  * @author      eFaktor     (fbv)
