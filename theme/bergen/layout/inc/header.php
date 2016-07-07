@@ -13,7 +13,11 @@ $loggedin = isloggedin();
 $loggedinclass = ' not-loggedin';
 if ($loggedin) {
     /* Get the municipality connected with the user */
-    $municipality = Municipality::municipality_ExitsMuni_User($USER->id);
+    //$municipality = Municipality::municipality_ExitsMuni_User($USER->id);
+    // For the Bergen theme always show the Bergen logo.
+    $municipality = new stdClass();
+    $municipality->name = 'Bergen kommune';
+    $municipality->logo = $OUTPUT->pix_url('bergen_kommune_logo', 'theme_bergen');
     $loggedinclass = ' loggedin';
 }
 ?>
