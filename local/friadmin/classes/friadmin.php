@@ -176,6 +176,9 @@ class friadmin {
 
         $PAGE->navbar->add(get_string('pluginname', 'local_friadmin'));
         $PAGE->navbar->add($data->title);
+        
+        $PAGE->requires->yui_module('moodle-local_friadmin-courselist',
+            'M.local_friadmin.courselist.init', array(), null, true);
     }
 
     /*

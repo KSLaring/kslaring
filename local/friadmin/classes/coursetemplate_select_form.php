@@ -36,6 +36,9 @@ class local_friadmin_coursetemplate_select_form extends \moodleform {
         $mform = $this->_form;
         $customdata = $this->_customdata;
 
+        $mform->addElement('hidden', 'temptype', $customdata['temptype']);
+        $mform->setType('temptype', PARAM_INT);
+
         $defaultText = get_string('fullnamecourse');
         $attributes = array(
             'placeholder' => $defaultText

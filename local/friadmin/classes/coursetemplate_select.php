@@ -83,6 +83,7 @@ class local_friadmin_coursetemplate_select extends local_friadmin_widget impleme
             $this->localtempcategoryexists = $customdata['localtempcategoryexists'];
 
             $customdata['templates'] = array();
+            $customdata['temptype'] = $type;
 
             if ($type == TEMPLATE_TYPE_EVENT) {
                 $customdata['templates'] = $customdata['eventtemplates'];
