@@ -415,9 +415,203 @@ class local_friadmin_helper {
         }//try_catch
     }//get_popup_data
 
+    /**
+     * Get the user related location related menu data for
+     * the municipality, sectors and locations
+     *
+     * @param int|null $userId
+     * @param int|null $municipalityid
+     * @param int|null $sectorid
+     *
+     * @return           array
+     * @throws           Exception
+     */
+    public static function get_user_locationdata($userId = null, $municipalityid = null,
+        $sectorid = null) {
+        global $USER;
+        $result = null;
+        $leveloneobjs = null;
+        $leveloneobjsfiltered = array();
+        $userleveloneids = array();
+
+        // Set the $municipalityid to null if it is 0 or -1 to get all sectors and locations.
+        if ($municipalityid <= 0) {
+            $municipalityid = null;
+        }
+
+        // Set the $sectorid to null if it is 0 or -1 to get all locations.
+        if ($sectorid <= 0) {
+            $sectorid = null;
+        }
+
+        try {
+            // Result structure.
+            $result = array(
+                'municipality' => array(),
+                'sector' => array(),
+                'location' => array()
+            );
+
+            if (is_null($userId)) {
+                $userId = $USER->id;
+            }//id_userid
+
+            // Get the competence related municipalities
+            // The $leveloneobjs array contains objects with
+            // id, name and industrycode properties.
+            $leveloneobjs = self::get_levelone_municipalities($userId);
+
+            //Get all my municipalities.
+            foreach ($leveloneobjs as $obj) {
+                $result['municipality'][$obj->id] = $obj->name;
+                $userleveloneids[] = $obj->id;
+
+                // If a municipality has been selected then use only that one.
+                if (!is_null($municipalityid)) {
+                    if ($municipalityid == $obj->id) {
+                        $leveloneobjsfiltered[] = $obj;
+                    }
+                } else {
+                    $leveloneobjsfiltered[] = $obj;
+                }
+            }//for_levelone_obj
+
+            //Get all categories where the user is a super user.
+            //$myCategories = self::getMyCategories();
+
+            if (!empty($leveloneobjsfiltered)) {
+                // Get the sectors for the relevant municipalities via industrycodes.
+                $leveltwoobjs = self::get_leveltwo_sectors($leveloneobjsfiltered);
+
+                foreach ($leveltwoobjs as $obj) {
+                    if (!in_array($obj->id, $result['sector'])) {
+                        $result['sector'][$obj->id] = $obj->name;
+                    }
+                }
+
+                if (is_null($sectorid)) {
+                    // Get the locations for the relevant municipalities via levelone ids
+                    $locationsobjs = self::get_locations($leveloneobjsfiltered);
+                } else {
+                    $locationsobjs = self::get_locations_for_sector($sectorid);
+                }
+
+                foreach ($locationsobjs as $obj) {
+                    if (!in_array($obj->id, $result['location'])) {
+                        $result['location'][$obj->id] = $obj->name;
+                    }
+                }
+            }//obj_filteref
+
+            return $result;
+        } catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//get_user_locationdata
+
     /*********************/
     /* PRIVATE FUNCTIONS */
     /*********************/
+
+    /**
+     * Get the locations with id, name
+     *
+     * @param Object $leveloneobjsfiltered The array of objects with the municipalities
+     *
+     * @return mixed Array|null The array with the sector objects
+     */
+    /**
+     * @param        $leveloneobjsfiltered
+     *
+     * @return       array|null
+     * @throws       Exception
+     *
+     * @updateDate  18/06/2015
+     * @author      eFaktor     (fbv)
+     *
+     * Description
+     * Add comments, exception...
+     */
+    protected function get_locations($leveloneobjsfiltered) {
+        /* Variables */
+        global $DB;
+        $ids = array();
+        $locations = null;
+
+        try {
+            if ($leveloneobjsfiltered) {
+                /* Get the municipality ids */
+                foreach ($leveloneobjsfiltered as $obj) {
+                    if (!in_array($obj->id, $ids)) {
+                        $ids[] = $obj->id;
+                    }
+                }
+
+                /* Get the location ids and names with given municipality ids */
+                if (!empty($ids)) {
+                    /* SQL Instruction  */
+                    $sql = "  SELECT    id,
+                                        name
+                              FROM      {course_locations}
+                              WHERE     levelone ";
+
+                    /* Get search criteria  */
+                    list($in, $params) = $DB->get_in_or_equal($ids);
+
+                    /* Execute  */
+                    $locations = $DB->get_records_sql($sql . $in, $params);
+                }//if_Empty
+            }//if_leveloneobjsfiltered
+
+            return $locations;
+        } catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//get_locations
+
+    /**
+     * Get the locations for the given sectors with id, name
+     *
+     * @param int $sectorid The selected sector id
+     *
+     * @return mixed Array|null The array with the sector objects
+     *
+     * @throws  Exception
+     */
+    protected function get_locations_for_sector($sectorid) {
+        global $DB;
+        $locations = null;
+
+        try {
+            if ($sectorid) {
+                // Get the location ids and names for the given sector id.
+                $sql = "SELECT	lo.id,
+                                lo.name
+                        FROM {course_locations} lo
+                        -- LEVLE TWO
+                        JOIN {report_gen_company_relation}	cr_two	
+                          ON cr_two.parentid = lo.levelone
+                          AND cr_two.companyid = :sector_selected
+                        JOIN {report_gen_companydata}	co_two 
+                          ON co_two.id = cr_two.companyid
+                        -- LEVEL ONE
+                        JOIN {report_gen_company_relation}	cr_one 
+                          ON cr_one.companyid = cr_two.parentid
+                        -- LEVEL ZERO
+                        JOIN {report_gen_company_relation}	cr_zero 
+                          ON cr_zero.companyid = cr_one.companyid  ";
+
+                // Get search criteria.
+                $params = array('sector_selected' => $sectorid);
+
+                $locations = $DB->get_records_sql($sql, $params);
+            }
+
+            return $locations;
+        } catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//get_locations_for_sector
 
     /**
      * @param           $categoryId
