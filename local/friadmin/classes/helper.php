@@ -56,6 +56,9 @@ class local_friadmin_helper {
         $sql            = null;
 
         try {
+            if (is_siteadmin($USER)) {
+                return true;
+            }
             /* Search Criteria  */
             $params = array();
             $params['user']         = $USER->id;
