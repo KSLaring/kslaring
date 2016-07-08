@@ -420,6 +420,10 @@ class CourseTemplate {
         $contextSystem  = null;
         
         try {
+            if (is_siteadmin($USER)) {
+                return true;
+            }
+            
             /* Fist, check if the user has the correct permissions  */
             /* Search Criteria  */
             $params = array();
