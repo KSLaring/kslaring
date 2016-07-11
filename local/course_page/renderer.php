@@ -24,7 +24,7 @@ class local_course_page_renderer extends plugin_renderer_base {
         /* Variables    */
         $output  = $this->output->header();
 
-        $context = CONTEXT_COURSE::instance($course->id);
+        $context = context_course::instance($course->id);
 
         $course->summary = file_rewrite_pluginfile_urls($course->summary, 'pluginfile.php', $context->id, 'course', 'summary',null);
         if (isset($format_options['homesummary'])) {
@@ -250,6 +250,8 @@ class local_course_page_renderer extends plugin_renderer_base {
                 $block_two .= $this->addExtra_PrerequisitesBlock($course,$format_options,$manager);
                 /* Block Coordinator    */
                 $block_two .= $this->addCoordinatorBlock($course->id,$manager);
+                /* Block Participant    */
+                $block_two .= $this->addParticipantListBlock($course->id,$course->format,$format_options);
                 /* Block Duration       */
                 $block_two .= $this->addExtra_DurationBlock($course->format,$format_options,$course->id);
                 /* Block Course Type    */
@@ -364,7 +366,6 @@ class local_course_page_renderer extends plugin_renderer_base {
                 $out .= '<h5 class="title_home chp-title">' . get_string('home_published',$str_format) . '</h5>';
                 $out .= '<div class="extra_home chp-content">' . userdate($course->timemodified,'%d.%m.%Y', 99, false) . '</div>';
             }
-
 
             switch ($course->format) {
                 case 'netcourse':
@@ -858,7 +859,7 @@ class local_course_page_renderer extends plugin_renderer_base {
             if ($manager) {
                 $user = $DB->get_record('user',array('id' => $manager,'deleted' => 0));
                 if ($user) {
-                $user->description = file_rewrite_pluginfile_urls($user->description, 'pluginfile.php', CONTEXT_USER::instance($user->id)->id, 'user', 'profile', null);
+                    $user->description = file_rewrite_pluginfile_urls($user->description, 'pluginfile.php', context_user::instance($user->id)->id, 'user', 'profile', null);
                 $url_user = new moodle_url('/user/profile.php',array('id' => $user->id));
 
                 $out .= '<h5 class="title_coordinator chp-title">' . get_string('home_coordinater','local_course_page') . '</h5>';
@@ -891,6 +892,65 @@ class local_course_page_renderer extends plugin_renderer_base {
         return $out;
     }//addCoordinatorBlock
 
+    /**
+     * @param           $courseId
+     * @param           $courseFormat
+     * @param           $formatOptions
+     *
+     * @return          string
+     * @throws          Exception
+     *
+     * @creationDate    06/07/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Add participant list link
+     */
+    protected function addParticipantListBlock($courseId,$courseFormat,$formatOptions) {
+        /* Variables */
+        global $USER;
+        $out        = '';
+        $urlLink    = null;
+        $strTitle   = null;
+        $context    = null;
+
+        try {
+            /* Get Context */
+            $context = context_course::instance($courseId);
+
+            /* Add participants block if has permissions    */
+            if (($courseFormat == 'classroom')
+                ||
+                ($courseFormat == 'classroom_frikomport')) {
+                if ($formatOptions['participant']) {
+
+                }//if_option
+            }//course_format
+
+            if (has_capability('local/participants:manage',$context)) {
+                if (($courseFormat == 'classroom')
+                    ||
+                    ($courseFormat == 'classroom_frikomport')) {
+                    if ($formatOptions['participant']) {
+                        /* Add link participants list   */
+                        $urlLink    = new moodle_url('/local/participants/participants.php',array('id' => $courseId));
+                        $strTitle   = get_string('home_participant','local_course_page');
+
+                        $out .= html_writer::start_tag('div',array('class' => 'manager chp-block clearfix'));
+                        $out .= '<h5 class="title_coordinator chp-title">' . get_string('home_participant_header','local_course_page') . '</h5>';
+                        $out .= '<div class="extra_home chp-content">';
+                        $out .= '<a href="' . $urlLink . '">' . $strTitle . "</a>";
+                        $out .= '</div>';
+                        $out .= html_writer::end_tag('div');//manager
+                    }//if_option
+                }//if_format
+            }//if_capability
+
+            return $out;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//addParticipantListBlock
 
     /**
      * @param           $course_id
