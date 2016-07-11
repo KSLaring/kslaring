@@ -891,6 +891,10 @@ class CourseTemplate {
                 $instance->approval         = 0;
                 $instance->priceinternal    = 0;
                 $instance->priceexternal    = 0;
+                $instance->welcome_message          = null;
+                $instance->self_waiting_message     = null;
+                $instance->bulk_waiting_message     = null;
+                $instance->bulk_renovation_message  = null;
 
                 return $instance;
             }//if
