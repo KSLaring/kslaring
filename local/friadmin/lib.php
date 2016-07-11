@@ -28,3 +28,35 @@ defined('MOODLE_INTERNAL') || die;
 
 define('TEMPLATE_TYPE_EVENT', 0);
 define('TEMPLATE_TYPE_NETCOURSE', 1);
+
+function local_friadmin_extends_settings_navigation($settingsnav, $context) {
+    global $CFG, $PAGE;
+
+    // Only add this settings item on non-site course pages.
+    if (!$PAGE->course or $PAGE->course->id == 1) {
+        return;
+    }
+
+    // Only let users with the appropriate capability see this settings item.
+    if (!has_capability('moodle/backup:backupcourse', context_course::instance($PAGE->course->id))) {
+        return;
+    }
+
+    if ($settingnode = $settingsnav->find('courseadmin', navigation_node::TYPE_COURSE)) {
+        $strduplicatecourse = get_string('duplicatecourse', 'local_friadmin');
+        $url = new moodle_url('/local/friadmin/duplicatecourse.php', array('id' => $PAGE->course->id));
+        $duplicatecoursenode = navigation_node::create(
+            $strduplicatecourse,
+            $url,
+            navigation_node::NODETYPE_LEAF,
+            //navigation_node::TYPE_SETTING,
+            'friadmin',
+            'friadmin',
+            new pix_icon('t/addcontact', $strduplicatecourse)
+        );
+        if ($PAGE->url->compare($url, URL_MATCH_BASE)) {
+            $duplicatecoursenode->make_active();
+        }
+        $settingnode->add_node($duplicatecoursenode, 'backup');
+    }
+}

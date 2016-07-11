@@ -645,4 +645,300 @@ class local_friadmin_helper {
             throw $ex;
         }//try_catch
     }//getSubcategories
+
+    /**
+     * Duplicate the coruse with the given data.
+     *
+     * @param object $data The course data
+     *
+     * @return array|string
+     * @throws Exception
+     */
+    public static function duplicate_course($data) {
+        $result = self::create_course($data);
+
+        return $result;
+    }
+
+    /**
+     * Create the course with the given data
+     * Restore the course from an exisitng course backup file.
+     * Create a course backup if non exists.
+     */
+    /**
+     * @return          array|string
+     * @throws          Exception
+     *
+     * @creationDate
+     * @author          Urs Hunkler {@link urs.hunkler@unodo.de}
+     *
+     * @updateDate      23/06/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Rebuild function.
+     *  - Add Exception
+     *  - Check if the user has the correct permissions
+     *  - Create a Fake Permission before create the new course from the template and
+     *  remove later.
+     *  - Errors is an array. So, it has to be converted into a string
+     */
+    protected static function create_course($data) {
+        /* Variables    */
+        global $DB, $CFG;
+
+        $result = '';
+        $fakePermission = null;
+        $newcourseid = null;
+        $error = null;
+        $coursedata = null;
+        $newCourse = null;
+        $info = null;
+        $errorMsg = null;
+        $admin = get_admin();
+
+        try {
+            $coursedata = array(
+                'userid' => $admin->id,
+                'sourcedir' => $CFG->dataroot . '/temp/test/',
+                'categoryid' => $data->selcategory,
+                'fullname' => $data->selfullname,
+                'shortname' => $data->selshortname,
+            );
+
+            list($newcourseid, $error) =
+                self::restore_course((int)$data->id, $coursedata, $data->includeusers, true);
+
+            if (empty($error)) {
+                // Get the infos for the new course.
+                $newCourse =
+                    $DB->get_record('course', array('id' => $newcourseid), '*', MUST_EXIST);
+                if ($newCourse) {
+                    //$this->newcourseid = $newCourse->id;
+                    $info = array('id' => $newCourse->id,
+                        'shortname' => $newCourse->shortname,
+                        'fullname' => $newCourse->fullname
+                    );
+
+                    $result .= '<p class="result">';
+                    $result .=
+                        get_string('coursetemplate_result', 'local_friadmin', $info) . '</p>';
+                } else {
+                    /* The course should exist when no processor errors had been generated */
+                    $result = '<p class="result">';
+                    $result .= get_string('coursetemplate_error', 'local_friadmin') . '</p>';
+                }//if_else_new_course
+            } else {
+                $result .= $error;
+            }
+
+            return array($info, $result);
+        } catch (Exception $ex) {
+            throw $ex;
+        }//try_Catch
+    }//create_course
+
+    /**
+     * Restore a backup course file with the given parameters for the new course.
+     *
+     * @param int $cid The course id of the course to restore
+     * @param array $options The backup options
+     * @param int $withusers Backup with users or without
+     * @param bool $forcebackup If true always create a new course backup, don't use an existing one
+     *
+     * @return array With the course id and the error
+     * @throws Exception
+     * @throws dml_transaction_exception
+     * @throws restore_controller_exception
+     */
+    protected static function restore_course($cid, $options, $withusers = 1, $forcebackup = false) {
+        /* Variables */
+        global $CFG,$DB;
+        $error      = '';
+        $courseid   = null;
+        $component  = 'backup';
+        $filearea   = 'course';
+        $itemid     = '0';
+        $sourcefile = null;
+
+        try {
+            require_once($CFG->dirroot . '/backup/util/includes/restore_includes.php');
+
+            $coursecontext  = context_course::instance($cid);
+            $fs             = get_file_storage();
+
+            $backupid = self::create_backup_if_needed($cid, $withusers, $forcebackup);
+
+            /**
+             * @updateDate      29/06/2016
+             * @author          eFaktor     (fbv)
+             *
+             * Description
+             * Remove get_file_inof because it compares with course = 1
+             */
+            //$browser    = get_file_browser();
+            //$fileinfo   = $browser->get_file_info($coursecontext, $component, $filearea, $itemid);
+
+            //if (is_a($fileinfo, 'file_info_stored')) {
+                $files      = $fs->get_area_files($coursecontext->id, $component, $filearea, $itemid);
+                $sourcefile = self::newest_stored_file($files);
+            //}
+
+            if (is_null($sourcefile)) {
+                $error .= 'No backupfile found for course id ' . $cid . "<br>\n";
+                return array($courseid, $error);
+            }
+
+            // Extract the file.
+            $packer     = get_file_packer('application/vnd.moodle.backup');
+            $backupid   = restore_controller::get_tempdir_name(SITEID, $options['userid']);
+            $path       = "$CFG->tempdir/backup/$backupid/";
+            if (!$packer->extract_to_pathname($sourcefile, $path)) {
+                $error .= 'Invalid backup file ' . $sourcefile->get_filename() . "<br>\n";
+                return array($courseid, $error);
+            }
+
+            // Start delegated transaction.
+            $transaction = $DB->start_delegated_transaction();
+
+            // Create new course.
+            $courseid = restore_dbops::create_new_course(fix_utf8($sourcefile->get_filename()),
+                                                         'restored-' . $backupid, $options['categoryid']);
+
+            // Restore backup into course.
+            $controller = new restore_controller($backupid,
+                                                 $courseid,
+                                                 backup::INTERACTIVE_NO,
+                                                 backup::MODE_SAMESITE,
+                                                 $options['userid'],
+                                                 backup::TARGET_NEW_COURSE);
+
+            if ($controller->execute_precheck()) {
+                $controller->execute_plan();
+            } else {
+                $error .= 'Precheck fails for ' . $sourcefile->get_filename() . ' ... skipping' . "<br>\n";
+                $results = $controller->get_precheck_results();
+                foreach ($results as $type => $messages) {
+                    foreach ($messages as $index => $message) {
+                        $error .= 'precheck ' . $type . '[' . $index . '] = ' . $message . "<br>\n";
+                    }
+                }
+                try {
+                    $transaction->rollback(new Exception('Prechecked failed'));
+                } catch (Exception $e) {
+                    unset($transaction);
+                    $controller->destroy();
+                    unset($controller);
+
+                    return array($courseid, $error);
+                }
+            }
+
+            // Commit and clean up.
+            $transaction->allow_commit();
+            unset($transaction);
+            $controller->destroy();
+            unset($controller);
+
+            // Set the course name choosen by the user
+            $course = new stdClass;
+            $course->id = $courseid;
+            $course->fullname = fix_utf8($options['fullname']);
+            $course->shortname = $options['shortname'];
+            $DB->update_record('course', $course);
+
+            return array($courseid, $error);
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//restore_course
+
+    /**
+     * Get the newest file in the file area.
+     *
+     * @param array $files The stored files
+     *
+     * @return null|stored_file The newest file
+     */
+    protected static function newest_stored_file($files) {
+        $newesttime = 0;
+        $newest = null;
+
+        /* @var $f stored_file */
+        foreach ($files as $f) {
+            if ($f->get_filename() === '.') {
+                continue;
+            }
+
+            if ($f->get_timecreated() > $newesttime) {
+                $newesttime = $f->get_timecreated();
+                $newest = $f;
+            }
+        }
+
+        return $newest;
+    }
+
+    /**
+     * Create an automatic course backup if none exisits.
+     *
+     * @param int $cid The course id of the course to restore
+     * @param int $withusers Backup with users or without
+     * @param bool $forcebackup If true always create a new course backup, don't use an existing one
+     *
+     * @return      null|int        The backup id if success, null if failure
+     * @throws      Exception
+     */
+    protected static function create_backup_if_needed($cid, $withusers = 1, $forcebackup = false) {
+        /* Variables */
+        global $CFG, $DB;
+        $result     = null;
+        $component  = 'backup';
+        $filearea   = 'course';
+        $itemid     = '0';
+
+        try {
+            $coursecontext  = context_course::instance($cid);
+            $fs             = get_file_storage();
+
+            if ($forcebackup || $fs->is_area_empty($coursecontext->id, $component, $filearea)) {
+                $course = $DB->get_record('course', array('id' => $cid), '*', MUST_EXIST);
+                if ($course) {
+                    $admin = get_admin();
+                    require_once($CFG->dirroot . '/backup/util/includes/backup_includes.php');
+                    $bc = new backup_controller(backup::TYPE_1COURSE, $cid, backup::FORMAT_MOODLE,
+                        backup::INTERACTIVE_NO, backup::MODE_SAMESITE, $admin->id);
+
+                    $bc->get_plan()->get_setting('users')->set_value($withusers);
+
+                    // Set the default filename.
+                    $format = $bc->get_format();
+                    $type = $bc->get_type();
+                    $id = $bc->get_id();
+                    $users = $bc->get_plan()->get_setting('users')->get_value();
+                    $anonymised = $bc->get_plan()->get_setting('anonymize')->get_value();
+                    $filename = backup_plan_dbops::get_default_backup_filename($format, $type,
+                        $id, $users, $anonymised);
+                    $bc->get_plan()->get_setting('filename')->set_value($filename);
+
+                    // Backup the course.
+                    $bc->set_status(backup::STATUS_AWAITING);
+                    $bc->execute_plan();
+
+                    // Get the results.
+                    $backupid = $bc->get_backupid();
+                    //$results = $bc->get_results();
+
+                    $bc->destroy();
+
+                    $result = $backupid;
+                }
+            }
+
+            return $result;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+
+    }
 }
