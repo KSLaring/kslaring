@@ -94,22 +94,19 @@ id: <strong>{$a->id}</strong>, kortnavn: "<strong>{$a->shortname}</strong>",
 Fullt navn: "<strong>{$a->fullname}</strong>".';
 $string['coursetemplate_error']         = 'Kurset kunne ikke opprettes.';
 
-$string['mysettings_title']                 = 'My settings';
-$string['seltemplcategory']                 = 'Select course template category ...';
-$string['seltemplcategorylabel']            = 'Local template category';
-$string['seltemplcategorydesc']             = 'Please select the course category where all 
-your local template courses are stored.';
-$string['missingseltemplcategory']          = 'Missing local template category';
-$string['selpreftemplate']                  = 'Select preferred template ...';
-$string['selpreftemplatelabel']             = 'Preferred template';
-$string['selpreftemplatedesc']              = 'Please select your preferred event template.';
-$string['selprefnetcoursetemplate']         = 'Select preferred netcourse template ...';
-$string['selprefnetcoursetemplatelabel']    = 'Preferred netcourse template';
-$string['selprefnetcoursetemplatedesc']     = 'Please select your preferred netcourse template.';
-$string['selmysetingssave']                 = 'Save settings';
-$string['missinglocaltempcategory']         = 'Your selected course template forlder is missing. 
-Please select a new folder for your course templates in <a href="{$a}">My settings</a> 
-in the Course wizard.';
+$string['mysettings_title']                 = 'Mine innstillinger';
+$string['seltemplcategory']                 = 'Velg din lokale kursmalkategori...';
+$string['seltemplcategorylabel']            = 'Lokal kursmalkategori';
+$string['seltemplcategorydesc']             = 'Vennligst velg en kurskategori hvor alle dine lokale kursmaler er lagret.';
+$string['missingseltemplcategory']          = 'Mangler lokal kursmalkategori';
+$string['selpreftemplate']                  = 'Velg foretrukket kursmal...';
+$string['selpreftemplatelabel']             = 'Foretrukket kursmal';
+$string['selpreftemplatedesc']              = 'Vennligst velg din foretrukne arrangementsmal.';
+$string['selprefnetcoursetemplate']         = 'Velg foretrukket nettkursmal...';
+$string['selprefnetcoursetemplatelabel']    = 'Foretrukket nettkursmal';
+$string['selprefnetcoursetemplatedesc']     = 'Vennligst velg din foretrukne nettkursmal.';
+$string['selmysetingssave']                 = 'Lagre innstillinger';
+$string['missinglocaltempcategory']         = 'Din valgte kurskategori for kursmaler finnes ikke. Vennligst velg en annen kurskategori for dine kursmaler i <a href="{$a}">Mine innstillinger</a> i Kursveiviseren.';
 
 $string['locationline']         = 'Sted: ';
 $string['fromto']               = 'Fra - til: ';
@@ -218,26 +215,24 @@ $string['enrol_wait_buk']   = 'Bulkpåmelding med venteliste';
 $string['no_competence_add_location']   = '<strong>Sorry, you must update your competence profile if you want to set up new locations connected with you competence</strong>';
 $string['no_competence_profile']        = '<strong>Sorry, you must update your competence profile if you want to look up locations connected with you competence</strong>';
 
-$string['course_teachers']              = 'Adding Teachers';
-$string['av_teachers']                  = 'Available teachers';
-$string['no_teachers']                  = 'None teachers';
-$string['sel_teachers']                 = 'Selected teachers';
+$string['course_teachers']              = 'Legg til lærere';
+$string['av_teachers']                  = 'Tilgjengelige lærere';
+$string['no_teachers']                  = 'Ingen lærere';
+$string['sel_teachers']                 = 'Valgte lærere';
 
-$string['pot_teachers']                = 'Potential teachers';
-$string['pot_teachers_matching']       = 'Potential matching teachers';
-$string['current_teachers']            = 'Current teachers';
-$string['current_teachers_matching']   = 'Current teachers matching';
+$string['pot_teachers']                = 'Potensielle lærere';
+$string['pot_teachers_matching']       = 'Potensielt matchende lærere';
+$string['current_teachers']            = 'Gjeldende lærere';
+$string['current_teachers_matching']   = 'Gjeldende matchende lærere';
 
-$string['duplicatecourse']          = 'Duplicate course';
-$string['includeusers']             = 'Include users';
-$string['includeusers_help']        = 'Select if you want to include the users in the duplicated coruse.';
-$string['dupcoursename']            = 'New course name';
-$string['dupcoursename_help']       = 'Set the name of the duplicated course.';
-$string['dupcoursenamedefault']     = ' copy';
-$string['selfullname']              = 'Fullname';
-$string['selfullname_help']         = 'Set name of the duplicated course.';
-$string['selshortname']             = 'Shortname';
-$string['selshortname_help']        = 'Set short name of the duplicated course. This short name
-must be unique.';
-$string['info_dup_course']          = 'Before starting to duplicate the course, you need to determine in 
-which category the course will be saved. The actual course category is selected by default.';
+$string['duplicatecourse']          = 'Duplisér kurs';
+$string['includeusers']             = 'Inkluder brukere';
+$string['includeusers_help']        = 'Velg om du vil ta med eksisterende brukere i det dupliserte kurset.';
+$string['dupcoursename']            = 'Nytt kursnavn';
+$string['dupcoursename_help']       = 'Gir det dupliserte kurset et nytt navn';
+$string['dupcoursenamedefault']     = ' kopi';
+$string['selfullname']              = 'Fullt kursnavn';
+$string['selfullname_help']         = 'Angir navnet på det dupliserte kurset.';
+$string['selshortname']             = 'Kortnavn';
+$string['selshortname_help']        = 'Angir kortnavnet på det dupliserte kurset. Kortnavnet må være unikt.';
+$string['info_dup_course']          = 'Før du dupliserer kurset må du angi kurskategorien hvor duplikatet skal plasseres. Som standard lagres det dupliserte kurset i samme kategori som originalen.';
