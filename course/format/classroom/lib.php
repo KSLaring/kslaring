@@ -633,6 +633,10 @@ class format_classroom extends format_base {
                     'label' => get_string('home_ratings', 'local_course_page'),
                     'element_type' => 'checkbox',
                 ),
+                'participant' => array(
+                    'label' => get_string('home_participant', 'local_course_page'),
+                    'element_type' => 'checkbox',
+                ),
                 'homevisible' => array(
                     'label' => get_string('home_visible', 'local_course_page'),
                     'default' => 1,
@@ -828,6 +832,7 @@ class format_classroom extends format_base {
             switch ($optionname) {
                 case 'homepage':
                 case 'ratings':
+                case 'participant':
                 case 'homevisible':
                 case 'homesummary':
                 case 'pagegraphics':
@@ -940,6 +945,15 @@ class format_classroom extends format_base {
                     break;
                 case 'ratings':
                     if (isset($data['ratings']) && $data['ratings']) {
+                        $data[$key] = 1;
+                    } else {
+                        $data[$key] = 0;
+                    }
+                    //if_homepage
+
+                    break;
+                case 'participant':
+                    if (isset($data['participant']) && $data['participant']) {
                         $data[$key] = 1;
                     } else {
                         $data[$key] = 0;
