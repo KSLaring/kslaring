@@ -20,6 +20,7 @@ define('TRACKER_PDF_DOWNLOAD', 'downloadpdf');
 define('TRACKER_PDF_SEND', 'sendpdf');
 
 class TrackerManager {
+    
     /********************/
     /* PUBLIC FUNCTIONS */
     /********************/
