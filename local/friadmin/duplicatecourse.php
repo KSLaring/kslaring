@@ -10,11 +10,13 @@
  */
 
 require_once('../../config.php');
-require_login();
 
 $courseid = required_param('id', PARAM_INT);
+
+require_login($courseid);
+
 $course = $DB->get_record('course', array('id' => $courseid));
-$str_defaultending = get_string('dupcorusenamedefault', 'local_friadmin');
+$str_defaultending = get_string('dupcoursenamedefault', 'local_friadmin');
 $coursecat = $course->category;
 $dupcoursenamefull = $course->fullname . $str_defaultending;
 $dupcoursenameshort = $course->shortname . $str_defaultending;
