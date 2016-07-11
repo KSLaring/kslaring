@@ -1623,7 +1623,7 @@ class TrackerManager {
 
                     /* State     */
                     $col = $col + 6;
-                    $my_xls->write($row, $col, get_string('outcome_course_started','local_tracker_manager'),array('size'=>12, 'name'=>'Arial','bg_color'=>$bg_color,'align'=>'left','v_align'=>'center'));
+                    $my_xls->write($row, $col, $state,array('size'=>12, 'name'=>'Arial','bg_color'=>$bg_color,'align'=>'left','v_align'=>'center'));
                     $my_xls->merge_cells($row,$col,$row,$col+1);
                     $my_xls->set_row($row,20);
 
@@ -1671,7 +1671,7 @@ class TrackerManager {
 
                     /* State     */
                     $col = $col + 6;
-                    $my_xls->write($row, $col, get_string('outcome_course_started','local_tracker_manager'),array('size'=>12, 'name'=>'Arial','bg_color'=>$bg_color,'align'=>'left','v_align'=>'center'));
+                    $my_xls->write($row, $col, $state,array('size'=>12, 'name'=>'Arial','bg_color'=>$bg_color,'align'=>'left','v_align'=>'center'));
                     $my_xls->merge_cells($row,$col,$row,$col+1);
                     $my_xls->set_row($row,20);
 
