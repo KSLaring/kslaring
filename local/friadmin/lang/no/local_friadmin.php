@@ -227,3 +227,17 @@ $string['pot_teachers']                = 'Potential teachers';
 $string['pot_teachers_matching']       = 'Potential matching teachers';
 $string['current_teachers']            = 'Current teachers';
 $string['current_teachers_matching']   = 'Current teachers matching';
+
+$string['duplicatecourse']          = 'Duplicate course';
+$string['includeusers']             = 'Include users';
+$string['includeusers_help']        = 'Select if you want to include the users in the duplicated coruse.';
+$string['dupcorusename']            = 'New course name';
+$string['dupcorusename_help']       = 'Set the name of the duplicated course.';
+$string['dupcorusenamedefault']     = ' copy';
+$string['selfullname']              = 'Fullname';
+$string['selfullname_help']         = 'Set name of the duplicated course.';
+$string['selshortname']             = 'Shortname';
+$string['selshortname_help']        = 'Set short name of the duplicated course. This short name
+must be unique.';
+$string['info_dup_course']          = 'Before starting to duplicate the course, you need to determine in 
+which category the course will be saved. The actual course category is selected by default.';
