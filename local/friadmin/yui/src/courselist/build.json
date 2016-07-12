@@ -1,0 +1,10 @@
+{
+  "name": "moodle-local_friadmin-courselist",
+  "builds": {
+    "moodle-local_friadmin-courselist": {
+      "jsfiles": [
+        "courselist.js"
+      ]
+    }
+  }
+}
