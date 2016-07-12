@@ -9,7 +9,7 @@
  * @creationDate    06/07/2016
  * @author          eFaktor     (fbv)
  */
-function local_participants_extend_settings_navigation($settingsnav, $context) {
+function local_participants_extends_settings_navigation($settingsnav, $context) {
     /* Variables */
     global $PAGE;
     $strTitle           = null;
