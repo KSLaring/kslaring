@@ -3,6 +3,29 @@
     display:block;
 }
 
+.block_participants .course_info_one {
+    float:none;
+    width: 50%;
+    text-justify:inter-word;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    border-bottom: 1px solid white;
+    background-color:  #f2f2f2;
+    height: 25px;
+    line-height: 25px;
+}
+
+.block_participants .course_info_two {
+    float:none;
+    width: 50%;
+    text-justify:inter-word;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    border-bottom: 1px solid white;
+    height: 25px;
+    line-height: 25px;
+}
+
 .block_participants label.header_course {
     width: 50%;
     text-align: left;
@@ -17,6 +40,15 @@
     line-height: 25px;
     text-transform: uppercase;
     background-color: #f2f2f2;
+}
+
+.block_participants .info_course_value {
+    font:12px Verdana,Verdana Pro,sans-serif;
+    text-justify:inter-word;
+    white-space: pre-line;
+    word-break: break-all;
+    padding-right: 5px;
+    padding-top: 5px;
 }
 
 .block_participants .lst_participants {
@@ -50,6 +82,16 @@
     text-align: left;
     text-justify:inter-word;
     padding: 0px 10px 0px 0px;
+}
+
+.block_participants .lst_participants  .button_order {
+    margin: 0px;
+    padding: 0px;
+    text-decoration: underline;
+    color: #0E7B9E;
+    display: inline-block;
+    height: 20px;
+    line-height: 20px;
 }
 
 .block_participants .lst_participants  th.info,
@@ -107,7 +149,9 @@
 
 @media (max-width: 767px) {
     .block_participants,
-    .block_participants .lst_participants {
+    .block_participants .lst_participants,
+    .block_participants .course_info_two,
+    .block_participants .course_info_one {
         float: none;
         width: 100%;
         display: block;
@@ -116,7 +160,9 @@
 
 @media (min-width: 850px) and (max-width: 978px) {
     .block_participants,
-    .block_participants .lst_participants {
+    .block_participants .lst_participants,
+    .block_participants .course_info_two,
+    .block_participants .course_info_one {
         float: none;
         width: 100%;
         display: block;
@@ -125,7 +171,9 @@
 
 @media (min-width: 767px) and (max-width: 849px) {
     .block_participants,
-    .block_participants .lst_participants {
+    .block_participants .lst_participants,
+    .block_participants .course_info_two,
+    .block_participants .course_info_one {
         float: none;
         width: 100%;
         display: block;

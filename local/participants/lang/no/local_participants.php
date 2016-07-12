@@ -34,3 +34,5 @@ $string['err_dates']            = 'It cannot be bigger than "To"';
 $string['remove_filter']        = 'Remove filter';
 
 $string['csvdownload']          = 'Download in spreadsheet format (.xls)';
+
+$string['str_instructors']      = 'Instructors';

@@ -918,33 +918,22 @@ class local_course_page_renderer extends plugin_renderer_base {
             /* Get Context */
             $context = context_course::instance($courseId);
 
-            /* Add participants block if has permissions    */
             if (($courseFormat == 'classroom')
                 ||
                 ($courseFormat == 'classroom_frikomport')) {
                 if ($formatOptions['participant']) {
+                    /* Add link participants list   */
+                    $urlLink    = new moodle_url('/local/participants/participants.php',array('id' => $courseId));
+                    $strTitle   = get_string('home_participant','local_course_page');
 
-                }//if_option
-            }//course_format
-
-            if (has_capability('local/participants:manage',$context)) {
-                if (($courseFormat == 'classroom')
-                    ||
-                    ($courseFormat == 'classroom_frikomport')) {
-                    if ($formatOptions['participant']) {
-                        /* Add link participants list   */
-                        $urlLink    = new moodle_url('/local/participants/participants.php',array('id' => $courseId));
-                        $strTitle   = get_string('home_participant','local_course_page');
-
-                        $out .= html_writer::start_tag('div',array('class' => 'manager chp-block clearfix'));
+                    $out .= html_writer::start_tag('div',array('class' => 'manager chp-block clearfix'));
                         $out .= '<h5 class="title_coordinator chp-title">' . get_string('home_participant_header','local_course_page') . '</h5>';
                         $out .= '<div class="extra_home chp-content">';
-                        $out .= '<a href="' . $urlLink . '">' . $strTitle . "</a>";
+                            $out .= '<a href="' . $urlLink . '">' . $strTitle . "</a>";
                         $out .= '</div>';
-                        $out .= html_writer::end_tag('div');//manager
-                    }//if_option
-                }//if_format
-            }//if_capability
+                    $out .= html_writer::end_tag('div');//manager
+                }//if_option
+            }//if_format
 
             return $out;
         }catch (Exception $ex) {

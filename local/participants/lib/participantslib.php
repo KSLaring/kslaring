@@ -16,60 +16,6 @@ class ParticipantsList {
     /**********/
 
     /**
-     * @param           $courseId
-     *
-     * @throws          Exception
-     *
-     * @creationDate    06/07/2016
-     * @author          eFaktor (fbv)
-     *
-     * Description
-     * Initialize participants
-     */
-    public static function InitParticipants($courseId) {
-        /* Variables */
-        global $PAGE;
-        $options    = null;
-        $hash       = null;
-        $jsModule   = null;
-        $name       = null;
-        $path       = null;
-        $requires   = null;
-        $strings    = null;
-        $grpOne     = null;
-        $grpTwo     = null;
-        $grpThree   = null;
-
-
-        try {
-            /* Initialise variables */
-            $name       = 'participant';
-            $path       = '/local/participants/js/attend.js';
-            $requires   = array('node', 'event-custom', 'datasource', 'json', 'moodle-core-notification');
-            $grpOne     = array('previouslyselectedusers', 'moodle', '%%SEARCHTERM%%');
-            $grpTwo     = array('nomatchingusers', 'moodle', '%%SEARCHTERM%%');
-            $grpThree   = array('none', 'moodle');
-            $strings    = array($grpOne,$grpTwo,$grpThree);
-
-            /* Initialise js module */
-            $jsModule = array('name'        => $name,
-                              'fullpath'    => $path,
-                              'requires'    => $requires,
-                              'strings'     => $strings
-                             );
-
-
-            $PAGE->requires->js_init_call('M.core_user.init_participants_list',
-                                          array($courseId),
-                                          false,
-                                          $jsModule
-                                         );
-        }catch (Exception $ex) {
-            throw $ex;
-        }//try_catch
-    }//InitParticipants
-
-    /**
      * @param           $contextId
      *
      * @return          array
@@ -122,7 +68,6 @@ class ParticipantsList {
     /**
      * @param           $courseId
      * @param           $notIn
-     * @param           null $filter
      * @param           $start
      * @param           $limit
      *
@@ -135,7 +80,7 @@ class ParticipantsList {
      * Description
      * Get participant list
      */
-    public static function GetParticipantList($courseId,$notIn,$filter = null,$start=null,$limit=null) {
+    public static function GetParticipantList($courseId,$notIn,$sort,$field,$start=null,$limit=null) {
         /* Variables */
         global $DB;
         $rdo                = null;
@@ -152,43 +97,24 @@ class ParticipantsList {
             /* Search Criteria */
             $params = array();
             $params['course'] = $courseId;
-            if ($filter) {
-                /* Criteria */
-                $params['from'] = $filter->from;
-                $params['to']   = $filter->to;
 
-                /* SQL Filter   */
-                $selAttendance  = " ca.attendacedate as 'attendacedate' ";
-                $joinAttendance = " JOIN ";
-                $condAttendance = " AND ca.attendacedate BETWEEN :from AND :to ";
-                $group          = "";
-            }else {
-                /* SQL */
-                $selAttendance  = " MAX(ca.attendacedate) as 'attendacedate' ";
-                $joinAttendance = " LEFT JOIN ";
-                $group          = " GROUP BY u.id ";
-                $condAttendance = "";
-            }//if_filter
+            /* Sort Field */
+            $field = 'u.' . $field;
 
             /* SQL Instruction */
             $sql = " SELECT	u.id,
                             u.firstname,
                             u.lastname,
-                            u.email,
-                            $selAttendance
-                     FROM			{user}					  u
-                        JOIN		{user_enrolments}		  ue  ON 	ue.userid 	= u.id
-                        JOIN		{enrol}					  e	  ON 	e.id 		= ue.enrolid
-                                                                  AND	e.courseid 	= :course
-                                                                  AND   e.status 	= 0
-                        -- LAST ATTENDACE
-                        $joinAttendance	{course_attendance}	  ca  ON 	ca.courseid = e.courseid
-                                                                  AND   ca.userid 	= ue.userid
-                                                                  $condAttendance
+                            u.email
+                     FROM			{user}				  u
+                        JOIN		{user_enrolments}	  ue  ON 	ue.userid 	= u.id
+                        JOIN		{enrol}				  e	  ON 	e.id 		= ue.enrolid
+                                                              AND	e.courseid 	= :course
+                                                              AND   e.status 	= 0
                      WHERE	u.deleted = 0
                         AND u.id NOT IN ($notIn)
-                     $group
-                     ORDER BY u.firstname, u.lastname ";
+                     GROUP BY u.id 
+                     ORDER BY $field $sort ";
 
             /* Execute */
             $rdo = $DB->get_records_sql($sql,$params,$start,$limit);
@@ -200,7 +126,6 @@ class ParticipantsList {
                     $infoParticipant->firstname = $instance->firstname;
                     $infoParticipant->lastname  = $instance->lastname;
                     $infoParticipant->email     = $instance->email;
-                    $infoParticipant->last      = $instance->attendacedate;
 
                     /* Add Participant */
                     $participantsLst[$instance->id] = $infoParticipant;
@@ -216,7 +141,6 @@ class ParticipantsList {
     /**
      * @param           $courseId
      * @param           $notIn
-     * @param           null $filter
      *
      * @return          int
      * @throws          Exception
@@ -227,7 +151,7 @@ class ParticipantsList {
      * Description
      * Get total participants list
      */
-    public static function GetTotalParticipants($courseId,$notIn,$filter=null) {
+    public static function GetTotalParticipants($courseId,$notIn) {
         /* Variables */
         global $DB;
         $total      = 0;
@@ -242,25 +166,12 @@ class ParticipantsList {
             $params['course'] = $courseId;
             
             /* SQL Instruction */
-            if ($filter) {
-                /* Criteria */
-                $params['from'] = $filter->from;
-                $params['to']   = $filter->to;
-
-                $sqlFilter = " JOIN	{course_attendance}	ca	ON 	ca.courseid = e.courseid
-								                            AND ca.userid 	= ue.userid
-										                    AND ca.attendacedate BETWEEN :from AND :to ";
-            }else {
-                $sqlFilter = "";
-            }//if_filter
-
             $sql = " SELECT	        count(u.id) as 'total'
                      FROM			{user}					u
                         JOIN		{user_enrolments}		ue 	ON 	ue.userid 	= u.id
                         JOIN		{enrol}					e	ON 	e.id 		= ue.enrolid
                                                                 AND	e.courseid 	= :course
                                                                 AND e.status 	= 0
-                        $sqlFilter
                      WHERE	u.deleted = 0
                         AND u.id NOT IN ($notIn) ";
             
@@ -279,8 +190,9 @@ class ParticipantsList {
     /**
      * @param           $participantList
      * @param           $course
-     * @param           $filtered
-     *
+     * @param           $sort
+     * @param           $fieldSort
+     * 
      * @return          string
      * @throws          Exception
      *
@@ -290,7 +202,7 @@ class ParticipantsList {
      * Description
      * Display participant list in the table
      */
-    public static function DisplayParticipantList($participantList,$course,$filtered) {
+    public static function DisplayParticipantList($participantList,$course,$sort,$fieldSort) {
         /* Variables */
         global $OUTPUT;
         $out    = '';
@@ -299,10 +211,10 @@ class ParticipantsList {
             /* Display Participant List */
             $out .= html_writer::start_div('block_participants');
                 /* Course Info  */
-                $out .= self::AddNameCourse($course->id,$course->fullname);
-
+                 $out .= self::AddInfoCourse($course);
+            
                 /* Participants List    */
-                $out .= self::AddParticipants($participantList,$filtered);
+                $out .= self::AddParticipants($participantList,$course->id,$sort,$fieldSort);
             $out .= html_writer::end_div();//block_participants
 
             return $out;
@@ -323,7 +235,7 @@ class ParticipantsList {
      * Description
      * Add back and tick button
      */
-    public static function GetBackAndTickButton($courseId) {
+    public static function GetBackButton($courseId) {
         /* Variables */
         $out    = '';
         $return = null;
@@ -336,7 +248,6 @@ class ParticipantsList {
             /* Link Button to back */
             $out .= html_writer::start_tag('div',array('class' => 'div_button_participants'));
                 $out .= html_writer::link($return,get_string('lnk_back','local_participants'),array('class' => 'button_participants'));
-                $out .= "<button class='button_participants' id='id_tick'>" . get_string('lnk_tick','local_participants') . "</button>";
             $out .= html_writer::end_tag('div');
 
             return $out;
@@ -428,7 +339,7 @@ class ParticipantsList {
 
         try {
             $time = userdate(time(),'%d.%m.%Y', 99, false);
-            $name = clean_filename('Participants_List_' . $course . '_' . $time . ".xls");
+            $name = clean_filename('Participants_List_' . $course->fullname . '_' . $time . ".xls");
             // Creating a workbook
             $export = new MoodleExcelWorkbook("-");
             // Sending HTTP headers
@@ -437,15 +348,13 @@ class ParticipantsList {
             $my_xls = $export->add_worksheet(get_string('pluginname','local_participants'));
 
             /* Course Name          */
-            self::AddNameCourse_Excel($course,$my_xls,$row);
+            self::AddInfoCourse_Excel($course,$my_xls,$row);
+            $row ++;
 
             /* Participants Table   */
-            $row ++;
-            $row ++;
-            $row ++;
             /* Header   */
             self::AddParticipants_HeaderExcel($my_xls,$row);
-            $row++;
+            $row ++;
             /* Content  */
             self::AddParticipants_ContentExcel($participantsList,$my_xls,$row);
 
@@ -460,6 +369,70 @@ class ParticipantsList {
     /***********/
     /* PRIVATE */
     /***********/
+
+    /**
+     * @param           $courseId
+     *
+     * @return          null
+     * @throws          Exception
+     *
+     * @creationDate    12/07/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Get instructors connected with the course
+     */
+    private static function GetInstructors($courseId) {
+        /* Variables */
+        global $DB;
+        $rdo            = null;
+        $sql            = null;
+        $params         = null;
+        $ctxSystem      = null;
+        $ctxCourse      = null;
+        $ctxCourseCat   = null;
+        $context        = null;
+        $instructors    = null;
+        $info           = null;
+
+        try {
+            /* Course Context   */
+            $context = context_course::instance($courseId);
+
+            /* Search Criteria  */
+            $params = array();
+            $params['context']  = $context->id;
+            $ctxSystem          = CONTEXT_SYSTEM;
+            $ctxCourse          = CONTEXT_COURSE;
+            $ctxCourseCat       = CONTEXT_COURSECAT;
+
+            /* SQL Instruction */
+            $sql = " SELECT		u.id,
+                                CONCAT(u.firstname,' ',u.lastname) as 'user',
+                                u.email
+                     FROM		{user}				u
+                        JOIN	{role_assignments}	ra		ON	ra.userid 		= u.id
+                        JOIN	{role}				r		ON 	r.id			= ra.roleid
+                                                            AND	r.archetype		IN ('editingteacher','teacher')
+                                                            AND r.shortname     = r.archetype
+                        JOIN    {context}           ct      ON  ct.id			= ra.contextid
+                                                            AND	ct.contextlevel	IN ($ctxSystem,$ctxCourse,$ctxCourseCat)
+                     WHERE		ra.contextid 	= :context ";
+
+            /* Execute */
+            $rdo = $DB->get_records_sql($sql,$params);
+            if ($rdo) {
+                foreach ($rdo as $instance) {
+                    /* Add instructor   */
+                    $instructors[$instance->id] = $instance->user;
+                }//for_rdo
+            }//if_Rdo
+
+            return $instructors;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//GetInstructors
 
     /**
      * @param           $courseId
@@ -508,40 +481,88 @@ class ParticipantsList {
     }//getReturnBackLink
 
     /**
-     * @param           $courseId
-     * @param           $courseName
+     * @param           $course
      *
      * @return          string
      * @throws          Exception
      *
-     * @creationDate    06/07/2016
+     * @creationDate    12/07/2016
      * @author          eFaktor     (fbv)
      *
      * Description
-     * Add the name of the course to the table
+     * Add info of the course
      */
-    private static function AddNameCourse($courseId,$courseName) {
+    private static function AddInfoCourse($course) {
         /* Variables */
-        $header = '';
+        $header         = '';
+        $url            = null;
+        $lnkCourse      = null;
+        $instructors    = null;
+        $strInstructors = null;
+        $lnkUser        = null;
+        $urlUser        = null;
 
         try {
-            $url        = new moodle_url('/course/view.php',array('id' => $courseId));
-            $lnkCourse  = '<a href="' . $url. '">' . $courseName . '</a>';
+            /* Course Name      */
+            $url        = new moodle_url('/course/view.php',array('id' => $course->id));
+            $lnkCourse  = '<a href="' . $url. '">' . $course->fullname . '</a>';
+            $header .= html_writer::start_div('course_info_one');
+                $header .= html_writer::start_tag('label',array('class' => ' header_course'));
+                    $header .= get_string('course') ;
+                $header .= html_writer::end_tag('label');
+            $header .= html_writer::end_div();//course_info_one
+            $header .= html_writer::start_div('course_info_two');
+                $header .= '<p class="info_course_value">' . $lnkCourse . '</p>';
+            $header .= html_writer::end_div();//course_info_two
 
-            $header .= html_writer::start_tag('label',array('class' => ' header_course'));
-                $header .= $lnkCourse ;
-            $header .= html_writer::end_tag('label');
+            /* Get Instructors */
+            $instructors = self::GetInstructors($course->id);
+            if ($instructors) {
+                $urlUser = new moodle_url('/user/profile.php');
+                foreach ($instructors as $key => $info) {
+                    $urlUser->param('id',$key);
+                    $lnkUser = '<a href="' . $urlUser. '">' . $info . '</a>';
+
+                    $instructors[$key] = $lnkUser;
+                }
+                $strInstructors = implode('</br>',$instructors);
+            }else {
+                $strInstructors = ' - ';
+            }
+
+            /* Instructors  */
+            $header .= html_writer::start_div('course_info_one');
+                $header .= html_writer::start_tag('label',array('class' => ' header_course'));
+                    $header .=  get_string('str_instructors','local_participants');
+                $header .= html_writer::end_tag('label');
+            $header .= html_writer::end_div();//course_info_one
+            $header .= html_writer::start_div('course_info_two');
+                $header .= '<p class="info_course_value">' . $strInstructors . '</p>';
+            $header .= html_writer::end_div();//course_info_two
+
+            /* Date */
+            $header .= "</br>";
+            $header .= html_writer::start_div('course_info_one');
+                $header .= html_writer::start_tag('label',array('class' => ' header_course'));
+                    $header .=  get_string('date');
+                $header .= html_writer::end_tag('label');
+            $header .= html_writer::end_div();//course_info_one
+            $header .= html_writer::start_div('course_info_two');
+                    $header .= '<p class="info_course_value">' . userdate(time(),'%d.%m.%Y', 99, false) . '</p>';
+            $header .= html_writer::end_div();//course_info_two
 
             return $header;
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//AddNameCourse
-
+    }//AddInfoCourse
+    
     /**
      * @param           $participantsList
-     * @param           $filtered
-     *
+     * @param           $courseId
+     * @param           $sort
+     * @param           $fieldSort
+     * 
      * @return          string
      * @throws          Exception
      *
@@ -551,9 +572,9 @@ class ParticipantsList {
      * Description
      * Add participant table
      */
-    private static function AddParticipants($participantsList,$filtered) {
+    private static function AddParticipants($participantsList,$courseId,$sort,$fieldSort) {
         /* Variables */
-        global $SESSION;
+        global $SESSION,$USER;
         $content = '';
         $csv_url = null;
 
@@ -567,10 +588,10 @@ class ParticipantsList {
                 /* Table    */
                 $content .= html_writer::start_tag('table',array('class' => 'generaltable'));
                     /* Header   */
-                    $content .= self::AddHeader_ParticipantsTable();
+                    $content .= self::AddHeader_ParticipantsTable($sort,$fieldSort);
             
                     /* Content  */
-                    $content .= self::AddContent_ParticipantsTable($participantsList,$filtered);
+                    $content .= self::AddContent_ParticipantsTable($participantsList);
                 $content .= html_writer::end_tag('table');
 
                 $content .= "</br>";
@@ -584,6 +605,9 @@ class ParticipantsList {
     }//AddParticipants
 
     /**
+     * @param           $sort
+     * @param           $fieldSort
+     * 
      * @return          string
      * @throws          Exception
      *
@@ -593,32 +617,53 @@ class ParticipantsList {
      * Description
      * Add header to the participant table
      */
-    private static function AddHeader_ParticipantsTable() {
+    private static function AddHeader_ParticipantsTable($sort,$fieldSort) {
         /* Variables */
         $header = '';
-        $strUser     = null;
-        $strMail     = null;
-        $strAttend   = null;
+        $strFirstname   = null;
+        $strLastname    = null;
+        $strMail        = null;
+        $dirFirstName   = null;
+        $dirLastName    = null;
 
         try {
+            switch ($fieldSort) {
+                case 'firstname':
+                    $dirFirstName   = $sort;
+                    $dirLastName    = 'ASC';
+
+                    break;
+
+                case 'lastname':
+                    $dirFirstName = 'ASC';
+                    $dirLastName  = $sort;
+
+                    break;
+                default:
+                    $dirFirstName = 'ASC';
+                    $dirLastName  = 'ASC';
+
+                    break;
+            }//fieldSort
+
             /* Headers  */
-            $strUser    = get_string('user');
-            $strMail    = get_string('email','local_participants');
-            $strAttend  = get_string('last_attendance','local_participants');
+            $strFirstname   = get_string('firstname');
+            $strLastname    = get_string('lastname');
+            $strMail        = get_string('email','local_participants');
 
             $header .=  html_writer::start_tag('thead');
                 $header .=  html_writer::start_tag('tr',array('class' => 'header_participants'));
-                    /* User             */
+                    /* Firstname */
                     $header .= html_writer::start_tag('th',array('class' => 'user'));
-                        $header .= $strUser;
+                        $header .= "<button class='button_order' id='firstname' name='firstname' value='" . $dirFirstName. "'>" . $strFirstname . "</button>";
+                    $header .= html_writer::end_tag('th');
+                    /* Lastname             */
+                    $header .= html_writer::start_tag('th',array('class' => 'user'));
+                        $header .= "<button class='button_order' id='lastname' name='lastname' value='" . $dirLastName. "'>" . $strLastname . "</button>";
                     $header .= html_writer::end_tag('th');
                     /* eMail            */
                     $header .= html_writer::start_tag('th',array('class' => 'info'));
                         $header .= $strMail;
-                    $header .= html_writer::end_tag('th');
-                    /* Attendance Day   */
-                    $header .= html_writer::start_tag('th',array('class' => 'attend'));
-                        $header .= $strAttend;
                     $header .= html_writer::end_tag('th');
                     /* Checkbox         */
                     $header .= html_writer::start_tag('th',array('class' => 'seats'));
@@ -634,7 +679,6 @@ class ParticipantsList {
 
     /**
      * @param           $participantsList
-     * @param           $filtered
      *
      * @return          string
      * @throws          Exception
@@ -645,50 +689,30 @@ class ParticipantsList {
      * Description
      * Add content to the participants table
      */
-    private static function AddContent_ParticipantsTable($participantsList,$filtered) {
+    private static function AddContent_ParticipantsTable($participantsList) {
         /* Variables */
         $content = '';
         $name    = null;
         $checked = null;
         $last    = null;
-        $today   = null;
 
         try {
-            /* Today date */
-            $today = mktime(0, 0, 0, date("m"), date("d"), date("Y"));
-
             foreach ($participantsList as $participant) {
                 $content .= html_writer::start_tag('tr');
-                    /* User     */
+                    /* firstname     */
                     $content .= html_writer::start_tag('td',array('class' => 'user'));
-                        $content .= $participant->firstname . ' ' . $participant->lastname;
+                        $content .= $participant->firstname;
+                    $content .= html_writer::end_tag('td');
+                    /* lastname     */
+                    $content .= html_writer::start_tag('td',array('class' => 'user'));
+                        $content .= $participant->lastname;
                     $content .= html_writer::end_tag('td');
                     /* eMail    */
                     $content .= html_writer::start_tag('td',array('class' => 'info'));
                         $content .= $participant->email;
                     $content .= html_writer::end_tag('td');
-                    /* Attend   */
-                    $content .= html_writer::start_tag('td',array('class' => 'attend'));
-                        if ($participant->last) {
-                            $last       = userdate($participant->last,'%d.%m.%Y', 99, false);
-                            if ($participant->last == $today) {
-                                $checked    = 'checked';
-                            }else {
-                                if ($filtered) {
-                                    $checked = 'disabled';
-                                }else {
-                                    $checked = '';
-                                }
-                            }//if_today
-                        }else {
-                            $last       = ' - ';
-                            $checked    = '';
-                        }//if_participant
-                        $content .= '<label id="UE_' . $participant->id . '">' . $last .'</label>';
-                    $content .= html_writer::end_tag('td');
                     /* Checkbox */
                     $content .= html_writer::start_tag('td',array('class' => 'seats'));
-                        $content .= '<input type="checkbox" name="attend" id="id_attend" value="' . $participant->id . '"' . $checked . '>';
                     $content .= html_writer::end_tag('td');
                 $content .= html_writer::end_tag('tr');
             }//participant_list
@@ -699,6 +723,7 @@ class ParticipantsList {
         }//try_catch
     }//AddContent_ParticipantsTable
 
+
     /**
      * @param           $course
      * @param           $my_xls
@@ -706,25 +731,73 @@ class ParticipantsList {
      *
      * @throws          Exception
      *
-     * @creationDate    11/07/2016
+     * @creationDate    12/07/2016
      * @author          eFaktor     (fbv)
      *
      * Description
-     * Add name of the course to the excel report
+     * Add course info header to excel report
      */
-    private static function AddNameCourse_Excel($course,&$my_xls,&$row) {
+    private static function AddInfoCourse_Excel($course,&$my_xls,&$row) {
         /* Variables */
-        $col        = 0;
+        $col = 0;
+        $instructors = null;
 
         try {
-            $my_xls->write($row, $col, $course,array('size'=>12, 'name'=>'Arial','bold'=>'1','bg_color'=>'#efefef','text_wrap'=>true,'v_align'=>'left'));
+            /* Get Instructors */
+            $instructors = self::GetInstructors($course->id);
+
+            /* Course Name  */
+            $my_xls->write($row, $col, get_string('course'),array('size'=>12, 'name'=>'Arial','bold'=>'1','bg_color'=>'#efefef','text_wrap'=>true,'v_align'=>'left'));
             $my_xls->merge_cells($row,$col,$row,$col+5);
             $my_xls->set_row($row,20);
+            $row ++;
+            $col = 0;
+            $my_xls->write($row, $col, $course->fullname,array('size'=>12, 'name'=>'Arial','bold'=>'1','text_wrap'=>true,'v_align'=>'left'));
+            $my_xls->merge_cells($row,$col,$row,$col+5);
+            $my_xls->set_row($row,20);
+            $row ++;
 
+            /* Instructors  */
+            $my_xls->write($row, $col, get_string('str_instructors','local_participants'),array('size'=>12, 'name'=>'Arial','bold'=>'1','bg_color'=>'#efefef','text_wrap'=>true,'v_align'=>'left'));
+            $my_xls->merge_cells($row,$col,$row,$col+5);
+            $my_xls->set_row($row,20);
+            $row ++;
+            $col = 0;
+            if ($instructors) {
+                foreach ($instructors as $key => $info) {
+                    $my_xls->write($row, $col, $info,array('size'=>12, 'name'=>'Arial','bold'=>'1','text_wrap'=>true,'v_align'=>'left'));
+                    $my_xls->merge_cells($row,$col,$row,$col+5);
+                    $my_xls->set_row($row,20);
+                    $row++;
+                    $col=0;
+                }//instructor
+            }else {
+                $my_xls->write($row, $col, '-',array('size'=>12, 'name'=>'Arial','bold'=>'1','text_wrap'=>true,'v_align'=>'left'));
+                $my_xls->merge_cells($row,$col,$row,$col+5);
+                $my_xls->set_row($row,20);
+                $row ++;
+                $col = 0;
+            }//if_instructors
+
+            /* Date */
+            $my_xls->write($row, $col, get_string('date'),array('size'=>12, 'name'=>'Arial','bold'=>'1','bg_color'=>'#efefef','text_wrap'=>true,'v_align'=>'left'));
+            $my_xls->merge_cells($row,$col,$row,$col+5);
+            $my_xls->set_row($row,20);
+            $row++;
+            $col=0;
+            $my_xls->write($row, $col, userdate(time(),'%d.%m.%Y', 99, false),array('size'=>12, 'name'=>'Arial','bold'=>'1','text_wrap'=>true,'v_align'=>'left'));
+            $my_xls->merge_cells($row,$col,$row,$col+5);
+            $my_xls->set_row($row,20);
+            $col=0;
+
+            $row ++;
+            $my_xls->merge_cells($row,0,$row,19);
+            $row ++;
+            $my_xls->merge_cells($row,0,$row,19);
         }catch (Exception $ex) {
             throw $ex;
-        }
-    }//AddNameCourse_Excel
+        }//try_catch
+    }//AddInfoCourse_Excel
 
     /**
      * @param           $my_xls
@@ -740,18 +813,26 @@ class ParticipantsList {
      */
     private static function AddParticipants_HeaderExcel(&$my_xls,$row) {
         /* Variables */
-        $col        = 0;
-        $strUser    = null;
-        $strMail    = null;
-        $strAttend  = null;
+        $col            = 0;
+        $strFirstname   = null;
+        $strLastname    = null;
+        $strMail        = null;
+        $strAttend      = null;
 
         try {
-            $strUser    = get_string('user');
-            $strMail    = get_string('email','local_participants');
-            $strAttend  = get_string('last_attendance','local_participants');
+            $strFirstname   = get_string('firstname');
+            $strLastname    = get_string('lastname');
+            $strMail        = get_string('email','local_participants');
+            $strAttend      = get_string('attendance','local_participants');
 
-            /* User Header      */
-            $my_xls->write($row, $col, $strUser,array('size'=>12, 'name'=>'Arial','bold'=>'1','bg_color'=>'#efefef','text_wrap'=>true,'v_align'=>'left'));
+            /* Firstname Header      */
+            $my_xls->write($row, $col, $strFirstname,array('size'=>12, 'name'=>'Arial','bold'=>'1','bg_color'=>'#efefef','text_wrap'=>true,'v_align'=>'left'));
+            $my_xls->merge_cells($row,$col,$row,$col+5);
+            $my_xls->set_row($row,20);
+
+            /* Lastname Header      */
+            $col += 6;
+            $my_xls->write($row, $col, $strLastname,array('size'=>12, 'name'=>'Arial','bold'=>'1','bg_color'=>'#efefef','text_wrap'=>true,'v_align'=>'left'));
             $my_xls->merge_cells($row,$col,$row,$col+5);
             $my_xls->set_row($row,20);
 
@@ -764,7 +845,7 @@ class ParticipantsList {
             /* Last Attended    */
             $col += 6;
             $my_xls->write($row, $col, $strAttend,array('size'=>12, 'name'=>'Arial','bold'=>'1','bg_color'=>'#efefef','text_wrap'=>true,'v_align'=>'left','align' => 'center'));
-            $my_xls->merge_cells($row,$col,$row,$col+2);
+            $my_xls->merge_cells($row,$col,$row,$col+1);
             $my_xls->set_row($row,20);
         }catch (Exception $ex) {
             throw $ex;
@@ -787,15 +868,19 @@ class ParticipantsList {
     private static function AddParticipants_ContentExcel($participantList,&$my_xls,&$row) {
         /* Variables */
         $col    = 0;
-        $user   = null;
         $last   = null;
 
         try {
             if ($participantList) {
                 foreach ($participantList as $participant) {
-                    /* User             */
-                    $user = $participant->firstname . ' ' . $participant->lastname;
-                    $my_xls->write($row, $col, $user,array('size'=>12, 'name'=>'Arial','bold'=>'1','text_wrap'=>true,'v_align'=>'left'));
+                    /* Firstname             */
+                    $my_xls->write($row, $col, $participant->firstname,array('size'=>12, 'name'=>'Arial','bold'=>'1','text_wrap'=>true,'v_align'=>'left'));
+                    $my_xls->merge_cells($row,$col,$row,$col+5);
+                    $my_xls->set_row($row,20);
+
+                    /* lastname             */
+                    $col += 6;
+                    $my_xls->write($row, $col, $participant->lastname,array('size'=>12, 'name'=>'Arial','bold'=>'1','text_wrap'=>true,'v_align'=>'left'));
                     $my_xls->merge_cells($row,$col,$row,$col+5);
                     $my_xls->set_row($row,20);
 
@@ -805,15 +890,10 @@ class ParticipantsList {
                     $my_xls->merge_cells($row,$col,$row,$col+5);
                     $my_xls->set_row($row,20);
 
-                    /* Last Attendance  */
-                    if ($participant->last) {
-                        $last = userdate($participant->last,'%d.%m.%Y', 99, false);
-                    }else {
-                        $last = ' - ';
-                    }
+                    /* Attended */
                     $col += 6;
-                    $my_xls->write($row, $col, $last,array('size'=>12, 'name'=>'Arial','bold'=>'1','text_wrap'=>true,'v_align'=>'left','align' => 'center'));
-                    $my_xls->merge_cells($row,$col,$row,$col+2);
+                    $my_xls->write($row, $col, '',array('size'=>12, 'name'=>'Arial','bold'=>'1','text_wrap'=>true,'v_align'=>'left'));
+                    $my_xls->merge_cells($row,$col,$row,$col+1);
                     $my_xls->set_row($row,20);
 
                     $row++;
