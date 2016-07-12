@@ -827,6 +827,7 @@ class CourseTemplate {
             $sql = " SELECT	e.id,
                             e.courseid,
                             IF(e.customint1,e.customint1,0)	as 'date_off',
+                            e.password                      as 'password',
                             e.customtext1                   as 'welcome_message',
                             es.customtext1                  as 'self_waiting_message',
                             un.customtext1                  as 'bulk_waiting_message',
@@ -884,6 +885,7 @@ class CourseTemplate {
                 $instance->selfid           = null;
                 $instance->bulkid           = null;
                 $instance->courseid         = $courseId;
+                $instance->password         = null;
                 $instance->date_off         = 0;
                 $instance->max_enrolled     = 0;
                 $instance->list_size        = SETTINGS_DEFAULT_SIZE;
