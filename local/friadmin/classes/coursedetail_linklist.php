@@ -107,7 +107,7 @@ class local_friadmin_coursedetail_linklist extends local_friadmin_widget impleme
             $url_completion         = new moodle_url('/report/completion/index.php',array('course' => $courseId));
             $url_statistics         = new moodle_url('/report/overviewstats/index.php',array('course' => $courseId));
             $url_enrollment         = new moodle_url('/enrol/instances.php',array('id' => $courseId));
-            $url_users              = new moodle_url('/enrol/users.php', array('id' => $courseId));
+            $url_users              = new moodle_url('/local/participants/participants.php', array('id' => $courseId));
             $url_confirmed          = new moodle_url('/enrol/waitinglist/manageconfirmed.php', array('id' => $courseId));
             $url_waitlist           = new moodle_url('/enrol/waitinglist/managequeue.php', array('id' => $courseId));
             $url_participantlist    = new moodle_url('/grade/export/xls/index.php?',array('id' => $courseId));
