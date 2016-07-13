@@ -27,16 +27,18 @@ if ($loggedin) {
 
 <div class="header-background">
     <div class="container-fluid">
-        <div class="logo-area">
-            <a class="logo" href="<?php echo $CFG->wwwroot; ?>">
-                <h1>BK Læring <span class="smaller">Kursadministrasjonssystem for Bergen kommune</span></h1></a>
-        </div>
+        <div class="bergen-background-image clearfix">
+            <div class="logo-area">
+                <a class="logo" href="<?php echo $CFG->wwwroot; ?>">
+                    <h1>BK Læring <span class="smaller">Kursadministrasjonssystem for Bergen kommune</span></h1></a>
+            </div>
 
-        <div class="header-right">
-            <?php if ($municipality) {
-                echo '<div class="muni-logo"><img class="logo" alt="' .
-                    $municipality->name . '"src="' . $municipality->logo . '"/></div>';
-            } ?>
+            <div class="header-right">
+                <?php if ($municipality) {
+                    echo '<div class="muni-logo"><img class="logo" alt="' .
+                        $municipality->name . '"src="' . $municipality->logo . '"/></div>';
+                } ?>
+            </div>
         </div>
     </div>
 </div>
