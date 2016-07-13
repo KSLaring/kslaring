@@ -68,7 +68,7 @@ $string['coursedetail_go']              = 'Gå til kurset';
 $string['coursedetail_settings']        = 'Kursinnstillinger';
 $string['coursedetail_completion']      = 'Kursfullføringer';
 $string['coursedetail_statistics']      = 'Statistikk';
-$string['coursedetail_enrollment']      = 'Enrollment methods';
+$string['coursedetail_enrollment']      = 'Påmeldingsmetoder';
 $string['coursedetail_users']           = 'Påmeldte kursdeltakere';
 $string['coursedetail_confirmed']       = 'Administrere bekreftede';
 $string['coursedetail_waitlist']        = 'Administrere venteliste';
@@ -212,8 +212,8 @@ $string['course_enrolment'] = 'Påmeldingsmetoder';
 $string['enrol_wait_self']  = 'Egenpåmelding med venteliste';
 $string['enrol_wait_buk']   = 'Bulkpåmelding med venteliste';
 
-$string['no_competence_add_location']   = '<strong>Sorry, you must update your competence profile if you want to set up new locations connected with you competence</strong>';
-$string['no_competence_profile']        = '<strong>Sorry, you must update your competence profile if you want to look up locations connected with you competence</strong>';
+$string['no_competence_add_location']   = '<strong>Beklager, men du må oppdatere profilen din med arbeidssted(er) hvis du ønsker å legge til nye kurssteder. (Vi trenger minst ett arbeidssted for å vite hvilken kommune/fylkeskommune du tilhører)</strong>';
+$string['no_competence_profile']        = '<strong>Beklager, men du må først legge til minst ett arbeidssted i din egen profil for å kunne bruke søkefunksjon basert på hvor du arbeider.</strong>';
 
 $string['course_teachers']              = 'Legg til lærere';
 $string['av_teachers']                  = 'Tilgjengelige lærere';
