@@ -65,7 +65,7 @@ $string['url_map'] = 'Klikk for å vise i kart';
 $string['of']       = 'av';
 $string['on_wait']  = 'Gå til venteliste';
 
-$string['home_participant']         = 'Participants List';
+$string['home_participant']         = 'Deltakerliste';
 $string['home_in_price']     = 'Intern pris';
 $string['home_ext_price']    = 'Ekstern pris';
-$string['home_participant_header']  = 'Participants';
+$string['home_participant_header']  = 'Deltakere';
