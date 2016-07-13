@@ -34,6 +34,35 @@ class user_bulk_action_form extends moodleform {
         if (has_capability('moodle/cohort:assign', $syscontext)) {
             $actions[8] = get_string('bulkadd', 'core_cohort');
         }
+
+        /**
+         * Description
+         * Add a new user bulk action to force the user to update their profile.
+         *
+         * @creationDate    21/08/2014
+         * @author          eFaktor     (fbv)
+         *
+         */
+        $actions[9] = get_string('force_bulk','local_force_profile');
+
+        /**
+         * @updateDate      16/11/2015
+         * @author          eFaktor     (fbv)
+         *
+         * Description
+         * Auto generate Express Login
+         */
+        $actions[10] = get_string('bulk_action','local_express_login');
+
+        /**
+         * @updateDate      07/12/2015
+         * @author          eFaktor     (fbv)
+         *
+         * Description
+         * Add a new action - Change Theme
+         */
+        $actions[11] = get_string('theme_action','local_theme_changes');
+
         $objs = array();
         $objs[] =& $mform->createElement('select', 'action', null, $actions);
         $objs[] =& $mform->createElement('submit', 'doaction', get_string('go'));

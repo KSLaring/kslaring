@@ -1,0 +1,170 @@
+input[type="button"].entercoursenowbutton {
+  	background-color: #00a85a;
+    background-image: linear-gradient(to bottom, #00a870, #00a838);
+    background-repeat: repeat-x;
+    border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
+    color: #fff;
+    text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+}
+
+div.enrol_waitinglist_listbuttons {
+	display: block;
+	/*float: left;*/
+}
+.enrol_waitinglist_listbuttons input[type="submit"]{
+	width: 400px;
+	/*float: left;*/
+}
+
+div.enrol_waitinglist_actionbuttons {
+	display: flex;
+	float: right;
+}
+
+tr.enrol_waitinglist_lastrow td {
+	border-bottom: 1px solid #ddd;
+}
+.lbl_warning h5 {
+    color:black;
+}
+
+.block_approval {
+    width: 90%;
+    display:block;
+}
+
+.block_approval .block_requests {
+    width: 90%;
+    display:block;
+    margin-bottom: 25px;
+    margin-top: 10px;
+}
+
+.block_approval label.header_course {
+    width: 95%;
+    text-align: left;
+    display:inline-block;
+    color:  #757474;
+    font:bold 12px Verdana,Verdana Pro,sans-serif;
+    text-indent: 1px;
+    cursor: default;
+    margin-top: 10px;
+    margin-bottom: 20px;
+    height: 25px;
+    line-height: 25px;
+    text-transform: uppercase;
+    background-color: #f2f2f2;
+}
+
+.block_approval label.label_approval_course {
+    font:bold 12px Verdana,Verdana Pro,sans-serif;
+    cursor: default;
+    text-justify:inter-word;
+    white-space: pre-line;
+    word-break: break-all;
+    display: block;
+    padding-right: 5px;
+    width: 95%;
+}
+
+.block_approval .approval_course_value {
+    font:12px Verdana,Verdana Pro,sans-serif;
+    text-justify:inter-word;
+    white-space: pre-line;
+    word-break: break-all;
+    padding-right: 5px;
+    display: block;
+    text-align: left;
+}
+
+.block_approval .to_right {
+    text-align: right;
+}
+
+.block_approval .block_basic_info {
+    width: 40%;
+    display:block;
+    min-height: 18px;
+    line-height: 8px;
+    padding-top: 2px;
+}
+
+.block_approval .approval_r0 {
+    background-color:  #efefef;
+}
+
+.block_approval .approval_r2 {
+    background-color: #fafafa;
+}
+
+.block_approval .block_requests table {
+    width: 100%;
+    border-collapse:collapse;
+    margin-bottom: 0;
+    display: table;
+}
+
+.block_approval .block_requests tr.header_approval {
+    background-color:  #f2f2f2;
+    color:  #000;
+    padding: 0;
+    margin-bottom: 0;
+    font:bold 12px Verdana,Verdana Pro,sans-serif;
+    border-bottom: 2px solid #d8d8d8;
+    vertical-align: middle;
+    height: 30px;
+}
+
+.block_approval .block_requests td.user,
+.block_approval .block_requests th.user {
+    width: 25%;
+    text-align: left;
+    text-justify:inter-word;
+    padding: 0px 10px 0px 0px;
+}
+
+.block_approval .block_requests th.info,
+.block_approval .block_requests td.info {
+    width: 25%;
+    text-align: left;
+    text-justify:inter-word;
+    padding: 0px 10px 0px 0px;
+}
+
+.block_approval .block_requests th.action,
+.block_approval .block_requests td.action {
+    width: 25%;
+    text-align: center;
+    text-justify:inter-word;
+    padding: 0px 10px 0px 0px;
+}
+
+.block_approval .block_requests th.seats,
+.block_approval .block_requests td.seats {
+    width: 5%;
+    text-align: left;
+    text-justify:inter-word;
+    padding: 0px 10px 0px 0px;
+}
+
+.block_approval .block_requests td.user,
+.block_approval .block_requests td.info,
+.block_approval .block_requests td.seats,
+.block_approval .block_requests td.action {
+    background-color: white;
+    white-space: pre-line;
+    word-break: break-all;
+}
+
+a.lnk_disabled {
+    pointer-events: none;
+    cursor: default;
+}
+
+.block_approval .block_requests .approved {
+    cursor: default;
+}
+
+.block_approval .block_requests .rejected {
+    cursor: default;
+}

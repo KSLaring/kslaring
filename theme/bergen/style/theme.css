@@ -1,0 +1,137 @@
+.ie-scrollbar-white {
+  scrollbar-shadow-color: #FFFFFF;
+  scrollbar-highlight-color: #FFFFFF;
+  scrollbar-face-color: #FFFFFF;
+  scrollbar-3dlight-color: #FFFFFF;
+  scrollbar-darkshadow-color: #FFFFFF;
+  scrollbar-track-color: #FFFFFF;
+  scrollbar-arrow-color: #FFFFFF;
+}
+body {
+  font-family: Verdana, Helvetica, Arial, sans-serif;
+  font-size: 14px;
+}
+input,
+button,
+select,
+textarea {
+  font-family: Verdana, Helvetica, Arial, sans-serif;
+}
+.navbar-search .search-query {
+  font-family: Verdana, Helvetica, Arial, sans-serif;
+}
+.hero-unit h1,
+.hero-unit .texts {
+  font-family: 'clan_otbook', Verdana, Helvetica, Arial, sans-serif;
+}
+a {
+  color: #157cb0;
+}
+a:visited,
+a:hover,
+a:focus,
+a:active,
+a.active {
+  color: #0d4c6c;
+  text-decoration: none;
+}
+a.btn {
+  color: #fff;
+}
+a.btn:visited,
+a.btn:hover,
+a.btn:focus,
+a.btn:active,
+a.btn.active {
+  color: #fff;
+  text-decoration: none;
+}
+.logo h1 span {
+  font-size: .5em;
+}
+.logo-area {
+  float: left;
+  max-width: 85%;
+  height: 52px;
+  margin: 2em 0 1em;
+  padding: 0;
+  width: auto;
+}
+.logo-area .logo {
+  display: block;
+}
+.logo-area h1 {
+  color: #157cb0;
+  line-height: .7;
+  margin: 0;
+  padding: 0;
+}
+@media (max-width: 859px) {
+  .logo-area {
+    margin-top: 1.5em;
+  }
+}
+@media (max-width: 767px) {
+  .logo-area {
+    margin-left: 20px;
+    margin-right: 20px;
+    max-width: inherit;
+  }
+}
+@media (max-width: 519px) {
+  .logo-area {
+    margin-top: .7em;
+    margin-bottom: .5em;
+  }
+}
+.header-right {
+  max-width: 15%;
+  width: auto;
+}
+.header-right .muni-logo img {
+  max-height: 60px;
+  width: auto;
+}
+#page-footer {
+  background: transparent;
+  border-top: 0;
+  padding-bottom: 0;
+}
+#page-footer #page-footer-inner {
+  max-width: inherit;
+}
+@media (max-width: 767px) {
+  #page-footer {
+    margin-right: -20px;
+    margin-left: -20px;
+    padding-right: 0;
+    width: auto;
+  }
+}
+.footer_mountain_container {
+  background-color: transparent;
+  border-bottom: 2px solid #00aef0;
+}
+.footer_mountain_container .mountains {
+  background: transparent url([[pix:theme|7-fjell-o]]) no-repeat center bottom;
+  background-size: contain;
+  height: 0;
+  margin: 0;
+  padding-top: 8.3333333333%;
+  width: 100%;
+}
+#sub-footer .text {
+  color: #999;
+  padding: 1em 0 .5em;
+}
+#sub-footer .returntorole {
+  margin-bottom: 1em;
+}
+#sub-footer .help-link {
+  padding: .7em 0 0;
+}
+#sub-footer .help-link a {
+  float: right;
+  display: table-cell;
+  text-align: center;
+}

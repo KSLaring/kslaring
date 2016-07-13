@@ -1,0 +1,38 @@
+// Strip down core bootstrap for editor.
+
+// Core variables and mixins.
+@import "theme/inc/variables.less"; // Modify this for custom colors, font-sizes, etc.
+@import "theme/inc/mixins.less";
+
+// CSS Reset.
+@import "../../bootstrapbase/less/bootstrap/reset.less";
+
+// Base CSS.
+@import "../../bootstrapbase/less/bootstrap/scaffolding.less";
+@import "../../bootstrapbase/less/bootstrap/type.less";
+@import "../../bootstrapbase/less/bootstrap/code.less";
+@import "../../bootstrapbase/less/bootstrap/tables.less";
+
+// Components: common.
+@import "../../bootstrapbase/less/bootstrap/sprites.less";
+@iconSpritePath:          ~"[[pix:theme|glyphicons-halflings]]";
+@iconWhiteSpritePath:     ~"[[pix:theme|glyphicons-halflings-white]]";
+@import "theme/inc/wells.less";
+
+// Components: Buttons & Alerts.
+@import "../../bootstrapbase/less/bootstrap/buttons.less";
+@import "../../bootstrapbase/less/bootstrap/alerts.less"; // Note: alerts share common CSS with buttons and thus have styles in buttons.less.
+
+// Components: Misc.
+@import "../../bootstrapbase/less/bootstrap/thumbnails.less";
+@import "../../bootstrapbase/less/bootstrap/labels-badges.less";
+
+// Utility classes.
+@import "../../bootstrapbase/less/bootstrap/utilities.less"; // Has to be last to override when necessary.
+
+// Moodle override.
+@import "../../bootstrapbase/less/moodle/editor.less"; // The final override.
+
+// Type and image styles
+@import "theme/type-img.less";
+@import "theme/kitable.less";

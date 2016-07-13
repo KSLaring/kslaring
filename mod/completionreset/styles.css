@@ -1,0 +1,49 @@
+
+.generaltable.mod_completionreset_choosertable {
+	width: 100%;
+	border: 1px;
+}
+
+.mod_completionreset_choosertable  select{
+	width: 100%; 
+}
+.mod_completionreset_choosertable  button{
+	width: 100%; 
+}
+.generaltable.mod_completionreset_choosertable  td{
+	text-align: center; 
+}
+.generaltable.mod_completionreset_choosertable  td.listcontainer{
+	width: 45%;
+}
+.generaltable.mod_completionreset_choosertable  td.buttoncontainer{
+	width: 10%;
+}
+
+div.mod_completionreset_activitylist{
+	padding: 5px;
+}
+div.mod_completionreset_activitylistitem{
+	padding-top: 10px;
+}
+
+div.mod_completionreset_actionbuttons {
+	display: flex;
+	float: left;
+	padding: 10px;
+	vertical-align: bottom;
+}
+div.mod_completionreset_choosebutton {
+	display: flex;
+	float: right;
+	padding: 10px;
+	vertical-align: bottom;
+}
+
+div.mod_completionreset_noactivities{
+	padding: 20px;
+	margin: auto;
+	width: 70%;
+	text-align: center;
+	color: #FF0000;
+}

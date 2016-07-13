@@ -138,6 +138,14 @@ if ($canenrol && optional_param('add', false, PARAM_BOOL) && confirm_sesskey()) 
                 $timeend = $timestart + $extendperiod;
             }
             $enrol_manual->enrol_user($instance, $adduser->id, $roleid, $timestart, $timeend);
+            /**
+             * @updateDate  11/03/2016
+             * @author      eFaktor     (fbv)
+             *
+             * Description
+             * Send a welcome message for manual enrolments
+             */
+            $enrol_manual->welcomeMessage($instance,$adduser);
         }
 
         $potentialuserselector->invalidate_selected_users();

@@ -1,0 +1,102 @@
+// Default zebra-stripe styles (alternating gray and transparent backgrounds)
+.table-striped {
+    tbody {
+        > tr:nth-child(odd) > td,
+        > tr:nth-child(odd) > th {
+            background-color: @tableBackgroundAccent;
+        }
+    }
+}
+
+.kitable {
+    border-collapse: collapse;
+    font-size: @baseFontSize;
+    width: 100%;
+
+    caption {
+        padding: .3em .5em;
+        text-align: left;
+    }
+    th,
+    td {
+        background-color: @bodyBackground;
+        font-size: inherit;
+        padding: .3em .5em;
+        vertical-align: top;
+    }
+}
+
+
+.kitable1,
+div.editor_atto_content  .kitable1 {
+    .kitable;
+    .table-striped;
+    border: 1px solid @kommitBlueGayLight;
+    border-top: 0;
+
+    caption {
+        background-color: @kommitBlueDark;
+        color: @white;
+    }
+    th,
+    td {
+        background-color: @bodyBackground;
+    }
+}
+
+.kitable2,
+div.editor_atto_content .kitable2 {
+    .kitable;
+
+    caption {
+        background-color: @kommitBlueGayLight;
+        border: solid @kommitBlueDark;
+        border-width: 3px 0;
+    }
+    &.table-no-lines {
+        th,
+        td {
+            border: 0;
+        }
+    }
+    &.table-lines {
+        border-bottom: 3px solid @kommitBlueDark;
+
+        th,
+        td {
+            border: 1px solid @kommitBlueGayLight;
+        }
+    }
+}
+
+.kitable3,
+div.editor_atto_content .kitable3 {
+    .kitable;
+
+    caption {
+        display: none;
+    }
+    th {
+        background-color: @kommitBlueGayLight;
+        border: solid @kommitBlueDark;
+        border-width: 3px 0;
+    }
+    th,
+    td {
+        border-right: 5px solid @white;
+    }
+    &.table-no-lines {
+        th,
+        td {
+            border: 0;
+        }
+    }
+    &.table-lines {
+        border-bottom: 3px solid @kommitBlueDark;
+
+        th,
+        td {
+            border: 1px solid @kommitBlueGayLight;
+        }
+    }
+}

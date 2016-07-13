@@ -1,0 +1,9 @@
+#page-mod-completionreport-view .status-table {
+    margin-bottom: 1em;
+}
+#page-mod-completionreport-view .completion-status span {
+    padding-left: .5em;
+}
+#page-mod-completionreport-view .completion-required span {
+    padding-left: .5em;
+}

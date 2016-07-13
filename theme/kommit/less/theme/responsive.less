@@ -1,0 +1,285 @@
+// these are content based minor break point adjustments, to override bootstraps where they look bad
+// Jon Jack
+// efaktor, 26/03/2013
+
+// Small screen
+// ---------------------------------------------------
+
+@media (max-width: 600px) {
+    .logo-area {
+        padding: 20px 19px;
+        margin: 0;
+    }
+
+    .header-background {
+        background-color: #fff;
+        background-image: none;
+        margin: 0 -20px;
+    }
+
+    .hero-unit {
+        background-image: url(~"[[pix:theme|banner_image]]");
+        max-height: 250px;
+        min-height: 250px;
+        background-repeat: no-repeat;
+        background-position: 70% 40%;
+        h1 {
+            font-size: @fontSizeH2;
+        }
+        .texts {
+            width: 85%;
+            margin-top: 1%;
+            padding-left: 7%;
+        }
+        .lead {
+            margin-top: 1%;
+            font-size: @fontSizeH4;
+
+        }
+    }
+
+    // category layout fixes for iphone
+    #navsearchbox {
+        width: 80px;
+    }
+
+    #page-course-index-category .categorypicker {
+        .singleselect {
+            width: 100%;
+        }
+    }
+
+    // word break for headinsg in course categrory
+    #page-course-index-category .generalbox.info h1,
+    #page-course-index-category .generalbox.info h2 {
+        word-break: break-all;
+    }
+
+    // hide edit toggle label
+    .edit-label {
+        display: none;
+    }
+
+    // truncate breadcrumbs in mobile devices
+    .breadcrumb > li {
+        display: none;
+    }
+
+    .breadcrumb > li:first-child,
+    .breadcrumb > li:last-child {
+        display: inline-block;
+    }
+
+    // fixes for small screens course home page
+    // -----------------------------------------------
+    .course_extra .col_one {
+        float: left;
+        text-align: left;
+        width: 100%;
+        display: block;
+    }
+
+    .course_extra .col_three {
+        float: left;
+        text-align: left;
+        width: 100%;
+        display: block;
+    }
+
+    .course_extra .col_two {
+        width: 100%;
+        display: block;
+    }
+
+}
+
+// Mid size screen
+// ---------------------------------------------------
+
+@media (max-width: 767px) {
+    .top-border {
+        margin: 0 -20px;
+    }
+
+    .header-right {
+        display: none;
+    }
+
+    .navbar .navbar-fixed-top {
+        margin: 0 -20px;
+    }
+
+    .hero-unit {
+        margin: 0 -20px;
+        .texts {
+            margin-top: 5%;
+        }
+    }
+
+    // nett course responsive fixes
+    .format-netcourse #page-content {
+        padding: 0 10px;
+        margin: 0 -10px;
+    }
+
+    // responsive fix for classroom course format
+    .format-classroom #page-content {
+        padding: 0 10px;
+        margin: 0 -10px;
+    }
+
+    // adjust height of featured courses
+    // -------------------------------
+    .label_header {
+        min-height: 70px;
+    }
+
+    #page-footer {
+        margin-left: -20px;
+        padding-right: 40px;
+    }
+
+    // adjust margin on smaller screens
+    // -------------------------------
+    .format-netcourse.path-mod-lesson .progress_bar {
+        margin-left: 20px;
+    }
+
+    // adjust tabbed navigation on net course format
+    // -------------------------------
+    .classroom-header,
+    .netcourse-header {
+        margin-left: -10px;
+        margin-right: -10px;
+        border-bottom: none;
+        .btn-toolbar {
+            border: none;
+            margin: 0;
+            padding: 0;
+            .btn-primary:active,
+            .btn-primary.active {
+                border: none;
+            }
+            .btn {
+                box-shadow: none;
+                border: none;
+                outline: 1px solid darken(@kommitGrayLight, 10%);
+                #gradient .vertical(lighten(@kommitGrayLight, 2%), darken(@kommitGrayLight, 7%));
+            }
+            .btn:first-child {
+                width: 100%;
+                margin: 0;
+                padding-left: 0;
+                padding-right: 0;
+            }
+            .btn:nth-child(n+2) {
+                width: 50%;
+                margin: 0;
+                padding-left: 0;
+                padding-right: 0;
+            }
+            .btn:nth-child(4) {
+                width: 100%;
+                margin: 0;
+                padding-left: 0;
+                padding-right: 0;
+            }
+        }
+    }
+}
+
+@media (min-width: 600px) and (max-width: 767px) {
+    .header-background {
+        margin-right: -20px;
+        margin-left: -20px;
+    }
+
+    .logo-area {
+        float: left;
+        padding-left: 20px;
+    }
+}
+
+@media (min-width: 767px) and (max-width: 849px) {
+    // adjust height of featured courses
+    // -------------------------------
+    .label_header {
+        min-height: 70px;
+    }
+}
+
+@media (min-width: 850px) and (max-width: 978px) {
+    // adjust height of featured courses
+    // -------------------------------
+    .label_header {
+        min-height: 100px;
+    }
+}
+
+@media (max-width: 979px) {
+    .nav-collapse.active {
+        float: left;
+    }
+
+    .navbar .nav > li > a {
+        text-align: left;
+    }
+
+    .navbar-fixed-top {
+        margin-bottom: 0;
+    }
+
+    .header-right {
+        width: 60%;
+    }
+
+    .nav-collapse .nav > li > a, .nav-collapse .dropdown-menu a {
+        color: #fff;
+    }
+
+    .navbar-fixed-top .navbar-inner, .navbar-fixed-bottom .navbar-inner {
+        padding: 0;
+    }
+
+    // Lesson Module - Set min-height on lesson pages
+    // -------------------------------------
+    #page-mod-lesson-view .contents {
+        //min-height: 12em;
+    }
+
+    // footer adjustments
+    // -------------------------------------
+    #page-footer {
+    }
+
+    #page-footer #page-footer-inner .column {
+        float: none;
+        display: block;
+        width: 100%;
+        margin-left: 0;
+    }
+}
+
+@media (min-width: 976px) and (max-width: 1090px) {
+    // adjust height of featured courses
+    // -------------------------------
+    .label_header {
+        min-height: 100px;
+    }
+}
+
+// Large size screen
+// -------------------------------------
+
+@media (min-width: 979px) {
+    .navbar-right {
+        float: right !important;
+    }
+}
+
+@media (min-width: 1200px) {
+    .container-fluid {
+        width: 1160px;
+        margin: 0 auto;
+    }
+}

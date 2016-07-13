@@ -1,0 +1,181 @@
+.block_participants {
+    width: 99%;
+    display:block;
+}
+
+.block_participants .course_info_one {
+    float:none;
+    width: 50%;
+    text-justify:inter-word;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    border-bottom: 1px solid white;
+    background-color:  #f2f2f2;
+    height: 25px;
+    line-height: 25px;
+}
+
+.block_participants .course_info_two {
+    float:none;
+    width: 50%;
+    text-justify:inter-word;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    border-bottom: 1px solid white;
+    height: 25px;
+    line-height: 25px;
+}
+
+.block_participants label.header_course {
+    width: 50%;
+    text-align: left;
+    display:inline-block;
+    color:  #757474;
+    font:bold 12px Verdana,Verdana Pro,sans-serif;
+    text-indent: 1px;
+    cursor: default;
+    margin-top: 0px;
+    margin-bottom: 20px;
+    height: 25px;
+    line-height: 25px;
+    text-transform: uppercase;
+    background-color: #f2f2f2;
+}
+
+.block_participants .info_course_value {
+    font:12px Verdana,Verdana Pro,sans-serif;
+    text-justify:inter-word;
+    white-space: pre-line;
+    word-break: break-all;
+    padding-right: 5px;
+    padding-top: 5px;
+}
+
+.block_participants .lst_participants {
+    width: 99%;
+    display:block;
+    margin-bottom: 25px;
+    margin-top: 10px;
+}
+
+.block_participants .lst_participants  table {
+    width: 99%;
+    border-collapse:collapse;
+    margin-bottom: 0;
+    display: table;
+}
+
+.block_participants .lst_participants tr.header_participants {
+    background-color:  #f2f2f2;
+    color:  #000;
+    padding: 0;
+    margin-bottom: 0;
+    font:bold 12px Verdana,Verdana Pro,sans-serif;
+    border-bottom: 2px solid #d8d8d8;
+    vertical-align: middle;
+    height: 30px;
+}
+
+.block_participants .lst_participants  td.user,
+.block_participants .lst_participants  th.user {
+    width: 35%;
+    text-align: left;
+    text-justify:inter-word;
+    padding: 0px 10px 0px 0px;
+}
+
+.block_participants .lst_participants  .button_order {
+    margin: 0px;
+    padding: 0px;
+    text-decoration: underline;
+    color: #0E7B9E;
+    display: inline-block;
+    height: 20px;
+    line-height: 20px;
+}
+
+.block_participants .lst_participants  th.info,
+.block_participants .lst_participants  td.info {
+    width: 25%;
+    text-align: left;
+    text-justify:inter-word;
+    padding: 0px 10px 0px 0px;
+}
+
+.block_participants .lst_participants  th.attend,
+.block_participants .lst_participants  td.attend {
+    width: 15%;
+    text-align: center;
+    text-justify:inter-word;
+    padding: 0px 10px 0px 0px;
+}
+
+.block_participants .lst_participants  th.seats,
+.block_participants .lst_participants  td.seats {
+    width: 8%;
+    text-align: center;
+    text-justify:inter-word;
+    padding: 0px 10px 0px 0px;
+}
+
+.block_participants .lst_participants  .participants_r0 {
+    background-color:  #efefef;
+}
+
+.block_participants .lst_participants  .participants_r2 {
+    background-color: #fafafa;
+}
+
+.div_button_participants {
+    position: relative;
+    float: left;
+    /* Top, Right, Bottom, Left */
+    margin-top: 25px;
+}
+
+.button_participants {
+    font: bold 14px Arial;
+    text-decoration: none;
+    background-color: #0E7B9E;
+    color: white;
+    padding: 8px 8px 8px 8px;
+    border-top: 1px solid #0E7B9E;
+    border-right: 1px solid #0E7B9E;
+    border-bottom: 1px solid #0E7B9E;
+    border-left: 1px solid #0E7B9E;
+    display: inline-block;
+    margin-right: 25px;
+}
+
+@media (max-width: 767px) {
+    .block_participants,
+    .block_participants .lst_participants,
+    .block_participants .course_info_two,
+    .block_participants .course_info_one {
+        float: none;
+        width: 100%;
+        display: block;
+    }
+}
+
+@media (min-width: 850px) and (max-width: 978px) {
+    .block_participants,
+    .block_participants .lst_participants,
+    .block_participants .course_info_two,
+    .block_participants .course_info_one {
+        float: none;
+        width: 100%;
+        display: block;
+    }
+}
+
+@media (min-width: 767px) and (max-width: 849px) {
+    .block_participants,
+    .block_participants .lst_participants,
+    .block_participants .course_info_two,
+    .block_participants .course_info_one {
+        float: none;
+        width: 100%;
+        display: block;
+    }
+}

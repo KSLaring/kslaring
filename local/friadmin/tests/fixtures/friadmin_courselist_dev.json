@@ -1,0 +1,70 @@
+{
+  "data": [
+    {
+      "courseid": "1",
+      "name": "Phasellus lacus sem, mattis volutpat",
+      "date": "2015-04-29",
+      "seats": "4",
+      "deadline": "2015-03-29",
+      "length": "6 hours",
+      "municipality": "Lillehammer",
+      "sector": "Helath",
+      "location": "Course room 1"
+    },
+    {
+      "courseid": "2",
+      "name": "Aliquam pretium malesuada urna id",
+      "date": "2015-03-12",
+      "seats": "16",
+      "deadline": "2015-02-12",
+      "length": "8 hours",
+      "municipality": "Lillehammer",
+      "sector": "Helath",
+      "location": "Course room 2"
+    },
+    {
+      "courseid": "3",
+      "name": "Praesent nec nulla ullamcorper, feugiat",
+      "date": "2015-05-05",
+      "seats": "30",
+      "deadline": "2015-04-05",
+      "length": "2 days",
+      "municipality": "Lillehammer",
+      "sector": "School",
+      "location": "Course room 4"
+    },
+    {
+      "courseid": "4",
+      "name": "Aenean ut semper sapien, non",
+      "date": "2015-05-17",
+      "seats": "8",
+      "deadline": "2015-04-17",
+      "length": "4 hours",
+      "municipality": "Lillehammer",
+      "sector": "School",
+      "location": "Course room 12"
+    },
+    {
+      "courseid": "5",
+      "name": "Sed luctus dolor ac pulvinar",
+      "date": "2015-07-01",
+      "seats": "24",
+      "deadline": "2015-06-15",
+      "length": "6 hours",
+      "municipality": "Oslo",
+      "sector": "Health",
+      "location": "Room 312"
+    },
+    {
+      "courseid": "6",
+      "name": "Aliquam tempor urna consequat justo",
+      "date": "2015-07-13",
+      "seats": "24",
+      "deadline": "2015-06-13",
+      "length": "8 hours",
+      "municipality": "Oslo",
+      "sector": "School",
+      "location": "Room 300"
+    }
+  ]
+}

@@ -1,0 +1,151 @@
+@titlesize: 1.3em;
+
+.sectionname {
+    font-size: @titlesize;
+}
+
+.section {
+    li {
+        &.activity {
+            padding: 0;
+
+            .contentafterlink {
+                &.dimmed_text {
+                    color: @grayLight;
+
+                    * {
+                        color: @grayLight;
+                    }
+                }
+            }
+        }
+    }
+}
+
+.course-content {
+    .section-summary {
+        .section-title {
+            font-size: @titlesize;
+        }
+    }
+}
+
+.path-course-view {
+    .section {
+        .summary {
+            line-height: inherit;
+        }
+    }
+}
+
+#section-0 {
+    .sectionname {
+        margin-top: 0;
+    }
+}
+
+#site-news-forum,
+#frontpage-course-list,
+#frontpage-category-names,
+#frontpage-category-combo {
+    h2 {
+        font-size: @titlesize;
+    }
+}
+
+.coursebox {
+    .border-radius(0);
+
+    > .info {
+        > h3 {
+            &.coursename {
+                font-size: @titlesize;
+
+                a {
+                    background-position: left .7em;
+                }
+            }
+        }
+    }
+}
+
+.courses {
+    .coursebox {
+        &:hover {
+            background-color: inherit;
+        }
+    }
+}
+
+/* To make the course titles have more space on the frontage
+Courses and categories lists, from Mary Evans
+----------------------------*/
+.coursebox .content .summary,
+.coursebox .content .coursecat {
+    width: 100%;
+    float: left;
+}
+
+.coursebox > .info > .name {
+    width: auto;
+}
+
+.coursebox .content .teachers,
+.coursebox .content .courseimage,
+.coursebox .content .coursefile {
+    width: 100%;
+}
+
+#frontpage-course-list {
+    .panel {
+        padding-bottom: .7em;
+    }
+}
+
+/* Align course search box course page
+// Jon Jack
+*/
+
+.coursesearchbox {
+  input[type="text"], input[type="search"] {
+    margin-bottom: 0;
+    width: 200px;
+  }
+}
+
+#coursesearch2 {
+  float: right;
+  padding: 10px 20px 10px 0;
+  input[type="text"], input[type="search"] {
+    margin-bottom: 0;
+    width: 200px !important;
+  }
+}
+
+
+// Fix for edit mode text editor popping out of interface
+// Jon Jack
+// ------------------------------------------
+
+.format-netcourse {
+  .mform .fitem div.fitemtitle {
+    width: 205px;
+      textarea[cols], input[size] {
+      width: 100%;
+      }
+  }
+  .mform .fitem .felement {
+    margin-left: 225px;
+      textarea[cols], input[size] {
+      width: 100%;
+      }
+    }
+}
+
+// Fix for description popping out of content area
+// Jon Jack
+// ------------------------------------------
+.empty-region-side-pre #region-bs-main-and-pre.span9 #region-main, .jsenabled.docked-region-side-pre #region-bs-main-and-pre.span9 #region-main {
+  float: none;
+  width: 96%;
+}
