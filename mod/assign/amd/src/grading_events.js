@@ -1,4 +1,3 @@
-<?php
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -15,31 +14,19 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * This file defines tasks performed by the tool.
+ * Events for the grading interface.
  *
- * @package    tool_monitor
- * @copyright  2014 Mark Nelson <markn@moodle.com>
+ * @module     mod_assign/grading_events
+ * @package    mod_assign
+ * @copyright  2016 Ryan Wyllie <ryan@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @since      3.1
  */
-
-// List of tasks.
-$tasks = array(
-    array(
-        'classname' => 'tool_monitor\task\clean_events',
-        'blocking' => 0,
-        'minute' => '*',
-        'hour' => '*',
-        'day' => '*',
-        'dayofweek' => '*',
-        'month' => '*'
-    ),
-    array(
-        'classname' => 'tool_monitor\task\check_subscriptions',
-        'blocking' => 0,
-        'minute' => 'R',
-        'hour' => 'R',
-        'day' => '*',
-        'dayofweek' => '*',
-        'month' => '*'
-    )
-);
+define(function() {
+    return {
+        COLLAPSE_REVIEW_PANEL: 'grading:collapse-review-panel',
+        EXPAND_REVIEW_PANEL: 'grading:expand-review-panel',
+        COLLAPSE_GRADE_PANEL: 'grading:collapse-grade-panel',
+        EXPAND_GRADE_PANEL: 'grading:expand-grade-panel',
+    };
+});
