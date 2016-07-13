@@ -10,29 +10,29 @@
  * @author          eFaktor     (fbv)
  */
 
-$string['pluginname']           = 'Participants list';
+$string['pluginname']           = 'Deltakerliste';
 
-$string['node']                 = 'Participants';
-$string['filter_node']          = 'Filter Participants';
+$string['node']                 = 'Deltakere';
+$string['filter_node']          = 'Filtrer deltakere';
 
-$string['participants:manage']  = 'Manage Participants list';
-$string['participants:view']    = 'View Participants list';
+$string['participants:manage']  = 'Administrere deltakerliste';
+$string['participants:view']    = 'Vis deltakerliste';
 
-$string['lnk_back']             = 'Back';
+$string['lnk_back']             = 'Tilbake';
 $string['lnk_tick']             = 'Tick attendance';
 $string['last_attendance']      = 'Last Attendance';
-$string['email']                = 'Email';
+$string['email']                = 'Epost';
 
-$string['header_filter']        = 'Filter';
-$string['attend_from']          = 'From';
-$string['attend_to']            = 'To';
-$string['attendance']           = 'Attended';
+$string['header_filter']        = 'Filtrer';
+$string['attend_from']          = 'Fra';
+$string['attend_to']            = 'Til';
+$string['attendance']           = 'Deltatt';
 
-$string['err_start']            = 'It cannot be bigger than today';
-$string['err_dates']            = 'It cannot be bigger than "To"';
+$string['err_start']            = 'Kan ikke være etter i dag';
+$string['err_dates']            = 'Kan ikke være etter "Til"';
 
-$string['remove_filter']        = 'Remove filter';
+$string['remove_filter']        = 'Fjern filter';
 
-$string['csvdownload']          = 'Download in spreadsheet format (.xls)';
+$string['csvdownload']          = 'Last ned i regnearkformat (.xls)';
 
-$string['str_instructors']      = 'Instructors';
+$string['str_instructors']      = 'Instruktører';
