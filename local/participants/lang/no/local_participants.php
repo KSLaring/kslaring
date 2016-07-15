@@ -19,8 +19,8 @@ $string['participants:manage']  = 'Administrere deltakerliste';
 $string['participants:view']    = 'Vis deltakerliste';
 
 $string['lnk_back']             = 'Tilbake';
-$string['lnk_tick']             = 'Tick attendance';
-$string['last_attendance']      = 'Last Attendance';
+$string['lnk_tick']             = 'Registrer frammøte';
+$string['last_attendance']      = 'Sist møtt';
 $string['email']                = 'Epost';
 
 $string['header_filter']        = 'Filtrer';
