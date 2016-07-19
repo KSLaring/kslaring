@@ -1,0 +1,59 @@
+// @package     theme_essential.
+// @copyright   2016 Gareth J Barnard.
+// @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later.
+
+/* Moodle fixes blocks begin */
+.block_navigation, .block_settings {
+    .block_tree .fa[aria-hidden="true"] {
+        display: inline-block;
+    }
+}
+.block_navigation, .block_settings {
+    .block_tree p.hasicon {
+        text-indent: 0;
+    }
+}
+.dir-rtl .block_navigation .block_tree ul {
+    margin-left: 0;
+    margin-right: 18px;
+}
+.dir-rtl .block_navigation .block_tree .depth_1 > ul {
+    margin: 0;
+}
+.dir-ltr {
+    .block_settings,
+    .block_navigation {
+        .block_tree {
+            p.hasicon {
+                padding-left: 0;
+            }
+            .depth_2 > p.hasicon {
+                padding-left: 21px;
+            }
+        }
+    }
+}
+.dir-rtl {
+    .block_settings,
+    .block_navigation {
+        .block_tree {
+            p.hasicon {
+                padding-right: 0;
+            }
+            .depth_2 > p.hasicon {
+                padding-right: 21px;
+            }
+        }
+    }
+}
+
+.dir-rtl .tree_item {
+    &.branch {
+        unicode-bidi: bidi-override;
+    }
+    span, a {
+        unicode-bidi: embed;
+    }
+}
+
+/* Moodle fixes blocks end */

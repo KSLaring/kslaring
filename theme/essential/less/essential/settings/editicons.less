@@ -1,0 +1,23 @@
+/* @group Edit Buttons */
+@import "../../fontawesome/variables";
+
+.menu a.menu-action,
+.course-item-actions a,
+.actions a {
+    > .@{fa-css-prefix} {
+        color: ~"[[setting:themeiconcolor]]";
+    }
+    &:hover {
+        > .@{fa-css-prefix} {
+            color: ~"[[setting:themehovercolor]]";
+        }
+    }
+}
+
+.section-modchooser-link {
+    > a:before {
+        color: @icon-colour;
+    }
+}
+
+/* @end */

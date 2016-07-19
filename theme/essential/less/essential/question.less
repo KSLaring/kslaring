@@ -1,0 +1,115 @@
+/* @group Quiz */
+
+#page-mod-quiz-edit {
+    div.question {
+        div.content {
+            div.points {
+                margin-top: 0;
+            }
+            div.questioncontrols {
+                width: 60px;
+                position: absolute;
+                top: 0.2em;
+                display: block;
+                background-color: transparent;
+            }
+        }
+    }
+    div.quizpage .pagecontent {
+        width: 100%;
+    }
+    div.quizcontents {
+        display: block;
+        width: 67%;
+    }
+    .questionbankwindow.block div.header {
+        border-radius: 6px;
+        .title h2 {
+            margin-bottom: 0;
+        }
+    }
+    .reorder div.question div.content .questionpreview .@{fa-css-prefix} {
+        vertical-align: middle;
+    }
+    .questionbank select.menucategory {
+        width: 100%;
+    }
+
+    ul.slots li.section li.activity img.iconsmall {
+        display: none;
+    }
+}
+
+.dir-ltr#page-mod-quiz-edit {
+    div.question {
+        div.content {
+            div.questioncontrols {
+                float: right;
+                right: 0.3em;
+                text-align: right;
+            }
+        }
+    }
+    .pagecontrols .singlebutton {
+        margin-left: 1.4em;
+    }
+    .addpage {
+        margin-right: 0;
+    }
+    div.quizcontents {
+        clear: left;
+        float: left;
+    }
+}
+
+.dir-rtl#page-mod-quiz-edit {
+    div.question {
+        div.content {
+            div.questioncontrols {
+                float: left;
+                left: 0.3em;
+                text-align: left;
+            }
+        }
+    }
+    .pagecontrols .singlebutton {
+        margin-right: 1.4em;
+    }
+    .addpage {
+        margin-left: 0;
+    }
+    div.quizcontents {
+        clear: right;
+        float: right;
+    }
+}
+
+.questionbankwindow {
+    width: 100%;
+    &.block {
+        background: white;
+        padding: 0px 12px;
+        border-radius: 8px;
+        border: 1px solid #E1E1E1;
+        margin-bottom: 10px;
+        .header .title {
+            border-bottom: 0px none;
+            h2:before {
+                content: "\f128";
+            }
+        }
+    }
+}
+
+#page-question-preview {
+    h1 {
+        font-size: 1.5em;
+    }
+}
+
+.formulation input[type="text"],
+.formulation select {
+    max-width: 100%;
+}
+
+/* @end Quiz */
