@@ -1,0 +1,205 @@
+{
+  "data": [
+    {
+      "id": 1,
+      "firstname": "Morbi",
+      "lastname": "Interdum et",
+      "municipality": "Lillehammer",
+      "workplace": "Health",
+      "attended": 1
+    },
+    {
+      "id": 2,
+      "firstname": "Vestibulum",
+      "lastname": "Nulla",
+      "municipality": "Lillehammer",
+      "workplace": "Health",
+      "attended": 1
+    },
+    {
+      "id": 3,
+      "firstname": "Proin eros",
+      "lastname": "Nullam",
+      "municipality": "Gjøvik",
+      "workplace": "Education",
+      "attended": 0
+    },
+    {
+      "id": 4,
+      "firstname": "Nunc",
+      "lastname": "Nullam",
+      "municipality": "Gjøvik",
+      "workplace": "Health",
+      "attended": 0
+    },
+    {
+      "id": 5,
+      "firstname": "Sed",
+      "lastname": "Proin",
+      "municipality": "Gjøvik",
+      "workplace": "Education",
+      "attended": 0
+    },
+    {
+      "id": 6,
+      "firstname": "Nulla",
+      "lastname": "Donec maximus",
+      "municipality": "Lillehamemr",
+      "workplace": "Education",
+      "attended": 0
+    },
+    {
+      "id": 7,
+      "firstname": "Ut",
+      "lastname": "Aenean",
+      "municipality": "Gjøvik",
+      "workplace": "Health",
+      "attended": 1
+    },
+    {
+      "id": 8,
+      "firstname": "Donec",
+      "lastname": "Interdum et",
+      "municipality": "Gjøvik",
+      "workplace": "Education",
+      "attended": 0
+    },
+    {
+      "id": 9,
+      "firstname": "Vestibulum",
+      "lastname": "Aliquam",
+      "municipality": "Lillehammer",
+      "workplace": "Education",
+      "attended": 0
+    },
+    {
+      "id": 10,
+      "firstname": "Donec",
+      "lastname": "Integer",
+      "municipality": "Lillehammer",
+      "workplace": "Education",
+      "attended": 1
+    },
+    {
+      "id": 11,
+      "firstname": "Cras",
+      "lastname": "Mauris",
+      "municipality": "Gjøvik",
+      "workplace": "Health",
+      "attended": 0
+    },
+    {
+      "id": 12,
+      "firstname": "Duis",
+      "lastname": "Ut sed",
+      "municipality": "Gjøvik",
+      "workplace": "Health",
+      "attended": 1
+    },
+    {
+      "id": 13,
+      "firstname": "In Donec",
+      "lastname": "Donec",
+      "municipality": "Gjøvik",
+      "workplace": "Health",
+      "attended": 1
+    },
+    {
+      "id": 14,
+      "firstname": "Nunc",
+      "lastname": "Pellentesque",
+      "municipality": "Gjøvik",
+      "workplace": "Education",
+      "attended": 1
+    },
+    {
+      "id": 15,
+      "firstname": "Duis",
+      "lastname": "Proin",
+      "municipality": "Gjøvik",
+      "workplace": "Education",
+      "attended": 0
+    },
+    {
+      "id": 16,
+      "firstname": "Nulla",
+      "lastname": "Integer",
+      "municipality": "Gjøvik",
+      "workplace": "Education",
+      "attended": 0
+    },
+    {
+      "id": 17,
+      "firstname": "Donec",
+      "lastname": "Mauris",
+      "municipality": "Gjøvik",
+      "workplace": "Education",
+      "attended": 1
+    },
+    {
+      "id": 18,
+      "firstname": "Proin",
+      "lastname": "Aliquam",
+      "municipality": "Lillehammer",
+      "workplace": "Health",
+      "attended": 1
+    },
+    {
+      "id": 19,
+      "firstname": "Sed",
+      "lastname": "Nam",
+      "municipality": "Lillehammer",
+      "workplace": "Health",
+      "attended": 0
+    },
+    {
+      "id": 20,
+      "firstname": "Mauris",
+      "lastname": "Suspendisse",
+      "municipality": "Lillehammer",
+      "workplace": "Health",
+      "attended": 0
+    },
+    {
+      "id": 21,
+      "firstname": "Sed",
+      "lastname": "Suspendisse",
+      "municipality": "Gjøvik",
+      "workplace": "Education",
+      "attended": 0
+    },
+    {
+      "id": 22,
+      "firstname": "Mauris",
+      "lastname": "Fusce",
+      "municipality": "Gjøvik",
+      "workplace": "Education",
+      "attended": 1
+    },
+    {
+
+      "id": 23,
+      "firstname": "Proin",
+      "lastname": "Morbi",
+      "municipality": "Lillehammer",
+      "workplace": "Health",
+      "attended": 1
+    },
+    {
+      "id": 24,
+      "firstname": "Aenean porttitor",
+      "lastname": "Mauris pellentesque",
+      "municipality": "Lillehammer",
+      "workplace": "Health",
+      "attended": 0
+    },
+    {
+      "id": 25,
+      "firstname": "Sed",
+      "lastname": "Aenean massa",
+      "municipality": "Lillehammer",
+      "workplace": "Health",
+      "attended": 0
+    }
+  ]
+}

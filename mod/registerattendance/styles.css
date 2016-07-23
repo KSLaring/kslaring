@@ -1,0 +1,62 @@
+#page-mod-registerattendance-view h2.title {
+    margin-bottom: .5em;
+}
+
+#page-mod-registerattendance-view #attendancelist .attended {
+    text-align: center;
+}
+
+#page-mod-registerattendance-view .buttons {
+    margin: 1em 0;
+}
+
+#page-mod-registerattendance-view .bulkregister {
+    margin-top: 0;
+    margin-bottom: 2em;
+}
+
+#page-mod-registerattendance-view .bulkregister .haveatttended,
+#page-mod-registerattendance-view .bulkregister .singlebutton {
+    float: left;
+}
+
+#page-mod-registerattendance-view .bulkregister .haveatttended {
+    padding-top: .5em;
+}
+
+#page-mod-registerattendance-view .bulkregister .singlebutton input {
+    margin: 0 0 0 1em;
+}
+
+#page-mod-registerattendance-view  #mform-attendancelist-filter {
+    clear: both;
+}
+
+#page-mod-registerattendance-view .form-item .form-label,
+#page-mod-registerattendance-view .mform .fitem div.fitemtitle {
+    width: 0;
+}
+
+#page-mod-registerattendance-view .mform .fitem .felement {
+    margin-left: 0;
+}
+
+#page-mod-registerattendance-view .mform .group-spacer {
+    padding-left: 1.5em;
+}
+
+#page-mod-registerattendance-view .mform .fitem_actionbuttons {
+    background-color: inherit;
+    border-top: 0;
+    margin-top: 0;
+    margin-bottom: 1.5em;
+    padding: 0;
+}
+
+#page-mod-registerattendance-view .lastinitial {
+    margin-bottom: .5em;
+}
+
+#page-mod-registerattendance-view form > .mdl-align {
+    text-align: left;
+}
