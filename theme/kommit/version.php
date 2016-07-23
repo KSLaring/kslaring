@@ -30,7 +30,7 @@
 
 defined('MOODLE_INTERNAL') || die;
 
-$plugin->version   = 2016062900;
+$plugin->version   = 2016072300;
 $plugin->requires  = 2013110500;
 $plugin->component = 'theme_kommit';
 $plugin->dependencies = array(

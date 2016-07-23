@@ -14402,7 +14402,11 @@ button,
 input.form-submit,
 input[type="button"],
 input[type="submit"],
-input[type="reset"] {
+input[type="reset"],
+input#id_submitbutton,
+input#id_submitbutton2,
+.path-admin .buttons input[type="submit"],
+td.submit input {
   /* IE7 inline-block hack */
   padding: 4px 12px;
   color: #333333;
@@ -14455,31 +14459,55 @@ input.form-submit:hover,
 input[type="button"]:hover,
 input[type="submit"]:hover,
 input[type="reset"]:hover,
+input#id_submitbutton:hover,
+input#id_submitbutton2:hover,
+.path-admin .buttons input[type="submit"]:hover,
+td.submit input:hover,
 button:focus,
 input.form-submit:focus,
 input[type="button"]:focus,
 input[type="submit"]:focus,
 input[type="reset"]:focus,
+input#id_submitbutton:focus,
+input#id_submitbutton2:focus,
+.path-admin .buttons input[type="submit"]:focus,
+td.submit input:focus,
 button:active,
 input.form-submit:active,
 input[type="button"]:active,
 input[type="submit"]:active,
 input[type="reset"]:active,
+input#id_submitbutton:active,
+input#id_submitbutton2:active,
+.path-admin .buttons input[type="submit"]:active,
+td.submit input:active,
 button.active,
 input.form-submit.active,
 input[type="button"].active,
 input[type="submit"].active,
 input[type="reset"].active,
+input#id_submitbutton.active,
+input#id_submitbutton2.active,
+.path-admin .buttons input[type="submit"].active,
+td.submit input.active,
 button.disabled,
 input.form-submit.disabled,
 input[type="button"].disabled,
 input[type="submit"].disabled,
 input[type="reset"].disabled,
+input#id_submitbutton.disabled,
+input#id_submitbutton2.disabled,
+.path-admin .buttons input[type="submit"].disabled,
+td.submit input.disabled,
 button[disabled],
 input.form-submit[disabled],
 input[type="button"][disabled],
 input[type="submit"][disabled],
-input[type="reset"][disabled] {
+input[type="reset"][disabled],
+input#id_submitbutton[disabled],
+input#id_submitbutton2[disabled],
+.path-admin .buttons input[type="submit"][disabled],
+td.submit input[disabled] {
   color: #333333;
   background-color: #e6e6e6;
   *background-color: #d9d9d9;
@@ -14489,18 +14517,30 @@ input.form-submit:active,
 input[type="button"]:active,
 input[type="submit"]:active,
 input[type="reset"]:active,
+input#id_submitbutton:active,
+input#id_submitbutton2:active,
+.path-admin .buttons input[type="submit"]:active,
+td.submit input:active,
 button.active,
 input.form-submit.active,
 input[type="button"].active,
 input[type="submit"].active,
-input[type="reset"].active {
+input[type="reset"].active,
+input#id_submitbutton.active,
+input#id_submitbutton2.active,
+.path-admin .buttons input[type="submit"].active,
+td.submit input.active {
   background-color: #cccccc \9;
 }
 button:first-child,
 input.form-submit:first-child,
 input[type="button"]:first-child,
 input[type="submit"]:first-child,
-input[type="reset"]:first-child {
+input[type="reset"]:first-child,
+input#id_submitbutton:first-child,
+input#id_submitbutton2:first-child,
+.path-admin .buttons input[type="submit"]:first-child,
+td.submit input:first-child {
   *margin-left: 0;
 }
 button:hover,
@@ -14508,11 +14548,19 @@ input.form-submit:hover,
 input[type="button"]:hover,
 input[type="submit"]:hover,
 input[type="reset"]:hover,
+input#id_submitbutton:hover,
+input#id_submitbutton2:hover,
+.path-admin .buttons input[type="submit"]:hover,
+td.submit input:hover,
 button:focus,
 input.form-submit:focus,
 input[type="button"]:focus,
 input[type="submit"]:focus,
-input[type="reset"]:focus {
+input[type="reset"]:focus,
+input#id_submitbutton:focus,
+input#id_submitbutton2:focus,
+.path-admin .buttons input[type="submit"]:focus,
+td.submit input:focus {
   color: #333333;
   text-decoration: none;
   background-position: 0 -15px;
@@ -14525,7 +14573,11 @@ button:focus,
 input.form-submit:focus,
 input[type="button"]:focus,
 input[type="submit"]:focus,
-input[type="reset"]:focus {
+input[type="reset"]:focus,
+input#id_submitbutton:focus,
+input#id_submitbutton2:focus,
+.path-admin .buttons input[type="submit"]:focus,
+td.submit input:focus {
   outline: thin dotted #333;
   outline: 5px auto -webkit-focus-ring-color;
   outline-offset: -2px;
@@ -14535,11 +14587,19 @@ input.form-submit.active,
 input[type="button"].active,
 input[type="submit"].active,
 input[type="reset"].active,
+input#id_submitbutton.active,
+input#id_submitbutton2.active,
+.path-admin .buttons input[type="submit"].active,
+td.submit input.active,
 button:active,
 input.form-submit:active,
 input[type="button"]:active,
 input[type="submit"]:active,
-input[type="reset"]:active {
+input[type="reset"]:active,
+input#id_submitbutton:active,
+input#id_submitbutton2:active,
+.path-admin .buttons input[type="submit"]:active,
+td.submit input:active {
   background-image: none;
   outline: 0;
   -webkit-box-shadow: inset 0 2px 4px rgba(0,0,0,.15), 0 1px 2px rgba(0,0,0,.05);
@@ -14551,11 +14611,19 @@ input.form-submit.disabled,
 input[type="button"].disabled,
 input[type="submit"].disabled,
 input[type="reset"].disabled,
+input#id_submitbutton.disabled,
+input#id_submitbutton2.disabled,
+.path-admin .buttons input[type="submit"].disabled,
+td.submit input.disabled,
 button[disabled],
 input.form-submit[disabled],
 input[type="button"][disabled],
 input[type="submit"][disabled],
-input[type="reset"][disabled] {
+input[type="reset"][disabled],
+input#id_submitbutton[disabled],
+input#id_submitbutton2[disabled],
+.path-admin .buttons input[type="submit"][disabled],
+td.submit input[disabled] {
   cursor: default;
   background-image: none;
   opacity: 0.65;
@@ -14569,11 +14637,19 @@ input.form-submit .label,
 input[type="button"] .label,
 input[type="submit"] .label,
 input[type="reset"] .label,
+input#id_submitbutton .label,
+input#id_submitbutton2 .label,
+.path-admin .buttons input[type="submit"] .label,
+td.submit input .label,
 button .badge,
 input.form-submit .badge,
 input[type="button"] .badge,
 input[type="submit"] .badge,
-input[type="reset"] .badge {
+input[type="reset"] .badge,
+input#id_submitbutton .badge,
+input#id_submitbutton2 .badge,
+.path-admin .buttons input[type="submit"] .badge,
+td.submit input .badge {
   position: relative;
   top: -1px;
 }
@@ -14582,11 +14658,19 @@ input.form-submit:hover,
 input[type="button"]:hover,
 input[type="submit"]:hover,
 input[type="reset"]:hover,
+input#id_submitbutton:hover,
+input#id_submitbutton2:hover,
+.path-admin .buttons input[type="submit"]:hover,
+td.submit input:hover,
 button:focus,
 input.form-submit:focus,
 input[type="button"]:focus,
 input[type="submit"]:focus,
-input[type="reset"]:focus {
+input[type="reset"]:focus,
+input#id_submitbutton:focus,
+input#id_submitbutton2:focus,
+.path-admin .buttons input[type="submit"]:focus,
+td.submit input:focus {
   color: white;
   text-decoration: none;
   background: #00aef0;
@@ -14595,7 +14679,11 @@ button:focus,
 input.form-submit:focus,
 input[type="button"]:focus,
 input[type="submit"]:focus,
-input[type="reset"]:focus {
+input[type="reset"]:focus,
+input#id_submitbutton:focus,
+input#id_submitbutton2:focus,
+.path-admin .buttons input[type="submit"]:focus,
+td.submit input:focus {
   outline: thin dotted #333;
   outline: 5px auto -webkit-focus-ring-color;
   outline-offset: -2px;
@@ -14605,11 +14693,19 @@ input.form-submit.active,
 input[type="button"].active,
 input[type="submit"].active,
 input[type="reset"].active,
+input#id_submitbutton.active,
+input#id_submitbutton2.active,
+.path-admin .buttons input[type="submit"].active,
+td.submit input.active,
 button:active,
 input.form-submit:active,
 input[type="button"]:active,
 input[type="submit"]:active,
-input[type="reset"]:active {
+input[type="reset"]:active,
+input#id_submitbutton:active,
+input#id_submitbutton2:active,
+.path-admin .buttons input[type="submit"]:active,
+td.submit input:active {
   outline: 0;
 }
 button.disabled,
@@ -14617,11 +14713,19 @@ input.form-submit.disabled,
 input[type="button"].disabled,
 input[type="submit"].disabled,
 input[type="reset"].disabled,
+input#id_submitbutton.disabled,
+input#id_submitbutton2.disabled,
+.path-admin .buttons input[type="submit"].disabled,
+td.submit input.disabled,
 button[disabled],
 input.form-submit[disabled],
 input[type="button"][disabled],
 input[type="submit"][disabled],
-input[type="reset"][disabled] {
+input[type="reset"][disabled],
+input#id_submitbutton[disabled],
+input#id_submitbutton2[disabled],
+.path-admin .buttons input[type="submit"][disabled],
+td.submit input[disabled] {
   cursor: default;
   opacity: 0.65;
   filter: alpha(opacity=65);
