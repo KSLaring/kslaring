@@ -1816,7 +1816,7 @@ class TrackerManager {
 
             /* Completed    */
             if ($completed) {
-                $state = get_string('outcome_course_started','local_tracker_manager');
+                $state = get_string('outcome_course_finished','local_tracker_manager');
                 foreach ($completed as $course) {
                     $col = 0;
 
@@ -1833,7 +1833,7 @@ class TrackerManager {
 
                     /* Completion        */
                     $col = $col + 2;
-                    $my_xls->write($row, $col, '-',array('size'=>12, 'name'=>'Arial','bg_color'=>$bg_color,'align'=>'center','v_align'=>'center'));
+                    $my_xls->write($row, $col,userdate($course->completed,'%d.%m.%Y', 99, false),array('size'=>12, 'name'=>'Arial','bg_color'=>$bg_color,'align'=>'center','v_align'=>'center'));
                     $my_xls->merge_cells($row,$col,$row,$col+1);
                     $my_xls->set_row($row,20);
 
