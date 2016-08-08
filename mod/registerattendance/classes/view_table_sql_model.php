@@ -193,13 +193,16 @@ class mod_registerattendance_view_table_sql_model extends mod_registerattendance
 
         // Get the users with the completed state and either use or exclude them
         // depending on the showattended setting.
-        if ($showattended) {
+        if ($showattended === 1 && !empty($this->completedusers)) {
             // If »show attended« then 1, else if »show not attended« then 2.
             $equal = $showattended === 1;
             list($in, $inparams) = $DB->get_in_or_equal($this->completedusers, SQL_PARAMS_NAMED, 'param', $equal);
 
             $sql = "$sql AND u.id $in";
             $params = array_merge($params, $inparams);
+        } else if ($showattended === 1 && empty($this->completedusers)) {
+            // Attended users requested but no attended users to show.
+            return array(0, array());
         }
 
         if ($orderby) {
@@ -214,7 +217,7 @@ class mod_registerattendance_view_table_sql_model extends mod_registerattendance
         $result = $DB->get_records_sql($sql, $params, $limitfrom, $limitnum);
         $result = $this->add_attended($result);
 
-        // @TODO Find a better to get the whole amount of records without $limitfrom, $limitnum for paging.
+        // @TODO Find a better way to get the whole amount of records without $limitfrom, $limitnum for paging.
         return array(count($DB->get_records_sql($sql, $params)), $result);
     }
 
