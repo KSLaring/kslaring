@@ -1,6 +1,6 @@
 <?PHP // $Id$ 
 $string['pluginname']   = 'Min side administrasjon';
-$string['name'] = 'Min side';
+$string['name'] = 'Kompetansestyring';
 
 $string['blocks_editing_on']    = 'Slå på blokkredigering';
 $string['blocks_editing_off']   = 'Slå av blokkredigering';
@@ -86,4 +86,4 @@ $string['course_report']        = 'Kursrapport';
  * Description
  * Add new language strings for 'Super Users' functionality
  */
-$string['spuser'] = 'Super Users';
+$string['spuser'] = 'Org-superbrukere';

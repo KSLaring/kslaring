@@ -47,6 +47,9 @@ class block_frikomport_menu_manager {
      * Add sections - a branch with leaves - with the »add_tree_section« method
      */
     protected function build_tree() {
+        global $CFG;
+        require_once ($CFG->dirroot . '/local/friadmin/lib.php');
+
         $settingsicon = new pix_icon('i/settings', '');
 
         // Create the root node
@@ -73,34 +76,23 @@ class block_frikomport_menu_manager {
         $subnode = new navigation_node($item);
         $this->nodes->add_node($subnode);
 
-        // Create and add the course creation links in a submenu
-        $branch = array(
-            array(
-                'text' => get_string('nnewcourses', 'block_frikomport'),
-                'type' => navigation_node::NODETYPE_BRANCH
-            ),
-            /**
-             * @updateDate  24/06/2015
-             * @author      eFaktor     (fbv)
-             *
-             * Description
-             * Add a new course --> First the user has to select the category where the course belong
-             * Action --> local/friadmin/newcourse.php
-             */
-            array(
-                'text' => get_string('naddcourse', 'block_frikomport'),
-                'icon' => $settingsicon,
-                'type' => navigation_node::NODETYPE_LEAF,
-                'action' => '/local/friadmin/newcourse.php'
-            ),
-            array(
-                'text' => get_string('naddfromtemplate', 'block_frikomport'),
-                'icon' => $settingsicon,
-                'type' => navigation_node::NODETYPE_LEAF,
-                'action' => '/local/friadmin/coursetemplate.php'
-            )
+        $item = array(
+            'text' => get_string('naddfromtemplate', 'block_frikomport'),
+            'icon' => $settingsicon,
+            'type' => navigation_node::NODETYPE_LEAF,
+            'action' => '/local/friadmin/coursetemplate.php?type=' . TEMPLATE_TYPE_EVENT
         );
-        $this->add_tree_section($branch);
+        $subnode = new navigation_node($item);
+        $this->nodes->add_node($subnode);
+
+        $item = array(
+            'text' => get_string('naddfromnectcoursetemplate', 'block_frikomport'),
+            'icon' => $settingsicon,
+            'type' => navigation_node::NODETYPE_LEAF,
+            'action' => '/local/friadmin/coursetemplate.php?type=' . TEMPLATE_TYPE_NETCOURSE
+        );
+        $subnode = new navigation_node($item);
+        $this->nodes->add_node($subnode);
 
         /**
          * @updateDate      27/04/2015
@@ -136,6 +128,15 @@ class block_frikomport_menu_manager {
             )
         );
         $this->add_tree_section($branch);
+
+        $item = array(
+            'text' => get_string('nmysettings', 'block_frikomport'),
+            'icon' => $settingsicon,
+            'type' => navigation_node::NODETYPE_LEAF,
+            'action' => '/local/friadmin/mysettings.php'
+        );
+        $subnode = new navigation_node($item);
+        $this->nodes->add_node($subnode);
     }
 
     /**

@@ -19,7 +19,7 @@ $string['class_course']             = 'Klasserom';
 $string['course_page:manage']   	= 'Administrere hjemmesider';
 $string['current_graphic']          = 'Gjeldende grafikk';
 $string['edit_home_page']           = 'Hjemmeside';
-$string['elearning']                 = 'eLearning';
+$string['elearning']                = 'eLearning';
 $string['home_about']               = 'Om dette kurset';
 $string['home_coordinater']         = 'Koordinator';
 $string['home_course_id']           = 'ID';
@@ -39,7 +39,7 @@ $string['home_video']               = 'Hjemmesidevideo';
 $string['home_visible']             = 'Publiseringsstatus';
 $string['net_course']               = 'Nettkurs';
 $string['not_comments']             = 'Ingen kommentarer';
-$string['pluginname']           	= 'Hjemmesider';
+$string['pluginname'] 		        = 'Hjemmesider';
 $string['rate_avg']                 = 'Middels';
 $string['rate_bad']                 = 'Dårlig';
 $string['rate_exc']                 = 'Kjempebra';
@@ -52,7 +52,7 @@ $string['single']                   = 'Enkeltaktivitet';
 $string['title_reviews']            = 'Revisjon';
 $string['whitepaper']               = 'Dokumentformat';
 $string['available_seats'] 			= 'Ledige plasser';
-$string['unlimited_seats']          = 'Unlimited';
+$string['unlimited_seats']          = 'Ubegrenset';
 $string['no_minimum_rates']         = 'Beklager, men det er ikke mange nok som har vurdert dette kurset ennå.';
 
 $string['view_detail'] = 'Vis detaljer';
@@ -60,13 +60,12 @@ $string['view_detail'] = 'Vis detaljer';
 $string['home_deadline']    = 'Påmeldingsfrist';
 $string['home_price']       = 'Pris';
 
-$string['url_map'] = 'Click here for the map';
+$string['url_map'] = 'Klikk for å vise i kart';
 
-$string['of']       = 'of';
-$string['on_wait']  = 'Put me on the wait list';
+$string['of']       = 'av';
+$string['on_wait']  = 'Gå til venteliste';
 
-$string['home_participant']         = 'Participants List';
+$string['home_participant']         = 'Deltakerliste';
 $string['home_in_price']     = 'Intern pris';
 $string['home_ext_price']    = 'Ekstern pris';
-
-$string['home_participant_header']  = 'Participants';
+$string['home_participant_header']  = 'Deltakere';

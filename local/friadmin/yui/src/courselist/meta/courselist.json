@@ -1,0 +1,13 @@
+{
+  "moodle-local_friadmin-courselist": {
+    "requires": [
+      "base",
+      "node",
+      "event",
+      "event-valuechange",
+      "node-event-delegate",
+      "io-form",
+      "selector-css3"
+    ]
+  }
+}

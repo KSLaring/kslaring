@@ -15,9 +15,9 @@
  * Integrate 'Course Locations' plugin into FriAdmin plugin
  */
 
-$string['pluginname']           = 'Frikomport';
+$string['pluginname']           = 'Kursveiviser';
 
-$string['courselist_title']     = 'Frikomport tilgjengelige kurs';
+$string['courselist_title']     = 'Tilgjengelige kurs';
 $string['coursetable_title']    = 'Kursoversikt';
 $string['course_courseid']      = 'Kurs ID';
 $string['course_name']          = 'Navn';
@@ -39,7 +39,7 @@ $string['course_price']         = 'Pris';
 $string['course_link']          = 'Lenke';
 $string['course_edit']          = '';
 
-$string['usercourselist_title']     = 'Frikomport tilgjengelige kurs';
+$string['usercourselist_title']     = 'Tilgjengelige kurs';
 $string['usercoursetable_title']    = 'Kursoversikt';
 $string['usercourse_courseid']      = 'Kurs ID';
 $string['usercourse_name']          = 'Navn';
@@ -62,13 +62,13 @@ $string['usercourse_edit']          = '';
 $string['usercourse_counter']       = 'No';
 $string['usercourse_morecourses']   = 'Det er flere kurs enn vist her som kan være av interesse.<br />Vennligst bruk søkemulighetene over for å avgrense søket.';
 
-$string['coursedetail_title']           = 'Frikomport kursdetaljer';
+$string['coursedetail_title']           = 'Kursveiviser kursdetaljer';
 $string['coursedetail_back']            = 'Tilbake til kursoversikten';
 $string['coursedetail_go']              = 'Gå til kurset';
 $string['coursedetail_settings']        = 'Kursinnstillinger';
 $string['coursedetail_completion']      = 'Kursfullføringer';
 $string['coursedetail_statistics']      = 'Statistikk';
-$string['coursedetail_enrollment']      = 'Enrollment methods';
+$string['coursedetail_enrollment']      = 'Påmeldingsmetoder';
 $string['coursedetail_users']           = 'Påmeldte kursdeltakere';
 $string['coursedetail_confirmed']       = 'Administrere bekreftede';
 $string['coursedetail_waitlist']        = 'Administrere venteliste';
@@ -76,7 +76,11 @@ $string['coursedetail_participantlist'] = 'Last ned deltakerliste';
 $string['coursedetail_duplicate']       = 'Dupliser';
 $string['coursedetail_email']           = 'Send epost';
 
-$string['coursetemplate_title']         = 'Frikomport - Legg til fra kursmal';
+$string['eventtemplate_title']          = 'Arrangement';
+$string['eventtemplate_subtitle']       = 'Opprett fra en kursmal.';
+$string['netcoursetemplate_title']      = 'Nettkurs';
+$string['netcoursetemplate_subtitle']   = 'Opprett fra en kursmal.';
+$string['coursetemplate_title']         = 'Kursveiviser - Legg til fra kursmal';
 $string['coursetemplate_subtitle']      = 'Opprett et kurs fra en kursmal.';
 $string['coursetemplate_cat']           = 'Kurskategori for kursmaler';
 $string['coursetemplate_cat_desc']      = 'Vennligst velg kurskategorien hvor alle kursmaler skal lagres.';
@@ -90,6 +94,20 @@ id: <strong>{$a->id}</strong>, kortnavn: "<strong>{$a->shortname}</strong>",
 Fullt navn: "<strong>{$a->fullname}</strong>".';
 $string['coursetemplate_error']         = 'Kurset kunne ikke opprettes.';
 
+$string['mysettings_title']                 = 'Mine innstillinger';
+$string['seltemplcategory']                 = 'Velg din lokale kursmalkategori...';
+$string['seltemplcategorylabel']            = 'Lokal kursmalkategori';
+$string['seltemplcategorydesc']             = 'Vennligst velg en kurskategori hvor alle dine lokale kursmaler er lagret.';
+$string['missingseltemplcategory']          = 'Mangler lokal kursmalkategori';
+$string['selpreftemplate']                  = 'Velg foretrukket kursmal...';
+$string['selpreftemplatelabel']             = 'Foretrukket kursmal';
+$string['selpreftemplatedesc']              = 'Vennligst velg din foretrukne arrangementsmal.';
+$string['selprefnetcoursetemplate']         = 'Velg foretrukket nettkursmal...';
+$string['selprefnetcoursetemplatelabel']    = 'Foretrukket nettkursmal';
+$string['selprefnetcoursetemplatedesc']     = 'Vennligst velg din foretrukne nettkursmal.';
+$string['selmysetingssave']                 = 'Lagre innstillinger';
+$string['missinglocaltempcategory']         = 'Din valgte kurskategori for kursmaler finnes ikke. Vennligst velg en annen kurskategori for dine kursmaler i <a href="{$a}">Mine innstillinger</a> i Kursveiviseren.';
+
 $string['locationline']         = 'Sted: ';
 $string['fromto']               = 'Fra - til: ';
 $string['coursename']           = 'Kursnavn: ';
@@ -100,6 +118,8 @@ $string['selname']              = 'Kursnavn';
 $string['selcategory']          = 'Lagres i kategorien';
 $string['missingselcategory']   = 'Mangler målkategori';
 $string['seltemplate']          = 'Kursmal';
+$string['seleventtemplate']     = 'Kursmal';
+$string['selnetcoursetemplate'] = 'Nettkurs kursmal';
 $string['missingseltemplate']   = 'Mangler kursmal';
 $string['selsubmit']            = 'Søk';
 $string['selsubmitcreate']      = 'Opprett kurs';
@@ -192,15 +212,27 @@ $string['course_enrolment'] = 'Påmeldingsmetoder';
 $string['enrol_wait_self']  = 'Egenpåmelding med venteliste';
 $string['enrol_wait_buk']   = 'Bulkpåmelding med venteliste';
 
-$string['no_competence_add_location']   = '<strong>Sorry, you must update your competence profile if you want to set up new locations connected with you competence</strong>';
-$string['no_competence_profile']        = '<strong>Sorry, you must update your competence profile if you want to look up locations connected with you competence</strong>';
+$string['no_competence_add_location']   = '<strong>Beklager, men du må oppdatere profilen din med arbeidssted(er) hvis du ønsker å legge til nye kurssteder. (Vi trenger minst ett arbeidssted for å vite hvilken kommune/fylkeskommune du tilhører)</strong>';
+$string['no_competence_profile']        = '<strong>Beklager, men du må først legge til minst ett arbeidssted i din egen profil for å kunne bruke søkefunksjon basert på hvor du arbeider.</strong>';
 
-$string['course_teachers']              = 'Adding Teachers';
-$string['av_teachers']                  = 'Available teachers';
-$string['no_teachers']                  = 'None teachers';
-$string['sel_teachers']                 = 'Selected teachers';
+$string['course_teachers']              = 'Legg til lærere';
+$string['av_teachers']                  = 'Tilgjengelige lærere';
+$string['no_teachers']                  = 'Ingen lærere';
+$string['sel_teachers']                 = 'Valgte lærere';
 
-$string['pot_teachers']                = 'Potential teachers';
-$string['pot_teachers_matching']       = 'Potential matching teachers';
-$string['current_teachers']            = 'Current teachers';
-$string['current_teachers_matching']   = 'Current teachers matching';
+$string['pot_teachers']                = 'Potensielle lærere';
+$string['pot_teachers_matching']       = 'Potensielt matchende lærere';
+$string['current_teachers']            = 'Gjeldende lærere';
+$string['current_teachers_matching']   = 'Gjeldende matchende lærere';
+
+$string['duplicatecourse']          = 'Duplisér kurs';
+$string['includeusers']             = 'Inkluder brukere';
+$string['includeusers_help']        = 'Velg om du vil ta med eksisterende brukere i det dupliserte kurset.';
+$string['dupcoursename']            = 'Nytt kursnavn';
+$string['dupcoursename_help']       = 'Gir det dupliserte kurset et nytt navn';
+$string['dupcoursenamedefault']     = ' kopi';
+$string['selfullname']              = 'Fullt kursnavn';
+$string['selfullname_help']         = 'Angir navnet på det dupliserte kurset.';
+$string['selshortname']             = 'Kortnavn';
+$string['selshortname_help']        = 'Angir kortnavnet på det dupliserte kurset. Kortnavnet må være unikt.';
+$string['info_dup_course']          = 'Før du dupliserer kurset må du angi kurskategorien hvor duplikatet skal plasseres. Som standard lagres det dupliserte kurset i samme kategori som originalen.';

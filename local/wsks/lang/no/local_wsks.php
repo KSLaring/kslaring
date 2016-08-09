@@ -10,19 +10,19 @@
  * @author          eFaktor     (fbv)
  */
 
-$string['pluginname']   = 'Feide Integration';
+$string['pluginname']   = 'Feide-integrasjon';
 
-$string['feide_settings']   = 'Feide Settings';
-$string['feide_site']       = 'Feide Site';
-$string['feide_site_desc']  = 'Log In Via Feide';
+$string['feide_settings']   = 'Feide-innstillinger';
+$string['feide_site']       = 'Feide login-server';
+$string['feide_site_desc']  = 'Logg inn via Feide';
 $string['feide_service']    = 'Feide Service';
 $string['feide_token']      = 'Feide Token';
-
-$string['FEIDE_ERR_NOT_VALID']  = 'User not valid. Please, contact your Moodle Administrator.';
-$string['FEIDE_ERR_PROCESS']    = 'There has been an error during the process. Please, contact your Moodle Administrator.';
+$string['FEIDE_ERR_NOT_VALID']  = 'Dette er ikke en gyldig bruker, vennligst kontakt administrator.';
+$string['FEIDE_ERR_PROCESS']    = 'Det har skjedd en feil under innloggingen. Vennligst kontakt administrator.';
 
 $string['set_activate']         = 'Activate Feide login';
 $string['set_activate_desc']    = 'Activate Feide login';
 
-$string['ADFS_ERR_PROCESS']    = 'There has been an error during the process. Please, contact your Moodle Administrator.';
-$string['ADFS_ERROR_USER']      = 'User not valid.Please, chack that all your main information is filled. Please, contact your Moodle Administrator.';
+$string['ADFS_ERR_PROCESS']    = 'Det har oppstått en feil i prosessen. Vennligst kontakt administrator.';
+$string['ADFS_ERROR_USER']      = 'Brukerens profildata er ugyldige. Vennligst sjekk at alle obligatoriske felt er utfylt og kontakt Administrator.';
+

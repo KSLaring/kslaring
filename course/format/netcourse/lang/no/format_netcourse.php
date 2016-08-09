@@ -35,7 +35,7 @@ $string['hidefromothers'] = 'Skjul emnet';
 $string['showfromothers'] = 'Vis emnet';
 
 $string['course'] = 'Innhold';
-$string['description'] = 'Introduksjon';
+$string['description'] = 'Informasjon';
 $string['forums'] = 'Oppslagstavle';
 $string['progress'] = 'Min progresjon';
 $string['coursehomepage'] = 'Kurs startside';
@@ -43,7 +43,7 @@ $string['mymoodle'] = 'Min startside';
 
 $string['lessonlastpageon'] = 'Vennligs velg neste aktivitet fra navigasjonsmenyen til venstre.';
 $string['lessonlastpageoff'] = 'Du har fullført denne leksjonen. Vennligst velg neste aktivitet i navigasjonsmenyen til venstre.';
-$string['feedbacklastpage'] = 'Du er ferdig med feedbacken. Vennligst velg neste aktivitet i menyen til venstre.';
+$string['feedbacklastpage'] = 'Du har fullført denne feedbacken. Vennligst velg neste aktivitet i menyen til venstre.';
 
 $string['home_prerequisities']      = 'Forutsetninger';
 $string['home_producedby']          = 'Produsert av';

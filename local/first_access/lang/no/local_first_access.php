@@ -20,4 +20,4 @@ $string['welcome_btn']      = 'Fullfør min personlige brukerprofil';
 
 $string['header_muni']      = 'Kommune';
 
-$string['btn_save']         = 'Save';
+$string['btn_save']         = 'Lagre';

@@ -14,7 +14,7 @@ $string['pluginname']   = 'Feide Integration';
 
 $string['feide_settings']   = 'Feide Settings';
 $string['feide_site']       = 'Feide Site';
-$string['feide_site_desc']  = 'Log In Via Feide';
+$string['feide_site_desc']  = 'Login via Feide';
 $string['feide_service']    = 'Feide Service';
 $string['feide_token']      = 'Feide Token';
 

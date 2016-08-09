@@ -133,7 +133,7 @@ class local_friadmin_usercourselist_filter extends local_friadmin_widget impleme
      *
      * The associative $defaults: array 'elementname' => 'defaultvalue'
      *
-     * @param Array $defaults The default values
+     * @param array $defaults The default values
      */
     public function set_defaults($defaults = array()) {
         $this->mform->set_defaults($defaults);
@@ -149,7 +149,7 @@ class local_friadmin_usercourselist_filter extends local_friadmin_widget impleme
      */
     public function get_user_locationdata($userId = null) {
         /* Variables    */
-        global $USER;
+        global $USER, $SESSION;
         $result = null;
         $leveloneobjs = null;
         $leveloneobjsfiltered = array();
@@ -186,16 +186,47 @@ class local_friadmin_usercourselist_filter extends local_friadmin_widget impleme
             // id, name and industry code properties.
             $leveloneobjs = local_friadmin_helper::get_levelone_municipalities($userId);
 
+            // Check if a new municipality has been selected by the user which is not
+            // yet saved in the session. The session data is saved after the form is
+            // created.
+            $sessionselmunicipality = 0;
+            if (!empty($SESSION->filterData['selmunicipality'])) {
+                $sessionselmunicipality = $SESSION->filterData['selmunicipality'];
+            }
+            $selmunicipality = optional_param('selmunicipality', $sessionselmunicipality, PARAM_INT);
+
+            /**
+             * @updateDate  17/06/2015
+             * @author      eFaktor     (fbv)
+             *
+             * Description
+             * Get all my municipalities
+             */
             foreach ($leveloneobjs as $obj) {
                 $result['municipality'][$obj->id] = $obj->name;
                 $this->userleveloneids[] = $obj->id;
-                $leveloneobjsfiltered[] = $obj;
+
+                // If a municipality has been selected then use only that one.
+                if ($selmunicipality) {
+                    if ($selmunicipality == $obj->id) {
+                        $leveloneobjsfiltered[] = $obj;
+                    }
+                } else {
+                    $leveloneobjsfiltered[] = $obj;
+                }
             }//for_levelone_obj
 
+            /**
+             * @updateDate  17/06/2015
+             * @author      eFaktor     (fbv)
+             *
+             * Description
+             * Get all categories where the user is a super user
+             */
             $this->myCategories = local_friadmin_helper::getMyCategories();
 
             if (!empty($leveloneobjsfiltered)) {
-                // Get the sectors for the relevant municipalities via inustrycodes
+                // Get the sectors for the relevant municipalities via industrycodes.
                 $leveltwoobjs = local_friadmin_helper::get_leveltwo_sectors($leveloneobjsfiltered);
 
                 foreach ($leveltwoobjs as $obj) {
@@ -204,8 +235,23 @@ class local_friadmin_usercourselist_filter extends local_friadmin_widget impleme
                     }
                 }
 
-                // Get the locations for the relevant municipalities via levelone ids
-                $locationsobjs = $this->get_locations($leveloneobjsfiltered);
+                // Check if a new sector has been selected by the user which is not
+                // yet saved in the session. The session data is saved after the form is
+                // created.
+                $sessionsectorid = 0;
+                $locationsobjs = array();
+                if (!empty($SESSION->filterData['selsector'])) {
+                    $sessionsectorid = $SESSION->filterData['selsector'];
+                }
+                $sectorid = optional_param('selsector', $sessionsectorid, PARAM_INT);
+
+                if (!$sectorid) {
+                    // Get the locations for the relevant municipalities via levelone ids
+                    $locationsobjs = $this->get_locations($leveloneobjsfiltered);
+                } else {
+                    $locationsobjs = $this->get_locations_for_sector($sectorid);
+                }
+
                 foreach ($locationsobjs as $obj) {
                     if (!in_array($obj->id, $result['location'])) {
                         $result['location'][$obj->id] = $obj->name;

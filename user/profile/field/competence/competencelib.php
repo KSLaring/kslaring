@@ -21,6 +21,58 @@ class Competence {
     /*************/
 
     /**
+     * @param           $inUsers
+     * @param           $level
+     * 
+     * @return          array|null
+     * @throws          Exception
+     * 
+     * @creationDate    09/08/2016
+     * @author          eFaktor     (fbv)
+     * 
+     * Description get workplace connected by level
+     */
+    public static function WorkplaceConnectedByLevel($inUsers,$level) {
+        /* Variables */
+        global $DB;
+        $workplaces = array();
+        $params     = null;
+        $sql        = null;
+        $rdo        = null;
+
+        try {
+            /* Search Criteria  */
+            $params = array();
+            $params['level'] = $level;
+            
+            /* SQL Instruction  */
+            $sql = " SELECT	uic.id,
+                            uic.userid,
+                            CONCAT(co.industrycode, ' - ',co.name) as 'workplace'
+                    FROM		{user_info_competence_data}	uic
+                        JOIN	{report_gen_companydata}	co	ON co.id = uic.companyid
+                    WHERE	uic.userid IN ($inUsers)
+                        AND	uic.level = :level ";
+            
+            /* Exdcute */
+            $rdo = $DB->get_records_sql($sql,$params);
+            if ($rdo) {
+                foreach ($rdo as $instance) {
+                    if (key_exists($instance->userid,$workplaces)) {
+                        $workplaces[$instance->userid] .= ', ' . $instance->workplace;
+                    }else {
+                        $workplaces[$instance->userid] =  $instance->workplace;
+                    }
+                }//for_rdo
+            }//if_Rdo
+
+            return $workplaces;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//WorkplaceConnectedByLevel
+
+    /**
      * @param           $selector
      * @param           $jrSelector
      * @param           $userId

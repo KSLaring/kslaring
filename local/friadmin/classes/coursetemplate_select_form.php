@@ -36,6 +36,9 @@ class local_friadmin_coursetemplate_select_form extends \moodleform {
         $mform = $this->_form;
         $customdata = $this->_customdata;
 
+        $mform->addElement('hidden', 'temptype', $customdata['temptype']);
+        $mform->setType('temptype', PARAM_INT);
+
         $defaultText = get_string('fullnamecourse');
         $attributes = array(
             'placeholder' => $defaultText
@@ -62,13 +65,13 @@ class local_friadmin_coursetemplate_select_form extends \moodleform {
             'required', null, 'client');
         $mform->setDefault('selcategory', '');
 
-        $options = array('' => get_string('seltemplate', 'local_friadmin') . ' ...');
+        $options = array('' => get_string($customdata['seltemplate'], 'local_friadmin') . ' ...');
         $options = $options + $customdata['templates'];
         $mform->addElement('select', 'seltemplate',
             get_string('seltemplate', 'local_friadmin'), $options);
         $mform->addRule('seltemplate', get_string('missingseltemplate', 'local_friadmin'),
             'required', null, 'client');
-        $mform->setDefault('seltemplate', '');
+        $mform->setDefault('seltemplate', $customdata['preftemplate']);
 
         $mform->addElement('submit', 'submitcreate',
             get_string('selsubmitcreate', 'local_friadmin'));
