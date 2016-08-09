@@ -27,7 +27,12 @@ $return_url     = new moodle_url('/course/view.php',array('id'=>$course_id));
 $campaign_id    = null;
 $url_users      = null;
 
-require_capability('local/microlearning:manage',$context);
+/* check right permissions */
+if (!has_capability('local/microlearning:manage',$context)) {
+    if (!Micro_Learning::HasPermissions($course_id,$USER->id)) {
+        print_error('nopermissions', 'error', '', 'local/microlearning:manage');
+    }
+}
 require_login($course);
 
 $PAGE->set_url($url);
