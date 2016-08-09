@@ -116,10 +116,15 @@ class mod_registerattendance_view_table_sql_model extends mod_registerattendance
 
         $userfields = 'u.id, ' . get_all_user_name_fields(true, 'u');
         $context = context_course::instance($this->cm->course);
-        list($count, $result) = $this->get_enrolled_users($context, '', 0, $userfields,
-            $this->sort, $where, $whereparams, $start, $rowstoshwo);
 
-        $result = $this->add_municipality_workplace($result);
+        list($count, $result) = $this->get_enrolled_users($context, '', 0, $userfields,
+                                                          $this->sort, $where, $whereparams, 
+                                                          $start, $rowstoshwo);
+
+        //$result = $this->add_municipality_workplace($result);
+
+        /* Add Municipality && Workplace */
+        $this->add_municipality_workplace($result);
 
         $this->countrecords = $count;
         $this->data = $result;
@@ -143,7 +148,113 @@ class mod_registerattendance_view_table_sql_model extends mod_registerattendance
      * @return array of user records
      */
     protected function get_enrolled_users(context $context, $withcapability = '', $groupid = 0,
-        $userfields = 'u.*', $orderby = null, $where = null, $whereparams = null, $limitfrom = 0, $limitnum = 0, $onlyactive = false) {
+                                          $userfields = 'u.*', $orderby = null,
+                                          $where = null, $whereparams = null,
+                                          $limitfrom = 0, $limitnum = 0, $onlyactive = false) {
+        /* Variables */
+        global $DB;
+        $params         = null;
+        $sql            = null;
+        $enrolledUses   = null;
+        $sqlCompleted   = null;
+        $completedUsers = null;
+
+        try {
+            /* Search Criteria  */
+            $params = array();
+            $params['contextid'] = $context->id;
+            $params['courseid']   = $this->cm->course;
+
+            /**
+             * Completed Users
+             */
+            // Get user list with completed state.
+            $sqlCompleted = " SELECT   userid
+                              FROM    {course_modules_completion}
+                              WHERE   coursemoduleid  = ?
+                                AND   completionstate = 1 ";
+
+            $completedUsers         = $DB->get_records_sql($sqlCompleted, array($this->cm->id));
+            $this->completedusers   = array_keys($completedUsers);
+
+            /**
+             * Enrolled Users
+             * Only users enrolled as student
+             */
+            $sql = " SELECT 	DISTINCT  u.id, 
+                                          u.firstnamephonetic,
+                                          u.lastnamephonetic,
+                                          u.middlename,
+                                          u.alternatename,
+                                          u.firstname,
+                                          u.lastname,
+                                          '' as 'municipality',
+                                          '' as 'workplace'
+                     FROM 		{user} 				u 
+                        -- ENROLLED USERS. STUDENTS
+                        JOIN	{user_enrolments}	ue	ON 	ue.userid 		= u.id
+                        JOIN	{enrol}				e	ON	e.id 			= ue.enrolid
+                                                        AND e.courseid 		= :courseid
+                        JOIN	{role_assignments}	ra	ON	ra.userid		= ue.userid
+                                                        AND	ra.contextid 	= :contextid
+                        JOIN	{role}				ro	ON	ro.id			= ra.roleid
+                                                        AND	ro.archetype	= 'student'
+                     WHERE	u.deleted = 0
+                        AND	u.username != 'guest' ";
+
+            /* Get Total Enrolled Users */
+            $enrolledUses = $DB->get_records_sql($sql, $params);
+            $this->enrolledusers = array_keys($enrolledUses);
+            
+            /* Apply Filter */
+            if ($where) {
+                $sql = "$sql AND $where";
+                $params = array_merge($params, $whereparams);
+            }
+
+            // Handle the »show attended« filter.
+            $showattended = 0;
+            if (!empty($this->filterdata['showattended'])) {
+                $showattended = (int)$this->filterdata['showattended'];
+            }
+
+            // Get the users with the completed state and either use or exclude them
+            // depending on the showattended setting.
+            if ($showattended === 1 && !empty($this->completedusers)) {
+                // If »show attended« then 1, else if »show not attended« then 2.
+                $equal = $showattended === 1;
+                list($in, $inparams) = $DB->get_in_or_equal($this->completedusers, SQL_PARAMS_NAMED, 'param', $equal);
+
+                $sql = "$sql AND u.id $in";
+                $params = array_merge($params, $inparams);
+            } else if ($showattended === 1 && empty($this->completedusers)) {
+                // Attended users requested but no attended users to show.
+                return array(0, array());
+            }
+
+            if ($orderby) {
+                $sql = "$sql ORDER BY $orderby";
+            } else {
+                list($sort, $sortparams) = users_order_by_sql('u');
+                $sql = "$sql ORDER BY $sort";
+                $params = array_merge($params, $sortparams);
+            }
+
+            // Get the users and add the attended state for each user.¨
+            $result = $DB->get_records_sql($sql, $params, $limitfrom, $limitnum);
+            $result = $this->add_attended($result);
+
+            // @TODO Find a better to get the whole amount of records without $limitfrom, $limitnum for paging.
+            return array(count($result), $result);
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//get_enrolled_users
+
+    protected function get_enrolled_users_old(context $context, $withcapability = '', $groupid = 0,
+                                              $userfields = 'u.*', $orderby = null,
+                                              $where = null, $whereparams = null,
+                                              $limitfrom = 0, $limitnum = 0, $onlyactive = false) {
         global $DB;
 
         list($esql, $params) = get_enrolled_sql($context, $withcapability, $groupid, $onlyactive);
@@ -162,6 +273,7 @@ class mod_registerattendance_view_table_sql_model extends mod_registerattendance
         // What do you think?
 
         // Get user list with enrolled users unfiltered.
+        // Why is twice this sql???
         $enrolledsql = "SELECT $userfields
                          FROM {user} u
                          JOIN ($esql) je ON je.id = u.id
@@ -213,11 +325,11 @@ class mod_registerattendance_view_table_sql_model extends mod_registerattendance
             $params = array_merge($params, $sortparams);
         }
 
-        // Get the users and add the attended state for each user.
+        // Get the users and add the attended state for each user.¨
         $result = $DB->get_records_sql($sql, $params, $limitfrom, $limitnum);
         $result = $this->add_attended($result);
 
-        // @TODO Find a better way to get the whole amount of records without $limitfrom, $limitnum for paging.
+        // @TODO Find a better to get the whole amount of records without $limitfrom, $limitnum for paging.
         return array(count($DB->get_records_sql($sql, $params)), $result);
     }
 
@@ -228,7 +340,49 @@ class mod_registerattendance_view_table_sql_model extends mod_registerattendance
      *
      * @return array The extended user data
      */
-    protected function add_municipality_workplace($data) {
+    protected function add_municipality_workplace(&$data) {
+        /* Variables */
+        global $CFG;
+        $inUsers        = null;
+        $usersMuni      = null;
+        $usersWorkplace = null;
+
+        try {
+            if ($data) {
+                $inUsers = implode(',',array_keys($data));
+
+                /* Add Municipalities */
+                if (file_exists($CFG->dirroot . '/user/profile/field/municipality/municipalitylib.php')) {
+                    require_once($CFG->dirroot . '/user/profile/field/municipality/municipalitylib.php');
+                    
+                    /* Get Municipalities   */
+                    $usersMuni = MunicipalityProfile::MunicipalitiesConnected($inUsers);
+                    if ($usersMuni) {
+                        foreach ($usersMuni as $info) {
+                            $data[$info->userid]->municipality = $info->municipality;
+                        }//muni 
+                    }//if_usersMuni
+                }//municipality
+
+                /* Add Workplace    */
+                if (file_exists($CFG->dirroot . '/user/profile/field/competence/competencelib.php')) {
+                    require_once($CFG->dirroot . '/user/profile/field/competence/competencelib.php');
+                    
+                    /* Get Workplaces */
+                    $usersWorkplace = Competence::WorkplaceConnectedByLevel($inUsers,3);
+                    if ($usersWorkplace) {
+                        foreach ($usersWorkplace as $id => $workplace) {
+                            $data[$id]->workplace = $workplace;
+                        }//info
+                    }//if_UsersWorkplace
+                }//workplace
+            }//if_data
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//add_municipality_workplace
+
+    protected function add_municipality_workplace_old($data) {
         $result = $data;
 
         if ($result) {
@@ -237,24 +391,7 @@ class mod_registerattendance_view_table_sql_model extends mod_registerattendance
 
         return $result;
     }
-
-    /**
-     * Callback for the municipality and workplace data
-     *
-     * @param object $row The user object from the database
-     *
-     * @return object The extended user data row
-     */
-    protected function callback_municipality_workplace($row) {
-        if (!isset($row->municipality)) {
-            $row->municipality = '';
-        }
-        if (!isset($row->workplace)) {
-            $row->workplace = '';
-        }
-
-        return $row;
-    }
+    
 
     /**
      * Add the user attended state

@@ -79,7 +79,7 @@ class competence_add_competence_form extends moodleform {
                                     get_string('select_company_structure_level','report_manager',$level),
                                     $options);
         if ($level == 3) {
-            $form->addRule('level_' . $level,'','required', null, 'server');
+            $form->addRule('level_' . $level,'','required', null, 'client');
         }//if_level_three
 
         $this->setLevelDefault($level,$form);
@@ -252,6 +252,8 @@ class competence_add_competence_form extends moodleform {
 
         /* Level Three  */
         if (!isset($data['level_3'])) {
+            $errors['level_3'] = get_string('required');
+        }else if (!$data['level_3']) {
             $errors['level_3'] = get_string('required');
         }//if_level_three
 
