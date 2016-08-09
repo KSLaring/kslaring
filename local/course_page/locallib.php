@@ -1523,6 +1523,16 @@ class course_page  {
                 }//if_exists
 
                 break;
+            case 'pagegraphicstitle':
+                $pageTitle = $form->createElement('text','pagegraphicstitle',get_string('home_graphicstitle','local_course_page'),'style="width:95%;"');
+                $form->setType('pagegraphicstitle',PARAM_TEXT);
+                $form->insertElementBefore($pageTitle,'courseformathdr');
+
+                $format_options = course_get_format($COURSE->id)->get_format_options();
+                if (array_key_exists('pagegraphicstitle',$format_options)) {
+                    $form->setDefault('pagegraphicstitle',$format_options['pagegraphicstitle']);
+                }//if_exists
+                break;
             case 'pagevideo':
                 $current_video = $form->createElement('static', 'current_video', get_string('home_current_video','local_course_page'));
                 $form->insertElementBefore($current_video,'courseformathdr');
