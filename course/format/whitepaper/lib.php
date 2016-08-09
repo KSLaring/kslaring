@@ -288,6 +288,7 @@ class format_whitepaper extends format_base {
                 case 'homevisible':
                 case 'homesummary':
                 case 'pagegraphics':
+                case 'pagegraphicstitle':
                 case 'pagevideo':
                     course_page::addCourseHomePage_Section($mform,$optionname);
 
