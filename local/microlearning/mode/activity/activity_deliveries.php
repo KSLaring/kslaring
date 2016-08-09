@@ -32,7 +32,12 @@ $campaign_name  = Micro_Learning::Get_NameCampaign($campaign_id);
 $url            = new moodle_url('/local/microlearning/mode/activity/activity_deliveries.php',array('id'=>$course_id,'mode' => $mode_learning,'cp' => $campaign_id,'sort' => $sort,'page' => $page, 'perpage' => $perpage));
 $return_url     = new moodle_url('/local/microlearning/index.php',array('id'=>$course_id));
 
-require_capability('local/microlearning:manage',$context);
+/* check right permissions */
+if (!has_capability('local/microlearning:manage',$context)) {
+    if (!Micro_Learning::HasPermissions($course_id,$USER->id)) {
+        print_error('nopermissions', 'error', '', 'local/microlearning:manage');
+    }
+}
 require_login($course);
 
 $PAGE->set_url($url);
