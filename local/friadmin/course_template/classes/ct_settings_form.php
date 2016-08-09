@@ -175,8 +175,7 @@ class ct_settings_form extends moodleform {
                 list($file_options,$context) = course_page::get_file_options($courseId);
                 $file_editor['accepted_types'] = array('image','web_image');
                 $file_editor = course_page::prepareFileManagerHomeGraphicsVideo($file_options,$context,'pagegraphics');
-
-
+                
                 $page_graphics = $form->createElement('filemanager', 'pagegraphics_filemanager', get_string('home_graphics','local_course_page'), null, $file_options);
                 $form->insertElementBefore($page_graphics,'courseformathdr');
                 $form->setDefault('pagegraphics_filemanager',$file_editor->pagegraphics);
@@ -187,9 +186,10 @@ class ct_settings_form extends moodleform {
 
                 break;
             case 'pagegraphicstitle':
-                $form->addElement('text','pagegraphicstitle',get_string('home_graphicstitle','local_course_page'),'style="width:95%;"');
+                $pageTitle = $form->createElement('text','pagegraphicstitle',get_string('home_graphicstitle','local_course_page'),'style="width:95%;"');
                 $form->setDefault('pagegraphicstitle',$value);
                 $form->setType('pagegraphicstitle',PARAM_TEXT);
+                $form->insertElementBefore($pageTitle,'courseformathdr');
 
                 break;
             case 'homepage':
