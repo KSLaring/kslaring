@@ -21,9 +21,10 @@ $capabilities = array(
         'captype' => 'write',
         'contextlevel' => CONTEXT_SYSTEM,CONTEXT_COURSE,
         'archetypes' => array(
-            'editingteacher' => CAP_ALLOW,
-            'coursecreator'  => CAP_ALLOW,
-            'manager' => CAP_ALLOW
+            'editingteacher'    => CAP_ALLOW,
+            'teacher'           => CAP_ALLOW,
+            'coursecreator'     => CAP_ALLOW,
+            'manager'           => CAP_ALLOW
         ),
         'clonepermissionsfrom' => 'moodle/course:update'
     )
