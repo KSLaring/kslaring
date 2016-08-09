@@ -30,7 +30,12 @@ $url_deliveries = new moodle_url('/local/microlearning/mode/activity/activity_de
 $return_url     = new moodle_url('/local/microlearning/index.php',array('id'=>$course_id));
 $delivery_info  = null;
 
-require_capability('local/microlearning:manage',$context);
+/* check right permissions */
+if (!has_capability('local/microlearning:manage',$context)) {
+    if (!Micro_Learning::HasPermissions($course_id,$USER->id)) {
+        print_error('nopermissions', 'error', '', 'local/microlearning:manage');
+    }
+}
 require_login($course);
 
 /* Get details of the delivery  */

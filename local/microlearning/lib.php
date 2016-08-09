@@ -11,7 +11,7 @@
  *
  */
 
-function local_microlearning_extend_settings_navigation($settingsnav, $context) {
+function local_microlearning_extends_settings_navigation($settingsnav, $context) {
     global $PAGE;
 
     // Only add this settings item on non-site course pages.
@@ -39,7 +39,7 @@ function local_microlearning_extend_settings_navigation($settingsnav, $context) 
         }
         $settingnode->add_node($micro_node,'users');
     }
-}//local_microlearning_extend_settings_navigation
+}//local_microlearning_extends_settings_navigation
 
 /**
  * @creationDate    06/12/2014

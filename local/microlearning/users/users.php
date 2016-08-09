@@ -42,7 +42,12 @@ $url            = new moodle_url('/local/microlearning/users/users.php',array('i
 $return_url     = new moodle_url('/local/microlearning/index.php',array('id'=>$course_id));
 $campaign_url   = null;
 
-require_capability('local/microlearning:manage',$context);
+/* check right permissions */
+if (!has_capability('local/microlearning:manage',$context)) {
+    if (!Micro_Learning::HasPermissions($course_id,$USER->id)) {
+        print_error('nopermissions', 'error', '', 'local/microlearning:manage');
+    }
+}
 require_login($course);
 
 if ($mode_learning == CALENDAR_MODE) {

@@ -28,7 +28,12 @@ $url                = new moodle_url('/local/microlearning/mode/activity/duplica
 $return_url         = new moodle_url('/local/microlearning/index.php',array('id'=>$course_id));
 $error              = false;
 
-require_capability('local/microlearning:manage',$context);
+/* check right permissions */
+if (!has_capability('local/microlearning:manage',$context)) {
+    if (!Micro_Learning::HasPermissions($course_id,$USER->id)) {
+        print_error('nopermissions', 'error', '', 'local/microlearning:manage');
+    }
+}
 require_login($course);
 
 $PAGE->set_url($url);
