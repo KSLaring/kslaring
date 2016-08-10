@@ -118,7 +118,7 @@ class mod_registerattendance_view_table_sql_model extends mod_registerattendance
         $context = context_course::instance($this->cm->course);
 
         list($count, $result) = $this->get_enrolled_users($context, '', 0, $userfields,
-                                                          $this->sort, $where, $whereparams, 
+                                                          $this->sort, $where, $whereparams,
                                                           $start, $rowstoshwo);
 
         //$result = $this->add_municipality_workplace($result);
@@ -141,11 +141,14 @@ class mod_registerattendance_view_table_sql_model extends mod_registerattendance
      * @param int     $groupid    0 means ignore groups, any other value limits the result by group id
      * @param string  $userfields requested user record fields
      * @param string  $orderby
+     * @param null    $where
+     * @param null    $whereparams
      * @param int     $limitfrom  return a subset of records, starting at this point (optional, required if $limitnum is set).
      * @param int     $limitnum   return a subset comprising this many records (optional, required if $limitfrom is set).
      * @param bool    $onlyactive consider only active enrolments in enabled plugins and time restrictions
      *
      * @return array of user records
+     * @throws Exception
      */
     protected function get_enrolled_users(context $context, $withcapability = '', $groupid = 0,
                                           $userfields = 'u.*', $orderby = null,
@@ -155,7 +158,7 @@ class mod_registerattendance_view_table_sql_model extends mod_registerattendance
         global $DB;
         $params         = null;
         $sql            = null;
-        $enrolledUses   = null;
+        $enrolledUsers  = null;
         $sqlCompleted   = null;
         $completedUsers = null;
 
@@ -203,9 +206,9 @@ class mod_registerattendance_view_table_sql_model extends mod_registerattendance
                         AND	u.username != 'guest' ";
 
             /* Get Total Enrolled Users */
-            $enrolledUses = $DB->get_records_sql($sql, $params);
-            $this->enrolledusers = array_keys($enrolledUses);
-            
+            $enrolledUsers = $DB->get_records_sql($sql, $params);
+            $this->enrolledusers = array_keys($enrolledUsers);
+
             /* Apply Filter */
             if ($where) {
                 $sql = "$sql AND $where";
@@ -220,7 +223,7 @@ class mod_registerattendance_view_table_sql_model extends mod_registerattendance
 
             // Get the users with the completed state and either use or exclude them
             // depending on the showattended setting.
-            if ($showattended === 1 && !empty($this->completedusers)) {
+            if ($showattended && !empty($this->completedusers)) {
                 // If »show attended« then 1, else if »show not attended« then 2.
                 $equal = $showattended === 1;
                 list($in, $inparams) = $DB->get_in_or_equal($this->completedusers, SQL_PARAMS_NAMED, 'param', $equal);
@@ -245,7 +248,9 @@ class mod_registerattendance_view_table_sql_model extends mod_registerattendance
             $result = $this->add_attended($result);
 
             // @TODO Find a better to get the whole amount of records without $limitfrom, $limitnum for paging.
-            return array(count($result), $result);
+            // The counted records need to return the number of all records without the $limitfrom, $limitnum restrictions
+            // otherwise the paging bar is not shown.
+            return array(count($DB->get_records_sql($sql, $params)), $result);
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
@@ -354,20 +359,20 @@ class mod_registerattendance_view_table_sql_model extends mod_registerattendance
                 /* Add Municipalities */
                 if (file_exists($CFG->dirroot . '/user/profile/field/municipality/municipalitylib.php')) {
                     require_once($CFG->dirroot . '/user/profile/field/municipality/municipalitylib.php');
-                    
+
                     /* Get Municipalities   */
                     $usersMuni = MunicipalityProfile::MunicipalitiesConnected($inUsers);
                     if ($usersMuni) {
                         foreach ($usersMuni as $info) {
                             $data[$info->userid]->municipality = $info->municipality;
-                        }//muni 
+                        }//muni
                     }//if_usersMuni
                 }//municipality
 
                 /* Add Workplace    */
                 if (file_exists($CFG->dirroot . '/user/profile/field/competence/competencelib.php')) {
                     require_once($CFG->dirroot . '/user/profile/field/competence/competencelib.php');
-                    
+
                     /* Get Workplaces */
                     $usersWorkplace = Competence::WorkplaceConnectedByLevel($inUsers,3);
                     if ($usersWorkplace) {
@@ -391,7 +396,7 @@ class mod_registerattendance_view_table_sql_model extends mod_registerattendance
 
         return $result;
     }
-    
+
 
     /**
      * Add the user attended state
