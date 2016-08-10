@@ -137,7 +137,51 @@ class course_page  {
         }//try_catch
     }//
 
+    /**
+     * @throws          Exception
+     *
+     * @creationDate    10/08/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Connect javascript action to add more one From-To date
+     */
+    public static function InitFromTo() {
+        /* Variables    */
+        global $PAGE;
+        $jsModule   = null;
+        $name       = null;
+        $path       = null;
+        $requires   = null;
+        $strings    = null;
+        $grpOne     = null;
+        $grpTwo     = null;
+        $grpThree   = null;
 
+        try {
+            /* Initialise variables */
+            $name       = 'from_to';
+            $path       = '/local/course_page/yui/fromto.js';
+            $requires   = array('node', 'event-custom', 'datasource', 'json', 'moodle-core-notification');
+            $grpThree   = array('none', 'moodle');
+            $strings    = array($grpThree);
+
+            /* Initialise js module */
+            $jsModule = array('name'        => $name,
+                'fullpath'    => $path,
+                'requires'    => $requires,
+                'strings'     => $strings
+            );
+
+            $PAGE->requires->js_init_call('M.core_classroom.init_from_to',
+                                          array('from_to_btn'),
+                                          false,
+                                          $jsModule
+            );
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//InitFromTo
 
     /**
      * @param           $itemid
@@ -1309,6 +1353,14 @@ class course_page  {
                         }//if_data_field
 
                         break;
+                    case 'from':
+                    case 'to':
+                        //if ($data['time'] != '') {
+                        $option->value = null;
+                        $DB->update_record('course_format_options',$option);
+                        //}
+
+                        break;
                     default:
                         if (isset($data->$field)) {
                             $option->value = $data->$field;
@@ -1381,8 +1433,22 @@ class course_page  {
                         $form->setDefault('course_sector',$value);
                         break;
                     case 'time':
-                        $form->addElement('textarea','time',get_string('home_time_from_to',$str_format),'rows="5" style="width:95%;"');
+                        $form->addElement('textarea','time',null,'rows="5" style="width:95%;" readonly');
                         $form->setDefault('time',$value);
+                        break;
+                    case 'from':
+                        $form->addElement('date_selector','from',get_string('home_time_from',$str_format));
+                        $form->setDefault('from',$value);
+
+                        break;
+                    case 'to':
+                        $form->addElement('date_selector','to',get_string('home_time_to',$str_format));
+                        $form->setDefault('to',$value);
+
+                        break;
+                    case 'from_to_btn':
+                        $form->addElement('button','from_to_btn',get_string('home_time_from_to_btn',$str_format));
+
                         break;
                     case 'length':
                         $form->addElement('text','length',get_string('home_length',$str_format),'style="width:95%;"');
@@ -2210,6 +2276,9 @@ class home_page_form extends moodleform {
         /* Course Format Section    */
         course_page::Init_LocationsSector();
         $format_options = course_get_format($course)->get_format_options();
+        if (($course->format == 'classroom') || ($course->format == 'classroom_frikomport')) {
+            course_page::InitFromTo();
+        }
         foreach ($format_options as $name=>$option) {
             course_page::addCourseHomePage_Section($form,$name,true);
             course_page::printFormatOptions($form,$name,$option,$course->format);

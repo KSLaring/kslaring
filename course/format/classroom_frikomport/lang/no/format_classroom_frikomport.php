@@ -49,5 +49,8 @@ $string['home_effort']              = 'Forventet innsats';
 $string['home_manager']             = 'Kursansvarlig';
 $string['home_time_from_to']        = 'Tid fra - til';
 $string['home_time_from_to_help']   = 'Du kan legge til flere datoer ved å bruke komma som separator';
+$string['home_time_from']           = 'Tid fra';
+$string['home_time_to']             = 'Tid til';
+$string['home_time_from_to_btn']    = 'Add date';
 
 $string['home_published']           = 'Sist oppdatert';
