@@ -66,9 +66,13 @@ class local_friadmin_courselist_filter extends local_friadmin_widget implements 
     public function __construct() {
         /* Variables    */
         global $SESSION;
+        
         // Create the data object and set the first values
         parent::__construct();
 
+        // Get the filtered user locationdata.
+        $customdata = $this->get_user_locationdata();
+        $this->fromform = $customdata;
 
         /**
          * @updateDate  23/06/2015
@@ -81,10 +85,6 @@ class local_friadmin_courselist_filter extends local_friadmin_widget implements 
         if (!isset($SESSION->filterData)) {
             $SESSION->filterData = array();
         }//if_filterData_SESSION
-
-        // Get the filtered user locationdata.
-        $customdata = $this->get_user_locationdata();
-        $this->fromform = $customdata;
 
         $mform = new local_friadmin_courselist_filter_form(null, $customdata, 'post', '',
             array('id' => 'mform-coursefilter'));
@@ -158,7 +158,7 @@ class local_friadmin_courselist_filter extends local_friadmin_widget implements 
      *
      * The associative $defaults: array 'elementname' => 'defaultvalue'
      *
-     * @param Array $defaults The default values
+     * @param array $defaults The default values
      */
     public function set_defaults($defaults = array()) {
         $this->mform->set_defaults($defaults);
@@ -188,6 +188,7 @@ class local_friadmin_courselist_filter extends local_friadmin_widget implements 
         $result = null;
         $leveloneobjs = null;
         $leveloneobjsfiltered = array();
+        
         try {
             /* Result Structure */
             /**
@@ -197,7 +198,8 @@ class local_friadmin_courselist_filter extends local_friadmin_widget implements 
              * Description
              * Add option only eLearning courses
              */
-            $result = array('municipality' => array(),
+            $result = array(
+                'municipality' => array(),
                 'sector' => array(),
                 'location' => array(),
                 'from' => null,

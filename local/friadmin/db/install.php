@@ -392,6 +392,8 @@ class FriAdmin_Handler {
 
             /* Add Keys */
             $tbl_courseLocations->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+            $tbl_courseLocations->add_key('levelzero',XMLDB_KEY_FOREIGN,array('levelzero'), 'report_gen_companydata', array('id'));
+            $tbl_courseLocations->add_key('levelone',XMLDB_KEY_FOREIGN,array('levelone'), 'report_gen_companydata', array('id'));
             $tbl_courseLocations->add_key('createdby',XMLDB_KEY_FOREIGN,array('createdby'), 'user', array('id'));
 
             return $tbl_courseLocations;

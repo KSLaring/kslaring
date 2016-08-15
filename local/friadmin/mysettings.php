@@ -15,11 +15,11 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * The course list page
+ * The my settings page with user specific setting options.
  *
  * @package         local
  * @subpackage      friadmin
- * @copyright       2015 eFaktor
+ * @copyright       2016 eFaktor
  * @author          Urs Hunkler {@link urs.hunkler@unodo.de}
  * @license         http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -33,24 +33,7 @@ $friadmin = new local_friadmin\friadmin();
 // Basic page init - set context and pagelayout
 $friadmin->init_page();
 
-$type = optional_param('type', -1, PARAM_INT);
-$savedtype = optional_param('temptype', -1, PARAM_INT);
-
-if ($type === -1) {
-    if ($savedtype !== -1) {
-        $type = $savedtype;
-    } else {
-        $type = TEMPLATE_TYPE_EVENT;
-    }
-}
-
-/**
- * @updateDate  22/06/2015
- * @author      eFaktor     (fbv)
- *
- * Description
- * Check if the user is super user
- */
+//Check if the user has the capability to view the page.
 if (!$friadmin->__get('superuser')) {
     print_error('nopermissions', 'error', '', 'block/frikomport:view');
 }//if_superuser
@@ -60,11 +43,10 @@ if (!$friadmin->__get('superuser')) {
 $output = $PAGE->get_renderer('local_friadmin');
 
 // Prepare the renderables for the page and the page areas
-$page = new local_friadmin_coursetemplate_page($type);
-$select = new local_friadmin_coursetemplate_select($type);
-$linklist = new local_friadmin_coursetemplate_linklist();
+$page = new local_friadmin_mysettings_page();
+$select = new local_friadmin_mysettings_select();
 
-$friadmin->set_coursetemplate_references($page, $select, $linklist, $output);
+$friadmin->set_mysettings_references($page, $select, $output);
 
-$friadmin->setup_coursetemplate_page();
-$friadmin->display_coursetemplate_page();
+$friadmin->setup_mysettings_page();
+$friadmin->display_mysettings_page();

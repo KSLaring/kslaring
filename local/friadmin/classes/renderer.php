@@ -97,6 +97,25 @@ class local_friadmin_renderer extends plugin_renderer_base {
     }
 
     /**
+     * Render the page.
+     *
+     * @param local_friadmin_mysettings_page $page The page renderable
+     *
+     * @return string html for the page
+     */
+    public function render_local_friadmin_mysettings_page(
+        local_friadmin_mysettings_page $page) {
+        global $OUTPUT;
+
+        $out = '';
+
+        $out .= $OUTPUT->heading($page->data->title, 2);
+        $out .= $this->render($page->data->select);
+
+        return $out;
+    }
+
+    /**
      * Render the course table.
      *
      * @param local_friadmin_courselist_table $table The table renderable
@@ -223,6 +242,19 @@ class local_friadmin_renderer extends plugin_renderer_base {
      */
     public function render_local_friadmin_coursetemplate_select(
         local_friadmin_coursetemplate_select $select) {
+
+        return $select->data->content;
+    }
+
+    /**
+     * Render the mysettings select.
+     *
+     * @param local_friadmin_mysettings_select $select The $select renderable
+     *
+     * @return string html for the page
+     */
+    public function render_local_friadmin_mysettings_select(
+        local_friadmin_mysettings_select $select) {
 
         return $select->data->content;
     }
