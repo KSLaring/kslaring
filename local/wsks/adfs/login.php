@@ -19,7 +19,7 @@ require_once ('../wsadfslib.php');
 $id             = $SESSION->user;
 
 $url            = new moodle_url('/local/wsks/adfs/login.php');
-$index          = new moodle_url('/index.php');
+$redirect       = new moodle_url('/index.php');
 $errUrl         = new moodle_url('/local/wsks/adfs/error.php');
 
 /* Clean SESSION Variables  */
@@ -38,6 +38,17 @@ try {
     $user = get_complete_user_data('id',$id);
     complete_user_login($user,true);
 
+    /**
+     * @updateDate  15/08/2016
+     * @author      eFaktor     (fbv)
+     * 
+     * Description
+     * Check if the redirect url has to be the course/activity
+     */
+    if (($SESSION->modlnk) && ($SESSION->modid)) {
+        $redirect = new moodle_url($SESSION->modlnk,array('id' => $SESSION->modid));    
+    }//if_modlnk
+    
     /**
      * @updateDate  10/11/2014
      * @author      eFaktor     (fbv)
@@ -69,12 +80,12 @@ try {
                 die();
             }else {
                 // test the session actually works by redirecting to self
-                redirect($index);
+                redirect($redirect);
             }//if_else_UpdateProfile
         }//if_first_access
     } else {
         require_logout();
-        redirect($index);
+        redirect($redirect);
     }//if_guest_user
 
 }catch (Exception $ex) {
