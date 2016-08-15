@@ -212,15 +212,30 @@ class WS_ADFS {
      *
      * Description
      * Generates the url where the user will be redirected
+     *
+     * @updateDate      15/08/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Add course/activity link if it's necessary
      */
-    private static function GenerateResponse($userId) {
+    private static function GenerateResponse($userId,$modLnk=null,$modId=null) {
         /* Variables    */
         global $CFG;
-        $response = null;
-
+        $response       = null;
+        $urlResponse    = null;
 
         try {
-            $response = urlencode($CFG->wwwroot . '/local/wsks/adfs/autologin.php?id=' . $userId);
+            /* Build URL Response */
+            $urlResponse = $CFG->wwwroot . '/local/wsks/adfs/autologin.php?id=' . $userId;
+
+            /* Check if the user has to be redirected to course/activity */
+            if ($modLnk && $modId) {
+                $urlResponse .= "&modlnk=" . $modLnk . "&modid=" . $modId;
+            }////course/activity link
+
+            /* URL Response */
+            $response = urlencode($urlResponse);
 
             return $response;
         }catch (Exception $ex) {
