@@ -11,7 +11,7 @@
  *
  */
 
-function local_microlearning_extends_settings_navigation($settingsnav, $context) {
+function local_microlearning_extend_settings_navigation($settingsnav, $context) {
     global $PAGE;
 
     // Only add this settings item on non-site course pages.
