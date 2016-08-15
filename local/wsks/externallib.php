@@ -36,6 +36,12 @@ class local_wsks_external extends external_api {
      *
      * Description
      * Parameters that ws has to get to create or update the user
+     * 
+     * @updateDate      15/08/2016
+     * @author          eFaktor     (fbv)
+     * 
+     * Description
+     * Add course/activity link.
      */
     public static function wsUserADFS_parameters() {
         /* User Info    */
@@ -46,6 +52,8 @@ class local_wsks_external extends external_api {
         $city       = new external_value(PARAM_TEXT,'city');
         $country    = new external_value(PARAM_TEXT,'country');
         $language   = new external_value(PARAM_TEXT,'language');
+        $modlnk     = new external_value(PARAM_TEXT,'Direct link. Course or activity link');
+        $modid      = new external_value(PARAM_TEXT,'Course Id. Activity Id');
 
         /* USER ADFS */
         $userADFS = new external_single_structure(array('username'  => $userName,
@@ -54,7 +62,9 @@ class local_wsks_external extends external_api {
                                                         'email'     => $eMail,
                                                         'city'      => $city,
                                                         'country'   => $country,
-                                                        'lang'      => $language));
+                                                        'lang'      => $language,
+                                                        'modlnk'    => $modlnk,
+                                                        'modid'     => $modid));
 
         return new external_function_parameters(array('user'=> $userADFS));
     }//wsUserADFS_parameters
