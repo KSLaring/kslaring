@@ -1,0 +1,12 @@
+{
+  "moodle-mod_registerattendance-changecompletionstate": {
+    "requires": [
+      "base",
+      "node",
+      "event",
+      "node-event-delegate",
+      "node-event-simulate",
+      "moodle-core-notification-exception"
+    ]
+  }
+}
