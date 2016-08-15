@@ -49,13 +49,13 @@ class local_friadmin_usercourselist_filter_form extends \moodleform {
         $options = $options + $customdata['sector'];
         $elementgroup[] = $mform->createElement('select', 'selsector', '', $options);
         $mform->setDefault('selsector', '0');
-        $mform->disabledIf('selsector', 'selmunicipality', 'eq', '0');
+        //$mform->disabledIf('selsector', 'selmunicipality', 'eq', '0');
 
         $options = array('0' => get_string('sellocation', 'local_friadmin'));
         $options = $options + $customdata['location'];
         $elementgroup[] = $mform->createElement('select', 'sellocation', '', $options);
         $mform->setDefault('sellocation', '0');
-        $mform->disabledIf('sellocation', 'selmunicipality', 'eq', '0');
+        //$mform->disabledIf('sellocation', 'selmunicipality', 'eq', '0');
 
         $mform->addGroup($elementgroup, 'selectrowone',
             get_string('locationline', 'local_friadmin'),

@@ -78,6 +78,10 @@ $string['coursedetail_participantlist'] = 'Downlaod participant list';
 $string['coursedetail_duplicate']       = 'Duplicate';
 $string['coursedetail_email']           = 'Send email';
 
+$string['eventtemplate_title']          = 'Event';
+$string['eventtemplate_subtitle']       = 'Create from a template.';
+$string['netcoursetemplate_title']      = 'Netcourse';
+$string['netcoursetemplate_subtitle']   = 'Create from a template.';
 $string['coursetemplate_title']         = 'Frikomport add from template';
 $string['coursetemplate_subtitle']      = 'Create a course from a course template.';
 $string['coursetemplate_cat']           = 'Course template category';
@@ -92,6 +96,23 @@ id: <strong>{$a->id}</strong>, shortname: "<strong>{$a->shortname}</strong>",
 fullname: "<strong>{$a->fullname}</strong>".';
 $string['coursetemplate_error']         = 'Course could not be created.';
 
+$string['mysettings_title']                 = 'My settings';
+$string['seltemplcategory']                 = 'Select course template category ...';
+$string['seltemplcategorylabel']            = 'Local template category';
+$string['seltemplcategorydesc']             = 'Please select the course category where all 
+your local template courses are stored.';
+$string['missingseltemplcategory']          = 'Missing local template category';
+$string['selpreftemplate']                  = 'Select preferred template ...';
+$string['selpreftemplatelabel']             = 'Preferred template';
+$string['selpreftemplatedesc']              = 'Please select your preferred event template.';
+$string['selprefnetcoursetemplate']         = 'Select preferred netcourse template ...';
+$string['selprefnetcoursetemplatelabel']    = 'Preferred netcourse template';
+$string['selprefnetcoursetemplatedesc']     = 'Please select your preferred netcourse template.';
+$string['selmysetingssave']                 = 'Save settings';
+$string['missinglocaltempcategory']         = 'Your selected course template forlder is missing. 
+Please select a new folder for your course templates in <a href="{$a}">My settings</a> 
+in the Course wizard.';
+
 $string['locationline']         = 'Location: ';
 $string['fromto']               = 'From - to: ';
 $string['coursename']           = 'Course name: ';
@@ -102,7 +123,9 @@ $string['selname']              = 'Course name';
 $string['selcategory']          = 'Target category';
 $string['missingselcategory']   = 'Missing target category';
 $string['seltemplate']          = 'Course template';
-$string['missingseltemplate']   = 'Missing course template';
+$string['seleventtemplate']     = 'Template';
+$string['selnetcoursetemplate'] = 'Netcourse template';
+$string['missingseltemplate']   = 'Missing template';
 $string['selsubmit']            = 'Search';
 $string['selsubmitcreate']      = 'Create course';
 
@@ -206,3 +229,17 @@ $string['pot_teachers']                = 'Potential teachers';
 $string['pot_teachers_matching']       = 'Potential matching teachers';
 $string['current_teachers']            = 'Current teachers';
 $string['current_teachers_matching']   = 'Current teachers matching';
+
+$string['duplicatecourse']          = 'Duplicate course';
+$string['includeusers']             = 'Include users';
+$string['includeusers_help']        = 'Select if you want to include the users in the duplicated coruse.';
+$string['dupcoursename']            = 'New course name';
+$string['dupcoursename_help']       = 'Set the name of the duplicated course.';
+$string['dupcoursenamedefault']     = ' copy';
+$string['selfullname']              = 'Fullname';
+$string['selfullname_help']         = 'Set name of the duplicated course.';
+$string['selshortname']             = 'Shortname';
+$string['selshortname_help']        = 'Set short name of the duplicated course. This short name
+must be unique.';
+$string['info_dup_course']          = 'Before starting to duplicate the course, you need to determine in 
+which category the course will be saved. The actual course category is selected by default.';

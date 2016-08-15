@@ -212,6 +212,12 @@ class format_classroom_frikomport extends format_base {
      *
      * Description
      * Remove page video
+     *
+     * @updateDate  10/08/2016
+     * @auhtor      eFaktor     (fbv)
+     *
+     * Description
+     * From - To date
      */
     public function course_format_options($foreditform = false) {
         /* Variables    */
@@ -333,8 +339,17 @@ class format_classroom_frikomport extends format_base {
                 'course_sector' => array(
                     'default' => 0,
                 ),
+                'from'      => array(
+                    'default'           => 0,
+                ),
+                'to'      => array(
+                    'default'           => 0,
+                ),
                 'time'      => array(
                     'type'      => PARAM_TEXT,
+                ),
+                'from_to_btn'      => array(
+                    'default'      => get_string('home_time_from_to_btn','format_classroom'),
                 ),
                 'length' => array(
                     'type' => PARAM_TEXT,
@@ -426,12 +441,22 @@ class format_classroom_frikomport extends format_base {
                     'element_type' => 'select',
                     'element_attributes' => array($lstSectors,'1' => 'multiple')
                 ),
+                'from'      => array(
+                    'label'           => get_string('home_time_from','format_classroom'),
+                    'element_type'    => 'date_selector',
+                ),
+                'to'      => array(
+                    'label'           => get_string('home_time_to','format_classroom'),
+                    'element_type'    => 'date_selector',
+                ),
                 'time'          => array(
-                    'label'                 => get_string('home_time_from_to','format_classroom_frikomport'),
-                    'help'                  => 'home_time_from_to',
-                    'help_component'        => 'format_classroom_frikomport',
+                    'label'                 => null,
                     'element_type'          => 'textarea',
-                    'element_attributes'    => array(0 => 'rows="4" style="width:50%;"'),
+                    'element_attributes'    => array(0 => 'rows="4" style="width:50%;" readonly'),
+                ),
+                'from_to_btn'      => array(
+                    'label'             => get_string('home_time_from_to_btn','format_classroom'),
+                    'element_type'      => 'BUTTON',
                 ),
                 'length' => array(
                     'label' => get_string('home_length', 'format_classroom_frikomport'),
@@ -508,6 +533,11 @@ class format_classroom_frikomport extends format_base {
         } else {
             $options = $this->course_format_options(true);
         }
+
+        /* Initialize Javascrips */
+        self::InitFromTo();
+        course_page::Init_LocationsSector();
+
         foreach ($options as $optionname => $option) {
             switch ($optionname) {
                 case 'homepage':
@@ -516,12 +546,12 @@ class format_classroom_frikomport extends format_base {
                 case 'homevisible':
                 case 'homesummary':
                 case 'pagegraphics':
+                case 'pagegraphicstitle':
                 case 'manager':
                     course_page::addCourseHomePage_Section($mform, $optionname);
 
                     break;
                 default:
-                    course_page::Init_LocationsSector();
 
                     if (!isset($option['element_type'])) {
                         $option['element_type'] = 'text';
@@ -570,6 +600,52 @@ class format_classroom_frikomport extends format_base {
         }
         return $elements;
     }
+
+    /**
+     * @throws          Exception
+     *
+     * @creationDate    10/08/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Connect javascript action to add more one From-To date
+     */
+    protected static function InitFromTo() {
+        /* Variables    */
+        global $PAGE;
+        $jsModule   = null;
+        $name       = null;
+        $path       = null;
+        $requires   = null;
+        $strings    = null;
+        $grpOne     = null;
+        $grpTwo     = null;
+        $grpThree   = null;
+
+        try {
+            /* Initialise variables */
+            $name       = 'from_to';
+            $path       = '/course/format/classroom_frikomport/yui/fromto.js';
+            $requires   = array('node', 'event-custom', 'datasource', 'json', 'moodle-core-notification');
+            $grpThree   = array('none', 'moodle');
+            $strings    = array($grpThree);
+
+            /* Initialise js module */
+            $jsModule = array('name'        => $name,
+                              'fullpath'    => $path,
+                              'requires'    => $requires,
+                             'strings'     => $strings
+            );
+
+            $PAGE->requires->js_init_call('M.core_classroom.init_from_to',
+                                          array('from_to_btn'),
+                                          false,
+                                          $jsModule
+            );
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//InitFromTo
 
     /**
      * Updates format options for a course
@@ -680,6 +756,22 @@ class format_classroom_frikomport extends format_base {
                             $data['course_sector'] = implode(',',$data['course_sector']);
                         }
                     }
+
+                    break;
+                case 'from':
+                    //if ($data['time'] != '') {
+                        $data['from'] = null;
+                    //}
+
+                    break;
+                case 'to':
+                    //if ($data['to'] != '') {
+                        $data['to'] = null;
+                    //}
+
+                    break;
+                case 'from_to_btn':
+                    $data['from_to_btn'] = null;
 
                     break;
                 default:

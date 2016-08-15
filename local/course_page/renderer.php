@@ -553,8 +553,10 @@ class local_course_page_renderer extends plugin_renderer_base {
 
                         if ($option->name == 'time') {
                             if ($option->value) {
+                                $time = str_replace(',','</br>',$option->value);
+                                $time = str_replace('\n','</br>',$time);
                                 $outTime  = '<h5 class="title_home chp-title">' . get_string('home_time_from_to',$str_format) . '</h5>';
-                                $outTime .=  '<div class="extra_home chp-content">' . str_replace(',','</br>',$option->value) . '</div>';
+                                $outTime .=  '<div class="extra_home chp-content">' . $time . '</div>';
                             }//if_value
                         }//if_time
 

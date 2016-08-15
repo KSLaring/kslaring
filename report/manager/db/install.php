@@ -177,9 +177,9 @@ class CompetenceManager_Install {
             $tblCompanyData->add_field('public',XMLDB_TYPE_INTEGER,'1',null, null,null,null);
 
             /* ansvar   */
-            $tblCompanyData->add_field('ansvar',XMLDB_TYPE_CHAR,'50',null, XMLDB_NOTNULL, null,null);
+            $tblCompanyData->add_field('ansvar',XMLDB_TYPE_CHAR,'255',null, XMLDB_NOTNULL, null,null);
             /* tjeneste */
-            $tblCompanyData->add_field('tjeneste',XMLDB_TYPE_CHAR,'50',null, XMLDB_NOTNULL, null,null);
+            $tblCompanyData->add_field('tjeneste',XMLDB_TYPE_CHAR,'255',null, XMLDB_NOTNULL, null,null);
             /* adresse1 */
             $tblCompanyData->add_field('adresse1',XMLDB_TYPE_CHAR,'255',null, XMLDB_NOTNULL, null,null);
             /* adresse2 */

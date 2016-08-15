@@ -175,8 +175,7 @@ class ct_settings_form extends moodleform {
                 list($file_options,$context) = course_page::get_file_options($courseId);
                 $file_editor['accepted_types'] = array('image','web_image');
                 $file_editor = course_page::prepareFileManagerHomeGraphicsVideo($file_options,$context,'pagegraphics');
-
-
+                
                 $page_graphics = $form->createElement('filemanager', 'pagegraphics_filemanager', get_string('home_graphics','local_course_page'), null, $file_options);
                 $form->insertElementBefore($page_graphics,'courseformathdr');
                 $form->setDefault('pagegraphics_filemanager',$file_editor->pagegraphics);
@@ -184,6 +183,13 @@ class ct_settings_form extends moodleform {
                 $form->addElement('hidden','pagegraphics');
                 $form->setType('pagegraphics',PARAM_RAW);
                 $form->setDefault('pagegraphics',$value);
+
+                break;
+            case 'pagegraphicstitle':
+                $pageTitle = $form->createElement('text','pagegraphicstitle',get_string('home_graphicstitle','local_course_page'),'style="width:95%;"');
+                $form->setDefault('pagegraphicstitle',$value);
+                $form->setType('pagegraphicstitle',PARAM_TEXT);
+                $form->insertElementBefore($pageTitle,'courseformathdr');
 
                 break;
             case 'homepage':
@@ -209,11 +215,13 @@ class ct_settings_form extends moodleform {
             case 'prerequisities':
                 $form->addElement('textarea','prerequisities',get_string('home_prerequisities',$str_format),'rows="5" style="width:95%;"');
                 $form->setDefault('prerequisities',$value);
+
                 break;
             case 'producedby':
                 $form->addElement('text','producedby',get_string('home_producedby',$str_format),'style="width:95%;"');
                 $form->setDefault('producedby',$value);
                 $form->setType('producedby',PARAM_TEXT);
+
                 break;
             case 'course_location':
                 $lstLocations = course_page::Get_CourseLocationsList($USER->id);
@@ -225,20 +233,24 @@ class ct_settings_form extends moodleform {
                 $lstSectors     = course_page::Get_SectorsLocationsList($location);
                 $form->addElement('select','course_sector',get_string('home_sector',$str_format),$lstSectors,'multiple');
                 $form->setDefault('course_sector',$value);
+
                 break;
             case 'time':
                 $form->addElement('textarea','time',get_string('home_time_from_to',$str_format),'rows="5" style="width:95%;"');
                 $form->setDefault('time',$value);
+
                 break;
             case 'length':
                 $form->addElement('text','length',get_string('home_length',$str_format),'style="width:95%;"');
                 $form->setDefault('length',$value);
                 $form->setType('length',PARAM_TEXT);
+
                 break;
             case 'effort':
                 $form->addElement('text','effort',get_string('home_effort',$str_format),'style="width:95%;"');
                 $form->setDefault('effort',$value);
                 $form->setType('effort',PARAM_TEXT);
+
                 break;
             case 'manager':
                 $lst_manager = course_page::getCourseManager();
@@ -250,16 +262,19 @@ class ct_settings_form extends moodleform {
                 $form->setType('manager_search',PARAM_TEXT);
 
                 course_page::Init_Manager_Selector('manager',null,$courseId);
+
                 break;
             case 'author':
                 $form->addElement('text','author',get_string('home_author',$str_format),'style="width:95%;"');
                 $form->setDefault('author',$value);
                 $form->setType('author',PARAM_TEXT);
+
                 break;
             case 'licence':
                 $form->addElement('text','licence',get_string('home_licence',$str_format),'style="width:95%;"');
                 $form->setDefault('licence',$value);
                 $form->setType('licence',PARAM_TEXT);
+
                 break;
             default:
                 break;

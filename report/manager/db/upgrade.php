@@ -517,14 +517,14 @@ class CompetenceManager_Update {
 
             /* Ansvar Field     */
             $fldAnsvar      = null;
-            $fldAnsvar      = new xmldb_field('ansvar', XMLDB_TYPE_CHAR, '50', null, XMLDB_NOTNULL, null, null, 'public');
+            $fldAnsvar      = new xmldb_field('ansvar', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, null, null, 'public');
             if (!$dbMan->field_exists($tblCompanyData, $fldAnsvar)) {
                 $dbMan->add_field($tblCompanyData, $fldAnsvar);
             }//if_not_exists
 
             /* Tjeneste Field   */
             $fldTjeneste    = null;
-            $fldTjeneste    = new xmldb_field('tjeneste', XMLDB_TYPE_CHAR, '50', null, XMLDB_NOTNULL, null, null, 'public');
+            $fldTjeneste    = new xmldb_field('tjeneste', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, null, null, 'public');
             if (!$dbMan->field_exists($tblCompanyData, $fldTjeneste)) {
                 $dbMan->add_field($tblCompanyData, $fldTjeneste);
             }//if_not_exists

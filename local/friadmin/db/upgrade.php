@@ -68,6 +68,53 @@ function xmldb_local_friadmin_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2015062406, 'local', 'friadmin');
     }//if_odlversion
 
+    if ($oldversion < 2016070101) {
+
+        // Define table friadmin_local_templates to be created.
+        $table = new xmldb_table('friadmin_local_templates');
+
+        // Adding fields to table friadmin_local_templates.
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('userid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('categoryid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('timemodified', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+
+        // Adding keys to table friadmin_local_templates.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+
+        // Adding indexes to table friadmin_local_templates.
+        $table->add_index('mdl_friadmlocaltemp_use_ix', XMLDB_INDEX_NOTUNIQUE, array('userid'));
+
+        // Conditionally launch create table for friadmin_local_templates.
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        // Define table friadmin_preferred_template to be created.
+        $table = new xmldb_table('friadmin_preferred_template');
+
+        // Adding fields to table friadmin_preferred_template.
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('userid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+        $table->add_field('courseid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('type', XMLDB_TYPE_INTEGER, '2', null, XMLDB_NOTNULL, null, '0');
+        $table->add_field('timemodified', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+
+        // Adding keys to table friadmin_prefered_template.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+
+        // Adding indexes to table friadmin_prefered_template.
+        $table->add_index('mdl_friapreftempl_use_ix', XMLDB_INDEX_NOTUNIQUE, array('userid'));
+
+        // Conditionally launch create table for friadmin_prefered_template.
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        // Friadmin savepoint reached.
+        upgrade_plugin_savepoint(true, 2016070101, 'local', 'friadmin');
+    }
+
     return true;
 }
 

@@ -13,6 +13,6 @@ $plugin->component = 'local_tracker_manager';
 
 /* Dependencies */
 $plugin->dependencies = array('report_manager'          => 2016060602,
-                              'profilefield_competence' => 2016030700);
+                              'profilefield_competence' => 2016080900);
 
 ?>

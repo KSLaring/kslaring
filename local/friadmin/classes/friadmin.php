@@ -16,7 +16,7 @@
 
 namespace local_friadmin;
 
-defined('MOODLE_INTERNAL') || die;
+require_once (__DIR__ . '/../lib.php');
 
 use moodle_url;
 use context_system;
@@ -153,6 +153,16 @@ class friadmin {
     }
 
     /*
+     *
+     */
+    public function set_mysettings_references($page, $select,
+        \local_friadmin_renderer $output) {
+        $this->page = $page;
+        $this->select = $select;
+        $this->output = $output;
+    }
+
+    /*
      * Set up the courselist page
      */
     public function setup_courselist_page() {
@@ -166,6 +176,9 @@ class friadmin {
 
         $PAGE->navbar->add(get_string('pluginname', 'local_friadmin'));
         $PAGE->navbar->add($data->title);
+        
+        $PAGE->requires->yui_module('moodle-local_friadmin-courselist',
+            'M.local_friadmin.courselist.init', array(), null, true);
     }
 
     /*
@@ -182,6 +195,9 @@ class friadmin {
 
         $PAGE->navbar->add(get_string('pluginname', 'local_friadmin'));
         $PAGE->navbar->add($data->title);
+        
+        $PAGE->requires->yui_module('moodle-local_friadmin-courselist',
+            'M.local_friadmin.courselist.init', array(), null, true);
     }
 
     /*
@@ -207,6 +223,22 @@ class friadmin {
      * Set up the page
      */
     public function setup_coursetemplate_page() {
+        global $PAGE;
+
+        $data = $this->page->data;
+
+        $PAGE->set_url($data->url);
+        $PAGE->set_docs_path('');
+        $PAGE->set_title($data->title);
+
+        $PAGE->navbar->add(get_string('pluginname', 'local_friadmin'));
+        $PAGE->navbar->add($data->title);
+    }
+
+    /*
+     * Set up the page
+     */
+    public function setup_mysettings_page() {
         global $PAGE;
 
         $data = $this->page->data;
@@ -294,6 +326,20 @@ class friadmin {
         } else {
             $this->page->data->linklist = null;
         }
+
+        echo $output->header();
+        echo $output->render($this->page);
+        echo $output->footer();
+    }
+
+    /*
+     * Display the coursetemplate page
+     */
+    public function display_mysettings_page() {
+        $output = $this->output;
+
+        $this->select->render();
+        $this->page->data->select = $this->select;
 
         echo $output->header();
         echo $output->render($this->page);

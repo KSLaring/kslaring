@@ -769,6 +769,7 @@ class format_netcourse extends format_base {
                 case 'homevisible':
                 case 'homesummary':
                 case 'pagegraphics':
+                case 'pagegraphicstitle':
                 case 'manager':
                     course_page::addCourseHomePage_Section($mform, $optionname);
 

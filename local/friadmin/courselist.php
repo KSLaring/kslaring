@@ -24,9 +24,9 @@
  * @license         http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-require_once('../../config.php');
-require_login();
+require_once(__DIR__ . '/../../config.php');
 
+require_login();
 
 $friadmin = new local_friadmin\friadmin();
 
@@ -40,7 +40,7 @@ $friadmin->init_page();
  * Description
  * Check if the user is super user
  */
-if (!$friadmin->__get('superuser')) {
+if (!$friadmin->superuser) {
     print_error('nopermissions', 'error', '', 'block/frikomport:view');
 }//if_superuser
 
@@ -49,9 +49,8 @@ if (!$friadmin->__get('superuser')) {
 $output = $PAGE->get_renderer('local_friadmin');
 
 // Prepare the renderables for the page and the page areas
-$page   = new local_friadmin_courselist_page();
+$page = new local_friadmin_courselist_page();
 $filter = new local_friadmin_courselist_filter();
-
 /**
  * @updateDate  17/06/2015
  * @author      eFaktor     (fbv)
@@ -65,6 +64,4 @@ $table = new local_friadmin_courselist_table($page->data->url,
 $friadmin->set_courselist_references($page, $filter, $table, $output);
 
 $friadmin->setup_courselist_page();
-
 $friadmin->display_courselist_page();
-

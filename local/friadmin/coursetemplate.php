@@ -33,6 +33,17 @@ $friadmin = new local_friadmin\friadmin();
 // Basic page init - set context and pagelayout
 $friadmin->init_page();
 
+$type = optional_param('type', -1, PARAM_INT);
+$savedtype = optional_param('temptype', -1, PARAM_INT);
+
+if ($type === -1) {
+    if ($savedtype !== -1) {
+        $type = $savedtype;
+    } else {
+        $type = TEMPLATE_TYPE_EVENT;
+    }
+}
+
 /**
  * @updateDate  22/06/2015
  * @author      eFaktor     (fbv)
@@ -49,8 +60,8 @@ if (!$friadmin->__get('superuser')) {
 $output = $PAGE->get_renderer('local_friadmin');
 
 // Prepare the renderables for the page and the page areas
-$page = new local_friadmin_coursetemplate_page();
-$select = new local_friadmin_coursetemplate_select();
+$page = new local_friadmin_coursetemplate_page($type);
+$select = new local_friadmin_coursetemplate_select($type);
 $linklist = new local_friadmin_coursetemplate_linklist();
 
 $friadmin->set_coursetemplate_references($page, $select, $linklist, $output);
