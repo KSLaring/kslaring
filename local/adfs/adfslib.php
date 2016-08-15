@@ -91,8 +91,14 @@ class KS_ADFS {
      *
      * Description
      * Get Log in url for the user
+     *
+     * @updateDate      15/08/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Add course/activity link information
      */
-    public static function LogIn_UserADFS($userId) {
+    public static function LogIn_UserADFS($userId,$modLnk = null,$modId = null) {
         /* Variables    */
         $urlRedirect = null;
 
@@ -100,7 +106,7 @@ class KS_ADFS {
         $pluginInfo     = get_config('local_adfs');
 
         try {
-            $urlRedirect = self::ProcessUserADFSService($userId,$pluginInfo);
+            $urlRedirect = self::ProcessUserADFSService($userId,$pluginInfo,$modLnk,$modId);
 
             return $urlRedirect;
         }catch (Exception $ex) {
@@ -127,8 +133,14 @@ class KS_ADFS {
      * Process the ADFS USER.
      * - Create/Update the user in KS Læring
      * - Get Log in url
+     *
+     * @updateDate      15/08/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Add course/activity link information
      */
-    private static function ProcessUserADFSService($userId,$pluginInfo) {
+    private static function ProcessUserADFSService($userId,$pluginInfo,$modLnk = null,$modId = null) {
         /* Variables    */
         $userRequest    = null;
         $urlRedirect    = null;
@@ -145,6 +157,12 @@ class KS_ADFS {
         try {
             /* User to Validate */
             $userRequest = self::GetUserADFS($userId);
+
+            /* Course/Activity Link */
+            if ($modLnk && $modId) {
+                $userRequest['modlnk']  = $modLnk;
+                $userRequest['modid']   = $modId;
+            }//courseActivity_Lnk
 
             /* Data to call Service */
             $domain     = $pluginInfo->ks_point;

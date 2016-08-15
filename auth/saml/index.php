@@ -225,7 +225,22 @@ define('SAML_INTERNAL', 1);
             require_once ('../../local/adfs/adfslib.php');
 
             try {
-                $urlKS = KS_ADFS::LogIn_UserADFS($USER->id);
+                $index  = 0;
+                $modlnk = null;
+                $modid  = null;
+                if ($_GET['directlnk']) {
+                    $index = stripos($_GET['directlnk'],'&');
+                    if ($index) {
+                        $modlnk = substr($_GET['directlink'],0,$index-1);
+                        $modid  = substr($_GET['directlnk'],$index+1);
+                        $modid  = str_replace('id','modid',$modid);
+                    }else if ($index = stripos($_GET['directlnk'],'?')){
+                        $modlnk = substr($_GET['directlink'],0,$index-1);
+                        $modid  = substr($_GET['directlnk'],$index+1);
+                        $modid  = str_replace('id','modid',$modid);
+                    }//if_else
+                }
+                $urlKS = KS_ADFS::LogIn_UserADFS($USER->id,$modlnk,$modid);
 
                 header('Location: ' . urldecode($urlKS));
                 require_logout();
