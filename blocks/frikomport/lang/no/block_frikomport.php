@@ -16,16 +16,17 @@
  * Add new strings for location menu
  */
 $string['enabledock']               = 'Tillat brukeren å flytte denne blokken til sidestolpen';
-$string['pluginname']               = 'Frikomport';
+$string['pluginname']               = 'Kursveiviser';
 $string['searchinfrikomport']       = 'Søk';
-$string['frikomport:addinstance']   = 'Legg til en ny Frikomport-blokk';
-$string['frikomport:myaddinstance'] = 'Legg til en ny Frikomport-blokk til Min startside';
+$string['frikomport:addinstance']   = 'Legg til en ny Kursveiviser-blokk';
+$string['frikomport:myaddinstance'] = 'Legg til en ny Kursveiviser-blokk til Min startside';
 $string['frikomport:view'] = 'Vis Friadmin-blokken';
 
-$string['ncourses']                 = 'Kursoversikt';
-$string['nnewcourses']              = 'Opprett nytt kurs';
-$string['naddcourse']               = 'Opprett nytt kurs';
-$string['naddfromtemplate']         = 'Nytt kurs fra en kursmal';
+$string['ncourses']                     = 'Kursoversikt';
+$string['nnewcourses']                  = 'Opprett nytt kurs';
+$string['naddcourse']                   = 'Nytt kurs';
+$string['naddfromtemplate']             = 'Nytt arrangement';
+$string['naddfromnectcoursetemplate']   = 'Nytt nettkurs';
 
 $string['norgstructure']            = 'Organisasjonsstruktur';
 $string['nvirksomheter']            = 'Virksomheter';
@@ -34,6 +35,8 @@ $string['nvirksomhetsrader']        = 'Virksomhetsområder';
 $string['nlocations']       = 'Kurssteder';
 $string['lst_locations']    = 'Vis liste over kurssteder';
 $string['new_location']     = 'Nytt kurssted';
+
+$string['nmysettings']      = 'Mine innstillinger';
 
 $string['nreports']         = 'Rapporter';
 $string['nparticipants']    = 'Deltakerliste';
