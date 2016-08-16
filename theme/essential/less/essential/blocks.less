@@ -1,0 +1,615 @@
+/* @group Blocks */
+@import "../fontawesome/variables";
+
+.block {
+    background: white;
+    padding: @borderRadiusLarge;
+    border: 1px solid darken(@wellBackground, 7%);
+    .border-radius(@borderRadiusLarge);
+    .content {
+        padding: 4px 0;
+    }
+    .moodle-actionmenu[data-enhanced].show .menu a:hover {
+        text-decoration: none;
+        &:before {
+            color: @white;
+        }
+    }
+    .moodle-core-dragdrop-draghandle {
+        &:before {
+            font-family: 'FontAwesome';
+            content: "\f047";
+            cursor: move;
+        }
+        img {
+            display: none;
+        }
+    }
+    li.item_with_icon > p img {
+        position: static !important;
+    }
+}
+
+.dir-ltr .block {
+    .icon {
+        margin-right: 5px;
+    }
+    .moodle-core-dragdrop-draghandle {
+        &:before {
+            margin-right: 5px;
+        }
+    }
+    li.item_with_icon > p img {
+        margin-right: 5px;
+    }
+}
+
+.dir-rtl .block {
+    .icon {
+        margin-left: 5px;
+    }
+    .moodle-core-dragdrop-draghandle {
+        &:before {
+            margin-left: 5px;
+        }
+    }
+    li.item_with_icon > p img {
+        margin-left: 5px;
+    }
+}
+
+.editing {
+    .block-region.yui3-dd-drop-active-valid {
+        border: 1px dashed darken(@wellBackground, 7%);
+        .border-radius(@borderRadiusLarge);
+    }
+
+    #page-footer {
+        .footerblocks {
+            margin-top: 10px;
+            > .footerblock,
+            .block-region.yui3-dd-drop-active-valid {
+                min-height: 300px;
+            }
+        }
+    }
+}
+
+.editing {
+    // Give space to 'empty' regions.
+    &.empty-region-side-pre #block-region-side-pre, &.used-region-side-pre #block-region-side-pre,
+    &.empty-region-side-post #block-region-side-post, &.used-region-side-post #block-region-side-post,
+    &.empty-region-home-left #block-region-home-left, &.used-region-home-left #block-region-home-left,
+    &.empty-region-home-middle #block-region-home-middle, &.used-region-home-middle #block-region-home-middle,
+    &.empty-region-home-right #block-region-home-right, &.used-region-home-right #block-region-home-right,
+    &.empty-region-footer-left #block-region-footer-left, &.used-region-footer-left #block-region-footer-left,
+    &.empty-region-footer-middle #block-region-footer-middle, &.used-region-footer-middle #block-region-footer-middle,
+    &.empty-region-footer-right #block-region-footer-right, &.used-region-footer-right #block-region-footer-right,
+    &.empty-region-hidden-dock #block-region-hidden-dock, &.used-region-hidden-dock #block-region-hidden-dock {
+        min-height: 200px;
+    }
+
+    // Using 'used' instead of 'empty' as body class will be 'used' as soon as D&D starts.
+    &.used-region-side-pre #block-region-side-pre,
+    &.used-region-side-post #block-region-side-post,
+    &.used-region-home-left #block-region-home-left,
+    &.used-region-home-middle #block-region-home-middle,
+    &.used-region-home-right #block-region-home-right,
+    &.used-region-footer-left #block-region-footer-left,
+    &.used-region-footer-middle #block-region-footer-middle,
+    &.used-region-footer-right #block-region-footer-right,
+    &.used-region-hidden-dock #block-region-hidden-dock {
+        border-width: 2px;
+        border-style: dashed;
+    }
+}
+
+#middle-blocks {
+    margin: 15px 0;
+}
+
+p.tree_item.leaf a {
+    > .@{fa-css-prefix} {
+        width: 14px;
+    }
+    &.action-delete {
+        > .@{fa-css-prefix} {
+            color: red;
+        }
+    }
+}
+
+.tree_item.branch {
+    background-image: none !important;
+
+    &:before {
+        font-family: FontAwesome;
+    }
+    &[aria-expanded="false"]:before {
+        content: "\f07b";
+    }
+    &[aria-expanded="true"]:before {
+        content: "\f07c";
+    }
+    &.emptybranch:before {
+        content: "\f114";
+    }
+    img.smallicon.navicon {
+        display: none;
+    }
+}
+
+.dir-ltr .tree_item.branch:before {
+    margin-right: 5px;
+}
+
+.dir-rtl .tree_item.branch:before {
+    margin-left: 5px;
+}
+
+.dir-ltr .tree_item.branch {
+    &:before {
+        margin-right: 5px;
+    }
+    &.emptybranch:before {
+        margin-right: 5px;
+    }
+}
+
+.dir-rtl .tree_item.branch {
+    &:before {
+        margin-left: 5px;
+    }
+    &.emptybranch:before {
+        margin-left: 5px;
+    }
+}
+
+.block_navigation.block {
+    li.type_user > .tree_item.branch:before {
+        content: "\f007";
+    }
+
+    li.type_unknown.depth_1 > .tree_item.branch:before {
+      content: "\f015";
+    }
+}
+
+.block_navigation.block .block_tree .tree_item {
+    &.hasicon .item-content-wrap {
+        display: inline !important;
+    }
+}
+
+.dir-ltr .block_navigation.block .block_tree .tree_item {
+    &.branch {
+        padding-left: 0;
+    }
+}
+
+.dir-rtl .block_navigation.block .block_tree .tree_item {
+    &.branch {
+        padding-right: 0;
+    }
+}
+
+.dir-ltr.jsenabled .block_settings .block_tree .tree_item {
+    padding-left: 0 !important;
+}
+.dir-rtl.jsenabled .block_settings .block_tree .tree_item {
+    padding-right: 0 !important;
+}
+.jsenabled .block_settings .block_tree .tree_item.branch.loadingbranch:before {
+    font-family: FontAwesome;
+    content: "\f110";
+    -moz-animation: essential-block-spin 0.8s infinite ease-in-out;
+    -webkit-animation: essential-block-spin 0.8s infinite ease-in-out;
+    -o-animation: essential-block-spin 0.8s infinite ease-in-out;
+    animation: essential-block-spin 0.8s infinite ease-in-out;
+}
+
+@-moz-keyframes essential-block-spin {
+    0% {
+        -moz-transform: rotate(0deg);
+        transform: rotate(0deg);
+    }
+    100% {
+        -moz-transform: rotate(359deg);
+        transform: rotate(359deg);
+    }
+}
+
+@-webkit-keyframes essential-block-spin {
+    0% {
+        -webkit-transform: rotate(0deg);
+        transform: rotate(0deg);
+    }
+    100% {
+        -webkit-transform: rotate(359deg);
+        transform: rotate(359deg);
+    }
+}
+
+@-o-keyframes essential-block-spin {
+    0% {
+        -o-transform: rotate(0deg);
+        -webkit-transform: rotate(0deg);
+        transform: rotate(0deg);
+    }
+    100% {
+        -o-transform: rotate(359deg);
+        -webkit-transform: rotate(359deg);
+        transform: rotate(359deg);
+    }
+}
+
+@keyframes essential-block-spin {
+    0% {
+        -webkit-transform: rotate(0deg);
+        transform: rotate(0deg);
+    }
+    100% {
+        -webkit-transform: rotate(359deg);
+        transform: rotate(359deg);
+    }
+}
+
+.hidden-blocks {
+    background: #ffe1e1;
+    padding: 10px;
+    border: 1px solid #EEE;
+    border-radius: 5px;
+    margin: 10px 0 10px 0;
+
+    h4 {
+        padding-bottom: 8px;
+        margin-bottom: 8px;
+        border-bottom: 1px solid #ccc;
+        margin-top: 0;
+        color: #ff6666;
+    }
+
+    .block {
+        width: 250px;
+    }
+}
+
+.dir-ltr .hidden-blocks {
+    h4 {
+        text-align: left;
+    }
+
+    .block {
+        float: right;
+        margin-left: 10px;
+    }
+}
+
+.dir-rtl .hidden-blocks {
+    h4 {
+        text-align: right;
+    }
+
+    .block {
+        float: left;
+        margin-right: 10px;
+    }
+}
+
+.block .header .title h2,
+.block h3.main {
+    font-size: 1.15em;
+    line-height: 26px;
+    margin-bottom: 5px;
+    text-transform: uppercase;
+    font-weight: normal;
+    padding: 0;
+}
+
+.block .header .title {
+    border-bottom: 1px solid #EEE;
+    h2 {
+        display: inline;
+    }
+
+    .@{fa-css-prefix} {
+        font-size: 1.65em;
+        display: inline;
+    }
+}
+
+.dir-ltr .block .header .title {
+    padding-left: 0;
+
+    .@{fa-css-prefix} {
+        margin-right: .3em;
+    }
+}
+
+.dir-rtl .block .header .title {
+    padding-right: 0;
+
+    .@{fa-css-prefix} {
+        margin-left: .3em;
+        float: right;
+    }
+}
+
+.block_iconic_html .header .title h2:before {
+    content: none;
+}
+.dir-ltr .block_iconic_html .header .title h2:before {
+    padding-right: 0;
+}
+.dir-rtl .block_iconic_html .header .title h2:before {
+    padding-left: 0;
+}
+.block.block_iconic_html .header .title h2 .@{fa-css-prefix} {
+    &:before {
+        font-size: 1.65em;
+    }
+}
+
+.dir-ltr .block.block_iconic_html .header .title h2 .@{fa-css-prefix} {
+    padding-right: 0 !important;
+    &:before {
+        margin-right: .3em;
+    }
+}
+.dir-rtl .block.block_iconic_html .header .title h2 .@{fa-css-prefix} {
+    padding-left: 0 !important;
+    &:before {
+        margin-left: .3em;
+    }
+}
+
+.block.hidden .header .title h2,
+.block.hidden h3.main,
+.block.hidden .header .title {
+    border-bottom: none;
+    margin-bottom: 0;
+}
+
+.dir-ltr .block_quiz_results {
+    text-align: left;
+}
+.dir-rtl .block_quiz_results {
+    text-align: right;
+}
+
+.block_rss_client {
+    .description {
+        height: auto;
+        padding-bottom: 0;
+        margin-bottom: 0;
+    }
+    .content {
+        padding: 0;
+        a:hover {
+            text-decoration: none;
+        }
+        li {
+            border-bottom: 1px dotted #E1E1E1;
+            padding: 5px;
+            &:hover {
+                background: #f9f9f9;
+            }
+        }
+    }
+    .footer {
+        text-align: right;
+        padding-top: 5px;
+        a {
+            color: @white;
+            width: 100px;
+            padding: 4px 12px;
+            font-size: 1em;
+            border-radius: 5px;
+            &:hover {
+                color: inherit;
+            }
+        }
+    }
+}
+.dir-rtl .block_rss_client {
+    .footer {
+        text-align: left;
+    }
+}
+
+/* @group Calendar Block */
+.block .minicalendar {
+    th, td {
+        word-break: break-word;
+    }
+}
+/* @end */
+
+/* @group Logged in User Block */
+.block_myprofile {
+    .content {
+        padding: 5px;
+        text-align: center;
+        min-height: 80px;
+        img.profilepicture {
+            width: 70px;
+            height: 70px;
+            padding: 3px;
+            margin-bottom: 5px;
+            float: left;
+        }
+    }
+}
+.dir-rtl .block_myprofile {
+    .content {
+        img.profilepicture {
+            float: right;
+        }
+    }
+}
+
+/* @end */
+
+/* @group Login Block */
+
+.block_login {
+    .content {
+        .footer {
+            padding: 0;
+            div {
+                margin: 0;
+                width: 90%;
+                a {
+                    background: darkslategray;
+                    &:hover {
+                        background: red;
+                    }
+                }
+            }
+            a {
+                color: @white;
+                padding: 0;
+                margin: 0;
+                font-size: 1em;
+                white-space: nowrap;
+            }
+        }
+        form input[type="submit"],
+        .footer a {
+            background-image: none;
+            border-color: #30ADD1;
+            border-image: none;
+            border-radius: 4px;
+            border-style: solid;
+            border-width: 1px;
+            box-shadow: none;
+            color: @white;
+            cursor: pointer;
+            display: inline-block;
+            font-size: 13px;
+            line-height: 20px;
+            padding: 4px 12px;
+            text-align: center;
+            text-shadow: none;
+            vertical-align: middle;
+            margin: 10px 0;
+            width: 100%;
+        }
+        form input[type="submit"]:hover,
+        .footer a:hover {
+            text-decoration: none;
+            background: green;
+        }
+    }
+    input#login_username,
+    input#login_password {
+        width: 95%;
+    }
+    .username label:before {
+        content: "\f007";
+        font-family: FontAwesome;
+    }
+    .password label:before {
+        content: "\f084";
+        font-family: FontAwesome;
+    }
+}
+.dir-ltr .block_login {
+    .username label:before {
+        margin-right: 5px;
+    }
+    .password label:before {
+        margin-right: 5px;
+    }
+}
+.dir-rtl .block_login {
+    .username label:before {
+        margin-left: 5px;
+    }
+    .password label:before {
+        margin-left: 5px;
+    }
+}
+/* @end */
+
+/* @group Footer blocks - copied from Shoelace */
+
+.footer-fluid-span (@columns, @fluidGridColumnWidth, @fluidGridGutterWidth) {
+    width: (@fluidGridColumnWidth * @columns) + (@fluidGridGutterWidth * (@columns - 1));
+    *width: (@fluidGridColumnWidth * @columns) + (@fluidGridGutterWidth * (@columns - 1)) - (.5 / @gridRowWidth * 100 * 1%);
+}
+
+aside.footer-edit .block {
+    .footer-fluid-span(3, @fluidGridColumnWidth, @fluidGridGutterWidth);
+    display: block;
+    min-height: 240px;
+    max-height: 240px;
+    overflow-y: scroll;
+    .box-sizing(border-box);
+}
+.dir-ltr aside.footer-edit .block {
+    float: left;
+    margin-left: @fluidGridGutterWidth;
+}
+.dir-rtl aside.footer-edit .block {
+    float: right;
+    margin-right: @fluidGridGutterWidth;
+}
+
+// MDL-44074.
+@media (min-width: 768px) and (max-width: 979px) {
+    aside.footer-edit .block {
+        .footer-fluid-span(3, @fluidGridColumnWidth768, @fluidGridGutterWidth768);
+    }
+    .dir-ltr aside.footer-edit .block {
+        margin-left: @fluidGridGutterWidth768;
+    }
+    .dir-rtl aside.footer-edit .block {
+        margin-right: @fluidGridGutterWidth768;
+    }
+}
+
+@media (min-width: 1200px) {
+    aside.footer-edit .block {
+        .footer-fluid-span(3, @fluidGridColumnWidth1200, @fluidGridGutterWidth1200);
+    }
+    .dir-ltr aside.footer-edit .block {
+        margin-left: @fluidGridGutterWidth1200;
+    }
+    .dir-rtl aside.footer-edit .block {
+        margin-right: @fluidGridGutterWidth1200;
+    }
+}
+
+// Eliminates need for 'desktop-first-column' but does not work in IE8.
+// Info on: http://www.w3schools.com/cssref/sel_first-of-type.asp
+.dir-ltr aside.footer-blocks div.row-fluid div.block:first-of-type {
+    margin-left: 0;
+}
+.dir-rtl aside.footer-blocks div.row-fluid div.block:first-of-type {
+    margin-right: 0;
+}
+
+// Support multiple rows when editing otherwise above works, see: http://www.w3schools.com/cssref/sel_nth-of-type.asp
+.footer-nth(@index) {
+    .dir-ltr aside.footer-edit div.block:nth-of-type(@{index}) {
+        margin-left: 0;
+    }
+    .dir-rtl aside.footer-edit div.block:nth-of-type(@{index}) {
+        margin-right: 0;
+    }
+}
+
+.footer-nthX (@index) when (@index > 0) {
+    .footer-nth(@index);
+    .footer-nthX(@index - 4);
+}
+
+.footer-nthX(37); // Ten rows.
+
+.dir-rtl aside.footer-blocks .block {
+    float: right;
+}
+/* @end */
+
+/* @end */

@@ -1,0 +1,88 @@
+/* @group Blocks */
+@import "../../fontawesome/variables";
+
+.block {
+    .icon {
+        color: ~"[[setting:themeiconcolor]]";
+    }
+    .moodle-core-dragdrop-draghandle {
+        &:before {
+            color: ~"[[setting:themeiconcolor]]";
+        }
+    }
+    .menu {
+        a.menu-action {
+            color: ~"[[setting:themeurlcolor]]";
+        }
+        a.menu-action:hover {
+            color: ~"[[setting:themehovercolor]]";
+        }
+    }
+}
+
+.block .header .title h2,
+.block h3.main {
+    color: ~"[[setting:themetextcolor]]";
+}
+
+p.tree_item {
+    &.leaf a {
+        > .@{fa-css-prefix} {
+            color: ~"[[setting:themeiconcolor]]";
+        }
+        &:hover, &:focus {
+            color: ~"[[setting:themehovercolor]]";
+            > .@{fa-css-prefix} {
+                color: inherit;
+            }
+        }
+    }
+    &.branch {
+        color: ~"[[setting:themeurlcolor]]";
+        &:before {
+            color: ~"[[setting:themeiconcolor]]";
+        }
+        &:hover, &:focus {
+            color: ~"[[setting:themehovercolor]]";
+            &:before {
+                color: inherit;
+            }
+            a {
+                color: inherit;
+            }
+        }
+        &.emptybranch {
+            &:before {
+                color: ~"[[setting:themeiconcolor]]";
+            }
+            &:hover, &:focus {
+                &:before {
+                    color: ~"[[setting:themehovercolor]]";
+                }
+            }
+        }
+    }
+}
+
+.collapsed .tree_item.branch:before {
+    color: ~"[[setting:themeiconcolor]]";
+}
+
+.editing {
+    // Using 'used' instead of 'empty' as body class will be 'used' as soon as D&D starts.
+    &.used-region-side-pre #block-region-side-pre,
+    &.used-region-side-post #block-region-side-post,
+    &.used-region-home-left #block-region-home-left,
+    &.used-region-home-middle #block-region-home-middle,
+    &.used-region-home-right #block-region-home-right,
+    &.used-region-hidden-dock #block-region-hidden-dock {
+        border-color: ~"[[setting:themecolor]]";
+    }
+    &.used-region-footer-left #block-region-footer-left
+    &.used-region-footer-middle #block-region-footer-middle,
+    &.used-region-footer-right #block-region-footer-right {
+        border-color: ~"[[setting:footertextcolor]]";
+    }
+}
+
+/* @end */
