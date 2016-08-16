@@ -26,7 +26,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$module->version = 2016080900; // The current module version (Date: YYYYMMDDXX)
-$module->requires = 2013110500; // Requires this Moodle version
-$module->component = 'mod_registerattendance'; // Full name of the plugin (used for diagnostics)
-$module->cron = 0;
+$plugin->version = 2016080900; // The current module version (Date: YYYYMMDDXX)
+$plugin->requires = 2013110500; // Requires this Moodle version
+$plugin->component = 'mod_registerattendance'; // Full name of the plugin (used for diagnostics)
+$plugin->cron = 0;
