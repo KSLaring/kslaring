@@ -105,16 +105,16 @@ class block_frikomport extends block_base {
             'M.block_navigation.init_add_tree', array($arguments));
     }
 
-    function get_required_javascript() {
-        global $PAGE;
-        $adminnode = $PAGE->settingsnav->find('siteadministration', navigation_node::TYPE_SITE_ADMIN);
-        parent::get_required_javascript();
-        $arguments = array(
-            'instanceid' => $this->instance->id,
-            'adminnodeid' => $adminnode ? $adminnode->id : null
-        );
-        $this->page->requires->js_call_amd('block_frikomport/frikomportblock', 'init', $arguments);
-    }
+    //function get_required_javascript() {
+    //    global $PAGE;
+    //    $adminnode = $PAGE->settingsnav->find('siteadministration', navigation_node::TYPE_SITE_ADMIN);
+    //    parent::get_required_javascript();
+    //    $arguments = array(
+    //        'instanceid' => $this->instance->id,
+    //        'adminnodeid' => $adminnode ? $adminnode->id : null
+    //    );
+    //    $this->page->requires->js_call_amd('block_frikomport/frikomportblock', 'init', $arguments);
+    //}
 
 
     /**
