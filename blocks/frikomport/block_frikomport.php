@@ -94,7 +94,7 @@ class block_frikomport extends block_base {
                 $this->config->enabledock == 'yes'));
     }
 
-    function get_required_javascript() {
+    function get_required_javascript_old() {
         parent::get_required_javascript();
         $arguments = array(
             'id' => $this->instance->id,
@@ -104,6 +104,18 @@ class block_frikomport extends block_base {
         $this->page->requires->yui_module('moodle-block_navigation-navigation',
             'M.block_navigation.init_add_tree', array($arguments));
     }
+
+    function get_required_javascript() {
+        global $PAGE;
+        $adminnode = $PAGE->settingsnav->find('siteadministration', navigation_node::TYPE_SITE_ADMIN);
+        parent::get_required_javascript();
+        $arguments = array(
+            'instanceid' => $this->instance->id,
+            'adminnodeid' => $adminnode ? $adminnode->id : null
+        );
+        $this->page->requires->js_call_amd('block_frikomport/frikomportblock', 'init', $arguments);
+    }
+
 
     /**
      * Gets the content for this block by grabbing it from $this->page
