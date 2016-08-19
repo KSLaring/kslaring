@@ -27,7 +27,7 @@
  require_once('enrol_waitinglist_method_namedbulk.php');
  require_once('enrol_waitinglist_method_selfconfirmed.php');
  require_once('enrol_waitinglist_method_paypal.php');
-
+ require_once('enrol_waitinglist_method_manual.php');
  
 $string['alterstatus'] = 'Alter status';
 $string['altertimeend'] = 'Alter end time';

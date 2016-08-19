@@ -58,7 +58,7 @@ class enrol_waitinglist_plugin extends enrol_plugin {
 	
 	public static function get_method_names(){
 		//return array('self','unnamedbulk','namedbulk','selfconfirmation','paypal');
-		return array('self','unnamedbulk');
+		return array('self','unnamedbulk','manual');
 	}
 
     public function roles_protected() {
@@ -127,7 +127,16 @@ class enrol_waitinglist_plugin extends enrol_plugin {
         	//methods
         	$managelink=new moodle_url('/enrol/waitinglist/managemethods.php', array('id'=>$instance->courseid));
         	$waitinglistnode->add(get_string('managemethods','enrol_waitinglist'), $managelink, navigation_node::TYPE_SETTING);
-        	//queue
+            /**
+             * @updateDate  18/08/2016
+             * @author      eFaktor     (fbv)
+             * 
+             * Description
+             * Add option to enrol users manually
+             */
+            $managelink = new moodle_url('/enrol/waitinglist/managemanual.php',array('id' => $instance->id));
+            $waitinglistnode->add(get_string('manual_manage','enrol_waitinglist'),$managelink,navigation_node::TYPE_SETTING);
+            //queue
         	$managelink=new moodle_url('/enrol/waitinglist/managequeue.php', array('id'=>$instance->courseid));
         	$waitinglistnode->add(get_string('managequeue','enrol_waitinglist'), $managelink, navigation_node::TYPE_SETTING);
         	//queue
