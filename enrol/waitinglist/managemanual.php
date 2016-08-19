@@ -17,13 +17,19 @@ require_once('classes/method/manual/managemanual_form.php');
 require_once('classes/method/manual/enrolmethodmanual.php');
 
 /* PARAMS   */
-$instanceId     = required_param('id',PARAM_INT);
+$instanceId     = optional_param('id',0,PARAM_INT);
+$courseId       = optional_param('co',0,PARAM_INT);
 $addSearch      = optional_param('addselect_searchtext', '', PARAM_RAW);
 $removeSearch   = optional_param('removeselect_searchtext', '', PARAM_RAW);
-//$manualClass    = 'enrol_waitinglist\method\manual\enrolmethodmanual';
 
-$instance   = $DB->get_record('enrol', array('id' => $instanceId));
-$course     = $DB->get_record('course',array('id' => $instance->courseid), '*', MUST_EXIST);
+if ($instanceId) {
+    $instance   = $DB->get_record('enrol', array('id' => $instanceId));
+    $course     = $DB->get_record('course',array('id' => $instance->courseid), '*', MUST_EXIST);
+}else if ($courseId) {
+    $course     = $DB->get_record('course',array('id' => $courseId), '*', MUST_EXIST);
+    $instance   = $DB->get_record('enrol', array('courseid' => $courseId,'enrol' => 'waitinglist'));
+}
+
 $context    = context_course::instance($course->id, MUST_EXIST);
 $url        = new moodle_url('/enrol/waitinglist/managemanual.php',array('id' => $instanceId));
 $return     = new moodle_url('/enrol/instances.php', array('id'=>$course->id));
