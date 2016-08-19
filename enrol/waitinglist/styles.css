@@ -168,3 +168,144 @@ a.lnk_disabled {
 .block_approval .block_requests .rejected {
     cursor: default;
 }
+.userselector .sel_users_left {
+    width:40%;
+    float:left;
+    display: inline-block;
+}
+
+.userselector .sel_users_right {
+    width:40%;
+    display: inline-block;
+}
+
+.userselector .sel_users_buttons {
+    min-width:15%;
+    float:left;
+    margin-right: 20px;
+    display: inline-block;
+}
+
+.userselector .sel_users_left select,
+.userselector .sel_users_right select {
+    width: 90%;
+}
+
+.userselector .sel_users_left label,
+.userselector .sel_users_right label {
+    text-align: left;
+    text-indent: 5px;
+    font-weight: bold;
+}
+
+#fitem_removeselect div.felement.fselect,
+#fitem_id_removeselect div.felement.fselect,
+#fitem_removeselect div.felement.fselectgroups,
+#fitem_addselect div.felement.fselect,
+#fitem_id_addselect div.felement.fselect,
+#fitem_addselect div.felement.fselectgroups,
+#fitem_id_add_sel div.felement.fsubmit,
+#fitem_id_remove_sel div.felement.fsubmit {
+    margin-left: 5px;
+}
+
+#fitem_id_add_sel div.felement.fsubmit {
+    margin-top:25px;
+}
+#fitem_removeselect div.fitemtitle,
+#fitem_id_removeselect div.fitemtitle,
+#fitem_addselect div.fitemtitle,
+#fitem_id_addselect div.fitemtitle,
+#fitem_id_add_sel div.fitemtitle,
+#fitem_id_remove_sel div.fitemtitle{
+    display:none;
+}
+
+#fitem_removeselect_searchtext div.fitemtitle,
+#fitem_addselect_searchtext div.fitemtitle {
+    text-align: left;
+    margin-left: 5px;
+    width: 70px;
+}
+
+#fitem_removeselect_searchtext div.felement.ftext,
+#fitem_addselect_searchtext div.felement.ftext {
+    margin-left: 0px;
+}
+
+input#id_add_sel,
+input#id_remove_sel {
+    width: 110px;
+}
+
+@media (max-width: 767px) {
+    .userselector .sel_users_left {
+        float: none;
+        width: 100%;
+        display: block;
+    }
+    .userselector .sel_users_right {
+        float: none;
+        width: 100%;
+        display: block;
+    }
+    .userselector .sel_users_buttons {
+        float: none;
+        width: 100%;
+        display: block;
+    }
+    .userselector .sel_users_left select {
+        width: 100%;
+    }
+    .userselector .sel_users_right select {
+        width: 100%;
+    }
+}
+
+@media (min-width: 850px) and (max-width: 978px) {
+    .userselector .sel_users_left {
+        float: none;
+        width: 100%;
+        display: block;
+    }
+    .userselector .sel_users_right {
+        float: none;
+        width: 100%;
+        display: block;
+    }
+    .userselector .sel_users_buttons {
+        float: none;
+        width: 100%;
+        display: block;
+    }
+    .userselector .sel_users_left select {
+        width: 100%;
+    }
+    .userselector .sel_users_right select {
+        width: 100%;
+    }
+}
+
+@media (min-width: 767px) and (max-width: 849px) {
+    .userselector .sel_users_left {
+        float: none;
+        width: 100%;
+        display: block;
+    }
+    .userselector .sel_users_right {
+        float: none;
+        width: 100%;
+        display: block;
+    }
+    .userselector .sel_users_buttons{
+        float: none;
+        width: 100%;
+        display: block;
+    }
+    .userselector .sel_users_left select {
+        width: 100%;
+    }
+    .userselector .sel_users_right select {
+        width: 100%;
+    }
+}

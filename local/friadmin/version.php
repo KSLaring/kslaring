@@ -40,5 +40,5 @@ $plugin->component  = 'local_friadmin'; /* Full name of the plugin (used for dia
 /* Dependencies */
 $plugin->dependencies = array('block_frikomport'        => 2016081700,
                               'block_fri_course_list'   => 2016030700,
-                              'enrol_waitinglist'       => 2016042400 
+                              'enrol_waitinglist'       => 2016081700 
                              );
