@@ -190,9 +190,8 @@ class KS_ADFS {
                 }//if_no_error
             }else {
                 $aux = (array)$response;
-
-                //$response = json_decode($response);
-                echo implode(',',array_keys($aux));
+                echo "Error: " . $aux['error'] . "</br>";
+                echo 'Message: ' . $aux['msg_error'] . '</br>';
             }
 
 
