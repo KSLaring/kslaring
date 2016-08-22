@@ -101,6 +101,9 @@ define('SAML_INTERNAL', 1);
 	    // Not valid session. Ship user off to Identity Provider
         unset($USER);
         try {
+            $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' START SAML AUTH . ' . "\n";
+            error_log($dbLog, 3, $CFG->dataroot . "/Testing PAQUI.log");
+            
             $as = new SimpleSAML_Auth_Simple($saml_param->sp_source);
             $as->requireAuth();
         } catch (Exception $e) {
