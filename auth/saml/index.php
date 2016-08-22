@@ -11,6 +11,16 @@ define('SAML_INTERNAL', 1);
         if (isset($_GET['directlink'])) {
             $SESSION->directlink = $_GET['directlink'];
         }
+
+        $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' START SMAL INDEX PAGE. ' . "\n";
+
+        if (isset($_GET['directlink'])) {
+            $SESSION->directlink = $_GET['directlink'];
+            $dbLog .= 'DIRECTLINK --> ' . $SESSION->directlink . '\n\n';
+        }
+
+        error_log($dbLog, 3, $CFG->dataroot . "/Testing PAQUI.log");
+
         global $CFG;
         // We read saml parameters from a config file instead from the database
         // due we can not operate with the moodle database without load all
