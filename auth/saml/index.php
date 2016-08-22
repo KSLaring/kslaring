@@ -226,7 +226,7 @@ define('SAML_INTERNAL', 1);
 
             try {
                 /* Testing */
-                if ($USER->username != 'ADM1\gb250') {
+                if ($USER->username != 'gb250') {
                     $index  = 0;
                     $modlnk = null;
                     $modid  = null;
