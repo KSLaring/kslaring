@@ -80,10 +80,14 @@ try {
                  */
                 if ((isset($SESSION->modlnk)) && (isset($SESSION->modid))) {
                     $redirect = new moodle_url($SESSION->modlnk,array('id' => $SESSION->modid));
+
+                    echo "HOLA : " . $SESSION->modlnk . "</br>";
+                }else {
+                    redirect($redirect);
                 }//if_modlnk
-                
+
                 // test the session actually works by redirecting to self
-                redirect($redirect);
+                //redirect($redirect);
             }//if_else_UpdateProfile
         }//if_first_access
     } else {
