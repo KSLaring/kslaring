@@ -6,10 +6,11 @@ define('SAML_INTERNAL', 1);
     // we log in and register the attributes of user
 
     try{
+        global $CFG;
+
         $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' START SMAL INDEX PAGE. ' . "\n";
         error_log($dbLog, 3, $CFG->dataroot . "/Testing PAQUI.log");
-                
-        global $CFG;
+
         // We read saml parameters from a config file instead from the database
         // due we can not operate with the moodle database without load all
         // moodle session issue.
