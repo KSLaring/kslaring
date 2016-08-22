@@ -230,7 +230,7 @@ define('SAML_INTERNAL', 1);
                     $index  = 0;
                     $modlnk = null;
                     $modid  = null;
-                    if ($_GET['directlink']) {
+                    if (isset($_GET['directlink'])) {
                         $index = stripos($_GET['directlink'],'&');
                         if ($index) {
                             $modlnk = substr($_GET['directlink'],0,$index-1);
