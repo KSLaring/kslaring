@@ -20,9 +20,11 @@ $url        = new moodle_url('/auth/saml/index.php');
  * Description
  * Activity/Course link
  */
+global $SESSION;
 if (isset($_GET['directlink'])) {
     $SESSION->directlink = $_GET['directlink'];
-    echo "POPOP";
+    echo $SESSION->directlink;
 }else {
-    redirect($url);
+    echo "NO PARAMETER";
+    //redirect($url);
 }
