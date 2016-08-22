@@ -113,6 +113,23 @@ echo '</center>';
               <input type="password" name="password" id="password" size="15" value="" <?php echo $autocomplete; ?> />
               <input type="submit" id="loginbtn" value="<?php print_string("login") ?>" />
             </div>
+              
+              <?php
+                global $SESSION;
+                if (isset($SESSION->directlink)) {
+                    $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' START SMAL LOGIN FORM PAGE. ' . "\n";
+
+
+                    if (isset( $SESSION->directlink )) {
+                        $dbLog .= ' 111 ' . '\n';
+                        $dbLog .= 'DIRECTLINK --> ' . $SESSION->directlink . '\n\n';
+                    }else {
+                        $dbLog .= ' 222 ' . '\n';
+                    }
+
+                    error_log($dbLog, 3, $CFG->dataroot . "/Testing PAQUI.log");
+                }
+              ?>
           </div>
             <div class="clearer"><!-- --></div>
               <?php if (isset($CFG->rememberusername) and $CFG->rememberusername == 2) { ?>

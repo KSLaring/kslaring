@@ -23,11 +23,6 @@ $url        = new moodle_url('/auth/saml/index.php');
 global $SESSION,$CFG;
 if (isset($_GET['directlink'])) {
     $SESSION->directlink = $_GET['directlink'];
-    $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' START DIRECT APGE. ' . "\n";
-
-    $dbLog .= ' 111 ' . '\n';
-    $dbLog .= 'DIRECTLINK --> ' . $SESSION->directlink . ' - ' . $_GET['directlink'] . '\n\n';
-    error_log($dbLog, 3, $CFG->dataroot . "/Testing PAQUI.log");
 }
 
 redirect($url);
