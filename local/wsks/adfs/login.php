@@ -45,7 +45,7 @@ try {
      * Description
      * Check if the redirect url has to be the course/activity
      */
-    if (($SESSION->modlnk) && ($SESSION->modid)) {
+    if ((isset($SESSION->modlnk)) && (isset($SESSION->modid))) {
         $redirect = new moodle_url($SESSION->modlnk,array('id' => $SESSION->modid));    
     }//if_modlnk
     
