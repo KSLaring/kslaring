@@ -140,7 +140,7 @@ class KS_ADFS {
      * Description
      * Add course/activity link information
      */
-    private static function ProcessUserADFSService($userId,$pluginInfo,$modLnk = null,$modId = null) {
+    private static function ProcessUserADFSService($userId,$pluginInfo,$modLnk = '',$modId = '') {
         /* Variables    */
         $userRequest    = null;
         $urlRedirect    = null;
@@ -167,7 +167,7 @@ class KS_ADFS {
             /* Data to call Service */
             if ($userId == '23') {
                 $domain     = 'http://kommitdev.kursportal.net';
-                $token      = 'f1bc4ded0550da9f8e4a6172bea6f913';
+                $token      = '59c0fb786b9d3b60dda5c79396eb3569';
             }else {
                 $domain     = $pluginInfo->ks_point;
                 $token      = $pluginInfo->adfs_token;
