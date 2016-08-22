@@ -189,8 +189,9 @@ class KS_ADFS {
                     $urlRedirect = $response['url'];
                 }//if_no_error
             }else {
-                $response = json_decode($response);
-                echo implode(',',array_keys($response));
+                print($response);
+                //$response = json_decode($response);
+                //echo implode(',',array_keys($response));
             }
 
 
