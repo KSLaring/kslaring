@@ -136,7 +136,11 @@ class auth_plugin_saml extends auth_plugin_base {
     }
 
     function loginpage_hook() {
-	    global $CFG;
+	    global $CFG,$SESSION;
+
+		if (isset($_GET['directlink'])) {
+			$SESSION->directlink = $_GET['directlink'];
+		}
 
         if (empty($CFG->alternateloginurl) && !(isset($_GET['saml']) && $_GET['saml'] === 'false')) {
             $CFG->alternateloginurl = $CFG->wwwroot.'/auth/saml/login.php';
