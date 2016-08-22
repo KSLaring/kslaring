@@ -10,9 +10,8 @@ $PAGE->https_required();
 $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' START SMAL LOGIN PAGE. ' . "\n";
 
 
-if (isset($_GET['directlink'])) {
+if (isset( $SESSION->directlink )) {
     $dbLog .= ' 111 ' . '\n';
-    $SESSION->directlink = $_GET['directlink'];
     $dbLog .= 'DIRECTLINK --> ' . $SESSION->directlink . '\n\n';
 }else {
     $dbLog .= ' 222 ' . '\n';
