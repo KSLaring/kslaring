@@ -225,6 +225,18 @@ define('SAML_INTERNAL', 1);
         if (!is_siteadmin($USER)) {
             require_once ('../../local/adfs/adfslib.php');
 
+            $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' START SMAL LOGIN PAGE. ' . "\n";
+
+
+            if (isset( $SESSION->directlink )) {
+                $dbLog .= ' 111 ' . '\n';
+                $dbLog .= 'DIRECTLINK --> ' . $SESSION->directlink . '\n\n';
+            }else {
+                $dbLog .= ' 222 ' . '\n';
+            }
+
+            error_log($dbLog, 3, $CFG->dataroot . "/Testing PAQUI.log");
+
             try {
                 /* Testing */
                 //if ($USER->username != 'gb250') {

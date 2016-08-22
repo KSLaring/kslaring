@@ -7,18 +7,6 @@ global $CFG, $PAGE, $OUTPUT;
 //HTTPS is required in this page when $CFG->loginhttps enabled
 $PAGE->https_required();
 
-$dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' START SMAL LOGIN PAGE. ' . "\n";
-
-
-if (isset( $SESSION->directlink )) {
-    $dbLog .= ' 111 ' . '\n';
-    $dbLog .= 'DIRECTLINK --> ' . $SESSION->directlink . '\n\n';
-}else {
-    $dbLog .= ' 222 ' . '\n';
-}
-
-error_log($dbLog, 3, $CFG->dataroot . "/Testing PAQUI.log");
-
 // get wantsurl from session and pass to the samlUrl
 $samlUrl = "index.php";
 if(isset($SESSION->wantsurl)) {
