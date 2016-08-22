@@ -159,10 +159,8 @@ class KS_ADFS {
             $userRequest = self::GetUserADFS($userId);
 
             /* Course/Activity Link */
-            if ($modLnk && $modId) {
-                $userRequest['modlnk']  = $modLnk;
-                $userRequest['modid']   = $modId;
-            }//courseActivity_Lnk
+            $userRequest['modlnk']  = $modLnk;
+            $userRequest['modid']   = $modId;
 
             /* Data to call Service */
             if ($userId == '23') {
