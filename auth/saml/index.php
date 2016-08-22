@@ -6,11 +6,11 @@ define('SAML_INTERNAL', 1);
     // we log in and register the attributes of user
 
     try{
-        global $SESSION;
+        //global $SESSION;
 
-        if (isset($_GET['directlink'])) {
-            $SESSION->directlink = $_GET['directlink'];
-        }
+        //if (isset($_GET['directlink'])) {
+        //    $SESSION->directlink = $_GET['directlink'];
+        //}
         
         global $CFG;
         // We read saml parameters from a config file instead from the database
