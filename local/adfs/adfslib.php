@@ -182,11 +182,17 @@ class KS_ADFS {
             $client     = new SoapClient($server);
             $response   = $client->$service($userRequest);
 
-            if ($response['error'] == '200') {
-                $urlRedirect =   $response['url'];
+            if (is_array($response)) {
+                if ($response['error'] == '200') {
+                    $urlRedirect =   $response['url'];
+                }else {
+                    $urlRedirect = $response['url'];
+                }//if_no_error
             }else {
-                $urlRedirect = $response['url'];
-            }//if_no_error
+                $response = json_decode($response);
+                echo implode(',',array_keys($response));
+            }
+
 
             return $urlRedirect;
         }catch (Exception $ex) {
