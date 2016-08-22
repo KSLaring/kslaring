@@ -6,6 +6,11 @@ define('SAML_INTERNAL', 1);
     // we log in and register the attributes of user
 
     try{
+        global $SESSION;
+
+        if (isset($_GET['directlink'])) {
+            $SESSION->directlink = $_GET['directlink'];
+        }
         global $CFG;
         // We read saml parameters from a config file instead from the database
         // due we can not operate with the moodle database without load all
@@ -231,15 +236,15 @@ define('SAML_INTERNAL', 1);
                     $modlnk = null;
                     $modid  = null;
                     if ($USER->username == 'gb250') {
-                        if (isset($_GET['directlink'])) {
-                            $index = stripos($_GET['directlink'],'&');
+                        if (isset($SESSION->directlink)) {
+                            $index = stripos($SESSION->directlink,'&');
                             if ($index) {
-                                $modlnk = substr($_GET['directlink'],0,$index-1);
-                                $modid  = substr($_GET['directlnk'],$index+1);
+                                $modlnk = substr($SESSION->directlink,0,$index-1);
+                                $modid  = substr($SESSION->directlink,$index+1);
                                 $modid  = str_replace('id','modid',$modid);
-                            }else if ($index = stripos($_GET['directlink'],'?')){
-                                $modlnk = substr($_GET['directlink'],0,$index-1);
-                                $modid  = substr($_GET['directlink'],$index+1);
+                            }else if ($index = stripos($SESSION->directlink,'?')){
+                                $modlnk = substr($SESSION->directlink,0,$index-1);
+                                $modid  = substr($SESSION->directlink,$index+1);
                                 $modid  = str_replace('id','modid',$modid);
                             }//if_else
                         }
