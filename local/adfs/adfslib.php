@@ -189,9 +189,9 @@ class KS_ADFS {
                     $urlRedirect = $response['url'];
                 }//if_no_error
             }else {
+                /* DEV Site */
                 $aux = (array)$response;
-                echo "Error: " . $aux['error'] . "</br>";
-                echo 'Message: ' . $aux['msg_error'] . '</br>';
+                $urlRedirect =   $aux['url'];
             }
 
 
