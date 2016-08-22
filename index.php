@@ -50,7 +50,7 @@
 $url = 'https://bergen.weblogin.no/auth/saml/index.php';
 $url .= '?directlink=http://kommitdev.kursportal.net/mod/page/view.php&id=680';
 
-echo "<a href='" . $url . "'>Testing</a>";
+//echo "<a href='" . $url . "'>Testing</a>";
 
     if ($CFG->forcelogin) {
         require_login();
