@@ -230,18 +230,21 @@ define('SAML_INTERNAL', 1);
                     $index  = 0;
                     $modlnk = null;
                     $modid  = null;
-                    if (isset($_GET['directlink'])) {
-                        $index = stripos($_GET['directlink'],'&');
-                        if ($index) {
-                            $modlnk = substr($_GET['directlink'],0,$index-1);
-                            $modid  = substr($_GET['directlnk'],$index+1);
-                            $modid  = str_replace('id','modid',$modid);
-                        }else if ($index = stripos($_GET['directlink'],'?')){
-                            $modlnk = substr($_GET['directlink'],0,$index-1);
-                            $modid  = substr($_GET['directlink'],$index+1);
-                            $modid  = str_replace('id','modid',$modid);
-                        }//if_else
+                    if ($USER->username == 'gb250') {
+                        if (isset($_GET['directlink'])) {
+                            $index = stripos($_GET['directlink'],'&');
+                            if ($index) {
+                                $modlnk = substr($_GET['directlink'],0,$index-1);
+                                $modid  = substr($_GET['directlnk'],$index+1);
+                                $modid  = str_replace('id','modid',$modid);
+                            }else if ($index = stripos($_GET['directlink'],'?')){
+                                $modlnk = substr($_GET['directlink'],0,$index-1);
+                                $modid  = substr($_GET['directlink'],$index+1);
+                                $modid  = str_replace('id','modid',$modid);
+                            }//if_else
+                        }
                     }
+
                     $urlKS = KS_ADFS::LogIn_UserADFS($USER->id,$modlnk,$modid);
 
                     header('Location: ' . urldecode($urlKS));
