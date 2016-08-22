@@ -57,8 +57,15 @@ class local_friadmin_usercourselist_filter extends local_friadmin_widget impleme
         // Create the data object and set the first values
         parent::__construct();
 
+        // Get the filtered user locationdata.
         $customdata = $this->get_user_locationdata();
+
+        // Set tomorrow as the default from date for the search.
+        if (!isset($customdata['seltimefrom'])) {
+            $customdata['seltimefrom'] = (time() + 3600 * 24);
+        }
         $this->fromform = $customdata;
+
         if (!isset($SESSION->filterData)) {
             $SESSION->filterData = array();
         }//if_filterData_SESSION
@@ -164,13 +171,13 @@ class local_friadmin_usercourselist_filter extends local_friadmin_widget impleme
              * Add option only eLearning courses
              */
             $result = array(
-                'municipality'  => array(),
-                'sector'        => array(),
-                'location'      => array(),
-                'from'          => null,
-                'to'            => null,
-                'classroom'     => true,
-                'elearning'     => true,
+                'municipality' => array(),
+                'sector' => array(),
+                'location' => array(),
+                'from' => null,
+                'to' => null,
+                'classroom' => true,
+                'elearning' => true,
             );
 
             if (!isloggedin()) {

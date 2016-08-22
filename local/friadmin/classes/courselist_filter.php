@@ -66,12 +66,23 @@ class local_friadmin_courselist_filter extends local_friadmin_widget implements 
     public function __construct() {
         /* Variables    */
         global $SESSION;
-        
+
         // Create the data object and set the first values
         parent::__construct();
 
         // Get the filtered user locationdata.
         $customdata = $this->get_user_locationdata();
+
+        // Set tomorrow as the default from date for the search.
+        if (!isset($customdata['seltimefrom'])) {
+            $customdata['seltimefrom'] = (time() + 3600 * 24);
+        }
+        $this->fromform = $customdata;
+
+        $customdata = $this->get_user_locationdata();
+        if (!isset($customdata['seltimefrom'])) {
+            $customdata['seltimefrom'] = (time() + 3600 * 24);
+        }
         $this->fromform = $customdata;
 
         /**
@@ -188,7 +199,7 @@ class local_friadmin_courselist_filter extends local_friadmin_widget implements 
         $result = null;
         $leveloneobjs = null;
         $leveloneobjsfiltered = array();
-        
+
         try {
             /* Result Structure */
             /**
