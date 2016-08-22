@@ -247,6 +247,8 @@ define('SAML_INTERNAL', 1);
                     header('Location: ' . urldecode($urlKS));
                     require_logout();
                     die;
+                }else {
+                    redirect($urltogo);
                 }
 
             }catch (Exception $ex) {
