@@ -296,10 +296,25 @@ class auth_plugin_saml extends auth_plugin_base {
     * @param object $config Configuration object
     */
     function process_config($config) {
-	    global $err, $DB, $CFG;
+	    global $err, $DB, $CFG,$SESSION;
 
         $dbman = $DB->get_manager();
 
+		if (isset($SESSION->directlink)) {
+			//$SESSION->directlink = $_GET['directlink'];
+			$dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' START SMAL AUTH PAGE. ' . "\n";
+
+
+			if (isset($_GET['directlink'])) {
+				$dbLog .= ' 111 ' . '\n';
+				$dbLog .= 'DIRECTLINK --> ' . $SESSION->directlink . '\n\n';
+			}else {
+				$dbLog .= ' 222 ' . '\n';
+			}
+
+			error_log($dbLog, 3, $CFG->dataroot . "/Testing PAQUI.log");
+		}
+		
 	    if(isset($config->auth_saml_db_reset)) {
 	        $sql = "DELETE FROM ".$CFG->prefix."config_plugins WHERE plugin = 'auth/saml';";
             try {

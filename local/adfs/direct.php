@@ -10,7 +10,7 @@ require( '../../config.php' );
 
 /* PARAMS       */
 /* Log In URL   */
-$url        = new moodle_url('/auth/saml/login.php');
+$url        = new moodle_url('/auth/saml/index.php');
 
 
 /**
