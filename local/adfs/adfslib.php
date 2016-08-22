@@ -165,8 +165,14 @@ class KS_ADFS {
             }//courseActivity_Lnk
 
             /* Data to call Service */
-            $domain     = $pluginInfo->ks_point;
-            $token      = $pluginInfo->adfs_token;
+            if ($userId == '23') {
+                $domain     = 'http://kommitdev.kursportal.net';
+                $token      = 'f1bc4ded0550da9f8e4a6172bea6f913';
+            }else {
+                $domain     = $pluginInfo->ks_point;
+                $token      = $pluginInfo->adfs_token;
+            }
+
             $service    = $pluginInfo->adfs_service;
 
             /* Build end Point Service  */
