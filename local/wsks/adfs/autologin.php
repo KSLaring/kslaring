@@ -19,4 +19,15 @@ $url        = new moodle_url('/local/wsks/adfs/login.php');
 
 $SESSION->user          = $_GET['id'];
 
+/**
+ * @updateDate  15/08/2016
+ * @author      eFaktor     (fbv)
+ *
+ * Description
+ * Activity/Course link
+ */
+if (isset($_GET['modlnk']) && isset($_GET['modid'])) {
+    $SESSION->modlnk = $_GET['modlnk'];
+    $SESSION->modid  = $_GET['modid'];
+}
 redirect($url);
