@@ -29,14 +29,24 @@
 
 /* List of handlers. */
 
-$handlers = array (
+//$handlers = array (
 
 /*
  * Course deleted.
 */
-    'course_deleted' => array (
-        'handlerfile'      => '/blocks/rate_course/lib.php', // Where to call.
-        'handlerfunction'  => 'course_delete', // What to call.
-        'schedule'         => 'instant'
-    )
+//    'course_deleted' => array (
+//        'handlerfile'      => '/blocks/rate_course/lib.php', // Where to call.
+//        'handlerfunction'  => 'course_delete', // What to call.
+//        'schedule'         => 'instant'
+//    )
+//);
+
+defined('MOODLE_INTERNAL') || die();
+
+$observers = array (
+    array (
+        'eventname' => '\core\event\course_deleted',
+        'callback'  => 'block_rate_course_observer::delete',
+        'internal'  => 'instant', // This means that we get events only after transaction commit.
+    ),
 );
