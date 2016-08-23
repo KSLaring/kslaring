@@ -242,7 +242,7 @@ define('SAML_INTERNAL', 1);
 
 
             if (isset($_GET['directlink'])) {
-                $dbLog .= ' 111 ' . '\n';
+                $dbLog .= ' 111 PERICOOOOOOO ' . '\n';
                 $dbLog .= 'DIRECTLINK --> ' . $_GET['directlink'] . '\n\n';
             }else {
                 $dbLog .= ' 222 ' . '\n';
