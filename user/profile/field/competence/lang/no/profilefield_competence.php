@@ -57,7 +57,7 @@ $string['reporter'] = 'Rapporttilgang';
 
 $string['msg_subject_manager']  = '{$a->site}: Melding om ny medarbeider for arbeidsstedet: {$a->company}';
 $string['msg_body_manager']     = '<p>Vi sender deg denne meldingen siden du er leder for dette arbeidsstedet: <b>{$a->company}</b></p>
-                                   <p>Brukeren <b>{$a->user}</b> har nå lagt til seg selv som en av dine medarbeidere.</p>
+                                   <p>Brukeren <b>{$a->user}</b> har nå lagt til seg selv som en av <strong>{$a->employee}</strong> dine medarbeidere.</p>
                                    </br>
                                    <p>Hvis brukeren ikke hører til på ditt arbeidssted kan du fjerne dette arbeidsstedet fra brukerens profil ved å klikke her: {$a->reject}. </p>
                                    </br></br>

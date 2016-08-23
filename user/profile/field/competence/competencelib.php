@@ -656,10 +656,12 @@ class Competence {
             $levelThree = $data->level_3;
 
             if (self::ManagersConnected($levelZero,$levelOne,$levelTwo,$levelThree)) {
+                $myCompany = self::Get_CompanyName($data->level_3);
+                $myCompany = array_shift($myCompany);
                 $managers = self::GetManagersCompany($levelZero,$levelOne,$levelTwo,$levelThree);
                 /* Send Notification    */
                 foreach($managers as $manager) {
-                    self::SendNotificationManager($manager,$infoCompetenceData);
+                    self::SendNotificationManager($manager,$infoCompetenceData,$myCompany);
                 }//if_managers
             }//if_manager
 
@@ -1368,6 +1370,7 @@ class Competence {
     /**
      * @param           $manager
      * @param           $infoCompetenceData
+     * @param           $myCompany
      *
      * @throws          Exception
      *
@@ -1377,7 +1380,7 @@ class Competence {
      * Description
      * Send Notification to the manager
      */
-    private static function SendNotificationManager($manager,$infoCompetenceData) {
+    private static function SendNotificationManager($manager,$infoCompetenceData,$myCompany) {
         /* Variables    */
         global $SITE,$CFG;
         $strBody    = null;
@@ -1397,6 +1400,8 @@ class Competence {
             $infoMail->company  = $manager->company;
             $infoMail->user     = fullname($user);
             $infoMail->site     = $SITE->shortname;
+            $infoMail->employee = $myCompany;
+            
             /* Reject Link  */
             $lnkReject  = $CFG->wwwroot . '/user/profile/field/competence/actions/reject.php/' . $infoCompetenceData->token . '/' . $manager->id;
             $infoMail->reject = '<a href="' . $lnkReject . '">' . get_string('reject_lnk','profilefield_competence') . '</br>';
