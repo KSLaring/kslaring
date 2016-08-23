@@ -8,17 +8,17 @@ define('SAML_INTERNAL', 1);
     try{
         global $CFG;
 
-        $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' START SMAL INDEX PAGE. ' . "\n";
+        //$dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' START SMAL INDEX PAGE. ' . "\n";
 
 
-        if (isset($_GET['directlink'])) {
-            $dbLog .= ' 111 ' . '\n';
-            $dbLog .= 'DIRECTLINK --> ' . $_GET['directlink'] . '\n\n';
-        }else {
-            $dbLog .= ' 222 ' . '\n';
-        }
+        //if (isset($_GET['directlink'])) {
+        //    $dbLog .= ' 111 ' . '\n';
+        //    $dbLog .= 'DIRECTLINK --> ' . $_GET['directlink'] . '\n\n';
+        //}else {
+        //    $dbLog .= ' 222 ' . '\n';
+        //}
 
-        error_log($dbLog, 3, $CFG->dataroot . "/Testing PAQUI.log");
+        //error_log($dbLog, 3, $CFG->dataroot . "/Testing PAQUI.log");
 
         // We read saml parameters from a config file instead from the database
         // due we can not operate with the moodle database without load all
@@ -241,9 +241,9 @@ define('SAML_INTERNAL', 1);
             $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' START SMAL LOGIN PAGE. ' . "\n";
 
 
-            if (isset( $SESSION->directlink )) {
+            if (isset($_GET['directlink'])) {
                 $dbLog .= ' 111 ' . '\n';
-                $dbLog .= 'DIRECTLINK --> ' . $SESSION->directlink . '\n\n';
+                $dbLog .= 'DIRECTLINK --> ' . $_GET['directlink'] . '\n\n';
             }else {
                 $dbLog .= ' 222 ' . '\n';
             }
