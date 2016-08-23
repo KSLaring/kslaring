@@ -534,6 +534,8 @@ class enrol_waitinglist_plugin extends enrol_plugin {
 		$DB->delete_records(ENROL_WAITINGLIST_TABLE_QUEUE,array('userid'=>$user->id));
     }
 
+
+
     /**
      * Add new instance of enrol plugin with default settings.
      * @param stdClass $course
@@ -567,7 +569,7 @@ class enrol_waitinglist_plugin extends enrol_plugin {
         }
         $fields = array(
                         'status'                                    => $this->get_config('status'),
-                        'roleid'                                    => $this->get_config('roleid', 0),
+                        'roleid'                                    => $this->get_config('roleid'),
                         'enrolperiod'                               => $this->get_config('enrolperiod', 0),
                         'expirynotify'                              => $expirynotify,
                         'notifyall'                                 => $notifyall,
@@ -1351,13 +1353,18 @@ class enrol_waitinglist_plugin extends enrol_plugin {
         }
 
         $subject = get_string('welcometocourse', 'enrol_waitinglist', format_string($course->fullname, true, array('context'=>$context)));
-
+        
         $rusers = array();
         if (!empty($CFG->coursecontact)) {
             $croles = explode(',', $CFG->coursecontact);
-            echo "croles " . implode(',',$croles) . "</br>";
             list($sort, $sortparams) = users_order_by_sql('u');
-            $rusers = get_role_users($croles, $context, true, 'ra.id', 'r.sortorder ASC, ' . $sort, null, '', '', '', '', $sortparams);
+            // We only use the first user.
+            $i = 0;
+            do {
+                $rusers = get_role_users($croles[$i], $context, true, '',
+                    'r.sortorder ASC, ' . $sort, null, '', '', '', '', $sortparams);
+                $i++;
+            } while (empty($rusers) && !empty($croles[$i]));
         }
         if ($rusers) {
             $contact = reset($rusers);
