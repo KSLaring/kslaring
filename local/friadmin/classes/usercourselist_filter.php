@@ -66,6 +66,12 @@ class local_friadmin_usercourselist_filter extends local_friadmin_widget impleme
         }
         $this->fromform = $customdata;
 
+        $customdata = $this->get_user_locationdata();
+        if (!isset($customdata['seltimefrom'])) {
+            $customdata['seltimefrom'] = (time() + 3600 * 24);
+        }
+        $this->fromform = $customdata;
+
         if (!isset($SESSION->filterData)) {
             $SESSION->filterData = array();
         }//if_filterData_SESSION
@@ -316,4 +322,48 @@ class local_friadmin_usercourselist_filter extends local_friadmin_widget impleme
             throw $ex;
         }//try_catch
     }//get_locations
+
+    /**
+     * Get the locations for the given sectors with id, name
+     *
+     * @param int $sectorid The selected sector id
+     *
+     * @return mixed Array|null The array with the sector objects
+     *
+     * @throws  Exception
+     */
+    protected function get_locations_for_sector($sectorid) {
+        global $DB;
+        $locations = null;
+
+        try {
+            if ($sectorid) {
+                // Get the location ids and names for the given sector id.
+                $sql = "SELECT	lo.id,
+                                lo.name
+                        FROM {course_locations} lo
+                        -- LEVLE TWO
+                        JOIN {report_gen_company_relation}	cr_two	
+                          ON cr_two.parentid = lo.levelone
+                          AND cr_two.companyid = :sector_selected
+                        JOIN {report_gen_companydata}	co_two 
+                          ON co_two.id = cr_two.companyid
+                        -- LEVEL ONE
+                        JOIN {report_gen_company_relation}	cr_one 
+                          ON cr_one.companyid = cr_two.parentid
+                        -- LEVEL ZERO
+                        JOIN {report_gen_company_relation}	cr_zero 
+                          ON cr_zero.companyid = cr_one.companyid  ";
+
+                // Get search criteria.
+                $params = array('sector_selected' => $sectorid);
+
+                $locations = $DB->get_records_sql($sql, $params);
+            }
+
+            return $locations;
+        } catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//get_locations_for_sector
 }
