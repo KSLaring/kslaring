@@ -236,6 +236,7 @@ class local_friadmin_usercourselist_table_sql_model extends local_friadmin_widge
                     }//if_selWhere
                     $sqlWhere .= " rgcmu.id = :selmunicipality ";
                     $params['selmunicipality'] = $filterData['selmunicipality'];
+                }//if_selmunicipality
 
                     /* Location Filter      */
                     if (isset($filterData['sellocation']) && ($filterData['sellocation'])) {
@@ -258,7 +259,6 @@ class local_friadmin_usercourselist_table_sql_model extends local_friadmin_widge
                         $sqlWhere .= " rgcse.id = :selsector ";
                         $params['selsector'] = $filterData['selsector'];
                     }//if_sector
-                }//if_selmunicipality
 
                 /* From Time Filter     */
                 if (isset($filterData['seltimefrom']) && ($filterData['seltimefrom'])) {

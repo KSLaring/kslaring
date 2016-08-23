@@ -72,6 +72,11 @@ class local_friadmin_courselist_filter extends local_friadmin_widget implements 
 
         // Get the filtered user locationdata.
         $customdata = $this->get_user_locationdata();
+
+        // Set tomorrow as the default from date for the search.
+        if (!isset($customdata['seltimefrom'])) {
+            $customdata['seltimefrom'] = (time() + 3600 * 24);
+        }
         $this->fromform = $customdata;
 
         /**
