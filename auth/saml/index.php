@@ -254,12 +254,12 @@ define('SAML_INTERNAL', 1);
                             $dbLog .= "MOD ID (0): " . $modid . "\n";
                             $index = stripos($modid,'=');
                             $dbLog .= "INDEX MOD ID: " . $index . "\n";
-                            $modid = substr($modid,0,$index);
+                            $modid = substr($modid,$index+1);
                         }else if ($index = stripos($_GET['directlink'],'?')){
                             $modlnk = substr($_GET['directlink'],0,$index);
                             $modid  = substr($_GET['directlink'],$index+1);
                             $index = stripos($modid,'=');
-                            $modid = substr($modid,0,$index);
+                            $modid = substr($modid,$index+1);
                         }//if_else
                     }
                 }
