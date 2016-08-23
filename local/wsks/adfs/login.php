@@ -38,16 +38,7 @@ try {
     $user = get_complete_user_data('id',$id);
     complete_user_login($user,true);
 
-    /**
-     * @updateDate  15/08/2016
-     * @author      eFaktor     (fbv)
-     * 
-     * Description
-     * Check if the redirect url has to be the course/activity
-     */
-    if (($SESSION->modlnk) && ($SESSION->modid)) {
-        $redirect = new moodle_url($SESSION->modlnk,array('id' => $SESSION->modid));    
-    }//if_modlnk
+
     
     /**
      * @updateDate  10/11/2014
@@ -79,6 +70,18 @@ try {
                 echo $OUTPUT->footer();
                 die();
             }else {
+
+                /**
+                 * @updateDate  15/08/2016
+                 * @author      eFaktor     (fbv)
+                 *
+                 * Description
+                 * Check if the redirect url has to be the course/activity
+                 */
+                if ((isset($SESSION->modlnk)) && (isset($SESSION->modid))) {
+                    $redirect = new moodle_url($SESSION->modlnk,array('id' => $SESSION->modid));
+                }
+
                 // test the session actually works by redirecting to self
                 redirect($redirect);
             }//if_else_UpdateProfile

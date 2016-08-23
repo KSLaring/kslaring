@@ -47,7 +47,7 @@ class WS_ADFS {
             }//if_exist
 
             if (($userId) && $result['valid']) {
-                $response = self::GenerateResponse($userId);
+                $response = self::GenerateResponse($userId,$userADFS['modlnk'],$userADFS['modid']);
             }
 
             return $response;

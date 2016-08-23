@@ -26,7 +26,7 @@ $SESSION->user          = $_GET['id'];
  * Description
  * Activity/Course link
  */
-if ($_GET['modlnk'] && $_GET['modid']) {
+if (isset($_GET['modlnk']) && isset($_GET['modid'])) {
     $SESSION->modlnk = $_GET['modlnk'];
     $SESSION->modid  = $_GET['modid'];
 }
