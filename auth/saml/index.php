@@ -257,15 +257,15 @@ define('SAML_INTERNAL', 1);
                     $modlnk = null;
                     $modid  = null;
                     if ($USER->username == 'gb250') {
-                        if (isset($SESSION->directlink)) {
-                            $index = stripos($SESSION->directlink,'&');
+                        if (isset($_GET['directlink'])) {
+                            $index = stripos($_GET['directlink'],'&');
                             if ($index) {
-                                $modlnk = substr($SESSION->directlink,0,$index-1);
-                                $modid  = substr($SESSION->directlink,$index+1);
+                                $modlnk = substr($_GET['directlink'],0,$index-1);
+                                $modid  = substr($_GET['directlink'],$index+1);
                                 $modid  = str_replace('id','modid',$modid);
-                            }else if ($index = stripos($SESSION->directlink,'?')){
-                                $modlnk = substr($SESSION->directlink,0,$index-1);
-                                $modid  = substr($SESSION->directlink,$index+1);
+                            }else if ($index = stripos($_GET['directlink'],'?')){
+                                $modlnk = substr($_GET['directlink'],0,$index-1);
+                                $modid  = substr($_GET['directlink'],$index+1);
                                 $modid  = str_replace('id','modid',$modid);
                             }//if_else
                         }
