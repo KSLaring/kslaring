@@ -236,29 +236,29 @@ class local_friadmin_usercourselist_table_sql_model extends local_friadmin_widge
                     }//if_selWhere
                     $sqlWhere .= " rgcmu.id = :selmunicipality ";
                     $params['selmunicipality'] = $filterData['selmunicipality'];
-
-                    /* Location Filter      */
-                    if (isset($filterData['sellocation']) && ($filterData['sellocation'])) {
-                        if (!$sqlWhere) {
-                            $sqlWhere = " WHERE ";
-                        } else {
-                            $sqlWhere .= " AND ";
-                        }//if_selWhere
-                        $sqlWhere .= " cl.id = :sellocation ";
-                        $params['sellocation'] = $filterData['sellocation'];
-                    }//if_location
-
-                    /* Sector Filter        */
-                    if (isset($filterData['selsector']) && ($filterData['selsector'])) {
-                        if (!$sqlWhere) {
-                            $sqlWhere = " WHERE ";
-                        } else {
-                            $sqlWhere .= " AND ";
-                        }//if_selWhere
-                        $sqlWhere .= " rgcse.id = :selsector ";
-                        $params['selsector'] = $filterData['selsector'];
-                    }//if_sector
                 }//if_selmunicipality
+
+                /* Location Filter      */
+                if (isset($filterData['sellocation']) && ($filterData['sellocation'])) {
+                    if (!$sqlWhere) {
+                        $sqlWhere = " WHERE ";
+                    } else {
+                        $sqlWhere .= " AND ";
+                    }//if_selWhere
+                    $sqlWhere .= " cl.id = :sellocation ";
+                    $params['sellocation'] = $filterData['sellocation'];
+                }//if_location
+
+                /* Sector Filter        */
+                if (isset($filterData['selsector']) && ($filterData['selsector'])) {
+                    if (!$sqlWhere) {
+                        $sqlWhere = " WHERE ";
+                    } else {
+                        $sqlWhere .= " AND ";
+                    }//if_selWhere
+                    $sqlWhere .= " rgcse.id = :selsector ";
+                    $params['selsector'] = $filterData['selsector'];
+                }//if_sector
 
                 /* From Time Filter     */
                 if (isset($filterData['seltimefrom']) && ($filterData['seltimefrom'])) {

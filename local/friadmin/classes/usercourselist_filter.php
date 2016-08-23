@@ -66,12 +66,6 @@ class local_friadmin_usercourselist_filter extends local_friadmin_widget impleme
         }
         $this->fromform = $customdata;
 
-        $customdata = $this->get_user_locationdata();
-        if (!isset($customdata['seltimefrom'])) {
-            $customdata['seltimefrom'] = (time() + 3600 * 24);
-        }
-        $this->fromform = $customdata;
-
         if (!isset($SESSION->filterData)) {
             $SESSION->filterData = array();
         }//if_filterData_SESSION

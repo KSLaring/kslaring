@@ -79,12 +79,6 @@ class local_friadmin_courselist_filter extends local_friadmin_widget implements 
         }
         $this->fromform = $customdata;
 
-        $customdata = $this->get_user_locationdata();
-        if (!isset($customdata['seltimefrom'])) {
-            $customdata['seltimefrom'] = (time() + 3600 * 24);
-        }
-        $this->fromform = $customdata;
-
         /**
          * @updateDate  23/06/2015
          * @author      eFaktor     (fbv)
