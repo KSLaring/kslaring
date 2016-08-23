@@ -238,55 +238,40 @@ define('SAML_INTERNAL', 1);
         if (!is_siteadmin($USER)) {
             require_once ('../../local/adfs/adfslib.php');
 
-            $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' START SMAL LOGIN PAGE. ' . "\n";
-
-
-            if (isset($_GET['directlink'])) {
-                $dbLog .= ' 111 PERICOOOOOOO ' . '\n';
-                $dbLog .= 'DIRECTLINK --> ' . $_GET['directlink'] . "\n\n";
-            }else {
-                $dbLog .= ' 222 ' . '\n';
-            }
-
-
+            $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' START SMAL INDEX PAGE. ' . "\n";
 
             try {
                 /* Testing */
-                //if ($USER->username != 'gb250') {
-                    $index  = 0;
-                    $modlnk = null;
-                    $modid  = null;
-                    if ($USER->username == 'gb250') {
-                        if (isset($_GET['directlink'])) {
-                            $dbLog .= " FOUND IT " . "\n";
-                            $index = stripos($_GET['directlink'],'&');
-                            $dbLog .= "Index: " . $index . "\n";
-                            if ($index) {
-                                $modlnk = substr($_GET['directlink'],0,$index);
-                                $modid  = substr($_GET['directlink'],$index+1);
-                                $modid  = str_replace('id','modid',$modid);
-                            }else if ($index = stripos($_GET['directlink'],'?')){
-                                $modlnk = substr($_GET['directlink'],0,$index);
-                                $modid  = substr($_GET['directlink'],$index+1);
-                                $modid  = str_replace('id','modid',$modid);
-                            }//if_else
-                        }
+                $index  = 0;
+                $modlnk = null;
+                $modid  = null;
+                if ($USER->username == 'gb250') {
+                    if (isset($_GET['directlink'])) {
+                        $dbLog .= " FOUND IT " . "\n";
+                        $index = stripos($_GET['directlink'],'&');
+                        $dbLog .= "Index: " . $index . "\n";
+                        if ($index) {
+                            $modlnk = substr($_GET['directlink'],0,$index);
+                            $modid  = substr($_GET['directlink'],$index+1);
+                            $modid  = str_replace('id','modid',$modid);
+                        }else if ($index = stripos($_GET['directlink'],'?')){
+                            $modlnk = substr($_GET['directlink'],0,$index);
+                            $modid  = substr($_GET['directlink'],$index+1);
+                            $modid  = str_replace('id','modid',$modid);
+                        }//if_else
                     }
+                }
 
-                    $dbLog .= "MOD LINK: " . $modlnk . "\n";
-                    $dbLog .= "MOD ID: " . $modid . "\n";
+                $dbLog .= "MOD LINK: " . $modlnk . "\n";
+                $dbLog .= "MOD ID: " . $modid . "\n";
 
-                    error_log($dbLog, 3, $CFG->dataroot . "/Testing PAQUI.log");
+                error_log($dbLog, 3, $CFG->dataroot . "/Testing PAQUI.log");
 
-                    $urlKS = KS_ADFS::LogIn_UserADFS($USER->id,$modlnk,$modid);
+                $urlKS = KS_ADFS::LogIn_UserADFS($USER->id,$modlnk,$modid);
 
-                    header('Location: ' . urldecode($urlKS));
-                    require_logout();
-                    die;
-                //}else {
-                //    redirect($urltogo);
-                //}
-
+                header('Location: ' . urldecode($urlKS));
+                require_logout();
+                die;
             }catch (Exception $ex) {
                 throw $ex;
             }
