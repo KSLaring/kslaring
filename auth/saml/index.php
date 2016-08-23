@@ -243,12 +243,12 @@ define('SAML_INTERNAL', 1);
 
             if (isset($_GET['directlink'])) {
                 $dbLog .= ' 111 PERICOOOOOOO ' . '\n';
-                $dbLog .= 'DIRECTLINK --> ' . $_GET['directlink'] . '\n\n';
+                $dbLog .= 'DIRECTLINK --> ' . $_GET['directlink'] . "\n\n";
             }else {
                 $dbLog .= ' 222 ' . '\n';
             }
 
-            error_log($dbLog, 3, $CFG->dataroot . "/Testing PAQUI.log");
+
 
             try {
                 /* Testing */
@@ -258,7 +258,9 @@ define('SAML_INTERNAL', 1);
                     $modid  = null;
                     if ($USER->username == 'gb250') {
                         if (isset($_GET['directlink'])) {
+                            $dbLog .= " FOUND IT " . "\n";
                             $index = stripos($_GET['directlink'],'&');
+                            $dbLog .= "Index: " . $index . "\n";
                             if ($index) {
                                 $modlnk = substr($_GET['directlink'],0,$index-1);
                                 $modid  = substr($_GET['directlink'],$index+1);
@@ -270,6 +272,8 @@ define('SAML_INTERNAL', 1);
                             }//if_else
                         }
                     }
+
+                    error_log($dbLog, 3, $CFG->dataroot . "/Testing PAQUI.log");
 
                     $urlKS = KS_ADFS::LogIn_UserADFS($USER->id,$modlnk,$modid);
 
