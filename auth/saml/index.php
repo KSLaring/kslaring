@@ -262,11 +262,11 @@ define('SAML_INTERNAL', 1);
                             $index = stripos($_GET['directlink'],'&');
                             $dbLog .= "Index: " . $index . "\n";
                             if ($index) {
-                                $modlnk = substr($_GET['directlink'],0,$index-1);
+                                $modlnk = substr($_GET['directlink'],0,$index);
                                 $modid  = substr($_GET['directlink'],$index+1);
                                 $modid  = str_replace('id','modid',$modid);
                             }else if ($index = stripos($_GET['directlink'],'?')){
-                                $modlnk = substr($_GET['directlink'],0,$index-1);
+                                $modlnk = substr($_GET['directlink'],0,$index);
                                 $modid  = substr($_GET['directlink'],$index+1);
                                 $modid  = str_replace('id','modid',$modid);
                             }//if_else
@@ -275,7 +275,7 @@ define('SAML_INTERNAL', 1);
 
                     $dbLog .= "MOD LINK: " . $modlnk . "\n";
                     $dbLog .= "MOD ID: " . $modid . "\n";
-                
+
                     error_log($dbLog, 3, $CFG->dataroot . "/Testing PAQUI.log");
 
                     $urlKS = KS_ADFS::LogIn_UserADFS($USER->id,$modlnk,$modid);
