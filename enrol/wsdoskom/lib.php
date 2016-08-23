@@ -205,6 +205,12 @@ class enrol_wsdoskom_plugin extends enrol_plugin {
         return false;
     }
 
+    public function can_hide_show_instance($instance) {
+        $context = context_course::instance($instance->courseid);
+        return has_capability('enrol/wsdoskom:config', $context);
+    }
+
+
     /**
      * Return information for enrolment instance containing list of parameters required
      * for enrolment, name of enrolment plugin etc.

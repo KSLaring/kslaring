@@ -254,8 +254,13 @@ class enrol_waitinglist_plugin extends enrol_plugin {
         }
 		return true;
 	}
-	
-	/**
+
+    public function can_hide_show_instance($instance) {
+        $context = context_course::instance($instance->courseid);
+        return has_capability('enrol/waitinglist:config', $context);
+    }
+
+    /**
      * Returns optional enrolment information icons.
      *
      * This is used in course list for quick overview of enrolment options.
