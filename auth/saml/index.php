@@ -238,36 +238,26 @@ define('SAML_INTERNAL', 1);
         if (!is_siteadmin($USER)) {
             require_once ('../../local/adfs/adfslib.php');
 
-            $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' START SMAL INDEX PAGE. ' . "\n";
-
             try {
-                /* Testing */
+                /* Direct Link course  */
                 $index  = 0;
                 $modlnk = null;
                 $modid  = null;
-                if ($USER->username == 'gb250') {
-                    if (isset($_GET['directlink'])) {
-                        $index = stripos($_GET['directlink'],'&');
-                        if ($index) {
-                            $modlnk = substr($_GET['directlink'],0,$index);
-                            $modid  = substr($_GET['directlink'],$index+1);
-                            $dbLog .= "MOD ID (0): " . $modid . "\n";
-                            $index = stripos($modid,'=');
-                            $dbLog .= "INDEX MOD ID: " . $index . "\n";
-                            $modid = substr($modid,$index+1);
-                        }else if ($index = stripos($_GET['directlink'],'?')){
-                            $modlnk = substr($_GET['directlink'],0,$index);
-                            $modid  = substr($_GET['directlink'],$index+1);
-                            $index = stripos($modid,'=');
-                            $modid = substr($modid,$index+1);
-                        }//if_else
-                    }
+
+                if (isset($_GET['directlink'])) {
+                    $index = stripos($_GET['directlink'],'&');
+                    if ($index) {
+                        $modlnk = substr($_GET['directlink'],0,$index);
+                        $modid  = substr($_GET['directlink'],$index+1);
+                        $index = stripos($modid,'=');
+                        $modid = substr($modid,$index+1);
+                    }else if ($index = stripos($_GET['directlink'],'?')){
+                        $modlnk = substr($_GET['directlink'],0,$index);
+                        $modid  = substr($_GET['directlink'],$index+1);
+                        $index = stripos($modid,'=');
+                        $modid = substr($modid,$index+1);
+                    }//if_else
                 }
-
-                $dbLog .= "MOD LINK: " . $modlnk . "\n";
-                $dbLog .= "MOD ID: " . $modid . "\n";
-
-                error_log($dbLog, 3, $CFG->dataroot . "/Testing PAQUI.log");
 
                 $urlKS = KS_ADFS::LogIn_UserADFS($USER->id,$modlnk,$modid);
 
