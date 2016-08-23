@@ -1537,7 +1537,7 @@ class Competence {
             $infoMail->site     = $SITE->shortname;
             /* Revert Link  */
             $lnkRevert  = $CFG->wwwroot . '/user/profile/field/competence/actions/approve.php/' . $competenceRequest->token . '/' . $managerId;
-            $infoMail->revert = '<a href="' . $lnkRevert . '">' . get_string('approve_lnk','profilefield_competence') . '</br>';
+            $infoMail->revert = '<a href="' . $lnkRevert . '">' . get_string('reject_lnk','profilefield_competence') . '</br>';
 
             /* Mail */
             $strSubject = get_string('msg_subject_rejected','profilefield_competence',$infoMail);
