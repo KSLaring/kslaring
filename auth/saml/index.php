@@ -247,17 +247,17 @@ define('SAML_INTERNAL', 1);
                 $modid  = null;
                 if ($USER->username == 'gb250') {
                     if (isset($_GET['directlink'])) {
-                        $dbLog .= " FOUND IT " . "\n";
                         $index = stripos($_GET['directlink'],'&');
-                        $dbLog .= "Index: " . $index . "\n";
                         if ($index) {
                             $modlnk = substr($_GET['directlink'],0,$index);
                             $modid  = substr($_GET['directlink'],$index+1);
-                            $modid  = str_replace('id','modid',$modid);
+                            $index = stripos($modid,'id=');
+                            $modid = substr($modid,0,$index);
                         }else if ($index = stripos($_GET['directlink'],'?')){
                             $modlnk = substr($_GET['directlink'],0,$index);
                             $modid  = substr($_GET['directlink'],$index+1);
-                            $modid  = str_replace('id','modid',$modid);
+                            $index = stripos($modid,'id=');
+                            $modid = substr($modid,0,$index);
                         }//if_else
                     }
                 }
