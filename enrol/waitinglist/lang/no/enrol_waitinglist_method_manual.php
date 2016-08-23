@@ -11,9 +11,9 @@
  *
  * Description
  */
-$string['manual_displayname']   = 'Manual Waitinglist Enrolment';
-$string['manual_menutitle']     = 'Enrol Manual';
-$string['manual_manage']        = 'Manage Manual Enrolments';
-$string['manual_no_seats']      = 'Sorry, you are selected too much users. There are only {$a} available seats';
-$string['manual_none_seats']    = 'Sorry, but there are none available seats';
-$string['manual_notification']  = '<strong>For this course, there are only <u>{$a}</u> available seats</strong>';
+$string['manual_displayname']   = 'Manuelle kurspåmeldinger';
+$string['manual_menutitle']     = 'Manuell kurspåmelding';
+$string['manual_manage']        = 'Manuelle kurspåeldinger';
+$string['manual_no_seats']      = 'Beklager, men du har valgt for mange brukere. Det er kun {$a} tilgjengelige plasser';
+$string['manual_none_seats']    = 'Beklager, men det er ingen tilgjengelige plasser';
+$string['manual_notification']  = '<strong>På dette kurset er det kun <u>{$a}</u> tilgjengelige plasser</strong>';
