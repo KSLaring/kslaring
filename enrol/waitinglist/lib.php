@@ -1357,7 +1357,7 @@ class enrol_waitinglist_plugin extends enrol_plugin {
             $croles = explode(',', $CFG->coursecontact);
             echo "croles " . implode(',',$croles) . "</br>";
             list($sort, $sortparams) = users_order_by_sql('u');
-            $rusers = get_role_users($croles, $context, true, '', 'r.sortorder ASC, ' . $sort, null, '', '', '', '', $sortparams);
+            $rusers = get_role_users($croles, $context, true, 'ra.id', 'r.sortorder ASC, ' . $sort, null, '', '', '', '', $sortparams);
         }
         if ($rusers) {
             $contact = reset($rusers);
