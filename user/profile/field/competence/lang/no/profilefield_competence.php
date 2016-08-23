@@ -57,9 +57,9 @@ $string['reporter'] = 'Rapporttilgang';
 
 $string['msg_subject_manager']  = '{$a->site}: Melding om ny medarbeider for arbeidsstedet: {$a->company}';
 $string['msg_body_manager']     = '<p>Vi sender deg denne meldingen siden du er leder for dette arbeidsstedet: <b>{$a->company}</b></p>
-                                   <p>Brukeren <b>{$a->user}</b> har nå lagt til seg selv som en av <strong>{$a->employee}</strong> dine medarbeidere.</p>
+                                   <p>Brukeren <b>{$a->user}</b> har nå lagt til seg selv som medarbeider ved <strong>{$a->employee}</strong>.</p>
                                    </br>
-                                   <p>Hvis brukeren ikke hører til på ditt arbeidssted kan du fjerne dette arbeidsstedet fra brukerens profil ved å klikke her: {$a->reject}. </p>
+                                   <p>Hvis brukeren ikke hører til her kan du fjerne dette arbeidsstedet fra brukerens profil ved å klikke på linken: {$a->reject}. </p>
                                    </br></br>
                                    <p>Dette er en automatisk generert epost fra {$a->site}. Du kan ikke svare på denne e-posten.</p>';
 
@@ -68,7 +68,7 @@ $string['msg_body_rejected']    = 'Vi vil gjerne informere deg om at arbeidssted
 $string['msg_body_approved']    = 'Vi vil gjerne informere deg om at arbeidsstedet <strong>{$a->company}</strong>, som du la til i egen proil, er godkjent.';
 
 $string['msg_boy_reverted']     = '<p>Vi sender deg denne meldingen fordi du er oppført som leder for arbeidsstedet:  <strong>{$a->company}</strong>.</p>
-                                   <p><strong>{$a->user}</strong> har lagt til arbeidsstedet du er leder for i sin profil.</p>
+                                   <p><strong>{$a->user}</strong> har lagt til arbeidsstedet i sin profil (hvor du er leder).</p>
                                    </br>
                                    <p>Hvis du ønsker tilbakestille dette, f.eks. hvis du ser at brukeren må ha lagt seg til ved en misforståelse eller annet, kan du klikke på lenken for å fjerne arbeiddstedet igjen fra denne brukerens profil: {$a->revert}</p>';
 
