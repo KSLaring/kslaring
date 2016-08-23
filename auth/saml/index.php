@@ -251,7 +251,9 @@ define('SAML_INTERNAL', 1);
                         if ($index) {
                             $modlnk = substr($_GET['directlink'],0,$index);
                             $modid  = substr($_GET['directlink'],$index+1);
+                            $dbLog .= "MOD ID (0): " . $modid . "\n";
                             $index = stripos($modid,'id=');
+                            $dbLog .= "INDEX MOD ID: " . $index . "\n";
                             $modid = substr($modid,0,$index);
                         }else if ($index = stripos($_GET['directlink'],'?')){
                             $modlnk = substr($_GET['directlink'],0,$index);
