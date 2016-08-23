@@ -80,8 +80,6 @@ try {
                  */
                 if ((isset($SESSION->modlnk)) && (isset($SESSION->modid))) {
                     $redirect = new moodle_url($SESSION->modlnk,array('id' => $SESSION->modid));
-
-                    echo "HOLA : " . $SESSION->modlnk . "</br>";
                 }else {
                     redirect($redirect);
                 }//if_modlnk
