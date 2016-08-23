@@ -8,6 +8,18 @@ define('SAML_INTERNAL', 1);
     try{
         global $CFG;
 
+        $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' START SMAL INDEX PAGE. ' . "\n";
+
+
+        if (isset($_GET['directlink'])) {
+            $dbLog .= ' 111 ' . '\n';
+            $dbLog .= 'DIRECTLINK --> ' . $_GET['directlink'] . '\n\n';
+        }else {
+            $dbLog .= ' 222 ' . '\n';
+        }
+
+        error_log($dbLog, 3, $CFG->dataroot . "/Testing PAQUI.log");
+
         // We read saml parameters from a config file instead from the database
         // due we can not operate with the moodle database without load all
         // moodle session issue.
@@ -100,10 +112,8 @@ define('SAML_INTERNAL', 1);
     if (!$valid_saml_session) {
 	    // Not valid session. Ship user off to Identity Provider
         unset($USER);
+        
         try {
-            $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' START SAML AUTH . ' . "\n";
-            error_log($dbLog, 3, $CFG->dataroot . "/Testing PAQUI.log");
-            
             $as = new SimpleSAML_Auth_Simple($saml_param->sp_source);
             $as->requireAuth();
         } catch (Exception $e) {

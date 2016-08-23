@@ -23,6 +23,7 @@ $url        = new moodle_url('/auth/saml/index.php');
 global $SESSION,$CFG;
 if (isset($_GET['directlink'])) {
     $SESSION->directlink = $_GET['directlink'];
+    $url->params('directlink',$_GET['directlink']);
 }
 
 redirect($url);
