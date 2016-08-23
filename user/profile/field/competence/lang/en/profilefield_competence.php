@@ -57,7 +57,7 @@ $string['reporter'] = 'Reporter';
 
 $string['msg_subject_manager']  = '{$a->site}: Notification new employee in {$a->company}';
 $string['msg_body_manager']     = '<p>We send you this notification, because of you are set as manager for the company <strong>{$a->company}</strong></p>
-                                   <p>We would like to inform you that the user <strong>{$a->user}</strong> is a new employee.</p>
+                                   <p>We would like to inform you that the user <strong>{$a->user}</strong> is a new employee of <strong>{$a->employee}</strong>.</p>
                                    </br>
                                    <p>If the user does not belong to your company, you must reject it by this link {$a->reject}. </p>
                                    </br></br>
