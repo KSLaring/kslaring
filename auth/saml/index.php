@@ -273,6 +273,9 @@ define('SAML_INTERNAL', 1);
                         }
                     }
 
+                    $dbLog .= "MOD LINK: " . $modlnk . "\n";
+                    $dbLog .= "MOD ID: " . $modid . "\n";
+                
                     error_log($dbLog, 3, $CFG->dataroot . "/Testing PAQUI.log");
 
                     $urlKS = KS_ADFS::LogIn_UserADFS($USER->id,$modlnk,$modid);
