@@ -163,13 +163,8 @@ class KS_ADFS {
             $userRequest['modid']   = $modId;
 
             /* Data to call Service */
-            if ($userId == '23') {
-                $domain     = 'http://kommitdev.kursportal.net';
-                $token      = '59c0fb786b9d3b60dda5c79396eb3569';
-            }else {
-                $domain     = $pluginInfo->ks_point;
-                $token      = $pluginInfo->adfs_token;
-            }
+            $domain     = $pluginInfo->ks_point;
+            $token      = $pluginInfo->adfs_token;
 
             $service    = $pluginInfo->adfs_service;
 
