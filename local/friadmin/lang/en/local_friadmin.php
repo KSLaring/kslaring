@@ -243,3 +243,4 @@ $string['selshortname_help']        = 'Set short name of the duplicated course. 
 must be unique.';
 $string['info_dup_course']          = 'Before starting to duplicate the course, you need to determine in 
 which category the course will be saved. The actual course category is selected by default.';
+$string['coursedetail_manual']      = 'Manual enrol';

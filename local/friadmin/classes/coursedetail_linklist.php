@@ -58,6 +58,12 @@ class local_friadmin_coursedetail_linklist extends local_friadmin_widget impleme
      *
      * Description
      * Add comments, exception, clean code...
+     * 
+     * @updateDate      19/08/2016
+     * @author          eFaktor     (fbv)
+     * 
+     * Description
+     * Add button for 'Manual enrolments'
      */
     protected function create_linklist($courseId) {
         /* Variables    */
@@ -81,6 +87,8 @@ class local_friadmin_coursedetail_linklist extends local_friadmin_widget impleme
         $url_participantlist = null;
         $str_email = null;
         $url_email = null;
+        $str_manual     = null;
+        $url_manual     = null;
         $list1 = null;
         $list2 = null;
         $list3 = null;
@@ -99,6 +107,7 @@ class local_friadmin_coursedetail_linklist extends local_friadmin_widget impleme
             $str_waitlist           = get_string('coursedetail_waitlist', 'local_friadmin');
             $str_participantlist    = get_string('coursedetail_participantlist', 'local_friadmin');
             $str_email              = get_string('coursedetail_email', 'local_friadmin');
+            $str_manual             = get_string('coursedetail_manual','local_friadmin');
 
             /* Set up url       */
             $url_back               = new moodle_url('/local/friadmin/courselist.php');
@@ -111,7 +120,8 @@ class local_friadmin_coursedetail_linklist extends local_friadmin_widget impleme
             $url_confirmed          = new moodle_url('/enrol/waitinglist/manageconfirmed.php', array('id' => $courseId));
             $url_waitlist           = new moodle_url('/enrol/waitinglist/managequeue.php', array('id' => $courseId));
             $url_participantlist    = new moodle_url('/grade/export/xls/index.php?',array('id' => $courseId));
-            $url_email = '#';
+            $url_email              = '#';
+            $url_manual             = new moodle_url('/enrol/waitinglist/managemanual.php',array('co' => $courseId));
 
             // Check if the course has completion criteria set
             list ($disabled_completion, $url_completion) = $this->check_completioncriteria($courseId, $url_completion);
@@ -140,6 +150,7 @@ class local_friadmin_coursedetail_linklist extends local_friadmin_widget impleme
                         '</a></li>
                         <li><a class="btn" href="' . $url_enrollment . '">' . $str_enrollment .
                         '</a></li>
+                        <li><a class="btn" href="' . $url_manual . '">' . $str_manual . '</a></li>
                       </ul>';
 
             /* Set up row 3 */

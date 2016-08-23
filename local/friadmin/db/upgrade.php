@@ -68,7 +68,7 @@ function xmldb_local_friadmin_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2015062406, 'local', 'friadmin');
     }//if_odlversion
 
-    if ($oldversion < 2016070101) {
+    if ($oldversion < 2016081702) {
 
         // Define table friadmin_local_templates to be created.
         $table = new xmldb_table('friadmin_local_templates');
