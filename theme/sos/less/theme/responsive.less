@@ -1,0 +1,99 @@
+@import "inc/variables.less";
+
+//
+// Responsive: Tablet to desktop
+// --------------------------------------------------
+
+@media (min-width: 768px) and (max-width: 960px) {
+    body {
+        padding-top: 0;
+    }
+    .navbar-fixed-top {
+        margin-bottom: 0px;
+    }
+    #banner {
+        margin-left: 20px
+    }
+    #page {
+        padding-right: 0;
+        padding-left: 0;
+    }
+}
+
+//
+// Responsive: Large desktop and up
+// --------------------------------------------------
+
+@media (min-width: @navbarCollapseWidth) {
+    body {
+        padding-top: 40px;
+    }
+    .navbar-fixed-top {
+        margin-bottom: 0;
+    }
+    #banner {
+        margin: 0 auto;
+    }
+}
+
+// UP TO LANDSCAPE PHONE
+// ---------------------
+
+@media (max-width: 480px) {
+    body {
+        padding-top: 0;
+    }
+    #banner {
+        margin-left: 20px
+    }
+    #page-header {
+        display: none;
+    }
+}
+
+// TABLETS AND BELOW
+// -----------------
+@media (max-width: @navbarCollapseWidth) {
+    body {
+        padding-top: 0;
+        padding-left: 20px;
+        padding-right: 20px;
+    }
+
+    // Negative indent the now static "fixed" navbar
+    .navbar-fixed-top,
+    .navbar-fixed-bottom,
+    .navbar-static-top {
+        margin-left: -20px;
+        margin-right: -20px;
+    }
+
+    #page-header {
+        margin-left: -20px;
+        margin-right: -20px;
+    }
+
+    #banner {
+        margin-left: 20px;
+    }
+
+    .navbar-fixed-top {
+        margin-bottom: 0;
+    }
+
+}
+
+@media (min-width: 960px) and (max-width: 978px) {
+    body {
+        padding-top: 0;
+    }
+
+    .navbar-fixed-top {
+        margin-bottom: 0;
+    }
+
+    #banner {
+        margin-left: 20px
+    }
+
+}

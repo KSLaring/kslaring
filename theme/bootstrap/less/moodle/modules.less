@@ -37,7 +37,7 @@ select {
     }
 }
 
-.path-mod-feedback .generalbox div table tbody img {
+.path-mod-feedback .feedback_bar_image { // MDL-46063
     height: 5px; // we should remove the bar height specification in core
 }
 
@@ -92,6 +92,9 @@ select {
             width: auto;
             float: left;
         }
+        input[type="submit"] {
+            float: left;
+        }
         &.movediscussion {
             float: left;
         }
@@ -123,6 +126,12 @@ select {
 
 .path-mod-data form {
     margin-top: 10px;
+}
+
+.path-mod-data table.mod-data-default-template {
+    th, td {
+        padding: 5px;
+    }
 }
 
 .template_heading {
@@ -163,6 +172,7 @@ div#dock {
     display: none;
 }
 
+// Choice.
 .path-mod-choice {
     .horizontal  .choices {
         margin: 0;
@@ -176,6 +186,7 @@ div#dock {
     }
 }
 
+// Lesson.
 .path-mod-lesson .firstpageoptions {
     margin: auto;
     min-width: 280px;
@@ -187,6 +198,7 @@ div#dock {
     text-align: center;
 }
 
+// Wiki
 .path-mod-wiki .wiki_headingtitle,
 .path-mod-wiki .midpad,
 .path-mod-wiki .wiki_headingtime {
@@ -197,8 +209,16 @@ div#dock {
     width: 100%;
 }
 
-// Survey module
+// Quiz.
+.path-mod-quiz {
+    .questioncontainer {
+        input[type="text"] {
+            height: 1.5em;
+        }
+    }
+}
 
+// Survey module
 .path-mod-survey {
     .surveytable {
         .r1 {background-color: @table-bg-accent}

@@ -130,3 +130,31 @@ img.hide {
 img.icon.hide {
   display: inline-block !important;
 }
+
+// In Moodle course texts are defined as labels.
+// In Bootstrap they are styled to have centered text which looks off on courses texts
+.section .label {
+  text-align: center;
+}
+
+// Input boxes for images sizes don't need a 3em width setting.
+.atto_image_size input[type="text"] {
+    width: auto;
+}
+
+// Bootstrap lists usually needs a class. But when using the editor you can't
+// expect users to do so. This will fix it when lists are used in the content area.
+div[role="main"] {
+    ul,
+    ol {
+        padding-left: 20px;
+        overflow: visible;
+
+        &.section,
+        &.weeks,
+        &.topics {
+            padding: 0;
+            overflow: visible;
+        }
+    }
+}
