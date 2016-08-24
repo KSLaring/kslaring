@@ -496,6 +496,7 @@ class Invoices {
      */
     public static function Add_CourseInfo_Header($course_info) {
         /* Variables    */
+        $price       = null;
         $header_info = " ";
 
         /* Course Name      */
@@ -527,7 +528,14 @@ class Invoices {
             $header_info .= '<label class="label_info_course">' . get_string('rpt_price','enrol_invoice') . '</label>';
         $header_info .= html_writer::end_div();//left
         $header_info .= html_writer::start_div('block_invoices_course_two');
-            $header_info .= '<p class="info_course_value">' . number_format($course_info->price,2,',','.') . '</p>';
+            if (is_string($course_info->price)) {
+                $price = $course_info->price;
+            }else if (is_double($course_info->price)) {
+                $price = number_format($course_info->price,2,',','.');
+            }else {
+                $price = $course_info->price;
+            }
+            $header_info .= '<p class="info_course_value">' . $price . '</p>';
         $header_info .= html_writer::end_div();//right
 
         return $header_info;
