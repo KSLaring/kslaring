@@ -117,10 +117,10 @@ certificate_print_text($pdf, $x, $y + 142, 'C', $fontsans, 'B', 24,
 
 // Set the line height in the style of a tag entered in the customtext field in the settings.
 $customtext =  $certificate->customtext;
-certificate_print_text($pdf, 46, $y + 164, 'L', $fontsans, '', 16,
-    $customtext, 210 - (46 * 2));
+certificate_print_text($pdf, 35, $y + 164, 'L', $fontsans, '', 16,
+    $customtext, 210 - (46 * 6));
 
-certificate_print_text($pdf, $x, $y + 227, 'C', $fontsans, '', 16,
+certificate_print_text($pdf, $x, $y + 247, 'C', $fontsans, '', 16,
     'Bergen, ' . certificate_get_date($certificate, $certrecord, $course));
 //certificate_print_text($pdf, $x, $y + 102, 'C', $fontserif, '', 10,
 // certificate_get_grade($certificate, $course));
