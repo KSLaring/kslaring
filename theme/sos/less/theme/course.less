@@ -1,0 +1,146 @@
+@import "inc/variables.less";
+
+/* To make the course titles have more space on the frontage
+Courses and categories lists, from Mary Evans
+----------------------------*/
+.coursebox .content .summary,
+.coursebox .content .coursecat {
+    width: 100%;
+    float: left;
+}
+
+.coursebox > .info > .name {
+    width: auto;
+}
+
+.coursebox .content .teachers,
+.coursebox .content .courseimage,
+.coursebox .content .coursefile {
+    width: 100%;
+}
+
+#page-course-index-category .generalbox.info {
+    margin: 1em 0;
+    padding: 0 5px;
+}
+
+.section.main {
+    h3 {
+        &.section-title {
+            color: @h-color;
+            font-size: 1em;
+            line-height: 1.2;
+        }
+    }
+}
+
+h3 {
+    &.coursename,
+    &.categoryname {
+        font-size: 1em;
+        line-height: 1.2;
+
+        a {
+            color: @h-color;
+        }
+    }
+}
+
+#site-news-forum h2,
+#frontpage-course-list h2,
+#frontpage-category-names h2,
+#frontpage-category-combo h2,
+h3.sectionname {
+    .sosHeadline(.5em);
+}
+
+#page-site-index {
+    div[role="main"] {
+        & > div {
+            background-color: @bright;
+            padding: .5em 1em;
+        }
+    }
+}
+
+.course-content {
+    ul {
+        &.topics,
+        &.weeks {
+            background-color: @bright;
+        }
+    }
+
+    & > .completionprogress {
+        margin: .5em 1em 0 0;
+    }
+}
+
+.section {
+    .label {
+        .mod-indent-outer {
+            padding-left: 0;
+        }
+    }
+}
+
+.editing {
+    .section {
+        .label {
+            .mod-indent-outer {
+                padding-left: 24px;
+            }
+        }
+    }
+}
+
+#page-course-edit,
+#page-course-index-category,
+#page-course-index,
+.pagelayout-admin,
+.pagelayout-report,
+.path-mod {
+    div[role="main"] {
+        background-color: @bright;
+        padding: .5em 1em;
+
+        & > h2 {
+            .sosHeadline(.5em, @fontSizeLarge);
+        }
+    }
+}
+
+#page-admin-index {
+    #page-header {
+        h1 {
+            .sosHeadline(.5em, @fontSizeLarge);
+            padding: .5em 1em;
+        }
+    }
+    div[role="main"] {
+        background-color: @bright;
+        padding: .5em 1em;
+
+        h2 {
+            .sosHeadline(.5em, @fontSizeLarge);
+        }
+    }
+}
+
+#page-course-management {
+    div[role="main"] {
+        background-color: @bright;
+        padding: .5em 1em;
+
+        .coursecat-management-header {
+            h2 {
+                .sosHeadline(.5em, @fontSizeLarge);
+            }
+        }
+        #course-category-listings {
+            h3 {
+                .sosHeadline(.5em, @fontSizeLarge);
+            }
+        }
+    }
+}

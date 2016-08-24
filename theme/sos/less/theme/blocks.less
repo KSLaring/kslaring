@@ -1,0 +1,43 @@
+@import "inc/variables.less";
+
+.block {
+    background: @bright;
+    border: 0;
+    box-shadow: 0 0 2px @sosGreyLight;
+    .rounded-corners(0);
+
+    a {
+        color: @linkColor;
+    }
+    .header {
+        background-color: transparent;
+        border: 0;
+        margin: 0;
+        padding: 0;
+
+        .title {
+            h2 {
+                .sosHeadline;
+                text-transform: none;
+                margin: 0;
+                padding: 2px 0 5px 10px;
+            }
+        }
+    }
+    .content {
+        hr {
+            background: @sosGreyLight;
+            border: @sosGreyLight;
+        }
+    }
+}
+
+#block-region-side-pre .block,
+#block-region-side-post .block {
+    background: @sosGreyLight;
+}
+
+// adjust the size of my profile block name text
+.block_myprofile .myprofileitem.fullname {
+    font-size: 1.2em;
+}
