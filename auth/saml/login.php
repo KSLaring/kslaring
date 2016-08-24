@@ -113,6 +113,7 @@ echo '</center>';
               <input type="password" name="password" id="password" size="15" value="" <?php echo $autocomplete; ?> />
               <input type="submit" id="loginbtn" value="<?php print_string("login") ?>" />
             </div>
+              
           </div>
             <div class="clearer"><!-- --></div>
               <?php if (isset($CFG->rememberusername) and $CFG->rememberusername == 2) { ?>

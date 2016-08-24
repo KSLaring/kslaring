@@ -1,0 +1,209 @@
+.matching_process {
+    width: 100%;
+    margin-bottom: 0px;
+    margin-top: 0px;
+    display: inline-block;
+}
+
+.matching_process_title {
+    width: 100%;
+    margin-bottom: 0px;
+    margin-top: 25px;
+    display: inline-block;
+    clear:both;
+}
+
+.matching_process_title .area_left {
+    width:40%;
+    float:left;
+    display: inline-block;
+    text-indent: 5px;
+    margin-right: 2px;
+}
+
+.matching_process .area_left {
+    width:40%;
+    float:left;
+    display: inline-block;
+    text-indent: 5px;
+    margin-right: 2px;
+    min-height: 50px;
+    background: #f9f9f9;
+}
+
+.matching_process_title .area_right {
+    width:40%;
+    display: inline-block;
+    text-indent: 5px;
+}
+
+.matching_process .area_right {
+    width:40%;
+    display: inline-block;
+    text-indent: 5px;
+    min-height: 50px;
+    background: #f9f9f9;
+}
+
+.title_matching {
+    text-decoration: none;
+    background-color: #e7eaef;
+    height: 25px;
+}
+
+.title_matching h6 {
+    color: #004b93;
+    /* Top, Right, Bottom, Left */
+    padding: 8px 2px 5px 2px;
+    margin: 0;
+    line-height: 10px;
+    font-weight: bold;
+}
+
+.line_rpt_matching {
+    border: 0;
+    border-top: 5px solid #cfd2d7;
+    width: 80%;
+    margin-top: 0;
+    margin-bottom: 0px;
+}
+
+#fgroup_id_grp .fitemtitle {
+    display: none;
+}
+
+#fgroup_id_grp fieldset.felement.fgroup {
+    margin-left: 5px;
+}
+
+#fgroup_id_grp fieldset.felement.fgroup span{
+    margin-right: 10px;
+}
+
+#fgroup_id_grp fieldset.felement.fgroup{
+    margin-left: 0px;
+}
+
+div.felement.fcheckbox  span{
+    margin-left: 25px;
+}
+
+.userselector .sel_comp_left {
+    width:40%;
+    float:left;
+    display: inline-block;
+}
+.userselector .sel_comp_right {
+    width:40%;
+    display: inline-block;
+}
+
+.userselector  .sel_comp_buttons {
+    min-width:15%;
+    float:left;
+    display: inline-block;
+    margin-right: 20px;
+}
+
+#fitem_id_scompanies div.felement.fselect,
+#fitem_scompanies div.felement.fselect,
+#fitem_id_scompanies div.felement.fselect,
+#fitem_scomapnies div.felement.fselectgroups,
+#fitem_id_acompanies div.felement.fselect,
+#fitem_acompanies div.felement.fselect,
+#fitem_id_acompanies div.felement.fselect,
+#fitem_acompanies div.felement.fselectgroups,
+#fitem_id_sjobroles div.felement.fselect,
+#fitem_sjobroles div.felement.fselect,
+#fitem_id_sjobroles div.felement.fselect,
+#fitem_sjobroles div.felement.fselectgroups,
+#fitem_id_ajobroles div.felement.fselect,
+#fitem_ajobroles div.felement.fselect,
+#fitem_id_ajobroles div.felement.fselect,
+#fitem_ajobroles div.felement.fselectgroups,
+#fitem_id_add_sel div.felement.fsubmit,
+#fitem_id_add_all div.felement.fsubmit,
+#fitem_id_remove_sel div.felement.fsubmit,
+#fitem_id_remove_all div.felement.fsubmit {
+    margin-left: 5px;
+}
+
+#fitem_id_scompanies div.fitemtitle,
+#fitem_scompanies div.fitemtitle,
+#fitem_id_scompanies div.fitemtitle,
+#fitem_id_acompanies div.fitemtitle,
+#fitem_acompanies div.fitemtitle,
+#fitem_id_acompanies div.fitemtitle,
+#fitem_id_sjobroles div.fitemtitle,
+#fitem_sjobroles div.fitemtitle,
+#fitem_id_sjobroles div.fitemtitle,
+#fitem_id_ajobroles div.fitemtitle,
+#fitem_ajobroles div.fitemtitle,
+#fitem_id_ajobroles div.fitemtitle,
+#fitem_id_add_sel div.fitemtitle,
+#fitem_id_add_all div.fitemtitle,
+#fitem_id_remove_sel div.fitemtitle,
+#fitem_id_remove_all div.fitemtitle {
+    display:none;
+}
+
+#fitem_scompanies_searchtext div.fitemtitle,
+#fitem_acompanies_searchtext div.fitemtitle,
+#fitem_sjobroles_searchtext div.fitemtitle,
+#fitem_ajobroles_searchtext div.fitemtitle {
+    text-align: left;
+    margin-left: 5px;
+    width: 70px;
+}
+
+#fitem_scompanies_searchtext div.felement.ftext,
+#fitem_acompanies_searchtext div.felement.ftext,
+#fitem_sjobroles_searchtext div.felement.ftext,
+#fitem_ajobroles_searchtext div.felement.ftext {
+    margin-left: 0px;
+}
+
+input#id_add_sel,
+input#id_add_all,
+input#id_remove_sel,
+input#id_remove_all {
+    width: 110px;
+}
+
+.userselector .sel_comp_left select,
+.userselector .sel_comp_right select {
+    width: 90%;
+    margin-left: 0px;
+}
+
+@media (max-width: 767px) {
+    .sel_comp_left,
+    .sel_comp_right,
+    .sel_comp_buttons {
+        float: none;
+        width: 100%;
+        display: block;
+    }
+
+
+   .userselector .sel_comp_left select,
+   .userselector .sel_comp_right select {
+        width: 100%;
+    }
+}
+
+@media (min-width: 850px) and (max-width: 978px) {
+    .sel_comp_left,
+    .sel_comp_right,
+    .sel_comp_buttons {
+        float: none;
+        width: 100%;
+        display: block;
+    }
+
+
+    .userselector .sel_comp_left select,
+    .userselector .sel_comp_right select {
+        width: 100%;
+    }
+}

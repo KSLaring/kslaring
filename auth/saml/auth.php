@@ -136,8 +136,10 @@ class auth_plugin_saml extends auth_plugin_base {
     }
 
     function loginpage_hook() {
-	    global $CFG;
+	    global $CFG,$SESSION;
 
+
+		
         if (empty($CFG->alternateloginurl) && !(isset($_GET['saml']) && $_GET['saml'] === 'false')) {
             $CFG->alternateloginurl = $CFG->wwwroot.'/auth/saml/login.php';
         }
@@ -294,10 +296,10 @@ class auth_plugin_saml extends auth_plugin_base {
     * @param object $config Configuration object
     */
     function process_config($config) {
-	    global $err, $DB, $CFG;
+	    global $err, $DB, $CFG,$SESSION;
 
         $dbman = $DB->get_manager();
-
+		
 	    if(isset($config->auth_saml_db_reset)) {
 	        $sql = "DELETE FROM ".$CFG->prefix."config_plugins WHERE plugin = 'auth/saml';";
             try {

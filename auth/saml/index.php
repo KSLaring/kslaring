@@ -7,6 +7,19 @@ define('SAML_INTERNAL', 1);
 
     try{
         global $CFG;
+
+        //$dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' START SMAL INDEX PAGE. ' . "\n";
+
+
+        //if (isset($_GET['directlink'])) {
+        //    $dbLog .= ' 111 ' . '\n';
+        //    $dbLog .= 'DIRECTLINK --> ' . $_GET['directlink'] . '\n\n';
+        //}else {
+        //    $dbLog .= ' 222 ' . '\n';
+        //}
+
+        //error_log($dbLog, 3, $CFG->dataroot . "/Testing PAQUI.log");
+
         // We read saml parameters from a config file instead from the database
         // due we can not operate with the moodle database without load all
         // moodle session issue.
@@ -99,6 +112,7 @@ define('SAML_INTERNAL', 1);
     if (!$valid_saml_session) {
 	    // Not valid session. Ship user off to Identity Provider
         unset($USER);
+        
         try {
             $as = new SimpleSAML_Auth_Simple($saml_param->sp_source);
             $as->requireAuth();
@@ -213,5 +227,56 @@ define('SAML_INTERNAL', 1);
         if(isset($err) && !empty($err)) {
             auth_saml_error($err, $urltogo, $pluginconfig->samllogfile);
         }
-        redirect($urltogo);
+
+        /**
+         * @updateDate  02/11/2015
+         * @author      eFaktor     (fbv)
+         *
+         * Description
+         * Redirect the user to KS Site
+         */
+        if (!is_siteadmin($USER)) {
+            require_once ('../../local/adfs/adfslib.php');
+
+            try {
+                /* Direct Link course  */
+                $index  = 0;
+                $modlnk = null;
+                $modid  = null;
+
+                if (isset($_GET['directlink'])) {
+                    $index = stripos($_GET['directlink'],'&');
+                    if ($index) {
+                        $modlnk = substr($_GET['directlink'],0,$index);
+                        $modid  = substr($_GET['directlink'],$index+1);
+                        $index = stripos($modid,'=');
+                        $modid = substr($modid,$index+1);
+                    }else if ($index = stripos($_GET['directlink'],'?')){
+                        $modlnk = substr($_GET['directlink'],0,$index);
+                        $modid  = substr($_GET['directlink'],$index+1);
+                        $index = stripos($modid,'=');
+                        $modid = substr($modid,$index+1);
+                    }//if_else
+                }
+
+                $urlKS = KS_ADFS::LogIn_UserADFS($USER->id,$modlnk,$modid);
+
+                header('Location: ' . urldecode($urlKS));
+                require_logout();
+                die;
+            }catch (Exception $ex) {
+                throw $ex;
+            }
+        }else {
+            /* Validate User */
+            if (KS_ADFS::IsValidUser($USER)) {
+                redirect($urltogo);
+            }else {
+                $urltogo = KS_ADFS::GetErrorURL();
+                redirect($urltogo);
+                require_logout();
+                die;
+            }
+
+        }//if_else
     }
