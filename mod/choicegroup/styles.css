@@ -114,10 +114,8 @@
 }
 
 .path-mod-choicegroup .tableform {text-align: center}
-<<<<<<< HEAD
-=======
 
 /* Styles to format the Choices table. */
 .path-mod-choicegroup .width10   {width: 10%;}
 .path-mod-choicegroup .width40   {width: 40%;}
->>>>>>> 27_core
+
