@@ -560,6 +560,12 @@ class CourseTemplate {
      *
      * Description
      * Update Waiting Enrolment
+     *
+     * @updateDate      26/08/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Add manual method
      */
     public static function UpdateWaitingEnrolment($data) {
         /* Variables */
@@ -568,6 +574,7 @@ class CourseTemplate {
         $enrolInstance  = null;
         $methodSelf     = null;
         $methodBulk     = null;
+        $methodManual   = null;
         $time           = null;
 
         /* Begin Transaction    */
@@ -599,7 +606,6 @@ class CourseTemplate {
             /* Self Method  */
             $methodSelf = new stdClass();
             $methodSelf->id                                 = $data->selfid;
-            $methodSelf->status                             = 1;
             $methodSelf->timemodified                       = $time;
             $methodSelf->password                           = $data->password;
             $methodSelf->{ENROL_FIELD_SELF_WAITING_MESSAGE} = $data->self_waiting_message;
@@ -610,6 +616,11 @@ class CourseTemplate {
             $methodBulk->timemodified                           = $time;
             $methodBulk->{ENROL_FIELD_BULK_WAITING_MESSAGE}     = $data->bulk_waiting_message;
             $methodBulk->{ENROL_FIELD_BULK_RENOVATION_MESSAGE}  = $data->bulk_renovation_message;
+
+            /* Manaul Method    */
+            $methodManual = new stdClass();
+            $methodManual->id       = $data->manualid;
+            $methodManual->status   = 0;
 
             /* Method Enrol Instance    */
             switch ($data->waitinglist) {
@@ -633,6 +644,8 @@ class CourseTemplate {
             $DB->update_record('enrol_waitinglist_method',$methodSelf);
             /* Update - Bulk method */
             $DB->update_record('enrol_waitinglist_method',$methodBulk);
+            /* Update - Manual Method   */
+            $DB->update_record('enrol_waitinglist_method',$methodManual);
 
             /* Commit */
             $trans->allow_commit();
@@ -657,6 +670,12 @@ class CourseTemplate {
      *
      * Description
      * Create waiting enrolment instance
+     *
+     * @updateDate      26/08/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Add Manual method
      */
     public static function CreateWaitingEnrolment($data) {
         /* Variables */
@@ -701,8 +720,10 @@ class CourseTemplate {
                     $methodId = $DB->insert_record('enrol_waitinglist_method',$instance);
                     if ($instance->methodtype == 'self') {
                         $data->selfid = $methodId;
-                    }else {
+                    }else if ($instance->methodtype == 'unnamedbulk')  {
                         $data->bulkid = $methodId;
+                    }else if ($instance->methodtype == 'manual') {
+                        $data->manualid = $methodId;
                     }
                 }
             }
