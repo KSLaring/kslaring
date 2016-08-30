@@ -170,6 +170,18 @@ class ct_enrolment_settings_form extends moodleform {
         $form->setType('bulk_renovation_message', PARAM_TEXT);
         $form->setDefault('bulk_renovation_message',$instance->bulk_renovation_message);
 
+        /**
+         * @updateDate  30/08/2016
+         * @author      eFaktor     (fbv)
+         *
+         * Description
+         * Add field for send confirmation
+         */
+        /* Bulk Send Confirmation   */
+        $form->addElement('hidden', 'bulk_send_confirmation');
+        $form->setType('bulk_send_confirmation', PARAM_TEXT);
+        $form->setDefault('bulk_send_confirmation',$instance->bulk_send_confirmation);
+
         $this->add_action_buttons(true,get_string('continue'));
     }//definition
 }//ct_enrolment_settings_form

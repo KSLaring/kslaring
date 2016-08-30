@@ -26,6 +26,7 @@ define('ENROL_FIELD_WELCOME_MESSAGE','customtext1');
 define('ENROL_FIELD_SELF_WAITING_MESSAGE','customtext1');
 define('ENROL_FIELD_BULK_WAITING_MESSAGE','customtext1');
 define('ENROL_FIELD_BULK_RENOVATION_MESSAGE','customtext2');
+define('ENROL_FIELD_BULK_SEND_CONFIRMATION','customint5');
 
 define('ENROL_FILED_COURSE_INTERNAL_PRICE','customtext3');
 define('ENROL_FILED_COURSE_EXTERNAL_PRICE','customtext4');
@@ -607,7 +608,10 @@ class CourseTemplate {
             $methodSelf = new stdClass();
             $methodSelf->id                                 = $data->selfid;
             $methodSelf->timemodified                       = $time;
-            $methodSelf->password                           = $data->password;
+            if (isset($data->password)) {
+                $methodSelf->password                           = $data->password;
+            }
+
             $methodSelf->{ENROL_FIELD_SELF_WAITING_MESSAGE} = $data->self_waiting_message;
 
             /* Bulk Method  */
@@ -853,6 +857,7 @@ class CourseTemplate {
                             es.customtext1                  as 'self_waiting_message',
                             un.customtext1                  as 'bulk_waiting_message',
                             un.customtext2                  as 'bulk_renovation_message',
+                            un.customint5                   as 'bulk_send_confirmation',
                             e.customint2 	                as 'max_enrolled',
                             e.customint6 	                as 'list_size',
                             e.customint8 	                as 'invoice',
@@ -915,9 +920,17 @@ class CourseTemplate {
                 $instance->priceinternal    = 0;
                 $instance->priceexternal    = 0;
                 $instance->welcome_message          = null;
-                $instance->self_waiting_message     = null;
-                $instance->bulk_waiting_message     = null;
-                $instance->bulk_renovation_message  = null;
+                /**
+                 * @updateDate  30/08/2016
+                 * @author      eFaktor     (fbv)
+                 * 
+                 * Description
+                 * Add welcome messages when is created from scratch
+                 */
+                $instance->self_waiting_message     = get_string('waitlistmessagetext_self','enrol_waitinglist');
+                $instance->bulk_waiting_message     = get_string('waitlistmessagetext_unnamedbulk','enrol_waitinglist');;
+                $instance->bulk_renovation_message  = get_string('confirmedmessagetext_unnamedbulk','enrol_waitinglist');
+                $instance->bulk_send_confirmation   = true;
 
                 return $instance;
             }//if
