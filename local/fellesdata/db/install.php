@@ -322,7 +322,7 @@ class Fellesdata_Install {
             /* Keys     */
             $tblImpManagersReporters->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
             /* Index    */
-            $tblImpManagersReporters->add_index('fodselnr',XMLDB_INDEX_NOTUNIQUE,array('fodselnr'));
+            $tblImpManagersReporters->add_index('fodselsnr',XMLDB_INDEX_NOTUNIQUE,array('fodselsnr'));
             $tblImpManagersReporters->add_index('org_enhet_id',XMLDB_INDEX_NOTUNIQUE,array('org_enhet_id'));
 
             if (!$dbMan->table_exists('fs_imp_managers_reporters')) {
