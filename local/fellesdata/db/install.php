@@ -356,7 +356,7 @@ class Fellesdata_Install {
             /* Id --> Primary key                   */
             $tblImpUsers->add_field('id',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, XMLDB_SEQUENCE,null);
             /* personalnumber --> Personal number   */
-            $tblImpUsers->add_field('fodselnr',XMLDB_TYPE_CHAR,'50',null, XMLDB_NOTNULL, null,null);
+            $tblImpUsers->add_field('fodselsnr',XMLDB_TYPE_CHAR,'50',null, XMLDB_NOTNULL, null,null);
             /* firstname    --> First name          */
             $tblImpUsers->add_field('fornavn',XMLDB_TYPE_CHAR,'255',null, XMLDB_NOTNULL, null,null);
             /* lastname     --> lastname            */
