@@ -39,6 +39,8 @@ class KS_ADFS {
                 empty($user->lastname) ||
                 empty($user->email)    ) {
                 $valid =false;
+            }else if (!isset($user->idnumber) || (empty($user->idnumber))) {
+                $valid = false;
             }else if ($user->username != $user->idnumber) {
                 $valid = false;
             }else {
