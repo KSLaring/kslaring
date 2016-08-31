@@ -21,11 +21,15 @@ $url        = new moodle_url('/auth/saml/index.php');
  * Activity/Course link
  */
 global $SESSION,$CFG;
+
+$dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' DIRECT COURSE LINK ' . "\n";
+error_log($dbLog, 3, $CFG->dataroot . "/COURSE_LNK.log");
+
 if (isset($_GET['directlink'])) {
     $SESSION->directlink = $_GET['directlink'];
     $params = array('directlink' => $_GET['directlink']);
 
-    $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' directlink: ' . $SESSION->directlink .   "\n";
+    $dbLog = ' directlink: ' . $SESSION->directlink .   "\n";
     error_log($dbLog, 3, $CFG->dataroot . "/COURSE_LNK.log");
     
     $url->params($params);
