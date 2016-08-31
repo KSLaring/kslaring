@@ -265,7 +265,8 @@ define('SAML_INTERNAL', 1);
                 error_log($dbLog, 3, $CFG->dataroot . "/COURSE_LNK.log");
 
                 $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' ADFS SSO LINK ' . "\n";
-                $dbLog .= $USER->id . ' -- ' . $USER->idnumber;
+                $dbLog .= $USER->id . ' -- ' . $USER->idnumber . "\n";
+                $dbLog .= "VValid : " . KS_ADFS::IsValidUser($USER) . "\n\n\n";
 
                 error_log($dbLog, 3, $CFG->dataroot . "/SSO_LNK.log");
 

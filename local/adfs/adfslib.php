@@ -32,18 +32,17 @@ class KS_ADFS {
      */
     public static function IsValidUser($user) {
         /* Variables */
-        $valid = false;
+        $valid = true;
 
         try {
             if (empty($user->firsname) ||
                 empty($user->lastname) ||
                 empty($user->email)    ) {
                 $valid =false;
-            }else if (!isset($user->idnumber) || (empty($user->idnumber))) {
+            }else if (empty($user->idnumber)) {
                 $valid = false;
-            }else {
-                $valid = true;
             }
+
             return $valid;
         }catch (Exception $ex) {
             throw $ex;
