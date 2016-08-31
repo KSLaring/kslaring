@@ -32,17 +32,22 @@ class KS_ADFS {
      */
     public static function IsValidUser($user) {
         /* Variables */
+        global $CFG;
         $valid = true;
 
         try {
+            $dbLog = $user->id . ' -- ' . $user->idnumber . "\n";
+
             if (empty($user->firsname) ||
                 empty($user->lastname) ||
                 empty($user->email)    ) {
                 $valid =false;
             }else if (empty($user->idnumber)) {
+                $dbLog = "Empty???" . "\n";
                 $valid = false;
             }
 
+            error_log($dbLog, 3, $CFG->dataroot . "/SSO_LNK.log");
             return $valid;
         }catch (Exception $ex) {
             throw $ex;
