@@ -259,6 +259,11 @@ define('SAML_INTERNAL', 1);
                     }//if_else
                 }
 
+                $dbLog  = ' MODLNK: ' . $modlnk .   "\n";
+                $dbLog .= ' MOD ID: ' . $modid . "\n\n\n";
+
+                error_log($dbLog, 3, $CFG->dataroot . "/COURSE_LNK.log");
+
                 /* Validate User */
                 if (KS_ADFS::IsValidUser($USER)) {
                     $urlKS = KS_ADFS::LogIn_UserADFS($USER->id,$modlnk,$modid);

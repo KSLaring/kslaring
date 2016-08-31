@@ -24,6 +24,10 @@ global $SESSION,$CFG;
 if (isset($_GET['directlink'])) {
     $SESSION->directlink = $_GET['directlink'];
     $params = array('directlink' => $_GET['directlink']);
+
+    $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' directlink: ' . $SESSION->directlink .   "\n";
+    error_log($dbLog, 3, $CFG->dataroot . "/COURSE_LNK.log");
+    
     $url->params($params);
 }
 
