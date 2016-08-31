@@ -271,11 +271,12 @@ define('SAML_INTERNAL', 1);
                 if (empty($USER->firsname) ||
                     empty($USER->lastname) ||
                     empty($USER->email)    ) {
+                    $dbLog .= "OTHERS " . "\n";
                     $valid = false;
                 }else if (empty($USER->idnumber)) {
                     $valid = false;
                 }
-                
+
                 if ($valid) {
                     $dbLog .= "User Valid " . "\n\n\n";
                 }else {
