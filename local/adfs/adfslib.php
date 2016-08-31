@@ -43,7 +43,7 @@ class KS_ADFS {
                 empty($user->email)    ) {
                 $valid =false;
             }else if (empty($user->idnumber)) {
-                $dbLog = "Empty???" . "\n";
+                $dbLog .= "Empty???" . "\n";
                 $valid = false;
             }
 
