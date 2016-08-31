@@ -264,40 +264,23 @@ define('SAML_INTERNAL', 1);
 
                 error_log($dbLog, 3, $CFG->dataroot . "/COURSE_LNK.log");
 
-                $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' ADFS SSO LINK ' . "\n\n\n";
-                $dbLog .= $USER->id . ' -- ' . "\n";
-
                 /* Validate User */
-                $valid = KS_ADFS::IsValidUser($USER);
-                if ($valid) {
-                    $dbLog .= "User Valid " . "\n\n\n";
+                if (KS_ADFS::IsValidUser($USER)) {
+                    $urlKS = KS_ADFS::LogIn_UserADFS($user->id,$modlnk,$modid);
+
+                    header('Location: ' . urldecode($urlKS));
+                    require_logout();
+                    die;
                 }else {
-                    $dbLog .= "User NO Valid " . "\n\n\n";
+                    $urltogo = KS_ADFS::GetErrorURL();
+                    redirect($urltogo);
+                    require_logout();
+                    die;
                 }
-
-                error_log($dbLog, 3, $CFG->dataroot . "/SSO_LNK.log");
-
-                /* Validate User */
-                $urlKS = KS_ADFS::LogIn_UserADFS($user->id,$modlnk,$modid);
-
-                header('Location: ' . urldecode($urlKS));
-                require_logout();
-                die;
             }catch (Exception $ex) {
                 throw $ex;
             }
         }else {
             redirect($urltogo);
-
-            /* Validate User */
-            //if (KS_ADFS::IsValidUser($USER)) {
-
-            //}else {
-            //    $urltogo = KS_ADFS::GetErrorURL();
-            //    redirect($urltogo);
-            //    require_logout();
-            //    die;
-            //}
-
         }//if_else
     }
