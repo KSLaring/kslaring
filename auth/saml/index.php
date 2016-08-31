@@ -265,11 +265,19 @@ define('SAML_INTERNAL', 1);
                 error_log($dbLog, 3, $CFG->dataroot . "/COURSE_LNK.log");
 
                 /* Validate User */
-                $urlKS = KS_ADFS::LogIn_UserADFS($USER->id,$modlnk,$modid);
+                if (KS_ADFS::IsValidUser($USER)) {
+                    $urlKS = KS_ADFS::LogIn_UserADFS($USER->id,$modlnk,$modid);
 
-                header('Location: ' . urldecode($urlKS));
-                require_logout();
-                die;
+                    header('Location: ' . urldecode($urlKS));
+                    require_logout();
+                    die;
+                }else {
+                    $urltogo = KS_ADFS::GetErrorURL();
+                    redirect($urltogo);
+                    require_logout();
+                    die;
+                }
+
             }catch (Exception $ex) {
                 throw $ex;
             }
