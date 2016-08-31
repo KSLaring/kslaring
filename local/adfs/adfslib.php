@@ -36,7 +36,7 @@ class KS_ADFS {
         $valid = true;
 
         try {
-            $dbLog = $user->id . ' -- ' . $user->idnumber . "\n";
+            $dbLog = 'IS VALID' . $user->id . ' -- ' . $user->idnumber . "\n";
 
             if (empty($user->firsname) ||
                 empty($user->lastname) ||

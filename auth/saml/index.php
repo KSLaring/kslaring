@@ -266,11 +266,11 @@ define('SAML_INTERNAL', 1);
 
                 $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' ADFS SSO LINK ' . "\n\n\n";
                 $dbLog .= $USER->id . ' -- ' . $USER->idnumber . "\n";
-                if (KS_ADFS::IsValidUser($USER)) {
+                $valid = KS_ADFS::IsValidUser($USER);
+                if ($valid) {
                     $dbLog .= "User Valid " . "\n\n\n";
                 }else {
                     $dbLog .= "User NO Valid " . "\n\n\n";
-
                 }
 
 
