@@ -265,19 +265,19 @@ define('SAML_INTERNAL', 1);
                 error_log($dbLog, 3, $CFG->dataroot . "/COURSE_LNK.log");
 
                 $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' ADFS SSO LINK ' . "\n\n\n";
-                $dbLog .= $USER->id . ' -- ' . $USER->idnumber . "\n";
+                $dbLog .= $user->id . ' -- ' . $user->idnumber . "\n";
 
                 $valid = true;
-                if (empty($USER->firsname)) {
+                if (empty($user->firsname)) {
                     $dbLog .= "firstname " . "\n";
                     $valid = false;
-                }else if (empty($USER->lastname)) {
+                }else if (empty($user->lastname)) {
                     $dbLog .= "lastname " . "\n";
                     $valid = false;
-                }else if (empty($USER->email)) {
+                }else if (empty($user->email)) {
                     $dbLog .= "email " . "\n";
                     $valid = false;
-                }else if (empty($USER->idnumber)) {
+                }else if (empty($user->idnumber)) {
                     $valid = false;
                 }
 
@@ -291,7 +291,7 @@ define('SAML_INTERNAL', 1);
                 error_log($dbLog, 3, $CFG->dataroot . "/SSO_LNK.log");
 
                 /* Validate User */
-                $urlKS = KS_ADFS::LogIn_UserADFS($USER->id,$modlnk,$modid);
+                $urlKS = KS_ADFS::LogIn_UserADFS($user->id,$modlnk,$modid);
 
                 header('Location: ' . urldecode($urlKS));
                 require_logout();
