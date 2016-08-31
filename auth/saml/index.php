@@ -268,10 +268,14 @@ define('SAML_INTERNAL', 1);
                 $dbLog .= $USER->id . ' -- ' . $USER->idnumber . "\n";
 
                 $valid = true;
-                if (empty($USER->firsname) ||
-                    empty($USER->lastname) ||
-                    empty($USER->email)    ) {
-                    $dbLog .= "OTHERS " . "\n";
+                if (empty($USER->firsname)) {
+                    $dbLog .= "firstname " . "\n";
+                    $valid = false;
+                }else if (empty($USER->lastname)) {
+                    $dbLog .= "lastname " . "\n";
+                    $valid = false;
+                }else if (empty($USER->email)) {
+                    $dbLog .= "email " . "\n";
                     $valid = false;
                 }else if (empty($USER->idnumber)) {
                     $valid = false;
