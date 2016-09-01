@@ -382,17 +382,17 @@ class outcome_report {
             /* Get Rest of the levels   */
             switch ($data['rpt']) {
                 case 1:
-                    $levelOne = $data[MANAGER_OUTCOME_STRUCTURE_LEVEL .'1'];
+                    $levelOne = array('0' => $data[MANAGER_OUTCOME_STRUCTURE_LEVEL .'1']);
 
                     break;
                 case 2:
-                    $levelOne = $data[MANAGER_OUTCOME_STRUCTURE_LEVEL .'1'];
-                    $levelTwo = $data[MANAGER_OUTCOME_STRUCTURE_LEVEL .'2'];
+                    $levelOne = array('0' => $data[MANAGER_OUTCOME_STRUCTURE_LEVEL .'1']);
+                    $levelTwo = array('0' => $data[MANAGER_OUTCOME_STRUCTURE_LEVEL .'2']);
 
                     break;
                 case 3:
-                    $levelOne   = $data[MANAGER_OUTCOME_STRUCTURE_LEVEL .'1'];
-                    $levelTwo   = $data[MANAGER_OUTCOME_STRUCTURE_LEVEL .'2'];
+                    $levelOne   = array('0' => $data[MANAGER_OUTCOME_STRUCTURE_LEVEL .'1']);
+                    $levelTwo   = array('0' => $data[MANAGER_OUTCOME_STRUCTURE_LEVEL .'2']);
 
                     if (isset($data[MANAGER_OUTCOME_STRUCTURE_LEVEL .'3'])) {
                         if (!in_array(0,$data[MANAGER_OUTCOME_STRUCTURE_LEVEL .'3'])) {
@@ -430,6 +430,8 @@ class outcome_report {
                     $inThree = $levelThree;
                     $inThree = implode(',',$inThree);
                 }
+            }else {
+                $inThree = implode(',',$inThree);
             }//if_levelThree
 
             /* Get Companies with Employees */
