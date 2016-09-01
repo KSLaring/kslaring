@@ -25,6 +25,7 @@
 $string['unnamedbulk_displayname'] = 'Bulkpåmelding';
 $string['unnamedbulk_menutitle'] = 'Reserver kursplasser for deg selv og andre';
 $string['waitlistmessagetitle_unnamedbulk'] = 'Kursplasser er lagt til i ventelisten for: {$a}';
+$string['waitlistmessagetitle_unnamedbulk_changed'] = 'Seats added to Waitlist for: {$a}. Changed seats';
 $string['waitlistmessagetext_unnamedbulk'] = '{$a->queueseats} kursplasser er lagt til i ventelisten for: {$a->coursename}
 
 Dine reserverte kursplasser er i øyeblikket nummer {$a->queueno} på ventelisten.
@@ -60,4 +61,5 @@ $string['unnamedbulk_enrolformintro'] = 'Bruk dette skjemaet til å reservere/en
 $string['unnamedbulk_enrolformqueuestatus'] = 'Du har søkt om å reservere {$a->seats} kursplasser og er tildelt {$a->assignedseats} kursplasser. 
 
 Din søknad er i øyeblikket nummer {$a->queueposition} på listen. (-0- betyr at du er først)';
-$string['unnamedbulk_enrolformqueuestatus_label'] = 'Gjeldende reservasjon';
+$string['unnamedbulk_enrolformqueuestatus_label'] = 'Din reservasjon';
+$string['unnamedbulk_enrolformqueuestatus_all'] = 'You have been assigned all your seats';

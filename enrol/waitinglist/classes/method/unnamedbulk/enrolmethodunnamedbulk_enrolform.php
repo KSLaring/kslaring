@@ -85,7 +85,7 @@ class enrolmethodunnamedbulk_enrolform extends \moodleform {
                 if($queuestatus->hasentry){
                     $mform->addElement('static','aboutqueuestatus',
                         get_string('unnamedbulk_enrolformqueuestatus_label','enrol_waitinglist'),
-                        get_string('unnamedbulk_enrolformqueuestatus','enrol_waitinglist',$queuestatus));
+                        get_string('unnamedbulk_enrolformqueuestatus_all','enrol_waitinglist',$queuestatus));
                 }else if ($infoRequest) {
                     $infoRequest->assignedseats = 0;
                     $infoRequest->waitingseats  = $infoRequest->seats;
