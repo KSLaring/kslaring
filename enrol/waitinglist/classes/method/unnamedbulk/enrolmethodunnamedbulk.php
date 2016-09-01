@@ -622,6 +622,7 @@ class enrolmethodunnamedbulk extends \enrol_waitinglist\method\enrolmethodbase {
                             //if there are vacancies, and we have an updatedentry
                             //and seats was not set to 0, and we are on top of waitinglist
                             //or there is no waitinglist at all ....give some seats
+                            /////;
                             if($vacancies &&
                                 $data->seats > $entry->seats &&
                                 ($updatedentry->queueno=1 || $queueman->get_entrycount()==0) ){
@@ -636,6 +637,26 @@ class enrolmethodunnamedbulk extends \enrol_waitinglist\method\enrolmethodbase {
                                 //post processing (emails mainly) should happen from the function call.
                                 //graduationcomplete doesn't mean much here
                                 $graduationcomplete = $this->graduate_from_list($waitinglist,$updatedentry,$giveseats);
+                            }
+
+                            /**
+                             * Send confirmation email when user increase or decrease seats
+                             */
+                            /**
+                             * @updateDate      01/09/2016
+                             * @author          eFaktor     (fbv)
+                             *
+                             * Description
+                             * Send email when there is a change of seats
+                             */
+                            if ($data->seats != $entry->seats
+                                &&
+                                $this->emailalert
+                                &&
+                                $waitinglist->{ENROL_WAITINGLIST_FIELD_SENDWAITLISTMESSAGE} ) {
+                                $queue_entry = $queueman->get_qentry($entry->id);
+                                $queue_entry->seats = $data->seats;
+                                $this->email_waitlist_message($waitinglist,$queue_entry,$USER,'',true);
                             }
                         }
 

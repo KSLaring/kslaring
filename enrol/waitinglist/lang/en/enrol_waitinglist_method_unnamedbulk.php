@@ -25,6 +25,7 @@
 $string['unnamedbulk_displayname'] = 'Unnamed Bulk';
 $string['unnamedbulk_menutitle'] = 'Reserve Seats';
 $string['waitlistmessagetitle_unnamedbulk'] = 'Seats added to Waitlist for: {$a}';
+$string['waitlistmessagetitle_unnamedbulk_changed'] = 'Seats added to Waitlist for: {$a}. Changed seats';
 $string['waitlistmessagetext_unnamedbulk'] = '{$a->totalseats} Seats Added to Waitlist for: {$a->coursename}
 
 Your reserved seats are at postion: {$a->queueno} on the waitinglist.
@@ -59,4 +60,5 @@ $string['unnamedbulk_enrolformintro'] = 'Use this form to reserve seats on this 
 $string['unnamedbulk_enrolformqueuestatus'] = 'You are currently reserving {$a->seats} seats. You have been assigned {$a->assignedseats} seats. You have {$a->waitingseats} on the waitinglist.
 
 Your seats are currently at position {$a->queueposition} on the waiting list.';
-$string['unnamedbulk_enrolformqueuestatus_label'] = 'Current Reservation';
+$string['unnamedbulk_enrolformqueuestatus_label']   = 'Current Reservation';
+$string['unnamedbulk_enrolformqueuestatus_all']     = 'You have been assigned all your seats';
