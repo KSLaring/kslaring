@@ -279,7 +279,7 @@ abstract class enrolmethodbase  {
 		}
 
 		//if we were not enrolled or not all our seats were granted, AND we are sending email, send email.
-		if ((!$graduationcomplete || $giveseats < $queue_entry->seats) 
+		if ((!$graduationcomplete || $giveseats < $queue_entry->seats)
 				&& $this->emailalert 
 				&& $waitinglist->{ENROL_WAITINGLIST_FIELD_SENDWAITLISTMESSAGE}) {
 			$queue_entry = $queueman->get_qentry($queueid);
@@ -313,7 +313,7 @@ abstract class enrolmethodbase  {
      * @param stdClass $user user record
      * @return void
      */
-    protected function email_waitlist_message($waitinglist, $entry, $user, $messagekey='') {
+    protected function email_waitlist_message($waitinglist, $entry, $user, $messagekey='',$changed=null) {
         global $CFG, $DB;
 
         $course = $DB->get_record('course', array('id'=>$waitinglist->courseid), '*', MUST_EXIST);
@@ -339,8 +339,7 @@ abstract class enrolmethodbase  {
         $a->allocatedseats = $entry->allocseats;
         $a->waitingseats = $seatsonqueue;
 
-
-        $message = $this->get_email_template($waitinglist,$messagekey);
+		$message = $this->get_email_template($waitinglist,$messagekey);
 		$message = str_replace('{$a->coursename}', $a->coursename, $message);
 		$message = str_replace('{$a->courseurl}', $a->courseurl, $message);
 		$message = str_replace('{$a->editenrolurl}', $a->editenrolurl, $message);
@@ -359,8 +358,19 @@ abstract class enrolmethodbase  {
 			$messagetext = html_to_text($messagehtml);
 		}
       
-
-        $subject = get_string('waitlistmessagetitle' . $messagekey . '_' . static::METHODTYPE, 'enrol_waitinglist', format_string($course->fullname, true, array('context'=>$context)));
+		/*
+		 * @updateDate	01/09/2016
+		 * @author		eFaktor		(fbv)
+		 *
+		 * Description
+		 * If it has been a change of seats
+		 */
+		if ($changed) {
+			$subject = get_string('waitlistmessagetitle' . $messagekey . '_' . static::METHODTYPE . '_changed', 'enrol_waitinglist', format_string($course->fullname, true, array('context'=>$context)));
+		}else {
+			$subject = get_string('waitlistmessagetitle' . $messagekey . '_' . static::METHODTYPE, 'enrol_waitinglist', format_string($course->fullname, true, array('context'=>$context)));	
+		}
+        
 
         $rusers = array();
         if (!empty($CFG->coursecontact)) {
