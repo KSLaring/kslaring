@@ -13,7 +13,11 @@ $loggedin = isloggedin();
 $loggedinclass = ' not-loggedin';
 if ($loggedin) {
     /* Get the municipality connected with the user */
-    $municipality = Municipality::municipality_ExitsMuni_User($USER->id);
+    //$municipality = Municipality::municipality_ExitsMuni_User($USER->id);
+    // For the Bergen theme always show the Bergen logo.
+    $municipality = new stdClass();
+    $municipality->name = 'Bergen kommune';
+    $municipality->logo = $OUTPUT->pix_url('bergen_kommune_logo', 'theme_bergen');
     $loggedinclass = ' loggedin';
 }
 ?>
@@ -23,16 +27,18 @@ if ($loggedin) {
 
 <div class="header-background">
     <div class="container-fluid">
-        <div class="logo-area">
-            <a class="logo" href="<?php echo $CFG->wwwroot; ?>">
-                <h1>BK Læring <span class="smaller">Kursadministrasjonssystem for Bergen kommune</span></h1></a>
-        </div>
-
-        <div class="header-right">
-            <?php if ($municipality) {
-                echo '<div class="muni-logo"><img class="logo" alt="' .
-                    $municipality->name . '"src="' . $municipality->logo . '"/></div>';
-            } ?>
+        <div class="bergen-background-image clearfix">
+            <div class="logo-area">
+                <a class="logo" href="<?php echo $CFG->wwwroot; ?>">
+                    <h1>BK Læring <span class="smaller">Kursadministrasjonssystem for Bergen kommune</span></h1></a>
+            </div>
+    
+            <div class="header-right">
+                <?php if ($municipality) {
+                    echo '<div class="muni-logo"><img class="logo" alt="' .
+                        $municipality->name . '"src="' . $municipality->logo . '"/></div>';
+                } ?>
+            </div>
         </div>
     </div>
 </div>
@@ -50,7 +56,9 @@ if ($loggedin) {
                     <span class="icon-bar"></span>
                 </a>
 
-                <?php if (!$loggedin) : ?>
+                <?php echo $OUTPUT->search_form(); ?>
+
+                <?php if (!$loggedin || isguestuser()) : ?>
                     <div class="navbar-text"><?php echo $OUTPUT->login_info() ?></div>
                 <?php endif ?>
 

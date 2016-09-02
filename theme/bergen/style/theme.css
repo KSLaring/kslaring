@@ -51,7 +51,7 @@ a.btn.active {
 }
 .logo-area {
   float: left;
-  max-width: 85%;
+  max-width: 75%;
   height: 52px;
   margin: 2em 0 1em;
   padding: 0;
@@ -84,9 +84,21 @@ a.btn.active {
     margin-bottom: .5em;
   }
 }
+.bergen-background-image {
+  background: url([[pix:theme|header_curve]]) 100% 0 no-repeat;
+}
+@media (max-width: 767px) {
+  .bergen-background-image {
+    background-image: none;
+  }
+}
 .header-right {
-  max-width: 15%;
+  background-image: none;
+  max-width: 25%;
   width: auto;
+}
+.header-right .muni-logo {
+  float: right;
 }
 .header-right .muni-logo img {
   max-height: 60px;
