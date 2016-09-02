@@ -22,94 +22,28 @@
  * @author     Urs Hunkler {@link urs.hunkler@unodo.de}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class theme_kommit_core_renderer extends core_renderer {
-    // additional block regions
+class theme_kommit_core_renderer extends theme_bootstrapbase_core_renderer {
+    // Additional block regions.
     public function blocks($region, $classes = array(), $tag = 'aside') {
         global $editing;
 
         $displayregion = $this->page->apply_theme_region_manipulations($region);
         if ($this->page->blocks->region_has_content($displayregion, $this) || $editing) {
-            $blocks_html = parent::blocks($region, $classes, $tag);
-            if ($region === 'content-top' && strpos($blocks_html, 'mod_quiz_navblock') !== false) {
-                $blocks_html = $this->process_quiz_nav_block($blocks_html);
+            $blockshtml = parent::blocks($region, $classes, $tag);
+            if ($region === 'content-top' && strpos($blockshtml, 'mod_quiz_navblock') !== false) {
+                $this->page->requires->js_call_amd('theme_kommit/quiznav', 'init');
+                $blockshtml = $this->process_quiz_nav_block($blockshtml);
             }
 
-            return $blocks_html;
+            return $blockshtml;
         }
 
         return '';
     }
 
-    protected function process_quiz_nav_block($blocks_html) {
+    protected function process_quiz_nav_block($blockshtml) {
         $jsscript = <<<EOT
-YUI().use('anim', 'node-event-simulate', function(Y) {
-  var nbl = Y.one("#mod_quiz_navblock"),
-    p = nbl.one("a.thispage"),
-    qbtns = Y.one(".qn_buttons"),
-    allqbtns = qbtns.all(".qnbutton");
 
-  if (p) {
-    var p_id = p.getAttribute('id'),
-        p_no = parseInt(p_id.replace(/\D/g, ''), 10),
-        c = nbl.one("#qn-buttons-wrapper"),
-        l_btn_ar = c.all('a:last-child'),
-        l_btn = l_btn_ar.item(0),
-        l_btn_id = l_btn.getAttribute('id'),
-        l_btn_no = parseInt(l_btn_id.replace(/\D/g, ''), 10),
-        btnp = nbl.one(".prev-btn"),
-        btnn = nbl.one(".next-btn"),
-        ppos = parseInt(p.getX()),
-        cpos = parseInt(c.getX()),
-        poff = ppos - cpos,
-        pl = 0,
-        pr = 0,
-        amount = 0,
-        base = 0;
-
-      btnp.on('click', function() {
-        if (p_no > 1) {
-          c.one('#quiznavbutton' + (p_no - 1)).simulate('click');
-        }
-      });
-
-      btnn.on('click', function() {
-        if (p_no < l_btn_no) {
-          c.one('#quiznavbutton' + (p_no + 1)).simulate('click');
-        }
-      });
-
-      if (poff > 0) {
-        ani = new Y.Anim({
-          node: c,
-          to: {
-            scrollLeft: poff
-          }
-        });
-        ani.run();
-      }
-
-      // Calculate the padding depending on the number of elements
-      // to get the percentage for left and right padding. One button has
-      // left padding, the number, right padding. So padding will reference
-      // roughly 1/3. If the numbers show 1 figure use 40% if there are more than 10
-      // questions numbers have one and two figures - then use 35%.
-      amount = allqbtns.size();
-      base = (amount < 10) ? 43 : 35;
-      pr = (base / amount) + "%";
-      pl = pr;
-
-      // console.log(amount, base, pr);
-
-      allqbtns.setStyles({
-        "padding-right": pr,
-        "padding-left": pl
-      });
-
-      qbtns.addClass("repaint");
-
-    //  console.log(p_id, p_no, l_btn_no);
-    }
-});
 EOT;
 
         $dom = new DOMDocument('1.0', 'utf-8');
@@ -117,58 +51,62 @@ EOT;
         libxml_use_internal_errors(true);
         // DOMDocument uses the ISO-8859-1 encoding, to keep unicode text UTF-8 needs
         // to be converted to HTML entities.
-        // http://stackoverflow.com/questions/11309194/php-domdocument-failing-to-handle-utf-8-characters-%E2%98%86
-        $blocks_html_encoded = mb_convert_encoding($blocks_html, 'HTML-ENTITIES', 'UTF-8');
-        $dom->loadHTML($blocks_html_encoded);
+        // http://stackoverflow.com/questions/11309194/php-domdocument-failing-to-handle-utf-8-characters-%E2%98%86.
+        $blockshtmlencoded = mb_convert_encoding($blockshtml, 'HTML-ENTITIES', 'UTF-8');
+        $dom->loadHTML($blockshtmlencoded);
         libxml_clear_errors();
         $xpath = new DOMXPath($dom);
 
-        // Get the "qn_buttons" and its parent node
-        $qn_buttons = $xpath->query("//div[contains(@class, 'qn_buttons')]")->item(0);
+        // Get the "qn_buttons" and its parent node.
+        $qnbuttons = $xpath->query("//div[contains(@class, 'qn_buttons')]")->item(0);
         $othernav = $xpath->query("//div[contains(@class, 'othernav')]")->item(0);
-        $contentNode = $qn_buttons->parentNode;
+        $contentnode = $qnbuttons->parentNode;
 
-        // Create a new wrapper
+        // Create a new wrapper.
         $wrapper = $dom->createElement('div');
         $wrapper->setAttribute('id', 'qn-buttons-wrapper');
 
-        $back_btn = $dom->createDocumentFragment();
-        $back_btn->appendXML('<button class="btn prev-btn">&lt;</button>');
-        $next_btn = $dom->createDocumentFragment();
-        $next_btn->appendXML('<button class="btn next-btn">&gt;</button>');
+        $backbtn = $dom->createDocumentFragment();
+        $backbtn->appendXML('<button class="btn prev-btn">&lt;</button>');
+        $nextbtn = $dom->createDocumentFragment();
+        $nextbtn->appendXML('<button class="btn next-btn">&gt;</button>');
 
         // Put the new wrapper around the button node and
         // add both to the content node.
-        $contentNode->removeChild($qn_buttons);
-        $wrapper->appendChild($qn_buttons);
-        $contentNode->insertBefore($back_btn, $othernav);
-        $contentNode->insertBefore($wrapper, $othernav);
-        $contentNode->insertBefore($next_btn, $othernav);
+        $contentnode->removeChild($qnbuttons);
+        $wrapper->appendChild($qnbuttons);
+        $contentnode->insertBefore($backbtn, $othernav);
+        $contentnode->insertBefore($wrapper, $othernav);
+        $contentnode->insertBefore($nextbtn, $othernav);
 
-        // Create the script node and append it at the end
+        // Create the script node and append it at the end.
         $blockscript = $dom->createElement('script', $jsscript);
         $blockscript->setAttribute('type', 'text/javascript');
         $wrapper->appendChild($blockscript);
 
         $body = $dom->getElementsByTagName('body')->item(0);
-        $out = $this->getNodeInnerHTML($body);
+        $out = $this->get_node_inner_html($body);
 
         return $out;
     }
 
-    protected function getNodeInnerHTML(DOMNode $oNode) {
-        $oDom = new DOMDocument('1.0', 'utf-8');
-        foreach ($oNode->childNodes as $oChild) {
-            $oDom->appendChild($oDom->importNode($oChild, true));
+    protected function get_node_inner_html(DOMNode $onode) {
+        $odom = new DOMDocument('1.0', 'utf-8');
+        foreach ($onode->childNodes as $ochild) {
+            $odom->appendChild($odom->importNode($ochild, true));
         }
 
-        return $oDom->saveHTML();
+        return $odom->saveHTML();
     }
 
-    /*
-   * This code replaces the icons in the Admin block with
-   * FontAwesome variants where available.
-   */
+    /**
+     * This code replaces the icons in the Admin block with
+     * FontAwesome variants where available.
+     *
+     * @param pix_icon $icon
+     *
+     * @return bool|string
+     */
     protected function render_pix_icon(pix_icon $icon) {
         if (self::replace_moodle_icon($icon->pix) !== false && $icon->attributes['alt'] === '') {
             return self::replace_moodle_icon($icon->pix);
@@ -234,10 +172,10 @@ EOT;
             $breadcrumbs[] = $this->render($item);
         }
         $divider = '</li>' . '<span class="divider">></span>' . '<li>';
-        $list_items = '<li>' . join($divider, $breadcrumbs) . '</li>';
+        $listitems = '<li>' . join($divider, $breadcrumbs) . '</li>';
         $title = '<span class="accesshide">' . get_string('pagepath') . '</span>';
 
-        return $title . "<ul class=\"breadcrumb\">$list_items</ul>";
+        return $title . "<ul class=\"breadcrumb\">$listitems</ul>";
     }
 
     /*
@@ -341,10 +279,6 @@ EOT;
                     array('sesskey' => sesskey(), 'alt' => 'logout')),
                     get_string('logout'));
 
-            } else {
-                /*
-                 * Hide login in custom menu area
-                $usermenu = $menu->add(get_string('login'), new moodle_url('/login/index.php'), get_string('login'), 10001);*/
             }
         }
 
@@ -379,7 +313,8 @@ EOT;
             } else {
                 $url = '#cm_submenu_' . $submenucount;
             }
-            $content .= html_writer::start_tag('a', array('href' => $url, 'class' => 'dropdown-toggle', 'data-toggle' => 'dropdown', 'title' => $menunode->get_title()));
+            $content .= html_writer::start_tag('a', array('href' => $url, 'class' => 'dropdown-toggle',
+                'data-toggle' => 'dropdown', 'title' => $menunode->get_title()));
             $content .= $menunode->get_text();
             if ($level == 1) {
                 $content .= '<b class="caret"></b>';
@@ -443,7 +378,7 @@ EOT;
             return html_writer::tag('li', html_writer::tag('a', $tab->text), array('class' => 'disabled'));
         } else {
             if (!($tab->link instanceof moodle_url)) {
-                // backward compartibility when link was passed as quoted string
+                // Backward compatible when link was passed as quoted string.
                 $link = "<a href=\"$tab->link\" title=\"$tab->title\">$tab->text</a>";
             } else {
                 $link = html_writer::link($tab->link, $tab->text, array('title' => $tab->title));
@@ -538,13 +473,13 @@ EOT;
         $loginurl = get_login_url();
 
         if (empty($course->id)) {
-            // $course->id is not defined during installation
+            // The $course->id is not defined during installation.
             return '';
         } else if (isloggedin()) {
             $context = context_course::instance($course->id);
 
             $fullname = fullname($USER, true);
-            // Since Moodle 2.0 this link always goes to the public profile page (not the course profile page)
+            // Since Moodle 2.0 this link always goes to the public profile page (not the course profile page).
             if ($withlinks) {
                 $linktitle = get_string('viewprofile');
                 $username = "<a href=\"$CFG->wwwroot/user/profile.php?id=$USER->id\" title=\"$linktitle\">$fullname</a>";
@@ -563,7 +498,7 @@ EOT;
                 if (!$loginpage && $withlinks) {
                     $loggedinas .= " (<a href=\"$loginurl\">" . get_string('login') . '</a>)';
                 }
-            } else if (is_role_switched($course->id)) { // Has switched roles
+            } else if (is_role_switched($course->id)) { // Has switched roles.
                 $rolename = '';
                 if ($role = $DB->get_record('role', array('id' => $USER->access['rsw'][$context->path]))) {
                     $rolename = ': ' . role_get_name($role, $context);
@@ -576,11 +511,12 @@ EOT;
             } else {
                 $loggedinas = $realuserinfo . get_string('loggedinas', 'moodle', $username);
                 if ($withlinks) {
-                    $loggedinas .= " (<a href=\"$CFG->wwwroot/login/logout.php?sesskey=" . sesskey() . "\">" . get_string('logout') . '</a>)';
+                    $loggedinas .= " (<a href=\"$CFG->wwwroot/login/logout.php?sesskey=" . sesskey() . "\">" .
+                        get_string('logout') . '</a>)';
                 }
             }
         } else {
-            // start change uh 2014-11-18
+            // Start change uh 2014-11-18.
             // Remove the text »You are not logged in.« and the brackets,
             // set the login link to bold.
             //            $loggedinas = get_string('loggedinnot', 'moodle');
@@ -588,7 +524,7 @@ EOT;
             if (!$loginpage && $withlinks) {
                 $loggedinas .= " <a href=\"$loginurl\"><strong>" . get_string('login') . '</strong></a>';
             }
-            // end change uh
+            // End change uh.
         }
 
         $loggedinas = '<div class="logininfo">' . $loggedinas . '</div>';
@@ -604,7 +540,9 @@ EOT;
                         $a = new stdClass();
                         $a->attempts = $count;
                         $loggedinas .= get_string('failedloginattempts', '', $a);
-                        if (file_exists("$CFG->dirroot/report/log/index.php") and has_capability('report/log:view', context_system::instance())) {
+                        if (file_exists("$CFG->dirroot/report/log/index.php") &&
+                            has_capability('report/log:view', context_system::instance())
+                        ) {
                             $loggedinas .= ' (' . html_writer::link(new moodle_url('/report/log/index.php', array('chooselog' => 1,
                                     'id' => 0, 'modid' => 'site_errors')), get_string('logs')) . ')';
                         }
@@ -684,7 +622,7 @@ EOT;
                 $realuserinfo = " [$fullname] ";
             }
             $fullname = fullname($USER, true);
-            // Since Moodle 2.0 this link always goes to the public profile page (not the course profile page)
+            // Since Moodle 2.0 this link always goes to the public profile page (not the course profile page).
             if ($withlinks) {
                 $linktitle = get_string('viewprofile');
                 $username = "<a href=\"$CFG->wwwroot/user/profile.php?id=$USER->id\" title=\"$linktitle\">$fullname</a>";
@@ -694,14 +632,15 @@ EOT;
             $loggedinas .= '<div class="returntorole">';
             $loggedinas .= $realuserinfo . get_string('loggedinas', 'moodle', $username);
             if ($withlinks) {
-                $loggedinas .= " (<a href=\"$CFG->wwwroot/login/logout.php?sesskey=" . sesskey() . "\">" . get_string('logout') . '</a>)';
+                $loggedinas .= " (<a href=\"$CFG->wwwroot/login/logout.php?sesskey=" . sesskey() . "\">" .
+                    get_string('logout') . '</a>)';
             }
             $loggedinas .= '</div>';
         } else {
             $realuserinfo = '';
         }
 
-        if (!is_role_switched($PAGE->course->id)) { // Has no switched roles
+        if (!is_role_switched($PAGE->course->id)) { // Has no switched roles.
             return $loggedinas;
         }
 
@@ -727,6 +666,39 @@ EOT;
     }
 
     /**
+     * Return the Moodle course search form.
+     *
+     * @return string The HTML for the search form
+     */
+    public function search_form() {
+        global $CFG;
+
+        $out = '';
+        $form = <<<T_END_HEREDOC
+        <form id="topsearch" action="{{baseurl}}/course/search.php" method="get">
+            <fieldset class="topsearchbox invisiblefieldset input-append">
+                <label for="shorttopsearchbox">{{searchlabel}}</label>
+                <input type="text" id="shorttopsearchbox" class="input-medium-" name="search"
+                    placeholder="{{placeholder}}" value="">
+                <button type="submit"><i class="icon-search icon-white"></i></button>
+            </fieldset>
+        </form>
+        <script type="text/javascript">Y.one('#shorttopsearchbox').focus();</script>
+T_END_HEREDOC;
+        $baseurl = $CFG->wwwroot;
+        $strsearchlabel = 'Search courses: ';
+        $strplaceholder = 'Hva leter du etter?';
+
+        $out = str_replace(
+            array('{{baseurl}}', '{{searchlabel}}', '{{placeholder}}'),
+            array($baseurl, $strsearchlabel, $strplaceholder),
+            $form
+        );
+
+        return $out;
+    }
+
+    /**
      * Get the background image style with the Moodle URL.
      *
      * @param $context object The Moodle context
@@ -734,7 +706,7 @@ EOT;
      * @return string The CSS background image style
      */
     protected function get_bgimg_style_o($context) {
-        // img background
+        // Img background.
         $bgimg = $this->bgimg_get_img(1, 1);
 
         $bgimgurl = '';
@@ -759,7 +731,7 @@ EOT;
      * @return string The CSS background image style
      */
     protected function get_bgimg_style($context) {
-        $bgimgurl  = $this->page->theme->setting_file_url('heroimg', 'heroimg');
+        $bgimgurl = $this->page->theme->setting_file_url('heroimg', 'heroimg');
         $imgstyle = '';
         if (!empty($bgimgurl)) {
             $imgstyle = "background-image: url('" . $bgimgurl . "');";
@@ -779,9 +751,9 @@ EOT;
     protected function editbtn($context, $sectionid) {
         global $PAGE, $USER;
 
-        $url_pic_edit = $PAGE->theme->pix_url('t/edit', 'moodle');
-        $str_edit_image = get_string('editimage', 'theme_kommit');
-        $str_edit_image_alt = get_string('editimage_alt', 'theme_kommit');
+        $urlpicedit = $PAGE->theme->pix_url('t/edit', 'moodle');
+        $streditimage = get_string('editimage', 'theme_kommit');
+        $streditimagealt = get_string('editimage_alt', 'theme_kommit');
 
         return html_writer::link(
             $this->bgimg_moodle_url('editimage.php', array(
@@ -789,10 +761,10 @@ EOT;
                 'sectionid' => $sectionid,
                 'userid' => $USER->id)),
             html_writer::empty_tag('img', array(
-                'src' => $url_pic_edit,
-                'alt' => $str_edit_image_alt)) . '&nbsp;' . $str_edit_image,
+                'src' => $urlpicedit,
+                'alt' => $streditimagealt)) . '&nbsp;' . $streditimage,
             array(
-                'title' => $str_edit_image_alt,
+                'title' => $streditimagealt,
                 'class' => 'editbgimg'
             )
         );
@@ -813,13 +785,7 @@ EOT;
             return false;
         }
 
-        /**
-         * @updateDate  03/14/2014
-         * @author      eFaktor         (fbv)
-         *
-         * Description
-         * Check if the table exists
-         */
+        // Check if the table exists.
         if ($DB->get_manager()->table_exists('background_image')) {
             if (!$bgimg = $DB->get_record('background_image', array('sectionid' => $sectionid))) {
                 $bgimg = false;
@@ -828,14 +794,14 @@ EOT;
             return $bgimg;
         } else {
             return false;
-        }//if_table_exist
+        }
     }
 
     /**
      * Get the course URL with the given PHP file name and optional params
      *
-     * @param       $url    The PHP file name
-     * @param array $params URL params needed to call the page
+     * @param string $url    The PHP file name
+     * @param array  $params URL params needed to call the page
      *
      * @return moodle_url
      */

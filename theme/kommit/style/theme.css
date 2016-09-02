@@ -413,6 +413,84 @@ h6 {
   border: none;
   border-bottom: 1px dotted #7e7e7e;
 }
+.navbar-menues {
+  position: relative;
+}
+@media only screen and (min-width: 980px) {
+  .navbar-menues {
+    float: right;
+    width: 70%;
+  }
+}
+@media only screen and (min-width: 768px) and (max-width: 979px) {
+  .navbar-menues {
+    float: right;
+    width: 60%;
+  }
+}
+@media only screen and (min-width: 640px) and (max-width: 767px) {
+  .navbar-menues {
+    float: right;
+    width: 50%;
+  }
+}
+@media only screen and (max-width: 639px) {
+  .navbar-menues {
+    float: none;
+  }
+}
+.navbar-menues .nav-collapse.active,
+.navbar-menues .nav-collapse.in {
+  float: right;
+}
+@media only screen and (max-width: 639px) {
+  .navbar-menues .nav-collapse.active,
+  .navbar-menues .nav-collapse.in {
+    float: none;
+  }
+}
+@media only screen and (min-width: 768px) {
+  #topsearch {
+    float: left;
+  }
+}
+@media only screen and (min-width: 640px) and (max-width: 767px) {
+  #topsearch {
+    float: left;
+    margin-left: 20px;
+  }
+}
+@media only screen and (max-width: 639px) {
+  #topsearch {
+    float: none;
+    margin-left: 5px;
+  }
+}
+#topsearch #shorttopsearchbox {
+  margin-bottom: 0;
+}
+#topsearch .topsearchbox label {
+  display: block;
+  font-size: 1px;
+  line-height: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+#topsearch .topsearchbox button {
+  font-family: Georgia, "Times New Roman", Times, serif;
+  font-size: 16px;
+  padding-top: .4em;
+  padding-bottom: .25em;
+  margin: 0;
+}
+#topsearch .topsearchbox.input-append {
+  margin-bottom: 5px;
+}
+#topsearch .topsearchbox.input-append input {
+  -webkit-border-radius: 0;
+  -moz-border-radius: 0;
+  border-radius: 0;
+}
 .sectionname {
   font-size: 1.3em;
 }
@@ -992,7 +1070,7 @@ a.autolink.glossary {
   display: none;
 }
 body {
-  padding-top: 0px;
+  padding-top: 0;
   background: #f2f2f3;
 }
 .top-border {
@@ -1016,8 +1094,8 @@ body {
   float: left;
   width: 224px;
   height: 52px;
-  margin: 19px 0px;
-  padding: 0px;
+  margin: 19px 0;
+  padding: 0;
 }
 .header-right {
   float: right;
@@ -1204,12 +1282,164 @@ body {
 .path-admin #explaincaps .rolecap.no td {
   background-color: #fae5e3;
 }
-/* fix for feedback module dropdowns
-// Jon Jack
-*/
 #page-mod-feedback-complete .box .feedback_items .feedback_item_presentation_left ul {
   padding: 0;
-  margin: 0 0 10.5px 0px;
+  margin: 0 0 10.5px 0;
+}
+.btn {
+  display: inline-block;
+  *display: inline;
+  /* IE7 inline-block hack */
+  *zoom: 1;
+  padding: 5px 15px;
+  margin-bottom: 0;
+  line-height: 21px;
+  text-align: center;
+  vertical-align: middle;
+  cursor: pointer;
+  background: #0e7b9e;
+  border: none;
+  *border: 0;
+  -webkit-border-radius: 0;
+  -moz-border-radius: 0;
+  border-radius: 0;
+  color: white;
+  text-shadow: none;
+  font-size: 16px;
+}
+.btn:hover,
+.btn:focus {
+  color: white;
+  text-decoration: none;
+  background: #00aef0;
+}
+.btn:focus {
+  outline: thin dotted #333;
+  outline: 5px auto -webkit-focus-ring-color;
+  outline-offset: -2px;
+}
+.btn.active,
+.btn:active {
+  outline: 0;
+}
+.btn.disabled,
+.btn[disabled] {
+  cursor: default;
+  opacity: 0.65;
+  filter: alpha(opacity=65);
+}
+.btn-lineup {
+  margin: 10px 10px 10px 10px;
+}
+button,
+input.form-submit,
+input[type="button"],
+input[type="submit"],
+input[type="reset"],
+input#id_submitbutton,
+input#id_submitbutton2,
+.path-admin .buttons input[type="submit"],
+td.submit input {
+  display: inline-block;
+  *display: inline;
+  /* IE7 inline-block hack */
+  *zoom: 1;
+  padding: 5px 15px;
+  margin-bottom: 0;
+  line-height: 21px;
+  text-align: center;
+  vertical-align: middle;
+  cursor: pointer;
+  background: #0e7b9e;
+  border: none;
+  *border: 0;
+  -webkit-border-radius: 0;
+  -moz-border-radius: 0;
+  border-radius: 0;
+  color: white;
+  text-shadow: none;
+  font-size: 16px;
+  margin: 10px 10px 10px 10px;
+}
+button:hover,
+input.form-submit:hover,
+input[type="button"]:hover,
+input[type="submit"]:hover,
+input[type="reset"]:hover,
+input#id_submitbutton:hover,
+input#id_submitbutton2:hover,
+.path-admin .buttons input[type="submit"]:hover,
+td.submit input:hover,
+button:focus,
+input.form-submit:focus,
+input[type="button"]:focus,
+input[type="submit"]:focus,
+input[type="reset"]:focus,
+input#id_submitbutton:focus,
+input#id_submitbutton2:focus,
+.path-admin .buttons input[type="submit"]:focus,
+td.submit input:focus {
+  color: white;
+  text-decoration: none;
+  background: #00aef0;
+}
+button:focus,
+input.form-submit:focus,
+input[type="button"]:focus,
+input[type="submit"]:focus,
+input[type="reset"]:focus,
+input#id_submitbutton:focus,
+input#id_submitbutton2:focus,
+.path-admin .buttons input[type="submit"]:focus,
+td.submit input:focus {
+  outline: thin dotted #333;
+  outline: 5px auto -webkit-focus-ring-color;
+  outline-offset: -2px;
+}
+button.active,
+input.form-submit.active,
+input[type="button"].active,
+input[type="submit"].active,
+input[type="reset"].active,
+input#id_submitbutton.active,
+input#id_submitbutton2.active,
+.path-admin .buttons input[type="submit"].active,
+td.submit input.active,
+button:active,
+input.form-submit:active,
+input[type="button"]:active,
+input[type="submit"]:active,
+input[type="reset"]:active,
+input#id_submitbutton:active,
+input#id_submitbutton2:active,
+.path-admin .buttons input[type="submit"]:active,
+td.submit input:active {
+  outline: 0;
+}
+button.disabled,
+input.form-submit.disabled,
+input[type="button"].disabled,
+input[type="submit"].disabled,
+input[type="reset"].disabled,
+input#id_submitbutton.disabled,
+input#id_submitbutton2.disabled,
+.path-admin .buttons input[type="submit"].disabled,
+td.submit input.disabled,
+button[disabled],
+input.form-submit[disabled],
+input[type="button"][disabled],
+input[type="submit"][disabled],
+input[type="reset"][disabled],
+input#id_submitbutton[disabled],
+input#id_submitbutton2[disabled],
+.path-admin .buttons input[type="submit"][disabled],
+td.submit input[disabled] {
+  cursor: default;
+  opacity: 0.65;
+  filter: alpha(opacity=65);
+}
+#notice .buttons .singlebutton {
+  display: inline-block;
 }
 .hero-unit {
   background-color: #f2f2f3;

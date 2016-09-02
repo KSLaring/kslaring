@@ -480,6 +480,15 @@ a.skip:active {
 .groupselector label {
   display: inline-block;
 }
+.dataformatselector {
+  margin: 1em 0;
+}
+.dataformatselector label {
+  display: inline-block;
+  margin: 0 5px 10px 0;
+  line-height: 30px;
+  vertical-align: top;
+}
 .loginbox {
   margin: 15px;
   overflow: visible;
@@ -716,105 +725,81 @@ table.mod_index {
 /**
 * Tags
 */
-#page-tag-coursetags_edit .coursetag_edit_centered {
-  position: relative;
-  width: 600px;
-  margin: 20px auto;
-}
-#page-tag-coursetags_edit .coursetag_edit_row {
-  clear: both;
-}
-#page-tag-coursetags_edit .coursetag_edit_row .coursetag_edit_left {
-  float: left;
-  width: 50%;
-  text-align: right;
-}
-#page-tag-coursetags_edit .coursetag_edit_row .coursetag_edit_right {
-  margin-left: 50%;
-}
-#page-tag-coursetags_edit .coursetag_edit_input3 {
-  display: none;
-}
-#page-tag-coursetags_more .coursetag_more_large {
-  font-size: 120%;
-}
-#page-tag-coursetags_more .coursetag_more_small {
-  font-size: 80%;
-}
-#page-tag-coursetags_more .coursetag_more_link {
-  font-size: 80%;
-}
-#tag-description,
-#tag-blogs {
-  width: 100%;
-}
-#tag-management-box {
-  margin-bottom: 10px;
-  line-height: 20px;
-}
-#tag-user-table {
-  padding: 3px;
-  clear: both;
-  width: 100%;
-}
-#tag-user-table {
-  *zoom: 1;
-}
-#tag-user-table:before,
-#tag-user-table:after {
-  display: table;
-  content: "";
-  line-height: 0;
-}
-#tag-user-table:after {
-  clear: both;
-}
 img.user-image {
   height: 100px;
   width: 100px;
-}
-#small-tag-cloud-box {
-  width: 300px;
-  margin: 0 auto;
-}
-#big-tag-cloud-box {
-  width: 600px;
-  margin: 0 auto;
-  float: none;
-}
-ul#tag-cloud-list {
-  list-style: none;
-  padding: 5px;
-  margin: 0;
-}
-ul#tag-cloud-list li {
-  margin: 0;
-  display: inline;
-  list-style-type: none;
 }
 #tag-search-box {
   text-align: center;
   margin: 10px auto;
 }
-#tag-search-results-container {
-  padding: 0;
-  width: 100%;
+.path-tag .tag-index-items .tagarea {
+  border: 1px solid #E3E3E3;
+  border-radius: 4px;
+  padding: 10px;
+  margin-top: 10px;
 }
-#tag-search-results {
-  padding: 0;
-  margin: 15px 20% 0 20%;
-  float: left;
-  width: 60%;
+.path-tag .tag-index-items .tagarea h3 {
   display: block;
-}
-#tag-search-results li {
-  width: 30%;
-  float: left;
-  padding-left: 1%;
-  text-align: left;
+  padding: 3px 0 10px 0;
+  margin: 0px;
+  font-size: 1.1em;
+  font-weight: bold;
   line-height: 20px;
-  padding-right: 1%;
-  list-style: none;
+  color: #999;
+  text-shadow: 0px 1px 0px rgba(255, 255, 255, 0.5);
+  text-transform: uppercase;
+  word-wrap: break-word;
+  border-bottom: solid 1px #E3E3E3;
+  margin-bottom: 10px;
+}
+.path-tag .tagarea .controls,
+.path-tag .tagarea .taggeditems {
+  *zoom: 1;
+}
+.path-tag .tagarea .controls:before,
+.path-tag .tagarea .taggeditems:before,
+.path-tag .tagarea .controls:after,
+.path-tag .tagarea .taggeditems:after {
+  display: table;
+  content: "";
+  line-height: 0;
+}
+.path-tag .tagarea .controls:after,
+.path-tag .tagarea .taggeditems:after {
+  clear: both;
+}
+.path-tag .tagarea .controls,
+.path-tag .tag-backtoallitems {
+  text-align: center;
+}
+.path-tag .tagarea .controls .gotopage.nextpage {
+  float: right;
+}
+.path-tag .tagarea .controls .gotopage.prevpage {
+  float: left;
+}
+.path-tag .tagarea .controls .exclusivemode {
+  display: inline-block;
+}
+.dir-rtl.path-tag .tagarea .controls .gotopage.nextpage {
+  float: left;
+}
+.dir-rtl.path-tag .tagarea .controls .gotopage.prevpage {
+  float: right;
+}
+.path-tag .tagarea .controls.controls-bottom {
+  margin-top: 5px;
+}
+.path-tag .tagarea .controls .gotopage.nextpage::after {
+  padding-right: 5px;
+  padding-left: 5px;
+  content: "»";
+}
+.path-tag .tagarea .controls .gotopage.prevpage::before {
+  padding-right: 5px;
+  padding-left: 5px;
+  content: "«";
 }
 span.flagged-tag,
 tr.flagged-tag,
@@ -827,91 +812,154 @@ tr.flagged-tag a {
   vertical-align: middle;
   padding: 4px;
 }
-.tag-management-table tr td.tageditingon .displaytagname,
-.tag-management-table td .edittagname {
-  display: none;
+.tag-management-table .inplaceeditable.inplaceeditingon input {
+  width: 150px;
 }
-.tag-management-table tr td.tageditingon .edittagname {
-  display: inherit;
-  position: relative;
+.path-admin-tag .addstandardtags {
+  float: right;
 }
-.tag-management-table tr td.tageditingon .edittagname .editinstructions {
-  margin-right: -300px;
-  margin-left: 0;
+.path-admin-tag .addstandardtags img {
+  margin: 0 5px;
 }
-.tag-management-table tr td .tagnameedit img {
-  opacity: 0.2;
+.dir-rtl.path-admin-tag .addstandardtags {
+  float: left;
 }
-.tag-management-table tr:hover td .tagnameedit img,
-.tag-management-table tr td .tagnameedit:focus img {
-  opacity: 1;
+.path-tag .tag-relatedtags {
+  padding-top: 10px;
 }
-.tag-management-table tr:hover td.tageditingon .tagnameedit img {
-  opacity: 0.2;
+.path-tag .tag-management-box {
+  text-align: right;
 }
-h2.tag-heading,
-div#tag-description,
-div#tag-blogs,
-body.tag .managelink {
-  padding: 5px;
+.path-tag .tag-index-toc {
+  padding: 10px;
+  text-align: center;
+}
+.path-tag .tag-index-toc li,
+.path-tag .tag-management-box li {
+  margin-left: 5px;
+  margin-right: 5px;
+}
+.path-tag .tag-management-box li a.edittag {
+  background-image: url([[pix:moodle|i/settings]]);
+}
+.path-tag .tag-management-box li a.flagasinappropriate {
+  background-image: url([[pix:moodle|i/flagged]]);
+}
+.path-tag .tag-management-box li a.removefrommyinterests {
+  background-image: url([[pix:moodle|t/delete]]);
+}
+.path-tag .tag-management-box li a.addtomyinterests {
+  background-image: url([[pix:moodle|t/add]]);
+}
+.path-tag .tag-management-box li a {
+  background-repeat: no-repeat;
+  background-position: left;
+  padding-left: 17px;
+}
+.tag_feed.media-list .media .itemimage {
+  float: left;
+}
+.dir-rtl .tag_feed.media-list .media .itemimage {
+  float: right;
+}
+.tag_feed.media-list .media .itemimage img {
+  height: 35px;
+  width: 35px;
+}
+.tag_feed.media-list .media .media-body {
+  padding-right: 10px;
+  padding-left: 10px;
+}
+.tag_feed .media .muted a {
+  color: #ccc;
+}
+.tag_cloud {
+  text-align: center;
+}
+.tag_cloud .inline-list li {
+  padding: 0px 0.2em;
+}
+.tag_cloud .tag_overflow {
+  margin-top: 1em;
+  font-style: italic;
 }
 .tag_cloud .s20 {
-  font-size: 1.5em;
-  font-weight: bold;
+  font-size: 2.7em;
 }
 .tag_cloud .s19 {
-  font-size: 1.5em;
+  font-size: 2.6em;
 }
 .tag_cloud .s18 {
-  font-size: 1.4em;
-  font-weight: bold;
+  font-size: 2.5em;
 }
 .tag_cloud .s17 {
-  font-size: 1.4em;
+  font-size: 2.4em;
 }
 .tag_cloud .s16 {
-  font-size: 1.3em;
-  font-weight: bold;
+  font-size: 2.3em;
 }
 .tag_cloud .s15 {
-  font-size: 1.3em;
+  font-size: 2.2em;
 }
 .tag_cloud .s14 {
-  font-size: 1.2em;
-  font-weight: bold;
+  font-size: 2.1em;
 }
 .tag_cloud .s13 {
+  font-size: 2em;
+}
+.tag_cloud .s12 {
+  font-size: 1.9em;
+}
+.tag_cloud .s11 {
+  font-size: 1.8em;
+}
+.tag_cloud .s10 {
+  font-size: 1.7em;
+}
+.tag_cloud .s9 {
+  font-size: 1.6em;
+}
+.tag_cloud .s8 {
+  font-size: 1.5em;
+}
+.tag_cloud .s7 {
+  font-size: 1.4em;
+}
+.tag_cloud .s6 {
+  font-size: 1.3em;
+}
+.tag_cloud .s5 {
   font-size: 1.2em;
 }
-.tag_cloud .s12,
-.tag_cloud .s11 {
-  font-size: 1.1em;
-  font-weight: bold;
-}
-.tag_cloud .s10,
-.tag_cloud .s9 {
+.tag_cloud .s4 {
   font-size: 1.1em;
 }
-.tag_cloud .s8,
-.tag_cloud .s7 {
-  font-size: 1em;
-  font-weight: bold;
-}
-.tag_cloud .s6,
-.tag_cloud .s5 {
-  font-size: 1em;
-}
-.tag_cloud .s4,
 .tag_cloud .s3 {
-  font-size: 0.9em;
-  font-weight: bold;
+  font-size: 1em;
 }
-.tag_cloud .s2,
-.tag_cloud .s1 {
+.tag_cloud .s2 {
   font-size: 0.9em;
+}
+.tag_cloud .s1 {
+  font-size: 0.8em;
 }
 .tag_cloud .s0 {
-  font-size: 0.8em;
+  font-size: 0.7em;
+}
+.tag_list ul {
+  display: inline;
+}
+.tag_list.hideoverlimit .overlimit {
+  display: none;
+}
+.tag_list .tagmorelink {
+  display: none;
+}
+.tag_list.hideoverlimit .tagmorelink {
+  display: inline;
+}
+.tag_list.hideoverlimit .taglesslink {
+  display: none;
 }
 /**
 * Web Service
@@ -1026,8 +1074,12 @@ body.tag .managelink {
 .userenrolment .subfield {
   margin-right: 5px;
 }
+.userenrolment .col_userdetails .subfield {
+  margin-left: 40px;
+}
 .userenrolment .col_userdetails .subfield_picture {
   float: left;
+  margin-left: 0;
 }
 .userenrolment .col_lastseen {
   width: 150px;
@@ -1141,8 +1193,13 @@ body.tag .managelink {
 #page-enrol-users .user-enroller-panel .uep-search-results .cohort .details {
   width: 237px;
 }
+.dir-rtl#page-enrol-users .col_userdetails .subfield {
+  margin-right: 40px;
+  margin-left: 5px;
+}
 .dir-rtl#page-enrol-users .col_userdetails .subfield_picture {
   float: right;
+  margin-right: 0;
 }
 .dir-rtl#page-enrol-users .enrol_user_buttons {
   float: left;
@@ -1161,6 +1218,14 @@ body.tag .managelink {
 .dir-rtl#page-enrol-users #filterform .fitem label {
   padding-right: 0;
   padding-left: .3em;
+}
+.dir-rtl#page-enrol-users .user-enroller-panel .uep-search-results .user .count,
+.dir-rtl#page-enrol-users .user-enroller-panel .uep-search-results .user .picture,
+.dir-rtl#page-enrol-users .user-enroller-panel .uep-search-results .user .details {
+  float: right;
+}
+.dir-rtl#page-enrol-users .user-enroller-panel .uep-search-results .user .options .enrol {
+  float: left;
 }
 #page-enrol-users .enrol-users-page-action input {
   margin-left: 0;
@@ -2250,14 +2315,14 @@ img#persona_signin {
   margin-right: 1em;
 }
 .dir-ltr .page-context-header .header-button-group {
-  float: right;
+  float: left;
 }
 .dir-rtl .page-context-header .page-header-image {
   float: right;
   margin-left: 1em;
 }
 .dir-rtl .page-context-header .header-button-group {
-  float: left;
+  float: right;
 }
 /** Action menu component styles **/
 .moodle-actionmenu,
@@ -2592,6 +2657,48 @@ dd:after {
 .nav-tabs > .active > a[href]:hover,
 .nav-tabs > .active > a[href]:focus {
   cursor: pointer;
+}
+.inplaceeditable.inplaceeditingon {
+  position: relative;
+}
+.inplaceeditable.inplaceeditingon .editinstructions {
+  margin-top: -30px;
+  font-weight: normal;
+  margin-right: 0;
+  margin-left: 0;
+  left: 0;
+  right: auto;
+  white-space: nowrap;
+}
+.inplaceeditable.inplaceeditingon input {
+  width: 330px;
+  height: 16px;
+  vertical-align: text-bottom;
+  margin-bottom: 0;
+}
+.inplaceeditable.inplaceeditingon select {
+  margin-bottom: 0;
+}
+.inplaceeditable .quickediticon img {
+  opacity: 0.2;
+}
+.inplaceeditable .quickeditlink {
+  color: inherit;
+  text-decoration: inherit;
+}
+.inplaceeditable:hover .quickeditlink .quickediticon img,
+.inplaceeditable .quickeditlink:focus .quickediticon img {
+  opacity: 1;
+}
+.inplaceeditable.inplaceeditable-toggle .quickediticon {
+  display: none;
+}
+.dir-rtl .inplaceeditable.inplaceeditingon .editinstructions {
+  right: 0;
+  left: auto;
+}
+h3.sectionname .inplaceeditable.inplaceeditingon .editinstructions {
+  margin-top: -20px;
 }
 /* admin.less */
 .formtable tbody th {
@@ -3719,6 +3826,34 @@ img.iconsmall {
   width: 100%;
   height: 100%;
   display: block;
+}
+.block .minicalendar td.duration_global {
+  border-top: 1px solid #d6f8cd;
+  border-bottom: 1px solid #d6f8cd;
+}
+.block .minicalendar td.duration_global.duration_finish {
+  background-color: #d6f8cd;
+}
+.block .minicalendar td.duration_course {
+  border-top: 1px solid #ffd3bd;
+  border-bottom: 1px solid #ffd3bd;
+}
+.block .minicalendar td.duration_course.duration_finish {
+  background-color: #ffd3bd;
+}
+.block .minicalendar td.duration_group {
+  border-top: 1px solid #fee7ae;
+  border-bottom: 1px solid #fee7ae;
+}
+.block .minicalendar td.duration_group.duration_finish {
+  background-color: #fee7ae;
+}
+.block .minicalendar td.duration_user {
+  border-top: 1px solid #dce7ec;
+  border-bottom: 1px solid #dce7ec;
+}
+.block .minicalendar td.duration_user.duration_finish {
+  background-color: #dce7ec;
 }
 .block .minicalendar caption {
   font-size: inherit;
@@ -6451,8 +6586,9 @@ table.message .searchresults td {
   padding: 5px;
 }
 .message .contactselector {
+  max-width: 380px;
+  margin: 0 auto;
   width: auto;
-  float: left;
 }
 @media screen and (min-width: 1000px) {
   .message .contactselector {
@@ -6462,9 +6598,6 @@ table.message .searchresults td {
 }
 .message .contactselector .singleselect {
   width: 240px;
-}
-.dir-rtl .message .contactselector {
-  float: right;
 }
 .message .contactselector .paging {
   z-index: 1;
@@ -6544,10 +6677,16 @@ table.message .searchresults td {
 .dir-rtl .message .message-contacts li > div.contact.nolinks {
   margin: 0 24px 0 0;
 }
+@media screen and (min-width: 1000px) {
+  .dir-rtl .message .contactselector {
+    float: right;
+  }
+}
 .message .messagearea {
   float: none;
   overflow: hidden;
   min-height: 200px;
+  min-width: 300px;
 }
 @media screen and (min-width: 1000px) {
   .message .messagearea {
@@ -6560,6 +6699,12 @@ table.message .searchresults td {
     width: 100%;
   }
 }
+#message_user_pictures {
+  text-align: center;
+}
+.dir-rtl #message_user_pictures {
+  direction: rtl;
+}
 .message .messagearea .messagehistorytype {
   clear: both;
   padding-bottom: 20px;
@@ -6568,16 +6713,29 @@ table.message .searchresults td {
   vertical-align: top;
   width: 45%;
   min-width: 100px;
-  float: left;
+  display: inline-block;
 }
 .message .messagearea .messagehistory .user > div {
   text-align: center;
 }
 .message .messagearea .messagehistory .between {
-  float: left;
+  display: inline-block;
   width: 16px;
   margin: 0 1%;
   padding-top: 40px;
+}
+@media screen and (max-width: 320px) {
+  .message .messagearea {
+    min-width: 0;
+  }
+  .message .messagearea .messagehistory .user {
+    max-width: 70px;
+    min-width: 0;
+  }
+  .message .messagearea .messagehistory .user .userpicture {
+    width: 50px;
+    height: auto;
+  }
 }
 @media screen and (min-width: 800px) {
   .message .messagearea .messagehistory .between {
@@ -6586,43 +6744,11 @@ table.message .searchresults td {
   .message .messagearea .messagehistory .user {
     width: 32%;
   }
-  .message .messagearea .messagehistory .user:first-child {
-    margin-left: 13%;
-  }
-  .message .messagearea .messagehistory .user:last-child {
-    margin-right: 13%;
-  }
-  .dir-rtl .message .messagearea .messagehistory .user:first-child {
-    margin-right: 13%;
-    margin-left: 0%;
-  }
-  .dir-rtl .message .messagearea .messagehistory .user:last-child {
-    margin-left: 13%;
-    margin-right: 0%;
-  }
 }
 @media screen and (min-width: 1200px) {
   .message .messagearea .messagehistory .user {
     width: 25%;
   }
-  .message .messagearea .messagehistory .user:first-child {
-    margin-left: 20%;
-  }
-  .message .messagearea .messagehistory .user:last-child {
-    margin-right: 20%;
-  }
-  .dir-rtl .message .messagearea .messagehistory .user:first-child {
-    margin-left: 0;
-    margin-right: 20%;
-  }
-  .dir-rtl .message .messagearea .messagehistory .user:last-child {
-    margin-right: 0%;
-    margin-left: 20%;
-  }
-}
-.dir-rtl .message .messagearea .messagehistory .between,
-.dir-rtl .message .messagearea .messagehistory .user {
-  float: right;
 }
 .message .messagearea .messagehistory .heading {
   width: 100%;
@@ -7744,9 +7870,14 @@ body.path-question-type .mform fieldset.hidden {
 }
 #groupeditform .groups,
 #groupeditform .members {
+  min-width: 175px;
   width: 49%;
   float: left;
   text-align: left;
+}
+#groupeditform .groups select,
+#groupeditform .members select {
+  min-width: 175px;
 }
 .dir-rtl #groupeditform .groups,
 .dir-rtl #groupeditform .members {
@@ -13181,9 +13312,9 @@ div.c1.btn {
   text-shadow: inherit;
   background-color: inherit;
   background-image: none;
-  background-repeat: none;
+  background-repeat: no-repeat;
   border: none;
-  border-radius: none;
+  border-radius: 0;
   box-shadow: none;
 }
 /* .container vs .container
@@ -13331,10 +13462,19 @@ body {
 .block_settings .block_tree .type_activity > p.tree_item.active_tree_node img {
   top: .2em;
 }
-.block_navigation .fa-circle,
-.block_settings .fa-circle {
-  margin-left: 0.2em;
-  padding-right: .8em;
+.block_navigation .block_tree p.hasicon,
+.block_settings .block_tree p.hasicon {
+  text-indent: -12px;
+}
+.block_navigation .block_tree p.hasicon .fa,
+.block_settings .block_tree p.hasicon .fa {
+  margin-left: -0.3em;
+  padding-right: 0;
+}
+.block_navigation .block_tree p.hasicon .fa-circle,
+.block_settings .block_tree p.hasicon .fa-circle {
+  margin-left: 0;
+  padding-right: 0.1em;
 }
 .calendar-event-panel .yui3-overlay-content h2.eventtitle {
   font-size: 1em;
@@ -13401,12 +13541,12 @@ body {
 .block_login .loginform .btn input {
   margin-left: 0;
 }
-.format-netcourse #block-region-content-top,
-.format-classroom #block-region-content-top {
+.path-mod-quiz.format-netcourse #block-region-content-top,
+.path-mod-quiz.format-classroom #block-region-content-top {
   margin-right: 1%;
 }
-.format-netcourse #mod_quiz_navblock,
-.format-classroom #mod_quiz_navblock {
+.path-mod-quiz.format-netcourse #mod_quiz_navblock,
+.path-mod-quiz.format-classroom #mod_quiz_navblock {
   scrollbar-shadow-color: #FFFFFF;
   scrollbar-highlight-color: #FFFFFF;
   scrollbar-face-color: #FFFFFF;
@@ -13415,89 +13555,122 @@ body {
   scrollbar-track-color: #FFFFFF;
   scrollbar-arrow-color: #FFFFFF;
 }
-.format-netcourse #mod_quiz_navblock .header,
-.format-classroom #mod_quiz_navblock .header {
+.path-mod-quiz.format-netcourse #mod_quiz_navblock .header,
+.path-mod-quiz.format-classroom #mod_quiz_navblock .header {
   display: none;
 }
-.format-netcourse #mod_quiz_navblock .content,
-.format-classroom #mod_quiz_navblock .content {
+.path-mod-quiz.format-netcourse #mod_quiz_navblock .content,
+.path-mod-quiz.format-classroom #mod_quiz_navblock .content {
   padding: .5em 0;
   word-wrap: inherit;
 }
-.format-netcourse #mod_quiz_navblock .content .othernav,
-.format-classroom #mod_quiz_navblock .content .othernav {
+.path-mod-quiz.format-netcourse #mod_quiz_navblock .content .othernav,
+.path-mod-quiz.format-classroom #mod_quiz_navblock .content .othernav {
   padding-top: .2em;
 }
-.format-netcourse #mod_quiz_navblock .content .btn,
-.format-classroom #mod_quiz_navblock .content .btn {
+.path-mod-quiz.format-netcourse #mod_quiz_navblock .content .btn,
+.path-mod-quiz.format-classroom #mod_quiz_navblock .content .btn {
   float: left;
   line-height: 3.35em;
-  margin-top: 0;
+  margin: 0;
   padding: 0 2%;
   width: 6%;
 }
-.format-netcourse #mod_quiz_navblock .content #qn-buttons-wrapper,
-.format-classroom #mod_quiz_navblock .content #qn-buttons-wrapper {
+.path-mod-quiz.format-netcourse #mod_quiz_navblock .content #qn-buttons-wrapper,
+.path-mod-quiz.format-classroom #mod_quiz_navblock .content #qn-buttons-wrapper {
   background-color: #f2f2f3;
   float: left;
+  height: 50px;
   overflow: auto;
   overflow-y: hidden;
   padding: 0 0 .2em 0;
-  width: 88%;
+  position: relative;
+  width: 85%;
+  -ms-overflow-style: none;
 }
-.format-netcourse #mod_quiz_navblock .content #qn-buttons-wrapper .qn_buttons,
-.format-classroom #mod_quiz_navblock .content #qn-buttons-wrapper .qn_buttons {
-  float: left;
-  padding: .2em 0 0;
-  width: 100%;
+.path-mod-quiz.format-netcourse #mod_quiz_navblock .content #qn-buttons-wrapper::-webkit-scrollbar,
+.path-mod-quiz.format-classroom #mod_quiz_navblock .content #qn-buttons-wrapper::-webkit-scrollbar {
+  display: none;
 }
-@media (max-width: 490px) {
-  .format-netcourse #mod_quiz_navblock .content .btn,
-  .format-classroom #mod_quiz_navblock .content .btn {
+.path-mod-quiz.format-netcourse #mod_quiz_navblock .content #qn-buttons-wrapper .qn_buttons,
+.path-mod-quiz.format-classroom #mod_quiz_navblock .content #qn-buttons-wrapper .qn_buttons {
+  overflow-y: hidden;
+  padding: 0;
+  position: absolute;
+  white-space: pre;
+  width: auto;
+}
+.path-mod-quiz.format-netcourse #mod_quiz_navblock .content #qn-buttons-wrapper .qn_buttons::before,
+.path-mod-quiz.format-classroom #mod_quiz_navblock .content #qn-buttons-wrapper .qn_buttons::before,
+.path-mod-quiz.format-netcourse #mod_quiz_navblock .content #qn-buttons-wrapper .qn_buttons::after,
+.path-mod-quiz.format-classroom #mod_quiz_navblock .content #qn-buttons-wrapper .qn_buttons::after {
+  font-size: 1px;
+}
+@media (max-width: 560px) {
+  .path-mod-quiz.format-netcourse #mod_quiz_navblock .content .btn,
+  .path-mod-quiz.format-classroom #mod_quiz_navblock .content .btn {
     width: 15%;
   }
-  .format-netcourse #mod_quiz_navblock .content #qn-buttons-wrapper,
-  .format-classroom #mod_quiz_navblock .content #qn-buttons-wrapper {
+  .path-mod-quiz.format-netcourse #mod_quiz_navblock .content #qn-buttons-wrapper,
+  .path-mod-quiz.format-classroom #mod_quiz_navblock .content #qn-buttons-wrapper {
     width: 70%;
   }
 }
-.format-netcourse #mod_quiz_navblock .qnbutton,
-.format-classroom #mod_quiz_navblock .qnbutton {
+@media (max-width: 440px) {
+  .path-mod-quiz.format-netcourse #mod_quiz_navblock .content .btn,
+  .path-mod-quiz.format-classroom #mod_quiz_navblock .content .btn {
+    width: 15%;
+  }
+}
+.path-mod-quiz.format-netcourse #mod_quiz_navblock .qnbutton,
+.path-mod-quiz.format-classroom #mod_quiz_navblock .qnbutton {
   background-color: #f9f9f9;
   border-color: #e8e8e8;
-  display: inline;
+  display: inline-block;
   float: none;
-  line-height: 3em !important;
+  font-weight: bold;
+  height: 50px;
+  line-height: 2em;
   margin: 0 -1px 0 0;
-  padding: 1em .6em;
+  padding: 2px 0 0;
+  width: auto;
+  min-width: 50px;
   white-space: pre;
 }
-.format-netcourse #mod_quiz_navblock .qnbutton.correct .trafficlight,
-.format-classroom #mod_quiz_navblock .qnbutton.correct .trafficlight {
+.path-mod-quiz.format-netcourse #mod_quiz_navblock .qnbutton .trafficlight,
+.path-mod-quiz.format-classroom #mod_quiz_navblock .qnbutton .trafficlight {
+  margin-top: 30px;
+}
+.path-mod-quiz.format-netcourse #mod_quiz_navblock .qnbutton .thispageholder,
+.path-mod-quiz.format-classroom #mod_quiz_navblock .qnbutton .thispageholder {
+  border-color: #e8e8e8;
+}
+.path-mod-quiz.format-netcourse #mod_quiz_navblock .qnbutton.correct .trafficlight,
+.path-mod-quiz.format-classroom #mod_quiz_navblock .qnbutton.correct .trafficlight {
   border-top: 0;
   border-bottom: 3px solid #46a546;
 }
-.format-netcourse #mod_quiz_navblock .qnbutton.partiallycorrect .trafficlight,
-.format-classroom #mod_quiz_navblock .qnbutton.partiallycorrect .trafficlight {
+.path-mod-quiz.format-netcourse #mod_quiz_navblock .qnbutton.partiallycorrect .trafficlight,
+.path-mod-quiz.format-classroom #mod_quiz_navblock .qnbutton.partiallycorrect .trafficlight {
   border-top: 0;
   border-bottom: 3px solid #ffc40d;
 }
-.format-netcourse #mod_quiz_navblock .qnbutton.incorrect .trafficlight,
-.format-classroom #mod_quiz_navblock .qnbutton.incorrect .trafficlight {
+.path-mod-quiz.format-netcourse #mod_quiz_navblock .qnbutton.incorrect .trafficlight,
+.path-mod-quiz.format-classroom #mod_quiz_navblock .qnbutton.incorrect .trafficlight {
   border-top: 0;
   border-bottom: 3px solid #9d261d;
 }
-.format-netcourse #mod_quiz_navblock .qnbutton.thispage,
-.format-classroom #mod_quiz_navblock .qnbutton.thispage {
+.path-mod-quiz.format-netcourse #mod_quiz_navblock .qnbutton.thispage,
+.path-mod-quiz.format-classroom #mod_quiz_navblock .qnbutton.thispage {
   background-color: #fff;
   border-color: #e8e8e8;
 }
-.format-netcourse #mod_quiz_navblock .qnbutton.thispage .thispageholder,
-.format-classroom #mod_quiz_navblock .qnbutton.thispage .thispageholder {
+.path-mod-quiz.format-netcourse #mod_quiz_navblock .qnbutton.thispage .thispageholder,
+.path-mod-quiz.format-classroom #mod_quiz_navblock .qnbutton.thispage .thispageholder {
   border-color: #e8e8e8;
 }
-.format-netcourse #mod_quiz_navblock .qnbutton:hover,
-.format-classroom #mod_quiz_navblock .qnbutton:hover {
+.path-mod-quiz.format-netcourse #mod_quiz_navblock .qnbutton:hover,
+.path-mod-quiz.format-classroom #mod_quiz_navblock .qnbutton:hover {
   background-color: #fff;
 }
 .block_myprofile .myprofileitem.fullname {
@@ -14394,9 +14567,6 @@ select {
 .path-mod-forum .forumheaderlist .discussion .lastpost {
   vertical-align: top;
 }
-.path-mod-feedback .feedback_bar_image {
-  height: 5px;
-}
 .forumpost {
   min-height: 20px;
   padding: 19px;
@@ -14758,7 +14928,7 @@ div#dock {
 }
 .jsenabled .usermenu .moodle-actionmenu > .menubar {
   display: block;
-  margin: 0px 0px 2px 0px;
+  margin: 0px;
 }
 .jsenabled .usermenu .moodle-actionmenu > .menu {
   min-width: 160px;
@@ -14877,6 +15047,79 @@ div#dock {
 .userloggedinas .usermenu .userbutton .avatars .avatar img {
   width: inherit;
   height: inherit;
+}
+.path-mod-quiz #mod_quiz_navblock .qnbutton {
+  text-decoration: none;
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: normal;
+  background-color: #fff;
+  background-image: none;
+  height: 40px;
+  width: 30px;
+  border-radius: 3px;
+  border: 0;
+  overflow: visible;
+  margin: 0 6px 6px 0;
+}
+.path-mod-quiz #mod_quiz_navblock span.qnbutton {
+  cursor: default;
+  background-color: #eee;
+  color: #555;
+}
+.path-mod-quiz #mod_quiz_navblock a.qnbutton:hover,
+.path-mod-quiz #mod_quiz_navblock a.qnbutton:active,
+.path-mod-quiz #mod_quiz_navblock a.qnbutton:focus {
+  text-decoration: underline;
+}
+.path-mod-quiz #mod_quiz_navblock .qnbutton .thispageholder {
+  border: 1px solid;
+  border-radius: 3px;
+  z-index: 1;
+}
+.path-mod-quiz #mod_quiz_navblock .qnbutton.thispage .thispageholder {
+  border-width: 3px;
+}
+.path-mod-quiz #mod_quiz_navblock .allquestionsononepage .qnbutton.thispage .thispageholder {
+  border-width: 1px;
+}
+.path-mod-quiz #mod_quiz_navblock .qnbutton.flagged .thispageholder {
+  background: transparent url([[pix:theme|mod/quiz/flag-on]]) 15px 0px no-repeat;
+}
+.path-mod-quiz #mod_quiz_navblock .qnbutton .trafficlight {
+  border: 0;
+  background: #fff none center / 10px no-repeat scroll;
+  height: 20px;
+  margin-top: 20px;
+  border-radius: 0 0 3px 3px;
+}
+.path-mod-quiz #mod_quiz_navblock .qnbutton.notyetanswered .trafficlight,
+.path-mod-quiz #mod_quiz_navblock .qnbutton.invalidanswer .trafficlight {
+  background-color: #fff;
+}
+.path-mod-quiz #mod_quiz_navblock .qnbutton.invalidanswer .trafficlight {
+  background-image: url([[pix:theme|mod/quiz/warningtriangle]]);
+}
+.path-mod-quiz #mod_quiz_navblock .qnbutton.correct .trafficlight {
+  background-image: url([[pix:theme|mod/quiz/checkmark]]);
+  background-color: #468847;
+}
+.path-mod-quiz #mod_quiz_navblock .qnbutton.blocked .trafficlight {
+  background-image: url([[pix:core|t/locked]]);
+  background-color: #eee;
+}
+.path-mod-quiz #mod_quiz_navblock .qnbutton.notanswered .trafficlight,
+.path-mod-quiz #mod_quiz_navblock .qnbutton.incorrect .trafficlight {
+  background-color: #b94a48;
+}
+.path-mod-quiz #mod_quiz_navblock .qnbutton.partiallycorrect .trafficlight {
+  background-image: url([[pix:theme|mod/quiz/whitecircle]]);
+  background-color: #f89406;
+}
+.path-mod-quiz #mod_quiz_navblock .qnbutton.complete .trafficlight,
+.path-mod-quiz #mod_quiz_navblock .qnbutton.answersaved .trafficlight,
+.path-mod-quiz #mod_quiz_navblock .qnbutton.requiresgrading .trafficlight {
+  background-color: #ccc;
 }
 .yui-skin-sam .yui-layout.path-mod-chat-gui_ajax {
   background-color: #fff;
@@ -15348,7 +15591,11 @@ button,
 input.form-submit,
 input[type="button"],
 input[type="submit"],
-input[type="reset"] {
+input[type="reset"],
+input#id_submitbutton,
+input#id_submitbutton2,
+.path-admin .buttons input[type="submit"],
+td.submit input {
   /* IE7 inline-block hack */
   padding: 4px 12px;
   color: #333333;
@@ -15401,31 +15648,55 @@ input.form-submit:hover,
 input[type="button"]:hover,
 input[type="submit"]:hover,
 input[type="reset"]:hover,
+input#id_submitbutton:hover,
+input#id_submitbutton2:hover,
+.path-admin .buttons input[type="submit"]:hover,
+td.submit input:hover,
 button:focus,
 input.form-submit:focus,
 input[type="button"]:focus,
 input[type="submit"]:focus,
 input[type="reset"]:focus,
+input#id_submitbutton:focus,
+input#id_submitbutton2:focus,
+.path-admin .buttons input[type="submit"]:focus,
+td.submit input:focus,
 button:active,
 input.form-submit:active,
 input[type="button"]:active,
 input[type="submit"]:active,
 input[type="reset"]:active,
+input#id_submitbutton:active,
+input#id_submitbutton2:active,
+.path-admin .buttons input[type="submit"]:active,
+td.submit input:active,
 button.active,
 input.form-submit.active,
 input[type="button"].active,
 input[type="submit"].active,
 input[type="reset"].active,
+input#id_submitbutton.active,
+input#id_submitbutton2.active,
+.path-admin .buttons input[type="submit"].active,
+td.submit input.active,
 button.disabled,
 input.form-submit.disabled,
 input[type="button"].disabled,
 input[type="submit"].disabled,
 input[type="reset"].disabled,
+input#id_submitbutton.disabled,
+input#id_submitbutton2.disabled,
+.path-admin .buttons input[type="submit"].disabled,
+td.submit input.disabled,
 button[disabled],
 input.form-submit[disabled],
 input[type="button"][disabled],
 input[type="submit"][disabled],
-input[type="reset"][disabled] {
+input[type="reset"][disabled],
+input#id_submitbutton[disabled],
+input#id_submitbutton2[disabled],
+.path-admin .buttons input[type="submit"][disabled],
+td.submit input[disabled] {
   color: #333333;
   background-color: #e6e6e6;
   *background-color: #d9d9d9;
@@ -15435,18 +15706,30 @@ input.form-submit:active,
 input[type="button"]:active,
 input[type="submit"]:active,
 input[type="reset"]:active,
+input#id_submitbutton:active,
+input#id_submitbutton2:active,
+.path-admin .buttons input[type="submit"]:active,
+td.submit input:active,
 button.active,
 input.form-submit.active,
 input[type="button"].active,
 input[type="submit"].active,
-input[type="reset"].active {
+input[type="reset"].active,
+input#id_submitbutton.active,
+input#id_submitbutton2.active,
+.path-admin .buttons input[type="submit"].active,
+td.submit input.active {
   background-color: #cccccc \9;
 }
 button:first-child,
 input.form-submit:first-child,
 input[type="button"]:first-child,
 input[type="submit"]:first-child,
-input[type="reset"]:first-child {
+input[type="reset"]:first-child,
+input#id_submitbutton:first-child,
+input#id_submitbutton2:first-child,
+.path-admin .buttons input[type="submit"]:first-child,
+td.submit input:first-child {
   *margin-left: 0;
 }
 button:hover,
@@ -15454,11 +15737,19 @@ input.form-submit:hover,
 input[type="button"]:hover,
 input[type="submit"]:hover,
 input[type="reset"]:hover,
+input#id_submitbutton:hover,
+input#id_submitbutton2:hover,
+.path-admin .buttons input[type="submit"]:hover,
+td.submit input:hover,
 button:focus,
 input.form-submit:focus,
 input[type="button"]:focus,
 input[type="submit"]:focus,
-input[type="reset"]:focus {
+input[type="reset"]:focus,
+input#id_submitbutton:focus,
+input#id_submitbutton2:focus,
+.path-admin .buttons input[type="submit"]:focus,
+td.submit input:focus {
   color: #333333;
   text-decoration: none;
   background-position: 0 -15px;
@@ -15471,7 +15762,11 @@ button:focus,
 input.form-submit:focus,
 input[type="button"]:focus,
 input[type="submit"]:focus,
-input[type="reset"]:focus {
+input[type="reset"]:focus,
+input#id_submitbutton:focus,
+input#id_submitbutton2:focus,
+.path-admin .buttons input[type="submit"]:focus,
+td.submit input:focus {
   outline: thin dotted #333;
   outline: 5px auto -webkit-focus-ring-color;
   outline-offset: -2px;
@@ -15481,11 +15776,19 @@ input.form-submit.active,
 input[type="button"].active,
 input[type="submit"].active,
 input[type="reset"].active,
+input#id_submitbutton.active,
+input#id_submitbutton2.active,
+.path-admin .buttons input[type="submit"].active,
+td.submit input.active,
 button:active,
 input.form-submit:active,
 input[type="button"]:active,
 input[type="submit"]:active,
-input[type="reset"]:active {
+input[type="reset"]:active,
+input#id_submitbutton:active,
+input#id_submitbutton2:active,
+.path-admin .buttons input[type="submit"]:active,
+td.submit input:active {
   background-image: none;
   outline: 0;
   -webkit-box-shadow: inset 0 2px 4px rgba(0,0,0,.15), 0 1px 2px rgba(0,0,0,.05);
@@ -15497,11 +15800,19 @@ input.form-submit.disabled,
 input[type="button"].disabled,
 input[type="submit"].disabled,
 input[type="reset"].disabled,
+input#id_submitbutton.disabled,
+input#id_submitbutton2.disabled,
+.path-admin .buttons input[type="submit"].disabled,
+td.submit input.disabled,
 button[disabled],
 input.form-submit[disabled],
 input[type="button"][disabled],
 input[type="submit"][disabled],
-input[type="reset"][disabled] {
+input[type="reset"][disabled],
+input#id_submitbutton[disabled],
+input#id_submitbutton2[disabled],
+.path-admin .buttons input[type="submit"][disabled],
+td.submit input[disabled] {
   cursor: default;
   background-image: none;
   opacity: 0.65;
@@ -15515,11 +15826,19 @@ input.form-submit .label,
 input[type="button"] .label,
 input[type="submit"] .label,
 input[type="reset"] .label,
+input#id_submitbutton .label,
+input#id_submitbutton2 .label,
+.path-admin .buttons input[type="submit"] .label,
+td.submit input .label,
 button .badge,
 input.form-submit .badge,
 input[type="button"] .badge,
 input[type="submit"] .badge,
-input[type="reset"] .badge {
+input[type="reset"] .badge,
+input#id_submitbutton .badge,
+input#id_submitbutton2 .badge,
+.path-admin .buttons input[type="submit"] .badge,
+td.submit input .badge {
   position: relative;
   top: -1px;
 }
@@ -15528,11 +15847,19 @@ input.form-submit:hover,
 input[type="button"]:hover,
 input[type="submit"]:hover,
 input[type="reset"]:hover,
+input#id_submitbutton:hover,
+input#id_submitbutton2:hover,
+.path-admin .buttons input[type="submit"]:hover,
+td.submit input:hover,
 button:focus,
 input.form-submit:focus,
 input[type="button"]:focus,
 input[type="submit"]:focus,
-input[type="reset"]:focus {
+input[type="reset"]:focus,
+input#id_submitbutton:focus,
+input#id_submitbutton2:focus,
+.path-admin .buttons input[type="submit"]:focus,
+td.submit input:focus {
   color: white;
   text-decoration: none;
   background: #00aef0;
@@ -15541,7 +15868,11 @@ button:focus,
 input.form-submit:focus,
 input[type="button"]:focus,
 input[type="submit"]:focus,
-input[type="reset"]:focus {
+input[type="reset"]:focus,
+input#id_submitbutton:focus,
+input#id_submitbutton2:focus,
+.path-admin .buttons input[type="submit"]:focus,
+td.submit input:focus {
   outline: thin dotted #333;
   outline: 5px auto -webkit-focus-ring-color;
   outline-offset: -2px;
@@ -15551,11 +15882,19 @@ input.form-submit.active,
 input[type="button"].active,
 input[type="submit"].active,
 input[type="reset"].active,
+input#id_submitbutton.active,
+input#id_submitbutton2.active,
+.path-admin .buttons input[type="submit"].active,
+td.submit input.active,
 button:active,
 input.form-submit:active,
 input[type="button"]:active,
 input[type="submit"]:active,
-input[type="reset"]:active {
+input[type="reset"]:active,
+input#id_submitbutton:active,
+input#id_submitbutton2:active,
+.path-admin .buttons input[type="submit"]:active,
+td.submit input:active {
   outline: 0;
 }
 button.disabled,
@@ -15563,11 +15902,19 @@ input.form-submit.disabled,
 input[type="button"].disabled,
 input[type="submit"].disabled,
 input[type="reset"].disabled,
+input#id_submitbutton.disabled,
+input#id_submitbutton2.disabled,
+.path-admin .buttons input[type="submit"].disabled,
+td.submit input.disabled,
 button[disabled],
 input.form-submit[disabled],
 input[type="button"][disabled],
 input[type="submit"][disabled],
-input[type="reset"][disabled] {
+input[type="reset"][disabled],
+input#id_submitbutton[disabled],
+input#id_submitbutton2[disabled],
+.path-admin .buttons input[type="submit"][disabled],
+td.submit input[disabled] {
   cursor: default;
   opacity: 0.65;
   filter: alpha(opacity=65);
@@ -16638,6 +16985,17 @@ input[type="reset"][disabled] {
   }
   .dir-rtl .navbar .nav > li {
     float: right;
+  }
+}
+@media (min-width: 980px) {
+  a[id]:empty::before,
+  a[name]:empty::before {
+    display: inline-block;
+    position: relative;
+    content: '';
+    padding-top: 40px;
+    margin-top: -40px;
+    vertical-align: top;
   }
 }
 @media (min-width: 980px) and (max-width: 1199px) {

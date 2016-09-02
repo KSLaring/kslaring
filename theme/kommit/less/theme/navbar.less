@@ -30,10 +30,6 @@
     color: @white;
 }
 
-//.navbar .nav > li > a {
-//    border-left: 1px solid @kommitGray;
-//}
-
 /* @group Navbar */
 .navbar {
     margin-bottom: 0;
@@ -81,10 +77,6 @@
     color: @white;
 }
 
-//.nav-collapse .nav > li > a, .nav-collapse .dropdown-menu a {
-//    color: @white;
-//}
-
 .navbar .btn-navbar {
     position: relative;
     float: right;
@@ -102,7 +94,10 @@
     background: @kommitBlue !important;
 }
 
-.navbar .btn-navbar:active, .navbar .btn-navbar.active, .navbar .btn-navbar.disabled, .navbar .btn-navbar[disabled] {
+.navbar .btn-navbar:active,
+.navbar .btn-navbar.active,
+.navbar .btn-navbar.disabled,
+.navbar .btn-navbar[disabled] {
     color: @kommitBlueDark;
     background-color: @white !important;
     transform: rotate(90deg);
@@ -171,6 +166,77 @@
         border: none;
         border-bottom: 1px dotted @kommitGray;
     }
-//    hr.sep:hover {
-//    }
+}
+
+.navbar-menues {
+    position: relative;
+
+    @media only screen and (min-width: @largeWidth) {
+        float: right;
+        width: 70%;
+    }
+    @media only screen and (min-width: @mediumWidth) and (max-width: (@largeWidth - 1)) {
+        float: right;
+        width: 60%;
+    }
+    @media only screen and (min-width: @narrowWidth) and (max-width: (@mediumWidth - 1)) {
+        float: right;
+        width: 50%;
+    }
+    @media only screen and (max-width: (@narrowWidth - 1)) {
+        float: none;
+    }
+
+    .nav-collapse {
+        &.active,
+        &.in {
+            float: right;
+
+            @media only screen and (max-width: (@narrowWidth - 1)) {
+                    float: none;
+                }
+        }
+    }
+}
+
+#topsearch {
+    @media only screen and (min-width: @mediumWidth) {
+        float: left;
+    }
+    @media only screen and (min-width: @narrowWidth) and (max-width: (@mediumWidth - 1)) {
+        float: left;
+        margin-left: 20px;
+    }
+    @media only screen and (max-width: (@narrowWidth - 1)) {
+        float: none;
+        margin-left: 5px;
+    }
+
+    #shorttopsearchbox {
+        margin-bottom: 0;
+    }
+    .topsearchbox {
+        label {
+            display: block;
+            font-size: 1px;
+            line-height: 1px;
+            height: 1px;
+            overflow: hidden;
+        }
+        button {
+            // For equal height on different devices.
+            font-family: Georgia, "Times New Roman", Times, serif;
+            font-size: @baseFontSize;
+            padding-top: .4em;
+            padding-bottom: .25em;
+            margin: 0;
+        }
+        &.input-append {
+            margin-bottom: 5px;
+
+            input {
+                .border-radius(0);
+            }
+        }
+    }
 }

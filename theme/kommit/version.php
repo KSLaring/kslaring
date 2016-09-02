@@ -31,8 +31,8 @@
 
 defined('MOODLE_INTERNAL') || die;
 
-$plugin->version = 2016062900;
-$plugin->release = '3.0.0';
+$plugin->version = 2016083000;
+$plugin->release = '3.1.0';
 $plugin->maturity = MATURITY_STABLE;
 $plugin->requires = 2015111602;
 $plugin->component = 'theme_kommit';

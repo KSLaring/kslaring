@@ -110,7 +110,7 @@ $string['region-side-post'] = 'Right';
 $string['region-side-pre'] = 'Left';
 
 
-// additional block regions
+// Additional block regions.
 $string['region-content-top'] = 'Content top';
 $string['region-content-bottom'] = 'Content bottom';
 $string['region-top'] = 'Top';

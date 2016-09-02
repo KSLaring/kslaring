@@ -48,7 +48,7 @@ class theme_kommit_core_course_renderer extends core_course_renderer {
         $content .= html_writer::end_tag('div'); // End .panel-heading.
         $content .= html_writer::start_tag('div', array('class' => 'panel-body'));
 
-        // This gets the course image or files
+        // This gets the course image or files.
         $content .= $this->coursecat_coursebox_content($chelper, $course);
 
         if ($chelper->get_show_courses() >= self::COURSECAT_SHOW_COURSES_EXPANDED) {
@@ -77,7 +77,7 @@ class theme_kommit_core_course_renderer extends core_course_renderer {
             return '';
         }
 
-        // Start content generation
+        // Start content generation.
         $content = '';
         $attributes = $chelper->get_and_erase_attributes('course_category_tree clearfix');
         $content .= html_writer::start_tag('div', $attributes);
@@ -85,27 +85,27 @@ class theme_kommit_core_course_renderer extends core_course_renderer {
         if ($coursecat->get_children_count()) {
             $classes = array(
                 'collapseexpand',
-                // start change uh 2014-11-21
+                // Start change uh 2014-11-21.
 //                'collapse-all',
-                // end change uh
+                // End change uh.
             );
             if ($chelper->get_subcat_depth() == 1) {
                 $classes[] = 'disabled';
             }
             // Only show the collapse/expand if there are children to expand.
             $content .= html_writer::start_tag('div', array('class' => 'collapsible-actions'));
-            // start change uh 2014-11-21
+            // Start change uh 2014-11-21.
 //            $content .= html_writer::link('#', get_string('collapseall'),
             $content .= html_writer::link('#', get_string('expandall_initial', 'theme_kommit'),
                     array('class' => implode(' ', $classes)));
-            // end change uh
+            // End change uh.
             $content .= html_writer::end_tag('div');
             $this->page->requires->strings_for_js(array('collapseall', 'expandall'), 'moodle');
         }
 
         $content .= html_writer::tag('div', $categorycontent, array('class' => 'content'));
 
-        $content .= html_writer::end_tag('div'); // .course_category_tree
+        $content .= html_writer::end_tag('div'); // Course_category_tree.
 
         return $content;
     }
@@ -131,7 +131,7 @@ class theme_kommit_core_course_renderer extends core_course_renderer {
         }
         $content = '';
 
-        // display course overview files
+        // Display course overview files.
         $contentimages = $contentfiles = '';
         foreach ($course->get_course_overviewfiles() as $file) {
             $isimage = $file->is_valid_image();
@@ -154,15 +154,15 @@ class theme_kommit_core_course_renderer extends core_course_renderer {
 //        $content .= $contentimages . $contentfiles;
         $content .= $contentimages;
 
-        // display course summary
+        // Display course summary.
         if ($course->has_summary()) {
             $content .= html_writer::start_tag('div', array('class' => 'summary'));
             $content .= $chelper->get_course_formatted_summary($course,
                     array('overflowdiv' => true, 'noclean' => true, 'para' => false));
-            $content .= html_writer::end_tag('div'); // .summary
+            $content .= html_writer::end_tag('div'); // Summary.
         }
 
-        // display course contacts. See course_in_list::get_course_contacts()
+        // Display course contacts. See course_in_list::get_course_contacts().
         if ($course->has_course_contacts()) {
             $content .= html_writer::start_tag('ul', array('class' => 'teachers'));
             foreach ($course->get_course_contacts() as $userid => $coursecontact) {
@@ -172,10 +172,10 @@ class theme_kommit_core_course_renderer extends core_course_renderer {
                             $coursecontact['username']);
                 $content .= html_writer::tag('li', $name);
             }
-            $content .= html_writer::end_tag('ul'); // .teachers
+            $content .= html_writer::end_tag('ul'); // Teachers.
         }
 
-        // display course category if necessary (for example in search results)
+        // Display course category if necessary (for example in search results).
         if ($chelper->get_show_courses() == self::COURSECAT_SHOW_COURSES_EXPANDED_WITH_CAT) {
             require_once($CFG->libdir. '/coursecatlib.php');
             if ($cat = coursecat::get($course->category, IGNORE_MISSING)) {
@@ -183,7 +183,7 @@ class theme_kommit_core_course_renderer extends core_course_renderer {
                 $content .= get_string('category').': '.
                         html_writer::link(new moodle_url('/course/index.php', array('categoryid' => $cat->id)),
                                 $cat->get_formatted_name(), array('class' => $cat->visible ? '' : 'dimmed'));
-                $content .= html_writer::end_tag('div'); // .coursecat
+                $content .= html_writer::end_tag('div'); // Coursecat.
             }
         }
 

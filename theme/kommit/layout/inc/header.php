@@ -21,27 +21,19 @@ if ($loggedin) {
 <div class="top-border">
 </div>
 
-
 <div class="header-background">
     <div class="container-fluid">
         <div class="logo-area">
-            <a class="logo" href="<?php echo $CFG->wwwroot; ?>"><img class="logo"
-                                                                     alt="kommit logo"
-                                                                     src="<?php echo
-                                                                     $OUTPUT->pix_url('logo', 'theme'); ?>"></a>
+            <a class="logo" href="<?php echo $CFG->wwwroot; ?>"><img
+                    class="logo" alt="kommit logo" src="<?php echo $OUTPUT->pix_url('logo', 'theme'); ?>"></a>
         </div>
 
         <div class="header-right">
             <?php
-            /**
-             * @updateDate  09/09/2014
-             * @author      eFaktor     (fbv)
-             *
-             * Description
-             * Add the Municipality log to the header
-             */
             if ($municipality) {
-                echo '<div class="muni-logo"><img class="logo" alt="' . $municipality->name . '"src="' . $municipality->logo . '"/></div>';
+                echo '<div class="muni-logo">
+                    <img class="logo" alt="' . $municipality->name . '"
+                    src="' . $municipality->logo . '"/></div>';
             }
             ?>
         </div>
@@ -53,21 +45,19 @@ if ($loggedin) {
             class="navbar navbar-fixed-top<?php echo $html->navbarclass ?> moodle-has-zindex">
         <nav role="navigation" class="navbar-inner">
             <div class="container-fluid">
+                <?php echo $OUTPUT->search_form(); ?>
 
-                <a class="btn btn-navbar" data-toggle="workaround-collapse"
-                   data-target=".nav-collapse">
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </a>
+                <div class="navbar-menues">
+                    <?php echo $OUTPUT->navbar_button(); ?>
 
-                <?php if (!$loggedin) : ?>
-                    <div class="navbar-text"><?php echo $OUTPUT->login_info() ?></div>
-                <?php endif ?>
+                    <?php if (!$loggedin || isguestuser()) : ?>
+                        <div class="navbar-text"><?php echo $OUTPUT->login_info() ?></div>
+                    <?php endif ?>
 
-                <div id="moodle-navbar" class="nav-collapse collapse">
-                    <?php echo $OUTPUT->custom_menu(); ?>
-                    <?php echo $OUTPUT->user_menu(); ?>
+                    <div id="moodle-navbar" class="nav-collapse collapse">
+                        <?php echo $OUTPUT->custom_menu(); ?>
+                        <?php echo $OUTPUT->user_menu(); ?>
+                    </div>
                 </div>
             </div>
         </nav>
@@ -77,15 +67,15 @@ if ($loggedin) {
 <!--Put in header-->
 <style type="text/css"></style>
 <script type="text/javascript" language="javascript">
-ed24ChatObj = {
-  'entrypoint':'Kommuneforlaget_Kommit'
-,'mainid':'A53'
-                ,'Online':'<img src="https://login.edialog24.com/kontakt/online_42275571536875427..png"/>'
-                ,'Offline':'<img src="https://login.edialog24.com/kontakt/online_422755716172106262..png"/>'
-  ,'Busy':'<img src="https://login.edialog24.com/images/standard2-offline-no.jpg"/>'
-                ,'webserverAddress':'https://login.edialog24.com'
-                ,'urlToOpen':'https://login.edialog24.com/chattemplate/Kommuneforlaget_Kommit/index.html'
-                ,'windowSettings':'width=600,height=800,status=0,scrollbars=0,titlebar=0'
-};
+    ed24ChatObj = {
+        'entrypoint': 'Kommuneforlaget_Kommit'
+        , 'mainid': 'A53'
+        , 'Online': '<img src="https://login.edialog24.com/kontakt/online_42275571536875427..png"/>'
+        , 'Offline': '<img src="https://login.edialog24.com/kontakt/online_422755716172106262..png"/>'
+        , 'Busy': '<img src="https://login.edialog24.com/images/standard2-offline-no.jpg"/>'
+        , 'webserverAddress': 'https://login.edialog24.com'
+        , 'urlToOpen': 'https://login.edialog24.com/chattemplate/Kommuneforlaget_Kommit/index.html'
+        , 'windowSettings': 'width=600,height=800,status=0,scrollbars=0,titlebar=0'
+    };
 </script>
 <script src="https://login.edialog24.com/ChatClient3/EntrypointScript4.js" type="text/javascript"></script>
