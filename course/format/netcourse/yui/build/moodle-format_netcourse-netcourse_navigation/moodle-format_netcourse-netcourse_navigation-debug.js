@@ -1,5 +1,6 @@
 YUI.add('moodle-format_netcourse-netcourse_navigation', function (Y, NAME) {
 
+/*global BRANCH: true, build_querystring: false */
 /**
  * Course navigation block JS.
  *
@@ -710,7 +711,8 @@ BRANCH.prototype = {
                         this.addChild(object.children[i]);
                     }
                 }
-                if ((this.get('type') === NODETYPE.CATEGORY || this.get('type') === NODETYPE.ROOTNODE || this.get('type') === NODETYPE.MYCATEGORY)
+                if ((this.get('type') === NODETYPE.CATEGORY || this.get('type') === NODETYPE.ROOTNODE ||
+                    this.get('type') === NODETYPE.MYCATEGORY)
                     && coursecount >= M.format_netcourse.courselimit) {
                     this.addViewAllCoursesChild(this);
                 }
@@ -726,7 +728,8 @@ BRANCH.prototype = {
         } catch (error) {
             if (outcome && outcome.status && outcome.status > 0) {
                 // If we got here then there was an error parsing the result.
-                Y.log('Error parsing AJAX response or adding branches to the netcourse_navigation tree', 'error', 'moodle-format_netcourse');
+                Y.log('Error parsing AJAX response or adding branches to the netcourse_navigation tree', 'error',
+                    'moodle-format_netcourse');
                 Y.use('moodle-core-notification-exception', function () {
                     return new M.core.exception(error).show();
                 });

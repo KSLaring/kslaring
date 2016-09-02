@@ -130,7 +130,7 @@ class format_netcourse extends format_base {
             $sectionno = $section;
         }
         if ($sectionno !== null) {
-            // Force the course display to single page
+            // Force the course display to single page.
             $usercoursedisplay = COURSE_DISPLAY_SINGLEPAGE;
             if ($sectionno != 0 && $usercoursedisplay == COURSE_DISPLAY_MULTIPAGE) {
                 $url->param('section', $sectionno);
@@ -193,7 +193,7 @@ class format_netcourse extends format_base {
             redirect($redirecturl);
         }
 
-        // Load the lightbox script
+        // Load the lightbox script.
         $page->requires->yui_module(array('moodle-local_lightbox-lightbox'),
             'M.local_lightbox.lightbox.init_lightbox',
             array());
@@ -211,13 +211,13 @@ class format_netcourse extends format_base {
         global $PAGE, $DB;
 
         // Exclude the SCORM report page - it has issues with
-        // the netcourse navigation block
+        // the netcourse navigation block.
         if ($PAGE->pagetype === 'mod-scorm-report') {
             return array();
         }
 
         // If section is specified in course/view.php, make sure it is expanded
-        // in navigation
+        // in navigation.
         if ($navigation->includesectionnum === false) {
             $selectedsection = optional_param('sectionid', null, PARAM_INT);
             if (is_null($selectedsection)) {
@@ -234,7 +234,7 @@ class format_netcourse extends format_base {
             }
         }
 
-        // Remove existing course navigation nodes
+        // Remove existing course navigation nodes.
         if ($node->has_children()) {
             foreach ($node->children as $childnode) {
                 $childnode->remove();
@@ -246,10 +246,10 @@ class format_netcourse extends format_base {
         foreach ($modinfo->get_section_info_all() as $section) {
             // Exclude section 0
             // Section 0 is used for the course description and potential
-            // Sections with no activities/resources are excluded
+            // Sections with no activities/resources are excluded.
             if ($section->section > 0 && isset($modinfo->sections[$section->section])) {
                 $sectionNode = $this->navigation_add_section($navigation, $node, $section);
-                // Section may be hidden, so check if null
+                // Section may be hidden, so check if null.
                 if (!is_null($sectionNode)) {
                     foreach ($modinfo->sections[$section->section] as $cmid) {
                         $this->navigation_add_activity($sectionNode, $modinfo->get_cm($cmid));
@@ -274,19 +274,19 @@ class format_netcourse extends format_base {
             $page->theme->layouts['incourse']['options']['nonavbar'] = true;
         }
 
-        // Check if the navigation trigger parameter "nonav" is set
+        // Check if the navigation trigger parameter "nonav" is set.
         $nonav = optional_param('nonav', 0, PARAM_INT);
 
-        // If the "nonav" parameter is not set show the course navigation
+        // If the "nonav" parameter is not set show the course navigation.
         if (!$nonav) {
             // Exclude the SCORM report page - it has issues with
-            // the netcourse navigation block
+            // the netcourse navigation block.
             if ($page->pagetype !== 'mod-scorm-report') {
                 $this->add_fake_nav_block_later($page);
             }
         }
 
-        // Get the manual completion form
+        // Get the manual completion form.
         if ($page->pagelayout === 'incourse') {
             $completioninfo = new completion_info($page->course);
             $cancomplete = isloggedin() && !isguestuser();
@@ -296,17 +296,18 @@ class format_netcourse extends format_base {
             $completionactivated = true;
 
             // The check for the completioncriteria is only needed for course completion.
-            //$completionactivated = false;
-            //$completioncriteria = $completioninfo->get_criteria(COMPLETION_CRITERIA_TYPE_ACTIVITY);
-            //foreach ($completioncriteria as $completioncriterium) {
-            //    if ($completioncriterium->moduleinstance == $thismod->id) {
-            //        $completionactivated = true;
-            //        break;
-            //    }
-            //}
+            /*$completionactivated = false;
+            $completioncriteria = $completioninfo->get_criteria(COMPLETION_CRITERIA_TYPE_ACTIVITY);
+            foreach ($completioncriteria as $completioncriterium) {
+                if ($completioncriterium->moduleinstance == $thismod->id) {
+                    $completionactivated = true;
+                    break;
+                }
+            }*/
 
             if ($completionactivated && $cancomplete &&
-                $completioninfo->is_enabled($thismod) != COMPLETION_TRACKING_NONE) {
+                $completioninfo->is_enabled($thismod) != COMPLETION_TRACKING_NONE
+            ) {
                 $completiondata = $completioninfo->get_data($thismod, true);
                 $completion = $completioninfo->is_enabled($thismod);
                 if ($completion == COMPLETION_TRACKING_MANUAL) {
@@ -389,7 +390,7 @@ class format_netcourse extends format_base {
         } else if ($section->parent == 0) {
             return false;
         } else if ($section->parent >= $section->section) {
-            // some error
+            // Some error.
             return false;
         } else {
             return $this->section_has_parent($section->parent, $parentnum);
@@ -410,7 +411,6 @@ class format_netcourse extends format_base {
             return null;
         }
         $sectionname = get_section_name($this->get_course(), $section);
-        //        $url = course_get_url($this->get_course(), $section->section, array('navigation' => true));
 
         $sectionnode = $node->add($sectionname, null, navigation_node::TYPE_SECTION, null,
             $section->id);
@@ -454,7 +454,7 @@ class format_netcourse extends format_base {
         $key = $cm->id;
         $type = navigation_node::TYPE_ACTIVITY;
 
-        // Check if node exists, if not add it
+        // Check if node exists, if not add it.
         $activitynode = $node->get($key, $type);
         if (!$activitynode) {
             $activitynode = $node->add($activityname, $action, $type,
@@ -557,24 +557,12 @@ class format_netcourse extends format_base {
                     'type' => PARAM_INT,
                     'element_type' => 'hidden',
                 ),
-                /**
-                 * @updateDate  08/05/2014
-                 * @author      eFaktor (fbv)
-                 *
-                 * Description
-                 * Add an extra fields
-                 */
+                // Add extra fields.
                 'homepage' => array(
                     'label' => get_string('checkbox_home', 'local_course_page'),
                     'element_type' => 'checkbox',
                 ),
-                /**
-                 * @updateDate  21/01/2016
-                 * @author      eFaktor     (fbv)
-                 *
-                 * Description
-                 * Course ratings
-                 */
+                // Course ratings.
                 'ratings' => array(
                     'label' => get_string('home_ratings', 'local_course_page'),
                     'element_type' => 'checkbox',
@@ -690,25 +678,6 @@ class format_netcourse extends format_base {
                     'element_type' => 'select',
                     'element_attributes' => array($lst_manager)
                 )
-                /**
-                 * @updateDate  08/05/2014
-                 * @author      eFaktor     (fbv)
-                 *
-                 * Description
-                 * It is not available for this format
-                 */
-                //'coursedisplay' => array(
-                //    'label' => new lang_string('coursedisplay'),
-                //    'element_type' => 'select',
-                //    'element_attributes' => array(
-                //        array(
-                //            COURSE_DISPLAY_SINGLEPAGE => new lang_string('coursedisplay_single'),
-                //            COURSE_DISPLAY_MULTIPAGE => new lang_string('coursedisplay_multi')
-                //        )
-                //    ),
-                //    'help' => 'coursedisplay',
-                //    'help_component' => 'moodle',
-                //),
             );
             $courseformatoptions = array_merge_recursive($courseformatoptions,
                 $courseformatoptionsedit);
@@ -741,14 +710,14 @@ class format_netcourse extends format_base {
      * Don't call create_edit_form      --> parent
      * Different functionality          --> Course Home Page
      *
-     * @updateDate  21/01/2016
-     * @author      eFaktor     (fbv)
+     * @updateDate      21/01/2016
+     * @author          eFaktor     (fbv)
      *
      * Description
      * Add the 'ratings' option format
      *
-     * @updateDate  15/06/2016
-     * @author      eFaktor     (fbv)
+     * @updateDate      15/06/2016
+     * @author          eFaktor     (fbv)
      *
      * Description
      * Remove page video
@@ -796,13 +765,13 @@ class format_netcourse extends format_base {
 
                     break;
             }
-            //swicth
+            // Switch.
 
             if (is_null($mform->getElementValue($optionname)) && isset($option['default'])) {
                 $mform->setDefault($optionname, $option['default']);
             }
         }
-        //for
+        // For.
 
         // Increase the number of sections combo box values if the user has increased
         // the number of sections using the icon on the course page beyond course
@@ -873,7 +842,7 @@ class format_netcourse extends format_base {
                     } else {
                         $data[$key] = 0;
                     }
-                    //if_homepage
+                    // If_homepage.
 
                     break;
                 case 'ratings':
@@ -882,14 +851,14 @@ class format_netcourse extends format_base {
                     } else {
                         $data[$key] = 0;
                     }
-                    //if_homepage
+                    // If_homepage.
 
                     break;
                 case 'homesummary':
                     if (isset($data['homesummary_editor']) && ($data['homesummary_editor'])) {
                         $data[$key] = course_page::getHomeSummaryEditor($data['homesummary_editor']);
                     }
-                    //homesummary_editor
+                    // Homesummary_editor.
 
                     break;
                 case 'pagegraphics':
@@ -898,15 +867,16 @@ class format_netcourse extends format_base {
                     } else {
                         $delete = false;
                     }
-                    //if_delete
+                    // If_delete.
                     if (isset($data['pagegraphics']) && isset($data['pagegraphics_filemanager'])) {
-                        $graphic_id = course_page::getHomeGraphicsVideo($data['pagegraphics'], 'pagegraphics', $data['pagegraphics_filemanager'], $delete);
+                        $graphic_id = course_page::getHomeGraphicsVideo($data['pagegraphics'], 'pagegraphics',
+                            $data['pagegraphics_filemanager'], $delete);
                         if ($graphic_id) {
                             $data[$key] = $graphic_id;
                         }
-                        //if_graphic_id
+                        // If_graphic_id.
                     }
-                    //pagegraphics_filemanager
+                    // Pagegraphics_filemanager.
 
                     break;
                 case 'pagevideo':
@@ -915,7 +885,7 @@ class format_netcourse extends format_base {
                     } else {
                         $delete = false;
                     }
-                    //if_delete
+                    // If_delete.
                     if (isset($data['pagevideo']) && isset($data['pagevideo_filemanager'])) {
                         $video_id = course_page::getHomeGraphicsVideo($data['pagevideo'], 'pagevideo', $data['pagevideo_filemanager'], $delete);
                         if ($video_id) {
@@ -968,7 +938,8 @@ class format_netcourse extends format_base {
 
         if (!($PAGE->pagetype === 'course-view-netcourse' ||
             $PAGE->pagetype === 'local-course_page-home_page' ||
-            strpos($PAGE->pagetype, 'mod-') !== false)) {
+            strpos($PAGE->pagetype, 'mod-') !== false)
+        ) {
             return new format_netcourse_specialnav('');
         }
 
@@ -1655,8 +1626,13 @@ EOT;
             'expansionlimit' => $expansionlimit
         );
         $this->page->requires->string_for_js('viewallcourses', 'moodle');
-        $this->page->requires->yui_module('moodle-format_netcourse-netcourse_navigation',
-            'M.format_netcourse.init_add_tree', array($arguments));
+        //$this->page->requires->yui_module('moodle-format_netcourse-netcourse_navigation',
+        //    'M.format_netcourse.init_add_tree', array($arguments));
+
+        $arguments = array(
+            'instanceid' => $id
+        );
+        $this->page->requires->js_call_amd('format_netcourse/navblock', 'init', $arguments);
     }
 
     /**

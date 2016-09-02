@@ -1,5 +1,6 @@
 YUI.add('moodle-format_netcourse-netcourse_navigation', function (Y, NAME) {
 
+/*global BRANCH: true, build_querystring: false */
 /**
  * Course navigation block JS.
  *
@@ -708,7 +709,8 @@ BRANCH.prototype = {
                         this.addChild(object.children[i]);
                     }
                 }
-                if ((this.get('type') === NODETYPE.CATEGORY || this.get('type') === NODETYPE.ROOTNODE || this.get('type') === NODETYPE.MYCATEGORY)
+                if ((this.get('type') === NODETYPE.CATEGORY || this.get('type') === NODETYPE.ROOTNODE ||
+                    this.get('type') === NODETYPE.MYCATEGORY)
                     && coursecount >= M.format_netcourse.courselimit) {
                     this.addViewAllCoursesChild(this);
                 }
