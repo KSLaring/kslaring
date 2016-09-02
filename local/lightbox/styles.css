@@ -51,6 +51,7 @@
 .yui3-skin-sam .yui3-moodle-local_lightbox-lightbox.yui3-panel .yui3-widget-hd .yui3-button-close {
     font-size: 0;
     height: 16px;
+    margin: 2px;
     text-align: left;
     width: 28px;
 }
