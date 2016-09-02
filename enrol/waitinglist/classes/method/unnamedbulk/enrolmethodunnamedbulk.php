@@ -649,15 +649,15 @@ class enrolmethodunnamedbulk extends \enrol_waitinglist\method\enrolmethodbase {
                              * Description
                              * Send email when there is a change of seats
                              */
-                            if ($data->seats != $entry->seats
-                                &&
-                                $this->emailalert
-                                &&
-                                $waitinglist->{ENROL_WAITINGLIST_FIELD_SENDWAITLISTMESSAGE} ) {
-                                $queue_entry = $queueman->get_qentry($entry->id);
-                                $queue_entry->seats = $data->seats;
-                                $this->email_waitlist_message($waitinglist,$queue_entry,$USER,'',true);
-                            }
+                            //if ($data->seats != $entry->seats
+                             //   &&
+                             //   $this->emailalert
+                             //   &&
+                             //   $waitinglist->{ENROL_WAITINGLIST_FIELD_SENDWAITLISTMESSAGE} ) {
+                             //   $queue_entry = $queueman->get_qentry($entry->id);
+                             //   $queue_entry->seats = $data->seats;
+                             //   $this->email_waitlist_message($waitinglist,$queue_entry,$USER,'',true);
+                            //}
                         }
 
                         //Send the user on somewhere
