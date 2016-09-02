@@ -204,6 +204,12 @@ class ct_settings_form extends moodleform {
                 $form->setDefault('ratings',$value);
 
                 break;
+            case 'participant':
+                $home_participant = $form->createElement('checkbox','participant',get_string('home_participant','local_course_page'));
+                $form->insertElementBefore($home_participant,'descriptionhdr');
+                $form->setDefault('participant',$value);
+                
+                break;
             case 'homevisible':
                 $visible['0'] = get_string('hide');
                 $visible['1'] = get_string('show');
