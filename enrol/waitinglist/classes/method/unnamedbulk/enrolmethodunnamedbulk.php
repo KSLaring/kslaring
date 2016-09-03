@@ -35,7 +35,13 @@ class enrolmethodunnamedbulk extends \enrol_waitinglist\method\enrolmethodbase {
 
 	const METHODTYPE='unnamedbulk';
 	protected $active = false;
-	
+
+    /**
+     * @updateDate  02/09/2016
+     * @author      eFaktor     (fbv)
+     */
+    const OFFQ = 99999;
+
 	//const QFIELD_ENROLPASSWORD='customtext1';
 	//const MFIELD_GROUPKEY = 'customint1';
 	//const MFIELD_LONGTIMENOSEE = 'customint2';
@@ -387,7 +393,7 @@ class enrolmethodunnamedbulk extends \enrol_waitinglist\method\enrolmethodbase {
 	 * @param stdClass $queueentry
      * @return boolean success or failure 
      */
-	public function graduate_from_list(\stdClass $waitinglist,\stdClass $queue_entry,$giveseats){
+	public function graduate_from_list(\stdClass $waitinglist,\stdClass $queue_entry,$giveseats,$changed=null){
 		global $DB;
 		$entryman= \enrol_waitinglist\entrymanager::get_by_course($waitinglist->courseid);
 		$newallocations = 0;
@@ -411,13 +417,14 @@ class enrolmethodunnamedbulk extends \enrol_waitinglist\method\enrolmethodbase {
 		}
 
 		//if we have allocated seats, send the user confirmation.
-		if($newallocations && $this->{static::MFIELD_SENDCONFIRMMESSAGE}){
-			$user = $DB->get_record('user',array('id'=>$queue_entry->userid));
+        $user = $DB->get_record('user',array('id'=>$queue_entry->userid));
+		if ($newallocations && $this->{static::MFIELD_SENDCONFIRMMESSAGE}) {
 			if($user){
 				//somehow need to add allocation count here ... or do we?
-				$this->email_waitlist_message($waitinglist, $updatedentry,$user, 'confirmation');
+				$this->email_waitlist_message($waitinglist, $updatedentry,$user, 'confirmation',$changed);
 			}
 		}
+
 		return $success;
 	}
 
@@ -468,9 +475,15 @@ class enrolmethodunnamedbulk extends \enrol_waitinglist\method\enrolmethodbase {
 		
 		//get waitlist object and  vacancies count
 		 $wl = enrol_get_plugin('waitinglist');
-		 $vacancies = $wl->get_vacancy_count($waitinglist);
-
-
+        /**
+         * @updateDate  02/09/2016
+         * @author      eFaktor     (fbv)
+         * 
+         * Description
+         * calculate the vacancies
+         */
+		 $vacancies = $vacancies = $waitinglist->customint2 - $entryman->GetOcuppaiedSeats_NotConnectedUser($USER->id,$waitinglist->courseid,$waitinglist->id);
+        
         // Don't show enrolment instance form, if user can't enrol using it.
         if (true === $enrolstatus) {
             $qstatus = new \stdClass;
@@ -481,6 +494,7 @@ class enrolmethodunnamedbulk extends \enrol_waitinglist\method\enrolmethodbase {
             $qstatus->assignedseats=0;
             $qstatus->queueposition=0;
             $qstatus->waitingseats =0;
+
             if($entry){
                 $qstatus->hasentry=true;
                 $qstatus->seats = $entry->seats;
@@ -575,8 +589,15 @@ class enrolmethodunnamedbulk extends \enrol_waitinglist\method\enrolmethodbase {
                         if($entry){
                             //if this is an update of user enrol details, process it
                             if($data->seats != $entry->seats){
-                                $updatedentry=$entryman->update_seats($entry->id,$data->seats);
-                                $actiontaken='updated';
+                                /**
+                                 * @updateDate 02/09/2016
+                                 * @auhtor      eFaktor     (fbv)
+                                 * 
+                                 * Description
+                                 * Update seats
+                                 */
+                                $updatedentry = $entryman->update_seats_bulk($entry->id,$data->seats,$entry->userid,$entry->courseid,$waitinglist,$vacancies);
+                                $actiontaken ='updated';
                             }else{
                                 $actiontaken='nothingchanged';
                             }
@@ -618,46 +639,28 @@ class enrolmethodunnamedbulk extends \enrol_waitinglist\method\enrolmethodbase {
                         //might want to process graduations
                         //this already happens in the sequence from "enrol_unnamedbulk"
                         //so we only need to do this for updates
+
                         if($actiontaken =='updated' && $updatedentry){
                             //if there are vacancies, and we have an updatedentry
                             //and seats was not set to 0, and we are on top of waitinglist
                             //or there is no waitinglist at all ....give some seats
                             /////;
-                            if($vacancies &&
-                                $data->seats > $entry->seats &&
-                                ($updatedentry->queueno=1 || $queueman->get_entrycount()==0) ){
-
-                                if(($updatedentry->seats - $updatedentry->allocseats) > $vacancies){
-                                    $giveseats = $vacancies;
-                                }else{
-                                    $giveseats = ($updatedentry->seats - $updatedentry->allocseats);
-                                }
-
-                                //move them off the waitinglist, and onto the course or confirmed list
-                                //post processing (emails mainly) should happen from the function call.
-                                //graduationcomplete doesn't mean much here
-                                $graduationcomplete = $this->graduate_from_list($waitinglist,$updatedentry,$giveseats);
-                            }
-
+                            //
                             /**
-                             * Send confirmation email when user increase or decrease seats
-                             */
-                            /**
-                             * @updateDate      01/09/2016
-                             * @author          eFaktor     (fbv)
-                             *
+                             * @updateDate  02/09/2016
+                             * @author      eFaktor     (fbv)
+                             * 
                              * Description
-                             * Send email when there is a change of seats
+                             * Mail to inform about the change 
                              */
-                            if ($data->seats != $entry->seats
-                                &&
-                                $this->emailalert
-                                &&
-                                $waitinglist->{ENROL_WAITINGLIST_FIELD_SENDWAITLISTMESSAGE} ) {
-                                $queue_entry = $queueman->get_qentry($entry->id);
-                                $queue_entry->seats = $data->seats;
-                                $this->email_waitlist_message($waitinglist,$queue_entry,$USER,'',true);
+                            if ($data->seats != $entry->seats) {
+                                if ($entry->queueno=static::OFFQ) {
+                                    $this->email_waitlist_message($waitinglist, $updatedentry,$USER, 'confirmation',true);
+                                }else if ($entry->queueno == 1) {
+                                    $this->email_waitlist_message($waitinglist, $updatedentry,$USER, '',true);
+                                }
                             }
+
                         }
 
                         //Send the user on somewhere
