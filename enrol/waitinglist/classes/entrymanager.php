@@ -255,38 +255,60 @@ class entrymanager  {
      * @return stdClass the updatedentry if successful, false if not
     */
 	public function confirm_seats($entryid,$seats){
+		/* Variables */
 		global $DB;
-		
-		//get the entry
-		$entry = $this->get_entry($entryid);	
-		//always the chief user is enrolled, so lets do that
-		if($entry->allocseats==0 && $entry->enroledseats==0){
-			 $wl = enrol_get_plugin('waitinglist');
-			 $wl->enrol_user($this->waitinglist,$entry->userid);
-			 $entry->allocseats=1;
-			 $entry->enroledseats=1;
-			 $seats = $seats -1;
-		}
-		
-		//if we still need to allocate seats, lets do that
-		if($seats > 0){
-			$entry->confirmedseats+=$seats;
-			$entry->allocseats+=$seats;
-		}
-		
-		//lets make sure we take entry off list
-		if($entry->allocseats >= $entry->seats){
-			$entry->offqueue=1;
-			$entry->queueno=queuemanager::OFFQ;
-		}
-		
-		//update the DB and return
-        $result = $this->update_entry($entry);
- 		if ($result){
- 			return $entry;
- 		}else{
- 			return false;
- 		}
+		$entry = null;
+		$wl		= null;
+		$rdo 	= null;
+		$params	= null;
+
+		try {
+			//get the entry
+			$entry 	= $this->get_entry($entryid);
+
+			//always the chief user is enrolled, so lets do that
+			if($entry->allocseats==0 && $entry->enroledseats==0){
+				$wl = enrol_get_plugin('waitinglist');
+
+				/* check if the users is already enrolled */
+				$params = array();
+				$params['enrolid'] 	= $entry->waitinglistid;
+				$params['userid']	= $entry->userid;
+				/* Execute */
+				$rdo = $DB->get_record('user_enrolments',$params);
+				if (!$rdo) {
+					/* Enrolled */
+					$wl->enrol_user($this->waitinglist,$entry->userid);
+					$entry->allocseats		= 1;
+					$entry->enroledseats	= 1;
+					$seats = $seats -1;
+				}
+
+				//if we still need to allocate seats, lets do that
+				if($seats > 0) {
+					$entry->confirmedseats	+= $seats;
+					$entry->allocseats		+= $seats;
+				}
+
+				//lets make sure we take entry off list
+				if($entry->allocseats >= $entry->seats){
+					$entry->offqueue	= 1;
+					$entry->queueno		= queuemanager::OFFQ;
+				}
+
+				//update the DB and return
+				$result = $this->update_entry($entry);
+				if ($result){
+					return $entry;
+				}else{
+					return false;
+				}
+			}
+
+			return $entry;
+		}catch (\Exception $ex) {
+			throw $ex;
+		}//try_catch
 	}
 	
 	/**
@@ -312,32 +334,32 @@ class entrymanager  {
     */
 	public function update_seats($entryid,$newseatcount){
 		global $DB;
-		
+
 		$entry = $this->get_entry($entryid);
 		if(!$entry){return false;}
-		
+
 		//if no change, just return
 		if($entry->seats == $newseatcount){return $entry;}
-		
+
 		//if seats set to zero, we remove the entry, unenrol the user, slap hands and return
 		if($newseatcount==0){
 			$this->remove_entry_from_db($entryid);
-			 //$DB->delete_records(self::CTABLE,array('id'=>$entryid));
-			 
-			 $wl = enrol_get_plugin('waitinglist');
-			 $wl->unenrol_user($this->waitinglist,$entry->userid);
-			 return true;
+			//$DB->delete_records(self::CTABLE,array('id'=>$entryid));
+
+			$wl = enrol_get_plugin('waitinglist');
+			$wl->unenrol_user($this->waitinglist,$entry->userid);
+			return true;
 		}
-		
+
 		//if seat count increased
 		//always add seats to queue. later can be graduated off queue
 		if($entry->seats < $newseatcount){
-			//if we are not on queue, add to end of queue
+		//	//if we are not on queue, add to end of queue
 			if($entry->offqueue==1){
 				$entry->offqueue=0;
 				$entry->queueno= queuemanager::get_maxq_no($this->waitinglist->id) + 1;
 			}
-		//if seat count decreased
+			//if seat count decreased
 		}else{
 
 			//if we new seats are equal to or less than current allocations
@@ -349,19 +371,147 @@ class entrymanager  {
 				$entry->confirmedseats=$newseatcount -1;
 			}
 		}
-		
+
 		//This is enough to tidy up unconfirm logic
 		//and deal with a reduced queue size
 		$entry->seats=$newseatcount;
 
 		//finally update DB and return
-		$ret = $this->update_entry($entry); 
+		$ret = $this->update_entry($entry);
 		if($ret){
 			return $entry;
 		}else{
 			return false;
 		}
-	}
+	}//update_Seats
+
+	/**
+	 * @param $entryid
+	 * @param $newseatcount
+	 * @param $userId
+	 * @param $courseId
+	 * @param $waitingList
+	 * @param $vacancies
+	 * @return bool|stdClass|null
+	 * @throws \Exception
+	 *
+	 * @creationDate	03/09/2016
+	 * @author			eFaktor		(fbv)
+	 *
+	 * Description
+	 * Update seats ferom bulk, after a change.
+	 */
+	public function update_seats_bulk($entryid,$newseatcount,$userId,$courseId,$waitingList,&$vacancies) {
+		/* Variables */
+		global  $DB;
+		$entry 		= null;
+		$rdo 		= null;
+		$params		= null;
+		$sql 		= null;
+		$occupaied	= null;
+		
+		try {
+			/* Get Entry	*/
+			$entry = $this->get_entry($entryid);
+			if(!$entry){return false;}
+
+			//if no change, just return
+			if($entry->seats == $newseatcount){return $entry;}
+
+			if($newseatcount==0){
+				$this->remove_entry_from_db($entryid);
+
+				$wl = enrol_get_plugin('waitinglist');
+				$wl->unenrol_user($this->waitinglist,$entry->userid);
+				return true;
+			}else {
+				if ($waitingList->customint2) {
+					/* Get vacancies */
+					$occupaied = $this->GetOcuppaiedSeats_NotConnectedUser($userId,$courseId,$waitingList->id);
+					$vacancies = $waitingList->customint2 - $occupaied;
+					if ($newseatcount > $vacancies) {
+						$entry->offqueue		= 0;
+						$entry->queueno			= queuemanager::get_maxq_no($waitingList->id) + 1;
+						$entry->allocseats		= $vacancies;
+						$entry->confirmedseats	= $vacancies -1;
+					}else {
+						$entry->offqueue		= 1;
+						$entry->queueno			= queuemanager::OFFQ;
+						$entry->allocseats		= $newseatcount;
+						$entry->confirmedseats	= $newseatcount -1;
+					}
+				}else {
+					/* Unlimitted */
+					$entry->offqueue		= 1;
+					$entry->queueno			= queuemanager::OFFQ;
+					$entry->allocseats		= $newseatcount;
+					$entry->confirmedseats	= $newseatcount -1;
+				}
+			}
+
+			//This is enough to tidy up unconfirm logic
+			//and deal with a reduced queue size
+			$entry->seats=$newseatcount;
+
+			//finally update DB and return
+			$ret = $this->update_entry($entry);
+			
+			if($ret){
+				return $entry;
+			}else{
+				return false;
+			}
+		}catch (\Exception $ex) {
+			throw $ex;
+		}//try_catch
+	}//update_seats_bulk
+
+	/**
+	 * @param 			$userId
+	 * @param 			$courseId
+	 * @param 			$waitingId
+	 * @return int
+	 * @throws \Exception
+	 *
+	 * @creationDate	03/09/2016
+	 * @author			eFaktor		(fbv)
+	 *
+	 * Description
+	 * Get total seats occupaid for other users
+	 */
+	public function GetOcuppaiedSeats_NotConnectedUser($userId,$courseId,$waitingId) {
+		/* Variables */
+		global $DB;
+		$rdo 		= null;
+		$sql 		= null;
+		$params 	= null;
+		$occupaied 	= 0;
+		
+		try {
+			/* Search criteria	*/
+			$params = array();
+			$params['user'] 	= $userId;
+			$params['course']	= $courseId;
+			$params['wait']		= $waitingId;
+
+			/* SQL Instruction */
+			$sql = " SELECT SUM(confirmedseats) as 'confirm',
+								SUM(enroledseats) as 'enrol'
+					 	 FROM	{enrol_waitinglist_queue}
+					 	 WHERE	courseid 		 = :course
+							AND	waitinglistid	 = :wait
+							AND userid 			!= :user ";
+			/* Execute */
+			$rdo = $DB->get_record_sql($sql,$params);
+			if ($rdo) {
+				$occupaied = $rdo->confirm + $rdo->enrol;
+			}
+			
+			return $occupaied;
+		}catch (\Exception $ex) {
+			throw $ex;
+		}//try_catch
+	}//GetOcuppaiedSeats_NotConnectedUser
 	
 	/**
      * Takes an entry off confirmed list and return to waiting list

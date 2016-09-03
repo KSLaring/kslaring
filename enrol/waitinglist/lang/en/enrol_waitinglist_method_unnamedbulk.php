@@ -32,6 +32,7 @@ Your reserved seats are at postion: {$a->queueno} on the waitinglist.
 
 You can edit your reservation here:  {$a->editenrolurl}';
 $string['waitlistmessagetitleconfirmation_unnamedbulk'] = 'Seats confirmed for course: {$a}';
+$string['waitlistmessagetitleconfirmation_unnamedbulk_changed'] = 'Seats confirmed for course: {$a}. . Changed seats\'';
 $string['sendconfirmmessage'] ='Send mail when seats are confirmed';
 $string['sendconfirmmessage_help'] ='When places become available on the course, and they are assigned to queue seats for this method, email the user responsible for the seats';
 $string['confirmedmessage_unnamedbulk'] = 'Seats allocated for: {$a->coursename}';
