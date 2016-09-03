@@ -83,9 +83,16 @@ class enrolmethodunnamedbulk_enrolform extends \moodleform {
                 }
                 //add caution for number of seats available, and waiting list size etc
                 if($queuestatus->hasentry){
-                    $mform->addElement('static','aboutqueuestatus',
-                        get_string('unnamedbulk_enrolformqueuestatus_label','enrol_waitinglist'),
-                        get_string('unnamedbulk_enrolformqueuestatus_all','enrol_waitinglist',$queuestatus));
+                    if ($queuestatus->assignedseats == $queuestatus->seats) {
+                        $mform->addElement('static','aboutqueuestatus',
+                            get_string('unnamedbulk_enrolformqueuestatus_label','enrol_waitinglist'),
+                            get_string('unnamedbulk_enrolformqueuestatus_all','enrol_waitinglist',$queuestatus));
+                    }else {
+                        $mform->addElement('static','aboutqueuestatus',
+                            get_string('unnamedbulk_enrolformqueuestatus_label','enrol_waitinglist'),
+                            get_string('unnamedbulk_enrolformqueuestatus','enrol_waitinglist',$queuestatus));
+                    }
+
                 }else if ($infoRequest) {
                     $infoRequest->assignedseats = 0;
                     $infoRequest->waitingseats  = $infoRequest->seats;

@@ -34,6 +34,7 @@ Du kan når som helst redigere reservasjonen din her: {$a->editenrolurl}
 
 Ta derfor vare på denne eposten!';
 $string['waitlistmessagetitleconfirmation_unnamedbulk'] = 'Bekreftede bulk kursplasser for kurset: {$a}';
+$string['waitlistmessagetitleconfirmation_unnamedbulk_changed'] = 'Seats confirmed for course: {$a}. . Changed seats\'';
 $string['sendconfirmmessage'] ='Send epost når kursplassene er bekreftet';
 $string['sendconfirmmessage_help'] ='Når kursplasser blir ledige i kurset, og de er lagt til i køen for denne påmeldingsmetoden, og de har tilgang til å reservere kursplasser med denne metoden, send en epost til vedkommende som har reservert kursplassene på seg.';
 $string['confirmedmessage_unnamedbulk'] = 'Tildelte kursplasser for: {$a->coursename}';
