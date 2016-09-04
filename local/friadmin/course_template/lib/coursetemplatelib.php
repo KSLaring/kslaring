@@ -847,6 +847,7 @@ class CourseTemplate {
             $params['enrol']        = 'waitinglist';
             $params['self']         = 'self';
             $params['bulk']         = 'unnamedbulk';
+            $params['manual']       = 'manual';
 
             /* SQL Instruction */
             $sql = " SELECT	e.id,
@@ -865,7 +866,8 @@ class CourseTemplate {
                             e.customtext3                   as 'priceinternal',
                             e.customtext4                   as 'priceexternal',
                             es.id							as 'selfid',
-                            un.id							as 'bulkid'
+                            un.id							as 'bulkid',
+                            ma.id                           as 'manualid'
                      FROM		{enrol}						e
                         -- SELF METHOD
                         JOIN 	{enrol_waitinglist_method}	es	ON 	es.waitinglistid 	= e.id
@@ -875,6 +877,10 @@ class CourseTemplate {
                         JOIN 	{enrol_waitinglist_method}	un	ON 	un.waitinglistid 	= e.id
                                                                 AND un.courseid 		= e.courseid
                                                                 AND	un.methodtype		= :bulk
+                        -- manual
+                        JOIN 	{enrol_waitinglist_method}	ma	ON 	ma.waitinglistid 	= e.id
+                                                                AND ma.courseid 		= e.courseid
+                                                                AND	ma.methodtype		= :manual
                      WHERE	e.enrol 	= :enrol
                         AND	e.courseid 	= :courseid ";
 
@@ -910,6 +916,7 @@ class CourseTemplate {
                 $instance->id               = null;
                 $instance->selfid           = null;
                 $instance->bulkid           = null;
+                $instance->manualid         = null;
                 $instance->courseid         = $courseId;
                 $instance->password         = null;
                 $instance->date_off         = 0;

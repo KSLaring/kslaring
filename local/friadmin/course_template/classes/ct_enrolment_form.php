@@ -143,6 +143,11 @@ class ct_enrolment_settings_form extends moodleform {
         $form->setType('bulkid', PARAM_INT);
         $form->setDefault('bulkid',$instance->bulkid);
 
+        /* Manual Method    */
+        $form->addElement('hidden', 'manualid');
+        $form->setType('manualid', PARAM_INT);
+        $form->setDefault('manualid',$instance->manualid);
+
         /**
          * @updateDate  17/06/2016
          * @author      eFaktor     (fbv)
