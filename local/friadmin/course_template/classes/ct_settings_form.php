@@ -61,6 +61,11 @@ class ct_settings_form extends moodleform {
                 $form->setConstant('visible', $course->visible);
             }
         }
+
+        /* Start Date   */
+        $form->addElement('date_selector', 'startdate', get_string('startdate'));
+        $form->addHelpButton('startdate', 'startdate');
+        $form->setDefault('startdate', time() + 3600 * 24);
         
         // Description.
         $form->addElement('header', 'descriptionhdr', get_string('description'));
