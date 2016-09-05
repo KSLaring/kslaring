@@ -115,6 +115,7 @@ $string['welcometocoursetext'] = 'Welcome to {$a->coursename}!
 If you have not done so already, you should edit your profile page so that we can learn more about you:
 
   {$a->profileurl}';
+$string['welcome_ical_attach'] = "Attached iCal file with the course start date.";
 $string['customwaitlistmessage'] = 'Custom waitlist message';
 $string['customwaitlistmessage_help'] = 'A custom waiting list notification message may be added as plain text or Moodle-auto format, including HTML tags and multi-lang tags.
 
@@ -275,4 +276,5 @@ $string['price'] = 'Price';
 
 $string['in_price']     = 'Internal price';
 $string['ext_price']    = 'External price';
+$string['ical_path']    = 'iCal path';
 

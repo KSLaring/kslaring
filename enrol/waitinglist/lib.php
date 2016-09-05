@@ -1360,9 +1360,87 @@ class enrol_waitinglist_plugin extends enrol_plugin {
         }
 
         // Directly emailing welcome message rather than using messaging.
-        email_to_user($user, $contact, $subject, $messagetext, $messagehtml);
+        /**
+         * @updateDate  05/09/2016
+         * @author      eFaktor     (fbv)
+         *
+         * Description
+         * Add iCal file
+         */
+        $fileCal = $this->iCalendar_StartDate($course);
+        if ($fileCal) {
+            $messagehtml .= "</br></br>" . get_string('welcome_ical_attach','enrol_waitinglist') . "</br></br>";
+            $messagetext .= "</br></br>" . get_string('welcome_ical_attach','enrol_waitinglist') . "</br></br>";
+            email_to_user($user, $contact, $subject, $messagetext, $messagehtml,'iCal/'.$fileCal ,$fileCal);
+        }else {
+            email_to_user($user, $contact, $subject, $messagetext, $messagehtml);
+        }//if_file_cal
     }
 
+    /**
+     * @param           $course
+     *
+     * @return          null|string
+     * @throws          Exception
+     *
+     * @updateDate      05/09/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Get iCal filte to attach
+     */
+    private function iCalendar_StartDate($course) {
+        /* Variables */
+        global $CFG;
+        $iCal           = null;
+        $fileCal        = null;
+        $fileName       = null;
+        $fileLocation   = null;
+        $pluginInfo     = null;
+
+        try {
+            /* Plugin Info  */
+            $pluginInfo     = get_config('enrol_waitinglist');
+            if ($pluginInfo) {
+                /* Get Location     */
+                $fileLocation   = $CFG->dataroot . '/' . $pluginInfo->file_location;
+                if (file_exists($fileLocation)) {
+                    if (is_dir($fileLocation)) {
+                        /* Content File */
+                        $iCal  = "BEGIN:VCALENDAR"  . "\n";
+                        $iCal .= "METHOD:PUBLISH"   . "\n";
+                        $iCal .= "VERSION:2.0"      . "\n";
+                        $iCal .= "PRODID:-//KSLæring//EN"   . "\n";
+                        $iCal .= "CALSCALE:GREGORIAN" . "\n";
+                        $iCal .= "X-WR-TIMEZONE:Europe/Oslo " . "\n";
+                        $iCal .= "BEGIN:VEVENT"     . "\n";
+                        $iCal .= "SUMMARY:"         . $course->fullname . "\n";
+                        $iCal .= "UID:"             . uniqid()       . "\n";
+                        $iCal .= "DTSTART:"         . date('Ymd\THis', $course->startdate + 28800) . "\n";
+                        $iCal .= "LOCATION:"        . "KSLæring" . "\n";
+                        $iCal .= "END:VEVENT"       . "\n";
+                        $iCal .= "END:VCALENDAR"    . "\n";
+
+                        /* File Name    */
+                        $fileName  = 'ical_' . $course->fullname . '.ics';
+                        $fileCal = fopen($CFG->dataroot . '/iCal/' . $fileName,'w+');
+                        fwrite($fileCal,$iCal);
+                        fclose($fileCal);
+
+                        return $fileName;
+                    }else {
+                        return false;
+                    }
+                }else {
+                    return false;
+                }
+            }else {
+                return false;
+            }//if_else
+        }catch (\Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//iCalendar_StartDate
 
     /**
      * Restore role assignment. 
