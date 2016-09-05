@@ -755,6 +755,7 @@ class FELLESDATA_CRON {
 
         try {
             /* Get user to synchronize  */
+            mtrace('LIMIT 0,2000');
             $rdo = $DB->get_records('fs_imp_users',array('imported' => '0'),'','*','LIMIT 0,2000');
 
             /* Prepare data */
