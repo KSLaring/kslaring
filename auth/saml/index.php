@@ -235,10 +235,6 @@ define('SAML_INTERNAL', 1);
          * Description
          * Redirect the user to KS Site
          */
-        $dbLog  = ' SAML INDEX INI BEFORE IF: '  .   "\n";
-        $dbLog .= 'USER ' . $USER->id . "\n";
-        error_log($dbLog, 3, $CFG->dataroot . "/SSO_LNK.log");
-        
         if (!is_siteadmin($USER)) {
             require_once ('../../local/adfs/adfslib.php');
 
@@ -268,12 +264,8 @@ define('SAML_INTERNAL', 1);
 
                 error_log($dbLog, 3, $CFG->dataroot . "/COURSE_LNK.log");
 
-                $dbLog  = ' SAML INDEX: '  .   "\n";
-                $dbLog .= 'USER ' . $USER->id . "\n";
-
                 /* Validate User */
                 if (KS_ADFS::IsValidUser($USER)) {
-                    $dbLog .= "Valid USER \n\n";
                     error_log($dbLog, 3, $CFG->dataroot . "/SSO_LNK.log");
 
                     $urlKS = KS_ADFS::LogIn_UserADFS($USER->id,$modlnk,$modid);
