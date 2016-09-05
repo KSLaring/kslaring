@@ -235,6 +235,10 @@ define('SAML_INTERNAL', 1);
          * Description
          * Redirect the user to KS Site
          */
+        $dbLog  = ' SAML INDEX INI BEFORE IF: '  .   "\n";
+        $dbLog .= 'USER ' . $USER->id . "\n";
+        error_log($dbLog, 3, $CFG->dataroot . "/SSO_LNK.log");
+        
         if (!is_siteadmin($USER)) {
             require_once ('../../local/adfs/adfslib.php');
 
