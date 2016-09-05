@@ -123,6 +123,7 @@ Følgende plassholdere kan legges inn i meldingen:
 * Antall plasser i ventelisten {$a->queueseats}
 * Link ttil kurset {$a->courseurl}
 * Link til påmeldingssiden {$a->editenrolurl}';
+$string['welcome_ical_attach'] = "Attached iCal file with the course start date.";
 $string['sendcoursewaitlistmessage'] = 'Send epost når brukeren blir lagt til i ventelisten';
 $string['sendcoursewaitlistmessage_help'] = 'Du kan sende en epost til brukeren når de legges til på kursets venteliste.';
 
@@ -265,4 +266,4 @@ $string['approval_occupied'] = 'Det er i øyeblikket ingen ledige plasser. Søkn
 $string['price'] = 'Pris';
 
 $string['in_price']     = 'Intern pris';
-$string['ext_price']    = 'Ekstern pris';
+$string['ext_price']    = 'Ekstern pris';$string['ical_path']    = 'iCal path';

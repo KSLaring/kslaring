@@ -82,6 +82,6 @@ if ($ADMIN->fulltree) {
 	$settings->add(new admin_setting_configcheckbox('enrol_waitinglist/sendcoursewelcomemessage', get_string('sendcoursewelcomemessage', 'enrol_waitinglist'), '', 1));
 	$settings->add(new admin_setting_configcheckbox('enrol_waitinglist/sendcoursewaitlistmessage', get_string('sendcoursewaitlistmessage', 'enrol_waitinglist'), '', 1));
 
-		
-	
+    /* ICal Path */
+    $settings->add(new admin_setting_configtext('enrol_waitinglist/file_location',get_string('ical_path', 'enrol_waitinglist'), '', ''));
 }
