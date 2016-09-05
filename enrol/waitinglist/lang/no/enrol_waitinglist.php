@@ -266,4 +266,5 @@ $string['approval_occupied'] = 'Det er i øyeblikket ingen ledige plasser. Søkn
 $string['price'] = 'Pris';
 
 $string['in_price']     = 'Intern pris';
-$string['ext_price']    = 'Ekstern pris';$string['ical_path']    = 'iCal path';
+$string['ext_price']    = 'Ekstern pris';
+$string['ical_path']    = 'iCal path';
