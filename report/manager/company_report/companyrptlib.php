@@ -955,7 +955,7 @@ class CompanyReport {
             $params['user'] = $user_id;
 
             /* SQL Instruction  */
-            $sql = " SELECT	    c.id,
+            $sql = " SELECT	    DISTINCT c.id,
                                 c.fullname,
                                 IF (cc.timecompleted,cc.timecompleted,0) as 'completed'
                      FROM			{course}				c

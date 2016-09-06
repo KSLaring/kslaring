@@ -509,7 +509,7 @@ class EmployeeReport {
             $params['user'] = $user_id;
 
             /* SQL Instruction  */
-            $sql = " SELECT	c.id,
+            $sql = " SELECT	DISTINCT c.id,
                             IF (cc.timecompleted,cc.timecompleted,0) as 'completed'
                      FROM			{course}				c
                         JOIN		{enrol}				    e	ON		e.courseid 	= c.id
