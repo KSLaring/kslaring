@@ -444,7 +444,8 @@ Class Managers {
                 $infoReporter->timecreated       = $time;
 
                 /* Execute  */
-                $DB->insert_record('report_gen_company_reporter',$infoReporter);
+                /* Check if already exists  */
+                //$DB->insert_record('report_gen_company_reporter',$infoReporter);
             }//for_managers
 
             /* Commit   */
@@ -551,7 +552,7 @@ Class Managers {
                         AND reporterid IN ($managersLst) ";
 
             /* Execute  */
-            $DB->execute($sql . $sqlLevels,$params);
+            //$DB->execute($sql . $sqlLevels,$params);
 
             /* Commit */
             $trans->allow_commit();
