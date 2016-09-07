@@ -42,10 +42,7 @@ if (!has_capability('local/participants:manage',$context)) {
     require_login($course);
 }//if_capabilities
 
-if (!isset($SESSION->url_download)) {
-    $SESSION->url_download  = $url_download;
-}
-
+$SESSION->url_download  = $url_download;
 
 /* Get the Sort Order       */
 if (isset($_COOKIE['dir'])) {
