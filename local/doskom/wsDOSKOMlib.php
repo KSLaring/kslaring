@@ -409,18 +409,24 @@ class WS_DOSKOM {
 
             /* SQL Instruction */
             $sql = " SELECT		u.id
-                     FROM		{user} 				u
-                      -- JOIN	    {user_company}		uc	    ON 	uc.userid 		= u.id
-                                                            -- AND	uc.companyid 	= :company
-                     WHERE		u.secret    = :secret
-                        AND     u.username  = :username ";
+                     FROM		{user} 	u ";
 
+            /* First Only Personale Number  */
+            $sqlTotal = $sql . " WHERE		u.username  = :username ";
             /* Execute  */
-            $rdo = $DB->get_record_sql($sql,$params);
+            $rdo = $DB->get_record_sql($sqlTotal,$params);
             if ($rdo) {
                 return $rdo->id;
             }else {
-                return false;
+                /* Second with secret   */
+                $sqlTotal = $sql . " WHERE		u.secret  = :secret ";
+                /* Execute  */
+                $rdo = $DB->get_record_sql($sqlTotal,$params);
+                if ($rdo) {
+                    return true;
+                }else {
+                    return false;
+                }
             }//if_rdo
         }catch (Exception $ex) {
             $result['error']        = 409;
