@@ -709,10 +709,18 @@ class FELLESDATA_CRON {
                 if (!file_exists($dir)) {
                     mkdir($dir);
                 }
+                $backup = $CFG->dataroot . '/fellesdata/backup';
+                if (!file_exists($backup)) {
+                    mkdir($backup);
+                }
 
                 /* Clean all response   */
-                $pathFile = $dir . '/' . $service . '.txt';
+                $fileName = $dir . '/' . $service;
+                $pathFile = $fileName . '.txt';
                 if (file_exists($pathFile)) {
+                    /* Move the file to the new directory   */
+                    copy($pathFile,$backup . '/' . $fileName . '_' . time() . '.txt');
+
                     unlink($pathFile);
                 }
 
