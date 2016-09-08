@@ -101,16 +101,26 @@ class ParticipantsList {
             /* Sort Field */
             $field = 'u.' . $field;
 
-            /* SQL Instruction */
-            $sql = " SELECT	DISTINCT u.id,
-                                     u.firstname,
-                                     u.lastname,
-                                     u.email
-                     FROM			{user}				  u
-                        JOIN		{user_enrolments}	  ue  ON 	ue.userid 	= u.id
-                        JOIN		{enrol}				  e	  ON 	e.id 		= ue.enrolid
-                                                              AND	e.courseid 	= :course
-                                                              AND   e.status 	= 0
+            /* SQL Instruction  */
+            $sql = " SELECT	DISTINCT 	u.id,
+                                        u.firstname,
+                                        u.lastname,
+                                        u.email,
+                                        GROUP_CONCAT(DISTINCT CONCAT(se.name, '#SE#',co.name) ORDER BY se.name,co.name SEPARATOR '#CO#') as 'workpalces_sector'
+                    FROM			{user}						u
+                        JOIN		{user_enrolments}	  		ue  	ON 	ue.userid 			= u.id
+                        JOIN		{enrol}						e		ON 	e.id 				= ue.enrolid
+                                                                        AND	e.courseid 			= :course
+                                                                        AND e.status 			= 0
+                        -- WORKPLACE
+                        LEFT JOIN	{user_info_competence_data}	  uid	ON	uid.userid			= ue.userid
+                                                                        AND uid.level 			= 3
+                        LEFT JOIN	{report_gen_companydata}	  co	ON	co.id 				= uid.companyid
+                                                                        AND	co.hierarchylevel	= 3
+                        -- SECTOR
+                        LEFT JOIN	{report_gen_company_relation} co_r	ON	co_r.companyid		= co.id
+                        LEFT JOIN	{report_gen_companydata}	  se	ON	se.id				= co_r.parentid
+                                                                        AND	se.hierarchylevel	= 2
                      WHERE	u.deleted = 0
                         AND u.id NOT IN ($notIn)
                      GROUP BY u.id 
@@ -126,7 +136,8 @@ class ParticipantsList {
                     $infoParticipant->firstname = $instance->firstname;
                     $infoParticipant->lastname  = $instance->lastname;
                     $infoParticipant->email     = $instance->email;
-
+                    $infoParticipant->workspace = explode('#CO#',$instance->workpalces_sector);
+                    
                     /* Add Participant */
                     $participantsLst[$instance->id] = $infoParticipant;
                 }
@@ -623,6 +634,8 @@ class ParticipantsList {
         $strFirstname   = null;
         $strLastname    = null;
         $strMail        = null;
+        $strSector      = null;
+        $strWorkspace   = null;
         $dirFirstName   = null;
         $dirLastName    = null;
 
@@ -650,6 +663,8 @@ class ParticipantsList {
             $strFirstname   = get_string('firstname');
             $strLastname    = get_string('lastname');
             $strMail        = get_string('email','local_participants');
+            $strSector      = get_string('header_se','local_participants');
+            $strWorkspace   = get_string('header_wk','local_participants');
 
             $header .=  html_writer::start_tag('thead');
                 $header .=  html_writer::start_tag('tr',array('class' => 'header_participants'));
@@ -665,8 +680,9 @@ class ParticipantsList {
                     $header .= html_writer::start_tag('th',array('class' => 'info'));
                         $header .= $strMail;
                     $header .= html_writer::end_tag('th');
-                    /* Checkbox         */
-                    $header .= html_writer::start_tag('th',array('class' => 'seats'));
+                    /* Sector / Workplace */
+                    $header .= html_writer::start_tag('th',array('class' => 'sector','colspan' => 2));
+                        $header .= $strSector . ' / ' . $strWorkspace;
                     $header .= html_writer::end_tag('th');
                 $header .= html_writer::end_tag('tr');
             $header .= html_writer::end_tag('thead');
@@ -691,10 +707,13 @@ class ParticipantsList {
      */
     private static function AddContent_ParticipantsTable($participantsList) {
         /* Variables */
-        $content = '';
-        $name    = null;
-        $checked = null;
-        $last    = null;
+        $content    = '';
+        $name       = null;
+        $checked    = null;
+        $last       = null;
+        $seWK       = null;
+        $sectors    = null;
+        $workplaces = null;
 
         try {
             foreach ($participantsList as $participant) {
@@ -711,9 +730,21 @@ class ParticipantsList {
                     $content .= html_writer::start_tag('td',array('class' => 'info'));
                         $content .= $participant->email;
                     $content .= html_writer::end_tag('td');
-                    /* Checkbox */
-                    $content .= html_writer::start_tag('td',array('class' => 'seats'));
+                    /* Sector / Workplace */
+                    $content .= html_writer::start_tag('td',array('class' => 'sector', 'colspan' => 2));
+                        if (count($participant->workspace)) {
+                            $workplaces = implode('</br>',$participant->workspace);
+                            $workplaces = str_replace('#SE#','/',$workplaces);
+
+                            $content .= $workplaces;
+                        }else {
+                            $content .= ' ';
+                        }
                     $content .= html_writer::end_tag('td');
+
+
+
+
                 $content .= html_writer::end_tag('tr');
             }//participant_list
 

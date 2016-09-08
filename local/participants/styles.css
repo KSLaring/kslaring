@@ -52,14 +52,14 @@
 }
 
 .block_participants .lst_participants {
-    width: 99%;
+    width: 100%;
     display:block;
     margin-bottom: 25px;
     margin-top: 10px;
 }
 
 .block_participants .lst_participants  table {
-    width: 99%;
+    width: 100%;
     border-collapse:collapse;
     margin-bottom: 0;
     display: table;
@@ -78,7 +78,7 @@
 
 .block_participants .lst_participants  td.user,
 .block_participants .lst_participants  th.user {
-    width: 35%;
+    width: 20%;
     text-align: left;
     text-justify:inter-word;
     padding: 0px 10px 0px 0px;
@@ -98,11 +98,20 @@
 
 .block_participants .lst_participants  th.info,
 .block_participants .lst_participants  td.info {
-    width: 25%;
+    width: 20%;
     text-align: left;
     text-justify:inter-word;
     padding: 0px 10px 0px 0px;
 }
+
+.block_participants .lst_participants  th.sector,
+.block_participants .lst_participants  td.sector {
+    width: 35%;
+    text-align: left;
+    text-justify:inter-word;
+    padding: 0px 10px 0px 0px;
+}
+
 
 .block_participants .lst_participants  th.attend,
 .block_participants .lst_participants  td.attend {

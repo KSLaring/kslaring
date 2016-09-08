@@ -36,3 +36,6 @@ $string['remove_filter']        = 'Remove filter';
 $string['csvdownload']          = 'Download in spreadsheet format (.xls)';
 
 $string['str_instructors']      = 'Instructors';
+
+$string['header_wk'] = 'Workplace';
+$string['header_se'] = 'Sector';
