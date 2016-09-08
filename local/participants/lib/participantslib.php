@@ -42,7 +42,7 @@ class ParticipantsList {
             $params['context'] = $contextId;
 
             /* SQL Instruction  */
-            $sql = " SELECT		ra.userid
+            $sql = " SELECT		DISTINCT ra.userid
                      FROM		{role_assignments}	ra
                         JOIN	{role}				r		ON 	r.id			= ra.roleid
                                                             AND	r.archetype		IN ('manager','coursecreator','editingteacher','teacher')
@@ -102,10 +102,10 @@ class ParticipantsList {
             $field = 'u.' . $field;
 
             /* SQL Instruction */
-            $sql = " SELECT	u.id,
-                            u.firstname,
-                            u.lastname,
-                            u.email
+            $sql = " SELECT	DISTINCT u.id,
+                                     u.firstname,
+                                     u.lastname,
+                                     u.email
                      FROM			{user}				  u
                         JOIN		{user_enrolments}	  ue  ON 	ue.userid 	= u.id
                         JOIN		{enrol}				  e	  ON 	e.id 		= ue.enrolid
