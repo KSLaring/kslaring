@@ -741,10 +741,6 @@ class ParticipantsList {
                             $content .= ' ';
                         }
                     $content .= html_writer::end_tag('td');
-
-
-
-
                 $content .= html_writer::end_tag('tr');
             }//participant_list
 
@@ -848,6 +844,7 @@ class ParticipantsList {
         $strFirstname   = null;
         $strLastname    = null;
         $strMail        = null;
+        $strSeWK        = null;
         $strAttend      = null;
 
         try {
@@ -855,6 +852,7 @@ class ParticipantsList {
             $strLastname    = get_string('lastname');
             $strMail        = get_string('email','local_participants');
             $strAttend      = get_string('attendance','local_participants');
+            $strSeWK        = get_string('header_se','local_participants') . ' / ' . get_string('header_wk','local_participants');
 
             /* Firstname Header      */
             $my_xls->write($row, $col, $strFirstname,array('size'=>12, 'name'=>'Arial','bold'=>'1','bg_color'=>'#efefef','text_wrap'=>true,'v_align'=>'left'));
@@ -873,8 +871,14 @@ class ParticipantsList {
             $my_xls->merge_cells($row,$col,$row,$col+5);
             $my_xls->set_row($row,20);
 
-            /* Last Attended    */
+            /* Sector / Workplace   */
             $col += 6;
+            $my_xls->write($row, $col, $strMail,array('size'=>12, 'name'=>'Arial','bold'=>'1','bg_color'=>'#efefef','text_wrap'=>true,'v_align'=>'left'));
+            $my_xls->merge_cells($row,$col,$row,$col+10);
+            $my_xls->set_row($row,20);
+
+            /* Last Attended    */
+            $col += 11;
             $my_xls->write($row, $col, $strAttend,array('size'=>12, 'name'=>'Arial','bold'=>'1','bg_color'=>'#efefef','text_wrap'=>true,'v_align'=>'left','align' => 'center'));
             $my_xls->merge_cells($row,$col,$row,$col+1);
             $my_xls->set_row($row,20);
@@ -898,36 +902,52 @@ class ParticipantsList {
      */
     private static function AddParticipants_ContentExcel($participantList,&$my_xls,&$row) {
         /* Variables */
-        $col    = 0;
-        $last   = null;
+        $col            = 0;
+        $last           = null;
+        $workplaces     = null;
+        $setRow         = null;
 
         try {
             if ($participantList) {
                 foreach ($participantList as $participant) {
+                    $setRow = 18 * count($participant->workspace);
+
                     /* Firstname             */
-                    $my_xls->write($row, $col, $participant->firstname,array('size'=>12, 'name'=>'Arial','bold'=>'1','text_wrap'=>true,'v_align'=>'left'));
+                    $my_xls->write($row, $col, $participant->firstname,array('size'=>12, 'name'=>'Arial','bold'=>'1','text_wrap'=>true,'v_align'=>'top'));
                     $my_xls->merge_cells($row,$col,$row,$col+5);
-                    $my_xls->set_row($row,20);
+                    $my_xls->set_row($row,$setRow);
 
                     /* lastname             */
                     $col += 6;
-                    $my_xls->write($row, $col, $participant->lastname,array('size'=>12, 'name'=>'Arial','bold'=>'1','text_wrap'=>true,'v_align'=>'left'));
+                    $my_xls->write($row, $col, $participant->lastname,array('size'=>12, 'name'=>'Arial','bold'=>'1','text_wrap'=>true,'v_align'=>'top'));
                     $my_xls->merge_cells($row,$col,$row,$col+5);
-                    $my_xls->set_row($row,20);
+                    $my_xls->set_row($row,$setRow);
 
                     /* eMail            */
                     $col += 6;
-                    $my_xls->write($row, $col, $participant->email,array('size'=>12, 'name'=>'Arial','bold'=>'1','text_wrap'=>true,'v_align'=>'left'));
+                    $my_xls->write($row, $col, $participant->email,array('size'=>12, 'name'=>'Arial','bold'=>'1','text_wrap'=>true,'v_align'=>'top'));
                     $my_xls->merge_cells($row,$col,$row,$col+5);
-                    $my_xls->set_row($row,20);
+                    $my_xls->set_row($row,$setRow);
+
+                    /* Sector / Workplace */
+                    if (count($participant->workspace)) {
+                        $workplaces = implode("\n",$participant->workspace);
+                        $workplaces = str_replace('#SE#','/',$workplaces);
+                    }else {
+                        $workplaces .= ' ';
+                    }
+                    $col += 6;
+                    $my_xls->write($row, $col, $workplaces,array('size'=>12, 'name'=>'Arial','bold'=>'1','text_wrap'=>true,'v_align'=>'top'));
+                    $my_xls->merge_cells($row,$col,$row,$col+10);
+                    $my_xls->set_row($row,$setRow);
 
                     /* Attended */
-                    $col += 6;
-                    $my_xls->write($row, $col, '',array('size'=>12, 'name'=>'Arial','bold'=>'1','text_wrap'=>true,'v_align'=>'left'));
+                    $col += 11;
+                    $my_xls->write($row, $col, '',array('size'=>12, 'name'=>'Arial','bold'=>'1','text_wrap'=>true,'v_align'=>'top'));
                     $my_xls->merge_cells($row,$col,$row,$col+1);
-                    $my_xls->set_row($row,20);
+                    $my_xls->set_row($row,$setRow);
 
-                    $row++;
+                    $row ++;
                     $col = 0;
                 }//for_participants
             }//if_participantList
