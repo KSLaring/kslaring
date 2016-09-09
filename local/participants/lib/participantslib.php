@@ -681,9 +681,9 @@ class ParticipantsList {
                         $header .= $strMail;
                     $header .= html_writer::end_tag('th');
                     /* Sector / Workplace */
-                    $header .= html_writer::start_tag('th',array('class' => 'sector','colspan' => 2));
-                        $header .= $strSector . ' / ' . $strWorkspace;
-                    $header .= html_writer::end_tag('th');
+                    //$header .= html_writer::start_tag('th',array('class' => 'sector','colspan' => 2));
+                    //    $header .= $strSector . ' / ' . $strWorkspace;
+                    //$header .= html_writer::end_tag('th');
                 $header .= html_writer::end_tag('tr');
             $header .= html_writer::end_tag('thead');
 
@@ -731,16 +731,16 @@ class ParticipantsList {
                         $content .= $participant->email;
                     $content .= html_writer::end_tag('td');
                     /* Sector / Workplace */
-                    $content .= html_writer::start_tag('td',array('class' => 'sector', 'colspan' => 2));
-                        if (count($participant->workspace)) {
-                            $workplaces = implode('</br>',$participant->workspace);
-                            $workplaces = str_replace('#SE#','/',$workplaces);
+                    //$content .= html_writer::start_tag('td',array('class' => 'sector', 'colspan' => 2));
+                    //    if (count($participant->workspace)) {
+                    //        $workplaces = implode('</br>',$participant->workspace);
+                    //        $workplaces = str_replace('#SE#','/',$workplaces);
 
-                            $content .= $workplaces;
-                        }else {
-                            $content .= ' ';
-                        }
-                    $content .= html_writer::end_tag('td');
+                    //        $content .= $workplaces;
+                    //    }else {
+                    //        $content .= ' ';
+                    //    }
+                    //$content .= html_writer::end_tag('td');
                 $content .= html_writer::end_tag('tr');
             }//participant_list
 
