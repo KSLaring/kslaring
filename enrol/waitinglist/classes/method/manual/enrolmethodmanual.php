@@ -211,6 +211,8 @@ class enrolmethodmanual extends \enrol_waitinglist\method\enrolmethodbase{
             
             if ($instance->{self::MFIELD_MAXENROLLED}) {
                 $vacancies = $instance->{self::MFIELD_MAXENROLLED} - $count - $confirmed;
+            }else {
+                $vacancies = "u";
             }
             
             return $vacancies;

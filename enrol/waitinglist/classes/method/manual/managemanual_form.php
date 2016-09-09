@@ -36,7 +36,14 @@ class managemanual_form extends moodleform {
 
         /* Users Selectors - Left Enrolled users */
         $mForm->addElement('html','<div class="userselector" id="addselect_wrapper">');
-            $mForm->addElement('static', 'manual-notification', '', get_string('manual_notification', 'enrol_waitinglist',$seats),'id="manual_notification"');
+            if ($seats == 'u') {
+                $mForm->addElement('static', 'manual-notification', '', get_string('manual_unlimit', 'enrol_waitinglist'),'id="manual_notification"');
+            }else if ($seats > 0) {
+                $mForm->addElement('static', 'manual-notification', '', get_string('manual_notification', 'enrol_waitinglist',$seats),'id="manual_notification"');    
+            }else {
+                $mForm->addElement('static', 'manual-notification', '', get_string('manual_none_seats', 'enrol_waitinglist'),'id="manual_notification"');
+            }
+            
             /* Left - Users enrolled        */
             $schoices = $manualClass::FindEnrolledUsers($instance->id,$course,$removeSearch);
             $mForm->addElement('html','<div class="sel_users_left">');
