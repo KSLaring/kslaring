@@ -236,4 +236,4 @@ $string['selfullname_help']         = 'Angir navnet på det dupliserte kurset.';
 $string['selshortname']             = 'Kortnavn';
 $string['selshortname_help']        = 'Angir kortnavnet på det dupliserte kurset. Kortnavnet må være unikt.';
 $string['info_dup_course']          = 'Før du dupliserer kurset må du angi kurskategorien hvor duplikatet skal plasseres. Som standard lagres det dupliserte kurset i samme kategori som originalen.';
-$string['coursedetail_manual'] = 'Manual enrol';
+$string['coursedetail_manual'] = 'Manuell påmelding av deltakere';
