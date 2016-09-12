@@ -29,16 +29,16 @@ define(['jquery', 'theme_bootstrapbase/bootstrap', 'core/tree', 'core/log'], fun
         $cnavTree = null;
 
     // Close the other items.
-    var handleExpand = function (item) {
+    var handleExpand = function ($item) {
         var $openEle = null;
 
         if ($cnavTree.length) {
             $openEle = $cnavTree.find('[aria-expanded="true"]');
-            item.siblings('[role="group"]').collapse('show');
+            $item.siblings('[role="group"]').collapse('show');
 
             $openEle.each(function () {
                 var $one = $(this);
-                if (!$one.is(item)) {
+                if (!$one.is($item)) {
                     $one.attr('aria-expanded', 'false');
                     $one.siblings('[role="group"]').attr('aria-hidden', 'true');
                     $one.siblings('[role="group"]').collapse('hide');
@@ -52,11 +52,11 @@ define(['jquery', 'theme_bootstrapbase/bootstrap', 'core/tree', 'core/log'], fun
             log.debug('format_netcourse/navblock init - instanceid: ' + instanceid);
 
             var navTree = new Tree('[data-instanceid="' + instanceid + '"] .block_tree');
-            navTree.finishExpandingGroup = function (item) {
-                handleExpand(item);
+            navTree.finishExpandingGroup = function ($item) {
+                handleExpand($item);
             };
-            navTree.collapseGroup = function () {
-                // Override to do nothing.
+            navTree.collapseGroup = function ($item) {
+                $item.siblings('[role="group"]').collapse('hide');
             };
 
             $courseNav = $('#instcnav');

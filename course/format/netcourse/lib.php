@@ -17,9 +17,8 @@
 /**
  * This file contains main class for the course format Topic
  *
- * @since      2.0
  * @package    format_netcourse
- * @copyright  2014 eFaktor
+ * @copyright  2016 eFaktor
  * @author     Urs Hunkler {@link urs.hunkler@unodo.de}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -32,7 +31,7 @@ require_once($CFG->dirroot . '/local/course_page/locallib.php');
  * Main class for the Netcourse course format
  *
  * @package     format_netcourse
- * @copyright   2014 eFaktor
+ * @copyright   2016 eFaktor
  * @author      Urs Hunkler {@link urs.hunkler@unodo.de}
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  *
@@ -327,10 +326,8 @@ class format_netcourse extends format_base {
 
                     if ($completion == COMPLETION_TRACKING_MANUAL) {
                         $imgtitle = get_string('completion-title-' . $completionicon, 'completion', $formattedname);
-                        $newstate =
-                            $completiondata->completionstate == COMPLETION_COMPLETE
-                                ? COMPLETION_INCOMPLETE
-                                : COMPLETION_COMPLETE;
+                        $newstate = $completiondata->completionstate ==
+                            COMPLETION_COMPLETE ? COMPLETION_INCOMPLETE : COMPLETION_COMPLETE;
                         // In manual mode the icon is a toggle form...
 
                         // If this completion state is used by the
@@ -538,7 +535,7 @@ class format_netcourse extends format_base {
          * Description
          * Get the users are candidates to be course manager
          */
-        $lst_manager = course_page::getCourseManager();
+        $lstmanager = course_page::getCourseManager();
         static $courseformatoptions = false;
         if ($courseformatoptions === false) {
             $courseconfig = get_config('moodlecourse');
@@ -676,7 +673,7 @@ class format_netcourse extends format_base {
                 'manager' => array(
                     'label' => get_string('home_manager', 'format_netcourse'),
                     'element_type' => 'select',
-                    'element_attributes' => array($lst_manager)
+                    'element_attributes' => array($lstmanager)
                 )
             );
             $courseformatoptions = array_merge_recursive($courseformatoptions,
@@ -869,10 +866,10 @@ class format_netcourse extends format_base {
                     }
                     // If_delete.
                     if (isset($data['pagegraphics']) && isset($data['pagegraphics_filemanager'])) {
-                        $graphic_id = course_page::getHomeGraphicsVideo($data['pagegraphics'], 'pagegraphics',
+                        $graphicid = course_page::getHomeGraphicsVideo($data['pagegraphics'], 'pagegraphics',
                             $data['pagegraphics_filemanager'], $delete);
-                        if ($graphic_id) {
-                            $data[$key] = $graphic_id;
+                        if ($graphicid) {
+                            $data[$key] = $graphicid;
                         }
                         // If_graphic_id.
                     }
@@ -887,42 +884,42 @@ class format_netcourse extends format_base {
                     }
                     // If_delete.
                     if (isset($data['pagevideo']) && isset($data['pagevideo_filemanager'])) {
-                        $video_id = course_page::getHomeGraphicsVideo($data['pagevideo'], 'pagevideo', $data['pagevideo_filemanager'], $delete);
-                        if ($video_id) {
-                            $data[$key] = $video_id;
+                        $videoid = course_page::getHomeGraphicsVideo($data['pagevideo'], 'pagevideo',
+                            $data['pagevideo_filemanager'], $delete);
+                        if ($videoid) {
+                            $data[$key] = $videoid;
                         }
-                        //if_graphic_id
+                        // If_graphic_id.
                     }
-                    //if_page_video_pagevideo_filemanager
+                    // If_page_video_pagevideo_filemanager.
 
                     break;
                 default:
                     break;
             }
-            //switch_key
+            // Switch_key.
 
             if (!array_key_exists($key, $data)) {
                 if (array_key_exists($key, $oldcourse)) {
                     $data[$key] = $oldcourse[$key];
                 } else if ($key === 'numsections') {
                     // If previous format does not have the field 'numsections'
-                    // and $data['numsections'] is not set,
-                    // we fill it with the maximum section number from the DB
+                    // and $data['numsections'] is not set, we fill it with the maximum section number from the DB.
                     $maxsection = $DB->get_field_sql('SELECT max(section) from
                             {course_sections} WHERE course = ?', array($this->courseid));
                     if ($maxsection) {
                         // If there are no sections, or just default 0-section,
-                        // 'numsections' will be set to default
+                        // 'numsections' will be set to default.
                         $data['numsections'] = $maxsection;
                     }
-                    //if_maxsection
+                    // If_maxsection.
                 }
-                //if_array_key
+                // If_array_key.
             }
-            //if_array_key
+            // If_array_key.
         }
 
-        //for_options
+        // For_options.
 
         return $this->update_format_options($data);
     }
@@ -963,7 +960,7 @@ class format_netcourse extends format_base {
         $modinfo = $this->openlast->get_modinfo();
 
         // If the user never visited the course the last opened page URL is null.
-        // In this case show the first activity/resource in the section 1
+        // In this case show the first activity/resource in the section 1.
         if ($editing) {
             $courseurl = new moodle_url('/course/view.php?id=' . $PAGE->course->id);
         } else if (is_null($courseurl)) {
@@ -977,7 +974,7 @@ class format_netcourse extends format_base {
         }
 
         // Create the url for the course overview which is the first
-        // resource in section 0
+        // resource in section 0.
         if (isset($modinfo->sections[0])) {
             $cmid = $modinfo->sections[0][0];
             $descriptionurl = $modinfo->cms[$cmid]->url;
@@ -1650,37 +1647,37 @@ EOT;
         switch ($mode) {
             case self::TRIM_RIGHT :
                 if (core_text::strlen($node->text) > ($long + 3)) {
-                    // Truncate the text to $long characters
+                    // Truncate the text to $long characters.
                     $node->text = $this->trim_right($node->text, $long);
                 }
                 if (is_string($node->shorttext) &&
                     core_text::strlen($node->shorttext) > ($short + 3)
                 ) {
-                    // Truncate the shorttext
+                    // Truncate the shorttext.
                     $node->shorttext = $this->trim_right($node->shorttext, $short);
                 }
                 break;
             case self::TRIM_LEFT :
                 if (core_text::strlen($node->text) > ($long + 3)) {
-                    // Truncate the text to $long characters
+                    // Truncate the text to $long characters.
                     $node->text = $this->trim_left($node->text, $long);
                 }
                 if (is_string($node->shorttext) &&
                     core_text::strlen($node->shorttext) > ($short + 3)
                 ) {
-                    // Truncate the shorttext
+                    // Truncate the shorttext.
                     $node->shorttext = $this->trim_left($node->shorttext, $short);
                 }
                 break;
             case self::TRIM_CENTER :
                 if (core_text::strlen($node->text) > ($long + 3)) {
-                    // Truncate the text to $long characters
+                    // Truncate the text to $long characters.
                     $node->text = $this->trim_center($node->text, $long);
                 }
                 if (is_string($node->shorttext) &&
                     core_text::strlen($node->shorttext) > ($short + 3)
                 ) {
-                    // Truncate the shorttext
+                    // Truncate the shorttext.
                     $node->shorttext = $this->trim_center($node->shorttext, $short);
                 }
                 break;
