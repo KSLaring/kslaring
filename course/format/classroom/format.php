@@ -18,7 +18,7 @@
  * Classroom course format.  Display the whole course as "classroom" made of modules.
  *
  * @package    format_classroom
- * @copyright  2014 eFaktor
+ * @copyright  2016 eFaktor
  * @author     Urs Hunkler {@link urs.hunkler@unodo.de}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */

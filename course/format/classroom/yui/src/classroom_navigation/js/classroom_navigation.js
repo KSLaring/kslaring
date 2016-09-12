@@ -387,7 +387,7 @@ TREE.prototype = {
         // console.log(to_height);
         list.transition({
             duration: 0.3,
-            height: to_height + 'px',
+            height: to_height + (to_height * 0.025) + 'px',
             opacity: 1.0
         });
     },

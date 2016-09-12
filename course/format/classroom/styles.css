@@ -96,25 +96,35 @@
 #instcnav .list .active_tree_node a {
     font-weight: bold;
 }
+#instcnav .block_tree ul {
+    margin-left: 0;
+}
 #instcnav .block_tree .tree_item.branch {
-    background-position: 10px 1.1em;
+    background-position: 10px 1em;
     margin: 0;
     padding-top: 1em;
     padding-right: .2em;
     padding-bottom: 1em;
 }
-#instcnav .block_tree .tree_item.leaf {
+#instcnav .block_tree .tree_item:not(.branch) {
     margin: 0;
     font-size: 1em;
     font-weight: normal;
 }
-#instcnav .block_tree .tree_item.leaf a {
+#instcnav .block_tree .tree_item:not(.branch) a {
     color: #7e7e7e;
     display: block;
     padding: .3em 0;
 }
-#instcnav .block_tree .tree_item.leaf a .smallicon {
+#instcnav .block_tree p.hasicon {
+    text-indent: -22px;
+}
+#instcnav .block_tree .tree_item:not(.branch) a .smallicon {
     top: .4em;
+}
+#instcnav .block_tree [aria-hidden="true"],
+#instcnav .block_tree [aria-hidden="false"] {
+    display: block;
 }
 #instcnav .content {
     padding: 0;
@@ -125,7 +135,7 @@
     line-height: 1.2em;
     padding-left: 30px;
 }
-#instcnav li.contains_branch.collapsed > p.branch {
+#instcnav li.contains_branch > p.branch {
     border-top: 1px solid #fff;
     border-bottom: 1px solid #e8e8e8;
     color: #7e7e7e;
@@ -141,7 +151,7 @@
 }
 #instcnav .block_tree li.depth_2 ul {
     padding-left: 22px;
-    padding-top: .2em;
+    padding-top: 0;
     overflow: hidden;
 }
 #instcnav .completed {

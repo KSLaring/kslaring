@@ -18,7 +18,7 @@
  * Renderer for outputting the classroom course format.
  *
  * @package    format_classroom
- * @copyright  2014 eFaktor
+ * @copyright  2016 eFaktor
  * @author     Urs Hunkler {@link urs.hunkler@unodo.de}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @since      Moodle 2.3
@@ -46,8 +46,9 @@ class format_classroom_renderer extends format_section_renderer_base {
     public function __construct(moodle_page $page, $target) {
         parent::__construct($page, $target);
 
-        // Since format_classroom_renderer::section_edit_controls() only displays the 'Set current section' control when editing mode is on
-        // we need to be sure that the link 'Turn editing mode on' is available for a user who does not have any other managing capability.
+        // Since format_classroom_renderer::section_edit_controls() only displays the 'Set current section' control
+        // when editing mode is on we need to be sure that the link 'Turn editing mode on' is available for a user
+        // who does not have any other managing capability.
         $page->set_other_editing_capability('moodle/course:setcurrentsection');
     }
 
@@ -145,7 +146,7 @@ class format_classroom_renderer extends format_section_renderer_base {
 
         // Can we view the section in question?
         if (!($sectioninfo = $modinfo->get_section_info($displaysection))) {
-            // This section doesn't exist
+            // This section doesn't exist.
             print_error('unknowncoursesection', 'error', null, $course->fullname);
 
             return;
@@ -177,7 +178,7 @@ class format_classroom_renderer extends format_section_renderer_base {
             }
         }
 
-        // Start single-section div
+        // Start single-section div.
         echo html_writer::start_tag('div', array('class' => 'single-section'));
 
         // The requested section page.
@@ -195,7 +196,7 @@ class format_classroom_renderer extends format_section_renderer_base {
             $sectiontitle .= html_writer::tag('span', $sectionnavlinks['next'], array('class' => 'mdl-right'));
         }
 
-        // Title attributes
+        // Title attributes.
         $classes = 'sectionname';
         if (!$thissection->visible) {
             $classes .= ' dimmed_text';
@@ -258,23 +259,21 @@ class format_classroom_fakeblock_renderer extends plugin_renderer_base {
     /**
      * Returns the content of the course_navigation tree.
      *
-     * @param navigation_node $course_navigation
+     * @param navigation_node $coursenavigation
      * @param int             $expansionlimit
      * @param array           $options
      *
      * @return string $content
      */
-//    public function course_navigation_tree(global_navigation $course_navigation,
-//            $expansionlimit, array $options = array()) {
-    public function course_navigation_tree(navigation_node $course_navigation,
+    public function course_navigation_tree(navigation_node $coursenavigation,
         $expansionlimit, array $options = array()) {
-        $course_navigation->add_class('course_navigation_node');
-        $content = $this->course_navigation_node(array($course_navigation),
+        $coursenavigation->add_class('course_navigation_node');
+        $content = $this->course_navigation_node(array($coursenavigation),
             array('class' => 'block_tree list'), $expansionlimit, $options);
-        if (isset($course_navigation->id) && !is_numeric($course_navigation->id) &&
+        if (isset($coursenavigation->id) && !is_numeric($coursenavigation->id) &&
             !empty($content)
         ) {
-            $content = $this->output->box($content, 'block_tree_box', $course_navigation->id);
+            $content = $this->output->box($content, 'block_tree_box', $coursenavigation->id);
         }
 
         return $content;
@@ -291,15 +290,15 @@ class format_classroom_fakeblock_renderer extends plugin_renderer_base {
      *
      * @return string
      */
-    protected function course_navigation_node($items, $attrs = array(),
+    protected function course_navigation_node_($items, $attrs = array(),
         $expansionlimit = null, array $options = array(), $depth = 1) {
 
-        // exit if empty, we don't want an empty ul element
+        // Exit if empty, we don't want an empty ul element.
         if (count($items) == 0) {
             return '';
         }
 
-        // array of nested li elements
+        // Array of nested li elements.
         $lis = array();
         foreach ($items as $item) {
             if (!$item->display && !$item->contains_active_node()) {
@@ -316,7 +315,7 @@ class format_classroom_fakeblock_renderer extends plugin_renderer_base {
                     ($item->has_children() && (isloggedin() ||
                             $item->type <= navigation_node::TYPE_CATEGORY)));
 
-            // Skip elements which have no content and no action - no point in showing them
+            // Skip elements which have no content and no action - no point in showing them.
             if (!$isexpandable && empty($item->action)) {
                 continue;
             }
@@ -330,7 +329,7 @@ class format_classroom_fakeblock_renderer extends plugin_renderer_base {
             } else {
                 $icon = '';
             }
-            $content = $icon . $content; // use CSS for spacing of icons
+            $content = $icon . $content; // Use CSS for spacing of icons.
             if ($item->helpbutton !== null) {
                 $content = trim($item->helpbutton) . html_writer::tag('span',
                         $content, array('class' => 'clearhelpbutton'));
@@ -352,11 +351,11 @@ class format_classroom_fakeblock_renderer extends plugin_renderer_base {
                         $item->type === navigation_node::TYPE_MY_CATEGORY) &&
                     empty($options['linkcategories']))
             ) {
-                //add tab support to span but still maintain character stream sequence.
+                // Add tab support to span but still maintain character stream sequence.
                 $attributes['tabindex'] = '0';
                 $content = html_writer::tag('span', $content, $attributes);
             } else if ($item->action instanceof action_link) {
-                //TODO: to be replaced with something else
+                // TODO: to be replaced with something else.
                 $link = $item->action;
                 $link->text = $icon . $link->text;
                 $link->attributes = array_merge($link->attributes, $attributes);
@@ -364,13 +363,13 @@ class format_classroom_fakeblock_renderer extends plugin_renderer_base {
                 $linkrendered = true;
             } else if ($item->action instanceof moodle_url) {
                 // Remove the $isbranch option for activity nodes to deactivate
-                // the optional activity offered direct links
+                // the optional activity offered direct links.
                 $isbranch = false;
-                $action_url = $item->action;
-                $content = html_writer::link($action_url, $content, $attributes);
+                $actionurl = $item->action;
+                $content = html_writer::link($actionurl, $content, $attributes);
             }
 
-            // this applies to the li item which contains all child lists too
+            // This applies to the li item which contains all child lists too.
             $liclasses = array($item->get_css_type(), 'depth_' . $depth);
             $liexpandable = array();
             if ($item->has_children() && (!$item->forceopen || $item->collapse)) {
@@ -378,8 +377,7 @@ class format_classroom_fakeblock_renderer extends plugin_renderer_base {
             }
             if ($isbranch) {
                 $liclasses[] = 'contains_branch';
-                $liexpandable = array('aria-expanded' =>
-                    in_array('collapsed', $liclasses) ? "false" : "true");
+                $liexpandable = array('aria-expanded' => in_array('collapsed', $liclasses) ? "false" : "true");
             } else if ($hasicon) {
                 $liclasses[] = 'item_with_icon';
             }
@@ -387,7 +385,7 @@ class format_classroom_fakeblock_renderer extends plugin_renderer_base {
                 $liclasses[] = 'current_branch';
             }
             $liattr = array('class' => join(' ', $liclasses)) + $liexpandable;
-            // class attribute on the div item which only contains the item content
+            // Class attribute on the div item which only contains the item content.
             $divclasses = array('tree_item');
             if ($isbranch) {
                 $divclasses[] = 'branch';
@@ -405,7 +403,7 @@ class format_classroom_fakeblock_renderer extends plugin_renderer_base {
                 $divattr['id'] = $item->id;
             }
 
-            // Don't render the course name in the navigation (node depth 1)
+            // Don't render the course name in the navigation (node depth 1).
             if ($depth === 1) {
                 $content = '';
             } else {
@@ -428,5 +426,161 @@ class format_classroom_fakeblock_renderer extends plugin_renderer_base {
         } else {
             return '';
         }
+    }
+
+    /**
+     * Produces a navigation node for the navigation tree
+     *
+     * @param navigation_node[] $items
+     * @param array             $attrs
+     * @param int               $expansionlimit
+     * @param array             $options
+     * @param int               $depth
+     *
+     * @return string
+     */
+    protected function course_navigation_node($items, $attrs = array(), $expansionlimit = null,
+        array $options = array(), $depth = 1) {
+        // Exit if empty, we don't want an empty ul element.
+        if (count($items) === 0) {
+            return '';
+        }
+
+        // Turn our navigation items into list items.
+        $lis = array();
+        // Set the number to be static for unique id's.
+        static $number = 0;
+        foreach ($items as $item) {
+            $number++;
+            if (!$item->display && !$item->contains_active_node()) {
+                continue;
+            }
+
+            $isexpandable = (empty($expansionlimit) || ($item->type > navigation_node::TYPE_ACTIVITY ||
+                    $item->type < $expansionlimit) || ($item->contains_active_node() && $item->children->count() > 0));
+
+            // Skip elements which have no content and no action - no point in showing them.
+            if (!$isexpandable && empty($item->action)) {
+                continue;
+            }
+
+            $id = $item->id ? $item->id : html_writer::random_id();
+            $content = $item->get_content();
+            $title = $item->get_title();
+            if ($depth <= 1) {
+                $ulattr = ['id' => $id . '_group', 'role' => 'group'];
+            } else {
+                $ulattr = [
+                    'id' => $id . '_group',
+                    'role' => 'group',
+                    'class' => 'collapse'
+                ];
+
+            }
+            $liattr = ['class' => [$item->get_css_type(), 'depth_' . $depth]];
+            $pattr = ['class' => ['tree_item'], 'role' => 'treeitem'];
+            $pattr += !empty($item->id) ? ['id' => $item->id] : [];
+            $isbranch = $isexpandable && ($item->children->count() > 0 || ($item->has_children() && (isloggedin() ||
+                            $item->type <= navigation_node::TYPE_CATEGORY)));
+            $hasicon = ((!$isbranch || $item->type == navigation_node::TYPE_ACTIVITY ||
+                    $item->type == navigation_node::TYPE_RESOURCE) && $item->icon instanceof renderable);
+            $icon = '';
+
+            if ($hasicon) {
+                $liattr['class'][] = 'item_with_icon';
+                $pattr['class'][] = 'hasicon';
+                $icon = $this->output->render($item->icon);
+                // Because an icon is being used we're going to wrap the actual content in a span.
+                // This will allow designers to create columns for the content, as we've done in styles.css.
+                $content = $icon . html_writer::span($content, 'item-content-wrap');
+            }
+            if ($item->helpbutton !== null) {
+                $content = trim($item->helpbutton) . html_writer::tag('span', $content, array('class' => 'clearhelpbutton'));
+            }
+            if (empty($content)) {
+                continue;
+            }
+
+            $nodetextid = 'label_' . $depth . '_' . $number;
+            $attributes = array('tabindex' => '-1', 'id' => $nodetextid);
+            if ($title !== '') {
+                $attributes['title'] = $title;
+            }
+            if ($item->hidden) {
+                $attributes['class'] = 'dimmed_text';
+            }
+            if (is_string($item->action) || empty($item->action) ||
+                (($item->type === navigation_node::TYPE_CATEGORY || $item->type === navigation_node::TYPE_MY_CATEGORY) &&
+                    empty($options['linkcategories']))
+            ) {
+                $content = html_writer::tag('span', $content, $attributes);
+            } else if ($item->action instanceof action_link) {
+                // TODO: to be replaced with something else.
+                $link = $item->action;
+                $link->text = $icon . html_writer::span($link->text, 'item-content-wrap');
+                $link->attributes = array_merge($link->attributes, $attributes);
+                $content = $this->output->render($link);
+            } else if ($item->action instanceof moodle_url) {
+                $content = html_writer::link($item->action, $content, $attributes);
+            }
+
+            // Reduce the branch behaviour to the sections (level 2 elements).
+            if ($isbranch && $depth === 2) {
+                $pattr['class'][] = 'branch';
+                $liattr['class'][] = 'contains_branch';
+                $pattr += ['aria-expanded' => ($item->has_children() && (!$item->forceopen || $item->collapse)) ? "false" : "true"];
+                // No AJAX loading.
+                //$pattr += ['aria-owns' => $id . '_group'];
+                $pattr += [
+                    'aria-owns' => $id . '_group',
+                    'data-toggle' => 'collapse',
+                    'data-target' => '#' . $id . '_group'
+                ];
+            }
+
+            if ($item->isactive === true) {
+                $liattr['class'][] = 'current_branch';
+            }
+            if (!empty($item->classes) && count($item->classes) > 0) {
+                $pattr['class'] = array_merge($pattr['class'], $item->classes);
+            }
+
+            $liattr['class'] = join(' ', $liattr['class']);
+            $pattr['class'] = join(' ', $pattr['class']);
+
+            $pattr += $depth == 1 ? ['data-collapsible' => 'false'] : [];
+            if (isset($pattr['aria-expanded']) && $pattr['aria-expanded'] === 'false') {
+                $ulattr += ['aria-hidden' => 'true'];
+            } else if (isset($pattr['aria-expanded']) && $pattr['aria-expanded'] === 'true') {
+                $ulattr['class'] = 'collapse in';
+            }
+
+            // Create the structure. Don't render the course name in the navigation (node depth 1).
+            if ($depth === 1) {
+                $content = '';
+            } else {
+                $content = html_writer::tag('p', $content, $pattr);
+            }
+
+            if ($isexpandable) {
+                $content .= $this->course_navigation_node($item->children, $ulattr, $expansionlimit, $options, $depth + 1);
+            }
+            if (!empty($item->preceedwithhr) && $item->preceedwithhr === true) {
+                $content = html_writer::empty_tag('hr') . $content;
+            }
+
+            $liattr['aria-labelledby'] = $nodetextid;
+            $content = html_writer::tag('li', $content, $liattr);
+            $lis[] = $content;
+        }
+
+        if (count($lis) === 0) {
+            // There is still a chance, despite having items, that nothing had content and no list items were created.
+            return '';
+        }
+
+        // We used to separate using new lines, however we don't do that now, instead we'll save a few chars.
+        // The source is complex already anyway.
+        return html_writer::tag('ul', implode('', $lis), $attrs);
     }
 }
