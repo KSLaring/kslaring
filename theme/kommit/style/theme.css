@@ -1486,7 +1486,7 @@ td.submit input[disabled] {
 .netcourse-header .btn-toolbar,
 .classroom-header .btn-toolbar {
   margin-top: 10.5px;
-  margin-bottom: 0px;
+  margin-bottom: 0;
 }
 .netcourse-header .btn-toolbar .btn,
 .classroom-header .btn-toolbar .btn {
