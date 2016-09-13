@@ -716,11 +716,10 @@ class FELLESDATA_CRON {
                 }
 
                 /* Clean all response   */
-                $fileName = $dir . '/' . $service;
-                $pathFile = $fileName . '.txt';
+                $pathFile = $dir . '/' . $service . '.txt';
                 if (file_exists($pathFile)) {
                     /* Move the file to the new directory   */
-                    copy($pathFile,$backup . '/' . $fileName . '_' . time() . '.txt');
+                    copy($pathFile,$backup . '/' . $service . '_' . time() . '.txt');
 
                     unlink($pathFile);
                 }
