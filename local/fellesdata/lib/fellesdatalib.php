@@ -1805,7 +1805,6 @@ class FS {
                             $newEntry->imported = 0;
                             break;
                         case DELETE_ACTION:
-                            echo "HOLA" . "</br>";
                             /* Old Entry        */
                             if (isset($lineContent->oldRecord)) {
                                 $newEntry = $lineContent->oldRecord;
@@ -1936,7 +1935,6 @@ class FS {
                 }else {
                     if ($infoFS->action != ADD) {
                         $infoFS->id         = $rdo->id;
-                        echo "Action: " . $infoFS->action . "</br>";
                         $DB->update_record('fs_imp_company',$infoFS);
                     }
                 }//if_rdo
