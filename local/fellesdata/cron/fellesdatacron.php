@@ -667,15 +667,16 @@ class FELLESDATA_CRON {
         
         try {
             /* Get Parameters service    */
-            $toDate     = mktime(1, 60, 0, date("m"), date("d"), date("Y"));
+            //$toDate     = mktime(1, 60, 0, date("m"), date("d"), date("Y"));
+            $toDate = mktime(0, 0, 0, '08', '14', '2016');
             $toDate     = gmdate('Y-m-d\TH:i:s\Z',$toDate);
             if (isset($pluginInfo->lastexecution) && $pluginInfo->lastexecution) {
                 /* No First Execution   */
                 $admin      = get_admin();
                 $timezone   = $admin->timezone;
                 $date       = usergetdate($pluginInfo->lastexecution, $admin->timezone);
-                $fromDate   = mktime(0, 0, 0, $date['mon'], $date['mday'] - 4, $date['year']);
-                
+                //$fromDate   = mktime(0, 0, 0, $date['mon'], $date['mday'] - 4, $date['year']);
+                $fromDate   = mktime(0, 0, 0, '08', '13', '2016');
                 $fromDate   = gmdate('Y-m-d\TH:i:s\Z',$fromDate);
             }else {
                 /* First Execution      */
