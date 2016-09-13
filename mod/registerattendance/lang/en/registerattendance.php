@@ -26,6 +26,7 @@
  */
 
 $string['registerattendance:addinstance'] = 'Add a new registerattendance';
+$string['registerattendance:registerattendance'] = 'Can register';
 $string['registerattendancetext'] = 'Register attendance text';
 $string['modulename'] = 'Register attendance';
 $string['modulename_help'] = 'The registerattendance module shows the course completion for enroled users.';
