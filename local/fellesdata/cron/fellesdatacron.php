@@ -765,6 +765,10 @@ class FELLESDATA_CRON {
             mtrace('LIMIT 0,2000');
             $rdo = $DB->get_records('fs_imp_users',array('imported' => '0'),'','*');
 
+            /* Log  */
+            $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' START Synchronization Users Accoutns . ' . "\n";
+            error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
+
             /* Prepare data */
             if ($rdo) {
                 foreach ($rdo as $instance) {
@@ -795,6 +799,10 @@ class FELLESDATA_CRON {
                     error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
                 }//if_no_error
             }//if_Rdo
+
+            /* Log  */
+            $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' FINISH Synchronization Users Accoutns . ' . "\n";
+            error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
         }catch (Exception $ex) {
             /* Log  */
             $dbLog = $ex->getMessage() . "\n" ."\n";
