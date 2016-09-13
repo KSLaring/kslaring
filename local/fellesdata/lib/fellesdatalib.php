@@ -499,6 +499,7 @@ class FSKS_COMPANY {
                     $infoCompany->epost         = ($instance->epost     ? $instance->epost      : '');
                     $infoCompany->action        = ADD;
 
+                    echo "FS ID: " . $infoCompany->fsId . " - " . "KS id : " . $infoCompany->ksId ."</br>";
                     /* Add Company */
                     $toSynchronize[$instance->id] = $infoCompany;
                 }//for_rdo
