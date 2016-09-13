@@ -23,7 +23,7 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class block_frikomport_menu_manager {
-    // The menu node structure
+    // The menu node structure.
     protected $nodes = array();
 
     public function __construct() {
@@ -48,25 +48,19 @@ class block_frikomport_menu_manager {
      */
     protected function build_tree() {
         global $CFG;
-        require_once ($CFG->dirroot . '/local/friadmin/lib.php');
+        require_once($CFG->dirroot . '/local/friadmin/lib.php');
 
         $settingsicon = new pix_icon('i/settings', '');
 
-        // Create the root node
+        //// Create the root node.
         $item = array(
             'text' => 'root',
             'type' => navigation_node::TYPE_ROOTNODE
         );
         $this->nodes = new navigation_node($item);
 
-        // Create and add the course listing link
-        /**
-         * @updateDate      2015-05-11
-         * @author          eFaktor         (uh)
-         *
-         * Description
-         * Change Action link to course list
-         */
+        // Create and add the course listing link,
+        // change action link to course list.
         $item = array(
             'text' => get_string('ncourses', 'block_frikomport'),
             'icon' => $settingsicon,
@@ -94,37 +88,31 @@ class block_frikomport_menu_manager {
         $subnode = new navigation_node($item);
         $this->nodes->add_node($subnode);
 
-        /**
-         * @updateDate      27/04/2015
-         * @author          eFaktor         (fbv)
-         *
-         * Description
-         * Remove sub-menu for Organization Structure
-         * Add sub-menu for locations
-         */
-        $lst_action = '#';
-        $new_action = '#';
+        // Remove sub-menu for Organization Structure,
+        // add sub-menu for locations.
+        $lstaction = '#';
+        $newaction = '#';
         if (get_config('course_locations')) {
-            $lst_action = new moodle_url('/local/friadmin/course_locations/index.php');
-            $new_action = new moodle_url('/local/friadmin/course_locations/add_location.php');
+            $lstaction = new moodle_url('/local/friadmin/course_locations/index.php');
+            $newaction = new moodle_url('/local/friadmin/course_locations/add_location.php');
         }//if_course_locations
 
         $branch = array(
             array(
-                'text'      => get_string('nlocations', 'block_frikomport'),
-                'type'      => navigation_node::NODETYPE_BRANCH
+                'text' => get_string('nlocations', 'block_frikomport'),
+                'type' => navigation_node::NODETYPE_BRANCH
             ),
             array(
-                'text'      => get_string('lst_locations', 'block_frikomport'),
-                'icon'      => $settingsicon,
-                'type'      => navigation_node::NODETYPE_LEAF,
-                'action'    => $lst_action
+                'text' => get_string('lst_locations', 'block_frikomport'),
+                'icon' => $settingsicon,
+                'type' => navigation_node::NODETYPE_LEAF,
+                'action' => $lstaction
             ),
             array(
-                'text'      => get_string('new_location', 'block_frikomport'),
-                'icon'      => $settingsicon,
-                'type'      => navigation_node::NODETYPE_LEAF,
-                'action'    => $new_action
+                'text' => get_string('new_location', 'block_frikomport'),
+                'icon' => $settingsicon,
+                'type' => navigation_node::NODETYPE_LEAF,
+                'action' => $newaction
             )
         );
         $this->add_tree_section($branch);
@@ -148,17 +136,18 @@ class block_frikomport_menu_manager {
      * @param array $branch The information about the section
      */
     protected function add_tree_section($branch) {
-        // Create the section title from the first item
+        // Create the section title from the first item.
         $item = array_shift($branch);
         $groupnode = new navigation_node($item);
+        $groupnode->collapse = true;
 
-        // Create the section items
+        // Create the section items.
         foreach ($branch as $item) {
             $subnode = new navigation_node($item);
             $groupnode->add_node($subnode);
         }
 
-        // Add the menu section to the menu
+        // Add the menu section to the menu.
         $this->nodes->add_node($groupnode);
     }
 }

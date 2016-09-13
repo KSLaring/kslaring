@@ -17,21 +17,17 @@
 /**
  * Version details
  *
- * @package    block_frikomport
- * @copyright  2014 eFaktor
- * @author     Urs Hunkler {@link urs.hunkler@unodo.de}
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-/**
  * @updateDate      16/06/2015
- * @author          eFaktor     (fbv)
- *
- * Description
  * Integrate Course Locations into Fridamin plugin
+ *
+ * @package         block_frikomport
+ * @copyright       2014 eFaktor
+ * @author          Urs Hunkler {@link urs.hunkler@unodo.de}
+ * @license         http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version = 2016081700;        // The current plugin version (Date: YYYYMMDDXX)
-$plugin->requires = 2014050800;        // Requires this Moodle version
-$plugin->component = 'block_frikomport';  // Full name of the plugin (used for diagnostics)
+$plugin->version = 2016091300;        // The current plugin version (Date: YYYYMMDDXX).
+$plugin->requires = 2014050800;        // Requires this Moodle version.
+$plugin->component = 'block_frikomport';  // Full name of the plugin (used for diagnostics).
