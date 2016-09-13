@@ -667,8 +667,7 @@ class FELLESDATA_CRON {
         
         try {
             /* Get Parameters service    */
-            //$toDate     = mktime(1, 60, 0, date("m"), date("d"), date("Y"));
-            $toDate = mktime(0, 0, 0, '08', '14', '2016');
+            $toDate     = mktime(1, 60, 0, date("m"), date("d"), date("Y"));
             $toDate     = gmdate('Y-m-d\TH:i:s\Z',$toDate);
             if (isset($pluginInfo->lastexecution) && $pluginInfo->lastexecution) {
                 /* No First Execution   */
