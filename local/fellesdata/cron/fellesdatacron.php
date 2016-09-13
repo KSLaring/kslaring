@@ -864,7 +864,7 @@ class FELLESDATA_CRON {
                 FSKS_COMPANY::Synchronize_CompaniesFS();
 
                 /*  Get Info to Synchronize and mail */
-                //list($toSynchronize,$toMail) = FSKS_COMPANY::CompaniesFSToSynchronize();
+                list($toSynchronize,$toMail) = FSKS_COMPANY::CompaniesFSToSynchronize();
 
                 /* Send Mail --> Manual Synchronization     */
                 if ($notifyTo) {
