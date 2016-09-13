@@ -857,7 +857,7 @@ class FELLESDATA_CRON {
             if ($fstExecution) {
                 /* Send eMail --> Manual synchronization    */
                 if ($notifyTo) {
-                    self::SendNotifications(SYNC_COMP,null,$notifyTo,$pluginInfo->fs_source);
+                    //self::SendNotifications(SYNC_COMP,null,$notifyTo,$pluginInfo->fs_source);
                 }//if_notify
             }else {
                 /* Synchronize Companies Only FS */
