@@ -390,7 +390,7 @@ class FSKS_COMPANY {
                     /* Get Company  */
                     $infoCompany        = $companiesFSKS[$objCompany->key];
                     $infoCompany->ksId  = $objCompany->ksId;
-                    
+
                     /* Synchronize Company  */
                     self::SynchronizeCompanyKSFS($infoCompany,$objCompany->key);
                 }//if_imported
@@ -792,8 +792,8 @@ class FSKS_COMPANY {
                         $rdoRelation = $DB->get_record('ksfs_company',$params);
                         if ($rdoRelation) {
                             /* Execute  */
-                            $params['kscompany']    = $companyKSFS->ksId;
-                            $DB->update_record_raw('ksfs_company',$params,false);
+                            $rdoRelation->kscompany = $companyKSFS->ksId;
+                            $DB->update_record('ksfs_company',$rdoRelation);
                         }else {
                             /* Execute  */
                             $params['kscompany']    = $companyKSFS->ksId;
