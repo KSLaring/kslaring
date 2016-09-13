@@ -757,6 +757,7 @@ class FSKS_COMPANY {
             $rdoCompany = $DB->get_record('fs_company',$params,'id');
 
             /* Apply Synchronization    */
+            echo "KS ID: " . $companyKSFS->ksId . " - " . " FS ID: " . $companyKSFS->fsId . "</br>";
             switch ($companyKSFS->action) {
                 case ADD:
                     if ($rdoCompany) {

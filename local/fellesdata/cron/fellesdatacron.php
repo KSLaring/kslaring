@@ -869,7 +869,7 @@ class FELLESDATA_CRON {
                 /* Send Mail --> Manual Synchronization     */
                 if ($notifyTo) {
                     if ($toMail) {
-                        self::SendNotifications(SYNC_COMP,$toMail,$notifyTo,$pluginInfo->fs_source);
+                        //self::SendNotifications(SYNC_COMP,$toMail,$notifyTo,$pluginInfo->fs_source);
                     }//if_toMail
                 }//if_notify
 
