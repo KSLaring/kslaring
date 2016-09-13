@@ -844,6 +844,10 @@ class FELLESDATA_CRON {
         $dbLog          = null;
 
         try {
+            /* Log  */
+            $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' START Companies FS/KS Synchronization . ' . "\n";
+            error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
+
             /* Get Notifications    */
             if ($pluginInfo->mail_notification) {
                 $notifyTo   = explode(',',$pluginInfo->mail_notification);
@@ -886,6 +890,10 @@ class FELLESDATA_CRON {
                 /* Clean Table*/
                 //$DB->delete_records('fs_imp_company',array('imported' => '1'));
             }//if_else
+
+            /* Log  */
+            $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' FINISH Companies FS/KS Synchronization . ' . "\n";
+            error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
         }catch (Exception $ex) {
             /* Log  */
             $dbLog  = $ex->getMessage() . "\n" . "\n";

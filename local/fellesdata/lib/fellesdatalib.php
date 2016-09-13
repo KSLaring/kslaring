@@ -906,6 +906,7 @@ class FSKS_COMPANY {
             $params['companyid'] = $companyFS->fscompany;
             $rdoCompany  = $DB->get_record('fs_company',$params);
 
+            echo "FS Company --> " . $companyFS->fscompany . "</br>";
             /* Apply Action */
             switch ($companyFS->action) {
                 case UPDATE:
