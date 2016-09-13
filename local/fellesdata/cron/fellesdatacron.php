@@ -486,6 +486,10 @@ class FELLESDATA_CRON {
         $fsResponse = null;
 
         try {
+            /* Log  */
+            $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' START Import FS ORG Structure . ' . "\n";
+            error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
+
             /* Call Web service */
             $fsResponse = self::ProcessTradisService($pluginInfo,TRADIS_FS_COMPANIES);
 
@@ -500,6 +504,10 @@ class FELLESDATA_CRON {
                     FS::SaveTemporary_Fellesdata($content,IMP_COMPANIES);
                 }//if_exists
             }
+
+            /* Log  */
+            $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' FINISH Import FS ORG Structure . ' . "\n";
+            error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
         }catch (Exception $ex) {
             /* Log  */
             $dbLog  = "Error: " . $ex->getMessage() . "\n" . "\n";
