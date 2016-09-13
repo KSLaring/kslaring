@@ -1789,34 +1789,35 @@ class FS {
 
                 /* Get New Entry    */
                 if ($lineContent) {
-                    if (isset($lineContent->newRecord)) {
-                        $newEntry = $lineContent->newRecord;
+                    /* Get Action       */
+                    switch (trim($lineContent->changeType)) {
+                        case ADD_ACTION:
+                            /* Add */
+                            $newEntry = $lineContent->newRecord;
+                            $newEntry->action   = 0;
+                            $newEntry->imported = 0;
 
-                        /* Get Action       */
-                        switch (trim($lineContent->changeType)) {
-                            case ADD_ACTION:
-                                $action = 0;
+                            break;
+                        case UPDATE_ACTION:
+                            /* Update */
+                            $newEntry = $lineContent->newRecord;
+                            $newEntry->action   = 1;
+                            $newEntry->imported = 0;
+                            break;
+                        case DELETE_ACTION:
+                            echo "HOLA" . "</br>";
+                            /* Old Entry        */
+                            if (isset($lineContent->oldRecord)) {
+                                $newEntry = $lineContent->oldRecord;
+                                $newEntry->action   = 2;
+                                $newEntry->imported = 0;
+                            }//if_old_record
 
-                                break;
-                            case UPDATE_ACTION:
-                                $action = 1;
+                            break;
+                    }//action
 
-                                break;
-                            case DELETE_ACTION:
-                                echo "HOLA" . "</br>";
-                                /* Old Entry        */
-                                if (isset($lineContent->oldRecord)) {
-                                    $newEntry = $lineContent->oldRecord;
-                                }//if_old_record
-
-                                $action = 2;
-
-                                break;
-                        }//action
-                        $newEntry->action   = $action;
-                        $newEntry->imported = 0;
-
-                        /* Add Record   */
+                    /* Add Record   */
+                    if ($newEntry) {
                         $toSave[$key] = $newEntry;
                     }
                 }//ifLineContent
