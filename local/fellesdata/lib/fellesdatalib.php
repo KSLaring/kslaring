@@ -1787,6 +1787,7 @@ class FS {
             foreach($data as $key=>$line) {
                 $lineContent    = json_decode($line);
 
+                echo $lineContent->changeType . "</br>";
                 /* Get New Entry    */
                 if ($lineContent) {
                     if (isset($lineContent->newRecord)) {

@@ -979,6 +979,10 @@ class FELLESDATA_CRON {
         $dbLog          = null;
 
         try {
+            /* Log  */
+            $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' START Manager Reporter Synchronization . ' . "\n";
+            error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
+            
             /* Get Info to Synchronize  */
             $toSynchronize = FSKS_USERS::GetManagersReporters_ToSynchronize();
 
@@ -997,10 +1001,14 @@ class FELLESDATA_CRON {
                     error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
                 }//if_no_error
             }//if_toSynchronize
+
+            /* Log  */
+            $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' FINISH Manager Reporter Synchronization . ' . "\n";
+            error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
         }catch (Exception $ex) {
             /* Log  */
             $dbLog  = $ex->getMessage() . "\n" . "\n";
-            $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' Finish ERROR Manaer Reporter Synchronization . ' . "\n";
+            $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' Finish ERROR Manager Reporter Synchronization . ' . "\n";
             error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
 
             throw $ex;
