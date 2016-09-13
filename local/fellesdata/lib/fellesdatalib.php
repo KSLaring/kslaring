@@ -457,6 +457,7 @@ class FSKS_COMPANY {
             /* SQL Instruction  */
             $sql = " SELECT	DISTINCT fs.id,
                             fs.companyid,
+                            IF(ks_fs.id,ks_fs.kscompany,0) as 'ks',
                             fs.name,
                             fs.level,
                             ks.industrycode,
@@ -470,8 +471,9 @@ class FSKS_COMPANY {
                             fs.postnr,
                             fs.poststed,
                             fs.epost
-                     FROM		{fs_company}	fs
-                        JOIN	{ks_company}	ks 	ON ks.companyid = fs.parent
+                     FROM		  {fs_company}	  fs
+                        JOIN	  {ks_company}	  ks 	ON ks.companyid     = fs.parent
+                        LEFT JOIN {ksfs_company}  ks_fs	ON ks_fs.fscompany 	= fs.companyid
                      WHERE	fs.synchronized = :synchronized
                         AND	fs.new 			= :new ";
 
@@ -483,7 +485,7 @@ class FSKS_COMPANY {
                     /* Info Company */
                     $infoCompany = new stdClass();
                     $infoCompany->fsId          = $instance->companyid;
-                    $infoCompany->ksId          = 0;
+                    $infoCompany->ksId          = $instance->ks;
                     $infoCompany->name          = $instance->name;
                     $infoCompany->industry      = $instance->industrycode;
                     $infoCompany->level         = $instance->level;
