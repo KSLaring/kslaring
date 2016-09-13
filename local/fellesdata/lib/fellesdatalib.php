@@ -388,8 +388,9 @@ class FSKS_COMPANY {
 
                 if ($objCompany->imported) {
                     /* Get Company  */
-                    $infoCompany = $companiesFSKS[$objCompany->key];
-
+                    $infoCompany        = $companiesFSKS[$objCompany->key];
+                    $infoCompany->ksId  = $objCompany->ksId;
+                    
                     /* Synchronize Company  */
                     self::SynchronizeCompanyKSFS($infoCompany,$objCompany->key);
                 }//if_imported
@@ -501,7 +502,6 @@ class FSKS_COMPANY {
                     $infoCompany->epost         = ($instance->epost     ? $instance->epost      : '');
                     $infoCompany->action        = ADD;
 
-                    echo "FS ID: " . $infoCompany->fsId . " - " . "KS id : " . $infoCompany->ksId ."</br>";
                     /* Add Company */
                     $toSynchronize[$instance->id] = $infoCompany;
                 }//for_rdo
