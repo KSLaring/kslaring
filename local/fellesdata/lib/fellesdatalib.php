@@ -348,7 +348,7 @@ class FSKS_COMPANY {
             /* New - Create */
             self::GetNewCompaniesFS_ToSynchronize($toSynchronize);
             /* New - Update */
-            //self::GetUpdateCompaniesFS_ToSynchronize($toSynchronize);
+            self::GetUpdateCompaniesFS_ToSynchronize($toSynchronize);
 
             /* To synchronize Only in FS    */
             if ($toSynchronize) {
@@ -760,7 +760,6 @@ class FSKS_COMPANY {
             $rdoCompany = $DB->get_record('fs_company',$params,'id');
 
             /* Apply Synchronization    */
-            echo "KS ID: " . $companyKSFS->ksId . " - " . " FS ID: " . $companyKSFS->fsId . "</br>";
             switch ($companyKSFS->action) {
                 case ADD:
                     if ($rdoCompany) {
