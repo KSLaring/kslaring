@@ -884,7 +884,7 @@ class TrackerManager {
         $method         = null;
         $instance       = null;
         $plugin         = null;
-        $context        = CONTEXT_COURSE::instance($courseId);
+        $context        = context_course::instance($courseId);
         $unEnrol        = true;
 
         try {
