@@ -18,4 +18,4 @@ $string['ks_site']      = 'KS Læring site';
 $string['adfs_settings']    = 'ADFS Settings';
 $string['adfs_service']     = 'ADFS Service';
 $string['adfs_token']       = 'ADFS Token';
-
+$string['adfs_idporten']    = 'ID Porten';

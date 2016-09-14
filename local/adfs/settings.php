@@ -25,4 +25,7 @@ if ($hassiteconfig) {
     $settings->add(new admin_setting_configtext('local_adfs/adfs_service',get_string('adfs_service','local_adfs'),'','',PARAM_TEXT,50));
     /* Token        */
     $settings->add(new admin_setting_configpasswordunmask('local_adfs/adfs_token',get_string('adfs_token','local_adfs'),'',''));
+    
+    /* ID Porten */
+    $settings->add(new admin_setting_configtext('local_adfs/idporten',get_string('adfs_idporten','local_adfs'),'','',PARAM_TEXT,50));
 }//if_config

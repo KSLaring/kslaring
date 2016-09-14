@@ -41,6 +41,10 @@ class KS_ADFS {
                 $valid = false;
             }else if (empty($user->idnumber)) {
                 $valid = false;
+            }else if (!is_number($user->idnumber)) {
+                $valid = false;
+            }else if (strlen($user->idnumber != 11)) {
+                $valid = 11;
             }
 
             return $valid;
@@ -69,8 +73,12 @@ class KS_ADFS {
             $pluginInfo     = get_config('local_adfs');
 
             /* URL */
-            $redirect = $pluginInfo->ks_point . '/local/wsks/adfs/error.php';
-            $redirect = new moodle_url($redirect,array('er' => 1));
+            if ($pluginInfo->idporten) {
+                $redirect = $pluginInfo->idporten;
+            }else {
+                $redirect = $pluginInfo->ks_point . '/local/wsks/adfs/error.php';
+                $redirect = new moodle_url($redirect,array('er' => 1));
+            }
 
             return $redirect;
         }catch (Exception $ex) {
