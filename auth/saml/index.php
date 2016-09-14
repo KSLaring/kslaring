@@ -275,8 +275,9 @@ define('SAML_INTERNAL', 1);
                     die;
                 }else {
                     $urltogo = KS_ADFS::GetErrorURL();
-                    redirect($urltogo);
                     require_logout();
+                    redirect($urltogo);
+
                     die;
                 }
             }catch (Exception $ex) {
