@@ -29,7 +29,7 @@ class manager_spuser_form extends moodleform {
         $form         = $this->_form;
 
         /* Get Extra Info   */
-        list($addSearch,$removeSearch,$removeSelected) = $this->_customdata;
+        list($addSearch,$removeSearch,$addSelected,$removeSelected) = $this->_customdata;
 
         /* Companies Levels Connected With  */
         $form->addElement('header', 'levels_connected', get_string('jr_connected', 'report_manager'));
@@ -166,11 +166,11 @@ class manager_spuser_form extends moodleform {
         $errors = parent::validation($data, $files);
 
         /* Get Extra Info   */
-        list($addSearch,$removeSearch,$removeSelected) = $this->_customdata;
+        list($addSearch,$removeSearch,$addSelected,$removeSelected) = $this->_customdata;
 
         /* Check there are users to add */
         if ((isset($data['add_sel']) && $data['add_sel'])) {
-            if (!isset($data['addselect'])) {
+            if (!$addSelected) {
                 $errors['addselect'] = get_string('required','report_manager');
             }//if_addselect
         }//if_add_sel

@@ -1397,6 +1397,7 @@ class enrol_waitinglist_plugin extends enrol_plugin {
         $fileName       = null;
         $fileLocation   = null;
         $pluginInfo     = null;
+        $uid            = null;
 
         try {
             /* Plugin Info  */
@@ -1416,6 +1417,7 @@ class enrol_waitinglist_plugin extends enrol_plugin {
                 }
 
                 if ($created) {
+                    $uid = uniqid();
                     /* Content File */
                     $iCal  = "BEGIN:VCALENDAR"  . "\n";
                     $iCal .= "METHOD:PUBLISH"   . "\n";
@@ -1425,14 +1427,14 @@ class enrol_waitinglist_plugin extends enrol_plugin {
                     $iCal .= "X-WR-TIMEZONE:Europe/Oslo " . "\n";
                     $iCal .= "BEGIN:VEVENT"     . "\n";
                     $iCal .= "SUMMARY:"         . $course->fullname . "\n";
-                    $iCal .= "UID:"             . uniqid()       . "\n";
+                    $iCal .= "UID:"             . $uid . "\n";
                     $iCal .= "DTSTART:"         . date('Ymd\THis', $course->startdate + 28800) . "\n";
                     $iCal .= "LOCATION:"        . "KSLæring" . "\n";
                     $iCal .= "END:VEVENT"       . "\n";
                     $iCal .= "END:VCALENDAR"    . "\n";
 
                     /* File Name    */
-                    $fileName  = 'ical_' . $course->fullname . '.ics';
+                    $fileName  = 'Kalender' . $uid  . '.ics';
                     $fileCal = fopen($CFG->dataroot . '/iCal/' . $fileName,'w+');
                     fwrite($fileCal,$iCal);
                     fclose($fileCal);

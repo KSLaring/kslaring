@@ -96,6 +96,7 @@ var organization = {
     Reload_Search : function() {
         //  Trigger an ajax search after a delay.
         M.core_user.get_super_user_selector('removeselect').reload_super_users();
+        M.core_user.get_super_user_selector('addselect').reload_super_users();
     },
 
     /**

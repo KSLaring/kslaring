@@ -1414,17 +1414,18 @@ class WS_FELLESDATA {
                     break;
                 case DELETE_ACTION:
                     if ($rdo) {
-                        $companyId = $rdo->id;
-
                         /* Delete  Company */
                         /* Check there are none users connected with */
                         $rdoEmployee = $DB->get_records('user_info_competence_data',array('companyid' => $companyInfo->ksId));
                         if (!$rdoEmployee) {
+                            $companyId = $rdo->id;
                             /* Delete Comapny   */
                             $DB->delete_records('report_gen_companydata',array('id' => $companyInfo->ksId));
 
                             /* Delete Relations */
                             $DB->delete_records('report_gen_company_relation',array('companyid' => $companyInfo->ksId));
+                        }else {
+                            $companyId = 0;
                         }//if_no_employees
                     }//if_exists
 
