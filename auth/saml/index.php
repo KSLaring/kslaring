@@ -268,6 +268,8 @@ define('SAML_INTERNAL', 1);
                 if ($USER->username == 'eftst') {
                     $USER->idnumber = '12127316609';
                 }
+
+
                 if (KS_ADFS::IsValidUser($USER)) {
                     error_log($dbLog, 3, $CFG->dataroot . "/SSO_LNK.log");
 
