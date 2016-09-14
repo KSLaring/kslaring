@@ -42,10 +42,6 @@ class KS_ADFS {
             }else if (empty($user->idnumber)) {
                 $valid = false;
             }else if (!is_number($user->idnumber)) {
-                global $CFG;
-                $dbLog  = " NOT NUMERIC: " . $user->idnumber . "\n";
-
-                error_log($dbLog, 3, $CFG->dataroot . "/COURSE_LNK.log");
                 $valid = false;
             }else if (strlen($user->idnumber) != 11) {
                 $valid = false;
