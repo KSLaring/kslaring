@@ -1568,11 +1568,13 @@ class enrol_waitinglist_plugin extends enrol_plugin {
                     $iCal .= "SUMMARY:"         . $course->fullname . "\n";
                     $iCal .= "UID:"             . $uid . "\n";
                     $iCal .= "DTSTART:"         . date('Ymd\THis', $course->startdate + 28800) . "\n";
-                    $iCal .= "LOCATION:"        . $location->name . '\n' . $location->address. "\n";
+                    if ($location) {
+                        $iCal .= "LOCATION:"        . $location->name . '\n' . $location->address. "\n";
+                        if ($location->map) {
+                            $iCal .= "URL;VALUE=URI:" . $location->map . "\n";
+                        }
+                    }//if_location
                     $iCal .= "DESCRIPTION:"     . $location->detail . "\n";
-                    if ($location->map) {
-                        $iCal .= "URL;VALUE=URI:" . $location->map . "\n";
-                    }
                     $iCal .= "END:VEVENT"       . "\n";
                     $iCal .= "END:VCALENDAR"    . "\n";
 
