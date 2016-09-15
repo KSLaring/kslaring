@@ -695,8 +695,13 @@ class FSKS_COMPANY {
         $sql            = null;
         $rdo            = null;
         $companiesFS    = array();
+        $params         = null;
 
         try {
+            /* Search Criteria  */
+            $params = array();
+            $params['delete'] = DELETE;
+
             /* SQL Instruction */
             $sql = " SELECT	fs.id,
                             fs.org_navn
@@ -704,6 +709,7 @@ class FSKS_COMPANY {
                      WHERE	fs.imported = 0
                         AND fs.id NOT IN ($notIn)
                         AND fs.org_nivaa != 4
+                        AND fs.action != :delete
                      ORDER BY fs.org_navn
                      LIMIT 0,5 ";
 
