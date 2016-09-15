@@ -17,10 +17,11 @@ require('../../config.php');
 require_once('classes/method/manual/enrolmethodmanual.php');
 
 /* PARAMS */
-$courseId   = required_param('course',PARAM_INT);
-$instanceId = required_param('instance',PARAM_INT);
-$search     = required_param('search',PARAM_TEXT);
-$selectorId = required_param('selectorid',PARAM_ALPHANUM);
+$courseId           = required_param('course',PARAM_INT);
+$instanceId         = required_param('instance',PARAM_INT);
+$search             = required_param('search',PARAM_TEXT);
+$selectorId         = required_param('selectorid',PARAM_ALPHANUM);
+$levelThree         = optional_param('levelThree',0,PARAM_TEXT);
 
 $optSelector    = null;
 $class          = null;
@@ -51,7 +52,7 @@ $optSelector = $USER->manual_selectors[$selectorId];
 /* Get Class    */
 $class = $optSelector['class'];
 
-$results = enrol_waitinglist\method\manual\enrolmethodmanual::$class($instanceId,$courseId,$search);
+$results = enrol_waitinglist\method\manual\enrolmethodmanual::$class($instanceId,$courseId,$levelThree,$search);
 
 foreach ($results as $groupName => $manuals) {
     $groupData = array('name' => $groupName, 'users' => array());

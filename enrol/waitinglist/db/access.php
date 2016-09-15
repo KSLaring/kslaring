@@ -72,18 +72,18 @@ $capabilities = array(
         'captype' => 'write',
         'contextlevel' => CONTEXT_COURSE,
         'archetypes' => array(
-            'manager' => CAP_ALLOW,
-            'editingteacher' => CAP_ALLOW,
+            'manager'        => CAP_ALLOW,
+            'editingteacher' => CAP_ALLOW
         )
     ),
 
     /* Unenrol self - watch out for data loss. */
-    'enrol/waitinglist:unenrolself' => array(
-        'captype' => 'write',
-        'contextlevel' => CONTEXT_COURSE,
-        'archetypes' => array(
-        )
-    ),
+    //'enrol/waitinglist:unenrolself' => array(
+    //    'captype' => 'write',
+    //    'contextlevel' => CONTEXT_COURSE,
+    //    'archetypes' => array(
+    //    )
+    //),
 	
 	 'enrol/waitinglist:canbulkenrol' => array(
         'riskbitmask' => RISK_SPAM,

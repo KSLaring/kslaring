@@ -173,6 +173,7 @@ $string['approval_info']    = 'Vennligst fyll inn en begrunnelse for at du vil m
 $string['arguments']        = 'Begrunnelse';
 
 $string['not_managers'] = 'Beklager, men du kan ikke melde deg på dette kurset siden vi ikke vet hvem som er lederen din. Vennligst kontakt din lokale administrator.';
+$string['not_managers_company'] = 'Sorry, you cannot apply for the course because of there is no manager connected with you for the company <strong>{$a}</strong>.';
 
 $string['mng_subject']  = '{$a->site}: Søknad om kursplass for kurset {$a->course}';
 $string['mng_body']     = '<p>Du får denne forespørselsen om godkjenning siden du er oppført som lederen for <b>{$a->user}</b>.<br /><b>{$a->user}</b> nettopp har søkt om plass på kurset  <b>{$a->course}</b>.</p><p>Begrunnelsen for søknaden om plass på kurset er:</p><p>{$a->arguments}</p>
@@ -268,3 +269,6 @@ $string['price'] = 'Pris';
 $string['in_price']     = 'Intern pris';
 $string['ext_price']    = 'Ekstern pris';
 $string['ical_path']    = 'iCal path';
+
+$string['company_sel']     = 'Company';
+$string['users_connected'] = 'Users connected';
