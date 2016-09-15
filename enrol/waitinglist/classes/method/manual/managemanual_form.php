@@ -28,17 +28,37 @@ class managemanual_form extends moodleform {
         $mForm      = $this->_form;
         $manualClass = 'enrol_waitinglist\method\manual\enrolmethodmanual';
         $seats       = 0;
-
-        list($instance,$course,$addSearch,$removeSearch) = $this->_customdata;
-
+        $levelThree  = optional_param('levelThree',0,PARAM_TEXT);
+        
+        list($instance,$course,$addSearch,$removeSearch,$addSelected,$removeSelected) = $this->_customdata;
+        
         /* Available Seats  */
         $seats = $manualClass::GetAvailableSeats($instance,$course);
 
+        if ($seats == 'u') {
+            $mForm->addElement('static', 'manual-notification', '', get_string('manual_unlimit', 'enrol_waitinglist'),'id="manual_notification"');
+        }else if ($seats > 0) {
+            $mForm->addElement('static', 'manual-notification', '', get_string('manual_notification', 'enrol_waitinglist',$seats),'id="manual_notification"');
+        }else {
+            $mForm->addElement('static', 'manual-notification', '', get_string('manual_none_seats', 'enrol_waitinglist'),'id="manual_notification"');
+        }
+
+        /* Companies Levels Connected With  */
+        $mForm->addElement('header', 'levels_connected', get_string('company_sel', 'enrol_waitinglist'));
+        $mForm->setExpanded('levels_connected',true);
+
+        /* Add Levels   */
+        for ($i = 0; $i <= 3; $i++) {
+            $this->Add_CompanyLevel($i,$mForm);
+        }//for_levels
+
+        /* Users Connected */
+        $mForm->addElement('header', 'users_connected', get_string('users_connected', 'enrol_waitinglist'));
+        $mForm->setExpanded('users_connected',true);
         /* Users Selectors - Left Enrolled users */
         $mForm->addElement('html','<div class="userselector" id="addselect_wrapper">');
-            $mForm->addElement('static', 'manual-notification', '', get_string('manual_notification', 'enrol_waitinglist',$seats),'id="manual_notification"');
             /* Left - Users enrolled        */
-            $schoices = $manualClass::FindEnrolledUsers($instance->id,$course,$removeSearch);
+            $schoices = $manualClass::FindEnrolledUsers($instance->id,$course,$levelThree,$removeSearch);
             $mForm->addElement('html','<div class="sel_users_left">');
                 $strEnrolled = get_string('enrolledusers','enrol');
                 $mForm->addElement('html','<label>' . $strEnrolled . '</label>');
@@ -66,7 +86,7 @@ class managemanual_form extends moodleform {
 
         /* Users Selectors - Right Not Enrolled users */
         $mForm->addElement('html','<div class="userselector" id="addselect_wrapper">');
-            $achoices = $manualClass::FindCandidatesUsers($instance->id,$course,$addSearch);
+            $achoices = $manualClass::FindCandidatesUsers($instance->id,$course,$levelThree,$addSearch);
             $mForm->addElement('html','<div class="sel_users_right">');
                 $strCandidates = get_string('enrolcandidates','enrol');
                 $mForm->addElement('html','<label>' . $strCandidates . '</label>');
@@ -94,17 +114,17 @@ class managemanual_form extends moodleform {
         /* Variables    */
         $errors = parent::validation($data, $files);
 
-        list($instance,$course,$addSearch,$removeSearch) = $this->_customdata;
+        list($instance,$course,$addSearch,$removeSearch,$addSelected,$removeSelected) = $this->_customdata;
         $manualClass = 'enrol_waitinglist\method\manual\enrolmethodmanual';
 
         /* Check there are users to add */
         if ((isset($data['add_sel']) && $data['add_sel'])) {
-            if (!isset($data['addselect']))  {
+            if (!$addSelected)  {
                 $errors['addselect'] = get_string('required');
             }else {
                 /* 0 -> Unlimitedd*/
                 if ($instance->customint2) {
-                    $total = count($data['addselect']);
+                    $total = count($addSelected);
                     $seats = $manualClass::GetAvailableSeats($instance,$course);
                     
                     if ($total > $seats) {
@@ -121,11 +141,64 @@ class managemanual_form extends moodleform {
 
         /* Check there are users to remove  */
         if ((isset($data['remove_sel']) && $data['remove_sel'])) {
-            if (!isset($data['removeselect'])) {
+            if (!$removeSelected) {
                 $errors['removeselect'] = get_string('required');
             }//if_removeselect
         }//if_remove_sel
 
         return $errors;
     }//validation
+
+    /**
+     * @param $level
+     * @param $form
+     * @throws Exception
+     * @throws coding_exception
+     *
+     * Description.
+     * Add companies 
+     */
+    function Add_CompanyLevel($level,&$form) {
+        /* Variables    */
+        global $USER;
+        $options    = array();
+        $my         = null;
+        $parent     = null;
+        $inThree    = null;
+        $levelZero  = null;
+        $levelOne   = null;
+        $levelTwo   = null;
+        $myCompetence = null;
+        $manualClass = null;
+        
+        /* Get Company List */
+        switch ($level) {
+            case 0:
+                /* Companies for Level Zero */
+                $options    = CompetenceManager::GetCompanies_LevelList($level);
+                
+                break;
+            default:
+                /* Parent*/
+                $parent     = optional_param('level_' . ($level-1), 0, PARAM_INT);
+
+                /* Companies for the current level */
+                if ($parent) {
+                    $options = CompetenceManager::GetCompanies_LevelList($level,$parent);
+                }else {
+                    $options[0] = get_string('select_level_list','report_manager');
+                }//if_parent
+
+                break;
+        }//level
+
+        /* Add Level/ Company List  */
+        $form->addElement('select','level_' . $level,get_string('select_company_structure_level','report_manager',$level), $options);
+
+        /* Get Default value    */
+        $my = optional_param('level_' . $level, 0, PARAM_INT);
+        
+        /* Set Default Values   */
+        $form->setDefault('level_' . $level,$my);
+    }//Add_CompanyLevel
 }//managemanual_form

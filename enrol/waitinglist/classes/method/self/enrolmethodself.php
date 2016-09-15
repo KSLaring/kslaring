@@ -30,6 +30,7 @@
  */
  
 namespace enrol_waitinglist\method\self;
+require_once($CFG->dirroot . '/report/manager/managerlib.php');
 
 class enrolmethodself extends \enrol_waitinglist\method\enrolmethodbase{
 
@@ -189,6 +190,12 @@ class enrolmethodself extends \enrol_waitinglist\method\enrolmethodbase{
      * Description
      * If it is an approval method, it'll check if the user has mangers or not.
      * No managers --> CANNOT ENROL
+     *
+     * @updateDate      13/09/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Checking for manager moved to enrol_page_hook
      */
     public function can_enrol(\stdClass $waitinglist, $checkuserenrolment = true) {
         /* Variables */
@@ -197,10 +204,6 @@ class enrolmethodself extends \enrol_waitinglist\method\enrolmethodbase{
 
 
         if ($waitinglist->{ENROL_WAITINGLIST_FIELD_APPROVAL} == APPROVAL_REQUIRED) {
-            $this->myManagers = \Approval::GetManagers($USER->id);
-            if (!$this->myManagers) {
-                return get_string('not_managers','enrol_waitinglist');
-            }
             /* Check if it has been rejected    */
             $rejected = new \stdClass();
             $rejected->sent = null;
@@ -259,13 +262,21 @@ class enrolmethodself extends \enrol_waitinglist\method\enrolmethodbase{
 
         return true;
     }
-	
-	   /**
+
+    /**
      * Self enrol user to course
+     * @param           \stdClass $waitinglist
+     * @param           null $data
      *
-     * @param stdClass $waitinglist enrolment instance
-     * @param stdClass $data data needed for enrolment.
-     * @return bool|array true if enroled else eddor code and messege
+     * @return          bool|array true if enroled else eddor code and messege
+     * @throws          \Exception
+     * @throws          \enrol_waitinglist\method\coding_exception
+     *
+     * @updateDate      13/09/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Add company
      */
     public function waitlistrequest_self(\stdClass $waitinglist, $data = null) {
         /* Variables    */
@@ -293,6 +304,7 @@ class enrolmethodself extends \enrol_waitinglist\method\enrolmethodbase{
                 $queue_entry->waitinglistid                 = $waitinglist->id;
                 $queue_entry->courseid                      = $waitinglist->courseid;
                 $queue_entry->userid                        = $USER->id;
+                $queue_entry->companyid                     = $data->level_3;
                 $queue_entry->methodtype                    = static::METHODTYPE;
                 if(!isset($data->enrolpassword)){$data->enrolpassword='';}
                 $queue_entry->{self::QFIELD_ENROLPASSWORD}  = $data->enrolpassword;
@@ -340,6 +352,61 @@ class enrolmethodself extends \enrol_waitinglist\method\enrolmethodbase{
         }//try_catch
     }
 
+    /**
+     * @param           $userId
+     *
+     * @return          null
+     * @throws          \Exception
+     *
+     * @creationDate    12/09/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Get competence data
+     */
+    public function GetCompetenceData($userId) {
+        /* Variables */
+        $wl             = null;
+        $myCompetence   = null;
+
+        try {
+            $wl = enrol_get_plugin('waitinglist');
+
+            $myCompetence = $wl->GetUserCompetenceData($userId);
+
+            return $myCompetence;
+        }catch (\Exception $ex) {
+            throw $ex;
+        }
+    }//GetCompetenceData
+
+    /**
+     * @param           $reload
+     * @param           $invoice
+     * 
+     * @throws          \Exception
+     * 
+     * @creationDate    13/09/2016
+     * @author          eFaktor     (fbv)
+     * 
+     * Description
+     * Initialize Organization Structure
+     */
+    public static function Init_Organization_Structure($reload,$invoice) {
+        /* Variables */
+        $wl = null;
+
+        try {
+            /* Get plugin */
+            $wl = enrol_get_plugin('waitinglist');
+
+            /* Init Organization Structure */
+            $wl->Init_Organization_Structure($reload,$invoice);
+        }catch (\Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//Init_Organization_Structure
+    
     /**
      * @param           \stdClass $waitinglist
      * @param                     $queue_entry
@@ -435,8 +502,19 @@ class enrolmethodself extends \enrol_waitinglist\method\enrolmethodbase{
      * Creates course enrol form, checks if form submitted
      * and enrols user if necessary. It can also redirect.
      *
-     * @param stdClass $waitinglist
-     * @return string html text, usually a form in a text box
+     * @param       \stdClass $waitinglist
+     * @param       $flagged
+     *
+     * @return      array
+     * @throws      \Exception
+     * @throws      \coding_exception
+     * @throws      \moodle_exception
+     *
+     * @updateDate  13/09/2016
+     * @author      eFaktor     (fbv)
+     *
+     * Description
+     * Selector company. Check managers.
      */
     public function enrol_page_hook(\stdClass $waitinglist, $flagged) {
         global $CFG, $OUTPUT, $USER;
@@ -463,6 +541,11 @@ class enrolmethodself extends \enrol_waitinglist\method\enrolmethodbase{
 
         // Don't show enrolment instance form, if user can't enrol using it.
         if (true === $enrolstatus) {
+            /**
+             * To initialize the organization structure
+             */
+            $this->Init_Organization_Structure(false,$waitinglist->{ENROL_WAITINGLIST_FIELD_INVOICE});
+
         	$listtotal = $queueman->get_listtotal();
 
             $waitinglistid  = optional_param('waitinglist', 0, PARAM_INT);
@@ -538,43 +621,78 @@ class enrolmethodself extends \enrol_waitinglist\method\enrolmethodbase{
                     if ($form->is_cancelled()) {
                         redirect($CFG->wwwroot . '/index.php');
                     }else if ($data = $form->get_data()) {
-                        $this->waitlistrequest_self($waitinglist, $data);
-
+                        /**
+                         * @updateDate  14/09/2016
+                         * @author      eFaktor     (fbv)
+                         *
+                         * Description
+                         * Check if user can enroll in the case of needing an approval
+                         */
                         if ($waitinglist->{ENROL_WAITINGLIST_FIELD_APPROVAL} == APPROVAL_REQUIRED) {
-                            $params = array();
-                            $params['id']   = $USER->id;
-                            $params['co']   = $waitinglist->courseid;
-
-                            if ($vacancies) {
-                                $params['se'] = 1;
+                            $this->myManagers = \Approval::ManagersConnected($USER->id,$data->level_3);
+                            if ($this->myManagers) {
+                                $enrolstatus = true;
                             }else {
-                                $params['se'] = 0;
-                            }//if_infoMail
-
-                            $redirect       = new \moodle_url('/enrol/waitinglist/approval/info.php',$params);
-                            redirect($redirect);
+                                $enrolstatus = false;
+                            }
                         }else {
-                            /**
-                             * @updateDate  28/10/2015
-                             * @author      eFaktor     (fbv)
-                             *
-                             * Description
-                             * Save Invoice Information
-                             */
-                            if (enrol_get_plugin('invoice')) {
-                                if ($waitinglist->{ENROL_WAITINGLIST_FIELD_INVOICE}) {
-                                    \Invoices::activate_enrol_invoice($USER->id,$waitinglist->courseid,$waitinglist->id);
-                                }//if_invoice_info
-                            }//if_enrol_invoice
-                        }//Approval_method
+                            $enrolstatus = true;
+                        }
+
+                        if ($enrolstatus) {
+                            $this->waitlistrequest_self($waitinglist, $data);
+
+                            if ($waitinglist->{ENROL_WAITINGLIST_FIELD_APPROVAL} == APPROVAL_REQUIRED) {
+                                $params = array();
+                                $params['id']   = $USER->id;
+                                $params['co']   = $waitinglist->courseid;
+
+                                if ($vacancies) {
+                                    $params['se'] = 1;
+                                }else {
+                                    $params['se'] = 0;
+                                }//if_infoMail
+
+                                $redirect       = new \moodle_url('/enrol/waitinglist/approval/info.php',$params);
+                                redirect($redirect);
+                            }else {
+                                /**
+                                 * @updateDate  28/10/2015
+                                 * @author      eFaktor     (fbv)
+                                 *
+                                 * Description
+                                 * Save Invoice Information
+                                 */
+                                if (enrol_get_plugin('invoice')) {
+                                    if ($waitinglist->{ENROL_WAITINGLIST_FIELD_INVOICE}) {
+                                        \Invoices::activate_enrol_invoice($USER->id,$waitinglist->courseid,$waitinglist->id);
+                                    }//if_invoice_info
+                                }//if_enrol_invoice
+                            }//Approval_method
+                        }//if_enrolstatus
                     }//if_form
 
-                    ob_start();
-                    $form->display();
-                    $output = ob_get_clean();
+                    /**
+                     * @updateDate  14/09/2016
+                     * @author      eFaktor     (fbv)
+                     * 
+                     * Description
+                     * If the user can enroll --> Enrolled
+                     * Cannot enroll --> Message
+                     */
+                    if ($enrolstatus) {
+                        ob_start();
+                        $form->display();
+                        $output = ob_get_clean();
 
-                    $message =$OUTPUT->box($output);
-                    $ret = array(true,$message);
+                        $message =$OUTPUT->box($output);
+                        $ret = array(true,$message);                        
+                    }else {
+                        $message = $OUTPUT->box($enrolstatus);
+                        $company = \CompetenceManager::GetCompany_Name($data->level_3);
+                        $ret = array(false,get_string('not_managers_company','enrol_waitinglist',$company));
+                    }
+
                 }//if_toConfirm
             }//if_else
 

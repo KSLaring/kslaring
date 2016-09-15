@@ -466,12 +466,134 @@ class enrol_waitinglist_plugin extends enrol_plugin {
          */
         if ($instance->{ENROL_WAITINGLIST_FIELD_APPROVAL} == APPROVAL_MESSAGE) {
             require_once('approval/approvallib.php');
+            /* Get Managers */
+            $myManagers = \Approval::GetManagers($userid,$instance);
+            
             /* Send Notification Manager Approved   */
             $infoNotification = \Approval::Info_NotificationApproved($userid,$instance->courseid);
 
+            /* Add Info Managers    */
+            $infoNotification->managers = $myManagers;
+            
             \Approval::SendApprovedNotification_Managers($infoNotification);
         }
     }
+
+    /**
+     * @param           $reload
+     * @param           $invoice
+     * 
+     * @throws          Exception
+     * 
+     * @creationDate    13/09/2016
+     * @author          eFaktor     (fbv)
+     * 
+     * Description
+     * Initialize organization structure
+     */
+    public function Init_Organization_Structure($reload,$invoice = false) {
+        /* Variables    */
+        global $USER,$PAGE;
+        $options    = null;
+        $hash       = null;
+        $jsModule   = null;
+        $name       = null;
+        $path       = null;
+        $requires   = null;
+        $strings    = null;
+        $grpOne     = null;
+        $grpTwo     = null;
+        $grpThree   = null;
+
+        try {
+            /* Initialise variables */
+            $name       = 'organization';
+            $path       = '/enrol/waitinglist/yui/structure.js';
+            $requires   = array('node', 'event-custom', 'datasource', 'json', 'moodle-core-notification');
+            $grpOne     = array('previouslyselectedusers', 'moodle', '%%SEARCHTERM%%');
+            $grpTwo     = array('nomatchingusers', 'moodle', '%%SEARCHTERM%%');
+            $grpThree   = array('none', 'moodle');
+            $strings    = array($grpOne,$grpTwo,$grpThree);
+
+            /* Initialise js module */
+            $jsModule = array('name'        => $name,
+                              'fullpath'    => $path,
+                              'requires'    => $requires,
+                              'strings'     => $strings
+            );
+
+
+            $PAGE->requires->js_init_call('M.core_user.init_structure',
+                                          array('level_',$reload,$invoice),
+                                          false,
+                                          $jsModule
+            );
+        }catch (\Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//Init_Organization_Structure
+    
+    /**
+     * @param           $userId
+     * 
+     * @return          mixed|null
+     * @throws          Exception
+     * 
+     * @creationDate    12/09/2016
+     * @author          eFaktor     (fbv)
+     * 
+     * Description
+     * Get competence data connected with the user.
+     * 
+     */
+    public  function GetUserCompetenceData($userId) {
+        /* Variables */
+        global $DB;
+        $rdo            = null;
+        $sql            = null;
+        $params         = null;
+
+        try {
+            /* Search Criteria */
+            $params = array();
+            $params['user'] = $userId;
+
+            /* SQL Instruction */
+            $sql = " SELECT		GROUP_CONCAT(DISTINCT co_zero.id  		ORDER BY co_zero.id 		SEPARATOR ',') as 'levelzero',
+                                GROUP_CONCAT(DISTINCT co_one.id  		ORDER BY co_one.id  		SEPARATOR ',') as 'levelone',
+                                GROUP_CONCAT(DISTINCT co_two.id  		ORDER BY co_two.id  		SEPARATOR ',') as 'leveltwo',
+                                GROUP_CONCAT(DISTINCT uicd.companyid  	ORDER BY uicd.companyid  	SEPARATOR ',') as 'levelthree'
+                     FROM		{user_info_competence_data} 		uicd
+                        -- LEVEL TWO
+                        JOIN	{report_gen_company_relation}   	cr_two	ON 	cr_two.companyid 		= uicd.companyid
+                        JOIN	{report_gen_companydata}			co_two	ON 	co_two.id 				= cr_two.parentid
+                                                                            AND co_two.hierarchylevel 	= 2
+                        -- LEVEL ONE
+                        JOIN	{report_gen_company_relation}   	cr_one	ON 	cr_one.companyid 		= cr_two.parentid
+                        JOIN	{report_gen_companydata}			co_one	ON 	co_one.id 				= cr_one.parentid
+                                                                            AND co_one.hierarchylevel 	= 1
+                        -- LEVEL ZERO
+                        JOIN	{report_gen_company_relation}  	    cr_zero	ON 	cr_zero.companyid 		= cr_one.parentid
+                        JOIN	{report_gen_companydata}			co_zero	ON 	co_zero.id 				= cr_zero.parentid
+                                                                            AND co_zero.hierarchylevel 	= 0
+                     WHERE		uicd.userid     = :user
+                        AND     (uicd.rejected  = 0
+                                 OR
+                                 uicd.rejected IS NULL)
+                        AND     uicd.approved   = 1  ";
+
+            /* Execute */
+            $rdo = $DB->get_record_sql($sql,$params);
+            if ($rdo) {
+                return $rdo;
+            }else {
+                return null;
+            }//if_Rdo
+        }catch (\Exception $ex) {
+            throw $ex;
+        }
+    }//GetUserCompetenceData
+    
 	    /**
      * Checks if user can self enrol.
      *
@@ -534,8 +656,6 @@ class enrol_waitinglist_plugin extends enrol_plugin {
 		$DB->delete_records(ENROL_WAITINGLIST_TABLE_QUEUE,array('userid'=>$user->id));
     }
 
-
-
     /**
      * Add new instance of enrol plugin with default settings.
      * @param stdClass $course
@@ -569,7 +689,7 @@ class enrol_waitinglist_plugin extends enrol_plugin {
         }
         $fields = array(
                         'status'                                    => $this->get_config('status'),
-                        'roleid'                                    => $this->get_config('roleid'),
+                        'roleid'                                    => $this->get_config('roleid', 0),
                         'enrolperiod'                               => $this->get_config('enrolperiod', 0),
                         'expirynotify'                              => $expirynotify,
                         'notifyall'                                 => $notifyall,
@@ -1410,6 +1530,8 @@ class enrol_waitinglist_plugin extends enrol_plugin {
         $fileName       = null;
         $fileLocation   = null;
         $pluginInfo     = null;
+        $uid            = null;
+        $location       = null;
 
         try {
             /* Plugin Info  */
@@ -1429,6 +1551,12 @@ class enrol_waitinglist_plugin extends enrol_plugin {
                 }
 
                 if ($created) {
+                    /* unique ID */
+                    $uid = uniqid();
+
+                    /* Location     */
+                    $location = self::GetLocation($course->id);
+
                     /* Content File */
                     $iCal  = "BEGIN:VCALENDAR"  . "\n";
                     $iCal .= "METHOD:PUBLISH"   . "\n";
@@ -1438,14 +1566,18 @@ class enrol_waitinglist_plugin extends enrol_plugin {
                     $iCal .= "X-WR-TIMEZONE:Europe/Oslo " . "\n";
                     $iCal .= "BEGIN:VEVENT"     . "\n";
                     $iCal .= "SUMMARY:"         . $course->fullname . "\n";
-                    $iCal .= "UID:"             . uniqid()       . "\n";
+                    $iCal .= "UID:"             . $uid . "\n";
                     $iCal .= "DTSTART:"         . date('Ymd\THis', $course->startdate + 28800) . "\n";
-                    $iCal .= "LOCATION:"        . "KSLæring" . "\n";
+                    $iCal .= "LOCATION:"        . $location->name . '\n' . $location->address. "\n";
+                    $iCal .= "DESCRIPTION:"     . $location->detail . "\n";
+                    if ($location->map) {
+                        $iCal .= "URL;VALUE=URI:" . $location->map . "\n";
+                    }
                     $iCal .= "END:VEVENT"       . "\n";
                     $iCal .= "END:VCALENDAR"    . "\n";
 
                     /* File Name    */
-                    $fileName  = 'ical_' . $course->fullname . '.ics';
+                    $fileName  = 'Kalender' . $uid  . '.ics';
                     $fileCal = fopen($CFG->dataroot . '/iCal/' . $fileName,'w+');
                     fwrite($fileCal,$iCal);
                     fclose($fileCal);
@@ -1461,6 +1593,68 @@ class enrol_waitinglist_plugin extends enrol_plugin {
             throw $ex;
         }//try_catch
     }//iCalendar_StartDate
+
+    /**
+     * @param           $courseId
+     *
+     * @return          null|stdClass
+     * @throws          Exception
+     *
+     * @creationDate    15/09/2016
+     * @author          eFaktor     (fbv)
+     */
+    private function GetLocation($courseId) {
+        /* Variables */
+        global $DB;
+        $sql            = null;
+        $rdo            = null;
+        $params         = null;
+        $infoLocation   = null;
+
+        try {
+            /* Search Criteria  */
+            $params = array();
+            $params['course'] = $courseId;
+            $params['name']   = 'course_location';
+
+            /* SQL Instruction */
+            $sql = " SELECT	lo.name,
+                            lo.floor,
+                            lo.room,
+                            lo.street,
+                            lo.postcode,
+                            lo.city,
+                            trim(lo.urlmap) as 'urlmap'
+                     FROM		{course_format_options}	cf
+                        JOIN	{course_locations}		lo ON lo.id = cf.value
+                     WHERE	cf.courseid = :course
+                        AND	cf.name     = :name ";
+
+            /* Execute */
+            $rdo = $DB->get_record_sql($sql,$params);
+            if ($rdo) {
+                /* Info Location    */
+                $infoLocation = new stdClass();
+                $infoLocation->name        = $rdo->name;
+                /* Detail */
+                $infoLocation->detail      = get_string('location_floor','local_friadmin') . ': ' . $rdo->floor;
+                $infoLocation->detail     .= '\n';
+                $infoLocation->detail     .= get_string('location_room','local_friadmin')  . ': ' . $rdo->room;
+                $infoLocation->detail     .= '\n';
+                /* Address  */
+                $infoLocation->address     = $rdo->street;
+                $infoLocation->address    .= '\n';
+                $infoLocation->address    .= $rdo->postcode . ' ' . $rdo->city;
+                $infoLocation->address    .= '\n';
+                /* Url Map */
+                $infoLocation->map         = $rdo->urlmap;
+            }//if_Rdo
+
+            return $infoLocation;
+        }catch (\Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//GetLocation
 
     /**
      * Restore role assignment. 

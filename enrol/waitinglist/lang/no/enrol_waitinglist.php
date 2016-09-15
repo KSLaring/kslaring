@@ -265,6 +265,9 @@ $string['home_page']    = 'Hjemmesider';
 $string['approval_occupied'] = 'Det er i øyeblikket ingen ledige plasser. Søknaden om kursplass vil derfor bli behandlet straks det er ledige plasser på kurset.';
 
 $string['price'] = 'Pris';
+
 $string['in_price']     = 'Intern pris';
 $string['ext_price']    = 'Ekstern pris';
 $string['ical_path']    = 'iCal path';
+$string['company_sel']     = 'Company';
+$string['users_connected'] = 'Users connected';

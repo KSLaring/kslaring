@@ -16,4 +16,4 @@ $string['manual_menutitle']     = 'Enrol Manual';
 $string['manual_manage']        = 'Manage Manual Enrolments';
 $string['manual_no_seats']      = 'Sorry, you are selected too much users. There are only {$a} available seats';
 $string['manual_none_seats']    = 'Sorry, but there are none available seats';
-$string['manual_notification']  = '<strong>For this course, there are only <u>{$a}</u> available seats</strong>';
+$string['manual_notification']  = '<strong>For this course, there are only <u>{$a}</u> available seats</strong>';$string['manual_unlimit']       = 'For this course, there is none restriction on the seats.';

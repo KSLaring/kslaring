@@ -63,14 +63,14 @@ Class Approval {
      * Description
      * Get managers connected with user
      */
-    public static function GetManagers($userId) {
+    public static function GetManagers($userId,$instance = null) {
         /* Variables    */
         $myManagers = null;
         $competence = null;
 
         try {
             /* First it gets the competence connected with the user */
-            $competence = self::GetCompetence_User($userId);
+            $competence = self::GetCompetence_User($userId,$instance);
 
             /* Get Managers */
             $myManagers = self::GetInfoManagers_NotificationApproved($competence);//self::GetManager_User($competence);
@@ -80,6 +80,82 @@ Class Approval {
             throw $ex;
         }//try_Catch
     }//GetManagers
+
+    /**
+     * @param           $userId
+     * @param           $three
+     *
+     * @return          array
+     * @throws          Exception
+     *
+     * @creationDate    12/09/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Get all managers connected with a specific user and company
+     */
+    public static function ManagersConnected($userId,$three) {
+        /* Variables */
+        global $DB;
+        $sql            = null;
+        $rdo            = null;
+        $params         = null;
+        $myManagers     = array();
+        $infoManager    = null;
+
+        try {
+            /* Search Criteria  */
+            $params = array();
+            $params['user']     = $userId;
+            $params['company']  = $three;
+
+            /* SQL Instruction  */
+            $sql = " SELECT	  rm.managerid,
+                              CONCAT(co_two.name,'/',co.name) as 'company'
+                     FROM		{user_info_competence_data} 	uicd
+                        JOIN	{report_gen_companydata}		co 		ON 	co.id = uicd.companyid
+                        -- LEVEL TWO
+                        JOIN	{report_gen_company_relation}  	cr_two	ON 	cr_two.companyid 		= co.id
+                        JOIN	{report_gen_companydata}		co_two	ON 	co_two.id 				= cr_two.parentid
+                                                                        AND co_two.hierarchylevel 	= 2
+                        -- CHECK MANAGER LEVEL TWO/ LEVEL THREE
+                        JOIN	{report_gen_company_manager}  	rm		ON 	(
+                                                                             (rm.levelthree = uicd.companyid
+                                                                              AND 
+                                                                              rm.leveltwo = co_two.id)
+                                                                             OR 
+                                                                             (rm.leveltwo = co_two.id
+                                                                              AND
+                                                                              rm.levelthree IS NULL)
+                                                                             )
+                     WHERE		uicd.userid 	= :user
+                        AND		uicd.companyid  = :company ";
+
+            /* Execute */
+            $rdo = $DB->get_records_sql($sql,$params);
+            if ($rdo) {
+                foreach ($rdo as $instance) {
+                    if (array_key_exists($instance->managerid,$myManagers)) {
+                        $infoManager = $myManagers[$instance->managerid];
+                    }else {
+                        $infoManager = new stdClass();
+                        $infoManager->id        = $instance->managerid;
+                        $infoManager->companies = array();
+                    }//if_manager_exists
+
+                    /* Add Company  */
+                    $infoManager->companies[] = $instance->company;
+
+                    /* Add Manager */
+                    $myManagers[$instance->managerid] = $infoManager;
+                }//of_rdo
+            }//if_rdo
+
+            return $myManagers;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//ManagersConnected
 
     /**
      * @param           $userId
@@ -137,6 +213,12 @@ Class Approval {
      *
      * Description
      * Create an entry for approval method
+     * 
+     * @updateDate      13/09/2016
+     * @auhtor          eFaktor     (fbv)
+     * 
+     * Description
+     * Add company
      */
     public static function Add_ApprovalEntry($data,$userId,$courseId,$method,$seats,$waitingId=0) {
         /* Variables */
@@ -158,6 +240,7 @@ Class Approval {
             /* Approval Entry */
             $infoApproval = new stdClass();
             $infoApproval->userid           = $userId;
+            $infoApproval->companyid        = $data->level_3;
             $infoApproval->courseid         = $courseId;
             $infoApproval->methodtype       = $method;
             $infoApproval->unenrol          = 0;
@@ -397,6 +480,12 @@ Class Approval {
      *
      * Description
      * Get request connected with the notification
+     * 
+     * @updateDate      13/09/2016
+     * @author          eFaktor     (fbv)
+     * 
+     * Description
+     * Add company
      */
     public static function Get_NotificationRequest($args) {
         /* Variables */
@@ -417,6 +506,7 @@ Class Approval {
             /* SQL Instruction  */
             $sql = " SELECT 	ea.id,
                                 ea.userid,
+                                ea.companyid,
                                 ea.courseid,
                                 ea.userenrolid,
                                 ea.waitinglistid,
@@ -640,16 +730,11 @@ Class Approval {
         $competenceUser     = null;
 
         try {
-            /* Competence User */
-            $competenceUser = self::GetCompetence_User($userId);
-
             /* Info Notification    */
-            $infoNotification = new stdClass();
-            $infoNotification->site     = $SITE->shortname;
+            $infoNotification       = new stdClass();
+            $infoNotification->site = $SITE->shortname;
             /* Add Info Course      */
             self::GetInfoCourse_Notification($courseId,$infoNotification);
-            /* Add Info Managers    */
-            $infoNotification->managers = self::GetInfoManagers_NotificationApproved($competenceUser);
 
             /* Add Info User        */
             self::GetInfoUser_NotificationApproved($userId,$infoNotification);
@@ -713,7 +798,7 @@ Class Approval {
                         LEFT JOIN	{user}						u  	ON 	u.id 		= ci.value
                         -- Location
                         LEFT JOIN	{course_format_options}		cl 	ON 	cl.courseid = c.id
-                                                                    AND	cl.name like '%location%'
+                                                                    AND	cl.name like 'course_location'
                         LEFT JOIN   {course_locations}			lo	ON	lo.id = cl.value
                         -- HOME PAGE
                         LEFT JOIN	{course_format_options}		hp	ON  hp.courseid = c.id
@@ -783,42 +868,42 @@ Class Approval {
             $strSubject = get_string('mng_approved_subject','enrol_waitinglist',$infoNotification);
 
             /* Send eMail to managers   */
-            foreach ($managers as $manager) {
-                $companies = '';
+            if ($managers) {
+                foreach ($managers as $manager) {
+                    $companies = '';
 
-                /* Get Info Body eMail  */
-                /* Info User Courses    */
-                $strBody = get_string('mng_approved_body_two','enrol_waitinglist',$infoNotification);
+                    /* Get Info Body eMail  */
+                    /* Info User Courses    */
+                    $strBody = get_string('mng_approved_body_two','enrol_waitinglist',$infoNotification);
 
-                /* Info Manager */
-                $companies .= '<ul>';
-                foreach ($manager->companies as $info) {
-                    $companies .= '<li>' . $info . '</li>';
-                }
-                $companies .= '</ul>';
-                $strBody .= get_string('mng_approved_body_one','enrol_waitinglist') . $companies . "</br>";
+                    /* Info Manager */
+                    $companies .= '<ul>';
+                    foreach ($manager->companies as $info) {
+                        $companies .= '<li>' . $info . '</li>';
+                    }
+                    $companies .= '</ul>';
+                    $strBody .= get_string('mng_approved_body_one','enrol_waitinglist') . $companies . "</br>";
 
-                $strBody .= "</br>" . "</br>" . get_string('mng_approved_body_end','enrol_waitinglist',$infoNotification);
+                    $strBody .= "</br>" . "</br>" . get_string('mng_approved_body_end','enrol_waitinglist',$infoNotification);
 
-                /* Content Mail */
-                $bodyText = null;
-                $bodyHtml = null;
-                if (strpos($strBody, '<') === false) {
-                    // Plain text only.
-                    $bodyText = $strBody;
-                    $bodyHtml = text_to_html($bodyText, null, false, true);
-                } else {
-                    // This is most probably the tag/newline soup known as FORMAT_MOODLE.
-                    $bodyHtml = format_text($strBody, FORMAT_MOODLE);
-                    $bodyText = html_to_text($bodyHtml);
-                }
+                    /* Content Mail */
+                    $bodyText = null;
+                    $bodyHtml = null;
+                    if (strpos($strBody, '<') === false) {
+                        // Plain text only.
+                        $bodyText = $strBody;
+                        $bodyHtml = text_to_html($bodyText, null, false, true);
+                    } else {
+                        // This is most probably the tag/newline soup known as FORMAT_MOODLE.
+                        $bodyHtml = format_text($strBody, FORMAT_MOODLE);
+                        $bodyText = html_to_text($bodyHtml);
+                    }
 
-                /* Send eMail   */
-                $user = get_complete_user_data('id',$manager->id);
-                email_to_user($user, $SITE->shortname, $strSubject, $bodyText,$bodyHtml);
-            }//for_managers
-
-            /* Body */
+                    /* Send eMail   */
+                    $user = get_complete_user_data('id',$manager->id);
+                    email_to_user($user, $SITE->shortname, $strSubject, $bodyText,$bodyHtml);
+                }//for_managers
+            }//if_managers
         }catch (Exception $ex) {
             throw $ex;
         }//try_Catch
@@ -840,7 +925,7 @@ Class Approval {
      * Description
      * Get the competence connected with the user
      */
-    private static function GetCompetence_User($userId) {
+    private static function GetCompetence_User($userId,$instance = null) {
         /* Variables    */
         global $DB;
         $competence = null;
@@ -854,24 +939,57 @@ Class Approval {
             $params['user'] = $userId;
 
             /* SQL Instruction */
-            $sql = " SELECT	GROUP_CONCAT(DISTINCT uicd.companyid  	ORDER BY uicd.companyid SEPARATOR ',')		as 'levelthree',
-                            GROUP_CONCAT(DISTINCT cr_two.parentid  	ORDER BY cr_two.parentid SEPARATOR ',') 	as 'leveltwo',
-                            GROUP_CONCAT(DISTINCT cr_one.parentid  	ORDER BY cr_one.parentid SEPARATOR ',') 	as 'levelone',
-                            GROUP_CONCAT(DISTINCT cr_zero.parentid  ORDER BY cr_zero.parentid SEPARATOR ',') 	as 'levelzero'
-                     FROM		{user_info_competence_data} 	uicd
-                        -- LEVEL TWO
-                        JOIN	{report_gen_company_relation}   	cr_two	ON 	cr_two.companyid 		= uicd.companyid
-                        JOIN	{report_gen_companydata}			co_two	ON 	co_two.id 				= cr_two.parentid
-                                                                            AND co_two.hierarchylevel 	= 2
-                        -- LEVEL ONE
-                        JOIN	{report_gen_company_relation}   	cr_one	ON 	cr_one.companyid 		= cr_two.parentid
-                        JOIN	{report_gen_companydata}			co_one	ON 	co_one.id 				= cr_one.parentid
-                                                                            AND co_one.hierarchylevel 	= 1
-                        -- LEVEL ZERO
-                        JOIN	{report_gen_company_relation}		cr_zero	ON 	cr_zero.companyid 		= cr_one.parentid
-                        JOIN	{report_gen_companydata}	  		co_zero	ON 	co_zero.id 				= cr_zero.parentid
-                                                                            AND co_zero.hierarchylevel 	= 0
-                     WHERE		uicd.userid = :user ";
+            if ($instance) {
+                /* Search criteria */
+                $params['waiting']  = $instance->id;
+                $params['course']   = $instance->courseid;
+
+                /**
+                 * Manager only connected with company from enrolment method
+                 */
+                $sql = " SELECT	uicd.companyid 		as 'levelthree',
+                                cr_two.parentid		as 'leveltwo',
+                                cr_one.parentid 	as 'levelone',
+                                cr_zero.parentid	as 'levelzero'
+                         FROM		{user_info_competence_data} 		uicd
+                            JOIN	{enrol_waitinglist_queue}			ew		ON ew.userid 			= uicd.userid
+                                                                                AND ew.companyid 		= uicd.companyid
+                                                                                AND ew.waitinglistid 	= :waiting
+                                                                                AND ew.courseid			= :course
+                            -- LEVEL TWO
+                            JOIN	{report_gen_company_relation}  	    cr_two	ON 	cr_two.companyid 		= uicd.companyid
+                            JOIN	{report_gen_companydata}			co_two	ON 	co_two.id 				= cr_two.parentid
+                                                                                AND co_two.hierarchylevel 	= 2
+                            -- LEVEL ONE
+                            JOIN	{report_gen_company_relation}   	cr_one	ON 	cr_one.companyid 		= cr_two.parentid
+                            JOIN	{report_gen_companydata}			co_one	ON 	co_one.id 				= cr_one.parentid
+                                                                                AND co_one.hierarchylevel 	= 1
+                            -- LEVEL ZERO
+                            JOIN	{report_gen_company_relation}		cr_zero	ON 	cr_zero.companyid 		= cr_one.parentid
+                            JOIN	{report_gen_companydata}	  		co_zero	ON 	co_zero.id 				= cr_zero.parentid
+                                                                                AND co_zero.hierarchylevel 	= 0
+                         WHERE		uicd.userid 	= :user ";
+            }else {
+                $sql = " SELECT	GROUP_CONCAT(DISTINCT uicd.companyid  	ORDER BY uicd.companyid SEPARATOR ',')		as 'levelthree',
+                                GROUP_CONCAT(DISTINCT cr_two.parentid  	ORDER BY cr_two.parentid SEPARATOR ',') 	as 'leveltwo',
+                                GROUP_CONCAT(DISTINCT cr_one.parentid  	ORDER BY cr_one.parentid SEPARATOR ',') 	as 'levelone',
+                                GROUP_CONCAT(DISTINCT cr_zero.parentid  ORDER BY cr_zero.parentid SEPARATOR ',') 	as 'levelzero'
+                         FROM		{user_info_competence_data} 	uicd
+                            -- LEVEL TWO
+                            JOIN	{report_gen_company_relation}   	cr_two	ON 	cr_two.companyid 		= uicd.companyid
+                            JOIN	{report_gen_companydata}			co_two	ON 	co_two.id 				= cr_two.parentid
+                                                                                AND co_two.hierarchylevel 	= 2
+                            -- LEVEL ONE
+                            JOIN	{report_gen_company_relation}   	cr_one	ON 	cr_one.companyid 		= cr_two.parentid
+                            JOIN	{report_gen_companydata}			co_one	ON 	co_one.id 				= cr_one.parentid
+                                                                                AND co_one.hierarchylevel 	= 1
+                            -- LEVEL ZERO
+                            JOIN	{report_gen_company_relation}		cr_zero	ON 	cr_zero.companyid 		= cr_one.parentid
+                            JOIN	{report_gen_companydata}	  		co_zero	ON 	co_zero.id 				= cr_zero.parentid
+                                                                                AND co_zero.hierarchylevel 	= 0
+                         WHERE		uicd.userid = :user ";
+            }//if_else
+
 
             /* Execute  */
             $rdo = $DB->get_record_sql($sql,$params);
@@ -1457,6 +1575,12 @@ Class Approval {
      *
      * Description
      * Add the waiting list entry.
+     * 
+     * @updateDate      13/09/2016
+     * @author          eFaktor     (fbv)
+     * 
+     * Description
+     * Add company
      */
     private static function Add_EntryWaitingList($instanceWaiting,$infoRequest) {
         /* Variables */
@@ -1471,6 +1595,7 @@ Class Approval {
             $queueEntry->waitinglistid      = $infoRequest->waitinglistid;
             $queueEntry->courseid           = $infoRequest->courseid;
             $queueEntry->userid             = $infoRequest->userid;
+            $queueEntry->companyid          = $infoRequest->companyid;
             $queueEntry->methodtype         = $infoRequest->methodtype;
             $queueEntry->timecreated        = time();
             $queueEntry->queueno            = 0;

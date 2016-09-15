@@ -179,6 +179,7 @@ $string['approval_info']    = 'Please, you must fill in your reasons to apply fo
 $string['arguments']        = 'Arguments';
 
 $string['not_managers'] = 'Sorry, you cannot apply for the course because of there is no manager connected with you.';
+$string['not_managers_company'] = 'Sorry, you cannot apply for the course because of there is no manager connected with you for the company <strong>{$a}</strong>.';
 
 $string['mng_subject']  = '{$a->site}: Application for enrolment in course {$a->course}';
 $string['mng_body']     = '<p>We would like to inform you that you are manager for <b>{$a->user}</b>, and the <b>{$a->user}</b> has just applied for the course <b>{$a->course}</b>.</p><p>The arguments of the user are:</p><p>{$a->arguments}</p>
@@ -277,4 +278,8 @@ $string['price'] = 'Price';
 $string['in_price']     = 'Internal price';
 $string['ext_price']    = 'External price';
 $string['ical_path']    = 'iCal path';
+
+$string['company_sel']     = 'Company';
+$string['users_connected'] = 'Users connected';
+
 
