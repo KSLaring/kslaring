@@ -49,6 +49,7 @@ class enrolmethodself_enrolform extends \moodleform {
     }
 
     public function definition() {
+        global $USER;
         $mform = $this->_form;
         list( $waitinglist,$method,$listtotal,$confirmed,$remainder) = $this->_customdata;
         $this->method = $method;
@@ -86,6 +87,19 @@ class enrolmethodself_enrolform extends \moodleform {
                 } else {
                     $mform->addElement('static', 'nokey', '', get_string('nopassword', 'enrol_self'));
                 }
+
+                /**
+                 * @updateDate  13/09/2016
+                 * @author      eFaktor     (fbv)
+                 * 
+                 * Description
+                 * Add selector companies
+                 */
+                $mform->addElement('header', 'levels_connected', get_string('company_sel', 'enrol_waitinglist'));
+                /* Add Levels   */
+                for ($i = 0; $i <= 3; $i++) {
+                    $this->Add_CompanyLevel($i,$this->_form);
+                }//for_levels
 
                 /**
                  * @updateDate  28/10/2015
@@ -128,8 +142,6 @@ class enrolmethodself_enrolform extends \moodleform {
 
                 $this->add_action_buttons(true, get_string('continue'));
             }//if_vacancies
-
-
         }
 
         $mform->addElement('hidden', 'id');
@@ -144,6 +156,168 @@ class enrolmethodself_enrolform extends \moodleform {
         $mform->setType('waitinglist', PARAM_INT);
         $mform->setDefault('waitinglist', $waitinglist->id);
     }
+
+    /**
+     * @param       $level
+     * @param       $form
+     * 
+     * @throws      Exception
+     * @throws      coding_exception
+     *
+     * Description.
+     * For admin users all companies
+     * Normal users --> only companies connected with his/her profile
+     */
+    function Add_CompanyLevel($level,&$form) {
+        /* Variables    */
+        global $USER,$SESSION;
+        $options    = array();
+        $my         = null;
+        $parent     = null;
+        $inThree    = null;
+        $levelZero  = null;
+        $levelOne   = null;
+        $levelTwo   = null;
+        $myCompetence = null;
+        $manualClass = null;
+
+        $selfClass      = new enrolmethodself();
+        $myCompetence   = $selfClass->GetCompetenceData($USER->id);
+
+        /* Get Company List */
+        switch ($level) {
+            case 0:
+                /* Companies for Level Zero */
+                if ($myCompetence) {
+                    $options    = \CompetenceManager::GetCompanies_LevelList($level,0,$myCompetence->levelzero);
+                }else {
+                    $options    = \CompetenceManager::GetCompanies_LevelList($level);
+                }
+
+                break;
+            default:
+                /* Parent*/
+                $parent     = optional_param('level_' . ($level-1), 0, PARAM_INT);
+                if (!$parent) {
+                    if (isset($SESSION->onlyCompany)) {
+                        $parent = $SESSION->onlyCompany[$level-1];
+                    }
+                }
+
+                /* Companies for the current level */
+                if ($parent) {
+                    if ($myCompetence) {
+                        switch ($level) {
+                            case 1:
+                                $options    = \CompetenceManager::GetCompanies_LevelList($level,$parent,$myCompetence->levelone);
+
+                                break;
+                            case 2:
+                                $options    = \CompetenceManager::GetCompanies_LevelList($level,$parent,$myCompetence->leveltwo);
+
+                                break;
+                            case 3:
+                                $options    = \CompetenceManager::GetCompanies_LevelList($level,$parent,$myCompetence->levelthree);
+
+                                break;
+                        }
+                    }else {
+                        $options = \CompetenceManager::GetCompanies_LevelList($level,$parent);
+                    }
+                }else {
+                    $options[0] = get_string('select_level_list','report_manager');
+                }//if_parent
+
+                break;
+        }//level
+
+        /* Add Level/ Company List  */
+        $form->addElement('select','level_' . $level,get_string('select_company_structure_level','report_manager',$level), $options);
+
+        /* Check Only One Company */
+        $this->SetOnlyOneCompany($level,$options);
+
+        /* Set  Default Values     */
+        $this->setLevelDefault($form,$level);
+
+        if ($level == '3') {
+            $form->addRule('level_' . $level, get_string('required'), 'required', null, 'client');
+            $form->addRule('level_' . $level, get_string('required'), 'nonzero', null, 'client');
+        }
+    }//Add_CompanyLevel
+
+    /**
+     * @param           $level
+     * @param           $companiesLst
+     * 
+     * @throws          \Exception
+     * 
+     * @creationDate    15/09/2016
+     * @author          eFaktor     (fbv)
+     * 
+     * Description
+     * Check if there is only one company
+     */
+    function SetOnlyOneCompany($level,$companiesLst) {
+        /* Variables    */
+        global $SESSION;
+        $aux            = null;
+        $onlyCompany    = null;
+
+        try {
+            /* Check if there is only one company   */
+            $aux = $companiesLst;
+            unset($aux[0]);
+            if (count($aux) == 1) {
+                $onlyCompany = implode(',',array_keys($aux));
+            }
+
+            /* Save Company */
+            if ($onlyCompany) {
+                if (!isset($SESSION->onlyCompany)) {
+                    $SESSION->onlyCompany = array();
+                }
+
+                /* Set the company */
+                $SESSION->onlyCompany[$level] = $onlyCompany;
+            }else {
+                unset($SESSION->onlyCompany);
+            }//if_oneCompany
+        }catch (\Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//SetOnlyOneCompany
+
+    /**
+     * @param       $form
+     * @param       $level
+     * 
+     * @throws      \coding_exception
+     * 
+     * @creationDate    14/09/2016
+     * @author          eFaktor     (fbv)
+     * 
+     * Description
+     * Set default value
+     */
+    function setLevelDefault(&$form,$level) {
+        /* Variables    */
+        global $SESSION;
+        $default    = null;
+        $parent     = null;
+
+        /* Get Default Value    */
+        if (isset($SESSION->selection)) {
+            $default = $SESSION->selection['level_' . $level];
+        }else if (isset($SESSION->onlyCompany)) {
+            $default = $SESSION->onlyCompany[$level];
+        }else {
+            $default = optional_param('level_' . $level, 0, PARAM_INT);
+        }
+
+        /* Set Default  */
+        $form->setDefault('level_' . $level,$default);
+    }//setLevelDefault
 
     public function validation($data, $files) {
         global $DB, $CFG;

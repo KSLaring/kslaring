@@ -15,12 +15,15 @@ require('../../config.php');
 require_once('lib.php');
 require_once('classes/method/manual/managemanual_form.php');
 require_once('classes/method/manual/enrolmethodmanual.php');
+require_once($CFG->dirroot . '/report/manager/managerlib.php');
 
 /* PARAMS   */
 $instanceId     = optional_param('id',0,PARAM_INT);
 $courseId       = optional_param('co',0,PARAM_INT);
 $addSearch      = optional_param('addselect_searchtext', '', PARAM_RAW);
 $removeSearch   = optional_param('removeselect_searchtext', '', PARAM_RAW);
+$removeSelected = optional_param_array('removeselect',0,PARAM_INT);
+$addSelected    = optional_param_array('addselect',0,PARAM_INT);
 
 if ($instanceId) {
     $instance   = $DB->get_record('enrol', array('id' => $instanceId));
@@ -48,28 +51,28 @@ if (!enrol_is_enabled('waitinglist')) {
 }
 
 /* Show Form */
-$form       = new managemanual_form(null,array($instance,$course->id,$addSearch,$removeSearch));
+$form       = new managemanual_form(null,array($instance,$course->id,$addSearch,$removeSearch,$addSelected,$removeSelected));
 if ($form->is_cancelled()) {
     $_POST = array();
     redirect($return);
 }else if($data = $form->get_data()) {
     /* Enrol Users    */
     if (!empty($data->add_sel)) {
-        if (isset($data->addselect)) {
+        if ($addSelected) {
             $manualClass = new enrol_waitinglist\method\manual\enrolmethodmanual();
-            $manualClass->EnrolUsers($data->addselect,$instance);
+            $manualClass->EnrolUsers($addSelected,$instance,$data->level_3);
         }//if_addselect
     }//if_add
 
     /* Unenrol Users  */
     if (!empty($data->remove_sel)) {
-        if (isset($data->removeselect)) {
+        if ($removeSelected) {
             $manualClass = new enrol_waitinglist\method\manual\enrolmethodmanual();
-            $manualClass->UnenrolUsers($data->removeselect,$instance);
+            $manualClass->UnenrolUsers($removeSelected,$instance);
         }//if_removeselect
     }//if_remove
 
-    $form  = new managemanual_form(null,array($instance,$course->id,$addSearch,$removeSearch));
+    $_POST = array();
 }//if_else
 
 echo $OUTPUT->header();
@@ -79,6 +82,7 @@ $form->display();
 
 /* Initialise Selectors */
 enrol_waitinglist\method\manual\enrolmethodmanual::Init_ManualSelectors($instance->id,$course->id,$addSearch,$removeSearch);
+enrol_waitinglist\method\manual\enrolmethodmanual::Init_Organization_Structure(true);
 
 echo $OUTPUT->footer();
 

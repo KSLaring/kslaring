@@ -14,6 +14,55 @@
 class Invoices {
 
     /**
+     * @param           $levelTwo
+     * @param           $levelThree
+     *
+     * @return          mixed|null
+     * @throws          Exception
+     *
+     * @creationDate    14/09/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Get invoice data connected with the company
+     */
+    public static function GetInvoiceData($levelTwo,$levelThree) {
+        /* Variables */
+        global $DB;
+        $sql        = null;
+        $rdo        = null;
+        $invoice    = null;
+
+        try {
+            /* First Level Three    */
+            /* Search criteria */
+            $params = array();
+            $params['id']               = $levelThree;
+            $params['hierarchylevel']   = 3;
+
+            /* Execute */
+            $rdo = $DB->get_record('report_gen_companydata',$params,'id,tjeneste,ansvar');
+            if ($rdo) {
+                $invoice = $rdo;
+            }else {
+                /* Level Two */
+                $params['id']               = $levelTwo;
+                $params['hierarchylevel']   = 2;
+
+                /* Execute */
+                $rdo = $DB->get_record('report_gen_companydata',$params,'id,tjeneste,ansvar');
+                if ($rdo) {
+                    $invoice = $rdo;
+                }//if_two
+            }//if_three
+            
+            return $invoice;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//GetInvoiceData
+    
+    /**
      * @param           $form
      *
      * @throws          Exception
@@ -156,6 +205,12 @@ class Invoices {
      *
      * Description
      * Save information about the invoice
+     *
+     * @updateDate          14/09/2016
+     * @author              eFaktor     (fbv)
+     *
+     * Description
+     * Add company id
      */
     public static function Add_InvoiceInto($data,$user_id,$course_id,$waitingId=0) {
         /* Variables    */
@@ -165,6 +220,7 @@ class Invoices {
             /* Invoice Detail   */
             $invoice_info = new stdClass();
             $invoice_info->userid           = $user_id;
+            $invoice_info->companyid        = $data->level_3;
             $invoice_info->courseid         = $course_id;
             $invoice_info->type             = $data->invoice_type;
             $invoice_info->invoiced         = 0;

@@ -14,7 +14,7 @@ M.core_user = M.core_user || {};
 // Define a user selectors array for against the cure_user namespace
 M.core_user.manual_selectors = [];
 
-M.core_user.get_manual_selector = function (name) {
+M.core_user.get_manual_user_selector = function (name) {
     return this.manual_selectors[name] || null;
 };
 
@@ -38,6 +38,9 @@ M.core_user.init_manual_selector = function (Y, name, hash, course, instance, la
          *  handle_selection_change to track when this status changes. */
         selectionempty : true,
 
+        /* Level Three Selector */
+        levelThree : Y.one('#id_level_3'),
+
         /* Course */
         myCourse: course,
         
@@ -59,6 +62,8 @@ M.core_user.init_manual_selector = function (Y, name, hash, course, instance, la
 
             // Define our custom event.
             this.selectionempty = this.is_selection_empty();
+
+            this.send_query(true);
         },
 
         /**
@@ -107,10 +112,12 @@ M.core_user.init_manual_selector = function (Y, name, hash, course, instance, la
             Y.Object.each(this.iotransactions, function(trans) {
                 trans.abort();
             });
+            
+            var valueThree  = this.levelThree.get('value');
 
             var iotrans = Y.io(M.cfg.wwwroot + '/enrol/waitinglist/manualsearch.php', {
                 method: 'POST',
-                data: 'course=' + this.myCourse + '&instance=' + this.myInstance + '&search=' + value + '&selectorid=' + hash + '&sesskey=' +M.cfg.sesskey,
+                data: 'course=' + this.myCourse + '&instance=' + this.myInstance + '&search=' + value + '&levelThree=' + valueThree + '&selectorid=' + hash + '&sesskey=' +M.cfg.sesskey,
                 on: {
                     complete: this.handle_response
                 },
@@ -155,11 +162,11 @@ M.core_user.init_manual_selector = function (Y, name, hash, course, instance, la
          */
         output_options : function(data) {
             // Clear out the existing options, keeping any ones that are already selected.
-            var selected_manuals = {};
+            var selectedusers = {};
             this.listbox.all('optgroup').each(function(optgroup){
                 optgroup.all('option').each(function(option){
                     if (option.get('selected')) {
-                        selected_manuals[option.get('value')] = {
+                        selectedusers[option.get('value')] = {
                             id : option.get('value'),
                             name : option.get('innerText') || option.get('textContent'),
                             disabled: option.get('disabled')
@@ -175,18 +182,18 @@ M.core_user.init_manual_selector = function (Y, name, hash, course, instance, la
             for (var key in data.results) {
                 var groupdata = data.results[key];
 
-                this.output_group(groupdata.name, groupdata.users, selected_manuals, true);
+                this.output_group(groupdata.name, groupdata.users, selectedusers, true);
                 count ++;
             }
 
             if (!count) {
                 var searchstr = (this.lastsearch != '') ? this.insert_search_into_str(M.str.moodle.nomatchingusers, this.lastsearch) : M.str.moodle.none;
-                this.output_group(searchstr, {}, selected_manuals, true)
+                this.output_group(searchstr, {}, selectedusers, true)
             }
 
             // If there were previously selected users who do not match the search, show them too.
-            if (this.get_option('preserveselected') && selected_manuals) {
-                this.output_group(this.insert_search_into_str(M.str.moodle.previouslyselectedusers, this.lastsearch), selected_manuals, true, false);
+            if (this.get_option('preserveselected') && selectedusers) {
+                this.output_group(this.insert_search_into_str(M.str.moodle.previouslyselectedusers, this.lastsearch), selectedusers, true, false);
             }
 
             this.handle_selection_change();
@@ -230,6 +237,7 @@ M.core_user.init_manual_selector = function (Y, name, hash, course, instance, la
             }
             this.listbox.append(optgroup);
 
+            /* Mark selected    */
             /* Mark selected    */
             this.listbox.get("options").each( function() {
                 if (selected_manuals[this.get('value')]) {
@@ -291,6 +299,14 @@ M.core_user.init_manual_selector = function (Y, name, hash, course, instance, la
             } else {
                 return false;
             }
+        },
+        
+        reload_users : function() {
+            // Cancel any pending timeout.
+            clearTimeout(this.timeoutid);
+            this.timeoutid = null;
+
+            this.send_query(true);
         }
     };
 

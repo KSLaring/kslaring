@@ -461,12 +461,134 @@ class enrol_waitinglist_plugin extends enrol_plugin {
          */
         if ($instance->{ENROL_WAITINGLIST_FIELD_APPROVAL} == APPROVAL_MESSAGE) {
             require_once('approval/approvallib.php');
+            /* Get Managers */
+            $myManagers = \Approval::GetManagers($userid,$instance);
+            
             /* Send Notification Manager Approved   */
             $infoNotification = \Approval::Info_NotificationApproved($userid,$instance->courseid);
 
+            /* Add Info Managers    */
+            $infoNotification->managers = $myManagers;
+            
             \Approval::SendApprovedNotification_Managers($infoNotification);
         }
     }
+
+    /**
+     * @param           $reload
+     * @param           $invoice
+     * 
+     * @throws          Exception
+     * 
+     * @creationDate    13/09/2016
+     * @author          eFaktor     (fbv)
+     * 
+     * Description
+     * Initialize organization structure
+     */
+    public function Init_Organization_Structure($reload,$invoice = false) {
+        /* Variables    */
+        global $USER,$PAGE;
+        $options    = null;
+        $hash       = null;
+        $jsModule   = null;
+        $name       = null;
+        $path       = null;
+        $requires   = null;
+        $strings    = null;
+        $grpOne     = null;
+        $grpTwo     = null;
+        $grpThree   = null;
+
+        try {
+            /* Initialise variables */
+            $name       = 'organization';
+            $path       = '/enrol/waitinglist/yui/structure.js';
+            $requires   = array('node', 'event-custom', 'datasource', 'json', 'moodle-core-notification');
+            $grpOne     = array('previouslyselectedusers', 'moodle', '%%SEARCHTERM%%');
+            $grpTwo     = array('nomatchingusers', 'moodle', '%%SEARCHTERM%%');
+            $grpThree   = array('none', 'moodle');
+            $strings    = array($grpOne,$grpTwo,$grpThree);
+
+            /* Initialise js module */
+            $jsModule = array('name'        => $name,
+                              'fullpath'    => $path,
+                              'requires'    => $requires,
+                              'strings'     => $strings
+            );
+
+
+            $PAGE->requires->js_init_call('M.core_user.init_structure',
+                                          array('level_',$reload,$invoice),
+                                          false,
+                                          $jsModule
+            );
+        }catch (\Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//Init_Organization_Structure
+    
+    /**
+     * @param           $userId
+     * 
+     * @return          mixed|null
+     * @throws          Exception
+     * 
+     * @creationDate    12/09/2016
+     * @author          eFaktor     (fbv)
+     * 
+     * Description
+     * Get competence data connected with the user.
+     * 
+     */
+    public  function GetUserCompetenceData($userId) {
+        /* Variables */
+        global $DB;
+        $rdo            = null;
+        $sql            = null;
+        $params         = null;
+
+        try {
+            /* Search Criteria */
+            $params = array();
+            $params['user'] = $userId;
+
+            /* SQL Instruction */
+            $sql = " SELECT		GROUP_CONCAT(DISTINCT co_zero.id  		ORDER BY co_zero.id 		SEPARATOR ',') as 'levelzero',
+                                GROUP_CONCAT(DISTINCT co_one.id  		ORDER BY co_one.id  		SEPARATOR ',') as 'levelone',
+                                GROUP_CONCAT(DISTINCT co_two.id  		ORDER BY co_two.id  		SEPARATOR ',') as 'leveltwo',
+                                GROUP_CONCAT(DISTINCT uicd.companyid  	ORDER BY uicd.companyid  	SEPARATOR ',') as 'levelthree'
+                     FROM		{user_info_competence_data} 		uicd
+                        -- LEVEL TWO
+                        JOIN	{report_gen_company_relation}   	cr_two	ON 	cr_two.companyid 		= uicd.companyid
+                        JOIN	{report_gen_companydata}			co_two	ON 	co_two.id 				= cr_two.parentid
+                                                                            AND co_two.hierarchylevel 	= 2
+                        -- LEVEL ONE
+                        JOIN	{report_gen_company_relation}   	cr_one	ON 	cr_one.companyid 		= cr_two.parentid
+                        JOIN	{report_gen_companydata}			co_one	ON 	co_one.id 				= cr_one.parentid
+                                                                            AND co_one.hierarchylevel 	= 1
+                        -- LEVEL ZERO
+                        JOIN	{report_gen_company_relation}  	    cr_zero	ON 	cr_zero.companyid 		= cr_one.parentid
+                        JOIN	{report_gen_companydata}			co_zero	ON 	co_zero.id 				= cr_zero.parentid
+                                                                            AND co_zero.hierarchylevel 	= 0
+                     WHERE		uicd.userid     = :user
+                        AND     (uicd.rejected  = 0
+                                 OR
+                                 uicd.rejected IS NULL)
+                        AND     uicd.approved   = 1  ";
+
+            /* Execute */
+            $rdo = $DB->get_record_sql($sql,$params);
+            if ($rdo) {
+                return $rdo;
+            }else {
+                return null;
+            }//if_Rdo
+        }catch (\Exception $ex) {
+            throw $ex;
+        }
+    }//GetUserCompetenceData
+    
 	    /**
      * Checks if user can self enrol.
      *
@@ -1524,7 +1646,7 @@ class enrol_waitinglist_plugin extends enrol_plugin {
             throw $ex;
         }//try_catch
     }//GetLocation
-    
+
     /**
      * Restore role assignment. 
      *

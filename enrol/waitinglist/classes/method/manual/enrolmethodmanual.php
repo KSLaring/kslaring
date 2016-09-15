@@ -158,25 +158,31 @@ class enrolmethodmanual extends \enrol_waitinglist\method\enrolmethodbase{
     }
 
     /**
-     * Manual enrol user to course
+     * @param       \stdClass   $waitinglist    enrolment instance
+     * @param                   $userId         user id
+     * @param                   $company        company
      *
-     * @param stdClass $waitinglist enrolment instance
-     * @param stdClass $data data needed for enrolment.
-     * @return bool|array true if enroled else eddor code and messege
+     * @throws      \Exception
+     * @throws      \enrol_waitinglist\method\coding_exception
+     *
+     * Description
+     * Manual enrolment
      */
-    public function waitlistrequest_manual(\stdClass $waitinglist, $userId) {
+    public function waitlistrequest_manual(\stdClass $waitinglist, $userId,$company) {
         /* Variables    */
         $queue_entry    = null;
         $infoApproval   = null;
         $infoMail       = null;
+        $queueUpdate    = null;
 
         try {
             //prepare additional fields for our queue DB entry
             $queue_entry = new \stdClass;
-            $queue_entry->waitinglistid                 = $waitinglist->id;
-            $queue_entry->courseid                      = $waitinglist->courseid;
-            $queue_entry->userid                        = $userId;
-            $queue_entry->methodtype                    = static::METHODTYPE;
+            $queue_entry->waitinglistid     = $waitinglist->id;
+            $queue_entry->courseid          = $waitinglist->courseid;
+            $queue_entry->userid            = $userId;
+            $queue_entry->companyid         = $company;
+            $queue_entry->methodtype        = static::METHODTYPE;
             $queue_entry->timecreated       = time();
             $queue_entry->queueno           = 0;
             $queue_entry->seats             = 1;
@@ -274,9 +280,65 @@ class enrolmethodmanual extends \enrol_waitinglist\method\enrolmethodbase{
         }//try_catch
     }//Init_ManualSelectors
 
+
+    /**
+     * @param           $reload
+     * @throws          \Exception
+     * 
+     * @creationDate    11/09/2016
+     * @author          eFaktor     (fbv)
+     * 
+     * Description
+     * Initialize organization structure
+     */
+    public static function Init_Organization_Structure($reload) {
+        /* Variables */
+        $wl = null;
+        
+        try {
+            /* Get plugin */
+            $wl = enrol_get_plugin('waitinglist');
+            
+            /* Init Organization Structure */
+            $wl->Init_Organization_Structure($reload);
+        }catch (\Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//Init_Organization_Structure
+    
+    /**
+     * @param           $userId
+     *
+     * @return          null
+     * @throws          \Exception
+     *
+     * @creationDate    12/09/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Get compentece data
+     */
+    public function GetCompetenceData($userId) {
+        /* Variables */
+        $wl             = null;
+        $myCompetence   = null;
+        
+        try {
+            /* Get plugin */
+            $wl = enrol_get_plugin('waitinglist');
+
+            $myCompetence = $wl->GetUserCompetenceData($userId);
+            
+            return $myCompetence;
+        }catch (\Exception $ex) {
+            throw $ex;
+        }
+    }//GetCompetenceData
+
     /**
      * @param           $lstUsers
      * @param           $instance
+     * @param           $company
      *
      * @throws          \Exception
      *
@@ -286,12 +348,12 @@ class enrolmethodmanual extends \enrol_waitinglist\method\enrolmethodbase{
      * Description
      * Enrol users selected
      */
-    public function EnrolUsers($lstUsers,$instance) {
+    public function EnrolUsers($lstUsers,$instance,$company) {
         /* Variables */
 
         try {
             foreach ($lstUsers as $userId) {
-                $this->waitlistrequest_manual($instance,$userId);
+                $this->waitlistrequest_manual($instance,$userId,$company);
             }
         }catch (\Exception $ex) {
             throw $ex;
@@ -326,6 +388,7 @@ class enrolmethodmanual extends \enrol_waitinglist\method\enrolmethodbase{
     /**
      * @param           $instanceId
      * @param           $courseId
+     * @param           $levelThree
      * @param           $search
      *
      * @return          array
@@ -334,7 +397,7 @@ class enrolmethodmanual extends \enrol_waitinglist\method\enrolmethodbase{
      * @creationDate    18/08/2016
      * @author          eFaktor     (fbv)
      */
-    public static function FindEnrolledUsers($instanceId,$courseId,$search) {
+    public static function FindEnrolledUsers($instanceId,$courseId,$levelThree,$search) {
         /* Variables */
         global $DB;
         $rdo            = null;
@@ -352,17 +415,20 @@ class enrolmethodmanual extends \enrol_waitinglist\method\enrolmethodbase{
             $params = array();
             $params['course']   = $courseId;
             $params['instance'] = $instanceId;
+            $params['three']    = $levelThree;
             
             /* SQL Instruction  */
             $sql = " SELECT	u.id,
                             u.firstname,
                             u.lastname,
                             u.email
-                     FROM		{user}				u
-                        JOIN	{user_enrolments}	ue	ON 	ue.userid   = u.id
-                                                        AND ue.enrolid  = :instance
-                        JOIN	{enrol}				e	ON 	e.id        = ue.enrolid
-                                                        AND e.courseid  = :course
+                     FROM		{user}				          u
+                        JOIN	{user_info_competence_data}	  uid	ON 	uid.userid 		= u.id
+													                AND	uid.companyid	= :three
+                        JOIN	{user_enrolments}	          ue	ON 	ue.userid       = u.id
+                                                                    AND ue.enrolid      = :instance
+                        JOIN	{enrol}				          e	    ON 	e.id            = ue.enrolid
+                                                                    AND e.courseid      = :course
                                                         
                      WHERE	u.deleted 	= 0
                         AND	u.username != 'guest' ";
@@ -436,7 +502,7 @@ class enrolmethodmanual extends \enrol_waitinglist\method\enrolmethodbase{
      * Description
      * Find potential users to enrol in
      */
-    public static function FindCandidatesUsers($instanceId,$courseId,$search) {
+    public static function FindCandidatesUsers($instanceId,$courseId,$levelThree,$search) {
         /* Variables */
         global $DB;
         $rdo            = null;
@@ -453,13 +519,16 @@ class enrolmethodmanual extends \enrol_waitinglist\method\enrolmethodbase{
             /* Search Criteria  */
             $params = array();
             $params['course']   = $courseId;
+            $params['three']    = $levelThree;
 
             /* SQL Instruction  */
             $sql = " SELECT	u.id,
                             u.firstname,
                             u.lastname,
                             u.email
-                     FROM			{user}	  u
+                     FROM			{user}	                      u
+                     	JOIN	    {user_info_competence_data}	  uid	ON 	uid.userid 		= u.id
+													                    AND	uid.companyid	= :three
                         LEFT JOIN (
                                     SELECT	  ue.userid
                                     FROM	  {enrol}			e
@@ -493,7 +562,9 @@ class enrolmethodmanual extends \enrol_waitinglist\method\enrolmethodbase{
             $sql .= " ORDER BY u.firstname, u.lastname ";
 
             /* Execute  */
-            $rdo = $DB->get_records_sql($sql,$params);
+            if ($levelThree) {
+                $rdo = $DB->get_records_sql($sql,$params);
+            }
             if ($rdo) {
                 $total = count($rdo);
                 if ($total > self::MAX_USERS) {
@@ -530,6 +601,8 @@ class enrolmethodmanual extends \enrol_waitinglist\method\enrolmethodbase{
         }//try_catch
     }//FindCandidatesUsers
 
+    
+    
     /**
      * @param           $search
      * @param           $total
