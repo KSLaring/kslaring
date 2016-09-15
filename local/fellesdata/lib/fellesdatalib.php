@@ -700,7 +700,7 @@ class FSKS_COMPANY {
         try {
             /* Search Criteria  */
             $params = array();
-            $params['delete'] = DELETE;
+            $params['add'] = ADD;
 
             /* SQL Instruction */
             $sql = " SELECT	fs.id,
@@ -709,7 +709,7 @@ class FSKS_COMPANY {
                      WHERE	fs.imported = 0
                         AND fs.id NOT IN ($notIn)
                         AND fs.org_nivaa != 4
-                        AND fs.action != :delete
+                        AND fs.action = :add
                      ORDER BY fs.org_navn
                      LIMIT 0,5 ";
 
