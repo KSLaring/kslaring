@@ -1398,6 +1398,7 @@ class enrol_waitinglist_plugin extends enrol_plugin {
         $fileLocation   = null;
         $pluginInfo     = null;
         $uid            = null;
+        $location       = null;
 
         try {
             /* Plugin Info  */
@@ -1417,7 +1418,12 @@ class enrol_waitinglist_plugin extends enrol_plugin {
                 }
 
                 if ($created) {
+                    /* unique ID */
                     $uid = uniqid();
+
+                    /* Location     */
+                    $location = self::GetLocation($course->id);
+
                     /* Content File */
                     $iCal  = "BEGIN:VCALENDAR"  . "\n";
                     $iCal .= "METHOD:PUBLISH"   . "\n";
@@ -1429,7 +1435,11 @@ class enrol_waitinglist_plugin extends enrol_plugin {
                     $iCal .= "SUMMARY:"         . $course->fullname . "\n";
                     $iCal .= "UID:"             . $uid . "\n";
                     $iCal .= "DTSTART:"         . date('Ymd\THis', $course->startdate + 28800) . "\n";
-                    $iCal .= "LOCATION:"        . "KSLæring" . "\n";
+                    $iCal .= "LOCATION:"        . $location->name . '\n' . $location->address. "\n";
+                    $iCal .= "DESCRIPTION:"     . $location->detail . "\n";
+                    if ($location->map) {
+                        $iCal .= "URL;VALUE=URI:" . $location->map . "\n";
+                    }
                     $iCal .= "END:VEVENT"       . "\n";
                     $iCal .= "END:VCALENDAR"    . "\n";
 
@@ -1451,6 +1461,68 @@ class enrol_waitinglist_plugin extends enrol_plugin {
         }//try_catch
     }//iCalendar_StartDate
 
+    /**
+     * @param           $courseId
+     *
+     * @return          null|stdClass
+     * @throws          Exception
+     *
+     * @creationDate    15/09/2016
+     * @author          eFaktor     (fbv)
+     */
+    private function GetLocation($courseId) {
+        /* Variables */
+        global $DB;
+        $sql            = null;
+        $rdo            = null;
+        $params         = null;
+        $infoLocation   = null;
+
+        try {
+            /* Search Criteria  */
+            $params = array();
+            $params['course'] = $courseId;
+            $params['name']   = 'course_location';
+
+            /* SQL Instruction */
+            $sql = " SELECT	lo.name,
+                            lo.floor,
+                            lo.room,
+                            lo.street,
+                            lo.postcode,
+                            lo.city,
+                            trim(lo.urlmap) as 'urlmap'
+                     FROM		{course_format_options}	cf
+                        JOIN	{course_locations}		lo ON lo.id = cf.value
+                     WHERE	cf.courseid = :course
+                        AND	cf.name     = :name ";
+
+            /* Execute */
+            $rdo = $DB->get_record_sql($sql,$params);
+            if ($rdo) {
+                /* Info Location    */
+                $infoLocation = new stdClass();
+                $infoLocation->name        = $rdo->name;
+                /* Detail */
+                $infoLocation->detail      = get_string('location_floor','local_friadmin') . ': ' . $rdo->floor;
+                $infoLocation->detail     .= '\n';
+                $infoLocation->detail     .= get_string('location_room','local_friadmin')  . ': ' . $rdo->room;
+                $infoLocation->detail     .= '\n';
+                /* Address  */
+                $infoLocation->address     = $rdo->street;
+                $infoLocation->address    .= '\n';
+                $infoLocation->address    .= $rdo->postcode . ' ' . $rdo->city;
+                $infoLocation->address    .= '\n';
+                /* Url Map */
+                $infoLocation->map         = $rdo->urlmap;
+            }//if_Rdo
+
+            return $infoLocation;
+        }catch (\Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//GetLocation
+    
     /**
      * Restore role assignment. 
      *
