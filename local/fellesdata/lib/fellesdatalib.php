@@ -703,14 +703,18 @@ class FSKS_COMPANY {
             $params['add'] = ADD;
 
             /* SQL Instruction */
-            $sql = " SELECT	fs.id,
-                            fs.org_navn
-                     FROM	{fs_imp_company}	fs
-                     WHERE	fs.imported = 0
-                        AND fs.id NOT IN ($notIn)
-                        AND fs.org_nivaa != 4
-                        AND fs.action = :add
-                     ORDER BY fs.org_navn
+            $sql = " SELECT fs_imp.id,
+                            fs_imp.org_navn,
+                            fs.companyid,
+                            fs.synchronized
+                     FROM 		{fs_imp_company}	fs_imp
+                        JOIN	{fs_company}		fs		ON fs.companyid = fs_imp.ORG_ENHET_ID
+                     WHERE 	fs_imp.imported 	 = 0
+                        AND fs.synchronized		 = 0
+                        AND fs_imp.org_nivaa 	!= 4
+                        AND fs_imp.action        = :add
+                        AND fs_imp.id NOT IN ($notIn) 
+                     ORDER BY fs_imp.org_navn 
                      LIMIT 0,5 ";
 
             /* Execute  */
