@@ -224,6 +224,12 @@ class enrolmethodunnamedbulk extends \enrol_waitinglist\method\enrolmethodbase {
         global $USER;
         $rejected = null;
 
+        if (!$rdo = $DB->get_records('user_info_competence_data',array('level' => 3,'userid' =>$USER->id),'id')) {
+            $urlProfile = new \moodle_url('/user/profile/field/competence/competence.php',array('id' => $USER->id));
+            $lnkProfile = "<a href='". $urlProfile . "'>". get_string('profile') . "</a>";
+            return get_string('no_competence','enrol_waitinglist',$lnkProfile);
+        }
+        
         if ($waitinglist->{ENROL_WAITINGLIST_FIELD_APPROVAL} == APPROVAL_REQUIRED) {
             /* Check if it has been rejected    */
             $rejected = new \stdClass();

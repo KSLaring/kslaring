@@ -465,7 +465,7 @@ class enrol_waitinglist_plugin extends enrol_plugin {
             $myManagers = \Approval::GetManagers($userid,$instance);
             
             /* Send Notification Manager Approved   */
-            $infoNotification = \Approval::Info_NotificationApproved($userid,$instance->courseid);
+            $infoNotification = \Approval::Info_NotificationApproved($userid,$instance->courseid,$instance->id);
 
             /* Add Info Managers    */
             $infoNotification->managers = $myManagers;
@@ -867,6 +867,12 @@ class enrol_waitinglist_plugin extends enrol_plugin {
      *
      * Description
      * Check if there are users with approval to activate
+     * 
+     * @updateDate              16/09/2016
+     * @author                  eFaktor     (fbv)
+     * 
+     * Description
+     * Add company
      */
     public function check_approval(progress_trace $trace) {
         /* Variables    */
@@ -909,6 +915,7 @@ class enrol_waitinglist_plugin extends enrol_plugin {
                                           ea.waitinglistid,
                                           ea.methodtype,
                                           ea.userid,
+                                          ea.companyid,
                                           ea.courseid,
                                           c.fullname,
                                           e.customtext3 as 'price',
@@ -1557,13 +1564,11 @@ class enrol_waitinglist_plugin extends enrol_plugin {
                     $iCal .= "SUMMARY:"         . $course->fullname . "\n";
                     $iCal .= "UID:"             . $uid . "\n";
                     $iCal .= "DTSTART:"         . date('Ymd\THis', $course->startdate + 28800) . "\n";
-                    if ($location) {
-                        $iCal .= "LOCATION:"        . $location->name . '\n' . $location->address. "\n";
-                        if ($location->map) {
-                            $iCal .= "URL;VALUE=URI:" . $location->map . "\n";
-                        }
-                    }//if_location
+                    $iCal .= "LOCATION:"        . $location->name . '\n' . $location->address. "\n";
                     $iCal .= "DESCRIPTION:"     . $location->detail . "\n";
+                    if ($location->map) {
+                        $iCal .= "URL;VALUE=URI:" . $location->map . "\n";
+                    }
                     $iCal .= "END:VEVENT"       . "\n";
                     $iCal .= "END:VCALENDAR"    . "\n";
 
