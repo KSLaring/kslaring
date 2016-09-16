@@ -807,7 +807,7 @@ class Competence {
      * Description
      * Reject the competence
      */
-    public static function RejectCompetence(&$competenceRequest,$managerId) {
+    public static function RejectCompetence($competenceRequest,$managerId) {
         /* Variables    */
         global $DB;
         $time = null;
@@ -823,7 +823,7 @@ class Competence {
             $competenceRequest->timemodified   = $time;
 
             /* Execute  */
-            $DB->update_record('user_info_competence_data',$competenceRequest);
+            $DB->delete_records('user_info_competence_data',array("id" => $competenceRequest->id));
 
             /* Send Notification to the user    */
             self::SendNotificationUser($competenceRequest,REQUEST_REJECTED);
@@ -1537,7 +1537,7 @@ class Competence {
             $infoMail->site     = $SITE->shortname;
             /* Revert Link  */
             $lnkRevert  = $CFG->wwwroot . '/user/profile/field/competence/actions/approve.php/' . $competenceRequest->token . '/' . $managerId;
-            $infoMail->revert = '<a href="' . $lnkRevert . '">' . get_string('reject_lnk','profilefield_competence') . '</br>';
+            $infoMail->revert = '<a href="' . $lnkRevert . '">' . get_string('approve_lnk','profilefield_competence') . '</br>';
 
             /* Mail */
             $strSubject = get_string('msg_subject_rejected','profilefield_competence',$infoMail);

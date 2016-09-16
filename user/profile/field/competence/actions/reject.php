@@ -56,21 +56,23 @@ if (count($args) != 2) {
         $info->company  = $competenceRequest->company;
         $info->user     = fullname($user);
 
-        if ($competenceRequest->rejected) {
+        //if ($competenceRequest->rejected) {
+        //    echo html_writer::start_tag('div');
+        //        echo '<h4>' . get_string('request_just_rejected','profilefield_competence',$info)  . '</h4>';
+        //   echo html_writer::end_tag('div');
+        //}else {
+
+        //}//if_rejected
+
+        if (Competence::RejectCompetence($competenceRequest,$args[1])) {
             echo html_writer::start_tag('div');
-                echo '<h4>' . get_string('request_just_rejected','profilefield_competence',$info)  . '</h4>';
+            echo '<h4>' . get_string('request_rejected','profilefield_competence',$info)  . '</h4>';
             echo html_writer::end_tag('div');
         }else {
-            if (Competence::RejectCompetence($competenceRequest,$args[1])) {
-                echo html_writer::start_tag('div');
-                    echo '<h4>' . get_string('request_rejected','profilefield_competence',$info)  . '</h4>';
-                echo html_writer::end_tag('div');
-            }else {
-                echo html_writer::start_tag('div');
-                    echo '<h4>' . get_string('err_process','profilefield_competence')  . '</h4>';
-                echo html_writer::end_tag('div');
-            }
-        }//if_rejected
+            echo html_writer::start_tag('div');
+            echo '<h4>' . get_string('err_process','profilefield_competence')  . '</h4>';
+            echo html_writer::end_tag('div');
+        }
     }//if_competenceRequest
 }//if_arg
 
