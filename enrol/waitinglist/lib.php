@@ -470,7 +470,7 @@ class enrol_waitinglist_plugin extends enrol_plugin {
             $myManagers = \Approval::GetManagers($userid,$instance);
             
             /* Send Notification Manager Approved   */
-            $infoNotification = \Approval::Info_NotificationApproved($userid,$instance->courseid);
+            $infoNotification = \Approval::Info_NotificationApproved($userid,$instance->courseid,$instance->id);
 
             /* Add Info Managers    */
             $infoNotification->managers = $myManagers;
@@ -872,6 +872,12 @@ class enrol_waitinglist_plugin extends enrol_plugin {
      *
      * Description
      * Check if there are users with approval to activate
+     * 
+     * @updateDate              16/09/2016
+     * @author                  eFaktor     (fbv)
+     * 
+     * Description
+     * Add company
      */
     public function check_approval(progress_trace $trace) {
         /* Variables    */
@@ -914,6 +920,7 @@ class enrol_waitinglist_plugin extends enrol_plugin {
                                           ea.waitinglistid,
                                           ea.methodtype,
                                           ea.userid,
+                                          ea.companyid,
                                           ea.courseid,
                                           c.fullname,
                                           e.customtext3 as 'price',
