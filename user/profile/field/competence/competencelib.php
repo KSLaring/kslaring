@@ -807,7 +807,7 @@ class Competence {
      * Description
      * Reject the competence
      */
-    public static function RejectCompetence(&$competenceRequest,$managerId) {
+    public static function RejectCompetence($competenceRequest,$managerId) {
         /* Variables    */
         global $DB;
         $time = null;
@@ -823,7 +823,7 @@ class Competence {
             $competenceRequest->timemodified   = $time;
 
             /* Execute  */
-            $DB->update_record('user_info_competence_data',$competenceRequest);
+            $DB->delete_records('user_info_competence_data',array("id" => $competenceRequest->id));
 
             /* Send Notification to the user    */
             self::SendNotificationUser($competenceRequest,REQUEST_REJECTED);
