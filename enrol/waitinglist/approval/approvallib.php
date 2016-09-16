@@ -272,7 +272,7 @@ Class Approval {
             $DB->insert_record('enrol_approval_action',$infoRejectAct);
 
             /* Info To Send */
-            $infoMail = self::Info_NotificationApproved($userId,$courseId);
+            $infoMail = self::Info_NotificationApproved($userId,$courseId,$waitingId);
             $infoMail->arguments    = $infoApproval->arguments;
             $infoMail->approvalid   = $infoApproval->id;
             /* Approve Link */
@@ -550,6 +550,12 @@ Class Approval {
      *
      * Description
      * Get the request connected
+     * 
+     * @updateDate      16/09/2016
+     * @author          eFaktor     (fbv)
+     * 
+     * Description
+     * Add company id
      */
     public static function Get_Request($userId,$courseId,$waitingId) {
         /* Variables */
@@ -568,6 +574,7 @@ Class Approval {
             /* SQL Instruction */
             $sql = " SELECT ea.id,
                             ea.userid,
+                            ea.companyid,
                             ea.courseid,
                             ea.userenrolid,
                             ea.waitinglistid,
@@ -721,7 +728,7 @@ Class Approval {
      * Description
      * Get the information to send when a request has been approved
      */
-    public static function Info_NotificationApproved($userId,$courseId) {
+    public static function Info_NotificationApproved($userId,$courseId,$instanceId = 0) {
         /* Variables    */
         global $SITE;
         $infoNotification   = null;
@@ -737,7 +744,7 @@ Class Approval {
             self::GetInfoCourse_Notification($courseId,$infoNotification);
 
             /* Add Info User        */
-            self::GetInfoUser_NotificationApproved($userId,$infoNotification);
+            self::GetInfoUser_NotificationApproved($userId,$infoNotification,$instanceId);
 
             return $infoNotification;
         }catch (Exception $ex) {
@@ -1244,10 +1251,11 @@ Class Approval {
      * Description
      * Get user information to send
      */
-    private static function GetInfoUser_NotificationApproved($userId,&$infoNotification) {
+    private static function GetInfoUser_NotificationApproved($userId,&$infoNotification,$instanceId = 0) {
         /* Variables    */
         global $DB;
         $sql        = null;
+        $sqlWhere   = null;
         $params     = null;
         $rdo        = null;
         $companies  = null;
@@ -1264,11 +1272,19 @@ Class Approval {
                      FROM	{user} u
                         -- COMPETENCE
                         JOIN	{user_info_competence_data}	ucd		ON ucd.userid 	= u.id
-                        JOIN	{report_gen_companydata}	co 		ON co.id 		= ucd.companyid
-                     WHERE 	 u.id = :user
-                     GROUP BY u.id ";
+                        JOIN	{report_gen_companydata}	co 		ON co.id 		= ucd.companyid ";
 
+            $sqlWhere = " WHERE 	 u.id = :user
+                          GROUP BY u.id ";
+            if ($instanceId) {
+                $params['waiting'] = $instanceId;
+
+                $sql .= " JOIN	{enrol_waitinglist_queue}	wq	ON 	wq.userid		    = u.id
+                                                                AND wq.companyid 		= co.id
+                                                                AND wq.waitinglistid 	= :waiting ";
+            }
             /* Execute  */
+            $sql .= $sqlWhere;
             $rdo = $DB->get_record_sql($sql,$params);
             if ($rdo) {
                 /* Add Info User    */
