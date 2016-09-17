@@ -221,7 +221,7 @@ class enrolmethodunnamedbulk extends \enrol_waitinglist\method\enrolmethodbase {
      */
     public function can_enrol(\stdClass $waitinglist, $checkuserenrolment = true) {
         /* Variables */
-        global $USER;
+        global $USER,$DB;
         $rejected = null;
 
         if (!$rdo = $DB->get_records('user_info_competence_data',array('level' => 3,'userid' =>$USER->id),'id')) {
