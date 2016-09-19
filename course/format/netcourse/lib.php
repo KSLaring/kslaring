@@ -305,7 +305,7 @@ class format_netcourse extends format_base {
             //    }
             //}
 
-            if ($completionactivated && $cancomplete &&
+            if (!is_null($thismod) && $completionactivated && $cancomplete &&
                 $completioninfo->is_enabled($thismod) != COMPLETION_TRACKING_NONE) {
                 $completiondata = $completioninfo->get_data($thismod, true);
                 $completion = $completioninfo->is_enabled($thismod);
@@ -1033,7 +1033,7 @@ class format_netcourse extends format_base {
         $progressurl = false;
         if (!is_null($this->openlast->get_section0modids())) {
             foreach ($this->openlast->get_section0modids() as $cmid) {
-                if ($modinfo->cms[$cmid]->modname === 'completionreport') {
+                if ($modinfo->cms[$cmid]->modname === 'registerattendance') {
                     if ($modinfo->cms[$cmid]->uservisible) {
                         $progressurl = $modinfo->cms[$cmid]->url;
                     }
