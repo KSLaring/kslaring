@@ -806,6 +806,12 @@ class Competence {
      *
      * Description
      * Reject the competence
+     *
+     * @updateDate      19/09/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Remove send notification to revert situation
      */
     public static function RejectCompetence($competenceRequest,$managerId) {
         /* Variables    */
@@ -829,7 +835,7 @@ class Competence {
             self::SendNotificationUser($competenceRequest,REQUEST_REJECTED);
 
             /* Send Notification Manager to revert the situation    */
-            self::SendNotification_ToRevert($competenceRequest,$managerId);
+            //self::SendNotification_ToRevert($competenceRequest,$managerId);
 
             return true;
         }catch (Exception $ex) {
