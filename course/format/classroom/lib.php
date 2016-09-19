@@ -301,7 +301,7 @@ class format_classroom extends format_base {
                 }
             }*/
 
-            if ($completionactivated && $cancomplete &&
+            if (!is_null($thismod) && $completionactivated && $cancomplete &&
                 $completioninfo->is_enabled($thismod) != COMPLETION_TRACKING_NONE
             ) {
                 $completiondata = $completioninfo->get_data($thismod, true);
