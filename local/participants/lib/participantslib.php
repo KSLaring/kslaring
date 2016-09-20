@@ -101,26 +101,27 @@ class ParticipantsList {
             /* Sort Field */
             $field = 'u.' . $field;
 
-            /* SQL Instruction  */
+            /* SQL Instruction */
             $sql = " SELECT	DISTINCT 	u.id,
                                         u.firstname,
                                         u.lastname,
                                         u.email,
-                                        GROUP_CONCAT(DISTINCT CONCAT(se.name, '#SE#',co.name) ORDER BY se.name,co.name SEPARATOR '#CO#') as 'workpalces_sector'
-                    FROM			{user}						u
-                        JOIN		{user_enrolments}	  		ue  	ON 	ue.userid 			= u.id
-                        JOIN		{enrol}						e		ON 	e.id 				= ue.enrolid
-                                                                        AND	e.courseid 			= :course
-                                                                        AND e.status 			= 0
-                        -- WORKPLACE
-                        LEFT JOIN	{user_info_competence_data}	  uid	ON	uid.userid			= ue.userid
-                                                                        AND uid.level 			= 3
-                        LEFT JOIN	{report_gen_companydata}	  co	ON	co.id 				= uid.companyid
-                                                                        AND	co.hierarchylevel	= 3
+                                        se.name as 'sector',
+                                        co.name as 'workplace'
+                     FROM			{user}						    u
+                        JOIN		{user_enrolments}	  		    ue  	ON 	ue.userid 			= u.id
+                        JOIN		{enrol}						    e		ON 	e.id 				= ue.enrolid
+                                                                            AND	e.courseid 			= :course
+                                                                            AND e.status 			= 0
+                        LEFT JOIN	{enrol_waitinglist_queue}		ew		ON  ew.waitinglistid	= e.id
+                                                                            AND	ew.userid			= ue.userid
+                        -- WORKAPLCE
+                        LEFT JOIN	{report_gen_companydata}	  	co		ON	co.id 				= ew.companyid
+                                                                            AND	co.hierarchylevel	= 3
                         -- SECTOR
-                        LEFT JOIN	{report_gen_company_relation} co_r	ON	co_r.companyid		= co.id
-                        LEFT JOIN	{report_gen_companydata}	  se	ON	se.id				= co_r.parentid
-                                                                        AND	se.hierarchylevel	= 2
+                        LEFT JOIN	{report_gen_company_relation}   co_r	ON	co_r.companyid		= co.id
+                        LEFT JOIN	{report_gen_companydata}	  	se		ON	se.id				= co_r.parentid
+                                                                            AND	se.hierarchylevel	= 2
                      WHERE	u.deleted = 0
                         AND u.id NOT IN ($notIn)
                      GROUP BY u.id 
@@ -136,7 +137,8 @@ class ParticipantsList {
                     $infoParticipant->firstname = $instance->firstname;
                     $infoParticipant->lastname  = $instance->lastname;
                     $infoParticipant->email     = $instance->email;
-                    $infoParticipant->workspace = explode('#CO#',$instance->workpalces_sector);
+                    $infoParticipant->sector    = $instance->sector;
+                    $infoParticipant->workplace = $instance->workplace;
                     
                     /* Add Participant */
                     $participantsLst[$instance->id] = $infoParticipant;
@@ -201,6 +203,8 @@ class ParticipantsList {
     /**
      * @param           $participantList
      * @param           $course
+     * @param           $location
+     * @param           $instructors
      * @param           $sort
      * @param           $fieldSort
      * 
@@ -213,7 +217,7 @@ class ParticipantsList {
      * Description
      * Display participant list in the table
      */
-    public static function DisplayParticipantList($participantList,$course,$sort,$fieldSort) {
+    public static function DisplayParticipantList($participantList,$course,$location,$instructors,$sort,$fieldSort) {
         /* Variables */
         global $OUTPUT;
         $out    = '';
@@ -222,10 +226,10 @@ class ParticipantsList {
             /* Display Participant List */
             $out .= html_writer::start_div('block_participants');
                 /* Course Info  */
-                 $out .= self::AddInfoCourse($course);
+                 $out .= self::AddInfoCourse($course,$location,$instructors);
             
                 /* Participants List    */
-                $out .= self::AddParticipants($participantList,$course->id,$sort,$fieldSort);
+                $out .= self::AddParticipants($participantList,$sort,$fieldSort);
             $out .= html_writer::end_div();//block_participants
 
             return $out;
@@ -328,58 +332,54 @@ class ParticipantsList {
     }//TickParticipants
 
     /**
-     * @param           $participantsList
-     * @param           $course
+     * @param           $courseId
      *
+     * @return          mixed|null
      * @throws          Exception
      *
-     * @creationDate    11/07/2016
-     * @author          eFaktor
+     * @creationDate    20/09/2016
+     * @author          eFaktor     (fbv)
      *
      * Description
-     * Download participant list
+     * Get location
      */
-    public static function Download_ParticipantsList($participantsList,$course) {
+    public static function GetLocation($courseId) {
         /* Variables */
-        $row    = 0;
-        $col    = 0;
-        $time   = null;
-        $name   = null;
-        $export = null;
-        $my_xls = null;
+        global $DB;
+        $rdo            = null;
+        $params         = null;
+        $sql            = null;
 
         try {
-            $time = userdate(time(),'%d.%m.%Y', 99, false);
-            $name = clean_filename('Participants_List_' . $course->fullname . '_' . $time . ".xls");
-            // Creating a workbook
-            $export = new MoodleExcelWorkbook("-");
-            // Sending HTTP headers
-            $export->send($name);
+            /* Search Criteria  */
+            $params = array();
+            $params['name']     = 'course_location';
+            $params['course']   = $courseId;
 
-            $my_xls = $export->add_worksheet(get_string('pluginname','local_participants'));
+            /* SQL Instruction  */
+            $sql = " SELECT	lo.id,
+                            lo.name,
+                            lo.floor,
+                            lo.room,
+                            lo.street,
+                            lo.postcode,
+                            lo.city
+                     FROM			{course_format_options}	cf
+                        LEFT JOIN	{course_locations}		lo ON lo.id = cf.value
+                     WHERE	cf.courseid = :course
+                        AND	cf.name     = :name ";
 
-            /* Course Name          */
-            self::AddInfoCourse_Excel($course,$my_xls,$row);
-            $row ++;
-
-            /* Participants Table   */
-            /* Header   */
-            self::AddParticipants_HeaderExcel($my_xls,$row);
-            $row ++;
-            /* Content  */
-            self::AddParticipants_ContentExcel($participantsList,$my_xls,$row);
-
-            $export->close();
-            exit;
+            /* Execute */
+            $rdo = $DB->get_record_sql($sql,$params);
+            if ($rdo) {
+                return $rdo;
+            }else {
+                return null;
+            }
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//Download_ParticipantsList
-
-    
-    /***********/
-    /* PRIVATE */
-    /***********/
+    }//GetLocation
 
     /**
      * @param           $courseId
@@ -393,7 +393,7 @@ class ParticipantsList {
      * Description
      * Get instructors connected with the course
      */
-    private static function GetInstructors($courseId) {
+    public static function GetInstructors($courseId) {
         /* Variables */
         global $DB;
         $rdo            = null;
@@ -446,6 +446,62 @@ class ParticipantsList {
     }//GetInstructors
 
     /**
+     * @param           $participantsList
+     * @param           $course
+     * @param           $location
+     * @param           $instructors
+     *
+     * @throws          Exception
+     *
+     * @creationDate    11/07/2016
+     * @author          eFaktor
+     *
+     * Description
+     * Download participant list
+     */
+    public static function Download_ParticipantsList($participantsList,$course,$location,$instructors) {
+        /* Variables */
+        $row    = 0;
+        $col    = 0;
+        $time   = null;
+        $name   = null;
+        $export = null;
+        $my_xls = null;
+
+        try {
+            $time = userdate(time(),'%d.%m.%Y', 99, false);
+            $name = clean_filename('Participants_List_' . $course->fullname . '_' . $time . ".xls");
+            // Creating a workbook
+            $export = new MoodleExcelWorkbook("-");
+            // Sending HTTP headers
+            $export->send($name);
+
+            $my_xls = $export->add_worksheet(get_string('pluginname','local_participants'));
+
+            /* Course Name          */
+            self::AddInfoCourse_Excel($course,$location,$instructors,$my_xls,$row);
+            $row ++;
+
+            /* Participants Table   */
+            /* Header   */
+            self::AddParticipants_HeaderExcel($my_xls,$row);
+            $row ++;
+            /* Content  */
+            self::AddParticipants_ContentExcel($participantsList,$my_xls,$row);
+
+            $export->close();
+            exit;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//Download_ParticipantsList
+
+    
+    /***********/
+    /* PRIVATE */
+    /***********/
+
+    /**
      * @param           $courseId
      * @return          moodle_url|null
      *
@@ -493,6 +549,8 @@ class ParticipantsList {
 
     /**
      * @param           $course
+     * @param           $location
+     * @param           $instructors
      *
      * @return          string
      * @throws          Exception
@@ -503,12 +561,13 @@ class ParticipantsList {
      * Description
      * Add info of the course
      */
-    private static function AddInfoCourse($course) {
+    private static function AddInfoCourse($course,$location,$instructors) {
         /* Variables */
         $header         = '';
         $url            = null;
         $lnkCourse      = null;
-        $instructors    = null;
+        $urlLocation    = null;
+        $lnkLocation    = null;
         $strInstructors = null;
         $lnkUser        = null;
         $urlUser        = null;
@@ -526,8 +585,37 @@ class ParticipantsList {
                 $header .= '<p class="info_course_value">' . $lnkCourse . '</p>';
             $header .= html_writer::end_div();//course_info_two
 
+            /* Date */
+            $header .= html_writer::start_div('course_info_one');
+                $header .= html_writer::start_tag('label',array('class' => ' header_course'));
+                    $header .=  get_string('date');
+                $header .= html_writer::end_tag('label');
+            $header .= html_writer::end_div();//course_info_one
+            $header .= html_writer::start_div('course_info_two');
+                $header .= '<p class="info_course_value">' . userdate(time(),'%d.%m.%Y', 99, false) . '</p>';
+            $header .= html_writer::end_div();//course_info_two
+
+            /* Location */
+            $header .= html_writer::start_div('course_info_one');
+                $header .= html_writer::start_tag('label',array('class' => ' header_course'));
+                    $header .= get_string('header_lo','local_participants');
+                $header .= html_writer::end_tag('label');
+            $header .= html_writer::end_div();//course_info_one
+            /* Location Name    */
+            $header .= html_writer::start_div('course_info_two');
+                if ($location) {
+                    $urlLocation  = new moodle_url('/local/friadmin/course_locations/view.php',array('id' => $location->id));
+                    $lnkLocation  = '<a href="' . $urlLocation. '">' . $location->name . '</a>';
+
+                    $header .= '<p class="info_course_value">' . $lnkLocation . '</p>';
+                }else {
+                    $header .= ' ';
+                }
+            $header .= html_writer::end_div();//course_info_two
+
+            $header .= "</br>";
+
             /* Get Instructors */
-            $instructors = self::GetInstructors($course->id);
             if ($instructors) {
                 $urlUser = new moodle_url('/user/profile.php');
                 foreach ($instructors as $key => $info) {
@@ -551,26 +639,14 @@ class ParticipantsList {
                 $header .= '<p class="info_course_value">' . $strInstructors . '</p>';
             $header .= html_writer::end_div();//course_info_two
 
-            /* Date */
-            $header .= "</br>";
-            $header .= html_writer::start_div('course_info_one');
-                $header .= html_writer::start_tag('label',array('class' => ' header_course'));
-                    $header .=  get_string('date');
-                $header .= html_writer::end_tag('label');
-            $header .= html_writer::end_div();//course_info_one
-            $header .= html_writer::start_div('course_info_two');
-                    $header .= '<p class="info_course_value">' . userdate(time(),'%d.%m.%Y', 99, false) . '</p>';
-            $header .= html_writer::end_div();//course_info_two
-
             return $header;
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
     }//AddInfoCourse
-    
+
     /**
      * @param           $participantsList
-     * @param           $courseId
      * @param           $sort
      * @param           $fieldSort
      * 
@@ -583,9 +659,9 @@ class ParticipantsList {
      * Description
      * Add participant table
      */
-    private static function AddParticipants($participantsList,$courseId,$sort,$fieldSort) {
+    private static function AddParticipants($participantsList,$sort,$fieldSort) {
         /* Variables */
-        global $SESSION,$USER;
+        global $SESSION;
         $content = '';
         $csv_url = null;
 
@@ -664,7 +740,7 @@ class ParticipantsList {
             $strLastname    = get_string('lastname');
             $strMail        = get_string('email','local_participants');
             $strSector      = get_string('header_se','local_participants');
-            $strWorkspace   = get_string('header_wk','local_participants');
+            $strWorkplace   = get_string('header_wk','local_participants');
 
             $header .=  html_writer::start_tag('thead');
                 $header .=  html_writer::start_tag('tr',array('class' => 'header_participants'));
@@ -680,9 +756,13 @@ class ParticipantsList {
                     $header .= html_writer::start_tag('th',array('class' => 'info'));
                         $header .= $strMail;
                     $header .= html_writer::end_tag('th');
-                    /* Sector / Workplace */
-                    $header .= html_writer::start_tag('th',array('class' => 'sector','colspan' => 2));
-                        $header .= $strSector . ' / ' . $strWorkspace;
+                    /* Sector   */
+                    $header .= html_writer::start_tag('th',array('class' => 'sector'));
+                        $header .= $strSector;
+                    $header .= html_writer::end_tag('th');
+                    /* Workplace */
+                    $header .= html_writer::start_tag('th',array('class' => 'sector'));
+                        $header .= $strWorkplace;
                     $header .= html_writer::end_tag('th');
                 $header .= html_writer::end_tag('tr');
             $header .= html_writer::end_tag('thead');
@@ -730,16 +810,13 @@ class ParticipantsList {
                     $content .= html_writer::start_tag('td',array('class' => 'info'));
                         $content .= $participant->email;
                     $content .= html_writer::end_tag('td');
-                    /* Sector / Workplace */
-                    $content .= html_writer::start_tag('td',array('class' => 'sector', 'colspan' => 2));
-                        if (count($participant->workspace)) {
-                            $workplaces = implode('</br>',$participant->workspace);
-                            $workplaces = str_replace('#SE#','/',$workplaces);
-
-                            $content .= $workplaces;
-                        }else {
-                            $content .= ' ';
-                        }
+                    /* Sector */
+                    $content .= html_writer::start_tag('td',array('class' => 'sector'));
+                        $content .= $participant->sector;
+                    $content .= html_writer::end_tag('td');
+                    /* Workplace    */
+                    $content .= html_writer::start_tag('td',array('class' => 'sector'));
+                        $content .= $participant->workplace;
                     $content .= html_writer::end_tag('td');
                 $content .= html_writer::end_tag('tr');
             }//participant_list
@@ -753,6 +830,8 @@ class ParticipantsList {
 
     /**
      * @param           $course
+     * @param           $location
+     * @param           $instructors
      * @param           $my_xls
      * @param           $row
      *
@@ -764,15 +843,11 @@ class ParticipantsList {
      * Description
      * Add course info header to excel report
      */
-    private static function AddInfoCourse_Excel($course,&$my_xls,&$row) {
+    private static function AddInfoCourse_Excel($course,$location,$instructors,&$my_xls,&$row) {
         /* Variables */
         $col = 0;
-        $instructors = null;
 
         try {
-            /* Get Instructors */
-            $instructors = self::GetInstructors($course->id);
-
             /* Course Name  */
             $my_xls->write($row, $col, get_string('course'),array('size'=>12, 'name'=>'Arial','bold'=>'1','bg_color'=>'#efefef','text_wrap'=>true,'v_align'=>'left'));
             $my_xls->merge_cells($row,$col,$row,$col+5);
@@ -783,6 +858,43 @@ class ParticipantsList {
             $my_xls->merge_cells($row,$col,$row,$col+5);
             $my_xls->set_row($row,20);
             $row ++;
+
+            /* Date */
+            $my_xls->write($row, $col, get_string('date'),array('size'=>12, 'name'=>'Arial','bold'=>'1','bg_color'=>'#efefef','text_wrap'=>true,'v_align'=>'left'));
+            $my_xls->merge_cells($row,$col,$row,$col+5);
+            $my_xls->set_row($row,20);
+            $row++;
+            $col=0;
+            $my_xls->write($row, $col, userdate(time(),'%d.%m.%Y', 99, false),array('size'=>12, 'name'=>'Arial','bold'=>'1','text_wrap'=>true,'v_align'=>'left'));
+            $my_xls->merge_cells($row,$col,$row,$col+5);
+            $my_xls->set_row($row,20);
+            $col=0;
+            $row ++;
+
+            /* Location     */
+            $my_xls->write($row, $col, get_string('header_lo','local_participants'),array('size'=>12, 'name'=>'Arial','bold'=>'1','bg_color'=>'#efefef','text_wrap'=>true,'v_align'=>'left'));
+            $my_xls->merge_cells($row,$col,$row,$col+5);
+            $my_xls->set_row($row,20);
+            $row ++;
+            $col = 0;
+            if ($location) {
+                $address     = $location->street;
+                $address    .= "\n";
+                $address    .= $location->postcode . ' ' . $location->city;
+                $address    .= "\n";
+                $my_xls->write($row, $col, $address,array('size'=>12, 'name'=>'Arial','bold'=>'1','text_wrap'=>true,'v_align'=>'top'));
+                $my_xls->merge_cells($row,$col,$row,$col+5);
+                $my_xls->set_row($row,40);
+                $col=0;
+                $row ++;
+            }else {
+                $my_xls->write($row, $col, '-',array('size'=>12, 'name'=>'Arial','bold'=>'1','text_wrap'=>true,'v_align'=>'left'));
+                $my_xls->merge_cells($row,$col,$row,$col+5);
+                $my_xls->set_row($row,20);
+                $row ++;
+                $col = 0;
+                $row ++;
+            }
 
             /* Instructors  */
             $my_xls->write($row, $col, get_string('str_instructors','local_participants'),array('size'=>12, 'name'=>'Arial','bold'=>'1','bg_color'=>'#efefef','text_wrap'=>true,'v_align'=>'left'));
@@ -797,6 +909,7 @@ class ParticipantsList {
                     $my_xls->set_row($row,20);
                     $row++;
                     $col=0;
+                    $row ++;
                 }//instructor
             }else {
                 $my_xls->write($row, $col, '-',array('size'=>12, 'name'=>'Arial','bold'=>'1','text_wrap'=>true,'v_align'=>'left'));
@@ -804,18 +917,9 @@ class ParticipantsList {
                 $my_xls->set_row($row,20);
                 $row ++;
                 $col = 0;
+                $row ++;
             }//if_instructors
 
-            /* Date */
-            $my_xls->write($row, $col, get_string('date'),array('size'=>12, 'name'=>'Arial','bold'=>'1','bg_color'=>'#efefef','text_wrap'=>true,'v_align'=>'left'));
-            $my_xls->merge_cells($row,$col,$row,$col+5);
-            $my_xls->set_row($row,20);
-            $row++;
-            $col=0;
-            $my_xls->write($row, $col, userdate(time(),'%d.%m.%Y', 99, false),array('size'=>12, 'name'=>'Arial','bold'=>'1','text_wrap'=>true,'v_align'=>'left'));
-            $my_xls->merge_cells($row,$col,$row,$col+5);
-            $my_xls->set_row($row,20);
-            $col=0;
 
             $row ++;
             $my_xls->merge_cells($row,0,$row,19);
@@ -852,7 +956,8 @@ class ParticipantsList {
             $strLastname    = get_string('lastname');
             $strMail        = get_string('email','local_participants');
             $strAttend      = get_string('attendance','local_participants');
-            $strSeWK        = get_string('header_se','local_participants') . ' / ' . get_string('header_wk','local_participants');
+            $strSector      = get_string('header_se','local_participants');
+            $strWorkplace   = get_string('header_wk','local_participants');
 
             /* Firstname Header      */
             $my_xls->write($row, $col, $strFirstname,array('size'=>12, 'name'=>'Arial','bold'=>'1','bg_color'=>'#efefef','text_wrap'=>true,'v_align'=>'left'));
@@ -871,14 +976,20 @@ class ParticipantsList {
             $my_xls->merge_cells($row,$col,$row,$col+5);
             $my_xls->set_row($row,20);
 
-            /* Sector / Workplace   */
+            /* Sector   */
             $col += 6;
-            $my_xls->write($row, $col, $strMail,array('size'=>12, 'name'=>'Arial','bold'=>'1','bg_color'=>'#efefef','text_wrap'=>true,'v_align'=>'left'));
-            $my_xls->merge_cells($row,$col,$row,$col+10);
+            $my_xls->write($row, $col, $strSector,array('size'=>12, 'name'=>'Arial','bold'=>'1','bg_color'=>'#efefef','text_wrap'=>true,'v_align'=>'left'));
+            $my_xls->merge_cells($row,$col,$row,$col+6);
+            $my_xls->set_row($row,20);
+
+            /* Workplace    */
+            $col += 7;
+            $my_xls->write($row, $col, $strWorkplace,array('size'=>12, 'name'=>'Arial','bold'=>'1','bg_color'=>'#efefef','text_wrap'=>true,'v_align'=>'left'));
+            $my_xls->merge_cells($row,$col,$row,$col+6);
             $my_xls->set_row($row,20);
 
             /* Last Attended    */
-            $col += 11;
+            $col += 7;
             $my_xls->write($row, $col, $strAttend,array('size'=>12, 'name'=>'Arial','bold'=>'1','bg_color'=>'#efefef','text_wrap'=>true,'v_align'=>'left','align' => 'center'));
             $my_xls->merge_cells($row,$col,$row,$col+1);
             $my_xls->set_row($row,20);
@@ -910,14 +1021,14 @@ class ParticipantsList {
         try {
             if ($participantList) {
                 foreach ($participantList as $participant) {
-                    $setRow = 18 * count($participant->workspace);
+                    $setRow = 15 * count($participant->workplace);
 
-                    /* Firstname             */
+                    /* Firstname        */
                     $my_xls->write($row, $col, $participant->firstname,array('size'=>12, 'name'=>'Arial','bold'=>'1','text_wrap'=>true,'v_align'=>'top'));
                     $my_xls->merge_cells($row,$col,$row,$col+5);
                     $my_xls->set_row($row,$setRow);
 
-                    /* lastname             */
+                    /* lastname         */
                     $col += 6;
                     $my_xls->write($row, $col, $participant->lastname,array('size'=>12, 'name'=>'Arial','bold'=>'1','text_wrap'=>true,'v_align'=>'top'));
                     $my_xls->merge_cells($row,$col,$row,$col+5);
@@ -929,20 +1040,20 @@ class ParticipantsList {
                     $my_xls->merge_cells($row,$col,$row,$col+5);
                     $my_xls->set_row($row,$setRow);
 
-                    /* Sector / Workplace */
-                    if (count($participant->workspace)) {
-                        $workplaces = implode("\n",$participant->workspace);
-                        $workplaces = str_replace('#SE#','/',$workplaces);
-                    }else {
-                        $workplaces .= ' ';
-                    }
+                    /* Sector           */
                     $col += 6;
-                    $my_xls->write($row, $col, $workplaces,array('size'=>12, 'name'=>'Arial','bold'=>'1','text_wrap'=>true,'v_align'=>'top'));
-                    $my_xls->merge_cells($row,$col,$row,$col+10);
+                    $my_xls->write($row, $col, $participant->sector,array('size'=>12, 'name'=>'Arial','bold'=>'1','text_wrap'=>true,'v_align'=>'top'));
+                    $my_xls->merge_cells($row,$col,$row,$col+6);
                     $my_xls->set_row($row,$setRow);
 
-                    /* Attended */
-                    $col += 11;
+                    /* Workplace        */
+                    $col += 7;
+                    $my_xls->write($row, $col, $participant->workplace,array('size'=>12, 'name'=>'Arial','bold'=>'1','text_wrap'=>true,'v_align'=>'top'));
+                    $my_xls->merge_cells($row,$col,$row,$col+6);
+                    $my_xls->set_row($row,$setRow);
+
+                    /* Attended         */
+                    $col += 7;
                     $my_xls->write($row, $col, '',array('size'=>12, 'name'=>'Arial','bold'=>'1','text_wrap'=>true,'v_align'=>'top'));
                     $my_xls->merge_cells($row,$col,$row,$col+1);
                     $my_xls->set_row($row,$setRow);
