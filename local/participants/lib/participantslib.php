@@ -961,17 +961,17 @@ class ParticipantsList {
 
             /* Firstname Header      */
             $my_xls->write($row, $col, $strFirstname,array('size'=>12, 'name'=>'Arial','bold'=>'1','bg_color'=>'#efefef','text_wrap'=>true,'v_align'=>'left'));
-            $my_xls->merge_cells($row,$col,$row,$col+5);
+            $my_xls->merge_cells($row,$col,$row,$col+3);
             $my_xls->set_row($row,20);
 
             /* Lastname Header      */
-            $col += 6;
+            $col += 4;
             $my_xls->write($row, $col, $strLastname,array('size'=>12, 'name'=>'Arial','bold'=>'1','bg_color'=>'#efefef','text_wrap'=>true,'v_align'=>'left'));
-            $my_xls->merge_cells($row,$col,$row,$col+5);
+            $my_xls->merge_cells($row,$col,$row,$col+3);
             $my_xls->set_row($row,20);
 
             /* Mail Header      */
-            $col += 6;
+            $col += 4;
             $my_xls->write($row, $col, $strMail,array('size'=>12, 'name'=>'Arial','bold'=>'1','bg_color'=>'#efefef','text_wrap'=>true,'v_align'=>'left'));
             $my_xls->merge_cells($row,$col,$row,$col+5);
             $my_xls->set_row($row,20);
@@ -989,10 +989,10 @@ class ParticipantsList {
             $my_xls->set_row($row,20);
 
             /* Last Attended    */
-            $col += 7;
-            $my_xls->write($row, $col, $strAttend,array('size'=>12, 'name'=>'Arial','bold'=>'1','bg_color'=>'#efefef','text_wrap'=>true,'v_align'=>'left','align' => 'center'));
-            $my_xls->merge_cells($row,$col,$row,$col+1);
-            $my_xls->set_row($row,20);
+            //$col += 7;
+            //$my_xls->write($row, $col, $strAttend,array('size'=>12, 'name'=>'Arial','bold'=>'1','bg_color'=>'#efefef','text_wrap'=>true,'v_align'=>'left','align' => 'center'));
+            //$my_xls->merge_cells($row,$col,$row,$col+1);
+            //$my_xls->set_row($row,20);
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
@@ -1017,6 +1017,7 @@ class ParticipantsList {
         $last           = null;
         $workplaces     = null;
         $setRow         = null;
+        $strUser        = null;
 
         try {
             if ($participantList) {
@@ -1025,17 +1026,17 @@ class ParticipantsList {
 
                     /* Firstname        */
                     $my_xls->write($row, $col, $participant->firstname,array('size'=>12, 'name'=>'Arial','bold'=>'1','text_wrap'=>true,'v_align'=>'top'));
-                    $my_xls->merge_cells($row,$col,$row,$col+5);
+                    $my_xls->merge_cells($row,$col,$row,$col+3);
                     $my_xls->set_row($row,$setRow);
 
                     /* lastname         */
-                    $col += 6;
+                    $col += 4;
                     $my_xls->write($row, $col, $participant->lastname,array('size'=>12, 'name'=>'Arial','bold'=>'1','text_wrap'=>true,'v_align'=>'top'));
-                    $my_xls->merge_cells($row,$col,$row,$col+5);
+                    $my_xls->merge_cells($row,$col,$row,$col+3);
                     $my_xls->set_row($row,$setRow);
 
                     /* eMail            */
-                    $col += 6;
+                    $col += 4;
                     $my_xls->write($row, $col, $participant->email,array('size'=>12, 'name'=>'Arial','bold'=>'1','text_wrap'=>true,'v_align'=>'top'));
                     $my_xls->merge_cells($row,$col,$row,$col+5);
                     $my_xls->set_row($row,$setRow);
@@ -1053,10 +1054,10 @@ class ParticipantsList {
                     $my_xls->set_row($row,$setRow);
 
                     /* Attended         */
-                    $col += 7;
-                    $my_xls->write($row, $col, '',array('size'=>12, 'name'=>'Arial','bold'=>'1','text_wrap'=>true,'v_align'=>'top'));
-                    $my_xls->merge_cells($row,$col,$row,$col+1);
-                    $my_xls->set_row($row,$setRow);
+                    //$col += 7;
+                    //$my_xls->write($row, $col, '',array('size'=>12, 'name'=>'Arial','bold'=>'1','text_wrap'=>true,'v_align'=>'top'));
+                    //$my_xls->merge_cells($row,$col,$row,$col+1);
+                    //$my_xls->set_row($row,$setRow);
 
                     $row ++;
                     $col = 0;
