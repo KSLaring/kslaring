@@ -1495,15 +1495,25 @@ class enrol_waitinglist_plugin extends enrol_plugin {
          *
          * Description
          * Add iCal file
+         *
+         * @updateDate  20/09/2016
+         * @author      eFaktor     (fbv)
+         *
+         * Description
+         * Only for classroom formats
          */
-        $fileCal = $this->iCalendar_StartDate($course);
-        if ($fileCal) {
-            $messagehtml .= "</br></br>" . get_string('welcome_ical_attach','enrol_waitinglist') . "</br></br>";
-            $messagetext .= "</br></br>" . get_string('welcome_ical_attach','enrol_waitinglist') . "</br></br>";
-            email_to_user($user, $contact, $subject, $messagetext, $messagehtml,'iCal/'.$fileCal ,$fileCal);
+        if (($course->format == 'classroom') || ($course->format == 'classroom_frikomport')) {
+            $fileCal = $this->iCalendar_StartDate($course);
+            if ($fileCal) {
+                $messagehtml .= "</br></br>" . get_string('welcome_ical_attach','enrol_waitinglist') . "</br></br>";
+                $messagetext .= "</br></br>" . get_string('welcome_ical_attach','enrol_waitinglist') . "</br></br>";
+                email_to_user($user, $contact, $subject, $messagetext, $messagehtml,'iCal/'.$fileCal ,$fileCal);
+            }else {
+                email_to_user($user, $contact, $subject, $messagetext, $messagehtml);
+            }//if_file_cal
         }else {
             email_to_user($user, $contact, $subject, $messagetext, $messagehtml);
-        }//if_file_cal
+        }//classroom_format
     }
 
     /**
