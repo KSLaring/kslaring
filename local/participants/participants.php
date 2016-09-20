@@ -32,7 +32,8 @@ $totalParticipants  = 0;
 $notIn              = null;
 $filtered           = false;
 $filter             = null;
-
+$location           = null;
+$instructors        = null;
 
 
 /* Check permissions */
@@ -64,6 +65,11 @@ $PAGE->set_context($context);
 $PAGE->set_pagelayout('admin');
 $PAGE->requires->js('/local/participants/js/sort.js');
 
+/* Location     */
+$location    = ParticipantsList::GetLocation($courseId);
+/* Instructors  */
+$instructors = ParticipantsList::GetInstructors($courseId);
+
 /* First get members that don't have to appear in participant list */
 $notIn = ParticipantsList::GetNotMembersParticipantList($context->id);
 if ($notIn) {
@@ -77,14 +83,14 @@ $totalParticipants  = ParticipantsList::GetTotalParticipants($courseId,$notIn);
 
 if ($format) {
     $participantList    = ParticipantsList::GetParticipantList($courseId,$notIn,$sort,$fieldSort);
-    ParticipantsList::Download_ParticipantsList($participantList,$course);
+    ParticipantsList::Download_ParticipantsList($participantList,$course,$location,$instructors);
 }
 /* Header   */
 echo $OUTPUT->header();
 
 /* Display Participants     */
 echo $OUTPUT->heading(get_string('pluginname','local_participants'));
-$out = ParticipantsList::DisplayParticipantList($participantList,$course,$sort,$fieldSort);
+$out = ParticipantsList::DisplayParticipantList($participantList,$course,$location,$instructors,$sort,$fieldSort);
 echo $out;
 
 echo "</br>";

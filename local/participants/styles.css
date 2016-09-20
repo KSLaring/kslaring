@@ -78,7 +78,7 @@
 
 .block_participants .lst_participants  td.user,
 .block_participants .lst_participants  th.user {
-    width: 30%;
+    width: 17%;
     text-align: left;
     text-justify:inter-word;
     padding: 0px 10px 0px 0px;
@@ -98,7 +98,7 @@
 
 .block_participants .lst_participants  th.info,
 .block_participants .lst_participants  td.info {
-    width: 25%;
+    width: 17%;
     text-align: left;
     text-justify:inter-word;
     padding: 0px 10px 0px 0px;
@@ -106,7 +106,7 @@
 
 .block_participants .lst_participants  th.sector,
 .block_participants .lst_participants  td.sector {
-    width: 35%;
+    width: 32%;
     text-align: left;
     text-justify:inter-word;
     padding: 0px 10px 0px 0px;
@@ -115,7 +115,7 @@
 
 .block_participants .lst_participants  th.attend,
 .block_participants .lst_participants  td.attend {
-    width: 15%;
+    width: 10%;
     text-align: center;
     text-justify:inter-word;
     padding: 0px 10px 0px 0px;
@@ -142,6 +142,11 @@
     float: left;
     /* Top, Right, Bottom, Left */
     margin-top: 25px;
+}
+
+.label_download {
+    float: right;
+    margin-right: 20px;
 }
 
 .button_participants {
