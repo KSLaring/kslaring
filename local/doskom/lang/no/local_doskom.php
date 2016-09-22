@@ -27,3 +27,5 @@ $string['cron_wsso']                = 'Single Sign On - Cron';
 $string['end_point']                        = 'API for import av brukere';
 $string['end_point_production']             = 'Produksjon';
 $string['end_point_production_desc']        = 'Produksjons- eller Dev-site';
+
+$string['crontask']             = 'Doskom Synchronization Cron Task';
