@@ -44,7 +44,6 @@ class WSDOSKOM_Cron {
             /* Call Web Service and Get the Users to Import */
             mtrace('Start WSDOSKOM Import Users '. time() . "\n");
             foreach ($companies as $company) {
-                echo $company->id . "</br>";
                 $company->import = self::Call_WS($company->id);
                 $companies[$company->id] = $company;
             }//for_companies
@@ -152,7 +151,6 @@ class WSDOSKOM_Cron {
 
             /* Format Data  */
             if ($response === false) {
-                echo "PERICO" . "</br>";
                 return null;
             }else {
                 $response = json_decode($response);
