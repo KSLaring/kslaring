@@ -23,7 +23,7 @@ if ($hassiteconfig) {
     $settings->add(new admin_setting_configselect('local_doskom/wsdoskom_cron_active', new lang_string('active'),  '', 1, $options));
 
     //Time
-    $settings->add(new admin_setting_configtime('local_doskom/wsdoskom_auto_time','wsdoskom_auto_time_minute', new lang_string('executeat'), '', array('h' => 0, 'm' => 0)));
+    //$settings->add(new admin_setting_configtime('local_doskom/wsdoskom_auto_time','wsdoskom_auto_time_minute', new lang_string('executeat'), '', array('h' => 0, 'm' => 0)));
 
     /* Web Service  */
     $settings->add(new admin_setting_configtext('local_doskom/wsdoskom_end_point',get_string('end_point','local_doskom'),'','',PARAM_TEXT,50));

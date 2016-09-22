@@ -42,7 +42,7 @@ class WSDOSKOM_Cron {
             /*      --> Save Users          */
             /*      --> Status Users        */
             /* Call Web Service and Get the Users to Import */
-            mtrace('Start WSDOSKOM Import Users '. time());
+            mtrace('Start WSDOSKOM Import Users '. time() . "\n");
             foreach ($companies as $company) {
                 $company->import = self::Call_WS($company->id);
                 $companies[$company->id] = $company;

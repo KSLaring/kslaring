@@ -11,7 +11,7 @@
  *
  */
 
-function local_doskom_cron() {
+function doskom_cron() {
     /* Variables    */
     global $DB;
     $pluginInfo     = null;
@@ -27,34 +27,20 @@ function local_doskom_cron() {
     $pluginInfo     = get_config('local_doskom');
 
 
-    /* Check if the cron is Activate    */
-    if ($pluginInfo->wsdoskom_cron_active) {
+    try {
+        /* Library */
         require_once('cron/wsssocron.php');
 
-        /* Admin */
-        $admin      = get_admin();
-        $now        = time();
-        $timezone   = $admin->timezone;
-        $cronHour   = $pluginInfo->wsdoskom_auto_time;
-        $cronMin    = $pluginInfo->wsdoskom_auto_time_minute;
-        $date       = usergetdate($now, $timezone);
-
-        /* Check if has to be run it    */
-        if (isset($pluginInfo->lastcron)) {
-            /* Calculate when it has to be triggered it */
-            $timeYesterday  = mktime($cronHour, $cronMin, 0, $date['mon'], $date['mday'] - 1, $date['year']);
-
-            if (($pluginInfo->lastexecution <= $timeYesterday)) {
-                WSDOSKOM_Cron::cron();
-                set_config('lastexecution', $now, 'local_doskom');
-            }else {
-
-            }
-        }else {
-            WSDOSKOM_Cron::cron();
+        /* First execution or no */
+        $activate = get_config('local_doskom','wsdoskom_cron_active');
+        if ($activate) {
+            \WSDOSKOM_Cron::cron();
+            
             set_config('lastexecution', $now, 'local_doskom');
-        }//if_else_lastcron
-    }else {
-        mtrace('... WSDOSKOM Cron Disabled');
+        }else {
+            mtrace('... WSDOSKOM Cron Disabled');
+        }
+    }catch (Exception $ex) {
+        throw $ex;
     }
 }//local_wssso_cron
