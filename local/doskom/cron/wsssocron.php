@@ -42,8 +42,9 @@ class WSDOSKOM_Cron {
             /*      --> Save Users          */
             /*      --> Status Users        */
             /* Call Web Service and Get the Users to Import */
-            mtrace('Start WSDOSKOM Import Users '. time());
+            mtrace('Start WSDOSKOM Import Users '. time() . "\n");
             foreach ($companies as $company) {
+                echo $company->id . "</br>";
                 $company->import = self::Call_WS($company->id);
                 $companies[$company->id] = $company;
             }//for_companies
@@ -151,6 +152,7 @@ class WSDOSKOM_Cron {
 
             /* Format Data  */
             if ($response === false) {
+                echo "PERICO" . "</br>";
                 return null;
             }else {
                 $response = json_decode($response);
@@ -310,64 +312,68 @@ class WSDOSKOM_Cron {
             $usersToImport = $DB->get_records('user_personalia',array('status' => 0));
             if ($usersToImport) {
                 foreach($usersToImport as $userInfo) {
-                    /* New User */
-                    $new_user = new stdClass();
-
-                    /* Username     */
+                    /**
+                     * Empty personal number --> No account
+                     */
                     if ($userInfo->personssn) {
-                    $new_user->username     = $userInfo->personssn;
-                    }else {
-                        $new_user->username     = $userInfo->username;
-                    }//if_personssn
-                    /* Password     */
-                    $new_user->password     = '';
-                    /* First name   */
-                    $new_user->firstname    = $userInfo->firstname;
-                    /* Last name    */
-                    $new_user->lastname     = $userInfo->lastname;
-                    /* eMail        */
-                    $new_user->email        = $userInfo->email;
-                    /* Lang         */
-                    $new_user->lang         = 'no';
-                    /* City         */
-                    if ($userInfo->city) {
-                        $new_user->city         = $userInfo->city;
-                    }//if_city
-                    /* Country      */
-                    if ($userInfo->country) {
-                        /* Countries List */
-                        $countries      = get_string_manager()->get_list_of_countries(false);
-                        $country        = array_search($userInfo->country,$countries);
-                        if ($country) {
-                            $new_user->country  = $country;
-                        }
-                    }//if_country
-                    /* Personal Number  */
-                    if ($userInfo->personssn) {
-                        $new_user->idnumber = $userInfo->personssn;
-                    }//if_personalNumber
-                    /* Mobile/Phone */
-                    if ($userInfo->mobilephone) {
-                        //$new_user->phone1   = $userInfo->mobilephone;
-                    }//if_mobilePhone
-                    /* Workplace    */
-                    if ($userInfo->divisionname) {
-                        $new_user->department = $userInfo->divisionname;
-                    }//if_divisionName
+                        /* New User */
+                        $new_user = new stdClass();
 
-                    /* Identifier of user in Dossier Profile    */
-                    $new_user->secret       = $userInfo->companyid . '##SEP##'. $userInfo->personid;
-                    $new_user->confirmed    = '1';
-                    $new_user->firstaccess  = $time;
-                    $new_user->timemodified = $time;
-                    $new_user->mnethostid   = $CFG->mnet_localhost_id;
-                    $new_user->auth         = 'saml';
-                    $new_user->password     = 'not cached';
-                    $new_user->source       = 'KOMMIT';
+                        /* Username     */
+                        if ($userInfo->personssn) {
+                            $new_user->username     = $userInfo->personssn;
+                        }else {
+                            $new_user->username     = $userInfo->username;
+                        }//if_personssn
+                        /* Password     */
+                        $new_user->password     = '';
+                        /* First name   */
+                        $new_user->firstname    = $userInfo->firstname;
+                        /* Last name    */
+                        $new_user->lastname     = $userInfo->lastname;
+                        /* eMail        */
+                        $new_user->email        = $userInfo->email;
+                        /* Lang         */
+                        $new_user->lang         = 'no';
+                        /* City         */
+                        if ($userInfo->city) {
+                            $new_user->city         = $userInfo->city;
+                        }//if_city
+                        /* Country      */
+                        if ($userInfo->country) {
+                            /* Countries List */
+                            $countries      = get_string_manager()->get_list_of_countries(false);
+                            $country        = array_search($userInfo->country,$countries);
+                            if ($country) {
+                                $new_user->country  = $country;
+                            }
+                        }//if_country
+                        /* Personal Number  */
+                        if ($userInfo->personssn) {
+                            $new_user->idnumber = $userInfo->personssn;
+                        }//if_personalNumber
+                        /* Mobile/Phone */
+                        if ($userInfo->mobilephone) {
+                            //$new_user->phone1   = $userInfo->mobilephone;
+                        }//if_mobilePhone
+                        /* Workplace    */
+                        if ($userInfo->divisionname) {
+                            $new_user->department = $userInfo->divisionname;
+                        }//if_divisionName
+
+                        /* Identifier of user in Dossier Profile    */
+                        $new_user->secret       = $userInfo->companyid . '##SEP##'. $userInfo->personid;
+                        $new_user->confirmed    = '1';
+                        $new_user->firstaccess  = $time;
+                        $new_user->timemodified = $time;
+                        $new_user->mnethostid   = $CFG->mnet_localhost_id;
+                        $new_user->auth         = 'saml';
+                        $new_user->password     = 'not cached';
+                        $new_user->source       = 'KOMMIT';
 
                         /* Check if the user already exists */
                         /* Check if the user exists with the new version */
-                    $user_id = self::ExistsUser($new_user->secret,$new_user->username,$userInfo->companyid);
+                        $user_id = self::ExistsUser($new_user->secret,$new_user->username,$userInfo->companyid);
                         if ($user_id) {
                             /* Update User  */
                             $new_user->id = $user_id;
@@ -391,6 +397,7 @@ class WSDOSKOM_Cron {
                             $userInfo->status = 1;
                             $DB->update_record('user_personalia',$userInfo);
                         }//if_else_user_NewVersion
+                    }//if_personssn
                 }//for_users_import
             }//if_UsersToImport
 
