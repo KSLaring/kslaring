@@ -36,7 +36,7 @@ function doskom_cron() {
         if ($activate) {
             \WSDOSKOM_Cron::cron();
             
-            set_config('lastexecution', $now, 'local_doskom');
+            set_config('lastexecution', time(), 'local_doskom');
         }else {
             mtrace('... WSDOSKOM Cron Disabled');
         }
