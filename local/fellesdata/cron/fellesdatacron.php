@@ -444,7 +444,7 @@ class FELLESDATA_CRON {
 
         try {
             /* Call Web service */
-            //$fsResponse = self::ProcessTradisService($pluginInfo,TRADIS_FS_USERS);
+            $fsResponse = self::ProcessTradisService($pluginInfo,TRADIS_FS_USERS);
 
             /* Import/Save data in Temporary tables */
             //if ($fsResponse) {
@@ -457,7 +457,6 @@ class FELLESDATA_CRON {
             //        FS::SaveTemporary_Fellesdata($content,IMP_USERS);
             //    }//if_exists
             //}
-            echo "Import FS Users Function" . "</br>";
         }catch (Exception $ex) {
             /* Log  */
             $dbLog  = "Error: " . $ex->getMessage() . "\n" . "\n";
@@ -694,6 +693,8 @@ class FELLESDATA_CRON {
             /* Build url end point  */
             $urlTradis = $pluginInfo->fs_point . '/tardis/fellesdata/' . $service . '?fromDate=' . $fromDate . '&toDate=' . $toDate;
 
+            echo "END POINT: " . $urlTradis . "</br>";
+            
             /* Call Web Service     */
             $ch = curl_init($urlTradis);
             curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false );
