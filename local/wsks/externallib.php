@@ -893,7 +893,7 @@ class local_wsks_external extends external_api {
         $firstName      = new external_value(PARAM_TEXT,'First Name');
         $lastName       = new external_value(PARAM_TEXT,'Last Name');
         $eMail          = new external_value(PARAM_TEXT,'eMail');
-        $resourceNum    = new external_value(PARAM_INT,'resource number');
+        $resourceNum    = new external_value(PARAM_TEXT,'resource number');
         $action         = new external_value(PARAM_INT,'Action. Add/Update/Delete');
 
         $accountInfo = new external_single_structure(array('personalnumber' => $personalNumber,

@@ -279,14 +279,15 @@ class WS_FELLESDATA {
                     $infoImported->key              = $key;
 
                     $imported[$key] = $infoImported;
-                }//if_userid
 
+                    $dbLog .= $key . " - " . json_encode($infoImported) . "\n" . "\n";
+                }//if_userid
             }//for_usersAccounts
 
             $result['usersAccounts'] = $imported;
 
             /* Log  */
-            $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' FINISH Synchronization Users Accoutns . ' . "\n"."\n";
+            $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH Synchronization Users Accoutns . ' . "\n"."\n";
             error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
         }catch (Exception $ex) {
             $result['error']            = 409;
@@ -1097,6 +1098,7 @@ class WS_FELLESDATA {
 
                     /* Synchronized */
                     $sync = true;
+
                     break;
                 case DELETE_ACTION:
                     /* Delete User  */
