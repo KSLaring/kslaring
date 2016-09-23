@@ -106,7 +106,6 @@ class FELLESDATA_CRON {
         $pluginInfo = null;
 
         try {
-            echo "Option: " . $option . "</br>";
             /* Plugin Info      */
             $pluginInfo     = get_config('local_fellesdata');
 
@@ -445,19 +444,20 @@ class FELLESDATA_CRON {
 
         try {
             /* Call Web service */
-            $fsResponse = self::ProcessTradisService($pluginInfo,TRADIS_FS_USERS);
+            //$fsResponse = self::ProcessTradisService($pluginInfo,TRADIS_FS_USERS);
 
             /* Import/Save data in Temporary tables */
-            if ($fsResponse) {
+            //if ($fsResponse) {
                 /* Open File */
-                $pathFile = $CFG->dataroot . '/fellesdata/' . TRADIS_FS_USERS . '.txt';
-                if (file_exists($pathFile)) {
+            //    $pathFile = $CFG->dataroot . '/fellesdata/' . TRADIS_FS_USERS . '.txt';
+            //    if (file_exists($pathFile)) {
                     /* Get Content */
-                    $content = file($pathFile);
+            //        $content = file($pathFile);
 
-                    FS::SaveTemporary_Fellesdata($content,IMP_USERS);
-                }//if_exists
-            }
+            //        FS::SaveTemporary_Fellesdata($content,IMP_USERS);
+            //    }//if_exists
+            //}
+            echo "Import FS Users Function" . "</br>";
         }catch (Exception $ex) {
             /* Log  */
             $dbLog  = "Error: " . $ex->getMessage() . "\n" . "\n";
