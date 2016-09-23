@@ -42,9 +42,7 @@ class FELLESDATA_CRON {
 
 
         try {
-            if (isset($SESSION->manual)) {
-                unset($SESSION->manual);
-            }
+            
             /* Log  */
             $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' START FELLESDATA CRON . ' . "\n";
             error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
