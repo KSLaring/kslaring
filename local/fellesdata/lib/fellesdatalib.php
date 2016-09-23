@@ -1410,6 +1410,11 @@ class FSKS_USERS {
             /* Commit   */
             $trans->allow_commit();
         }catch (Exception $ex) {
+            /* Log  */
+            $dbLog = $ex->getMessage() . "\n" ."\n";
+            $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH ERROR SynchronizeUserFS . ' . "\n";
+            error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
+            
             /* Rollback */
             $trans->rollback($ex);
 

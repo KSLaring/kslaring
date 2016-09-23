@@ -778,7 +778,7 @@ class FELLESDATA_CRON {
             /* Get user to synchronize  */
             mtrace('LIMIT 0,2000');
             
-            $rdo = $DB->get_records('fs_imp_users',array('imported' => '0'),'','*',0,2000);
+            $rdo = $DB->get_records('fs_imp_users',array('imported' => '0'),'','*',0,2);
 
             /* Log  */
             $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' START Synchronization Users Accoutns . ' . "\n";
