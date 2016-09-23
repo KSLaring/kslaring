@@ -683,9 +683,7 @@ class FELLESDATA_CRON {
                 $admin      = get_admin();
                 $timezone   = $admin->timezone;
                 $date       = usergetdate($pluginInfo->lastexecution, $admin->timezone);
-
-                //$fromDate   = mktime(0, 0, 0, $date['mon'], $date['mday']-4, $date['year']);
-                $fromDate   = mktime(0, 0, 0, 1, 1, 1970);
+                $fromDate   = mktime(0, 0, 0, $date['mon'], $date['mday']-4, $date['year']);
                 $fromDate   = gmdate('Y-m-d\TH:i:s\Z',$fromDate);
             }else {
                 /* First Execution      */
@@ -791,7 +789,7 @@ class FELLESDATA_CRON {
                     /* Users account info   */
                     $infoUser = new stdClass();
                     $infoUser->personalnumber   = $instance->fodselsnr;
-                    //$infoUser->ressursnr        = $instance->ressursnr;
+                    $infoUser->ressursnr        = $instance->ressursnr;
                     $infoUser->firstname        = $instance->fornavn;
                     $infoUser->lastname         = $instance->mellomnavn . ' ' . $instance->etternavn;
                     $infoUser->email            = $instance->epost;
