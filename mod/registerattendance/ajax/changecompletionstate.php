@@ -51,17 +51,25 @@ echo $OUTPUT->header();
 
 switch ($action) {
     case 'changestate':
-        $result = mod_registerattendance_helper::change_completionstate($cmid, $userid, $state);
+        if ($userid) {
+            $result = mod_registerattendance_helper::change_completionstate($cmid, $userid, $state);
 
-        if ($result) {
+            if ($result) {
+                $feedback = new stdClass();
+                $feedback->state = $state;
+                $feedback->amount = 1;
+
+                $outcome->outcome = $feedback;
+            } else {
+                $outcome->error = true;
+                $outcome->outcome = $result;
+            }
+        } else {
             $feedback = new stdClass();
             $feedback->state = $state;
-            $feedback->amount = 1;
+            $feedback->amount = 0;
 
             $outcome->outcome = $feedback;
-        } else {
-            $outcome->error = true;
-            $outcome->outcome = $result;
         }
         break;
 
@@ -70,17 +78,23 @@ switch ($action) {
 
         if (is_array($userids)) {
             $result = mod_registerattendance_helper::change_completionstates($cmid, $userids, $state);
-        }
 
-        if ($result) {
+            if ($result) {
+                $feedback = new stdClass();
+                $feedback->state = $state;
+                $feedback->amount = count($userids);
+
+                $outcome->outcome = $feedback;
+            } else {
+                $outcome->error = true;
+                $outcome->outcome = $result;
+            }
+        } else {
             $feedback = new stdClass();
             $feedback->state = $state;
-            $feedback->amount = count($userids);
+            $feedback->amount = 0;
 
             $outcome->outcome = $feedback;
-        } else {
-            $outcome->error = true;
-            $outcome->outcome = $result;
         }
         break;
 }
