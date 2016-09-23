@@ -767,7 +767,7 @@ class FELLESDATA_CRON {
      */
     private static function UsersFS_Synchronization($pluginInfo) {
         /* Variables    */
-        global $DB,$CFG;
+        global $DB,$CFG,$SESSION;
         $rdo        = null;
         $usersFS    = array();
         $infoUser   = null;
@@ -777,7 +777,8 @@ class FELLESDATA_CRON {
         try {
             /* Get user to synchronize  */
             mtrace('LIMIT 0,2000');
-            $rdo = $DB->get_records('fs_imp_users',array('imported' => '0'),'','*');
+            
+            $rdo = $DB->get_records('fs_imp_users',array('imported' => '0'),'','*',0,2000);
 
             /* Log  */
             $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' START Synchronization Users Accoutns . ' . "\n";
