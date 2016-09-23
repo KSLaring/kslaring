@@ -16,16 +16,16 @@
  *
  */
 
-$string['pluginname']           = 'Brukers kompetanseprofil';
-$string['pluginname_help']      = 'Brukerens kompetanseprofil inneholder informasjon om arbeidssted og jobbroller.';
+$string['pluginname']           = 'Brukers arbeidssteder og jobbroller';
+$string['pluginname_help']      = 'Her finner du brukerens arbeidssteder og jobbroller';
 
-$string['competence_profile']   = 'Kompetanseprofil';
+$string['competence_profile']   = 'Arbeidsteder og jobbroller';
 
 $string['profile_desc'] = 'Dine arbeidssteder og jobbroller.<br >Vennligst legg til minst ett arbeidssted med tilhørende jobbrolle. Klikk på "Opprett ny" for å gjøre dette.';
-$string['lnk_update']   = 'Oppdater mine arbeidssteder og jobbroller';
+$string['lnk_update']   = 'Endre mine arbeidssteder og jobbroller';
 $string['lnk_edit']     = 'Rediger';
 $string['lnk_delete']   = 'Slett';
-$string['lnk_view']     = 'Vis mine kompetanser';
+$string['lnk_view']     = 'Arbeidssteder og jobbroller';
 
 $string['my_companies'] = 'Arbeidssteder';
 $string['my_job_roles'] = 'Jobbroller';
@@ -46,7 +46,7 @@ $string['btn_add']           = 'Legg til';
 
 $string['edit_competence']      = 'Rediger kompetanser';
 $string['btn_save']             = 'Lagre';
-$string['edit_competence_desc'] = 'Her kan du oppdatere kompetanseprofilen din.';
+$string['edit_competence_desc'] = 'Her kan du oppdatere dine arbeidssteder med jobbroller';
 
 $string['level_generic']        = 'Generiske';
 

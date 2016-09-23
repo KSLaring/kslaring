@@ -20,11 +20,11 @@ $string['pluginname']               = 'Kursveiviser';
 $string['searchinfrikomport']       = 'Søk';
 $string['frikomport:addinstance']   = 'Legg til en ny Kursveiviser-blokk';
 $string['frikomport:myaddinstance'] = 'Legg til en ny Kursveiviser-blokk til Min startside';
-$string['frikomport:view'] = 'Vis Friadmin-blokken';
+$string['frikomport:view'] = 'Vis Kursveiviserblokken';
 
 $string['ncourses']                     = 'Kursoversikt';
 $string['nnewcourses']                  = 'Opprett nytt kurs';
-$string['naddcourse']                   = 'Nytt kurs';
+$string['naddcourse']                   = 'Tomt kurs';
 $string['naddfromtemplate']             = 'Nytt arrangement';
 $string['naddfromnectcoursetemplate']   = 'Nytt nettkurs';
 

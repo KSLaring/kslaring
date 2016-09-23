@@ -30,7 +30,7 @@ $string['waitlistmessagetext_self'] = 'Du er nå lagt til i ventelisten for kurs
 I øyeblikket er du nummer {$a->queueno} på ventelisten.
 
 Du kan sjekke her hvor du er på ventelisten:  {$a->courseurl}';
-$string['self_queuewarning_label'] ='Dette kurset har ingen ledige plasser';
-$string['self_queuewarning'] = 'Hvis du fortsetter vil du bli lagt til kursets venteliste og vil automatisk rykke opp hvis det blir plasser ledige. Du får da en epost med bekreftelse på kursplassen din.
-
-Antall kursdeltakere som ligger foran deg på ventelisten: {$a}';
+$string['self_queuewarning_label'] ='Dette kurset er allerede fullt.';
+$string['self_queuewarning'] = 'Dersom du fortsetter vil du bli plassert på ventelisten. Du vil automatisk bli varslet når det blir ledige plasser. 
+	
+	Du er nå nummer: {$a} på ventelisten.';

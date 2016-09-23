@@ -64,8 +64,8 @@ $string['waitinglist:manage'] = 'Administrere brukerpåmeldinger';
 $string['waitinglist:unenrol'] = 'Meld ut brukere fra kurset';
 $string['waitinglist:unenrolself'] = 'Meld meg ut av dette kurset';
 $string['messageprovider:expiry_notification'] = 'Din kurspåmelding er i ferd med å utløpe';
-$string['pluginname'] = 'Ventelistepåmeldinger';
-$string['pluginname_desc'] = 'Ventelistemodulen har en venteliste for påmelding til et kurs.';
+$string['pluginname'] = 'Kurspåmelding';
+$string['pluginname_desc'] = 'Kurspåmeldingsmodulen har en venteliste for påmelding til et kurs.';
 $string['status'] = 'Aktiver påmelding med venteliste';
 $string['status_desc'] = 'Tillat kurstilgang fra internt påmeldte brukere. Dette bør være aktivert i de fleste tilfeller.';
 $string['status_help'] = 'Denne innstillingen bestemmer hvorvidt brukere kan meldt på via påmelding med venteliste, via en link i kursadministrasjonsinnstillingene, og av en bruker med tillatelse til dette, f.eks. en lærer.';
@@ -111,7 +111,7 @@ Følgende plassholdere kan legges inn i meldingen:
 * Kursnavn {$a->coursename}
 * Link til brukerens profilside {$a->profileurl}';
 $string['welcometocourse'] = 'Du er påmeldt {$a} - velkommen!';
-$string['welcometocoursetext'] = '<p>Du er påmeldt {$a->coursename} – velkommen!</p> <p>Husk å sette av datoen(e) i kalenderen.</p>
+$string['welcometocoursetext'] = '<p>Du er påmeldt {$a->coursename} – velkommen!</p> <p>Vi anbefaler at du legger inn en påminnelse om kurset i din kalender.</p>
 <p>Dette er en automatisk generert e-post. Du kan ikke svare på e-posten.</p>';
 $string['customwaitlistmessage'] = 'Egendefinert melding for påmelding med venteliste';
 $string['customwaitlistmessage_help'] = 'Du kan legge til en egendefinert melding som ren tekst eller i Moodles auto-format, inkludert HTML-tagger og flerspråktagger.
@@ -155,7 +155,7 @@ $string['totalcell']='Totalt: {$a}';
  * Description
  * New strings to add invoice information option
  */
-$string['invoice']      = 'Fakturainformasjon er påkrevd';
+$string['invoice']      = 'Krev fakturainformasjon';
 $string['invoice_help'] = 'Brukeren må fylle inn all nødvendig fakturainformasjon før påmeldingen skjer.';
 
 $string['seats_occupied'] = 'Det er i øyeblikket ingen ledige plasser. Ønsker du å bli plassert på en venteliste for dette kurset?';
@@ -218,10 +218,10 @@ $string['request_remainder']    = 'Søknaden din er ennå ikke behandlet av din 
 
 $string['err_link'] = 'OOPS - søknaden er allerede behandlet. Lenken du klikket på kan bare benyttes en gang.';
 
-$string['request_approved']   = 'Din søknad om kurset {$a->homepage} ble godkjent av lederen din {$a->sent}. 
+$string['request_approved']   = 'Din søknad om plass på kurset {$a->homepage} ble godkjent av lederen din den {$a->sent}. 
 	(Dette er en automatisk generert e-post fra {$a->site} og du kan ikke svare på e-posten.)';
-$string['request_rejected']   = '<p>Din søknad om kurset {$a->homepage} ble avslått av lederen din {$a->sent}.</p>
-                                <p>Om søknaden ble avslått ved en feil, bør du ta kontakt med lederen din og søke på nytt.</p><p>(Dette er en automatisk generert e-post fra {$a->site} og du kan ikke svare på e-posten.)</p>';
+$string['request_rejected']   = '<p>Din søknad om plass på kurset {$a->homepage} ble avslått av lederen din {$a->sent}.</p>
+                                <p>(Dette er en automatisk generert e-post fra {$a->site} og du kan ikke svare på e-posten.)</p>';
 
 $string['approved_mnd'] = 'Søknaden om kursplass på kurset: {$a->homepage} for brukeren: <b>{$a->user}</b> er nå godkjent.';
 $string['rejected_mnd'] = 'Søknaden om kursplass på kurset: {$a->homepage} for brukeren: <b>{$a->user}</b> er nå avslått.';
@@ -247,7 +247,7 @@ $string['rpt_back']         = 'Tilbake';
 
 $string['mng_approved_subject']  = '{$a->site}: Søknad om plass på kurset: {$a->course}';
 $string['mng_approved_body_one'] = '<p>Vi sender deg denne bekreftelsen fordi du er oppgitt som leder for følgende arbeidssted(er): </p>';
-$string['mng_approved_body_two'] = '<p>Vi vil gjerne informere deg om at brukeren <b>{$a->user}</b>, som hører til følgende arbeidssted(er): </p>
+$string['mng_approved_body_two'] = '<p>Vi vil gjerne informere deg om at <b>{$a->user}</b>, som hører til følgende arbeidssted: </p>
                                     {$a->companies_user}
                                     <p> nettopp er blitt påmeldt kurset: <b>{$a->course}</b>.</p>
                                     <p>Kursinformasjon:</p>

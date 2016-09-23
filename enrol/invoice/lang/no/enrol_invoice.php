@@ -64,7 +64,7 @@ $string['send_course_welcome_message_help'] = 'Når aktivert vil brukere få en 
 
 $string['cannt_enrol']                          = 'Påmelding er deaktivert eller inaktiv';
 $string['cohort_non_member_info']               = 'Bare medlemmer av brukergruppen \'{$a}\' kan registrere seg via fakturerinsmodulen.';
-$string['no_password']                          = 'Ingen påmeldingsnøkkel er påkrevd.';
+$string['no_password']                          = 'Når du klikker på knappen under blir du automatisk meldt på og kurssiden vises.';
 $string['password']                             = 'påmeldingsnøkkel';
 $string['password_help']                        = 'Påmeldingsnøkkelen sørger for tilgangen til kurset begrenses til de som kjenner nøkkelen.
 
@@ -109,7 +109,7 @@ $string['invoice_service']                      = 'Tjenestenummer';
 $string['invoice_project']                      = 'Prosjektnummer';
 $string['invoice_act']                          = 'Aktivitetsnummer';
 
-$string['invoice_info']                         = 'Påmeldingen kan ikke fullføres før all fakturainformasjo.';
+$string['invoice_info']                         = 'Påmelding kan ikke fullføres før obligatorisk fakturainformasjon er utfylt.';
 $string['account_required']                     = 'Vennligst fyll inn feltet Ansvar- og tjenestenummer';
 $string['resp_required']                        = 'Vennligst fyll inn feltet Ansvarsnummer';
 $string['service_required']                     = 'Vennligst fyll inn feltet Tjenestenummer';
@@ -127,4 +127,4 @@ $string['rpt_course_info']      = 'Kursinfo';
 $string['rpt_invoices_info']    = 'Brannvernkurs';
 
 $string['rpt_seats'] = 'Forespurte';
-$string['rpt_price'] = 'Price';
+$string['rpt_price'] = 'Pris';
