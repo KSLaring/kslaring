@@ -803,11 +803,10 @@ class FELLESDATA_CRON {
 
                 /* Call Web Service */
                 $response = self::ProcessKSService($pluginInfo,KS_SYNC_USER_ACCOUNT,$usersFS);
-                print ($response);
                 if ($response['error'] == '200') {
                     echo "HOLA";
                     /* Synchronize Users Accounts FS    */
-                    //FSKS_USERS::Synchronize_UsersFS($usersFS,$response['usersAccounts']);
+                    FSKS_USERS::Synchronize_UsersFS($usersFS,$response['usersAccounts']);
 
                     /* Clean Table*/
                     //$DB->delete_records('fs_imp_users',array('imported' => '1'));
