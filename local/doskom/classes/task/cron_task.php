@@ -29,15 +29,8 @@ class cron_task extends \core\task\scheduled_task {
      */
     public function execute() {
         global $CFG;
-
-        try {
-            require_once($CFG->dirroot . '/local/doskom/lib.php');
-            doskom_cron();
-        }catch (\Exception $ex) {
-            $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' ERROR EXECUTE CALL CRON ' . "\n";
-            error_log($dbLog, 3, $CFG->dataroot . "/doskom.log");
-            throw $ex;
-        }
+        require_once($CFG->dirroot . '/local/doskom/lib.php');
+        doskom_cron();
     }
 
 }

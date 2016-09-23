@@ -33,40 +33,36 @@ class WSDOSKOM_Cron {
         $plugin_info     = get_config('local_doskom');
 
         try {
-            //mtrace('Start WSDOSKOM Import Users '. time());
+            mtrace('Start WSDOSKOM Import Users '. time());
 
             /* Get the companies    */
-            //$companies = self::Get_Companies();
+            $companies = self::Get_Companies();
             /* Actions for each company */
             /*      --> Call Web Service    */
             /*      --> Save Users          */
             /*      --> Status Users        */
             /* Call Web Service and Get the Users to Import */
-            //mtrace('Start WSDOSKOM Import Users '. time() . "\n");
-            //foreach ($companies as $company) {
-            //    $company->import = self::Call_WS($company->id);
-            //    $companies[$company->id] = $company;
-            //}//for_companies
+            mtrace('Start WSDOSKOM Import Users '. time() . "\n");
+            foreach ($companies as $company) {
+                $company->import = self::Call_WS($company->id);
+                $companies[$company->id] = $company;
+            }//for_companies
 
             /* Save users temporary table      */
-            //foreach ($companies as $company) {
-            //  if ($company->import) {
-            //    self::SaveTemp_UsersToImport($company->import,$company->id);
-            //  }//if_companyImport
-            //}//for_companies
+            foreach ($companies as $company) {
+              if ($company->import) {
+                self::SaveTemp_UsersToImport($company->import,$company->id);
+              }//if_companyImport
+            }//for_companies
 
             /* Import Users */
-            //self::ImportUsers();
+            self::ImportUsers();
 
             /* Clean Temporary Table    */
-            //self::Clean_Temporary();
+            self::Clean_Temporary();
 
-            //mtrace('Finish WSDOSKOM Import Users '. time());
+            mtrace('Finish WSDOSKOM Import Users '. time());
 
-            global $CFG;
-            $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' START CRON HAPINESS ' . "\n";
-            error_log($dbLog, 3, $CFG->dataroot . "/doskom.log");
-            
             return true;
         }catch (Exception $ex) {
             mtrace($ex->getTraceAsString());
