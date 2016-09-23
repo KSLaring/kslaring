@@ -106,6 +106,7 @@ class FELLESDATA_CRON {
         $pluginInfo = null;
 
         try {
+            echo "Option: " . $option . "</br>";
             /* Plugin Info      */
             $pluginInfo     = get_config('local_fellesdata');
 
