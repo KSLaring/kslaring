@@ -803,6 +803,7 @@ class FELLESDATA_CRON {
 
                 /* Call Web Service */
                 $response = self::ProcessKSService($pluginInfo,KS_SYNC_USER_ACCOUNT,$usersFS);
+                print ($response);
                 if ($response['error'] == '200') {
                     echo "HOLA";
                     /* Synchronize Users Accounts FS    */
