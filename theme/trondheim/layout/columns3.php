@@ -15,24 +15,18 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Moodle's stavanger theme, an example of how to make a Bootstrap theme
+ * KS Læring Trondheim theme.
  *
- * DO NOT MODIFY THIS THEME!
- * COPY IT FIRST, THEN RENAME THE COPY AND MODIFY IT INSTEAD.
- *
- * For full information about creating Moodle themes, see:
- * http://docs.moodle.org/dev/Themes_2.0
- *
- * @package   theme_stavanger
+ * @package   theme_trondheim
  * @copyright 2016 eFaktor
  * @author    Urs Hunkler {@link urs.hunkler@unodo.de}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 // Get the HTML for the settings bits.
-$html = theme_stavanger_get_html_for_settings($OUTPUT, $PAGE);
-$show_hidden_blocks = theme_stavanger_show_hidden_blocks($PAGE);
-$str_visibleadminonly = get_string('visibleadminonly', 'theme_stavanger');
+$html = theme_trondheim_get_html_for_settings($OUTPUT, $PAGE);
+$show_hidden_blocks = theme_trondheim_show_hidden_blocks($PAGE);
+$str_visibleadminonly = get_string('visibleadminonly', 'theme_trondheim');
 
 if (right_to_left()) {
     $regionbsid = 'region-bs-main-and-post';
@@ -40,11 +34,9 @@ if (right_to_left()) {
     $regionbsid = 'region-bs-main-and-pre';
 }
 
-$frontpage = $PAGE->pagetype === 'site-index';
-
 // Get the URL for the logo link
 $url = new moodle_url('/', array('redirect' => 0));
-$url_course_lst = new moodle_url('/course/index.php');
+
 echo $OUTPUT->doctype() ?>
 <html <?php echo $OUTPUT->htmlattributes(); ?> xmlns="http://www.w3.org/1999/html">
 <head>
@@ -52,18 +44,14 @@ echo $OUTPUT->doctype() ?>
     <link rel="shortcut icon" href="<?php echo $OUTPUT->favicon(); ?>"/>
     <?php echo $OUTPUT->standard_head_html() ?>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=PT+Sans:400,700,400italic,700italic" type="text/css">
 </head>
-
 
 <body <?php echo $OUTPUT->body_attributes(); ?>>
 
 <?php echo $OUTPUT->standard_top_of_body_html() ?>
 
 <?php include 'inc/header.php'; ?>
-
-<?php if ($frontpage) {
-    include(__DIR__ . '/../../kommit/layout/inc/carousel.php');
-} ?>
 
 <div id="page" class="container-fluid">
     <header id="page-header" class="clearfix">
@@ -88,6 +76,7 @@ echo $OUTPUT->doctype() ?>
                     echo $OUTPUT->course_content_header();
                     echo $OUTPUT->blocks('content-top', 'content-top-blocks', 'section');
                     echo $OUTPUT->main_content();
+                    echo $OUTPUT->blocks('content-bottom', 'content-bottom-blocks', 'section');
                     echo $OUTPUT->course_content_footer();
                     ?>
                 </section>
@@ -98,10 +87,10 @@ echo $OUTPUT->doctype() ?>
     </div>
 
     <?php if ($show_hidden_blocks) : ?>
-        <div id="hidden-blocks-admin" class="clearfix">
-            <h4><?php echo $str_visibleadminonly; ?></h4>
-            <?php echo $OUTPUT->blocks('hidden-dock', 'hidden-dock-blocks', 'div'); ?>
-        </div>
+    <div id="hidden-blocks-admin" class="clearfix">
+        <h4><?php echo $str_visibleadminonly; ?></h4>
+        <?php echo $OUTPUT->blocks('hidden-dock', 'hidden-dock-blocks', 'div'); ?>
+    </div>
     <?php endif ?>
 </div>
 

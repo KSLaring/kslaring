@@ -15,45 +15,31 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Moodle's stavanger theme, an example of how to make a Bootstrap theme
+ * KS Læring Trondheim theme.
  *
- * DO NOT MODIFY THIS THEME!
- * COPY IT FIRST, THEN RENAME THE COPY AND MODIFY IT INSTEAD.
- *
- * For full information about creating Moodle themes, see:
- * http://docs.moodle.org/dev/Themes_2.0
- *
- * @package   theme_stavanger
+ * @package   theme_trondheim
  * @copyright 2016 eFaktor
  * @author    Urs Hunkler {@link urs.hunkler@unodo.de}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 // Get the HTML for the settings bits.
-$html = theme_stavanger_get_html_for_settings($OUTPUT, $PAGE);
-$show_hidden_blocks = theme_stavanger_show_hidden_blocks($PAGE);
-$str_visibleadminonly = get_string('visibleadminonly', 'theme_stavanger');
-
-if (right_to_left()) {
-    $regionbsid = 'region-bs-main-and-post';
-} else {
-    $regionbsid = 'region-bs-main-and-pre';
-}
-
-$frontpage = $PAGE->pagetype === 'site-index';
+$html = theme_trondheim_get_html_for_settings($OUTPUT, $PAGE);
+$show_hidden_blocks = theme_trondheim_show_hidden_blocks($PAGE);
+$str_visibleadminonly = get_string('visibleadminonly', 'theme_trondheim');
 
 // Get the URL for the logo link
 $url = new moodle_url('/', array('redirect' => 0));
-$url_course_lst = new moodle_url('/course/index.php');
+
 echo $OUTPUT->doctype() ?>
-<html <?php echo $OUTPUT->htmlattributes(); ?> xmlns="http://www.w3.org/1999/html">
+<html <?php echo $OUTPUT->htmlattributes(); ?>>
 <head>
     <title><?php echo $OUTPUT->page_title(); ?></title>
     <link rel="shortcut icon" href="<?php echo $OUTPUT->favicon(); ?>"/>
     <?php echo $OUTPUT->standard_head_html() ?>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=PT+Sans:400,700,400italic,700italic" type="text/css">
 </head>
-
 
 <body <?php echo $OUTPUT->body_attributes(); ?>>
 
@@ -61,47 +47,33 @@ echo $OUTPUT->doctype() ?>
 
 <?php include 'inc/header.php'; ?>
 
-<?php if ($frontpage) {
-    include(__DIR__ . '/../../kommit/layout/inc/carousel.php');
-} ?>
-
 <div id="page" class="container-fluid">
+
     <header id="page-header" class="clearfix">
         <div id="page-navbar" class="clearfix">
             <div class="breadcrumb-nav"><?php echo $OUTPUT->navbar(); ?></div>
             <nav class="breadcrumb-button"><?php echo $OUTPUT->page_heading_button(); ?></nav>
         </div>
-
         <div id="course-header">
             <?php echo $OUTPUT->course_header(); ?>
         </div>
-
-        <?php echo $OUTPUT->blocks('top', 'top-blocks', 'section'); ?>
     </header>
 
     <div id="page-content" class="row-fluid">
-        <div id="<?php echo $regionbsid ?>" class="span9">
-            <div class="row-fluid">
-                <section id="region-main" class="span8 pull-right">
-                    <?php
-                    //echo $html->heading;
-                    echo $OUTPUT->course_content_header();
-                    echo $OUTPUT->blocks('content-top', 'content-top-blocks', 'section');
-                    echo $OUTPUT->main_content();
-                    echo $OUTPUT->course_content_footer();
-                    ?>
-                </section>
-                <?php echo $OUTPUT->blocks('side-pre', 'span4 desktop-first-column'); ?>
-            </div>
-        </div>
-        <?php echo $OUTPUT->blocks('side-post', 'span3'); ?>
+        <section id="region-main" class="span12">
+            <?php
+            echo $OUTPUT->course_content_header();
+            echo $OUTPUT->main_content();
+            echo $OUTPUT->course_content_footer();
+            ?>
+        </section>
     </div>
 
     <?php if ($show_hidden_blocks) : ?>
-        <div id="hidden-blocks-admin" class="clearfix">
-            <h4><?php echo $str_visibleadminonly; ?></h4>
-            <?php echo $OUTPUT->blocks('hidden-dock', 'hidden-dock-blocks', 'div'); ?>
-        </div>
+    <div id="hidden-blocks-admin" class="clearfix">
+        <h4><?php echo $str_visibleadminonly; ?></h4>
+        <?php echo $OUTPUT->blocks('hidden-dock', 'hidden-dock-blocks', 'div'); ?>
+    </div>
     <?php endif ?>
 </div>
 

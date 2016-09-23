@@ -1,0 +1,101 @@
+.top-border {
+    border-bottom-color: @trondheimBlue;
+}
+
+.header-background {
+    background: transparent url(~"[[pix:theme|trondheim_header_bg]]") 50% 50%;
+}
+
+.logo-area {
+    float: none;
+    height: auto;
+    margin: .9em 0;
+    padding: 0;
+    width: auto;
+
+    .logo {
+        float: left;
+    }
+    h1 {
+        color: @trondheimBlue;
+        line-height: .7;
+        margin: .6em 0 0 2em;
+        padding: 0;
+
+        @media (max-width: 490px) {
+            margin-top: .1em;
+            margin-bottom: 0;
+            max-width: 10em;
+        }
+
+        .smaller {
+            font-size: .5em;
+        }
+    }
+
+    @media (max-width: 859px) {
+        //margin-top: 1.5em;
+    }
+    @media (max-width: (@mediumWidth - 1)) {
+        margin-left: 20px;
+        margin-right: 20px;
+        max-width: inherit;
+    }
+}
+
+.navbar-inner {
+    background-color: @trondheimBlue !important;
+    border-color: @trondheimBlue;
+}
+
+.navbar {
+    .nav {
+        > li {
+            > a {
+                color: @white;
+
+                &:hover {
+                    background-color: @linkColorHover !important;
+                }
+            }
+            &.dropdown.open {
+                > .dropdown-toggle {
+                    background-color: @linkColorHover !important;
+                }
+            }
+        }
+    }
+    .nav-collapse {
+        &.active {
+            border-top: 0;
+        }
+    }
+}
+
+#page-footer {
+    display: none;
+}
+
+.footer-wrapper {
+    background-color: @trondheimBlue;
+    padding: .8em 0 1.6em;
+}
+
+#sub-footer {
+    .text {
+        color: @white;
+        padding: 1em 0 .5em;
+    }
+    .returntorole {
+        margin-bottom: 1em;
+    }
+    .help-link {
+        padding: .7em 0 0;
+
+        a {
+            float: right;
+            display: table-cell;
+            text-align: center;
+        }
+    }
+}

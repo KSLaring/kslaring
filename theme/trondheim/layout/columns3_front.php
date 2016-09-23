@@ -15,24 +15,18 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Moodle's stavanger theme, an example of how to make a Bootstrap theme
+ * KS Læring Trondheim theme.
  *
- * DO NOT MODIFY THIS THEME!
- * COPY IT FIRST, THEN RENAME THE COPY AND MODIFY IT INSTEAD.
- *
- * For full information about creating Moodle themes, see:
- * http://docs.moodle.org/dev/Themes_2.0
- *
- * @package   theme_stavanger
+ * @package   theme_trondheim
  * @copyright 2016 eFaktor
  * @author    Urs Hunkler {@link urs.hunkler@unodo.de}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 // Get the HTML for the settings bits.
-$html = theme_stavanger_get_html_for_settings($OUTPUT, $PAGE);
-$show_hidden_blocks = theme_stavanger_show_hidden_blocks($PAGE);
-$str_visibleadminonly = get_string('visibleadminonly', 'theme_stavanger');
+$html = theme_trondheim_get_html_for_settings($OUTPUT, $PAGE);
+$show_hidden_blocks = theme_trondheim_show_hidden_blocks($PAGE);
+$str_visibleadminonly = get_string('visibleadminonly', 'theme_trondheim');
 
 if (right_to_left()) {
     $regionbsid = 'region-bs-main-and-post';
@@ -52,6 +46,7 @@ echo $OUTPUT->doctype() ?>
     <link rel="shortcut icon" href="<?php echo $OUTPUT->favicon(); ?>"/>
     <?php echo $OUTPUT->standard_head_html() ?>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=PT+Sans:400,700,400italic,700italic" type="text/css">
 </head>
 
 

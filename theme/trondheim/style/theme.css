@@ -1,0 +1,130 @@
+.ie-scrollbar-white {
+  scrollbar-shadow-color: #FFFFFF;
+  scrollbar-highlight-color: #FFFFFF;
+  scrollbar-face-color: #FFFFFF;
+  scrollbar-3dlight-color: #FFFFFF;
+  scrollbar-darkshadow-color: #FFFFFF;
+  scrollbar-track-color: #FFFFFF;
+  scrollbar-arrow-color: #FFFFFF;
+}
+body {
+  font-family: 'PT Sans', Helvetica, Arial, sans-serif;
+  font-size: 16px;
+}
+input,
+button,
+select,
+textarea {
+  font-family: 'PT Sans', Helvetica, Arial, sans-serif;
+}
+.navbar-search .search-query {
+  font-family: 'PT Sans', Helvetica, Arial, sans-serif;
+}
+.hero-unit h1,
+.hero-unit .texts {
+  font-family: 'PT Sans', Helvetica, Arial, sans-serif;
+}
+a {
+  color: #005aa7;
+}
+a:visited,
+a:hover,
+a:focus,
+a:active,
+a.active {
+  color: #00315b;
+  text-decoration: none;
+}
+a.btn {
+  color: #fff;
+}
+a.btn:visited,
+a.btn:hover,
+a.btn:focus,
+a.btn:active,
+a.btn.active {
+  color: #fff;
+  text-decoration: none;
+}
+.logo h1 span {
+  font-size: .5em;
+}
+.top-border {
+  border-bottom-color: #005aa7;
+}
+.header-background {
+  background: transparent url([[pix:theme|trondheim_header_bg]]) 50% 50%;
+}
+.logo-area {
+  float: none;
+  height: auto;
+  margin: .9em 0;
+  padding: 0;
+  width: auto;
+}
+.logo-area .logo {
+  float: left;
+}
+.logo-area h1 {
+  color: #005aa7;
+  line-height: .7;
+  margin: .6em 0 0 2em;
+  padding: 0;
+}
+@media (max-width: 490px) {
+  .logo-area h1 {
+    margin-top: .1em;
+    margin-bottom: 0;
+    max-width: 10em;
+  }
+}
+.logo-area h1 .smaller {
+  font-size: .5em;
+}
+@media (max-width: 859px) {
+}
+@media (max-width: 767px) {
+  .logo-area {
+    margin-left: 20px;
+    margin-right: 20px;
+    max-width: inherit;
+  }
+}
+.navbar-inner {
+  background-color: #005aa7 !important;
+  border-color: #005aa7;
+}
+.navbar .nav > li > a {
+  color: #fff;
+}
+.navbar .nav > li > a:hover {
+  background-color: #00315b !important;
+}
+.navbar .nav > li.dropdown.open > .dropdown-toggle {
+  background-color: #00315b !important;
+}
+.navbar .nav-collapse.active {
+  border-top: 0;
+}
+#page-footer {
+  display: none;
+}
+.footer-wrapper {
+  background-color: #005aa7;
+  padding: .8em 0 1.6em;
+}
+#sub-footer .text {
+  color: #fff;
+  padding: 1em 0 .5em;
+}
+#sub-footer .returntorole {
+  margin-bottom: 1em;
+}
+#sub-footer .help-link {
+  padding: .7em 0 0;
+}
+#sub-footer .help-link a {
+  float: right;
+  display: table-cell;
+  text-align: center;
+}

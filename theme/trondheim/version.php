@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Moodle's stavanger theme, an example of how to make a Bootstrap theme
+ * Moodle's trondheim theme, an example of how to make a Bootstrap theme
  *
  * DO NOT MODIFY THIS THEME!
  * COPY IT FIRST, THEN RENAME THE COPY AND MODIFY IT INSTEAD.
@@ -23,7 +23,7 @@
  * For full information about creating Moodle themes, see:
  * http://docs.moodle.org/dev/Themes_2.0
  *
- * @package    theme_stavanger
+ * @package    theme_trondheim
  * @copyright  2016 eFaktor
  * @author     Urs Hunkler {@link urs.hunkler@unodo.de}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -35,7 +35,7 @@ $plugin->version = 2016092300;
 $plugin->release = '3.1.0';
 $plugin->maturity = MATURITY_STABLE;
 $plugin->requires = 2015111602;
-$plugin->component = 'theme_stavanger';
+$plugin->component = 'theme_trondheim';
 $plugin->dependencies = array(
     'theme_bootstrapbase' => 2015111600,
     'theme_kommit' => 2016040600,

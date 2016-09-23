@@ -15,21 +15,15 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Stavanger theme
+ * KS Læring Trondheim theme.
  *
- * DO NOT MODIFY THIS THEME!
- * COPY IT FIRST, THEN RENAME THE COPY AND MODIFY IT INSTEAD.
- *
- * For full information about creating Moodle themes, see:
- * http://docs.moodle.org/dev/Themes_2.0
- *
- * @package   theme_stavanger
+ * @package   theme_trondheim
  * @copyright 2016 eFaktor
  * @author    Urs Hunkler {@link urs.hunkler@unodo.de}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-$THEME->name = 'stavanger';
+$THEME->name = 'trondheim';
 $parentthemname = 'kommit';
 
 // Load the parent theme config to be able to use the identical config settings.
@@ -56,7 +50,7 @@ $THEME->plugins_exclude_sheets = $parentconfig->plugins_exclude_sheets;
 $THEME->blockrtlmanipulations = $parentconfig->blockrtlmanipulations;
 
 $THEME->rendererfactory = 'theme_overridden_renderer_factory';
-$THEME->csspostprocess = 'theme_stavanger_process_css';
+$THEME->csspostprocess = 'theme_trondheim_process_css';
 
 // Use the parent layouts.
 $THEME->layouts = $parentconfig->layouts;
