@@ -48,8 +48,7 @@ $THEME->supportscssoptimisation = false;
 $THEME->yuicssmodules = array();
 $THEME->enable_dock = false;
 
-// this will allow for moodle to be used on sites like responsinator
-//---------------------------------
+// This will allow for moodle to be used on sites like responsinator.
 $CFG->allowframembedding = true;
 
 $THEME->parents_exclude_sheets = $parentconfig->parents_exclude_sheets;

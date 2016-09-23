@@ -40,6 +40,8 @@ if (right_to_left()) {
     $regionbsid = 'region-bs-main-and-pre';
 }
 
+$frontpage = $PAGE->pagetype === 'site-index';
+
 // Get the URL for the logo link
 $url = new moodle_url('/', array('redirect' => 0));
 $url_course_lst = new moodle_url('/course/index.php');
@@ -59,60 +61,49 @@ echo $OUTPUT->doctype() ?>
 
 <?php include 'inc/header.php'; ?>
 
-    <div class="hero-unit" style="<?php echo $OUTPUT->hero_img(); ?>">
-        <div class="container-fluid">
-            <div class="texts">
-                <h1><?php echo $html->heroheadline; ?></h1>
+<?php if ($frontpage) {
+    include(__DIR__ . '/../../kommit/layout/inc/carousel.php');
+} ?>
 
-                <div class="lead"><?php echo $html->herolead; ?></div>
-                <div class="buttons">
-                    <a class="btn" href="<?php echo $html->herolink; ?>">
-                        <?php echo $html->herolinktext; ?>
-                    </a>
-                </div>
+<div id="page" class="container-fluid">
+    <header id="page-header" class="clearfix">
+        <div id="page-navbar" class="clearfix">
+            <div class="breadcrumb-nav"><?php echo $OUTPUT->navbar(); ?></div>
+            <nav class="breadcrumb-button"><?php echo $OUTPUT->page_heading_button(); ?></nav>
+        </div>
+
+        <div id="course-header">
+            <?php echo $OUTPUT->course_header(); ?>
+        </div>
+
+        <?php echo $OUTPUT->blocks('top', 'top-blocks', 'section'); ?>
+    </header>
+
+    <div id="page-content" class="row-fluid">
+        <div id="<?php echo $regionbsid ?>" class="span9">
+            <div class="row-fluid">
+                <section id="region-main" class="span8 pull-right">
+                    <?php
+                    //echo $html->heading;
+                    echo $OUTPUT->course_content_header();
+                    echo $OUTPUT->blocks('content-top', 'content-top-blocks', 'section');
+                    echo $OUTPUT->main_content();
+                    echo $OUTPUT->course_content_footer();
+                    ?>
+                </section>
+                <?php echo $OUTPUT->blocks('side-pre', 'span4 desktop-first-column'); ?>
             </div>
         </div>
+        <?php echo $OUTPUT->blocks('side-post', 'span3'); ?>
     </div>
 
-    <div id="page" class="container-fluid">
-        <header id="page-header" class="clearfix">
-            <div id="page-navbar" class="clearfix">
-                <div class="breadcrumb-nav"><?php echo $OUTPUT->navbar(); ?></div>
-                <nav class="breadcrumb-button"><?php echo $OUTPUT->page_heading_button(); ?></nav>
-            </div>
-
-            <div id="course-header">
-                <?php echo $OUTPUT->course_header(); ?>
-            </div>
-
-            <?php echo $OUTPUT->blocks('top', 'top-blocks', 'section'); ?>
-        </header>
-
-        <div id="page-content" class="row-fluid">
-            <div id="<?php echo $regionbsid ?>" class="span9">
-                <div class="row-fluid">
-                    <section id="region-main" class="span8 pull-right">
-                        <?php
-                        //echo $html->heading;
-                        echo $OUTPUT->course_content_header();
-                        echo $OUTPUT->blocks('content-top', 'content-top-blocks', 'section');
-                        echo $OUTPUT->main_content();
-                        echo $OUTPUT->course_content_footer();
-                        ?>
-                    </section>
-                    <?php echo $OUTPUT->blocks('side-pre', 'span4 desktop-first-column'); ?>
-                </div>
-            </div>
-            <?php echo $OUTPUT->blocks('side-post', 'span3'); ?>
-        </div>
-
-        <?php if ($show_hidden_blocks) : ?>
+    <?php if ($show_hidden_blocks) : ?>
         <div id="hidden-blocks-admin" class="clearfix">
             <h4><?php echo $str_visibleadminonly; ?></h4>
             <?php echo $OUTPUT->blocks('hidden-dock', 'hidden-dock-blocks', 'div'); ?>
         </div>
-        <?php endif ?>
-    </div>
+    <?php endif ?>
+</div>
 
 <?php include 'inc/footer.php'; ?>
 
