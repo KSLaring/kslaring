@@ -683,7 +683,7 @@ class FELLESDATA_CRON {
                 $admin      = get_admin();
                 $timezone   = $admin->timezone;
                 $date       = usergetdate($pluginInfo->lastexecution, $admin->timezone);
-                $fromDate   = mktime(0, 0, 0, $date['mon'], $date['mday'] - 4, $date['year']);
+                $fromDate   = mktime(0, 0, 0, $date['mon'], $date['mday'], $date['year']);
                 $fromDate   = gmdate('Y-m-d\TH:i:s\Z',$fromDate);
             }else {
                 /* First Execution      */
