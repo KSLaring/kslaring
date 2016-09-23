@@ -789,7 +789,7 @@ class FELLESDATA_CRON {
                     /* Users account info   */
                     $infoUser = new stdClass();
                     $infoUser->personalnumber   = $instance->fodselsnr;
-                    $infoUser->ressursnr        = $instance->ressursnr;
+                    //$infoUser->ressursnr        = $instance->ressursnr;
                     $infoUser->firstname        = $instance->fornavn;
                     $infoUser->lastname         = $instance->mellomnavn . ' ' . $instance->etternavn;
                     $infoUser->email            = $instance->epost;

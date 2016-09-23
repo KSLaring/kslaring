@@ -1388,24 +1388,24 @@ class FSKS_USERS {
             /*
              * First. Check if already exist an entry for this user.
              */
-            if ($userFS->ressursnr) {
-                $rdo = $DB->get_record('user_resource_number',array('userid' => $userId));
-                if ($rdo) {
-                    /* Update   */
-                    $rdo->ressursnr = $userFS->ressursnr;
+            //if ($userFS->ressursnr) {
+            //    $rdo = $DB->get_record('user_resource_number',array('userid' => $userId));
+            //   if ($rdo) {
+            //       /* Update   */
+            //       $rdo->ressursnr = $userFS->ressursnr;
 
-                    /* Execute */
-                    $DB->update_record('user_resource_number',$rdo);
-                }else {
-                    /* Insert   */
-                    $instance = new stdClass();
-                    $instance->userid       = $userId;
-                    $instance->ressursnr    = $userFS->ressursnr;
+            //       /* Execute */
+            //       $DB->update_record('user_resource_number',$rdo);
+            //   }else {
+            //       /* Insert   */
+            //       $instance = new stdClass();
+            //       $instance->userid       = $userId;
+            //       $instance->ressursnr    = $userFS->ressursnr;
 
-                    /* Execute  */
-                    $DB->insert_record('user_resource_number',$instance);
-                }//if_rdo
-            }//if_resource_number
+            //       /* Execute  */
+            //       $DB->insert_record('user_resource_number',$instance);
+            //   }//if_rdo
+            //}//if_resource_number
 
             /* Commit   */
             $trans->allow_commit();
