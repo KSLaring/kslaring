@@ -35,13 +35,13 @@ function fellesdata_cron() {
     $fstExecution   = null;
 
     try {
-            /* Library */
-            require_once('cron/fellesdatacron.php');
-            require_once('lib/fellesdatalib.php');
+        /* Library */
+        require_once('cron/fellesdatacron.php');
+        require_once('lib/fellesdatalib.php');
 
-            /* First execution or no */
-            $activate = get_config('local_fellesdata','cron_active');
-            if ($activate) {
+        /* First execution or no */
+        $activate = get_config('local_fellesdata','cron_active');
+        if ($activate) {
             $lastexecution = get_config('local_fellesdata','lastexecution');
             if ($lastexecution) {
                 $fstExecution = false;
@@ -51,7 +51,7 @@ function fellesdata_cron() {
             \FELLESDATA_CRON::cron($fstExecution);
 
             $lastexecution = get_config('local_fellesdata','lastexecution');
-        
+
             set_config('lastexecution', $now, 'local_fellesdata');
         }
     }catch (Exception $ex) {

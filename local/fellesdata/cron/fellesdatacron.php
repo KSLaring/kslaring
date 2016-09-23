@@ -675,7 +675,8 @@ class FELLESDATA_CRON {
         
         try {
             /* Get Parameters service    */
-            $toDate     = mktime(1, 60, 0, date("m"), date("d"), date("Y"));
+            //$toDate     = mktime(1, 60, 0, date("m"), date("d"), date("Y"));
+            $toDate     = mktime(1, 60, 0, '1', '1', '1900');
             $toDate     = gmdate('Y-m-d\TH:i:s\Z',$toDate);
             if (isset($pluginInfo->lastexecution) && $pluginInfo->lastexecution) {
                 /* No First Execution   */
@@ -757,6 +758,12 @@ class FELLESDATA_CRON {
      *
      * Description
      * Synchronization of users accounts between KS and FS
+     *
+     * @updateDate      23/09/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Add resource number 
      */
     private static function UsersFS_Synchronization($pluginInfo) {
         /* Variables    */
@@ -782,6 +789,7 @@ class FELLESDATA_CRON {
                     /* Users account info   */
                     $infoUser = new stdClass();
                     $infoUser->personalnumber   = $instance->fodselsnr;
+                    $infoUser->ressursnr        = $instance->ressursnr;
                     $infoUser->firstname        = $instance->fornavn;
                     $infoUser->lastname         = $instance->mellomnavn . ' ' . $instance->etternavn;
                     $infoUser->email            = $instance->epost;

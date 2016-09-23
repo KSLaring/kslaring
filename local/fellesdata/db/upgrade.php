@@ -80,6 +80,10 @@ function xmldb_local_fellesdata_upgrade($oldVersion) {
             Fellesdata_Update::Update_FSUserCompetence($dbMan);
         }//UserCompetence
 
+        if ($oldVersion < 2016092300) {
+            Fellesdata_Update::ResourceNumber($dbMan);
+        }//ResourceNumber
+
         return true;
     }catch (Exception $ex) {
         throw $ex;
@@ -374,4 +378,53 @@ class Fellesdata_Update {
             throw $ex;
         }//try_catch
     }//Update_FSCompany
+
+    /**
+     * @param           $dbMan
+     * 
+     * @throws          Exception
+     * 
+     * @creationDate    23/09/2016
+     * @author          eFaktor     (fbv)
+     * 
+     * Description
+     * Add resource number
+     */
+    public static function ResourceNumber($dbMan) {
+        /* Variables */
+        $tblUserResource    = null;
+        $tblImpUsers        = null;
+        $fldResource        = null;
+
+        try {
+            /* First Create the table   */
+            if (!$dbMan->table_exists('user_resource_number')) {
+                /* Create Table */
+                $tblUserResource =  new xmldb_table('user_resource_number');
+
+                /* Add fields   */
+                /* Id               --> Primary Key */
+                $tblUserResource->add_field('id',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, XMLDB_SEQUENCE,null);
+                /* User Id          --> Foreign Key */
+                $tblUserResource->add_field('userid',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, null,null);
+                /* Resource Number  */
+                $tblUserResource->add_field('ressursnr',XMLDB_TYPE_CHAR,'50',null,XMLDB_NOTNULL,null,null);
+
+                /* Add Keys */
+                $tblUserResource->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+                $tblUserResource->add_key('userid',XMLDB_KEY_FOREIGN,array('userid'), 'user', array('id'));
+
+                $dbMan->create_table($tblUserResource);
+            }
+            
+            /* Extra field to fs_imp_users table */
+            $tblImpUsers = new xmldb_table('fs_imp_users');
+            $fldResource       = new xmldb_field('ressursnr', XMLDB_TYPE_CHAR, '50',null,XMLDB_NOTNULL,null,null, 'fodselsnr');
+            if (!$dbMan->field_exists($tblImpUsers, $fldResource)) {
+                $dbMan->add_field($tblImpUsers, $fldResource);
+            }//if_not_exists
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//ResourceNumber
 }//Fellesdata_Update
