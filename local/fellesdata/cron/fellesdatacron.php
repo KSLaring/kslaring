@@ -447,16 +447,16 @@ class FELLESDATA_CRON {
             $fsResponse = self::ProcessTradisService($pluginInfo,TRADIS_FS_USERS);
 
             /* Import/Save data in Temporary tables */
-            //if ($fsResponse) {
+            if ($fsResponse) {
                 /* Open File */
-            //    $pathFile = $CFG->dataroot . '/fellesdata/' . TRADIS_FS_USERS . '.txt';
-            //    if (file_exists($pathFile)) {
+                $pathFile = $CFG->dataroot . '/fellesdata/' . TRADIS_FS_USERS . '.txt';
+                if (file_exists($pathFile)) {
                     /* Get Content */
-            //        $content = file($pathFile);
+                    $content = file($pathFile);
 
-            //        FS::SaveTemporary_Fellesdata($content,IMP_USERS);
-            //    }//if_exists
-            //}
+                    FS::SaveTemporary_Fellesdata($content,IMP_USERS);
+                }//if_exists
+            }
         }catch (Exception $ex) {
             /* Log  */
             $dbLog  = "Error: " . $ex->getMessage() . "\n" . "\n";
@@ -663,7 +663,7 @@ class FELLESDATA_CRON {
      */
     private static function ProcessTradisService($pluginInfo,$service) {
         /* Variables    */
-        global $CFG;
+        global $CFG,$SESSION;
         $dir            = null;
         $responseFile   = null;
         $pathFile       = null;
@@ -675,15 +675,17 @@ class FELLESDATA_CRON {
         
         try {
             /* Get Parameters service    */
-            //$toDate     = mktime(1, 60, 0, date("m"), date("d"), date("Y"));
-            $toDate     = mktime(1, 60, 0, '1', '1', '1900');
+            $toDate     = mktime(1, 60, 0, date("m"), date("d"), date("Y"));
             $toDate     = gmdate('Y-m-d\TH:i:s\Z',$toDate);
+
             if (isset($pluginInfo->lastexecution) && $pluginInfo->lastexecution) {
                 /* No First Execution   */
                 $admin      = get_admin();
                 $timezone   = $admin->timezone;
                 $date       = usergetdate($pluginInfo->lastexecution, $admin->timezone);
-                $fromDate   = mktime(0, 0, 0, $date['mon'], $date['mday'], $date['year']);
+
+                //$fromDate   = mktime(0, 0, 0, $date['mon'], $date['mday']-4, $date['year']);
+                $fromDate   = mktime(0, 0, 0, 1, 1, 1970);
                 $fromDate   = gmdate('Y-m-d\TH:i:s\Z',$fromDate);
             }else {
                 /* First Execution      */
@@ -693,8 +695,6 @@ class FELLESDATA_CRON {
             /* Build url end point  */
             $urlTradis = $pluginInfo->fs_point . '/tardis/fellesdata/' . $service . '?fromDate=' . $fromDate . '&toDate=' . $toDate;
 
-            echo "END POINT: " . $urlTradis . "</br>";
-            
             /* Call Web Service     */
             $ch = curl_init($urlTradis);
             curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false );
