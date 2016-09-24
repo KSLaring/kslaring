@@ -808,6 +808,12 @@ class FELLESDATA_CRON {
                 echo json_encode($response) . "</br>";
                 echo "ERROR: " . $response->error . "</br>";
 
+                if (!is_array($response)) {
+                    $response = (Array)$response;
+                }
+
+                echo "ERROR II: " . $response['error'] . "</br>";
+                
                 //if ($response['error'] == '200') {
                     /* Synchronize Users Accounts FS    */
                 //    FSKS_USERS::Synchronize_UsersFS($usersFS,$response['usersAccounts']);
