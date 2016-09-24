@@ -370,12 +370,6 @@ class FELLESDATA_CRON {
             $client     = new SoapClient($server);
             $response   = $client->$service($params);
 
-            /* Log  */
-            $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' wsUsersAccounts . ' . "\n";
-            $dbLog .= json_encode($response) . "\n" . "\n";
-
-            error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
-
             return $response;
         }catch (Exception $ex) {
             /* Log Error    */
@@ -810,18 +804,21 @@ class FELLESDATA_CRON {
 
                 /* Call Web Service */
                 $response = self::ProcessKSService($pluginInfo,KS_SYNC_USER_ACCOUNT,$usersFS);
-                if ($response['error'] == '200') {
+
+                echo json_encode($response);
+
+                //if ($response['error'] == '200') {
                     /* Synchronize Users Accounts FS    */
-                    FSKS_USERS::Synchronize_UsersFS($usersFS,$response['usersAccounts']);
+                //    FSKS_USERS::Synchronize_UsersFS($usersFS,$response['usersAccounts']);
 
                     /* Clean Table*/
                     //$DB->delete_records('fs_imp_users',array('imported' => '1'));
-                }else {
-                    /* Log  */
-                    $dbLog = "Error WS: " . $response['message'] . "\n" ."\n";
-                    $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH ERROR Synchronization Users Accoutns . ' . "\n";
-                    error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
-                }//if_no_error
+                //}else {
+                //    /* Log  */
+                //    $dbLog = "Error WS: " . $response['message'] . "\n" ."\n";
+                //    $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH ERROR Synchronization Users Accoutns . ' . "\n";
+                //    error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
+                //}//if_no_error
             }//if_Rdo
 
             /* Log  */
