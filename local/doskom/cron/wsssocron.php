@@ -197,6 +197,7 @@ class WSDOSKOM_Cron {
                         $userInfo               = new stdClass();
                         $userInfo->companyid    = $companyId;
                         $userInfo->status       = 0;
+                        $userInfo->personssn    = '';
 
                         foreach ($fieldEntry as $entry) {
                             switch (strtolower(trim($entry->name))) {
@@ -265,10 +266,13 @@ class WSDOSKOM_Cron {
                         }//for_entry
 
                         /* Check if the user already exists*/
-                        if (isset($userInfo->personid)) {
+                        //if (isset($userInfo->personid)) {
+                        if ($userInfo->personssn) {
                             /* Save Temporary Table */
                             $secret = $userInfo->companyid . '##SEP##' . $userInfo->personid;
-                            if (!$DB->get_record('user',array('secret' => $secret))) {
+                            if (!$DB->get_record('user',array('idnumber' => $userInfo->personssn))) {
+                                $DB->insert_record('user_personalia',$userInfo);
+                            }else if (!$DB->get_record('user',array('secret' => $secret))) {
                                 $DB->insert_record('user_personalia',$userInfo);
                             }
                         }
@@ -304,103 +308,112 @@ class WSDOSKOM_Cron {
         $user_id            = null;
         $time               = time();
         $secret             = null;
+        $sql                = null;
 
         try {
             /* Get users To Import  */
+            $sql = " SELECT *
+                     FROM   {user_personalia} 
+                     WHERE  status = 0
+                        AND	(username 	IS NOT NULL OR username != '')
+                        AND	(personssn 	IS NOT NULL OR personssn != '')
+                        AND (firstname 	IS NOT NULL OR firstname != '')
+                        AND (lastname 	IS NOT NULL OR lastname != '')
+                        AND (email 		IS NOT NULL OR email != '') ";
+
             $usersToImport = $DB->get_records('user_personalia',array('status' => 0));
             if ($usersToImport) {
                 foreach($usersToImport as $userInfo) {
-                    /**
-                     * Empty personal number --> No account
-                     */
+                    /* New User */
+                    $new_user = new stdClass();
+
+                    /* Username     */
                     if ($userInfo->personssn) {
-                        /* New User */
-                        $new_user = new stdClass();
-
-                        /* Username     */
-                        if ($userInfo->personssn) {
-                            $new_user->username     = $userInfo->personssn;
-                        }else {
-                            $new_user->username     = $userInfo->username;
-                        }//if_personssn
-                        /* Password     */
-                        $new_user->password     = '';
-                        /* First name   */
-                        $new_user->firstname    = $userInfo->firstname;
-                        /* Last name    */
-                        $new_user->lastname     = $userInfo->lastname;
-                        /* eMail        */
-                        $new_user->email        = $userInfo->email;
-                        /* Lang         */
-                        $new_user->lang         = 'no';
-                        /* City         */
-                        if ($userInfo->city) {
-                            $new_user->city         = $userInfo->city;
-                        }//if_city
-                        /* Country      */
-                        if ($userInfo->country) {
-                            /* Countries List */
-                            $countries      = get_string_manager()->get_list_of_countries(false);
-                            $country        = array_search($userInfo->country,$countries);
-                            if ($country) {
-                                $new_user->country  = $country;
-                            }
-                        }//if_country
-                        /* Personal Number  */
-                        if ($userInfo->personssn) {
-                            $new_user->idnumber = $userInfo->personssn;
-                        }//if_personalNumber
-                        /* Mobile/Phone */
-                        if ($userInfo->mobilephone) {
-                            //$new_user->phone1   = $userInfo->mobilephone;
-                        }//if_mobilePhone
-                        /* Workplace    */
-                        if ($userInfo->divisionname) {
-                            $new_user->department = $userInfo->divisionname;
-                        }//if_divisionName
-
-                        /* Identifier of user in Dossier Profile    */
-                        $new_user->secret       = $userInfo->companyid . '##SEP##'. $userInfo->personid;
-                        $new_user->confirmed    = '1';
-                        $new_user->firstaccess  = $time;
-                        $new_user->timemodified = $time;
-                        $new_user->mnethostid   = $CFG->mnet_localhost_id;
-                        $new_user->auth         = 'saml';
-                        $new_user->password     = 'not cached';
-                        $new_user->source       = 'KOMMIT';
-
-                        /* Check if the user already exists */
-                        /* Check if the user exists with the new version */
-                        $user_id = self::ExistsUser($new_user->secret,$new_user->username,$userInfo->companyid);
-                        if ($user_id) {
-                            /* Update User  */
-                            $new_user->id = $user_id;
-                            $DB->update_record('user',$new_user);
-
-                            /* Update Status    */
-                            $userInfo->status = 1;
-                            $DB->update_record('user_personalia',$userInfo);
-                        }else {
-                            /* New User     */
-                            $new_user->id = $DB->insert_record('user',$new_user);
-
-                            /* New User Company Relation    */
-                            $user_company = new stdClass();
-                            $user_company->userid = $new_user->id;
-                            $user_company->companyid = $userInfo->companyid;
-                            $user_company->timecreated = $time;
-                            $DB->insert_record('user_company',$user_company);
-
-                            /* Update Status    */
-                            $userInfo->status = 1;
-                            $DB->update_record('user_personalia',$userInfo);
-                        }//if_else_user_NewVersion
+                        $new_user->username     = $userInfo->personssn;
+                    }else {
+                        $new_user->username     = $userInfo->username;
                     }//if_personssn
+                    /* Password     */
+                    $new_user->password     = '';
+                    /* First name   */
+                    $new_user->firstname    = $userInfo->firstname;
+                    /* Last name    */
+                    $new_user->lastname     = $userInfo->lastname;
+                    /* eMail        */
+                    $new_user->email        = $userInfo->email;
+                    /* Lang         */
+                    $new_user->lang         = 'no';
+                    /* City         */
+                    if ($userInfo->city) {
+                        $new_user->city         = $userInfo->city;
+                    }//if_city
+                    /* Country      */
+                    if ($userInfo->country) {
+                        /* Countries List */
+                        $countries      = get_string_manager()->get_list_of_countries(false);
+                        $country        = array_search($userInfo->country,$countries);
+                        if ($country) {
+                            $new_user->country  = $country;
+                        }
+                    }//if_country
+                    /* Personal Number  */
+                    if ($userInfo->personssn) {
+                        $new_user->idnumber = $userInfo->personssn;
+                    }//if_personalNumber
+                    /* Mobile/Phone */
+                    if ($userInfo->mobilephone) {
+                        //$new_user->phone1   = $userInfo->mobilephone;
+                    }//if_mobilePhone
+                    /* Workplace    */
+                    if ($userInfo->divisionname) {
+                        $new_user->department = $userInfo->divisionname;
+                    }//if_divisionName
+
+                    /* Identifier of user in Dossier Profile    */
+                    $new_user->secret       = $userInfo->companyid . '##SEP##'. $userInfo->personid;
+                    $new_user->confirmed    = '1';
+                    $new_user->firstaccess  = $time;
+                    $new_user->timemodified = $time;
+                    $new_user->mnethostid   = $CFG->mnet_localhost_id;
+                    $new_user->auth         = 'saml';
+                    $new_user->password     = 'not cached';
+                    $new_user->source       = 'KOMMIT';
+
+                    /* Check if the user already exists */
+                    /* Check if the user exists with the new version */
+                    $user_id = self::ExistsUser($new_user->username,$userInfo->personssn);
+                    if ($user_id) {
+                        /* Update User  */
+                        $new_user->id = $user_id;
+                        $DB->update_record('user',$new_user);
+
+                        /* Update Status    */
+                        $userInfo->status = 1;
+                        $DB->update_record('user_personalia',$userInfo);
+                    }else {
+                        /* New User     */
+                        $new_user->id = $DB->insert_record('user',$new_user);
+
+                        /* New User Company Relation    */
+                        $user_company = new stdClass();
+                        $user_company->userid = $new_user->id;
+                        $user_company->companyid = $userInfo->companyid;
+                        $user_company->timecreated = $time;
+                        $DB->insert_record('user_company',$user_company);
+
+                        /* Update Status    */
+                        $userInfo->status = 1;
+                        $DB->update_record('user_personalia',$userInfo);
+                    }//if_else_user_NewVersion
                 }//for_users_import
             }//if_UsersToImport
 
         }catch (Exception $ex) {
-            mtrace($ex->getTraceAsString());
+            /* Log  */
+            $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' DSOKOM API CRON . ' . "\n";
+            $dbLog .= " ERROR: " . $ex->getTraceAsString();
+            error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
+
             throw $ex;
         }//try_catch
     }//ImportUsers
@@ -418,7 +431,7 @@ class WSDOSKOM_Cron {
      * Description
      * Check if the users already exists
      */
-    private static function ExistsUser($userID,$username,$companyID) {
+    private static function ExistsUser_old($userID,$username,$companyID) {
         /* Variables    */
         global $DB;
 
@@ -435,6 +448,53 @@ class WSDOSKOM_Cron {
                                                         AND	uc.companyid 	= :company
                      WHERE		u.secret    = :secret
                         AND     u.username  = :username ";
+
+            /* Execute  */
+            $rdo = $DB->get_record_sql($sql,$params);
+            if ($rdo) {
+                return $rdo->id;
+            }else {
+                return false;
+            }//if_rdo
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//ExistsUser
+
+    /**
+     * @param           $username
+     * @param           $idNumber
+     *
+     * @return          bool
+     * @throws          Exception
+     *
+     * @creationDate    05/02/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Check if the users already exists
+     *
+     * @updateDate      24/09/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Check if the user already exits by username or idnumber
+     */
+    private static function ExistsUser($username,$idNumber) {
+        /* Variables    */
+        global $DB;
+
+        try {
+            /* Search Criteria  */
+            $params['username']     = $username;
+            $params['idnumber']     = $idNumber;
+
+            /* SQL Instruction */
+            $sql = " SELECT		u.id
+                     FROM		{user} 				u
+                     WHERE		(u.username  = :username
+                                 OR 
+                                 u.idnumber = :idnumber) ";
 
             /* Execute  */
             $rdo = $DB->get_record_sql($sql,$params);
