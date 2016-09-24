@@ -805,27 +805,22 @@ class FELLESDATA_CRON {
                 /* Call Web Service */
                 $response = self::ProcessKSService($pluginInfo,KS_SYNC_USER_ACCOUNT,$usersFS);
 
-                echo json_encode($response) . "</br>";
-                echo "ERROR: " . $response->error . "</br>";
-
                 if (!is_array($response)) {
                     $response = (Array)$response;
                 }
-
-                echo "ERROR II: " . $response['error'] . "</br>";
                 
-                //if ($response['error'] == '200') {
+                if ($response['error'] == '200') {
                     /* Synchronize Users Accounts FS    */
-                //    FSKS_USERS::Synchronize_UsersFS($usersFS,$response['usersAccounts']);
+                    FSKS_USERS::Synchronize_UsersFS($usersFS,$response['usersAccounts']);
 
                     /* Clean Table*/
                     //$DB->delete_records('fs_imp_users',array('imported' => '1'));
-                //}else {
-                //    /* Log  */
-                //    $dbLog = "Error WS: " . $response['message'] . "\n" ."\n";
-                //    $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH ERROR Synchronization Users Accoutns . ' . "\n";
-                //    error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
-                //}//if_no_error
+                }else {
+                    /* Log  */
+                    $dbLog = "Error WS: " . $response['message'] . "\n" ."\n";
+                    $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH ERROR Synchronization Users Accoutns . ' . "\n";
+                    error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
+                }//if_no_error
             }//if_Rdo
 
             /* Log  */
