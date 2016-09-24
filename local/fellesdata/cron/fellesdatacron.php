@@ -35,7 +35,7 @@ class FELLESDATA_CRON {
     /* PUBLIC */
     /**********/
 
-    public static function OLDcron($fstExecution) {
+    public static function cron($fstExecution) {
         /* Variables    */
         global $SESSION,$CFG;
         $pluginInfo = null;
@@ -370,6 +370,10 @@ class FELLESDATA_CRON {
             $client     = new SoapClient($server);
             $response   = $client->$service($params);
 
+            if (!is_array($response)) {
+                $response = (Array)$response;
+            }
+            
             return $response;
         }catch (Exception $ex) {
             /* Log Error    */
@@ -780,7 +784,7 @@ class FELLESDATA_CRON {
             /* Get user to synchronize  */
             mtrace('LIMIT 0,2000');
             
-            $rdo = $DB->get_records('fs_imp_users',array('imported' => '0'),'','*',0,2);
+            $rdo = $DB->get_records('fs_imp_users',array('imported' => '0'),'','*');
 
             /* Log  */
             $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' START Synchronization Users Accoutns . ' . "\n";
@@ -804,10 +808,6 @@ class FELLESDATA_CRON {
 
                 /* Call Web Service */
                 $response = self::ProcessKSService($pluginInfo,KS_SYNC_USER_ACCOUNT,$usersFS);
-
-                if (!is_array($response)) {
-                    $response = (Array)$response;
-                }
                 
                 if ($response['error'] == '200') {
                     /* Synchronize Users Accounts FS    */
