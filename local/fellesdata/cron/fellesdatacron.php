@@ -379,7 +379,8 @@ class FELLESDATA_CRON {
             return $response;
         }catch (Exception $ex) {
             /* Log Error    */
-            $dbLog = "ERROR: " . $ex->getMessage() . "\n\n";
+            $dbLog = "ERROR: " . $ex->getMessage() .  "\n\n";
+            $dbLog .= $ex->getTraceAsString() . "\n\n";
             $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' Error calling web service . ' . "\n";
             error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
             throw $ex;
