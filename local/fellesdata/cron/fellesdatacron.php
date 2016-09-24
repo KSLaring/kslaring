@@ -372,7 +372,7 @@ class FELLESDATA_CRON {
 
             /* Log  */
             $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' wsUsersAccounts . ' . "\n";
-            $dbLog .= $response . "\n" . "\n";
+            $dbLog .= json_encode($response) . "\n" . "\n";
 
             error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
 
