@@ -963,12 +963,6 @@ class local_wsks_external extends external_api {
             /* Synchronization */
             WS_FELLESDATA::Synchronize_UsersAccounts($usersAccounts,$result);
 
-            /* Log  */
-            $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' wsUsersAccounts . ' . "\n";
-            $dbLog .= json_encode($result) . "\n" . "\n";
-
-            error_log($dbLog, 3, $CFG->dataroot . "/wsUsersAccounts.log");
-
             return $result;
         }catch (Exception $ex) {
             if ($result['error'] == '200') {

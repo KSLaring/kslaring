@@ -279,8 +279,6 @@ class WS_FELLESDATA {
                     $infoImported->key              = $key;
 
                     $imported[$key] = $infoImported;
-
-                    $dbLog .= $key . " - " . json_encode($infoImported) . "\n" . "\n";
                 }//if_userid
             }//for_usersAccounts
 
