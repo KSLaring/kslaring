@@ -40,6 +40,28 @@ $PAGE->set_url('/user/editadvanced.php', array('course' => $course, 'id' => $id)
 
 $course = $DB->get_record('course', array('id' => $course), '*', MUST_EXIST);
 
+/* Log  */
+/**
+ * @updateDate  26/09/2016
+ * @author      eFaktor     (fbv)
+ *
+ * Add LOG
+ */
+global $CFG;
+
+/* Check if exists temporary directory */
+$dir = $CFG->dataroot . '/login';
+if (!file_exists($dir)) {
+    mkdir($dir);
+}
+
+$pathFile = $dir . '/' . $id . '.log';
+$dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' KSLæring - Log In (Edit Advanced). ' . "\n";
+$dbLog .= "User : " . $id . "\n";
+$dbLog .= "USER (global) : " . $USER->id . "\n";
+error_log($dbLog, 3, $pathFile);
+/* FIN ADD LOG (fbv) */
+
 if (!empty($USER->newadminuser)) {
     // Ignore double clicks, we must finish all operations before cancelling request.
     ignore_user_abort(true);
@@ -76,6 +98,14 @@ if ($id == -1) {
     // Editing existing user.
     require_capability('moodle/user:update', $systemcontext);
     $user = $DB->get_record('user', array('id' => $id), '*', MUST_EXIST);
+
+    /* Add Log  (fbv)       */
+    $dbLog = "\n" . " Editing an existing User " . "\n";
+    $dbLog .= " User to Edit : " . $user->id . "\n";
+    $dbLog .= " USER (global - log in): " . $USER->id . "\n";
+    error_log($dbLog, 3, $pathFile);
+    /* Fin Add Log (fbv)    */
+
     $PAGE->set_context(context_user::instance($user->id));
     if ($user->id != $USER->id) {
         $PAGE->navigation->extend_for_user($user);
@@ -171,6 +201,14 @@ if ($usernew = $userform->get_data()) {
     $usernew->timemodified = time();
     $createpassword = false;
 
+    /* Add Log  (fbv)       */
+    $dbLog = "\n" . " USER DATA AFFTER EDITTED BUT NOT UPDATED YET - WITH NEW INFORMATION  " . "\n";
+    $dbLog .= " User to Edit : " . $user->id . "\n";
+    $dbLog .= " User Editted : " . $usernew->id . "\n";
+    $dbLog .= " USER (global - log in): " . $USER->id . "\n";
+    error_log($dbLog, 3, $pathFile);
+    /* Fin Add Log (fbv)    */
+
     if ($usernew->id == -1) {
         unset($usernew->id);
         $createpassword = !empty($usernew->createpassword);
@@ -249,6 +287,14 @@ if ($usernew = $userform->get_data()) {
     // Reload from db.
     $usernew = $DB->get_record('user', array('id' => $usernew->id));
 
+    /* Add Log  (fbv)       */
+    $dbLog = "\n" . " USER DATA AFFTER EDITTED AND ALREADY UPDATED  " . "\n";
+    $dbLog .= " User to Edit : " . $user->id . "\n";
+    $dbLog .= " User Editted : " . $usernew->id . "\n";
+    $dbLog .= " USER (global - log in): " . $USER->id . "\n";
+    error_log($dbLog, 3, $pathFile);
+    /* Fin Add Log (fbv)    */
+
     if ($createpassword) {
         setnew_password_and_mail($usernew);
         unset_user_preference('create_password', $usernew);
@@ -262,7 +308,25 @@ if ($usernew = $userform->get_data()) {
         \core\event\user_updated::create_from_userid($usernew->id)->trigger();
     }
 
+    /* Add Log  (fbv)       */
+    $dbLog = "\n" . " BEFORE COMPARING user->id with USER->id  " . "\n";
+    $dbLog .= " User to Edit : " . $user->id . "\n";
+    $dbLog .= " User Editted : " . $usernew->id . "\n";
+    $dbLog .= " USER (global - log in): " . $USER->id . "\n";
+
+    $dbLog .= "WHY IS IT DOING THAT? REASON???" . "\n";
+    error_log($dbLog, 3, $pathFile);
+    /* Fin Add Log (fbv)    */
+
     if ($user->id == $USER->id) {
+        /* Add Log  (fbv)       */
+        $dbLog = "\n" . " AFTER COMPARING user->id with USER->id  " . "\n";
+        $dbLog .= " User to Edit : " . $user->id . "\n";
+        $dbLog .= " User Editted : " . $usernew->id . "\n";
+        $dbLog .= " USER (global - log in): " . $USER->id . "\n";
+        error_log($dbLog, 3, $pathFile);
+        /* Fin Add Log (fbv)    */
+
         // Override old $USER session variable.
         foreach ((array)$usernew as $variable => $value) {
             if ($variable === 'description' or $variable === 'password') {
@@ -289,21 +353,47 @@ if ($usernew = $userform->get_data()) {
             redirect("$CFG->wwwroot/user/view.php?id=$USER->id&course=$course->id");
         }
     } else {
+        /* Add Log  (fbv)       */
+        $dbLog = "\n" . " AFTER COMPARING user->id with USER->id --> FALSE  " . "\n";
+        $dbLog .= " User to Edit : " . $user->id . "\n";
+        $dbLog .= " User Editted : " . $usernew->id . "\n";
+        $dbLog .= " USER (global - log in): " . $USER->id . "\n";
+        $dbLog .= " NEXT ACTION IS REMOVE STALE SESSIONS???";
+        $aux = "$CFG->wwwroot/$CFG->admin/user.php";
+        $dbLog .= $aux . "\n";
+        error_log($dbLog, 3, $pathFile);
+        /* Fin Add Log (fbv)    */
+
         \core\session\manager::gc(); // Remove stale sessions.
         redirect("$CFG->wwwroot/$CFG->admin/user.php");
     }
     // Never reached..
 }
 
+
+
 // Make sure we really are on the https page when https login required.
 $PAGE->verify_https_required();
 
-
+$dbLog = "\n";
 // Display page header.
 if ($user->id == -1 or ($user->id != $USER->id)) {
+    /* ADD LOG (fbv)    */
+    $dbLog .= "\n" . " LOD HEADER. 1" . "\n";
+    /* Fin LOG (fbv)    */
+    
     if ($user->id == -1) {
+        /* ADD LOG (fbv)    */
+        $dbLog .= " -1 " . "\n";
+        /* END LOG (fbv)    */
         echo $OUTPUT->header();
     } else {
+        /* ADD LOG (fbv) */
+        $dbLog .= " != -1 " . "\n";
+        $dbLog .= "user -> " . $user->id . "\n";
+        $dbLog .= " USER (global - log in): " . $USER->id . "\n";
+        /* END LOG (fbv)    */
+        
         $userfullname = fullname($user, true);
         $streditmyprofile = get_string('editmyprofile');
         $PAGE->set_heading($SITE->fullname);
@@ -312,6 +402,12 @@ if ($user->id == -1 or ($user->id != $USER->id)) {
         echo $OUTPUT->heading($userfullname);
     }
 } else if (!empty($USER->newadminuser)) {
+    /* ADD LOG (fbv) */
+    $dbLog .= " !empty USER-newadminuser" . "\n";
+    $dbLog .= "user -> " . $user->id . "\n";
+    $dbLog .= " USER (global - log in): " . $USER->id . "\n";
+    /* END LOG (fbv)    */
+    
     $strinstallation = get_string('installation', 'install');
     $strprimaryadminsetup = get_string('primaryadminsetup');
 
@@ -324,6 +420,12 @@ if ($user->id == -1 or ($user->id != $USER->id)) {
     echo $OUTPUT->box(get_string('configintroadmin', 'admin'), 'generalbox boxwidthnormal boxaligncenter');
     echo '<br />';
 } else {
+    /* ADD LOG (fbv) */
+    $dbLog .= " LAST CASE               " . "\n";
+    $dbLog .= " user ->                 " . $user->id . "\n";
+    $dbLog .= " USER (global - log in): " . $USER->id . "\n";
+    /* END LOG (fbv)    */
+    
     $streditmyprofile = get_string('editmyprofile');
     $strparticipants  = get_string('participants');
     $strnewuser       = get_string('newuser');
@@ -335,6 +437,10 @@ if ($user->id == -1 or ($user->id != $USER->id)) {
     echo $OUTPUT->header();
     echo $OUTPUT->heading($userfullname);
 }
+
+/* ADD LOG (fbv)    */
+error_log($dbLog, 3, $pathFile);
+/* Fin LOG (fbv)    */
 
 // Finally display THE form.
 $userform->display();

@@ -32,6 +32,27 @@ $PAGE->set_context(context_system::instance());
 $sesskey = optional_param('sesskey', '__notpresent__', PARAM_RAW); // we want not null default to prevent required sesskey warning
 $login   = optional_param('loginpage', 0, PARAM_BOOL);
 
+/* Log  */
+/**
+ * @updateDate  26/09/2016
+ * @author      eFaktor     (fbv)
+ *
+ * Add LOG
+ */
+global $CFG;
+
+/* Check if exists temporary directory */
+$dir = $CFG->dataroot . '/login';
+if (!file_exists($dir)) {
+    mkdir($dir);
+}
+
+$pathFile = $dir . '/' . $USER->id . '.log';
+$dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' KSLæring - Log OUT (). ' . "\n";
+$dbLog .= "USER (global) : " . $USER->id . "\n";
+error_log($dbLog, 3, $pathFile);
+/* FIN ADD LOG (fbv) */
+
 // can be overridden by auth plugins
 if ($login) {
     $redirect = get_login_url();

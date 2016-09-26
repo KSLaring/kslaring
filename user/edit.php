@@ -38,6 +38,28 @@ $cancelemailchange = optional_param('cancelemailchange', 0, PARAM_INT);   // Cou
 
 $PAGE->set_url('/user/edit.php', array('course' => $course, 'id' => $userid));
 
+/* Log  */
+/**
+ * @updateDate  26/09/2016
+ * @author      eFaktor     (fbv)
+ *
+ * Add LOG
+ */
+global $CFG;
+
+/* Check if exists temporary directory */
+$dir = $CFG->dataroot . '/login';
+if (!file_exists($dir)) {
+    mkdir($dir);
+}
+
+$pathFile = $dir . '/' . $userid . '.log';
+$dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' KSLæring - Log In (Edit). ' . "\n";
+$dbLog .= "User : " . $id . "\n";
+$dbLog .= "USER (global) : " . $USER->id . "\n";
+error_log($dbLog, 3, $pathFile);
+/* FIN ADD LOG (fbv) */
+
 if (!$course = $DB->get_record('course', array('id' => $course))) {
     print_error('invalidcourseid');
 }
@@ -219,6 +241,14 @@ if ($usernew = $userform->get_data()) {
         print_error('cannotupdateprofile');
     }
 
+    /* Add Log  (fbv)       */
+    $dbLog = "\n" . " USER DATA AFFTER EDITTED BUT NOT UPDATED YET - WITH NEW INFORMATION  " . "\n";
+    $dbLog .= " User to Edit : " . $user->id . "\n";
+    $dbLog .= " User Editted : " . $usernew->id . "\n";
+    $dbLog .= " USER (global - log in): " . $USER->id . "\n";
+    error_log($dbLog, 3, $pathFile);
+    /* Fin Add Log (fbv)    */
+
     // Update user with new profile data.
     user_update_user($usernew, false, false);
 
@@ -247,6 +277,14 @@ if ($usernew = $userform->get_data()) {
     // Trigger event.
     \core\event\user_updated::create_from_userid($user->id)->trigger();
 
+    /* Add Log  (fbv)       */
+    $dbLog = "\n" . " USER DATA AFFTER EDITTED AND ALREADY UPDATED  " . "\n";
+    $dbLog .= " User to Edit : " . $user->id . "\n";
+    $dbLog .= " User Editted : " . $usernew->id . "\n";
+    $dbLog .= " USER (global - log in): " . $USER->id . "\n";
+    error_log($dbLog, 3, $pathFile);
+    /* Fin Add Log (fbv)    */
+
     // If email was changed and confirmation is required, send confirmation email now to the new address.
     if ($emailchanged && $CFG->emailchangeconfirmation) {
         $tempuser = $DB->get_record('user', array('id' => $user->id), '*', MUST_EXIST);
@@ -270,7 +308,25 @@ if ($usernew = $userform->get_data()) {
     // Reload from db, we need new full name on this page if we do not redirect.
     $user = $DB->get_record('user', array('id' => $user->id), '*', MUST_EXIST);
 
+    /* Add Log  (fbv)       */
+    $dbLog = "\n" . " BEFORE COMPARING user->id with USER->id  " . "\n";
+    $dbLog .= " User to Edit : " . $user->id . "\n";
+    $dbLog .= " User Editted : " . $usernew->id . "\n";
+    $dbLog .= " USER (global - log in): " . $USER->id . "\n";
+
+    $dbLog .= "WHY IS IT DOING THAT? REASON???" . "\n";
+    $dbLog .= "\n" . "In this case, it doesn't kill any session " . "\n";
+    error_log($dbLog, 3, $pathFile);
+    /* Fin Add Log (fbv)    */
+
     if ($USER->id == $user->id) {
+        /* Add Log  (fbv)       */
+        $dbLog = "\n" . " AFTER COMPARING user->id with USER->id  " . "\n";
+        $dbLog .= " User to Edit : " . $user->id . "\n";
+        $dbLog .= " User Editted : " . $usernew->id . "\n";
+        $dbLog .= " USER (global - log in): " . $USER->id . "\n";
+        error_log($dbLog, 3, $pathFile);
+        /* Fin Add Log (fbv)    */
         // Override old $USER session variable if needed.
         foreach ((array)$user as $variable => $value) {
             if ($variable === 'description' or $variable === 'password') {

@@ -53,6 +53,28 @@ if ($hassiteconfig && moodle_needs_upgrading()) {
 
 $strmymoodle = get_string('myhome');
 
+/* Log  */
+/**
+ * @updateDate  26/09/2016
+ * @author      eFaktor     (fbv)
+ *
+ * Add LOG
+ */
+global $CFG;
+
+/* Check if exists temporary directory */
+$dir = $CFG->dataroot . '/login';
+if (!file_exists($dir)) {
+    mkdir($dir);
+}
+
+$pathFile = $dir . '/' . $userid . '.log';
+$dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' KSLæring - Log In (My index). ' . "\n";
+$dbLog .= "User : " . $userid . "\n";
+$dbLog .= "USER (global) : " . $USER->id . "\n";
+error_log($dbLog, 3, $pathFile);
+/* FIN ADD LOG (fbv) */
+
 if (isguestuser()) {  // Force them to see system default, no editing allowed
     // If guests are not allowed my moodle, send them to front page.
     if (empty($CFG->allowguestmymoodle)) {
