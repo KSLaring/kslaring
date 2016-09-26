@@ -30,7 +30,7 @@
  * Add Invoice information option
  */
 namespace enrol_waitinglist\method\self;
- 
+
 require_once($CFG->libdir.'/formslib.php');
 
 class enrolmethodself_enrolform extends \moodleform {
@@ -94,12 +94,24 @@ class enrolmethodself_enrolform extends \moodleform {
                  * 
                  * Description
                  * Add selector companies
+                 * 
+                 * @updateDate  26/0972016
+                 * @author      eFaktor     (fbv)
+                 * 
+                 * Description
+                 * Add selectors company depends on option from method
                  */
-                $mform->addElement('header', 'levels_connected', get_string('company_sel', 'enrol_waitinglist'));
-                /* Add Levels   */
-                for ($i = 0; $i <= 3; $i++) {
-                    $this->Add_CompanyLevel($i,$this->_form);
-                }//for_levels
+                if ($waitinglist->{ENROL_WAITINGLIST_FIELD_APPROVAL} != COMPANY_NO_DEMANDED) {
+                    $mform->addElement('header', 'levels_connected', get_string('company_sel', 'enrol_waitinglist'));
+                    /* Add Levels   */
+                    for ($i = 0; $i <= 3; $i++) {
+                        $this->Add_CompanyLevel($i,$this->_form);
+                    }//for_levels                    
+                }else {
+                    $mform->addElement('hidden', 'level_3');
+                    $mform->setType('level_3', PARAM_INT);
+                    $mform->setDefault('level_3', 0);
+                }
 
                 /**
                  * @updateDate  28/10/2015

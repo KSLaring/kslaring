@@ -15,6 +15,7 @@ define('AJAX_SCRIPT', true);
 
 require('../../config.php');
 require_once('classes/method/manual/enrolmethodmanual.php');
+require_once('lib.php');
 
 /* PARAMS */
 $courseId           = required_param('course',PARAM_INT);
@@ -52,7 +53,14 @@ $optSelector = $USER->manual_selectors[$selectorId];
 /* Get Class    */
 $class = $optSelector['class'];
 
-$results = enrol_waitinglist\method\manual\enrolmethodmanual::$class($instanceId,$courseId,$levelThree,$search);
+/* GET Instance */
+$instance = $DB->get_record('enrol', array('courseid' =>$courseId, 'enrol' => 'waitinglist','id' => $instanceId));
+if ($instance->{ENROL_WAITINGLIST_FIELD_APPROVAL} == COMPANY_NO_DEMANDED) {
+    $noDemanded = true;
+}else {
+    $noDemanded = false;
+}
+$results = enrol_waitinglist\method\manual\enrolmethodmanual::$class($instanceId,$courseId,$levelThree,$noDemanded,$search);
 
 foreach ($results as $groupName => $manuals) {
     $groupData = array('name' => $groupName, 'users' => array());

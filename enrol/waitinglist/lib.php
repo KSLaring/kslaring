@@ -46,9 +46,17 @@ define('ENROL_WAITINGLIST_FIELD_APPROVAL','customint7');
 define('ENROL_WAITINGLIST_FIELD_INTERNAL_PRICE','customtext3');
 define('ENROL_WAITINGLIST_FIELD_EXTERNAL_PRICE','customtext4');
 
+/**
+ * @updateDate  26/09/2016
+ * @author      eFaktor     (fbv)
+ *
+ * Description
+ * Add an extra option no demand company
+ */
 define('APPROVAL_NONE',0);
 define('APPROVAL_REQUIRED',1);
 define('APPROVAL_MESSAGE',2);
+define('COMPANY_NO_DEMANDED',3);
 
 class enrol_waitinglist_plugin extends enrol_plugin {
 
@@ -695,6 +703,7 @@ class enrol_waitinglist_plugin extends enrol_plugin {
                         'expirythreshold'                           => $this->get_config('expirythreshold', 86400),
                         ENROL_WAITINGLIST_FIELD_INVOICE             => 0,
                         ENROL_WAITINGLIST_FIELD_APPROVAL            => 0,
+                        ENROL_WAITING_LIST_NO_DEMAND_COMPANY        => 0,
                         ENROL_WAITINGLIST_FIELD_INTERNAL_PRICE      => 0,
                         ENROL_WAITINGLIST_FIELD_EXTERNAL_PRICE      => 0
                        );

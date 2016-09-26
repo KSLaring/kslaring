@@ -108,14 +108,26 @@ class enrolmethodunnamedbulk_enrolform extends \moodleform {
                  *
                  * Description
                  * Add selector companies
+                 * 
+                 * @updateDate  26/09/2016
+                 * @author      eFaktor     (fbv)
+                 * 
+                 * Description
+                 * Company selector if it is demanded
                  */
-                $mform->addElement('header', 'levels_connected', get_string('company_sel', 'enrol_waitinglist'));
-                /* Add Levels   */
-                for ($i = 0; $i <= 3; $i++) {
-                    $this->Add_CompanyLevel($i,$this->_form);
-                }//for_levels
-                if ($queuestatus->companyid) {
-                    $mform->setDefault('level_3',$queuestatus->companyid);
+                if ($waitinglist->{ENROL_WAITINGLIST_FIELD_APPROVAL} != COMPANY_NO_DEMANDED) {
+                    $mform->addElement('header', 'levels_connected', get_string('company_sel', 'enrol_waitinglist'));
+                    /* Add Levels   */
+                    for ($i = 0; $i <= 3; $i++) {
+                        $this->Add_CompanyLevel($i,$this->_form);
+                    }//for_levels
+                    if ($queuestatus->companyid) {
+                        $mform->setDefault('level_3',$queuestatus->companyid);
+                    }                    
+                }else {
+                    $mform->addElement('hidden', 'level_3');
+                    $mform->setType('level_3', PARAM_INT);
+                    $mform->setDefault('level_3', 0);
                 }
 
                 //add form input elements

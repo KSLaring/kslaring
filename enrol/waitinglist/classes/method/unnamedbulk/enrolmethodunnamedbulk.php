@@ -224,10 +224,19 @@ class enrolmethodunnamedbulk extends \enrol_waitinglist\method\enrolmethodbase {
         global $USER,$DB;
         $rejected = null;
 
-        if (!$rdo = $DB->get_records('user_info_competence_data',array('level' => 3,'userid' =>$USER->id),'id')) {
-            $urlProfile = new \moodle_url('/user/profile/field/competence/competence.php',array('id' => $USER->id));
-            $lnkProfile = "<a href='". $urlProfile . "'>". get_string('profile') . "</a>";
-            return get_string('no_competence','enrol_waitinglist',$lnkProfile);
+        /**
+         * @updateDate  26/09/2016
+         * @author      eFaktor     (fbv)
+         *
+         * Description
+         * If company is compulsory
+         */
+        if ($waitinglist->{ENROL_WAITINGLIST_FIELD_APPROVAL} != COMPANY_NO_DEMANDED) {
+            if (!$rdo = $DB->get_records('user_info_competence_data',array('level' => 3,'userid' =>$USER->id),'id')) {
+                $urlProfile = new \moodle_url('/user/profile/field/competence/competence.php',array('id' => $USER->id));
+                $lnkProfile = "<a href='". $urlProfile . "'>". get_string('profile') . "</a>";
+                return get_string('no_competence','enrol_waitinglist',$lnkProfile);
+            }
         }
         
         if ($waitinglist->{ENROL_WAITINGLIST_FIELD_APPROVAL} == APPROVAL_REQUIRED) {
@@ -579,7 +588,9 @@ class enrolmethodunnamedbulk extends \enrol_waitinglist\method\enrolmethodbase {
             /**
              * To initialize the organization structure
              */
-            $this->Init_Organization_Structure(false,$waitinglist->{ENROL_WAITINGLIST_FIELD_INVOICE});
+            if ($waitinglist->{ENROL_WAITINGLIST_FIELD_APPROVAL} != COMPANY_NO_DEMANDED) {
+                $this->Init_Organization_Structure(false,$waitinglist->{ENROL_WAITINGLIST_FIELD_INVOICE});    
+            }
             
             $qstatus = new \stdClass;
             $qstatus->hasentry      = false;
