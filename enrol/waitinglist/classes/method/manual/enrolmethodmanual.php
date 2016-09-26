@@ -389,6 +389,7 @@ class enrolmethodmanual extends \enrol_waitinglist\method\enrolmethodbase{
      * @param           $instanceId
      * @param           $courseId
      * @param           $levelThree
+     * @param           $noDemanded
      * @param           $search
      *
      * @return          array
@@ -397,11 +398,12 @@ class enrolmethodmanual extends \enrol_waitinglist\method\enrolmethodbase{
      * @creationDate    18/08/2016
      * @author          eFaktor     (fbv)
      */
-    public static function FindEnrolledUsers($instanceId,$courseId,$levelThree,$search) {
+    public static function FindEnrolledUsers($instanceId,$courseId,$levelThree,$noDemanded,$search) {
         /* Variables */
         global $DB;
         $rdo            = null;
         $sql            = null;
+        $sqlWhere       = null;
         $params         = null;
         $locate         = '';
         $extra          = null;
@@ -418,20 +420,29 @@ class enrolmethodmanual extends \enrol_waitinglist\method\enrolmethodbase{
             $params['three']    = $levelThree;
             
             /* SQL Instruction  */
+
             $sql = " SELECT	u.id,
                             u.firstname,
                             u.lastname,
                             u.email
                      FROM		{user}				          u
-                        JOIN	{user_info_competence_data}	  uid	ON 	uid.userid 		= u.id
-													                AND	uid.companyid	= :three
                         JOIN	{user_enrolments}	          ue	ON 	ue.userid       = u.id
                                                                     AND ue.enrolid      = :instance
                         JOIN	{enrol}				          e	    ON 	e.id            = ue.enrolid
-                                                                    AND e.courseid      = :course
-                                                        
-                     WHERE	u.deleted 	= 0
-                        AND	u.username != 'guest' ";
+                                                                    AND e.courseid      = :course ";
+
+            /* SQL Criteria */
+            $sqlWhere = " WHERE	u.deleted 	= 0
+                            AND	u.username != 'guest' ";
+
+            /* Company Demanded or not */
+            if (!$noDemanded) {
+                $sql .= " JOIN   {user_info_competence_data}    uid	ON 	uid.userid 		= u.id 
+                                                                    AND	uid.companyid	= :three ";
+            }
+
+            /* Add criteria */
+            $sql .= $sqlWhere;
 
             /* Search Option */
             if ($search) {
@@ -491,6 +502,7 @@ class enrolmethodmanual extends \enrol_waitinglist\method\enrolmethodbase{
     /**
      * @param           $instanceId
      * @param           $courseId
+     * @param           $noDemanded
      * @param           $search
      *
      * @return          array
@@ -502,11 +514,12 @@ class enrolmethodmanual extends \enrol_waitinglist\method\enrolmethodbase{
      * Description
      * Find potential users to enrol in
      */
-    public static function FindCandidatesUsers($instanceId,$courseId,$levelThree,$search) {
+    public static function FindCandidatesUsers($instanceId,$courseId,$levelThree,$noDemanded,$search) {
         /* Variables */
         global $DB;
         $rdo            = null;
         $sql            = null;
+        $sqlWhere       = null;
         $params         = null;
         $locate         = '';
         $extra          = null;
@@ -527,18 +540,29 @@ class enrolmethodmanual extends \enrol_waitinglist\method\enrolmethodbase{
                             u.lastname,
                             u.email
                      FROM			{user}	                      u
-                     	JOIN	    {user_info_competence_data}	  uid	ON 	uid.userid 		= u.id
-													                    AND	uid.companyid	= :three
                         LEFT JOIN (
                                     SELECT	  ue.userid
                                     FROM	  {enrol}			e
                                         JOIN  {user_enrolments} ue	ON 	ue.enrolid	= e.id
                                                                     AND	e.courseid	= :course
                                   ) uen ON uen.userid = u.id
-                     WHERE	u.deleted 	= 0
-                        AND	u.username != 'guest'
-                        AND uen.userid IS NULL ";
+                     ";
 
+            /* SQL criteria     */
+            $sqlWhere = " WHERE	u.deleted 	= 0
+                            AND	u.username != 'guest'
+                            AND uen.userid IS NULL  ";
+
+            /* Company Demanded or not */
+            if (!$noDemanded) {
+                $sql .= " JOIN   {user_info_competence_data}	  uid	ON 	uid.userid 		= u.id 
+                                                                    AND	uid.companyid	= :three ";
+            }
+
+            /* Add criteria */
+            $sql .= $sqlWhere;
+
+            /* With or without competence profile */
             /* Search Option */
             if ($search) {
                 $extra = explode(' ',$search);
@@ -562,9 +586,14 @@ class enrolmethodmanual extends \enrol_waitinglist\method\enrolmethodbase{
             $sql .= " ORDER BY u.firstname, u.lastname ";
 
             /* Execute  */
-            if ($levelThree) {
+            if (!$noDemanded) {
+                if ($levelThree) {
+                    $rdo = $DB->get_records_sql($sql,$params);
+                }
+            }else {
                 $rdo = $DB->get_records_sql($sql,$params);
             }
+
             if ($rdo) {
                 $total = count($rdo);
                 if ($total > self::MAX_USERS) {

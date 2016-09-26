@@ -82,7 +82,9 @@ $form->display();
 
 /* Initialise Selectors */
 enrol_waitinglist\method\manual\enrolmethodmanual::Init_ManualSelectors($instance->id,$course->id,$addSearch,$removeSearch);
-enrol_waitinglist\method\manual\enrolmethodmanual::Init_Organization_Structure(true);
+if ($instance->{ENROL_WAITINGLIST_FIELD_APPROVAL} != COMPANY_NO_DEMANDED) {
+    enrol_waitinglist\method\manual\enrolmethodmanual::Init_Organization_Structure(true);
+}
 
 echo $OUTPUT->footer();
 

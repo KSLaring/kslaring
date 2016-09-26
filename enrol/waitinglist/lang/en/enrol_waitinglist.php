@@ -284,4 +284,6 @@ $string['users_connected'] = 'Users connected';
 $string['no_competence']   = 'Sorry, you cannot enroll because there is no workplace connected with your profile. Please, update your profile before enrolling to the course.
                               <p>You can update your profile click on <strong>{$a}</strong></p>';
 
+$string['company_demanded'] = 'No demand company';
+
 

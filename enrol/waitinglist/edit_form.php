@@ -105,6 +105,8 @@ class enrol_waitinglist_edit_form extends moodleform {
         $mform->addElement('radio',ENROL_WAITINGLIST_FIELD_APPROVAL,get_string('approval','enrol_waitinglist'),'',APPROVAL_REQUIRED);
         /* Mail to manager option   */
         $mform->addElement('radio',ENROL_WAITINGLIST_FIELD_APPROVAL,get_string('approval_message','enrol_waitinglist'),'',APPROVAL_MESSAGE);
+        /* Company Demanded */
+        $mform->addElement('radio',ENROL_WAITINGLIST_FIELD_APPROVAL,get_string('company_demanded','enrol_waitinglist'),'',COMPANY_NO_DEMANDED);
 
         /*
         $settings->add(new admin_setting_configtext('enrol_waitinglist/maxenrolments', get_string('maxenrolments', 'enrol_waitinglist'), get_string('maxenrolments_desc', 'enrol_waitinglist'), ''));
