@@ -703,7 +703,6 @@ class enrol_waitinglist_plugin extends enrol_plugin {
                         'expirythreshold'                           => $this->get_config('expirythreshold', 86400),
                         ENROL_WAITINGLIST_FIELD_INVOICE             => 0,
                         ENROL_WAITINGLIST_FIELD_APPROVAL            => 0,
-                        ENROL_WAITING_LIST_NO_DEMAND_COMPANY        => 0,
                         ENROL_WAITINGLIST_FIELD_INTERNAL_PRICE      => 0,
                         ENROL_WAITINGLIST_FIELD_EXTERNAL_PRICE      => 0
                        );
