@@ -16,8 +16,9 @@ defined('MOODLE_INTERNAL') || die();
 function xmldb_local_wsks_upgrade($oldVersion) {
     /* Variables */
     global $DB;
-    $table  = null;
-    $dbMan  = $DB->get_manager();
+    $table              = null;
+    $fldIndustryCode    = null;
+    $dbMan              = $DB->get_manager();
 
     try {
         /* New Table user_resource_number */
@@ -40,6 +41,17 @@ function xmldb_local_wsks_upgrade($oldVersion) {
 
                 $dbMan->create_table($table);
             }
+        }//if_oldVersion
+
+        if ($oldVersion < 2016092700) {
+            /* Table */
+            $table   = new xmldb_table('user_resource_number');
+
+            /* New Field */
+            $fldIndustryCode = new xmldb_field('industrycode', XMLDB_TYPE_CHAR, '50',null,XMLDB_NOTNULL,null,null, 'ressursnr');
+            if (!$dbMan->field_exists($table, $fldIndustryCode)) {
+                $dbMan->add_field($table, $fldIndustryCode);
+            }//if_not_exists
         }//if_oldVersion
 
         return true;

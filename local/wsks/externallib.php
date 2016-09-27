@@ -894,6 +894,7 @@ class local_wsks_external extends external_api {
         $lastName       = new external_value(PARAM_TEXT,'Last Name');
         $eMail          = new external_value(PARAM_TEXT,'eMail');
         $resourceNum    = new external_value(PARAM_TEXT,'resource number');
+        $industryCode   = new external_value(PARAM_TEXT,'Industry code');
         $action         = new external_value(PARAM_INT,'Action. Add/Update/Delete');
 
         $accountInfo = new external_single_structure(array('personalnumber' => $personalNumber,
@@ -901,6 +902,7 @@ class local_wsks_external extends external_api {
                                                            'lastname'       => $lastName,
                                                            'email'          => $eMail,
                                                            'ressursnr'      => $resourceNum,
+                                                           'industry'       => $industryCode,
                                                            'action'         => $action));
 
         return new external_function_parameters(array('usersAccounts'=> new external_multiple_structure($accountInfo)));
