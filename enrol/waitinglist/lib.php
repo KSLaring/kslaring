@@ -46,9 +46,17 @@ define('ENROL_WAITINGLIST_FIELD_APPROVAL','customint7');
 define('ENROL_WAITINGLIST_FIELD_INTERNAL_PRICE','customtext3');
 define('ENROL_WAITINGLIST_FIELD_EXTERNAL_PRICE','customtext4');
 
+/**
+ * @updateDate  26/09/2016
+ * @author      eFaktor     (fbv)
+ *
+ * Description
+ * Add an extra option no demand company
+ */
 define('APPROVAL_NONE',0);
 define('APPROVAL_REQUIRED',1);
 define('APPROVAL_MESSAGE',2);
+define('COMPANY_NO_DEMANDED',3);
 
 class enrol_waitinglist_plugin extends enrol_plugin {
 
@@ -254,13 +262,8 @@ class enrol_waitinglist_plugin extends enrol_plugin {
         }
 		return true;
 	}
-
-    public function can_hide_show_instance($instance) {
-        $context = context_course::instance($instance->courseid);
-        return has_capability('enrol/waitinglist:config', $context);
-    }
-
-    /**
+	
+	/**
      * Returns optional enrolment information icons.
      *
      * This is used in course list for quick overview of enrolment options.
@@ -585,7 +588,11 @@ class enrol_waitinglist_plugin extends enrol_plugin {
             /* Execute */
             $rdo = $DB->get_record_sql($sql,$params);
             if ($rdo) {
-                return $rdo;
+                if ($rdo->levelthree) {
+                    return $rdo;
+                }else {
+                    return null;
+                }
             }else {
                 return null;
             }//if_Rdo
@@ -1480,18 +1487,12 @@ class enrol_waitinglist_plugin extends enrol_plugin {
         }
 
         $subject = get_string('welcometocourse', 'enrol_waitinglist', format_string($course->fullname, true, array('context'=>$context)));
-        
+
         $rusers = array();
         if (!empty($CFG->coursecontact)) {
             $croles = explode(',', $CFG->coursecontact);
             list($sort, $sortparams) = users_order_by_sql('u');
-            // We only use the first user.
-            $i = 0;
-            do {
-                $rusers = get_role_users($croles[$i], $context, true, '',
-                    'r.sortorder ASC, ' . $sort, null, '', '', '', '', $sortparams);
-                $i++;
-            } while (empty($rusers) && !empty($croles[$i]));
+            $rusers = get_role_users($croles, $context, true, '', 'r.sortorder ASC, ' . $sort, null, '', '', '', '', $sortparams);
         }
         if ($rusers) {
             $contact = reset($rusers);

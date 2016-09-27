@@ -28,9 +28,9 @@ class managemanual_form extends moodleform {
         $mForm      = $this->_form;
         $manualClass = 'enrol_waitinglist\method\manual\enrolmethodmanual';
         $seats       = 0;
-        $levelThree  = optional_param('levelThree',0,PARAM_TEXT);
-        
+        $levelThree     = optional_param('levelThree',0,PARAM_TEXT);
         list($instance,$course,$addSearch,$removeSearch,$addSelected,$removeSelected) = $this->_customdata;
+        $noDemanded = false;
         
         /* Available Seats  */
         $seats = $manualClass::GetAvailableSeats($instance,$course);
@@ -44,21 +44,30 @@ class managemanual_form extends moodleform {
         }
 
         /* Companies Levels Connected With  */
-        $mForm->addElement('header', 'levels_connected', get_string('company_sel', 'enrol_waitinglist'));
-        $mForm->setExpanded('levels_connected',true);
+        if ($instance->{ENROL_WAITINGLIST_FIELD_APPROVAL} != COMPANY_NO_DEMANDED) {
+            $mForm->addElement('header', 'levels_connected', get_string('company_sel', 'enrol_waitinglist'));
+            $mForm->setExpanded('levels_connected',true);
 
-        /* Add Levels   */
-        for ($i = 0; $i <= 3; $i++) {
-            $this->Add_CompanyLevel($i,$mForm);
-        }//for_levels
+            /* Add Levels   */
+            for ($i = 0; $i <= 3; $i++) {
+                $this->Add_CompanyLevel($i,$mForm);
+            }//for_levels
 
+            $noDemanded = false;
+        }else {
+            $mForm->addElement('static', 'manual-nodemanded', '', get_string('company_demanded_manual', 'enrol_waitinglist'),'id="manual_not_demanded"');
+            $mForm->addElement('hidden', 'level_3');
+            $mForm->setType('level_3', PARAM_INT);
+            $mForm->setDefault('level_3', 0);
+        }
+        
         /* Users Connected */
         $mForm->addElement('header', 'users_connected', get_string('users_connected', 'enrol_waitinglist'));
         $mForm->setExpanded('users_connected',true);
         /* Users Selectors - Left Enrolled users */
         $mForm->addElement('html','<div class="userselector" id="addselect_wrapper">');
             /* Left - Users enrolled        */
-            $schoices = $manualClass::FindEnrolledUsers($instance->id,$course,$levelThree,$removeSearch);
+            $schoices = $manualClass::FindEnrolledUsers($instance->id,$course,$levelThree,$noDemanded,$removeSearch);
             $mForm->addElement('html','<div class="sel_users_left">');
                 $strEnrolled = get_string('enrolledusers','enrol');
                 $mForm->addElement('html','<label>' . $strEnrolled . '</label>');
@@ -86,7 +95,7 @@ class managemanual_form extends moodleform {
 
         /* Users Selectors - Right Not Enrolled users */
         $mForm->addElement('html','<div class="userselector" id="addselect_wrapper">');
-            $achoices = $manualClass::FindCandidatesUsers($instance->id,$course,$levelThree,$addSearch);
+            $achoices = $manualClass::FindCandidatesUsers($instance->id,$course,$levelThree,$noDemanded,$addSearch);
             $mForm->addElement('html','<div class="sel_users_right">');
                 $strCandidates = get_string('enrolcandidates','enrol');
                 $mForm->addElement('html','<label>' . $strCandidates . '</label>');

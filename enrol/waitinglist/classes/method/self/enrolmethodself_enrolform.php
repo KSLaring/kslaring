@@ -30,7 +30,7 @@
  * Add Invoice information option
  */
 namespace enrol_waitinglist\method\self;
- 
+
 require_once($CFG->libdir.'/formslib.php');
 
 class enrolmethodself_enrolform extends \moodleform {
@@ -94,12 +94,21 @@ class enrolmethodself_enrolform extends \moodleform {
                  * 
                  * Description
                  * Add selector companies
+                 * 
+                 * @updateDate  26/0972016
+                 * @author      eFaktor     (fbv)
+                 * 
+                 * Description
+                 * Add selectors company depends on option from method
                  */
+                $selfClass      = new enrolmethodself();
+                $myCompetence   = $selfClass->GetCompetenceData($USER->id);
                 $mform->addElement('header', 'levels_connected', get_string('company_sel', 'enrol_waitinglist'));
                 /* Add Levels   */
                 for ($i = 0; $i <= 3; $i++) {
-                    $this->Add_CompanyLevel($i,$this->_form);
+                    $this->Add_CompanyLevel($i,$this->_form,$myCompetence,$waitinglist->{ENROL_WAITINGLIST_FIELD_APPROVAL});
                 }//for_levels
+
 
                 /**
                  * @updateDate  28/10/2015
@@ -160,6 +169,8 @@ class enrolmethodself_enrolform extends \moodleform {
     /**
      * @param       $level
      * @param       $form
+     * @param       $myCompetence
+     * @param       $notDemanded
      * 
      * @throws      Exception
      * @throws      coding_exception
@@ -168,21 +179,18 @@ class enrolmethodself_enrolform extends \moodleform {
      * For admin users all companies
      * Normal users --> only companies connected with his/her profile
      */
-    function Add_CompanyLevel($level,&$form) {
+    function Add_CompanyLevel($level,&$form,$myCompetence,$notDemanded) {
         /* Variables    */
-        global $USER,$SESSION;
-        $options    = array();
-        $my         = null;
-        $parent     = null;
-        $inThree    = null;
-        $levelZero  = null;
-        $levelOne   = null;
-        $levelTwo   = null;
-        $myCompetence = null;
-        $manualClass = null;
-
-        $selfClass      = new enrolmethodself();
-        $myCompetence   = $selfClass->GetCompetenceData($USER->id);
+        global $SESSION;
+        $options        = array();
+        $my             = null;
+        $parent         = null;
+        $inThree        = null;
+        $levelZero      = null;
+        $levelOne       = null;
+        $levelTwo       = null;
+        $manualClass    = null;
+        $disabled       = '';
 
         /* Get Company List */
         switch ($level) {
@@ -191,7 +199,8 @@ class enrolmethodself_enrolform extends \moodleform {
                 if ($myCompetence) {
                     $options    = \CompetenceManager::GetCompanies_LevelList($level,0,$myCompetence->levelzero);
                 }else {
-                    $options    = \CompetenceManager::GetCompanies_LevelList($level);
+                    $options    = array();
+                    $options[0] = get_string('select_level_list','report_manager');
                 }
 
                 break;
@@ -241,8 +250,10 @@ class enrolmethodself_enrolform extends \moodleform {
         $this->setLevelDefault($form,$level);
 
         if ($level == '3') {
-            $form->addRule('level_' . $level, get_string('required'), 'required', null, 'client');
-            $form->addRule('level_' . $level, get_string('required'), 'nonzero', null, 'client');
+            if ($notDemanded != COMPANY_NO_DEMANDED) {
+                $form->addRule('level_' . $level, get_string('required'), 'required', null, 'client');
+                $form->addRule('level_' . $level, get_string('required'), 'nonzero', null, 'client');                
+            }
         }
     }//Add_CompanyLevel
 

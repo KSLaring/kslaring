@@ -37,7 +37,7 @@ class enrolmethodself extends \enrol_waitinglist\method\enrolmethodbase{
 	const METHODTYPE='self';
 	protected $active = false;
 	
-	const QFIELD_ENROLPASSWORD          ='customtext1';
+	const QFIELD_ENROLPASSWORD          = 'customtext1';
 	const MFIELD_GROUPKEY               = 'customint1';
 	const MFIELD_LONGTIMENOSEE          = 'customint2';
 	const MFIELD_MAXENROLLED            = 'customint3';
@@ -202,11 +202,21 @@ class enrolmethodself extends \enrol_waitinglist\method\enrolmethodbase{
         global $DB, $USER, $CFG;
         $rejected = null;
 
-        if (!$rdo = $DB->get_records('user_info_competence_data',array('level' => 3,'userid' =>$USER->id),'id')) {
-            $urlProfile = new \moodle_url('/user/profile/field/competence/competence.php',array('id' => $USER->id));
-            $lnkProfile = "<a href='". $urlProfile . "'>". get_string('profile') . "</a>";
-            return get_string('no_competence','enrol_waitinglist',$lnkProfile);
+        /**
+         * @updateDate  26/09/2016
+         * @author      eFaktor     (fbv)
+         * 
+         * Description
+         * If company is compulsory
+         */
+        if ($waitinglist->{ENROL_WAITINGLIST_FIELD_APPROVAL} != COMPANY_NO_DEMANDED) {
+            if (!$rdo = $DB->get_records('user_info_competence_data',array('level' => 3,'userid' =>$USER->id),'id')) {
+                $urlProfile = new \moodle_url('/user/profile/field/competence/competence.php',array('id' => $USER->id));
+                $lnkProfile = "<a href='". $urlProfile . "'>". get_string('profile') . "</a>";
+                return get_string('no_competence','enrol_waitinglist',$lnkProfile);
+            }            
         }
+
         if ($waitinglist->{ENROL_WAITINGLIST_FIELD_APPROVAL} == APPROVAL_REQUIRED) {
             /* Check if it has been rejected    */
             $rejected = new \stdClass();
@@ -522,6 +532,7 @@ class enrolmethodself extends \enrol_waitinglist\method\enrolmethodbase{
      */
     public function enrol_page_hook(\stdClass $waitinglist, $flagged) {
         global $CFG, $OUTPUT, $USER;
+        $isInvoice = false;
 
 		$queueman= \enrol_waitinglist\queuemanager::get_by_course($waitinglist->courseid);
 		$qdetails = $queueman->get_user_queue_details(static::METHODTYPE);
@@ -548,7 +559,10 @@ class enrolmethodself extends \enrol_waitinglist\method\enrolmethodbase{
             /**
              * To initialize the organization structure
              */
-            $this->Init_Organization_Structure(false,$waitinglist->{ENROL_WAITINGLIST_FIELD_INVOICE});
+            if ($waitinglist->{ENROL_WAITINGLIST_FIELD_INVOICE}) {
+                $isInvoice = true;
+            }
+            $this->Init_Organization_Structure(false,$isInvoice);
 
         	$listtotal = $queueman->get_listtotal();
 

@@ -39,7 +39,7 @@ M.core_user.init_manual_selector = function (Y, name, hash, course, instance, la
         selectionempty : true,
 
         /* Level Three Selector */
-        levelThree : Y.one('#id_level_3'),
+        //levelThree : ,
 
         /* Course */
         myCourse: course,
@@ -97,6 +97,7 @@ M.core_user.init_manual_selector = function (Y, name, hash, course, instance, la
          * Fires off the ajax search request.
          */
         send_query : function(forceresearch) {
+            var valueThree = 0;
 
             // Cancel any pending timeout.
             this.cancel_timeout();
@@ -112,8 +113,10 @@ M.core_user.init_manual_selector = function (Y, name, hash, course, instance, la
             Y.Object.each(this.iotransactions, function(trans) {
                 trans.abort();
             });
-            
-            var valueThree  = this.levelThree.get('value');
+
+            if (Y.one('#id_level_3')) {
+                valueThree  = Y.one('#id_level_3').get('value');
+            }
 
             var iotrans = Y.io(M.cfg.wwwroot + '/enrol/waitinglist/manualsearch.php', {
                 method: 'POST',

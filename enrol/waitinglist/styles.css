@@ -168,6 +168,7 @@ a.lnk_disabled {
 .block_approval .block_requests .rejected {
     cursor: default;
 }
+
 .userselector .sel_users_left {
     width:40%;
     float:left;

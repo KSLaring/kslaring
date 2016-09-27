@@ -54,6 +54,7 @@ M.core_user.init_structure = function (Y,name,reload,invoice) {
          * @constructor
          */
         init : function() {
+
             /* Level Zero  */
             this.levelZero.on('change', this.Activate_LevelOne, this);
 
@@ -72,7 +73,6 @@ M.core_user.init_structure = function (Y,name,reload,invoice) {
                     this.InvoiceDataCompany();
                 }
             }
-
         },
 
         Activate_LevelOne : function(e) {

@@ -95,6 +95,8 @@ class ct_enrolment_settings_form extends moodleform {
         $form->addElement('radio','approval',get_string('approval','enrol_waitinglist'),'',CT_APPROVAL_REQUIRED);
         /* Mail to manager option   */
         $form->addElement('radio','approval',get_string('approval_message','enrol_waitinglist'),'',CT_APPROVAL_MESSAGE);
+        /* No Demand Company        */
+        $form->addElement('radio','approval',get_string('company_demanded','enrol_waitinglist'),'',CT_COMPANY_NO_DEMANDED);
         $form->setDefault('approval',$instance->approval);
         /**
          * @updateDate      21/06/2016
@@ -197,7 +199,7 @@ class ct_self_enrolment_settings_form extends moodleform {
         list($course,$instance,$ct) = $this->_customdata;
 
         $plugin     = enrol_get_plugin('self');
-        $context   = CONTEXT_COURSE::instance($course);
+        $context   = context_course::instance($course);
 
         /* Form     */
         $form   = $this->_form;

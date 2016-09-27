@@ -108,11 +108,19 @@ class enrolmethodunnamedbulk_enrolform extends \moodleform {
                  *
                  * Description
                  * Add selector companies
+                 * 
+                 * @updateDate  26/09/2016
+                 * @author      eFaktor     (fbv)
+                 * 
+                 * Description
+                 * Company selector if it is demanded
                  */
+                $bulkClass      = new enrolmethodunnamedbulk();
+                $myCompetence   = $bulkClass->GetCompetenceData($USER->id);
                 $mform->addElement('header', 'levels_connected', get_string('company_sel', 'enrol_waitinglist'));
                 /* Add Levels   */
                 for ($i = 0; $i <= 3; $i++) {
-                    $this->Add_CompanyLevel($i,$this->_form);
+                    $this->Add_CompanyLevel($i,$this->_form,$myCompetence,$waitinglist->{ENROL_WAITINGLIST_FIELD_APPROVAL});
                 }//for_levels
                 if ($queuestatus->companyid) {
                     $mform->setDefault('level_3',$queuestatus->companyid);
@@ -198,6 +206,7 @@ class enrolmethodunnamedbulk_enrolform extends \moodleform {
     /**
      * @param       $level
      * @param       $form
+     * @param       $notDemanded
      *
      * @throws      Exception
      * @throws      coding_exception
@@ -206,9 +215,9 @@ class enrolmethodunnamedbulk_enrolform extends \moodleform {
      * For admin users all companies
      * Normal users --> only companies connected with his/her profile
      */
-    function Add_CompanyLevel($level,&$form) {
+    function Add_CompanyLevel($level,&$form,$myCompetence,$notDemanded) {
         /* Variables    */
-        global $USER,$SESSION;
+        global $SESSION;
         $options    = array();
         $my         = null;
         $parent     = null;
@@ -216,11 +225,7 @@ class enrolmethodunnamedbulk_enrolform extends \moodleform {
         $levelZero  = null;
         $levelOne   = null;
         $levelTwo   = null;
-        $myCompetence = null;
         $manualClass = null;
-
-        $bulkClass      = new enrolmethodunnamedbulk();
-        $myCompetence   = $bulkClass->GetCompetenceData($USER->id);
 
         /* Get Company List */
         switch ($level) {
@@ -229,7 +234,8 @@ class enrolmethodunnamedbulk_enrolform extends \moodleform {
                 if ($myCompetence) {
                     $options    = \CompetenceManager::GetCompanies_LevelList($level,0,$myCompetence->levelzero);
                 }else {
-                    $options    = \CompetenceManager::GetCompanies_LevelList($level);
+                    $options    = array();
+                    $options[0] = get_string('select_level_list','report_manager');
                 }
 
                 break;
@@ -279,8 +285,10 @@ class enrolmethodunnamedbulk_enrolform extends \moodleform {
         $this->setLevelDefault($form,$level);
 
         if ($level == '3') {
-            $form->addRule('level_' . $level, get_string('required'), 'required', null, 'server');
-            $form->addRule('level_' . $level, get_string('required'), 'nonzero', null, 'server');
+            if ($notDemanded != COMPANY_NO_DEMANDED) {
+                $form->addRule('level_' . $level, get_string('required'), 'required', null, 'server');
+                $form->addRule('level_' . $level, get_string('required'), 'nonzero', null, 'server');
+            }
         }
     }//Add_CompanyLevel
 
