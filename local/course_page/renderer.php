@@ -927,23 +927,25 @@ class local_course_page_renderer extends plugin_renderer_base {
                 $urlLink    = new moodle_url('/local/participants/participants.php',array('id' => $courseId));
                 $strTitle   = get_string('home_participant','local_course_page');
 
-                if ($formatOptions['participant']->value) {
-                    /* That means everybody */
-                    $out .= html_writer::start_tag('div',array('class' => 'manager chp-block clearfix'));
+                if (isset($formatOptions['participant'])) {
+                    if ($formatOptions['participant']->value) {
+                        /* That means everybody */
+                        $out .= html_writer::start_tag('div',array('class' => 'manager chp-block clearfix'));
                         $out .= '<h5 class="title_coordinator chp-title">' . get_string('home_participant_header','local_course_page') . '</h5>';
                         $out .= '<div class="extra_home chp-content">';
-                            $out .= '<a href="' . $urlLink . '">' . $strTitle . "</a>";
+                        $out .= '<a href="' . $urlLink . '">' . $strTitle . "</a>";
                         $out .= '</div>';
-                    $out .= html_writer::end_tag('div');//manager
-                }else if (has_capability('local/participants:manage',$context)) {
-                    /* Only teachers    */
-                    $out .= html_writer::start_tag('div',array('class' => 'manager chp-block clearfix'));
+                        $out .= html_writer::end_tag('div');//manager
+                    }else if (has_capability('local/participants:manage',$context)) {
+                        /* Only teachers    */
+                        $out .= html_writer::start_tag('div',array('class' => 'manager chp-block clearfix'));
                         $out .= '<h5 class="title_coordinator chp-title">' . get_string('home_participant_header','local_course_page') . '</h5>';
                         $out .= '<div class="extra_home chp-content">';
-                            $out .= '<a href="' . $urlLink . '">' . $strTitle . "</a>";
+                        $out .= '<a href="' . $urlLink . '">' . $strTitle . "</a>";
                         $out .= '</div>';
-                    $out .= html_writer::end_tag('div');//manager
-                }//if_option
+                        $out .= html_writer::end_tag('div');//manager
+                    }//if_option
+                }
             }//if_format
 
             return $out;
