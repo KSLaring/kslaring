@@ -774,17 +774,32 @@ class FELLESDATA_CRON {
     private static function UsersFS_Synchronization($pluginInfo) {
         /* Variables    */
         global $DB,$CFG,$SESSION;
-        $rdo        = null;
-        $usersFS    = array();
-        $infoUser   = null;
-        $response   = null;
-        $dbLog      = null;
+        $rdo            = null;
+        $usersFS        = array();
+        $infoUser       = null;
+        $response       = null;
+        $dbLog          = null;
+        $rdoIC          = null;
+        $industryCode   = null;
+        $params         = null;
 
         try {
             /* Get user to synchronize  */
-            mtrace('LIMIT 0,2000');
-            
             $rdo = $DB->get_records('fs_imp_users',array('imported' => '0'),'','*');
+
+            /* Get Industry Code    */
+            if ($pluginInfo->ks_muni) {
+                $params = array();
+                $params['name']             = $pluginInfo->ks_muni;
+                $params['hierarchylevel']   = 1;
+                $rdoIC = $DB->get_record('ks_company',$params,'industrycode');
+
+                if ($rdoIC) {
+                    $industryCode = $rdoIC->industrycode;
+                }
+            }else {
+                $industryCode = 0;
+            }//if_muni
 
             /* Log  */
             $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' START Synchronization Users Accoutns . ' . "\n";
@@ -797,6 +812,7 @@ class FELLESDATA_CRON {
                     $infoUser = new stdClass();
                     $infoUser->personalnumber   = $instance->fodselsnr;
                     $infoUser->ressursnr        = $instance->ressursnr;
+                    $infoUser->industry         = $industryCode;
                     $infoUser->firstname        = $instance->fornavn;
                     $infoUser->lastname         = $instance->mellomnavn . ' ' . $instance->etternavn;
                     $infoUser->email            = $instance->epost;
