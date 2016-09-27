@@ -19,12 +19,14 @@ function xmldb_local_fellesdata_upgrade($oldVersion) {
     global $DB;
     global $DB;
     /* Imp User JR  */
-    $tblImpUsersJR  = null;
-    $fldStillins    = null;
-    $tblKSCompany   = null;
-    $fldParent      = null;
-    $tblFSCompany   = null;
-    $fldFSParent    = null;
+    $tblImpUsersJR      = null;
+    $fldStillins        = null;
+    $tblKSCompany       = null;
+    $tblResource        = null;
+    $fldParent          = null;
+    $tblFSCompany       = null;
+    $fldFSParent        = null;
+    $fldIndustryCode    = null;
 
     /* Get Manager  */
     $dbMan = $DB->get_manager();
@@ -84,6 +86,16 @@ function xmldb_local_fellesdata_upgrade($oldVersion) {
             Fellesdata_Update::ResourceNumber($dbMan);
         }//ResourceNumber
 
+        if ($oldVersion < 2016092700) {
+            /* Table */
+            $tblResource   = new xmldb_table('user_resource_number');
+
+            /* New Field */
+            $fldIndustryCode = new xmldb_field('industrycode', XMLDB_TYPE_CHAR, '50',null,XMLDB_NOTNULL,null,null, 'ressursnr');
+            if (!$dbMan->field_exists($tblResource, $fldIndustryCode)) {
+                $dbMan->add_field($tblResource, $fldIndustryCode);
+            }//if_not_exists
+        }
         return true;
     }catch (Exception $ex) {
         throw $ex;
@@ -419,7 +431,7 @@ class Fellesdata_Update {
             
             /* Extra field to fs_imp_users table */
             $tblImpUsers = new xmldb_table('fs_imp_users');
-            $fldResource       = new xmldb_field('ressursnr', XMLDB_TYPE_CHAR, '50',null,XMLDB_NOTNULL,null,null, 'fodselsnr');
+            $fldResource = new xmldb_field('ressursnr', XMLDB_TYPE_CHAR, '50',null,XMLDB_NOTNULL,null,null, 'fodselsnr');
             if (!$dbMan->field_exists($tblImpUsers, $fldResource)) {
                 $dbMan->add_field($tblImpUsers, $fldResource);
             }//if_not_exists

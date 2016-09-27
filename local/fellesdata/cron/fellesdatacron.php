@@ -35,7 +35,7 @@ class FELLESDATA_CRON {
     /* PUBLIC */
     /**********/
 
-    public static function cron($fstExecution) {
+    public static function cronOLD($fstExecution) {
         /* Variables    */
         global $SESSION,$CFG;
         $pluginInfo = null;
@@ -373,7 +373,7 @@ class FELLESDATA_CRON {
             if (!is_array($response)) {
                 $response = (Array)$response;
             }
-            
+
             return $response;
         }catch (Exception $ex) {
             /* Log Error    */
