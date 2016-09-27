@@ -1399,9 +1399,10 @@ class FSKS_USERS {
                }else {
                    /* Insert   */
                    $instance = new stdClass();
-                   $instance->userid       = $userId;
-                   $instance->ressursnr    = $userFS->ressursnr;
-
+                   $instance->userid        = $userId;
+                   $instance->ressursnr     = $userFS->ressursnr;
+                   $instance->industrycode  = $userFS->industry;
+                    
                    /* Execute  */
                    $DB->insert_record('user_resource_number',$instance);
                }//if_rdo
