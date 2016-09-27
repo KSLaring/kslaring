@@ -68,9 +68,8 @@ if (!file_exists($dir)) {
     mkdir($dir);
 }
 
-$pathFile = $dir . '/' . $userid . '.log';
+$pathFile = $dir . '/' . $USER->id . '.log';
 $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' KSLæring - Log In (My index). ' . "\n";
-$dbLog .= "User : " . $userid . "\n";
 $dbLog .= "USER (global) : " . $USER->id . "\n";
 error_log($dbLog, 3, $pathFile);
 /* FIN ADD LOG (fbv) */
