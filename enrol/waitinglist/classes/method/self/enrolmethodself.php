@@ -532,6 +532,7 @@ class enrolmethodself extends \enrol_waitinglist\method\enrolmethodbase{
      */
     public function enrol_page_hook(\stdClass $waitinglist, $flagged) {
         global $CFG, $OUTPUT, $USER;
+        $isInvoice = false;
 
 		$queueman= \enrol_waitinglist\queuemanager::get_by_course($waitinglist->courseid);
 		$qdetails = $queueman->get_user_queue_details(static::METHODTYPE);
@@ -558,9 +559,10 @@ class enrolmethodself extends \enrol_waitinglist\method\enrolmethodbase{
             /**
              * To initialize the organization structure
              */
-            if ($waitinglist->{ENROL_WAITINGLIST_FIELD_APPROVAL} != COMPANY_NO_DEMANDED) {
-                $this->Init_Organization_Structure(false,$waitinglist->{ENROL_WAITINGLIST_FIELD_INVOICE});    
+            if ($waitinglist->{ENROL_WAITINGLIST_FIELD_INVOICE}) {
+                $isInvoice = true;
             }
+            $this->Init_Organization_Structure(false,$isInvoice);
 
         	$listtotal = $queueman->get_listtotal();
 

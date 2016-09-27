@@ -588,7 +588,11 @@ class enrol_waitinglist_plugin extends enrol_plugin {
             /* Execute */
             $rdo = $DB->get_record_sql($sql,$params);
             if ($rdo) {
-                return $rdo;
+                if ($rdo->levelthree) {
+                    return $rdo;
+                }else {
+                    return null;
+                }
             }else {
                 return null;
             }//if_Rdo
