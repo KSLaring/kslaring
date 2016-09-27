@@ -39,6 +39,7 @@ define('ACTION_SHOW_COURSE',0);
 define('CT_APPROVAL_NONE',0);
 define('CT_APPROVAL_REQUIRED',1);
 define('CT_APPROVAL_MESSAGE',2);
+define('CT_COMPANY_NO_DEMANDED',3);
 
 class CourseTemplate {
     /**********/

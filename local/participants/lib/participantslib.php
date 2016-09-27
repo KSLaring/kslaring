@@ -1022,7 +1022,12 @@ class ParticipantsList {
         try {
             if ($participantList) {
                 foreach ($participantList as $participant) {
-                    $setRow = 15 * count($participant->workplace);
+                    if ($participant->workplace) {
+                        $setRow = 15 * count($participant->workplace);
+                    }else {
+                        $setRow = 15;
+                    }
+
 
                     /* Firstname        */
                     $my_xls->write($row, $col, $participant->firstname,array('size'=>12, 'name'=>'Arial','bold'=>'1','text_wrap'=>true,'v_align'=>'top'));

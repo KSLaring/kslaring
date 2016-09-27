@@ -38,9 +38,6 @@ M.core_user.init_structure = function (Y,name,reload,invoice) {
         /* Level Three Selector */
         levelThree  : Y.one('#id_' + name + '3'),
 
-        /* Competence checkbox  */
-        no_competence : Y.one('#id_competence'),
-
         /** Whether any options where selected last time we checked. Used by
          *  handle_selection_change to track when this status changes. */
         selectionempty : true,
@@ -57,6 +54,7 @@ M.core_user.init_structure = function (Y,name,reload,invoice) {
          * @constructor
          */
         init : function() {
+
             /* Level Zero  */
             this.levelZero.on('change', this.Activate_LevelOne, this);
 
@@ -75,10 +73,6 @@ M.core_user.init_structure = function (Y,name,reload,invoice) {
                     this.InvoiceDataCompany();
                 }
             }
-
-            /* Competence Checkbox  */
-            this.no_competence.on('change',this.Reload_UsersNoCompetence,this);
-
         },
 
         Activate_LevelOne : function(e) {
@@ -111,26 +105,6 @@ M.core_user.init_structure = function (Y,name,reload,invoice) {
                 M.core_user.get_manual_user_selector('removeselect').reload_users();
                 M.core_user.get_manual_user_selector('addselect').reload_users();
             }
-        },
-
-        Reload_UsersNoCompetence : function() {
-            if (this.no_competence.get('checked')) {
-                /* Deactivate   company selector    */
-                this.levelZero.setAttribute('disabled');
-                this.levelOne.setAttribute('disabled');
-                this.levelTwo.setAttribute('disabled');
-                this.levelThree.setAttribute('disabled');
-            }else {
-                /* Activate company selector    */
-                this.levelZero.removeAttribute('disabled');
-                this.levelOne.removeAttribute('disabled');
-                this.levelTwo.removeAttribute('disabled');
-                this.levelThree.removeAttribute('disabled');
-            }
-            
-            /* Reload users */
-            M.core_user.get_manual_user_selector('removeselect').reload_users();
-            M.core_user.get_manual_user_selector('addselect').reload_users();
         },
 
         InvoiceDataCompany: function(e) {

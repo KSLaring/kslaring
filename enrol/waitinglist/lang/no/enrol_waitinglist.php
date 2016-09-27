@@ -274,4 +274,5 @@ $string['company_sel']     = 'Company';
 $string['users_connected'] = 'Users connected';
 $string['no_competence']   = 'Beklager, men du kan ikke melde deg på dette kurset når du ikke har oppgitt arbeidssted i din egen profil. Vennligst oppdater profilen din før du prøver igjen.  <p>Du kan oppdatere profilen din med et arbeidssted ved å klikke her: <strong>{$a}</strong></p>';
 
-$string['company_demanded'] = 'No demand company';
+$string['company_demanded']        = 'No demand company';
+$string['company_demanded_manual'] = 'Company not demanded. All users will be available to select';

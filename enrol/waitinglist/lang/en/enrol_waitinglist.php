@@ -285,5 +285,6 @@ $string['no_competence']   = 'Sorry, you cannot enroll because there is no workp
                               <p>You can update your profile click on <strong>{$a}</strong></p>';
 
 $string['company_demanded'] = 'No demand company';
+$string['company_demanded_manual'] = 'Company not demanded. All users will be available to select';
 
 

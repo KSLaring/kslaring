@@ -55,6 +55,7 @@ class managemanual_form extends moodleform {
 
             $noDemanded = false;
         }else {
+            $mForm->addElement('static', 'manual-nodemanded', '', get_string('company_demanded_manual', 'enrol_waitinglist'),'id="manual_not_demanded"');
             $mForm->addElement('hidden', 'level_3');
             $mForm->setType('level_3', PARAM_INT);
             $mForm->setDefault('level_3', 0);
