@@ -1392,7 +1392,8 @@ class FSKS_USERS {
                 $rdo = $DB->get_record('user_resource_number',array('userid' => $userId));
                if ($rdo) {
                    /* Update   */
-                   $rdo->ressursnr = $userFS->ressursnr;
+                   $rdo->ressursnr      = $userFS->ressursnr;
+                   $rdo->industrycode   = $userFS->industry;
 
                    /* Execute */
                    $DB->update_record('user_resource_number',$rdo);
