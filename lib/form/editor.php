@@ -51,9 +51,10 @@ class MoodleQuickForm_editor extends HTML_QuickForm_element {
     public $_type       = 'editor';
 
     /** @var array options provided to initalize filepicker */
+    // Start change uh 2016-09-28 - add the atto:toolbar option.
     protected $_options = array('subdirs' => 0, 'maxbytes' => 0, 'maxfiles' => 0, 'changeformat' => 0,
             'areamaxbytes' => FILE_AREA_MAX_BYTES_UNLIMITED, 'context' => null, 'noclean' => 0, 'trusttext' => 0,
-            'return_types' => 7, 'enable_filemanagement' => true);
+            'return_types' => 7, 'enable_filemanagement' => true, 'atto:toolbar' => '');
     // $_options['return_types'] = FILE_INTERNAL | FILE_EXTERNAL | FILE_REFERENCE
 
     /** @var array values for editor */
@@ -77,6 +78,12 @@ class MoodleQuickForm_editor extends HTML_QuickForm_element {
                 $this->_options[$name] = $value;
             }
         }
+        // Start change uh 2016-09-28.
+        // Use the global atto toolbar config if the atto:toolbar option is not set.
+        if (empty($this->_options['atto:toolbar'])) {
+            $this->_options['atto:toolbar'] = get_config('editor_atto', 'toolbar');
+        }
+        // End change uh.
         if (!empty($options['maxbytes'])) {
             $this->_options['maxbytes'] = get_max_upload_file_size($CFG->maxbytes, $options['maxbytes']);
         }
