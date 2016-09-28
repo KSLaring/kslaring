@@ -81,6 +81,7 @@ M.core_user.init_structure = function (Y,name,reload,invoice) {
 
             //  Trigger an ajax search after a delay.
             //this.cleanCookies();
+            this.DeactivateInvoiceDate();
             this.cancel_timeout();
             this.timeoutid  = Y.later(this.querydelay * 1000, e, function(obj){obj.send_query(false,parent,level)}, this);
         },
@@ -91,6 +92,7 @@ M.core_user.init_structure = function (Y,name,reload,invoice) {
 
             //  Trigger an ajax search after a delay.
             //this.cleanCookies();
+            this.DeactivateInvoiceDate();
             this.cancel_timeout();
             this.timeoutid = Y.later(this.querydelay * 1000, e, function(obj){obj.send_query(false,parent,level)}, this);
         },
@@ -227,8 +229,8 @@ M.core_user.init_structure = function (Y,name,reload,invoice) {
             Y.one('#id_act_number').setAttribute('disabled');
             Y.one('#id_act_number').set('value','');
 
-            Y.one('#id_resource_number').setAttribute('disabled');
-            Y.one('#id_resource_number').set('value','');
+            //Y.one('#id_resource_number').setAttribute('disabled');
+            //Y.one('#id_resource_number').set('value','');
         },
 
         /**
