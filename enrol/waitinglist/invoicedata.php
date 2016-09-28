@@ -41,6 +41,12 @@ $data       = array('invoice' => null);
 
 $infoInvoice = Invoices::GetInvoiceData($two,$three);
 
+if (!$infoInvoice) {
+    $infoInvoice = new stdClass();
+    $infoInvoice->tjeneste  = null;
+    $infoInvoice->ansvar    = null;
+}
+
 /* Add Company*/
 $data['invoice'] = $infoInvoice;
 

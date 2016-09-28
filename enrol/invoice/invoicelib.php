@@ -29,13 +29,11 @@ class Invoices {
     public static function GetInvoiceData($levelTwo,$levelThree) {
         /* Variables */
         global $DB;
-        $sql        = null;
         $rdo        = null;
         $invoice    = null;
 
         try {
             /* First Level Three    */
-            /* Search criteria */
             $params = array();
             $params['id']               = $levelThree;
             $params['hierarchylevel']   = 3;
@@ -43,8 +41,12 @@ class Invoices {
             /* Execute */
             $rdo = $DB->get_record('report_gen_companydata',$params,'id,tjeneste,ansvar');
             if ($rdo) {
-                $invoice = $rdo;
-            }else {
+                if ($rdo->tjeneste && $rdo->ansvar) {
+                    $invoice = $rdo;
+                }
+            }//if_rdo
+
+            if (!$invoice) {
                 /* Level Two */
                 $params['id']               = $levelTwo;
                 $params['hierarchylevel']   = 2;
@@ -52,10 +54,12 @@ class Invoices {
                 /* Execute */
                 $rdo = $DB->get_record('report_gen_companydata',$params,'id,tjeneste,ansvar');
                 if ($rdo) {
-                    $invoice = $rdo;
+                    if (!empty($rdo->tjeneste) && !empty($rdo->ansvar)) {
+                        $invoice = $rdo;
+                    }
                 }//if_two
-            }//if_three
-            
+            }
+
             return $invoice;
         }catch (Exception $ex) {
             throw $ex;
