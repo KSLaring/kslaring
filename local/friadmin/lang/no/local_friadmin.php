@@ -74,6 +74,7 @@ $string['coursedetail_confirmed']       = 'Administrere bekreftede';
 $string['coursedetail_waitlist']        = 'Administrere venteliste';
 $string['coursedetail_participantlist'] = 'Last ned deltakerliste';
 $string['coursedetail_duplicate']       = 'Dupliser';
+$string['coursedetail_duplicatecourse'] = 'Dupliser kurset';
 $string['coursedetail_email']           = 'Send epost';
 
 $string['eventtemplate_title']          = 'Arrangement';

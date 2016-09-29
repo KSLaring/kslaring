@@ -14,13 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-//namespace local_friadmin;
-
 defined('MOODLE_INTERNAL') || die;
-
-//use renderable;
-//use renderer_base;
-//use stdClass;
 
 /**
  * Class containing data for the local_friadmin coursedetail linklist area
@@ -43,7 +37,7 @@ class local_friadmin_coursedetail_linklist extends local_friadmin_widget impleme
     }
 
     /**
-     * @param           $courseId
+     * @param           $courseid
      *
      * @throws          Exception
      *
@@ -58,116 +52,121 @@ class local_friadmin_coursedetail_linklist extends local_friadmin_widget impleme
      *
      * Description
      * Add comments, exception, clean code...
-     * 
+     *
      * @updateDate      19/08/2016
      * @author          eFaktor     (fbv)
-     * 
+     *
      * Description
      * Add button for 'Manual enrolments'
      */
-    protected function create_linklist($courseId) {
+    protected function create_linklist($courseid) {
         /* Variables    */
-        $str_back       = null;
-        $url_back       = null;
-        $str_go         = null;
-        $url_go         = null;
-        $str_settings   = null;
-        $url_settings   = null;
-        $str_completion = null;
-        $url_completion = null;
-        $str_statistics = null;
-        $url_statistics = null;
-        $str_users      = null;
-        $url_users      = null;
-        $str_confirmed  = null;
-        $url_confirmed  = null;
-        $str_waitlist   = null;
-        $url_waitlist   = null;
-        $str_participantlist = null;
-        $url_participantlist = null;
-        $str_email = null;
-        $url_email = null;
-        $str_manual     = null;
-        $url_manual     = null;
-        $list1 = null;
-        $list2 = null;
-        $list3 = null;
-        $list4 = null;
+        $strback       = null;
+        $urlback       = null;
+        $strgo         = null;
+        $urlgo         = null;
+        $strsettings   = null;
+        $urlsettings   = null;
+        $strcompletion = null;
+        $urlcompletion = null;
+        $strstatistics = null;
+        $urlstatistics = null;
+        $strusers      = null;
+        $urlusers      = null;
+        $strconfirmed  = null;
+        $urlconfirmed  = null;
+        $strwaitlist   = null;
+        $urlwaitlist   = null;
+        $strparticipantlist = null;
+        $urlparticipantlist = null;
+        $stremail      = null;
+        $urlemail      = null;
+        $strmanual     = null;
+        $urlmanual     = null;
+        $strduplicate  = null;
+        $urlduplicate  = null;
+        $list1         = null;
+        $list2         = null;
+        $list3         = null;
+        $list4         = null;
 
         try {
             /* Set up variables */
-            $str_back               = get_string('coursedetail_back', 'local_friadmin');
-            $str_go                 = get_string('coursedetail_go', 'local_friadmin');
-            $str_settings           = get_string('coursedetail_settings', 'local_friadmin');
-            $str_completion         = get_string('coursedetail_completion', 'local_friadmin');
-            $str_statistics         = get_string('coursedetail_statistics', 'local_friadmin');
-            $str_enrollment         = get_string('coursedetail_enrollment', 'local_friadmin');
-            $str_users              = get_string('coursedetail_users', 'local_friadmin');
-            $str_confirmed          = get_string('coursedetail_confirmed', 'local_friadmin');
-            $str_waitlist           = get_string('coursedetail_waitlist', 'local_friadmin');
-            $str_participantlist    = get_string('coursedetail_participantlist', 'local_friadmin');
-            $str_email              = get_string('coursedetail_email', 'local_friadmin');
-            $str_manual             = get_string('coursedetail_manual','local_friadmin');
+            $strback               = get_string('coursedetail_back', 'local_friadmin');
+            $strgo                 = get_string('coursedetail_go', 'local_friadmin');
+            $strsettings           = get_string('coursedetail_settings', 'local_friadmin');
+            $strcompletion         = get_string('coursedetail_completion', 'local_friadmin');
+            $strstatistics         = get_string('coursedetail_statistics', 'local_friadmin');
+            $strenrollment         = get_string('coursedetail_enrollment', 'local_friadmin');
+            $strusers              = get_string('coursedetail_users', 'local_friadmin');
+            $strconfirmed          = get_string('coursedetail_confirmed', 'local_friadmin');
+            $strwaitlist           = get_string('coursedetail_waitlist', 'local_friadmin');
+            $strparticipantlist    = get_string('coursedetail_participantlist', 'local_friadmin');
+            $stremail              = get_string('coursedetail_email', 'local_friadmin');
+            $strmanual             = get_string('coursedetail_manual', 'local_friadmin');
+            $strduplicate          = get_string('coursedetail_duplicatecourse', 'local_friadmin');
 
             /* Set up url       */
-            $url_back               = new moodle_url('/local/friadmin/courselist.php');
-            $url_go                 = new moodle_url('/course/view.php', array('id' => $courseId));
-            $url_settings           = new moodle_url('/course/edit.php', array('id' => $courseId));
-            $url_completion         = new moodle_url('/report/completion/index.php',array('course' => $courseId));
-            $url_statistics         = new moodle_url('/report/overviewstats/index.php',array('course' => $courseId));
-            $url_enrollment         = new moodle_url('/enrol/instances.php',array('id' => $courseId));
-            $url_users              = new moodle_url('/local/participants/participants.php', array('id' => $courseId));
-            $url_confirmed          = new moodle_url('/enrol/waitinglist/manageconfirmed.php', array('id' => $courseId));
-            $url_waitlist           = new moodle_url('/enrol/waitinglist/managequeue.php', array('id' => $courseId));
-            $url_participantlist    = new moodle_url('/grade/export/xls/index.php?',array('id' => $courseId));
-            $url_email              = '#';
-            $url_manual             = new moodle_url('/enrol/waitinglist/managemanual.php',array('co' => $courseId));
+            $urlback               = new moodle_url('/local/friadmin/courselist.php');
+            $urlgo                 = new moodle_url('/course/view.php', array('id' => $courseid));
+            $urlsettings           = new moodle_url('/course/edit.php', array('id' => $courseid));
+            $urlcompletion         = new moodle_url('/report/completion/index.php', array('course' => $courseid));
+            $urlstatistics         = new moodle_url('/report/overviewstats/index.php', array('course' => $courseid));
+            $urlenrollment         = new moodle_url('/enrol/instances.php', array('id' => $courseid));
+            $urlusers              = new moodle_url('/local/participants/participants.php', array('id' => $courseid));
+            $urlconfirmed          = new moodle_url('/enrol/waitinglist/manageconfirmed.php', array('id' => $courseid));
+            $urlwaitlist           = new moodle_url('/enrol/waitinglist/managequeue.php', array('id' => $courseid));
+            $urlparticipantlist    = new moodle_url('/grade/export/xls/index.php?', array('id' => $courseid));
+            $urlemail              = '#';
+            $urlmanual             = new moodle_url('/enrol/waitinglist/managemanual.php', array('co' => $courseid));
+            $urlduplicate          = new moodle_url('/local/friadmin/duplicatecourse.php', array('id' => $courseid));
 
-            // Check if the course has completion criteria set
-            list ($disabled_completion, $url_completion) = $this->check_completioncriteria($courseId, $url_completion);
+            // Check if the course has completion criteria set.
+            list ($disabledcompletion, $urlcompletion) = $this->check_completioncriteria($courseid, $urlcompletion);
 
-            // Check if there are confirmed users
-            list ($disabled_confirmed, $url_confirmed) = $this->check_confirmedusers($courseId, $url_confirmed);
+            // Check if there are confirmed users.
+            list ($disabledconfirmed, $urlconfirmed) = $this->check_confirmedusers($courseid, $urlconfirmed);
 
-            // Check if there are users in the course waitlist
-            list ($disabled_waitlist, $url_waitlist) = $this->check_usersinwaitlist($courseId, $url_waitlist);
+            // Check if there are users in the course waitlist.
+            list ($disabledwaitlist, $urlwaitlist) = $this->check_usersinwaitlist($courseid, $urlwaitlist);
 
-            // Check if there is a forum with forcesubscribe activated
-            list ($disabled_email, $url_email) = $this->check_forcesubscribeforum($courseId, $url_email);
+            // Check if there is a forum with forcesubscribe activated.
+            list ($disabledemail, $urlemail) = $this->check_forcesubscribeforum($courseid, $urlemail);
 
             /* Set up row 1 */
             $list1 = '<ul class="unlist buttons-linklist">
-                        <li><a class="btn" href="' . $url_back . '">' . $str_back . '</a></li>
+                        <li><a class="btn" href="' . $urlback . '">' . $strback . '</a></li>
                       </ul>';
 
             /* Set up row 2 */
             $list2 = '<ul class="unlist buttons-linklist">
-                        <li><a class="btn" href="' . $url_go . '">' . $str_go . '</a></li>
-                        <li><a class="btn" href="' . $url_settings . '">' . $str_settings . '</a></li>
-                        <li><a class="btn' . $disabled_completion . '" href="' . $url_completion .
-                        '">' . $str_completion . '</a></li>
-                        <li><a class="btn" href="' . $url_statistics . '">' . $str_statistics .
+                        <li><a class="btn" href="' . $urlgo . '">' . $strgo . '</a></li>
+                        <li><a class="btn" href="' . $urlsettings . '">' . $strsettings . '</a></li>
+                        <li><a class="btn' . $disabledcompletion . '" href="' . $urlcompletion .
+                        '">' . $strcompletion . '</a></li>
+                        <li><a class="btn" href="' . $urlstatistics . '">' . $strstatistics .
                         '</a></li>
-                        <li><a class="btn" href="' . $url_enrollment . '">' . $str_enrollment .
+                        <li><a class="btn" href="' . $urlenrollment . '">' . $strenrollment .
                         '</a></li>
-                        <li><a class="btn" href="' . $url_manual . '">' . $str_manual . '</a></li>
+                        <li><a class="btn" href="' . $urlmanual . '">' . $strmanual . '</a></li>
+                        <li><a class="btn" href="' . $urlduplicate . '">' . $strduplicate . '</a></li>
                       </ul>';
 
             /* Set up row 3 */
             $list3 = '<ul class="unlist buttons-linklist">
-                        <li><a class="btn" href="' . $url_users . '">' . $str_users . '</a></li>
-                        <li><a class="btn' . $disabled_confirmed . '" href="' . $url_confirmed .
-                        '">' . $str_confirmed . '</a></li>
-                        <li><a class="btn' . $disabled_waitlist . '" href="' . $url_waitlist . '">' .
-                        $str_waitlist . '</a></li>
-                        <li><a class="btn" href="' . $url_participantlist . '">' . $str_participantlist .
+                        <li><a class="btn" href="' . $urlusers . '">' . $strusers . '</a></li>
+                        <li><a class="btn' . $disabledconfirmed . '" href="' . $urlconfirmed .
+                        '">' . $strconfirmed . '</a></li>
+                        <li><a class="btn' . $disabledwaitlist . '" href="' . $urlwaitlist . '">' .
+                        $strwaitlist . '</a></li>
+                        <li><a class="btn" href="' . $urlparticipantlist . '">' . $strparticipantlist .
                         '</a></li>
                       </ul>';
 
             /* Set up row 4 */
             $list4 = '<ul class="unlist buttons-linklist">
-                        <li><a class="btn' . $disabled_email . '" href="' . $url_email . '">' .
-                        $str_email . '</a></li>
+                        <li><a class="btn' . $disabledemail . '" href="' . $urlemail . '">' .
+                        $stremail . '</a></li>
                      </ul>';
 
             $this->data->content = $list1 . $list2 . $list3 . $list4;
@@ -177,7 +176,7 @@ class local_friadmin_coursedetail_linklist extends local_friadmin_widget impleme
     }//create_linklist
 
     /**
-     * @param  int          $courseId   The course id
+     * @param  int          $courseid   The course id
      * @param  moodle_url   $url        The url
      *
      * @return              array
@@ -196,7 +195,7 @@ class local_friadmin_coursedetail_linklist extends local_friadmin_widget impleme
      * Description
      * Add exception, clean code ...
      */
-    protected function check_completioncriteria($courseId, $url) {
+    protected function check_completioncriteria($courseid, $url) {
         /* Variables    */
         global $CFG;
         $disabled   = '';
@@ -208,8 +207,8 @@ class local_friadmin_coursedetail_linklist extends local_friadmin_widget impleme
             require_once("{$CFG->libdir}/completionlib.php");
             require_once("{$CFG->libdir}/datalib.php");
 
-            // Get criteria for course
-            $course     = get_course($courseId);
+            // Get criteria for course.
+            $course     = get_course($courseid);
             $completion = new completion_info($course);
 
             if (!$completion->is_enabled() || !$completion->has_criteria()) {
@@ -258,7 +257,7 @@ class local_friadmin_coursedetail_linklist extends local_friadmin_widget impleme
     }
 
     /**
-     * @param           $courseId
+     * @param           $courseid
      * @param           $url
      *
      * @return          array
@@ -271,13 +270,13 @@ class local_friadmin_coursedetail_linklist extends local_friadmin_widget impleme
      * Check if there are users in the course waitlist,
      * set the waitlist button to disabled if not.
      */
-    protected function check_usersinwaitlist($courseId, $url) {
+    protected function check_usersinwaitlist($courseid, $url) {
         /* Variables    */
         $disabled = '';
         $queueman = null;
 
         try {
-            $queueman = \enrol_waitinglist\queuemanager::get_by_course($courseId);
+            $queueman = \enrol_waitinglist\queuemanager::get_by_course($courseid);
 
             /**
              * @updateDate  17/06/2015
@@ -303,7 +302,7 @@ class local_friadmin_coursedetail_linklist extends local_friadmin_widget impleme
     }//check_usersinwaitlist
 
     /**
-     * @param           $courseId
+     * @param           $courseid
      * @param           $url
      *
      * @return          array
@@ -323,7 +322,7 @@ class local_friadmin_coursedetail_linklist extends local_friadmin_widget impleme
      * Description
      * Add exception,clean code...
      */
-    protected function check_forcesubscribeforum($courseId, $url) {
+    protected function check_forcesubscribeforum($courseid, $url) {
         /* Variables    */
         global $DB;
         $disabled = ' disabled';
@@ -333,7 +332,7 @@ class local_friadmin_coursedetail_linklist extends local_friadmin_widget impleme
         try {
             /* Search Criteria  */
             $params = array();
-            $params['courseid'] = $courseId;
+            $params['courseid'] = $courseid;
             $params['forum'] = 'forum';
             $params['force'] = 1;
 
@@ -352,7 +351,7 @@ class local_friadmin_coursedetail_linklist extends local_friadmin_widget impleme
 
             /* Execute  */
             if ($forums = $DB->get_records_sql($sql, $params)) {
-                // Continue with the only/first forum found
+                // Continue with the only/first forum found.
                 $forum = array_shift($forums);
                 if (!empty($forum)) {
                     $disabled = '';
