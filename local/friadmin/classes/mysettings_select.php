@@ -14,13 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-//namespace local_friadmin;
-
 defined('MOODLE_INTERNAL') || die;
-
-//use renderable;
-//use renderer_base;
-//use stdClass;
 
 /**
  * Class containing data for the local_friadmin mysettings selection area
@@ -33,45 +27,56 @@ defined('MOODLE_INTERNAL') || die;
  */
 class local_friadmin_mysettings_select extends local_friadmin_widget implements renderable {
 
-    // The form feeback - for debugging
+    /* @var $formdatadump string - The form feeback - for debugging. */
     protected $formdatadump = null;
 
-    // The Moodle form
+    /* @var $mform local_friadmin_mysettings_select_form - The Moodle form. */
     protected $mform = null;
 
-    // The returned form data
+    /* @var $fromform object - The returned form data. */
     protected $fromform = null;
 
     /**
      * Construct the mysettings renderable.
      */
     public function __construct() {
-        /* Variables    */
+        /* @var $customdata array - The data for the form. */
         $customdata = null;
 
         try {
-            // Create the data object and set the first values
+            // ToDo 2016-09-28 - the error occurs when the local template folder has been changed.
+            // The two subsequent lists are not updated - only the local templates in the changed
+            // folder must be listed. Solve the issue.
+            // Create the data object and set the first values.
             parent::__construct();
 
-            /* custom data used */
+            // Custom data used.
             $customdata = local_friadmin_helper::get_usercategories_data();
 
-            /* Create form  */
+            // Create form.
             $mform = new local_friadmin_mysettings_select_form(null, $customdata, 'post',
                 '', array('id' => 'mform-mysettings-select'));
             $this->mform = $mform;
 
-            /* Collect the input data and save the settings */
+            // Collect the input data and save the settings.
             if ($fromform = $mform->get_data()) {
                 $this->fromform = $fromform;
 
                 $this->formdatadump = '<div class="form-data"><h4>Form data</h4><pre>' .
                     var_export($fromform, true) . '</pre></div>';
 
-                /* Save the settings */
+                // Save the settings.
                 $this->save_localtempcategory();
                 $this->save_preftemplate_selection();
 
+                // When data has been changed the form needs to be rebuild with the changed data.
+                // Get the actual custom data for the form.
+                $customdata = local_friadmin_helper::get_usercategories_data();
+
+                // Create the form and save it for further processing.
+                $mform = new local_friadmin_mysettings_select_form(null, $customdata, 'post',
+                    '', array('id' => 'mform-mysettings-select'));
+                $this->mform = $mform;
             }//if_get_data
         } catch (Exception $ex) {
             throw $ex;

@@ -664,6 +664,8 @@ class local_friadmin_helper {
      * Create the course with the given data
      * Restore the course from an exisitng course backup file.
      * Create a course backup if non exists.
+     *
+     * @param object $data The form result.
      */
     /**
      * @return          array|string
@@ -688,13 +690,13 @@ class local_friadmin_helper {
         global $DB, $CFG;
 
         $result = '';
-        $fakePermission = null;
+        $fakepermission = null;
         $newcourseid = null;
         $error = null;
         $coursedata = null;
-        $newCourse = null;
+        $newcourse = null;
         $info = null;
-        $errorMsg = null;
+        $errormsg = null;
         $admin = get_admin();
 
         try {
@@ -704,25 +706,22 @@ class local_friadmin_helper {
                 'categoryid' => $data->selcategory,
                 'fullname' => $data->selfullname,
                 'shortname' => $data->selshortname,
+                'startdate' => $data->startdate,
             );
 
-            list($newcourseid, $error) =
-                self::restore_course((int)$data->id, $coursedata, $data->includeusers, true);
+            list($newcourseid, $error) = self::restore_course((int)$data->id, $coursedata, $data->includeusers, true);
 
             if (empty($error)) {
                 // Get the infos for the new course.
-                $newCourse =
-                    $DB->get_record('course', array('id' => $newcourseid), '*', MUST_EXIST);
-                if ($newCourse) {
-                    //$this->newcourseid = $newCourse->id;
-                    $info = array('id' => $newCourse->id,
-                        'shortname' => $newCourse->shortname,
-                        'fullname' => $newCourse->fullname
+                $newcourse = $DB->get_record('course', array('id' => $newcourseid), '*', MUST_EXIST);
+                if ($newcourse) {
+                    $info = array('id' => $newcourse->id,
+                        'shortname' => $newcourse->shortname,
+                        'fullname' => $newcourse->fullname
                     );
 
                     $result .= '<p class="result">';
-                    $result .=
-                        get_string('coursetemplate_result', 'local_friadmin', $info) . '</p>';
+                    $result .= get_string('coursetemplate_result', 'local_friadmin', $info) . '</p>';
                 } else {
                     /* The course should exist when no processor errors had been generated */
                     $result = '<p class="result">';
@@ -753,7 +752,7 @@ class local_friadmin_helper {
      */
     protected static function restore_course($cid, $options, $withusers = 1, $forcebackup = false) {
         /* Variables */
-        global $CFG,$DB;
+        global $CFG, $DB;
         $error      = '';
         $courseid   = null;
         $component  = 'backup';
@@ -840,15 +839,18 @@ class local_friadmin_helper {
             $controller->destroy();
             unset($controller);
 
-            // Set the course name choosen by the user
+            // Set the parameters chosen by the user.
             $course = new stdClass;
             $course->id = $courseid;
             $course->fullname = fix_utf8($options['fullname']);
             $course->shortname = $options['shortname'];
+            if (isset($options['startdate'])) {
+                $course->startdate = $options['startdate'];
+            }
             $DB->update_record('course', $course);
 
             return array($courseid, $error);
-        }catch (Exception $ex) {
+        } catch (Exception $ex) {
             throw $ex;
         }//try_catch
     }//restore_course

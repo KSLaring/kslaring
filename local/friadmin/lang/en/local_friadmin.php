@@ -76,6 +76,7 @@ $string['coursedetail_confirmed']       = 'Manage confirmed';
 $string['coursedetail_waitlist']        = 'Manage queue';
 $string['coursedetail_participantlist'] = 'Downlaod participant list';
 $string['coursedetail_duplicate']       = 'Duplicate';
+$string['coursedetail_duplicatecourse'] = 'Duplicate course';
 $string['coursedetail_email']           = 'Send email';
 
 $string['eventtemplate_title']          = 'Event';

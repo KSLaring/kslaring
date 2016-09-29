@@ -21,10 +21,10 @@ $coursecat = $course->category;
 $dupcoursenamefull = $course->fullname . $str_defaultending;
 $dupcoursenameshort = $course->shortname . $str_defaultending;
 $url = new moodle_url('/local/friadmin/duplicatecourse.php');
-$return_url = new moodle_url('/course/view.php', array('id' => $courseid));
+$returnurl = new moodle_url('/course/view.php', array('id' => $courseid));
 $context = context_system::instance();
 $category = null;
-$urlEdit = null;
+$urledit = null;
 $errormsg = false;
 
 // Set page.
@@ -48,14 +48,14 @@ $form = new local_friadmin_duplicatecourse_form(null, $customdata);
 
 if ($form->is_cancelled()) {
     $_POST = array();
-    redirect($return_url);
+    redirect($returnurl);
 } else if ($data = $form->get_data()) {
     // Duplicate the course.
     list($newcourse, $result) = local_friadmin_helper::duplicate_course($data);
 
     if (!is_null($newcourse)) {
-        $urlNewcourse = new moodle_url('/course/view.php', array('id' => $newcourse['id']));
-        redirect($urlNewcourse);
+        $urlnewcourse = new moodle_url('/course/view.php', array('id' => $newcourse['id']));
+        redirect($urlnewcourse);
     } else {
         $errormsg = '<div class="alert alert-error">' . $result . '</div>';
     }
