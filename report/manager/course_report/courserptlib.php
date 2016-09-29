@@ -338,30 +338,29 @@ class course_report {
             if ($levelOne) {
                 if ($inOne) {
                     $inOne = array_intersect($inOne,$levelOne);
-                    $inOne = implode(',',$inOne);
                 }else {
                     $inOne = $levelOne;
                 }
+                $inOne = implode(',',$inOne);
             }//if_levelOne
 
             if ($levelTwo) {
                 if ($inTwo) {
                     $inTwo = array_intersect($inTwo,$levelTwo);
-                    $inTwo = implode(',',$inTwo);
                 }else {
                     $inTwo = $levelTwo;
                 }
+                $inTwo = implode(',',$inTwo);
             }//if_levelTwo
 
             /* Level Three  */
             if ($levelThree) {
                 if ($inThree) {
                     $inThree = array_intersect($inThree,$levelThree);
-                    $inThree = implode(',',$inThree);
                 }else {
                     $inThree = $levelThree;
-                    $inThree = implode(',',$inThree);
                 }
+                $inThree = implode(',',$inThree);
             }else {
                 $inThree = implode(',',$inThree);
             }//if_levelThree
