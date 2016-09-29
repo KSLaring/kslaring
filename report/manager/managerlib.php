@@ -566,6 +566,7 @@ class CompetenceManager {
                default:
                     break;
             }
+
             return array($levelZero,$levelOne,$levelTwo,$levelThree);
         }catch (Exception $ex) {
             throw $ex;
