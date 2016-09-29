@@ -1,4 +1,23 @@
 <?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+defined('MOODLE_INTERNAL') || die;
+
+require_once($CFG->dirroot . '/lib/formslib.php');
+
 /**
  * Friadmin Plugin - duplicate course form
  *
@@ -8,13 +27,9 @@
  * @author          Urs Hunkler {@link urs.hunkler@unodo.de}
  * @license         http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-defined('MOODLE_INTERNAL') || die;
-
-require_once($CFG->dirroot . '/lib/formslib.php');
-
 class local_friadmin_duplicatecourse_form extends moodleform {
-    function definition() {
-        $myCategories = array();
+    public function definition() {
+        $mycategories = array();
 
         $mform = $this->_form;
         $customdata = $this->_customdata;
@@ -23,14 +38,14 @@ class local_friadmin_duplicatecourse_form extends moodleform {
         $mform->setType('id', PARAM_INT);
 
         // Get my categories.
-        $myCategories[0] = get_string('sel_category', 'local_friadmin');
-        $myCategories = $myCategories + local_friadmin_helper::getMyCategories();
+        $mycategories[0] = get_string('sel_category', 'local_friadmin');
+        $mycategories = $mycategories + local_friadmin_helper::getMyCategories();
 
         // Static element - extra info for the user.
         $mform->addElement('static', 'extra_info', null, get_string('info_dup_course', 'local_friadmin'));
 
-        // Categories selection
-        $mform->addElement('select', 'selcategory', get_string('my_categories', 'local_friadmin'), $myCategories);
+        // Categories selection.
+        $mform->addElement('select', 'selcategory', get_string('my_categories', 'local_friadmin'), $mycategories);
         $mform->addHelpButton('selcategory', 'my_categories', 'local_friadmin');
         $mform->addRule('selcategory', 'required', 'required', 'nonzero', 'client');
         $mform->addRule('selcategory', 'required', 'nonzero', null, 'client');
@@ -52,6 +67,11 @@ class local_friadmin_duplicatecourse_form extends moodleform {
         $mform->setType('selshortname', PARAM_TEXT);
         $mform->setDefault('selshortname', $customdata['selshortname']);
 
+        // Set the course start date.
+        $mform->addElement('date_selector', 'startdate', get_string('startdate'));
+        $mform->addHelpButton('startdate', 'startdate');
+        $mform->setDefault('startdate', time() + 3600 * 24);
+
         // Check if users shall be included.
         $mform->addElement('advcheckbox', 'includeusers', get_string('includeusers', 'local_friadmin'));
         $mform->addHelpButton('includeusers', 'includeusers', 'local_friadmin');
@@ -68,7 +88,7 @@ class local_friadmin_duplicatecourse_form extends moodleform {
      *
      * @return array the errors that were found
      */
-    function validation($data, $files) {
+    public function validation($data, $files) {
         global $DB;
 
         $errors = parent::validation($data, $files);
@@ -82,4 +102,4 @@ class local_friadmin_duplicatecourse_form extends moodleform {
 
         return $errors;
     }
-}//local_friadmin_new_course_form
+}
