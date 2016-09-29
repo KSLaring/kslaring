@@ -30,7 +30,7 @@ require_login();
 
 $friadmin = new local_friadmin\friadmin();
 
-// Basic page init - set context and pagelayout
+// Basic page init - set context and pagelayout.
 $friadmin->init_page();
 
 //Check if the user has the capability to view the page.
@@ -39,10 +39,11 @@ if (!$friadmin->__get('superuser')) {
 }//if_superuser
 
 // In Moodle 2.7 renderers and renderables can't be loaded via namespaces
-// Get the renderer for this plugin
+// Get the renderer for this plugin.
+/* @var $PAGE moodle_page The Moodle page object. */
 $output = $PAGE->get_renderer('local_friadmin');
 
-// Prepare the renderables for the page and the page areas
+// Prepare the renderables for the page and the page areas.
 $page = new local_friadmin_mysettings_page();
 $select = new local_friadmin_mysettings_select();
 

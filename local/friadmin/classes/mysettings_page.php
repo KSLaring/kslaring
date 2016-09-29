@@ -14,13 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-//namespace local_friadmin;
-
 defined('MOODLE_INTERNAL') || die;
-
-//use renderable;
-//use renderer_base;
-//use stdClass;
 
 /**
  * Class containing data for the local_friadmin mysettings page
@@ -37,7 +31,7 @@ class local_friadmin_mysettings_page extends local_friadmin_widget implements re
      * Construct the coursetemplate_page renderable.
      */
     public function __construct() {
-        // Create the data object and set the first values
+        // Create the data object and set the first values.
         parent::__construct();
 
         $this->data->url = new moodle_url('/local/friadmin/mysettings.php');
