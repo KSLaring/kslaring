@@ -70,7 +70,6 @@ class SuperUser {
         }//try_catch
     }//Init_SuperUsers_Selectors
 
-
     /**
      *
      * @throws          Exception

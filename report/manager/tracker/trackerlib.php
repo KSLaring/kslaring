@@ -20,6 +20,7 @@ define('TRACKER_PDF_DOWNLOAD', 'downloadpdf');
 define('TRACKER_PDF_SEND', 'sendpdf');
 
 class TrackerManager {
+    
     /********************/
     /* PUBLIC FUNCTIONS */
     /********************/
@@ -883,7 +884,7 @@ class TrackerManager {
         $method         = null;
         $instance       = null;
         $plugin         = null;
-        $context        = CONTEXT_COURSE::instance($courseId);
+        $context        = context_course::instance($courseId);
         $unEnrol        = true;
 
         try {

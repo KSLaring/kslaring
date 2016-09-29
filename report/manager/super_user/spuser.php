@@ -19,6 +19,7 @@ require_login();
 
 /* PARAMS   */
 $removeSelected = optional_param_array('removeselect',0,PARAM_INT);
+$addSelected    = optional_param_array('addselect',0,PARAM_INT);
 $addSearch      = optional_param('addselect_searchtext', '', PARAM_RAW);
 $removeSearch   = optional_param('removeselect_searchtext', '', PARAM_RAW);
 $url            = new moodle_url('/report/manager/super_user/spuser.php');
@@ -50,7 +51,7 @@ require_capability('report/manager:edit', $site_context);
 
 
 /* Show Form */
-$form = new manager_spuser_form(null,array($addSearch,$removeSearch,$removeSelected));
+$form = new manager_spuser_form(null,array($addSearch,$removeSearch,$addSelected,$removeSelected));
 
 if ($form->is_cancelled()) {
     $_POST = array();
@@ -61,9 +62,9 @@ if ($form->is_cancelled()) {
     list($levelZero,$levelOne,$levelTwo,$levelThree) = SuperUser::GetLevels_SuperUser($data);
 
     if (!empty($data->add_sel)) {
-        if (isset($data->addselect)) {
+        if ($addSelected) {
             /* Create Super Users   */
-            SuperUser::AddSuperUsers($data->addselect,$levelZero,$levelOne,$levelTwo,$levelThree);
+            SuperUser::AddSuperUsers($addSelected,$levelZero,$levelOne,$levelTwo,$levelThree);
         }//if_addselect
     }
 

@@ -28,7 +28,7 @@ $json           = array();
 $data           = array();
 $infoCompany    = null;
 
-$context        = CONTEXT_SYSTEM::instance();
+$context        = context_system::instance();
 $url            = new moodle_url('/report/manager/super_user/structure.php');
 
 $PAGE->set_context($context);
