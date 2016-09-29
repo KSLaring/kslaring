@@ -14,13 +14,9 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-//namespace local_friadmin;
-
 defined('MOODLE_INTERNAL') || die;
 
 require_once($CFG->dirroot . '/lib/formslib.php');
-
-//use \stdClass;
 
 /**
  * The form for the local_friadmin usercourse_list selection area
@@ -32,16 +28,16 @@ require_once($CFG->dirroot . '/lib/formslib.php');
  * @license         http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class local_friadmin_usercourselist_filter_form extends \moodleform {
-    function definition() {
+    public function definition() {
         global $SESSION;
         $mform = $this->_form;
         $customdata = $this->_customdata;
 
-        // The first form row
+        // The first form row.
         $elementgroup = array();
 
         $options = array('0' => get_string('seleverywhere', 'local_friadmin'));
-        $options = $options + $customdata['municipality'];
+        $options = $customdata['municipality'] + $options;
         $elementgroup[] = $mform->createElement('select', 'selmunicipality', '', $options);
         $mform->setDefault('selmunicipality', '0');
 
@@ -49,13 +45,11 @@ class local_friadmin_usercourselist_filter_form extends \moodleform {
         $options = $options + $customdata['sector'];
         $elementgroup[] = $mform->createElement('select', 'selsector', '', $options);
         $mform->setDefault('selsector', '0');
-        //$mform->disabledIf('selsector', 'selmunicipality', 'eq', '0');
 
         $options = array('0' => get_string('sellocation', 'local_friadmin'));
         $options = $options + $customdata['location'];
         $elementgroup[] = $mform->createElement('select', 'sellocation', '', $options);
         $mform->setDefault('sellocation', '0');
-        //$mform->disabledIf('sellocation', 'selmunicipality', 'eq', '0');
 
         $mform->addGroup($elementgroup, 'selectrowone',
             get_string('locationline', 'local_friadmin'),
@@ -63,7 +57,7 @@ class local_friadmin_usercourselist_filter_form extends \moodleform {
         $mform->addHelpButton('selectrowone', 'locationline', 'local_friadmin');
 
 
-        // The second form row
+        // The second form row.
         $elementgroup = array();
 
         $options = array('optional' => true);
@@ -89,7 +83,7 @@ class local_friadmin_usercourselist_filter_form extends \moodleform {
         $mform->addHelpButton('selectrowtwo', 'fromto', 'local_friadmin');
 
 
-        // The third form row
+        // The third form row.
         $elementgroup = array();
 
         $defaultText = get_string('selname', 'local_friadmin');
@@ -135,7 +129,7 @@ class local_friadmin_usercourselist_filter_form extends \moodleform {
      *
      * The associative $defaults: array 'elementname' => 'defaultvalue'
      *
-     * @param Array $defaults The default values
+     * @param array $defaults The default values
      */
     public function set_defaults($defaults = array()) {
         $mform = $this->_form;
