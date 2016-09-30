@@ -69,16 +69,24 @@ M.core_user.init_structure = function (Y,name,reload,invoice) {
                 this.levelThree.on('change', this.Reload_ManualUsersSelectors, this);
             }else if (this.isInvoice) {
                 this.levelThree.on('change', this.InvoiceDataCompany, this);
-                if (this.levelThree.get('value') != 0) {
+                if (this.levelTwo.get('value') != 0) {
                     this.InvoiceDataCompany();
                 }
+                this.DeactivateInvoiceDate();
+
+                this.InvoiceDataCompany();
             }
         },
 
         Activate_LevelOne : function(e) {
             var parent  = this.levelZero.get('value');
             var level   = 1;
+
             //  Trigger an ajax search after a delay.
+            this.cleanCookies();
+            if (this.isInvoice) {
+                this.DeactivateInvoiceDate();
+            }
             this.cancel_timeout();
             this.timeoutid  = Y.later(this.querydelay * 1000, e, function(obj){obj.send_query(false,parent,level)}, this);
         },
@@ -86,7 +94,12 @@ M.core_user.init_structure = function (Y,name,reload,invoice) {
         Activate_LevelTwo : function(e) {
             var parent      = this.levelOne.get('value');
             var level       = 2;
+
             //  Trigger an ajax search after a delay.
+            this.cleanCookies();
+            if (this.isInvoice) {
+                this.DeactivateInvoiceDate();
+            }
             this.cancel_timeout();
             this.timeoutid = Y.later(this.querydelay * 1000, e, function(obj){obj.send_query(false,parent,level)}, this);
         },
@@ -94,7 +107,9 @@ M.core_user.init_structure = function (Y,name,reload,invoice) {
         Activate_LevelThree : function(e) {
             var parent  = this.levelTwo.get('value');
             var level   = 3;
+
             //  Trigger an ajax search after a delay.
+            this.cleanCookies();
             this.cancel_timeout();
             this.timeoutid = Y.later(this.querydelay * 1000, e, function(obj){obj.send_query(false,parent,level)}, this);
         },
@@ -110,34 +125,38 @@ M.core_user.init_structure = function (Y,name,reload,invoice) {
         InvoiceDataCompany: function(e) {
             //  Trigger an ajax search after a delay.
             this.cancel_timeout();
+
             this.timeoutid = Y.later(this.querydelay * 1000, e,function(obj){obj.send_invoice_query(false)}, this);
         },
 
         send_invoice_query: function(forceresearch) {
             /* Variables */
             var levelTwo    = this.levelTwo.get('value');
-            var levelThree   = this.levelThree.get('value');
+            var levelThree  = this.levelThree.get('value');
 
             // Cancel any pending timeout.
             this.cancel_timeout();
+            
+            if (levelThree != 0) {
+                // Try to cancel existing transactions.
+                Y.Object.each(this.iotransactions, function(trans) {
+                    trans.abort();
+                });
 
-            // Try to cancel existing transactions.
-            Y.Object.each(this.iotransactions, function(trans) {
-                trans.abort();
-            });
+                /* Activate Invoice Data Fields */
+                this.ActivateInvoiceData();
 
-            /* Activate Invoice Data Fields */
-            this.ActivateInvoiceData();
+                var iotrans = Y.io(M.cfg.wwwroot + '/enrol/waitinglist/invoice/invoicedata.php', {
+                    method: 'POST',
+                    data: 'two=' + levelTwo + '&three' + '=' + levelThree + '&sesskey=' + M.cfg.sesskey,
+                    on: {
+                        complete: this.handle_invoice_response
+                    },
+                    context:this
+                });
+                this.iotransactions[iotrans.id] = iotrans;                
+            }
 
-            var iotrans = Y.io(M.cfg.wwwroot + '/enrol/waitinglist/invoicedata.php', {
-                method: 'POST',
-                data: 'two=' + levelTwo + '&three' + '=' + levelThree + '&sesskey=' + M.cfg.sesskey,
-                on: {
-                    complete: this.handle_invoice_response
-                },
-                context:this
-            });
-            this.iotransactions[iotrans.id] = iotrans;
         },
 
         handle_invoice_response : function(requestid, response) {
@@ -169,16 +188,30 @@ M.core_user.init_structure = function (Y,name,reload,invoice) {
                 infoInvoice = company.invoice;
 
                 /* Tjeneste */
-                if ((infoInvoice.tjeneste != '') || (infoInvoice.ansvar != '')) {
-                    Y.one('#id_resp_number').set('value',infoInvoice.tjeneste);
+                Y.one('#id_resp_number').set('value',infoInvoice.tjeneste);
+                if (infoInvoice.tjeneste) {
                     Y.one('#id_resp_number').setAttribute('readonly');
-                    /* Ansvar  */
-                    Y.one('#id_service_number').set('value',infoInvoice.ansvar);
-                    Y.one('#id_service_number').setAttribute('readonly');
-                    /* Address option Not viable */
-                    Y.one('#id_invoice_type_ADDRESS').setAttribute('disabled');
+                }else {
+                    Y.one('#id_resp_number').removeAttribute('readonly');
                 }
 
+                /* Ansvar  */
+                Y.one('#id_service_number').set('value',infoInvoice.ansvar);
+                if (infoInvoice.ansvar) {
+                    Y.one('#id_service_number').setAttribute('readonly');
+                }else {
+                    Y.one('#id_service_number').removeAttribute('readonly');
+                }
+
+                /* Address option Not viable */
+                //Y.one('#id_invoice_type_ADDRESS').setAttribute('disabled');
+
+                /* Resource Number  */
+                if (infoInvoice.resource_number) {
+                    Y.one('#id_resource_number').set('value',infoInvoice.resource_number);
+                }else {
+                    Y.one('#id_resource_number').set('value','');
+                }
             }//for_results
         },
         
@@ -186,15 +219,49 @@ M.core_user.init_structure = function (Y,name,reload,invoice) {
             Y.one('#id_invoice_type_ACCOUNT').set('checked','checked');
             /* Activate Account Invoice     */
             Y.one('#id_resp_number').removeAttribute('disabled');
+            Y.one('#id_resp_number').set('value','');
+
             Y.one('#id_service_number').removeAttribute('disabled');
+            Y.one('#id_service_number').set('value','');
+
             Y.one('#id_project_number').removeAttribute('disabled');
+            Y.one('#id_project_number').set('value','');
+
             Y.one('#id_act_number').removeAttribute('disabled');
+            Y.one('#id_act_number').set('value','');
+            
+            Y.one('#id_resource_number').removeAttribute('disabled');
+
+            Y.one('#id_lnk_search').removeClass('link_search_disabled');
+            Y.one('#id_lnk_search').addClass('link_search');
 
             /* Disabled Address Invoice     */
             Y.one('#id_street').setAttribute('disabled');
             Y.one('#id_post_code').setAttribute('disabled');
             Y.one('#id_city').setAttribute('disabled');
             Y.one('#id_bil_to').setAttribute('disabled');
+        },
+
+        DeactivateInvoiceDate: function() {
+            Y.one('#id_invoice_type_ACCOUNT').set('checked','');
+            /* Activate Account Invoice     */
+            Y.one('#id_resp_number').setAttribute('disabled');
+            Y.one('#id_resp_number').set('value','');
+
+            Y.one('#id_service_number').setAttribute('disabled');
+            Y.one('#id_service_number').set('value','');
+
+            Y.one('#id_project_number').setAttribute('disabled');
+            Y.one('#id_project_number').set('value','');
+
+            Y.one('#id_act_number').setAttribute('disabled');
+            Y.one('#id_act_number').set('value','');
+
+            Y.one('#id_resource_number').setAttribute('disabled');
+            Y.one('#id_resource_number').set('value','');
+
+            Y.one('#id_lnk_search').removeClass('link_search');
+            Y.one('#id_lnk_search').addClass('link_search_disabled');
         },
 
         /**
@@ -324,6 +391,13 @@ M.core_user.init_structure = function (Y,name,reload,invoice) {
                 clearTimeout(this.timeoutid);
                 this.timeoutid = null;
             }
+        },
+
+        cleanCookies : function () {
+            document.cookie = "level_0"   + "=0";
+            document.cookie = "level_1"   + "=0";
+            document.cookie = "level_2"   + "=0";
+            document.cookie = "level_3"   + "=0";
         }
     };
 

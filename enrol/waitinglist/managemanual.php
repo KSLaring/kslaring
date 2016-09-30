@@ -2,14 +2,13 @@
 /**
  * Waiting List - Manual submethod
  *
- * @package         enrol/waitinglist
- * @subpackage
+ * @package         enrol
+ * @subpackage      waitinglist
  * @copyright       2013 efaktor    {@link http://www.efaktor.no}
  *
  * @creationDate    17/08/2016
  * @author          efaktor     (fbv)
  *
- * Description
  */
 require('../../config.php');
 require_once('lib.php');
@@ -45,6 +44,7 @@ $PAGE->set_url($url);
 $PAGE->set_pagelayout('admin');
 $PAGE->set_title(get_string('managemethods', 'enrol_waitinglist'));
 $PAGE->set_heading($course->fullname);
+$PAGE->set_context($context);
 
 if (!enrol_is_enabled('waitinglist')) {
     redirect($return);

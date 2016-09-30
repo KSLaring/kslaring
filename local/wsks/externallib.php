@@ -880,6 +880,12 @@ class local_wsks_external extends external_api {
      *
      * Description
      * Parameters - Web service to synchronize the users accounts between KS Læring and FELLESDATA
+     *
+     * @updateDate      23/09/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Add resource number
      */
     public static function wsUsersAccounts_parameters() {
         /* User account info */
@@ -887,12 +893,16 @@ class local_wsks_external extends external_api {
         $firstName      = new external_value(PARAM_TEXT,'First Name');
         $lastName       = new external_value(PARAM_TEXT,'Last Name');
         $eMail          = new external_value(PARAM_TEXT,'eMail');
+        $resourceNum    = new external_value(PARAM_TEXT,'resource number');
+        $industryCode   = new external_value(PARAM_TEXT,'Industry code');
         $action         = new external_value(PARAM_INT,'Action. Add/Update/Delete');
 
         $accountInfo = new external_single_structure(array('personalnumber' => $personalNumber,
                                                            'firstname'      => $firstName,
                                                            'lastname'       => $lastName,
                                                            'email'          => $eMail,
+                                                           'ressursnr'      => $resourceNum,
+                                                           'industry'       => $industryCode,
                                                            'action'         => $action));
 
         return new external_function_parameters(array('usersAccounts'=> new external_multiple_structure($accountInfo)));
