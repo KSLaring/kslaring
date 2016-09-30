@@ -277,3 +277,7 @@ $string['no_competence']   = 'Sorry, you cannot enroll because there is no workp
 
 $string['company_demanded']        = 'No demand company';
 $string['company_demanded_manual'] = 'Company not demanded. All users will be available to select';
+$string['find_resource_number'] = " Find Resource Number";
+$string['no_users_invoice']     = " No users invoice approval";
+$string['users_matching']       = " Users invoice approval matching";
+$string['please_use_filter']    = " Please use the filter";

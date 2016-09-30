@@ -130,7 +130,6 @@ class enrolmethodunnamedbulk_enrolform extends \moodleform {
                 $mform->addElement('text','seats',  get_string('reserveseatcount', 'enrol_waitinglist'), array('size' => '8'));
                 $mform->addRule('seats', null, 'numeric', null, 'client');
                 $mform->setType('seats', PARAM_INT);
-                $mform->setDefault('seats','');
 
                 /**
                  * @updateDate  28/10/2015
@@ -243,7 +242,9 @@ class enrolmethodunnamedbulk_enrolform extends \moodleform {
                 /* Parent*/
                 $parent     = optional_param('level_' . ($level-1), 0, PARAM_INT);
                 if (!$parent) {
-                    if (isset($SESSION->onlyCompany)) {
+                    if (isset($_COOKIE['level_' . ($level-1)]) && $_COOKIE['level_' . ($level-1)]) {
+                        $parent = $_COOKIE['level_' . ($level-1)];
+                    }else if (isset($SESSION->onlyCompany)) {
                         $parent = $SESSION->onlyCompany[$level-1];
                     }
                 }
@@ -357,6 +358,8 @@ class enrolmethodunnamedbulk_enrolform extends \moodleform {
             $default = $SESSION->selection['level_' . $level];
         }else if (isset($SESSION->onlyCompany)) {
             $default = $SESSION->onlyCompany[$level];
+        }else if (isset($_COOKIE['level_' . $level]) && $_COOKIE['level_' . $level]) {
+            $default = $_COOKIE['level_' . $level];
         }else {
             $default = optional_param('level_' . $level, 0, PARAM_INT);
         }

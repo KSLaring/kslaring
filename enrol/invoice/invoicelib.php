@@ -14,6 +14,59 @@
 class Invoices {
 
     /**
+     * @param           $levelTwo
+     * @param           $levelThree
+     *
+     * @return          mixed|null
+     * @throws          Exception
+     *
+     * @creationDate    14/09/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Get invoice data connected with the company
+     */
+    public static function GetInvoiceData($levelTwo,$levelThree) {
+        /* Variables */
+        global $DB;
+        $rdo        = null;
+        $invoice    = null;
+
+        try {
+            /* First Level Three    */
+            $params = array();
+            $params['id']               = $levelThree;
+            $params['hierarchylevel']   = 3;
+
+            /* Execute */
+            $rdo = $DB->get_record('report_gen_companydata',$params,'id,tjeneste,ansvar');
+            if ($rdo) {
+                if ($rdo->tjeneste && $rdo->ansvar) {
+                    $invoice = $rdo;
+                }
+            }//if_rdo
+
+            if (!$invoice) {
+                /* Level Two */
+                $params['id']               = $levelTwo;
+                $params['hierarchylevel']   = 2;
+
+                /* Execute */
+                $rdo = $DB->get_record('report_gen_companydata',$params,'id,tjeneste,ansvar');
+                if ($rdo) {
+                    if (!empty($rdo->tjeneste) && !empty($rdo->ansvar)) {
+                        $invoice = $rdo;
+                    }
+                }//if_two
+            }
+            
+            return $invoice;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//GetInvoiceData
+    
+    /**
      * @param           $form
      *
      * @throws          Exception
@@ -26,11 +79,14 @@ class Invoices {
      */
     public static function AddElements_ToForm(&$form) {
         /* Variables    */
+        global $COURSE,$SESSION;
         $invoice    = null;
         $grp        = null;
+        $resource_number = '';
 
         try {
             /* Invoice Type */
+
             $form->addElement('html','<label class="invoice_info">' . get_string('invoice_info','enrol_invoice') . '</label>');
 
             /* Account  */
@@ -51,28 +107,35 @@ class Invoices {
             /* Activity Number  */
             $invoice[4] = $form->createElement('text','act_number',get_string('invoice_act','enrol_invoice'),'class="address" disabled');
             $form->setType('act_number',PARAM_TEXT);
-
-
-            /* Address  */
-            $invoice[5] = $form->createElement('radio', 'invoice_type','',get_string('address_invoice','enrol_invoice'),ADDRESS_INVOICE);
-            $invoice[5]->setValue(ADDRESS_INVOICE);
-            /* Street       */
-            $invoice[6] = $form->createElement('text','street',get_string('invoice_street','enrol_invoice'),'class="address" disabled');
-            $form->setType('street',PARAM_TEXT);
-            /* Post Code    */
-            $invoice[7] = $form->createElement('text','post_code',get_string('invoice_post_code','enrol_invoice'),'class="address" disabled');
-            $form->setType('post_code',PARAM_TEXT);
-            /* City         */
-            $invoice[8] = $form->createElement('text','city',get_string('invoice_city','enrol_invoice'),'class="address" disabled');
-            $form->setType('city',PARAM_TEXT);
-            /* Bil To /Marked With         */
-            $invoice[9] = $form->createElement('text','bil_to',get_string('invoice_bil','enrol_invoice'),'class="address" disabled');
-            $form->setType('bil_to',PARAM_TEXT);
+            /* Invoice Approval */
+            $invoice[5] = $form->createElement('text','resource_number',get_string('invoice_approval','enrol_invoice'),'class="address" disabled');
+            $form->setType('resource_number',PARAM_TEXT);
 
             $grp = $form->addElement('group', 'grp_InvoiceType', null, $invoice,'</br>' , false);
             $form->addRule('grp_InvoiceType',get_string('required'),'required', null, 'server');
 
+            $urlResource = new moodle_url('/enrol/waitinglist/invoice/invoiceusers.php',array('id' => $COURSE->id));
+            $lnkResource = '<a href="' . $urlResource . '" class="link_search" id="id_lnk_search">' . get_string('search_approval','enrol_invoice'). '</a></br>';
+            $form->addElement('html',$lnkResource);
+            /* Address  */
+            $invoice = array();
+            $invoice[0] = $form->createElement('radio', 'invoice_type','',get_string('address_invoice','enrol_invoice'),ADDRESS_INVOICE);
+            $invoice[0]->setValue(ADDRESS_INVOICE);
+            /* Street       */
+            $invoice[1] = $form->createElement('text','street',get_string('invoice_street','enrol_invoice'),'class="address" disabled');
+            $form->setType('street',PARAM_TEXT);
+            /* Post Code    */
+            $invoice[2] = $form->createElement('text','post_code',get_string('invoice_post_code','enrol_invoice'),'class="address" disabled');
+            $form->setType('post_code',PARAM_TEXT);
+            /* City         */
+            $invoice[3] = $form->createElement('text','city',get_string('invoice_city','enrol_invoice'),'class="address" disabled');
+            $form->setType('city',PARAM_TEXT);
+            /* Bil To /Marked With         */
+            $invoice[4] = $form->createElement('text','bil_to',get_string('invoice_bil','enrol_invoice'),'class="address" disabled');
+            $form->setType('bil_to',PARAM_TEXT);
 
+            $grp = $form->addElement('group', 'grp_InvoiceType', null, $invoice,'</br>' , false);
+            $form->addRule('grp_InvoiceType',get_string('required'),'required', null, 'server');
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
@@ -102,12 +165,10 @@ class Invoices {
                         /* Responsibility Number    */
                         if (!$data['resp_number']) {
                             $errors['grp_InvoiceType'] = get_string('resp_required','enrol_invoice');
-                            return $errors;
                         }//resp_number
                         /* Service Number           */
                         if (!$data['service_number']) {
                             $errors['grp_InvoiceType'] = get_string('service_required','enrol_invoice');
-                            return $errors;
                         }//resp_number
 
                         break;
@@ -133,11 +194,14 @@ class Invoices {
                         if ($msg_error) {
                             $errors['grp_InvoiceType'] = $msg_error;
                         }
+
                         break;
                     default:
                         break;
                 }//_invoice_type
             }
+
+            return $errors;
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
@@ -156,6 +220,12 @@ class Invoices {
      *
      * Description
      * Save information about the invoice
+     *
+     * @updateDate          14/09/2016
+     * @author              eFaktor     (fbv)
+     *
+     * Description
+     * Add company id
      */
     public static function Add_InvoiceInto($data,$user_id,$course_id,$waitingId=0) {
         /* Variables    */
@@ -165,6 +235,7 @@ class Invoices {
             /* Invoice Detail   */
             $invoice_info = new stdClass();
             $invoice_info->userid           = $user_id;
+            $invoice_info->companyid        = $data->level_3;
             $invoice_info->courseid         = $course_id;
             $invoice_info->type             = $data->invoice_type;
             $invoice_info->invoiced         = 0;
@@ -179,6 +250,7 @@ class Invoices {
                     $invoice_info->servicenumber    = $data->service_number;
                     $invoice_info->projectnumber    = $data->project_number;
                     $invoice_info->actnumber        = $data->act_number;
+                    $invoice_info->ressursnr        = $data->resource_number;
 
                     break;
                 case ADDRESS_INVOICE:
@@ -318,6 +390,7 @@ class Invoices {
                                             ei.servicenumber,
                                             ei.projectnumber,
                                             ei.actnumber,
+                                            ei.ressursnr,
                                             ei.street,
                                             ei.postcode,
                                             ei.city,
@@ -346,20 +419,21 @@ class Invoices {
                 foreach ($rdo as $invoice) {
                     /* Invoice Info */
                     $info = new stdClass();
-                    $info->name         = $invoice->name;
-                    $info->email        = $invoice->email;
-                    $info->type         = $invoice->type;
-                    $info->respo        = $invoice->responumber;
-                    $info->service      = $invoice->servicenumber;
-                    $info->project      = $invoice->projectnumber;
-                    $info->act          = $invoice->actnumber;
-                    $info->street       = $invoice->street;
-                    $info->post_code    = $invoice->postcode;
-                    $info->city         = $invoice->city;
-                    $info->bil_to       = $invoice->bilto;
-                    $info->arbeidssted  = $invoice->arbeidssted;
+                    $info->name             = $invoice->name;
+                    $info->email            = $invoice->email;
+                    $info->type             = $invoice->type;
+                    $info->respo            = $invoice->responumber;
+                    $info->service          = $invoice->servicenumber;
+                    $info->project          = $invoice->projectnumber;
+                    $info->act              = $invoice->actnumber;
+                    $info->resource_number  = $invoice->ressursnr;
+                    $info->street           = $invoice->street;
+                    $info->post_code        = $invoice->postcode;
+                    $info->city             = $invoice->city;
+                    $info->bil_to           = $invoice->bilto;
+                    $info->arbeidssted      = $invoice->arbeidssted;
                     if ($invoice->waitinglistid) {
-                        $info->seats    = self::GetConfirmedSeats($invoice->id,$course_id,$invoice->waitinglistid);
+                        $info->seats        = self::GetConfirmedSeats($invoice->id,$course_id,$invoice->waitinglistid);
                     }//if_waitinglist
                     $lst_invoices[$invoice->id] = $info;
                 }//for_rdo
@@ -590,10 +664,10 @@ class Invoices {
         $str_name       = get_string('rpt_name','enrol_invoice');
         $str_place      = get_string('rpt_work','enrol_invoice');
         $str_mail       = get_string('rpt_mail','enrol_invoice');
-        $str_invoice    = get_string('rpt_invoice','enrol_invoice');
         $str_detail     = get_string('rpt_details','enrol_invoice');
-        $str_seats      = get_String('rpt_seats','enrol_invoice');
-
+        $str_seats      = get_string('rpt_seats','enrol_invoice');
+        $str_resource   = get_string('rpt_resource','enrol_invoice');
+        
         $header .=  html_writer::start_tag('thead');
         $header .=  html_writer::start_tag('tr',array('class' => 'header_invoice'));
             /* User Name    */
@@ -615,6 +689,10 @@ class Invoices {
             /* Details      */
             $header .= html_writer::start_tag('th',array('class' => 'type'));
                 $header .= $str_detail;
+            $header .= html_writer::end_tag('th');
+            /* Resource Number  */
+            $header .= html_writer::start_tag('th',array('class' => 'type'));
+                $header .= $str_resource;
             $header .= html_writer::end_tag('th');
         $header .= html_writer::end_tag('tr');
         $header .= html_writer::end_tag('thead');
@@ -682,6 +760,10 @@ class Invoices {
                             $body .= $invoice->street . "</br>" . $invoice->post_code . " " . $invoice->city . "</br>" . $invoice->bil_to;
                             break;
                     }//switch_type
+                $body .= html_writer::end_tag('td');
+                /* Resource Number  */
+                $body .= html_writer::start_tag('td',array('class' => 'type'));
+                    $body .= $invoice->resource_number;
                 $body .= html_writer::end_tag('td');
             $body .= html_writer::end_tag('tr');
         }//for_invoices_lst
@@ -867,71 +949,65 @@ class Invoices {
         $str_project    = get_string('invoice_project','enrol_invoice');
         $str_act        = get_string('invoice_act','enrol_invoice');
         $str_seats      = get_string('rpt_seats','enrol_invoice');
+        $str_resource   = get_string('rpt_resource','enrol_invoice');
 
         try {
             /* User/Name    */
             $my_xls->write($row, $col, $str_name,array('size'=>12, 'name'=>'Arial','bold'=>'1','bg_color'=>'#efefef','text_wrap'=>true,'v_align'=>'left'));
-            //$my_xls->merge_cells($row,$col,$row,$col+5);
             $my_xls->set_row($row,20);
 
             /* Work Place   */
             $col = $col + 1;
             $my_xls->write($row, $col, $str_place,array('size'=>12, 'name'=>'Arial','bold'=>'1','bg_color'=>'#efefef','text_wrap'=>true,'v_align'=>'left'));
-            //$my_xls->merge_cells($row,$col,$row,$col+3);
             $my_xls->set_row($row,20);
 
             /* Mail         */
             $col = $col + 1;
             $my_xls->write($row, $col, $str_mail,array('size'=>12, 'name'=>'Arial','bold'=>'1','bg_color'=>'#efefef','text_wrap'=>true,'v_align'=>'left'));
-            //$my_xls->merge_cells($row,$col,$row,$col+3);
             $my_xls->set_row($row,20);
 
             /* Seats    */
             $col = $col + 1;
             $my_xls->write($row, $col, $str_seats,array('size'=>12, 'name'=>'Arial','bold'=>'1','bg_color'=>'#efefef','text_wrap'=>true,'v_align'=>'left'));
-            //$my_xls->merge_cells($row,$col,$row,$col+3);
             $my_xls->set_row($row,20);
 
             /* Street           */
             $col = $col + 1;
             $my_xls->write($row, $col, $str_street,array('size'=>12, 'name'=>'Arial','bold'=>'1','bg_color'=>'#efefef','text_wrap'=>true,'v_align'=>'left'));
-            //$my_xls->merge_cells($row,$col,$row,$col+3);
             $my_xls->set_row($row,20);
             /* Post Code        */
             $col = $col + 1;
             $my_xls->write($row, $col, $str_post,array('size'=>12, 'name'=>'Arial','bold'=>'1','bg_color'=>'#efefef','text_wrap'=>true,'v_align'=>'left'));
-            //$my_xls->merge_cells($row,$col,$row,$col+3);
             $my_xls->set_row($row,20);
             /* City             */
             $col = $col + 1;
             $my_xls->write($row, $col, $str_city,array('size'=>12, 'name'=>'Arial','bold'=>'1','bg_color'=>'#efefef','text_wrap'=>true,'v_align'=>'left'));
-            //$my_xls->merge_cells($row,$col,$row,$col+3);
             $my_xls->set_row($row,20);
             /* Marked with      */
             $col = $col + 1;
             $my_xls->write($row, $col, $str_bil,array('size'=>12, 'name'=>'Arial','bold'=>'1','bg_color'=>'#efefef','text_wrap'=>true,'v_align'=>'left'));
-            //$my_xls->merge_cells($row,$col,$row,$col+3);
             $my_xls->set_row($row,20);
 
             /* Responsibility number    */
             $col = $col + 1;
             $my_xls->write($row, $col, $str_resp,array('size'=>12, 'name'=>'Arial','bold'=>'1','bg_color'=>'#efefef','text_wrap'=>true,'v_align'=>'left'));
-            //$my_xls->merge_cells($row,$col,$row,$col+3);
             $my_xls->set_row($row,20);
             /* Service number           */
             $col = $col + 1;
             $my_xls->write($row, $col, $str_service,array('size'=>12, 'name'=>'Arial','bold'=>'1','bg_color'=>'#efefef','text_wrap'=>true,'v_align'=>'left'));
-            //$my_xls->merge_cells($row,$col,$row,$col+3);
             $my_xls->set_row($row,20);
             /* Project number           */
             $col = $col + 1;
             $my_xls->write($row, $col, $str_project,array('size'=>12, 'name'=>'Arial','bold'=>'1','bg_color'=>'#efefef','text_wrap'=>true,'v_align'=>'left'));
-            //$my_xls->merge_cells($row,$col,$row,$col+3);
             $my_xls->set_row($row,20);
             /* Activity number          */
             $col = $col + 1;
             $my_xls->write($row, $col, $str_act,array('size'=>12, 'name'=>'Arial','bold'=>'1','bg_color'=>'#efefef','text_wrap'=>true,'v_align'=>'left'));
-            //$my_xls->merge_cells($row,$col,$row,$col+3);
+            $my_xls->set_row($row,20);
+
+            /* Resource Number */
+            $col = $col + 1;
+            $my_xls->write($row, $col, $str_resource,array('size'=>12, 'name'=>'Arial','bold'=>'1','bg_color'=>'#efefef','text_wrap'=>true,'v_align'=>'left'));
             $my_xls->set_row($row,20);
         }catch (Exception $ex) {
             throw $ex;
@@ -964,68 +1040,61 @@ class Invoices {
         try {
             foreach($invoices_lst as $id=>$invoice) {
                 /* User/name    */
-                $my_xls->write($row, $col, $invoice->name,array('size'=>12, 'name'=>'Arial','text_wrap'=>true,'v_align'=>'left'));
-                //$my_xls->merge_cells($row,$col,$row,$col+5);
+                $my_xls->write($row, $col, $invoice->name,array('size'=>12, 'name'=>'Arial','text_wrap'=>true,'v_align'=>'center'));
                 $my_xls->set_row($row,25);
 
                 /* Work Place   */
                 $col = $col + 1;
-                $my_xls->write($row, $col, $invoice->arbeidssted,array('size'=>12, 'name'=>'Arial','text_wrap'=>true,'v_align'=>'left'));
-                //$my_xls->merge_cells($row,$col,$row,$col+3);
+                $my_xls->write($row, $col, $invoice->arbeidssted,array('size'=>12, 'name'=>'Arial','text_wrap'=>true,'v_align'=>'center'));
                 $my_xls->set_row($row,25);
 
                 /* Mail         */
                 $col = $col + 1;
-                $my_xls->write($row, $col, $invoice->email,array('size'=>12, 'name'=>'Arial','text_wrap'=>true,'v_align'=>'left'));
-                //$my_xls->merge_cells($row,$col,$row,$col+3);
+                $my_xls->write($row, $col, $invoice->email,array('size'=>12, 'name'=>'Arial','text_wrap'=>true,'v_align'=>'center'));
                 $my_xls->set_row($row,25);
 
                 /* Seats    */
                 $col = $col + 1;
-                $my_xls->write($row, $col, $invoice->seats,array('size'=>12, 'name'=>'Arial','text_wrap'=>true,'v_align'=>'left'));
-                //$my_xls->merge_cells($row,$col,$row,$col+3);
+                $my_xls->write($row, $col, $invoice->seats,array('size'=>12, 'name'=>'Arial','text_wrap'=>true,'v_align'=>'center'));
                 $my_xls->set_row($row,25);
 
                 /* Street       */
                 $col = $col + 1;
-                $my_xls->write($row, $col, $invoice->street,array('size'=>12, 'name'=>'Arial','text_wrap'=>true,'v_align'=>'left'));
-                //$my_xls->merge_cells($row,$col,$row,$col+3);
+                $my_xls->write($row, $col, $invoice->street,array('size'=>12, 'name'=>'Arial','text_wrap'=>true,'v_align'=>'center'));
                 $my_xls->set_row($row,25);
                 /* Post Code    */
                 $col = $col + 1;
-                $my_xls->write_string($row, $col, $invoice->post_code,array('size'=>12, 'name'=>'Arial','text_wrap'=>true,'v_align'=>'left','align' => 'right'));
-                //$my_xls->merge_cells($row,$col,$row,$col+3);
+                $my_xls->write_string($row, $col, $invoice->post_code,array('size'=>12, 'name'=>'Arial','text_wrap'=>true,'v_align'=>'center','align' => 'right'));
                 $my_xls->set_row($row,25);
                 /* City         */
                 $col = $col + 1;
-                $my_xls->write($row, $col, $invoice->city,array('size'=>12, 'name'=>'Arial','text_wrap'=>true,'v_align'=>'left'));
-                //$my_xls->merge_cells($row,$col,$row,$col+3);
+                $my_xls->write($row, $col, $invoice->city,array('size'=>12, 'name'=>'Arial','text_wrap'=>true,'v_align'=>'center'));
                 $my_xls->set_row($row,25);
                 /* Marked with  */
                 $col = $col + 1;
-                $my_xls->write($row, $col, $invoice->bil_to,array('size'=>12, 'name'=>'Arial','text_wrap'=>true,'v_align'=>'left'));
-                //$my_xls->merge_cells($row,$col,$row,$col+3);
+                $my_xls->write($row, $col, $invoice->bil_to,array('size'=>12, 'name'=>'Arial','text_wrap'=>true,'v_align'=>'center'));
                 $my_xls->set_row($row,25);
 
                 /* Responsibility number    */
                 $col = $col + 1;
-                $my_xls->write_string($row, $col, $invoice->respo,array('size'=>12, 'name'=>'Arial','text_wrap'=>true,'v_align'=>'left','align' => 'right'));
-                //$my_xls->merge_cells($row,$col,$row,$col+3);
+                $my_xls->write_string($row, $col, $invoice->respo,array('size'=>12, 'name'=>'Arial','text_wrap'=>true,'v_align'=>'center','align' => 'right'));
                 $my_xls->set_row($row,25);
                 /* Service number           */
                 $col = $col + 1;
-                $my_xls->write_string($row, $col, $invoice->service,array('size'=>12, 'name'=>'Arial','text_wrap'=>true,'v_align'=>'left','align' => 'right'));
-                //$my_xls->merge_cells($row,$col,$row,$col+3);
+                $my_xls->write_string($row, $col, $invoice->service,array('size'=>12, 'name'=>'Arial','text_wrap'=>true,'v_align'=>'center','align' => 'right'));
                 $my_xls->set_row($row,25);
                 /* Project number           */
                 $col = $col + 1;
-                $my_xls->write_string($row, $col, $invoice->project,array('size'=>12, 'name'=>'Arial','text_wrap'=>true,'v_align'=>'left','align' => 'right'));
-                //$my_xls->merge_cells($row,$col,$row,$col+3);
+                $my_xls->write_string($row, $col, $invoice->project,array('size'=>12, 'name'=>'Arial','text_wrap'=>true,'v_align'=>'center','align' => 'right'));
                 $my_xls->set_row($row,25);
                 /* Activity number          */
                 $col = $col + 1;
-                $my_xls->write_string($row, $col, $invoice->act,array('size'=>12, 'name'=>'Arial','text_wrap'=>true,'v_align'=>'left','align' => 'right'));
-                //$my_xls->merge_cells($row,$col,$row,$col+3);
+                $my_xls->write_string($row, $col, $invoice->act,array('size'=>12, 'name'=>'Arial','text_wrap'=>true,'v_align'=>'center','align' => 'right'));
+                $my_xls->set_row($row,25);
+
+                /* Resource Number */
+                $col = $col + 1;
+                $my_xls->write_string($row, $col, $invoice->resource_number,array('size'=>12, 'name'=>'Arial','text_wrap'=>true,'v_align'=>'center','align' => 'right'));
                 $my_xls->set_row($row,25);
 
                 $row ++;

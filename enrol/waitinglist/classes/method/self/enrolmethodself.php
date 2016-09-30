@@ -532,7 +532,13 @@ class enrolmethodself extends \enrol_waitinglist\method\enrolmethodbase{
      */
     public function enrol_page_hook(\stdClass $waitinglist, $flagged) {
         global $CFG, $OUTPUT, $USER;
-        $isInvoice = false;
+        $isInvoice          = false;
+
+        /* Clean Cookies    */
+        setcookie('level_0',0);
+        setcookie('level_1',0);
+        setcookie('level_2',0);
+        setcookie('level_3',0);
 
 		$queueman= \enrol_waitinglist\queuemanager::get_by_course($waitinglist->courseid);
 		$qdetails = $queueman->get_user_queue_details(static::METHODTYPE);
