@@ -270,9 +270,9 @@ $string['in_price']     = 'Intern pris';
 $string['ext_price']    = 'Ekstern pris';
 $string['ical_path']    = 'iCal-mappe';
 
-$string['company_sel']     = 'Company';
-$string['users_connected'] = 'Users connected';
+$string['company_sel']     = 'Arbeidssted';
+$string['users_connected'] = 'Brukere tilkoblet';
 $string['no_competence']   = 'Beklager, men du kan ikke melde deg på dette kurset når du ikke har oppgitt arbeidssted i din egen profil. Vennligst oppdater profilen din før du prøver igjen.  <p>Du kan oppdatere profilen din med et arbeidssted ved å klikke her: <strong>{$a}</strong></p>';
 
-$string['company_demanded']        = 'No demand company';
-$string['company_demanded_manual'] = 'Company not demanded. All users will be available to select';
+$string['company_demanded']        = 'Ikke krev arbeidssted ved påmelding';
+$string['company_demanded_manual'] = 'Arbeidssted ikke påkrevd for påmelding. Brukere uten arbeidssted i egen profil kan dermed melde seg på.';
