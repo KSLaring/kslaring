@@ -44,7 +44,7 @@ class WSDOSKOM_Cron {
             /* Call Web Service and Get the Users to Import */
             mtrace('Start WSDOSKOM Import Users '. time() . "\n");
             foreach ($companies as $company) {
-                $company->import = self::Call_WS($company->id);
+                $company->import = self::Call_WS($company);
                 $companies[$company->id] = $company;
             }//for_companies
 
@@ -92,12 +92,14 @@ class WSDOSKOM_Cron {
 
         try {
             /* Execute  */
-            $rdo = $DB->get_records('company_data',null,'id','id');
+            $rdo = $DB->get_records('company_data',null,'id','id,user,token');
             if ($rdo) {
                 foreach ($rdo as $instance) {
                         /* Info Company     */
                         $info = new stdClass();
                         $info->id       = $instance->id;
+                        $info->user     = $instance->user;
+                        $info->token    = $instance->token;
                         $info->import   = null;
 
                         $companies[$instance->id] = $info;
@@ -121,7 +123,7 @@ class WSDOSKOM_Cron {
      * Description
      * Call the Web Services to get the users
      */
-    private static function Call_WS($companyId) {
+    private static function Call_WS($company) {
         /* Variables    */
         $urlWs      = null;
         $response   = null;
@@ -131,7 +133,7 @@ class WSDOSKOM_Cron {
             $plugin_info     = get_config('local_doskom');
 
             /* Build url end point  */
-            $urlWs = $plugin_info->wsdoskom_end_point . '/' . $companyId .'/personalia/no';
+            $urlWs = $plugin_info->wsdoskom_end_point . '/' . $company->id .'/personalia/no';
 
             /* Call Web Service     */
             $ch = curl_init($urlWs);
@@ -142,8 +144,8 @@ class WSDOSKOM_Cron {
             curl_setopt($ch, CURLOPT_HTTPHEADER, array(
                     'User-Agent: Moodle 1.0',
                     'Content-Type: application/json ',
-                    'DOSSIER_USER: ' . $plugin_info->local_wsdoskom_username,
-                    'DOSSIER_PASSWORD: ' . $plugin_info->local_wsdoskom_password)
+                    'DOSSIER_USER: ' . $company->user,
+                    'DOSSIER_PASSWORD: ' . $company->token)
             );
 
             $response   = curl_exec( $ch );
