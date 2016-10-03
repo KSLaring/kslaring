@@ -23,6 +23,7 @@ $addSearch      = optional_param('addselect_searchtext', '', PARAM_RAW);
 $removeSearch   = optional_param('removeselect_searchtext', '', PARAM_RAW);
 $removeSelected = optional_param_array('removeselect',0,PARAM_INT);
 $addSelected    = optional_param_array('addselect',0,PARAM_INT);
+$isInvoice      = false;
 
 if ($instanceId) {
     $instance   = $DB->get_record('enrol', array('id' => $instanceId));
@@ -83,7 +84,10 @@ $form->display();
 /* Initialise Selectors */
 enrol_waitinglist\method\manual\enrolmethodmanual::Init_ManualSelectors($instance->id,$course->id,$addSearch,$removeSearch);
 if ($instance->{ENROL_WAITINGLIST_FIELD_APPROVAL} != COMPANY_NO_DEMANDED) {
-    enrol_waitinglist\method\manual\enrolmethodmanual::Init_Organization_Structure(true);
+    if ($instance->{ENROL_WAITINGLIST_FIELD_INVOICE}) {
+        $isInvoice = true;
+    }
+    enrol_waitinglist\method\manual\enrolmethodmanual::Init_Organization_Structure(true,$isInvoice);
 }
 
 echo $OUTPUT->footer();
