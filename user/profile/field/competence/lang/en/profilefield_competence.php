@@ -76,7 +76,7 @@ $string['err_link']     = 'Sorry, link not valid. Please, contact with administr
 $string['reject_lnk']   = 'Reject';
 $string['approve_lnk']  = 'Approve';
 
-$string['err_process']  = 'Sorry, It has been an error during the process. Please, try it later or contact with administrator.';
+$string['err_process']  = 'Sorry, There has been an error during the process. Please, try it later or contact with administrator.';
 
 $string['request_rejected']      = 'The request for the company <strong>{$a->company}</strong> and for the user <strong>{$a->user}</strong> has been rejected successfully.';
 $string['request_approved']      = 'The request for the company <strong>{$a->company}</strong> and for the user <strong>{$a->user}</strong> has been approved successfully.';

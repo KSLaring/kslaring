@@ -1087,6 +1087,12 @@ class enrol_waitinglist_plugin extends enrol_plugin {
      *
      * Description
      * Update to approval option
+     * 
+     * @updateDate      03/10/2016
+     * @author          eFaktor     (fbv)
+     * 
+     * Description
+     * Delete unenrol actions
      */
     public function handle_unenrol($courseid,$userid){
         /* Variables    */
@@ -1150,6 +1156,13 @@ class enrol_waitinglist_plugin extends enrol_plugin {
                 }//if_rdo
             }//if_approval_option
 
+            /* Unenrol actions  */
+            $params = array();
+            $params['userid']           = $userid;
+            $params['courseid']         = $courseid;
+            $params['waitingid']        = $waitingLst->id;
+            $DB->delete_records('enrol_waitinglist_unenrol',$params);
+            
             return true;
         }catch (Exception $ex) {
             throw $ex;
@@ -1171,12 +1184,19 @@ class enrol_waitinglist_plugin extends enrol_plugin {
      *
      * Description
      * remove invoice entries
+     *
+     * @updateDate      03/10/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Remove unenrol entries
      */
     public function handle_coursedeleted($courseid){
         /* Variables    */
 		global $DB;
         $rdoApproval    = null;
         $approval       = null;
+        $rdoUnenrol     = null;
 
         try {
             /**
@@ -1215,8 +1235,12 @@ class enrol_waitinglist_plugin extends enrol_plugin {
                     foreach ($rdoApproval as $approval) {
                         $DB->delete_records('enrol_approval_action',array('approvalid' => $approval->id));
                     }//for
-                }//for
 
+                    /* Unenrol actions */
+                    unset($params['waitinglistid']);
+                    $params['waitingid'] = $instance->waitinglistid;
+                    $DB->delete_records('enrol_waitinglist_unenrol',$params);
+                }//for
             }//if_waitinglist
 
 
@@ -1468,21 +1492,34 @@ class enrol_waitinglist_plugin extends enrol_plugin {
         $a->coursename = format_string($course->fullname, true, array('context'=>$context));
         $a->profileurl = "$CFG->wwwroot/user/view.php?id=$user->id&course=$course->id";
 
+        /**
+         * @updateDate  03/10/2016
+         * @author      eFaktor     (fbv)
+         *
+         * Description
+         * Add unenrol link
+         */
+        require_once('unenrol/unenrollib.php');
+        $unEnrolURL = \Unenrol_Waiting::UnenrolLink($user->id,$instance->courseid,$instance->id);
+        $unenrolLnk = "<a href='" . $unEnrolURL ."'>" . get_string('unenrol_me','enrol_waitinglist') . "</a>";
+        $unenrolStr = "</br>". get_string('unenrol_link','enrol_waitinglist',$unenrolLnk);
         if (trim($instance->{ENROL_WAITINGLIST_FIELD_WELCOMEMESSAGE}) !== '') {
             $message = $instance->customtext1;
             $message = str_replace('{$a->coursename}', $a->coursename, $message);
             $message = str_replace('{$a->profileurl}', $a->profileurl, $message);
             if (strpos($message, '<') === false) {
                 // Plain text only.
-                $messagetext = $message;
+                $messagetext = $message . "</br>" . $unenrolStr;
                 $messagehtml = text_to_html($messagetext, null, false, true);
             } else {
                 // This is most probably the tag/newline soup known as FORMAT_MOODLE.
                 $messagehtml = format_text($message, FORMAT_MOODLE, array('context'=>$context, 'para'=>false, 'newlines'=>true, 'filter'=>true));
+                $messagehtml .= "</br>" . $unenrolStr;
                 $messagetext = html_to_text($messagehtml);
             }
         } else {
             $messagetext = get_string('welcometocoursetext', 'enrol_waitinglist', $a);
+            $messagetext .= "</br>" . $unenrolStr;
             $messagehtml = text_to_html($messagetext, null, false, true);
         }
 

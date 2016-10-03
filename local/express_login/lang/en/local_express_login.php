@@ -38,7 +38,7 @@ $string['pin_percentage_err']   = 'The PIN code is not valid. The digit {$a} is 
 $string['pin_numeric_err']      = 'The PIN code has to be a numeric string';
 $string['pin_code_expired']     = 'PIN code expired.';
 
-$string['err_generic']          = 'It has been an error during the process. Please, try again or contact with administrator';
+$string['err_generic']          = 'There has been an error during the process. Please, try again or contact with administrator';
 $string['err_micro_lnk']        = 'Micro Learning Link not valid. Please, contact with your instructor';
 
 $string['pin_new_diff_err']         = 'The PIN code are different';

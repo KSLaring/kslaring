@@ -96,7 +96,7 @@ $string['action_deactivate']        = 'Deactivate';
 
 $string['calendar_date_err']        = 'The date has to be greater than current date';
 
-$string['err_generic']          = 'It has been an error during the process. Please, try again or contact with administrator';
+$string['err_generic']          = 'There has been an error during the process. Please, try again or contact with administrator';
 
 $string['cron_activate']    = 'Enabled';
 $string['cron_deactivate']  = 'Disabled';

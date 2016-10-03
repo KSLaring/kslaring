@@ -183,6 +183,38 @@ function xmldb_enrol_waitinglist_upgrade($oldversion) {
             upgrade_plugin_savepoint(true, 2016091400, 'enrol','waitinglist');
         }//if_old_version
 
+        if ($oldversion < 2016093000) {
+            /* New Table    */
+            $tblUnenrol = new xmldb_table('enrol_waitinglist_unenrol');
+
+            /* Fields   */
+            /* Id               -- Primary Key  */
+            $tblUnenrol->add_field('id',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, XMLDB_SEQUENCE,null);
+            /* Waitinglist id   -- Foreign Key  */
+            $tblUnenrol->add_field('waitingid',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, null,null);
+            /* Course id        -- Foreign Key  */
+            $tblUnenrol->add_field('courseid',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, null,null);
+            /* Token Course                     */
+            $tblUnenrol->add_field('tokenco',XMLDB_TYPE_CHAR,'100',null, XMLDB_NOTNULL, null,null);
+            /* User Id          -- Foreign Key  */
+            $tblUnenrol->add_field('userid',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, null,null);
+            /* Token User                       */
+            $tblUnenrol->add_field('tokenus',XMLDB_TYPE_CHAR,'100',null, XMLDB_NOTNULL, null,null);
+            /* Time created                     */
+            $tblUnenrol->add_field('timecreated',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, null,null);
+
+            /* Keys     */
+            $tblUnenrol->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+            //Adding Index
+            $tblUnenrol->add_key('waitingid',XMLDB_KEY_FOREIGN,array('waitingid'),'enrol', array('id'));
+            $tblUnenrol->add_key('courseid',XMLDB_KEY_FOREIGN,array('courseid'),'course', array('id'));
+            $tblUnenrol->add_key('userid',XMLDB_KEY_FOREIGN,array('userid'),'user', array('id'));
+
+            if (!$dbman->table_exists('enrol_waitinglist_unenrol')) {
+                $dbman->create_table($tblUnenrol);
+            }//if_table_exists
+        }
+
         return true;
     }catch (Exception $ex) {
         throw $ex;
