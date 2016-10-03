@@ -282,3 +282,9 @@ $string['find_resource_number'] = " Find Resource Number";
 $string['no_users_invoice']     = " No users invoice approval";
 $string['users_matching']       = " Users invoice approval matching";
 $string['please_use_filter']    = " Please use the filter";
+
+$string['unenrol_link']         = 'If you want to unenrol by yourself, please click on <strong>{$a}</strong>';
+$string['unenrol_me']           = 'Unenrol me';
+$string['user_unenrolled']      = 'You have already been unenrolled';
+$string['user_not_enrolled']    = 'Sorry, you can be unenrolled because you are not a member of this course';
+
