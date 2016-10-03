@@ -263,6 +263,11 @@ class enrol_waitinglist_plugin extends enrol_plugin {
 		return true;
 	}
 	
+    public function can_hide_show_instance($instance) {
+        $context = context_course::instance($instance->courseid);
+        return has_capability('enrol/waitinglist:config', $context);
+    }
+
 	/**
      * Returns optional enrolment information icons.
      *
@@ -696,7 +701,7 @@ class enrol_waitinglist_plugin extends enrol_plugin {
         }
         $fields = array(
                         'status'                                    => $this->get_config('status'),
-                        'roleid'                                    => $this->get_config('roleid', 0),
+                        'roleid'                                    => $this->get_config('roleid'),
                         'enrolperiod'                               => $this->get_config('enrolperiod', 0),
                         'expirynotify'                              => $expirynotify,
                         'notifyall'                                 => $notifyall,
@@ -1529,7 +1534,13 @@ class enrol_waitinglist_plugin extends enrol_plugin {
         if (!empty($CFG->coursecontact)) {
             $croles = explode(',', $CFG->coursecontact);
             list($sort, $sortparams) = users_order_by_sql('u');
-            $rusers = get_role_users($croles, $context, true, '', 'r.sortorder ASC, ' . $sort, null, '', '', '', '', $sortparams);
+            // We only use the first user.
+            $i = 0;
+            do {
+                $rusers = get_role_users($croles[$i], $context, true, '',
+                    'r.sortorder ASC, ' . $sort, null, '', '', '', '', $sortparams);
+                $i++;
+            } while (empty($rusers) && !empty($croles[$i]));
         }
         if ($rusers) {
             $contact = reset($rusers);
@@ -1628,8 +1639,12 @@ class enrol_waitinglist_plugin extends enrol_plugin {
                         if ($location->map) {
                             $iCal .= "URL;VALUE=URI:" . $location->map . "\n";
                         }
+
+                        if ($location->detail) {
+                            $iCal .= "DESCRIPTION:"     . $location->detail . "\n";
+                        }
                     }//if_location
-                    $iCal .= "DESCRIPTION:"     . $location->detail . "\n";
+
                     $iCal .= "END:VEVENT"       . "\n";
                     $iCal .= "END:VCALENDAR"    . "\n";
 

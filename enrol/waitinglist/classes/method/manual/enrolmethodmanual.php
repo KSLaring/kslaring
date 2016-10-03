@@ -283,6 +283,7 @@ class enrolmethodmanual extends \enrol_waitinglist\method\enrolmethodbase{
 
     /**
      * @param           $reload
+     * @param           $isInvoice
      * @throws          \Exception
      * 
      * @creationDate    11/09/2016
@@ -291,7 +292,7 @@ class enrolmethodmanual extends \enrol_waitinglist\method\enrolmethodbase{
      * Description
      * Initialize organization structure
      */
-    public static function Init_Organization_Structure($reload) {
+    public static function Init_Organization_Structure($reload,$isInvoice) {
         /* Variables */
         $wl = null;
         
@@ -299,8 +300,7 @@ class enrolmethodmanual extends \enrol_waitinglist\method\enrolmethodbase{
             /* Get plugin */
             $wl = enrol_get_plugin('waitinglist');
             
-            /* Init Organization Structure */
-            $wl->Init_Organization_Structure($reload);
+            $wl->Init_Organization_Structure($reload,$isInvoice);
         }catch (\Exception $ex) {
             throw $ex;
         }//try_catch
