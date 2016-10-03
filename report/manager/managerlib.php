@@ -97,17 +97,24 @@ class CompetenceManager {
         try {
             /* Search Criteria  */
             $params = array();
-            $params['reporterid']           = $userId;
+            $params['managerid']           = $userId;
             if ($level >= 0) {
                 $params['hierarchylevel']   = $level;
             }
             /* Execute  */
-            $rdo = $DB->get_records('report_gen_company_reporter',$params);
+            $rdo = $DB->get_records('report_gen_company_manager',$params);
 
             if ($rdo) {
                 return true;
             }else {
-                return false;
+                unset($params['managerid']);
+                $params['reporterid']           = $userId;
+                $rdo = $DB->get_records('report_gen_company_reporter',$params);
+                if ($rdo) {
+                    return true;
+                }else {
+                    return false;
+                }
             }
         }catch (Exception $ex) {
             throw $ex;
@@ -1356,6 +1363,10 @@ class CompetenceManager {
         $levelOne       = null;
         $levelTwo       = null;
         $levelThree     = null;
+        $inZero         = array();
+        $inOne          = 0;
+        $inTwo          = 0;
+        $inThree        = 0;
 
         try {
             /* Search Criteria */
@@ -1409,14 +1420,150 @@ class CompetenceManager {
 
                     /* Add Competence */
                     $myCompetence[$instance->levelzero] = $infoHierarchy;
-                }
+
+                    /* Level Zero */
+                    if ($instance->levelzero) {
+                        $inZero[] = $instance->levelzero;
+                    }
+                    /* Level One    */
+                    if ($infoHierarchy->levelOne) {
+                        if ($inOne) {
+                            $inOne .= ',' . $infoHierarchy->levelOne;
+                        }else {
+                            $inOne = $infoHierarchy->levelOne;
+                        }
+                    }
+                    /* Level Two    */
+                    if ($infoHierarchy->levelTwo) {
+                        if ($inTwo) {
+                            $inTwo .= ',' . $infoHierarchy->levelTwo;
+                        }else {
+                            $inTwo = $infoHierarchy->levelTwo;
+                        }
+                    }
+                    /* Level Three  */
+                    if ($infoHierarchy->levelThree) {
+                        if ($inThree) {
+                            $inThree .= ',' . $infoHierarchy->levelThree;
+                        }else {
+                            $inThree = $infoHierarchy->levelThree;
+                        }
+                    }
+                }//for_rdo
             }//if_rdo
 
+            self::Get_ManagerCompetence($myCompetence,$userId,$inZero,$inOne,$inTwo,$inThree);
             return $myCompetence;
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
     }//Get_MyReporterCompetence
+
+    /**
+     * @param       $myCompetence
+     * @param       $userId
+     * @param       $inZero
+     * @param       $inOne
+     * @param       $inTwo
+     * @param       $inThree
+     *
+     * @throws Exception
+     *
+     * @creationDate    03/10/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Get competence for managers
+     */
+    private static function Get_ManagerCompetence(&$myCompetence,$userId,$inZero,$inOne,$inTwo,$inThree) {
+        /* Variables */
+        global $DB;
+        $myCompetence   = null;
+        $infoHierarchy  = null;
+        $sql            = null;
+        $rdo            = null;
+        $params         = null;
+        $levelOne       = null;
+        $levelTwo       = null;
+        $levelThree     = null;
+
+        try {
+            /* Search Criteria */
+            $params = array();
+            $params['user']  = $userId;
+
+            if ($inZero) {
+                $inZero = explode(',',$inZero);
+            }else {
+                $inZero =  0;
+            }
+
+            /* SQL Instruction */
+            $sql = " SELECT re.levelzero as 'levelzero',
+                            GROUP_CONCAT(DISTINCT re.levelone  	ORDER BY re.levelone 	SEPARATOR ',') 	as 'levelone',
+                            GROUP_CONCAT(DISTINCT re.leveltwo  	ORDER BY re.leveltwo 	SEPARATOR ',') 	as 'leveltwo',
+                            GROUP_CONCAT(DISTINCT re.levelthree ORDER BY re.levelthree	SEPARATOR ',') 	as 'levelthree',
+                            re.hierarchylevel
+                     FROM	{report_gen_company_manager} re
+                     WHERE	re.managerid 		= :user ";
+
+            if ($inZero) {
+                $sql .= " AND re.levelzero  NOT IN ($inZero) ";
+            }
+            if ($inOne) {
+               $sql .= " AND re.levelone   NOT IN ($inOne) " ;
+            }
+            if ($inTwo) {
+                $sql .= " AND re.leveltwo   NOT IN ($inTwo) ";
+            }
+            if ($inThree) {
+                $sql .= " AND re.levelthree NOT IN ($inThree) ";
+            }
+            /* Execute */
+            $sql .= " GROUP BY re.levelzero  ";
+            $rdo = $DB->get_records_sql($sql,$params);
+            if ($rdo) {
+                foreach ($rdo as $instance) {
+                    $infoHierarchy = new stdClass();
+                    $infoHierarchy->levelZero   = $instance->levelzero;
+                    /* Level One */
+                    if ($instance->levelone) {
+                        $infoHierarchy->levelOne    = explode(',',$instance->levelone);
+                    }else {
+                        $levelOne = self::GetCompanies_LevelList(1,$instance->levelzero);
+                        unset($levelOne[0]);
+                        $infoHierarchy->levelOne = array_keys($levelOne);
+                    }//if_levelone
+
+                    /* Level Two    */
+                    if ($instance->leveltwo) {
+                        $infoHierarchy->levelTwo    = explode(',',$instance->leveltwo);
+                    }else {
+                        $levelTwo = self::GetCompanies_LevelList(2,$instance->levelone);
+                        unset($levelTwo[0]);
+                        $infoHierarchy->levelTwo = array_keys($levelTwo);
+                    }//if_leveltwo
+
+                    /* Level Three  */
+                    if ($instance->levelthree) {
+                        $infoHierarchy->levelThree  = explode(',',$instance->levelthree);
+                    }else {
+                        $levelThree = self::GetCompanies_LevelList(3,$instance->leveltwo);
+                        unset($levelThree[0]);
+                        $infoHierarchy->levelThree = array_keys($levelThree);
+                    }//if_levelThree
+
+                    /* Hierarchy level */
+                    $infoHierarchy->level      = $instance->hierarchylevel;
+
+                    /* Add Competence */
+                    $myCompetence[$instance->levelzero] = $infoHierarchy;
+                }
+            }//if_rdo
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//Get_ManagerCompetence
 
     /**
      * @static
