@@ -385,7 +385,6 @@ Class Managers {
         $levelTwo       = null;
         $levelThree     = null;
 
-
         /* Start Transaction */
         $trans = $DB->start_delegated_transaction();
 
