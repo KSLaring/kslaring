@@ -1428,31 +1428,32 @@ class CompetenceManager {
                     /* Level One    */
                     if ($infoHierarchy->levelOne) {
                         if ($inOne) {
-                            $inOne .= ',' . $infoHierarchy->levelOne;
+                            $inOne .= ',' . $instance->levelone;
                         }else {
-                            $inOne = $infoHierarchy->levelOne;
+                            $inOne = $instance->levelone;
                         }
                     }
                     /* Level Two    */
                     if ($infoHierarchy->levelTwo) {
                         if ($inTwo) {
-                            $inTwo .= ',' . $infoHierarchy->levelTwo;
+                            $inTwo .= ',' . $instance->leveltwo;
                         }else {
-                            $inTwo = $infoHierarchy->levelTwo;
+                            $inTwo = $instance->leveltwo;
                         }
                     }
                     /* Level Three  */
                     if ($infoHierarchy->levelThree) {
                         if ($inThree) {
-                            $inThree .= ',' . $infoHierarchy->levelThree;
+                            $inThree .= ',' . $instance->levelthree;
                         }else {
-                            $inThree = $infoHierarchy->levelThree;
+                            $inThree = $instance->levelthree;
                         }
                     }
                 }//for_rdo
             }//if_rdo
 
             self::Get_ManagerCompetence($myCompetence,$userId,$inZero,$inOne,$inTwo,$inThree);
+
             return $myCompetence;
         }catch (Exception $ex) {
             throw $ex;
@@ -1478,7 +1479,6 @@ class CompetenceManager {
     private static function Get_ManagerCompetence(&$myCompetence,$userId,$inZero,$inOne,$inTwo,$inThree) {
         /* Variables */
         global $DB;
-        $myCompetence   = null;
         $infoHierarchy  = null;
         $sql            = null;
         $rdo            = null;
@@ -1493,7 +1493,7 @@ class CompetenceManager {
             $params['user']  = $userId;
 
             if ($inZero) {
-                $inZero = explode(',',$inZero);
+                $inZero = implode(',',$inZero);
             }else {
                 $inZero =  0;
             }
