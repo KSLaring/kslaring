@@ -68,7 +68,6 @@ M.core_user.init_structure = function (Y,name,reload,invoice) {
             if (this.isManual) {
                 this.levelThree.on('change', this.Reload_ManualUsersSelectors, this);
             }else if (this.isInvoice) {
-                alert(this.isInvoice);
                 this.levelThree.on('change', this.InvoiceDataCompany, this);
                 if (this.levelTwo.get('value') != 0) {
                     this.InvoiceDataCompany();
@@ -84,8 +83,10 @@ M.core_user.init_structure = function (Y,name,reload,invoice) {
             var level   = 1;
 
             //  Trigger an ajax search after a delay.
-            //this.cleanCookies();
-            this.DeactivateInvoiceDate();
+            this.cleanCookies();
+            if (this.isInvoice) {
+                this.DeactivateInvoiceDate();
+            }
             this.cancel_timeout();
             this.timeoutid  = Y.later(this.querydelay * 1000, e, function(obj){obj.send_query(false,parent,level)}, this);
         },
@@ -95,8 +96,10 @@ M.core_user.init_structure = function (Y,name,reload,invoice) {
             var level       = 2;
 
             //  Trigger an ajax search after a delay.
-            //this.cleanCookies();
-            this.DeactivateInvoiceDate();
+            this.cleanCookies();
+            if (this.isInvoice) {
+                this.DeactivateInvoiceDate();
+            }
             this.cancel_timeout();
             this.timeoutid = Y.later(this.querydelay * 1000, e, function(obj){obj.send_query(false,parent,level)}, this);
         },
