@@ -84,7 +84,7 @@ M.core_user.init_structure = function (Y,name,reload,invoice) {
 
             //  Trigger an ajax search after a delay.
             this.cleanCookies();
-            if (this.isInvoice) {
+            if (this.isInvoice && !this.isManual) {
                 this.DeactivateInvoiceDate();
             }
             this.cancel_timeout();
@@ -97,7 +97,7 @@ M.core_user.init_structure = function (Y,name,reload,invoice) {
 
             //  Trigger an ajax search after a delay.
             this.cleanCookies();
-            if (this.isInvoice) {
+            if (this.isInvoice && !this.isManual) {
                 this.DeactivateInvoiceDate();
             }
             this.cancel_timeout();
