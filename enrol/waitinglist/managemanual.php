@@ -86,9 +86,9 @@ enrol_waitinglist\method\manual\enrolmethodmanual::Init_ManualSelectors($instanc
 if ($instance->{ENROL_WAITINGLIST_FIELD_APPROVAL} != COMPANY_NO_DEMANDED) {
     echo "1";
     if ($instance->{ENROL_WAITINGLIST_FIELD_INVOICE}) {
-        $isInvoice = true;
+        $isInvoice = 1;
     }else {
-        $isInvoice = false;
+        $isInvoice = 0;
     }
     echo "--> " . $instance->{ENROL_WAITINGLIST_FIELD_INVOICE} . "</br>";
     echo "Invoice : " . $isInvoice . "</br>";
