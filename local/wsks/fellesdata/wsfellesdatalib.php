@@ -1027,6 +1027,12 @@ class WS_FELLESDATA {
      *
      * Description
      * Add resource number
+     *
+     * @updateDate      05/10/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Add the gender
      */
     private static function ProcessUserAccount($userAccount) {
         /* Variables */
@@ -1144,6 +1150,13 @@ class WS_FELLESDATA {
                     $DB->insert_record('user_resource_number',$instance);
                 }//if_rdo
             }//if_resource_number
+
+            /**
+             * Add the gender
+             */
+            if ($userAccount->action != DELETE_ACTION) {
+                Gender::Add_UserGender($userId,$userAccount->personalnumber);
+            }
 
             /* Commit */
             $trans->allow_commit();

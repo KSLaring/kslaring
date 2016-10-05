@@ -100,7 +100,7 @@ class profile_field_competence extends profile_field_base {
         /* Variables    */
         $url                = new moodle_url('/user/profile/field/competence/competence.php',array('id' => $this->userid));
 
-        return '<a href="' . $url . '">' . get_string('lnk_view','profilefield_competence') . '</a>';;
+        return '<a href="' . $url . '">' . get_string('lnk_view','profilefield_competence') . '</a>';
     }//display_data
 
     /**
