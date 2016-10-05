@@ -109,7 +109,7 @@ M.core_user.init_structure = function (Y,name,reload,invoice) {
             var level   = 3;
 
             //  Trigger an ajax search after a delay.
-            //this.cleanCookies();
+            this.cleanCookies();
             this.cancel_timeout();
             this.timeoutid = Y.later(this.querydelay * 1000, e, function(obj){obj.send_query(false,parent,level)}, this);
         },
