@@ -35,6 +35,7 @@ if ($instanceId) {
 $context    = context_course::instance($course->id, MUST_EXIST);
 $url        = new moodle_url('/enrol/waitinglist/managemanual.php',array('id' => $instanceId));
 $return     = new moodle_url('/enrol/instances.php', array('id'=>$course->id));
+$isInvoice  = false;
 
 require_login($course);
 require_capability('enrol/waitinglist:config', $context);
@@ -83,7 +84,10 @@ $form->display();
 /* Initialise Selectors */
 enrol_waitinglist\method\manual\enrolmethodmanual::Init_ManualSelectors($instance->id,$course->id,$addSearch,$removeSearch);
 if ($instance->{ENROL_WAITINGLIST_FIELD_APPROVAL} != COMPANY_NO_DEMANDED) {
-    enrol_waitinglist\method\manual\enrolmethodmanual::Init_Organization_Structure(true);
+    if ($instance->{ENROL_WAITINGLIST_FIELD_INVOICE}) {
+        $isInvoice = true;
+    }
+    enrol_waitinglist\method\manual\enrolmethodmanual::Init_Organization_Structure(true,$isInvoice);
 }
 
 echo $OUTPUT->footer();

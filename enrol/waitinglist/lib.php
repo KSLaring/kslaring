@@ -1628,8 +1628,12 @@ class enrol_waitinglist_plugin extends enrol_plugin {
                         if ($location->map) {
                             $iCal .= "URL;VALUE=URI:" . $location->map . "\n";
                         }
+
+                        if ($location->detail) {
+                            $iCal .= "DESCRIPTION:"     . $location->detail . "\n";
+                        }
                     }//if_location
-                    $iCal .= "DESCRIPTION:"     . $location->detail . "\n";
+
                     $iCal .= "END:VEVENT"       . "\n";
                     $iCal .= "END:VCALENDAR"    . "\n";
 
