@@ -88,7 +88,8 @@ if ($instance->{ENROL_WAITINGLIST_FIELD_APPROVAL} != COMPANY_NO_DEMANDED) {
     if ($instance->{ENROL_WAITINGLIST_FIELD_INVOICE}) {
         $isInvoice = true;
     }
-    echo "--> " . $instance->{ENROL_WAITINGLIST_FIELD_INVOICE};
+    echo "--> " . $instance->{ENROL_WAITINGLIST_FIELD_INVOICE} . "</br>";
+    echo "Invoice : " . $isInvoice . "</br>";
     enrol_waitinglist\method\manual\enrolmethodmanual::Init_Organization_Structure(true,$isInvoice);
 }else {
     echo "2";
