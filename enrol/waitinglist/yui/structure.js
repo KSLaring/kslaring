@@ -68,6 +68,7 @@ M.core_user.init_structure = function (Y,name,reload,invoice) {
             if (this.isManual) {
                 this.levelThree.on('change', this.Reload_ManualUsersSelectors, this);
             }else if (this.isInvoice) {
+                alert(this.isInvoice);
                 this.levelThree.on('change', this.InvoiceDataCompany, this);
                 if (this.levelTwo.get('value') != 0) {
                     this.InvoiceDataCompany();
