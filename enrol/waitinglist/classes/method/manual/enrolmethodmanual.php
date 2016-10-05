@@ -300,7 +300,6 @@ class enrolmethodmanual extends \enrol_waitinglist\method\enrolmethodbase{
             /* Get plugin */
             $wl = enrol_get_plugin('waitinglist');
             
-            /* Init Organization Structure */
             $wl->Init_Organization_Structure($reload,$isInvoice);
         }catch (\Exception $ex) {
             throw $ex;

@@ -72,6 +72,9 @@ M.core_user.init_structure = function (Y,name,reload,invoice) {
                 if (this.levelTwo.get('value') != 0) {
                     this.InvoiceDataCompany();
                 }
+                this.DeactivateInvoiceDate();
+
+                this.InvoiceDataCompany();
             }
         },
 
