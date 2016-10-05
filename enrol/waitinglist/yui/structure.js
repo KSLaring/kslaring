@@ -137,23 +137,25 @@ M.core_user.init_structure = function (Y,name,reload,invoice) {
             // Cancel any pending timeout.
             this.cancel_timeout();
 
-            // Try to cancel existing transactions.
-            Y.Object.each(this.iotransactions, function(trans) {
-                trans.abort();
-            });
+            if (levelThree != 0) {
+                // Try to cancel existing transactions.
+                Y.Object.each(this.iotransactions, function(trans) {
+                    trans.abort();
+                });
+                
+                /* Activate Invoice Data Fields */
+                this.ActivateInvoiceData();
 
-            /* Activate Invoice Data Fields */
-            this.ActivateInvoiceData();
-
-            var iotrans = Y.io(M.cfg.wwwroot + '/enrol/waitinglist/invoicedata.php', {
-                method: 'POST',
-                data: 'two=' + levelTwo + '&three' + '=' + levelThree + '&sesskey=' + M.cfg.sesskey,
-                on: {
-                    complete: this.handle_invoice_response
-                },
-                context:this
-            });
-            this.iotransactions[iotrans.id] = iotrans;
+                var iotrans = Y.io(M.cfg.wwwroot + '/enrol/waitinglist/invoicedata.php', {
+                    method: 'POST',
+                    data: 'two=' + levelTwo + '&three' + '=' + levelThree + '&sesskey=' + M.cfg.sesskey,
+                    on: {
+                        complete: this.handle_invoice_response
+                    },
+                    context:this
+                });
+                this.iotransactions[iotrans.id] = iotrans;
+            }
         },
 
         handle_invoice_response : function(requestid, response) {
