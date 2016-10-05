@@ -84,11 +84,14 @@ $form->display();
 /* Initialise Selectors */
 enrol_waitinglist\method\manual\enrolmethodmanual::Init_ManualSelectors($instance->id,$course->id,$addSearch,$removeSearch);
 if ($instance->{ENROL_WAITINGLIST_FIELD_APPROVAL} != COMPANY_NO_DEMANDED) {
+    echo "1";
     if ($instance->{ENROL_WAITINGLIST_FIELD_INVOICE}) {
         $isInvoice = true;
     }
     echo "--> " . $instance->{ENROL_WAITINGLIST_FIELD_INVOICE};
     enrol_waitinglist\method\manual\enrolmethodmanual::Init_Organization_Structure(true,$isInvoice);
+}else {
+    echo "2";
 }
 
 echo $OUTPUT->footer();
