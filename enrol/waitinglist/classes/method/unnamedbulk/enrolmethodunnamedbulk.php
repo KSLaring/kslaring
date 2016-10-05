@@ -550,6 +550,12 @@ class enrolmethodunnamedbulk extends \enrol_waitinglist\method\enrolmethodbase {
         global $CFG, $OUTPUT, $USER,$DB;
 		$isInvoice = false;
 
+        /* Clean Cookies    */
+        setcookie('level_0',0);
+        setcookie('level_1',0);
+        setcookie('level_2',0);
+        setcookie('level_3',0);
+        
 		$queueman= \enrol_waitinglist\queuemanager::get_by_course($waitinglist->courseid);
 		$entryman= \enrol_waitinglist\entrymanager::get_by_course($waitinglist->courseid);
 		$entry = $entryman->get_entry_by_userid($USER->id,static::METHODTYPE);

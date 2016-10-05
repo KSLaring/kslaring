@@ -2,14 +2,13 @@
 /**
  * Waiting List - Manual submethod search
  *
- * @package         enrol/waitinglist
- * @subpackage      yui
+ * @package         enrol
+ * @subpackage      waitinglist
  * @copyright       2013 efaktor    {@link http://www.efaktor.no}
  *
  * @creationDate    17/08/2016
  * @author          efaktor     (fbv)
  *
- * Description
  */
 define('AJAX_SCRIPT', true);
 

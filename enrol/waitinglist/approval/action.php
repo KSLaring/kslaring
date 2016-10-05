@@ -15,7 +15,7 @@ require('../../../config.php');
 require_once('approvallib.php');
 
 /* PARAMS */
-$contextSystem = CONTEXT_SYSTEM::instance();
+$contextSystem     = context_system::instance();
 $returnUrl         = $CFG->wwwroot . '/index.php';
 $url               = new moodle_url('/enrol/waitinglist/approval/action.php');
 

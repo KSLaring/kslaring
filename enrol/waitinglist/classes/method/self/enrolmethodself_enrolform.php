@@ -208,7 +208,9 @@ class enrolmethodself_enrolform extends \moodleform {
                 /* Parent*/
                 $parent     = optional_param('level_' . ($level-1), 0, PARAM_INT);
                 if (!$parent) {
-                    if (isset($SESSION->onlyCompany)) {
+                    if (isset($_COOKIE['level_' . ($level-1)]) && $_COOKIE['level_' . ($level-1)]) {
+                        $parent = $_COOKIE['level_' . ($level-1)];
+                    }else if (isset($SESSION->onlyCompany)) {
                         $parent = $SESSION->onlyCompany[$level-1];
                     }
                 }
@@ -322,6 +324,8 @@ class enrolmethodself_enrolform extends \moodleform {
             $default = $SESSION->selection['level_' . $level];
         }else if (isset($SESSION->onlyCompany)) {
             $default = $SESSION->onlyCompany[$level];
+        }else if (isset($_COOKIE['level_' . $level]) && $_COOKIE['level_' . $level]) { 
+            $default = $_COOKIE['level_' . $level];
         }else {
             $default = optional_param('level_' . $level, 0, PARAM_INT);
         }

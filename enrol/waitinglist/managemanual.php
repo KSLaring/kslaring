@@ -23,7 +23,6 @@ $addSearch      = optional_param('addselect_searchtext', '', PARAM_RAW);
 $removeSearch   = optional_param('removeselect_searchtext', '', PARAM_RAW);
 $removeSelected = optional_param_array('removeselect',0,PARAM_INT);
 $addSelected    = optional_param_array('addselect',0,PARAM_INT);
-$isInvoice      = false;
 
 if ($instanceId) {
     $instance   = $DB->get_record('enrol', array('id' => $instanceId));
@@ -36,6 +35,7 @@ if ($instanceId) {
 $context    = context_course::instance($course->id, MUST_EXIST);
 $url        = new moodle_url('/enrol/waitinglist/managemanual.php',array('id' => $instanceId));
 $return     = new moodle_url('/enrol/instances.php', array('id'=>$course->id));
+$isInvoice  = false;
 
 require_login($course);
 require_capability('enrol/waitinglist:config', $context);

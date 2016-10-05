@@ -142,7 +142,7 @@ M.core_user.init_structure = function (Y,name,reload,invoice) {
                 Y.Object.each(this.iotransactions, function(trans) {
                     trans.abort();
                 });
-                
+
                 /* Activate Invoice Data Fields */
                 this.ActivateInvoiceData();
 
