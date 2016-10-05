@@ -275,6 +275,19 @@ class user_filter_profilefield extends user_filter_type {
         /* Get Datatype */
         $rdo = $DB->get_record('user_info_field',array('id' => $profile),'datatype');
         switch ($rdo->datatype) {
+            case 'gender':
+                $optMan     = explode(',',get_string('lst_man','profilefield_gender'));
+                $optWoman   = explode(',',get_string('lst_woman','profilefield_gender'));
+
+                if (in_array($value,$optMan)) {
+                    $params[$name] = 1;
+                }else if (in_array($value,$optWoman)) {
+                    $params[$name] = 2;
+                }
+
+                return array("id $op (SELECT userid FROM {user_info_data} $where)", $params);
+
+                break;
             case 'competence':
                 /* Get the users connected to the company   */
                 $user_companies = array();

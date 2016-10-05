@@ -937,6 +937,12 @@ class local_wsks_external extends external_api {
      *
      * Description
      * To synchronize the users accounts between KS Læring and FELLESDATA
+     *
+     * @updateDate      05/10/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Add the gender
      */
     public static function wsUsersAccounts($usersAccounts) {
         /* Variables    */
@@ -952,6 +958,9 @@ class local_wsks_external extends external_api {
         $result['usersAccounts']    = array();
 
         try {
+            /* Library  */
+            require_once($CFG->wwwroot . '/user/profile/field/gender/lib/genderlib.php');
+            
             /* Synchronization */
             WS_FELLESDATA::Synchronize_UsersAccounts($usersAccounts,$result);
 

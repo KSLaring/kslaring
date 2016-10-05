@@ -280,13 +280,12 @@ class WS_FELLESDATA {
 
                     $imported[$key] = $infoImported;
                 }//if_userid
-
             }//for_usersAccounts
 
             $result['usersAccounts'] = $imported;
 
             /* Log  */
-            $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' FINISH Synchronization Users Accoutns . ' . "\n"."\n";
+            $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH Synchronization Users Accoutns . ' . "\n"."\n";
             error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
         }catch (Exception $ex) {
             $result['error']            = 409;
@@ -1022,6 +1021,18 @@ class WS_FELLESDATA {
      *
      * Description
      * Process the user account to synchronize
+     *
+     * @updateDate      23/09/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Add resource number
+     *
+     * @updateDate      05/10/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Add the gender
      */
     private static function ProcessUserAccount($userAccount) {
         /* Variables */
@@ -1031,6 +1042,7 @@ class WS_FELLESDATA {
         $sync       = null;
         $rdoUser    = null;
         $trans      = null;
+        $userId     = null;
 
         /* Begin transaction */
         $trans = $DB->start_delegated_transaction();
@@ -1057,6 +1069,8 @@ class WS_FELLESDATA {
                 $infoUser->firstaccess  = $time;
                 $infoUser->calendartype = $CFG->calendartype;
                 $infoUser->mnethostid   = $CFG->mnet_localhost_id;
+            }else {
+                $userId = $rdoUser->id;
             }//if_not_info_user
 
             /* Apply Action */
@@ -1064,7 +1078,7 @@ class WS_FELLESDATA {
                 case ADD_ACTION:
                     if (!$rdoUser) {
                         /* Execute  */
-                        $infoUser->id = $DB->insert_record('user',$infoUser);
+                        $userId = $DB->insert_record('user',$infoUser);
                     }//if_notExist
 
                     /* Synchronized */
@@ -1083,11 +1097,12 @@ class WS_FELLESDATA {
                         $DB->update_record('user',$rdoUser);
                     }else {
                         /* Execute  */
-                        $infoUser->id = $DB->insert_record('user',$infoUser);
+                        $userId = $DB->insert_record('user',$infoUser);
                     }//if_infoUSer
 
                     /* Synchronized */
                     $sync = true;
+
                     break;
                 case DELETE_ACTION:
                     /* Delete User  */
@@ -1100,7 +1115,7 @@ class WS_FELLESDATA {
                     }else {
                         /* Execute  */
                         $infoUser->deleted      = 1;
-                        $infoUser->id = $DB->insert_record('user',$infoUser);
+                        $userId             = $DB->insert_record('user',$infoUser);
                     }//if_infoUsers
 
                     /* Synchronized */
@@ -1108,6 +1123,13 @@ class WS_FELLESDATA {
 
                     break;
             }//action
+
+            /**
+             * Add the gender
+             */
+            if ($userAccount->action != DELETE_ACTION) {
+                Gender::Add_UserGender($userId,$userAccount->personalnumber);
+            }
 
             /* Commit */
             $trans->allow_commit();
@@ -1434,7 +1456,6 @@ class WS_FELLESDATA {
 
             /* Commit */
             $trans->allow_commit();
-
 
             return $companyId;
         }catch (Exception $ex) {
