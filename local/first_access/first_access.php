@@ -30,28 +30,6 @@ $PAGE->set_heading($SITE->fullname);
 $PAGE->set_title($SITE->fullname);
 $PAGE->set_pagelayout('admin');
 
-/* Log  */
-/**
- * @updateDate  26/09/2016
- * @author      eFaktor     (fbv)
- *
- * Add LOG
- */
-global $CFG;
-
-/* Check if exists temporary directory */
-$dir = $CFG->dataroot . '/login';
-if (!file_exists($dir)) {
-    mkdir($dir);
-}
-
-$pathFile = $dir . '/' . $userId . '.log';
-$dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' KSLæring - Log In (My First Access). ' . "\n";
-$dbLog .= "User : " . $userId . "\n";
-$dbLog .= "USER (global) : " . $USER->id . "\n";
-error_log($dbLog, 3, $pathFile);
-/* FIN ADD LOG (fbv) */
-
 /* SHOW FORM */
 $form = new first_access_form(null,$userId);
 if ($form->is_cancelled()) {
