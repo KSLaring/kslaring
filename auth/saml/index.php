@@ -222,11 +222,10 @@ define('SAML_INTERNAL', 1);
         if (is_numeric($USER->username) && (strlen($USER->username) == 11)) {
             /* Library  */
             require_once($CFG->wwwroot . '/user/profile/field/gender/lib/genderlib.php');
-
+            
             /* Add Gender*/
             Gender::Add_UserGender($USER->id,$USER->username);
         }
-
 
         /**
          * @updateDate  10/11/2014
