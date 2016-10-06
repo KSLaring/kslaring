@@ -41,7 +41,8 @@ if (!is_siteadmin($USER->id)) {
 
 /* Create gender profile if it does not exist       */
 echo "Checking..." . "</br>";
-if (!Gender::ExistGenderProfile()) {
+$fieldId =Gender::ExistGenderProfile();
+if (!$fieldId) {
     echo "Creating Gender Profile Instance" . "</br>";
     /* Create gender profile    */
     $fieldId = Gender::CreateGenderProfile();
@@ -51,6 +52,7 @@ if (!Gender::ExistGenderProfile()) {
 echo "Update USers " . "</br>";
 Gender::AddGender_ToUsers($fieldId,0,2000);
 $remiander = 0;
+
 
 /* Footer   */
 echo $OUTPUT->footer();
