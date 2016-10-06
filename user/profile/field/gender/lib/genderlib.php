@@ -39,7 +39,7 @@ class Gender {
             /* Check if exist   */
             $rdo = $DB->get_record('user_info_field',array('datatype' => 'gender'));
             if ($rdo) {
-                return true;
+                return $rdo->id;
             }else {
                 return false;
             }//if_rdo

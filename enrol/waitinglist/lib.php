@@ -435,6 +435,62 @@ class enrol_waitinglist_plugin extends enrol_plugin {
     
     
     /**
+     * @param           stdClass    $instance
+     * @param           int         $userid
+     * 
+     * @throws                      Exception
+     * 
+     * @creationDate    06/10/2016
+     * @author          eFaktor     (fbv)
+     * 
+     * Description
+     * Unenrol the user and send an email confirmation
+     */
+    public function unenrol_user(stdClass $instance, $userid) {
+        /* Variables */
+        global $CFG;
+        $user        = null;
+        $course      = null;
+        $context     = null;
+        $messagehtml = null;
+        $messagetext = null;
+        $subject     = null;
+
+        try {
+            /* First unenrol    */
+            parent::unenrol_user($instance,$userid);
+
+            /* Extra information */
+            $user       = get_complete_user_data('id',$userid);
+            $course     = get_course($instance->courseid);
+            $context    = context_course::instance($instance->courseid);
+            $rusers = array();
+            if (!empty($CFG->coursecontact)) {
+                $croles = explode(',', $CFG->coursecontact);
+                list($sort, $sortparams) = users_order_by_sql('u');
+                $rusers = get_role_users($croles, $context, true, '', 'r.sortorder ASC, ' . $sort, null, '', '', '', '', $sortparams);
+            }
+            if ($rusers) {
+                $contact = reset($rusers);
+            } else {
+                $contact = core_user::get_support_user();
+            }
+
+            /* Subject      */
+            $subject    = get_string('unenrol_subject','enrol_waitinglist',$course->fullname);
+
+            /* Body Message */
+            $messagetext = get_string('unenrol_body','enrol_waitinglist',$course->fullname) . "</br></br>";
+            $messagehtml = text_to_html($messagetext, null, false, true);
+
+            /* Sencd confirmation message   */
+            email_to_user($user, $contact, $subject, $messagetext, $messagehtml);
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }
+    
+    /**
      * Enrol user into course via enrol instance.
      *
      * @param stdClass $instance

@@ -248,7 +248,6 @@ define('SAML_INTERNAL', 1);
             Gender::Add_UserGender($USER->id,$USER->username);
         }
 
-
         /**
          * @updateDate  10/11/2014
          * @author      eFaktor     (fbv)
