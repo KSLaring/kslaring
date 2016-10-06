@@ -286,3 +286,6 @@ $string['unenrol_link']         = 'If you want to unenrol by yourself, please cl
 $string['unenrol_me']           = 'Unenrol me';
 $string['user_unenrolled']      = 'You have already been unenrolled';
 $string['user_not_enrolled']    = 'Sorry, you can be unenrolled because you are not a member of this course';
+$string['unenrol_subject'] = 'Course {$a}.Unenrol confirmation.';
+$string['unenrol_body']    = 'We would like to inform you, that you have been unenrolled from the course <strong>{$a}</strong>';
+
