@@ -49,7 +49,7 @@ if (!Gender::ExistGenderProfile()) {
 }
 
 echo "Update USers " . "</br>";
-Gender::AddGender_ToUsers(14,0,2000);
+Gender::AddGender_ToUsers($fieldId,0,2000);
 $remiander = 0;
 
 /* Footer   */
