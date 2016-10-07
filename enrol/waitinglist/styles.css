@@ -161,6 +161,11 @@ a.lnk_disabled {
     cursor: default;
 }
 
+.lnk_manual_disabled {
+    pointer-events: none;
+    cursor: default;
+}
+
 .block_approval .block_requests .approved {
     cursor: default;
 }
