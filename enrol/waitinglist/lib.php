@@ -127,7 +127,7 @@ class enrol_waitinglist_plugin extends enrol_plugin {
         }
 
         $context = context_course::instance($instance->courseid);
-        if (has_capability('enrol/waitinglist:config', $context)) {
+        if (has_capability('enrol/waitinglist:manage', $context)) {
             $managelink = new moodle_url('/enrol/waitinglist/edit.php', array('courseid'=>$instance->courseid));
             $waitinglistnode = $instancesnode->add($this->get_instance_name($instance), $managelink, navigation_node::TYPE_SETTING);
         
@@ -155,15 +155,17 @@ class enrol_waitinglist_plugin extends enrol_plugin {
             $sql = " SELECT status
                      FROM   {enrol_waitinglist_method} 
                      WHERE  waitinglistid = :wait
+                        AND courseid = :course
                         AND methodtype LIKE 'manual' ";
 
-            $rdo = $DB->get_record_sql($sql,array('wait' => $instance->id));
+            $rdo = $DB->get_record_sql($sql,array('wait' => $instance->id,'course' => $instance->courseid ));
             if ($rdo->status) {
-                $manual_enrol->remove_class('dimmed_text lnk_manual_disabled');
+                $waitinglistnode->add_node($manual_enrol);
+                //$manual_enrol->remove_class('dimmed_text lnk_manual_disabled');
             }else {
-                $manual_enrol->add_class('dimmed_text lnk_manual_disabled');
+                //$manual_enrol->add_class('dimmed_text lnk_manual_disabled');
             }
-            $waitinglistnode->add_node($manual_enrol);
+
 
             //queue
         	$managelink=new moodle_url('/enrol/waitinglist/managequeue.php', array('id'=>$instance->courseid));
