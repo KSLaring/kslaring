@@ -33,7 +33,7 @@ $course = $DB->get_record('course', array('id'=>$courseid), '*', MUST_EXIST);
 $context = context_course::instance($course->id, MUST_EXIST);
 
 require_login($course);
-require_capability('enrol/waitinglist:config', $context);
+require_capability('enrol/waitinglist:manage', $context);
 
 $PAGE->set_url('/enrol/waitinglist/edit.php', array('courseid'=>$course->id));
 $PAGE->set_pagelayout('admin');
