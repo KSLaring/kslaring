@@ -155,9 +155,10 @@ class enrol_waitinglist_plugin extends enrol_plugin {
             $sql = " SELECT status
                      FROM   {enrol_waitinglist_method} 
                      WHERE  waitinglistid = :wait
+                        AND courseid = :course
                         AND methodtype LIKE 'manual' ";
 
-            $rdo = $DB->get_record_sql($sql,array('wait' => $instance->id));
+            $rdo = $DB->get_record_sql($sql,array('wait' => $instance->id,'course' => $instance->courseid ));
             if ($rdo->status) {
                 $waitinglistnode->add_node($manual_enrol);
                 //$manual_enrol->remove_class('dimmed_text lnk_manual_disabled');
