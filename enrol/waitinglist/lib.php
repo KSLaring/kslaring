@@ -127,7 +127,7 @@ class enrol_waitinglist_plugin extends enrol_plugin {
         }
 
         $context = context_course::instance($instance->courseid);
-        if (has_capability('enrol/waitinglist:config', $context)) {
+        if (has_capability('enrol/waitinglist:manage', $context)) {
             $managelink = new moodle_url('/enrol/waitinglist/edit.php', array('courseid'=>$instance->courseid));
             $waitinglistnode = $instancesnode->add($this->get_instance_name($instance), $managelink, navigation_node::TYPE_SETTING);
         
