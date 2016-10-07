@@ -142,8 +142,29 @@ class enrol_waitinglist_plugin extends enrol_plugin {
              * Description
              * Add option to enrol users manually
              */
+            global $DB;
+            $str_title      = get_string('manual_manage','enrol_waitinglist');
             $managelink = new moodle_url('/enrol/waitinglist/managemanual.php',array('id' => $instance->id));
-            $waitinglistnode->add(get_string('manual_manage','enrol_waitinglist'),$managelink,navigation_node::TYPE_SETTING);
+            $manual_enrol   = navigation_node::create($str_title,
+                                                      $managelink,
+                                                      navigation_node::TYPE_SETTING,'manual_enrol',
+                                                      'manual_enrol',
+                                                      new pix_icon('i/report', $str_title)
+                                                     );
+            /* Check if is active or not    */
+            $sql = " SELECT status
+                     FROM   {enrol_waitinglist_method} 
+                     WHERE  waitinglistid = :wait
+                        AND methodtype LIKE 'manual' ";
+
+            $rdo = $DB->get_record_sql($sql,array('wait' => $instance->id));
+            if ($rdo->status) {
+                $manual_enrol->remove_class('dimmed_text lnk_manual_disabled');
+            }else {
+                $manual_enrol->add_class('dimmed_text lnk_manual_disabled');
+            }
+            $waitinglistnode->add_node($manual_enrol);
+
             //queue
         	$managelink=new moodle_url('/enrol/waitinglist/managequeue.php', array('id'=>$instance->courseid));
         	$waitinglistnode->add(get_string('managequeue','enrol_waitinglist'), $managelink, navigation_node::TYPE_SETTING);
