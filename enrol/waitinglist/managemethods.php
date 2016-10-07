@@ -53,16 +53,12 @@ $PAGE->set_heading($course->fullname);
 $methods = enrol_waitinglist_plugin::get_methods($course,$waitinglist->id);
 
 if ($canconfig and $action and confirm_sesskey()) {
-
-
         if ($action === 'disable') {
 			foreach($methods as $method){
 				if($methodtype == $method->get_type()){
 					$method->deactivate();
 				}
 			}
-			
-
         } else if ($action === 'enable') {
 			foreach($methods as $method){
 				if($methodtype == $method->get_type()){
