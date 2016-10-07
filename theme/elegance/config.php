@@ -81,9 +81,9 @@ if ((!empty($THEME->settings->enablecustomlogin)) && ($THEME->settings->enablecu
 }
 
 if ('ltr' === get_string('thisdirection', 'langconfig')) {
-    $THEME->sheets = array('font-awesome', 'google-fonts', $categorysheet, $loginsheet, 'nprogress', 'elegance');
+    $THEME->sheets = array('font-awesome', 'google-fonts', $categorysheet, $loginsheet, 'nprogress', 'elegance', 'mobile');
 } else {
-    $THEME->sheets = array('tinymce-rtl', 'font-awesome', 'google-fonts', $categorysheet, $loginsheet, 'nprogress', 'elegance');
+    $THEME->sheets = array('tinymce-rtl', 'font-awesome', 'google-fonts', $categorysheet, $loginsheet, 'nprogress', 'elegance', 'mobile');
 }
 
 $THEME->layouts = array(
@@ -146,13 +146,6 @@ $THEME->layouts = array(
     	'file' => $loginlayout,
         'regions' => array(),
         'options' => array('langmenu'=>true, 'nonavbar'=>false),
-    ),
-
-    // Pages that appear in pop-up windows - no navigation, no blocks, no header.
-    'popup' => array(
-        'file' => 'default.php',
-        'regions' => array(),
-        'options' => array('nofooter'=>true, 'nonavbar'=>false),
     ),
     // No blocks and minimal footer - used for legacy frame layouts only!
     'frametop' => array(

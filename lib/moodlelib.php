@@ -4745,6 +4745,7 @@ function hash_internal_user_password($password, $fasthash = false) {
  *
  * Updating the password will modify the $user object and the database
  * record to use the current hashing algorithm.
+ * It will remove Web Services user tokens too.
  *
  * @param stdClass $user User object (password property may be updated).
  * @param string $password Plain text password.
@@ -4792,6 +4793,10 @@ function update_internal_user_password($user, $password, $fasthash = false) {
         // Trigger event.
         $user = $DB->get_record('user', array('id' => $user->id));
         \core\event\user_password_updated::create_from_user($user)->trigger();
+
+        // Remove WS user tokens.
+        require_once($CFG->dirroot.'/webservice/lib.php');
+        webservice::delete_user_ws_tokens($user->id);
     }
 
     return true;
@@ -7787,14 +7792,16 @@ function count_letters($string) {
  * @param int $length The length of the string to be created.
  * @return string
  */
-function random_string ($length=15) {
+function random_string($length=15) {
+    $randombytes = random_bytes_emulate($length);
     $pool  = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
     $pool .= 'abcdefghijklmnopqrstuvwxyz';
     $pool .= '0123456789';
     $poollen = strlen($pool);
     $string = '';
     for ($i = 0; $i < $length; $i++) {
-        $string .= substr($pool, (mt_rand()%($poollen)), 1);
+        $rand = ord($randombytes[$i]);
+        $string .= substr($pool, ($rand%($poollen)), 1);
     }
     return $string;
 }
@@ -7815,11 +7822,54 @@ function complex_random_string($length=null) {
     if ($length===null) {
         $length = floor(rand(24, 32));
     }
+    $randombytes = random_bytes_emulate($length);
     $string = '';
     for ($i = 0; $i < $length; $i++) {
-        $string .= $pool[(mt_rand()%$poollen)];
+        $rand = ord($randombytes[$i]);
+        $string .= $pool[($rand%$poollen)];
     }
     return $string;
+}
+
+/**
+ * Try to generates cryptographically secure pseudo-random bytes.
+ *
+ * Note this is achieved by fallbacking between:
+ *  - PHP 7 random_bytes().
+ *  - OpenSSL openssl_random_pseudo_bytes().
+ *  - In house random generator getting its entropy from various, hard to guess, pseudo-random sources.
+ *
+ * @param int $length requested length in bytes
+ * @return string binary data
+ */
+function random_bytes_emulate($length) {
+    global $CFG;
+    if ($length <= 0) {
+        debugging('Invalid random bytes length', DEBUG_DEVELOPER);
+        return '';
+    }
+    if (function_exists('random_bytes')) {
+        // Use PHP 7 goodness.
+        $hash = @random_bytes($length);
+        if ($hash !== false) {
+            return $hash;
+        }
+    }
+    if (function_exists('openssl_random_pseudo_bytes')) {
+        // For PHP 5.3 and later with openssl extension.
+        $hash = openssl_random_pseudo_bytes($length);
+        if ($hash !== false) {
+            return $hash;
+        }
+    }
+
+    // Bad luck, there is no reliable random generator, let's just hash some unique stuff that is hard to guess.
+    $hash = sha1(serialize($CFG) . serialize($_SERVER) . microtime(true) . uniqid('', true), true);
+    // NOTE: the last param in sha1() is true, this means we are getting 20 bytes, not 40 chars as usual.
+    if ($length <= 20) {
+        return substr($hash, 0, $length);
+    }
+    return $hash . random_bytes_emulate($length - 20);
 }
 
 /**

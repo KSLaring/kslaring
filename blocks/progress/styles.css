@@ -1,70 +1,98 @@
 .block_progress .content {
-    text-align: center;
+    text-align: left;
 }
 
-.block_progress table {
-    margin: 0 auto;
+.block_progress .barContainer {
+    overflow: hidden;
+    position: relative;
     padding: 0;
 }
 
-.block_progress .progressBarProgressTable {
-    width: 100%;
-    margin: 0 0 5px 0;
-    height: 25px;
-    overflow: hidden;
+.left-arrow-svg,
+.right-arrow-svg {
+    position: absolute;
+    top: calc(50% - 15px);
+    display: none;
 }
 
-.block_progress .progressBarProgressTable.noNow {
-    height: 19px;
+.triangle-polygon {
+    fill: rgba(0, 0, 0, 0.3);
+    stroke: white;
+    stroke-width: 3px;
+}
+
+.block_progress .nowRow,
+.block_progress .barRow {
+    padding: 0;
+    width: 100%;
+    margin: 0;
+    height: 25px;
+    display: table;
+}
+
+.block_progress .nowRow .blankDiv {
+    display: table-cell;
 }
 
 .block_progress .progressBarCell {
-    height: 19px;
-    margin: 0;
+    height: 25px;
+    margin: 0 -1px 0 0;
     padding: 0;
     text-align: center;
     vertical-align: middle;
-    background-color: none;
     cursor: pointer;
     border-left: solid 1px #e3e3e3;
+    border-top: solid 1px #e3e3e3;
 }
 
-.block_progress .progressBarCell#first {
-    border-radius: 3px 0 0 3px;
+.block_progress .progressBarCell.firstProgressBarCell {
+    border-radius: 4px 0 0 4px;
     border-left: none;
 }
 
-.block_progress .progressBarCell#last {
-    border-radius: 0 3px 3px 0;
+.dir-rtl .block_progress .progressBarCell.firstProgressBarCell {
+    border-radius: 0px 4px 4px 0px;
+    border-left: solid 1px #e3e3e3;
+}
+
+.block_progress .progressBarCell.lastProgressBarCell {
+    border-radius: 0 4px 4px 0;
+}
+
+.dir-rtl .block_progress .progressBarCell.lastProgressBarCell {
+    border-radius: 4px 0px 0px 4px;
+    border-left: none;
 }
 
 .block_progress .progressBarCell img {
-    width: 100%;
-    height: 15px;
-    margin: 1px 0 0 0;
-    padding: 0;
-}
-
-.block_progress .progressBarCell .smallicon {
-    width: 85%;
-    height: 85%;
-    max-width: 15px;
     height: auto;
+    margin: 1px 0 0 0;
     max-height: 15px;
-    vertical-align: text-bottom;
+    max-width: 15px;
+    padding: 0;
+    vertical-align: middle;
+    width: 85%;
 }
 
-.block_progress .progressEventInfo {
+.block_progress .progressEventInfo,
+.block_progress .progressPercentage {
     font-size: x-small;
     text-align: left;
     white-space: pre;
     overflow: hidden;
     padding: 0;
-    margin: 5px auto;
+    margin: 5px;
 }
 
-#page-blocks-progress-overview .block_progress .progressEventInfo {
-    max-width: 200px;
+.block_progress .progressEventInfo .iconInInfo,
+#fitem_id_config_progressBarIcons .iconOnConfig {
+    height: 1.2em;
+}
+
+#page-blocks-progress-overview .overviewTable {
+    margin: 10px 0;
+    width: 100%;
+    table-layout: fixed;
 }
 
 .block_progress .progressEventInfo img {
@@ -74,6 +102,7 @@
 .block_progress .moduleIcon {
     float: left;
     margin-right: 5px;
+    max-width: 24px;
 }
 
 .block_progress .progressBarHeader {
@@ -90,6 +119,16 @@
     margin: 5px auto;
 }
 
+.progressWarningBox {
+    border: 2px solid #F00;
+    padding: 10px;
+    background-color: #F66;
+    color: white;
+    margin: 10px 0;
+    font-size: large;
+    font-weight: bold;
+}
+
 .progressConfigBox {
     border-bottom: 1px dashed #cccccc;
     padding: 5px;
@@ -104,35 +143,43 @@
     vertical-align: middle;
 }
 
-#page-blocks-progress-overview .groupselector {
-    text-align: center;
-}
-
-#page-blocks-progress-overview .progressoverviewmenus {
-    text-align: center;
-    margin-bottom: 5px;
-}
-
-#page-blocks-progress-overview .progressoverviewmenus form,
-#page-blocks-progress-overview .progressoverviewmenus select,
-#page-blocks-progress-overview .progressoverviewmenus div {
-    display: inline;
-}
-
-#page-blocks-progress-overview .progressoverviewmenus select {
-    margin-left: 2px;
-}
-
 .block_progress .overviewButton {
     margin: 10px;
+    text-align: center;
 }
 
 #page-blocks-progress-overview .buttons {
     margin-top: 20px;
-    text-align: center;
+    text-align: left;
 }
 
 #page-blocks-progress-overview .buttons label {
     display: inline;
     margin: 0 5px 0 10px;
+}
+
+#page-blocks-progress-overview .progressoverviewmenus {
+    text-align: left;
+    margin-bottom: 5px;
+}
+
+#page-blocks-progress-overview .progressoverviewmenus .singleselect {
+    text-align: left;
+    margin-right: 10px;
+}
+
+#page-blocks-progress-overview .progressoverviewmenus form,
+#page-blocks-progress-overview .progressoverviewmenus select,
+#page-blocks-progress-overview .progressoverviewmenus div,
+#page-blocks-progress-overview .paging,
+#page-blocks-progress-overview #showall {
+    display: inline;
+}
+
+#page-blocks-progress-overview #showall {
+    margin-left: 10px;
+}
+
+#page-blocks-progress-overview .progressoverviewmenus select {
+    margin-left: 2px;
 }

@@ -70,7 +70,7 @@ class block_progress extends block_base {
      * @return bool
      */
     public function instance_allow_multiple() {
-        return !block_progress_on_my_page();
+        return !block_progress_on_site_page();
     }
 
     /**
@@ -79,7 +79,7 @@ class block_progress extends block_base {
      * @return bool
      */
     public function instance_allow_config() {
-        return !block_progress_on_my_page();
+        return !block_progress_on_site_page();
     }
 
     /**
@@ -90,7 +90,7 @@ class block_progress extends block_base {
     public function applicable_formats() {
         return array(
             'course-view'    => true,
-            'site'           => false,
+            'site'           => true,
             'mod'            => false,
             'my'             => true
         );
@@ -118,9 +118,10 @@ class block_progress extends block_base {
             return $this->content;
         }
 
-        // Draw the multi-bar content for the My home page.
-        if (block_progress_on_my_page()) {
+        // Draw the multi-bar content for the Dashboard and Front page.
+        if (block_progress_on_site_page()) {
             $courses = enrol_get_my_courses();
+            $coursenametoshow = get_config('block_progress', 'coursenametoshow') ?: DEFAULT_COURSENAMETOSHOW;
             $sql = "SELECT bi.id,
                            bp.id AS blockpositionid,
                            COALESCE(bp.region, bi.defaultregion) AS region,
@@ -142,7 +143,6 @@ class block_progress extends block_base {
                     $context = block_progress_get_course_context($course->id);
                     $params = array('contextid' => $context->id, 'pagetype' => 'course-view-%');
                     $blockinstances = $DB->get_records_sql($sql, $params);
-                    $blockinstancesonpage = array_merge($blockinstancesonpage, array_keys($blockinstances));
                     foreach ($blockinstances as $blockid => $blockinstance) {
                         $blockinstance->config = unserialize(base64_decode($blockinstance->configdata));
                         if (!empty($blockinstance->config)) {
@@ -153,7 +153,9 @@ class block_progress extends block_base {
                             $blockinstance->events = block_progress_filter_visibility($blockinstance->events,
                                                          $USER->id, $context, $course);
                         }
+                        $blockcontext = block_progress_get_block_context($blockid);
                         if (
+                            !has_capability('block/progress:showbar', $blockcontext) ||
                             $blockinstance->visible == 0 ||
                             empty($blockinstance->config) ||
                             $blockinstance->events == 0 ||
@@ -166,16 +168,17 @@ class block_progress extends block_base {
                             unset($blockinstances[$blockid]);
                         }
                     }
+                    $blockinstancesonpage = array_merge($blockinstancesonpage, array_keys($blockinstances));
 
                     // Output the Progress Bar.
                     if (!empty($blockinstances)) {
                         $courselink = new moodle_url('/course/view.php', array('id' => $course->id));
-                        $linktext = HTML_WRITER::tag('h3', s($course->shortname));
+                        $linktext = HTML_WRITER::tag('h3', s($course->$coursenametoshow));
                         $this->content->text .= HTML_WRITER::link($courselink, $linktext);
                     }
                     foreach ($blockinstances as $blockid => $blockinstance) {
                         if ($blockinstance->config->progressTitle != '') {
-                            $this->content->text .= HTML_WRITER::tag('p', s($blockinstance->config->progressTitle));
+                            $this->content->text .= HTML_WRITER::tag('p', s(format_string($blockinstance->config->progressTitle)));
                         }
                         $attempts = block_progress_attempts($modules,
                                                             $blockinstance->config,
@@ -249,14 +252,16 @@ class block_progress extends block_base {
             }
 
             // Display progress bar.
-            $attempts = block_progress_attempts($modules, $this->config, $events, $USER->id, $COURSE->id);
-            $this->content->text = block_progress_bar($modules,
-                                                      $this->config,
-                                                      $events,
-                                                      $USER->id,
-                                                      $this->instance->id,
-                                                      $attempts,
-                                                      $COURSE->id);
+            if (has_capability('block/progress:showbar', $this->context)) {
+                $attempts = block_progress_attempts($modules, $this->config, $events, $USER->id, $COURSE->id);
+                $this->content->text .= block_progress_bar($modules,
+                                                           $this->config,
+                                                           $events,
+                                                           $USER->id,
+                                                           $this->instance->id,
+                                                           $attempts,
+                                                           $COURSE->id);
+            }
             $blockinstancesonpage = array($this->instance->id);
 
             // Allow teachers to access the overview page.
@@ -277,6 +282,7 @@ class block_progress extends block_base {
             'strings' => array(),
         );
         $arguments = array($blockinstancesonpage, array($USER->id));
+        $this->page->requires->js_init_call('M.block_progress.setupScrolling', array(), false, $jsmodule);
         $this->page->requires->js_init_call('M.block_progress.init', $arguments, false, $jsmodule);
 
         return $this->content;
