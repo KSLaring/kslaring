@@ -1079,6 +1079,15 @@ class WS_FELLESDATA {
                     if (!$rdoUser) {
                         /* Execute  */
                         $userId = $DB->insert_record('user',$infoUser);
+                    }else {
+                        $rdoUser->firstname    = $userAccount->firstname;
+                        $rdoUser->lastname     = $userAccount->lastname;
+                        $rdoUser->email        = $userAccount->email;
+                        $rdoUser->timemodified = $time;
+                        $rdoUser->deleted      = 0;
+
+                        /* Execute */
+                        $DB->update_record('user',$rdoUser);
                     }//if_notExist
 
                     /* Synchronized */
@@ -1092,6 +1101,7 @@ class WS_FELLESDATA {
                         $rdoUser->lastname     = $userAccount->lastname;
                         $rdoUser->email        = $userAccount->email;
                         $rdoUser->timemodified = $time;
+                        $rdoUser->deleted      = 0;
 
                         /* Execute */
                         $DB->update_record('user',$rdoUser);
