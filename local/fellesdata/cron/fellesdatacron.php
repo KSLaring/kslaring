@@ -683,8 +683,7 @@ class FELLESDATA_CRON {
             /* Get Parameters service    */
             $toDate     = mktime(1, 60, 0, date("m"), date("d"), date("Y"));
             $toDate     = gmdate('Y-m-d\TH:i:s\Z',$toDate);
-
-            echo "DAYS: " . $pluginInfo->fs_days;
+            
             if (isset($pluginInfo->lastexecution) && $pluginInfo->lastexecution) {
                 /* No First Execution   */
                 $admin      = get_admin();
