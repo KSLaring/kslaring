@@ -98,8 +98,6 @@ class Fellesdata_Install {
             self::JR_KSFS_Relation_Table($dbMan);
 
             self::UsersFSCompetence_Table($dbMan);
-
-            self::ResourceNumber($dbMan);
         }catch (Exception $ex) {
             /* Delete tables */
             self::Delete_SynchronizationTables($dbMan);
@@ -359,8 +357,6 @@ class Fellesdata_Install {
             $tblImpUsers->add_field('id',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, XMLDB_SEQUENCE,null);
             /* personalnumber --> Personal number   */
             $tblImpUsers->add_field('fodselsnr',XMLDB_TYPE_CHAR,'50',null, XMLDB_NOTNULL, null,null);
-            /* REsource number  */
-            $tblImpUsers->add_field('ressursnr',XMLDB_TYPE_CHAR,'50',null, XMLDB_NOTNULL, null,null);
             /* firstname    --> First name          */
             $tblImpUsers->add_field('fornavn',XMLDB_TYPE_CHAR,'255',null, XMLDB_NOTNULL, null,null);
             /* lastname     --> lastname            */
@@ -946,58 +942,8 @@ class Fellesdata_Install {
             if ($dbMan->table_exists('fs_users_competence')) {
                 $dbMan->drop_table($tblUsersFSJR);
             }//if_exists
-
-            /* mdl_user_resource_number */
-            $tblUserResource = new xmldb_table('user_resource_number');
-            if ($dbMan->table_exists('user_resource_number')) {
-                $dbMan->drop_table($tblUserResource);
-            }//if_exists
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
     }//Delete_SynchronizationTables
-
-    /**
-     * @param           $dbMan
-     *
-     * @throws          Exception
-     *
-     * @creationDate    23/09/2016
-     * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Add resource number
-     */
-    public static function ResourceNumber($dbMan) {
-        /* Variables */
-        $tblUserResource    = null;
-        $tblImpUsers        = null;
-        $fldResource        = null;
-
-        try {
-            /* First Create the table   */
-            if (!$dbMan->table_exists('user_resource_number')) {
-                /* Create Table */
-                $tblUserResource =  new xmldb_table('user_resource_number');
-
-                /* Add fields   */
-                /* Id               --> Primary Key */
-                $tblUserResource->add_field('id',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, XMLDB_SEQUENCE,null);
-                /* User Id          --> Foreign Key */
-                $tblUserResource->add_field('userid',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, null,null);
-                /* Resource Number  */
-                $tblUserResource->add_field('ressursnr',XMLDB_TYPE_CHAR,'50',null,XMLDB_NOTNULL,null,null);
-                /* industry code  */
-                $tblUserResource->add_field('industrycode',XMLDB_TYPE_CHAR,'50',null,XMLDB_NOTNULL,null,null);
-
-                /* Add Keys */
-                $tblUserResource->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
-                $tblUserResource->add_key('userid',XMLDB_KEY_FOREIGN,array('userid'), 'user', array('id'));
-
-                $dbMan->create_table($tblUserResource);
-            }
-        }catch (Exception $ex) {
-            throw $ex;
-        }//try_catch
-    }//ResourceNumber
 }//Fellesdata_Install

@@ -1269,12 +1269,6 @@ class FSKS_USERS {
      *
      * Description
      * Synchronize user account ino FS.
-     *
-     * @updateDate      23/09/2016
-     * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Add resource number
      */
     private static function SynchronizeUserFS($userFS,$fsKey) {
         /* Variables    */
@@ -1286,7 +1280,6 @@ class FSKS_USERS {
         $time       = null;
         $sync       = false;
         $trans      = null;
-        $userId     = null;
 
         /* Start Transaction    */
         $trans = $DB->start_delegated_transaction();
@@ -1316,8 +1309,6 @@ class FSKS_USERS {
                 $infoUser->firstaccess  = $time;
                 $infoUser->calendartype = $CFG->calendartype;
                 $infoUser->mnethostid   = $CFG->mnet_localhost_id;
-            }else {
-                $userId = $rdoUser->id;
             }//if_no_exist
 
             /* Apply synchronization    */
@@ -1325,10 +1316,21 @@ class FSKS_USERS {
                 case ADD:
                     /* Execute      */
                     if (!$rdoUser) {
-                        $userId = $DB->insert_record('user',$infoUser);
+                        $infoUser->id = $DB->insert_record('user',$infoUser);
 
                         /* Synchronized */
                         $sync = true;
+                    }else {
+                        /* Update   */
+                        $rdoUser->username      = $userFS->personalnumber;
+                        $rdoUser->firstname     = $userFS->firstname;
+                        $rdoUser->lastname      = $userFS->lastname;
+                        $rdoUser->email         = $userFS->email;
+                        $rdoUser->deleted       = 0;
+                        $rdoUser->timemodified  = $time;
+
+                        /* Execute  */
+                        $DB->update_record('user',$rdoUser);
                     }//if_no_exists
 
                     break;
@@ -1336,17 +1338,18 @@ class FSKS_USERS {
                     /* Check if exists  */
                     if ($rdoUser) {
                         /* Update   */
-                        $rdoUser->username     = $userFS->personalnumber;
-                        $rdoUser->firstname    = $userFS->firstname;
-                        $rdoUser->lastname     = $userFS->lastname;
-                        $rdoUser->email        = $userFS->email;
-                        $rdoUser->timemodified = $time;
+                        $rdoUser->username      = $userFS->personalnumber;
+                        $rdoUser->firstname     = $userFS->firstname;
+                        $rdoUser->lastname      = $userFS->lastname;
+                        $rdoUser->email         = $userFS->email;
+                        $rdoUser->deleted       = 0;
+                        $rdoUser->timemodified  = $time;
 
                         /* Execute  */
                         $DB->update_record('user',$rdoUser);
                     }else {
                         /* Execute  */
-                        $userId = $DB->insert_record('user',$infoUser);
+                        $infoUser->id = $DB->insert_record('user',$infoUser);
                     }//if_else
 
                     /* Synchronized */
@@ -1382,41 +1385,9 @@ class FSKS_USERS {
                 $DB->update_record('fs_imp_users',$instance);
             }//if_sync
 
-            /**
-             * Create the connection between user and his/her resource number
-             */
-            /*
-             * First. Check if already exist an entry for this user.
-             */
-            if ($userFS->ressursnr) {
-                $rdo = $DB->get_record('user_resource_number',array('userid' => $userId));
-               if ($rdo) {
-                   /* Update   */
-                   $rdo->ressursnr      = $userFS->ressursnr;
-                   $rdo->industrycode   = $userFS->industry;
-
-                   /* Execute */
-                   $DB->update_record('user_resource_number',$rdo);
-               }else {
-                   /* Insert   */
-                   $instance = new stdClass();
-                   $instance->userid        = $userId;
-                   $instance->ressursnr     = $userFS->ressursnr;
-                   $instance->industrycode  = $userFS->industry;
-                    
-                   /* Execute  */
-                   $DB->insert_record('user_resource_number',$instance);
-               }//if_rdo
-            }//if_resource_number
-
             /* Commit   */
             $trans->allow_commit();
         }catch (Exception $ex) {
-            /* Log  */
-            $dbLog = $ex->getMessage() . "\n" ."\n";
-            $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH ERROR SynchronizeUserFS . ' . "\n";
-            error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
-            
             /* Rollback */
             $trans->rollback($ex);
 
@@ -1939,10 +1910,10 @@ class FS {
                 if (!$rdo) {
                     $DB->insert_record('fs_imp_users',$infoUser);
                 }else {
-                    if ($infoUser->action != ADD) {
+                    //if ($infoUser->action != ADD) {
                         $infoUser->id       = $rdo->id;
                         $DB->update_record('fs_imp_users',$infoUser);
-                    }
+                    //}
                 }//if_rdo
             }//ofr_each
 
@@ -1984,10 +1955,10 @@ class FS {
                 if (!$rdo) {
                     $DB->insert_record('fs_imp_company',$infoFS);
                 }else {
-                    if ($infoFS->action != ADD) {
+                    //if ($infoFS->action != ADD) {
                         $infoFS->id         = $rdo->id;
                         $DB->update_record('fs_imp_company',$infoFS);
-                    }
+                    //}
                 }//if_rdo
             }//for_each
 
@@ -2029,10 +2000,10 @@ class FS {
                 if (!$rdo) {
                     $DB->insert_record('fs_imp_jobroles',$infoFS);
                 }else {
-                    if ($infoFS->action != ADD) {
+                    //if ($infoFS->action != ADD) {
                         $infoFS->id         = $rdo->id;
                         $DB->update_record('fs_imp_jobroles',$infoFS);
-                    }
+                    //}
                 }//if_rdo
             }//for_each
 
@@ -2079,10 +2050,10 @@ class FS {
                 if (!$rdo) {
                     $DB->insert_record('fs_imp_managers_reporters',$info);
                 }else {
-                    if ($info->action != ADD) {
+                    //if ($info->action != ADD) {
                         $info->id       = $rdo->id;
                         $DB->update_record('fs_imp_managers_reporters',$info);
-                    }
+                    //}
                 }//if_rdo
             }
 

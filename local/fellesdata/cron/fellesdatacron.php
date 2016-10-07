@@ -42,7 +42,6 @@ class FELLESDATA_CRON {
 
 
         try {
-
             /* Log  */
             $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' START FELLESDATA CRON . ' . "\n";
             error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
@@ -370,15 +369,10 @@ class FELLESDATA_CRON {
             $client     = new SoapClient($server);
             $response   = $client->$service($params);
 
-            if (!is_array($response)) {
-                $response = (Array)$response;
-            }
-
             return $response;
         }catch (Exception $ex) {
             /* Log Error    */
-            $dbLog = "ERROR: " . $ex->getMessage() .  "\n\n";
-            $dbLog .= $ex->getTraceAsString() . "\n\n";
+            $dbLog = "ERROR: " . $ex->getMessage() . "\n\n";
             $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' Error calling web service . ' . "\n";
             error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
             throw $ex;
@@ -669,7 +663,7 @@ class FELLESDATA_CRON {
      */
     private static function ProcessTradisService($pluginInfo,$service) {
         /* Variables    */
-        global $CFG,$SESSION;
+        global $CFG;
         $dir            = null;
         $responseFile   = null;
         $pathFile       = null;
@@ -683,13 +677,12 @@ class FELLESDATA_CRON {
             /* Get Parameters service    */
             $toDate     = mktime(1, 60, 0, date("m"), date("d"), date("Y"));
             $toDate     = gmdate('Y-m-d\TH:i:s\Z',$toDate);
-
             if (isset($pluginInfo->lastexecution) && $pluginInfo->lastexecution) {
                 /* No First Execution   */
                 $admin      = get_admin();
                 $timezone   = $admin->timezone;
                 $date       = usergetdate($pluginInfo->lastexecution, $admin->timezone);
-                $fromDate   = mktime(0, 0, 0, $date['mon'], $date['mday']-4, $date['year']);
+                $fromDate   = mktime(0, 0, 0, $date['mon'], $date['mday'] - 4, $date['year']);
                 $fromDate   = gmdate('Y-m-d\TH:i:s\Z',$fromDate);
             }else {
                 /* First Execution      */
@@ -764,42 +757,20 @@ class FELLESDATA_CRON {
      *
      * Description
      * Synchronization of users accounts between KS and FS
-     *
-     * @updateDate      23/09/2016
-     * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Add resource number 
      */
     private static function UsersFS_Synchronization($pluginInfo) {
         /* Variables    */
-        global $DB,$CFG,$SESSION;
-        $rdo            = null;
-        $usersFS        = array();
-        $infoUser       = null;
-        $response       = null;
-        $dbLog          = null;
-        $rdoIC          = null;
-        $industryCode   = null;
-        $params         = null;
+        global $DB,$CFG;
+        $rdo        = null;
+        $usersFS    = array();
+        $infoUser   = null;
+        $response   = null;
+        $dbLog      = null;
 
         try {
             /* Get user to synchronize  */
+            mtrace('LIMIT 0,2000');
             $rdo = $DB->get_records('fs_imp_users',array('imported' => '0'),'','*');
-
-            /* Get Industry Code    */
-            if ($pluginInfo->ks_muni) {
-                $params = array();
-                $params['name']             = $pluginInfo->ks_muni;
-                $params['hierarchylevel']   = 1;
-                $rdoIC = $DB->get_record('ks_company',$params,'industrycode');
-
-                if ($rdoIC) {
-                    $industryCode = $rdoIC->industrycode;
-                }
-            }else {
-                $industryCode = 0;
-            }//if_muni
 
             /* Log  */
             $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' START Synchronization Users Accoutns . ' . "\n";
@@ -811,8 +782,6 @@ class FELLESDATA_CRON {
                     /* Users account info   */
                     $infoUser = new stdClass();
                     $infoUser->personalnumber   = $instance->fodselsnr;
-                    $infoUser->ressursnr        = $instance->ressursnr;
-                    $infoUser->industry         = $industryCode;
                     $infoUser->firstname        = $instance->fornavn;
                     $infoUser->lastname         = $instance->mellomnavn . ' ' . $instance->etternavn;
                     $infoUser->email            = $instance->epost;
@@ -824,7 +793,6 @@ class FELLESDATA_CRON {
 
                 /* Call Web Service */
                 $response = self::ProcessKSService($pluginInfo,KS_SYNC_USER_ACCOUNT,$usersFS);
-                
                 if ($response['error'] == '200') {
                     /* Synchronize Users Accounts FS    */
                     FSKS_USERS::Synchronize_UsersFS($usersFS,$response['usersAccounts']);
