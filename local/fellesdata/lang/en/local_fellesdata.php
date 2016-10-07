@@ -86,3 +86,6 @@ $string['to_connect']           = 'Companies to connect';
 
 $string['header_jobroles']      = 'Parent connected with';
 $string['jr_to_connect']        = 'Job roles to connect';
+
+$string['fellesdata_days']          = 'Import days';
+$string['fellesdata_default_days']  = '4';

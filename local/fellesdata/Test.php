@@ -36,6 +36,8 @@ try {
     if ($option) {
         FELLESDATA_CRON::cron_manual(true,$option);
     }else {
+        $pluginInfo     = get_config('local_fellesdata');
+        echo $pluginInfo->fs_days;
     }
 }catch (Exception $ex) {
     throw $ex;
