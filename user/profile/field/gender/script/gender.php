@@ -40,16 +40,16 @@ if (!is_siteadmin($USER->id)) {
 }
 
 /* Create gender profile if it does not exist       */
-echo "Checking..." . "</br>";
+echo "Sjekker..." . "</br>";
 $fieldId =Gender::ExistGenderProfile();
 if (!$fieldId) {
-    echo "Creating Gender Profile Instance" . "</br>";
+    echo "Oppretter en liste over alle som må oppdateres" . "</br>";
     /* Create gender profile    */
     $fieldId = Gender::CreateGenderProfile();
-    echo "Instance Created" . "</br>";
+    echo "Listen er opprettet" . "</br>";
 }
 
-echo "Update USers " . "</br>";
+echo "Oppdaterer brukere " . "</br>";
 Gender::AddGender_ToUsers($fieldId,0,2000);
 $remiander = 0;
 
