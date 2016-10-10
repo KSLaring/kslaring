@@ -369,10 +369,15 @@ class FELLESDATA_CRON {
             $client     = new SoapClient($server);
             $response   = $client->$service($params);
 
+            if (!is_array($response)) {
+                $response = (Array)$response;
+            }
+
             return $response;
         }catch (Exception $ex) {
             /* Log Error    */
             $dbLog = "ERROR: " . $ex->getMessage() . "\n\n";
+            $dbLog .= $ex->getTraceAsString() . "\n\n";
             $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' Error calling web service . ' . "\n";
             error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
             throw $ex;
@@ -663,7 +668,7 @@ class FELLESDATA_CRON {
      */
     private static function ProcessTradisService($pluginInfo,$service) {
         /* Variables    */
-        global $CFG;
+        global $CFG,$SESSION;
         $dir            = null;
         $responseFile   = null;
         $pathFile       = null;
@@ -677,12 +682,13 @@ class FELLESDATA_CRON {
             /* Get Parameters service    */
             $toDate     = mktime(1, 60, 0, date("m"), date("d"), date("Y"));
             $toDate     = gmdate('Y-m-d\TH:i:s\Z',$toDate);
+            
             if (isset($pluginInfo->lastexecution) && $pluginInfo->lastexecution) {
                 /* No First Execution   */
                 $admin      = get_admin();
                 $timezone   = $admin->timezone;
                 $date       = usergetdate($pluginInfo->lastexecution, $admin->timezone);
-                $fromDate   = mktime(0, 0, 0, $date['mon'], $date['mday'] - 4, $date['year']);
+                $fromDate   = mktime(0, 0, 0, $date['mon'], $date['mday']- $pluginInfo->fs_days, $date['year']);
                 $fromDate   = gmdate('Y-m-d\TH:i:s\Z',$fromDate);
             }else {
                 /* First Execution      */

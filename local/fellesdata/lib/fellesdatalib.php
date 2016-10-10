@@ -1280,6 +1280,7 @@ class FSKS_USERS {
         $time       = null;
         $sync       = false;
         $trans      = null;
+        $userId     = null;
 
         /* Start Transaction    */
         $trans = $DB->start_delegated_transaction();
@@ -1309,6 +1310,8 @@ class FSKS_USERS {
                 $infoUser->firstaccess  = $time;
                 $infoUser->calendartype = $CFG->calendartype;
                 $infoUser->mnethostid   = $CFG->mnet_localhost_id;
+            }else {
+                $userId = $rdoUser->id;
             }//if_no_exist
 
             /* Apply synchronization    */
@@ -1316,21 +1319,10 @@ class FSKS_USERS {
                 case ADD:
                     /* Execute      */
                     if (!$rdoUser) {
-                        $infoUser->id = $DB->insert_record('user',$infoUser);
+                        $userId = $DB->insert_record('user',$infoUser);
 
                         /* Synchronized */
                         $sync = true;
-                    }else {
-                        /* Update   */
-                        $rdoUser->username      = $userFS->personalnumber;
-                        $rdoUser->firstname     = $userFS->firstname;
-                        $rdoUser->lastname      = $userFS->lastname;
-                        $rdoUser->email         = $userFS->email;
-                        $rdoUser->deleted       = 0;
-                        $rdoUser->timemodified  = $time;
-
-                        /* Execute  */
-                        $DB->update_record('user',$rdoUser);
                     }//if_no_exists
 
                     break;
@@ -1349,7 +1341,7 @@ class FSKS_USERS {
                         $DB->update_record('user',$rdoUser);
                     }else {
                         /* Execute  */
-                        $infoUser->id = $DB->insert_record('user',$infoUser);
+                        $userId = $DB->insert_record('user',$infoUser);
                     }//if_else
 
                     /* Synchronized */
@@ -1388,6 +1380,11 @@ class FSKS_USERS {
             /* Commit   */
             $trans->allow_commit();
         }catch (Exception $ex) {
+            /* Log  */
+            $dbLog = $ex->getMessage() . "\n" ."\n";
+            $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH ERROR SynchronizeUserFS . ' . "\n";
+            error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
+            
             /* Rollback */
             $trans->rollback($ex);
 

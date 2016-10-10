@@ -33,6 +33,11 @@ if ($hassiteconfig) {
     $settings->add(new admin_setting_heading('local_fellesdata_FS_settings', '', get_string('fellesdata_settigns', 'local_fellesdata')));
     /* End Point    */
     $settings->add(new admin_setting_configtext('local_fellesdata/fs_point',get_string('fellesdata_end','local_fellesdata'),'','',PARAM_TEXT,50));
+    /* Import Days  */
+    $settings->add(new admin_setting_configtext('local_fellesdata/fs_days',
+                                                get_string('fellesdata_days','local_fellesdata'),
+                                                '',
+                                                get_string('fellesdata_default_days','local_fellesdata'),PARAM_TEXT,8));
     /* System   */
     $srcOptions = array('0' => 'ADFS',
                         '1' => 'AGRESSO',
@@ -41,7 +46,7 @@ if ($hassiteconfig) {
                                                 get_string('fellesdata_source','local_fellesdata'),
                                                 get_string('fellesdata_source_desc','local_fellesdata'),0,$srcOptions));
     /* User / Password  */
-    $settings->add(new admin_setting_configpasswordunmask('local_fellesdata/fs_username',get_String('username'),'',''));
+    $settings->add(new admin_setting_configpasswordunmask('local_fellesdata/fs_username',get_string('username'),'',''));
     $settings->add(new admin_setting_configpasswordunmask('local_fellesdata/fs_password',get_string('password'),'',''));
 
 
