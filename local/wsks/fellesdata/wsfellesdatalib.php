@@ -1136,6 +1136,33 @@ class WS_FELLESDATA {
             }//action
 
             /**
+             * Create the connection between user and his/her resource number
+             */
+            /*
+             * First. Check if already exist an entry for this user.
+             */
+            if ($userAccount->ressursnr) {
+                $rdo = $DB->get_record('user_resource_number',array('userid' => $userId));
+                if ($rdo) {
+                    /* Update   */
+                    $rdo->ressursnr     = $userAccount->ressursnr;
+                    $rdo->industrycode  = $userAccount->industry;
+
+                    /* Execute */
+                    $DB->update_record('user_resource_number',$rdo);
+                }else {
+                    /* Insert   */
+                    $instance = new stdClass();
+                    $instance->userid       = $userId;
+                    $instance->ressursnr    = $userAccount->ressursnr;
+                    $instance->industrycode = $userAccount->industry;
+
+                    /* Execute  */
+                    $DB->insert_record('user_resource_number',$instance);
+                }//if_rdo
+            }//if_resource_number
+
+            /**
              * Add the gender
              */
             if ($userAccount->action != DELETE_ACTION) {
