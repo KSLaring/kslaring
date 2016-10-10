@@ -958,6 +958,7 @@ class WS_FELLESDATA {
                             if (!in_array($userCompetence->jobrole,$myJobRoles)) {
                                 /* Add Job role */
                                 $competenceData->jobroles .= ',' . $userCompetence->jobrole;
+                                $competenceData->editable = 0;
 
                                 /* Execute */
                                 $DB->update_record('user_info_competence_data',$competenceData);
