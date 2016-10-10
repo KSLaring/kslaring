@@ -1286,6 +1286,9 @@ body {
   padding: 0;
   margin: 0 0 10.5px 0;
 }
+.felement label p {
+  display: inline;
+}
 .btn {
   display: inline-block;
   *display: inline;
