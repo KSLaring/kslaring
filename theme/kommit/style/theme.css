@@ -278,7 +278,6 @@ h6 {
 .navbar-fixed-top,
 .navbar-fixed-bottom {
   position: relative;
-  z-index: 0;
 }
 /* @group Navbar */
 .navbar .nav > li > a:hover,
