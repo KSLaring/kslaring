@@ -1323,6 +1323,17 @@ class FSKS_USERS {
 
                         /* Synchronized */
                         $sync = true;
+                    }else {
+                        /* Update   */
+                        $rdoUser->username      = $userFS->personalnumber;
+                        $rdoUser->firstname     = $userFS->firstname;
+                        $rdoUser->lastname      = $userFS->lastname;
+                        $rdoUser->email         = $userFS->email;
+                        $rdoUser->deleted       = 0;
+                        $rdoUser->timemodified  = $time;
+
+                        /* Execute  */
+                        $DB->update_record('user',$rdoUser);
                     }//if_no_exists
 
                     break;
