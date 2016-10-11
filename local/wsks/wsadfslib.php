@@ -50,9 +50,9 @@ class WS_ADFS {
                 /**
                  * Add the gender
                  */
-                if (is_numeric($userADFS['username']) && (strlen($userADFS['username']) == 11)) {
-                    Gender::Add_UserGender($userId,$userADFS['username']);
-                }
+                //if (is_numeric($userADFS['username']) && (strlen($userADFS['username']) == 11)) {
+                //    Gender::Add_UserGender($userId,$userADFS['username']);
+                //}
 
                 $response = self::GenerateResponse($userId,$userADFS['modlnk'],$userADFS['modid']);
             }
