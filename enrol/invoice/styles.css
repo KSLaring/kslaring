@@ -160,7 +160,7 @@ label.invoice_info {
 .block_enrol_invoices .block_invoices  th.seats,
 .block_enrol_invoices .block_invoices  td.seats {
     width: 5%;
-    text-align: left;
+    text-align: center;
     text-justify:inter-word;
     padding: 0px 10px 0px 0px;
 }
@@ -174,4 +174,12 @@ label.invoice_info {
     word-break: break-all;
 }
 
+.link_search {
+    margin-left: 245px;
+}
+.link_search_disabled {
+    pointer-events: none;
+    cursor: default;
+    margin-left: 245px;
+}
 

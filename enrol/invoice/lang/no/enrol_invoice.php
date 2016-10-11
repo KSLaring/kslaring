@@ -127,4 +127,9 @@ $string['rpt_course_info']      = 'Kursinfo';
 $string['rpt_invoices_info']    = 'Brannvernkurs';
 
 $string['rpt_seats'] = 'Forespurte';
-$string['rpt_price'] = 'Pris';
+$string['rpt_price'] = 'Price';
+
+$string['invoice_approval'] = 'Fakturagodkjenner';
+$string['search_approval']  = 'Search approval';
+
+$string['rpt_resource']  = 'Resource';

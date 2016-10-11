@@ -3,7 +3,7 @@
  * Waiting List - Manual submethod load organization
  *
  * @package         enrol/waitinglist
- * @subpackage      yui
+ * @subpackage      invoice
  * @copyright       2013 efaktor    {@link http://www.efaktor.no}
  *
  * @creationDate    17/08/2016
@@ -13,7 +13,7 @@
  */
 define('AJAX_SCRIPT', true);
 
-require('../../config.php');
+require('../../../config.php');
 require_once($CFG->dirroot . '/enrol/invoice/invoicelib.php');
 
 /* PARAMS   */
@@ -25,7 +25,7 @@ $data           = array();
 $infoInvoice    = null;
 
 $context        = context_system::instance();
-$url            = new moodle_url('/enrol/waitinglist/invoicedata.php');
+$url            = new moodle_url('/enrol/waitinglist/invoice/invoicedata.php');
 
 $PAGE->set_context($context);
 $PAGE->set_url($url);
@@ -43,9 +43,15 @@ $infoInvoice = Invoices::GetInvoiceData($two,$three);
 
 if (!$infoInvoice) {
     $infoInvoice = new stdClass();
-    $infoInvoice->tjeneste  = null;
-    $infoInvoice->ansvar    = null;
+    $infoInvoice->tjeneste          = null;
+    $infoInvoice->ansvar            = null;
+    $infoInvoice->resource_number   = null;
 }
+
+if (isset($SESSION->resource_number) && $SESSION->resource_number) {
+    $infoInvoice->resource_number = $SESSION->resource_number;
+}
+unset($SESSION->resource_number);
 
 /* Add Company*/
 $data['invoice'] = $infoInvoice;

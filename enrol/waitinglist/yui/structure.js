@@ -136,7 +136,7 @@ M.core_user.init_structure = function (Y,name,reload,invoice) {
 
             // Cancel any pending timeout.
             this.cancel_timeout();
-
+            
             if (levelThree != 0) {
                 // Try to cancel existing transactions.
                 Y.Object.each(this.iotransactions, function(trans) {
@@ -146,7 +146,7 @@ M.core_user.init_structure = function (Y,name,reload,invoice) {
                 /* Activate Invoice Data Fields */
                 this.ActivateInvoiceData();
 
-                var iotrans = Y.io(M.cfg.wwwroot + '/enrol/waitinglist/invoicedata.php', {
+                var iotrans = Y.io(M.cfg.wwwroot + '/enrol/waitinglist/invoice/invoicedata.php', {
                     method: 'POST',
                     data: 'two=' + levelTwo + '&three' + '=' + levelThree + '&sesskey=' + M.cfg.sesskey,
                     on: {
@@ -154,8 +154,9 @@ M.core_user.init_structure = function (Y,name,reload,invoice) {
                     },
                     context:this
                 });
-                this.iotransactions[iotrans.id] = iotrans;
+                this.iotransactions[iotrans.id] = iotrans;                
             }
+
         },
 
         handle_invoice_response : function(requestid, response) {
@@ -203,7 +204,14 @@ M.core_user.init_structure = function (Y,name,reload,invoice) {
                 }
 
                 /* Address option Not viable */
-                Y.one('#id_invoice_type_ADDRESS').setAttribute('disabled');
+                //Y.one('#id_invoice_type_ADDRESS').setAttribute('disabled');
+
+                /* Resource Number  */
+                if (infoInvoice.resource_number) {
+                    Y.one('#id_resource_number').set('value',infoInvoice.resource_number);
+                }else {
+                    Y.one('#id_resource_number').set('value','');
+                }
             }//for_results
         },
         
@@ -211,10 +219,21 @@ M.core_user.init_structure = function (Y,name,reload,invoice) {
             Y.one('#id_invoice_type_ACCOUNT').set('checked','checked');
             /* Activate Account Invoice     */
             Y.one('#id_resp_number').removeAttribute('disabled');
+            Y.one('#id_resp_number').set('value','');
+
             Y.one('#id_service_number').removeAttribute('disabled');
+            Y.one('#id_service_number').set('value','');
+
             Y.one('#id_project_number').removeAttribute('disabled');
+            Y.one('#id_project_number').set('value','');
+
             Y.one('#id_act_number').removeAttribute('disabled');
+            Y.one('#id_act_number').set('value','');
+            
             Y.one('#id_resource_number').removeAttribute('disabled');
+
+            Y.one('#id_lnk_search').removeClass('link_search_disabled');
+            Y.one('#id_lnk_search').addClass('link_search');
 
             /* Disabled Address Invoice     */
             Y.one('#id_street').setAttribute('disabled');
@@ -238,8 +257,11 @@ M.core_user.init_structure = function (Y,name,reload,invoice) {
             Y.one('#id_act_number').setAttribute('disabled');
             Y.one('#id_act_number').set('value','');
 
-            //Y.one('#id_resource_number').setAttribute('disabled');
-            //Y.one('#id_resource_number').set('value','');
+            Y.one('#id_resource_number').setAttribute('disabled');
+            Y.one('#id_resource_number').set('value','');
+
+            Y.one('#id_lnk_search').removeClass('link_search');
+            Y.one('#id_lnk_search').addClass('link_search_disabled');
         },
 
         /**
@@ -372,10 +394,10 @@ M.core_user.init_structure = function (Y,name,reload,invoice) {
         },
 
         cleanCookies : function () {
-            document.cookie = "level_0" + "=0";
-            document.cookie = "level_1" + "=0";
-            document.cookie = "level_2" + "=0";
-            document.cookie = "level_3" + "=0";
+            document.cookie = "level_0"   + "=0";
+            document.cookie = "level_1"   + "=0";
+            document.cookie = "level_2"   + "=0";
+            document.cookie = "level_3"   + "=0";
         }
     };
 

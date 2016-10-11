@@ -133,3 +133,7 @@ $string['rpt_invoices_info']    = 'Invoices Info';
 
 $string['rpt_seats'] = 'Seats';
 $string['rpt_price'] = 'Price';
+$string['invoice_approval'] = 'Invoice approval';
+$string['search_approval']  = 'Search approval';
+
+$string['rpt_resource']     = 'Resource';

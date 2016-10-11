@@ -19,9 +19,9 @@ function xmldb_enrol_invoice_upgrade($old_version) {
     /* Variable to manage DB */
     global $DB;
     $db_man = $DB->get_manager();
-
-    $table_invoice = new xmldb_table('enrol_invoice');
-
+    $table_invoice      = new xmldb_table('enrol_invoice');
+    $fldResourceNumber  = null;
+    
     if ($old_version < 2014092518) {
         /* New Fields  -- Account Invoice             */
         /* Responsibility Number    */
@@ -82,11 +82,26 @@ function xmldb_enrol_invoice_upgrade($old_version) {
      * Add waitinglistid
      */
     if ($old_version < 2015281000) {
-        $fieldWait       = new xmldb_field('waitinglistid', XMLDB_TYPE_INTEGER,'10',null, null, null,null,'userenrolid');
+        $fieldWait       = new xmldb_field('waitinglistid', XMLDB_TYPE_INTEGER,'10',null, null, null,null,'actnumber');
         if (!$db_man->field_exists($table_invoice, $fieldWait)) {
             $db_man->add_field($table_invoice, $fieldWait);
         }//field_bil
     }//if_old_version
 
+    /**
+     * @updateDate  27/09/2016
+     * @author      eFaktor     (fbv)
+     * 
+     * Description
+     * Add extra field to enrol_invoice. resource number
+     */
+    if ($old_version < 2016092700) {
+        /* New Field */
+        $fldResourceNumber = new xmldb_field('ressursnr', XMLDB_TYPE_CHAR, '50',null,null,null,null, 'actnumber');
+        if (!$db_man->field_exists($table_invoice, $fldResourceNumber)) {
+            $db_man->add_field($table_invoice, $fldResourceNumber);
+        }//if_not_exists
+    }
+    
     return true;
 }//xmldb_enrol_invoice_upgrade

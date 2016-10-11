@@ -50,20 +50,12 @@ class WS_ADFS {
                 /**
                  * Add the gender
                  */
-                /* Log  */
-                $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' START GENDER . ' . "\n";
+                if (!Gender::ExistGenderUser($userId)) {
+                    if (is_numeric($userADFS['username']) && (strlen($userADFS['username']) == 11)) {
 
-
-                if (is_numeric($userADFS['username']) && (strlen($userADFS['username']) == 11)) {
-                        //$fieldId    = Gender::ExistGenderProfile();
-                        //$gender     = Gender::GetGender_ByUser($userId,$fieldId);
-
-                        //if (($gender->data != MAN) && ($gender->data != WOMAN))  {
-                            Gender::Add_UserGender($userId,$userADFS['username']);
-                        //}
-                }
-                error_log($dbLog, 3, $CFG->dataroot . "/gender.log");
-
+                        Gender::Add_UserGender($userId,$userADFS['username']);
+                    }
+                }//if_gender
                 $response = self::GenerateResponse($userId,$userADFS['modlnk'],$userADFS['modid']);
             }
 

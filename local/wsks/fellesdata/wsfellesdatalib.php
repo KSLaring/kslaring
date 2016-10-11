@@ -1125,7 +1125,7 @@ class WS_FELLESDATA {
                         $DB->update_record('user',$rdoUser);
                     }else {
                         /* Execute  */
-                        $infoUser->deleted      = 1;
+                        $infoUser->deleted  = 1;
                         $userId             = $DB->insert_record('user',$infoUser);
                     }//if_infoUsers
 
@@ -1166,7 +1166,11 @@ class WS_FELLESDATA {
              * Add the gender
              */
             if ($userAccount->action != DELETE_ACTION) {
-                //Gender::Add_UserGender($userId,$userAccount->personalnumber);
+                if (!Gender::ExistGenderUser($userId)) {
+                    if (is_numeric($userAccount->personalnumber) && ($userAccount->personalnumber) == 11) {
+                        Gender::Add_UserGender($userId,$userAccount->personalnumber);
+                    }
+                }//if_gender
             }
 
             /* Commit */
@@ -1494,7 +1498,7 @@ class WS_FELLESDATA {
 
             /* Commit */
             $trans->allow_commit();
-
+            
             return $companyId;
         }catch (Exception $ex) {
             /* Rollback */
