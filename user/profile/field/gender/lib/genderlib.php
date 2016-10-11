@@ -48,6 +48,10 @@ class Gender {
         }//try_catch
     }//ExistGenderProfile
 
+    //public static function ExistGenderUser($userId) {
+        
+    //}//ExistGenderUser
+    
     /**
      * @throws          Exception
      *
@@ -291,23 +295,31 @@ class Gender {
      */
     private static function UpdateGender($user) {
         /* Variables */
-        global $DB;
+        global $DB,$CFG;
         $rdo    = null;
         $gender = null;
         $key    = null;
 
         try {
+            $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' START UPDATE GENDER . ' . "\n";
+
             /* Check if already exists an entrance  */
             $rdo = $DB->get_record('user_info_data',array('userid' => $user->userid,'fieldid' => $user->fieldid));
             if ($rdo) {
+                $dbLog .= "1" . "\n";
+
                 /* Update   */
                 $rdo->data = $user->data;
                 $DB->update_record('user_info_data',$rdo);
             }else {
+                $dbLog .= "2" . "\n";
+
                 /* Insert   */
                 $DB->insert_record('user_info_data',$user);
             }//if_rdo
         }catch (Exception $ex) {
+            $dbLog = " ERROR: " . $ex->getTraceAsString() . "\n";
+            error_log($dbLog, 3, $CFG->dataroot . "/gender.log");
             throw $ex;
         }//try_catch
     }//UpdateGender
