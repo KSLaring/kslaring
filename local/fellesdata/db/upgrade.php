@@ -430,13 +430,58 @@ class Fellesdata_Update {
             }
             
             /* Extra field to fs_imp_users table */
-            $tblImpUsers = new xmldb_table('fs_imp_users');
-            $fldResource = new xmldb_field('ressursnr', XMLDB_TYPE_CHAR, '50',null,XMLDB_NOTNULL,null,null, 'fodselsnr');
-            if (!$dbMan->field_exists($tblImpUsers, $fldResource)) {
-                $dbMan->add_field($tblImpUsers, $fldResource);
-            }//if_not_exists
+            if (!$dbMan->table_exists('fs_imp_users')) {
+                self::ImpUsers_FSTable($dbMan);
+            }else {
+                $tblImpUsers = new xmldb_table('fs_imp_users');
+                $fldResource = new xmldb_field('ressursnr', XMLDB_TYPE_CHAR, '50',null,XMLDB_NOTNULL,null,null, 'fodselsnr');
+                if (!$dbMan->field_exists($tblImpUsers, $fldResource)) {
+                    $dbMan->add_field($tblImpUsers, $fldResource);
+                }//if_not_exists                
+            }
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
     }//ResourceNumber
+
+    private static function ImpUsers_FSTable($dbMan) {
+        /* Variables */
+        $tblImpUsers = null;
+
+        try {
+            /* mdl_fs_imp_users             */
+            $tblImpUsers = new xmldb_table('fs_imp_users');
+
+            /* Fields */
+            /* Id --> Primary key                   */
+            $tblImpUsers->add_field('id',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, XMLDB_SEQUENCE,null);
+            /* personalnumber --> Personal number   */
+            $tblImpUsers->add_field('fodselsnr',XMLDB_TYPE_CHAR,'50',null, XMLDB_NOTNULL, null,null);
+            /* REsource number  */
+            $tblImpUsers->add_field('ressursnr',XMLDB_TYPE_CHAR,'50',null, XMLDB_NOTNULL, null,null);
+            /* firstname    --> First name          */
+            $tblImpUsers->add_field('fornavn',XMLDB_TYPE_CHAR,'255',null, XMLDB_NOTNULL, null,null);
+            /* lastname     --> lastname            */
+            $tblImpUsers->add_field('mellomnavn',XMLDB_TYPE_CHAR,'255',null, null, null,null);
+            /* lastname     --> lastname            */
+            $tblImpUsers->add_field('etternavn',XMLDB_TYPE_CHAR,'255',null, XMLDB_NOTNULL, null,null);
+            /* eMail        --> eMail               */
+            $tblImpUsers->add_field('epost',XMLDB_TYPE_CHAR,'255',null, XMLDB_NOTNULL, null,null);
+            /* action   --> Action to apply         */
+            $tblImpUsers->add_field('action',XMLDB_TYPE_CHAR,'50',null, XMLDB_NOTNULL, null,null);
+            /* Imported                             */
+            $tblImpUsers->add_field('imported',XMLDB_TYPE_INTEGER,'2',null, XMLDB_NOTNULL, null,null);
+
+            /* Keys     */
+            $tblImpUsers->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+            /* Index    */
+            $tblImpUsers->add_index('fodselsnr',XMLDB_INDEX_NOTUNIQUE,array('fodselsnr'));
+
+            if (!$dbMan->table_exists('fs_imp_users')) {
+                $dbMan->create_table($tblImpUsers);
+            }//if_exists
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//ImpUsers_FSTable
 }//Fellesdata_Update

@@ -418,9 +418,11 @@ class FSKS_COMPANY {
             $companiesFS = self::GetCompaniesFS_ToSynchronizeFS();
 
             /* Synchronize /update  FS Company  */
-            foreach ($companiesFS as $company) {
-                self::SynchronizeCompanyFs($company);
-            }//for_company
+            if ($companiesFS) {
+                foreach ($companiesFS as $company) {
+                    self::SynchronizeCompanyFs($company);
+                }//for_company
+            }
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
@@ -640,7 +642,6 @@ class FSKS_COMPANY {
                               fs.poststed,
                               fs.epost,
                               fs.action
-
                      FROM	    {fs_imp_company}	fs
                      WHERE	fs.action 	 != :add
                         AND	fs.imported  = :imported ";
@@ -718,7 +719,7 @@ class FSKS_COMPANY {
                      LIMIT 0,5 ";
 
             /* Execute  */
-            $rdo = $DB->get_records_sql($sql);
+            $rdo = $DB->get_records_sql($sql,$params);
             if ($rdo) {
                 foreach ($rdo as $instance) {
                     $companiesFS[$instance->id] = $instance->org_navn;
@@ -917,7 +918,7 @@ class FSKS_COMPANY {
             /* Get Info Company */
             $params = array();
             $params['companyid'] = $companyFS->fscompany;
-            $rdoCompany  = $DB->get_record('fs_company',$params);
+            $rdoCompany          = $DB->get_record('fs_company',$params);
 
             /* Apply Action */
             switch ($companyFS->action) {
@@ -1329,6 +1330,17 @@ class FSKS_USERS {
 
                         /* Synchronized */
                         $sync = true;
+                    }else {
+                        /* Update   */
+                        $rdoUser->username      = $userFS->personalnumber;
+                        $rdoUser->firstname     = $userFS->firstname;
+                        $rdoUser->lastname      = $userFS->lastname;
+                        $rdoUser->email         = $userFS->email;
+                        $rdoUser->deleted       = 0;
+                        $rdoUser->timemodified  = $time;
+
+                        /* Execute  */
+                        $DB->update_record('user',$rdoUser);
                     }//if_no_exists
 
                     break;
@@ -1340,6 +1352,7 @@ class FSKS_USERS {
                         $rdoUser->firstname    = $userFS->firstname;
                         $rdoUser->lastname     = $userFS->lastname;
                         $rdoUser->email        = $userFS->email;
+                        $rdoUser->deleted       = 0;
                         $rdoUser->timemodified = $time;
 
                         /* Execute  */
@@ -1939,10 +1952,10 @@ class FS {
                 if (!$rdo) {
                     $DB->insert_record('fs_imp_users',$infoUser);
                 }else {
-                    if ($infoUser->action != ADD) {
+                    //if ($infoUser->action != ADD) {
                         $infoUser->id       = $rdo->id;
                         $DB->update_record('fs_imp_users',$infoUser);
-                    }
+                    //}
                 }//if_rdo
             }//ofr_each
 
@@ -1984,10 +1997,10 @@ class FS {
                 if (!$rdo) {
                     $DB->insert_record('fs_imp_company',$infoFS);
                 }else {
-                    if ($infoFS->action != ADD) {
+                    //if ($infoFS->action != ADD) {
                         $infoFS->id         = $rdo->id;
                         $DB->update_record('fs_imp_company',$infoFS);
-                    }
+                    //}
                 }//if_rdo
             }//for_each
 
@@ -2029,10 +2042,10 @@ class FS {
                 if (!$rdo) {
                     $DB->insert_record('fs_imp_jobroles',$infoFS);
                 }else {
-                    if ($infoFS->action != ADD) {
+                    //if ($infoFS->action != ADD) {
                         $infoFS->id         = $rdo->id;
                         $DB->update_record('fs_imp_jobroles',$infoFS);
-                    }
+                    //}
                 }//if_rdo
             }//for_each
 
@@ -2079,10 +2092,10 @@ class FS {
                 if (!$rdo) {
                     $DB->insert_record('fs_imp_managers_reporters',$info);
                 }else {
-                    if ($info->action != ADD) {
+                    //if ($info->action != ADD) {
                         $info->id       = $rdo->id;
                         $DB->update_record('fs_imp_managers_reporters',$info);
-                    }
+                    //}
                 }//if_rdo
             }
 
