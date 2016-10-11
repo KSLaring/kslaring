@@ -49,6 +49,54 @@ class Gender {
     }//ExistGenderProfile
 
     /**
+     * @param           $userId
+     *
+     * @return          bool
+     * @throws          Exception
+     *
+     * @creationDate    11/10/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Check if the gender for the user already exist
+     */
+    public static function ExistGenderUser($userId) {
+        /* Variables    */
+        global $DB;
+        $params = null;
+        $sql    = null;
+        $rdo    = null;
+
+        try {
+            /* Search Criteria  */
+            $params = array();
+            $params['user']     = $userId;
+            $params['type']     = 'gender';
+            $params['man']      = MAN;
+            $params['woman']    = WOMAN;
+
+            /* SQL Instruction */
+            $sql = " SELECT	  uid.id
+                     FROM	  {user_info_data}	uid
+                        JOIN  {user_info_field}	uif	  ON  uif.id        = uid.fieldid	
+                                                      AND uif.datatype  = :type
+                     WHERE	uid.userid = :user
+                        AND	uid.data != :man 
+                        AND uid.data != :woman ";
+            
+            /* Execute */
+            $rdo =$DB->get_record_sql($sql,$params);
+            if ($rdo) {
+                return true;
+            }else {
+                return false;
+            }//if_rdo
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//ExistGenderUser
+    
+    /**
      * @throws          Exception
      *
      * @creationDate    04/1072016
@@ -145,6 +193,18 @@ class Gender {
         }//try_catch
     }//AddGender_ToUsers
 
+    /**
+     * @param           $userId
+     * @param           $idNumber
+     *
+     * @throws          Exception
+     *
+     * @creationDate    04/10/2016
+     * @author          efaktor     (fbv)
+     *
+     * Description
+     * Add gender to the user
+     */
     public static function Add_UserGender($userId,$idNumber) {
         /* Variables    */
         global $DB;
@@ -163,7 +223,7 @@ class Gender {
                 /* Gender Info  */
                 $gender = new stdClass();
                 $gender->userid     = $userId;
-                $gender->fieldid    = $rdo->fieldid;
+                $gender->fieldid    = $rdo->id;
 
                 /* Calculate Gender */
                 $remainder      = ($position % 2);
@@ -182,7 +242,7 @@ class Gender {
      * @param           $fieldId
      *
      * @return          mixed|null
-     * @throws           Exception
+     * @throws          Exception
      *
      * @creationDate    04/10/2016
      * @author          eFaktor     (fbv)
@@ -244,10 +304,10 @@ class Gender {
         try {
             /* Search Criteria  */
             $params = array();
-            $params['field'] = $fieldId;
-            $params['term']  = "^-?[0-9]+$";
-            $params['term1']  = "^-?[0-9]+$";
-            $REGEXP          = $DB->sql_regex(true);
+            $params['field']    = $fieldId;
+            $params['term']     = "^-?[0-9]+$";
+            $params['term1']    = "^-?[0-9]+$";
+            $REGEXP             = $DB->sql_regex(true);
 
             /* SQL Instruction  */
             $sql = " SELECT	u.id,
@@ -293,8 +353,6 @@ class Gender {
         /* Variables */
         global $DB;
         $rdo    = null;
-        $gender = null;
-        $key    = null;
 
         try {
             /* Check if already exists an entrance  */

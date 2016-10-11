@@ -93,6 +93,11 @@ class WS_DOSKOM {
                     $user_id = self::createUser($userSSO,$result);
                 }//if_user_exist
 
+                /* Add Gender   */
+                if (is_numeric($userSSO['ssn']) && ($userSSO['ssn']) == 11) {
+                    Gender::Add_UserGender($user_id,$userSSO['ssn']);
+                }
+
                 /* Assign Rol   */
                 self::assignRol($user_id,$userSSO['UserRoles'],$result);
 

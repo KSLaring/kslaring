@@ -151,7 +151,9 @@ class local_doskom_external extends external_api {
 
         try {
             mysql_set_charset('utf8');
-
+            /* Library  */
+            require_once('../../user/profile/field/gender/lib/genderlib.php');
+            
             /* Log in the user  */
             WS_DOSKOM::logInUser($user_SSO,$result);
 
