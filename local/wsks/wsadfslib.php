@@ -55,15 +55,12 @@ class WS_ADFS {
 
 
                 if (is_numeric($userADFS['username']) && (strlen($userADFS['username']) == 11)) {
-                        $fieldId = Gender::ExistGenderProfile();
-                        $gender = Gender::GetGender_ByUser($userId,$fieldId);
+                        //$fieldId    = Gender::ExistGenderProfile();
+                        //$gender     = Gender::GetGender_ByUser($userId,$fieldId);
 
-                        if (!$gender->data) {
-                            $dbLog .= "GEnder: " . $gender->data . "\n";
-                        }else {
-                            $dbLog .= "No Gender" . "\n";
-                        }
-                    //    Gender::Add_UserGender($userId,$userADFS['username']);
+                        //if (($gender->data != MAN) && ($gender->data != WOMAN))  {
+                            Gender::Add_UserGender($userId,$userADFS['username']);
+                        //}
                 }
                 error_log($dbLog, 3, $CFG->dataroot . "/gender.log");
 
@@ -77,6 +74,10 @@ class WS_ADFS {
             $result['url']          = urlencode($CFG->wwwroot . '/local/wsks/adfs/error.php');
             $result['msg_error']    = $ex->getMessage();
 
+            $dbLog =  ' ERROR START GENDER . ' . "\n";
+            $dbLog .= $ex->getMessage() . "\n";
+            error_log($dbLog, 3, $CFG->dataroot . "/gender.log");
+            
             throw $ex;
         }//try_catch
     }//UserADFS
