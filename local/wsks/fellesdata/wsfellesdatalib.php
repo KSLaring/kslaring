@@ -1166,11 +1166,9 @@ class WS_FELLESDATA {
              * Add the gender
              */
             if ($userAccount->action != DELETE_ACTION) {
-                if (!Gender::ExistGenderUser($userId)) {
-                    if (is_numeric($userAccount->personalnumber) && ($userAccount->personalnumber) == 11) {
-                        Gender::Add_UserGender($userId,$userAccount->personalnumber);
-                    }
-                }//if_gender
+                if (is_numeric($userAccount->personalnumber) && ($userAccount->personalnumber) == 11) {
+                    Gender::Add_UserGender($userId,$userAccount->personalnumber);
+                }
             }
 
             /* Commit */
