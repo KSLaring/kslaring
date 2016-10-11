@@ -283,7 +283,7 @@ class Gender {
     }//GetUsers_ToUpdate
 
     /**
-     * @param           $user
+     * @param           $gender
      *
      * @throws          Exception
      *
@@ -293,7 +293,7 @@ class Gender {
      * Description
      * Add the gender to the users
      */
-    private static function UpdateGender($user) {
+    private static function UpdateGender($gender) {
         /* Variables */
         global $DB,$CFG;
         $rdo    = null;
@@ -304,21 +304,31 @@ class Gender {
             $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' START UPDATE GENDER . ' . "\n";
 
             /* Check if already exists an entrance  */
-            $rdo = $DB->get_record('user_info_data',array('userid' => $user->userid,'fieldid' => $user->fieldid));
+            $rdo = $DB->get_record('user_info_data',array('userid' => $gender->userid,'fieldid' => $gender->fieldid));
             if ($rdo) {
                 $dbLog .= "1" . "\n";
 
                 /* Update   */
-                $rdo->data = $user->data;
+                $rdo->data = $gender->data;
                 $DB->update_record('user_info_data',$rdo);
             }else {
                 $dbLog .= "2" . "\n";
+                $dbLog .= "User:    " . $gender->userid . "\n";
+                $dbLog .= "Data:    " . $gender->data . "\n";
+                $dbLog .= "FIELD:   " . $gender->fieldid . "\n";
 
+                error_log($dbLog, 3, $CFG->dataroot . "/gender.log");
                 /* Insert   */
-                $DB->insert_record('user_info_data',$user);
+                $DB->insert_record('user_info_data',$gender);
             }//if_rdo
         }catch (Exception $ex) {
+
+
             $dbLog = " ERROR: " . $ex->getTraceAsString() . "\n";
+            $dbLog .= "User:    " . $gender->userid . "\n";
+            $dbLog .= "Data:    " . $gender->data . "\n";
+            $dbLog .= "FIELD:   " . $gender->fieldid . "\n";
+            
             error_log($dbLog, 3, $CFG->dataroot . "/gender.log");
             throw $ex;
         }//try_catch
