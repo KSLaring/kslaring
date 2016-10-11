@@ -221,10 +221,9 @@ define('SAML_INTERNAL', 1);
          */
         if (is_numeric($USER->username) && (strlen($USER->username) == 11)) {
             /* Library  */
-            //require_once('../../user/profile/field/gender/lib/genderlib.php');
+            require_once('../../user/profile/field/gender/lib/genderlib.php');
 
-            /* Add Gender*/
-            //Gender::Add_UserGender($USER->id,$USER->username);
+            Gender::Add_UserGender($USER->id,$USER->username);
         }
 
         /**
@@ -257,7 +256,7 @@ define('SAML_INTERNAL', 1);
             }else {
                 // test the session actually works by redirecting to self
                 $SESSION->wantsurl = $urltogo;
-        redirect($urltogo);
+                redirect($urltogo);
             }//if_else_UpdateProfile
         }//if_first_access
     }
