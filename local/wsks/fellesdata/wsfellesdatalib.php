@@ -1166,7 +1166,7 @@ class WS_FELLESDATA {
              * Add the gender
              */
             if ($userAccount->action != DELETE_ACTION) {
-                Gender::Add_UserGender($userId,$userAccount->personalnumber);
+                //Gender::Add_UserGender($userId,$userAccount->personalnumber);
             }
 
             /* Commit */
