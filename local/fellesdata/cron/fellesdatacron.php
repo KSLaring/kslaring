@@ -42,6 +42,7 @@ class FELLESDATA_CRON {
 
 
         try {
+
             /* Log  */
             $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' START FELLESDATA CRON . ' . "\n";
             error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
@@ -376,7 +377,7 @@ class FELLESDATA_CRON {
             return $response;
         }catch (Exception $ex) {
             /* Log Error    */
-            $dbLog = "ERROR: " . $ex->getMessage() . "\n\n";
+            $dbLog = "ERROR: " . $ex->getMessage() .  "\n\n";
             $dbLog .= $ex->getTraceAsString() . "\n\n";
             $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' Error calling web service . ' . "\n";
             error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
@@ -763,20 +764,42 @@ class FELLESDATA_CRON {
      *
      * Description
      * Synchronization of users accounts between KS and FS
+     *
+     * @updateDate      23/09/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Add resource number 
      */
     private static function UsersFS_Synchronization($pluginInfo) {
         /* Variables    */
-        global $DB,$CFG;
-        $rdo        = null;
-        $usersFS    = array();
-        $infoUser   = null;
-        $response   = null;
-        $dbLog      = null;
+        global $DB,$CFG,$SESSION;
+        $rdo            = null;
+        $usersFS        = array();
+        $infoUser       = null;
+        $response       = null;
+        $dbLog          = null;
+        $rdoIC          = null;
+        $industryCode   = null;
+        $params         = null;
 
         try {
             /* Get user to synchronize  */
-            mtrace('LIMIT 0,2000');
             $rdo = $DB->get_records('fs_imp_users',array('imported' => '0'),'','*');
+
+            /* Get Industry Code    */
+            if ($pluginInfo->ks_muni) {
+                $params = array();
+                $params['name']             = $pluginInfo->ks_muni;
+                $params['hierarchylevel']   = 1;
+                $rdoIC = $DB->get_record('ks_company',$params,'industrycode');
+
+                if ($rdoIC) {
+                    $industryCode = $rdoIC->industrycode;
+                }
+            }else {
+                $industryCode = 0;
+            }//if_muni
 
             /* Log  */
             $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' START Synchronization Users Accoutns . ' . "\n";
@@ -788,6 +811,8 @@ class FELLESDATA_CRON {
                     /* Users account info   */
                     $infoUser = new stdClass();
                     $infoUser->personalnumber   = $instance->fodselsnr;
+                    $infoUser->ressursnr        = $instance->ressursnr;
+                    $infoUser->industry         = $industryCode;
                     $infoUser->firstname        = $instance->fornavn;
                     $infoUser->lastname         = $instance->mellomnavn . ' ' . $instance->etternavn;
                     $infoUser->email            = $instance->epost;
@@ -799,6 +824,7 @@ class FELLESDATA_CRON {
 
                 /* Call Web Service */
                 $response = self::ProcessKSService($pluginInfo,KS_SYNC_USER_ACCOUNT,$usersFS);
+                
                 if ($response['error'] == '200') {
                     /* Synchronize Users Accounts FS    */
                     FSKS_USERS::Synchronize_UsersFS($usersFS,$response['usersAccounts']);

@@ -1269,6 +1269,12 @@ class FSKS_USERS {
      *
      * Description
      * Synchronize user account ino FS.
+     *
+     * @updateDate      23/09/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Add resource number
      */
     private static function SynchronizeUserFS($userFS,$fsKey) {
         /* Variables    */
@@ -1341,12 +1347,12 @@ class FSKS_USERS {
                     /* Check if exists  */
                     if ($rdoUser) {
                         /* Update   */
-                        $rdoUser->username      = $userFS->personalnumber;
-                        $rdoUser->firstname     = $userFS->firstname;
-                        $rdoUser->lastname      = $userFS->lastname;
-                        $rdoUser->email         = $userFS->email;
+                        $rdoUser->username     = $userFS->personalnumber;
+                        $rdoUser->firstname    = $userFS->firstname;
+                        $rdoUser->lastname     = $userFS->lastname;
+                        $rdoUser->email        = $userFS->email;
                         $rdoUser->deleted       = 0;
-                        $rdoUser->timemodified  = $time;
+                        $rdoUser->timemodified = $time;
 
                         /* Execute  */
                         $DB->update_record('user',$rdoUser);
@@ -1387,6 +1393,33 @@ class FSKS_USERS {
 
                 $DB->update_record('fs_imp_users',$instance);
             }//if_sync
+
+            /**
+             * Create the connection between user and his/her resource number
+             */
+            /*
+             * First. Check if already exist an entry for this user.
+             */
+            if ($userFS->ressursnr) {
+                $rdo = $DB->get_record('user_resource_number',array('userid' => $userId));
+               if ($rdo) {
+                   /* Update   */
+                   $rdo->ressursnr      = $userFS->ressursnr;
+                   $rdo->industrycode   = $userFS->industry;
+
+                   /* Execute */
+                   $DB->update_record('user_resource_number',$rdo);
+               }else {
+                   /* Insert   */
+                   $instance = new stdClass();
+                   $instance->userid        = $userId;
+                   $instance->ressursnr     = $userFS->ressursnr;
+                   $instance->industrycode  = $userFS->industry;
+                    
+                   /* Execute  */
+                   $DB->insert_record('user_resource_number',$instance);
+               }//if_rdo
+            }//if_resource_number
 
             /* Commit   */
             $trans->allow_commit();
