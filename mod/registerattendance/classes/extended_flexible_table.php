@@ -14,16 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-//namespace mod_registerattendance;
-
 defined('MOODLE_INTERNAL') || die;
 
-//use renderable;
-//use renderer_base;
-//use stdClass;
-
-/* Add reference */
-//global $CFG;
 require_once($CFG->libdir . '/tablelib.php');
 
 /**
@@ -36,29 +28,16 @@ require_once($CFG->libdir . '/tablelib.php');
  * @license         http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class mod_registerattendance_extended_flexible_table extends flexible_table {
-
-    /**
-     * Construct the bulkregister page selector.
-     *
-     * @param string $uniqueid
-     *
-     * @throws Exception
-     */
-    public function __construct($uniqueid) {
-        parent::__construct($uniqueid);
-    }
-
-    /* - - - - - - - - - overridden methods - - - - - - - - - */
-
     /**
      * This function is not part of the public api.
+     * This method is overridden.
      *
      * Place the download menu below the paging bar.
      */
-    function finish_html() {
+    public function finish_html() {
         global $OUTPUT;
         if (!$this->started_output) {
-            //no data has been added to the table.
+            // No data has been added to the table.
             $this->print_nothing_to_display();
 
         } else {
@@ -75,7 +54,7 @@ class mod_registerattendance_extended_flexible_table extends flexible_table {
             echo html_writer::end_tag('div');
             $this->wrap_html_finish();
 
-            // Paging bar
+            // Paging bar.
             if ($this->use_pages) {
                 $pagingbar = new paging_bar($this->totalrows, $this->currpage, $this->pagesize, $this->baseurl);
                 $pagingbar->pagevar = $this->request[TABLE_VAR_PAGE];
@@ -91,10 +70,9 @@ class mod_registerattendance_extended_flexible_table extends flexible_table {
         }
     }
 
-    /* - - - - - - - - - new methods - - - - - - - - - */
-
     /**
      * Add the buttons for bulk registering.
+     * This is a new method.
      */
     protected function register_buttons() {
         $out = '';

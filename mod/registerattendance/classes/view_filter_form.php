@@ -41,7 +41,11 @@ class mod_registerattendance_view_filter_form extends \moodleform {
         $mform->addElement('hidden', 'id', $customdata['id']);
         $mform->setType('id', PARAM_INT);
 
-        // The first form row
+        // Filter.
+        $mform->addElement('header', 'filterhdr', get_string('filterhdr', 'mod_registerattendance'));
+        $mform->setExpanded('filterhdr', false);
+
+        // The first form row.
         $elementgroup = array();
         $elementgroup[] = $mform->createElement('radio', 'showattended', '',
             get_string('showattended_all', 'mod_registerattendance'), SHOW_ATTENDED_ALL);
@@ -54,7 +58,7 @@ class mod_registerattendance_view_filter_form extends \moodleform {
         $mform->addGroup($elementgroup, 'showattendedarr', '', '<span class="group-spacer"> </span>', false);
 
 
-        // The second form row
+        // The second form row.
         $elementgroup = array();
         $attributes = array(
             'placeholder' => get_string('searchnameshort', 'mod_registerattendance'),
@@ -73,7 +77,7 @@ class mod_registerattendance_view_filter_form extends \moodleform {
         $mform->addGroup($elementgroup, 'selectrowtwo', '', '<span class="group-spacer"> </span>', false);
 
 
-        // The third form row
+        // The third form row.
         $elementgroup = array();
         $attributes = array(
             'size' => 5
@@ -90,11 +94,10 @@ class mod_registerattendance_view_filter_form extends \moodleform {
 
         $mform->addGroup($elementgroup, 'selectrowthree', '', '<span class="group-spacer"> </span>', false);
 
-        $buttonarray=array();
+        $buttonarray = array();
         $buttonarray[] = $mform->createElement('submit', 'submitbutton', get_string('addfilter', 'mod_registerattendance'));
         //$buttonarray[] = $mform->createElement('reset', 'resetbutton', get_string('revert'));
         $mform->addGroup($buttonarray, 'buttonar', '', '<span class="group-spacer"> </span>', false);
-        $mform->closeHeaderBefore('buttonar');
     }
 
     /**

@@ -14,13 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-//namespace mod_registerattendance;
-
 defined('MOODLE_INTERNAL') || die;
-
-//use renderable;
-//use renderer_base;
-//use stdClass;
 
 /**
  * Class containing data for the mod_registerattendance base page class
@@ -33,17 +27,17 @@ defined('MOODLE_INTERNAL') || die;
  */
 abstract class mod_registerattendance_widget implements renderable {
 
-    // The page data
+    /* @var object $data The page data. */
     protected $data = null;
 
-    // The registerattencance object
+    /* @var object $registerattendance The registerattencance object. */
     protected $registerattendance = null;
 
     /**
      * Construct the widget renderable.
      */
     public function __construct() {
-        // Create the data object and set the first values
+        // Create the data object and set the first values.
         $data = new stdClass();
 
         $this->data = $data;
@@ -60,7 +54,7 @@ abstract class mod_registerattendance_widget implements renderable {
      * Data setter
      */
     protected function set_data($key, $value) {
-        $this->data->$key = $value;
+        $this->$key = $value;
     }
 
     /**

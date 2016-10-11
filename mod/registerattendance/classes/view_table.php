@@ -14,13 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-//namespace mod_registerattendance;
-
 defined('MOODLE_INTERNAL') || die;
-
-//use renderable;
-//use renderer_base;
-//use stdClass;
 
 /**
  * Class containing data for the mod_registerattendance view page table
@@ -36,7 +30,6 @@ class mod_registerattendance_view_table extends mod_registerattendance_widget im
     protected $registerattendance = null;
 
     /** @var array The fecxitable column names. */
-    //protected $colnames = array('firstname', 'lastname', 'municipality', 'workplace', 'attended');
     protected $colnames = array('fullname', 'municipality', 'workplace', 'attended');
 
     /** @var object The course module object. */
@@ -52,7 +45,7 @@ class mod_registerattendance_view_table extends mod_registerattendance_widget im
     public $download = '';
 
     /** @var object The SQL model. */
-    protected $sql_model = null;
+    protected $sqlmodel = null;
 
     /**
      * Construct the view page table.
@@ -73,7 +66,7 @@ class mod_registerattendance_view_table extends mod_registerattendance_widget im
         // If excel download use »excel« as parameter.
         $this->download = optional_param('download', $this->download, PARAM_ALPHA);
 
-        // Create the table column titles
+        // Create the table column titles.
         foreach ($this->colnames as $name) {
             $this->colheaders[] = get_string('view_' . $name, 'mod_registerattendance');
         }
@@ -89,13 +82,10 @@ class mod_registerattendance_view_table extends mod_registerattendance_widget im
         global $CFG;
         $out = '';
         $table = null;
-        $tableModel = null;
+        $tablemodel = null;
         $result = null;
 
-        /* Add reference */
-        //require_once($CFG->libdir . '/tablelib.php');
-
-        /* Create table */
+        // Create the table.
         $table = new mod_registerattendance_extended_flexible_table('attendancelist');
 
         $table->define_columns($this->colnames);
@@ -108,7 +98,8 @@ class mod_registerattendance_view_table extends mod_registerattendance_widget im
         $table->column_class('attended', 'attended');
 
         $table->sortable(true, 'lastname', SORT_ASC);
-        $table->no_sorting('attended');
+        $table->maxsortkeys = 1;
+        //$table->no_sorting('attended');
         $table->collapsible(false);
 
         $table->defaultdownloadformat = 'excel';
@@ -129,12 +120,7 @@ class mod_registerattendance_view_table extends mod_registerattendance_widget im
 
         $table->setup();
 
-
-        if ($table->get_sql_sort()) {
-            $sort = $table->get_sql_sort();
-        } else {
-            $sort = $table->get_sql_sort('lastname');
-        }
+        $sort = $table->get_sql_sort();
 
         // Either filter by given search name when set or by the alphabetical filter, don't filter with both.
         if (!empty($this->filterdata['searchname'])) {
@@ -156,7 +142,7 @@ class mod_registerattendance_view_table extends mod_registerattendance_widget im
             $firstrow = $table->get_page_start();
         }
 
-        $table_model = new mod_registerattendance_view_table_sql_model(
+        $tablemodel = new mod_registerattendance_view_table_sql_model(
             $this->filterdata,
             $sort,
             $where,
@@ -165,12 +151,18 @@ class mod_registerattendance_view_table extends mod_registerattendance_widget im
             $maxperpage,
             $this->cm);
 
-        $this->sql_model = $table_model;
+        $this->sql_model = $tablemodel;
 
         // Get and process the data.
-        if ($result = $table_model->data) {
+        if ($result = $tablemodel->data) {
             // Add the fullname needed for the flexitable alphabetic name filter.
             $result = $this->add_fullname($result);
+
+            // Sort the table data by »attended« if the user has chosen to sort by »attended«.
+            if (strpos($sort, 'attended') !== false) {
+                $sortcolumns = $table->get_sort_columns();
+                $result = $this->sortby_attended($result, $sortcolumns['attended']);
+            }
 
             // Add the checkboxes with the attended state.
             if (!$table->is_downloading()) {
@@ -180,8 +172,8 @@ class mod_registerattendance_view_table extends mod_registerattendance_widget im
 
         if (!$table->is_downloading()) {
             // Update the paging bar with the actual values.
-            if ($table_model->countrecords > $maxperpage) {
-                $table->pagesize($maxperpage, $table_model->countrecords);
+            if ($tablemodel->countrecords > $maxperpage) {
+                $table->pagesize($maxperpage, $tablemodel->countrecords);
             } else {
                 $table->pageable(false);
             }
@@ -200,7 +192,7 @@ class mod_registerattendance_view_table extends mod_registerattendance_widget im
     /**
      * Add the user's fullname, remove firstname and lastname
      *
-     * @param array $data Array with user data objects
+     * @param object $data Object with user data objects
      *
      * @return array The extended user data
      */
@@ -252,6 +244,30 @@ class mod_registerattendance_view_table extends mod_registerattendance_widget im
     /**
      * Set the checkboxes with the attended state
      *
+     * @param array  $data      The data set
+     * @param string $sortorder The sort order
+     *
+     * @return array
+     */
+    protected function sortby_attended($data, $sortorder = 'ASC') {
+        $result = array();
+
+        // Sort the array objects by »attended«.
+        core_collator::asort_objects_by_property($data, 'attended');
+
+        // If sortorder is »DESC« then reverse the array.
+        if ($sortorder !== 'ASC') {
+            $data = array_reverse($data);
+        }
+
+        $result = $data;
+
+        return $result;
+    }
+
+    /**
+     * Set the checkboxes with the attended state
+     *
      * @param object $data   The data set
      * @param array  $fields The fields to change
      *
@@ -259,14 +275,14 @@ class mod_registerattendance_view_table extends mod_registerattendance_widget im
      */
     protected function add_attended_checkboxes($data, $fields) {
         $result = array();
-        $isArray = null;
+        $isarray = null;
 
         foreach ($data as $row) {
             if (is_array($row)) {
-                $isArray = true;
+                $isarray = true;
                 $row = (object)$row;
             } else {
-                $isArray = false;
+                $isarray = false;
             }//if_is_Array
 
             foreach ($fields as $field) {
@@ -283,7 +299,7 @@ class mod_registerattendance_view_table extends mod_registerattendance_widget im
                 }
             }//for_each_field
 
-            if ($isArray) {
+            if ($isarray) {
                 $result[] = (array)$row;
             } else {
                 $result[] = $row;
