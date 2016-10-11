@@ -39,7 +39,7 @@ class local_friadmin_usercourselist_filter_form extends \moodleform {
         $options = array('0' => get_string('seleverywhere', 'local_friadmin'));
         $options = $customdata['municipality'] + $options;
         $elementgroup[] = $mform->createElement('select', 'selmunicipality', '', $options);
-        $mform->setDefault('selmunicipality', '0');
+        // Default to the first entry, no need to set the default value.
 
         $options = array('0' => get_string('selsector', 'local_friadmin'));
         $options = $options + $customdata['sector'];
