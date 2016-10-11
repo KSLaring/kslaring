@@ -418,9 +418,11 @@ class FSKS_COMPANY {
             $companiesFS = self::GetCompaniesFS_ToSynchronizeFS();
 
             /* Synchronize /update  FS Company  */
-            foreach ($companiesFS as $company) {
-                self::SynchronizeCompanyFs($company);
-            }//for_company
+            if ($companiesFS) {
+                foreach ($companiesFS as $company) {
+                    self::SynchronizeCompanyFs($company);
+                }//for_company
+            }
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
@@ -640,7 +642,6 @@ class FSKS_COMPANY {
                               fs.poststed,
                               fs.epost,
                               fs.action
-
                      FROM	    {fs_imp_company}	fs
                      WHERE	fs.action 	 != :add
                         AND	fs.imported  = :imported ";
@@ -718,7 +719,7 @@ class FSKS_COMPANY {
                      LIMIT 0,5 ";
 
             /* Execute  */
-            $rdo = $DB->get_records_sql($sql);
+            $rdo = $DB->get_records_sql($sql,$params);
             if ($rdo) {
                 foreach ($rdo as $instance) {
                     $companiesFS[$instance->id] = $instance->org_navn;
@@ -917,7 +918,7 @@ class FSKS_COMPANY {
             /* Get Info Company */
             $params = array();
             $params['companyid'] = $companyFS->fscompany;
-            $rdoCompany  = $DB->get_record('fs_company',$params);
+            $rdoCompany          = $DB->get_record('fs_company',$params);
 
             /* Apply Action */
             switch ($companyFS->action) {
