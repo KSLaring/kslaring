@@ -297,8 +297,6 @@ class Gender {
         /* Variables */
         global $DB,$CFG;
         $rdo    = null;
-        $gender = null;
-        $key    = null;
 
         try {
             $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' START UPDATE GENDER . ' . "\n";
@@ -328,7 +326,7 @@ class Gender {
             $dbLog .= "User:    " . $gender->userid . "\n";
             $dbLog .= "Data:    " . $gender->data . "\n";
             $dbLog .= "FIELD:   " . $gender->fieldid . "\n";
-            
+
             error_log($dbLog, 3, $CFG->dataroot . "/gender.log");
             throw $ex;
         }//try_catch
