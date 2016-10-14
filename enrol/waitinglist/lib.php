@@ -159,13 +159,11 @@ class enrol_waitinglist_plugin extends enrol_plugin {
                         AND methodtype LIKE 'manual' ";
 
             $rdo = $DB->get_record_sql($sql,array('wait' => $instance->id,'course' => $instance->courseid ));
+            if ($rdo) {
             if ($rdo->status) {
                 $waitinglistnode->add_node($manual_enrol);
-                //$manual_enrol->remove_class('dimmed_text lnk_manual_disabled');
-            }else {
-                //$manual_enrol->add_class('dimmed_text lnk_manual_disabled');
             }
-
+            }
 
             //queue
         	$managelink=new moodle_url('/enrol/waitinglist/managequeue.php', array('id'=>$instance->courseid));

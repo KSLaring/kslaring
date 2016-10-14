@@ -263,18 +263,6 @@ class ct_settings_form extends moodleform {
                 $form->setType('effort',PARAM_TEXT);
 
                 break;
-            case 'manager':
-                $lst_manager = course_page::getCourseManager();
-                $form->addElement('select','manager',get_string('home_manager',$str_format),$lst_manager);
-                $form->setDefault('manager',$value);
-
-                $form->addElement('static', 'serach-description', '', 'enter the first letters to reduce the list');
-                $form->addElement('text','manager_search' ,'','size = 25');
-                $form->setType('manager_search',PARAM_TEXT);
-
-                course_page::Init_Manager_Selector('manager',null,$courseId);
-
-                break;
             case 'author':
                 $form->addElement('text','author',get_string('home_author',$str_format),'style="width:95%;"');
                 $form->setDefault('author',$value);

@@ -47,55 +47,6 @@ class course_page  {
 
     /* PUBLIC FUNCTIONS */
 
-    /**
-     * @param           $managerSel
-     * @param           $search
-     * @param           $courseId
-     *
-     * @throws          Exception
-     *
-     * @creationDate    05/11/2015
-     * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Initialise the manager selector (listbox)
-     */
-    public static function Init_Manager_Selector($managerSel,$search,$courseId) {
-        /* Variables    */
-        global $PAGE;
-        $jsModule   = null;
-        $name       = null;
-        $path       = null;
-        $requires   = null;
-        $strings    = null;
-        $grpOne     = null;
-        $grpTwo     = null;
-        $grpThree   = null;
-
-        try {
-            /* Initialise variables */
-            $name       = 'manager_selector';
-            $path       = '/local/course_page/yui/manager.js';
-            $requires   = array('node', 'event-custom', 'datasource', 'json', 'moodle-core-notification');
-            $grpThree   = array('none', 'moodle');
-            $strings    = array($grpThree);
-
-            /* Initialise js module */
-            $jsModule = array('name'        => $name,
-                              'fullpath'    => $path,
-                              'requires'    => $requires,
-                              'strings'     => $strings
-                             );
-
-            $PAGE->requires->js_init_call('M.core_user.init_manager',
-                                          array($managerSel,$search,$courseId),
-                                          false,
-                                          $jsModule
-                                         );
-        }catch (Exception $ex) {
-            throw $ex;
-        }//try_catch
-    }//Init_Manager_Selector
 
     /**
      * @throws          Exception
@@ -231,76 +182,6 @@ class course_page  {
     }//getUrlPageGraphicsVideo
 
     /**
-     * @static
-     * @param           $search
-     *
-     * @return          array
-     * @throws          Exception
-     *
-     * @creationDate    14/05/2014
-     * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Get all the users are candidates to be manager
-     *
-     * @updateDate      05/11/2015
-     * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Add the search filter
-     */
-    public static function getCourseManager($search = null) {
-        /* Variables */
-        global $DB;
-        $context_levels = null;
-        $lst_manager    = null;
-        $sql            = null;
-        $rdo            = null;
-
-        try {
-            /* Context Levels   */
-            $context_levels =  CONTEXT_SYSTEM . ',' . CONTEXT_COURSE . ',' . CONTEXT_COURSECAT . ',' . CONTEXT_MODULE;
-
-            /* Managers */
-            $lst_manager = array();
-            $lst_manager[0] = get_string('sel_course_manager','local_course_page');
-
-            /* SQL Instruction  */
-            $sql = " SELECT		DISTINCT u.id,
-                                CONCAT(u.firstname, ' ' , u.lastname) as 'name'
-                     FROM		{user}					u
-                        JOIN	{role_assignments}		ra		ON		ra.userid 		= u.id
-                        JOIN	{role}					r		ON		r.id 			= ra.roleid
-                                                                AND		r.archetype 	IN ('teacher','editingteacher','coursecreator')
-                        JOIN 	{context}				c		ON		c.id 			= ra.contextid
-                                                                AND		c.contextlevel  IN ($context_levels)
-                     WHERE		u.deleted = 0 ";
-
-            /* Search Filter    */
-            if ($search) {
-                $sql .= " AND   (u.firstname like '%" . $search . "%'
-                                 OR
-                                 u.lastname like '%". $search. "%')";
-            }//if_search
-
-            /* Order    */
-            $sql .= " ORDER BY 	u.firstname, u.lastname ";
-
-            /* Execute  */
-            $rdo = $DB->get_records_sql($sql);
-            if ($rdo) {
-                foreach($rdo as $manager) {
-                    $lst_manager[$manager->id] = $manager->name;
-                }///for_rdo
-            }//if_rdo
-
-            return $lst_manager;
-        }catch(Exception $ex) {
-            throw $ex;
-        }//try_catch
-    }//getCourseManager
-
-    /**
      * @param           $courseId
      *
      * @return          null
@@ -340,7 +221,8 @@ class course_page  {
     /**
      * @static
      * @param           $course_id
-     * @param           $manager_id
+     * @param           $notIn
+     * 
      * @return          array
      * @throws          Exception
      *
@@ -350,7 +232,7 @@ class course_page  {
      * Description
      * Get the teachers connected with the course.
      */
-    public static function getCoursesTeachers($course_id,$manager_id) {
+    public static function getCoursesTeachers($course_id,$notIn) {
         /* Variables    */
         global $DB;
         $lst_teachers   = null;
@@ -364,7 +246,7 @@ class course_page  {
             $lst_teachers = array();
 
             /* Context  */
-            $context = CONTEXT_COURSE::instance($course_id);
+            $context = context_course::instance($course_id);
             /* Search Criteria  */
             $params = array();
             $params['context_id'] = $context->id;
@@ -379,7 +261,7 @@ class course_page  {
                                                                 AND		r.archetype 	IN ('teacher','editingteacher')
 
                      WHERE		u.deleted = 0
-                        AND     u.id NOT IN ($manager_id)
+                        AND     u.id NOT IN ($notIn)
                      ORDER BY 	u.firstname, u.lastname ";
 
             /* Execute  */
@@ -395,6 +277,58 @@ class course_page  {
             throw $ex;
         }//try_catch
     }//getCoursesTeachers
+
+
+    /**
+     * @param           $course_id
+     * 
+     * @return          mixed|null
+     * @throws          Exception
+     * 
+     * @creationDate    14/10/2016
+     * @author          eFaktor     (fbv)
+     * 
+     * Description
+     * Get manager connected with the course
+     */
+    public static function getCoursesManager($course_id) {
+        /* Variables    */
+        global $DB;
+        $context        = null;
+        $params         = null;
+        $sql            = null;
+        $rdo            = null;
+
+        try {
+            /* Context  */
+            $context = context_course::instance($course_id);
+            /* Search Criteria  */
+            $params = array();
+            $params['context_id'] = $context->id;
+
+            /* SQL Instruction  */
+            $sql = " SELECT		u.*
+                     FROM		{user}					u
+                        JOIN	{role_assignments}		ra		ON		ra.userid 		= u.id
+                                                                AND     ra.contextid    = :context_id
+                        JOIN	{role}					r		ON		r.id 			= ra.roleid
+                                                                AND		r.archetype 	IN ('teacher','editingteacher')
+
+                     WHERE		u.deleted = 0
+                     ORDER BY 	u.timemodified,u.firstname, u.lastname
+                     LIMIT 0,1 ";
+
+            /* Execute  */
+            $rdo = $DB->get_record_sql($sql,$params);
+            if ($rdo) {
+                return $rdo;
+            }else {
+                return null;
+            }//if_rod
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//getCoursesManager
 
     /**
      * @static
@@ -1403,8 +1337,7 @@ class course_page  {
     public static function printFormatOptions(&$form,$option,$value,$format) {
         /* Variables*/
         global  $COURSE,$USER;
-        $str_format     = null;;
-        $lstManager     = null;
+        $str_format     = null;
         $lstLocations   = null;
         $lstSectors     = null;
         $location       = null;
@@ -1415,26 +1348,31 @@ class course_page  {
                     case 'prerequisities':
                         $form->addElement('textarea','prerequisities',get_string('home_prerequisities',$str_format),'rows="5" style="width:95%;"');
                         $form->setDefault('prerequisities',$value);
+
                         break;
                     case 'producedby':
                         $form->addElement('text','producedby',get_string('home_producedby',$str_format),'style="width:95%;"');
                         $form->setDefault('producedby',$value);
                         $form->setType('producedby',PARAM_TEXT);
+
                         break;
                     case 'course_location':
                         $lstLocations = course_page::Get_CourseLocationsList($USER->id);
                         $form->addElement('select','course_location',get_string('home_location',$str_format),$lstLocations);
                         $form->setDefault('course_location',$value);
+
                         break;
                     case 'course_sector':
                         $location = self::GetCourseLocation($COURSE->id);
                         $lstSectors     = course_page::Get_SectorsLocationsList($location);
                         $form->addElement('select','course_sector',get_string('home_sector',$str_format),$lstSectors,'multiple');
                         $form->setDefault('course_sector',$value);
+
                         break;
                     case 'time':
                         $form->addElement('textarea','time',null,'rows="5" style="width:95%;" readonly');
                         $form->setDefault('time',$value);
+
                         break;
                     case 'from':
                         $form->addElement('date_selector','from',get_string('home_time_from',$str_format));
@@ -1454,32 +1392,25 @@ class course_page  {
                         $form->addElement('text','length',get_string('home_length',$str_format),'style="width:95%;"');
                         $form->setDefault('length',$value);
                         $form->setType('length',PARAM_TEXT);
+
                         break;
                     case 'effort':
                         $form->addElement('text','effort',get_string('home_effort',$str_format),'style="width:95%;"');
                         $form->setDefault('effort',$value);
                         $form->setType('effort',PARAM_TEXT);
-                        break;
-                    case 'manager':
-                        $lst_manager = self::getCourseManager();
-                        $form->addElement('select','manager',get_string('home_manager',$str_format),$lst_manager);
-                        $form->setDefault('manager',$value);
 
-                        $form->addElement('static', 'serach-description', '', 'enter the first letters to reduce the list');
-                        $form->addElement('text','manager_search' ,'','size = 25');
-                        $form->setType('manager_search',PARAM_TEXT);
-
-                        self::Init_Manager_Selector('manager',null,$COURSE->id);
                         break;
                     case 'author':
                         $form->addElement('text','author',get_string('home_author',$str_format),'style="width:95%;"');
                         $form->setDefault('author',$value);
                         $form->setType('author',PARAM_TEXT);
+
                         break;
                     case 'licence':
                         $form->addElement('text','licence',get_string('home_licence',$str_format),'style="width:95%;"');
                         $form->setDefault('licence',$value);
                         $form->setType('licence',PARAM_TEXT);
+
                         break;
                     default:
                         break;
@@ -1629,23 +1560,6 @@ class course_page  {
                 if (array_key_exists('pagevideo',$format_options)) {
                     $form->setDefault('pagevideo',$format_options['pagevideo']);
                 }//if_exists
-
-                break;
-            case 'manager': //appearancehdr
-                $lstManager = self::getCourseManager();
-                if (!$from_home) {
-                    $manager = $form->createElement('select','manager',get_string('home_manager','format_classroom'),$lstManager);
-                    $form->insertElementBefore($manager,'appearancehdr');
-
-                    $static = $form->createElement('static', 'serach-description', '', 'enter the first letters to reduce the list');
-                    $form->insertElementBefore($static,'appearancehdr');
-
-                    $search = $form->createElement('text','manager_search' ,'','size = 25');
-                    $form->insertElementBefore($search,'appearancehdr');
-                    $form->setType('manager_search',PARAM_TEXT);
-
-                    self::Init_Manager_Selector('manager',null,$COURSE->id);
-                }
 
                 break;
             default:

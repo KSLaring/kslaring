@@ -237,19 +237,17 @@ class local_course_page_renderer extends plugin_renderer_base {
      */
     private function addBlockTwo_homePage($course,$format_options) {
         /* Variables    */
-        global $DB,$USER;
-        $manager        = 0;
+        global $DB;
         $block_two      = '';
-        $disabled       = '';
 
         $block_two .= html_writer::start_tag('div',array('class' => 'home_page_block_two'));
             $block_two .= html_writer::start_tag('div',array('class' => 'go-left clearfix'));
                 /* Start Course Button */
                 $block_two .= $this->BlockCourseButton($course);
                 /* Block Prerequisites  */
-                $block_two .= $this->addExtra_PrerequisitesBlock($course,$format_options,$manager);
+                $block_two .= $this->addExtra_PrerequisitesBlock($course,$format_options);
                 /* Block Coordinator    */
-                $block_two .= $this->addCoordinatorBlock($course->id,$manager);
+                $block_two .= $this->addCoordinatorBlock($course->id);
                 /* Block Participant    */
                 $block_two .= $this->addParticipantListBlock($course->id,$course->format,$format_options);
                 /* Block Duration       */
@@ -327,7 +325,6 @@ class local_course_page_renderer extends plugin_renderer_base {
     /**
      * @param           $course
      * @param           $format_options
-     * @param           $manager
      * @return          string
      *
      * @creationDate    05/09/2014
@@ -342,7 +339,7 @@ class local_course_page_renderer extends plugin_renderer_base {
      * Description
      * Add the frikomport formats
      */
-    protected function addExtra_PrerequisitesBlock($course,$format_options,&$manager) {
+    protected function addExtra_PrerequisitesBlock($course,$format_options) {
         /* Variables */
         $out = '';
         $str_format     = null;
@@ -386,10 +383,6 @@ class local_course_page_renderer extends plugin_renderer_base {
                                 $out .= '<div class="extra_home chp-content">' . $option->value . '</div>';
                             }//if_value
                         }//if_produced
-
-                        if ($option->name == 'manager') {
-                            $manager = $option->value;
-                        }//if_manager
                     }//for_format_options
 
                     break;
@@ -409,10 +402,6 @@ class local_course_page_renderer extends plugin_renderer_base {
                                 $out .= '<div class="extra_home chp-content">' . $option->value . '</div>';
                             }//if_value
                         }//licence
-
-                        if ($option->name == 'manager') {
-                            $manager = $option->value;
-                        }//if_manager
                     }//for_format_options
 
                     break;
@@ -828,7 +817,6 @@ class local_course_page_renderer extends plugin_renderer_base {
 
     /**
      * @param           $course_id
-     * @param           $manager
      * @return          string
      *
      * @creationDate    20/05/2014
@@ -849,7 +837,7 @@ class local_course_page_renderer extends plugin_renderer_base {
      * Description
      * Replace mail of coordinator by 'Send a message'
      */
-    protected function addCoordinatorBlock($course_id,$manager) {
+    protected function addCoordinatorBlock($course_id) {
         /* Variables    */
         global $OUTPUT,$DB;
         $urlMessage = null;
@@ -858,8 +846,7 @@ class local_course_page_renderer extends plugin_renderer_base {
 
         $out .= html_writer::start_tag('div',array('class' => 'manager chp-block clearfix'));
             /* Main Manager */
-            if ($manager) {
-                $user = $DB->get_record('user',array('id' => $manager,'deleted' => 0));
+            $user = course_page::getCoursesManager($course_id);
                 if ($user) {
                     $user->description = file_rewrite_pluginfile_urls($user->description, 'pluginfile.php', context_user::instance($user->id)->id, 'user', 'profile', null);
                 $url_user = new moodle_url('/user/profile.php',array('id' => $user->id));
@@ -875,10 +862,9 @@ class local_course_page_renderer extends plugin_renderer_base {
                     $out .= '<div class="extra_coordinator">' . $user->description . '</div>'  . '</div>';
                 $out .= '</div>';
                 }//if_user
-            }//if_manager
 
             /* Teachers */
-            $lst_teachers = course_page::getCoursesTeachers($course_id,$manager);
+            $lst_teachers = course_page::getCoursesTeachers($course_id,$user->id);
             if ($lst_teachers) {
                 $out .= '<div class="title_coordinator chp-title">' . get_string('home_teachers','local_course_page') . '</div>';
                 $url_user = new moodle_url('/user/profile.php');
