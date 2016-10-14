@@ -123,7 +123,7 @@ Følgende plassholdere kan legges inn i meldingen:
 * Antall plasser i ventelisten {$a->queueseats}
 * Link ttil kurset {$a->courseurl}
 * Link til påmeldingssiden {$a->editenrolurl}';
-$string['welcome_ical_attach'] = "Attached iCal file with the course start date.";
+$string['welcome_ical_attach'] = "Vedlagt kalenderfil. Trykk på denne for å oppdatere kalenderen din. OBS! Du må selv sette inn korrekte klokkeslett for arrangementet.";
 $string['sendcoursewaitlistmessage'] = 'Send epost når brukeren blir lagt til i ventelisten';
 $string['sendcoursewaitlistmessage_help'] = 'Du kan sende en epost til brukeren når de legges til på kursets venteliste.';
 
@@ -282,11 +282,11 @@ $string['no_users_invoice']     = " No users invoice approval";
 $string['users_matching']       = " Users invoice approval matching";
 $string['please_use_filter']    = " Please use the filter";
 
-$string['unenrol_link']         = 'If you want to unenrol by yourself, please click on <strong>{$a}</strong>';
-$string['unenrol_me']           = 'Unenrol me';
-$string['user_unenrolled']      = 'You have already been unenrolled';
-$string['user_not_enrolled']    = 'Sorry, you can be unenrolled because you are not a member of this course';
+$string['unenrol_link']         = 'Hvis du ønsker å melde deg av kurset, vennligst klikk på følgende lenke <strong>{$a}</strong>';
+$string['unenrol_me']           = 'Meld meg ut';
+$string['user_unenrolled']      = 'Du har blitt meldt ut av kurset';
+$string['user_not_enrolled']    = 'Beklager, du kan ikke melde deg ut fordi du ikke er meldt på kurset.';
 
-$string['unenrol_subject'] = 'Course {$a}.Unenrol confirmation.';
-$string['unenrol_body']    = 'We would like to inform you, that you have been unenrolled from the course <strong>{$a}</strong>';
+$string['unenrol_subject'] = 'Avmeldingsbekreftelse for kurset {$a}.';
+$string['unenrol_body']    = 'Dette er en bekreftelse på at du har kansellert kurspåmeldingen din for kurset <strong>{$a}</strong>';
 
