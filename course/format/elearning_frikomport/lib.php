@@ -209,15 +209,6 @@ class format_elearning_frikomport extends format_base {
      * Remove page video
      */
     public function course_format_options($foreditform = false) {
-        /**
-         * @updateDate  21/04/2015
-         * @author      eFaktor     (fbv)
-         *
-         * Description
-         * Get the users are candidates to be course manager
-         */
-        $lst_manager = course_page::getCourseManager();
-
         static $courseformatoptions = false;
         if ($courseformatoptions === false) {
             $courseconfig = get_config('moodlecourse');
@@ -285,10 +276,6 @@ class format_elearning_frikomport extends format_base {
                 ),
                 'effort' => array(
                     'type' => PARAM_TEXT,
-                ),
-                'manager' => array(
-                    'default' => 0,
-                    'type' => PARAM_INT,
                 )
             );
         }
@@ -373,11 +360,6 @@ class format_elearning_frikomport extends format_base {
                     'element_attributes' => array(
                         0 => 'style="width:95%;"'
                     )
-                ),
-                'manager' => array(
-                    'label' => get_string('home_manager', 'format_elearning_frikomport'),
-                    'element_type' => 'select',
-                    'element_attributes' => array($lst_manager)
                 )
             );
             $courseformatoptions = array_merge_recursive($courseformatoptions, $courseformatoptionsedit);

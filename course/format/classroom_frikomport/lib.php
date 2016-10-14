@@ -216,7 +216,6 @@ class format_classroom_frikomport extends format_base {
     public function course_format_options($foreditform = false) {
         /* Variables    */
         global $USER,$COURSE;
-        $lstManager     = null;
         $lstLocations   = null;
         $lstSectors     = null;
         $location       = null;
@@ -250,15 +249,6 @@ class format_classroom_frikomport extends format_base {
             $lstSectors = array();
             $lstSectors[0] = get_string('sel_sector','local_friadmin');
         }//if_location
-
-        /**
-         * @updateDate  21/04/2015
-         * @author      eFaktor     (fbv)
-         *
-         * Description
-         * Get the users are candidates to be course manager
-         */
-        $lstManager = course_page::getCourseManager();
 
         static $courseformatoptions = false;
         if ($courseformatoptions === false) {
@@ -341,10 +331,6 @@ class format_classroom_frikomport extends format_base {
                 ),
                 'effort' => array(
                     'type' => PARAM_TEXT,
-                ),
-                'manager' => array(
-                    'default' => 0,
-                    'type' => PARAM_INT,
                 )
             );
         }
@@ -446,11 +432,6 @@ class format_classroom_frikomport extends format_base {
                     'element_attributes' => array(
                         0 => 'style="width:95%;"'
                     )
-                ),
-                'manager' => array(
-                    'label' => get_string('home_manager', 'format_classroom_frikomport'),
-                    'element_type' => 'select',
-                    'element_attributes' => array($lstManager)
                 )
             );
             $courseformatoptions = array_merge_recursive($courseformatoptions, $courseformatoptionsedit);
@@ -508,6 +489,9 @@ class format_classroom_frikomport extends format_base {
         } else {
             $options = $this->course_format_options(true);
         }
+
+        course_page::Init_LocationsSector();
+
         foreach ($options as $optionname => $option) {
             switch ($optionname) {
                 case 'homepage':
@@ -516,12 +500,12 @@ class format_classroom_frikomport extends format_base {
                 case 'homevisible':
                 case 'homesummary':
                 case 'pagegraphics':
+                case 'pagegraphicstitle':
                 case 'manager':
                     course_page::addCourseHomePage_Section($mform, $optionname);
 
                     break;
                 default:
-                    course_page::Init_LocationsSector();
 
                     if (!isset($option['element_type'])) {
                         $option['element_type'] = 'text';
