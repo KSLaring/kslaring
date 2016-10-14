@@ -53,7 +53,6 @@ class WS_ADFS {
                 if (is_numeric($userADFS['username']) && (strlen($userADFS['username']) == 11)) {
                     Gender::Add_UserGender($userId,$userADFS['username']);
                 }
-
                 $response = self::GenerateResponse($userId,$userADFS['modlnk'],$userADFS['modid']);
             }
 
@@ -63,7 +62,7 @@ class WS_ADFS {
             $result['valid']        = 0;
             $result['url']          = urlencode($CFG->wwwroot . '/local/wsks/adfs/error.php');
             $result['msg_error']    = $ex->getMessage();
-
+            
             throw $ex;
         }//try_catch
     }//UserADFS

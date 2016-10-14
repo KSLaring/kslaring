@@ -120,7 +120,7 @@ class local_wsks_external extends external_api {
         $result['url']          = '';
         try {
             /* Library  */
-            require_once($CFG->wwwroot . '/user/profile/field/gender/lib/genderlib.php');
+            require_once('../../user/profile/field/gender/lib/genderlib.php');
             
             /* Create or Update User ADFS   */
             $result['url'] = WS_ADFS::Process_UserADFS($userADFS,$result);
@@ -972,7 +972,7 @@ class local_wsks_external extends external_api {
 
         try {
             /* Library  */
-            require_once($CFG->wwwroot . '/user/profile/field/gender/lib/genderlib.php');
+            require_once('../../user/profile/field/gender/lib/genderlib.php');
             
             /* Synchronization */
             WS_FELLESDATA::Synchronize_UsersAccounts($usersAccounts,$result);

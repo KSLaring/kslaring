@@ -555,19 +555,9 @@ class format_classroom extends format_base {
     public function course_format_options($foreditform = false) {
         /* Variables    */
         global $USER,$COURSE;
-        $lstManager     = null;
         $lstLocations   = null;
         $lstSectors     = null;
         $location       = null;
-
-        /**
-         * @updateDate  14/05/2014
-         * @author      eFaktor     (fbv)
-         *
-         * Description
-         * Get the users are candidates to be course manager
-         */
-        $lstManager = course_page::getCourseManager();
 
         /**
          * @updateDate  08/05/2015
@@ -691,10 +681,6 @@ class format_classroom extends format_base {
                 ),
                 'effort' => array(
                     'type' => PARAM_TEXT,
-                ),
-                'manager' => array(
-                    'default'   => 0,
-                    'type'      => PARAM_INT,
                 )
             );
         }
@@ -794,11 +780,6 @@ class format_classroom extends format_base {
                     'element_attributes' => array(
                         0 => 'style="width:95%;"'
                     )
-                ),
-                'manager' => array(
-                    'label' => get_string('home_manager', 'format_classroom'),
-                    'element_type' => 'select',
-                    'element_attributes' => array($lstManager)
                 )
             );
             $courseformatoptions = array_merge_recursive($courseformatoptions,
