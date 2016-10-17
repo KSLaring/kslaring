@@ -1299,6 +1299,7 @@ class enrol_waitinglist_plugin extends enrol_plugin {
 
                 foreach ($waitingLst as $instance) {
                     /* Criteria */
+                    unset($params['waitingid']);
                     $params['waitinglistid'] = $instance->waitinglistid;
                     /* Invoice Option */
                     if (enrol_get_plugin('invoice')) {
