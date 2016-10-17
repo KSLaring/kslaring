@@ -41,6 +41,7 @@ function xmldb_enrol_waitinglist_upgrade($oldversion) {
     $tblApprovalAction  = null;
     $table  = null;
     $field  = null;
+    $fldEnrolEnd        = null;
 
     try {
         if ($oldversion < 2015021101) {
@@ -214,6 +215,15 @@ function xmldb_enrol_waitinglist_upgrade($oldversion) {
                 $dbman->create_table($tblUnenrol);
             }//if_table_exists
         }
+
+        if ($oldversion < 2016101702) {
+            $table       = new xmldb_table('enrol_waitinglist_method');
+            $fldEnrolEnd = new xmldb_field('unenrolenddate', XMLDB_TYPE_INTEGER, '10', null, null, null, '0', 'status');
+
+            if (!$dbman->field_exists($table, $fldEnrolEnd)) {
+                $dbman->add_field($table, $fldEnrolEnd);
+            }
+        }//if_odlVersion
 
         return true;
     }catch (Exception $ex) {

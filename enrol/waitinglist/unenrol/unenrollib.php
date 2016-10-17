@@ -80,7 +80,8 @@ Class Unenrol_Waiting {
 
             /* SQL Instruction  */
             $sql = " SELECT		ewu.id,
-                                ewu.waitingid
+                                ewu.waitingid,
+                                ewu.courseid
                      FROM		{enrol_waitinglist_unenrol}	ewu
                         JOIN	{user}						u	ON	u.id		= ewu.userid
                         JOIN	{enrol}						e	ON	e.id		= ewu.waitingid
@@ -91,7 +92,7 @@ Class Unenrol_Waiting {
                         AND   ewu.tokenco 	= :tkn_course ";
 
             /* Execute */
-            $rdo = $DB->get_records_sql($sql,$params);
+            $rdo = $DB->get_record_sql($sql,$params);
             if ($rdo) {
                 return $rdo;
             }else {
@@ -176,6 +177,56 @@ Class Unenrol_Waiting {
             throw $ex;
         }//try_catch
     }//UnenrolUser
+
+    /**
+     * @param           $courseId
+     * @param           $waitingId
+     *
+     * @return          bool
+     * @throws          Exception
+     *
+     * @creationDate    17/10/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Check if the user can unenrol from the course based on deadline
+     */
+    public static function Can_Unenrol($courseId,$waitingId) {
+        /* Variables */
+        global $DB;
+        $sql    = null;
+        $rdo    = null;
+        $params = null;
+
+        try {
+            /* Criteria */
+            $params = array();
+            $params['course']   = $courseId;
+            $params['wait']     = $waitingId;
+
+            /* SQL Instruction */
+            $sql = " SELECT id,
+                            unenrolenddate 
+                     FROM   {enrol_waitinglist_method} 
+                     WHERE  courseid      = :course
+                        AND waitinglistid = :wait
+                        AND methodtype  like '%self%'";
+
+            /* Execute */
+            $rdo = $DB->get_record_sql($sql,$params);
+            if ($rdo) {
+                if ($rdo->unenrolenddate != 0 and $rdo->unenrolenddate < time()) {
+                    return false;
+                }else {
+                    return true;
+                }
+            }else {
+                return true;
+            }
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//Can_Unenrol
 
     /***********/
     /* PRIVATE */

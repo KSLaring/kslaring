@@ -67,6 +67,13 @@ class ct_enrolment_settings_form extends moodleform {
 
         $form->addElement('date_selector', 'date_off', get_string('cutoffdate', 'enrol_waitinglist'),array('optional' => true));
         $form->setDefault('date_off',$instance->date_off);
+
+        if ($enrolMethod == ENROL_WAITING_SELF) {
+            $form->addElement('date_selector', 'unenrolenddate', get_string('unenrolenddate', 'enrol_waitinglist'), array('optional' => true));
+            $form->setDefault('unenrolenddate', $instance->unenrolenddate);
+            $form->addHelpButton('unenrolenddate', 'unenrolenddate', 'enrol_waitinglist');
+        }
+        
         /* Participants     */
         $form->addElement('text','max_enrolled',  get_string('maxenrolments', 'enrol_waitinglist'), array('size' => '8'));
         $form->addHelpButton('max_enrolled','maxenrolments','enrol_waitinglist');
@@ -191,6 +198,21 @@ class ct_enrolment_settings_form extends moodleform {
 
         $this->add_action_buttons(true,get_string('continue'));
     }//definition
+
+    function validation($data, $files) {
+        global $DB, $CFG;
+        $errors = parent::validation($data, $files);
+
+        list($course,$enrolMethod,$instance,$ct) = $this->_customdata;
+        
+        if (isset($data['unenrolenddate'])) {
+            if (($data['unenrolenddate']) && ($data['unenrolenddate'] < time())) {
+                $errors['unenrolenddate'] = get_string('unenrolenddate_err','enrol_waitinglist');
+            }
+        }//unenrolenddate
+
+        return $errors;
+    }
 }//ct_enrolment_settings_form
 
 class ct_self_enrolment_settings_form extends moodleform {

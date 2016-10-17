@@ -47,16 +47,23 @@ if (count($args) != 4) {
         /* Check Arguments for unenrol action   */
         $unenrol = Unenrol_Waiting::Check_UnenrolLink($args);
         if ($unenrol) {
-            /* Right --> Unenrol user   */
-            if (Unenrol_Waiting::UnenrolUser($args)) {
-                echo html_writer::start_tag('div',array('class' => 'loginerrors'));
-                echo $OUTPUT->error_text('<h4>' . get_string('user_unenrolled','enrol_waitinglist') . '</h4>');
-                echo html_writer::end_tag('div');
+            /* Check Deadline for unenrol   */
+            if (Unenrol_Waiting::Can_Unenrol($unenrol->courseid,$unenrol->waitingid)) {
+                /* Right --> Unenrol user       */
+                if (Unenrol_Waiting::UnenrolUser($args)) {
+                    echo html_writer::start_tag('div',array('class' => 'loginerrors'));
+                    echo $OUTPUT->error_text('<h4>' . get_string('user_unenrolled','enrol_waitinglist') . '</h4>');
+                    echo html_writer::end_tag('div');
+                }else {
+                    echo html_writer::start_tag('div',array('class' => 'loginerrors'));
+                    echo $OUTPUT->error_text('<h4>' . get_string('err_process','enrol_waitinglist') . '</h4>');
+                    echo html_writer::end_tag('div');
+                }
             }else {
                 echo html_writer::start_tag('div',array('class' => 'loginerrors'));
-                echo $OUTPUT->error_text('<h4>' . get_string('err_process','enrol_waitinglist') . '</h4>');
+                echo $OUTPUT->error_text('<h4>' . get_string('cannot_unenrol_date','enrol_waitinglist') . '</h4>');
                 echo html_writer::end_tag('div');
-            }
+            }//if_can_unenrol
         }else {
             /* Wrong --> Error Missatge */
             echo html_writer::start_tag('div',array('class' => 'loginerrors'));
