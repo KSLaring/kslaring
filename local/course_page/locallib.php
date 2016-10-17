@@ -315,7 +315,7 @@ class course_page  {
                                                                 AND		r.archetype 	IN ('teacher','editingteacher')
 
                      WHERE		u.deleted = 0
-                     ORDER BY 	u.timemodified,u.firstname, u.lastname
+                     ORDER BY 	ra.timemodified,u.firstname, u.lastname
                      LIMIT 0,1 ";
 
             /* Execute  */
