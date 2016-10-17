@@ -610,7 +610,7 @@ class CourseTemplate {
             $methodSelf->id                                 = $data->selfid;
             $methodSelf->timemodified                       = $time;
             if (isset($data->password)) {
-                $methodSelf->password                           = $data->password;
+                $methodSelf->password                       = $data->password;
             }
 
             $methodSelf->{ENROL_FIELD_SELF_WAITING_MESSAGE} = $data->self_waiting_message;
@@ -631,7 +631,8 @@ class CourseTemplate {
             switch ($data->waitinglist) {
                 case ENROL_WAITING_SELF:
                     /* Self Method  */
-                    $methodSelf->status = 1;
+                    $methodSelf->unenrolenddate  = $data->unenrolenddate;
+                    $methodSelf->status          = 1;
                     /* Bulk Method  */
                     $methodBulk->status = 0;
 
@@ -867,6 +868,7 @@ class CourseTemplate {
                             e.customtext3                   as 'priceinternal',
                             e.customtext4                   as 'priceexternal',
                             es.id							as 'selfid',
+                            es.unenrolenddate               as 'unenrolenddate',     
                             un.id							as 'bulkid',
                             ma.id                           as 'manualid'
                      FROM		{enrol}						e
@@ -921,13 +923,14 @@ class CourseTemplate {
                 $instance->courseid         = $courseId;
                 $instance->password         = null;
                 $instance->date_off         = 0;
+                $instance->unenrolenddate   = 0;
                 $instance->max_enrolled     = 0;
                 $instance->list_size        = SETTINGS_DEFAULT_SIZE;
                 $instance->invoice          = 0;
                 $instance->approval         = 0;
                 $instance->priceinternal    = 0;
                 $instance->priceexternal    = 0;
-                $instance->welcome_message          = null;
+                $instance->welcome_message  = null;
                 /**
                  * @updateDate  30/08/2016
                  * @author      eFaktor     (fbv)
