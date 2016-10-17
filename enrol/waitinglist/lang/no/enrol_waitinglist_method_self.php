@@ -34,3 +34,8 @@ $string['self_queuewarning_label'] ='Dette kurset er allerede fullt.';
 $string['self_queuewarning'] = 'Dersom du fortsetter vil du bli plassert på ventelisten. Du vil automatisk bli varslet når det blir ledige plasser. 
 	
 	Du er nå nummer: {$a} på ventelisten.';
+
+$string['cannot_unenrol_date']    = 'Sorry, you cannot unenrol it after the deadline';
+$string['unenrolenddate']         = 'Deadline to unenrol';
+$string['unenrolenddate_help']    = 'If enabled, users can unenrol themselves until this date only.';
+$string['unenrolenddate_err']     = 'The unenrol deadline cannot be less than the currernt one.';

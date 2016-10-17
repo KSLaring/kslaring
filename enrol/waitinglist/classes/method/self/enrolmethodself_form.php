@@ -59,6 +59,10 @@ class enrolmethodself_form extends \moodleform {
                          0 => get_string('no'));
         $mform->addElement('select',enrolmethodself::MFIELD_GROUPKEY, get_string('groupkey', 'enrol_self'), $options);
         $mform->addHelpButton(enrolmethodself::MFIELD_GROUPKEY, 'groupkey', 'enrol_self');
+
+        $mform->addElement('date_selector', 'unenrolenddate', get_string('unenrolenddate', 'enrol_waitinglist'), array('optional' => true));
+        $mform->setDefault('unenrolenddate', 0);
+        $mform->addHelpButton('unenrolenddate', 'unenrolenddate', 'enrol_waitinglist');
 /*
         $roles = $this->extend_assignable_roles($context, $instance->roleid);
         $mform->addElement('select', 'roleid', get_string('role', 'enrol_self'), $roles);
@@ -80,9 +84,7 @@ class enrolmethodself_form extends \moodleform {
         $mform->setDefault('enrolstartdate', 0);
         $mform->addHelpButton('enrolstartdate', 'enrolstartdate', 'enrol_self');
 
-        $mform->addElement('date_time_selector', 'enrolenddate', get_string('enrolenddate', 'enrol_self'), array('optional' => true));
-        $mform->setDefault('enrolenddate', 0);
-        $mform->addHelpButton('enrolenddate', 'enrolenddate', 'enrol_self');
+
 */
 /*
         $options = array(0 => get_string('never'),
@@ -201,6 +203,12 @@ class enrolmethodself_form extends \moodleform {
                 }
             }
         }
+		
+        if (isset($data['unenrolenddate'])) {
+            if (($data['unenrolenddate']) && ($data['unenrolenddate'] < time())) {
+                $errors['unenrolenddate'] = get_string('unenrolenddate_err','enrol_waitinglist');
+            }
+        }//unenrolenddate
 		
 		/*
 

@@ -180,6 +180,7 @@ class enrolmethodself extends \enrol_waitinglist\method\enrolmethodbase{
      * @param           bool        $checkuserenrolment     if true will check db and queue for user
      *
      * @return          bool|null|string                true if successful, else error message or false.
+     * @throws          \Exception
      *
      * Description
      * Checks if user can enrol.
@@ -200,81 +201,86 @@ class enrolmethodself extends \enrol_waitinglist\method\enrolmethodbase{
     public function can_enrol(\stdClass $waitinglist, $checkuserenrolment = true) {
         /* Variables */
         global $DB, $USER, $CFG;
-        $rejected = null;
+        $rejected   = null;
 
-        /**
-         * @updateDate  26/09/2016
-         * @author      eFaktor     (fbv)
-         * 
-         * Description
-         * If company is compulsory
-         */
-        if ($waitinglist->{ENROL_WAITINGLIST_FIELD_APPROVAL} != COMPANY_NO_DEMANDED) {
-            if (!$rdo = $DB->get_records('user_info_competence_data',array('level' => 3,'userid' =>$USER->id),'id')) {
-                $urlProfile = new \moodle_url('/user/profile/field/competence/competence.php',array('id' => $USER->id));
-                $lnkProfile = "<a href='". $urlProfile . "'>". get_string('profile') . "</a>";
-                return get_string('no_competence','enrol_waitinglist',$lnkProfile);
-            }            
-        }
-
-        if ($waitinglist->{ENROL_WAITINGLIST_FIELD_APPROVAL} == APPROVAL_REQUIRED) {
-            /* Check if it has been rejected    */
-            $rejected = new \stdClass();
-            $rejected->sent = null;
-            if ($rejected->sent = \Approval::IsRejected($USER->id,$waitinglist->courseid,$waitinglist->id)) {
-                $rejected->sent = userdate($rejected->sent,'%d.%m.%Y', 99, false);
-                return get_string('request_rejected','enrol_waitinglist',$rejected);
+        try {
+            /**
+             * @updateDate  26/09/2016
+             * @author      eFaktor     (fbv)
+             *
+             * Description
+             * If company is compulsory
+             */
+            if ($waitinglist->{ENROL_WAITINGLIST_FIELD_APPROVAL} != COMPANY_NO_DEMANDED) {
+                if (!$rdo = $DB->get_records('user_info_competence_data',array('level' => 3,'userid' =>$USER->id),'id')) {
+                    $urlProfile = new \moodle_url('/user/profile/field/competence/competence.php',array('id' => $USER->id));
+                    $lnkProfile = "<a href='". $urlProfile . "'>". get_string('profile') . "</a>";
+                    return get_string('no_competence','enrol_waitinglist',$lnkProfile);
+                }
             }
-        }//Approval_Method
 
-        $entryman =  \enrol_waitinglist\entrymanager::get_by_course($waitinglist->courseid);
-		$entry = $entryman->get_entry_by_userid($USER->id);
-		if($entry && $entry->methodtype!=static::METHODTYPE){
-			return get_string('onlyoneenrolmethodallowed', 'enrol_waitinglist');
-		}
-        
-        //checking the queue (db calls)
-        //to do: turn queuemanager into a singleton, and remove the checkusenrolment condition
-        if ($checkuserenrolment) {
-         	//$entryman =  \enrol_waitinglist\entrymanager::get_by_course($waitinglist->courseid);
-         	$queueman =  \enrol_waitinglist\queuemanager::get_by_course($waitinglist->courseid);
-    
-		
-			//maximum users for this enrolment method
-        	if ($this->{self::MFIELD_MAXENROLLED} > 0 && false) {
-				// Max enrol limit specified.
-				//$count = $entryman->get_allocated_listtotal_by_method(static::METHODTYPE);
-				$count = $queueman->get_listtotal_by_method(static::METHODTYPE);
-				if ($count >= $this->{self::MFIELD_MAXENROLLED}) {
-					// Bad luck, no more self enrolments here.
-					return get_string('noroomonlist', 'enrol_waitinglist');
-				}
-        	}
-	
+            if ($waitinglist->{ENROL_WAITINGLIST_FIELD_APPROVAL} == APPROVAL_REQUIRED) {
+                /* Check if it has been rejected    */
+                $rejected = new \stdClass();
+                $rejected->sent = null;
+                if ($rejected->sent = \Approval::IsRejected($USER->id,$waitinglist->courseid,$waitinglist->id)) {
+                    $rejected->sent = userdate($rejected->sent,'%d.%m.%Y', 99, false);
+                    return get_string('request_rejected','enrol_waitinglist',$rejected);
+                }
+            }//Approval_Method
+
+            $entryman =  \enrol_waitinglist\entrymanager::get_by_course($waitinglist->courseid);
+            $entry = $entryman->get_entry_by_userid($USER->id);
+            if($entry && $entry->methodtype!=static::METHODTYPE){
+                return get_string('onlyoneenrolmethodallowed', 'enrol_waitinglist');
+            }
+
+            //checking the queue (db calls)
+            //to do: turn queuemanager into a singleton, and remove the checkusenrolment condition
+            if ($checkuserenrolment) {
+                //$entryman =  \enrol_waitinglist\entrymanager::get_by_course($waitinglist->courseid);
+                $queueman =  \enrol_waitinglist\queuemanager::get_by_course($waitinglist->courseid);
+
+
+                //maximum users for this enrolment method
+                if ($this->{self::MFIELD_MAXENROLLED} > 0 && false) {
+                    // Max enrol limit specified.
+                    //$count = $entryman->get_allocated_listtotal_by_method(static::METHODTYPE);
+                    $count = $queueman->get_listtotal_by_method(static::METHODTYPE);
+                    if ($count >= $this->{self::MFIELD_MAXENROLLED}) {
+                        // Bad luck, no more self enrolments here.
+                        return get_string('noroomonlist', 'enrol_waitinglist');
+                    }
+                }
+
+            }
+
+            //checking cohort status (db calls)
+            if($checkuserenrolment){
+                if ($this->{self::MFIELD_COHORTONLY}) {
+                    require_once("$CFG->dirroot/cohort/lib.php");
+                    if (!cohort_is_member($this->{self::MFIELD_COHORTONLY}, $USER->id)) {
+                        $cohort = $DB->get_record('cohort', array('id' => $this->{self::MFIELD_COHORTONLY}));
+                        if (!$cohort) {
+                            return null;
+                        }
+                        $a = format_string($cohort->name, true, array('context' => \context::instance_by_id($cohort->contextid)));
+                        return markdown_to_html(get_string('cohortnonmemberinfo', 'enrol_self', $a));
+                    }
+                }
+            }
+
+            //basic waitinglist and plugin checks (no db calls)
+            if (!$this->is_active()) {
+                return get_string('canntenrol', 'enrol_self');
+            }
+
+
+            return true;
+        }catch (\Exception $ex) {
+            throw $ex;
         }
-        
-        //checking cohort status (db calls)
-        if($checkuserenrolment){
-			if ($this->{self::MFIELD_COHORTONLY}) {
-				require_once("$CFG->dirroot/cohort/lib.php");
-				if (!cohort_is_member($this->{self::MFIELD_COHORTONLY}, $USER->id)) {
-					$cohort = $DB->get_record('cohort', array('id' => $this->{self::MFIELD_COHORTONLY}));
-					if (!$cohort) {
-						return null;
-					}
-					$a = format_string($cohort->name, true, array('context' => \context::instance_by_id($cohort->contextid)));
-					return markdown_to_html(get_string('cohortnonmemberinfo', 'enrol_self', $a));
-				}
-			}
-        }
 
-		//basic waitinglist and plugin checks (no db calls)
-        if (!$this->is_active()) {
-            return get_string('canntenrol', 'enrol_self');
-        }
-
-
-        return true;
     }
 
     /**
@@ -532,7 +538,7 @@ class enrolmethodself extends \enrol_waitinglist\method\enrolmethodbase{
      */
     public function enrol_page_hook(\stdClass $waitinglist, $flagged) {
         global $CFG, $OUTPUT, $USER;
-        $isInvoice = false;
+        $isInvoice          = false;
 
         /* Clean Cookies    */
         setcookie('level_0',0);

@@ -1552,95 +1552,131 @@ class enrol_waitinglist_plugin extends enrol_plugin {
             $this->enrol_user($instance, $userid, null, $data->timestart, $data->timeend, $data->status);
         }
     }
-    
+
     /**
      * Send welcome email to specified user.
      *
-     * @param stdClass $instance
-     * @param stdClass $user user record
-     * @return void
+     * @param           $instance
+     * @param           $user
+     *
+     * @throws          Exception
+     *
+     * @updateDate      03/10/2016
+     * @author          eFaktor     (fbv)
+     * 
+     * Description
+     * Add the unenrol link
+     * 
+     * @updateDate      17/10/2016
+     * @author          eFaktor     (fbv)
+     * 
+     * Description
+     * Add the unenrol link if the deadlin allow it
      */
     protected function email_welcome_message($instance, $user) {
+        /* Variables */
         global $CFG, $DB;
+        $unEnrolURL     = null;
+        $unenrolLnk     = null;
+        $unenrolStr     = null;
+        $course         = null;
+        $context        = null;
+        $a              = null;
+        $message        = null;
+        $messagetext    = null;
+        $messagehtml    = null;
+        $subject        = null;
+        $rusers         = null;
+        $croles         = null;
+        $sort           = null;
+        $sortparams     = null;
+        $contact        = null;
 
-        $course = $DB->get_record('course', array('id'=>$instance->courseid), '*', MUST_EXIST);
-        $context = context_course::instance($course->id);
+        try {
+            $course = $DB->get_record('course', array('id'=>$instance->courseid), '*', MUST_EXIST);
+            $context = context_course::instance($course->id);
 
-        $a = new stdClass();
-        $a->coursename = format_string($course->fullname, true, array('context'=>$context));
-        $a->profileurl = "$CFG->wwwroot/user/view.php?id=$user->id&course=$course->id";
+            $a = new stdClass();
+            $a->coursename = format_string($course->fullname, true, array('context'=>$context));
+            $a->profileurl = "$CFG->wwwroot/user/view.php?id=$user->id&course=$course->id";
 
-        /**
-         * @updateDate  03/10/2016
-         * @author      eFaktor     (fbv)
-         *
-         * Description
-         * Add unenrol link
-         */
-        require_once('unenrol/unenrollib.php');
-        $unEnrolURL = \Unenrol_Waiting::UnenrolLink($user->id,$instance->courseid,$instance->id);
-        $unenrolLnk = "<a href='" . $unEnrolURL ."'>" . get_string('unenrol_me','enrol_waitinglist') . "</a>";
-        $unenrolStr = "</br>". get_string('unenrol_link','enrol_waitinglist',$unenrolLnk);
-        if (trim($instance->{ENROL_WAITINGLIST_FIELD_WELCOMEMESSAGE}) !== '') {
-            $message = $instance->customtext1;
-            $message = str_replace('{$a->coursename}', $a->coursename, $message);
-            $message = str_replace('{$a->profileurl}', $a->profileurl, $message);
-            if (strpos($message, '<') === false) {
-                // Plain text only.
-                $messagetext = $message . "</br>" . $unenrolStr;
-                $messagehtml = text_to_html($messagetext, null, false, true);
+            /**
+             * @updateDate  03/10/2016
+             * @author      eFaktor     (fbv)
+             *
+             * Description
+             * Add unenrol link
+             */
+            require_once('unenrol/unenrollib.php');
+            if (\Unenrol_Waiting::Can_Unenrol($instance->courseid,$instance->id)) {
+                $unEnrolURL = \Unenrol_Waiting::UnenrolLink($user->id,$instance->courseid,$instance->id);
+                $unenrolLnk = "<a href='" . $unEnrolURL ."'>" . get_string('unenrol_me','enrol_waitinglist') . "</a>";
+                $unenrolStr = "</br>". get_string('unenrol_link','enrol_waitinglist',$unenrolLnk);
+            }//if_can_unenrol
+            
+            if (trim($instance->{ENROL_WAITINGLIST_FIELD_WELCOMEMESSAGE}) !== '') {
+                $message = $instance->customtext1;
+                $message = str_replace('{$a->coursename}', $a->coursename, $message);
+                $message = str_replace('{$a->profileurl}', $a->profileurl, $message);
+                if (strpos($message, '<') === false) {
+                    // Plain text only.
+                    $messagetext = $message . "</br>" . $unenrolStr;
+                    $messagehtml = text_to_html($messagetext, null, false, true);
+                } else {
+                    // This is most probably the tag/newline soup known as FORMAT_MOODLE.
+                    $messagehtml = format_text($message, FORMAT_MOODLE, array('context'=>$context, 'para'=>false, 'newlines'=>true, 'filter'=>true));
+                    $messagehtml .= "</br>" . $unenrolStr;
+                    $messagetext = html_to_text($messagehtml);
+                }
             } else {
-                // This is most probably the tag/newline soup known as FORMAT_MOODLE.
-                $messagehtml = format_text($message, FORMAT_MOODLE, array('context'=>$context, 'para'=>false, 'newlines'=>true, 'filter'=>true));
-                $messagehtml .= "</br>" . $unenrolStr;
-                $messagetext = html_to_text($messagehtml);
+                $messagetext = get_string('welcometocoursetext', 'enrol_waitinglist', $a);
+                $messagetext .= "</br>" . $unenrolStr;
+                $messagehtml = text_to_html($messagetext, null, false, true);
             }
-        } else {
-            $messagetext = get_string('welcometocoursetext', 'enrol_waitinglist', $a);
-            $messagetext .= "</br>" . $unenrolStr;
-            $messagehtml = text_to_html($messagetext, null, false, true);
-        }
 
-        $subject = get_string('welcometocourse', 'enrol_waitinglist', format_string($course->fullname, true, array('context'=>$context)));
+            $subject = get_string('welcometocourse', 'enrol_waitinglist', format_string($course->fullname, true, array('context'=>$context)));
 
-        $rusers = array();
-        if (!empty($CFG->coursecontact)) {
-            $croles = explode(',', $CFG->coursecontact);
-            list($sort, $sortparams) = users_order_by_sql('u');
-            $rusers = get_role_users($croles, $context, true, '', 'r.sortorder ASC, ' . $sort, null, '', '', '', '', $sortparams);
-        }
-        if ($rusers) {
-            $contact = reset($rusers);
-        } else {
-            $contact = core_user::get_support_user();
-        }
+            $rusers = array();
+            if (!empty($CFG->coursecontact)) {
+                $croles = explode(',', $CFG->coursecontact);
+                list($sort, $sortparams) = users_order_by_sql('u');
+                $rusers = get_role_users($croles, $context, true, '', 'r.sortorder ASC, ' . $sort, null, '', '', '', '', $sortparams);
+            }
+            if ($rusers) {
+                $contact = reset($rusers);
+            } else {
+                $contact = core_user::get_support_user();
+            }
 
-        // Directly emailing welcome message rather than using messaging.
-        /**
-         * @updateDate  05/09/2016
-         * @author      eFaktor     (fbv)
-         *
-         * Description
-         * Add iCal file
-         *
-         * @updateDate  20/09/2016
-         * @author      eFaktor     (fbv)
-         *
-         * Description
-         * Only for classroom formats
-         */
-        if (($course->format == 'classroom') || ($course->format == 'classroom_frikomport')) {
-            $fileCal = $this->iCalendar_StartDate($course);
-            if ($fileCal) {
-                $messagehtml .= "</br></br>" . get_string('welcome_ical_attach','enrol_waitinglist') . "</br></br>";
-                $messagetext .= "</br></br>" . get_string('welcome_ical_attach','enrol_waitinglist') . "</br></br>";
-                email_to_user($user, $contact, $subject, $messagetext, $messagehtml,'iCal/'.$fileCal ,$fileCal);
+            // Directly emailing welcome message rather than using messaging.
+            /**
+             * @updateDate  05/09/2016
+             * @author      eFaktor     (fbv)
+             *
+             * Description
+             * Add iCal file
+             *
+             * @updateDate  20/09/2016
+             * @author      eFaktor     (fbv)
+             *
+             * Description
+             * Only for classroom formats
+             */
+            if (($course->format == 'classroom') || ($course->format == 'classroom_frikomport')) {
+                $fileCal = $this->iCalendar_StartDate($course);
+                if ($fileCal) {
+                    $messagehtml .= "</br></br>" . get_string('welcome_ical_attach','enrol_waitinglist') . "</br></br>";
+                    $messagetext .= "</br></br>" . get_string('welcome_ical_attach','enrol_waitinglist') . "</br></br>";
+                    email_to_user($user, $contact, $subject, $messagetext, $messagehtml,'iCal/'.$fileCal ,$fileCal);
+                }else {
+                    email_to_user($user, $contact, $subject, $messagetext, $messagehtml);
+                }//if_file_cal
             }else {
                 email_to_user($user, $contact, $subject, $messagetext, $messagehtml);
-            }//if_file_cal
-        }else {
-            email_to_user($user, $contact, $subject, $messagetext, $messagehtml);
-        }//classroom_format
+            }//classroom_format
+        }catch (\Exception $ex) {
+            throw $ex;
+        }//try_catch
     }
 
     /**

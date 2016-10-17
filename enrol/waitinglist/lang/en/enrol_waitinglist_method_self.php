@@ -34,3 +34,8 @@ $string['self_queuewarning_label'] ='This course is presently booked';
 $string['self_queuewarning'] = 'If you proceed you will be placed on a waiting list and will be enrolled automatically and informed by email when a place becomes available.
 
 Number of persons waiting in front of you: {$a}';
+
+$string['cannot_unenrol_date']    = 'Sorry, you cannot unenrol it after the deadline';
+$string['unenrolenddate']         = 'Deadline to unenrol';
+$string['unenrolenddate_help']    = 'If enabled, users can unenrol themselves until this date only.';
+$string['unenrolenddate_err']     = 'The unenrol deadline cannot be less than the currernt one.';
