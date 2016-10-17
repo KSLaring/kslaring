@@ -842,6 +842,7 @@ class local_course_page_renderer extends plugin_renderer_base {
         global $OUTPUT,$DB;
         $urlMessage = null;
         $lnkMessage = null;
+        $notIn      = 0;
         $out = '';
 
         $out .= html_writer::start_tag('div',array('class' => 'manager chp-block clearfix'));
@@ -864,7 +865,10 @@ class local_course_page_renderer extends plugin_renderer_base {
             }//if_user
 
             /* Teachers */
-            $lst_teachers = course_page::getCoursesTeachers($course_id,$user->id);
+            if ($user) {
+                $notIn = $user->id;
+            }
+            $lst_teachers = course_page::getCoursesTeachers($course_id,$notIn);
             if ($lst_teachers) {
                 $out .= '<div class="title_coordinator chp-title">' . get_string('home_teachers','local_course_page') . '</div>';
                 $url_user = new moodle_url('/user/profile.php');
