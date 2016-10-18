@@ -238,3 +238,15 @@ $string['selshortname']             = 'Kortnavn';
 $string['selshortname_help']        = 'Angir kortnavnet på det dupliserte kurset. Kortnavnet må være unikt.';
 $string['info_dup_course']          = 'Før du dupliserer kurset må du angi kurskategorien hvor duplikatet skal plasseres. Som standard lagres det dupliserte kurset i samme kategori som originalen.';
 $string['coursedetail_manual'] = 'Manuell påmelding av deltakere';
+
+$string['course_noed_teachers']              = 'Adding No Editing Teachers';
+$string['av_noed_teachers']                  = 'Available no editing teachers';
+$string['no_noed_teachers']                  = 'None no editing teachers';
+$string['sel_noed_teachers']                 = 'Selected no editing teachers';
+
+$string['pot_noed_teachers']                = 'Potential no editing teachers';
+$string['pot_noed_teachers_matching']       = 'Potential matching no editing teachers';
+$string['current_noed_teachers']            = 'Current no editing teachers';
+$string['current_noed_teachers_matching']   = 'Current no editing teachers matching';
+
+$string['noed_teachers']                    = 'No Editing Teachers';
