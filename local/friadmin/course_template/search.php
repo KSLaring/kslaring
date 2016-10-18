@@ -30,7 +30,7 @@ $groupName      = null;
 $groupData      = null;
 $parents        = array();
 
-$context        = CONTEXT_SYSTEM::instance();
+$context        = context_system::instance();
 $url            = new moodle_url('/local/friadmin/course_template/search.php');
 
 $PAGE->set_context($context);
