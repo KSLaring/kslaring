@@ -50,6 +50,7 @@ class CourseTemplate {
      * @param           $addSearch
      * @param           $removeSearch
      * @param           $course
+     * @param           $nonediting
      *
      * @throws          Exception
      *
@@ -59,7 +60,7 @@ class CourseTemplate {
      * Description
      * Initialize both selector for teachers
      */
-    public static function Init_Teachers_Selectors($addSearch,$removeSearch,$course) {
+    public static function Init_Teachers_Selectors($addSearch,$removeSearch,$course,$nonediting = 0) {
         /* Variables */
         $jsModule   = null;
         $name       = null;
@@ -90,14 +91,14 @@ class CourseTemplate {
                              );
 
             /* Teachers - Add Selector       */
-            self::Init_Teachers_AddSelector($addSearch,$jsModule,$course);
+            self::Init_Teachers_AddSelector($addSearch,$jsModule,$course,$nonediting);
             /* Teachers - Remove Selector    */
-            self::Init_Teachers_RemoveSelector($removeSearch,$jsModule,$course);
+            self::Init_Teachers_RemoveSelector($removeSearch,$jsModule,$course,$nonediting);
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
     }//Init_Managers_Selectors
-
+    
     /**
      * @param           $courseId
      * @param           $search
@@ -114,23 +115,23 @@ class CourseTemplate {
     public static function FindTeachers_Selectors($courseId,$search) {
         /* Variables */
         global $DB;
-        $params             = null;
-        $sql                = null;
-        $sqlSearch          = null;
-        $rdo                = null;
-        $context            = null;
-        $teachers           = array();
-        $currentTeachers    = array();
-        $groupName          = null;
+        $params                 = null;
+        $sql                    = null;
+        $sqlSearch              = null;
+        $rdo                    = null;
+        $context                = null;
+        $teachers               = array();
+        $currentTeachers        = array();
+        $groupName              = null;
 
         try {
             /* Context  */
-            $context = CONTEXT_COURSE::instance($courseId);
+            $context = context_course::instance($courseId);
 
             /* Search Criteria  */
             $params = array();
             $params['context']      = $context->id;
-            $params['archetype']    = 'teacher';
+            $params['archetype']    = 'editingteacher';
 
             /* SQL Instruction  */
             $sql = " SELECT		DISTINCT u.id,
@@ -212,19 +213,29 @@ class CourseTemplate {
     public static function FindPotentialTeachers_Selector($courseId,$search) {
         /* Variables */
         global $DB;
-        $params             = null;
-        $sql                = null;
-        $sqlSearch          = null;
-        $rdo                = null;
-        $context            = null;
-        $teachers           = array();
-        $potentialTeachers  = array();
-        $groupName          = null;
-        $total              = null;
+        $params                 = null;
+        $sql                    = null;
+        $sqlSearch              = null;
+        $rdo                    = null;
+        $context                = null;
+        $teachers               = array();
+        $potentialTeachers      = array();
+        $groupName              = null;
+        $total                  = null;
+        $lstTeachersStudents    = null;
 
         try {
             /* Context  */
-            $context = CONTEXT_COURSE::instance($courseId);
+            $context = context_course::instance($courseId);
+
+            /* Teachers Students Connected with */
+            $lstTeachersStudents = self::GetTeachersStudents($context->id);
+            if ($lstTeachersStudents) {
+                $lstTeachersStudents = implode(',',$lstTeachersStudents);
+
+            }else {
+                $lstTeachersStudents = 0;
+            }
 
             /* Search Criteria  */
             $params = array();
@@ -235,18 +246,10 @@ class CourseTemplate {
                             u.firstname,
                             u.lastname,
                             u.email
-                     FROM		mdl_user	u
-                        -- NO ENROLLED AS STUDENTS AND TEACHER
-                         LEFT JOIN (
-                                    SELECT		ra.userid
-                                    FROM		{role_assignments}	ra
-                                        JOIN	{role}				r		ON 		r.id 			= ra.roleid
-                                                                            AND		r.archetype 	IN ('student','teacher','editingteacher')
-                                    WHERE		ra.contextid    = :context
-                                  ) ra ON ra.userid = u.id
+                     FROM		{user}	u
                      WHERE 	u.deleted = 0
                         AND	u.username != 'guest'
-                        AND ra.userid IS NULL ";
+                        AND u.id NOT IN ($lstTeachersStudents) ";
 
             /* Search   */
             if ($search) {
@@ -302,7 +305,206 @@ class CourseTemplate {
 
     /**
      * @param           $courseId
+     * @param           $search
+     * 
+     * @return          array
+     * @throws          Exception
+     * 
+     * @creationDate    18/10/2016
+     * @author          eFaktor     (fbv)
+     * 
+     * Description
+     * Find potential users for non editing teachers
+     */
+    public static function FindNoEdPotentialTeachers_Selector($courseId,$search) {
+        /* Variables */
+        global $DB;
+        $params                 = null;
+        $sql                    = null;
+        $sqlSearch              = null;
+        $rdo                    = null;
+        $context                = null;
+        $noEdTeachers           = array();
+        $potentialNoEdTeachers  = array();
+        $groupName              = null;
+        $total                  = null;
+        $lstTeachersStudents    = null;
+
+        try {
+            /* Context  */
+            $context = context_course::instance($courseId);
+
+            /* Teachers Students Connected with */
+            $lstTeachersStudents = self::GetTeachersStudents($context->id,true);
+            if ($lstTeachersStudents) {
+                $lstTeachersStudents = implode(',',$lstTeachersStudents);
+            }else {
+                $lstTeachersStudents = 0;
+            }
+
+            /* SQL Instruction */
+            $sql = " SELECT	u.id,
+                            u.firstname,
+                            u.lastname,
+                            u.email
+                     FROM		{user}	u
+                     WHERE 	u.deleted = 0
+                        AND	u.username != 'guest'
+                        AND u.id NOT IN ($lstTeachersStudents) ";
+
+            /* Search   */
+            if ($search) {
+                $extra = explode(' ',$search);
+                foreach ($extra as $str) {
+                    if ($sqlSearch) {
+                        $sqlSearch .= ") AND (";
+                    }
+                    $sqlSearch .= " LOCATE('" . $str . "',u.firstname)
+                                    OR
+                                    LOCATE('" . $str . "',u.lastname)
+                                    OR
+                                    LOCATE('" . $str . "',CONCAT(u.firstname,' ',u.lastname))
+                                    OR
+                                    LOCATE('" . $str . "',u.email) ";
+                }//if_search_opt
+
+                $sql .=  " AND ($sqlSearch) ";
+            }//if_search
+
+            /* Order Criteria */
+            $sql .= "  ORDER BY 	u.firstname, u.lastname ";
+
+            /* Execute */
+            $rdo = $DB->get_records_sql($sql,$params);
+            if($rdo) {
+                $total = count($rdo);
+                if ($total > MAX_TEACHERS_PAGE) {
+                    $potentialNoEdTeachers = self::TooMany_TeachersSelector($search,$total);
+
+                }else {
+                    if ($search) {
+                        $groupName = get_string('pot_noed_teachers_matching', 'local_friadmin', $search);
+                    }else {
+                        $groupName = get_string('pot_noed_teachers', 'local_friadmin');
+                    }//if_serach
+
+                    /* Get Teachers    */
+                    foreach ($rdo as $instance) {
+                        $noEdTeachers[$instance->id] = $instance->firstname . " " . $instance->lastname . "(" . $instance->email . ")";
+                    }//for_Rdo
+
+                    /* Add Users */
+                    $potentialNoEdTeachers[$groupName] = $noEdTeachers;
+                }//if_tooMany
+            }//if_rdo
+
+            return $potentialNoEdTeachers;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//FindNoEdPotentialTeachers_Selector
+
+    /**
+     * @param           $courseId
+     * @param           $search
+     * 
+     * @return          array
+     * @throws          Exception
+     * 
+     * @creationDate    18/10/2016
+     * @author          eFaktor     (fbv)
+     * 
+     * Description
+     * Find no editing teachers connected with the course
+     */
+    public static function FindNoEdTeachers_Selectors($courseId,$search) {
+        /* Variables */
+        global $DB;
+        $params                 = null;
+        $sql                    = null;
+        $sqlSearch              = null;
+        $rdo                    = null;
+        $context                = null;
+        $noEdTeachers           = array();
+        $currentNoEdTeachers    = array();
+        $groupName              = null;
+        $total                  = null;
+
+        try {
+            /* Context  */
+            $context = context_course::instance($courseId);
+
+            /* Search Criteria  */
+            $params = array();
+            $params['context']      = $context->id;
+
+            /* SQL Instruction */
+            $sql = " SELECT	DISTINCT 	u.id,
+                                        u.firstname,
+                                        u.lastname,
+                                        u.email
+                     FROM		{user}				u
+                        JOIN	{role_assignments}	ra	ON		ra.userid 		= u.id
+                                                        AND     ra.contextid    = :context
+                        JOIN	{role}				r	ON		r.id 			= ra.roleid
+                                                        AND		r.archetype 	IN ('teacher')
+                     WHERE	u.deleted = 0
+                        AND	u.username != 'guest' ";
+
+            /* Search   */
+            if ($search) {
+                $extra = explode(' ',$search);
+                foreach ($extra as $str) {
+                    if ($sqlSearch) {
+                        $sqlSearch .= ") AND (";
+                    }
+                    $sqlSearch .= " LOCATE('" . $str . "',u.firstname)
+                                    OR
+                                    LOCATE('" . $str . "',u.lastname)
+                                    OR
+                                    LOCATE('" . $str . "',CONCAT(u.firstname,' ',u.lastname))
+                                    OR
+                                    LOCATE('" . $str . "',u.email) ";
+                }//if_search_opt
+
+                $sql .=  " AND ($sqlSearch) ";
+            }//if_search
+
+            /* Order Criteria */
+            $sql .= "  ORDER BY 	u.firstname, u.lastname ";
+
+            /* Execute */
+            $rdo = $DB->get_records_sql($sql,$params);
+            if ($rdo) {
+                if ($search) {
+                    $groupName = get_string('current_noed_teachers_matching', 'local_friadmin', $search);
+                }else {
+                    $groupName = get_string('current_noed_teachers', 'local_friadmin');
+                }//if_serach
+
+                /* Get Teachers    */
+                foreach ($rdo as $instance) {
+                    $noEdTeachers[$instance->id] = $instance->firstname . " " . $instance->lastname . "(" . $instance->email . ")";
+                }//for_Rdo
+
+                /* Add users    */
+                $currentNoEdTeachers[$groupName] = $noEdTeachers;
+            }else {
+                /* Info to return */
+                $groupName = get_string('no_noed_teachers','local_friadmin');
+                $currentNoEdTeachers[$groupName]  = array('');
+            }//if_rdo
+
+            return $currentNoEdTeachers;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//FindNoEdTeachers_Selectors
+
+    /**
+     * @param           $courseId
      * @param           $teachers
+     * @param           $noEditing
      *
      * @throws          Exception
      *
@@ -311,8 +513,14 @@ class CourseTemplate {
      *
      * Description
      * Assign/Enrol user as a teacher
+     * 
+     * @updateDate      18/10/2016
+     * @author          eFaktor     (fbv)
+     * 
+     * Description
+     * Assign a non editing teacher
      */
-    public static function AssignTeacher($courseId,$teachers) {
+    public static function AssignTeacher($courseId,$teachers,$noEditing = false) {
         /* Variables */
         global $DB;
         $rdo        = null;
@@ -323,7 +531,12 @@ class CourseTemplate {
             $plugin = enrol_get_plugin('manual');
 
             /* Get Role Id for teacher  */
-            $rdo = $DB->get_record('role',array('archetype' => 'teacher'));
+            if ($noEditing) {
+                $rdo = $DB->get_record('role',array('archetype' => 'teacher'));
+            }else {
+                $rdo = $DB->get_record('role',array('archetype' => 'editingteacher'));
+            }
+
             if ($rdo) {
                 $instance = $DB->get_record('enrol',array('courseid' => $courseId,'enrol' => 'manual'));
                 /* Assign teacher role  */
@@ -340,6 +553,7 @@ class CourseTemplate {
     /**
      * @param           $courseId
      * @param           $teachers
+     * @param           $noEditing
      *
      * @throws          Exception
      *
@@ -348,8 +562,14 @@ class CourseTemplate {
      *
      * Description
      * Unassign the user as a teacher. Unenrol
+     * 
+     * @upateDate       18/10/2016
+     * @author          eFaktor     (fbv)
+     * 
+     * Description
+     * Unassign the user as no editing teacher
      */
-    public static function UnassignTeacher($courseId,$teachers) {
+    public static function UnassignTeacher($courseId,$teachers,$noEditing = false) {
         /* Variables */
         global $DB;
         $rdo        = null;
@@ -360,7 +580,12 @@ class CourseTemplate {
             $plugin = enrol_get_plugin('manual');
 
             /* Get Role Id for teacher  */
-            $rdo = $DB->get_record('role',array('archetype' => 'teacher'));
+            if ($noEditing) {
+                $rdo = $DB->get_record('role',array('archetype' => 'teacher'));
+            }else {
+                $rdo = $DB->get_record('role',array('archetype' => 'editingteacher'));
+            }
+
             if ($rdo) {
                 $instance = $DB->get_record('enrol',array('courseid' => $courseId,'enrol' => 'manual'));
                 /* Unassign teacher role  */
@@ -754,6 +979,63 @@ class CourseTemplate {
     /***********/
 
     /**
+     * @param           $contextId
+     * @param           bool $noEditing
+     * 
+     * @return          array
+     * @throws          Exception
+     * 
+     * @creationDate    18/10/2016
+     * @author          eFaktor     (fbv)
+     * 
+     * Description
+     * Get teaches, noneditingteachers and students connected with the corse
+     */
+    private static function GetTeachersStudents($contextId,$noEditing = false) {
+        /* Variables */
+        global $DB;
+        $rdo                    = null;
+        $sql                    = null;
+        $params                 = null;
+        $sqlEditing             = null;
+        $lstTeachersStudents    = array();
+
+        try {
+            /* Search Criteria  */
+            $params = array();
+            $params['context']      = $contextId;
+
+            if ($noEditing) {
+                $sqlEditing = " AND	r.archetype 	IN ('editingteacher','student','teacher')";
+            }else {
+                $sqlEditing = " AND	r.archetype 	IN ('editingteacher','student') ";
+            }
+
+            /* SQL Instruction  */
+            $sql = " SELECT	DISTINCT u.id
+                     FROM		{user}				u
+                        JOIN	{role_assignments}	ra	ON	ra.userid 		= u.id
+                                                        AND ra.contextid    = :context
+                        JOIN	{role}				r	ON	r.id 			= ra.roleid
+                                                        $sqlEditing    
+                     WHERE	u.deleted = 0
+                        AND	u.username != 'guest' ";
+
+            /* Execute */
+            $rdo = $DB->get_records_sql($sql,$params);
+            if ($rdo) {
+                foreach ($rdo as $instance) {
+                    $lstTeachersStudents[$instance->id] = $instance->id;
+                }//for_rdo
+            }
+
+            return $lstTeachersStudents;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//GetTeachersStudents
+
+    /**
      * @param           $courseId
      * @param           $courseTemplate
      *
@@ -1002,6 +1284,7 @@ class CourseTemplate {
      * @param           $search
      * @param           $jsModule
      * @param           $course
+     * @param           $nonediting
      *
      * @throws          Exception
      *
@@ -1011,7 +1294,7 @@ class CourseTemplate {
      * Description
      * Initialize selector for adding teachers
      */
-    private static function Init_Teachers_AddSelector($search,$jsModule,$course) {
+    private static function Init_Teachers_AddSelector($search,$jsModule,$course,$nonediting) {
         /* Variables */
         global $USER,$PAGE;
         $options    = null;
@@ -1019,7 +1302,12 @@ class CourseTemplate {
         try {
             /* Initialise Options Selector  */
             $options = array();
-            $options['class']       = 'FindPotentialTeachers_Selector';
+            if ($nonediting) {
+                $options['class']   = 'FindNoEdPotentialTeachers_Selector';
+            }else {
+                $options['class']   = 'FindPotentialTeachers_Selector';
+            }
+
             $options['name']        = 'addselect';
             $options['multiselect'] = true;
 
@@ -1028,7 +1316,7 @@ class CourseTemplate {
             $USER->teacher_selectors[$hash] = $options;
 
             $PAGE->requires->js_init_call('M.core_user.init_teachers_selector',
-                                          array('addselect',$hash, $course, $search),
+                                          array('addselect',$hash, $course,$search),
                                           false,
                                           $jsModule
                                          );
@@ -1041,6 +1329,7 @@ class CourseTemplate {
      * @param           $search
      * @param           $jsModule
      * @param           $course
+     * @param           $nonediting
      *
      * @throws          Exception
      *
@@ -1050,7 +1339,7 @@ class CourseTemplate {
      * Description
      * initialize selector for removing teachers
      */
-    private static function Init_Teachers_RemoveSelector($search,$jsModule,$course) {
+    private static function Init_Teachers_RemoveSelector($search,$jsModule,$course,$nonediting) {
         /* Variables */
         global $USER,$PAGE;
         $options    = null;
@@ -1058,7 +1347,11 @@ class CourseTemplate {
         try {
             /* Initialise Options Selector  */
             $options = array();
-            $options['class']       = 'FindTeachers_Selectors';
+            if ($nonediting) {
+                $options['class']   = 'FindNoEdTeachers_Selectors';
+            }else {
+                $options['class']   = 'FindTeachers_Selectors';
+            }
             $options['name']        = 'removeselect';
             $options['multiselect'] = true;
 
@@ -1067,9 +1360,9 @@ class CourseTemplate {
             $USER->teacher_selectors[$hash] = $options;
 
             $PAGE->requires->js_init_call('M.core_user.init_teachers_selector',
-                array('removeselect',$hash, $course, $search),
-                false,
-                $jsModule
+                                          array('removeselect',$hash, $course,$search),
+                                          false,
+                                          $jsModule
             );
         }catch (Exception $ex) {
             throw $ex;

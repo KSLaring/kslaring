@@ -205,12 +205,6 @@ class ct_enrolment_settings_form extends moodleform {
 
         list($course,$enrolMethod,$instance,$ct) = $this->_customdata;
         
-        if (isset($data['unenrolenddate'])) {
-            if (($data['unenrolenddate']) && ($data['unenrolenddate'] < time())) {
-                $errors['unenrolenddate'] = get_string('unenrolenddate_err','enrol_waitinglist');
-            }
-        }//unenrolenddate
-
         return $errors;
     }
 }//ct_enrolment_settings_form

@@ -204,12 +204,6 @@ class enrolmethodself_form extends \moodleform {
             }
         }
 		
-        if (isset($data['unenrolenddate'])) {
-            if (($data['unenrolenddate']) && ($data['unenrolenddate'] < time())) {
-                $errors['unenrolenddate'] = get_string('unenrolenddate_err','enrol_waitinglist');
-            }
-        }//unenrolenddate
-		
 		/*
 
         if ($data['status'] == ENROL_INSTANCE_ENABLED) {

@@ -1,16 +1,16 @@
 <?php
 /**
- * Course Template - Teachers
+ * Course Template - Non editing Teachers
  *
  * @package         local
  * @subpackage      friadmin/course_template
  * @copyright       2014        eFaktor {@link http://www.efaktor.no}
  *
- * @creationDate    20/06/2016
+ * @creationDate    18/10/2016
  * @author          eFaktor     (fbv)
  *
  * Description
- * Course create form template. Adding teachers
+ * Course create form template. Adding non editing teachers
  */
 
 require_once('../../../config.php');
@@ -26,13 +26,12 @@ $courseTemplate = required_param('ct',PARAM_INT);
 $addSearch      = optional_param('addselect_searchtext', '', PARAM_RAW);
 $removeSearch   = optional_param('removeselect_searchtext', '', PARAM_RAW);
 $contextCourse  = context_course::instance($courseId);
-$url            = new moodle_url('/local/friadmin/course_template/course_teacher.php',array('id' => $courseId,'ct' => $courseTemplate));
-$redirectUrl    = new moodle_url('/local/friadmin/course_template/course_noed_teacher.php',array('id' => $courseId,'ct' => $courseTemplate));
+$url            = new moodle_url('/local/friadmin/course_template/course_noed_teacher.php',array('id' => $courseId,'ct' => $courseTemplate));
 $returnUrl      = new moodle_url('/local/friadmin/course_template/course_template.php',array('id' => $courseId));
 
 $course         = get_course($courseId);
 $strTitle       = get_string('coursetemplate_title', 'local_friadmin');
-$strSubTitle    = get_string('course_teachers', 'local_friadmin');
+$strSubTitle    = get_string('course_noed_teachers', 'local_friadmin');
 $instance       = null;
 
 /* Check Permissions/Capability */
@@ -52,26 +51,26 @@ $PAGE->navbar->add($strTitle);
 $PAGE->navbar->add($strSubTitle);
 
 /* FORM */
-$form = new ct_enrolment_teachers_form(null,array($courseId,$courseTemplate,$addSearch,$removeSearch));
+$form = new ct_enrolment_noed_teachers_form(null,array($courseId,$courseTemplate,$addSearch,$removeSearch));
 if ($form->is_cancelled()) {
     $_POST = array();
     redirect($returnUrl);
 }else if($data = $form->get_data()) {
     if (isset($data->submitbutton) && ($data->submitbutton)) {
         $_POST = array();
-        redirect($redirectUrl);
+        redirect($returnUrl);
     }else {
         /* Add Teachers     */
         if (!empty($data->add_sel)) {
             if (isset($data->addselect)) {
-                CourseTemplate::AssignTeacher($courseId,$data->addselect);
+                CourseTemplate::AssignTeacher($courseId,$data->addselect,true);
             }//if_addselect
         }//if_add
 
         /* Remove Teachers  */
         if (!empty($data->remove_sel)) {
             if (isset($data->removeselect)) {
-                CourseTemplate::UnassignTeacher($courseId,$data->removeselect);
+                CourseTemplate::UnassignTeacher($courseId,$data->removeselect,true);
             }//if_removeselect
         }//if_remove
     }//if_continues
@@ -85,7 +84,7 @@ echo $OUTPUT->heading($strSubTitle,3);
 $form->display();
 
 /* Initialise Selectors */
-CourseTemplate::Init_Teachers_Selectors($addSearch,$removeSearch,$courseId);
+CourseTemplate::Init_Teachers_Selectors($addSearch,$removeSearch,$courseId,1);
 
 /* Footer   */
 echo $OUTPUT->footer();
