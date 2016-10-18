@@ -244,3 +244,15 @@ must be unique.';
 $string['info_dup_course']          = 'Before starting to duplicate the course, you need to determine in 
 which category the course will be saved. The actual course category is selected by default.';
 $string['coursedetail_manual']      = 'Manual enrol';
+
+$string['course_noed_teachers']              = 'Adding No Editing Teachers';
+$string['av_noed_teachers']                  = 'Available no editing teachers';
+$string['no_noed_teachers']                  = 'None no editing teachers';
+$string['sel_noed_teachers']                 = 'Selected no editing teachers';
+
+$string['pot_noed_teachers']                = 'Potential no editing teachers';
+$string['pot_noed_teachers_matching']       = 'Potential matching no editing teachers';
+$string['current_noed_teachers']            = 'Current no editing teachers';
+$string['current_noed_teachers_matching']   = 'Current no editing teachers matching';
+
+$string['noed_teachers']                    = 'No Editing Teachers';
