@@ -1495,7 +1495,10 @@ class enrol_waitinglist_plugin extends enrol_plugin {
      * @param int $oldid
      */
     public function restore_instance(restore_enrolments_structure_step $step, stdClass $data, $course, $oldid) {
+        /* Variables */
         global $DB;
+        $newInstance = null;
+
         // There is only I waitinglist enrol instance allowed per course.
         if ($instances = $DB->get_records('enrol', array('courseid'=>$data->courseid, 'enrol'=>'waitinglist'), 'id')) {
             $instance = reset($instances);
@@ -1504,6 +1507,25 @@ class enrol_waitinglist_plugin extends enrol_plugin {
             $instanceid = $this->add_instance($course, (array)$data);
         }
         $step->set_mapping('enrol', $oldid, $instanceid);
+
+        /**
+         * @updateDate      19/10/2016
+         * @author          eFaktor     (fbv)
+         *
+         * Description
+         * Add methods connected and its status
+         */
+        $rdo = $DB->get_records('enrol_waitinglist_method',array('waitinglistid' => $oldid));
+        if ($rdo) {
+            foreach ($rdo as $instance) {
+                $newInstance = $instance;
+                $newInstance->courseid = $data->courseid;
+                $newInstance->waitinglistid = $instanceid;
+                unset($newInstance->id);
+
+                $DB->insert_record('enrol_waitinglist_method',$newInstance);
+            }
+        }//if_Rdo
     }
 
     /**
