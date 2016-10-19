@@ -343,52 +343,162 @@ class mod_registerattendance_view_table_sql_model extends mod_registerattendance
     /**
      * Add the municipality and workplace data
      *
-     * @param array $data Array with user data objects
+     * @param       $data       Array
+     * @throws      Exception
      *
-     * @return array The extended user data
-     * @throws Exception
+     * @updateDate  19/10/2016
+     * @author      eFaktor (fbv)
+     *
+     * Description
+     * Get workplace form the course or from competence profile
      */
     protected function add_municipality_workplace(&$data) {
         /* Variables */
         global $CFG;
-        $inusers = null;
-        $usersmuni = null;
-        $usersworkplace = null;
+        $inUsers        = null;
+        $notIn          = null;
+        $usersMuni      = null;
+        $usersWorkplace = null;
 
         try {
             if ($data) {
-                $inusers = implode(',', array_keys($data));
+                $inUsers = implode(',',array_keys($data));
 
                 /* Add Municipalities */
                 if (file_exists($CFG->dirroot . '/user/profile/field/municipality/municipalitylib.php')) {
                     require_once($CFG->dirroot . '/user/profile/field/municipality/municipalitylib.php');
 
                     /* Get Municipalities   */
-                    $usersmuni = MunicipalityProfile::MunicipalitiesConnected($inusers);
-                    if ($usersmuni) {
-                        foreach ($usersmuni as $info) {
+                    $usersMuni = MunicipalityProfile::MunicipalitiesConnected($inUsers);
+                    if ($usersMuni) {
+                        foreach ($usersMuni as $info) {
                             $data[$info->userid]->municipality = $info->municipality;
                         }//muni
                     }//if_usersMuni
                 }//municipality
 
                 /* Add Workplace    */
-                if (file_exists($CFG->dirroot . '/user/profile/field/competence/competencelib.php')) {
-                    require_once($CFG->dirroot . '/user/profile/field/competence/competencelib.php');
+                /**
+                 * First, it gets workspace connected with course via enrolment
+                 */
+                $usersWorkplace = self::GetWorkplaceEnrolled($this->cm->course,$inUsers);
 
-                    /* Get Workplaces */
-                    $usersworkplace = Competence::WorkplaceConnectedByLevel($inusers, 3);
-                    if ($usersworkplace) {
-                        foreach ($usersworkplace as $id => $workplace) {
-                            $data[$id]->workplace = $workplace;
-                        }//info
-                    }//if_UsersWorkplace
-                }//workplace
+                /**
+                 * Second, it gets workplace from competence profile for users without company
+                 * in the enrolment method.
+                 */
+                if ($usersWorkplace) {
+                    $notIn      = implode(',',array_keys($usersWorkplace));
+                    $inUsers    = array_diff_key($data,$usersWorkplace);
+                }else {
+                    $notIn = 0;
+                }
+                self::GetWorkspaceCompetence($usersWorkplace,$inUsers,$notIn);
+
+                /*
+                 * Add workplace to the user data
+                 */
+                if ($usersWorkplace) {
+                    foreach ($usersWorkplace as $id => $workplace) {
+                        $data[$id]->workplace = $workplace;
+                    }//info
+                }//if_UsersWorkplace
             }//if_data
-        } catch (Exception $ex) {
+        }catch (Exception $ex) {
             throw $ex;
         }//try_catch
     }//add_municipality_workplace
+
+    /**
+     * @param           $courseId
+     * @param           $inUsers
+     *
+     * @return          array
+     * @throws          Exception
+     *
+     * @creationDate    19/10/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Get workspace connected with the course
+     */
+    private static function GetWorkplaceEnrolled($courseId,$inUsers) {
+        /* Variables */
+        global $DB;
+        $rdo            = null;
+        $sql            = null;
+        $params         = null;
+        $usersWorkplace = array();
+
+        try {
+            /* Search Criteria  */
+            $params = array();
+            $params['course'] = $courseId;
+
+            /* SQL Instruction  */
+            $sql = " SELECT	ewq.userid,
+                            CONCAT(co.industrycode, ' - ',co.name) 	as 'workplace'
+                     FROM		{enrol_waitinglist_queue}	ewq 
+                        JOIN	{report_gen_companydata}	co	ON co.id = ewq.companyid	
+                     WHERE	ewq.courseid 	= :course
+                        AND	ewq.companyid  != 0
+                        AND ewq.userid IN ($inUsers) ";
+
+            /* Execute */
+            $rdo = $DB->get_records_sql($sql,$params);
+            if ($rdo) {
+                foreach ($rdo as $instance) {
+                    $usersWorkplace[$instance->userid] = $instance->workplace;
+                }//for_rdo
+            }//if_redo
+
+            return $usersWorkplace;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//GetWorkplaceEnrolled
+
+    /**
+     * @param           $usersWorkplace
+     * @param           $inUsers
+     * @param           $noIn
+     *
+     * @throws          Exception
+     *
+     * @creationDate    19/10/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Get worskplace from user profile
+     */
+    private static function GetWorkspaceCompetence(&$usersWorkplace,$inUsers,$noIn) {
+        /* Variables    */
+        global $DB;
+        $sql = null;
+        $rdo = null;
+
+        try {
+            /* SQL Instruction  */
+            $sql = " SELECT 	uic.userid,
+                                GROUP_CONCAT(DISTINCT CONCAT(co.industrycode, ' - ',co.name) ORDER BY co.industrycode,co.name SEPARATOR '#SE#') 	as 'workplace'
+                     FROM		{user_info_competence_data}	uic
+                        JOIN	{report_gen_companydata}	co	ON co.id = uic.companyid
+                     WHERE	uic.userid IN 		($inUsers)
+                        AND	uic.userid NOT IN 	($noIn)
+                        AND uic.level = 3
+                     GROUP BY uic.userid ";
+
+            /* Execute  */
+            $rdo = $DB->get_records_sql($sql);
+            if ($rdo) {
+                foreach ($rdo as $instance) {
+                    $usersWorkplace[$instance->userid] = str_replace('#SE#',',',$instance->workplace);
+                }//for
+            }//if_rdo
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//GetWorkspaceCompetence
 
     protected function add_municipality_workplace_old($data) {
         $result = $data;
