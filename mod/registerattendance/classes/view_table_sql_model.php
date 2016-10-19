@@ -389,7 +389,7 @@ class mod_registerattendance_view_table_sql_model extends mod_registerattendance
                  */
                 if ($usersWorkplace) {
                     $notIn      = implode(',',array_keys($usersWorkplace));
-                    $inUsers    = implode(',',array_diff_key($data,$usersWorkplace));
+                    $inUsers    = implode(',',array_keys(array_diff_key($data,$usersWorkplace)));
                 }else {
                     $notIn = 0;
                 }
