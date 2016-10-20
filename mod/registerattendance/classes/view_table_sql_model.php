@@ -392,7 +392,10 @@ class mod_registerattendance_view_table_sql_model extends mod_registerattendance
                 }else {
                     $notIn = 0;
                 }
-                self::GetWorkspaceCompetence($usersWorkplace,$inUsers,$notIn);
+                if ($inUsers) {
+                    self::GetWorkspaceCompetence($usersWorkplace,$inUsers,$notIn);
+                }
+
 
                 /*
                  * Add workplace to the user data
