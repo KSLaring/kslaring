@@ -1513,9 +1513,10 @@ class enrol_waitinglist_plugin extends enrol_plugin {
         $rdo = $DB->get_records('enrol_waitinglist_method',array('waitinglistid' => $oldid));
         if ($rdo) {
             foreach ($rdo as $instance) {
-                $newInstance = $instance;
-                $newInstance->courseid = $data->courseid;
-                $newInstance->waitinglistid = $instanceid;
+                $newInstance                    = null;
+                $newInstance                    = $instance;
+                $newInstance->courseid          = $data->courseid;
+                $newInstance->waitinglistid     = $instanceid;
                 unset($newInstance->id);
 
                 $DB->insert_record('enrol_waitinglist_method',$newInstance);
@@ -1523,6 +1524,17 @@ class enrol_waitinglist_plugin extends enrol_plugin {
         }//if_Rdo
     }
 
+    private function restore_submethods($odlId,$newId,$courseId) {
+        /* Variables */
+        global $DB;
+        
+        try {
+            
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//restore_submethods
+    
     /**
      * Restore user enrolment.
      *
