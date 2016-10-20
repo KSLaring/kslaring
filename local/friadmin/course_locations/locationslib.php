@@ -152,13 +152,19 @@ class CourseLocations {
             /* Execute  */
             $rdo = $DB->get_record_sql($sql,$params);
             if ($rdo) {
-                /* Competence   Info    */
-                $myCompetence = new stdClass();
-                $myCompetence->jobRoles     = $rdo->jobroles;
-                $myCompetence->levelZero    = $rdo->levelzero;
-                $myCompetence->levelOne     = $rdo->levelone;
-                $myCompetence->levelTwo     = $rdo->leveltwo;
-                $myCompetence->levelThree   = $rdo->levelthree;
+                if (($rdo->jobroles)  ||
+                    ($rdo->levelzero) ||
+                    ($rdo->levelone)  ||
+                    ($rdo->leveltwo)  ||
+                    ($rdo->levelthree)) {
+                    /* Competence   Info    */
+                    $myCompetence = new stdClass();
+                    $myCompetence->jobRoles     = $rdo->jobroles;
+                    $myCompetence->levelZero    = $rdo->levelzero;
+                    $myCompetence->levelOne     = $rdo->levelone;
+                    $myCompetence->levelTwo     = $rdo->leveltwo;
+                    $myCompetence->levelThree   = $rdo->levelthree;
+                }//if_data
             }//if_rdo
 
             return $myCompetence;
