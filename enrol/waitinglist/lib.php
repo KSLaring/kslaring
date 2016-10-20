@@ -1761,9 +1761,9 @@ class enrol_waitinglist_plugin extends enrol_plugin {
                     $iCal .= "UID:"             . $uid . "\n";
                     $iCal .= "DTSTART:"         . date('Ymd\THis', $course->startdate + 28800) . "\n";
                     if ($location) {
-                        $iCal .= "LOCATION:"        . $location->name . "\n" . $location->address. "\n";
+                        $iCal .= "LOCATION:"        . $location->name . '\n' . $location->address. "\n";
                         if ($location->map) {
-                            $iCal .= "URL;VALUE=URI:" . $location->map . "\n";
+                            $iCal .= "URL;VALUE=URI:" . $location->map . '\n';
                         }
 
                         if ($location->detail) {
@@ -1836,14 +1836,14 @@ class enrol_waitinglist_plugin extends enrol_plugin {
                 $infoLocation->name        = $rdo->name;
                 /* Detail */
                 $infoLocation->detail      = get_string('location_floor','local_friadmin') . ': ' . $rdo->floor;
-                $infoLocation->detail     .= "\n";
+                $infoLocation->detail     .= '\n';
                 $infoLocation->detail     .= get_string('location_room','local_friadmin')  . ': ' . $rdo->room;
-                $infoLocation->detail     .= "\n";
+                $infoLocation->detail     .= '\n';
                 /* Address  */
                 $infoLocation->address     = $rdo->street;
-                $infoLocation->address    .= "\n";
+                $infoLocation->address    .= '\n';
                 $infoLocation->address    .= $rdo->postcode . ' ' . $rdo->city;
-                $infoLocation->address    .= "\n";
+                $infoLocation->address    .= '\n';
                 /* Url Map */
                 $infoLocation->map         = $rdo->urlmap;
             }//if_Rdo
