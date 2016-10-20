@@ -1761,13 +1761,13 @@ class enrol_waitinglist_plugin extends enrol_plugin {
                     $iCal .= "UID:"             . $uid . "\n";
                     $iCal .= "DTSTART:"         . date('Ymd\THis', $course->startdate + 28800) . "\n";
                     if ($location) {
-                        $iCal .= "LOCATION:"        . $location->name . '\n' . $location->address. "\n";
+                        $iCal .= "LOCATION:"        . $location->name . "\n" . $location->address. "\n";
                         if ($location->map) {
-                            $iCal .= "URL;VALUE=URI:" . $location->map . '\n';
+                            $iCal .= "URL;VALUE=URI:" . $location->map . "\n";
                         }
 
                         if ($location->detail) {
-                            $iCal .= "DESCRIPTION:"     . $location->detail . "\n";
+                            $iCal .= "DESCRIPTION:"     . str_replace(',','\,',$location->detail) . "\n";
                         }
                     }//if_location
 
@@ -1833,16 +1833,16 @@ class enrol_waitinglist_plugin extends enrol_plugin {
             if ($rdo) {
                 /* Info Location    */
                 $infoLocation = new stdClass();
-                $infoLocation->name        = $rdo->name;
+                $infoLocation->name        = str_replace(',','\,',$rdo->name);
                 /* Detail */
-                $infoLocation->detail      = get_string('location_floor','local_friadmin') . ': ' . $rdo->floor;
+                $infoLocation->detail      = get_string('location_floor','local_friadmin') . ': ' . str_replace(',','\,',$rdo->floor);
                 $infoLocation->detail     .= '\n';
-                $infoLocation->detail     .= get_string('location_room','local_friadmin')  . ': ' . $rdo->room;
+                $infoLocation->detail     .= get_string('location_room','local_friadmin')  . ': ' . str_replace(',','\,',$rdo->room);
                 $infoLocation->detail     .= '\n';
                 /* Address  */
-                $infoLocation->address     = $rdo->street;
+                $infoLocation->address     = str_replace(',','\,',$rdo->street);
                 $infoLocation->address    .= '\n';
-                $infoLocation->address    .= $rdo->postcode . ' ' . $rdo->city;
+                $infoLocation->address    .= $rdo->postcode . ' ' . str_replace(',','\,',$rdo->city);
                 $infoLocation->address    .= '\n';
                 /* Url Map */
                 $infoLocation->map         = $rdo->urlmap;
