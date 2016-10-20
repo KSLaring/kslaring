@@ -1761,9 +1761,9 @@ class enrol_waitinglist_plugin extends enrol_plugin {
                     $iCal .= "UID:"             . $uid . "\n";
                     $iCal .= "DTSTART:"         . date('Ymd\THis', $course->startdate + 28800) . "\n";
                     if ($location) {
-                        $iCal .= "LOCATION:"        . $location->name . "\n" . $location->address. "\n";
+                        $iCal .= "LOCATION:"        . $location->name . '\n' . $location->address. "\n";
                         if ($location->map) {
-                            $iCal .= "URL;VALUE=URI:" . $location->map . "\n";
+                            $iCal .= "URL;VALUE=URI:" . $location->map . '\n';
                         }
 
                         if ($location->detail) {
