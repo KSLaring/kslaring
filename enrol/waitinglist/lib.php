@@ -1783,7 +1783,7 @@ class enrol_waitinglist_plugin extends enrol_plugin {
                     return $fileName;
                 }else {
                     return false;
-                }
+                }//if_created
             }else {
                 return false;
             }//if_else
