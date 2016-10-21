@@ -1628,25 +1628,15 @@ class FSKS_USERS {
                         }
                     }else {
                         /* Info Competence JR   */
-                        $infoComp = array();
-                        $infoComp['personalNumber']  = $instance->fodselsnr;
-                        $infoComp['jobrole']         = $instance->ksjobrole;
-                        $infoComp['fsjobroles']      = $instance->fsjobroles;
-                        $infoComp['fsId']            = $instance->fscompany;
-                        $infoComp['company']         = $instance->companyid;
-                        $infoComp['level']           = $instance->hierarchylevel;
-                        $infoComp['impkeys']         = $instance->impkeys;
-                        $infoComp['action']          = ADD;
-
-                        //$infoComp = new stdClass();
-                        //$infoComp->personalNumber   = $instance->fodselsnr;
-                        //$infoComp->jobrole          = $instance->ksjobrole;
-                        //$infoComp->fsjobroles       = $instance->fsjobroles;
-                        //$infoComp->fsId             = $instance->fscompany;
-                        //$infoComp->company          = $instance->companyid;
-                        //$infoComp->level            = $instance->hierarchylevel;
-                        //$infoComp->impkeys          = $instance->impkeys;
-                        //$infoComp->action           = ADD;
+                        $infoComp = new stdClass();
+                        $infoComp->personalNumber   = $instance->fodselsnr;
+                        $infoComp->jobrole          = $instance->ksjobrole;
+                        $infoComp->fsjobroles       = $instance->fsjobroles;
+                        $infoComp->fsId             = $instance->fscompany;
+                        $infoComp->company          = $instance->companyid;
+                        $infoComp->level            = $instance->hierarchylevel;
+                        $infoComp->impkeys          = $instance->impkeys;
+                        $infoComp->action           = ADD;
 
                         /* Add competence */
                         $usersComp[] = $infoComp;

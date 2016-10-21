@@ -961,7 +961,7 @@ class FELLESDATA_CRON {
 
             //for ($i=0;$i<=$total;$i=$i+400) {
                 $start = 0;
-                $limit = 400;
+                $limit = 5;
 
                 $toSynchronize = FSKS_USERS::UserCompetence_ToSynchronize($toDelete,$start,$limit);
                 /* Call Web Service  */
