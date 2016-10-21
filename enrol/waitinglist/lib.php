@@ -1526,7 +1526,7 @@ class enrol_waitinglist_plugin extends enrol_plugin {
                 foreach(self::get_method_names() as $methodtype){
                     $class = '\enrol_waitinglist\method\\' . $methodtype. '\enrolmethod' .$methodtype ;
                     if (class_exists($class)){
-                        $class::restore_instance($instanceId,$course->id);
+                        $class::restore_instance($oldid,$rdoWaitOld->courseid,$instanceId,$course->id);
                     }
                 }
 
