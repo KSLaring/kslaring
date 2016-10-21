@@ -811,6 +811,7 @@ class FELLESDATA_CRON {
                 foreach ($rdo as $instance) {
                     /* Users account info   */
                     $infoUser = new stdClass();
+                    mtrace('-->' . $instance->fodselsnr . "-- ");
                     $infoUser->personalnumber   = $instance->fodselsnr;
                     $infoUser->ressursnr        = ($instance->ressursnr ? $instance->ressursnr : 0);
                     $infoUser->industry         = $industryCode;
