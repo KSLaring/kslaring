@@ -1652,6 +1652,12 @@ class FSKS_USERS {
                         $usersComp[] = $infoComp;
                     }//id_delte
                 }//for_rdo
+            }else {
+                /* Log  */
+                global $CFG;
+                $dbLog  = "User Competence - GetUsersCompetence_ToSynchronize NO RDO".  "\n\n";
+                $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH GetUsersCompetence_ToSynchronize . ' . "\n";
+                error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
             }//if_Rdo
 
             return $usersComp;
