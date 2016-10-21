@@ -785,7 +785,7 @@ class FELLESDATA_CRON {
 
         try {
             /* Get user to synchronize  */
-            $rdo = $DB->get_records('fs_imp_users',array('imported' => '0','action' => 1),'','*',0,1);
+            $rdo = $DB->get_records('fs_imp_users',array('imported' => '0','action' => 1),'','*',0,100);
 
             /* Get Industry Code    */
             if ($pluginInfo->ks_muni) {
@@ -811,7 +811,6 @@ class FELLESDATA_CRON {
                 foreach ($rdo as $instance) {
                     /* Users account info   */
                     $infoUser = new stdClass();
-                    mtrace('-->' . $instance->fodselsnr . "-- ");
                     $infoUser->personalnumber   = $instance->fodselsnr;
                     $infoUser->ressursnr        = ($instance->ressursnr ? $instance->ressursnr : 0);
                     $infoUser->industry         = $industryCode;
