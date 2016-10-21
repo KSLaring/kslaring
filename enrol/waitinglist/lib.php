@@ -1763,7 +1763,7 @@ class enrol_waitinglist_plugin extends enrol_plugin {
                     if ($location) {
                         $iCal .= "LOCATION:"        . $location->name . '\n' . $location->address. "\n";
                         if ($location->map) {
-                            $iCal .= "URL;VALUE=URI:" . $location->map . '\n';
+                            $iCal .= "URL;VALUE=URI:" . $location->map . "\n";
                         }
 
                         if ($location->detail) {
@@ -1843,7 +1843,7 @@ class enrol_waitinglist_plugin extends enrol_plugin {
                 $infoLocation->address     = str_replace(',','\,',$rdo->street);
                 $infoLocation->address    .= '\n';
                 $infoLocation->address    .= $rdo->postcode . ' ' . str_replace(',','\,',$rdo->city);
-                
+
                 /* Url Map */
                 $infoLocation->map         = $rdo->urlmap;
             }//if_Rdo
