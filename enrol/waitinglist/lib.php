@@ -1843,7 +1843,7 @@ class enrol_waitinglist_plugin extends enrol_plugin {
                 $infoLocation->address     = str_replace(',','\,',$rdo->street);
                 $infoLocation->address    .= '\n';
                 $infoLocation->address    .= $rdo->postcode . ' ' . str_replace(',','\,',$rdo->city);
-                $infoLocation->address    .= '\n';
+                
                 /* Url Map */
                 $infoLocation->map         = $rdo->urlmap;
             }//if_Rdo
