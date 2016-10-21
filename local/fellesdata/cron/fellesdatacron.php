@@ -959,7 +959,7 @@ class FELLESDATA_CRON {
             /* Get Info to Synchronize */
             $total = FSKS_USERS::GetTotalUsersCompetence_ToSynchronize($toDelete);
 
-            for ($i=0;$i<=$total;$i=$i+400) {
+            //for ($i=0;$i<=$total;$i=$i+400) {
                 $start = 0;
                 $limit = 400;
 
@@ -979,7 +979,7 @@ class FELLESDATA_CRON {
                         error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
                     }//if_no_error
                 }//if_toSynchronize
-            }
+            //}
         }catch (Exception $ex) {
             /* Log  */
             $dbLog  = $ex->getMessage() . "\n" . "\n";
