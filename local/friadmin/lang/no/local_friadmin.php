@@ -216,15 +216,15 @@ $string['enrol_wait_buk']   = 'Bulkpåmelding med venteliste';
 $string['no_competence_add_location']   = '<strong>Beklager, men du må oppdatere profilen din med arbeidssted(er) hvis du ønsker å legge til nye kurssteder. (Vi trenger minst ett arbeidssted for å vite hvilken kommune/fylkeskommune du tilhører)</strong>';
 $string['no_competence_profile']        = '<strong>Beklager, men du må først legge til minst ett arbeidssted i din egen profil for å kunne bruke søkefunksjon basert på hvor du arbeider.</strong>';
 
-$string['course_teachers']              = 'Legg til lærere';
-$string['av_teachers']                  = 'Tilgjengelige lærere';
-$string['no_teachers']                  = 'Ingen lærere';
-$string['sel_teachers']                 = 'Valgte lærere';
+$string['course_teachers']              = 'Legg til kursansvarlige';
+$string['av_teachers']                  = 'Tilgjengelige kursansvarlige';
+$string['no_teachers']                  = 'Ingen kursansvarlige';
+$string['sel_teachers']                 = 'Valgte kursansvarlige';
 
-$string['pot_teachers']                = 'Potensielle lærere';
-$string['pot_teachers_matching']       = 'Potensielt matchende lærere';
-$string['current_teachers']            = 'Gjeldende lærere';
-$string['current_teachers_matching']   = 'Gjeldende matchende lærere';
+$string['pot_teachers']                = 'Potensielle kursansvarlige';
+$string['pot_teachers_matching']       = 'Potensielt matchende kursansvarlige';
+$string['current_teachers']            = 'Gjeldende kursansvarlige';
+$string['current_teachers_matching']   = 'Gjeldende matchende kursansvarlige';
 
 $string['duplicatecourse']          = 'Duplisér kurs';
 $string['includeusers']             = 'Inkluder brukere';
@@ -239,14 +239,14 @@ $string['selshortname_help']        = 'Angir kortnavnet på det dupliserte kurse
 $string['info_dup_course']          = 'Før du dupliserer kurset må du angi kurskategorien hvor duplikatet skal plasseres. Som standard lagres det dupliserte kurset i samme kategori som originalen.';
 $string['coursedetail_manual'] = 'Manuell påmelding av deltakere';
 
-$string['course_noed_teachers']              = 'Adding No Editing Teachers';
-$string['av_noed_teachers']                  = 'Available no editing teachers';
-$string['no_noed_teachers']                  = 'None no editing teachers';
-$string['sel_noed_teachers']                 = 'Selected no editing teachers';
+$string['course_noed_teachers']              = 'Legg til instruktører';
+$string['av_noed_teachers']                  = 'Tilgjengelige instruktører';
+$string['no_noed_teachers']                  = 'Ingen instruktører';
+$string['sel_noed_teachers']                 = 'Valgte instruktører';
 
-$string['pot_noed_teachers']                = 'Potential no editing teachers';
-$string['pot_noed_teachers_matching']       = 'Potential matching no editing teachers';
-$string['current_noed_teachers']            = 'Current no editing teachers';
-$string['current_noed_teachers_matching']   = 'Current no editing teachers matching';
+$string['pot_noed_teachers']                = 'Potensielle instruktører';
+$string['pot_noed_teachers_matching']       = 'Potensielle matchende instruktører';
+$string['current_noed_teachers']            = 'Gjeldende instruktører';
+$string['current_noed_teachers_matching']   = 'Gjeldende machende instruktører';
 
-$string['noed_teachers']                    = 'No Editing Teachers';
+$string['noed_teachers']                    = 'Instruktører';

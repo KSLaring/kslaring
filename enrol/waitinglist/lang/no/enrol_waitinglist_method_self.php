@@ -35,7 +35,7 @@ $string['self_queuewarning'] = 'Dersom du fortsetter vil du bli plassert på ven
 	
 	Du er nå nummer: {$a} på ventelisten.';
 
-$string['cannot_unenrol_date']    = 'Sorry, you cannot unenrol it after the deadline';
-$string['unenrolenddate']         = 'Deadline to unenrol';
-$string['unenrolenddate_help']    = 'If enabled, users can unenrol themselves until this date only.';
-$string['unenrolenddate_err']     = 'The unenrol deadline cannot be less than the currernt one.';
+$string['cannot_unenrol_date']    = 'Beklager, du kan ikke melde deg av kurset etter avmeldingsfristen';
+$string['unenrolenddate']         = 'Avmeldingsfrist';
+$string['unenrolenddate_help']    = 'Hvis aktivert, er dette den første datoen deltakerne ikke lengre kan melde seg av kurset.';
+$string['unenrolenddate_err']     = 'Avmeldingsfristen må settes til en senere dato enn dagens dato.';

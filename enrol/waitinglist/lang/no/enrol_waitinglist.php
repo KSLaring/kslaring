@@ -277,10 +277,10 @@ $string['no_competence']   = 'Beklager, men du kan ikke melde deg på dette kurs
 $string['company_demanded']        = 'Ikke krev arbeidssted ved påmelding';
 $string['company_demanded_manual'] = 'Arbeidssted ikke påkrevd for påmelding. Brukere uten arbeidssted i egen profil kan dermed melde seg på.';
 
-$string['find_resource_number'] = " Find Resource Number";
+$string['find_resource_number'] = " Finn ressursnummer";
 $string['no_users_invoice']     = " No users invoice approval";
 $string['users_matching']       = " Users invoice approval matching";
-$string['please_use_filter']    = " Please use the filter";
+$string['please_use_filter']    = " Vennligst bruk filteret";
 
 $string['unenrol_link']         = 'Hvis du ønsker å melde deg av kurset, vennligst klikk på følgende lenke <strong>{$a}</strong>';
 $string['unenrol_me']           = 'Meld meg ut';
