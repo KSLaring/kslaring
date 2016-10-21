@@ -35,7 +35,7 @@ class FELLESDATA_CRON {
     /* PUBLIC */
     /**********/
 
-    public static function cron_old($fstExecution) {
+    public static function cron($fstExecution) {
         /* Variables    */
         global $SESSION,$CFG;
         $pluginInfo = null;
@@ -785,7 +785,7 @@ class FELLESDATA_CRON {
 
         try {
             /* Get user to synchronize  */
-            $rdo = $DB->get_records('fs_imp_users',array('imported' => '0','action' => 1),'','*',0,2000);
+            $rdo = $DB->get_records('fs_imp_users',array('imported' => '0','action' => 1),'','*');
 
             /* Get Industry Code    */
             if ($pluginInfo->ks_muni) {
@@ -962,7 +962,7 @@ class FELLESDATA_CRON {
 
             for ($i=0;$i<=$total;$i=$i+400) {
                 $start = 0;
-                $limit = 200;
+                $limit = 400;
 
                 $toSynchronize = FSKS_USERS::UserCompetence_ToSynchronize($toDelete,$start,$limit);
                 /* Call Web Service  */
