@@ -1779,7 +1779,7 @@ class enrol_waitinglist_plugin extends enrol_plugin {
                         }
 
                         if ($location->detail) {
-                            $iCal .= "DESCRIPTION:"     . $location->detail . "\n";
+                            $iCal .= "DESCRIPTION:"     . str_replace(',','\,',$location->detail) . "\n";
                         }
                     }//if_location
 
@@ -1795,7 +1795,7 @@ class enrol_waitinglist_plugin extends enrol_plugin {
                     return $fileName;
                 }else {
                     return false;
-                }
+                }//if_created
             }else {
                 return false;
             }//if_else
@@ -1845,17 +1845,17 @@ class enrol_waitinglist_plugin extends enrol_plugin {
             if ($rdo) {
                 /* Info Location    */
                 $infoLocation = new stdClass();
-                $infoLocation->name        = $rdo->name;
+                $infoLocation->name        = str_replace(',','\,',$rdo->name);
                 /* Detail */
-                $infoLocation->detail      = get_string('location_floor','local_friadmin') . ': ' . $rdo->floor;
+                $infoLocation->detail      = get_string('location_floor','local_friadmin') . ': ' . str_replace(',','\,',$rdo->floor);
                 $infoLocation->detail     .= '\n';
-                $infoLocation->detail     .= get_string('location_room','local_friadmin')  . ': ' . $rdo->room;
+                $infoLocation->detail     .= get_string('location_room','local_friadmin')  . ': ' . str_replace(',','\,',$rdo->room);
                 $infoLocation->detail     .= '\n';
                 /* Address  */
-                $infoLocation->address     = $rdo->street;
+                $infoLocation->address     = str_replace(',','\,',$rdo->street);
                 $infoLocation->address    .= '\n';
-                $infoLocation->address    .= $rdo->postcode . ' ' . $rdo->city;
-                $infoLocation->address    .= '\n';
+                $infoLocation->address    .= $rdo->postcode . ' ' . str_replace(',','\,',$rdo->city);
+
                 /* Url Map */
                 $infoLocation->map         = $rdo->urlmap;
             }//if_Rdo
