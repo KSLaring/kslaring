@@ -795,7 +795,14 @@ class enrol_waitinglist_plugin extends enrol_plugin {
 			foreach(self::get_method_names() as $methodtype){
 			 $class = '\enrol_waitinglist\method\\' . $methodtype. '\enrolmethod' .$methodtype ;
 			   if (class_exists($class)){
-					$class::add_default_instance( $waitinglistid,$course->id); 
+                   /**
+                    * @updateDate   25/10/2016
+                    * @author       eFaktor     (fbv)
+                    * 
+                    * Description
+                    * The order parameters was wrong
+                    */
+					$class::add_default_instance($course->id,$waitinglistid);
 			   }
 			}
 		}
