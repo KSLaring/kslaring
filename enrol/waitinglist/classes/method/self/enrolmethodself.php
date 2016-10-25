@@ -112,6 +112,63 @@ class enrolmethodself extends \enrol_waitinglist\method\enrolmethodbase{
 			}
     }
 
+    /**
+     * @param           $oldWaitId
+     * @param           $oldCourse
+     * @param           $newWaitId
+     * @param           $courseId
+     *
+     * @throws          \Exception
+     *
+     * @creationDate    21/10/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Restore instance for self-enrolment
+     */
+    public static function restore_instance($oldWaitId,$oldCourse,$newWaitId,$courseId) {
+        /* Variables */
+        global $DB;
+        $newInstance    = null;
+        $oldInstance    = null;
+        $params         = null;
+
+        try {
+            /* New Instance */
+            $newInstance                = new \stdClass();
+            $newInstance->courseid      = $courseId;
+            $newInstance->waitinglistid = $newWaitId;
+            $newInstance->methodtype    = static::METHODTYPE;
+
+            /* Get Old Instance */
+            $params = array();
+            $params['waitinglistid'] = $oldWaitId;
+            $params['courseid']      = $oldCourse;
+            $params['methodtype']    = 'self';
+            
+            /* Execute */
+            $oldInstance = $DB->get_record('enrol_waitinglist_method',$params);
+            if ($oldInstance) {
+                /* Create a new one from the old one */
+                $newInstance->status        = $oldInstance->status;
+                $newInstance->emailalert    = $oldInstance->emailalert;
+                $newInstance->{enrolmethodself::MFIELD_WAITLISTMESSAGE} = $oldInstance->{enrolmethodself::MFIELD_WAITLISTMESSAGE};
+
+                /* Execute */
+                $newInstance->id = $DB->insert_record('enrol_waitinglist_method',$newInstance);
+            }else {
+                /* Create a new One */
+                $newInstance->status        = true;
+                $newInstance->emailalert    = true;
+                $newInstance->{enrolmethodself::MFIELD_WAITLISTMESSAGE} = get_string('waitlistmessagetext_self','enrol_waitinglist');
+                /* Execute */
+                $newInstance->id = $DB->insert_record('enrol_waitinglist_method',$newInstance);
+            }//if_oldInstance
+        }catch (\Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//restore_instance
+
 	 
 	 
 	 //settings related functions

@@ -94,6 +94,61 @@ class enrolmethodmanual extends \enrol_waitinglist\method\enrolmethodbase{
         }//try_catch
     }//add_default_instance
 
+    /**
+     * @param           $oldWaitId
+     * @param           $oldCourse
+     * @param           $newWaitId
+     * @param           $courseId
+     * 
+     * @throws          \Exception
+     * 
+     * @creationDate    21/10/2016
+     * @author          eFaktor     (fbv)
+     * 
+     * Description
+     * Restore instance for manual enrolment.
+     */
+    public static function restore_instance($oldWaitId,$oldCourse,$newWaitId,$courseId) {
+        /* Variables */
+        global $DB;
+        $newInstance    = null;
+        $oldInstance    = null;
+        $params         = null;
+
+        try {
+            /* New Instance */
+            $newInstance                = new \stdClass();
+            $newInstance->courseid      = $courseId;
+            $newInstance->waitinglistid = $newWaitId;
+            $newInstance->methodtype    = static::METHODTYPE;
+
+            /* Get Old Instance */
+            $params = array();
+            $params['waitinglistid'] = $oldWaitId;
+            $params['courseid']      = $oldCourse;
+            $params['methodtype']    = 'manual';
+
+            /* Execute */
+            $oldInstance = $DB->get_record('enrol_waitinglist_method',$params);
+            if ($oldInstance) {
+                /* Create a new one from the old one */
+                $newInstance->status           = $oldInstance->status;
+                $newInstance->emailalert       = $oldInstance->emailalert;
+
+                /* Execute */
+                $newInstance->id = $DB->insert_record('enrol_waitinglist_method',$newInstance);
+            }else {
+                /* Create a new One */
+                $newInstance->status        = true;
+                $newInstance->emailalert    = false;
+                /* Execute */
+                $newInstance->id = $DB->insert_record('enrol_waitinglist_method',$newInstance);
+            }//if_oldInstance
+        }catch (\Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//restore_instance
+
     //settings related functions
     public function has_notifications() {
         return false;
