@@ -796,6 +796,7 @@ class FELLESDATA_CRON {
 
                 if ($rdoIC) {
                     $industryCode = $rdoIC->industrycode;
+
                 }
             }else {
                 $industryCode = 0;
@@ -811,7 +812,7 @@ class FELLESDATA_CRON {
                     /* Users account info   */
                     $infoUser = new stdClass();
                     $infoUser->personalnumber   = $instance->fodselsnr;
-                    $infoUser->ressursnr        = $instance->ressursnr;
+                    $infoUser->ressursnr        = ($instance->ressursnr ? $instance->ressursnr : 0);
                     $infoUser->industry         = $industryCode;
                     $infoUser->firstname        = $instance->fornavn;
                     $infoUser->lastname         = $instance->mellomnavn . ' ' . $instance->etternavn;
