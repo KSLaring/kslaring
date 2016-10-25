@@ -27,6 +27,8 @@ function xmldb_local_fellesdata_upgrade($oldVersion) {
     $tblFSCompany       = null;
     $fldFSParent        = null;
     $fldIndustryCode    = null;
+    $fldADFS            = null;
+    $fldUsersImp        = null;
 
     /* Get Manager  */
     $dbMan = $DB->get_manager();
@@ -95,7 +97,22 @@ function xmldb_local_fellesdata_upgrade($oldVersion) {
             if (!$dbMan->field_exists($tblResource, $fldIndustryCode)) {
                 $dbMan->add_field($tblResource, $fldIndustryCode);
             }//if_not_exists
-        }
+        }//if_oldVersion_2016092700
+
+        /**
+         * Add ADFS ID
+         */
+        if ($oldVersion < 2016102502) {
+            $fldUsersImp = new xmldb_table('fs_imp_users');
+            if ($dbMan->table_exists('fs_imp_users')) {
+                /* ADFS ID  */
+                $fldADFS = new xmldb_field('brukernavn', XMLDB_TYPE_CHAR, '50',null,XMLDB_NOTNULL,null,null, 'id');
+                if (!$dbMan->field_exists($fldUsersImp, $fldADFS)) {
+                    $dbMan->add_field($fldUsersImp, $fldADFS);
+                }//if_not_exists
+            }//if_exists
+        }//if_oldVersion_2016102502
+
         return true;
     }catch (Exception $ex) {
         throw $ex;

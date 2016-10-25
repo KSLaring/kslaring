@@ -357,6 +357,8 @@ class Fellesdata_Install {
             /* Fields */
             /* Id --> Primary key                   */
             $tblImpUsers->add_field('id',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, XMLDB_SEQUENCE,null);
+            /* ADFS ID                              */
+            $tblImpUsers->add_field('brukernavn',XMLDB_TYPE_CHAR,'50',null, XMLDB_NOTNULL, null,null);
             /* personalnumber --> Personal number   */
             $tblImpUsers->add_field('fodselsnr',XMLDB_TYPE_CHAR,'50',null, XMLDB_NOTNULL, null,null);
             /* REsource number  */
