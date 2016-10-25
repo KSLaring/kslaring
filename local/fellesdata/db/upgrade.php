@@ -102,16 +102,16 @@ function xmldb_local_fellesdata_upgrade($oldVersion) {
         /**
          * Add ADFS ID
          */
-        if ($oldVersion < 2016102502) {
+        if ($oldVersion < 2016102504) {
             $fldUsersImp = new xmldb_table('fs_imp_users');
             if ($dbMan->table_exists('fs_imp_users')) {
                 /* ADFS ID  */
-                $fldADFS = new xmldb_field('brukernavn', XMLDB_TYPE_CHAR, '50',null,XMLDB_NOTNULL,null,null, 'id');
+                $fldADFS = new xmldb_field('brukernavn', XMLDB_TYPE_CHAR, '50',null,XMLDB_NOTNULL,null,null, 'epost');
                 if (!$dbMan->field_exists($fldUsersImp, $fldADFS)) {
                     $dbMan->add_field($fldUsersImp, $fldADFS);
                 }//if_not_exists
             }//if_exists
-        }//if_oldVersion_2016102502
+        }//if_oldVersion_2016102504
 
         return true;
     }catch (Exception $ex) {

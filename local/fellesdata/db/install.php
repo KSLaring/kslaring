@@ -357,8 +357,6 @@ class Fellesdata_Install {
             /* Fields */
             /* Id --> Primary key                   */
             $tblImpUsers->add_field('id',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, XMLDB_SEQUENCE,null);
-            /* ADFS ID                              */
-            $tblImpUsers->add_field('brukernavn',XMLDB_TYPE_CHAR,'50',null, XMLDB_NOTNULL, null,null);
             /* personalnumber --> Personal number   */
             $tblImpUsers->add_field('fodselsnr',XMLDB_TYPE_CHAR,'50',null, XMLDB_NOTNULL, null,null);
             /* REsource number  */
@@ -371,6 +369,8 @@ class Fellesdata_Install {
             $tblImpUsers->add_field('etternavn',XMLDB_TYPE_CHAR,'255',null, XMLDB_NOTNULL, null,null);
             /* eMail        --> eMail               */
             $tblImpUsers->add_field('epost',XMLDB_TYPE_CHAR,'255',null, XMLDB_NOTNULL, null,null);
+            /* ADFS ID                              */
+            $tblImpUsers->add_field('brukernavn',XMLDB_TYPE_CHAR,'50',null, XMLDB_NOTNULL, null,null);
             /* action   --> Action to apply         */
             $tblImpUsers->add_field('action',XMLDB_TYPE_CHAR,'50',null, XMLDB_NOTNULL, null,null);
             /* Imported                             */

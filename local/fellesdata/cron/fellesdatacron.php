@@ -466,6 +466,7 @@ class FELLESDATA_CRON {
         }catch (Exception $ex) {
             /* Log  */
             $dbLog  = "Error: " . $ex->getMessage() . "\n" . "\n";
+            $dbLog .= $ex->getTraceAsString() . "\n";
             $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' ERROR Import FS Users . ' . "\n";
             error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
 
