@@ -94,18 +94,28 @@ class enrolmethodmanual extends \enrol_waitinglist\method\enrolmethodbase{
         }//try_catch
     }//add_default_instance
 
+    /**
+     * @param           $oldWaitId
+     * @param           $oldCourse
+     * @param           $newWaitId
+     * @param           $courseId
+     * 
+     * @throws          \Exception
+     * 
+     * @creationDate    21/10/2016
+     * @author          eFaktor     (fbv)
+     * 
+     * Description
+     * Restore instance for manual enrolment.
+     */
     public static function restore_instance($oldWaitId,$oldCourse,$newWaitId,$courseId) {
         /* Variables */
-        global $DB,$CFG;
+        global $DB;
         $newInstance    = null;
         $oldInstance    = null;
         $params         = null;
-        $dbLog          = null;
 
         try {
-            /* OPEN LOG     */
-            $dbLog = " RESTORE INSTANCE MANUAL SUB-METHOD " . "\n";
-
             /* New Instance */
             $newInstance                = new \stdClass();
             $newInstance->courseid      = $courseId;
@@ -121,8 +131,6 @@ class enrolmethodmanual extends \enrol_waitinglist\method\enrolmethodbase{
             /* Execute */
             $oldInstance = $DB->get_record('enrol_waitinglist_method',$params);
             if ($oldInstance) {
-                $dbLog .= "New Instance Based from Old ONE " . "\n";
-
                 /* Create a new one from the old one */
                 $newInstance->status           = $oldInstance->status;
                 $newInstance->emailalert       = $oldInstance->emailalert;
@@ -130,22 +138,13 @@ class enrolmethodmanual extends \enrol_waitinglist\method\enrolmethodbase{
                 /* Execute */
                 $newInstance->id = $DB->insert_record('enrol_waitinglist_method',$newInstance);
             }else {
-                $dbLog .= "New Instance " . "\n";
-
                 /* Create a new One */
                 $newInstance->status        = true;
                 $newInstance->emailalert    = false;
                 /* Execute */
                 $newInstance->id = $DB->insert_record('enrol_waitinglist_method',$newInstance);
             }//if_oldInstance
-
-            /* Close Log */
-            error_log($dbLog, 3, $CFG->dataroot . "/Restore.log");
         }catch (\Exception $ex) {
-            $dbLog .= "ERROR RESTORE MANUAL SUB-METHOD " . "\n";
-            $dbLog .= $ex->getTraceAsString() . "\n";
-            error_log($dbLog, 3, $CFG->dataroot . "/Restore.log");
-
             throw $ex;
         }//try_catch
     }//restore_instance

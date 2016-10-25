@@ -1488,21 +1488,29 @@ class enrol_waitinglist_plugin extends enrol_plugin {
     }
 
 
-
+    /**
+     * @param       restore_enrolments_structure_step $step
+     * @param       stdClass $data
+     * @param       stdClass $course
+     * @param       int $oldid
+     *
+     * @throws      Exception
+     *
+     * @updateDate  21/10/2016
+     * @author      eFaktor     (fbv)
+     *
+     * Description
+     * Add restore instance for sub-methods connected
+     */
     public function restore_instance(restore_enrolments_structure_step $step, stdClass $data, $course, $oldid) {
         /* Variables */
-        global $DB,$CFG;
-        $dbLog          = null;
+        global $DB;
         $instanceId     = null;
         $rdoWaitOld     = null;
         $rdoOldSub      = null;
         $params         = null;
 
         try {
-            /* OPEN LOG */
-            $dbLog  = userdate(time(),'%d.%m.%Y', 99, false) . ' Restore Instance ' . "\n";
-            $dbLog .= " New Course: "   . $data->courseid   . "\n";
-
             /**
              * Get old Waiting List instance
              */
@@ -1512,10 +1520,6 @@ class enrol_waitinglist_plugin extends enrol_plugin {
             /* Execute */
             $rdoWaitOld = $DB->get_record('enrol',$params);
             if ($rdoWaitOld) {
-                $dbLog .= "Old Id(sql): "       . $rdoWaitOld->id           . "\n";
-                $dbLog .= "Old Id(parameter): " . $oldid                    . "\n";
-                $dbLog .= "Old Course Id: "     . $rdoWaitOld->courseid     . "\n";
-
                 /**
                  * Update waiting list instance.
                  * Only one waiting list instance per course.
@@ -1539,64 +1543,11 @@ class enrol_waitinglist_plugin extends enrol_plugin {
 
                 /* Mapping */
                 $step->set_mapping('enrol', $oldid, $instanceId);
-            }else {
-                $dbLog .= "Instance not founded" . "\n";
-            }
-
-            /* CLOSE */
-            error_log($dbLog, 3, $CFG->dataroot . "/Restore.log");
+            }//if_$rdoWaitOld
         }catch (Exception $ex) {
-            /* LOG */
-            $dbLog  .= 'ERROR Restore Instance ' . "\n";
-            $dbLog .= $ex->getTraceAsString() . "\n";
-            error_log($dbLog, 3, $CFG->dataroot . "/Restore.log");
-
             throw $ex;
         }//try_catch
     }//restore_instance
-
-    /**
-     * Restore instance and map settings.
-     *
-     * @param restore_enrolments_structure_step $step
-     * @param stdClass $data
-     * @param stdClass $course
-     * @param int $oldid
-     */
-    public function restore_instance_old(restore_enrolments_structure_step $step, stdClass $data, $course, $oldid) {
-        /* Variables */
-        global $DB;
-        $newInstance = null;
-
-        // There is only I waitinglist enrol instance allowed per course.
-        if ($instances = $DB->get_records('enrol', array('courseid'=>$data->courseid, 'enrol'=>'waitinglist'), 'id')) {
-            $instance = reset($instances);
-            $instanceid = $instance->id;
-        } else {
-            $instanceid = $this->add_instance($course, (array)$data);
-        }
-        $step->set_mapping('enrol', $oldid, $instanceid);
-
-        /**
-         * @updateDate      19/10/2016
-         * @author          eFaktor     (fbv)
-         *
-         * Description
-         * Add methods connected and its status
-         */
-        $rdo = $DB->get_records('enrol_waitinglist_method',array('waitinglistid' => $oldid));
-        if ($rdo) {
-            foreach ($rdo as $instance) {
-                $newInstance                    = null;
-                $newInstance                    = $instance;
-                $newInstance->courseid          = $data->courseid;
-                $newInstance->waitinglistid     = $instanceid;
-                unset($newInstance->id);
-
-                $DB->insert_record('enrol_waitinglist_method',$newInstance);
-            }
-        }//if_Rdo
-    }
     
     /**
      * Restore user enrolment.
