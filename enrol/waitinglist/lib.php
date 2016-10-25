@@ -800,7 +800,14 @@ class enrol_waitinglist_plugin extends enrol_plugin {
 			foreach(self::get_method_names() as $methodtype){
 			 $class = '\enrol_waitinglist\method\\' . $methodtype. '\enrolmethod' .$methodtype ;
 			   if (class_exists($class)){
-					$class::add_default_instance( $waitinglistid,$course->id); 
+                   /**
+                    * @updateDate   25/10/2016
+                    * @author       eFaktor     (fbv)
+                    *
+                    * Description
+                    * The order parameters was wrong
+                    */
+                   $class::add_default_instance($course->id,$waitinglistid);
 			   }
 			}
 		}
@@ -1487,47 +1494,65 @@ class enrol_waitinglist_plugin extends enrol_plugin {
 
 
     /**
-     * Restore instance and map settings.
+     * @param       restore_enrolments_structure_step $step
+     * @param       stdClass $data
+     * @param       stdClass $course
+     * @param       int $oldid
      *
-     * @param restore_enrolments_structure_step $step
-     * @param stdClass $data
-     * @param stdClass $course
-     * @param int $oldid
+     * @throws      Exception
+     *
+     * @updateDate  21/10/2016
+     * @author      eFaktor     (fbv)
+     *
+     * Description
+     * Add restore instance for sub-methods connected
      */
     public function restore_instance(restore_enrolments_structure_step $step, stdClass $data, $course, $oldid) {
         /* Variables */
         global $DB;
-        $newInstance = null;
+        $instanceId     = null;
+        $rdoWaitOld     = null;
+        $rdoOldSub      = null;
+        $params         = null;
 
-        // There is only I waitinglist enrol instance allowed per course.
-        if ($instances = $DB->get_records('enrol', array('courseid'=>$data->courseid, 'enrol'=>'waitinglist'), 'id')) {
-            $instance = reset($instances);
-            $instanceid = $instance->id;
-        } else {
-            $instanceid = $this->add_instance($course, (array)$data);
-        }
-        $step->set_mapping('enrol', $oldid, $instanceid);
+        try {
+            /**
+             * Get old Waiting List instance
+             */
+            $params = array();
+            $params['enrol'] = 'waitinglist';
+            $params['id']    = $oldid;
+            /* Execute */
+            $rdoWaitOld = $DB->get_record('enrol',$params);
+            if ($rdoWaitOld) {
+                /**
+                 * Update waiting list instance.
+                 * Only one waiting list instance per course.
+                 */
+                if ($instances = $DB->get_records('enrol', array('courseid'=>$data->courseid, 'enrol'=>'waitinglist'), 'id')) {
+                    $instance = reset($instances);
+                    $instanceId = $instance->id;
+                } else {
+                    $instanceId = $this->add_instance($course, (array)$data);
+                }
 
-        /**
-         * @updateDate      19/10/2016
-         * @author          eFaktor     (fbv)
-         *
-         * Description
-         * Add methods connected and its status
-         */
-        $rdo = $DB->get_records('enrol_waitinglist_method',array('waitinglistid' => $oldid));
-        if ($rdo) {
-            foreach ($rdo as $instance) {
-                $newInstance                    = null;
-                $newInstance                    = $instance;
-                $newInstance->courseid          = $data->courseid;
-                $newInstance->waitinglistid     = $instanceid;
-                unset($newInstance->id);
+                /**
+                 * Generate instance sub-methods
+                 */
+                foreach(self::get_method_names() as $methodtype){
+                    $class = '\enrol_waitinglist\method\\' . $methodtype. '\enrolmethod' .$methodtype ;
+                    if (class_exists($class)){
+                        $class::restore_instance($oldid,$rdoWaitOld->courseid,$instanceId,$course->id);
+                    }
+                }
 
-                $DB->insert_record('enrol_waitinglist_method',$newInstance);
-            }
-        }//if_Rdo
-    }
+                /* Mapping */
+                $step->set_mapping('enrol', $oldid, $instanceId);
+            }//if_$rdoWaitOld
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//restore_instance
 
     /**
      * Restore user enrolment.

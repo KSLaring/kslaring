@@ -135,7 +135,67 @@ class enrolmethodunnamedbulk extends \enrol_waitinglist\method\enrolmethodbase {
 			}
     }
 
+    /**
+     * @param           $oldWaitId
+     * @param           $oldCourse
+     * @param           $newWaitId
+     * @param           $courseId
+     *
+     * @throws          \Exception
+     *
+     * @creationDate    21/10/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Descripiton
+     * Restore instance fot bulk-method
+     */
+    public static function restore_instance($oldWaitId,$oldCourse,$newWaitId,$courseId) {
+        /* Variables */
+        global $DB;
+        $newInstance    = null;
+        $oldInstance    = null;
+        $params         = null;
+        $dbLog          = null;
 	 
+        try {
+            /* New Instance */
+            $newInstance                = new \stdClass();
+            $newInstance->courseid      = $courseId;
+            $newInstance->waitinglistid = $newWaitId;
+            $newInstance->methodtype    = static::METHODTYPE;
+
+            /* Get Old Instance */
+            $params = array();
+            $params['waitinglistid'] = $oldWaitId;
+            $params['courseid']      = $oldCourse;
+            $params['methodtype']    = 'unnamedbulk';
+
+            /* Execute */
+            $oldInstance = $DB->get_record('enrol_waitinglist_method',$params);
+            if ($oldInstance) {
+                /* Create a new one from the old one */
+                $newInstance->status        = $oldInstance->status;
+                $newInstance->emailalert    = $oldInstance->emailalert;
+                $newInstance->{enrolmethodunnamedbulk::MFIELD_SENDCONFIRMMESSAGE}   = $oldInstance->{enrolmethodunnamedbulk::MFIELD_SENDCONFIRMMESSAGE};
+                $newInstance->{enrolmethodunnamedbulk::MFIELD_WAITLISTMESSAGE}      = $oldInstance->{enrolmethodunnamedbulk::MFIELD_WAITLISTMESSAGE};
+                $newInstance->{enrolmethodunnamedbulk::MFIELD_CONFIRMEDMESSAGE}     = $oldInstance->{enrolmethodunnamedbulk::MFIELD_CONFIRMEDMESSAGE};
+
+                /* Execute */
+                $newInstance->id = $DB->insert_record('enrol_waitinglist_method',$newInstance);
+            }else {
+                /* Create a new One */
+                $newInstance->status        = true;
+                $newInstance->emailalert    = true;
+                $newInstance->{enrolmethodunnamedbulk::MFIELD_SENDCONFIRMMESSAGE}   = true;
+                $newInstance->{enrolmethodunnamedbulk::MFIELD_WAITLISTMESSAGE}      = get_string('waitlistmessagetext_unnamedbulk','enrol_waitinglist');
+                $newInstance->{enrolmethodunnamedbulk::MFIELD_CONFIRMEDMESSAGE}     = get_string('confirmedmessagetext_unnamedbulk','enrol_waitinglist');
+                /* Execute */
+                $newInstance->id = $DB->insert_record('enrol_waitinglist_method',$newInstance);
+            }//if_oldInstance
+        }catch (\Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//restore_instance
 	 
 	 //settings related functions
 	 public function has_notifications(){return false;}
