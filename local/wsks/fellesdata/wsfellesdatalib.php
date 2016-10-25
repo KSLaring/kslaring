@@ -1053,7 +1053,7 @@ class WS_FELLESDATA {
             $time = time();
 
             /* Check if already exists the account */
-            $rdoUser = get_complete_user_data('username',$userAccount->personalnumber);
+            $rdoUser = $DB->get_record('user',array('username' => $userAccount->personalnumber));
 
             /* Extract user data */
             if (!$rdoUser) {
