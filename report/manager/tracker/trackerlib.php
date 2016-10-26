@@ -791,6 +791,13 @@ class TrackerManager {
      *
      * Description
      * Check if the user can unenrol from the course
+     *
+     * @updateDate      26/10/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Add deadline unenrol and ethodtype for waiting list enrolments, to check if the user
+     * can unenrol or not
      */
     private static function GetTrackerNotConnected($user_id,$competence) {
         /* Variables    */
@@ -824,15 +831,20 @@ class TrackerManager {
             $sql = " SELECT	c.id,
                             c.fullname,
                             IF (cc.timecompleted,cc.timecompleted,0)                                        as 'completed',
-                            GROUP_CONCAT(DISTINCT CONCAT(e.enrol,'#',e.id) ORDER BY e.enrol SEPARATOR ',')  as 'enrolments'
+                            GROUP_CONCAT(DISTINCT CONCAT(e.enrol,'#',e.id) ORDER BY e.enrol SEPARATOR ',')  as 'enrolments',
+                            ewq.unenrolenddate,
+                            ewq.methodtype
                      FROM			{course}					c
-                        LEFT JOIN	{course_completions}  	    cc	ON	cc.course   = c.id
-                                                                    AND cc.userid   = :user
-                        JOIN		{enrol} 					e	ON 	e.courseid 	= c.id
-                                                                    AND	e.status 	= 0
-                        JOIN		{user_enrolments}			ue	ON 	ue.enrolid 	= e.id
-                                                                    AND	ue.status	= 0
-                                                                    AND ue.userid   = :ue_user
+                        LEFT JOIN	{course_completions}  	    cc	ON	cc.course           = c.id
+                                                                    AND cc.userid           = :user
+                        JOIN		{enrol} 					e	ON 	e.courseid 	        = c.id
+                                                                    AND	e.status 	        = 0
+                        JOIN		{user_enrolments}			ue	ON 	ue.enrolid 	        = e.id
+                                                                    AND	ue.status	        = 0
+                                                                    AND ue.userid           = :ue_user
+	                    LEFT JOIN	{enrol_waitinglist_method}	ewq	ON  ewq.waitinglistid 	= e.id
+													                AND ewq.methodtype like 'self'
+                                                                    AND ewq.status			= 1
                      WHERE		c.id NOT IN ($connected)
                         AND     c.visible = 1
                      GROUP BY	c.id
@@ -847,7 +859,7 @@ class TrackerManager {
                     $info->id           = $instance->id;
                     $info->name         = $instance->fullname;
                     $info->completed    = $instance->completed;
-                    $info->unEnrol      = self::Check_CanUnenrol(explode(',',$instance->enrolments),$user,$instance->id);
+                    $info->unEnrol      = self::Check_CanUnenrol(explode(',',$instance->enrolments),$user,$instance->id,$instance->unenrolenddate,$instance->methodtype);
 
                     /* Add course   */
                     if ($instance->completed) {
@@ -868,6 +880,8 @@ class TrackerManager {
      * @param           $enrolMethods
      * @param           $user
      * @param           $courseId
+     * @param           $unEnrolDate
+     * @param           $methodType
      *
      * @return          bool
      * @throws          Exception
@@ -877,8 +891,15 @@ class TrackerManager {
      *
      * Description
      * Check if the user can enrol by himsef/herslef
+     *
+     * @updateDate      26/10/2016
+     * @auhtor          eFaktor     (fbv)
+     *
+     * Description
+     * add deadline unenrol and sub-method type to check if the user
+     * can unenrol or not
      */
-    private static function Check_CanUnenrol($enrolMethods,$user,$courseId) {
+    private static function Check_CanUnenrol($enrolMethods,$user,$courseId,$unEnrolDate,$methodType) {
         /* Variables    */
         global $DB;
         $method         = null;
@@ -886,8 +907,12 @@ class TrackerManager {
         $plugin         = null;
         $context        = context_course::instance($courseId);
         $unEnrol        = true;
+        $time           = null;
 
         try {
+            /* Local time   */
+            $time = time();
+
             foreach ($enrolMethods as $enrol) {
                 $method = explode('#',$enrol);
 
@@ -898,13 +923,27 @@ class TrackerManager {
                 $instance->enrol    = $method[0];
 
                 $capability = 'enrol/' . $method[0] . ':unenrol';
-                if ($plugin->allow_unenrol_user($instance,$user) && has_capability($capability, $context)) {
-                    $unEnrol  = $unEnrol && true;
-                }else {
-                    $unEnrol = false;
-                }
 
-            }
+
+
+                if (($method[0] == 'waitinglist') && $methodType == 'self') {
+                    if ($unEnrolDate) {
+                        if ($time < $unEnrolDate) {
+                            $unEnrol = $unEnrol && true;
+                        }else {
+                            $unEnrol = false;
+                        }
+                    }else {
+                        $unEnrol = $unEnrol && true;
+                    }//if_unEnrolDate
+                }else {
+                    if ($plugin->allow_unenrol_user($instance,$user) && has_capability($capability, $context)) {
+                        $unEnrol  = $unEnrol && true;
+                    }else {
+                        $unEnrol = false;
+                    }
+                }//if_waitinglist_self
+            }//for
 
             return $unEnrol;
         }catch (Exception $ex) {
