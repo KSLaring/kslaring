@@ -829,18 +829,13 @@ class Invoices {
      * @author          eFaktor     (fbv)
      *
      * Description
-     * Get invoices connected with. Workplace based on if the company is demanded or not
+     * Get invoices connected with when company is demanded
      */
     private static function GetInvoices($courseId,$enrolId,$isCompanyDemanded) {
         /* Variables */
-        global $DB;
+        global  $DB;
         $rdo            = null;
         $sql            = null;
-        $sqlSel         = null;
-        $sqlDiff        = null;
-        $sqlFrom        = null;
-        $sqlJoin        = null;
-        $sqlWhere       = null;
         $params         = null;
         $lstInvoices    = array();
 
@@ -850,57 +845,37 @@ class Invoices {
             $params['course_id']    = $courseId;
             $params['enrol_id']     = $enrolId;
 
-            /**
-             * SQL common parts - Demanded and no demanded comapny
-             */
-            $sqlSel = " SELECT	DISTINCT    u.id,
-                                            u.firstname,
-                                            u.lastname,
-                                            u.email,
-                                            ei.type,
-                                            ei.responumber,
-                                            ei.servicenumber,
-                                            ei.projectnumber,
-                                            ei.actnumber,
-                                            ei.ressursnr,
-                                            ei.street,
-                                            ei.postcode,
-                                            ei.city,
-                                            ei.bilto,
-                                            ei.waitinglistid, ";
-
-            $sqlFrom = " FROM		    {user}						u
-                                JOIN	{user_enrolments}			ue	ON 	ue.userid 		= 	u.id
-                                                                        AND	ue.enrolid		=	:enrol_id
-                                JOIN	{enrol_invoice}				ei	ON	ei.userenrolid	=	ue.id
-                                                                        AND	ei.courseid		=	:course_id
-                                                                        AND	ei.userid		= 	ue.userid
-                                                                        AND	ei.unenrol		= 	0 ";
-
-            /**
-             * SQL Diff - Based on if the company is demanded or not
-             */
-            if ($isCompanyDemanded) {
-                $sqlDiff = "    co.industrycode,
-                                co.name ";
-
-                $sqlJoin = " LEFT JOIN	{report_gen_companydata}	co	ON		co.id			= 	ei.companyid ";
-
-                $sqlWhere = " WHERE		u.deleted = 0
-                              ORDER BY 	u.firstname, u.lastname ";
-            }else {
-                $sqlDiff = " GROUP_CONCAT(DISTINCT CONCAT(co.industrycode, ' - ',co.name) ORDER BY co.industrycode,co.name SEPARATOR '#SE#') as 'workplace' ";
-
-                $sqlJoin = "    LEFT JOIN 	{user_info_competence_data}	uic	ON		uic.userid		= 	ei.userid
-                                LEFT JOIN	{report_gen_companydata}	co	ON 		co.id 			= 	uic.companyid ";
-
-                $sqlWhere = " WHERE		u.deleted = 0
-                              GROUP BY  u.id
-                              ORDER BY 	u.firstname, u.lastname ";
-            }//if_isDemanded
+            /* SQL Instruction  */
+            $sql = " SELECT	  DISTINCT	u.id,
+                                        u.firstname,
+                                        u.lastname,
+                                        u.email,
+                                        ei.type,
+                                        ei.responumber,
+                                        ei.servicenumber,
+                                        ei.projectnumber,
+                                        ei.actnumber,
+                                        ei.ressursnr,
+                                        ei.street,
+                                        ei.postcode,
+                                        ei.city,
+                                        ei.bilto,
+                                        ei.waitinglistid,
+                                        ei.companyid,
+                                        co.industrycode,
+                                        co.name
+                     FROM		    {user}					  u
+                        JOIN	    {user_enrolments}		  ue	ON 		ue.userid 		= 	u.id
+                                                                    AND		ue.enrolid		=	:enrol_id
+                        JOIN	    {enrol_invoice}			  ei	ON		ei.userenrolid	=	ue.id
+                                                                    AND		ei.courseid		=	:course_id
+                                                                    AND		ei.userid		= 	ue.userid
+                                                                    AND		ei.unenrol		= 	0
+                        LEFT JOIN	{report_gen_companydata}  co	ON		co.id			= 	ei.companyid
+                    WHERE		u.deleted = 0
+                     ORDER BY 	u.firstname, u.lastname ";
 
             /* Execute */
-            $sql = $sqlSel . $sqlDiff . $sqlFrom . $sqlJoin . $sqlWhere;
             $rdo = $DB->get_records_sql($sql,$params);
             if ($rdo) {
                 foreach ($rdo as $invoice) {
@@ -920,10 +895,15 @@ class Invoices {
                     $info->bil_to           = $invoice->bilto;
                     $info->arbeidssted      = null;
                     if ($isCompanyDemanded) {
-                        $info->arbeidssted = $invoice->industrycode . ' - ' . $invoice->name;
+                        $info->arbeidssted      = $invoice->industrycode . ' - ' . $invoice->name;
                     }else {
-                        $info->arbeidssted = str_replace('#SE#','</br>',$invoice->workplace);
-                    }
+                        if ($invoice->companyid) {
+                            $info->arbeidssted      = $invoice->industrycode . ' - ' . $invoice->name;
+                        }else {
+                            $info->arbeidssted = self::GetWorkplaceConnected($invoice->id);
+                        }
+                    }//if_comapnyDemanded
+
                     if ($invoice->waitinglistid) {
                         $info->seats        = self::GetConfirmedSeats($invoice->id,$courseId,$invoice->waitinglistid);
                     }//if_waitinglist
@@ -938,6 +918,54 @@ class Invoices {
             throw $ex;
         }//try_catch
     }//GetInvoices
+
+    /**
+     * @param           $userId
+     *
+     * @return          mixed|null
+     * @throws          Exception
+     *
+     * @creationDate    26/10/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Get workplace connected with user
+     */
+    private static function GetWorkplaceConnected($userId) {
+        /* Variables */
+        global $DB;
+        $rdo        = null;
+        $sql        = null;
+        $params     = null;
+        $workplace  = null;
+
+        try {
+            /* Search criteria  */
+            $params =array();
+            $params['user_id']  = $userId;
+            $params['level']    = 3;
+
+            /* SQL Instruction */
+            $sql = " SELECT 	uic.userid,
+                                GROUP_CONCAT(DISTINCT CONCAT(co.industrycode, ' - ',co.name) ORDER BY co.industrycode,co.name SEPARATOR '#SE#') 	as 'workplace'
+                     FROM		{user_info_competence_data}	uic
+                        JOIN	{report_gen_companydata}	co	ON co.id = uic.companyid
+                     WHERE	uic.userid = :user_id
+                        AND uic.level  = :level ";
+
+            /* Execute */
+            $rdo = $DB->get_record_sql($sql,$params);
+            if ($rdo) {
+                if ($rdo->workplace) {
+                    $workplace =     str_replace('#SE#','</br>',$rdo->workplace);
+                }
+            }//if_Rdo
+
+            return $workplace;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//GetWorkplaceConnected
 
     /**
      * @static
@@ -1177,7 +1205,7 @@ class Invoices {
 
                 /* Work Place   */
                 $col = $col + 1;
-                $my_xls->write($row, $col, $invoice->arbeidssted,array('size'=>12, 'name'=>'Arial','text_wrap'=>true,'v_align'=>'center'));
+                $my_xls->write($row, $col, str_replace('</br>',',',$invoice->arbeidssted),array('size'=>12, 'name'=>'Arial','text_wrap'=>true,'v_align'=>'center'));
                 $my_xls->set_row($row,25);
 
                 /* Mail         */
