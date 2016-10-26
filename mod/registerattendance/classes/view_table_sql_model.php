@@ -14,13 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-//namespace mod_registerattendance;
-
 defined('MOODLE_INTERNAL') || die;
-
-//use renderable;
-//use renderer_base;
-//use stdClass;
 
 /**
  * Model class for the mod_registerattendance view table
@@ -55,8 +49,10 @@ class mod_registerattendance_view_table_sql_model extends mod_registerattendance
      *
      * @param object $filterdata The filter data
      * @param string $sort       The sort string
+     * @param        $where
+     * @param array  $whereparams
      * @param int    $start      The first paged user
-     * @param int    $rowstoshwo The amout tof rows to show
+     * @param int    $rowstoshwo The amonut of rows to show
      * @param object $cm         The course module
      */
     public function __construct($filterdata, $sort, $where, $whereparams, $start = 0, $rowstoshwo = 0, $cm) {
@@ -110,6 +106,11 @@ class mod_registerattendance_view_table_sql_model extends mod_registerattendance
 
     /**
      * Get the enrolled users.
+     *
+     * @param int    $start      The first paged user
+     * @param int    $rowstoshwo The amonut of rows to show
+     * @param $where
+     * @param $whereparams
      */
     protected function get_data_from_db($start, $rowstoshwo, $where, $whereparams) {
         $result = null;
@@ -117,13 +118,25 @@ class mod_registerattendance_view_table_sql_model extends mod_registerattendance
         $userfields = 'u.id, ' . get_all_user_name_fields(true, 'u');
         $context = context_course::instance($this->cm->course);
 
-        list($count, $result) = $this->get_enrolled_users($context, '', 0, $userfields,
-                                                          $this->sort, $where, $whereparams,
+        // Remove the »attended« column from the sort for the DB query.
+        $dbsort = null;
+        if (strpos($this->sort, 'attended') === false) {
+            $dbsort = $this->sort;
+        } else {
+            $sortitems = explode(',', $this->sort);
+            $reducedsortitems = array();
+            foreach ($sortitems as $item) {
+                if (strpos($this->sort, 'attended') === false) {
+                    $reducedsortitems[] = trim($item);
+                }
+            }
+            $dbsort = implode(', ', $reducedsortitems);
+        }
+
+        list($count, $result) = $this->get_enrolled_users($context, '', 0, $userfields, $dbsort, $where, $whereparams,
                                                           $start, $rowstoshwo);
 
-        //$result = $this->add_municipality_workplace($result);
-
-        /* Add Municipality && Workplace */
+        // Add Municipality && Workplace.
         $this->add_municipality_workplace($result);
 
         $this->countrecords = $count;
@@ -141,8 +154,8 @@ class mod_registerattendance_view_table_sql_model extends mod_registerattendance
      * @param int     $groupid    0 means ignore groups, any other value limits the result by group id
      * @param string  $userfields requested user record fields
      * @param string  $orderby
-     * @param null    $where
-     * @param null    $whereparams
+     * @param string  $where
+     * @param array   $whereparams
      * @param int     $limitfrom  return a subset of records, starting at this point (optional, required if $limitnum is set).
      * @param int     $limitnum   return a subset comprising this many records (optional, required if $limitfrom is set).
      * @param bool    $onlyactive consider only active enrolments in enabled plugins and time restrictions
@@ -150,40 +163,30 @@ class mod_registerattendance_view_table_sql_model extends mod_registerattendance
      * @return array of user records
      * @throws Exception
      */
-    protected function get_enrolled_users(context $context, $withcapability = '', $groupid = 0,
-                                          $userfields = 'u.*', $orderby = null,
-                                          $where = null, $whereparams = null,
-                                          $limitfrom = 0, $limitnum = 0, $onlyactive = false) {
-        /* Variables */
+    protected function get_enrolled_users(context $context, $withcapability = '', $groupid = 0, $userfields = 'u.*',
+        $orderby = '', $where = '', $whereparams = array(), $limitfrom = 0, $limitnum = 0, $onlyactive = false) {
         global $DB;
-        $params         = null;
-        $sql            = null;
-        $enrolledUsers  = null;
-        $sqlCompleted   = null;
-        $completedUsers = null;
+        $params = array();
+        $sql = '';
+        $enrolledusers = null;
+        $sqlcompleted = null;
+        $completedusers = null;
 
         try {
-            /* Search Criteria  */
-            $params = array();
+            // Search Criteria.
             $params['contextid'] = $context->id;
             $params['courseid']   = $this->cm->course;
 
-            /**
-             * Completed Users
-             */
-            // Get user list with completed state.
-            $sqlCompleted = " SELECT   userid
+            // Completed Users - Get user list with completed state.
+            $sqlcompleted = " SELECT   userid
                               FROM    {course_modules_completion}
                               WHERE   coursemoduleid  = ?
                                 AND   completionstate = 1 ";
 
-            $completedUsers         = $DB->get_records_sql($sqlCompleted, array($this->cm->id));
-            $this->completedusers   = array_keys($completedUsers);
+            $completedusers = $DB->get_records_sql($sqlcompleted, array($this->cm->id));
+            $this->completedusers = array_keys($completedusers);
 
-            /**
-             * Enrolled Users
-             * Only users enrolled as student
-             */
+            // Enrolled Users - Only users enrolled as student.
             $sql = " SELECT 	DISTINCT  u.id, 
                                           u.firstnamephonetic,
                                           u.lastnamephonetic,
@@ -205,11 +208,11 @@ class mod_registerattendance_view_table_sql_model extends mod_registerattendance
                      WHERE	u.deleted = 0
                         AND	u.username != 'guest' ";
 
-            /* Get Total Enrolled Users */
-            $enrolledUsers = $DB->get_records_sql($sql, $params);
-            $this->enrolledusers = array_keys($enrolledUsers);
+            // Get Total Enrolled Users.
+            $enrolledusers = $DB->get_records_sql($sql, $params);
+            $this->enrolledusers = array_keys($enrolledusers);
 
-            /* Apply Filter */
+            // Apply the filter.
             if ($where) {
                 $sql = "$sql AND $where";
                 $params = array_merge($params, $whereparams);
@@ -243,11 +246,12 @@ class mod_registerattendance_view_table_sql_model extends mod_registerattendance
                 $params = array_merge($params, $sortparams);
             }
 
-            // Get the users and add the attended state for each user.¨
+            // Get the users and add the attended state for each user.
             $result = $DB->get_records_sql($sql, $params, $limitfrom, $limitnum);
             $result = $this->add_attended($result);
 
-            // @TODO Find a better to get the whole amount of records without $limitfrom, $limitnum for paging.
+            /* @TODO Find a better to get the whole amount of records without $limitfrom, $limitnum for paging. */
+
             // The counted records need to return the number of all records without the $limitfrom, $limitnum restrictions
             // otherwise the paging bar is not shown.
             return array(count($DB->get_records_sql($sql, $params)), $result);
@@ -256,10 +260,8 @@ class mod_registerattendance_view_table_sql_model extends mod_registerattendance
         }//try_catch
     }//get_enrolled_users
 
-    protected function get_enrolled_users_old(context $context, $withcapability = '', $groupid = 0,
-                                              $userfields = 'u.*', $orderby = null,
-                                              $where = null, $whereparams = null,
-                                              $limitfrom = 0, $limitnum = 0, $onlyactive = false) {
+    protected function get_enrolled_users_old(context $context, $withcapability = '', $groupid = 0, $userfields = 'u.*',
+        $orderby = null, $where = null, $whereparams = null, $limitfrom = 0, $limitnum = 0, $onlyactive = false) {
         global $DB;
 
         list($esql, $params) = get_enrolled_sql($context, $withcapability, $groupid, $onlyactive);
@@ -273,7 +275,7 @@ class mod_registerattendance_view_table_sql_model extends mod_registerattendance
         // helpful to build modular SQL queries and the SQL would need to be written once and could
         // be used at several places.
         // We could for example add some code like the following (or similar):
-        // list($munisql, $params) = friadmin_helper::get_muni_sql();
+        // // list($munisql, $params) = friadmin_helper::get_muni_sql();
         // and add a line of SQL like "JOIN ($munisql) muni ON muni.id = u.id"
         // What do you think?
 
@@ -296,7 +298,7 @@ class mod_registerattendance_view_table_sql_model extends mod_registerattendance
         $completedusers = $DB->get_records_sql($completedsql, array($this->cm->id));
         $this->completedusers = array_keys($completedusers);
 
-        // Add filters
+        // Add filters.
         if ($where) {
             $sql = "$sql AND $where";
             $params = array_merge($params, $whereparams);
@@ -330,14 +332,13 @@ class mod_registerattendance_view_table_sql_model extends mod_registerattendance
             $params = array_merge($params, $sortparams);
         }
 
-        // Get the users and add the attended state for each user.¨
+        // Get the users and add the attended state for each user.
         $result = $DB->get_records_sql($sql, $params, $limitfrom, $limitnum);
         $result = $this->add_attended($result);
 
-        // @TODO Find a better to get the whole amount of records without $limitfrom, $limitnum for paging.
+        /* @TODO Find a better way to get the whole amount of records without $limitfrom, $limitnum for paging. */
         return array(count($DB->get_records_sql($sql, $params)), $result);
     }
-
 
     /**
      * Add the municipality and workplace data
@@ -501,7 +502,6 @@ class mod_registerattendance_view_table_sql_model extends mod_registerattendance
             throw $ex;
         }//try_catch
     }//GetWorkspaceCompetence
-
 
     protected function add_municipality_workplace_old($data) {
         $result = $data;

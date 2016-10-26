@@ -27,7 +27,7 @@
 require_once(__DIR__ . '/../../config.php');
 require_once($CFG->libdir . '/completionlib.php');
 
-$id = optional_param('id', 0, PARAM_INT);    // Course Module ID
+$id = optional_param('id', 0, PARAM_INT);    // Course Module ID.
 
 if (!$cm = get_coursemodule_from_id('registerattendance', $id)) {
     print_error('invalidcoursemodule');
@@ -47,19 +47,18 @@ $completion->set_module_viewed($cm);
 
 $registerattendance = new mod_registerattendance\registerattendance();
 
-// Get the renderer for this plugin
+// Get the renderer for this plugin.
 $output = $PAGE->get_renderer('mod_registerattendance');
 
-// Prepare the renderables for the page and the page areas
+// Prepare the renderables for the page and the page areas.
 $page = new mod_registerattendance_view_page($cm);
 $filter = new mod_registerattendance_view_filter($cm);
-//$table = new mod_registerattendance_view_table($page->data->url, $filter->get_fromform(), $cm);
 $table = new mod_registerattendance_view_table($page->data->url, $filter->get_fromform(),
     $cm, $registerattendance);
 
 $registerattendance->set_view_references($page, $filter, $table, $output, $course, $cm, $completion);
 
-// Basic page init - set context and pagelayout
+// Basic page init - set context and pagelayout.
 $registerattendance->init_page();
 
 $registerattendance->setup_view_page();

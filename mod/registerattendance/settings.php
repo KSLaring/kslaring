@@ -28,5 +28,5 @@ defined('MOODLE_INTERNAL') || die;
 
 if ($ADMIN->fulltree) {
         $settings->add(new admin_setting_configcheckbox('registerattendance/requiremodintro',
-            get_string('requiremodintro', 'admin'), get_string('requiremodintro', 'admin'), 0));
+            get_string('requiremodintro', 'admin'), get_string('configrequiremodintro', 'admin'), 0));
 }
