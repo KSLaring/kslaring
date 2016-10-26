@@ -11,6 +11,8 @@
  *
  */
 
+define('ENROL_COMPANY_NO_DEMANDED',3);
+
 class Invoices {
 
     /**
@@ -369,77 +371,49 @@ class Invoices {
      * Description
      * Add the seats confirmed.
      */
-    public static function Get_InvoicesUsers($course_id,$enrol_id) {
-        /* Variables    */
-        global $DB;
-        $lst_invoices = array();
+
+    /**
+     * @param           $courseId
+     * @param           $enrolId
+     *
+     * @return          array
+     * @throws          Exception
+     *
+     * @creationDate    29/09/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Get all the invoices connected with the course and their details
+     *
+     * @updateDate      31/10/2015
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Add the seats confirmed
+     *
+     * @updateDate      26/10/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Check if the company is demanded or not to know where thw workplace has to be taken
+     */
+    public static function Get_InvoicesUsers($courseId,$enrolId) {
+        /* Variables */
+        $lstInvoices        = array();
+        $isCompanyDemanded  = null;
 
         try {
-            /* Search Criteria      */
-            $params = array();
-            $params['course_id']    = $course_id;
-            $params['enrol_id']     = $enrol_id;
+            /**
+             * Check if Company is Demanded
+             */
+            $isCompanyDemanded = self::IsCompanyDemanded($enrolId);
 
-            /* SQL Instruction      */
-            $sql = " SELECT	    DISTINCT	u.id,
-                                            CONCAT(u.firstname,', ',u.lastname) as 'name',
-                                            ar.data as 'arbeidssted',
-                                            u.email,
-                                            ei.type,
-                                            ei.responumber,
-                                            ei.servicenumber,
-                                            ei.projectnumber,
-                                            ei.actnumber,
-                                            ei.ressursnr,
-                                            ei.street,
-                                            ei.postcode,
-                                            ei.city,
-                                            ei.bilto,
-                                            ei.waitinglistid
-                     FROM		    {user}				u
-                        JOIN	    {user_enrolments}	ue		ON 		ue.userid 		= 	u.id
-                                                                AND		ue.enrolid		=	:enrol_id
-                        JOIN	    {enrol_invoice}		ei		ON		ei.userenrolid	=	ue.id
-                                                                AND		ei.courseid		=	:course_id
-                                                                AND		ei.userid		= 	ue.userid
-                                                                AND		ei.unenrol		= 	0
-                        LEFT JOIN 	(
-                                        SELECT 	uid.userid,
-                                                uid.data
-                                        FROM		{user_info_data}		uid
-                                            JOIN	{user_info_field}		uif		ON		uif.id			= 	uid.fieldid
-                                                                                    AND		uif.shortname	= 	'Arbeidssted'
-                                    ) ar ON ar.userid = ue.userid
-                     WHERE		u.deleted = 0
-                     ORDER BY 	u.firstname, u.lastname ";
+            /**
+             * Get Invoices List
+             */
+            $lstInvoices = self::GetInvoices($courseId,$enrolId,$isCompanyDemanded);
 
-            /* Execute  */
-            $rdo = $DB->get_records_sql($sql,$params);
-            if ($rdo) {
-                foreach ($rdo as $invoice) {
-                    /* Invoice Info */
-                    $info = new stdClass();
-                    $info->name             = $invoice->name;
-                    $info->email            = $invoice->email;
-                    $info->type             = $invoice->type;
-                    $info->respo            = $invoice->responumber;
-                    $info->service          = $invoice->servicenumber;
-                    $info->project          = $invoice->projectnumber;
-                    $info->act              = $invoice->actnumber;
-                    $info->resource_number  = $invoice->ressursnr;
-                    $info->street           = $invoice->street;
-                    $info->post_code        = $invoice->postcode;
-                    $info->city             = $invoice->city;
-                    $info->bil_to           = $invoice->bilto;
-                    $info->arbeidssted      = $invoice->arbeidssted;
-                    if ($invoice->waitinglistid) {
-                        $info->seats        = self::GetConfirmedSeats($invoice->id,$course_id,$invoice->waitinglistid);
-                    }//if_waitinglist
-                    $lst_invoices[$invoice->id] = $info;
-                }//for_rdo
-            }//if_rdo
-
-            return $lst_invoices;
+            return $lstInvoices;
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
@@ -806,6 +780,164 @@ class Invoices {
             throw $ex;
         }//try_catch
     }////Download_RequestCourses
+
+    /***********/
+    /* PRIVATE */
+    /***********/
+
+    /**
+     * @param           $enrolId
+     *
+     * @return          bool|null
+     * @throws          Exception
+     *
+     * @creationDate    26/10/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Check id the company is demanded or not
+     */
+    private static function IsCompanyDemanded($enrolId) {
+        /* Variables */
+        global $DB;
+        $rdo = null;
+        $isCompanyDemanded = null;
+
+        try {
+            $rdo = $DB->get_record('enrol',array('id' => $enrolId),'customint7');
+            if ($rdo) {
+                if ($rdo->customint7 != ENROL_COMPANY_NO_DEMANDED) {
+                    $isCompanyDemanded = true;
+                }//if_custom
+            }//if_rdo
+
+            return $isCompanyDemanded;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//IsCompanyDemanded
+
+    /**
+     * @param           $courseId
+     * @param           $enrolId
+     * @param           $isCompanyDemanded
+     *
+     * @return          array
+     * @throws          Exception
+     *
+     * @creationDate    26/10/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Get invoices connected with. Workplace based on if the company is demanded or not
+     */
+    private static function GetInvoices($courseId,$enrolId,$isCompanyDemanded) {
+        /* Variables */
+        global $DB;
+        $rdo            = null;
+        $sql            = null;
+        $sqlSel         = null;
+        $sqlDiff        = null;
+        $sqlFrom        = null;
+        $sqlJoin        = null;
+        $sqlWhere       = null;
+        $params         = null;
+        $lstInvoices    = array();
+
+        try {
+            /* Search Criteria      */
+            $params = array();
+            $params['course_id']    = $courseId;
+            $params['enrol_id']     = $enrolId;
+
+            /**
+             * SQL common parts - Demanded and no demanded comapny
+             */
+            $sqlSel = " SELECT	DISTINCT    u.id,
+                                            u.firstname,
+                                            u.lastname,
+                                            u.email,
+                                            ei.type,
+                                            ei.responumber,
+                                            ei.servicenumber,
+                                            ei.projectnumber,
+                                            ei.actnumber,
+                                            ei.ressursnr,
+                                            ei.street,
+                                            ei.postcode,
+                                            ei.city,
+                                            ei.bilto,
+                                            ei.waitinglistid, ";
+
+            $sqlFrom = " FROM		    {user}						u
+                                JOIN	{user_enrolments}			ue	ON 	ue.userid 		= 	u.id
+                                                                        AND	ue.enrolid		=	:enrol_id
+                                JOIN	{enrol_invoice}				ei	ON	ei.userenrolid	=	ue.id
+                                                                        AND	ei.courseid		=	:course_id
+                                                                        AND	ei.userid		= 	ue.userid
+                                                                        AND	ei.unenrol		= 	0 ";
+
+            /**
+             * SQL Diff - Based on if the company is demanded or not
+             */
+            if ($isCompanyDemanded) {
+                $sqlDiff = "    co.industrycode,
+                                co.name ";
+
+                $sqlJoin = " LEFT JOIN	{report_gen_companydata}	co	ON		co.id			= 	ei.companyid ";
+
+                $sqlWhere = " WHERE		u.deleted = 0
+                              ORDER BY 	u.firstname, u.lastname ";
+            }else {
+                $sqlDiff = " GROUP_CONCAT(DISTINCT CONCAT(co.industrycode, ' - ',co.name) ORDER BY co.industrycode,co.name SEPARATOR '#SE#') as 'workplace' ";
+
+                $sqlJoin = "    LEFT JOIN 	{user_info_competence_data}	uic	ON		uic.userid		= 	ei.userid
+                                LEFT JOIN	{report_gen_companydata}	co	ON 		co.id 			= 	uic.companyid ";
+
+                $sqlWhere = " WHERE		u.deleted = 0
+                              GROUP BY  u.id
+                              ORDER BY 	u.firstname, u.lastname ";
+            }//if_isDemanded
+
+            /* Execute */
+            $sql = $sqlSel . $sqlDiff . $sqlFrom . $sqlJoin . $sqlWhere;
+            $rdo = $DB->get_records_sql($sql,$params);
+            if ($rdo) {
+                foreach ($rdo as $invoice) {
+                    /* Invoice Info */
+                    $info = new stdClass();
+                    $info->name             = $invoice->firstname . ', ' . $invoice->lastname;
+                    $info->email            = $invoice->email;
+                    $info->type             = $invoice->type;
+                    $info->respo            = $invoice->responumber;
+                    $info->service          = $invoice->servicenumber;
+                    $info->project          = $invoice->projectnumber;
+                    $info->act              = $invoice->actnumber;
+                    $info->resource_number  = $invoice->ressursnr;
+                    $info->street           = $invoice->street;
+                    $info->post_code        = $invoice->postcode;
+                    $info->city             = $invoice->city;
+                    $info->bil_to           = $invoice->bilto;
+                    $info->arbeidssted      = null;
+                    if ($isCompanyDemanded) {
+                        $info->arbeidssted = $invoice->industrycode . ' - ' . $invoice->name;
+                    }else {
+                        $info->arbeidssted = str_replace('#SE#','</br>',$invoice->workplace);
+                    }
+                    if ($invoice->waitinglistid) {
+                        $info->seats        = self::GetConfirmedSeats($invoice->id,$courseId,$invoice->waitinglistid);
+                    }//if_waitinglist
+
+                    /* Add Invoice */
+                    $lstInvoices[$invoice->id] = $info;
+                }//for_rdo
+            }//if_rdo
+
+            return $lstInvoices;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//GetInvoices
 
     /**
      * @static
