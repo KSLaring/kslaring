@@ -113,20 +113,6 @@ function xmldb_local_fellesdata_upgrade($oldVersion) {
             }//if_exists
         }//if_oldVersion_2016102504
 
-        if ($oldVersion < 2016102700) {
-            $fldUsersImp = new xmldb_table('fs_imp_users');
-
-            if ($dbMan->table_exists('fs_imp_users')) {
-                /* ePOST not null */
-                $fldField = new xmldb_field('EPOST');
-                $dbMan->change_field_notnull($fldUsersImp,$fldField);
-
-                /* ADFS ID NOT NULL */
-                $fldField = new xmldb_field('BRUKERNAVN');
-                $dbMan->change_field_notnull($fldUsersImp,$fldField);
-            }
-        }//if_oldVersion_2016102700
-
         return true;
     }catch (Exception $ex) {
         throw $ex;
