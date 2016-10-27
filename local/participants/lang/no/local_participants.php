@@ -37,6 +37,6 @@ $string['csvdownload']          = 'Last ned i regnearkformat (.xls)';
 
 $string['str_instructors']      = 'Instruktører';
 
-$string['header_wk'] = 'Workplace';
-$string['header_se']    = 'Sector';
-$string['header_lo']    = 'Location';
+$string['header_wk'] = 'Arbeidssted';
+$string['header_se']    = 'Sektor';
+$string['header_lo']    = 'Sted';
