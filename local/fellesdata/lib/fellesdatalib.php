@@ -2004,7 +2004,7 @@ class FS {
             if ($rdo) {
                 foreach ($rdo as $instance) {
                     /* Fake eMail   */
-                    $instance->EPOST = md5($instance->id) . '@fakeEmail.no';
+                    $instance->EPOST = rand(1,50) . $instance->id . '@fakeEmail.no';
                     
                     /* Update */
                     $DB->update_record('fs_imp_users',$instance);
