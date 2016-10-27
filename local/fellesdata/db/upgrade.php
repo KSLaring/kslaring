@@ -113,6 +113,14 @@ function xmldb_local_fellesdata_upgrade($oldVersion) {
             }//if_exists
         }//if_oldVersion_2016102504
 
+        if ($oldVersion < 2016102700) {
+            $fldUsersImp = new xmldb_table('fs_imp_users');
+            $fldField = new xmldb_field('epost');
+            if ($dbMan->table_exists('fs_imp_users')) {
+                $dbMan->change_field_notnull($fldUsersImp,$fldField);
+            }
+        }//if_oldVersion_2016102700
+
         return true;
     }catch (Exception $ex) {
         throw $ex;
