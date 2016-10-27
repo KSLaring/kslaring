@@ -1898,6 +1898,9 @@ class FS {
                         /* FS Users     */
                         self::ImportTemporary_FSUsers($toSave);
 
+                        /* Fake eMails  */
+                        self::UpdateFakeMails();
+                        
                         break;
                     case IMP_COMPANIES:
                         /* FS Companies */
@@ -1958,10 +1961,8 @@ class FS {
                 if (!$rdo) {
                     $DB->insert_record('fs_imp_users',$infoUser);
                 }else {
-                    //if ($infoUser->action != ADD) {
-                        $infoUser->id       = $rdo->id;
-                        $DB->update_record('fs_imp_users',$infoUser);
-                    //}
+                    $infoUser->id       = $rdo->id;
+                    $DB->update_record('fs_imp_users',$infoUser);
                 }//if_rdo
             }//ofr_each
 
@@ -1974,6 +1975,45 @@ class FS {
             throw $ex;
         }//try_catch
     }//ImportTemporary_FSUsers
+
+    /**
+     * @throws          Exception
+     * 
+     * @creationDate    26/10/2016
+     * @author          eFaktor     (fbv)
+     * 
+     * Description
+     * Generate a fake email for users with empty email
+     */
+    private static function UpdateFakeMails() {
+        /* Variables */
+        global $DB;
+        $sql        = null;
+        $rdo        = null;
+
+        try {
+            /* SQL Instruction  */
+            $sql = " SELECT fs.id,
+                            fs.EPOST
+                     FROM	{fs_imp_users}	fs
+                     WHERE 	fs.EPOST IS NULL
+                        OR 	fs.EPOST    = '' ";
+
+            /* Execute */
+            $rdo = $DB->get_records_sql($sql);
+            if ($rdo) {
+                foreach ($rdo as $instance) {
+                    /* Fake eMail   */
+                    $instance->EPOST = md5($instance->id) . '@fakeEmail.no';
+                    
+                    /* Update */
+                    $DB->update_record('fs_imp_users',$instance);
+                }//rdo
+            }//if_rdo
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//UpdateFakeMails
 
     /**
      * @param           $data
@@ -2003,10 +2043,8 @@ class FS {
                 if (!$rdo) {
                     $DB->insert_record('fs_imp_company',$infoFS);
                 }else {
-                    //if ($infoFS->action != ADD) {
-                        $infoFS->id         = $rdo->id;
-                        $DB->update_record('fs_imp_company',$infoFS);
-                    //}
+                    $infoFS->id         = $rdo->id;
+                    $DB->update_record('fs_imp_company',$infoFS);
                 }//if_rdo
             }//for_each
 
@@ -2048,10 +2086,8 @@ class FS {
                 if (!$rdo) {
                     $DB->insert_record('fs_imp_jobroles',$infoFS);
                 }else {
-                    //if ($infoFS->action != ADD) {
-                        $infoFS->id         = $rdo->id;
-                        $DB->update_record('fs_imp_jobroles',$infoFS);
-                    //}
+                    $infoFS->id         = $rdo->id;
+                    $DB->update_record('fs_imp_jobroles',$infoFS);
                 }//if_rdo
             }//for_each
 
@@ -2098,10 +2134,8 @@ class FS {
                 if (!$rdo) {
                     $DB->insert_record('fs_imp_managers_reporters',$info);
                 }else {
-                    //if ($info->action != ADD) {
-                        $info->id       = $rdo->id;
-                        $DB->update_record('fs_imp_managers_reporters',$info);
-                    //}
+                    $info->id       = $rdo->id;
+                    $DB->update_record('fs_imp_managers_reporters',$info);
                 }//if_rdo
             }
 
