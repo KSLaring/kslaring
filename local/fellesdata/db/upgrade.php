@@ -118,11 +118,11 @@ function xmldb_local_fellesdata_upgrade($oldVersion) {
 
             if ($dbMan->table_exists('fs_imp_users')) {
                 /* ePOST not null */
-                $fldField = new xmldb_field('epost');
+                $fldField = new xmldb_field('EPOST');
                 $dbMan->change_field_notnull($fldUsersImp,$fldField);
 
                 /* ADFS ID NOT NULL */
-                $fldField = new xmldb_field('brukernavn');
+                $fldField = new xmldb_field('BRUKERNAVN');
                 $dbMan->change_field_notnull($fldUsersImp,$fldField);
             }
         }//if_oldVersion_2016102700
