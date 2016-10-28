@@ -100,4 +100,31 @@ class first_access_form extends moodleform {
         /* Add Actions Buttons */
         $this->add_action_buttons(false, get_string('btn_save','local_first_access'));
     }//definition
+
+    /**
+     * @param       array $data
+     * @param       array $files
+     *
+     * @return      array
+     * @throws      Exception
+     * @throws      coding_exception
+     *
+     * @updateDate  27/10/2016
+     * @author      eFaktor     (fbv)
+     *
+     * Description
+     * Check if it is a fake email
+     */
+    function validation($data, $files) {
+        /* Variables */
+        $index  = null;
+        $errors = parent::validation($data, $files);
+
+        $index   = strpos($data['email'],'@fakeEmail.no');
+        if ($index) {
+            $errors['email'] = get_string('invalidemail');
+        }
+
+        return $errors;
+    }//validation
 }//first_access_form

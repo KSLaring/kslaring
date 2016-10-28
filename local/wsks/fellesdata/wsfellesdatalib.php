@@ -430,6 +430,34 @@ class WS_FELLESDATA {
         }//try_catch
     }//Synchronize_UserCompetence
 
+    /**
+     * @param           $userMail
+     *
+     * @return          bool
+     * @throws          Exception
+     *
+     * @creationDate    27/10/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Check if it's a fake email
+     */
+    public static function IsFakeMail($userMail) {
+        /* Variables    */
+        $index = null;
+
+        try {
+            $index   = strpos($userMail,'@fakeEmail.no');
+            if ($index) {
+                return true;
+            }else  {
+                return false;
+            }//if
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//IsFakeMail
+
     /***********/
     /* PRIVATE */
     /***********/
