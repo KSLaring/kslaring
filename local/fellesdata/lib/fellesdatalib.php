@@ -1304,13 +1304,6 @@ class FSKS_USERS {
             /* Local Time   */
             $time = time();
 
-            /**
-             * THAT's ONLY FOR TEST
-             * THIS PARAMETER WILL COME IN userFS
-             */
-            $rdo    = $DB->get_record('fs_imp_users',array('id' => $fsKey),'brukernavn');
-            $userFS->adfs = $rdo->brukernavn;
-
             echo "</br>";
             echo $fsKey . " --> " . $userFS->firstname . " - " . $userFS->adfs . "</br>";
 
