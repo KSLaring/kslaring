@@ -26,3 +26,5 @@ $string['set_activate_desc']    = 'Activate Feide login';
 $string['ADFS_ERR_PROCESS']    = 'Det har oppstått en feil i prosessen. Vennligst kontakt administrator.';
 $string['ADFS_ERROR_USER']      = 'Brukerens profildata er ugyldige. Vennligst sjekk at alle obligatoriske felt er utfylt og kontakt Administrator.';
 
+$string['invalid_email'] = 'Sorry, your account is connected to an invalid email. Please, you should change your email account.';
+
