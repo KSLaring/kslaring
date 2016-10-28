@@ -1305,7 +1305,7 @@ class FSKS_USERS {
              * THAT's ONLY FOR TEST
              * THIS PARAMETER WILL COME IN userFS
              */
-            $rdo    = $DB->get_record('fs_imp_users',array('id' => $fsKey),'brukernavn');
+            $rdo    = $DB->get_record('fs_imp_users',array('id' => $fsKey),'brukernavn',8,5);
             $userFS->adfs = $rdo->brukernavn;
 
             /**
