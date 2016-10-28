@@ -254,9 +254,15 @@ define('SAML_INTERNAL', 1);
                 echo $OUTPUT->footer();
                 die();
             }else {
+                require_once('../../local/wsks/fellesdata/wsfellesdatalib.php');
+                if (WS_FELLESDATA::IsFakeMail($USER->email)) {
+                    $url = new moodle_url('/local/wsks/email/email.php',array('id' => $USER->id));
+                    redirect($url);
+                }else {
                 // test the session actually works by redirecting to self
                 $SESSION->wantsurl = $urltogo;
                 redirect($urltogo);
+                }//if_fake_email
             }//if_else_UpdateProfile
         }//if_first_access
     }
