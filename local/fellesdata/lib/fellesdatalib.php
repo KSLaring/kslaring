@@ -1303,7 +1303,7 @@ class FSKS_USERS {
         try {
             /* Local Time   */
             $time = time();
-            
+
             /**
              * THAT's ONLY FOR TEST
              * THIS PARAMETER WILL COME IN userFS
@@ -1311,7 +1311,7 @@ class FSKS_USERS {
             $rdo    = $DB->get_record('fs_imp_users',array('id' => $fsKey),'brukernavn');
             $userFS->adfs = $rdo->brukernavn;
 
-            echo $fsKey . " --> " . $userFS->firstname . " - " . $userFS->adfs . "</br>";
+            echo "</br>" . $fsKey . " --> " . $userFS->firstname . " - " . $userFS->adfs . "</br>";
 
             /**
              * Check if user already exists.
@@ -1326,7 +1326,9 @@ class FSKS_USERS {
                 /* Fellesdata account to delete */
                 $rdoFellesdata = $DB->get_record('user',array('username' => $userFS->personalnumber),'id,username');
 
-                echo "Yes" . "</br>";
+                if ($rdoFellesdata) {
+                    echo "Yes" . "</br>";
+                }
             }else {
                 /* No Connected */
                 $params = array();
