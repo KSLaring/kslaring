@@ -20,7 +20,7 @@ $string['fellesdata_settigns']      = 'Fellesdata Services';
 $string['fellesdata_end']           = 'API Import Fellesdata';
 $string['idnumber_end']             = 'Personal Number End Point';
 $string['fellesdata_source']        = 'Source';
-$string['fellesdata_source_desc']   = 'ADFS, Agresso, Visma...';
+$string['fellesdata_source_desc']   = 'TARDIS, Agresso, Visma';
 
 $string['ks_settings']  = 'KS Læring services';
 $string['ks_end_point'] = 'KS Læring Site';
