@@ -1305,8 +1305,10 @@ class FSKS_USERS {
              * THAT's ONLY FOR TEST
              * THIS PARAMETER WILL COME IN userFS
              */
-            $rdo    = $DB->get_record('fs_imp_users',array('id' => $fsKey),'brukernavn',8,5);
+            $rdo    = $DB->get_record('fs_imp_users',array('id' => $fsKey),'brukernavn');
             $userFS->adfs = $rdo->brukernavn;
+
+            echo $fsKey . " --> " . $userFS->firstname . " - " . $userFS->adfs . "</br>";
 
             /**
              * Check if user already exists.
@@ -1320,11 +1322,14 @@ class FSKS_USERS {
 
                 /* Fellesdata account to delete */
                 $rdoFellesdata = $DB->get_record('user',array('username' => $userFS->personalnumber),'id,username');
+
+                echo "Yes" . "</br>";
             }else {
                 /* No Connected */
                 $params = array();
                 $params['username'] = $userFS->personalnumber;
                 $rdoUser = $DB->get_record('user',$params,'id');
+                echo "No" . "</br>";
             }//if_adfs
 
             /* Info Account */
@@ -1332,9 +1337,11 @@ class FSKS_USERS {
                 /* Create new Account   */
                 $infoUser = new stdClass();
                 if ($userFS->adfs) {
+                    echo "Create a new ADFS Account" . "</br>";
                     /* Connected    */
                     $infoUser->username     = $userFS->adfs;
                 }else {
+                    echo "Create a new Account " . "</br>";
                     /* No connected */
                     $infoUser->username     = $userFS->personalnumber;
                 }//if_adfs
@@ -1351,11 +1358,13 @@ class FSKS_USERS {
                 $infoUser->calendartype = $CFG->calendartype;
                 $infoUser->mnethostid   = $CFG->mnet_localhost_id;
             }else {
+                echo "Already exist" . "</br>";
                 $userId = $rdoUser->id;
                 /**
                  * Two merge accounts
                  */
                 if ($userFS->adfs) {
+                    echo "ADFS" . "</br>";
                     /* Connected    */
                     $rdoUser->username     = $userFS->adfs;
                 }//if_adfs
@@ -1465,6 +1474,7 @@ class FSKS_USERS {
              * Only one account for user
              */
             if ($rdoFellesdata) {
+                echo "Delete Account" . "</br>";
                 /* From user */
                 $DB->delete_records('user',array('id' => $rdoFellesdata->id,'username' => $rdoFellesdata->username));
 
