@@ -1313,11 +1313,10 @@ class FSKS_USERS {
             if ($userFS->adfs) {
                 /* Connected with   */
                 $params = array();
-                $params['idnumber'] = $userFS->personalnumber;
+                $params['username'] = $userFS->adfs;
                 $rdoUser = $DB->get_record('user',$params,'id');
 
                 if (!$rdoUser) {
-                    unset($params['idnumber']);
                     $params['username'] = $userFS->personalnumber;
                     $rdoUser = $DB->get_record('user',$params,'id');
                 }else {
