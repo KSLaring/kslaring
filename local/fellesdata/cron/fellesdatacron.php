@@ -813,7 +813,7 @@ class FELLESDATA_CRON {
                     /* Users account info   */
                     $infoUser = new stdClass();
                     $infoUser->personalnumber   = $instance->fodselsnr;
-                    $infoUser->adfs             = $instance->brukernavn;
+                    $infoUser->adfs             = ($instance->brukernavn ? $instance->brukernavn : '');
                     $infoUser->ressursnr        = ($instance->ressursnr ? $instance->ressursnr : 0);
                     $infoUser->industry         = $industryCode;
                     $infoUser->firstname        = $instance->fornavn;
