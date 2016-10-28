@@ -447,7 +447,7 @@ class WS_FELLESDATA {
         $index = null;
 
         try {
-            $index   = strpos($userMail,'@fakeEmail.no');
+            $index   = strpos($userMail,'@byttmegut.no');
             if ($index) {
                 return true;
             }else  {
@@ -1111,7 +1111,7 @@ class WS_FELLESDATA {
                     }else {
                         $rdoUser->firstname    = $userAccount->firstname;
                         $rdoUser->lastname     = $userAccount->lastname;
-                        $rdoUser->email        = $userAccount->email;
+                        $rdoUser->email        = self::ProcessRightEMail($rdoUser->email,$userAccount->email);
                         $rdoUser->timemodified = $time;
                         $rdoUser->deleted      = 0;
 
@@ -1128,7 +1128,7 @@ class WS_FELLESDATA {
                     if ($rdoUser) {
                         $rdoUser->firstname    = $userAccount->firstname;
                         $rdoUser->lastname     = $userAccount->lastname;
-                        $rdoUser->email        = $userAccount->email;
+                        $rdoUser->email        = self::ProcessRightEMail($rdoUser->email,$userAccount->email);
                         $rdoUser->timemodified = $time;
                         $rdoUser->deleted      = 0;
 
@@ -1214,6 +1214,68 @@ class WS_FELLESDATA {
             throw $ex;
         }//try_catch
     }//ProcessUserAccount
+
+    /**
+     * @param           $userEmail
+     * @param           $newEmail
+     *
+     * @return          null
+     * @throws          Exception
+     *
+     * @creationDate    27/10/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Get the right email to update
+     */
+    private static function ProcessRightEMail($userEmail,$newEmail) {
+        /* Variables */
+        $rightEmail    = null;
+        $indexUser     = null;
+        $indexNew      = null;
+
+        try {
+            /**
+             * Case 1.
+             * user Email and new Email are exactly the same.
+             */
+            if ($userEmail == $newEmail) {
+                $rightEmail = $newEmail;
+            }else {
+                /* user Email is fake?  */
+                $indexUser  = strpos($userEmail,'@byttmegut.no');
+                /* new Email is fake?   */
+                $indexNew   = strpos($newEmail,'@byttmegut.no');
+
+                /**
+                 * Case 2.
+                 * user Email fake and new Email not fake
+                 */
+                if ($indexUser && !$indexNew) {
+                    $rightEmail = $newEmail;
+                }else if (!$indexUser && $indexNew) {
+                    /**
+                     * Case 3.
+                     * user Email not fake and new Email fake
+                     */
+                    $rightEmail = $userEmail;
+                }else if (!$indexNew && !$indexUser){
+                    /**
+                     * Case 4.
+                     * user Email and new Email not fake
+                     */
+                    $rightEmail = $newEmail;
+                }else {
+                    $rightEmail = $newEmail;
+                }
+            }//if_user_email
+
+            return $rightEmail;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//ProcessRightEMail
+
 
     /**
      * @param           $jobRoleInfo
