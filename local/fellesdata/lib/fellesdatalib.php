@@ -1301,6 +1301,9 @@ class FSKS_USERS {
         $trans = $DB->start_delegated_transaction();
 
         try {
+            /* Local Time   */
+            $time = time();
+            
             /**
              * THAT's ONLY FOR TEST
              * THIS PARAMETER WILL COME IN userFS
