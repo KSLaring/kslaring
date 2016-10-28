@@ -1304,7 +1304,6 @@ class FSKS_USERS {
             /* Local Time   */
             $time = time();
 
-            echo "</br>";
             echo $fsKey . " --> " . $userFS->firstname . " - " . $userFS->adfs . "</br>";
 
             /**
