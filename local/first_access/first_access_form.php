@@ -120,7 +120,7 @@ class first_access_form extends moodleform {
         $index  = null;
         $errors = parent::validation($data, $files);
 
-        $index   = strpos($data['email'],'@fakeEmail.no');
+        $index   = strpos($data['email'],'@byttmegut.no');
         if ($index) {
             $errors['email'] = get_string('invalidemail');
         }
