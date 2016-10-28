@@ -447,7 +447,7 @@ class WS_FELLESDATA {
         $index = null;
 
         try {
-            $index   = strpos($userMail,'@fakeEmail.no');
+            $index   = strpos($userMail,'@byttmegut.no');
             if ($index) {
                 return true;
             }else  {
@@ -1243,9 +1243,9 @@ class WS_FELLESDATA {
                 $rightEmail = $newEmail;
             }else {
                 /* user Email is fake?  */
-                $indexUser  = strpos($userEmail,'@fakeEmail.no');
+                $indexUser  = strpos($userEmail,'@byttmegut.no');
                 /* new Email is fake?   */
-                $indexNew   = strpos($newEmail,'@fakeEmail.no');
+                $indexNew   = strpos($newEmail,'@byttmegut.no');
 
                 /**
                  * Case 2.
