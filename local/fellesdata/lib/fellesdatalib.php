@@ -1324,19 +1324,19 @@ class FSKS_USERS {
                 $params['idnumber'] = $userFS->personalnumber;
                 $rdoUser = $DB->get_record('user',$params,'id');
 
-                /* Fellesdata account to delete */
-                if ($rdoUser) {
+                if (!$rdoUser) {
                     echo "No IDNUMBER" . "</br>";
                     unset($params['idnumber']);
                     $params['username'] = $userFS->personalnumber;
                     $rdoUser = $DB->get_record('user',$params,'id');
                 }else {
+                    /* Fellesdata account to delete */
                     $rdoFellesdata = $DB->get_record('user',array('username' => $userFS->personalnumber),'id,username');
 
                     if ($rdoFellesdata) {
                         echo "Yes" . "</br>";
                     }
-                }
+                }//if_rdoUser
             }else {
                 /* No Connected */
                 $params = array();
