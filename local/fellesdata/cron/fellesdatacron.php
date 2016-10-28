@@ -786,10 +786,7 @@ class FELLESDATA_CRON {
 
         try {
             /* Get user to synchronize  */
-            //$rdo = $DB->get_records('fs_imp_users',array('imported' => '0'),'','*',0,1);
-
-            //
-            $rdo = $DB->get_records('fs_imp_users',array('imported' => '0','id' => '48116'),'','*');
+            $rdo = $DB->get_records('fs_imp_users',array('imported' => '0'),'','*');
 
             /* Get Industry Code    */
             if ($pluginInfo->ks_muni) {
