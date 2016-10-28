@@ -20,7 +20,7 @@ $string['fellesdata_settings']      = 'Fellesdata-innstillinger';
 $string['fellesdata_end']           = 'API for import fra Fellesdata';
 $string['idnumber_end']             = 'Personnummer-endepunkt';
 $string['fellesdata_source']        = 'Kilde';
-$string['fellesdata_source_desc']   = 'Fellesdata, Agresso, Visma...';
+$string['fellesdata_source_desc']   = 'TARDIS, Agresso, Visma';
 
 $string['ks_settings']  = 'KS Læring-innstillinger';
 $string['ks_end_point'] = 'KS Læring-adresse';
