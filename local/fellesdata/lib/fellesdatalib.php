@@ -1379,7 +1379,8 @@ class FSKS_USERS {
                 if ($userFS->adfs) {
                     echo "ADFS" . "</br>";
                     /* Connected    */
-                    $rdoUser->username     = $userFS->adfs;
+                    $rdoUser->username  = $userFS->adfs;
+                    $rdoUser->idnumber  = $userFS->personalnumber;
                 }//if_adfs
             }//if_no_exist
 
