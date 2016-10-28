@@ -106,7 +106,7 @@ function xmldb_local_fellesdata_upgrade($oldVersion) {
             $fldUsersImp = new xmldb_table('fs_imp_users');
             if ($dbMan->table_exists('fs_imp_users')) {
                 /* ADFS ID  */
-                $fldADFS = new xmldb_field('brukernavn', XMLDB_TYPE_CHAR, '50',null,XMLDB_NOTNULL,null,null, 'epost');
+                $fldADFS = new xmldb_field('brukernavn', XMLDB_TYPE_CHAR, '50',null,null,null,null, 'epost');
                 if (!$dbMan->field_exists($fldUsersImp, $fldADFS)) {
                     $dbMan->add_field($fldUsersImp, $fldADFS);
                 }//if_not_exists

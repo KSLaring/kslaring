@@ -1276,8 +1276,218 @@ class FSKS_USERS {
      *
      * Description
      * Add resource number
+     *
+     * @updateDate      27/10/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * ADFS ID.
+     * Merge ADFS and Fellesdata accounts
      */
     private static function SynchronizeUserFS($userFS,$fsKey) {
+        /* Variables    */
+        global $DB,$CFG;
+        $rdoUser        = null;
+        $rdoFellesdata  = null;
+        $params         = null;
+        $infoUser       = null;
+        $instance       = null;
+        $time           = null;
+        $sync           = false;
+        $trans          = null;
+        $userId         = null;
+
+        /* Start Transaction    */
+        $trans = $DB->start_delegated_transaction();
+
+        try {
+            /**
+             * THAT's ONLY FOR TEST
+             * THIS PARAMETER WILL COME IN userFS
+             */
+            $rdo    = $DB->get_record('fs_imp_users',array('id' => $fsKey),'brukernavn');
+            $userFS->adfs = $rdo->brukernavn;
+
+            /**
+             * Check if user already exists.
+             * Can be connected with ADFS or not.
+             */
+            if ($userFS->adfs) {
+                /* Connected with   */
+                $params = array();
+                $params['idnumber'] = $userFS->personalnumber;
+                $rdoUser = $DB->get_record('user',$params,'id');
+
+                /* Fellesdata account to delete */
+                $rdoFellesdata = $DB->get_record('user',array('username' => $userFS->personalnumber),'id,username');
+            }else {
+                /* No Connected */
+                $params = array();
+                $params['username'] = $userFS->personalnumber;
+                $rdoUser = $DB->get_record('user',$params,'id');
+            }//if_adfs
+
+            /* Info Account */
+            if (!$rdoUser) {
+                /* Create new Account   */
+                $infoUser = new stdClass();
+                if ($userFS->adfs) {
+                    /* Connected    */
+                    $infoUser->username     = $userFS->adfs;
+                }else {
+                    /* No connected */
+                    $infoUser->username     = $userFS->personalnumber;
+                }//if_adfs
+                $infoUser->idnumber     = $userFS->personalnumber;
+                $infoUser->firstname    = $userFS->firstname;
+                $infoUser->lastname     = $userFS->lastname;
+                $infoUser->email        = $userFS->email;
+                $infoUser->timemodified = $time;
+                $infoUser->timecreated  = $time;
+                $infoUser->auth         = 'saml';
+                $infoUser->password     = AUTH_PASSWORD_NOT_CACHED;
+                $infoUser->confirmed    = '1';
+                $infoUser->firstaccess  = $time;
+                $infoUser->calendartype = $CFG->calendartype;
+                $infoUser->mnethostid   = $CFG->mnet_localhost_id;
+            }else {
+                $userId = $rdoUser->id;
+                /**
+                 * Two merge accounts
+                 */
+                if ($userFS->adfs) {
+                    /* Connected    */
+                    $rdoUser->username     = $userFS->adfs;
+                }//if_adfs
+            }//if_no_exist
+
+            /* Apply synchronization    */
+            switch ($userFS->action) {
+                case ADD:
+                    /* Execute      */
+                    if (!$rdoUser) {
+                        $userId = $DB->insert_record('user',$infoUser);
+                    }else {
+                        /* Update   */
+                        $rdoUser->firstname     = $userFS->firstname;
+                        $rdoUser->lastname      = $userFS->lastname;
+                        $rdoUser->email         = $userFS->email;
+                        $rdoUser->deleted       = 0;
+                        $rdoUser->timemodified  = $time;
+
+                        /* Execute  */
+                        $DB->update_record('user',$rdoUser);
+                    }//if_no_exists
+
+                    /* Synchronized */
+                    $sync = true;
+
+                    break;
+                case UPDATE:
+                    /* Check if exists  */
+                    if ($rdoUser) {
+                        /* Update   */
+                        $rdoUser->firstname    = $userFS->firstname;
+                        $rdoUser->lastname     = $userFS->lastname;
+                        $rdoUser->email        = $userFS->email;
+                        $rdoUser->deleted       = 0;
+                        $rdoUser->timemodified = $time;
+
+                        /* Execute  */
+                        $DB->update_record('user',$rdoUser);
+                    }else {
+                        /* Execute  */
+                        $userId = $DB->insert_record('user',$infoUser);
+                    }//if_else
+
+                    /* Synchronized */
+                    $sync = true;
+
+                    break;
+                case DELETE:
+                    /* Delete   */
+                    if ($rdoUser) {
+                        $rdoUser->timemodified = $time;
+                        $rdoUser->deleted      = 1;
+
+                        /* Execute  */
+                        $DB->update_record('user',$rdoUser);
+                    }else {
+                        /* Execute  */
+                        $infoUser->deleted      = 1;
+                        $infoUser->id = $DB->insert_record('user',$infoUser);
+                    }//if_exist
+
+                    /* Synchronized */
+                    $sync = true;
+
+                    break;
+            }//switch_Action
+
+            /* Synchronized */
+            if ($sync) {
+                $instance = new stdClass();
+                $instance->id       = $fsKey;
+                $instance->imported = 1;
+
+                $DB->update_record('fs_imp_users',$instance);
+            }//if_sync
+
+            /**
+             * Create the connection between user and his/her resource number
+             */
+            /*
+             * First. Check if already exist an entry for this user.
+             */
+            if ($userFS->ressursnr) {
+                $rdo = $DB->get_record('user_resource_number',array('userid' => $userId));
+                if ($rdo) {
+                    /* Update   */
+                    $rdo->ressursnr      = $userFS->ressursnr;
+                    $rdo->industrycode   = $userFS->industry;
+
+                    /* Execute */
+                    $DB->update_record('user_resource_number',$rdo);
+                }else {
+                    /* Insert   */
+                    $instance = new stdClass();
+                    $instance->userid        = $userId;
+                    $instance->ressursnr     = $userFS->ressursnr;
+                    $instance->industrycode  = $userFS->industry;
+
+                    /* Execute  */
+                    $DB->insert_record('user_resource_number',$instance);
+                }//if_rdo
+            }//if_resource_number
+
+            /**
+             * Fellesdata account has to be deleted
+             * Only one account for user
+             */
+            if ($rdoFellesdata) {
+                /* From user */
+                $DB->delete_records('user',array('id' => $rdoFellesdata->id,'username' => $rdoFellesdata->username));
+
+                /* From user resource number    */
+                $DB->delete_records('user_resource_number',array('userid' => $rdoFellesdata->id));
+            }//if_fellesdata
+
+            /* Commit   */
+            $trans->allow_commit();
+        }catch (Exception $ex) {
+            /* Log  */
+            $dbLog = $ex->getMessage() . "\n" ."\n";
+            $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH ERROR SynchronizeUserFS . ' . "\n";
+            error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
+
+            /* Rollback */
+            $trans->rollback($ex);
+
+            throw $ex;
+        }//try_catch
+    }//SynchronizeUserFS
+
+    private static function SynchronizeUserFS_old($userFS,$fsKey) {
         /* Variables    */
         global $DB,$CFG;
         $rdoUser    = null;
