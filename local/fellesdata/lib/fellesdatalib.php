@@ -1311,7 +1311,8 @@ class FSKS_USERS {
             $rdo    = $DB->get_record('fs_imp_users',array('id' => $fsKey),'brukernavn');
             $userFS->adfs = $rdo->brukernavn;
 
-            echo "</br>" . $fsKey . " --> " . $userFS->firstname . " - " . $userFS->adfs . "</br>";
+            echo "</br>";
+            echo $fsKey . " --> " . $userFS->firstname . " - " . $userFS->adfs . "</br>";
 
             /**
              * Check if user already exists.
