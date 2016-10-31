@@ -1304,8 +1304,6 @@ class FSKS_USERS {
             /* Local Time   */
             $time = time();
 
-            echo $fsKey . " --> " . $userFS->firstname . " - " . $userFS->adfs . "</br>";
-
             /**
              * Check if user already exists.
              * Can be connected with ADFS or not.
