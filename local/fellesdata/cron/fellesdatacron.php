@@ -776,7 +776,8 @@ class FELLESDATA_CRON {
         /* Variables    */
         global $DB,$CFG,$SESSION;
         $rdo            = null;
-        $usersFS        = null;//array();
+        $usersFS        = array();
+        $lstUsersFS     = null;
         $infoUser       = null;
         $response       = null;
         $dbLog          = null;
@@ -824,25 +825,26 @@ class FELLESDATA_CRON {
                     /* Add User */
                     //$usersFS[$instance->id] = $infoUser;
 
-                    $usersFS .= json_encode($infoUser) . "\n";
+                    $lstUsersFS .= json_encode($infoUser) . "\n";
                 }//for_rdo
 
                 echo "USERS TO SYNCHORIZE: " .$usersFS . "</br>";
                 /* Call Web Service */
-                //$response = self::ProcessKSService($pluginInfo,KS_SYNC_USER_ACCOUNT,$usersFS);
+                $usersFS['users'] = $lstUsersFS;
+                $response = self::ProcessKSService($pluginInfo,KS_SYNC_USER_ACCOUNT,$usersFS);
 
-                //if ($response['error'] == '200') {
-                //    /* Synchronize Users Accounts FS    */
-                //    FSKS_USERS::Synchronize_UsersFS($usersFS,$response['usersAccounts']);
+                if ($response['error'] == '200') {
+                    /* Synchronize Users Accounts FS    */
+                    FSKS_USERS::Synchronize_UsersFS(json_decode($lstUsersFS),$response['usersAccounts']);
 
-                //    /* Clean Table*/
-                //    //$DB->delete_records('fs_imp_users',array('imported' => '1'));
-                //}else {
+                    /* Clean Table*/
+                    //$DB->delete_records('fs_imp_users',array('imported' => '1'));
+                }else {
                     /* Log  */
-                //    $dbLog = "Error WS: " . $response['message'] . "\n" ."\n";
-                //    $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH ERROR Synchronization Users Accoutns . ' . "\n";
-                //    error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
-                //}//if_no_error
+                    $dbLog = "Error WS: " . $response['message'] . "\n" ."\n";
+                    $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH ERROR Synchronization Users Accoutns . ' . "\n";
+                    error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
+                }//if_no_error
             }//if_Rdo
 
             /* Log  */
