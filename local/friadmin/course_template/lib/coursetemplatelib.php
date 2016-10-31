@@ -850,7 +850,7 @@ class CourseTemplate {
             /* Manaul Method    */
             $methodManual = new stdClass();
             $methodManual->id       = $data->manualid;
-            $methodManual->status   = 0;
+            $methodManual->status   = 1;
 
             /* Method Enrol Instance    */
             switch ($data->waitinglist) {
