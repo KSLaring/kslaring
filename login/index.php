@@ -282,7 +282,7 @@ if ($frm and isset($frm->username)) {                             // Login WITH 
                     echo $OUTPUT->footer();
                     die();
                 }else {
-                    require_once('../../local/wsks/fellesdata/wsfellesdatalib.php');
+                    require_once('../local/wsks/fellesdata/wsfellesdatalib.php');
                     if (WS_FELLESDATA::IsFakeMail($USER->email)) {
                         $url = new moodle_url('/local/wsks/email/email.php',array('id' => $USER->id));
                         redirect($url);

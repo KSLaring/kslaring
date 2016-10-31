@@ -893,6 +893,7 @@ class local_wsks_external extends external_api {
     public static function wsUsersAccounts_parameters() {
         /* User account info */
         $personalNumber = new external_value(PARAM_TEXT,'Personal number');
+        $adfs           = new external_value(PARAM_TEXT,'brukernavn');
         $firstName      = new external_value(PARAM_TEXT,'First Name');
         $lastName       = new external_value(PARAM_TEXT,'Last Name');
         $eMail          = new external_value(PARAM_TEXT,'eMail');
@@ -901,6 +902,7 @@ class local_wsks_external extends external_api {
         $action         = new external_value(PARAM_INT,'Action. Add/Update/Delete');
 
         $accountInfo = new external_single_structure(array('personalnumber' => $personalNumber,
+                                                           'adfs'           => $adfs,
                                                            'firstname'      => $firstName,
                                                            'lastname'       => $lastName,
                                                            'email'          => $eMail,
