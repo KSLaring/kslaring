@@ -776,6 +776,7 @@ class FELLESDATA_CRON {
         /* Variables    */
         global $DB,$CFG,$SESSION;
         $rdo            = null;
+        $total          = null;
         $usersFS        = array();
         $lstUsersFS     = null;
         $infoUser       = null;
@@ -801,8 +802,16 @@ class FELLESDATA_CRON {
                 $industryCode = 0;
             }//if_muni
 
+            //$total = $DB->count_records('fs_imp_users',array('imported' => '0'));
+
             /* Get user to synchronize  */
-            $rdo = $DB->get_records('fs_imp_users',array('imported' => '0'),'','*',0,200);
+            //for ($i=0;$i<=$total;$i=$i+400) {
+            //    $start = 0;
+            //    $limit = 400;
+            //}
+
+
+            $rdo = $DB->get_records('fs_imp_users',array('imported' => '0'),'','*',0,400);
 
             /* Log  */
             $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' START Synchronization Users Accoutns . ' . "\n";
