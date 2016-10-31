@@ -816,6 +816,9 @@ class FELLESDATA_CRON {
 
                 /* Prepare data */
                 if ($rdo) {
+                    $usersFS    = array();
+                    $lstUsersFS = null;
+                    
                     foreach ($rdo as $instance) {
                         /* Users account info   */
                         $infoUser = new stdClass();
