@@ -252,6 +252,8 @@ class WS_FELLESDATA {
     public static function Synchronize_UsersAccounts($usersAccounts,&$result) {
         /* Variables    */
         global $CFG;
+        $dir            = null;
+        $pathFile       = null;
         $userId         = null;
         $imported       = array();
         $infoImported   = null;
@@ -261,32 +263,54 @@ class WS_FELLESDATA {
         /* Log  */
         $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' START Synchronization Users Accoutns . ' . "\n";
         error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
-
+        
         try {
-            /* Synchronization between FS and KS. Users accounts */
-            foreach ($usersAccounts as $key => $account) {
-                /* InfoAccount  */
-                $infoAccount = (Object)$account;
+            /* Save Data Temporary */
+            $dir = $CFG->dataroot . '/fellesdata';
+            if (!file_exists($dir)) {
+                mkdir($dir);
+            }
+            /* Clean all response   */
+            $pathFile = $dir . '/wsUsersAccounts.txt';
 
-                /* Process Account */
-                $userId = self::ProcessUserAccount($infoAccount);
+            /* Create a new response file */
+            /* Clean Old Data   */
+            unlink($pathFile);
+            $responseFile = fopen($pathFile,'w');
+            fwrite($responseFile,$usersAccounts);
+            fclose($responseFile);
+            
+            /* Read Content */
+            if (file_exists($pathFile)) {
+                /* Get Content */
+                $data = file($pathFile);
 
-                /* Marked as imported */
-                if($userId) {
-                    $infoImported = new stdClass();
-                    $infoImported->personalnumber   = $infoAccount->personalnumber;
-                    $infoImported->imported         = 1;
-                    $infoImported->key              = $key;
+                /* Synchronization between FS and KS. Users accounts */
+                foreach($data as $key=>$line) {
+                    if ($line) {
+                        $infoAccount = json_decode($line);
+                        
+                        /* Process Account */
+                        $userId = self::ProcessUserAccount($infoAccount);
 
-                    $imported[$key] = $infoImported;
-                }//if_userid
-            }//for_usersAccounts
+                        /* Marked as imported */
+                        if($userId) {
+                            $infoImported = new stdClass();
+                            $infoImported->personalnumber   = $infoAccount->personalnumber;
+                            $infoImported->imported         = 1;
+                            $infoImported->key              = $key;
 
-            $result['usersAccounts'] = $imported;
-
-            /* Log  */
-            $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH Synchronization Users Accoutns . ' . "\n"."\n";
-            error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
+                            $imported[$key] = $infoImported;
+                        }//if_userid
+                        
+                        $result['usersAccounts'] = $imported;
+                    }//if_line
+                }//for_line_File
+                
+                /* Log  */
+                $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH Synchronization Users Accoutns . ' . "\n"."\n";
+                error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
+            }//if_exists
         }catch (Exception $ex) {
             $result['error']            = 409;
             $result['message']          = $ex->getMessage();
@@ -295,11 +319,10 @@ class WS_FELLESDATA {
             $dbLog = "ERROR: " . $ex->getMessage() . "\n" . "\n";
             $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). 'FINISH Synchronization Users Accoutns . ' . "\n";
             error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
-
+            
             throw $ex;
         }//try_catch
     }//Synchronize_UsersAccounts
-
 
     /**
      * @param           $userManagerReporter
