@@ -1007,17 +1007,6 @@ class FSKS_USERS {
      * Synchronize users accounts
      */
     public static function Synchronize_UsersFS($usersFS,$usersImported) {
-        global $DB;
-
-        /* Synchronize users have been imported  */
-        foreach ($usersImported as $user) {
-            /* Convert to object */
-            $objUser = (Object)$user;
-
-            $DB->insert_record('fs_ws_users_accounts',$objUser);
-        }//for_userImported
-    }
-    public static function Synchronize_UsersFS_OLD($usersFS,$usersImported) {
         /* Variables    */
         $infoUser   = null;
         $objUser    = null;
