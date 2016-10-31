@@ -788,6 +788,7 @@ class FELLESDATA_CRON {
             /* Get user to synchronize  */
             $rdoTotal = $DB->count_records('fs_imp_users',array('imported' => '0'));
 
+            echo " Total:" . $rdoTotal . " </br>";
 
             //$rdo = $DB->get_records('fs_imp_users',array('imported' => '0'),'','*');
 
