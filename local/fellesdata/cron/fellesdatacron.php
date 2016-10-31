@@ -810,15 +810,15 @@ class FELLESDATA_CRON {
 
             /* Get user to synchronize  */
             $start = 0;
-            $limit = 200;
-            for ($i=0;$i<=$total;$i=$i+200) {
+            $limit = 2000;
+            //for ($i=0;$i<=$total;$i=$i+200) {
                 $rdo = $DB->get_records('fs_imp_users',array('imported' => '0'),'','*',$start,$limit);
 
                 /* Prepare data */
                 if ($rdo) {
                     $usersFS    = array();
                     $lstUsersFS = null;
-                    
+
                     foreach ($rdo as $instance) {
                         /* Users account info   */
                         $infoUser = new stdClass();
@@ -856,7 +856,7 @@ class FELLESDATA_CRON {
                         error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
                     }//if_no_error
                 }//if_Rdo
-            }
+            //}
 
             /* Log  */
             $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' FINISH Synchronization Users Accoutns . ' . "\n";
