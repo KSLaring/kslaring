@@ -42,7 +42,7 @@ if ($show && $noslides) {
         $slide[$i] = array(
             'img' => $PAGE->theme->setting_file_url('slide' . $i . 'image',
                 'slide' . $i . 'image'),
-            'captiontitle' => format_text($themesettings->{'slide' . $i . 'caption'}),
+            'captiontitle' => format_text($themesettings->{'slide' . $i . 'captiontitle'}),
             'caption' => format_text($themesettings->{'slide' . $i . 'caption'}),
             'linktext' => format_text($themesettings->{'slide' . $i . 'linktext'}),
             'url' => format_text($themesettings->{'slide' . $i . 'url'}, FORMAT_HTML),
