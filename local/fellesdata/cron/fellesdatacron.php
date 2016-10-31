@@ -802,7 +802,7 @@ class FELLESDATA_CRON {
             }//if_muni
 
             /* Get user to synchronize  */
-            $rdo = $DB->get_records('fs_imp_users',array('imported' => '0'),'','*',0,500);
+            $rdo = $DB->get_records('fs_imp_users',array('imported' => '0'),'','*',0,1);
 
             /* Log  */
             $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' START Synchronization Users Accoutns . ' . "\n";
@@ -826,10 +826,11 @@ class FELLESDATA_CRON {
                     /* Add User */
                     $usersFS[$instance->id] = $infoUser;
 
+                    echo json_encode($infoUser)  . "</br>";
                     $lstUsersFS .= json_encode($infoUser) . "\n";
                 }//for_rdo
 
-                echo "USERS TO SYNCHORIZE: " .$lstUsersFS . "</br>";
+                //echo "USERS TO SYNCHORIZE: " .$lstUsersFS . "</br>";
                 /* Call Web Service */
                 $response = self::ProcessKSService($pluginInfo,KS_SYNC_USER_ACCOUNT,$lstUsersFS);
 
