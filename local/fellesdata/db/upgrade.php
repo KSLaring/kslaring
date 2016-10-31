@@ -128,7 +128,7 @@ function xmldb_local_fellesdata_upgrade($oldVersion) {
             /* Keys     */
             $tblTemp->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
             /* Index    */
-            $tblTemp->add_index('$tblTemp',XMLDB_INDEX_NOTUNIQUE,array('personalnumber'));
+            $tblTemp->add_index('personalnumber',XMLDB_INDEX_NOTUNIQUE,array('personalnumber'));
 
             if (!$dbMan->table_exists('fs_ws_users_accounts')) {
                 $dbMan->create_table($tblTemp);
