@@ -802,7 +802,7 @@ class FELLESDATA_CRON {
             }//if_muni
 
             /* Get user to synchronize  */
-            $rdo = $DB->get_records('fs_imp_users',array('imported' => '0'),'','*',1000);
+            $rdo = $DB->get_records('fs_imp_users',array('imported' => '0'),'','*',10);
 
             /* Log  */
             $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' START Synchronization Users Accoutns . ' . "\n";
