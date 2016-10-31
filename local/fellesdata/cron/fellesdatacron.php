@@ -823,19 +823,18 @@ class FELLESDATA_CRON {
                     $infoUser->action           = $instance->action;
 
                     /* Add User */
-                    //$usersFS[$instance->id] = $infoUser;
+                    $usersFS[$instance->id] = $infoUser;
 
                     $lstUsersFS .= json_encode($infoUser) . "\n";
                 }//for_rdo
 
                 echo "USERS TO SYNCHORIZE: " .$lstUsersFS . "</br>";
                 /* Call Web Service */
-                $usersFS['users'] = $lstUsersFS;
                 $response = self::ProcessKSService($pluginInfo,KS_SYNC_USER_ACCOUNT,$lstUsersFS);
 
                 if ($response['error'] == '200') {
                     /* Synchronize Users Accounts FS    */
-                    FSKS_USERS::Synchronize_UsersFS(json_decode($lstUsersFS),$response['usersAccounts']);
+                    FSKS_USERS::Synchronize_UsersFS($usersFS,$response['usersAccounts']);
 
                     /* Clean Table*/
                     //$DB->delete_records('fs_imp_users',array('imported' => '1'));
