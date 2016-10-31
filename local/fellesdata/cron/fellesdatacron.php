@@ -813,6 +813,7 @@ class FELLESDATA_CRON {
                 foreach ($rdo as $instance) {
                     /* Users account info   */
                     $infoUser = new stdClass();
+                    $infoUser->id               = $instance->id;
                     $infoUser->personalnumber   = $instance->fodselsnr;
                     $infoUser->adfs             = ($instance->brukernavn ? $instance->brukernavn : 0);
                     $infoUser->ressursnr        = ($instance->ressursnr ? $instance->ressursnr : 0);
