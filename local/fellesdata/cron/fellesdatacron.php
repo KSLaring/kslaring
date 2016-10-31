@@ -35,7 +35,7 @@ class FELLESDATA_CRON {
     /* PUBLIC */
     /**********/
 
-    public static function cron_LIVE($fstExecution) {
+    public static function cron($fstExecution) {
         /* Variables    */
         global $SESSION,$CFG;
         $pluginInfo = null;
@@ -812,7 +812,7 @@ class FELLESDATA_CRON {
             $start = 0;
             $limit = 250;
             //for ($i=0;$i<=$total;$i=$i+250) {
-                $rdo = $DB->get_records('fs_imp_users',array('imported' => '0'),'','*',0,200);
+                $rdo = $DB->get_records('fs_imp_users',array('imported' => '0'),'','*');
 
                 /* Prepare data */
                 if ($rdo) {
