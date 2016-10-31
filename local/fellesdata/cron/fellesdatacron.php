@@ -35,7 +35,7 @@ class FELLESDATA_CRON {
     /* PUBLIC */
     /**********/
 
-    public static function cron($fstExecution) {
+    public static function cron_FOR_LIVE($fstExecution) {
         /* Variables    */
         global $SESSION,$CFG;
         $pluginInfo = null;
@@ -786,7 +786,10 @@ class FELLESDATA_CRON {
 
         try {
             /* Get user to synchronize  */
-            $rdo = $DB->get_records('fs_imp_users',array('imported' => '0'),'','*');
+            $rdoTotal = $DB->count_records('fs_imp_users',array('imported' => '0'));
+
+
+            //$rdo = $DB->get_records('fs_imp_users',array('imported' => '0'),'','*');
 
             /* Get Industry Code    */
             if ($pluginInfo->ks_muni) {
@@ -816,8 +819,8 @@ class FELLESDATA_CRON {
                     $infoUser->adfs             = ($instance->brukernavn ? $instance->brukernavn : 0);
                     $infoUser->ressursnr        = ($instance->ressursnr ? $instance->ressursnr : 0);
                     $infoUser->industry         = $industryCode;
-                    $infoUser->firstname        = $instance->fornavn;
-                    $infoUser->lastname         = $instance->mellomnavn . ' ' . $instance->etternavn;
+                    $infoUser->firstname        = $instance->fornavn . ' ' . $instance->mellomnavn;
+                    $infoUser->lastname         = $instance->etternavn;
                     $infoUser->email            = $instance->epost;
                     $infoUser->action           = $instance->action;
 
