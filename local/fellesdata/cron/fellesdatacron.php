@@ -828,10 +828,10 @@ class FELLESDATA_CRON {
                     $lstUsersFS .= json_encode($infoUser) . "\n";
                 }//for_rdo
 
-                echo "USERS TO SYNCHORIZE: " .$usersFS . "</br>";
+                echo "USERS TO SYNCHORIZE: " .$lstUsersFS . "</br>";
                 /* Call Web Service */
                 $usersFS['users'] = $lstUsersFS;
-                $response = self::ProcessKSService($pluginInfo,KS_SYNC_USER_ACCOUNT,$usersFS);
+                $response = self::ProcessKSService($pluginInfo,KS_SYNC_USER_ACCOUNT,$lstUsersFS);
 
                 if ($response['error'] == '200') {
                     /* Synchronize Users Accounts FS    */
