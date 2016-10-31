@@ -791,9 +791,9 @@ class FELLESDATA_CRON {
             echo "</br>";
             echo " Total:" . $rdoTotal . " </br>";
 
-            for ($i=0;$i<=$rdoTotal;$i=$i+400) {
+            for ($i=0;$i<=$rdoTotal;$i=$i+100) {
                 $start = 0;
-                $limit = 400;
+                $limit = 100;
 
                 echo "Lap: " . $i . "</br>";
                 $rdo = $DB->get_records('fs_imp_users',array('imported' => '0'),'','*',$start,$limit);
