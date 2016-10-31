@@ -35,7 +35,7 @@ class FELLESDATA_CRON {
     /* PUBLIC */
     /**********/
 
-    public static function cron($fstExecution) {
+    public static function cron_LIVE($fstExecution) {
         /* Variables    */
         global $SESSION,$CFG;
         $pluginInfo = null;
@@ -811,7 +811,7 @@ class FELLESDATA_CRON {
             /* Get user to synchronize  */
             $start = 0;
             $limit = 250;
-            for ($i=0;$i<=$total;$i=$i+250) {
+            //for ($i=0;$i<=$total;$i=$i+250) {
                 $rdo = $DB->get_records('fs_imp_users',array('imported' => '0'),'','*',$start,$limit);
 
                 /* Prepare data */
@@ -854,7 +854,7 @@ class FELLESDATA_CRON {
                         error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
                     }//if_no_error
                 }//if_Rdo
-            }
+            //}
 
             /* Log  */
             $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' FINISH Synchronization Users Accoutns . ' . "\n";
