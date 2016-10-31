@@ -298,7 +298,7 @@ class WS_FELLESDATA {
                             $infoImported = new stdClass();
                             $infoImported->personalnumber   = $infoAccount->personalnumber;
                             $infoImported->imported         = 1;
-                            $infoImported->key              = $key;
+                            $infoImported->key              = $infoAccount->id;
 
                             $imported[$key] = $infoImported;
                         }//if_userid
