@@ -810,7 +810,7 @@ class FELLESDATA_CRON {
 
             /* Get user to synchronize  */
             $start = 0;
-            $limit = 2;
+            $limit = 250;
             //for ($i=0;$i<=$total;$i=$i+200) {
                 $rdo = $DB->get_records('fs_imp_users',array('imported' => '0'),'','*',$start,$limit);
 
