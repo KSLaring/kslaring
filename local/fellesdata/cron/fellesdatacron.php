@@ -85,12 +85,12 @@ class FELLESDATA_CRON {
                 /* Synchronization User Competence JobRole  -- Add/Update */
                 $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' START Users competence FS Synchronization. ' . "\n";
                 error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
-                self::UserCompetence_Synchronization($pluginInfo,KS_USER_COMPETENCE);
+                //self::UserCompetence_Synchronization($pluginInfo,KS_USER_COMPETENCE);
 
                 /* Synchronization User Competence JobRole  -- Delete */
                 $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' START Users Competence to delete FS Synchronization. ' . "\n";
                 error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
-                self::UserCompetence_Synchronization($pluginInfo,KS_USER_COMPETENCE,true);
+                //self::UserCompetence_Synchronization($pluginInfo,KS_USER_COMPETENCE,true);
            }
 
             /* Log  */
@@ -812,7 +812,7 @@ class FELLESDATA_CRON {
             $start = 0;
             $limit = 250;
             //for ($i=0;$i<=$total;$i=$i+250) {
-                $rdo = $DB->get_records('fs_imp_users',array('imported' => '0'),'','*',$start,$limit);
+                $rdo = $DB->get_records('fs_imp_users',array('imported' => '0'),'','*',0,500);
 
                 /* Prepare data */
                 if ($rdo) {
