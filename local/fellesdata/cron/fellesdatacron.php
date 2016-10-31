@@ -812,7 +812,7 @@ class FELLESDATA_CRON {
             $start = 0;
             $limit = 250;
             //for ($i=0;$i<=$total;$i=$i+250) {
-                $rdo = $DB->get_records('fs_imp_users',array('imported' => '0'),'','*',0,500);
+                $rdo = $DB->get_records('fs_imp_users',array('imported' => '0'),'','*',0,200);
 
                 /* Prepare data */
                 if ($rdo) {
