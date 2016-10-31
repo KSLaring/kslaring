@@ -802,60 +802,58 @@ class FELLESDATA_CRON {
                 $industryCode = 0;
             }//if_muni
 
-            //$total = $DB->count_records('fs_imp_users',array('imported' => '0'));
-
-            /* Get user to synchronize  */
-            //for ($i=0;$i<=$total;$i=$i+400) {
-            //    $start = 0;
-            //    $limit = 400;
-            //}
-
-
-            $rdo = $DB->get_records('fs_imp_users',array('imported' => '0'),'','*',0,200);
-
             /* Log  */
             $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' START Synchronization Users Accoutns . ' . "\n";
             error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
 
-            /* Prepare data */
-            if ($rdo) {
-                foreach ($rdo as $instance) {
-                    /* Users account info   */
-                    $infoUser = new stdClass();
-                    $infoUser->id               = $instance->id;
-                    $infoUser->personalnumber   = $instance->fodselsnr;
-                    $infoUser->adfs             = ($instance->brukernavn ? $instance->brukernavn : 0);
-                    $infoUser->ressursnr        = ($instance->ressursnr ? $instance->ressursnr : 0);
-                    $infoUser->industry         = $industryCode;
-                    $infoUser->firstname        = $instance->fornavn . ' ' . $instance->mellomnavn;
-                    $infoUser->lastname         = $instance->etternavn;
-                    $infoUser->email            = $instance->epost;
-                    $infoUser->action           = $instance->action;
+            $total = $DB->count_records('fs_imp_users',array('imported' => '0'));
 
-                    /* Add User */
-                    $usersFS[$instance->id] = $infoUser;
+            /* Get user to synchronize  */
+            $start = 0;
+            $limit = 200;
+            for ($i=0;$i<=$total;$i=$i+200) {
+                $rdo = $DB->get_records('fs_imp_users',array('imported' => '0'),'','*',$start,$limit);
 
-                    echo json_encode($infoUser)  . "</br>";
-                    $lstUsersFS .= json_encode($infoUser) . "\n";
-                }//for_rdo
+                /* Prepare data */
+                if ($rdo) {
+                    foreach ($rdo as $instance) {
+                        /* Users account info   */
+                        $infoUser = new stdClass();
+                        $infoUser->id               = $instance->id;
+                        $infoUser->personalnumber   = $instance->fodselsnr;
+                        $infoUser->adfs             = ($instance->brukernavn ? $instance->brukernavn : 0);
+                        $infoUser->ressursnr        = ($instance->ressursnr ? $instance->ressursnr : 0);
+                        $infoUser->industry         = $industryCode;
+                        $infoUser->firstname        = $instance->fornavn . ' ' . $instance->mellomnavn;
+                        $infoUser->lastname         = $instance->etternavn;
+                        $infoUser->email            = $instance->epost;
+                        $infoUser->action           = $instance->action;
 
-                //echo "USERS TO SYNCHORIZE: " .$lstUsersFS . "</br>";
-                /* Call Web Service */
-                $response = self::ProcessKSService($pluginInfo,KS_SYNC_USER_ACCOUNT,$lstUsersFS);
+                        /* Add User */
+                        $usersFS[$instance->id] = $infoUser;
 
-                if ($response['error'] == '200') {
-                    /* Synchronize Users Accounts FS    */
-                    FSKS_USERS::Synchronize_UsersFS($usersFS,$response['usersAccounts']);
+                        echo json_encode($infoUser)  . "</br>";
+                        $lstUsersFS .= json_encode($infoUser) . "\n";
+                    }//for_rdo
 
-                    /* Clean Table*/
-                    //$DB->delete_records('fs_imp_users',array('imported' => '1'));
-                }else {
-                    /* Log  */
-                    $dbLog = "Error WS: " . $response['message'] . "\n" ."\n";
-                    $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH ERROR Synchronization Users Accoutns . ' . "\n";
-                    error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
-                }//if_no_error
-            }//if_Rdo
+                    //echo "USERS TO SYNCHORIZE: " .$lstUsersFS . "</br>";
+                    /* Call Web Service */
+                    $response = self::ProcessKSService($pluginInfo,KS_SYNC_USER_ACCOUNT,$lstUsersFS);
+
+                    if ($response['error'] == '200') {
+                        /* Synchronize Users Accounts FS    */
+                        FSKS_USERS::Synchronize_UsersFS($usersFS,$response['usersAccounts']);
+
+                        /* Clean Table*/
+                        //$DB->delete_records('fs_imp_users',array('imported' => '1'));
+                    }else {
+                        /* Log  */
+                        $dbLog = "Error WS: " . $response['message'] . "\n" ."\n";
+                        $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH ERROR Synchronization Users Accoutns . ' . "\n";
+                        error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
+                    }//if_no_error
+                }//if_Rdo
+            }
 
             /* Log  */
             $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' FINISH Synchronization Users Accoutns . ' . "\n";
