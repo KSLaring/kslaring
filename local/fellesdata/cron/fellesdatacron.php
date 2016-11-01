@@ -80,17 +80,17 @@ class FELLESDATA_CRON {
                 /* Synchronization Managers && Reporters    */
                 $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' START  Managers/Reporters FS Synchronization. ' . "\n";
                 error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
-                self::ManagerReporter_Synchronization($pluginInfo,KS_MANAGER_REPORTER);
+                //self::ManagerReporter_Synchronization($pluginInfo,KS_MANAGER_REPORTER);
 
                 /* Synchronization User Competence JobRole  -- Add/Update */
                 $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' START Users competence FS Synchronization. ' . "\n";
                 error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
-                self::UserCompetence_Synchronization($pluginInfo,KS_USER_COMPETENCE);
+                //self::UserCompetence_Synchronization($pluginInfo,KS_USER_COMPETENCE);
 
                 /* Synchronization User Competence JobRole  -- Delete */
                 $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' START Users Competence to delete FS Synchronization. ' . "\n";
                 error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
-                self::UserCompetence_Synchronization($pluginInfo,KS_USER_COMPETENCE,true);
+                //self::UserCompetence_Synchronization($pluginInfo,KS_USER_COMPETENCE,true);
            }
 
             /* Log  */
@@ -810,8 +810,8 @@ class FELLESDATA_CRON {
 
             /* Get user to synchronize  */
             $start = 0;
-            $limit = 400;
-            for ($i=0;$i<=$total;$i=$i+400) {
+            $limit = 50;
+            for ($i=0;$i<=$total;$i=$i+50) {
                 $rdo = $DB->get_records('fs_imp_users',array('imported' => '0'),'','*',$start,$limit);
 
                 /* Prepare data */
