@@ -1031,6 +1031,56 @@ class FSKS_USERS {
     }//UsersFS_To_Synchronize
 
     /**
+     * @return          null
+     * @throws          Exception
+     *
+     * @creationDate    01/11/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Get total managers to synchronize
+     */
+    public static function GetTotalManagersReporters_ToSynchronize() {
+        /* Variables    */
+        global $DB;
+        $params             = null;
+        $sql                = null;
+        $rdo                = null;
+
+        try {
+            /* Search criteria */
+            $params = array();
+            $params['imported'] = 0;
+
+            /* SQL Instruction  */
+            $sql = " SELECT	count(*) as 'total'
+                     FROM	  {fs_imp_managers_reporters}   fs
+                        JOIN  {user}                        u         ON      u.idnumber = fs.fodselsnr
+                                                                      AND     u.deleted  = 0
+                        JOIN  {ksfs_company}		        fsk	ON  fsk.fscompany = fs.org_enhet_id
+                        JOIN  {ks_company}			        ks	ON	ks.companyid  = fsk.kscompany
+                     WHERE	fs.imported	= :imported ";
+
+            /* Execute */
+            $rdo = $DB->get_record_sql($sql,$params);
+            if ($rdo) {
+                if ($rdo->total) {
+                    return $rdo->total;
+                }else {
+                    return null;
+                }
+            }else {
+                return null;
+            }//if_rdo
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//GetTotalManagersReporters_ToSynchronize
+    
+    /**
+     * @param           $start
+     * @param           $limit
+     * 
      * @return          array
      * @throws          Exception
      *
@@ -1040,7 +1090,7 @@ class FSKS_USERS {
      * Description
      * Get User Managers/Reporters to synchronize
      */
-    public static function GetManagersReporters_ToSynchronize() {
+    public static function GetManagersReporters_ToSynchronize($start,$limit) {
         /* Variables    */
         global $DB;
         $params             = null;
@@ -1070,7 +1120,7 @@ class FSKS_USERS {
                      WHERE	fs.imported	= :imported ";
 
             /* Execute  */
-            $rdo = $DB->get_records_sql($sql,$params);
+            $rdo = $DB->get_records_sql($sql,$params,$start,$limit);
             if ($rdo) {
                 foreach ($rdo as $instance) {
                     /* Info Competence  */
