@@ -110,8 +110,8 @@ Class Approval {
             $params['company']  = $three;
 
             /* SQL Instruction  */
-            $sql = " SELECT	  rm.managerid,
-                              CONCAT(co_two.name,'/',co.name) as 'company'
+            $sql = " SELECT	  DISTINCT rm.managerid,
+                                       CONCAT(co_two.name,'/',co.name) as 'company'
                      FROM		{user_info_competence_data} 	uicd
                         JOIN	{report_gen_companydata}		co 		ON 	co.id = uicd.companyid
                         -- LEVEL TWO
@@ -223,6 +223,7 @@ Class Approval {
     public static function Add_ApprovalEntry($data,$userId,$courseId,$method,$seats,$waitingId=0) {
         /* Variables */
         global $DB,$CFG;
+        $rdo            = null;
         $infoApproval   = null;
         $infoApproveAct = null;
         $infoRejectAct  = null;
@@ -254,7 +255,7 @@ Class Approval {
             $infoApproval->onwait           = 0;
             $infoApproval->timecreated      = time();
 
-            /* Execute  */
+            /* Execute */
             $infoApproval->id = $DB->insert_record('enrol_approval',$infoApproval);
 
             /* Insert Approve Action */
@@ -651,14 +652,16 @@ Class Approval {
      */
     public static function ApprovalRequests($courseId,$waitingId) {
         /* Variables */
-        $approvalRequests = null;
-
+        $approvalRequests   = null;
+        $isCompanyDemanded  = null;
+        
         try {
             /* Get basic information for the course instance*/
             $approvalRequests = self::GetBasicInfo($courseId,$waitingId);
 
             /* Approval Requests */
-            $approvalRequests->requests = self::Get_ApprovalRequests($courseId,$waitingId);
+            $isCompanyDemanded = self::IsCompanyDemanded($waitingId);
+            $approvalRequests->requests = self::Get_ApprovalRequests($courseId,$waitingId,$isCompanyDemanded);
 
             return $approvalRequests;
         }catch (Exception $ex) {
@@ -1759,8 +1762,89 @@ Class Approval {
     }//GetBasicInfo
 
     /**
+     * @param           $enrolId
+     *
+     * @return          bool|null
+     * @throws          Exception
+     *
+     * @creationDate    26/10/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Check id the company is demanded or not
+     */
+    private static function IsCompanyDemanded($enrolId) {
+        /* Variables */
+        global $DB;
+        $rdo = null;
+        $isCompanyDemanded = null;
+
+        try {
+            $rdo = $DB->get_record('enrol',array('id' => $enrolId),'customint7');
+            if ($rdo) {
+                if ($rdo->customint7 != ENROL_COMPANY_NO_DEMANDED) {
+                    $isCompanyDemanded = true;
+                }//if_custom
+            }//if_rdo
+
+            return $isCompanyDemanded;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//IsCompanyDemanded
+
+    /**
+     * @param           $userId
+     *
+     * @return          mixed|null
+     * @throws          Exception
+     *
+     * @creationDate    01/11/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Get workplace connected with user. Competence profile
+     */
+    private static function GetWorkplaceConnected($userId) {
+        /* Variables */
+        global $DB;
+        $rdo        = null;
+        $sql        = null;
+        $params     = null;
+        $workplace  = null;
+
+        try {
+            /* Search criteria  */
+            $params =array();
+            $params['user_id']  = $userId;
+            $params['level']    = 3;
+
+            /* SQL Instruction */
+            $sql = " SELECT 	uic.userid,
+                                GROUP_CONCAT(DISTINCT CONCAT(co.industrycode, ' - ',co.name) ORDER BY co.industrycode,co.name SEPARATOR '#SE#') 	as 'workplace'
+                     FROM		{user_info_competence_data}	uic
+                        JOIN	{report_gen_companydata}	co	ON co.id = uic.companyid
+                     WHERE	uic.userid = :user_id
+                        AND uic.level  = :level ";
+
+            /* Execute */
+            $rdo = $DB->get_record_sql($sql,$params);
+            if ($rdo) {
+                if ($rdo->workplace) {
+                    $workplace =     str_replace('#SE#','</br>',$rdo->workplace);
+                }
+            }//if_Rdo
+
+            return $workplace;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//GetWorkplaceConnected
+
+    /**
      * @param           $courseId
      * @param           $waitingId
+     * @param           $isCompanyDemanded
      *
      * @return          array
      * @throws          Exception
@@ -1770,8 +1854,14 @@ Class Approval {
      *
      * Description
      * Get all approval requests
+     * 
+     * @updateDate      01/11/2016
+     * @author          eFaktor     (fbv)
+     * 
+     * Description
+     * Get correct workpalce
      */
-    private static function Get_ApprovalRequests($courseId,$waitingId) {
+    private static function Get_ApprovalRequests($courseId,$waitingId,$isCompanyDemanded) {
         /* Variables */
         global $DB;
         $params         = null;
@@ -1793,10 +1883,14 @@ Class Approval {
                             ea.arguments,
                             ea.seats,
                             ea.approved,
-                            ea.rejected
-                     FROM		{enrol_approval}	ea
-                        JOIN 	{user}			    u	ON u.id 		= ea.userid
-                                                        AND u.deleted 	= 0
+                            ea.rejected,
+                            ea.companyid,
+                            co.industrycode,
+                            co.name         as 'company'
+                     FROM		  {enrol_approval}	        ea
+                        JOIN 	  {user}			        u	ON u.id 		= ea.userid
+                                                                AND u.deleted 	= 0
+                        LEFT JOIN {report_gen_companydata}  co	ON	co.id	= 	ea.companyid
                      WHERE	ea.courseid 		= :course
                         AND ea.waitinglistid 	= :waiting
                      ORDER BY u.firstname,u.lastname ";
@@ -1814,6 +1908,15 @@ Class Approval {
                     $infoRequest->seats     = $instance->seats;
                     $infoRequest->approved  = $instance->approved;
                     $infoRequest->rejected  = $instance->rejected;
+                    if ($isCompanyDemanded) {
+                        $infoRequest->arbeidssted      = $instance->industrycode . ' - ' . $instance->company;
+                    }else {
+                        if ($instance->companyid) {
+                            $infoRequest->arbeidssted      = $instance->industrycode . ' - ' . $instance->company;
+                        }else {
+                            $infoRequest->arbeidssted = self::GetWorkplaceConnected($instance->id);
+                        }
+                    }//if_comapnyDemanded
 
                     /* Add Request */
                     $requests[$instance->id] = $infoRequest;
@@ -2145,6 +2248,7 @@ Class Approval {
             /* Headers */
             $strName        = get_string('rpt_name','enrol_waitinglist');
             $strMail        = get_string('rpt_mail','enrol_waitinglist');
+            $strPlace       = get_string('rpt_workplace','enrol_waitinglist');
             $strArguments   = get_string('rpt_arguments','enrol_waitinglist');
             $strSeats       = get_string('rpt_seats','enrol_waitinglist');
             $strAction      = get_string('rpt_action','enrol_waitinglist');
@@ -2154,6 +2258,10 @@ Class Approval {
                     /* User Name    */
                     $header .= html_writer::start_tag('th',array('class' => 'user'));
                         $header .= $strName;
+                    $header .= html_writer::end_tag('th');
+                    /* Workplace    */
+                    $header .= html_writer::start_tag('th',array('class' => 'user'));
+                        $header .= $strPlace;
                     $header .= html_writer::end_tag('th');
                     /* Mail         */
                     $header .= html_writer::start_tag('th',array('class' => 'info'));
@@ -2216,6 +2324,10 @@ Class Approval {
                     $content .= html_writer::start_tag('td',array('class' => 'user'));
                         $lnkUser = new moodle_url('/user/profile.php',array('id' => $request->user));
                         $content .= '<a href="' . $lnkUser . '">' . $request->name . '</a>';;
+                    $content .= html_writer::end_tag('td');
+                    /* Workplace    */
+                    $content .= html_writer::start_tag('td',array('class' => 'user'));
+                        $content .= $request->arbeidssted;
                     $content .= html_writer::end_tag('td');
                     /* Mail         */
                     $content .= html_writer::start_tag('td',array('class' => 'info'));
