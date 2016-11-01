@@ -1063,7 +1063,7 @@ class FSKS_USERS {
                             fs.prioritet,
                             fs.action
                      FROM	  {fs_imp_managers_reporters}   fs
-                        JOIN  {user}                        u         ON      u.username = fs.fodselsnr
+                        JOIN  {user}                        u         ON      u.idnumber = fs.fodselsnr
                                                                       AND     u.deleted  = 0
                         JOIN  {ksfs_company}		        fsk	ON  fsk.fscompany = fs.org_enhet_id
                         JOIN  {ks_company}			        ks	ON	ks.companyid  = fsk.kscompany
@@ -1223,7 +1223,7 @@ class FSKS_USERS {
             /* SQL Instruction  */
             $sql = " SELECT		DISTINCT fs.id
                      FROM	    {fs_imp_users_jr}	  fs
-                        JOIN    {user}                u         ON      u.username = fs.fodselsnr
+                        JOIN    {user}                u         ON      u.idnumber = fs.fodselsnr
                                                                 AND     u.deleted  = 0
                         -- COMPANY
                         JOIN	{ksfs_company}		  ksfs 		ON 		ksfs.fscompany 		= fs.ORG_ENHET_ID
@@ -1635,7 +1635,7 @@ class FSKS_USERS {
                                 GROUP_CONCAT(DISTINCT fs.stillingskode ORDER BY fs.stillingskode SEPARATOR ',') as 'fsjobroles',
                                 GROUP_CONCAT(DISTINCT fs.id ORDER BY fs.id SEPARATOR ',') as 'impkeys'
                      FROM	    {fs_imp_users_jr}	  fs
-                        JOIN    {user}                u         ON      u.username = fs.fodselsnr
+                        JOIN    {user}                u         ON      u.idnumber = fs.fodselsnr
                                                                 AND     u.deleted  = 0
                         -- COMPANY
                         JOIN	{ksfs_company}		  ksfs 		ON 		ksfs.fscompany 		= fs.ORG_ENHET_ID
