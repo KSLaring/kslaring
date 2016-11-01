@@ -300,3 +300,5 @@ $string['user_not_enrolled']    = 'Sorry, you can be unenrolled because you are 
 $string['unenrol_subject'] = 'Course {$a}.Unenrol confirmation.';
 $string['unenrol_body']    = 'We would like to inform you, that you have been unenrolled from the course <strong>{$a}</strong>';
 
+$string['rpt_workplace']   = 'Workplace';
+
