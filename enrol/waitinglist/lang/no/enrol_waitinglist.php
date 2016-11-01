@@ -290,3 +290,5 @@ $string['user_not_enrolled']    = 'Beklager, du kan ikke melde deg ut fordi du i
 $string['unenrol_subject'] = 'Avmeldingsbekreftelse for kurset {$a}.';
 $string['unenrol_body']    = 'Dette er en bekreftelse på at du har kansellert kurspåmeldingen din for kurset <strong>{$a}</strong>';
 
+$string['rpt_workplace']   = 'Arbeidssted';
+
