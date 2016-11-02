@@ -71,7 +71,12 @@ M.core_user.init_structure = function (Y,name,reload,invoice) {
             if (this.isInvoice) {
                 this.levelThree.on('change', this.InvoiceDataCompany, this);
                 if (this.levelTwo.get('value') != 0) {
+                    Y.one('#id_lnk_search').removeClass('link_search_disabled');
+                    Y.one('#id_lnk_search').addClass('link_search');
                     this.InvoiceDataCompany();
+                }else {
+                    Y.one('#id_lnk_search').removeClass('link_search');
+                    Y.one('#id_lnk_search').addClass('link_search_disabled');
                 }
             }
         },
