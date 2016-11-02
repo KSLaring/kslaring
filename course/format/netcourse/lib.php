@@ -1016,7 +1016,7 @@ class format_netcourse extends format_base {
         $progressurl = false;
         if (!is_null($this->openlast->get_section0modids())) {
             foreach ($this->openlast->get_section0modids() as $cmid) {
-                if ($modinfo->cms[$cmid]->modname === 'registerattendance') {
+                if ($modinfo->cms[$cmid]->modname === 'completionreport') {
                     if ($modinfo->cms[$cmid]->uservisible) {
                         $progressurl = $modinfo->cms[$cmid]->url;
                     }
