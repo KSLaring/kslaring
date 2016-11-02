@@ -188,6 +188,11 @@ if ($PAGE->user_allowed_editing()) {
     //    $button = $OUTPUT->single_button($url, $editstring);
     //    $PAGE->set_button($resetbutton . $button);
     //}
+    require_once('../local/wsks/fellesdata/wsfellesdatalib.php');
+    if (WS_FELLESDATA::IsFakeMail($USER->email)) {
+        $url = new moodle_url('/local/wsks/email/email.php',array('id' => $USER->id));
+        redirect($url);
+    }
 } else {
     $USER->editing = $edit = 0;
 }
