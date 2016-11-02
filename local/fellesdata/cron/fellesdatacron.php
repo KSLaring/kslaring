@@ -54,13 +54,13 @@ class FELLESDATA_CRON {
             /* Log  */
             $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' START Import KS. ' . "\n";
             error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
-            //self::ImportKS($pluginInfo);
+            self::ImportKS($pluginInfo);
 
             /* Import Fellesdata        */
             /* Log  */
             $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' START Import Fellesdata. ' . "\n";
             error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
-            //self::ImportFellesdata($pluginInfo);
+            self::ImportFellesdata($pluginInfo);
 
 
             /* SYNCHRONIZATION  */
