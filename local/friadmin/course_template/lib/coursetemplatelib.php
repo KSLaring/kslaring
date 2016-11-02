@@ -778,6 +778,7 @@ class CourseTemplate {
     
     /**
      * @param           $data
+     * @param           $new
      *
      * @return          bool
      * @throws          Exception
@@ -794,7 +795,7 @@ class CourseTemplate {
      * Description
      * Add manual method
      */
-    public static function UpdateWaitingEnrolment($data) {
+    public static function UpdateWaitingEnrolment($data,$new = false) {
         /* Variables */
         global $DB;
         $trans          = null;
@@ -832,25 +833,41 @@ class CourseTemplate {
 
             /* Self Method  */
             $methodSelf = new stdClass();
-            $methodSelf->id                                 = $data->selfid;
             $methodSelf->timemodified                       = $time;
             if (isset($data->password)) {
                 $methodSelf->password                       = $data->password;
             }
-
             $methodSelf->{ENROL_FIELD_SELF_WAITING_MESSAGE} = $data->self_waiting_message;
 
             /* Bulk Method  */
             $methodBulk = new stdClass();
-            $methodBulk->id                                     = $data->bulkid;
             $methodBulk->timemodified                           = $time;
             $methodBulk->{ENROL_FIELD_BULK_WAITING_MESSAGE}     = $data->bulk_waiting_message;
             $methodBulk->{ENROL_FIELD_BULK_RENOVATION_MESSAGE}  = $data->bulk_renovation_message;
 
             /* Manaul Method    */
             $methodManual = new stdClass();
-            $methodManual->id       = $data->manualid;
-            $methodManual->status   = 1;
+
+
+            /* New or update */
+            if (!$new) {
+                $methodSelf->id     = $data->selfid;
+                $methodBulk->id     = $data->bulkid;
+                $methodManual->id   = $data->manualid;
+            }else {
+                $rdo = $DB->get_records('enrol_waitinglist_method',array('waitinglistid' => $data->instanceid,'courseid' => $data->id));
+                if ($rdo) {
+                    foreach ($rdo as $instance) {
+                        if ($instance->methodtype == 'self') {
+                            $methodSelf->id = $instance->id;
+                        }else if ($instance->methodtype == 'unnamedbulk')  {
+                            $methodBulk->id = $instance->id;
+                        }else if ($instance->methodtype == 'manual') {
+                            $methodManual->id = $instance->id;
+                        }
+                    }
+                }
+            }//if_new
 
             /* Method Enrol Instance    */
             switch ($data->waitinglist) {
@@ -860,13 +877,14 @@ class CourseTemplate {
                     $methodSelf->status          = 1;
                     /* Bulk Method  */
                     $methodBulk->status = 0;
-
+                    $methodManual->status   = 1;
                     break;
                 case ENROL_WAITING_BULK:
                     /* Self Method  */
                     $methodSelf->status = 0;
                     /* Bulk Method  */
                     $methodBulk->status = 1;
+                    $methodManual->status   = 1;
 
                     break;
             }//switch
@@ -933,34 +951,9 @@ class CourseTemplate {
             $plugin->add_default_instance($course);
             /* Get the id */
             $enrol = $DB->get_record('enrol',array('courseid'=>$course->id, 'enrol'=>'waitinglist'),'id');
-
-            /* Insert Default instance*/
-            $sql = " SELECT *
-                     FROM   {enrol_waitinglist_method}
-                     WHERE  waitinglistid = :courseid
-                        AND courseid      = :waitinglistid";
-
-            $rdo = $DB->get_records_sql($sql,array('waitinglistid' => $enrol->id,'courseid' => $data->id));
-            if ($rdo) {
-                foreach ($rdo as $instance) {
-                    $instance->waitinglistid    = $enrol->id;
-                    $instance->courseid         = $data->id;
-                    $instance->timecreated      = $time;
-
-                    /* Execute */
-                    $methodId = $DB->insert_record('enrol_waitinglist_method',$instance);
-                    if ($instance->methodtype == 'self') {
-                        $data->selfid = $methodId;
-                    }else if ($instance->methodtype == 'unnamedbulk')  {
-                        $data->bulkid = $methodId;
-                    }else if ($instance->methodtype == 'manual') {
-                        $data->manualid = $methodId;
-                    }
-                }
-            }
-
             $data->instanceid = $enrol->id;
-            self::UpdateWaitingEnrolment($data);
+
+            self::UpdateWaitingEnrolment($data,true);
 
             /* Commit */
             $trans->allow_commit();
