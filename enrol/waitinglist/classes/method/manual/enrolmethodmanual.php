@@ -264,18 +264,22 @@ class enrolmethodmanual extends \enrol_waitinglist\method\enrolmethodbase{
     public static function GetAvailableSeats($instance,$courseId) {
         /* Variables */
         global $DB;
-        $count      = 0;
+        $count      = null;
         $entryman   = null;
-        $confirmed  = 0;
+        $confirmed  = null;
         $vacancies  = null;
         
         try {
             $count      = $DB->count_records('user_enrolments', array('enrolid' => $instance->id));
+
             $entryman   = \enrol_waitinglist\entrymanager::get_by_course($courseId);
             $confirmed  = $entryman->get_confirmed_listtotal();
-            
+
             if ($instance->{self::MFIELD_MAXENROLLED}) {
                 $vacancies = $instance->{self::MFIELD_MAXENROLLED} - $count - $confirmed;
+                if (!$vacancies) {
+                    $vacancies = -1;
+                }
             }else {
                 $vacancies = "u";
             }
