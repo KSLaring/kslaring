@@ -183,11 +183,11 @@ if ($PAGE->user_allowed_editing()) {
      * Description
      * Remove for everybody. Even for the admin user
      */
-    if (is_siteadmin($USER->id)) {
-        $url = new moodle_url("$CFG->wwwroot/my/index.php", $params);
-        $button = $OUTPUT->single_button($url, $editstring);
-        $PAGE->set_button($resetbutton . $button);
-    }
+    //if (is_siteadmin($USER->id)) {
+    //    $url = new moodle_url("$CFG->wwwroot/my/index.php", $params);
+    //    $button = $OUTPUT->single_button($url, $editstring);
+    //    $PAGE->set_button($resetbutton . $button);
+    //}
 } else {
     $USER->editing = $edit = 0;
 }
