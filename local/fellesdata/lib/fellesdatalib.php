@@ -85,8 +85,8 @@ class FSKS_JOBROLES {
                      FROM			{fs_imp_jobroles}   fs
                         LEFT JOIN	{ksfs_jobroles}		ksfs	ON 	ksfs.fsjobrole = fs.stillingskode
                      WHERE  	ksfs.id IS NULL
-                        AND fs.imported     = :imported 
-                        AND fs_imp.action   = :add
+                        AND fs.imported = :imported 
+                        AND fs.action   = :add
                      ORDER BY fs.stillingskode, fs.stillingstekst ";
 
             /* Execute */
