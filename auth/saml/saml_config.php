@@ -1,0 +1,1 @@
+{"samllib":"\/www\/efaktor\/simplesamlphp\/skoleoksne\/lib","sp_source":"default-sp","dosinglelogout":"on"}
