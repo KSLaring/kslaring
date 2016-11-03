@@ -999,7 +999,7 @@ class FELLESDATA_CRON {
             error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
         }catch (Exception $ex) {
             /* Log  */
-            $dbLog  = $ex->getMessage() . "\n" . "\n";
+            $dbLog  = $ex->getTraceAsString() . "\n" . "\n";
             $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH ERROR Jobroles FS to Map - Mailing . ' . "\n";
             error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
 
@@ -1177,8 +1177,8 @@ class FELLESDATA_CRON {
                     break;
                 case SYNC_JR:
                     $info->jobroles = implode(',',$toMail);
-
-                    $urlMapping->param('m','jr');
+                    
+                    $urlMapping = new moodle_url('/local/fellesdata/mapping/jobroles.php');
                     $info->mapping  = $urlMapping;
 
                     $body = (string)new lang_string('body_jr_to_sync','local_fellesdata',$info,$USER->lang);
