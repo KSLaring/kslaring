@@ -28,6 +28,7 @@ class managemanual_form extends moodleform {
         $mForm      = $this->_form;
         $manualClass = 'enrol_waitinglist\method\manual\enrolmethodmanual';
         $seats       = 0;
+        $disabled    = '';
         $levelThree     = optional_param('levelThree',0,PARAM_TEXT);
         list($instance,$course,$addSearch,$removeSearch,$addSelected,$removeSelected) = $this->_customdata;
         $noDemanded = false;
@@ -40,6 +41,7 @@ class managemanual_form extends moodleform {
         }else if ($seats > 0) {
             $mForm->addElement('static', 'manual-notification', '', get_string('manual_notification', 'enrol_waitinglist',$seats),'id="manual_notification"');
         }else {
+            $disabled = 'disabled';
             $mForm->addElement('static', 'manual-notification', '', get_string('manual_none_seats', 'enrol_waitinglist'),'id="manual_notification"');
         }
 
@@ -82,14 +84,14 @@ class managemanual_form extends moodleform {
             $mForm->addElement('html','<div class="sel_users_buttons">');
                 /* Add Users        */
                 $addBtn    = html_to_text($OUTPUT->larrow() . '&nbsp;'.get_string('add'));
-                $mForm->addElement('submit','add_sel',$addBtn);
+                $mForm->addElement('submit','add_sel',$addBtn,$disabled);
 
                 /* Separator    */
                 $mForm->addElement('html','</br>');
 
                 /* Remove Users     */
                 $removeBtn = html_to_text(get_string('remove') . '&nbsp;' . $OUTPUT->rarrow());
-                $mForm->addElement('submit','remove_sel',$removeBtn);
+                $mForm->addElement('submit','remove_sel',$removeBtn,$disabled);
             $mForm->addElement('html','</div>');//sel_users_buttons
         $mForm->addElement('html','</div>');//userselector_managers
 

@@ -72,6 +72,12 @@ class TrackerManager {
      *                                      --> id
      *                                      --> name
      *                                      --> completed
+     *
+     * @updateDate      03/11/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Add all courses connected with the user, where the user is in the waiting list
      */
     public static function GetUserTracker($user_id) {
         /* Variables    */
@@ -96,7 +102,7 @@ class TrackerManager {
             }//if_competence
 
             /* Get Tracker course not connected */
-            list($userTracker->completed,$userTracker->not_completed) = self::GetTrackerNotConnected($user_id,$userTracker->competence);
+            list($userTracker->completed,$userTracker->not_completed,$userTracker->inWaitList) = self::GetTrackerNotConnected($user_id,$userTracker->competence);
 
             return $userTracker;
         }catch (Exception $ex) {
@@ -125,7 +131,7 @@ class TrackerManager {
         $params = null;
         $rdo    = null;
         $plugin = null;
-        $exit   = true;
+        $exit   = null;
 
         /* Start Transaction    */
         $trans = $DB->start_delegated_transaction();
@@ -174,6 +180,72 @@ class TrackerManager {
     }//Unenrol_FromCourse
 
     /**
+     * @param           $courseId
+     * @param           $userId
+     *
+     * @return          bool|null
+     * @throws          Exception
+     * @throws          dml_transaction_exception
+     *
+     * @creationDate    03/11/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Cancel the enrol request user for a specific course
+     */
+    public static function UnWait_FromCourse($courseId,$userId) {
+        /* Variables */
+        global $DB;
+        $trans  = null;
+        $sql    = null;
+        $params = null;
+        $rdo    = null;
+        $plugin = null;
+        $exit   = null;
+
+        /* Start Transaction    */
+        $trans = $DB->start_delegated_transaction();
+
+        try {
+            /* Search Criteria  */
+            $params = array();
+            $params['course']   = $courseId;
+            $params['user']     = $userId;
+            $params['queue']    = '99999';
+
+            /* Instance Connected */
+            /* SQL Instruction  */
+            $sql = " SELECT	      ewq.id
+                     FROM			{enrol_waitinglist_queue}	ewq
+                        LEFT JOIN	{user_enrolments}			ue 	ON 	ue.enrolid 	= ewq.waitinglistid
+                                                                    AND	ue.userid 	= ewq.userid
+                     WHERE	ewq.userid 		 = :user
+                        AND	ewq.courseid 	 = :course
+                        AND ewq.queueno 	!= :queue
+                        AND ue.id IS NULL ";
+            
+            /* Execute */
+            $rdo = $DB->get_record_sql($sql,$params);
+            if ($rdo) {
+                /* Deleted Instance */
+                $DB->delete_records('enrol_waitinglist_queue',array('id' => $rdo->id));
+                $exit = true;
+            }else {
+                $exit = false;
+            }
+            /* Commit   */
+            $trans->allow_commit();
+
+            return $exit;
+        }catch (Exception $ex) {
+            /* Rollback */
+            $trans->rollback($ex);
+
+            throw $ex;
+        }//try_catch
+    }//UnWait_FromCourse
+
+    /**
      * @param           $trackerUser
      * @return          string
      * @throws          Exception
@@ -220,6 +292,12 @@ class TrackerManager {
      *                                      --> id
      *                                      --> name
      *                                      --> completed
+     *
+     * @updateDate          03/11/2016
+     * @author              eFaktor     (fbv)
+     *
+     * Description
+     * Add all courses connected with the user and where user is in the waiting list
      */
     public static function Print_TrackerInfo($trackerUser) {
         /* Variables    */
@@ -233,7 +311,7 @@ class TrackerManager {
             $out_tracker .= self::Print_OutcomeTracker($trackerUser->competence);
 
             /* Print Individual Tracker     */
-            $out_tracker .= self::Print_IndividualTracker($trackerUser->completed,$trackerUser->not_completed);
+            $out_tracker .= self::Print_IndividualTracker($trackerUser->completed,$trackerUser->not_completed,$trackerUser->inWaitList);
 
             return $out_tracker;
         }catch (Exception $ex) {
@@ -331,6 +409,8 @@ class TrackerManager {
     /**
      * @param           $completed
      * @param           $not_completed
+     * @param           $inWaitList
+     *
      * @return          string
      * @throws          Exception
      *
@@ -339,8 +419,14 @@ class TrackerManager {
      *
      * Description
      * Print the tracker connected to the individual courses - Screen Format
+     *
+     * @updateDate      03/11/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Add courses where user is in waiting list
      */
-    public static function Print_IndividualTracker($completed,$not_completed) {
+    public static function Print_IndividualTracker($completed,$not_completed,$inWaitList) {
         /* Variables    */
         $out_tracker = '';
         $individualToogle   = 'YUI_' . '0';
@@ -362,7 +448,7 @@ class TrackerManager {
                     $out_tracker .= self::AddHeader_IndividualCoursesTable($individualToogle,$url_img);
                     /* Content Table    */
                     $out_tracker .= html_writer::start_tag('div',array('class' => 'course_list', 'id' => $individualToogle . '_div'));
-                        $out_tracker .= self::AddContent_IndividualCoursesTable($completed,$not_completed);
+                        $out_tracker .= self::AddContent_IndividualCoursesTable($completed,$not_completed,$inWaitList);
                     $out_tracker .= html_writer::end_tag('div');//course_list
                 $out_tracker .= html_writer::end_tag('div');//course_list
             $out_tracker .= html_writer::end_tag('div');//tracker_list
@@ -798,6 +884,12 @@ class TrackerManager {
      * Description
      * Add deadline unenrol and ethodtype for waiting list enrolments, to check if the user
      * can unenrol or not
+     *
+     * @updateDate      03/11/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Add all courses where user is in the waiting list
      */
     private static function GetTrackerNotConnected($user_id,$competence) {
         /* Variables    */
@@ -805,8 +897,12 @@ class TrackerManager {
         $connected      = 0;
         $completed      = array();
         $not_completed  = array();
+        $inWaitList     = null;
         $info           = null;
         $user           = null;
+        $params         = null;
+        $rdo            = null;
+        $sql            = null;
 
         try {
             $user = get_complete_user_data('id',$user_id);
@@ -870,11 +966,74 @@ class TrackerManager {
                 }//for_instance
             }//if_rdo
 
-            return array($completed,$not_completed);
+            /**
+             * Get courses connected where user is not enrolled,
+             * but the user is in the waiting list
+             */
+            $inWaitList = self::GetTrackerWaitingList($user_id);
+
+            return array($completed,$not_completed,$inWaitList);
         }catch (Exception $ex) {
             throw $ex;
         }//try_Catch
     }//GetTrackerNotConnected
+
+    /**
+     * @param           $userId
+     *
+     * @return          array
+     * @throws          Exception
+     *
+     * @creationDate    03/11/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Get all courses connected with user, where the user is in the waiting list
+     */
+    private static function GetTrackerWaitingList($userId) {
+        /* Variables */
+        global $DB;
+        $inWaitList     = array();
+        $info           = null;
+        $rdo            = null;
+        $sql            = null;
+        $params         = null;
+
+        try {
+            /* Search Criteria  */
+            $params = array();
+            $params['user']     = $userId;
+            $params['queue']    = '99999';
+            $params['visible']  = 1;
+
+            /* SQL Instruction  */
+            $sql = " SELECT	DISTINCT c.id,
+                                     c.fullname
+                     FROM		{course}					c
+                        JOIN	{enrol_waitinglist_queue}	ewq	ON  ewq.courseid  = c.id
+                                                                AND	ewq.userid    = :user
+                                                                AND ewq.queueno  != :queue
+                     WHERE	c.visible = :visible ";
+
+            /* Execute */
+            $rdo = $DB->get_records_sql($sql,$params);
+            if ($rdo) {
+                foreach ($rdo as $instance) {
+                    /* Course Info  */
+                    $info = new stdClass();
+                    $info->id           = $instance->id;
+                    $info->name         = $instance->fullname;
+
+                    /* Add course   */
+                    $inWaitList[$instance->id] = $info;
+                }//for_instance
+            }//if_Rdo
+
+            return $inWaitList;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//GetTrackerWaitingList
 
     /**
      * @param           $enrolMethods
@@ -1347,6 +1506,8 @@ class TrackerManager {
     /**
      * @param           $completed
      * @param           $not_completed
+     * @param           $inWaitList
+     *
      * @return          string
      * @throws          Exception
      *
@@ -1361,8 +1522,14 @@ class TrackerManager {
      *
      * Description
      * Add the link to unerol
+     *
+     * @updateDate      03/11/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Add courses where user is in the waiting list
      */
-    private static function AddContent_IndividualCoursesTable($completed,$not_completed) {
+    private static function AddContent_IndividualCoursesTable($completed,$not_completed,$inWaitList) {
         /* Variables    */
         $content        = '';
         $url            = null;
@@ -1412,11 +1579,6 @@ class TrackerManager {
                                     $content .= '&nbsp;';
                                 }//if_unenrol
                             $content .= html_writer::end_tag('td');
-                            /* Empty Col    */
-                            //$strUrl  = '<a href="'.$url .'">'. get_string('start_course','local_tracker_manager') .'</a>';
-                            //$content .= html_writer::start_tag('td',array('class' => 'start'));
-                            //    $content .= $strUrl;
-                            //$content .= html_writer::end_tag('td');
                             /* Last Col */
                             $content .= html_writer::start_tag('td',array('class' => 'first'));
                             $content .= html_writer::end_tag('td');
@@ -1464,17 +1626,56 @@ class TrackerManager {
                                     $content .= '&nbsp;';
                                 }//if_unenrol
                             $content .= html_writer::end_tag('td');
-                            /* Empty Col    */
-                            //$strUrl  = '<a href="'.$url .'">'. get_string('start_course','local_tracker_manager') .'</a>';
-                            //$content .= html_writer::start_tag('td',array('class' => 'start'));
-                            //    $content .= $strUrl;
-                            //$content .= html_writer::end_tag('td');
                             /* Last Col */
                             $content .= html_writer::start_tag('td',array('class' => 'first'));
                             $content .= html_writer::end_tag('td');
                         $content .= html_writer::end_tag('tr');
                     }//for_each_course_completed
                 }//if_completed
+
+                /* Waiting List */
+                if ($inWaitList) {
+                    foreach ($inWaitList as $course) {
+                        /* Course Url */
+                        $url     = new moodle_url('/course/view.php',array('id'=>$course->id,'start'=>1));
+
+                        $content .= html_writer::start_tag('tr',array('class' => 'not_enroll'));
+                            /* Empty Col   */
+                            $content .= html_writer::start_tag('td',array('class' => 'first'));
+                            $content .= html_writer::end_tag('td');
+                                /* Course           */
+                                $content .= html_writer::start_tag('td',array('class' => 'course'));
+                                if (strlen($course->name) <= 100) {
+                                    $nameTruncate = $course->name;
+                                }else {
+                                    $nameTruncate = substr($course->name,0,100);
+                                    $index = strrpos($nameTruncate,' ');
+                                    $nameTruncate = substr($nameTruncate,0,$index) . ' ...';
+                                }
+                                $content .= '<a href="'.$url .'">'. $nameTruncate .'</a>';
+                            $content .= html_writer::end_tag('td');
+                            /* Status        */
+                            $content .= html_writer::start_tag('td',array('class' => 'status'));
+                                $content .= get_string('tracker_on_wait','report_manager');
+                            $content .= html_writer::end_tag('td');
+                            /* Completion    */
+                            $content .= html_writer::start_tag('td',array('class' => 'status'));
+                                $content .= '-';
+                            $content .= html_writer::end_tag('td');
+                            /* Valid        */
+                            $content .= html_writer::start_tag('td',array('class' => 'status'));
+                                /* Add link to cancel the enrol request */
+                                $urlUnEnrol->param('id',$course->id);
+                                $urlUnEnrol->param('w',1);
+                                $strUrl  = '<a href="'.$urlUnEnrol .'">'. get_string('cancel') .'</a>';
+                                $content .= $strUrl;
+                            $content .= html_writer::end_tag('td');
+                            /* Last Col */
+                            $content .= html_writer::start_tag('td',array('class' => 'first'));
+                            $content .= html_writer::end_tag('td');
+                        $content .= html_writer::end_tag('tr');//tr
+                    }//for_waiting_list
+                }//if_waitingList
             $content .= html_writer::end_tag('table');
 
             return $content;
