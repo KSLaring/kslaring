@@ -901,6 +901,8 @@ class local_wsks_external extends external_api {
         $industryCode   = new external_value(PARAM_TEXT,'Industry code');
         $action         = new external_value(PARAM_INT,'Action. Add/Update/Delete');
 
+        $lstUsers       = new external_value(PARAM_TEXT,'List of Users FS');
+        
         $accountInfo = new external_single_structure(array('personalnumber' => $personalNumber,
                                                            'adfs'           => $adfs,
                                                            'firstname'      => $firstName,
@@ -910,7 +912,11 @@ class local_wsks_external extends external_api {
                                                            'industry'       => $industryCode,
                                                            'action'         => $action));
 
-        return new external_function_parameters(array('usersAccounts'=> new external_multiple_structure($accountInfo)));
+        //return new external_function_parameters(array('usersAccounts'=> new external_multiple_structure($accountInfo)));
+        
+        return new external_function_parameters(array('usersAccounts'=> $lstUsers));
+            
+        
     }//wsUsersAccounts_parameters
 
     /**
