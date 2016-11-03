@@ -126,10 +126,14 @@ class enrolmethodmanual extends \enrol_waitinglist\method\enrolmethodbase{
             $params = array();
             $params['waitinglistid'] = $oldWaitId;
             $params['courseid']      = $oldCourse;
-            $params['methodtype']    = 'manual';
-
+            
+            $sql = " SELECT * 
+                     FROM   {enrol_waitinglist_method} 
+                     WHERE  waitinglistid = :waitinglistid 
+                        AND courseid      = :courseid 
+                        AND methodtype like '%manual%'";
             /* Execute */
-            $oldInstance = $DB->get_record('enrol_waitinglist_method',$params);
+            $oldInstance = $DB->get_record_sql($sql,$params);
             if ($oldInstance) {
                 /* Create a new one from the old one */
                 $newInstance->status           = $oldInstance->status;
