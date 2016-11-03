@@ -61,7 +61,7 @@ class block_tracker_manager extends block_base {
             $this->content->text .= TrackerManager::Print_OutcomeTracker($trackerUser->competence);
 
             /* Individual Courses   */
-            $this->content->text .= TrackerManager::Print_IndividualTracker($trackerUser->completed,$trackerUser->not_completed);
+            $this->content->text .= TrackerManager::Print_IndividualTracker($trackerUser->completed,$trackerUser->not_completed,$trackerUser->inWaitList);
         }
 
 
