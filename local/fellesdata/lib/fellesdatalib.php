@@ -56,37 +56,52 @@ class FSKS_JOBROLES {
 
     /**
      * @return          array
-     *
      * @throws          Exception
      *
-     * @creationDate    10/02/2016
+     * @creationDate    03/11/2016
      * @author          eFaktor     (fbv)
      *
      * Description
-     * Get all job roles that have to be synchronized
+     * Check if there are new job roles that have to be mapped and synchronized
      */
-    public static function JobRolesFSToSynchronize() {
-        /* Variables    */
-        $toSynchronize  = null;
-        $toMail         = null;
-        $notIn          = null;
+    public static function JobRolesFSToSynchronize_Mailing() {
+        /* Variables */
+        global $DB;
+        $sql            = null;
+        $rdo            = null;
+        $params         = null;
+        $lstJobRoles    = array();
 
         try {
-            /* To Synchronize only in FS    */
-            $toSynchronize = self::GetJobRoles_ToSynchronize();
+            /* Search Criteria  */
+            $params = array();
+            $params['imported'] = 0;
+            $params['add']      = ADD;
 
-            /* To Mail  */
-            if ($toSynchronize) {
-                $notIn = implode(',',array_keys($toSynchronize));
+            /* SQL Instruction */
+            $sql = " SELECT fs.id,
+                            fs.stillingskode,
+                            fs.stillingstekst
+                     FROM			{fs_imp_jobroles}   fs
+                        LEFT JOIN	{ksfs_jobroles}		ksfs	ON 	ksfs.fsjobrole = fs.stillingskode
+                     WHERE  	ksfs.id IS NULL
+                        AND fs.imported     = :imported 
+                        AND fs_imp.action   = :add
+                     ORDER BY fs.stillingskode, fs.stillingstekst ";
 
-                $toMail = self::GetJobRoles_ToMail($notIn);
-            }//if_synchronize
+            /* Execute */
+            $rdo = $DB->get_records_sql($sql,$params,0,5);
+            if ($rdo) {
+                foreach ($rdo as $instance) {
+                    $lstJobRoles[$instance->id] = $instance->stillingskode . " - " . $instance->stillingstekst;
+                }//for_rdo
+            }//if_Rdo
 
-            return array($toSynchronize,$toMail);
+            return $lstJobRoles;
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//JobRolesFSToSynchronize
+    }//JobRolesFSToSynchronize_Mailing
 
     /**
      * @param           $toSynchronize
@@ -175,54 +190,6 @@ class FSKS_JOBROLES {
             throw $ex;
         }//try_catch
     }//GetJobRoles_ToSynchronize
-
-    /**
-     * @param           $notIn
-     *
-     * @return          array
-     * @throws          Exception
-     *
-     * @creationDate    10/02/2016
-     * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Get job role that have to be manully mapped
-     */
-    private static function GetJobRoles_ToMail($notIn) {
-        /* Variables    */
-        global $DB;
-        $toMail = array();
-        $sql    = null;
-        $rdo    = null;
-        $params = null;
-
-        try {
-            /* Search Criteria  */
-            $params = array();
-            $params['imported'] = 0;
-
-            /* SQL Instruction */
-            $sql = " SELECT	fs.id,
-                            fs.stillingstekst
-                     FROM	{fs_imp_jobroles}	fs
-                     WHERE	fs.imported = :imported
-                        AND fs.id NOT IN ($notIn)
-                     ORDER BY fs.stillingstekst
-                     LIMIT 0,5 ";
-
-            /* Execute  */
-            $rdo = $DB->get_records_sql($sql,$params);
-            if ($rdo) {
-                foreach($rdo as $instance) {
-                    $toMail[$instance->id] = $instance->stillingstekst;
-                }//for_Rdo
-            }//if_rdo
-
-            return $toMail;
-        }catch (Exception $ex) {
-            throw $ex;
-        }//try_catch
-    }//GetJobRoles_ToMail
 
     /**
      * @param           $jobRole
@@ -362,6 +329,8 @@ class FSKS_COMPANY {
             throw $ex;
         }//try_catch
     }//CompaniesFSToSynchronize
+
+
 
     /**
      * @param           $companiesFSKS
