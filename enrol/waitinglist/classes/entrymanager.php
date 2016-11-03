@@ -117,12 +117,18 @@ class entrymanager  {
      *  Return all queue entries
      *
      * @return array all the confirmed entries
+	 *
+	 * @updateDate	03/11/2016
+	 * @author		eFaktor		(fbv)
+	 *
+	 * Description
+	 * Confirmed entries --> allocseats
      */
 	public function get_confirmed_entries(){
 		global $DB;
 		$where = "courseid = $this->courseid ";
 		$where .="AND waitinglistid = " . $this->waitinglist->id . " ";
-		$where .="AND confirmedseats > 0 ";
+		$where .="AND allocseats > 0 ";
 		$entries = $DB->get_records_select(self::CTABLE, $where);
 		return $entries;
 	}
