@@ -1177,7 +1177,8 @@ class FELLESDATA_CRON {
                     break;
                 case SYNC_JR:
                     $info->jobroles = implode(',',$toMail);
-
+                    
+                    $urlMapping = new moodle_url('/local/fellesdata/mapping/jobroles.php');
                     $urlMapping->param('m','jr');
                     $info->mapping  = $urlMapping;
 
