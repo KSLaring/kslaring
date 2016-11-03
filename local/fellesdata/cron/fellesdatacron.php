@@ -786,7 +786,7 @@ class FELLESDATA_CRON {
         $industryCode   = null;
         $params         = null;
         $start          = 0;
-        $limit          = 200;
+        $limit          = 100;
 
         try {
             /* Get Industry Code    */
@@ -811,7 +811,7 @@ class FELLESDATA_CRON {
             /* Get user to synchronize  */
             $total = $DB->count_records('fs_imp_users',array('imported' => '0'));
             if ($total) {
-                for ($i=0;$i<=$total;$i=$i+200) {
+                for ($i=0;$i<=$total;$i=$i+100) {
                     $rdo = $DB->get_records('fs_imp_users',array('imported' => '0'),'','*',$start,$limit);
 
                     /* Prepare data */
@@ -973,13 +973,13 @@ class FELLESDATA_CRON {
         $response       = null;
         $dbLog          = null;
         $start          = 0;
-        $limit          = 200;
+        $limit          = 100;
 
         try {
             /* Get Info to Synchronize */
             $total = FSKS_USERS::GetTotalUsersCompetence_ToSynchronize($toDelete);
             if ($total) {
-                for ($i=0;$i<=$total;$i=$i+200) {
+                for ($i=0;$i<=$total;$i=$i+100) {
                     $toSynchronize = FSKS_USERS::UserCompetence_ToSynchronize($toDelete,$start,$limit);
                     /* Call Web Service  */
                     if ($toSynchronize) {
@@ -1028,7 +1028,7 @@ class FELLESDATA_CRON {
         $dbLog          = null;
         $total          = null;
         $start          = 0;
-        $limit          = 200;
+        $limit          = 100;
 
         try {
             /* Log  */
@@ -1038,7 +1038,7 @@ class FELLESDATA_CRON {
             /* Get Total to synchronize */
             $total = FSKS_USERS::GetTotalManagersReporters_ToSynchronize();
             if ($total) {
-                for ($i=0;$i<=$total;$i=$i+200) {
+                for ($i=0;$i<=$total;$i=$i+100) {
                     /* Get Info to Synchronize  */
                     $toSynchronize = FSKS_USERS::GetManagersReporters_ToSynchronize($start,$limit);
 
