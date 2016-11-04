@@ -485,6 +485,6 @@ $string['return_main_report']   = '<< Tilbake til Arbeidsstedsrapporter';
 $string['no_completed']         = 'Det er ingen som har fullført kurset de siste {$a}';
 $string['no_out_completed']     = 'Det er ingen som utløper neste {$a}';
 
-$string['tracker_on_wait']      = "On standby";
-$string['unwaitconfirm']        = 'Do you really want to cancel the user enrol request "{$a->user}" for the  course "{$a->course}"?';
-$string['exit_unwait']          = 'Your enrol request has been canceled';
+$string['tracker_on_wait']      = "På venteliste";
+$string['unwaitconfirm']        = 'Ønsker du virkelig å fjerne deg fra ventelisten for kurset "{$a->course}"?';
+$string['exit_unwait']          = 'Ventelisteoppføringen dn har blitt slettet';

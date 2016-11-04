@@ -127,7 +127,7 @@ $string['welcome_ical_attach'] = '<p>Vedlagt kalenderfil. Trykk på denne for å
 $string['sendcoursewaitlistmessage'] = 'Send epost når brukeren blir lagt til i ventelisten';
 $string['sendcoursewaitlistmessage_help'] = 'Du kan sende en epost til brukeren når de legges til på kursets venteliste.';
 
-$string['manageconfirmed'] = 'Bekreftede bulk kursplasser';
+$string['manageconfirmed'] = 'Bekreftede kursplasser';
 $string['unconfirmfailed'] = 'Fjerning fra bekreftede kursplasser mislykkes!';
 $string['waitinglistisempty'] = 'Ventelisten er tom';
 $string['confirmedlistisempty'] = 'Listen er tom';
