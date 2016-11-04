@@ -1009,11 +1009,14 @@ class TrackerManager {
             /* SQL Instruction  */
             $sql = " SELECT	DISTINCT c.id,
                                      c.fullname
-                     FROM		{course}					c
-                        JOIN	{enrol_waitinglist_queue}	ewq	ON  ewq.courseid  = c.id
+                     FROM		  {course}					c
+                        JOIN	  {enrol_waitinglist_queue}	ewq	ON  ewq.courseid  = c.id
                                                                 AND	ewq.userid    = :user
                                                                 AND ewq.queueno  != :queue
-                     WHERE	c.visible = :visible ";
+						LEFT JOIN {user_enrolments}		    ue 	ON 	ue.enrolid 	= ewq.waitinglistid
+																AND	ue.userid 	= ewq.userid
+                     WHERE	c.visible = :visible 
+                        AND ue.id IS NULL ";
 
             /* Execute */
             $rdo = $DB->get_records_sql($sql,$params);
