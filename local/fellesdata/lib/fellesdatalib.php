@@ -1497,7 +1497,8 @@ class FSKS_USERS {
             $trans->allow_commit();
         }catch (Exception $ex) {
             /* Log  */
-            $dbLog = $ex->getMessage() . "\n" ."\n";
+            $dbLog = $userFS->personalnumber . "\n" . "\n";
+            $dbLog .= $ex->getTraceAsString() . "\n" ."\n";
             $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH ERROR SynchronizeUserFS . ' . "\n";
             error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
 
