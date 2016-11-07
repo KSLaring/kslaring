@@ -50,11 +50,11 @@ class FELLESDATA_CRON {
 
             /* Import KS */
             $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' START Import KS. ' . "\n";
-            //self::ImportKS($pluginInfo);
+            self::ImportKS($pluginInfo);
 
             /* Import Fellesdata        */
             $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' START Import Fellesdata. ' . "\n";
-            //self::ImportFellesdata($pluginInfo);
+            self::ImportFellesdata($pluginInfo);
 
             /* SYNCHRONIZATION  */
             /* Synchronization Users Accounts   */
@@ -63,24 +63,24 @@ class FELLESDATA_CRON {
 
             /* Synchronization Companies    */
             $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' START Companies FS Synchronization. ' . "\n";
-            //self::CompaniesFS_Synchronization($pluginInfo,$fstExecution);
+            self::CompaniesFS_Synchronization($pluginInfo,$fstExecution);
 
             /* Job roles to Map/Synchronize */
-            //self::JobRolesFS_ToMap($pluginInfo);
+            self::JobRolesFS_ToMap($pluginInfo);
 
             /* Synchronization Comeptence   */
             if (!$fstExecution) {
                 /* Synchronization Managers && Reporters    */
                 $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' START  Managers/Reporters FS Synchronization. ' . "\n";
-                //self::ManagerReporter_Synchronization($pluginInfo,KS_MANAGER_REPORTER);
+                self::ManagerReporter_Synchronization($pluginInfo,KS_MANAGER_REPORTER);
 
                 /* Synchronization User Competence JobRole  -- Add/Update */
                 $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' START Users competence FS Synchronization. ' . "\n";
-                //self::UserCompetence_Synchronization($pluginInfo,KS_USER_COMPETENCE);
+                self::UserCompetence_Synchronization($pluginInfo,KS_USER_COMPETENCE);
 
                 /* Synchronization User Competence JobRole  -- Delete */
                 $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' START Users Competence to delete FS Synchronization. ' . "\n";
-                //self::UserCompetence_Synchronization($pluginInfo,KS_USER_COMPETENCE,true);
+                self::UserCompetence_Synchronization($pluginInfo,KS_USER_COMPETENCE,true);
            }
 
             /* Log  */
