@@ -1315,6 +1315,7 @@ class FSKS_USERS {
         $sync           = false;
         $trans          = null;
         $userId         = null;
+        $dbLog          = null;
 
         /* Start Transaction    */
         $trans = $DB->start_delegated_transaction();
