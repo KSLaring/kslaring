@@ -1315,6 +1315,7 @@ class FSKS_USERS {
         $sync           = false;
         $trans          = null;
         $userId         = null;
+        $dbLog          = null;
 
         /* Start Transaction    */
         $trans = $DB->start_delegated_transaction();
@@ -1436,7 +1437,7 @@ class FSKS_USERS {
                     }else {
                         /* Execute  */
                         $infoUser->deleted      = 1;
-                        $infoUser->id = $DB->insert_record('user',$infoUser);
+                        $userId = $DB->insert_record('user',$infoUser);
                     }//if_exist
 
                     /* Synchronized */
@@ -1497,7 +1498,7 @@ class FSKS_USERS {
             $trans->allow_commit();
         }catch (Exception $ex) {
             /* Log  */
-            $dbLog = $ex->getMessage() . "\n" ."\n";
+            $dbLog .= $ex->getTraceAsString() . "\n" ."\n";
             $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH ERROR SynchronizeUserFS . ' . "\n";
             error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
 
