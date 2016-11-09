@@ -10,6 +10,6 @@
  * @author          eFaktor     (fbv)
  *
  */
-$plugin->version    =  '2016110700';         /* The plugin current version (DATE: YYYYMMDDXX) */
+$plugin->version    =  '2016110900';         /* The plugin current version (DATE: YYYYMMDDXX) */
 $plugin->component  =  'local_wsslave';
 //$plugin->cron       =  0;                  // Cron interval 1 day. //60; //(300 secs - 5 min)

@@ -29,6 +29,11 @@ $functionConfig = array('classname'     =>    $className,
                     );
 
 /**
+ * Functions to install
+ */
+$functions = array($functionName => $functionConfig);
+
+/**
  * SLAVE Service
  */
 $serviceSLAVE        = 'slave';
