@@ -16,9 +16,12 @@ defined('MOODLE_INTERNAL') || die();
 function xmldb_local_wsks_upgrade($oldVersion) {
     /* Variables */
     global $DB;
-    $table              = null;
-    $fldIndustryCode    = null;
-    $dbMan              = $DB->get_manager();
+    $table                  = null;
+    $tblExtSlaves           = null;
+    $tblExtSlavesServices   = null;
+    $tblExtSlavesLog        = null;
+    $fldIndustryCode        = null;
+    $dbMan                  = $DB->get_manager();
 
     try {
         /* New Table user_resource_number */
@@ -52,6 +55,82 @@ function xmldb_local_wsks_upgrade($oldVersion) {
             if (!$dbMan->field_exists($table, $fldIndustryCode)) {
                 $dbMan->add_field($table, $fldIndustryCode);
             }//if_not_exists
+        }//if_oldVersion
+
+        if ($oldVersion < 2016110800) {
+            /* External Slaves      */
+            if (!$dbMan->table_exists('external_slaves')) {
+                /* Create table */
+                $tblExtSlaves = new xmldb_table('external_slaves');
+
+                /* Add Fields   */
+                /* Id       */
+                $tblExtSlaves->add_field('id',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, XMLDB_SEQUENCE,null);
+                /* Slave    */
+                $tblExtSlaves->add_field('slave',XMLDB_TYPE_CHAR,'250',null,XMLDB_NOTNULL,null,null);
+                /* Token    */
+                $tblExtSlaves->add_field('token',XMLDB_TYPE_CHAR,'128',null,XMLDB_NOTNULL,null,null);
+                /* Time created     */
+                $tblExtSlaves->add_field('timecreated',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, null,null);
+                /* Time Modified    */
+                $tblExtSlaves->add_field('timemodified',XMLDB_TYPE_INTEGER,'10',null, null, null,null);
+
+                /* Add Keys */
+                $tblExtSlaves->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+
+                /* Create table */
+                $dbMan->create_table($tblExtSlaves);
+            }//if_table_exits
+
+            /* External Slaves Services */
+            if (!$dbMan->table_exists('external_slaves_services')) {
+                /* Create table */
+                $tblExtSlavesServices = new xmldb_table('external_slaves_services');
+
+                /* Add Fields   */
+                /* Id           */
+                $tblExtSlavesServices->add_field('id',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, XMLDB_SEQUENCE,null);
+                /* Slave id     */
+                $tblExtSlavesServices->add_field('slaveid',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, null,null);
+                /* Service Id   */
+                $tblExtSlavesServices->add_field('serviceid',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, null,null);
+
+                /* Add Keys     */
+                $tblExtSlavesServices->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+                $tblExtSlavesServices->add_key('slaveid',XMLDB_KEY_FOREIGN,array('slaveid'), 'external_slaves', array('id'));
+
+                /* Create table */
+                $dbMan->create_table($tblExtSlavesServices);
+            }//if_table_exist
+
+            /* External Slaves Log  */
+            if (!$dbMan->table_exists('external_slaves_services_log')) {
+                /* Create table */
+                $tblExtSlavesLog = new xmldb_table('external_slaves_services_log');
+
+                /* Add Fields   */
+                /* Id           */
+                $tblExtSlavesLog->add_field('id',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, XMLDB_SEQUENCE,null);
+                /* Slave id     */
+                $tblExtSlavesLog->add_field('slaveid',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, null,null);
+                /* Service Id   */
+                $tblExtSlavesLog->add_field('serviceid',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, null,null);
+                /* Old token    */
+                $tblExtSlavesLog->add_field('oldtoken',XMLDB_TYPE_CHAR,'128',null,XMLDB_NOTNULL,null,null);
+                /* Updated      */
+                $tblExtSlavesLog->add_field('updated',XMLDB_TYPE_INTEGER,'1',null, null, null,null);
+                /* Updated By   */
+                $tblExtSlavesLog->add_field('updatedby',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, null,null);
+                /* Time updated */
+                $tblExtSlavesLog->add_field('timeupdated',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, null,null);
+
+                /* Add Keys     */
+                $tblExtSlavesLog->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+                $tblExtSlavesLog->add_key('slaveid',XMLDB_KEY_FOREIGN,array('slaveid'), 'external_slaves', array('id'));
+
+                /* Create table */
+                $dbMan->create_table($tblExtSlavesLog);
+            }//if_table_exits
         }//if_oldVersion
 
         return true;
