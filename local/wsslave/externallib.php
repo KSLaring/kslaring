@@ -61,7 +61,7 @@ class local_wsslave_external extends external_api {
      * Description
      * Web Service response
      */
-    public static function wsUpdateMainService_return() {
+    public static function wsUpdateMainService_returns() {
         $error      = new external_value(PARAM_INT,'Error. True/False');
         $msg_error  = new external_value(PARAM_TEXT,'Error Description');
         $valid      = new external_value(PARAM_INT,'Updated or not');
