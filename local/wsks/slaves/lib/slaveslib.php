@@ -334,15 +334,18 @@ class Slaves {
      */
     public static function Process_Update_SlavesSystems($serviceId) {
         /* Variables */
-        global $DB,$USER;
+        global $DB,$USER,$CFG;
         $pluginInfo = null;
         $lstDomains = null;
         $infoDomain = null;
         $wsService  = null;
         $msgErr     = null;
         $infoLog    = null;
+        $dbLog      = null;
 
         try {
+            $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' START UPDATE SLAVE SYSTEM. ' . "\n";
+
             /**
              * Plugin Info
              */
@@ -352,7 +355,9 @@ class Slaves {
              * Slave Service
              */
             $wsService = $pluginInfo->slaves_service;
+            $dbLog .= "wsService " . $wsService . "\n";
             if ($wsService) {
+                $dbLog .= " Yes WsService " . "\n";
                 /**
                  * Get domains to update
                  */
@@ -381,6 +386,7 @@ class Slaves {
                         $DB->insert_record('external_slaves_services_log',$infoLog);
 
                         if ($infoDomain->response['error'] != '200') {
+                            $dbLog .= "ERROR " . $infoDomain->response['msg_error'] . "\n";
                             $msgErr = ERR_SLAVE_SERVICE;
                         }
                     }//for_domains
@@ -392,11 +398,17 @@ class Slaves {
                     $msgErr = ERR_NO_DOMAINS;
                 }
             }else {
+                $dbLog .= "NO wsService " . "\n";
                 $msgErr = ERR_SLAVE_SERVICE;
             }
 
+            error_log($dbLog, 3, $CFG->dataroot . "/slave.log");
             return $msgErr;
         }catch (Exception $ex) {
+            $dbLog = "ERROR: " . $ex->getMessage() . "\n" . "\n";
+            $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH ERROR UPDATE SLAVE SYSTEM. ' . "\n";
+            error_log($dbLog, 3, $CFG->dataroot . "/slave.log");
+
             throw $ex;
         }//try_catch
     }//Process_Update_SlavesSystems
