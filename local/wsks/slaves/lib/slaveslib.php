@@ -587,7 +587,7 @@ class Slaves {
              */
             $params = array();
             $params['name']     = $domain->service;
-            $params['main']     = 'https://kommit.kursportal.net'; //$CFG->wwwroot;
+            $params['main']     = $CFG->wwwroot;
             $params['token']    = $domain->token;
 
             /* Call service */
