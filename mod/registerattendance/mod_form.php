@@ -48,7 +48,14 @@ class mod_registerattendance_mod_form extends moodleform_mod {
         }
         $mform->addRule('name', null, 'required', null, 'client');
         $mform->addRule('name', get_string('maximumchars', '', 255), 'maxlength', 255, 'client');
-        $this->add_intro_editor($config->requiremodintro);
+        /**
+         * @updateDate  10/11/2016
+         * @author      eFaktor     (fbv)
+         *
+         * Description
+         * add_intro_editor --> standard_intro_elements
+         */
+        $this->standard_intro_elements();
 
         // Set completion tracking default to off
         // to not include this resource into the completion tracking

@@ -16,24 +16,30 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Resource module admin settings and defaults
- *
- * @package    mod_registerattendance
- * @copyright  2016 eFaktor
- * @author     Urs Hunkler {@link urs.hunkler@unodo.de}
+ * @package tool
+ * @subpackage mergeusers
+ * @author Jordi Pujol-Ahulló <jordi.pujol@urv.cat>
+ * @copyright 2013 Servei de Recursos Educatius (http://www.sre.urv.cat)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+spl_autoload_register(function ($class) {
 
-defined('MOODLE_INTERNAL') || die;
+    $fileName = strtolower($class) . '.php';
+    $fileDirname = dirname(__FILE__);
+    $dirs = array(
+        $fileDirname,
+        $fileDirname . '/table',
+        $fileDirname . '/local',
+        $fileDirname.'/../classes',
+    );
 
-if ($ADMIN->fulltree) {
-        /**
-         * @updateDate  10/11/2016
-         * @author      eFaktor (fbv)
-         *
-         * Description
-         * Not used in 31
-         */
-        //$settings->add(new admin_setting_configcheckbox('registerattendance/requiremodintro',
-        //    get_string('requiremodintro', 'admin'), get_string('configrequiremodintro', 'admin'), 0));
-}
+    foreach ($dirs as $dir) {
+        if (is_file($dir . '/' . $fileName)) {
+            require_once $dir . '/' . $fileName;
+            if (class_exists($class)) {
+                return true;
+            }
+        }
+    }
+    return false;
+});

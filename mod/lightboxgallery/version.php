@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -16,24 +15,19 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Resource module admin settings and defaults
+ * Lightbox gallery version info.
  *
- * @package    mod_registerattendance
- * @copyright  2016 eFaktor
- * @author     Urs Hunkler {@link urs.hunkler@unodo.de}
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package   mod_lightboxgallery
+ * @copyright 2014 NetSpot Pty Ltd
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die;
+defined('MOODLE_INTERNAL') || die();
 
-if ($ADMIN->fulltree) {
-        /**
-         * @updateDate  10/11/2016
-         * @author      eFaktor (fbv)
-         *
-         * Description
-         * Not used in 31
-         */
-        //$settings->add(new admin_setting_configcheckbox('registerattendance/requiremodintro',
-        //    get_string('requiremodintro', 'admin'), get_string('configrequiremodintro', 'admin'), 0));
-}
+$plugin->version  = 2015091800;  // The current plugin version (Date: YYYYMMDDXX).
+$plugin->requires = 2014050800;  // Requires this Moodle version.
+$plugin->cron     = 0;           // Period for cron to check this plugin (secs).
+
+$plugin->component = 'mod_lightboxgallery';
+$plugin->maturity = MATURITY_STABLE;
+$plugin->release = '2.7.1.2';

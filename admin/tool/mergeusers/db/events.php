@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -16,24 +15,23 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Resource module admin settings and defaults
- *
- * @package    mod_registerattendance
- * @copyright  2016 eFaktor
- * @author     Urs Hunkler {@link urs.hunkler@unodo.de}
+ * @package tool
+ * @subpackage mergeusers
+ * @author Jordi Pujol-Ahulló <jordi.pujol@urv.cat>
+ * @copyright 2013 Servei de Recursos Educatius (http://www.sre.urv.cat)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die;
-
-if ($ADMIN->fulltree) {
-        /**
-         * @updateDate  10/11/2016
-         * @author      eFaktor (fbv)
-         *
-         * Description
-         * Not used in 31
-         */
-        //$settings->add(new admin_setting_configcheckbox('registerattendance/requiremodintro',
-        //    get_string('requiremodintro', 'admin'), get_string('configrequiremodintro', 'admin'), 0));
-}
+/**
+ * @var array Available handlers for merging events.
+ *
+ * Available events: merging_sucess, merging_failed
+ */
+$handlers = array (
+    'merging_success' => array (
+        'handlerfile'      => '/admin/tool/mergeusers/lib/events/olduser.php',
+        'handlerfunction'  => 'tool_mergeusers_old_user_suspend',
+        'schedule'         => 'instant',
+        'internal'         => 1,
+    ),
+);
