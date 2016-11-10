@@ -78,13 +78,18 @@ if (empty($job_roles)) {
 }else {
     /* Print Title */
     echo $OUTPUT->heading(get_string('job_roles', 'report_manager'));
+
+    /* Add Levels Links */
+    $url_edit = new moodle_url('/report/manager/job_role/add_job_role.php');
     $table = job_role::JobRoles_table($job_roles,$superUser);
 
+    echo $OUTPUT->action_link($url_edit,get_string('add_job_role','report_manager'));
     echo html_writer::table($table);
+    echo $OUTPUT->action_link($url_edit,get_string('add_job_role','report_manager'));
 }//if_else
 
-$url_edit = new moodle_url('/report/manager/job_role/add_job_role.php');
-echo $OUTPUT->single_button($url_edit,get_string('add_job_role', 'report_manager'));
+//$url_edit = new moodle_url('/report/manager/job_role/add_job_role.php');
+//echo $OUTPUT->single_button($url_edit,get_string('add_job_role', 'report_manager'));
 
 /* Print Footer */
 echo $OUTPUT->footer();
