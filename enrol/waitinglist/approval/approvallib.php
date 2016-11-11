@@ -948,6 +948,15 @@ Class Approval {
             $params = array();
             $params['user'] = $userId;
 
+            /**
+             * Competence
+             */
+            $competence = new stdClass();
+            $competence->levelZero  = 0;
+            $competence->levelOne   = 0;
+            $competence->levelTwo   = 0;
+            $competence->levelThree = 0;
+
             /* SQL Instruction */
             if ($instance) {
                 /* Search criteria */
