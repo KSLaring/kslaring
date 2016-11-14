@@ -484,3 +484,7 @@ $string['del_no']               = 'No';
 $string['return_main_report']   = 'Return to the main report page';
 $string['no_completed']         = 'No one has completed the course during the last {$a}';
 $string['no_out_completed']     = 'No one expires  during the next {$a}';
+
+$string['tracker_on_wait']      = "On standby";
+$string['unwaitconfirm']        = 'Do you really want to cancel the user enrol request "{$a->user}" for the  course "{$a->course}"?';
+$string['exit_unwait']          = 'Your enrol request has been canceled';
