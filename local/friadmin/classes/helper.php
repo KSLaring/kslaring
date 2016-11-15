@@ -801,26 +801,19 @@ class local_friadmin_helper {
             $transaction = $DB->start_delegated_transaction();
 
             // Create new course.
-            $courseid = restore_dbops::create_new_course(fix_utf8($sourcefile->get_filename()),
-                                                         'restored-' . $backupid, $options['categoryid']);
-
-            // Set the parameters chosen by the user.
             /**
              * @updateDate  15/11/2016
              * @author      eFaktor     (fbv)
-             * 
+             *
              * Description
-             * Move before restoring course, so the welcome email
-             * will take the right name of the course
+             * Restore the course with the correct name
              */
-            $course = new stdClass;
-            $course->id         = $courseid;
-            $course->fullname   = fix_utf8($options['fullname']);
-            $course->shortname  = $options['shortname'];
-            if (isset($options['startdate'])) {
-                $course->startdate = $options['startdate'];
-            }
-            $DB->update_record('course', $course);
+            $courseid = restore_dbops::create_new_course(fix_utf8($options['fullname']),
+                fix_utf8($options['shortname']), $options['categoryid']);
+            //$courseid = restore_dbops::create_new_course(fix_utf8($sourcefile->get_filename()),
+            //                                             'restored-' . $backupid, $options['categoryid']);
+
+
             // Restore backup into course.
             $controller = new restore_controller($backupid,
                                                  $courseid,
@@ -855,6 +848,16 @@ class local_friadmin_helper {
             unset($transaction);
             $controller->destroy();
             unset($controller);
+
+            // Set the parameters chosen by the user.
+            $course = new stdClass;
+            $course->id         = $courseid;
+            $course->fullname   = fix_utf8($options['fullname']);
+            $course->shortname  = $options['shortname'];
+            if (isset($options['startdate'])) {
+                $course->startdate = $options['startdate'];
+            }
+            $DB->update_record('course', $course);
 
             return array($courseid, $error);
         } catch (Exception $ex) {
