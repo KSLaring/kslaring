@@ -164,6 +164,7 @@ class course_report {
                     /* Get information to display by level          */
                     /* Level zero    - That's common for all levels  */
                     $course_report->levelZero   = $data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'0'];
+                    $course_report->zero_name   = $data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'0'];
                     $USER->levelZero            = $course_report->levelZero;
                     $USER->courseReport         = $course_id;
 
@@ -1357,7 +1358,7 @@ class course_report {
                     $out_report .= '<ul class="level-list unlist">';
                         /* Level Zero       */
                         $out_report .= '<li>';
-                            $out_report .= '<h3>'. get_string('company_structure_level', 'report_manager', 0) . ': ' . CompetenceManager::GetCompany_Name($course_report->levelZero)  . '</h3>';
+                            $out_report .= '<h3>'. get_string('company_structure_level', 'report_manager', 0) . ': ' . $course_report->zero_name  . '</h3>';
                         $out_report .= '</li>';
                     $out_report .= '</ul>';
 
@@ -1511,7 +1512,7 @@ class course_report {
                     $out_report .= '<ul class="level-list unlist">';
                         /* Level Zero       */
                         $out_report .= '<li>';
-                            $out_report .= '<h3>'. get_string('company_structure_level', 'report_manager', 0) . ': ' . CompetenceManager::GetCompany_Name($course_report->levelZero) . '</h3>';
+                            $out_report .= '<h3>'. get_string('company_structure_level', 'report_manager', 0) . ': ' . $course_report->zero_name . '</h3>';
                         $out_report .= '</li>';
                         /* Level One        */
                         $levelOne = array_shift($course_report->levelOne);
@@ -1663,7 +1664,7 @@ class course_report {
                     $out_report .= '<ul class="level-list unlist">';
                         /* Level Zero       */
                         $out_report .= '<li>';
-                            $out_report .= '<h3>'. get_string('company_structure_level', 'report_manager', 0) . ': ' . CompetenceManager::GetCompany_Name($course_report->levelZero) . '</h3>';
+                            $out_report .= '<h3>'. get_string('company_structure_level', 'report_manager', 0) . ': ' . $course_report->zero_name . '</h3>';
                         $out_report .= '</li>';
                         /* Level One        */
                         $levelOne = array_shift($course_report->levelOne);
@@ -1806,7 +1807,7 @@ class course_report {
                     $out_report .= '<ul class="level-list unlist">';
                         /* Level Zero       */
                         $out_report .= '<li>';
-                            $out_report .= '<h3>'. get_string('company_structure_level', 'report_manager', 0) . ': ' . CompetenceManager::GetCompany_Name($course_report->levelZero) . '</h3>';
+                            $out_report .= '<h3>'. get_string('company_structure_level', 'report_manager', 0) . ': ' . $course_report->zero_name . '</h3>';
                         $out_report .= '</li>';
                         /* Level One        */
                         $levelOne = array_shift($course_report->levelOne);
@@ -2176,7 +2177,7 @@ class course_report {
                         $my_xls = $export->add_worksheet($levelTwo->name);
 
                         /* Add Header - Company Course Report  - Level One */
-                        self::AddHeader_CompanySheet($course_report->name,$course_report->outcomes,$course_report->levelZero,$levelOne,$levelTwo,null,$completed_before,$my_xls,$row);
+                        self::AddHeader_CompanySheet($course_report->name,$course_report->outcomes,$course_report->zero_name,$levelOne,$levelTwo,null,$completed_before,$my_xls,$row);
 
                         /* Ad Level Two */
                         if ($levelTwo->levelThree) {
@@ -2201,7 +2202,7 @@ class course_report {
                 $my_xls = $export->add_worksheet($course_report->levelZero);
 
                 /* Add Header - Company Course Report  - Level One */
-                self::AddHeader_CompanySheet($course_report->name,$course_report->outcomes,$course_report->levelZero,null,null,get_string('no_data', 'report_manager'),$completed_before,$my_xls,$row);
+                self::AddHeader_CompanySheet($course_report->name,$course_report->outcomes,$course_report->zero_name,null,null,get_string('no_data', 'report_manager'),$completed_before,$my_xls,$row);
             }//if_levelOne
 
 
@@ -2253,7 +2254,7 @@ class course_report {
                     $my_xls = $export->add_worksheet($levelTwo->name);
 
                     /* Add Header - Company Course Report  - Level One */
-                    self::AddHeader_CompanySheet($course_report->name,$course_report->outcomes,$course_report->levelZero,$levelOne,$levelTwo,null,$completed_before,$my_xls,$row);
+                    self::AddHeader_CompanySheet($course_report->name,$course_report->outcomes,$course_report->zero_name,$levelOne,$levelTwo,null,$completed_before,$my_xls,$row);
 
                     /* Ad Level Two */
                     if ($levelTwo->levelThree) {
@@ -2277,7 +2278,7 @@ class course_report {
                 $my_xls = $export->add_worksheet($levelOne->name);
 
                 /* Add Header - Company Course Report  - Level One */
-                self::AddHeader_CompanySheet($course_report->name,$course_report->outcomes,$course_report->levelZero,$levelOne,null,get_string('no_data', 'report_manager'),$completed_before,$my_xls,$row);
+                self::AddHeader_CompanySheet($course_report->name,$course_report->outcomes,$course_report->zero_name,$levelOne,null,get_string('no_data', 'report_manager'),$completed_before,$my_xls,$row);
             }//if_levelTwo
 
 
@@ -2334,7 +2335,7 @@ class course_report {
             /* Ad Level Two */
             if ($levelTwo->levelThree) {
                 /* Add Header - Company Course Report  - Level One */
-                self::AddHeader_CompanySheet($course_report->name,$course_report->outcomes,$course_report->levelZero,$levelOne,$levelTwo,null,$completed_before,$my_xls,$row);
+                self::AddHeader_CompanySheet($course_report->name,$course_report->outcomes,$course_report->zero_name,$levelOne,$levelTwo,null,$completed_before,$my_xls,$row);
 
                 /* Add Header Table */
                 $row++;
@@ -2350,7 +2351,7 @@ class course_report {
                 }//for_each_company
             }else {
                 /* Add Header - Company Course Report  - Level One */
-                self::AddHeader_CompanySheet($course_report->name,$course_report->outcomes,$course_report->levelZero,$levelOne,$levelTwo,get_string('no_data', 'report_manager'),$completed_before,$my_xls,$row);
+                self::AddHeader_CompanySheet($course_report->name,$course_report->outcomes,$course_report->zero_name,$levelOne,$levelTwo,get_string('no_data', 'report_manager'),$completed_before,$my_xls,$row);
             }//if_level_three
 
             $export->close();
@@ -2407,7 +2408,7 @@ class course_report {
                     $my_xls    = $export->add_worksheet($company->name);
 
                     /* Add Header - Company Course Report  - Level One */
-                    self::AddHeader_CompanySheet($course_report->name,$course_report->outcomes,$course_report->levelZero,$levelOne,$levelTwo,$company->name,$completed_before,$my_xls,$row);
+                    self::AddHeader_CompanySheet($course_report->name,$course_report->outcomes,$course_report->zero_name,$levelOne,$levelTwo,$company->name,$completed_before,$my_xls,$row);
 
                     /* Add Header Table     */
                     $row++;
@@ -2425,7 +2426,7 @@ class course_report {
                 $my_xls    = $export->add_worksheet($levelTwo->name);
 
                 /* Add Header - Company Course Report  - Level One */
-                self::AddHeader_CompanySheet($course_report->name,$course_report->outcomes,$course_report->levelZero,$levelOne,$levelTwo,get_string('no_data', 'report_manager'),$completed_before,$my_xls,$row);
+                self::AddHeader_CompanySheet($course_report->name,$course_report->outcomes,$course_report->zero_name,$levelOne,$levelTwo,get_string('no_data', 'report_manager'),$completed_before,$my_xls,$row);
             }//if_level_three
 
             $export->close();

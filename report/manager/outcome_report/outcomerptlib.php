@@ -207,6 +207,7 @@ class outcome_report {
                 $outcome_report->rpt                = $data_form['rpt'];
                 $outcome_report->completed_before   = $data_form[REPORT_MANAGER_COMPLETED_LIST];
                 $outcome_report->levelZero          = $data_form[MANAGER_OUTCOME_STRUCTURE_LEVEL .'0'];
+                $outcome_report->zero_name          = $data_form[MANAGER_OUTCOME_STRUCTURE_LEVEL .'0'];
                 /* Level One    */
                 $levelOne = new stdClass();
                 $levelOne->id                               = $data_form[MANAGER_OUTCOME_STRUCTURE_LEVEL .'1'];
@@ -1488,7 +1489,7 @@ class outcome_report {
                     $out_report .= '<ul class="level-list unlist">';
                         /* Level Zero       */
                         $out_report .= '<li>';
-                            $out_report .= '<h3>'. get_string('company_structure_level', 'report_manager', 0) . ': ' . CompetenceManager::GetCompany_Name($outcome_report->levelZero) . '</h3>';
+                            $out_report .= '<h3>'. get_string('company_structure_level', 'report_manager', 0) . ': ' . $outcome_report->zero_name . '</h3>';
                         $out_report .= '</li>';
                     $out_report .= '</ul>';
                     /* Expiration Before    */
@@ -1627,7 +1628,7 @@ class outcome_report {
                     $out_report .= '<ul class="level-list unlist">';
                         /* Level Zero       */
                         $out_report .= '<li>';
-                            $out_report .= '<h3>'. get_string('company_structure_level', 'report_manager', 0) . ': ' . CompetenceManager::GetCompany_Name($outcome_report->levelZero) . '</h3>';
+                            $out_report .= '<h3>'. get_string('company_structure_level', 'report_manager', 0) . ': ' . $outcome_report->zero_name . '</h3>';
                         $out_report .= '</li>';
                         /* Level One        */
                         $levelOne = array_shift($outcome_report->levelOne);
@@ -1761,7 +1762,7 @@ class outcome_report {
                     $out_report .= '<ul class="level-list unlist">';
                         /* Level Zero       */
                         $out_report .= '<li>';
-                            $out_report .= '<h3>'. get_string('company_structure_level', 'report_manager', 0) . ': ' . CompetenceManager::GetCompany_Name($outcome_report->levelZero) . '</h3>';
+                            $out_report .= '<h3>'. get_string('company_structure_level', 'report_manager', 0) . ': ' . $outcome_report->zero_name . '</h3>';
                         $out_report .= '</li>';
                         /* Level One        */
                         $levelOne = array_shift($outcome_report->levelOne);
@@ -1891,7 +1892,7 @@ class outcome_report {
                     $out_report .= '<ul class="level-list unlist">';
                         /* Level Zero       */
                         $out_report .= '<li>';
-                            $out_report .= '<h3>'. get_string('company_structure_level', 'report_manager', 0) . ': ' . CompetenceManager::GetCompany_Name($outcome_report->levelZero) . '</h3>';
+                            $out_report .= '<h3>'. get_string('company_structure_level', 'report_manager', 0) . ': ' . $outcome_report->zero_name . '</h3>';
                         $out_report .= '</li>';
                         /* Level One        */
                         $levelOne = array_shift($outcome_report->levelOne);
@@ -2370,7 +2371,7 @@ class outcome_report {
                         $myXls = $export->add_worksheet($levelTwo->name);
 
                         /* Add Header - Company Outcome Report  - Level One */
-                        self::AddHeader_CompanySheet($outcome_report->name,$outcome_report->description,$outcome_report->job_roles,$outcome_report->levelZero,$levelOne,$levelTwo,null,$completedBefore,$myXls,$row);
+                        self::AddHeader_CompanySheet($outcome_report->name,$outcome_report->description,$outcome_report->job_roles,$outcome_report->zero_name,$levelOne,$levelTwo,null,$completedBefore,$myXls,$row);
                         /* Ad Level Two */
                         if ($levelTwo->levelThree) {
                             /* Add Header Table */
@@ -2396,7 +2397,7 @@ class outcome_report {
                 $myXls = $export->add_worksheet($outcome_report->levelZero);
 
                 /* Add Header - Company Outcome Report  - Level One */
-                self::AddHeader_CompanySheet($outcome_report->name,$outcome_report->description,$outcome_report->job_roles,$outcome_report->levelZero,null,null,get_string('no_data', 'report_manager'),$completedBefore,$myXls,$row);
+                self::AddHeader_CompanySheet($outcome_report->name,$outcome_report->description,$outcome_report->job_roles,$outcome_report->zero_name,null,null,get_string('no_data', 'report_manager'),$completedBefore,$myXls,$row);
             }//if_levelOne
 
             $export->close();
@@ -2455,7 +2456,7 @@ class outcome_report {
                     $myXls = $export->add_worksheet($levelTwo->name);
 
                     /* Add Header - Company Outcome Report  - Level One */
-                    self::AddHeader_CompanySheet($outcome_report->name,$outcome_report->description,$outcome_report->job_roles,$outcome_report->levelZero,$levelOne,$levelTwo,null,$completedBefore,$myXls,$row);
+                    self::AddHeader_CompanySheet($outcome_report->name,$outcome_report->description,$outcome_report->job_roles,$outcome_report->zero_name,$levelOne,$levelTwo,null,$completedBefore,$myXls,$row);
 
                     /* Ad Level Two */
                     if ($levelTwo->levelThree) {
@@ -2481,7 +2482,7 @@ class outcome_report {
                 $myXls = $export->add_worksheet($levelOne->name);
 
                 /* Add Header - Company Outcome Report  - Level One */
-                self::AddHeader_CompanySheet($outcome_report->name,$outcome_report->description,$outcome_report->job_roles,$outcome_report->levelZero,$levelOne,null,get_string('no_data', 'report_manager'),$completedBefore,$myXls,$row);
+                self::AddHeader_CompanySheet($outcome_report->name,$outcome_report->description,$outcome_report->job_roles,$outcome_report->zero_name,$levelOne,null,get_string('no_data', 'report_manager'),$completedBefore,$myXls,$row);
             }//if_levelTwo
 
 
@@ -2546,7 +2547,7 @@ class outcome_report {
             /* Ad Level Two */
             if ($levelTwo->levelThree) {
                 /* Add Header - Company Outcome Report  - Level One */
-                self::AddHeader_CompanySheet($outcome_report->name,$outcome_report->description,$outcome_report->job_roles,$outcome_report->levelZero,$levelOne,$levelTwo,null,$completedBefore,$myXls,$row);
+                self::AddHeader_CompanySheet($outcome_report->name,$outcome_report->description,$outcome_report->job_roles,$outcome_report->zero_name,$levelOne,$levelTwo,null,$completedBefore,$myXls,$row);
 
                 /* Add Header Table */
                 $row++;
@@ -2564,7 +2565,7 @@ class outcome_report {
                 }//for_each_company
             }else {
                 /* Add Header - Company Outcome Report  - Level One */
-                self::AddHeader_CompanySheet($outcome_report->name,$outcome_report->description,$outcome_report->job_roles,$outcome_report->levelZero,$levelOne,$levelTwo,get_string('no_data', 'report_manager'),$completedBefore,$myXls,$row);
+                self::AddHeader_CompanySheet($outcome_report->name,$outcome_report->description,$outcome_report->job_roles,$outcome_report->zero_name,$levelOne,$levelTwo,get_string('no_data', 'report_manager'),$completedBefore,$myXls,$row);
             }//if_level_three
 
             $export->close();
@@ -2628,7 +2629,7 @@ class outcome_report {
                     $myXls    = $export->add_worksheet($company->name);
 
                     /* Add Header - Company Outcome Report  - Level One */
-                    self::AddHeader_CompanySheet($outcome_report->name,$outcome_report->description,$outcome_report->job_roles,$outcome_report->levelZero,$levelOne,$levelTwo,$company->name,$completedBefore,$myXls,$row);
+                    self::AddHeader_CompanySheet($outcome_report->name,$outcome_report->description,$outcome_report->job_roles,$outcome_report->zero_name,$levelOne,$levelTwo,$company->name,$completedBefore,$myXls,$row);
 
                     /* Add Header Table     */
                     $row++;
@@ -2646,7 +2647,7 @@ class outcome_report {
                 $myXls    = $export->add_worksheet($levelTwo->name);
 
                 /* Add Header - Company Outcome Report  - Level One */
-                self::AddHeader_CompanySheet($outcome_report->name,$outcome_report->description,$outcome_report->job_roles,$outcome_report->levelZero,$levelOne,$levelTwo,get_string('no_data', 'report_manager'),$completedBefore,$myXls,$row);
+                self::AddHeader_CompanySheet($outcome_report->name,$outcome_report->description,$outcome_report->job_roles,$outcome_report->zero_name,$levelOne,$levelTwo,get_string('no_data', 'report_manager'),$completedBefore,$myXls,$row);
             }//if_level_three
 
             $export->close();
