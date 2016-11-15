@@ -164,7 +164,7 @@ class course_report {
                     /* Get information to display by level          */
                     /* Level zero    - That's common for all levels  */
                     $course_report->levelZero   = $data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'0'];
-                    $course_report->zero_name   = $data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'0'];
+                    $course_report->zero_name   = CompetenceManager::GetCompany_Name($data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'0']);
                     $USER->levelZero            = $course_report->levelZero;
                     $USER->courseReport         = $course_id;
 
