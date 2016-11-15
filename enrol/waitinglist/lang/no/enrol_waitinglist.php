@@ -219,9 +219,11 @@ $string['request_remainder']    = 'Søknaden din ble innsendt <b>{$a}</b>. Den e
 
 $string['err_link'] = 'OOPS - søknaden er allerede behandlet. Lenken du klikket på kan bare benyttes en gang.';
 
-$string['request_approved']   = '<p>Din søknad om kurset {$a->homepage} ble godkjent av lederen din {$a->sent}.<p><p>Dette er en automatisk generert e-post fra {$a->site} og du kan ikke svare på e-posten.</p>';
-$string['request_rejected']   = '<p>Din søknad om kurset {$a->homepage} ble avslått av lederen din {$a->sent}.</p>
-                                 <p>Om søknaden ble avslått ved en feil, bør du ta kontakt med lederen din og søke på nytt.</p><p>(Dette er en automatisk generert e-post fra {$a->site} og du kan ikke svare på e-posten.)</p>';
+$string['request_approved']       = '<p>Din søknad om kurset {$a->homepage} ble godkjent av lederen din {$a->sent}.<p><p>Dette er en automatisk generert e-post fra {$a->site} og du kan ikke svare på e-posten.</p>';
+$string['request_rejected']       = '<p>Din søknad om kurset {$a->homepage} ble avslått av lederen din {$a->sent}.</p>
+                                    <p>Om søknaden ble avslått ved en feil, bør du ta kontakt med lederen din og søke på nytt.</p><p>(Dette er en automatisk generert e-post fra {$a->site} og du kan ikke svare på e-posten.)</p>';
+$string['request_rejected_enrol'] = '<p>Din søknad om kurset ble avslått av lederen din {$a->sent}.</p>
+                                     <p>Om søknaden ble avslått ved en feil, bør du ta kontakt med lederen din og søke på nytt.</p>';
 
 $string['approved_mnd'] = 'Søknaden om kursplass på kurset: {$a->homepage} for brukeren: <b>{$a->user}</b> er nå godkjent.';
 $string['rejected_mnd'] = 'Søknaden om kursplass på kurset: {$a->homepage} for brukeren: <b>{$a->user}</b> er nå avslått.';

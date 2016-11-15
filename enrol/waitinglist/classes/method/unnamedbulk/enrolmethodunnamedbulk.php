@@ -309,7 +309,7 @@ class enrolmethodunnamedbulk extends \enrol_waitinglist\method\enrolmethodbase {
             $rejected->sent = null;
             if ($rejected->sent = \Approval::IsRejected($USER->id,$waitinglist->courseid,$waitinglist->id)) {
                 $rejected->sent = userdate($rejected->sent,'%d.%m.%Y', 99, false);
-                return get_string('request_rejected','enrol_waitinglist',$rejected);
+                return get_string('request_rejected_enrol','enrol_waitinglist',$rejected);
             }
         }//Approval_Method
 

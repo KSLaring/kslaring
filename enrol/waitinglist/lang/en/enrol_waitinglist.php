@@ -226,9 +226,11 @@ $string['request_remainder']    = 'Your request was applied on <b>{$a}</b>. It h
 
 $string['err_link'] = 'Sorry, link not valid. Please, contact with administrator. ';
 
-$string['request_approved']   = 'Your request for the course {$a->homepage} was approved on {$a->sent}.';
-$string['request_rejected']   = '<p>Your request for the course {$a->homepage} was rejected on {$a->sent}.</p>
-                                 <p>Please contact with your manager if there is wrong and if you can apply again if it is necessary.</p>';
+$string['request_approved']     = 'Your request for the course {$a->homepage} was approved on {$a->sent}.';
+$string['request_rejected']     = '<p>Your request for the course {$a->homepage} was rejected on {$a->sent}.</p>
+                                   <p>Please contact with your manager if there is wrong and if you can apply again if it is necessary.</p>';
+$string['request_rejected_enrol'] = '<p>Your request for the course was rejected on {$a->sent}.</p>
+                                     <p>Please contact with your manager if there is wrong and if you can apply again if it is necessary.</p>';
 
 $string['approved_mnd'] = 'The request for the course {$a->homepage} and for the user <b>{$a->user}</b> has been approved successfully.';
 $string['rejected_mnd'] = 'The request for the course {$a->homepage} and for the user <b>{$a->user}</b> has been rejected successfully.';
