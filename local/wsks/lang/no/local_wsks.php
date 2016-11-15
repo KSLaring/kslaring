@@ -10,14 +10,14 @@
  * @author          eFaktor     (fbv)
  */
 
-$string['pluginname']   = 'KSL Laring Integrasjon';
+$string['pluginname']   = 'KS Læring-integrasjon';
 
 $string['feide_settings']   = 'Feide-innstillinger';
 $string['feide_site']       = 'Feide login-server';
 $string['feide_site_desc']  = 'Logg inn via Feide';
 $string['feide_service']    = 'Feide Service';
 $string['feide_token']      = 'Feide Token';
-$string['slave_settings']   = 'Slave Systems Integration';
+$string['slave_settings']   = 'Slave-tjeneste integrasjon';
 
 $string['FEIDE_ERR_NOT_VALID']  = 'Dette er ikke en gyldig bruker, vennligst kontakt administrator.';
 $string['FEIDE_ERR_PROCESS']    = 'Det har skjedd en feil under innloggingen. Vennligst kontakt administrator.';
@@ -30,29 +30,29 @@ $string['ADFS_ERROR_USER']      = 'Brukerens profildata er ugyldige. Vennligst s
 
 $string['invalid_email'] = 'Beklager, brukerkontoen din har en ugyldig epostadresse. Vennligst oppdater epostadressen din.';
 
-$string['wsks:manage']    = 'Manage Slaves Systems';
+$string['wsks:manage']    = 'Administrer slave-systemer';
 
-$string['slave_service']    = 'Slave service';
+$string['slave_service']    = 'Slave-tjeneste';
 
-$string['lst_slaves']       = 'Slaves systems';
-$string['add_slave']        = 'Add slave';
-$string['remove_slave']     = 'Remove slave';
-$string['update_slaves']    = 'Update slaves systems';
+$string['lst_slaves']       = 'Slave-tjenester';
+$string['add_slave']        = 'Legg til slave';
+$string['remove_slave']     = 'Fjern slave';
+$string['update_slaves']    = 'Oppdater slave-tjenester';
 
-$string['new_slave']    = 'New slave system';
-$string['del_slave']    = 'Delete slave system';
-$string['site']         = 'Site';
+$string['new_slave']    = 'Ny slave-tjeneste';
+$string['del_slave']    = 'Slett slave-tjeneste';
+$string['site']         = 'Portal';
 $string['token']        = 'Token';
 
-$string['exist_slave']          = 'That site already exists';
-$string['delete_slave_sure']    = 'Are you sure that you want to delete <strong>{$a}</strong> site?';
-$string['delete_error']         = 'Sorry, There has been an error during the process and the site . Please, contact your Moodle Administrator.';
-$string['slave_deleted']        = 'The site has been deleted';
-$string['no_data']              = 'There is no slave system added.';
+$string['exist_slave']          = 'Portalen er allerede lagt til';
+$string['delete_slave_sure']    = 'Er du sikker på at du vil slette <strong>{$a}</strong>-portalen?';
+$string['delete_error']         = 'Beklager, det har oppstått en feil under oppdateringen. Vennligst kontakt Moodle Administrator.';
+$string['slave_deleted']        = 'Portalen er blitt fjernet fra listen';
+$string['no_data']              = 'Det er ikke lagt til noen slave-tjenester.';
 
-$string['services'] = 'Services';
-$string['select']   = 'Select one...';
+$string['services'] = 'Tjenester';
+$string['select']   = 'Velg en...';
 
-$string['err_no_domains']   = "Sorry, there is no slave system to be updated.";
-$string['err_no_service']   = "Sorry, the service to update does not exist";
-$string['err_none']         = 'All slaves systems have been updated';
+$string['err_no_domains']   = "Beklager, men det finnes ingen slave-tjenester å oppdatere.";
+$string['err_no_service']   = "Beklager, tjenesten som skal oppdateres eksisterer ikke.";
+$string['err_none']         = 'Alle slave-tjenester er blitt oppdatert!';
