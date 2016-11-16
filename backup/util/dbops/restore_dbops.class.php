@@ -1679,12 +1679,25 @@ abstract class restore_dbops {
 
         return $dbrec;
     }
-
+    
     /**
-     * Given on courseid, fullname and shortname, calculate the correct fullname/shortname to avoid dupes
+     * Given on courseid, fullname and shortname, calculate the correct fullname/shortname to avoid dupes 
+     * 
+     * @param $courseid
+     * @param $fullname
+     * @param $shortname
+     * @return array
+     * @throws coding_exception
+     * @throws dml_missing_record_exception
+     * 
+     * @updateDate  16/11/2016
+     * @author      eFaktor (fbv)
+     * 
+     * Description
+     * Check if there is a name come in from friadmin
      */
     public static function calculate_course_names($courseid, $fullname, $shortname) {
-        global $CFG, $DB;
+        global $CFG, $DB,$SESSION;
 
         $currentfullname = '';
         $currentshortname = '';
@@ -1707,6 +1720,22 @@ abstract class restore_dbops {
         } while ($coursefull || $courseshort);
 
         // Return results
+
+        /**
+         * @updateDate  16/11/2016
+         * @author      eFaktor     (fbv)
+         * 
+         * Description 
+         * Select name come in from friadmin
+         */
+        if (isset($SESSION->friadmin_fullname)) {
+            $currentfullname = $SESSION->friadmin_fullname;
+        }
+        if (isset($SESSION->friadmin_shortname)) {
+            $currentshortname = $SESSION->friadmin_shortname;
+        }
+
+        
         return array($currentfullname, $currentshortname);
     }
 
