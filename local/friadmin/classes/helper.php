@@ -752,7 +752,7 @@ class local_friadmin_helper {
      */
     protected static function restore_course($cid, $options, $withusers = 1, $forcebackup = false) {
         /* Variables */
-        global $CFG, $DB;
+        global $CFG, $DB,$SESSION;
         $error      = '';
         $courseid   = null;
         $component  = 'backup';
@@ -801,17 +801,27 @@ class local_friadmin_helper {
             $transaction = $DB->start_delegated_transaction();
 
             // Create new course.
+            $courseid = restore_dbops::create_new_course(fix_utf8($sourcefile->get_filename()),
+                                                         'restored-' . $backupid, $options['categoryid']);
+
             /**
-             * @updateDate  15/11/2016
+             * @updateDate  16/11/2016
              * @author      eFaktor     (fbv)
              *
              * Description
-             * Restore the course with the correct name
+             * Save fullname and shortname to restore the course
+             * and send welcome emails with the right name
              */
-            $courseid = restore_dbops::create_new_course(fix_utf8($options['fullname']),
-                fix_utf8($options['shortname']), $options['categoryid']);
-            //$courseid = restore_dbops::create_new_course(fix_utf8($sourcefile->get_filename()),
-            //                                             'restored-' . $backupid, $options['categoryid']);
+            if (!isset($SESSION->friadmin_fullname)) {
+                $SESSION->friadmin_fullname = null;
+            }//fullname
+
+            if (!isset($SESSION->friadmin_shortname)) {
+                $SESSION->friadmin_shortname = null;
+            }//shortname
+
+            $SESSION->friadmin_fullname     = fix_utf8($options['fullname']);
+            $SESSION->friadmin_shortname    = fix_utf8($options['shortname']);
 
 
             // Restore backup into course.
@@ -825,6 +835,8 @@ class local_friadmin_helper {
             if ($controller->execute_precheck()) {
                 $controller->execute_plan();
             } else {
+                unset($SESSION->friadmin_fullname);
+                unset($SESSION->friadmin_shortname);
                 $error .= 'Precheck fails for ' . $sourcefile->get_filename() . ' ... skipping' . "<br>\n";
                 $results = $controller->get_precheck_results();
                 foreach ($results as $type => $messages) {
@@ -844,6 +856,8 @@ class local_friadmin_helper {
             }
 
             // Commit and clean up.
+            unset($SESSION->friadmin_fullname);
+            unset($SESSION->friadmin_shortname);
             $transaction->allow_commit();
             unset($transaction);
             $controller->destroy();
