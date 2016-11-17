@@ -592,8 +592,7 @@ class FS_MAPPING {
                      FROM			{fs_imp_jobroles}	fs
                         LEFT JOIN	{ksfs_jobroles}		ksfs	ON 	ksfs.fsjobrole = fs.stillingskode
                                                                 AND	ksfs.ksjobrole = :job_role
-                     WHERE  	ksfs.id IS NULL
-                        AND     fs.imported = 0 ";
+                     WHERE  	ksfs.id IS NULL ";
 
             /* Search   */
             if ($search) {

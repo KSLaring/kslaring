@@ -39,7 +39,7 @@ if ($hassiteconfig) {
                                                 '',
                                                 get_string('fellesdata_default_days','local_fellesdata'),PARAM_TEXT,8));
     /* System   */
-    $srcOptions = array('0' => 'TARDIS',
+    $srcOptions = array('0' => 'ADFS',
                         '1' => 'AGRESSO',
                         '2' => 'VISMA');
     $settings->add(new admin_setting_configselect('local_fellesdata/fs_source',
