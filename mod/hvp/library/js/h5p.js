@@ -691,7 +691,13 @@ H5P.getPath = function (path, contentId) {
 
   var prefix;
   if (contentId !== undefined) {
-    prefix = H5PIntegration.url + '/content/' + contentId;
+    // Check for custom override URL
+    if (H5PIntegration.contents !== undefined) {
+      prefix = H5PIntegration.contents['cid-' + contentId].contentUrl;
+    }
+    if (!prefix) {
+      prefix = H5PIntegration.url + '/content/' + contentId;
+    }
   }
   else if (window.H5PEditor !== undefined) {
     prefix = H5PEditor.filesPath;
@@ -1637,7 +1643,7 @@ H5P.shuffleArray = function (array) {
  *   Reported time consumption/usage
  */
 H5P.setFinished = function (contentId, score, maxScore, time) {
-  if (H5PIntegration.postUserStatistics === true) {
+  if (typeof score === 'number' && H5PIntegration.postUserStatistics === true) {
     /**
      * Return unix timestamp for the given JS Date.
      *

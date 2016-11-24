@@ -93,6 +93,9 @@ if (empty($export)) {
     $content['disable'] |= \H5PCore::DISABLE_DOWNLOAD;
 }
 
+// Find cm context
+$context = \context_module::instance($cm->id);
+
 // Add JavaScript settings for this content.
 $cid = 'cid-' . $content['id'];
 $settings['contents'][$cid] = array(
@@ -103,6 +106,7 @@ $settings['contents'][$cid] = array(
     'title' => $content['title'],
     'disable' => $content['disable'],
     'url' => "{$CFG->httpswwwroot}/mod/hvp/view.php?id={$id}",
+    'contentUrl' => "{$CFG->httpswwwroot}/pluginfile.php/{$context->id}/mod_hvp/content/" . $content['id'],
     'contentUserData' => array(
         0 => \mod_hvp\content_user_data::load_pre_loaded_user_data($content['id'])
     )
@@ -142,6 +146,7 @@ $PAGE->requires->data_for_js('H5PIntegration', $settings, true);
 
 // Print page HTML.
 echo $OUTPUT->header();
+echo $OUTPUT->heading(format_string($content['title']));
 echo '<div class="clearer"></div>';
 
 // Print any messages.
@@ -167,7 +172,9 @@ if ($embedtype === 'div') {
         '" style="height:1px" src="about:blank" frameBorder="0" scrolling="no"></iframe></div>';
 }
 
-$context = \context_module::instance($id);
+// Find cm context
+$context = \context_module::instance($cm->id);
+
 // Trigger module viewed event.
 $event = \mod_hvp\event\course_module_viewed::create(array(
     'objectid' => $cm->instance,
