@@ -20,7 +20,7 @@ $string['fellesdata_settings']      = 'Fellesdata-innstillinger';
 $string['fellesdata_end']           = 'API for import fra Fellesdata';
 $string['idnumber_end']             = 'Personnummer-endepunkt';
 $string['fellesdata_source']        = 'Kilde';
-$string['fellesdata_source_desc']   = 'Fellesdata, Agresso, Visma...';
+$string['fellesdata_source_desc']   = 'TARDIS, Agresso, Visma';
 
 $string['ks_settings']  = 'KS Læring-innstillinger';
 $string['ks_end_point'] = 'KS Læring-adresse';
@@ -89,3 +89,14 @@ $string['jr_to_connect']        = 'Job roles to connect';
 
 $string['fellesdata_days']          = 'Import days';
 $string['fellesdata_default_days']  = '4';
+
+$string['nav_unmap']                = 'Unmap';
+$string['nav_unmap_org']            = 'Unmap organizations';
+$string['header_unmap_fellesdata']  = 'Fellesdata Unmap';
+$string['unmap_opt']                = 'Unmap Options';
+$string['level_unmap']              = 'Level to unmap';
+
+$string['to_unmapp']    = 'To Unmap';
+$string['mapped_with']  = 'Mapped with';
+$string['fs_company']   = 'FS Company';
+$string['none_mapped']  = 'There is no company mapped yet';
