@@ -19,11 +19,11 @@ require_login();
 
 /* PARAMS   */
 $level          = required_param('le',PARAM_INT);
+$start          = 0;
+$step           = 5;
 $pattern        = null;
 $url            = new moodle_url('/local/fellesdata/unmap/unmap_org.php',array('le' => $level));
 $return         = new moodle_url('/local/fellesdata/unmap/unmap.php');
-$start          = 0;
-$step           = 5;
 $fsMapped       = null;
 $total          = 0;
 $infoMapped     = null;
@@ -65,6 +65,11 @@ if (!isset($SESSION->FS_COMP)) {
     $SESSION->FS_COMP = array();
 }//isset
 
+if (!isset($SESSION->start_block)) {
+    $SESSION->start_block = 0;
+}else {
+    $start = $SESSION->start_block;
+}
 
 list($fsMapped,$total) = FS_UnMap::FSCompaniesMapped($level,$pattern,$start,$step);
 if ($total) {
@@ -72,30 +77,37 @@ if ($total) {
     if ($form->is_cancelled()) {
         unset($SESSION->FS_COMP);
         unset($SESSION->notIn);
+        unset($SESSION->start_block);
 
         $_POST = array();
         redirect($return);
     }else if ($data = $form->get_data()) {
-        /* Unmap process */
-        $toUnMap = array();
-        foreach ($fsMapped as $infoMapped) {
-            /* Referencia   */
-            $ref = "ID_FS_KS_" . $infoMapped->id;
+        if ((isset($data->submitbutton) && ($data->submitbutton))) {
+            /* Unmap process */
+            $toUnMap = array();
+            foreach ($fsMapped as $infoMapped) {
+                /* Referencia   */
+                $ref = "ID_FS_KS_" . $infoMapped->id;
+
+                /**
+                 * Companies that have to be unmapped
+                 */
+                if (isset($data->$ref)) {
+                    $toUnMap[$infoMapped->id] = $infoMapped;
+                }//if_rdf
+            }//for_rdo
 
             /**
-             * Companies that have to be unmapped
+             * Unmap companies
              */
-            if (isset($data->$ref)) {
-                $toUnMap[$infoMapped->id] = $infoMapped;
-            }//if_rdf
-        }//for_rdo
-
-        /**
-         * Unmap companies
-         */
-        if ($toUnMap) {
-            FS_UnMap::UnMap($toUnMap);
+            if ($toUnMap) {
+                FS_UnMap::UnMap($toUnMap);
+            }
+        }else if ((isset($data->submitbutton2) && ($data->submitbutton2))) {
+            /* Next - First Block no data to unmap  */
+            $SESSION->start_block +=  $step;
         }
+
         redirect($url);
     }//if_Else    
 }//if_total
@@ -107,7 +119,7 @@ echo $OUTPUT->heading(get_string('nav_unmap_org', 'local_fellesdata'));
 if ($total) {
     $form->display();
 }else {
-    echo $OUTPUT->notification(get_string('none_mapped','local_fellesdata'), 'notifysuccess');
+    echo $OUTPUT->notification(get_string('none_unmapped','local_fellesdata'), 'notifysuccess');
     echo $OUTPUT->continue_button($return);
 }
 
