@@ -511,15 +511,17 @@ class WS_FELLESDATA {
              */
             if ($toUnMap) {
                 foreach ($toUnMap as $infoOrg) {
-                    $unmapped = $DB->delete_records('report_gen_companydata',array('id' => $infoOrg->kscompany));
-                    if ($unmapped) {
-                        $info = new stdClass();
-                        $info->unmapped     = true;
-                        $info->key          = $infoOrg->id;
+                    $dbLog .= " ID Record: " . $infoOrg->id . "\n";
+                    $dbLog .= " KSCOMPANY: " . $infoOrg->kscompany . "\n";
+                    //$unmapped = $DB->delete_records('report_gen_companydata',array('id' => $infoOrg->kscompany));
+                    //if ($unmapped) {
+                    //    $info = new stdClass();
+                    //    $info->unmapped     = true;
+                    //    $info->key          = $infoOrg->id;
 
                         /* Add */
-                        $orgUnMapped[$infoOrg->id] = $info;
-                    }//if_unmapped
+                     //   $orgUnMapped[$infoOrg->id] = $info;
+                    //}//if_unmapped
                 }//for_toUnMap
             }//if_toUnMap
 
