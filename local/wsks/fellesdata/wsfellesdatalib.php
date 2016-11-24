@@ -500,6 +500,7 @@ class WS_FELLESDATA {
         $orgUnMapped    = array();
         $info           = null;
         $infoOrg        = null;
+        $objOrg         = null;
         $dbLog          = null;
 
         try {
@@ -511,8 +512,11 @@ class WS_FELLESDATA {
              */
             if ($toUnMap) {
                 foreach ($toUnMap as $infoOrg) {
-                    $dbLog .= " ID Record: " . $infoOrg->id . "\n";
-                    $dbLog .= " KSCOMPANY: " . $infoOrg->kscompany . "\n";
+                    /* Convert to object */
+                    $objOrg = (Object)$infoOrg;
+
+                    $dbLog .= " ID Record: " . $objOrg->id . "\n";
+                    $dbLog .= " KSCOMPANY: " . $objOrg->kscompany . "\n";
                     //$unmapped = $DB->delete_records('report_gen_companydata',array('id' => $infoOrg->kscompany));
                     //if ($unmapped) {
                     //    $info = new stdClass();
