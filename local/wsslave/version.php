@@ -1,16 +1,15 @@
 <?php
 /**
- * Fellesdata Integration - Version
+ * Slaves Integration - Version file
  *
  * @package         local
- * @subpackage      fellesdata
+ * @subpackage      wsslave
  * @copyright       2014        eFaktor {@link http://www.efaktor.no}
  *
- * @creationDate    01/02/2016
+ * @creationDate    07/11/2016
  * @author          eFaktor     (fbv)
  *
  */
-
-$plugin->version    =  '2016111700';         /* The plugin current version (DATE: YYYYMMDDXX) */
-$plugin->component  =  'local_fellesdata';
+$plugin->version    =  '2016110900';         /* The plugin current version (DATE: YYYYMMDDXX) */
+$plugin->component  =  'local_wsslave';
 //$plugin->cron       =  0;                  // Cron interval 1 day. //60; //(300 secs - 5 min)

@@ -30,6 +30,10 @@ define('TEST_FS_SYNC_MANAGERS_REPORTERS',10);
 define('TEST_FS_SYNC_COMPETENCE',11);
 define('TEST_FS_SYNC_FS_USERS',12);
 
+define('TEST_FS_UNMAP_COMPENTECE',14);
+define('TEST_FS_UNMAP_MANAGERS_REPORTERS',15);
+define('TEST_FS_UNMAP_ORGANIZATION',16);
+
 class FELLESDATA_CRON {
     /**********/
     /* PUBLIC */
@@ -82,6 +86,26 @@ class FELLESDATA_CRON {
                 $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' START Users Competence to delete FS Synchronization. ' . "\n";
                 self::UserCompetence_Synchronization($pluginInfo,KS_USER_COMPETENCE,true);
            }
+
+            /*
+             * Unmap process
+             * 1 - Unmap user competence
+             * 2 - Unmap managers reporters
+             * 3 - Unmap organizations
+             */
+            if (!$fstExecution) {
+                /* Unmap user competence    */
+                $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' START  UNMAP User competence. ' . "\n";
+                self::UnMap_UserCompetence($pluginInfo,KS_UNMAP_USER_COMPETENCE);
+
+                /* Unmap Managers           */
+                $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' START  UNMAP Manager/Reporter. ' . "\n";
+                self::UnMap_ManagersReporters($pluginInfo,KS_MANAGER_REPORTER);
+
+                /* Unmap organizations      */
+                $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' START  UNMAP Organizations. ' . "\n";
+                self::UnMap_Organizations($pluginInfo,KS_UNMAP_COMPANY);
+            }//fstExecution_tounmap
 
             /* Log  */
             $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH FELLESDATA CRON . ' . "\n";
@@ -174,6 +198,21 @@ class FELLESDATA_CRON {
                     echo "Synchronization Users FS";
                     /* Synchronization Users Accounts   */
                     self::UsersFS_Synchronization($pluginInfo);
+
+                    break;
+                case TEST_FS_UNMAP_COMPENTECE:
+                    echo "UNMAP USERS COMPETENCE";
+                    self::UnMap_UserCompetence($pluginInfo,KS_UNMAP_USER_COMPETENCE);
+
+                    break;
+                case TEST_FS_UNMAP_MANAGERS_REPORTERS:
+                    echo "UNMAP  MANAGERS REPORTERS";
+                    self::UnMap_ManagersReporters($pluginInfo,KS_MANAGER_REPORTER);
+
+                    break;
+                case TEST_FS_UNMAP_ORGANIZATION:
+                    echo "UNMAP ORGANIZATIONS";
+                    self::UnMap_Organizations($pluginInfo,KS_UNMAP_COMPANY);
 
                     break;
                 default:
@@ -951,6 +990,59 @@ class FELLESDATA_CRON {
 
     /**
      * @param           $pluginInfo
+     * @param           $service
+     *
+     * @throws          Exception
+     *
+     * @creationDate    23/11/2016
+     * @author          unmap companies
+     *
+     * Description
+     * Un map organizations between FS & KS
+     */
+    private static function UnMap_Organizations($pluginInfo,$service) {
+        /* Variables */
+        global $CFG;
+        $toUnMap    = null;
+        $response   = null;
+        $dbLog      = null;
+
+        try {
+            /* Log  */
+            $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' START Unmap FS/KS Companies . ' . "\n";
+
+            /* Get companies to unmap   */
+            $toUnMap = FSKS_COMPANY::CompaniesToUnMap();
+
+            if ($toUnMap) {
+                /* Call web service    */
+                if ($toUnMap) {
+                    $response = self::ProcessKSService($pluginInfo,$service,$toUnMap);
+                    if ($response['error'] == '200') {
+                        FSKS_COMPANY::UnMap_CompaniesKSFS($toUnMap,$response['orgUnMapped']);
+                    }else {
+                        /* Log  */
+                        $dbLog  .= "ERROR WS: " . $response['error'] . "\n\n";
+                        $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' Finish ERROR Unmap FS/KS Companies . ' . "\n";
+                    }//if_no_error
+                }//if_toSynchronize
+            }//if_toUnMap
+
+            /* Log  */
+            $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH Unmap FS/KS Companies . ' . "\n";
+            error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
+        }catch (Exception $ex) {
+            /* Log  */
+            $dbLog  = $ex->getMessage() . "\n" . "\n";
+            $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' Finish ERROR Unmap FS/KS Companies . ' . "\n";
+            error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
+
+            throw $ex;
+        }//try_catch
+    }//UnMap_Organizations
+
+    /**
+     * @param           $pluginInfo
      * 
      * @throws          Exception
      * 
@@ -1022,7 +1114,7 @@ class FELLESDATA_CRON {
      */
     private static function UserCompetence_Synchronization($pluginInfo,$service,$toDelete = false) {
         /* Variables    */
-        global $DB,$CFG;
+        global $CFG;
         $toSynchronize  = null;
         $response       = null;
         $dbLog          = null;
@@ -1068,6 +1160,68 @@ class FELLESDATA_CRON {
      *
      * @throws          Exception
      *
+     * @creationDate    23/11/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Unmap competence (company) from the users
+     */
+    private static function UnMap_UserCompetence($pluginInfo,$service) {
+        /* Variables */
+        global $CFG;
+        $toUnMap    = null;
+        $response   = null;
+        $dbLog      = null;
+        $start      = 0;
+        $limit      = 100;
+        
+        try {
+            /* Log  */
+            $dbLog = userdate(time(),'%d.%m.%Y', 99, false) . " Start UNAMP User Competence Synchronization. " . "\n\n";
+            
+            /* Get Total Competence to Unmap    */
+            $total = FSKS_USERS::GetTotal_UsersCompetence_ToUnMap();
+            if ($total) {
+                /*
+                 * Get users competence that have to be unmapped
+                 */
+                for ($i=0;$i<=$total;$i=$i+100) {
+                    $toUnMap = FSKS_USERS::UserCompetence_ToUnMap($start,$limit);
+                    
+                    /* Call Web Service  */
+                    if ($toUnMap) {
+                        $response = self::ProcessKSService($pluginInfo,$service,$toUnMap);
+                        if ($response['error'] == '200') {
+                            /* Un Map User Competence   */
+                            FSKS_USERS::UnMap_UserCompetenceFS($toUnMap,$response['usersUnMapped']);
+                        }else {
+                            /* Log  */
+                            $dbLog  = "ERROR WS: " . $response['message'] . "\n" . "\n";
+                            $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' Finish ERROR UNMAP User Competence Synchronization . ' . "\n";
+                            error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
+                        }//if_no_error
+                    }//if_toSynchronize
+                }//for
+            }//if_total
+
+            $dbLog .= " FINISH UNAMP User Competence Synchronization. " . "\n\n";
+            error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
+        }catch (Exception $ex) {
+            /* Log  */
+            $dbLog  = $ex->getMessage() . "\n" . "\n";
+            $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' Finish ERROR UNMAP User Competence Synchronization . ' . "\n";
+            error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
+            
+            throw $ex;
+        }//try_catch
+    }//UnMap_UserCompetence
+    
+    /**
+     * @param           $pluginInfo
+     * @param           $service
+     *
+     * @throws          Exception
+     *
      * @creationDate    14/06/2016
      * @author          eFaktor     (fbv)
      *
@@ -1076,7 +1230,7 @@ class FELLESDATA_CRON {
      */
     private static function ManagerReporter_Synchronization($pluginInfo,$service) {
         /* Variables    */
-        global $DB,$CFG;
+        global $CFG;
         $toSynchronize  = null;
         $response       = null;
         $dbLog          = null;
@@ -1124,6 +1278,67 @@ class FELLESDATA_CRON {
             throw $ex;
         }//try_catch
     }//ManagerReporter_Synchronization
+
+    /**
+     * @param           $pluginInfo
+     * @param           $service
+     * 
+     * @throws          Exception
+     * 
+     * @creationDate    23/11/2016
+     * @author          eFaktor     (fbv)
+     * 
+     * Description
+     * Unmap manager/reporter form the company
+     */
+    private static function UnMap_ManagersReporters($pluginInfo,$service) {
+        /* Variables    */
+        global $CFG;
+        $toUnMap  = null;
+        $response = null;
+        $dbLog    = null;
+        $total    = null;
+        $start    = 0;
+        $limit    = 100;
+
+        try {
+            /* Log  */
+            $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' START UnMap Manager/Reporter . ' . "\n";
+
+            /* Get total */
+            $total = FSKS_USERS::GetTotalManagersReporters_ToUnMap();
+            if ($total) {
+                for ($i=0;$i<=$total;$i=$i+100) {
+                    /* Get Info to unmap    */
+                    $toUnMap = FSKS_USERS::GetManagersReporters_ToUnMap($start,$limit);
+
+                    /* Call Web Service  */
+                    if ($toUnMap) {
+                        $response = self::ProcessKSService($pluginInfo,$service,$toUnMap);
+                        if ($response['error'] == '200') {
+                            /* Synchronize Manager Reporters   */
+                            FSKS_USERS::UnMap_ManagerReporterFS($toUnMap,$response['managerReporter']);
+                        }else {
+                            /* Log  */
+                            $dbLog  .= "ERROR WS: " . $response['message'] . "\n" . "\n";
+                            $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' Finish ERROR Manaer Reporter Synchronization . ' . "\n";
+                        }//if_no_error
+                    }//if_toSynchronize
+                }//for_total
+            }//if_total
+            
+            /* Log  */
+            $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH UnMap Manager/Reporter . ' . "\n";
+            error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
+        }catch (Exception $ex) {
+            /* Log  */
+            $dbLog  = $ex->getMessage() . "\n" . "\n";
+            $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' Finish ERROR UnMap Manager Reporter . ' . "\n";
+            error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
+
+            throw $ex;
+        }//try_catch
+    }//UnMap_ManagersReporters
 
     /*******************/
     /* Extra Functions */
