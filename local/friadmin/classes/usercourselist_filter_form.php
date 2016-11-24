@@ -28,7 +28,7 @@ require_once($CFG->dirroot . '/lib/formslib.php');
  * @license         http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class local_friadmin_usercourselist_filter_form extends \moodleform {
-    function definition() {
+    public function definition() {
         global $SESSION;
         $mform = $this->_form;
         $customdata = $this->_customdata;
@@ -86,9 +86,9 @@ class local_friadmin_usercourselist_filter_form extends \moodleform {
         // The third form row.
         $elementgroup = array();
 
-        $defaultText = get_string('selname', 'local_friadmin');
+        $defaulttext = get_string('selname', 'local_friadmin');
         $attributes = array(
-            'placeholder' => $defaultText
+            'placeholder' => $defaulttext
         );
         $textinput = $mform->createElement('text', 'selname',
             get_string('selname', 'local_friadmin'), $attributes);
@@ -100,20 +100,14 @@ class local_friadmin_usercourselist_filter_form extends \moodleform {
         $mform->addHelpButton('selectrowthree', 'coursename', 'local_friadmin');
 
         $elementgroup = array();
-        $classRoom = $mform->createElement('checkbox', 'classroom', '',
+        $classroom = $mform->createElement('checkbox', 'classroom', '',
             get_string('only_classroom', 'local_friadmin'));
-        $elementgroup[] = $classRoom;
+        $elementgroup[] = $classroom;
         $mform->setDefault('classroom', false);
-        /**
-         * @updateDate  02/12/2015
-         * @author      eFaktor     (fbv)
-         *
-         * Description
-         * Add checkbox -- Only eLearnign Course
-         */
-        $eLearning = $mform->createElement('checkbox', 'elearning', '',
+        // Add checkbox -- Only eLearnign Course.
+        $elearning = $mform->createElement('checkbox', 'elearning', '',
             get_string('only_elearning', 'local_friadmin'));
-        $elementgroup[] = $eLearning;
+        $elementgroup[] = $elearning;
         $mform->setDefault('elearning', false);
 
         $elementgroup[] = $mform->createElement('submit', 'submitbutton',

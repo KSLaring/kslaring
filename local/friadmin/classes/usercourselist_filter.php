@@ -14,13 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-//namespace local_friadmin;
-
 defined('MOODLE_INTERNAL') || die;
-
-//use renderable;
-//use renderer_base;
-//use stdClass;
 
 /**
  * Class containing data for the local_friadmin usercourse_list selection area
@@ -33,28 +27,25 @@ defined('MOODLE_INTERNAL') || die;
  */
 class local_friadmin_usercourselist_filter extends local_friadmin_widget implements renderable {
 
-    /* Level One    */
+    // Level One.
     protected $userleveloneids = array();
 
-    /**
-     * Categories connected with user
-     */
-    protected $myCategories = array();
+    // Categories connected with user.
+    protected $mycategories = array();
 
-    // The Moodle form
+    // The Moodle form.
     protected $mform = null;
 
-    // The returned form data
+    // The returned form data.
     protected $fromform = null;
 
     /**
      * Construct the courselist_page renderable.
      */
     public function __construct() {
-        /* Variables    */
         global $SESSION;
 
-        // Create the data object and set the first values
+        // Create the data object and set the first values.
         parent::__construct();
 
         // Get the filtered user locationdata.
@@ -68,7 +59,7 @@ class local_friadmin_usercourselist_filter extends local_friadmin_widget impleme
 
         if (!isset($SESSION->filterData)) {
             $SESSION->filterData = array();
-        }//if_filterData_SESSION
+        }
 
         // If we are on the frontpage the URL contains '?redirect=0'.
         // Moodle strips the query from the URL for the mform action, so we need
@@ -90,19 +81,12 @@ class local_friadmin_usercourselist_filter extends local_friadmin_widget impleme
             if (!isset($SESSION->filterData['classroom'])) {
                 $SESSION->filterData['classroom'] = false;
             }
-            /**
-             * @updateDate  02/2/2015
-             * @author      eFaktor     (fbv)
-             *
-             * Description
-             * Add check elearning
-             */
             if (!isset($SESSION->filterData['elearning'])) {
                 $SESSION->filterData['elearning'] = false;
             }
             $this->fromform = $SESSION->filterData;
             $mform->set_defaults($SESSION->filterData);
-        }//if_form_data
+        } // End if form data.
     }
 
     /**
@@ -117,9 +101,9 @@ class local_friadmin_usercourselist_filter extends local_friadmin_widget impleme
      *
      * @return          array
      */
-    public function get_myCategories() {
-        return $this->myCategories;
-    }//get_myCategories
+    public function get_mycategories() {
+        return $this->mycategories;
+    } // End get_mycategories.
 
     /**
      * Get the returned form data, if any
@@ -149,27 +133,20 @@ class local_friadmin_usercourselist_filter extends local_friadmin_widget impleme
     /**
      * Get the user related location data
      *
-     * @param       null $userId
+     * @param       null $userid
      *
      * @return           array
      * @throws           Exception
      */
-    public function get_user_locationdata($userId = null) {
-        /* Variables    */
+    public function get_user_locationdata($userid = null) {
         global $USER, $SESSION;
         $result = null;
         $leveloneobjs = null;
         $leveloneobjsfiltered = array();
 
         try {
-            /* Result Structure */
-            /**
-             * @updateDate  02/12/2015
-             * @author      eFaktor     (fbv)
-             *
-             * Description
-             * Add option only eLearning courses
-             */
+            // Result Structure
+            // add option only for eLearning courses.
             $result = array(
                 'municipality' => array(),
                 'sector' => array(),
@@ -184,31 +161,23 @@ class local_friadmin_usercourselist_filter extends local_friadmin_widget impleme
                 return $result;
             }
 
-            if (is_null($userId)) {
-                $userId = $USER->id;
-            }//id_userid
+            if (is_null($userid)) {
+                $userid = $USER->id;
+            } // End if_userid.
 
-            // Get the competence related municipalities
-            // The $leveloneobjs array contains objects with
-            // id, name and industry code properties.
-            $leveloneobjs = local_friadmin_helper::get_levelone_municipalities($userId);
+            // Get the competence related municipalities.
+            // The $leveloneobjs array contains objects with id, name and industry code properties.
+            $leveloneobjs = local_friadmin_helper::get_levelone_municipalities($userid);
 
             // Check if a new municipality has been selected by the user which is not
-            // yet saved in the session. The session data is saved after the form is
-            // created.
+            // yet saved in the session. The session data is saved after the form is created.
             $sessionselmunicipality = 0;
             if (!empty($SESSION->filterData['selmunicipality'])) {
                 $sessionselmunicipality = $SESSION->filterData['selmunicipality'];
             }
             $selmunicipality = optional_param('selmunicipality', $sessionselmunicipality, PARAM_INT);
 
-            /**
-             * @updateDate  17/06/2015
-             * @author      eFaktor     (fbv)
-             *
-             * Description
-             * Get all my municipalities
-             */
+            // Get all my municipalities.
             foreach ($leveloneobjs as $obj) {
                 $result['municipality'][$obj->id] = $obj->name;
                 $this->userleveloneids[] = $obj->id;
@@ -221,16 +190,10 @@ class local_friadmin_usercourselist_filter extends local_friadmin_widget impleme
                 } else {
                     $leveloneobjsfiltered[] = $obj;
                 }
-            }//for_levelone_obj
+            } // End for_levelone_obj.
 
-            /**
-             * @updateDate  17/06/2015
-             * @author      eFaktor     (fbv)
-             *
-             * Description
-             * Get all categories where the user is a super user
-             */
-            $this->myCategories = local_friadmin_helper::getMyCategories();
+            // Get all categories where the user is a super user.
+            $this->mycategories = local_friadmin_helper::getmycategories();
 
             if (!empty($leveloneobjsfiltered)) {
                 // Get the sectors for the relevant municipalities via industrycodes.
@@ -253,7 +216,7 @@ class local_friadmin_usercourselist_filter extends local_friadmin_widget impleme
                 $sectorid = optional_param('selsector', $sessionsectorid, PARAM_INT);
 
                 if (!$sectorid) {
-                    // Get the locations for the relevant municipalities via levelone ids
+                    // Get the locations for the relevant municipalities via levelone ids.
                     $locationsobjs = $this->get_locations($leveloneobjsfiltered);
                 } else {
                     $locationsobjs = $this->get_locations_for_sector($sectorid);
@@ -264,58 +227,57 @@ class local_friadmin_usercourselist_filter extends local_friadmin_widget impleme
                         $result['location'][$obj->id] = $obj->name;
                     }
                 }
-            }//obj_filteref
+            } // End obj_filteref.
 
             return $result;
         } catch (Exception $ex) {
             throw $ex;
-        }//try_catch
-    }//get_user_locationdata
+        } // End try_catch.
+    } // End get_user_locationdata.
 
     /**
      * Get the locations with id, name
      *
-     * @param Array $leveloneobjsfiltered The array of objects with the municipalities
+     * @param array $leveloneobjsfiltered The array of objects with the municipalities
      *
      * @return mixed Array|null The array with the sector objects
      * @throws Exception
      */
     protected function get_locations($leveloneobjsfiltered) {
-        /* Variables */
         global $DB;
         $ids = array();
         $locations = null;
 
         try {
             if ($leveloneobjsfiltered) {
-                /* Get the municipality ids */
+                // Get the municipality ids.
                 foreach ($leveloneobjsfiltered as $obj) {
                     if (!in_array($obj->id, $ids)) {
                         $ids[] = $obj->id;
                     }
                 }
 
-                /* Get the location ids and names with given municipality ids */
+                // Get the location ids and names with given municipality ids.
                 if (!empty($ids)) {
-                    /* SQL Instruction  */
+                    // SQL Instruction.
                     $sql = "  SELECT    id,
                                         name
                               FROM      {course_locations}
                               WHERE     levelone ";
 
-                    /* Get search criteria  */
+                    // Get search criteria.
                     list($in, $params) = $DB->get_in_or_equal($ids);
 
-                    /* Execute  */
+                    // Execute.
                     $locations = $DB->get_records_sql($sql . $in, $params);
-                }//if_Empty
-            }//if_leveloneobjsfiltered
+                } // End if_Empty.
+            } // end if_leveloneobjsfiltered.
 
             return $locations;
         } catch (Exception $ex) {
             throw $ex;
-        }//try_catch
-    }//get_locations
+        } // End try_catch.
+    } // End get_locations.
 
     /**
      * Get the locations for the given sectors with id, name
@@ -352,12 +314,13 @@ class local_friadmin_usercourselist_filter extends local_friadmin_widget impleme
                 // Get search criteria.
                 $params = array('sector_selected' => $sectorid);
 
+                // Execute.
                 $locations = $DB->get_records_sql($sql, $params);
             }
 
             return $locations;
         } catch (Exception $ex) {
             throw $ex;
-        }//try_catch
-    }//get_locations_for_sector
+        } // End try_catch.
+    } // End get_locations_for_sector.
 }
