@@ -25,7 +25,7 @@
  * Moodle is performing actions across all modules.
  *
  * @package    mod_hvp
- * @copyright  2013 Amendor
+ * @copyright  2016 Joubel AS <contact@joubel.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 defined('MOODLE_INTERNAL') || die();
@@ -159,7 +159,7 @@ function hvp_save_content($hvp) {
         $params = json_decode($hvp->params);
 
         // Move any uploaded images or files. Determine content dependencies.
-        $editor->processParameters($hvp->id, $hvp->library, $params, isset($oldlib) ? $oldlib : NULL, isset($oldparams) ? $oldparams : NULL);
+        $editor->processParameters($hvp, $hvp->library, $params, isset($oldlib) ? $oldlib : NULL, isset($oldparams) ? $oldparams : NULL);
     }
 
     return $hvp->id;
@@ -201,9 +201,12 @@ function hvp_delete_instance($id) {
         return false;
     }
 
+    // Load CM
+    $cm = \get_coursemodule_from_instance('hvp', $id);
+
     // Delete content
     $h5pstorage = \mod_hvp\framework::instance('storage');
-    $h5pstorage->deletePackage(array('id' => $hvp->id, 'slug' => $hvp->slug));
+    $h5pstorage->deletePackage(array('id' => $hvp->id, 'slug' => $hvp->slug, 'coursemodule' => $cm->id));
 
     // Get library details
     $library = $DB->get_record_sql(
@@ -259,7 +262,7 @@ function hvp_pluginfile($course, $cm, $context, $filearea, $args, $forcedownload
             break;
 
         case 'content':
-            if ($context->contextlevel != CONTEXT_COURSE) {
+            if ($context->contextlevel != CONTEXT_MODULE) {
                 return false; // Invalid context.
             }
 
@@ -272,13 +275,25 @@ function hvp_pluginfile($course, $cm, $context, $filearea, $args, $forcedownload
             break;
 
         case 'exports':
-        case 'editor':
             if ($context->contextlevel != CONTEXT_COURSE) {
                 return false; // Invalid context.
             }
 
             // Check permissions
             if (!has_capability('mod/hvp:getexport', $context)) {
+                return false;
+            }
+
+            $itemid = 0;
+            break;
+
+        case 'editor':
+            if ($context->contextlevel != CONTEXT_COURSE) {
+                return false; // Invalid context.
+            }
+
+            // Check permissions
+            if (!has_capability('mod/hvp:addinstance', $context)) {
                 return false;
             }
 
