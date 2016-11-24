@@ -1053,7 +1053,8 @@ class local_wsks_external extends external_api {
 
         try {
             /* Unmap User Competence */
-
+            WS_FELLESDATA::UnMap_UserCompetence($usersUnMapCompetence,$result);
+            
             return $result;
         }catch (Exception $ex) {
             if ($result['error'] == '200') {

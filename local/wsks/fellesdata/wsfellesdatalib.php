@@ -515,17 +515,15 @@ class WS_FELLESDATA {
                     /* Convert to object */
                     $objOrg = (Object)$infoOrg;
 
-                    $dbLog .= " ID Record: " . $objOrg->id . "\n";
-                    $dbLog .= " KSCOMPANY: " . $objOrg->kscompany . "\n";
-                    //$unmapped = $DB->delete_records('report_gen_companydata',array('id' => $infoOrg->kscompany));
-                    //if ($unmapped) {
-                    //    $info = new stdClass();
-                    //    $info->unmapped     = true;
-                    //    $info->key          = $infoOrg->id;
+                    $unmapped = $DB->delete_records('report_gen_companydata',array('id' => $objOrg->kscompany));
+                    if ($unmapped) {
+                        $info = new stdClass();
+                        $info->unmapped     = true;
+                        $info->key          = $objOrg->id;
 
                         /* Add */
-                     //   $orgUnMapped[$infoOrg->id] = $info;
-                    //}//if_unmapped
+                        $orgUnMapped[$objOrg->id] = $info;
+                    }//if_unmapped
                 }//for_toUnMap
             }//if_toUnMap
 
@@ -565,6 +563,7 @@ class WS_FELLESDATA {
         global $CFG;
         $dbLog          = null;
         $usersUnMapped  = array();
+        $objCompetence  = null;
         $info           = null;
 
         try {
@@ -576,8 +575,11 @@ class WS_FELLESDATA {
              */
             if ($toUnMap) {
                 foreach ($toUnMap as $key => $infoCompetence) {
+                    /* Convert to object */
+                    $objCompetence = (Object)$infoCompetence;
+
                     /* Unmap */
-                    $info = self::Process_UnMap_CompetenceUser($infoCompetence,$key);
+                    $info = self::Process_UnMap_CompetenceUser($objCompetence,$key);
                     if ($info) {
                         /* Add */
                         $usersUnMapped[$key] = $info;
