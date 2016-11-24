@@ -44,12 +44,10 @@ $THEME->supportscssoptimisation = false;
 $THEME->yuicssmodules = array();
 $THEME->enable_dock = false;
 
-// add custom javascripts here
-//---------------------------------
+// Add custom javascripts here.
 
 
-// this will allow for moodle to be used on sites like responsinator
-//---------------------------------
+// This will allow for moodle to be used on sites like responsinator.
 $CFG->allowframembedding = true;
 
 $THEME->editor_sheets = array('editor');
@@ -78,7 +76,7 @@ $THEME->blockrtlmanipulations = array(
     'side-post' => 'side-pre'
 );
 
-// additional block regions
+// Additional block regions.
 $THEME->layouts = array(
     // Main course page.
     'course' => array(
