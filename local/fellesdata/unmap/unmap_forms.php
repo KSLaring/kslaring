@@ -66,6 +66,8 @@ class organizations_unmap_form extends moodleform {
         $form->setDefault('sector',$pattern);
         $form->setType('sector',PARAM_TEXT);
 
+        $form->addElement('static','static_error');
+
         $form->addElement('html','<div class="unmap_process_title">');
             /* Title   FS     */
             $form->addElement('html','<div class="area_unmap_fs_left title_matching ">');
@@ -84,7 +86,7 @@ class organizations_unmap_form extends moodleform {
         $form->addElement('html','</div>');//matching_process
 
         /* Add data   */
-       $this->OrganizationMapped($fsMapped,$form);
+        $this->OrganizationMapped($fsMapped,$form);
         
         /* Level */
         $form->addElement('hidden','le');
@@ -92,9 +94,49 @@ class organizations_unmap_form extends moodleform {
         $form->setType('le',PARAM_INT);
 
         /* Add Action Buttons   */
-        $this->add_action_buttons(true,get_string('nav_unmap','local_fellesdata'));
+        //$this->add_action_buttons(true,get_string('nav_unmap','local_fellesdata'));
+
+        /* BUTTONS  */
+        $buttons = array();
+        $buttons[] = $form->createElement('submit','submitbutton',get_string('nav_unmap','local_fellesdata'));
+        $buttons[] = $form->createElement('submit','submitbutton2',get_string('next'));
+        $buttons[] = $form->createElement('cancel');
+
+        $form->addGroup($buttons, 'buttonar', '', array(' '), false);
+        $form->setType('buttonar', PARAM_RAW);
+        $form->closeHeaderBefore('buttonar');
+
     }//definition
-    
+
+    function validation($data, $files) {
+        $errors = parent::validation($data, $files);
+        list($level,$pattern,$fsMapped) = $this->_customdata;
+
+        if ((isset($data['submitbutton']) && ($data['submitbutton']))) {
+            $toUnMap = array();
+            foreach ($fsMapped as $infoMapped) {
+                /* Referencia   */
+                $ref = "ID_FS_KS_" . $infoMapped->id;
+
+                /**
+                 * Companies that have to be unmapped
+                 */
+                if (isset($data[$ref])) {
+                    $toUnMap[$infoMapped->id] = $ref;
+                }//if_rdf
+            }//for_rdo
+
+            /**
+             * Unmap companies
+             */
+            if (!$toUnMap) {
+                $errors['static_error'] = get_string('no_selection','local_fellesdata');
+            }
+        }
+
+        return $errors;
+    }//validation
+
     function OrganizationMapped($fsMapped,&$form) {
         /* Variables    */
         $ref      = null;

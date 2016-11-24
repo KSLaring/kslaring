@@ -100,4 +100,5 @@ $string['level_unmap']              = 'Level to unmap';
 $string['to_unmapp']    = 'To Unmap';
 $string['mapped_with']  = 'Mapped with';
 $string['fs_company']   = 'FS Company';
-$string['none_mapped']  = 'There is no company mapped yet';
+$string['none_mapped']  = 'There is no company connected with the search';
+$string['no_selection'] = 'There is no company selected';
