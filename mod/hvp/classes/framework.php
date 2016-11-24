@@ -103,7 +103,7 @@ class framework implements \H5PFrameworkInterface {
         }
 
         // Get current language in Moodle
-        $language = \current_language();
+        $language = str_replace('_', '-', strtolower(\current_language()));
 
         // Try to map
         return isset($map[$language]) ? $map[$language] : $language;
@@ -1123,7 +1123,7 @@ class framework implements \H5PFrameworkInterface {
         return (int) $DB->get_field_sql(
                 "SELECT COUNT(id)
                    FROM {hvp}
-                  WHERE filtered = ''");
+                  WHERE filtered LIKE ''");
     }
 
     /**
@@ -1222,4 +1222,9 @@ class framework implements \H5PFrameworkInterface {
         ));
     }
 
+    /**
+     * Implements afterExportCreated
+     */
+    public function afterExportCreated() {
+    }
 }
