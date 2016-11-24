@@ -481,9 +481,198 @@ class WS_FELLESDATA {
         }//try_catch
     }//IsFakeMail
 
+    /**
+     * @param           $toUnMap
+     * @param           $result
+     *
+     * @throws          Exception
+     *
+     * @creationDate    24/11/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Unmap companies
+     */
+    public static function UnMap_Companies($toUnMap,&$result) {
+        /* Variables */
+        global $DB,$CFG;
+        $unmapped       = null;
+        $orgUnMapped    = array();
+        $info           = null;
+        $infoOrg        = null;
+        $dbLog          = null;
+
+        try {
+            /* Log  */
+            $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' START Un-Map companies . ' . "\n";
+
+            /**
+             * Unmap company --> delete company
+             */
+            if ($toUnMap) {
+                foreach ($toUnMap as $infoOrg) {
+                    $unmapped = $DB->delete_records('report_gen_companydata',array('id' => $infoOrg->kscompany));
+                    if ($unmapped) {
+                        $info = new stdClass();
+                        $info->unmapped     = true;
+                        $info->key          = $infoOrg->id;
+
+                        /* Add */
+                        $orgUnMapped[$infoOrg->id] = $info;
+                    }//if_unmapped
+                }//for_toUnMap
+            }//if_toUnMap
+
+            /* Add result   */
+            $result['orgUnMapped']  = $orgUnMapped;
+
+            /* Log  */
+            $dbLog .= ' FINISH Un-Map companies . ' . "\n";
+            error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
+        }catch (Exception $ex) {
+            $result['error']        = 409;
+            $result['message']      = $ex->getMessage();
+            $result['orgUnMapped']  = $orgUnMapped;
+
+            $dbLog = "ERROR: " . $ex->getMessage() . "\n" . "\n";
+            $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). 'FINISH ERROR Un-Map companies . ' . "\n";
+            error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
+
+            throw $ex;
+        }//try_Catch
+    }//UnMap_Companies
+
+    /**
+     * @param           $toUnMap
+     * @param           $result
+     *
+     * @throws          Exception
+     *
+     * @creationDate    24/11/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Unmap user competence
+     */
+    public static function UnMap_UserCompetence($toUnMap,&$result) {
+        /* Variables */
+        global $CFG;
+        $dbLog          = null;
+        $usersUnMapped  = array();
+        $info           = null;
+
+        try {
+            /* Log  */
+            $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' START Un-Map user competence . ' . "\n";
+
+            /**
+             * Unmap competence --> delete competence
+             */
+            if ($toUnMap) {
+                foreach ($toUnMap as $key => $infoCompetence) {
+                    /* Unmap */
+                    $info = self::Process_UnMap_CompetenceUser($infoCompetence,$key);
+                    if ($info) {
+                        /* Add */
+                        $usersUnMapped[$key] = $info;
+                    }//if_info
+                }//for_toUnMap 
+            }//if_toUnmape
+
+            /* Add result   */
+            $result['usersUnMapped']    = $usersUnMapped;
+
+            /* Log  */
+            $dbLog .= ' FINISH Un-Map user competence . ' . "\n";
+            error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
+        }catch (Exception $ex) {
+            $result['error']            = 409;
+            $result['message']          = $ex->getMessage();
+            $result['usersUnMapped']    = $usersUnMapped;
+
+            $dbLog = "ERROR: " . $ex->getMessage() . "\n" . "\n";
+            $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). 'FINISH ERROR Un-Map user competence . ' . "\n";
+            error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
+
+            throw $ex;
+        }//try_catch
+    }//UnMap_UserCompetence
+
     /***********/
     /* PRIVATE */
     /***********/
+
+    /**
+     * @param           $infoCompetence
+     * @param           $key
+     *
+     * @return          null|stdClass
+     * @throws          Exception
+     * @throws          dml_transaction_exception
+     *
+     * @creationDate    24/11/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * unmap competence for a specific user
+     */
+    private static function Process_UnMap_CompetenceUser($infoCompetence,$key) {
+        /* Variables */
+        global $DB;
+        $trans          = null;
+        $unmapped       = null;
+        $params         = null;
+        $paramsDel      = null;
+        $infoUser       = null;
+        $infoUnMap      = null;
+
+        /* Start transaccrion */
+        $trans = $DB->start_delegated_transaction();
+
+        try {
+            /* Get Info User */
+            $params = array();
+            $params['username'] = $infoCompetence->personalnumber;
+            /* Execute */
+            $infoUser   = $DB->get_record('user',$params,'id');
+
+            /* Unmap */
+            if ($infoUser) {
+                /* Criteria */
+                $paramsDel = array();
+                $paramsDel['userid']    = $infoUser->id;
+                $paramsDel['companyid'] = $infoCompetence->companyid;
+
+                /* Execute */
+                $unmapped = $DB->delete_records('user_info_competence_data',$paramsDel);
+                if ($unmapped) {
+                    $infoUnMap = new stdClass();
+                    $infoUnMap->unmapped    = true;
+                    $infoUnMap->key         = $key;
+
+                    /**
+                     * Check if there are more records connected with the user
+                     */
+                    unset($paramsDel['companyid']);
+                    $rdo = $DB->get_records('user_info_competence_data',$paramsDel);
+                    if (!$rdo) {
+                        /* Delete entry from the table mdl_user_info_competence */
+                        $DB->delete_records('user_info_competence',$paramsDel);
+                    }//if_Rdo
+                }//if_unmmaped
+            }//if_infoUSer
+
+            /* Commit */
+            $trans->allow_commit();
+
+            return $infoUnMap;
+        }catch (Exception $ex) {
+            /* Rollback */
+            $trans->rollback($ex);
+
+            throw $ex;
+        }//try_catch
+    }//Process_UnMap_CompetenceUser
 
     /**
      * @param           $managerReporter

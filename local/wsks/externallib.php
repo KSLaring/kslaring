@@ -892,31 +892,9 @@ class local_wsks_external extends external_api {
      */
     public static function wsUsersAccounts_parameters() {
         /* User account info */
-        $personalNumber = new external_value(PARAM_TEXT,'Personal number');
-        $adfs           = new external_value(PARAM_TEXT,'brukernavn');
-        $firstName      = new external_value(PARAM_TEXT,'First Name');
-        $lastName       = new external_value(PARAM_TEXT,'Last Name');
-        $eMail          = new external_value(PARAM_TEXT,'eMail');
-        $resourceNum    = new external_value(PARAM_TEXT,'resource number');
-        $industryCode   = new external_value(PARAM_TEXT,'Industry code');
-        $action         = new external_value(PARAM_INT,'Action. Add/Update/Delete');
-
         $lstUsers       = new external_value(PARAM_TEXT,'List of Users FS');
         
-        $accountInfo = new external_single_structure(array('personalnumber' => $personalNumber,
-                                                           'adfs'           => $adfs,
-                                                           'firstname'      => $firstName,
-                                                           'lastname'       => $lastName,
-                                                           'email'          => $eMail,
-                                                           'ressursnr'      => $resourceNum,
-                                                           'industry'       => $industryCode,
-                                                           'action'         => $action));
-
-        //return new external_function_parameters(array('usersAccounts'=> new external_multiple_structure($accountInfo)));
-        
         return new external_function_parameters(array('usersAccounts'=> $lstUsers));
-            
-        
     }//wsUsersAccounts_parameters
 
     /**
@@ -996,6 +974,186 @@ class local_wsks_external extends external_api {
         }//try_catch
     }//wsUsersAccounts
 
+    /*************************/
+    /* wsUnMapUserCompetence */
+    /*************************/
+
+    /**
+     * @return          external_function_parameters
+     * 
+     * @creationDate    24/11/2016
+     * @author          eFaktor     (fbv)
+     * 
+     * Description
+     * Input parameters for the service
+     */
+    public static function wsUnMapUserCompetence_parameters() {
+        /* Info to unmap */
+        $personalNumber = new external_value(PARAM_TEXT,'Personal number');
+        $companyId      = new external_value(PARAM_INT,'Company Id ');
+
+        $toUnMap = new external_single_structure(array('personalnumber' => $personalNumber,
+                                                       'companyid'      => $companyId));
+
+        return new external_function_parameters(array('usersUnMapCompetence'=> new external_multiple_structure($toUnMap)));
+    }//wsUnMapUserCompetence_parameters
+
+    /**
+     * @return          external_single_structure
+     * 
+     * @creationDate    24/11/2016
+     * @author          eFaktor     (fbv)
+     * 
+     * Description
+     * Response for the service
+     */
+    public static function wsUnMapUserCompetence_returns() {
+        $error      = new external_value(PARAM_INT,'Error. True/False');
+        $msgError   = new external_value(PARAM_TEXT,'Error Description');
+
+        /* Unmapped Info */
+        $unmapped   = new external_value(PARAM_INT,'True/False');
+        $key        = new external_value(PARAM_INT,'Key Id record imported');
+
+        $usersUnMapped = new external_single_structure(array('unmapped'        => $unmapped,
+                                                             'key'             => $key));
+
+        $existReturn = new external_single_structure(array('error'          => $error,
+                                                           'message'        => $msgError,
+                                                           'usersUnMapped'  => new external_multiple_structure($usersUnMapped)));
+
+        return $existReturn;
+    }//wsUnMapUserCompetence_returns
+
+    /**
+     * @param           $usersUnMapCompetence
+     * 
+     * @return          array
+     * @throws          invalid_parameter_exception
+     * @throws          moodle_exception
+     * 
+     * @creationDate    24/11/2016
+     * @author          eFaktor     (fbv)
+     * 
+     * Description
+     * Service to unamp user competence
+     */ 
+    public static function wsUnMapUserCompetence($usersUnMapCompetence) {
+        /* Variables    */
+        global $CFG;
+        $result     = array();
+
+        /* Parameter Validation */
+        $params = self::validate_parameters(self::wsUnMapUserCompetence_parameters(), array('usersUnMapCompetence' => $usersUnMapCompetence));
+
+        /* Web Service Response */
+        $result['error']                = 200;
+        $result['message']              = '';
+        $result['usersUnMapped'] = array();
+
+        try {
+            /* Unmap User Competence */
+
+            return $result;
+        }catch (Exception $ex) {
+            if ($result['error'] == '200') {
+                $result['error']    = 500;
+                $result['message']  = $ex->getMessage() . ' ' . $ex->getTraceAsString();
+            }//if_error
+
+            return $result;
+        }//try_catch
+    }//wsUnMapUserCompetence
+
+    /******************/
+    /* wsUnMapCompany */
+    /******************/
+
+    /**
+     * @return          external_function_parameters
+     *
+     * @creationDate    24/11/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Input parameters for the service
+     */
+    public static function wsUnMapCompany_parameters() {
+        /* Info to unmap */
+        $unMapID    = new external_value(PARAM_INT,'id');
+        $ksCompany  = new external_value(PARAM_INT,'Company Id ');
+
+        $toUnMap = new external_single_structure(array('id' => $unMapID,
+                                                       'kscompany'      => $ksCompany));
+
+        return new external_function_parameters(array('toUnMap'=> new external_multiple_structure($toUnMap)));
+    }//wsUnMapCompany_parameters
+
+    /**
+     * @return          external_single_structure
+     *
+     * @creationDate    24/11/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Response for the service
+     */
+    public static function wsUnMapCompany_returns() {
+        $error      = new external_value(PARAM_INT,'Error. True/False');
+        $msgError   = new external_value(PARAM_TEXT,'Error Description');
+
+        /* Unmapped Info */
+        $unmapped   = new external_value(PARAM_INT,'True/False');
+        $key        = new external_value(PARAM_INT,'Key Id record imported');
+
+        $orgUnMapped = new external_single_structure(array('unmapped'        => $unmapped,
+                                                           'key'             => $key));
+
+        $existReturn = new external_single_structure(array('error'         => $error,
+                                                           'message'       => $msgError,
+                                                           'orgUnMapped'   => new external_multiple_structure($orgUnMapped)));
+
+        return $existReturn;
+    }//wsUnMapCompany_returns
+
+    /**
+     * @return          array
+     * @throws          invalid_parameter_exception
+     * @throws          moodle_exception
+     *
+     * @creationDate    24/11/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Service to unmap companies between FS and KS
+     */
+    public static function wsUnMapCompany($toUnMap) {
+        /* Variables    */
+        global $CFG;
+        $result     = array();
+
+        /* Parameter Validation */
+        $params = self::validate_parameters(self::wsUnMapCompany_parameters(), array('toUnMap' => $toUnMap));
+
+        /* Web Service Response */
+        $result['error']        = 200;
+        $result['message']      = '';
+        $result['orgUnMapped']  = array();
+
+        try {
+            /* Unmap Companies */
+            WS_FELLESDATA::UnMap_Companies($toUnMap,$result);
+            
+            return $result;
+        }catch (Exception $ex) {
+            if ($result['error'] == '200') {
+                $result['error']    = 500;
+                $result['message']  = $ex->getMessage() . ' ' . $ex->getTraceAsString();
+            }//if_error
+
+            return $result;
+        }//try_catch
+    }//wsUnMapCompany
 
     /*****************************/
     /*****************************/

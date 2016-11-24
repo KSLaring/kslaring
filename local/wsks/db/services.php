@@ -132,6 +132,32 @@ $fonUsersAccountsConfig = array(
 
 
 /**
+ * Unmap user competence
+ */
+$fonUnMapCompetence         = 'wsUnMapUserCompetence';
+$fonUnMapCompetenceConfig   = array(
+                                    'classname'     => $className,
+                                    'methodname'    => $fonUnMapCompetence,
+                                    'classpath'     => $classPath,
+                                    'description'   => 'Fellesdata Integration. Unmap user competence',
+                                    'type'          => 'write',
+                                    'capabilities'  => ''
+                                   );
+
+/**
+ * Unmap organizations FS-KS
+ */
+$fonUnMapOrganizations          = 'wsUnMapCompany';
+$fonUnMapOrganizationsConfig    = array(
+                                        'classname'     => $className,
+                                        'methodname'    => $fonUnMapOrganizations,
+                                        'classpath'     => $classPath,
+                                        'description'   => 'Fellesdata Integration. Unmap companies',
+                                        'type'          => 'write',
+                                        'capabilities'  => ''
+                                       );
+
+/**
  * Functions to install
  */
 $functions = array(
@@ -143,7 +169,9 @@ $functions = array(
                     $fonKSJobRolesGenerics	=> $fonKSJobRolesGenericsConfig,
                     $fonManagerReporter     => $fonManagerReporterConfig,
                     $fonUserCompetence      => $fonUserCompetenceConfig,
-                    $fonUsersAccounts		=> $fonUsersAccountsConfig);
+                    $fonUsersAccounts		=> $fonUsersAccountsConfig,
+                    $fonUnMapCompetence     => $fonUnMapCompetenceConfig,
+                    $fonUnMapOrganizations  => $fonUnMapOrganizationsConfig);
 
 /**
  * ADFS Service
@@ -160,7 +188,9 @@ $serviceADFSConfig  = array(
  */
 $serviceFS        = 'fellesdata';
 $serviceFSConfig  = array(
-                          'functions'         => array($fonCompany,$fonHierarchy,$fonFSJobRoles,$fonKSJobRoles,$fonKSJobRolesGenerics,$fonManagerReporter,$fonUserCompetence,$fonUsersAccounts),
+                          'functions'         => array($fonCompany,$fonHierarchy,$fonFSJobRoles,$fonKSJobRoles,$fonKSJobRolesGenerics,
+                                                       $fonManagerReporter,$fonUserCompetence,$fonUsersAccounts,
+                                                       $fonUnMapCompetence,$fonUnMapOrganizations),
                           'restrictedusers'   => 1,
                           'enabled'           => 1
 );
