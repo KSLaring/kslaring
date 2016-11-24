@@ -366,7 +366,11 @@ function has_capability($capability, context $context, $user = null, $doanything
     global $USER, $CFG, $SCRIPT, $ACCESSLIB_PRIVATE;
 
     if (during_initial_install()) {
-        if ($SCRIPT === "/$CFG->admin/index.php" or $SCRIPT === "/$CFG->admin/cli/install.php" or $SCRIPT === "/$CFG->admin/cli/install_database.php") {
+        if ($SCRIPT === "/$CFG->admin/index.php"
+                or $SCRIPT === "/$CFG->admin/cli/install.php"
+                or $SCRIPT === "/$CFG->admin/cli/install_database.php"
+                or (defined('BEHAT_UTIL') and BEHAT_UTIL)
+                or (defined('PHPUNIT_UTIL') and PHPUNIT_UTIL)) {
             // we are in an installer - roles can not work yet
             return true;
         } else {
@@ -4208,15 +4212,32 @@ function get_role_users($roleid, context $context, $parent = false, $fields = ''
     // Adding the fields from $sort that are not present in $fields.
     $sortarray = preg_split('/,\s*/', $sort);
     $fieldsarray = preg_split('/,\s*/', $fields);
+
+    // Discarding aliases from the fields.
+    $fieldnames = array();
+    foreach ($fieldsarray as $key => $field) {
+        list($fieldnames[$key]) = explode(' ', $field);
+    }
+
     $addedfields = array();
     foreach ($sortarray as $sortfield) {
         // Throw away any additional arguments to the sort (e.g. ASC/DESC).
-        list ($sortfield) = explode(' ', $sortfield);
-        if (!in_array($sortfield, $fieldsarray)) {
+        list($sortfield) = explode(' ', $sortfield);
+        list($tableprefix) = explode('.', $sortfield);
+        $fieldpresent = false;
+        foreach ($fieldnames as $fieldname) {
+            if ($fieldname === $sortfield || $fieldname === $tableprefix.'.*') {
+                $fieldpresent = true;
+                break;
+            }
+        }
+
+        if (!$fieldpresent) {
             $fieldsarray[] = $sortfield;
             $addedfields[] = $sortfield;
         }
     }
+
     $fields = implode(', ', $fieldsarray);
     if (!empty($addedfields)) {
         $addedfields = implode(', ', $addedfields);

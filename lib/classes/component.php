@@ -910,18 +910,24 @@ $cache = '.var_export($cache, true).';
      * e.g. get_component_classes_in_namespace('mod_forum', 'event')
      *
      * @param string $component A valid moodle component (frankenstyle)
-     * @param string $namespace Namespace from the component name.
+     * @param string $namespace Namespace from the component name or empty if all $component namespace classes.
      * @return array The full class name as key and the class path as value.
      */
     public static function get_component_classes_in_namespace($component, $namespace = '') {
 
-        // We will add them later.
-        $namespace = ltrim($namespace, '\\');
+        $component = self::normalize_componentname($component);
 
-        // We need add double backslashes as it is how classes are stored into self::$classmap.
-        $namespace = implode('\\\\', explode('\\', $namespace));
+        if ($namespace) {
 
-        $regex = '/^' . $component . '\\\\' . $namespace . '/';
+            // We will add them later.
+            $namespace = trim($namespace, '\\');
+
+            // We need add double backslashes as it is how classes are stored into self::$classmap.
+            $namespace = implode('\\\\', explode('\\', $namespace));
+            $namespace = $namespace . '\\\\';
+        }
+
+        $regex = '|^' . $component . '\\\\' . $namespace . '|';
         $it = new RegexIterator(new ArrayIterator(self::$classmap), $regex, RegexIterator::GET_MATCH, RegexIterator::USE_KEY);
 
         // We want to be sure that they exist.
@@ -1019,7 +1025,7 @@ $cache = '.var_export($cache, true).';
      * Note: this does not verify the validity of plugin or type names.
      *
      * @param string $component
-     * @return array as (string)$type => (string)$plugin
+     * @return array two-items list of [(string)type, (string|null)name]
      */
     public static function normalize_component($component) {
         if ($component === 'moodle' or $component === 'core' or $component === '') {

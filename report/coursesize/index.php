@@ -40,9 +40,9 @@ if (!defined('REPORT_COURSESIZE_UPDATETOTAL')) {
     define('REPORT_COURSESIZE_UPDATETOTAL', 1 * DAYSECS);
 }
 
-
 $reportconfig = get_config('report_coursesize');
-if (!empty($reportconfig->filessize) && !empty($reportconfig->filessizeupdated) && ($reportconfig->filessizeupdated > time() - REPORT_COURSESIZE_UPDATETOTAL)) {
+if (!empty($reportconfig->filessize) && !empty($reportconfig->filessizeupdated)
+    && ($reportconfig->filessizeupdated > time() - REPORT_COURSESIZE_UPDATETOTAL)) {
     // Total files usage has been recently calculated, and stored by another process - use that.
     $totalusage = $reportconfig->filessize;
     $totaldate = date("Y-m-d H:i", $reportconfig->filessizeupdated);
@@ -57,20 +57,38 @@ if (!empty($reportconfig->filessize) && !empty($reportconfig->filessizeupdated) 
 $totalusagereadable = number_format(ceil($totalusage / 1048576)) . " MB";
 
 // TODO: display the sizes of directories (other than filedir) in dataroot
-//       eg old 1.9 course dirs, temp, sessions etc.
+// eg old 1.9 course dirs, temp, sessions etc.
 
 // Generate a full list of context sitedata usage stats.
 $subsql = 'SELECT f.contextid, sum(f.filesize) as filessize' .
           ' FROM {files} f';
 $wherebackup = ' WHERE component like \'backup\'';
 $groupby = ' GROUP BY f.contextid';
-$sizesql = 'SELECT cx.id, cx.contextlevel, cx.instanceid, cx.path, cx.depth, size.filessize, backupsize.filessize as backupsize' .
+$reverse = 'reverse(cx2.path)';
+$poslast = $DB->sql_position("'/'", $reverse);
+$length = $DB->sql_length('cx2.path');
+$substr = $DB->sql_substr('cx2.path', 1, $length ." - " . $poslast);
+$likestr = $DB->sql_concat($substr, "'%'");
+
+$sizesql = 'SELECT cx.id, cx.contextlevel, cx.instanceid, cx.path, cx.depth,
+            size.filessize, backupsize.filessize as backupsize, sharedsize.sharedsize as sharedsize' .
            ' FROM {context} cx ' .
            ' INNER JOIN ( ' . $subsql . $groupby . ' ) size on cx.id=size.contextid' .
            ' LEFT JOIN ( ' . $subsql . $wherebackup . $groupby . ' ) backupsize on cx.id=backupsize.contextid' .
+           ' LEFT JOIN ( SELECT f.contextid, SUM(f.filesize) as sharedsize
+                           FROM {files} f
+                     INNER JOIN {context} cx ON f.contextid = cx.id
+                          WHERE contenthash in (SELECT contenthash
+                                                  FROM {files}
+                                                 WHERE filesize > 0 AND filearea <> \'draft\'
+                                              GROUP BY contenthash  HAVING count(*) > 1)
+                                AND f.filesize > 0
+                                AND f.filearea <> \'draft\'
+                       GROUP BY f.contextid) sharedsize on cx.id=sharedsize.contextid '.
            ' ORDER by cx.depth ASC, cx.path ASC';
 $cxsizes = $DB->get_recordset_sql($sizesql);
 $coursesizes = array(); // To track a mapping of courseid to filessize.
+$coursesizesshared = array(); // To track courseid to shared size.
 $coursebackupsizes = array(); // To track a mapping of courseid to backup filessize.
 $usersizes = array(); // To track a mapping of users to filesize.
 $systemsize = $systembackupsize = 0;
@@ -83,6 +101,7 @@ foreach ($cxsizes as $cxdata) {
     $contextlevel = $cxdata->contextlevel;
     $instanceid = $cxdata->instanceid;
     $contextsize = $cxdata->filessize;
+    $sharedsize = (empty($cxdata->sharedsize) ? 0 : $cxdata->sharedsize);
     $contextbackupsize = (empty($cxdata->backupsize) ? 0 : $cxdata->backupsize);
     if ($contextlevel == CONTEXT_USER) {
         $usersizes[$instanceid] = $contextsize;
@@ -92,6 +111,7 @@ foreach ($cxsizes as $cxdata) {
     if ($contextlevel == CONTEXT_COURSE) {
         $coursesizes[$instanceid] = $contextsize;
         $coursebackupsizes[$instanceid] = $contextbackupsize;
+        $coursesizesshared[$instanceid] = $sharedsize;
         continue;
     }
     if (($contextlevel == CONTEXT_SYSTEM) || ($contextlevel == CONTEXT_COURSECAT)) {
@@ -116,9 +136,11 @@ foreach ($cxsizes as $cxdata) {
             if (!empty($coursesizes[$courseid])) {
                 $coursesizes[$courseid] += $contextsize;
                 $coursebackupsizes[$courseid] += $contextbackupsize;
+                $coursesizesshared[$courseid] += $sharedsize;
             } else {
                 $coursesizes[$courseid] = $contextsize;
                 $coursebackupsizes[$courseid] = $contextbackupsize;
+                $coursesizesshared[$courseid] = $sharedsize;
             }
             break;
         }
@@ -134,9 +156,10 @@ $cxsizes->close();
 $courses = $DB->get_records('course', array(), '', 'id, shortname');
 
 $coursetable = new html_table();
-$coursetable->align = array('right', 'right', 'right');
+$coursetable->align = array('right', 'right', 'left', 'right');
 $coursetable->head = array(get_string('course'),
                            get_string('diskusage', 'report_coursesize'),
+                           get_string('sharedusage', 'report_coursesize'),
                            get_string('backupsize', 'report_coursesize'));
 $coursetable->data = array();
 
@@ -153,7 +176,9 @@ foreach ($coursesizes as $courseid => $size) {
     $a->backupbytes = $backupsize;
     $bytesused = get_string('coursebytes', 'report_coursesize', $a);
     $backupbytesused = get_string('coursebackupbytes', 'report_coursesize', $a);
-    $row[] = "<span title=\"$bytesused\">$readablesize</span>";
+    $row[] = "<span id=\"coursesize_".$course->shortname."\" title=\"$bytesused\">$readablesize</span>";
+    $row[] = "<span id=\"coursesharedsize_".$course->shortname ."\"> ".
+        number_format(ceil($coursesizesshared[$courseid] / 1048576)) . "MB</span>";
     $row[] = "<span title=\"$backupbytesused\">" . number_format(ceil($backupsize / 1048576)) . " MB</span>";
     $coursetable->data[] = $row;
     unset($courses[$courseid]);
