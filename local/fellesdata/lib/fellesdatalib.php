@@ -26,6 +26,9 @@ define('KS_JOBROLES_GENERICS','wsKSJobRolesGenerics');
 define('KS_MANAGER_REPORTER','wsManagerReporter');
 define('KS_USER_COMPETENCE','wsUserCompetence');
 
+define('KS_UNMAP_USER_COMPETENCE','wsUnMapUserCompetence');
+define('KS_UNMAP_COMPANY','wsUnMapCompany');
+
 define('KS_USER_COMPETENCE_CO','wsUserCompetenceCompany'); //DELETE
 define('KS_USER_COMPETENCE_JR','wsUserCompetenceJobRole'); //DELETE
 
@@ -330,8 +333,6 @@ class FSKS_COMPANY {
         }//try_catch
     }//CompaniesFSToSynchronize
 
-
-
     /**
      * @param           $companiesFSKS
      * @param           $companiesImported
@@ -396,6 +397,81 @@ class FSKS_COMPANY {
             throw $ex;
         }//try_catch
     }//Synchronize_CompaniesFS
+
+    /**
+     * @return          array
+     * @throws          Exception
+     *
+     * @creationDate    23/11/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Get companies to unmap
+     */
+    public static function CompaniesToUnMap() {
+        /* Variables */
+        global $DB;
+        $params     = null;
+        $info       = null;
+        $toUnMap    = array();
+
+        try {
+            /* Search criteria */
+            $params = array();
+            $params['tosync']   = 1;
+            $params['sync']     = 0;
+
+            /* Execute */
+            $rdo = $DB->get_records('ksfs_org_unmap',$params,'id','id,kscompany');
+            if ($rdo) {
+                foreach ($rdo as $instance) {
+                    $toUnMap[$instance->id] = $instance;
+                }//for_rdo
+            }//if_rdo
+
+            return $toUnMap;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//CompaniesToUnMap
+
+    /**
+     * @param           $toUnMap
+     * @param           $unMapped
+     *
+     * @throws          Exception
+     *
+     * @creationDate    23/11/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Unmap companies
+     */
+    public static function UnMap_CompaniesKSFS($toUnMap,$unMapped) {
+        /* Variables */
+        global $DB;
+        $infoCompany    = null;
+        $objUnMapped    = null;
+
+        try {
+            /* Unmap companies  */
+            foreach ($unMapped as $company) {
+                /* Convert to object */
+                $objCompany = (Object)$company;
+
+                if ($objCompany->unmapped) {
+                    /* Get Company  */
+                    $infoCompany        = $toUnMap[$objCompany->key];
+
+                    /* Unmap company */
+                    $infoCompany->sync = 1;
+                    $DB->update_record('ksfs_org_unmap',$infoCompany);
+                }//unmapped
+            }//for_unmap
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//UnMap_CompaniesKSFS
 
     /***********/
     /* PRIVATE */
@@ -1082,8 +1158,8 @@ class FSKS_USERS {
                             fs.prioritet,
                             fs.action
                      FROM	  {fs_imp_managers_reporters}   fs
-                        JOIN  {user}                        u         ON      u.idnumber = fs.fodselsnr
-                                                                      AND     u.deleted  = 0
+                        JOIN  {user}                        u   ON  u.idnumber    = fs.fodselsnr
+                                                                AND u.deleted     = 0
                         JOIN  {ksfs_company}		        fsk	ON  fsk.fscompany = fs.org_enhet_id
                         JOIN  {ks_company}			        ks	ON	ks.companyid  = fsk.kscompany
                      WHERE	fs.imported	= :imported ";
@@ -1100,6 +1176,7 @@ class FSKS_USERS {
                     $info->level            = $instance->hierarchylevel;
                     $info->prioritet        = $instance->prioritet;
                     $info->action           = $instance->action;
+
                     /* Add Competence   */
                     $managersReporters[$instance->id] = $info;
                 }//for_Rdo
@@ -1110,6 +1187,101 @@ class FSKS_USERS {
             throw $ex;
         }//try_catch
     }//GetManagersReporters_ToSynchronize
+
+    /**
+     * @return          null
+     * @throws          Exception
+     *
+     * @creationDate    23/11/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Get the total amount of managers/reporters that
+     * have to be unmapped from company
+     */
+    public static function GetTotalManagersReporters_ToUnMap() {
+        /* Variables */
+        global $DB;
+        $sql    = null;
+        $rdo    = null;
+
+        try {
+            /**
+             * SQL Instruction
+             */
+            $sql = " SELECT		count(*) as 'total'
+                     FROM		{fs_users_company}	fsu
+                        JOIN	{ksfs_org_unmap}	un	ON  un.fscompany = fsu.companyid ";
+
+            /* Execute */
+            $rdo = $DB->get_record_sql($sql);
+            if ($rdo) {
+                return $rdo->total;
+            }else {
+                return null;
+            }//if_Rdo
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//GetTotalManagersReporters_ToUnMap
+
+    /**
+     * @param           $start
+     * @param           $limit
+     *
+     * @return          array
+     * @throws          Exception
+     *
+     * @creationDate    23/11/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Get Managers/Reporters that have to be unmapped
+     */
+    public static function GetManagersReporters_ToUnMap($start,$limit) {
+        /* Variables */
+        global $DB;
+        $sql        = null;
+        $rdo        = null;
+        $toUnMap    = array();
+        $info       = null;
+
+        try {
+
+            /* SQL Instruction */
+            $sql = " SELECT	fsu.id,
+                            fsu.personalnumber,
+                            fsu.companyid 	as 'fscompany',
+                            un.kscompany 	as 'kscompany',
+                            fsu.level,
+                            fsu.priority
+                     FROM		{fs_users_company}	fsu
+                        JOIN	{ksfs_org_unmap}	un	  ON  un.fscompany = fsu.companyid
+                     ORDER BY fsu.personalnumber ";
+
+            /* Execute */
+            $rdo = $DB->get_records_sql($sql,null,$start,$limit);
+            if ($rdo) {
+                foreach ($rdo as $instance) {
+                    /* Info */
+                    $info = new stdClass();
+                    $info->personalNumber   = $instance->personalnumber;
+                    $info->ksId             = $instance->kscompany;
+                    $info->fsId             = $instance->fscompany;
+                    $info->level            = $instance->level;
+                    $info->prioritet        = $instance->priority;
+                    $info->action           = DELETE;
+
+                    /* Add */
+                    $toUnMap[$instance->id] = $info;
+                }//for_rdo
+            }//if_rdo
+
+            return $toUnMap;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//GetManagersReporters_ToUnMap
 
 
     /**
@@ -1139,6 +1311,36 @@ class FSKS_USERS {
             throw $ex;
         }//try_catch
     }//UserCompetence_ToSynchronize
+
+
+    /**
+     * @param           $start
+     * @param           $limit
+     *
+     * @return          array|null
+     * @throws          Exception
+     *
+     * @creationDate    23/11/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Unmap user competence (company)
+     */
+    public static function UserCompetence_ToUnMap($start,$limit) {
+        /* Variables */
+        $toUnMap = null;
+
+        try {
+            /*
+             * Get users competence to unmap
+             */
+            $toUnMap = self::GetUsersCompetence_ToUnMap($start,$limit);
+
+            return $toUnMap;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//UserCompetence_ToUnMap
 
     /**
      * @param           $usersTo
@@ -1178,6 +1380,42 @@ class FSKS_USERS {
     }//Synchronize_ManagerReporterFS
 
     /**
+     * @param           $toUnMap
+     * @param           $competencesUnMapped
+     *
+     * @throws          Exception
+     *
+     * @creationDate    23/11/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Unmap managers/reporters from company
+     */
+    public static function UnMap_ManagerReporterFS($toUnMap,$competencesUnMapped) {
+        /* Variables    */
+        $infoUser       = null;
+        $objUnMapped  = null;
+
+        try {
+            /* UnMapp User Competence   */
+            foreach ($competencesUnMapped as $competence) {
+                /* Convert to object    */
+                $objCompetence = (Object)$competence;
+
+                if ($objCompetence->imported) {
+                    /* Get Info */
+                    $infoUser = $toUnMap[$objCompetence->key];
+
+                    /* UnMap    */
+                    self::UnMapManagerReporterFS($infoUser,$objCompetence->key);
+                }//unmapped
+            }//competenceUnMapped
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//UnMap_ManagerReporterFS
+
+    /**
      * @param           $usersCompetence
      * @param           $competencesImported
      *
@@ -1195,7 +1433,6 @@ class FSKS_USERS {
         $objCompetence  = null;
 
         try {
-
             /* Synchronize User Competence */
             foreach ($competencesImported as $competence) {
                 /* Convert to object    */
@@ -1273,6 +1510,78 @@ class FSKS_USERS {
             throw $ex;
         }//try_catch
     }//GetTotalUsersCompetence_ToSynchronize
+
+    /**
+     * @return          null
+     * @throws          Exception
+     *
+     * @creationDate    23/11/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Get total users that have to be unmapped
+     */
+    public static function GetTotal_UsersCompetence_ToUnMap() {
+        /* Variables */
+        global $DB;
+        $sql    = null;
+        $rdo    = null;
+
+        try {
+            /**
+             * Sql Instruction
+             */
+            $sql = " SELECT 	count(*) as 'total'
+                     FROM		{fs_users_competence} fsu
+                        JOIN	{ksfs_org_unmap}	  un	ON 	un.kscompany = fsu.companyid ";
+
+            /* Execute  */
+            $rdo = $DB->get_record_sql($sql);
+            if ($rdo) {
+                return $rdo->total;
+            }else {
+                return null;
+            }//if_Rdo
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//GetTotal_UsersCompetence_ToUnMap
+
+    /**
+     * @param           $toUnMap
+     * @param           $competencesUnMapped
+     * 
+     * @throws          Exception
+     * 
+     * @creationDate    23/11/2016
+     * @author          eFaktor     (fbv)
+     * 
+     * Description
+     * Un map user competence - companies
+     */
+    public static function UnMap_UserCompetenceFS($toUnMap, $competencesUnMapped) {
+        /* Variables    */
+        $infoUser       = null;
+        $objUnMapped  = null;
+
+        try {
+            /* UnMapp User Competence   */
+            foreach ($competencesUnMapped as $competence) {
+                /* Convert to object    */
+                $objCompetence = (Object)$competence;
+
+                if ($objCompetence->unmapped) {
+                    /* Get Info */
+                    $infoUser = $toUnMap[$objCompetence->key];
+
+                    /* UnMap    */
+                    self::UnMapCompetenceFS($infoUser,$objCompetence->key);
+                }//unmapped
+            }//competenceUnMapped
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//UnMap_UserCompetenceFS
 
     /***********/
     /* PRIVATE */
@@ -1615,6 +1924,37 @@ class FSKS_USERS {
     }//SynchronizeManagerReporterFS
 
     /**
+     * @param           $infoUserFS
+     * @param           $fsKey
+     * 
+     * @throws          Exception
+     * 
+     * @creationDate    23/11/2016
+     * @author          eFaktor     (fbv)
+     * 
+     * Description
+     * Unmap manager/reporter from the company
+     */
+    private static function UnMapManagerReporterFS($infoUserFS,$fsKey) {
+        /* Variables */
+        global $DB;
+        $params = null;
+
+        try {
+            /* Search Criteria  */
+            $params = array();
+            $params['id']               = $fsKey;
+            $params['personalnumber']   = $infoUserFS->personalNumber;
+            $params['companyid']        = $infoUserFS->fsId;
+
+            /* Execute */
+            $DB->delete_records('fs_users_company',$params);
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//UnMapManagerReporterFS
+
+    /**
      * @param           $toDelete
      * @param           $start
      * @param           $limit
@@ -1645,8 +1985,7 @@ class FSKS_USERS {
             $params['action']   = DELETE;
 
             /* SQL Instruction  */
-            $sql = " SELECT		-- concat(fs.fodselsnr,'_',ksfs.fscompany) as 'id',
-			                    fs.id,
+            $sql = " SELECT		fs.id,
 			                    fs.fodselsnr,
 			                    ksfs.fscompany,
                                 ks.companyid,
@@ -1727,6 +2066,59 @@ class FSKS_USERS {
             throw $ex;
         }//try_catch
     }//GetUsersCompetence_ToSynchronize
+
+    /**
+     * @param           $start
+     * @param           $limit
+     * 
+     * @return          array
+     * @throws          Exception
+     * 
+     * @creationDate    23/11/2016
+     * @author          eFaktor     (fbv)
+     * 
+     * Description
+     * User that have to be unmapped from company
+     */
+    private static function GetUsersCompetence_ToUnMap($start,$limit) {
+        /* Variables */
+        global $DB;
+        $sql        = null;
+        $rdo        = null;
+        $dbLog      = null;
+        $toUnMap    = array();
+        $info       = null;
+
+        try {
+            /**
+             * SQL Instruction
+             */
+            $sql = " SELECT   fsu.id,
+                              fsu.personalnumber,
+                              fsu.companyid
+                     FROM		{fs_users_competence}	fsu
+                        JOIN	{ksfs_org_unmap}		un	ON 	un.kscompany = fsu.companyid
+                     ORDER BY	fsu.personalnumber ";
+
+            /* Executed */
+            $rdo = $DB->get_records_sql($sql,null,$start,$limit);
+            if ($rdo) {
+                foreach ($rdo as $instance) {
+                    /* Info to unmap    */
+                    $info = new stdClass();
+                    $info->personalnumber   = $instance->personalnumber;
+                    $info->companyid        = $instance->companyid;
+
+                    /* Add */
+                    $toUnMap[$instance->id] = $info;
+                }//for_rdo
+            }//if_rdo
+
+            return $toUnMap;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//tryCatch
+    }//GetUsersCompetence_ToUnMap
 
     /**
      * @param           $competence
@@ -1895,6 +2287,34 @@ class FSKS_USERS {
             throw $ex;
         }//try_catch
     }//SynchronizeCompetenceFS
+
+    /**
+     * @param           $infoUser
+     * @param           $key
+     * 
+     * @throws          Exception
+     * 
+     * @creationDate    23/11/2016
+     * @author          eFaktor     (fbv)
+     * 
+     * Description
+     * Un map competence from the user
+     */
+    private static function UnMapCompetenceFS($infoUser,$key) {
+        /* Variables */
+        global $DB;
+        $params = null;
+
+        try {
+            /* Delete record */
+            $params = (Array)$infoUser;
+            $params['id'] = $key;
+            $DB->delete_records('fs_users_competence',$params);
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//UnMapCompetenceFS
+
 }//FSKS_USERS
 
 /************/

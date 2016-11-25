@@ -134,6 +134,11 @@ function xmldb_local_fellesdata_upgrade($oldVersion) {
                 $dbMan->create_table($tblTemp);
             }//if_exists
         }
+        
+        if ($oldVersion < 2016111700) {
+            Fellesdata_Update::UnMapTables($dbMan);    
+        }//if_oldVersion
+        
         return true;
     }catch (Exception $ex) {
         throw $ex;
@@ -482,6 +487,73 @@ class Fellesdata_Update {
         }//try_catch
     }//ResourceNumber
 
+    /**
+     * @param           $dbMan
+     * @throws          Exception
+     *
+     * @creationDate    17/11/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Create tables:
+     * mdl_ksfs_org_unmap
+     * mdl_ksfs_jr_unmap
+     */
+    public static function UnMapTables($dbMan) {
+        try {
+            self::UnMapOrg_Table($dbMan);
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_Catch
+    }//UnMapTables
+    
+    /***********/
+    /* PRIVATE */
+    /***********/
+    
+    /**
+     * @param           $dbMan
+     * @throws          Exception
+     *
+     * @creationDate    17/11/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Create table mdl_ksfs_org_unmap
+     */
+    private static function UnMapOrg_Table($dbMan) {
+        /* Variables */
+        $tblUnMap = null;
+
+        try {
+            /* Table */
+            $tblUnMap = new xmldb_table('ksfs_org_unmap');
+
+            /* Id               --> Primary key.  */
+            $tblUnMap->add_field('id',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, XMLDB_SEQUENCE,null);
+            /* kscompany        --> Foreign key     */
+            $tblUnMap->add_field('kscompany',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, null,null);
+            /* fscompany        --> Foreign key     */
+            $tblUnMap->add_field('fscompany',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, null,null);
+            /* tosync           --> Not null. To be synchronized or not     */
+            $tblUnMap->add_field('tosync',XMLDB_TYPE_INTEGER,'1',null, XMLDB_NOTNULL, null,null);
+            /* sync             --> Not null. If it is already synchronized */
+            $tblUnMap->add_field('sync',XMLDB_TYPE_INTEGER,'1',null, XMLDB_NOTNULL, null,null);
+
+            /* Keys */
+            $tblUnMap->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+            $tblUnMap->add_key('kscompany',XMLDB_KEY_FOREIGN,array('kscompany'), 'ks_company', array('companyid'));
+            $tblUnMap->add_key('fscompany',XMLDB_KEY_FOREIGN,array('fscompany'), 'fs_company', array('companyid'));
+
+            /* Create table */
+            if (!$dbMan->table_exists('ksfs_org_unmap')) {
+                $dbMan->create_table($tblUnMap);
+            }//if_exists
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//UnMapOrg_Table
+    
     private static function ImpUsers_FSTable($dbMan) {
         /* Variables */
         $tblImpUsers = null;

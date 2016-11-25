@@ -2,14 +2,14 @@
     width: 100%;
     margin-bottom: 0px;
     margin-top: 0px;
-    display: inline-block;
+    display: block;
 }
 
 .matching_process_title {
     width: 100%;
     margin-bottom: 0px;
     margin-top: 25px;
-    display: inline-block;
+    display: block;
     clear:both;
 }
 
@@ -43,6 +43,97 @@
     text-indent: 5px;
     min-height: 50px;
     background: #f9f9f9;
+}
+
+.unmap_process_title {
+    width: 100%;
+    margin-bottom: 2px;
+    margin-top: 25px;
+    display: block;
+    clear:both;
+}
+
+.unmap_process {
+    width: 100%;
+    margin-bottom: 0px;
+    margin-top: 0px;
+    display: block;
+    min-height: 30px;
+}
+
+.unmap_process .area_unmap_fs_left {
+    width:35%;
+    float:left;
+    display: inline-block;
+    text-indent: 5px;
+    margin-right: 2px;
+    min-height: 30px;
+    text-justify:inter-word;
+    white-space: pre-line;
+    word-break: break-all;
+}
+
+.unmap_process .area_unmap_ks_left {
+    width:35%;
+    display: inline-block;
+    text-indent: 5px;
+    margin-right: 2px;
+    min-height: 30px;
+    text-justify:inter-word;
+    white-space: pre-line;
+    word-break: break-all;
+}
+
+.unmap_process .area_unmap_right {
+    width:10%;
+    display: inline-block;
+    text-indent: 5px;
+    min-height: 30px;
+}
+
+.ro {
+    background: #f5f5f5;
+}
+
+.unmap_process_title .area_unmap_fs_left {
+    width:35%;
+    float:left;
+    display: inline-block;
+    text-indent: 5px;
+    margin-right: 2px;
+    background: #efefef;
+    border-bottom: 2px solid #004b93;
+    text-justify:inter-word;
+    white-space: pre-line;
+    word-break: break-all;
+}
+
+.unmap_process_title .area_unmap_ks_left {
+    width:35%;
+    display: inline-block;
+    text-indent: 5px;
+    margin-right: 2px;
+    background: #efefef;
+    border-bottom: 2px solid #004b93;
+    text-justify:inter-word;
+    white-space: pre-line;
+    word-break: break-all;
+}
+
+.unmap_process_title .area_unmap_right {
+    width:10%;
+    display: inline-block;
+    text-indent: 5px;
+    background: #efefef;
+    border-bottom: 2px solid #004b93;
+}
+
+.line_rpt_unmap {
+    border: 0;
+    border-top: 2px solid #cfd2d7;
+    width: 80%;
+    margin-top: 0;
+    margin-bottom: 0px;
 }
 
 .title_matching {
@@ -84,9 +175,6 @@
     margin-left: 0px;
 }
 
-div.felement.fcheckbox  span{
-    margin-left: 25px;
-}
 
 .userselector .sel_comp_left {
     width:40%;
@@ -103,6 +191,16 @@ div.felement.fcheckbox  span{
     float:left;
     display: inline-block;
     margin-right: 20px;
+}
+div.unmap_process div.area_unmap_right div.felement.fcheckbox,
+div.unmap_process div.area_unmap_right div.felement.fcheckbox  span {
+    margin-left: 0px;
+    margin-right: 0px;
+    display: inline-block;
+}
+
+div.area_unmap_right div.fitemtitle {
+    display:none;
 }
 
 #fitem_id_scompanies div.felement.fselect,
@@ -188,6 +286,22 @@ input#id_remove_all {
 
    .userselector .sel_comp_left select,
    .userselector .sel_comp_right select {
+        width: 100%;
+    }
+}
+
+@media (min-width: 767px) and (max-width: 849px) {
+    .sel_comp_left,
+    .sel_comp_right,
+    .sel_comp_buttons {
+        float: none;
+        width: 100%;
+        display: block;
+    }
+
+
+    .userselector .sel_comp_left select,
+    .userselector .sel_comp_right select {
         width: 100%;
     }
 }

@@ -18,7 +18,7 @@ class map_org_form extends moodleform {
     function definition() {
         /* Variables    */
         $form       = null;
-        $form               = $this->_form;
+        $form       = $this->_form;
 
         /* Options Mapping */
         $form->addElement('header','header_map',get_string('map_opt','local_fellesdata'));

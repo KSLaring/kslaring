@@ -176,9 +176,9 @@ class FS_MAPPING {
 
             /* Initialise js module */
             $jsModule = array('name'        => $name,
-                'fullpath'    => $path,
-                'requires'    => $requires,
-                'strings'     => $strings);
+                              'fullpath'    => $path,
+                              'requires'    => $requires,
+                              'strings'     => $strings);
 
 
             $PAGE->requires->js_init_call('M.core_user.init_fs_company',
@@ -577,6 +577,7 @@ class FS_MAPPING {
         $sql        = null;
         $sqlExtra   = null;
         $locate     = null;
+        $extra      = null;
         $rdo        = null;
         $params     = null;
         $fsJobroles = null;
@@ -659,9 +660,10 @@ class FS_MAPPING {
             /* SQL Instruction  */
             $sql = " SELECT   fs.jrcode,
                               fs.jrname
-                     FROM	  {fs_jobroles}		fs
-                        JOIN  {ksfs_jobroles}	ksfs	ON 	ksfs.fsjobrole = fs.jrcode
-                                                        AND	ksfs.ksjobrole = :job_role ";
+                     FROM	      {fs_jobroles}		fs
+                        JOIN      {ksfs_jobroles}	ksfs	ON 	ksfs.fsjobrole  = fs.jrcode
+                                                            AND	ksfs.ksjobrole  = :job_role
+				     WHERE 	  un.id IS NULL ";
 
             /* Search   */
             if ($search) {
@@ -675,7 +677,7 @@ class FS_MAPPING {
                                  LOCATE('" . $str . "',fs.jrcode) > 0 ";
                 }//if_search_opt
 
-                $sql .= " WHERE ($locate) ";
+                $sql .= " AND ($locate) ";
             }//if_search
 
             /* Execute */
@@ -983,6 +985,73 @@ class FS_MAPPING {
     /***********/
 
     /**
+     * @param           $fsJobroles
+     * @param           $ks_jobrole
+     * @param           $search
+     * @param           $notIn
+     *
+     * @throws          Exception
+     *
+     * @creationDate    18/11/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Get job roles unmapped but no synchronized yet
+     */
+    private static function GetUnMappedJR(&$fsJobroles,$ks_jobrole,$search,$notIn) {
+        /* Variables */
+        global $DB;
+        $sql        = null;
+        $rdo        = null;
+        $sqlExtra   = null;
+        $locate     = null;
+
+        try {
+            /* Search criteria */
+            $params = array();
+            $params['job_role'] = $ks_jobrole;
+
+            /* SQL Instruction */
+            $sql = " SELECT   fs.jrcode,
+                              fs.jrname
+                     FROM	  {ksfs_jr_unmap}	un
+                        JOIN  {fs_jobroles}		fs ON fs.jrcode = un.fsjobrole
+                     WHERE	un.fsjobrole NOT IN ($notIn)
+                        AND	un.ksjobrole = :job_role ";
+
+            /* Search   */
+            if ($search) {
+                $extra = explode(' ',$search);
+                foreach ($extra as $str) {
+                    if ($locate) {
+                        $locate .= " OR ";
+                    }
+                    $locate .= " (
+                                    LOCATE('" . $str . "',fs.jrname) > 0
+                                    OR
+                                    LOCATE('" . $str . "',fs.jralternative) > 0
+                                    OR
+                                    LOCATE('" . $str . "',fs.jrcode) > 0
+                                 )";
+                }//if_search_opt
+
+                $sql .= " AND ($locate) ";
+            }//if_search
+
+            /* Execute */
+            $sql .= " ORDER BY   fs.jrcode,fs.jrname ";
+            $rdo = $DB->get_records_sql($sql,$params);
+            if ($rdo) {
+                foreach ($rdo as $instance) {
+                    $fsJobroles[$instance->jrcode] = $instance->jrcode . " - " . $instance->jrname;
+                }
+            }//if_rdo
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//GetUnMappedJR
+
+    /**
      * @param           $fsCompany
      * @param           $level
      *
@@ -1016,9 +1085,6 @@ class FS_MAPPING {
                 /* Create Company   */
                 $infoCompany = new stdClass();
                 $infoCompany->companyid     = $fsCompany->fscompany;
-                if (strpos($fsCompany->name,'>')) {
-
-                }
                 $infoCompany->name          = $fsCompany->real_name;
                 $infoCompany->fs_parent     = $fsCompany->fs_parent;
                 $infoCompany->parent        = 0;
