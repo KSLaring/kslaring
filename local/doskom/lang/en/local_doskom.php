@@ -10,7 +10,7 @@
  * @author          eFaktor     (fbv)
  */
 
-$string['pluginname']               = 'Single Sign on - Web Service';
+$string['pluginname']               = 'DOSKOM SSO';
 
 $string['err_authenticate']         = 'Sorry, You are not authenticated user. Please, contact with the system administrator.';
 $string['exists_username']          = 'Other user is using the username <b>{$a->username}</b>. Please, contact with the system administrator.';

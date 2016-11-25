@@ -10,7 +10,7 @@
  * @author          eFaktor     (fbv)
  */
 
-$string['pluginname']               = 'Single Sign on - Web Service';
+$string['pluginname']               = 'DOSKOM SSO';
 
 $string['err_authenticate']         = 'Beklager, men du er ingen godkjent bruker. Vennligst kontakt systemadministrator.';
 $string['exists_username']          = 'Brukernavnet ditt er allerede i bruk.<br />Vennligst kontakt systemadministrator.';
