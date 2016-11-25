@@ -412,6 +412,8 @@ class FSKS_COMPANY {
         /* Variables */
         global $DB;
         $params     = null;
+        $info       = null;
+        $toUnMap    = array();
 
         try {
             /* Search criteria */
@@ -421,8 +423,13 @@ class FSKS_COMPANY {
 
             /* Execute */
             $rdo = $DB->get_records('ksfs_org_unmap',$params,'id','id,kscompany');
+            if ($rdo) {
+                foreach ($rdo as $instance) {
+                    $toUnMap[$instance->id] = $instance;
+                }//for_rdo
+            }//if_rdo
 
-            return $rdo;
+            return $toUnMap;
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
@@ -1197,25 +1204,17 @@ class FSKS_USERS {
         global $DB;
         $sql    = null;
         $rdo    = null;
-        $params = null;
 
         try {
-            /* Search criteria  */
-            $params = array();
-            $params['to_sync']  = 1;
-            $params['sync']     = 0;
-
             /**
              * SQL Instruction
              */
             $sql = " SELECT		count(*) as 'total'
                      FROM		{fs_users_company}	fsu
-                        JOIN	{ksfs_org_unmap}	un	ON  un.fscompany = fsu.companyid
-                                                        AND	un.tosync	 = :to_sync
-                                                        AND un.sync		 = :sync ";
+                        JOIN	{ksfs_org_unmap}	un	ON  un.fscompany = fsu.companyid ";
 
             /* Execute */
-            $rdo = $DB->get_record_sql($sql,$params);
+            $rdo = $DB->get_record_sql($sql);
             if ($rdo) {
                 return $rdo->total;
             }else {
@@ -1244,15 +1243,10 @@ class FSKS_USERS {
         global $DB;
         $sql        = null;
         $rdo        = null;
-        $params     = null;
         $toUnMap    = array();
         $info       = null;
 
         try {
-            /* Search criteria  */
-            $params = array();
-            $params['to_sync']  = 1;
-            $params['sync']     = 0;
 
             /* SQL Instruction */
             $sql = " SELECT	fsu.id,
@@ -1263,12 +1257,10 @@ class FSKS_USERS {
                             fsu.priority
                      FROM		{fs_users_company}	fsu
                         JOIN	{ksfs_org_unmap}	un	  ON  un.fscompany = fsu.companyid
-                                                          AND un.tosync	   = :to_sync
-                                                          AND un.sync	   = :sync
                      ORDER BY fsu.personalnumber ";
 
             /* Execute */
-            $rdo = $DB->get_records_sql($sql,$params,$start,$limit);
+            $rdo = $DB->get_records_sql($sql,null,$start,$limit);
             if ($rdo) {
                 foreach ($rdo as $instance) {
                     /* Info */
@@ -1278,7 +1270,7 @@ class FSKS_USERS {
                     $info->fsId             = $instance->fscompany;
                     $info->level            = $instance->level;
                     $info->prioritet        = $instance->priority;
-                    $info->action           = ACT_DELETE;
+                    $info->action           = DELETE;
 
                     /* Add */
                     $toUnMap[$instance->id] = $info;
@@ -1410,7 +1402,7 @@ class FSKS_USERS {
                 /* Convert to object    */
                 $objCompetence = (Object)$competence;
 
-                if ($objCompetence->unmapped) {
+                if ($objCompetence->imported) {
                     /* Get Info */
                     $infoUser = $toUnMap[$objCompetence->key];
 
@@ -1534,25 +1526,17 @@ class FSKS_USERS {
         global $DB;
         $sql    = null;
         $rdo    = null;
-        $params = null;
 
         try {
-            /* Search criteria  */
-            $params = array();
-            $params['to_sync']  = 1;
-            $params['sync']     = 0;
-
             /**
              * Sql Instruction
              */
             $sql = " SELECT 	count(*) as 'total'
                      FROM		{fs_users_competence} fsu
-                        JOIN	{ksfs_org_unmap}	  un	ON 	un.kscompany = fsu.companyid	
-                                                            AND	un.tosync	 = :to_sync
-                                                            AND un.sync		 = :sync ";
+                        JOIN	{ksfs_org_unmap}	  un	ON 	un.kscompany = fsu.companyid ";
 
             /* Execute  */
-            $rdo = $DB->get_record_sql($sql,$params);
+            $rdo = $DB->get_record_sql($sql);
             if ($rdo) {
                 return $rdo->total;
             }else {
@@ -2101,17 +2085,11 @@ class FSKS_USERS {
         global $DB;
         $sql        = null;
         $rdo        = null;
-        $params     = null;
         $dbLog      = null;
         $toUnMap    = array();
         $info       = null;
 
         try {
-            /* Search Criteria  */
-            $params = array();
-            $params['to_sync']  = 1;
-            $params['sync']     = 0;
-
             /**
              * SQL Instruction
              */
@@ -2119,13 +2097,11 @@ class FSKS_USERS {
                               fsu.personalnumber,
                               fsu.companyid
                      FROM		{fs_users_competence}	fsu
-                        JOIN	{ksfs_org_unmap}		un	ON 	un.kscompany = fsu.companyid	
-                                                            AND	un.tosync	 = :to_sync
-                                                            AND un.sync		 = :sync
+                        JOIN	{ksfs_org_unmap}		un	ON 	un.kscompany = fsu.companyid
                      ORDER BY	fsu.personalnumber ";
 
             /* Executed */
-            $rdo = $DB->get_records_sql($sql,$params,$start,$limit);
+            $rdo = $DB->get_records_sql($sql,null,$start,$limit);
             if ($rdo) {
                 foreach ($rdo as $instance) {
                     /* Info to unmap    */
@@ -2333,7 +2309,7 @@ class FSKS_USERS {
             /* Delete record */
             $params = (Array)$infoUser;
             $params['id'] = $key;
-            $DB->delete_records('fs_users_competence',$infoUser);
+            $DB->delete_records('fs_users_competence',$params);
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
