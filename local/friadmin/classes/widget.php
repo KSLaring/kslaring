@@ -14,13 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-//namespace local_friadmin;
-
 defined('MOODLE_INTERNAL') || die;
-
-//use renderable;
-//use renderer_base;
-//use stdClass;
 
 /**
  * Class containing data for the local_friadmin base page class
@@ -33,14 +27,14 @@ defined('MOODLE_INTERNAL') || die;
  */
 abstract class local_friadmin_widget implements renderable {
 
-    // The page data
+    // The page data.
     protected $data;
 
     /**
      * Construct the courselist_page renderable.
      */
     public function __construct() {
-        // Create the data object and set the first values
+        // Create the data object and set the first values.
         $data = new stdClass();
 
         $this->data = $data;
@@ -67,11 +61,11 @@ abstract class local_friadmin_widget implements renderable {
      * to simply set the property
      *
      * @param string $key
-     * @param mixed $value
+     * @param mixed  $value
      */
     public function __set($key, $value) {
-        if (method_exists($this, 'set_'.$key)) {
-            $this->{'set_'.$key}($value);
+        if (method_exists($this, 'set_' . $key)) {
+            $this->{'set_' . $key}($value);
         }
         $this->properties->{$key} = $value;
     }
@@ -83,13 +77,17 @@ abstract class local_friadmin_widget implements renderable {
      * to return the raw property
      *
      * @param string $key
+     *
      * @return mixed
      */
     public function __get($key) {
-        if (method_exists($this, 'get_'.$key)) {
-            return $this->{'get_'.$key}();
+        if (method_exists($this, 'get_' . $key)) {
+            return $this->{'get_' . $key}();
+        } else {
+            throwException('Property does not exisit.');
         }
-        return $this->properties->{$key};
+        //return $this->properties->{$key};
+        return null;
     }
 
     /**
@@ -97,20 +95,26 @@ abstract class local_friadmin_widget implements renderable {
      * still want empty calls to work.
      *
      * @param string $key
+     *
      * @return bool
      */
     public function __isset($key) {
-        if (method_exists($this, 'get_'.$key)) {
-            $val = $this->{'get_'.$key}();
+        if (method_exists($this, 'get_' . $key)) {
+            $val = $this->{'get_' . $key}();
+
             return !empty($val);
+        } else {
+            throwException('Property does not exisit.');
         }
-        return !empty($this->properties->{$key});
+        //return !empty($this->properties->{$key});
+        return null;
     }
 
     /**
      * Read the JSON encoded fixture and create a PHP object
      *
      * @param string $fname The file name
+     *
      * @return array $result The parsed JSON object
      */
     public function get_fixture($fname) {

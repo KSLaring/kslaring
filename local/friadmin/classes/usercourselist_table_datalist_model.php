@@ -14,13 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-//namespace local_friadmin;
-
 defined('MOODLE_INTERNAL') || die;
-
-//use renderable;
-//use renderer_base;
-//use stdClass;
 
 /**
  * Model class for the local_friadmin usercourse_list table
@@ -33,7 +27,7 @@ defined('MOODLE_INTERNAL') || die;
  */
 class local_friadmin_usercourselist_table_datalist_model extends local_efaktor_model {
 
-    // The user municipality list
+    // The user municipality list.
     protected $userleveloneids = null;
 
     /**
@@ -49,15 +43,15 @@ class local_friadmin_usercourselist_table_datalist_model extends local_efaktor_m
         global $CFG;
 
         try {
-            // Create the data object and set the first values
+            // Create the data object and set the first values.
             parent::__construct();
 
-            /* Set the data */
+            // Set the data.
             $this->userleveloneids = $userleveloneids;
             $this->filterdata = $filterdata;
             $this->sort = $sort;
 
-            /* Set up the fields    */
+            // Set up the fields.
             $this->fields = array('courseid', 'name', 'date', 'seats', 'deadline',
                 'length', 'municipality', 'sector', 'location');
             $this->set_fixture_data(
@@ -65,14 +59,13 @@ class local_friadmin_usercourselist_table_datalist_model extends local_efaktor_m
                 'data', $this->fields);
         } catch (Exception $ex) {
             throw $ex;
-        }//try_catch
-    }//constructor
+        } // End try_catch.
+    } // End constructor.
 
     /**
      * Datalist filters
      */
     protected function add_datalist_filters() {
-        /* Variables    */
         try {
             if (is_null($this->filterdata)) {
                 return false;
@@ -100,6 +93,6 @@ class local_friadmin_usercourselist_table_datalist_model extends local_efaktor_m
             return true;
         } catch (Exception $ex) {
             throw $ex;
-        }//try_catch
+        } // End try_catch.
     }
 }

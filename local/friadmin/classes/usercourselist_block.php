@@ -14,13 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-//namespace local_friadmin;
-
 defined('MOODLE_INTERNAL') || die;
-
-//use renderable;
-//use renderer_base;
-//use stdClass;
 
 /**
  * Class containing data for the local_friadmin usercourse_list block
@@ -38,7 +32,7 @@ class local_friadmin_usercourselist_block extends local_friadmin_widget implemen
      */
     public function __construct() {
         global $PAGE;
-        // Create the data object and set the first values
+        // Create the data object and set the first values.
         parent::__construct();
 
         $this->data->url = $PAGE->url;

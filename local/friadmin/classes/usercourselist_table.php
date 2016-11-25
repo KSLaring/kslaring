@@ -14,15 +14,9 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-//namespace local_friadmin;
-
 defined('MOODLE_INTERNAL') || die;
 
 require_once($CFG->dirroot . '/enrol/waitinglist/lib.php');
-
-//use renderable;
-//use renderer_base;
-//use stdClass;
 
 /**
  * Class containing data for the local_friadmin usercourse_list table
@@ -35,24 +29,19 @@ require_once($CFG->dirroot . '/enrol/waitinglist/lib.php');
  */
 class local_friadmin_usercourselist_table extends local_friadmin_widget implements renderable {
 
-    // The table column names
-    //protected $colnames = array("counter", "name", "date", "seats", "deadline", "length",
-    //    "municipality", "sector", "location", "edit");
-    protected $colnames = array("name", "date", "seats", "deadline",
-        "municipality", "location", "edit");
+    // The table column names.
+    protected $colnames = array("name", "date", "seats", "deadline", "municipality", "location", "edit");
 
-    // The table column titles
+    // The table column titles.
     protected $colheaders = array();
 
-    // The user municipality list
+    // The user municipality list.
     protected $userleveloneids = null;
 
-    /**
-     * Categories connected with user
-     */
-    protected $myCategories = array();
+    // Categories connected with user.
+    protected $mycategories = array();
 
-    // The related filter data returned from the form
+    // The related filter data returned from the form.
     protected $filterdata = null;
 
     /**
@@ -67,25 +56,24 @@ class local_friadmin_usercourselist_table extends local_friadmin_widget implemen
      */
     public function __construct($baseurl, $userleveloneids = null, $usercategories = null,
         $filterdata = null) {
-        /* Variables    */
 
         try {
-            // Create the data object and set the first values
+            // Create the data object and set the first values.
             parent::__construct();
 
             $this->data->baseurl = $baseurl;
             $this->userleveloneids = $userleveloneids;
             $this->filterdata = $filterdata;
-            $this->myCategories = $usercategories;
+            $this->mycategories = $usercategories;
 
-            // Create the table column titles
+            // Create the table column titles.
             foreach ($this->colnames as $name) {
                 $this->colheaders[] = get_string('usercourse_' . $name, 'local_friadmin');
-            }//for_Each
+            } // End for_Each.
         } catch (Exception $ex) {
             throw $ex;
-        }//try_catch
-    }//constructor
+        } // End try_catch.
+    } // End constructor.
 
     /**
      * Create the Moodle flexitable with the saved data
@@ -94,18 +82,17 @@ class local_friadmin_usercourselist_table extends local_friadmin_widget implemen
      * @throws          Exception
      */
     public function get_table_html() {
-        /* Variables    */
         global $CFG;
         $out = null;
         $table = null;
-        $tableModel = null;
+        $tablemodel = null;
         $result = null;
 
         try {
-            /* Add reference */
+            // Add reference.
             require_once($CFG->libdir . '/tablelib.php');
 
-            /* Create table */
+            // Create table.
             $table = new flexible_table('courselist');
 
             $table->define_columns($this->colnames);
@@ -123,14 +110,14 @@ class local_friadmin_usercourselist_table extends local_friadmin_widget implemen
 
             // Get the data for the table rows,
             // format the date columns and add the course edit link behind the course name.
-            $table_model = new local_friadmin_usercourselist_table_sql_model(
+            $tablemodel = new local_friadmin_usercourselist_table_sql_model(
                 $this->userleveloneids,
-                $this->myCategories,
+                $this->mycategories,
                 $this->filterdata,
                 $table->get_sql_sort('courselist'));
 
 
-            if ($result = $table_model->data) {
+            if ($result = $tablemodel->data) {
                 $morecourses = false;
                 if (count($result) > local_friadmin\friadmin::MAX_LISTED_COURSES) {
                     $morecourses = true;
@@ -138,7 +125,6 @@ class local_friadmin_usercourselist_table extends local_friadmin_widget implemen
                 $result = $this->format_date($result, array('date', 'deadline'));
                 $result = $this->add_availseats($result);
                 $result = $this->add_course_link_and_icons($result);
-                //$result = $this->add_course_counter($result);
 
                 ob_start();
                 $table->format_and_add_array_of_rows($result);
@@ -149,136 +135,134 @@ class local_friadmin_usercourselist_table extends local_friadmin_widget implemen
                         get_string('usercourse_morecourses', 'local_friadmin'),
                         array('class' => 'morecourses'));
                 }
-            }//if_result
+            } // End if_result.
 
             return $out;
         } catch (Exception $ex) {
             throw $ex;
-        }//try_catch
-    }//get_table_html
+        } // End try_catch.
+    } // End get_table_html.
 
     /**
      * Add the link to the course detail page to the course name
      * and an edit icon with a link to the course settings page.
      *
-     * @param           $data       The table data
+     * @param array $data The table data
      *
-     * @return          array       The modified table data
-     * @throws          Exception
+     * @return  array  The modified table data
+     * @throws  Exception
      */
     protected function add_course_link_and_icons($data) {
-        /* Variables    */
         global $OUTPUT;
         $result = array();
-        $isArray = null;
-        $nameLink = null;
+        $isarray = null;
+        $namelink = null;
         $icon = null;
         $link = null;
-        $detailsLink = null;
-        $urlDetail = null;
-        $urlEdit = null;
+        $detailslink = null;
+        $urldetail = null;
+        $urledit = null;
 
         try {
             foreach ($data as $row) {
                 if (is_array($row)) {
-                    $isArray = true;
+                    $isarray = true;
                     $row = (object)$row;
                 } else {
-                    $isArray = false;
-                }//if_is_array
+                    $isarray = false;
+                } // End if_is_array.
 
-                /* Set Detail Name  Link    */
-                $urlDetail = new moodle_url('/course/view.php',
+                // Set Detail Name Link.
+                $urldetail = new moodle_url('/course/view.php',
                     array('id' => $row->courseid));
-                $nameLink = html_writer::link($urlDetail, $row->name);
-                $row->name = $nameLink;
+                $namelink = html_writer::link($urldetail, $row->name);
+                $row->name = $namelink;
 
-                /* Set Detail  Link    */
+                // Set Detail Link.
                 $icon = $OUTPUT->pix_icon('t/viewdetails', get_string('show', 'local_friadmin'));
-                $detailsLink = html_writer::link($urlDetail, $icon);
+                $detailslink = html_writer::link($urldetail, $icon);
 
-                $row->edit = $detailsLink;
+                $row->edit = $detailslink;
 
-                if ($isArray) {
+                if ($isarray) {
                     $result[] = (array)$row;
                 } else {
                     $result[] = $row;
-                }//if_isArray
-            }//for_each_row
+                } // End if_isArray.
+            } // End for_each_row.
 
             return $result;
         } catch (Exception $ex) {
             throw $ex;
-        }//try_catch
-    }//add_course_link_and_icons
+        } // End try_catch.
+    } // End add_course_link_and_icons.
 
     /**
      * Add the the available seats for the courses.
-     * @param           $data       The table data
      *
-     * @return          array       The modified table data
-     * @throws          Exception
+     * @param array $data The table data
+     *
+     * @return array The modified table data
+     * @throws Exception
      */
     protected function add_availseats($data) {
-        /* Variables    */
         global $DB;
         $result = array();
-        $isArray = null;
+        $isarray = null;
         $instance = null;
-        $enrolWaitingList = null;
+        $enrolwaitinglist = null;
 
         try {
             foreach ($data as $row) {
                 if (is_array($row)) {
-                    $isArray = true;
+                    $isarray = true;
                     $row = (object)$row;
                 } else {
-                    $isArray = false;
-                }//if_isArray
+                    $isarray = false;
+                } // End if_isArray.
 
-                /* Get Instance Enrolment Waiting List  */
+                // Get Instance Enrolment Waiting List.
                 $instance = $DB->get_record('enrol', array('courseid' => $row->courseid,
                     'enrol' => 'waitinglist'));
                 if ($instance) {
-                    /* Get Seats    */
-                    $enrolWaitingList = new enrol_waitinglist_plugin();
-                    $row->seats = $enrolWaitingList->get_vacancy_count($instance);
-                }//if_instance
+                    // Get Seats.
+                    $enrolwaitinglist = new enrol_waitinglist_plugin();
+                    $row->seats = $enrolwaitinglist->get_vacancy_count($instance);
+                } // End if_instance.
 
-                if ($isArray) {
+                if ($isarray) {
                     $result[] = (array)$row;
                 } else {
                     $result[] = $row;
-                }//if_isArray
-            }//for_each_row
+                } // End if_isArray.
+            } // End for_each_row.
             return $result;
         } catch (Exception $ex) {
             throw $ex;
-        }//try_catch
-    }//add_availseats
+        } // End try_catch.
+    } // End add_availseats.
 
     /**
      * Format the date fields from UNIX timestamp to userdate.
      *
-     * @param           $data       The table data
-     * @param           $fields     The fields containing dates
+     * @param array $data   The table data
+     * @param array $fields The fields containing dates
      *
      * @return          array
      * @throws          Exception
      */
     protected function format_date($data, $fields) {
-        /* Variables    */
         $result = array();
-        $isArray = null;
+        $isarray = null;
 
         try {
             foreach ($data as $row) {
                 if (is_array($row)) {
-                    $isArray = true;
+                    $isarray = true;
                     $row = (object)$row;
                 } else {
-                    $isArray = false;
-                }//if_is_Array
+                    $isarray = false;
+                } // End if_is_Array.
 
                 foreach ($fields as $field) {
                     if (isset($row->$field) && ($row->$field)) {
@@ -287,56 +271,55 @@ class local_friadmin_usercourselist_table extends local_friadmin_widget implemen
                     } else {
                         $row->$field = '-';
                     }
-                }//if_Else
+                } // End if_Else.
 
-                if ($isArray) {
+                if ($isarray) {
                     $result[] = (array)$row;
                 } else {
                     $result[] = $row;
-                }//if_isArray
-            }//for_each_row
+                } // End if_isArray.
+            } // End for_each_row.
 
             return $result;
         } catch (Exception $ex) {
             throw $ex;
-        }//try_catch
-    }//format_date
+        } // End try_catch.
+    } // End format_date.
 
     /**
      * Add a counter in the first table row.
      *
-     * @param           $data       The table data
+     * @param array $data The table data
      *
      * @return          array
      * @throws          Exception
      */
     protected function add_course_counter($data) {
-        /* Variables    */
         $result = array();
-        $isArray = null;
+        $isarray = null;
         $counter = 1;
 
         try {
             foreach ($data as $row) {
                 if (is_array($row)) {
-                    $isArray = true;
+                    $isarray = true;
                     $row = (object)$row;
                 } else {
-                    $isArray = false;
-                }//if_is_Array
+                    $isarray = false;
+                } // End if_is_Array.
 
                 $row->counter = $counter++;
 
-                if ($isArray) {
+                if ($isarray) {
                     $result[] = (array)$row;
                 } else {
                     $result[] = $row;
-                }//if_isArray
-            }//for_each_row
+                } // End if_isArray.
+            } // End for_each_row.
 
             return $result;
         } catch (Exception $ex) {
             throw $ex;
-        }//try_catch
-    }//format_date
+        } // End try_catch.
+    } // End format_date.
 }
