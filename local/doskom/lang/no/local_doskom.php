@@ -22,7 +22,7 @@ $string['company']                  = 'Firma';
 
 $string['cron_activate']            = 'Aktiver';
 $string['cron_deactivate']          = 'Deaktiver';
-$string['cron_wsso']                = 'Single Sign On - Cron';
+$string['cron_wsso']                = 'DOSKOM SSO - Cron';
 
 $string['end_point']                        = 'API for import av brukere';
 $string['end_point_production']             = 'Produksjon';

@@ -17,6 +17,7 @@ define('ONWAIT_ACTION',3);
 define('WAITINGLIST_FIELD_INVOICE','customint8');
 define('WAITINGLIST_FIELD_APPROVAL','customint7');
 define('ENROLPASSWORD','customtext1');
+define('ENROL_COMPANY_NO_DEMANDED',3);
 
 Class Approval {
     /**********/
