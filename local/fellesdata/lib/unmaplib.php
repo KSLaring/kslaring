@@ -93,8 +93,8 @@ class FS_UnMap {
             $instance = new stdClass();
             $instance->kscompany = $infoOrg->kscompany;
             $instance->fscompany = $infoOrg->fscompany;
-            $instance->tosync    = ($infoOrg->synchronized ? 1 : 0);
-            $instance->sync      = ($infoOrg->synchronized ? 0 : 1);
+            $instance->tosync    = ($infoOrg->new ? 1 : 0);
+            $instance->sync      = ($infoOrg->new ? 0 : 1);
 
             /* Insert */
             $instance->id = $DB->insert_record('ksfs_org_unmap',$instance);
@@ -105,8 +105,17 @@ class FS_UnMap {
             $params = array();
             $params['kscompany']    = $instance->kscompany;
             $params['fscompany']    = $instance->fscompany;
-
+            /* Execute */
             $DB->delete_records('ksfs_company',$params);
+
+            /**
+             * Delete from fs_company because is not mapped anymore
+             */
+            $params = array();
+            $params['id']           = $infoOrg->id;
+            $params['companyid']    = $infoOrg->fscompany;
+            /* Execute */
+            $DB->delete_records('fs_company',$params);
 
             /* Commit   */
             $trans->allow_commit();
@@ -155,7 +164,7 @@ class FS_UnMap {
                             fs.name,
                             ks.companyid 							as 'kscompany',
                             CONCAT(ks.industrycode,' - ',ks.name) 	as 'ksname',
-                            fs.synchronized
+                            fs.new
                      FROM			{fs_company}		fs
                         JOIN		{ksfs_company}	    ksfs 	ON	ksfs.fscompany 	= fs.companyid
                         JOIN		{ks_company}		ks		ON  ks.companyid 	= ksfs.kscompany
@@ -200,7 +209,7 @@ class FS_UnMap {
                     $infoMapped->fsname         = $instance->name;
                     $infoMapped->kscompany      = $instance->kscompany;
                     $infoMapped->ksname         = $instance->ksname;
-                    $infoMapped->synchronized   = $instance->synchronized;
+                    $infoMapped->new            = $instance->new;
 
                     /* Add to the list  */
                     $fsMapped[$instance->id] = $infoMapped;
