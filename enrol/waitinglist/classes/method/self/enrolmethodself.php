@@ -280,15 +280,15 @@ class enrolmethodself extends \enrol_waitinglist\method\enrolmethodbase{
                 }
             }
 
-            if ($waitinglist->{ENROL_WAITINGLIST_FIELD_APPROVAL} == APPROVAL_REQUIRED) {
+            //if ($waitinglist->{ENROL_WAITINGLIST_FIELD_APPROVAL} == APPROVAL_REQUIRED) {
                 /* Check if it has been rejected    */
-                $rejected = new \stdClass();
-                $rejected->sent = null;
-                if ($rejected->sent = \Approval::IsRejected($USER->id,$waitinglist->courseid,$waitinglist->id)) {
-                    $rejected->sent = userdate($rejected->sent,'%d.%m.%Y', 99, false);
-                    return get_string('request_rejected_enrol','enrol_waitinglist',$rejected);
-                }
-            }//Approval_Method
+            //    $rejected = new \stdClass();
+            //    $rejected->sent = null;
+            //    if ($rejected->sent = \Approval::IsRejected($USER->id,$waitinglist->courseid,$waitinglist->id)) {
+            //        $rejected->sent = userdate($rejected->sent,'%d.%m.%Y', 99, false);
+                    //return get_string('request_rejected_enrol','enrol_waitinglist',$rejected);
+            //    }
+            //}//Approval_Method
 
             $entryman =  \enrol_waitinglist\entrymanager::get_by_course($waitinglist->courseid);
             $entry = $entryman->get_entry_by_userid($USER->id);

@@ -257,20 +257,33 @@ Class Approval {
             $infoApproval->timecreated      = time();
 
             /* Execute */
-            $infoApproval->id = $DB->insert_record('enrol_approval',$infoApproval);
+            /* Check if already exist   */
+            $params = array();
+            $params['userid']   = $userId;
+            $params['courseid'] = $courseId;
+            $rdo = $DB->get_record('enrol_approval',$params,'id');
+            if ($rdo) {
+                /* Update   */
+                $infoApproval->id = $rdo->id;
+                $DB->update_record('enrol_approval',$infoApproval);
+            }else {
+                /* Insert New */
+                $infoApproval->id = $DB->insert_record('enrol_approval',$infoApproval);
+            }//if_rdo
+
 
             /* Insert Approve Action */
             $infoApproveAct = new stdClass();
             $infoApproveAct->approvalid = $infoApproval->id;
-            $infoApproveAct->token = self::GenerateToken_Action($courseId,'approve');
-            $infoApproveAct->action = APPROVED_ACTION;
+            $infoApproveAct->token      = self::GenerateToken_Action($courseId,'approve');
+            $infoApproveAct->action     = APPROVED_ACTION;
             $DB->insert_record('enrol_approval_action',$infoApproveAct);
 
             /* Insert Reject Action  */
             $infoRejectAct = new stdClass();
-            $infoRejectAct->approvalid = $infoApproval->id;
-            $infoRejectAct->token   = self::GenerateToken_Action($courseId,'reject');
-            $infoRejectAct->action  = REJECTED_ACTION;
+            $infoRejectAct->approvalid  = $infoApproval->id;
+            $infoRejectAct->token       = self::GenerateToken_Action($courseId,'reject');
+            $infoRejectAct->action      = REJECTED_ACTION;
             $DB->insert_record('enrol_approval_action',$infoRejectAct);
 
             /* Info To Send */
