@@ -14,7 +14,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 if ($hassiteconfig) {
-    $settings = new admin_settingpage('local_doskom', get_string('pluginame','local_doskom'));
+    $settings = new admin_settingpage('local_doskom', get_string('pluginname','local_doskom'));
     $ADMIN->add('localplugins', $settings);
 
     // Cron Activate/Deactivate.
