@@ -1251,10 +1251,13 @@ class WS_FELLESDATA {
     private static function RemoveConnectionMunicipality($userId,$industryCode) {
         /* Variables */
         global $DB;
-        $sql    = null;
-        $rdo    = null;
-        $params = null;
-        $trans  = null;
+        $sql        = null;
+        $sqlMng     = null;
+        $sqlRpt     = null;
+        $sqlSuper   = null;
+        $rdo        = null;
+        $params     = null;
+        $trans      = null;
 
         /* Start transaction */
         $trans = $DB->start_delegated_transaction();
@@ -1270,14 +1273,19 @@ class WS_FELLESDATA {
             /**
              * SQL instruction
              */
-            $sql = " DELETE		icd.*
+            $sql = " SELECT		icd.id
                      FROM		{user_info_competence_data}	icd
                         JOIN	{report_gen_companydata}	co 	ON 	co.id 			= icd.companyid
                                                                 AND co.industrycode = :industry
                      WHERE icd.userid = :userid ";
 
             /* Execute */
-            $DB->execute($sql,$params);
+            $rdo = $DB->get_records_sql($sql,$params);
+            if ($rdo) {
+                foreach ($rdo as $instance) {
+                    $DB->delete_records('user_info_competence_data',array('id' => $instance->id));
+                }
+            }//if_rdo_competence
 
             /**
              * Delete entry from mdl_user_info_competence
@@ -1286,6 +1294,67 @@ class WS_FELLESDATA {
             if (!$rdo) {
                 $DB->delete_records('user_info_competence',array('userid' => $userId));
             }//if_rdo
+
+            /**
+             * Delete from managers
+             */
+            $sqlMng = " SELECT DISTINCT ma.id
+                        FROM		{report_gen_company_manager} 	ma
+                            JOIN	{report_gen_companydata}		co 	ON 	(co.id 			= ma.levelone
+                                                                             OR
+                                                                             co.id			= ma.leveltwo
+                                                                             OR
+                                                                             co.id			= ma.levelthree)
+                                                                        AND co.industrycode = :industry
+                        WHERE ma.managerid = :userid ";
+
+            /* Execute */
+            $rdo = $DB->get_records_sql($sqlMng,$params);
+            if ($rdo) {
+                foreach ($rdo as $instance) {
+                    $DB->delete_records('report_gen_company_manager',array('id' => $instance->id));
+                }
+            }//if_rdo_managers
+
+            /**
+             * Delete from reporters
+             */
+            $sqlRpt = " SELECT DISTINCT re.id
+                        FROM		{report_gen_company_reporter} re
+                            JOIN	{report_gen_companydata}	  co ON (co.id 			= re.levelone
+                                                                         OR
+                                                                         co.id			= re.leveltwo
+                                                                         OR
+                                                                         co.id			= re.levelthree)
+                                                                     AND co.industrycode = :industry
+                        WHERE re.reporterid = :userid ";
+            /* Execute */
+            $rdo = $DB->get_records_sql($sqlRpt,$params);
+            if ($rdo) {
+                foreach ($rdo as $instance) {
+                    $DB->delete_records('report_gen_company_reporter',array('id' => $instance->id));
+                }
+            }//if_rdo_reporters
+
+            /**
+             * Delete from super users
+             */
+            $sqlSuper = " SELECT DISTINCT	su.id
+                          FROM		{report_gen_super_user}	  su
+                            JOIN	{report_gen_companydata}  co ON (co.id 			= su.levelone
+                                                                     OR
+                                                                     co.id			= su.leveltwo
+                                                                     OR
+                                                                     co.id			= su.levelthree)
+                                                                 AND co.industrycode = :industry
+                          WHERE su.userid = :userid ";
+            /* Execute */
+            $rdo = $DB->get_records_sql($sqlSuper,$params);
+            if ($rdo) {
+                foreach ($rdo as $instance) {
+                    $DB->delete_records('report_gen_super_user',array('id' => $instance->id));
+                }
+            }//if_rdo_super_users
 
             /* Commit */
             $trans->allow_commit();
