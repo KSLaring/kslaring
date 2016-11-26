@@ -564,8 +564,9 @@ class enrol_waitinglist_plugin extends enrol_plugin {
 
             /* Add Info Managers    */
             $infoNotification->managers = $myManagers;
-            
-            \Approval::SendApprovedNotification_Managers($infoNotification);
+            if ($infoNotification->managers) {
+                \Approval::SendApprovedNotification_Managers($infoNotification);
+            }//if_managers
         }
     }
 
