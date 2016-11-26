@@ -338,9 +338,7 @@ Class Approval {
             $infoMail->site = $SITE->shortname;
 
             /* Mail for Managers    */
-            if ($toManagers) {
-                self::SendNotification_Managers($infoMail,$toManagers);
-            }//if_else
+            self::SendNotification_Managers($infoMail,$toManagers);
 
             /* Mail for Users       */
             $strSubject = get_string('mng_subject','enrol_waitinglist',$infoMail);
@@ -480,9 +478,7 @@ Class Approval {
             $infoNotification->reject = '<a href="' . $lnkReject . '">' . get_string('reject_lnk','enrol_waitinglist') . '</br>';
 
             /* Send Mail */
-            if ($toManagers) {
-                self::SendNotification_Managers($infoNotification,$toManagers,true);
-            }//if_toManagers
+            self::SendNotification_Managers($infoNotification,$toManagers,true);
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
