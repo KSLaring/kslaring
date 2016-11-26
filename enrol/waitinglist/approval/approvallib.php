@@ -17,6 +17,7 @@ define('ONWAIT_ACTION',3);
 define('WAITINGLIST_FIELD_INVOICE','customint8');
 define('WAITINGLIST_FIELD_APPROVAL','customint7');
 define('ENROLPASSWORD','customtext1');
+define('APPROVAL_COMPANY_NO_DEMANDED',3);
 
 Class Approval {
     /**********/
@@ -1791,7 +1792,7 @@ Class Approval {
         try {
             $rdo = $DB->get_record('enrol',array('id' => $enrolId),'customint7');
             if ($rdo) {
-                if ($rdo->customint7 != ENROL_COMPANY_NO_DEMANDED) {
+                if ($rdo->customint7 != APPROVAL_COMPANY_NO_DEMANDED) {
                     $isCompanyDemanded = true;
                 }//if_custom
             }//if_rdo

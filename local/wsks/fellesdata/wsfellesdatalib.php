@@ -1169,14 +1169,11 @@ class WS_FELLESDATA {
                 case DELETE_ACTION:
                     /* Delete User  */
                     if ($rdoUser) {
-                        $rdoUser->deleted      = 1;
-                        $rdoUser->timemodified = $time;
-
-                        /* Execute */
-                        $DB->update_record('user',$rdoUser);
+                        /* Delete his/her connection with the municipality */
+                        self::RemoveConnectionMunicipality($rdoUser->id,$userAccount->industry);
                     }else {
                         /* Execute  */
-                        $infoUser->deleted  = 1;
+                        //$infoUser->deleted  = 1;
                         $userId             = $DB->insert_record('user',$infoUser);
                     }//if_infoUsers
 
@@ -1237,6 +1234,68 @@ class WS_FELLESDATA {
             throw $ex;
         }//try_catch
     }//ProcessUserAccount
+
+    /**
+     * @param           $userId
+     * @param           $industryCode
+     *
+     * @throws          Exception
+     * @throws          dml_transaction_exception
+     *
+     * @creationDate    26/11/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * For users with delete action, their connection with municipality has to be removed
+     */
+    private static function RemoveConnectionMunicipality($userId,$industryCode) {
+        /* Variables */
+        global $DB;
+        $sql    = null;
+        $rdo    = null;
+        $params = null;
+        $trans  = null;
+
+        /* Start transaction */
+        $trans = $DB->start_delegated_transaction();
+
+        try {
+            /**
+             * Search Criteria
+             */
+            $params = array();
+            $params['userid']   = $userId;
+            $params['industry'] = $industryCode;
+
+            /**
+             * SQL instruction
+             */
+            $sql = " DELETE		icd.*
+                     FROM		{user_info_competence_data}	icd
+                        JOIN	{report_gen_companydata}	co 	ON 	co.id 			= icd.companyid
+                                                                AND co.industrycode = :industry
+                     WHERE icd.userid = :userid ";
+
+            /* Execute */
+            $DB->execute($sql,$params);
+
+            /**
+             * Delete entry from mdl_user_info_competence
+             */
+            $rdo = $DB->get_records('user_info_competence_data',array('userid' => $userId));
+            if (!$rdo) {
+                $DB->delete_records('user_info_competence',array('userid' => $userId));
+            }//if_rdo
+
+            /* Commit */
+            $trans->allow_commit();
+        }catch (Exception $ex) {
+            /* Rollback */
+            $trans->rollback($ex);
+
+            throw $ex;
+        }//try_catch
+    }//RemoveConnectionMunicipality
 
     /**
      * @param           $userEmail
