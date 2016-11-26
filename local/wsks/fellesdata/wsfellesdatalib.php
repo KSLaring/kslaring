@@ -549,13 +549,6 @@ class WS_FELLESDATA {
                                 /* Create   */
                                 $DB->insert_record('report_gen_company_manager',$infoManager);
                             }//if_manager
-
-                            /* Check if the user is already reporter or not */
-                            $IsReporter = self::IsManagerReporter($infoReporter,REPORTER);
-                            if (!$IsReporter) {
-                                /* Create */
-                                $DB->insert_record('report_gen_company_reporter',$infoReporter);
-                            }//if_reporter
                         }else if($reporter) {
                             /* Check if the user is already reporter or not */
                             $IsReporter = self::IsManagerReporter($infoReporter,REPORTER);
@@ -579,13 +572,6 @@ class WS_FELLESDATA {
                                 /* Create   */
                                 $DB->insert_record('report_gen_company_manager',$infoManager);
                             }//if_manager
-
-                            /* Check if the user is already reporter or not */
-                            $IsReporter = self::IsManagerReporter($infoReporter,REPORTER);
-                            if (!$IsReporter) {
-                                /* Create */
-                                $DB->insert_record('report_gen_company_reporter',$infoReporter);
-                            }//if_reporter
                         }else if ($reporter) {
                             /* Check if the user is already reporter or not */
                             $IsReporter = self::IsManagerReporter($infoReporter,REPORTER);
@@ -606,12 +592,6 @@ class WS_FELLESDATA {
                             if ($IsManager) {
                                 $DB->delete_records('report_gen_company_manager',array('id' => $IsManager));
                             }//if_Manager
-
-                            /* Delete From Reporter */
-                            $IsReporter = self::IsManagerReporter($infoReporter,REPORTER);
-                            if ($IsReporter) {
-                                $DB->delete_records('report_gen_company_reporter',array('id' => $IsReporter));
-                            }//if_reporter
                         }else if ($reporter) {
                             /* Delete From Reporter */
                             $IsReporter = self::IsManagerReporter($infoReporter,REPORTER);
