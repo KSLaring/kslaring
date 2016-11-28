@@ -47,6 +47,46 @@ class CourseTemplate {
     /**********/
 
     /**
+     * @throws          Exception
+     *
+     * @creationDate    21/03/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Initialize the sector selector
+     */
+    public static function Init_LocationsSector() {
+        /* Variables    */
+        global $PAGE;
+        $jsModule   = null;
+        $name       = null;
+        $path       = null;
+        $requires   = null;
+
+        try {
+            /* Initialise variables */
+            $name       = 'sectors';
+            $path       = '/local/course_page/yui/sectors.js';
+            $requires   = array('node', 'event-custom', 'datasource', 'json', 'moodle-core-notification');
+
+            /* Initialise js module */
+            $jsModule = array('name'        => $name,
+                'fullpath'    => $path,
+                'requires'    => $requires,
+                'strings'     => null
+            );
+
+            $PAGE->requires->js_init_call('M.core_coursepage.init_sectors',
+                array('course_location','course_sector'),
+                false,
+                $jsModule
+            );
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//Init_LocationsSector
+    
+    /**
      * @param           $addSearch
      * @param           $removeSearch
      * @param           $course

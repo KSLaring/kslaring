@@ -86,7 +86,7 @@ class course_page  {
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//
+    }//Init_LocationsSector
 
     /**
      * @throws          Exception

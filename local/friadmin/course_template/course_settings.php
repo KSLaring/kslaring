@@ -95,6 +95,11 @@ echo $OUTPUT->heading($strSubTitle,3);
 
 $form->display();
 
+/**
+ * Initialize Locations/Sector - Javascript
+ */
+CourseTemplate::Init_LocationsSector();
+
 /* Footer   */
 echo $OUTPUT->footer();
 
