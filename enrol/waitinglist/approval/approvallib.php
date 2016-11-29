@@ -1354,7 +1354,7 @@ Class Approval {
                     $bodyText = html_to_text($bodyHtml);
                 }
 
-                if (email_to_user($manager, $SITE->shortname, $strSubject, $bodyText,$bodyHtml)) {
+                if (email_to_user($info, $SITE->shortname, $strSubject, $bodyText,$bodyHtml)) {
                     // Notification Sent
                     $sent = true;
                 }//send_mail
