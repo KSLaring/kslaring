@@ -1,0 +1,58 @@
+body {
+    font-family: @sansFontFamily;
+    font-size: @baseFontSize;
+}
+
+input,
+button,
+select,
+textarea {
+    font-family: @sansFontFamily;
+}
+
+.navbar-search {
+    .search-query {
+        font-family: @sansFontFamily;
+    }
+}
+
+.hero-unit {
+    h1,
+    .texts {
+        font-family: @heroFontFamily;
+    }
+}
+
+a {
+    color: @linkColor;
+
+    &:visited,
+    &:hover,
+    &:focus,
+    &:active,
+    &.active {
+        color: @linkColorHover;
+        text-decoration: none;
+    }
+
+    &.btn {
+        color: @white;
+
+        &:visited,
+        &:hover,
+        &:focus,
+        &:active,
+        &.active {
+            color:  @white;
+            text-decoration: none;
+        }
+    }
+}
+
+.logo {
+    h1 {
+        span {
+            font-size: .5em;
+        }
+    }
+}
