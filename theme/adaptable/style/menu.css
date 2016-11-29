@@ -44,7 +44,7 @@
 
 .navbar .nav > li > a:hover {
     color: [[setting:menufontcolor]];
-    background-color: none;
+    background-color: [[setting:menuhovercolor]] !important;
     text-decoration: none;
 }
 
@@ -285,7 +285,7 @@ color: [[setting:headertextcolor]];
 }
 
 @media (max-width: 768px) {
-  .newmenu1, .newmenu2, .newmenu3, .newmenu4, .newmenu5, .newmenu6, .newmenu7, .newmenu8, .newmenu9, .newmenu10, .newmenu11, .newmenu12, .newmenu13, .newmenu14, .newmenu15, .newmenu16[[setting:hidepagefootermobile]][[setting:hidebreadcrumbmobile]][[setting:hidealertsmobile]][[setting:hidesocialmobile]][[setting:hideheadermobile]][[setting:hidelogomobile]][[setting:hidecoursetitlemobile]] {
+  .newmenu1, .newmenu2, .newmenu3, .newmenu4, .newmenu5, .newmenu6, .newmenu7, .newmenu8, .newmenu9, .newmenu10, .newmenu11, .newmenu12, .newmenu13, .newmenu14, .newmenu15, .newmenu16[[setting:hidepagefootermobile]][[setting:hidebreadcrumbmobile]][[setting:hidealertsmobile]][[setting:hidesocialmobile]][[setting:hideheadermobile]][[setting:hidecoursetitlemobile]] {
       display: none;
   }
 }

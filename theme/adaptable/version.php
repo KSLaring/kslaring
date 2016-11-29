@@ -17,19 +17,19 @@
 /**
  * Version details
  *
- * @package    theme_adaptable
- * @copyright 2015 Jeremy Hopkins (Coventry University)
- * @copyright 2015 Fernando Acedo (3-bits.com)
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package   theme_adaptable
+ * @copyright 2015-2016 Jeremy Hopkins (Coventry University)
+ * @copyright 2015-2016 Fernando Acedo (3-bits.com)
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  *
  */
 
 defined('MOODLE_INTERNAL') || die;
 
-$plugin->version   = 2016052900;
+$plugin->version   = 2016102300;
 $plugin->requires  = 2015051100;
 $plugin->component = 'theme_adaptable';
-$plugin->release = '1.2.3';
+$plugin->release = '1.2.4.2';
 $plugin->maturity = MATURITY_STABLE;
 $plugin->dependencies = array(
     'theme_bootstrapbase'  => 2014111000,

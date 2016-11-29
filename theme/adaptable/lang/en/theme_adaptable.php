@@ -18,8 +18,8 @@
  * Version details
  *
  * @package    theme_adaptable
- * @copyright  2015 Jeremy Hopkins (Coventry University)
- * @copyright  2015 Fernando Acedo (3-bits.com)
+ * @copyright  2015-2016 Jeremy Hopkins (Coventry University)
+ * @copyright  2015-2016 Fernando Acedo (3-bits.com)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  *
  */
@@ -36,22 +36,31 @@ $string['choosereadme'] = '
  <h2>Credits</h2>
  <h3>About</h3>
  <p>Adaptable is a Moodle 2-columns responsive theme highly customizable and based in the popular BCU theme.</p>
- <p>This theme is licensed under the GPL (GNU General Public License). You can find a complete licence copy in: http://www.gnu.org/licenses/</p>
- <p>Modify it / Improve it / Share it</p>
+ <p>The theme is licensed under the GPL (GNU General Public License). You can find a complete licence copy <a href="http://www.gnu.org/licenses/" target="_HERE">blank</a></p>
+ <h4>Modify it! - Improve it! - Share it!</h4>
  <br>
  <p>This theme has been developed by:<br>
  Jeremy Hopkins (Coventry University)<br>
- Fernando Acedo (3-bits.com)<br>
- </p>
+ Fernando Acedo (<a href="http://3-bits.com" target="_blank">3-bits.com</a>)</p>
+ <br>
+ <p>and many other developers, testers, translators and volunteers (See <a href="adaptable/README.txt" target="_blank">README.txt</a>)</p>
  <br>
  <h3>Bugs Report</h3>
- <p>You can report bugs using the Moodle forum or https://bitbucket.org/covuni/moodle-theme_adaptable/issues</p>
+ <p>You can report bugs (and please, <b>ONLY</b> bugs) in our <a href="https://bitbucket.org/covuni/moodle-theme_adaptable/issues" target="_blank">Bitbucket repository</a></p>
+ <br>
+ <h3>Technical Support</h3>
+ <p>You can ask your questions, doubts and share your tips in the moodle forum:</p>
+ <ul>
+ <li>English: <a href="https://moodle.org/mod/forum/discuss.php?d=340404" target="_blank">https://moodle.org/mod/forum/discuss.php?d=340404</a>
+ <li>Español: <a href="https://moodle.org/mod/forum/discuss.php?d=326804" target="_blank">https://moodle.org/mod/forum/discuss.php?d=326804</a>
+ <li>Català: <a href="https://moodle.org/mod/forum/discuss.php?d=340406" target="_blank">https://moodle.org/mod/forum/discuss.php?d=340406</a>
+ </ul>
  <br>
  <h3>Documentation</h3>
- <p></p>
+ <p>Coming soon</p>
  <br>
  <h3>Demo</h3>
- <p>You can see a demo and download a Quickinstall version in <a href="http://3-bits.com/demo/adaptable">http://3-bits.com/demo/adaptable</a></p>
+ <p>You can see a demo version <a href="http://3-bits.com/demo/adaptable" target="_blank">HERE</a></p>
  <br>
 
 </div>
@@ -60,32 +69,32 @@ $string['choosereadme'] = '
 $string['pluginname'] = 'Adaptable';
 $string['configtitle'] = 'Adaptable';
 
-$string['region-middle'] = 'middle';
-$string['region-frnt-footer'] = 'footer';
+$string['region-middle'] = 'Middle';
+$string['region-frnt-footer'] = 'Footer';
 $string['region-side-post'] = 'Right';
 $string['region-side-pre'] = 'Left';
 $string['frnt-footer'] = 'Blocks in this area will only be visible to admin users.';
 
-$string['region-frnt-market-a'] = 'Market';
-$string['region-frnt-market-b'] = 'Market';
-$string['region-frnt-market-c'] = 'Market';
-$string['region-frnt-market-d'] = 'Market';
-$string['region-frnt-market-e'] = 'Market';
-$string['region-frnt-market-f'] = 'Market';
-$string['region-frnt-market-g'] = 'Market';
-$string['region-frnt-market-h'] = 'Market';
-$string['region-frnt-market-i'] = 'Market';
-$string['region-frnt-market-j'] = 'Market';
-$string['region-frnt-market-k'] = 'Market';
-$string['region-frnt-market-l'] = 'Market';
-$string['region-frnt-market-m'] = 'Market';
-$string['region-frnt-market-n'] = 'Market';
-$string['region-frnt-market-o'] = 'Market';
-$string['region-frnt-market-p'] = 'Market';
-$string['region-frnt-market-q'] = 'Market';
-$string['region-frnt-market-r'] = 'Market';
-$string['region-frnt-market-s'] = 'Market';
-$string['region-frnt-market-t'] = 'Market';
+$string['region-frnt-market-a'] = 'Market-a';
+$string['region-frnt-market-b'] = 'Market-b';
+$string['region-frnt-market-c'] = 'Market-c';
+$string['region-frnt-market-d'] = 'Market-d';
+$string['region-frnt-market-e'] = 'Market-e';
+$string['region-frnt-market-f'] = 'Market-f';
+$string['region-frnt-market-g'] = 'Market-g';
+$string['region-frnt-market-h'] = 'Market-h';
+$string['region-frnt-market-i'] = 'Market-i';
+$string['region-frnt-market-j'] = 'Market-j';
+$string['region-frnt-market-k'] = 'Market-k';
+$string['region-frnt-market-l'] = 'Market-l';
+$string['region-frnt-market-m'] = 'Market-m';
+$string['region-frnt-market-n'] = 'Market-n';
+$string['region-frnt-market-o'] = 'Market-o';
+$string['region-frnt-market-p'] = 'Market-p';
+$string['region-frnt-market-q'] = 'Market-q';
+$string['region-frnt-market-r'] = 'Market-r';
+$string['region-frnt-market-s'] = 'Market-s';
+$string['region-frnt-market-t'] = 'Market-t';
 
 
 // Settings page headings ******************************************.
@@ -102,7 +111,7 @@ $string['settingsalertbox'] = 'Alert Box';
 $string['settingsbreadcrumbcolors'] = 'Breadcrumb Colours';
 $string['settingsfootercolors'] = 'Footer Colours';
 $string['settingsfonts'] = 'Fonts';
-$string['analyticssettings'] = 'Analytics';
+$string['settingsanalytics'] = 'Analytics';
 
 
 // Admin Menu Strings.
@@ -233,6 +242,10 @@ $string['slideroption2colordesc'] = 'Set a background colour for the submit text
 $string['slideroption2a'] = 'Slider style option 2 arrow background colour';
 $string['slideroption2adesc'] = 'Set the slider style option 2 arrow background colour';
 
+$string['sliderstyle1'] = 'Slider style 1';
+$string['sliderstyle2'] = 'Slider style 2';
+
+
 // Block Regions ***************************************************.
 $string['blocklayoutbuilder'] = 'Frontpage Block Regions';
 $string['blocklayoutbuilderdesc'] = 'Below you can build your own layout for block regions on the front page.
@@ -292,6 +305,11 @@ $string['frontpagemarketenableddesc'] = 'Set the marketing blocks in the frontpa
 $string['frontpagemarketoption'] = 'Choose style for marketing blocks';
 $string['frontpagemarketoptiondesc'] = 'You can apply different styles to marketing blocks.
 Note: BCU style is designed to work with images at top of block.';
+
+$string['bcustyle'] = 'BCU style';
+$string['coventrystyle'] = 'Coventry style';
+$string['nostyle'] = 'No style';
+
 
 // Footer **********************************************************.
 $string['footersettings'] = 'Footer';
@@ -572,11 +590,21 @@ $string['menubordercolordesc'] = 'Set a Main Menu border bottom colour';
 $string['menufontcolor'] = 'Main Menu font colour';
 $string['menufontcolordesc'] = 'Set a Main Menu font colour';
 
+$string['menuhovercolor'] = 'Main Menu hover colour';
+$string['menuhovercolordesc'] = 'Set a Main Menu hover colour';
+
 $string['mobilemenubkcolor'] = 'Mobile Menu background colour';
 $string['mobilemenubkcolordesc'] = 'Set the Main Menu background colour on mobile devices (collapsed)';
 
 $string['mobilemenufontcolor'] = 'Mobile Menu font colour';
 $string['mobilemenufontcolordesc'] = 'Set a Main Menu font colour on mobile devices (collapsed)';
+
+$string['selectiontext'] = 'Selection text colour';
+$string['selectiontextdesc'] = 'Set the text colour when a text in the screen is selected.';
+
+$string['selectionbackground'] = 'Selection background colour';
+$string['selectionbackgrounddesc'] = 'Set the background colour when a text in the screen is selected.';
+
 
 // Course *********************************************************.
 $string['coursesettings'] = 'Course Sections';
@@ -622,7 +650,10 @@ $string['fontsettingsheading'] = 'Modify the fonts used throughout the theme.';
 $string['fontdesc'] = 'You can select the <a href="https://www.google.com/fonts" target="_blank">Google Fonts</a> that you would like to use throughout the theme. Select the subset needed (latin is always included) and enter the right font weight or the font will not displayed.';
 
 $string['fontname'] = 'Main font';
-$string['fontnamedesc'] = 'Select the default font or <a href="https://www.google.com/fonts" target="_blank">Google Fonts</a> used in site.';
+$string['fontnamedesc'] = 'Select the default font or <a href="https://www.google.com/fonts" target="_blank">Google Fonts</a> used in the site.';
+
+$string['fontsize'] = 'Main font size';
+$string['fontsizedesc'] = 'Select the default font size (in percentage) used in the whole site.';
 
 $string['fontheadername'] = 'Headers font';
 $string['fontheadernamedesc'] = 'Select the default font or <a href="https://www.google.com/fonts" target="_blank">Google Fonts</a> used in the text and blocks headers.';
@@ -783,8 +814,8 @@ $string['logodesc'] = 'Upload a logo for use on your site.';
 $string['favicon'] = 'Favicon';
 $string['favicondesc'] = 'Upload a favicon for use on your site,';
 
-$string['enableavailablecourses'] = 'Display Available Courses';
-$string['enableavailablecoursesdesc'] = 'Display Available Courses label in the frontpage';
+$string['enableavailablecourses'] = 'Display "Available Courses"';
+$string['enableavailablecoursesdesc'] = 'Display "Available Courses" label in the frontpage';
 
 $string['thiscourse'] = 'This course';
 
@@ -805,6 +836,17 @@ $string['sitetitletextdesc'] = 'Site title displayed in the header. You can use 
 
 $string['frontpagelogin'] = 'Front Page Login';
 $string['frontpagelogindesc'] = 'Enable login form in header (will show button if turned off)';
+
+$string['displaylogin'] = 'Display login';
+$string['displaylogindesc'] = 'Select how to display the login in the screen (when enabled above).';
+
+$string['displayloginbutton'] = 'Button';
+$string['displayloginbox'] = 'Login Box';
+$string['displayloginno'] = 'No Login';
+
+
+$string['enablemessagemenu'] = 'Message menu';
+$string['enablemessagemenudesc'] = 'Enable Message menu in header (moot if messaging is globally turned off)';
 
 $string['hideblocks'] = 'Hide blocks';
 $string['showblocks'] = 'Show blocks';
@@ -866,6 +908,8 @@ $string['tilescontactstitledesc'] = 'Show / hide the role of a course contact. I
 $string['tilesshowallcontacts'] = 'Show all course contacts';
 $string['tilesshowallcontactsdesc'] = 'Show all course contacts or just one';
 
+$string['course'] = 'Course';
+
 
 // Alerts **********************************************************.
 // Alert Box Enable.
@@ -905,10 +949,10 @@ $string['alertinfo'] = 'Info';
 $string['alertinfodesc'] = 'Display information in the Alert Box';
 
 $string['alertwarning'] = 'Warning';
-$string['alertinfodesc'] = 'Display a warning in the Alert Box';
+$string['alertwarningdesc'] = 'Display a warning in the Alert Box';
 
 $string['alertannounce'] = 'Announcement';
-$string['alertinfodesc'] = 'Display an announcement in the Alert Box';
+$string['alertannouncedesc'] = 'Display an announcement in the Alert Box';
 
 $string['alertprofilefield'] = 'Custom Profile Field Name=Value (optional)';
 $string['alertprofilefielddesc'] = 'Add access rule using for custom profile field eg: usertype=student';
@@ -989,11 +1033,14 @@ $string['layoutsettingsheading'] = 'Control aspects of the site\'s layout';
 $string['blockside'] = 'Location of the blocks';
 $string['blocksidedesc'] = 'Control whether blocks appear on the left or right of the page';
 
+$string['rightblocks'] = 'Right side';
+$string['leftblocks'] = 'Left side';
+
 $string['blockicons'] = 'Block Icons';
 $string['blockiconsdesc'] = 'Set this to show block icons in the block header area.';
 
-$string['leftblocks'] = 'Left';
-$string['rightblocks'] = 'Right';
+$string['emoticonsize'] = 'Emoticons size';
+$string['emoticonsizedesc'] = 'Set the height and width of the moodle emoticons.';
 
 $string['helptarget'] = 'Help target';
 $string['helptargetdesc'] = 'Do you want the help link to open in a new window?';
@@ -1215,11 +1262,17 @@ $string['socialsearchicondesc'] = 'Enable to put a search link alongside social 
 $string['socialicondesc'] = 'Set Font Awesome icon for example: fa-facebook';
 
 $string['socialiconlist'] = 'Social Icon List';
-$string['socialiconlistdesc'] = 'Enter a de-limited list to setup the social icons / links you need using the format: url|title|icon';
+$string['socialiconlistdesc'] = 'Enter a delimited list to setup the social icons / links you need using the format: url|title|icon';
 
-// Analytics.
-$string['analyticssettingsheading'] = 'Setup Google Analytics';
-$string['analyticssettingsdesc'] = 'You can setup multiple codes for Google Analytics and targed them to user profile fields.';
+// Analytics *********************************.
+$string['analyticssettings'] = 'Analytics';
+$string['analyticssettingsheading'] = 'Setup Google Analytics and/or Piwik';
+$string['analyticssettingsdesc'] = 'You can setup multiple codes for Google Analytics and targed them to user profile fields. Or you can use Piwik, the open source analytics.';
+
+// GA.
+$string['googleanalyticssettings'] = 'Google Analytics';
+$string['googleanalyticssettingsheading'] = 'Setup Google Analytics for your site';
+$string['googleanalyticssettingsdesc'] = 'You can setup multiple codes for Google Analytics and targed them to user profile fields.';
 
 $string ['enableanalytics'] = 'Enable Google Analytics';
 $string ['enableanalyticsdesc'] = 'Enable Google Analytics settings on your Moodle site';
@@ -1233,7 +1286,27 @@ $string['analyticscountdesc'] = 'The number of analytics fields to show in the e
 $string ['analyticsprofilefield'] = 'Custom Profile Field Name=Value (optional)';
 $string ['analyticsprofilefielddesc'] = 'Add access rule using for custom profile field eg: usertype=student';
 
-// Custom CSS.
+// Piwik.
+$string['piwiksettings'] = 'Piwik Analytics';
+$string['piwiksettingsheading'] = 'Setup Piwik';
+$string['piwiksettingsdesc'] = 'Generate clean URL for in advanced tracking.';
+
+$string['piwikenabled'] = 'Enabled';
+$string['piwikenableddesc'] = 'Enable Piwik tracking for Moodle.';
+
+$string['piwiksiteid'] = 'Site ID';
+$string['piwiksiteiddesc'] = 'Enter your Site ID.';
+
+$string['piwikimagetrack'] = 'Image Tracking';
+$string['piwikimagetrackdesc'] = 'Enable Image Tracking for Moodle for browsers with JavaScript disabled.';
+
+$string['piwiksiteurl'] = 'Piwik URL';
+$string['piwiksiteurldesc'] = 'Enter your Piwik Analytics URL without http(s) or a trailing slash';
+
+$string['piwiktrackadmin'] = 'Tracking Admins';
+$string['piwiktrackadmindesc'] = 'Enable tracking of Admin users (not recommended)';
+
+// Custom CSS ********************************.
 $string['customcss'] = 'Custom CSS';
 $string['customcssdesc'] = 'Whatever CSS rules you add to this textarea will be reflected in every page, making for easier customization of this theme.';
 

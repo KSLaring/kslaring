@@ -59,6 +59,7 @@ $temp->add($setting);
 
 // If we don't have a menuscount yet, default to the preset.
 $toolsmenuscount = get_config('theme_adaptable', 'toolsmenuscount');
+
 if (!$toolsmenuscount) {
     $toolsmenuscount = THEME_ADAPTABLE_DEFAULT_TOOLSMENUSCOUNT;
 }

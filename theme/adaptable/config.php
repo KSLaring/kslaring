@@ -18,13 +18,14 @@
  * Version details
  *
  * @package    theme_adaptable
- * @copyright 2015 Jeremy Hopkins (Coventry University)
- * @copyright 2015 Fernando Acedo (3-bits.com)
+ * @copyright  2015-2016 Jeremy Hopkins (Coventry University)
+ * @copyright  2015-2016 Fernando Acedo (3-bits.com)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  *
  */
 
 global $PAGE;
+
 if ($PAGE->pagetype == 'site-index') {
     $regions = array('side-post', 'middle', 'frnt-footer', 'frnt-market-a', 'frnt-market-b', 'frnt-market-c', 'frnt-market-d',
         'frnt-market-e', 'frnt-market-f', 'frnt-market-g', 'frnt-market-h', 'frnt-market-i', 'frnt-market-j', 'frnt-market-k',
@@ -159,7 +160,6 @@ $THEME->layouts = array(
         'regions' => array('side-post'),
         'defaultregion' => 'side-post',
     ),
-
     // The pagelayout used for safebrowser and securewindow.
     'secure' => array(
         'file' => 'secure.php',

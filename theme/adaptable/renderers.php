@@ -18,14 +18,16 @@
  * Version details
  *
  * @package    theme_adaptable
- * @copyright 2015 Jeremy Hopkins (Coventry University)
- * @copyright 2015 Fernando Acedo (3-bits.com)
+ * @copyright  2015 Jeremy Hopkins (Coventry University)
+ * @copyright  2015 Fernando Acedo (3-bits.com)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  *
  */
 
+
+// Load libraries.
 require_once($CFG->dirroot.'/blocks/course_overview/locallib.php');
-require_once($CFG->dirroot . "/course/renderer.php");
+require_once($CFG->dirroot .'/course/renderer.php');
 require_once($CFG->libdir. '/coursecatlib.php');
 
 /**
@@ -113,7 +115,8 @@ class theme_adaptable_core_renderer extends core_renderer {
     public function get_alert_messages() {
         global $PAGE;
         $alerts = '';
-        $alertcount = get_config('theme_adaptable', 'alertcount');
+
+        $alertcount = $PAGE->theme->settings->alertcount;
 
         for ($i = 1; $i <= $alertcount; $i++) {
             $enablealert = 'enablealert' . $i;
@@ -192,7 +195,7 @@ class theme_adaptable_core_renderer extends core_renderer {
         $retval = '<div class="customalert alert alert-' . $type . ' fade in" role="alert">';
         $retval .= '<a href="#" class="close" data-dismiss="alert" data-alertkey="' . $alertkey .
         '" data-alertindex="' . $alertindex . '" aria-label="close">&times;</a>';
-        $retval .= '<i class="fa fa-' . $this->alert_icon($type) . ' fa-lg"></i>&nbsp';
+        $retval .= '<i class="fa fa-' . $this->alert_icon($type) . ' fa-lg"></i>&nbsp;';
         $retval .= $text;
         $retval .= '</div>';
         return $retval;
@@ -260,9 +263,9 @@ class theme_adaptable_core_renderer extends core_renderer {
     public function get_analytics() {
         global $PAGE;
         $analytics = '';
-        $analyticscount = get_config('theme_adaptable', 'analyticscount');
-        if (isset($PAGE->theme->settings->enableanalytics)) {
+        $analyticscount = $PAGE->theme->settings->enableanalytics;
 
+        if (isset($PAGE->theme->settings->enableanalytics)) {
             for ($i = 1; $i <= $analyticscount; $i++) {
                 $analyticstext = 'analyticstext' . $i;
                 $analyticsprofilefield = 'analyticsprofilefield' . $i;
@@ -302,6 +305,98 @@ EOT;
     }
 
     /**
+     * Returns Piwik code if enabled
+     *
+     * @copyright  2016 COMETE-UPO (Université Paris Ouest)
+     *
+     * @return string
+     */
+    public function get_piwik() {
+        global $CFG, $DB, $PAGE, $COURSE, $SITE;
+
+        $enabled = $PAGE->theme->settings->piwikenabled;
+        $imagetrack = $PAGE->theme->settings->piwikimagetrack;
+        $siteurl = $PAGE->theme->settings->piwiksiteurl;
+        $siteid = $PAGE->theme->settings->piwiksiteid;
+        $trackadmin = $PAGE->theme->settings->piwiktrackadmin;
+
+        $enabled = $PAGE->theme->settings->piwikenabled;
+        $imagetrack = $PAGE->theme->settings->piwikimagetrack;
+        $siteurl = $PAGE->theme->settings->piwiksiteurl;
+        $siteid = $PAGE->theme->settings->piwiksiteid;
+        $trackadmin = $PAGE->theme->settings->piwiktrackadmin;
+
+        $analytics = '';
+        if ($enabled && !empty($siteurl) && !empty($siteid) && (!is_siteadmin() || $trackadmin)) {
+            if ($imagetrack) {
+                $addition = '<noscript><p>
+                            <img src="//'.$siteurl.'/piwik.php?idsite='.$siteid.' style="border:0;" alt="" /></p></noscript>';
+            } else {
+                $addition = '';
+            }
+            // Cleanurl.
+            $pageinfo = get_context_info_array($PAGE->context->id);
+            $trackurl = '';
+            // Adds course category name.
+            if (isset($pageinfo[1]->category)) {
+                if ($category = $DB->get_record('course_categories', array('id' => $pageinfo[1]->category))) {
+                    $cats = explode("/", $category->path);
+                    foreach (array_filter($cats) as $cat) {
+                        if ($categorydepth = $DB->get_record("course_categories", array("id" => $cat))) {
+                            $trackurl .= $categorydepth->name.'/';
+                        }
+                    }
+                }
+            }
+            // Adds course full name.
+            if (isset($pageinfo[1]->fullname)) {
+                if (isset($pageinfo[2]->name)) {
+                    $trackurl .= $pageinfo[1]->fullname.'/';
+                } else if ($PAGE->user_is_editing()) {
+                    $trackurl .= $pageinfo[1]->fullname.'/'.get_string('edit', 'local_analytics');
+                } else {
+                    $trackurl .= $pageinfo[1]->fullname.'/'.get_string('view', 'local_analytics');
+                }
+            }
+            // Adds activity name.
+            if (isset($pageinfo[2]->name)) {
+                $trackurl .= $pageinfo[2]->modname.'/'.$pageinfo[2]->name;
+            }
+            $trackurl = '"'.str_replace('"', '\"', $trackurl).'"';
+            // Here we go.
+            $analytics .= '<!-- Start Piwik Code -->'."\n".
+                '<script type="text/javascript">'."\n".
+                '    var _paq = _paq || [];'."\n".
+                '    _paq.push(["setDocumentTitle", '.$trackurl.']);'."\n".
+                '    _paq.push(["trackPageView"]);'."\n".
+                '    _paq.push(["enableLinkTracking"]);'."\n".
+                '    (function() {'."\n".
+                '      var u="//'.$siteurl.'/";'."\n".
+                '      _paq.push(["setTrackerUrl", u+"piwik.php"]);'."\n".
+                '      _paq.push(["setSiteId", '.$siteid.']);'."\n".
+                '      var d=document, g=d.createElement("script"), s=d.getElementsByTagName("script")[0];'."\n".
+                '    g.type="text/javascript"; g.async=true; g.defer=true; g.src=u+"piwik.js"; s.parentNode.insertBefore(g,s);'."\n".
+                '    })();'."\n".
+                '</script>'.$addition."\n".
+                '<!-- End Piwik Code -->'."\n".
+            '';
+        }
+        return $analytics;
+    }
+
+    /**
+     * Returns all tracking methods (Analytics and Piwik)
+     *
+     * @return string
+     */
+    public function get_all_tracking_methods() {
+        $analytics = '';
+        $analytics .= $this->get_analytics();
+        $analytics .= $this->get_piwik();
+        return $analytics;
+    }
+
+    /**
      * Returns HTML to display a "Turn editing on/off" button in a form.
      *
      * @param moodle_url $url The URL + params to send through when clicking the button
@@ -332,14 +427,14 @@ EOT;
      * @return string
      */
     protected function render_user_menu(custom_menu $menu) {
-        global $CFG, $USER, $DB, $OUTPUT;
+        global $PAGE, $CFG, $USER, $DB, $OUTPUT;
         $addlangmenu = true;
         $addmessagemenu = true;
 
         if (!isloggedin() || isguestuser()) {
             $addmessagemenu = false;
         }
-        if (!$CFG->messaging) {
+        if (!$CFG->messaging || !$PAGE->theme->settings->enablemessagemenu) {
             $addmessagemenu = false;
         } else {
             // Check whether or not the "popup" message output is enabled
@@ -453,8 +548,7 @@ EOT;
             $messagelist[] = $this->process_message($message);
         }
 
-        $showoldmessages = (empty($this->page->theme->settings->showoldmessages)) ? 0 :
-                $this->page->theme->settings->showoldmessages;
+        $showoldmessages = (empty($this->page->theme->settings->showoldmessages)) ? 0 : $this->page->theme->settings->showoldmessages;
         if ($showoldmessages) {
             $maxmessages = 5;
             $readmessagesql = "SELECT id, smallmessage, useridfrom, useridto, timecreated, fullmessageformat, notification
@@ -828,7 +922,11 @@ EOT;
         for ($i = 1; $i <= $noslides; $i++) {
             $sliderimage = 'p' . $i;
             $sliderurl = 'p' . $i . 'url';
-            $slidercaption = 'p' . $i .'cap';
+
+            if (!empty($PAGE->theme->settings->$sliderimage)) {
+                $slidercaption = 'p' . $i .'cap';
+            }
+
             $closelink = '';
             if (!empty($PAGE->theme->settings->$sliderimage)) {
                 $retval .= '<li>';
@@ -878,6 +976,7 @@ EOT;
         return $retval;
     }
 
+
     /*
      * Render the breadcrumb
      * @param array $items
@@ -886,10 +985,11 @@ EOT;
      * return string
      */
     public function navbar() {
-        global $COURSE;
+        global $PAGE;
 
         $items = $this->page->navbar->get_items();
-        $breadcrumbseparator = get_config('theme_adaptable', 'breadcrumbseparator');
+        $breadcrumbseparator = $PAGE->theme->settings->breadcrumbseparator;
+
         $breadcrumbs = "";
 
         if (empty($items)) {
@@ -903,7 +1003,7 @@ EOT;
 
             // Text / Icon home.
             if ($i++ == 0) {
-                if (get_config('theme_adaptable', 'breadcrumbhome') == 'icon') {
+                if ($PAGE->theme->settings->breadcrumbhome == 'icon') {
                     $breadcrumbs = html_writer::link(new moodle_url('/'),
                                    html_writer::tag('i', '', array('class' => 'fa fa-home fa-lg')));
                 } else {
@@ -919,7 +1019,6 @@ EOT;
 
         return '<ul class="breadcrumb">'.$breadcrumbs.'</ul>';
     }
-
 
 
     /**
@@ -938,11 +1037,6 @@ EOT;
         $performanceinfo = '';
         if (defined('MDL_PERF') || (!empty($CFG->perfdebug) and $CFG->perfdebug > 7)) {
             $perf = get_performance_info();
-
-            // Deprecated function. Display: The use of function error_log() is forbidden.
-            // if (defined('MDL_PERFTOLOG') && !function_exists('register_shutdown_function')) {.
-            // error_log("PERF: " . $perf['txt']);.
-            // }.
 
             if (defined('MDL_PERFTOFOOT') || debugging() || $CFG->perfdebug > 7) {
                 $performanceinfo = theme_adaptable_performance_output($perf);
@@ -971,11 +1065,6 @@ EOT;
         $overridestrings = false;
         $overridetype = 'off';
         $sessttl = 0;
-
-        if (!empty($PAGE->theme->settings->navbarcachetime) && $PAGE->theme->settings->navbarcachetime > 0) {
-            $sessttl = (time() + ($PAGE->theme->settings->navbarcachetime * 60));
-        }
-
         $cache = cache::make('theme_adaptable', 'userdata');
 
         if ($sessttl > 0 && time() <= $cache->get('usernavbarttl')) {
@@ -1072,9 +1161,9 @@ EOT;
                                 } else { // If not in array add to sub menu item.
                                     if (!isset($parent)) {
                                         $icon = '<i class="fa fa-history"></i> ';
-                                        $parent = $branch->add($icon . $trunc =
-                                            rtrim(mb_strimwidth(format_string(get_string('pastcourses', 'theme_adaptable')),
-                                            0, $mysitesmaxlengthhidden)) . '...', new moodle_url('#'), '', 1000);
+                                        $parent = $branch->add($icon . $trunc = rtrim(
+                                                    mb_strimwidth(format_string(get_string('pastcourses', 'theme_adaptable')),
+                                                    0, $mysitesmaxlengthhidden)) . '...', new moodle_url('#'), '', 1000);
                                     }
                                     $parent->add($trunc = rtrim(mb_strimwidth(format_string($course->fullname),
                                                  0, $mysitesmaxlengthhidden)) . '...',
@@ -1255,68 +1344,60 @@ EOT;
      * @return string
      */
     public function get_logo_title() {
-        global $PAGE, $COURSE, $CFG, $SITE;
+        global $PAGE, $COURSE, $CFG, $SITE, $OUTPUT;
         $retval = '';
         $display = $PAGE->theme->settings->sitetitle;
 
-        if ($COURSE->id > 1) {
-            $div = '<div id="titlecontainer" class="pull-left">';
-//            $div = '<div id="coursetitle" class="pull-left">';
-        } else {
-            $div = '<div id="titlecontainer" class="pull-left">';
-        }
-
+        $div = '<div id="titlecontainer" class="pull-left">';
         $retval .= $div;
 
+        if (!empty($PAGE->theme->settings->logo)) {
+            // Logo.
+            $retval .= '<div id="logocontainer">';
+            $retval .= "<a href='$CFG->wwwroot'>";
+            $retval .= '<img src=' . $PAGE->theme->setting_file_url('logo', 'logo') . ' alt="logo" id="logo" />';
+            $retval .= '</a></div>';
+        } else {
+            $retval .= '<div style="height: 20px"></div>';
+        }
+
         if ($display == 'default') {
-        // Default moodle title.
-            if (!empty($PAGE->theme->settings->logo)) {
-                // Logo.
-                $retval .= '<div id="logocontainer">';
-                $retval .= "<a href='$CFG->wwwroot'>";
-                $retval .= '<img src=' . $PAGE->theme->setting_file_url('logo', 'logo') . ' alt="logo" id="logo" />';
-                $retval .= '</a></div></div>';
-            } else {
-                if ($COURSE->id > 1) {
-                    // Course Title.
-
-                    switch ($PAGE->theme->settings->enableheading) {
-                        case 'fullname':
-                        // Full Name.
-                        $retval .= '<span id="sitetitle">' . $COURSE->fullname . '</span></div>';
+            // Default moodle title.
+            if ($COURSE->id > 1) {
+                // Course Title.
+                switch ($PAGE->theme->settings->enableheading) {
+                    case 'fullname':
+                        // Full Course Name.
+                        $retval .= '<div id="sitetitle">' . format_string($COURSE->fullname) . '</div>';
                         break;
 
-                        case 'shortname':
-                        // Short Name.
-                        $retval .= '<span id="sitetitle">' . $COURSE->shortname . '</span></div>';
+                    case 'shortname':
+                        // Short Course Name.
+                        $retval .= '<div id="sitetitle">' . format_string($COURSE->shortname) . '</div>';
                         break;
 
-                        default: 
+                    default:
                         // None.
-                        $retval .= '<span id="sitetitle"></span></div>';
+                        $retval .= '<div id="sitetitle"></div>';
                         break;
-                    }
-
-
-                } else {
-                    // Site Title.
-                    $retval .= '<span id="sitetitle">' . $SITE->shortname . '</span></div>';
                 }
+            } else {
+                // Site Title.
+                $retval .= '<div id="sitetitle">' . $SITE->shortname . '</div>';
             }
         } else {
-        // Custom title.
-            $header = theme_adaptable_remove_site_fullname($PAGE->heading);
+            if ($display == 'custom') {
+                // Custom title.
+                if (!empty($PAGE->theme->settings->sitetitletext)) {
+                    $header = theme_adaptable_remove_site_fullname($PAGE->theme->settings->sitetitletext);
+                    $PAGE->set_heading($header);
 
-            if (!empty($header)) {
-                $header = $PAGE->theme->settings->sitetitletext;
+                    $retval .= '<div id="sitetitle">' . $PAGE->theme->settings->sitetitletext . '</div>';
+                }
             }
-
-            $PAGE->set_heading($header);
-
-            $retval .= "<a href='$CFG->wwwroot'>";
-            $retval .= '<span>' . $PAGE->theme->settings->sitetitletext . '</span>';
-            $retval .= '</a></div>';
         }
+
+        $retval .= '</div>';
 
         return $retval;
     }
@@ -1867,8 +1948,7 @@ class theme_adaptable_core_course_renderer extends core_course_renderer {
             $classes .= ' collapsed';
         }
 
-
-// Control span to display course tiles.
+        // Control span to display course tiles.
         if (!isloggedin() || isguestuser()) {
             $spanclass = "span4";
         } else {
@@ -1920,7 +2000,7 @@ class theme_adaptable_core_course_renderer extends core_course_renderer {
                 $icondirection = 'right';
             }
             $arrow = html_writer::tag('span', '', array('class' => 'fa fa-chevron-'.$icondirection));
-            $btn = html_writer::tag('span', get_string('course') . ' ' . $arrow, array('class' => 'coursequicklink'));
+            $btn = html_writer::tag('span', get_string('course', 'theme_adaptable') . ' ' . $arrow, array('class' => 'get_stringlink'));
 
             if (empty($PAGE->theme->settings->covhidebutton)) {
                 $content .= html_writer::link(new moodle_url('/course/view.php',
