@@ -116,7 +116,6 @@ Class Approval {
                                 u.lang
                      FROM		{user_info_competence_data} 	uicd                       
                         JOIN	{report_gen_companydata}		co 		ON 	co.id = uicd.companyid
-                        JOIN    {user}                          u       ON  u.id  = uicd.userid
                         -- LEVEL TWO
                         JOIN	{report_gen_company_relation}  	cr_two	ON 	cr_two.companyid 		= co.id
                         JOIN	{report_gen_companydata}		co_two	ON 	co_two.id 				= cr_two.parentid
@@ -131,6 +130,7 @@ Class Approval {
                                                                               AND
                                                                               rm.levelthree IS NULL)
                                                                              )
+                        JOIN    {user}                          	u   ON  u.id  = rm.managerid
                      WHERE		uicd.userid 	= :user
                         AND		uicd.companyid  = :company ";
 
