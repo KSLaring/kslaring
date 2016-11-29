@@ -645,8 +645,9 @@ class enrolmethodself extends \enrol_waitinglist\method\enrolmethodbase{
             $infoRequest    = null;
 
             if ($waitinglist->{ENROL_WAITINGLIST_FIELD_APPROVAL} == APPROVAL_REQUIRED) {
-                $remainder      = \Approval::get_notification_sent($USER->id,$waitinglist->courseid);
-                $infoRequest    = \Approval::get_request($USER->id,$waitinglist->courseid,$waitinglist->id);
+                $this->myManagers   = \Approval::managers_connected($USER->id,$data->level_3);
+                $remainder          = \Approval::get_notification_sent($USER->id,$waitinglist->courseid);
+                $infoRequest        = \Approval::get_request($USER->id,$waitinglist->courseid,$waitinglist->id);
             }
 
             if ($confirm) {
@@ -710,7 +711,6 @@ class enrolmethodself extends \enrol_waitinglist\method\enrolmethodbase{
                          * Check if user can enroll in the case of needing an approval
                          */
                         if ($waitinglist->{ENROL_WAITINGLIST_FIELD_APPROVAL} == APPROVAL_REQUIRED) {
-                            $this->myManagers = \Approval::managers_connected($USER->id,$data->level_3);
                             if ($this->myManagers) {
                                 $enrolstatus = true;
                             }else {
