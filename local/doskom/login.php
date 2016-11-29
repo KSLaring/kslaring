@@ -17,24 +17,27 @@
 require( '../../config.php' );
 require_once ('wsDOSKOMlib.php');
 
-/* PARMAS   */
-/* User ID      */
+/* PARAMS   */
+global $SESSION;
+global $PAGE;
+global $CFG;
+// User Id
 $id             = $SESSION->user;
-/* User Token   */
+// User token
 $key            = $SESSION->ticket;
-/* Where the user will be redirected    */
+// Where the user will be redirected
 $RedirectPage   = $SESSION->RedirectPage;
-/* Where the user will be redirected after logging out  */
+// Where the user will be redirected after logging out
 $LogoutUrl      = $SESSION->LogoutUrl;
 $url            = new moodle_url('/local/doskom/login.php');
 $return         = new moodle_url($CFG->wwwroot);
 
-/* Clean SESSION Variables  */
+// Clean SESSION Variables
 unset($SESSION->user);
 unset($SESSION->ticket);
 unset($SESSION->RedirectPage);
 
-/* Start PAGE   */
+// Start PAGE
 $PAGE->https_required();
 
 $PAGE->set_url($url);
@@ -43,17 +46,17 @@ $PAGE->set_context($context);
 $PAGE->verify_https_required();
 $PAGE->set_pagelayout('login');
 
-/* Authenticate the user to log in  */
+// Authenticate the user to log in
 $authenticated = WS_DOSKOM::authenticateUser($id,$key);
 
 if ($authenticated) {
     WS_DOSKOM::deleteKey($authenticated);
     $user = get_complete_user_data('id',$id);
-    complete_user_login($user,true);
+    complete_user_login($user);
 
     redirect($RedirectPage);
 }else {
-    /* Print Header */
+    // Print Header
     echo $OUTPUT->header();
 
     echo $OUTPUT->notification(get_string('err_authenticate','local_doskom'), 'notifysuccess');
@@ -63,6 +66,6 @@ if ($authenticated) {
     }//if_back
     echo $OUTPUT->continue_button($return);
 
-    /* Print Footer */
+    // Print Footer
     echo $OUTPUT->footer();
 }//if_else_authenticated
