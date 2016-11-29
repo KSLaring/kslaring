@@ -33,7 +33,7 @@ $url            = new moodle_url('/user/profile/field/competence/competence.php'
 
 /* Settings Page    */
 $PAGE->https_required();
-$PAGE->set_context(contex_user::instance($user_id));
+$PAGE->set_context(context_user::instance($user_id));
 $PAGE->set_course($SITE);
 $PAGE->set_pagelayout('admin');
 $PAGE->navbar->add(get_string('pluginname','profilefield_competence'));
