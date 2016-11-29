@@ -645,7 +645,6 @@ class enrolmethodself extends \enrol_waitinglist\method\enrolmethodbase{
             $infoRequest    = null;
 
             if ($waitinglist->{ENROL_WAITINGLIST_FIELD_APPROVAL} == APPROVAL_REQUIRED) {
-                $this->myManagers   = \Approval::managers_connected($USER->id,$data->level_3);
                 $remainder          = \Approval::get_notification_sent($USER->id,$waitinglist->courseid);
                 $infoRequest        = \Approval::get_request($USER->id,$waitinglist->courseid,$waitinglist->id);
             }
@@ -670,6 +669,7 @@ class enrolmethodself extends \enrol_waitinglist\method\enrolmethodbase{
                 if ($form->is_cancelled()) {
                     redirect($CFG->wwwroot . '/index.php');
                 }else if ($form->is_submitted()) {
+                    $this->myManagers   = \Approval::managers_connected($USER->id,$infoRequest->companyid);
                     \Approval::send_reminder($USER,$remainder,$this->myManagers);
 
                     redirect($CFG->wwwroot . '/index.php');
@@ -711,6 +711,7 @@ class enrolmethodself extends \enrol_waitinglist\method\enrolmethodbase{
                          * Check if user can enroll in the case of needing an approval
                          */
                         if ($waitinglist->{ENROL_WAITINGLIST_FIELD_APPROVAL} == APPROVAL_REQUIRED) {
+                            $this->myManagers   = \Approval::managers_connected($USER->id,$data->level_3);
                             if ($this->myManagers) {
                                 $enrolstatus = true;
                             }else {
