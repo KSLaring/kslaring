@@ -124,11 +124,11 @@ class competence_add_competence_form extends moodleform {
         $options[0] = get_string('select_level_list','report_manager');
         if ($levelThree) {
             /* Add Generics --> Only Public Job Roles   */
-            if (Competence::IsPublic($levelThree)) {
-                Competence::GetJobRoles_Generics($options);
+            if (Competence::is_public($levelThree)) {
+                Competence::get_jobroles_generics($options);
             }//if_isPublic
 
-            Competence::GetJobRoles_Hierarchy($options,$levelZero,$levelOne,$levelTwo,$levelThree);
+            Competence::get_jobroles_hierarchy($options,$levelZero,$levelOne,$levelTwo,$levelThree);
         }//if_level_three
 
         $select= &$form->addElement('select','job_roles',
@@ -169,12 +169,12 @@ class competence_add_competence_form extends moodleform {
 
         switch ($level) {
             case 0:
-                $options = Competence::GetCompanies_Level($level);
+                $options = Competence::get_companies_level($level);
 
                 break;
             case 1:
                 if ($parent) {
-                    $options = Competence::GetCompanies_Level(1,$parent);
+                    $options = Competence::get_companies_level(1,$parent);
                 }else {
                     $options[0] = get_string('select_level_list','report_manager');
                 }//if_levelZero
@@ -182,7 +182,7 @@ class competence_add_competence_form extends moodleform {
                 break;
             case 2:
                 if ($parent) {
-                    $options = Competence::GetCompanies_Level(2,$parent);
+                    $options = Competence::get_companies_level(2,$parent);
                 }else {
                     $options[0] = get_string('select_level_list','report_manager');
                 }//if_levelOne
@@ -190,7 +190,7 @@ class competence_add_competence_form extends moodleform {
                 break;
             case 3:
                 if ($parent) {
-                    $options = Competence::GetCompanies_Level(3,$parent,$my_companies);
+                    $options = Competence::get_companies_level(3,$parent,$my_companies);
                 }else {
                     $options[0] = get_string('select_level_list','report_manager');
                 }//if_levelTwo

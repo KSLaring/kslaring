@@ -41,7 +41,7 @@ $return_url     = new moodle_url('/user/profile/field/competence/competence.php'
 
 /* Settings Page    */
 $PAGE->https_required();
-$PAGE->set_context(CONTEXT_USER::instance($user_id));
+$PAGE->set_context(context_user::instance($user_id));
 $PAGE->set_course($SITE);
 $PAGE->set_pagelayout('admin');
 $PAGE->navbar->add(get_string('pluginname','profilefield_competence'),$return_url);
@@ -57,7 +57,7 @@ if (empty($CFG->loginhttps)) {
 $PAGE->verify_https_required();
 
 /* Get My Competence    */
-    $my_competence = Competence::Get_CompetenceData($user_id,$competence_data,$competence);
+    $my_competence = Competence::get_competence_data($user_id,$competence_data,$competence);
     $my_hierarchy  = $my_competence[$competence_data];
 
 
@@ -75,7 +75,7 @@ if (!$confirmed) {
     /* Print Footer */
     echo $OUTPUT->footer();
 }else {
-    Competence::DeleteCompetence($user_id,$competence_data,$competence);
+    Competence::delete_competence($user_id,$competence_data,$competence);
 
     redirect($return_url);
 }//if_confirm

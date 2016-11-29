@@ -18,7 +18,7 @@ require_once('../competencelib.php');
 require_once($CFG->libdir . '/adminlib.php');
 
 /* PARAMS */
-$contextSystem      = CONTEXT_SYSTEM::instance();
+$contextSystem      = contenxt_system::instance();
 $returnUrl          = $CFG->wwwroot . '/index.php';
 $url                = new moodle_url('/user/profile/field/competence/actions/reject.php');
 $competenceRequest  = null;
@@ -43,7 +43,7 @@ if (count($args) != 2) {
         echo $OUTPUT->error_text('<h4>' . get_string('err_link','profilefield_competence') . '</h4>');
     echo html_writer::end_tag('div');
 }else {
-    $competenceRequest = Competence::CompetenceRequest($args[0]);
+    $competenceRequest = Competence::competence_request($args[0]);
 
     if (!$competenceRequest) {
         echo html_writer::start_tag('div',array('class' => 'loginerrors'));
@@ -56,15 +56,7 @@ if (count($args) != 2) {
         $info->company  = $competenceRequest->company;
         $info->user     = fullname($user);
 
-        //if ($competenceRequest->rejected) {
-        //    echo html_writer::start_tag('div');
-        //        echo '<h4>' . get_string('request_just_rejected','profilefield_competence',$info)  . '</h4>';
-        //   echo html_writer::end_tag('div');
-        //}else {
-
-        //}//if_rejected
-
-        if (Competence::RejectCompetence($competenceRequest,$args[1])) {
+        if (Competence::reject_competence($competenceRequest,$args[1])) {
             echo html_writer::start_tag('div');
             echo '<h4>' . get_string('request_rejected','profilefield_competence',$info)  . '</h4>';
             echo html_writer::end_tag('div');

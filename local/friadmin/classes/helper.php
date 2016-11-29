@@ -201,7 +201,7 @@ class local_friadmin_helper {
 
         try {
             /* Get user competence  */
-            $competences = Competence::Get_CompetenceData($userid);
+            $competences = Competence::get_competence_data($userid);
 
             /* Get Level One connected with user    */
             if ($competences) {

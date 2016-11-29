@@ -32,7 +32,7 @@ $jobRoles       = array();
 $infoJR         = null;
 $managers       = null;
 
-$context        = CONTEXT_SYSTEM::instance();
+$context        = context_system::instance();
 $url            = new moodle_url('/user/profile/field/competence/actions/jobrole.php');
 
 $PAGE->set_context($context);
@@ -53,13 +53,13 @@ $options[0] = get_string('select_level_list','report_manager');
 /* Level Three  */
 if ($levelThree) {
     /* Add Generics --> Only Public Job Roles   */
-    if (Competence::IsPublic($levelThree)) {
-        Competence::GetJobRoles_Generics($options);
+    if (Competence::is_public($levelThree)) {
+        Competence::get_jobroles_generics($options);
     }//if_isPublic
 
-    Competence::GetJobRoles_Hierarchy($options,$levelZero,$levelOne,$levelTwo,$levelThree);
+    Competence::get_jobroles_hierarchy($options,$levelZero,$levelOne,$levelTwo,$levelThree);
 
-    $managers = Competence::ManagersConnected($levelZero,$levelOne,$levelTwo,$levelThree);
+    $managers = Competence::managers_connected($levelZero,$levelOne,$levelTwo,$levelThree);
     if ($managers) {
         $data['toApprove']  = 1;
     }

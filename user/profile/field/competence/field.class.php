@@ -63,7 +63,7 @@ class profile_field_competence extends profile_field_base {
             require_once('competencelib.php');
 
             /* Get My Competence Data   */
-            $myCompetence  = Competence::Get_CompetenceData($this->userid);
+            $myCompetence  = Competence::get_competence_data($this->userid);
 
             if ($myCompetence) {
                 $out .= '<div><ul>';

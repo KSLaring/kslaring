@@ -46,7 +46,7 @@ $return_url     = new moodle_url('/user/profile/field/competence/competence.php'
 
 /* Settings Page    */
 $PAGE->https_required();
-$PAGE->set_context(CONTEXT_USER::instance($user_id));
+$PAGE->set_context(context_user::instance($user_id));
 $PAGE->set_course($SITE);
 $PAGE->set_pagelayout('admin');
 $PAGE->navbar->add(get_string('pluginname','profilefield_competence'),$return_url);
@@ -62,7 +62,7 @@ if (empty($CFG->loginhttps)) {
 $PAGE->verify_https_required();
 
 /* Get the companies connected with the user    */
-$my_companies = Competence::Get_MyCompanies($user_id);
+$my_companies = Competence::get_mycompanies($user_id);
 
 /* Form */
 $form = new competence_add_competence_form(null,array($user_id,$my_companies));
@@ -72,7 +72,7 @@ if ($form->is_cancelled()) {
 }else if($data = $form->get_data()) {
 
     /* Add the Competence   */
-    Competence::AddCompetence($data);
+    Competence::add_competence($data);
 
     unset($SESSION->user_id);
     $_POST = array();
@@ -85,7 +85,7 @@ echo $OUTPUT->header();
 $form->display();
 
 /* Initialise Organization Structure    */
-Competence::Init_OrganizationStructure('level_','job_roles',$user_id);
+Competence::init_organization_structure('level_','job_roles',$user_id);
 
 /* Print Footer */
 echo $OUTPUT->footer();

@@ -33,7 +33,7 @@ $url            = new moodle_url('/user/profile/field/competence/competence.php'
 
 /* Settings Page    */
 $PAGE->https_required();
-$PAGE->set_context(CONTEXT_USER::instance($user_id));
+$PAGE->set_context(contex_user::instance($user_id));
 $PAGE->set_course($SITE);
 $PAGE->set_pagelayout('admin');
 $PAGE->navbar->add(get_string('pluginname','profilefield_competence'));
@@ -48,9 +48,9 @@ if (empty($CFG->loginhttps)) {
 $PAGE->verify_https_required();
 
 /* Get My Competence Data   */
-$my_competence  = Competence::Get_CompetenceData($user_id);
+$my_competence  = Competence::get_competence_data($user_id);
 
 echo $OUTPUT->header();
     /* Display the Competence and the actions */
-    echo Competence::Get_CompetenceTable($my_competence,$user_id);
+    echo Competence::get_competence_table($my_competence,$user_id);
 echo $OUTPUT->footer();

@@ -36,7 +36,7 @@ $return_url     = new moodle_url('/user/profile/field/competence/competence.php'
 
 /* Settings Page    */
 $PAGE->https_required();
-$PAGE->set_context(CONTEXT_USER::instance($user_id));
+$PAGE->set_context(context_user::instance($user_id));
 $PAGE->set_course($SITE);
 $PAGE->set_pagelayout('admin');
 $PAGE->navbar->add(get_string('pluginname','profilefield_competence'),$return_url);
@@ -58,7 +58,7 @@ if ($form->is_cancelled()) {
     redirect($return_url);
 }else if($data = $form->get_data()) {
     /* Update Competence Info   */
-    Competence::EditCompetence($data);
+    Competence::edit_competence($data);
 
     $_POST = array();
     redirect($return_url);

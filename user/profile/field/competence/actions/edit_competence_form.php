@@ -35,7 +35,7 @@ class competence_edit_competence_form extends moodleform {
         $form->addElement('static', 'edit-description', '', get_string('edit_competence_desc', 'profilefield_competence'));
 
         /* Get My Competence    */
-            $myCompetence = Competence::Get_CompetenceData($user_id,$competence_data,$competence);
+            $myCompetence = Competence::get_competence_data($user_id,$competence_data,$competence);
             $myHierarchy   = $myCompetence[$competence_data];
 
             /* Company Structure    */
@@ -121,22 +121,22 @@ class competence_edit_competence_form extends moodleform {
 
         switch ($level) {
             case 0:
-                $options = Competence::GetCompanies_Level($level);
+                $options = Competence::get_companies_level($level);
                 $options = array_intersect_key($options,array_flip(explode(',',$levelZero)));
 
                 break;
             case 1:
-                $options = Competence::GetCompanies_Level($level,$levelZero);
+                $options = Competence::get_companies_level($level,$levelZero);
                 $options = array_intersect_key($options,array_flip(explode(',',$levelOne)));
 
                 break;
             case 2:
-                $options = Competence::GetCompanies_Level($level,$levelOne);
+                $options = Competence::get_companies_level($level,$levelOne);
                 $options = array_intersect_key($options,array_flip(explode(',',$levelTwo)));
 
                 break;
             case 3:
-                $options = Competence::GetCompanies_Level($level,$levelTwo);
+                $options = Competence::get_companies_level($level,$levelTwo);
                 $options = array_intersect_key($options,array_flip(explode(',',$levelThree)));
 
                 break;
@@ -167,12 +167,12 @@ class competence_edit_competence_form extends moodleform {
         /* Job Roles    */
         $options[0] = get_string('select_level_list','report_manager');
         /* Add Generics --> Only Public Job Roles   */
-        if (Competence::IsPublic($my_hierarchy->levelThree)) {
-            Competence::GetJobRoles_Generics($options);
+        if (Competence::is_public($my_hierarchy->levelThree)) {
+            Competence::get_jobroles_generics($options);
         }//if_isPublic
 
         /* Level Three  */
-        Competence::GetJobRoles_Hierarchy($options,$my_hierarchy->levelZero,$my_hierarchy->levelOne,$my_hierarchy->levelTwo,$my_hierarchy->levelThree);
+        Competence::get_jobroles_hierarchy($options,$my_hierarchy->levelZero,$my_hierarchy->levelOne,$my_hierarchy->levelTwo,$my_hierarchy->levelThree);
         $select= &$form->addElement('select','job_roles',
                                     get_string('select_job_role','report_manager'),
                                     $options);
