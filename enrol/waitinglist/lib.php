@@ -557,14 +557,14 @@ class enrol_waitinglist_plugin extends enrol_plugin {
         if ($instance->{ENROL_WAITINGLIST_FIELD_APPROVAL} == APPROVAL_MESSAGE) {
             require_once('approval/approvallib.php');
             /* Get Managers */
-            $myManagers = \Approval::GetManagers($userid,$instance);
+            $myManagers = \Approval::get_managers($userid,$instance);
             
             /* Send Notification Manager Approved   */
-            $infoNotification = \Approval::Info_NotificationApproved($userid,$instance->courseid,$instance->id);
+            $infoNotification = \Approval::info_notification_approved($userid,$instance->courseid,$instance->id);
 
             /* Add Info Managers    */
             $infoNotification->managers = $myManagers;
-            \Approval::SendApprovedNotification_Managers($infoNotification);
+            \Approval::send_approved_notification_managers($infoNotification);
         }
     }
 
@@ -1071,11 +1071,11 @@ class enrol_waitinglist_plugin extends enrol_plugin {
                                 }//vacancies
 
                                 if ($sendNotification) {
-                                    $myManagers = \Approval::GetManagers($instance->userid);
+                                    $myManagers = \Approval::get_managers($instance->userid);
 
                                     if (array_key_exists($instance->userid,$myManagers)) {
                                         $instance->action = APPROVED_ACTION;
-                                        \Approval::ApplyAction_FromManager($instance);
+                                        \Approval::apply_action_from_manager($instance);
                                     }else {
                                         $infoMail = new stdClass();
                                         $infoMail->approvalid   = $instance->id;
@@ -1091,7 +1091,7 @@ class enrol_waitinglist_plugin extends enrol_plugin {
 
                                         /* Send Mails   */
                                         $user = get_complete_user_data('id',$instance->userid);
-                                        \Approval::SendNotifications($user,$infoMail,$myManagers);
+                                        \Approval::send_notifications($user,$infoMail,$myManagers);
 
                                         $instanceApproval = new stdClass();
                                         $instanceApproval->id           = $instance->id;

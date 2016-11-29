@@ -71,9 +71,9 @@ class CourseTemplate {
 
             /* Initialise js module */
             $jsModule = array('name'        => $name,
-                'fullpath'    => $path,
-                'requires'    => $requires,
-                'strings'     => null
+                              'fullpath'    => $path,
+                              'requires'    => $requires,
+                              'strings'     => null
             );
 
             $PAGE->requires->js_init_call('M.core_coursepage.init_sectors',

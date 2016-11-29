@@ -50,10 +50,10 @@ echo $OUTPUT->header();
 echo $OUTPUT->heading(get_string('title_approval','enrol_waitinglist'));
 
 /*  Get Requests    */
-$approvalRequests = Approval::ApprovalRequests($courseId,$enrolId);
+$approvalRequests = Approval::approval_requests($courseId,$enrolId);
 
 /* Show Report      */
-echo Approval::Display_ApprovalRequests($approvalRequests);
+echo Approval::display_approval_requests($approvalRequests);
 
 /* Print Footer */
 echo $OUTPUT->footer();

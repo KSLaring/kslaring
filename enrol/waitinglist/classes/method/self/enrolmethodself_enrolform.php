@@ -136,7 +136,7 @@ class enrolmethodself_enrolform extends \moodleform {
                  */
                 if ($waitinglist->{ENROL_WAITINGLIST_FIELD_APPROVAL} == APPROVAL_REQUIRED) {
                     global $PAGE;
-                    \Approval::AddElements_ToForm($mform);
+                    \Approval::add_elements_form($mform);
                 }//if_approval
 
                 $mform->addElement('hidden', 'confirm');

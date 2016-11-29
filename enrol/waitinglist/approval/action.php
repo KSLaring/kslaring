@@ -37,7 +37,7 @@ if (count($args) != 2) {
     echo $OUTPUT->error_text('<h4>' . get_string('err_link','enrol_waitinglist') . '</h4>');
     echo html_writer::end_tag('div');
 }else {
-    $infoRequest = Approval::Get_NotificationRequest($args);
+    $infoRequest = Approval::get_notification_request($args);
     if (!$infoRequest) {
         echo html_writer::start_tag('div',array('class' => 'loginerrors'));
         echo $OUTPUT->error_text('<h4>' . get_string('err_link','enrol_waitinglist') . '</h4>');
@@ -45,11 +45,11 @@ if (count($args) != 2) {
     }else {
         $strTitle = null;
 
-        if (Approval::ApplyAction_FromManager($infoRequest)) {
+        if (Approval::apply_action_from_manager($infoRequest)) {
             $user = get_complete_user_data('id',$infoRequest->userid);
             $infoNotification = new stdClass();
             $infoNotification->user = fullname($user);
-            Approval::GetInfoCourse_Notification($infoRequest->courseid,$infoNotification);
+            Approval::get_infocourse_notification($infoRequest->courseid,$infoNotification);
 
             switch ($infoRequest->action) {
                 case APPROVED_ACTION:

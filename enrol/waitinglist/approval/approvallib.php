@@ -25,77 +25,76 @@ Class Approval {
     /**********/
 
     /**
-     * @param           $form
+     * Description
+     * Add extra elements to the main form
+     *
+     * @param           $form       Moodle form
      *
      * @throws          Exception
      *
      * @creationDate    24/12/2015
      * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Add extra elements to the main form
      */
-    public static function AddElements_ToForm(&$form) {
+    public static function add_elements_form(&$form) {
         /* Variables */
-        global $USER,$COURSE;
 
         try {
-            /* Approval Info    */
+            // Approval Info
             $form->addElement('html','<label class="approval_info">' . get_string('approval_info','enrol_waitinglist') . '</label>');
 
-            /* Arguments            */
+            // Arguments
             $form->addElement('textarea', 'arguments',get_string('arguments', 'enrol_waitinglist'),'cols=75 rows=5');
             $form->addRule('arguments',get_string('required'), 'required', null, 'server');
 
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//AddElements_ToForm
+    }//add_elements_form
 
     /**
-     * @param           $userId
+     * Description
+     * Get managers connected with user
+     *
+     * @param           int $userId     User id
      *
      * @return          array
      * @throws          Exception
      *
      * @creationDate    28/12/2015
      * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Get managers connected with user
      */
-    public static function GetManagers($userId,$instance = null) {
+    public static function get_managers($userId,$instance = null) {
         /* Variables    */
         $myManagers = null;
         $competence = null;
 
         try {
-            /* First it gets the competence connected with the user */
-            $competence = self::GetCompetence_User($userId,$instance);
+            // First it gets the competence connected with the user
+            $competence = self::get_competence_user($userId,$instance);
 
-            /* Get Managers */
-            $myManagers = self::GetInfoManagers_NotificationApproved($competence);//self::GetManager_User($competence);
+            // Get Managers
+            $myManagers = self::get_infoManagers_notification_approved($competence);
 
             return $myManagers;
         }catch (Exception $ex) {
             throw $ex;
         }//try_Catch
-    }//GetManagers
+    }//get_managers
 
     /**
-     * @param           $userId
-     * @param           $three
+     * Description
+     * Get all managers connected with a specific user and company
+     *
+     * @param           int $userId     Id user
+     * @param           int $three      Id company. Level three
      *
      * @return          array
      * @throws          Exception
      *
      * @creationDate    12/09/2016
      * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Get all managers connected with a specific user and company
      */
-    public static function ManagersConnected($userId,$three) {
+    public static function managers_connected($userId,$three) {
         /* Variables */
         global $DB;
         $sql            = null;
@@ -105,16 +104,19 @@ Class Approval {
         $infoManager    = null;
 
         try {
-            /* Search Criteria  */
+            // Search Criteria
             $params = array();
             $params['user']     = $userId;
             $params['company']  = $three;
 
-            /* SQL Instruction  */
-            $sql = " SELECT	  DISTINCT rm.managerid,
-                                       CONCAT(co_two.name,'/',co.name) as 'company'
-                     FROM		{user_info_competence_data} 	uicd
+            //  SQL Instruction
+            $sql = " SELECT DISTINCT 
+                                rm.managerid,
+                                CONCAT(co_two.name,'/',co.name) as 'company',
+                                u.lang
+                     FROM		{user_info_competence_data} 	uicd                       
                         JOIN	{report_gen_companydata}		co 		ON 	co.id = uicd.companyid
+                        JOIN    {user}                          u       ON  u.id  = uicd.userid
                         -- LEVEL TWO
                         JOIN	{report_gen_company_relation}  	cr_two	ON 	cr_two.companyid 		= co.id
                         JOIN	{report_gen_companydata}		co_two	ON 	co_two.id 				= cr_two.parentid
@@ -132,7 +134,7 @@ Class Approval {
                      WHERE		uicd.userid 	= :user
                         AND		uicd.companyid  = :company ";
 
-            /* Execute */
+            // Execute
             $rdo = $DB->get_records_sql($sql,$params);
             if ($rdo) {
                 foreach ($rdo as $instance) {
@@ -141,13 +143,14 @@ Class Approval {
                     }else {
                         $infoManager = new stdClass();
                         $infoManager->id        = $instance->managerid;
+                        $infoManager->lang      = $instance->lang;
                         $infoManager->companies = array();
                     }//if_manager_exists
 
-                    /* Add Company  */
+                    // Add Company
                     $infoManager->companies[] = $instance->company;
 
-                    /* Add Manager */
+                    // Add Manager
                     $myManagers[$instance->managerid] = $infoManager;
                 }//of_rdo
             }//if_rdo
@@ -156,37 +159,37 @@ Class Approval {
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//ManagersConnected
+    }//managers_connected
 
     /**
-     * @param           $userId
-     * @param           $courseId
-     * @param           $waitingId
+     * Description
+     * Check if the request has been rejected
+     *
+     * @param           int $userId     Id user
+     * @param           int $courseId   Id course
+     * @param           int $waitingId  Id enrol waiting list
      *
      * @return          bool
      * @throws          Exception
      *
      * @creationDate    30/12/2015
      * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Check if the request has been rejected
      */
-    public static function IsRejected($userId,$courseId,$waitingId) {
+    public static function is_rejected($userId,$courseId,$waitingId) {
         /* Variables */
         global $DB;
         $params = null;
         $rdo    = null;
 
         try {
-            /* Search Criteria */
+            // Search Criteria
             $params = array();
             $params['userid']           = $userId;
             $params['courseid']         = $courseId;
             $params['waitinglistid']    = $waitingId;
             $params['rejected']         = 1;
 
-            /* Execute */
+            // Execute
             $rdo = $DB->get_record('enrol_approval',$params);
             if ($rdo) {
                 return $rdo->timemodified;
@@ -196,32 +199,32 @@ Class Approval {
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//IsRejected
+    }//is_rejected
 
     /**
-     * @param           $data
-     * @param           $userId
-     * @param           $courseId
-     * @param           $method
-     * @param           $seats
-     * @param           int $waitingId
+     * Description
+     * Create an entry for approval method
+     *
+     * @updateDate      13/09/2016
+     * @auhtor          eFaktor     (fbv)
+     *
+     * Description
+     * Add company
+     *
+     * @param           Object  $data       Data enrolment
+     * @param           int     $userId     Id user
+     * @param           int     $courseId   Id Course
+     * @param           string  $method     Sub-Method enrol waitinglist
+     * @param           int     $seats      Seats
+     * @param           int     $waitingId  Id enrol waiting list
      *
      * @return          stdClass
      * @throws          Exception
      *
      * @creationDate    28/12/2015
      * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Create an entry for approval method
-     * 
-     * @updateDate      13/09/2016
-     * @auhtor          eFaktor     (fbv)
-     * 
-     * Description
-     * Add company
      */
-    public static function Add_ApprovalEntry($data,$userId,$courseId,$method,$seats,$waitingId=0) {
+    public static function add_approval_entry($data,$userId,$courseId,$method,$seats,$waitingId=0) {
         /* Variables */
         global $DB,$CFG;
         $rdo            = null;
@@ -235,11 +238,11 @@ Class Approval {
         $lnkReject      = null;
         $trans          = null;
 
-        /* Start Transaction */
+        //Start Transaction
         $trans = $DB->start_delegated_transaction();
 
         try {
-            /* Approval Entry */
+            // Approval Entry
             $infoApproval = new stdClass();
             $infoApproval->userid           = $userId;
             $infoApproval->companyid        = $data->level_3;
@@ -250,80 +253,79 @@ Class Approval {
             $infoApproval->waitinglistid    = $waitingId;
             $infoApproval->arguments        = $data->arguments;
             $infoApproval->seats            = $seats;
-            $infoApproval->token            = self::GenerateToken($userId,$courseId);
+            $infoApproval->token            = self::generate_token($userId,$courseId);
             $infoApproval->approved         = 0;
             $infoApproval->rejected         = 0;
             $infoApproval->onwait           = 0;
             $infoApproval->timecreated      = time();
 
-            /* Execute */
-            /* Check if already exist   */
+
+            // Check if already exist
             $params = array();
             $params['userid']   = $userId;
             $params['courseid'] = $courseId;
             $rdo = $DB->get_record('enrol_approval',$params,'id');
             if ($rdo) {
-                /* Update   */
+                // Update
                 $infoApproval->id = $rdo->id;
                 $DB->update_record('enrol_approval',$infoApproval);
             }else {
-                /* Insert New */
+                // Insert New
                 $infoApproval->id = $DB->insert_record('enrol_approval',$infoApproval);
             }//if_rdo
 
-
-            /* Insert Approve Action */
+            // Insert Approve Action
             $infoApproveAct = new stdClass();
             $infoApproveAct->approvalid = $infoApproval->id;
-            $infoApproveAct->token      = self::GenerateToken_Action($courseId,'approve');
+            $infoApproveAct->token      = self::generate_token_action($courseId,'approve');
             $infoApproveAct->action     = APPROVED_ACTION;
             $DB->insert_record('enrol_approval_action',$infoApproveAct);
 
-            /* Insert Reject Action  */
+            // Insert Reject Action
             $infoRejectAct = new stdClass();
             $infoRejectAct->approvalid  = $infoApproval->id;
-            $infoRejectAct->token       = self::GenerateToken_Action($courseId,'reject');
+            $infoRejectAct->token       = self::generate_token_action($courseId,'reject');
             $infoRejectAct->action      = REJECTED_ACTION;
             $DB->insert_record('enrol_approval_action',$infoRejectAct);
 
-            /* Info To Send */
-            $infoMail = self::Info_NotificationApproved($userId,$courseId,$waitingId);
+            // Info To Send
+            $infoMail = self::info_notification_approved($userId,$courseId,$waitingId);
             $infoMail->arguments    = $infoApproval->arguments;
             $infoMail->approvalid   = $infoApproval->id;
-            /* Approve Link */
+            // Approve Link
             $lnkApprove = $CFG->wwwroot . '/enrol/waitinglist/approval/action.php/' . $infoApproval->token . '/' . $infoApproveAct->token;
             $infoMail->approve = '<a href="' . $lnkApprove . '">' . get_string('approve_lnk','enrol_waitinglist') . '</br>';
-            /* Reject Link  */
+            // Reject Link
             $lnkReject  = $CFG->wwwroot . '/enrol/waitinglist/approval/action.php/' . $infoApproval->token . '/' . $infoRejectAct->token;
             $infoMail->reject = '<a href="' . $lnkReject . '">' . get_string('reject_lnk','enrol_waitinglist') . '</br>';
 
-            /* Commit */
+            // Commit
             $trans->allow_commit();
 
             return array($infoApproval,$infoMail);
         }catch (Exception $ex) {
-            /* Rollback */
+            // Rollback
             $trans->rollback($ex);
 
             throw $ex;
         }//try_catch
-    }//Add_ApprovalEntry
+    }//add_approval_entry
 
 
     /**
-     * @param           $user
-     * @param           $infoMail
-     * @param           $toManagers
+     * Description
+     * Send notifications for all managers and the user.
+     *
+     * @param           Object  $user       user
+     * @param           Object  $infoMail   Information to send
+     * @param           array   $toManagers Manager who receive the email
      *
      * @throws          Exception
      *
      * @creationDate    28/12/2015
      * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Send notifications for all managers and the user.
      */
-    public static function SendNotifications($user,&$infoMail,$toManagers) {
+    public static function send_notifications($user,&$infoMail,$toManagers) {
         /* Variables */
         global $SITE;
         $strBody    = null;
@@ -332,19 +334,18 @@ Class Approval {
         $bodyHtml   = null;
 
         try {
-
-            /* Extra Info   */
+            // Extra Info
             $infoMail->user = fullname($user);
             $infoMail->site = $SITE->shortname;
 
-            /* Mail for Managers    */
-            self::SendNotification_Managers($infoMail,$toManagers);
+            // Mail for Managers
+            self::send_notification_managers($infoMail,$toManagers);
 
-            /* Mail for Users       */
-            $strSubject = get_string('mng_subject','enrol_waitinglist',$infoMail);
-            $strBody    = get_string('std_body','enrol_waitinglist',$infoMail);
+            // Mail for Users
+            $strSubject = (string)new lang_string('mng_subject','enrol_waitinglist',$infoMail,$user->lang);
+            $strBody    = (string)new lang_string('std_body','enrol_waitinglist',$infoMail,$user->lang);
 
-            /* Content Mail         */
+            // Content Mail
             $bodyText = null;
             $bodyHtml = null;
             if (strpos($strBody, '<') === false) {
@@ -357,27 +358,27 @@ Class Approval {
                 $bodyText = html_to_text($bodyHtml);
             }
 
-            /* Send Mail    */
+            // Send Mail
             email_to_user($user, $SITE->shortname, $strSubject, $bodyText,$bodyHtml);
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//SendNotifications
+    }//send_notifications
 
     /**
-     * @param           $userId
-     * @param           $courseId
+     * Description
+     * Get when notification was sent
+     *
+     * @param           int $userId     Id user
+     * @param           int $courseId   Id course
      *
      * @return          mixed|null
      * @throws          Exception
      *
      * @creationDate    29/12/2015
      * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Get when notification was sent
      */
-    public static function GetNotificationSent($userId,$courseId) {
+    public static function get_notification_sent($userId,$courseId) {
         /* Variables    */
         global $DB,$CFG,$SITE;
         $rdo                = null;
@@ -387,13 +388,13 @@ Class Approval {
         $course             = null;
 
         try {
-            /* Info Notification    */
+            // Info Notification
             $infoNotification = new stdClass();
             $infoNotification->site     = $SITE->shortname;
-            /* Add Info Course      */
-            self::GetInfoCourse_Notification($courseId,$infoNotification);
+            // Add Info Course
+            self::get_infocourse_notification($courseId,$infoNotification);
 
-            /* Search Criteria  */
+            // Search Criteria
             $params = array();
             $params['user']     = $userId;
             $params['course']   = $courseId;
@@ -401,7 +402,7 @@ Class Approval {
             $params['rejected'] = 0;
             $params['unenrol']  = 0;
 
-            /* SQL Instruction */
+            // SQL Instruction
             $sql = " SELECT	ea.id,
                             ea.timesent,
                             ea.token,
@@ -415,10 +416,10 @@ Class Approval {
                         AND ea.rejected = :rejected
                         AND ea.unenrol	= :unenrol ";
 
-            /* Execute */
+            // Execute
             $rdo = $DB->get_record_sql($sql,$params);
             if ($rdo) {
-                /* Info Notification */
+                // Info Notification
                 $infoNotification->approvalid   = $rdo->id;
                 $infoNotification->arguments    = $rdo->arguments;
                 $infoNotification->timesent     = userdate($rdo->timesent,'%d.%m.%Y', 99, false);
@@ -432,22 +433,22 @@ Class Approval {
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//GetNotificationSent
+    }//get_notification_sent
 
     /**
-     * @param           $user
-     * @param           $infoNotification
-     * @param           $toManagers
+     * Description
+     * Send reminders to the manager
+     *
+     * @param           Object $user                user
+     * @param           Object $infoNotification    information to send
+     * @param           array  $toManagers          who receive the notifcation
      *
      * @throws          Exception
      *
      * @creationDate    29/12/2015
      * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Send reminders to the manager
      */
-    public static function SendReminder($user,&$infoNotification,$toManagers) {
+    public static function send_reminder($user,&$infoNotification,$toManagers) {
         /* Variables */
         global $SITE,$DB;
         $lnkApprove = null;
@@ -457,34 +458,43 @@ Class Approval {
 
 
         try {
-            /* Extra Info   */
+            // Extra Info
             $infoNotification->user = fullname($user);
             $infoNotification->site = $SITE->shortname;
 
-            /* Action Tokens */
+            // Action Tokens
             $params = array();
             $params['approvalid']   = $infoNotification->approvalid;
 
-            /* Approve Token    */
+            // Approve Token
             $params['action']       = APPROVED_ACTION;
             $rdo = $DB->get_record('enrol_approval_action',$params);
             $lnkApprove =   $infoNotification->approve . '/' . $rdo->token;
             $infoNotification->approve = '<a href="' . $lnkApprove . '">' . get_string('approve_lnk','enrol_waitinglist') . '</br>';
 
-            /* Reject Token */
+            // Reject Token
             $params['action']       = REJECTED_ACTION;
             $rdo = $DB->get_record('enrol_approval_action',$params);
             $lnkReject  = $infoNotification->reject . '/' . $rdo->token;
             $infoNotification->reject = '<a href="' . $lnkReject . '">' . get_string('reject_lnk','enrol_waitinglist') . '</br>';
 
-            /* Send Mail */
-            self::SendNotification_Managers($infoNotification,$toManagers,true);
+            // Send Mail
+            self::send_notification_managers($infoNotification,$toManagers,true);
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//SendReminder
+    }//send_reminder
 
     /**
+     * Description
+     * Get request connected with the notification
+     *
+     * @updateDate      13/09/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Add company
+     *
      * @param           $args
      *
      * @return          mixed|null
@@ -492,17 +502,8 @@ Class Approval {
      *
      * @creationDate    29/12/2015
      * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Get request connected with the notification
-     * 
-     * @updateDate      13/09/2016
-     * @author          eFaktor     (fbv)
-     * 
-     * Description
-     * Add company
      */
-    public static function Get_NotificationRequest($args) {
+    public static function get_notification_request($args) {
         /* Variables */
         global $DB;
         $sql            = null;
@@ -510,7 +511,7 @@ Class Approval {
         $params         = null;
 
         try {
-            /* Search Criteria  */
+            // Search Criteria
             $params = array();
             $params['approve']  = 0;
             $params['reject']   = 0;
@@ -518,7 +519,7 @@ Class Approval {
             $params['request']  = $args[0];
             $params['action']   = $args[1];
 
-            /* SQL Instruction  */
+            // SQL Instruction
             $sql = " SELECT 	ea.id,
                                 ea.userid,
                                 ea.companyid,
@@ -540,7 +541,7 @@ Class Approval {
                         AND (ea.timesent IS NOT NULL OR ea.timereminder IS NOT NULL)
                         AND (ea.timesent != 0 OR ea.timereminder != 0) ";
 
-            /* Execute */
+            // Execute
             $rdo = $DB->get_record_sql($sql,$params);
             if ($rdo) {
                 return $rdo;
@@ -550,29 +551,29 @@ Class Approval {
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//Check_NotificationRequest
+    }//get_notification_request
 
     /**
-     * @param           $userId
-     * @param           $courseId
-     * @param           $waitingId
+     * Description
+     * Get the request connected
+     *
+     * @updateDate      16/09/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Add company id
+     *
+     * @param           int $userId     Id User
+     * @param           int $courseId   Id course
+     * @param           int $waitingId  Id enrol waiting list
      *
      * @return          mixed|null
      * @throws          Exception
      *
      * @creationDate    31/12/2015
      * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Get the request connected
-     * 
-     * @updateDate      16/09/2016
-     * @author          eFaktor     (fbv)
-     * 
-     * Description
-     * Add company id
      */
-    public static function Get_Request($userId,$courseId,$waitingId) {
+    public static function get_request($userId,$courseId,$waitingId) {
         /* Variables */
         global $DB;
         $sql    = null;
@@ -580,13 +581,13 @@ Class Approval {
         $rdo    = null;
 
         try {
-            /* Search Criteria */
+            // Search Criteria
             $params = array();
             $params['user']     = $userId;
             $params['course']   = $courseId;
             $params['waiting']  = $waitingId;
 
-            /* SQL Instruction */
+            // SQL Instruction
             $sql = " SELECT ea.id,
                             ea.userid,
                             ea.companyid,
@@ -598,12 +599,12 @@ Class Approval {
                             ea.arguments,
                             ea.approved,
                             ea.rejected
-                     FROM	  {enrol_approval}	ea
+                     FROM	{enrol_approval}	ea
                      WHERE	ea.waitinglistid 	= :waiting
                         AND	ea.courseid 		= :course
                         AND ea.userid 			= :user ";
 
-            /* Execute */
+            // Execute
             $rdo = $DB->get_record_sql($sql,$params);
             if ($rdo) {
                 return $rdo;
@@ -613,34 +614,34 @@ Class Approval {
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//Get_Request
+    }//get_request
 
     /**
-     * @param           $infoRequest
+     * Description
+     * Apply the action selected by the manager
+     *
+     * @param           Object $infoRequest     Request detail
      *
      * @return          bool
      * @throws          Exception
      *
      * @creationDate    29/12/2015
      * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Apply the action selected by the manager
      */
-    public static function ApplyAction_FromManager($infoRequest) {
+    public static function apply_action_from_manager($infoRequest) {
         /* Variables */
         $instanceWaiting    = null;
         $exit               = true;
 
         try {
-            /* Check Action */
+            // Check Action
             switch ($infoRequest->action) {
                 case APPROVED_ACTION:
-                    $exit =  self::ApproveAction($infoRequest);
+                    $exit =  self::approve_action($infoRequest);
 
                     break;
                 case REJECTED_ACTION:
-                    $exit =  self::RejectAction($infoRequest);
+                    $exit =  self::reject_action($infoRequest);
 
                     break;
             }//switch_action
@@ -649,53 +650,53 @@ Class Approval {
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//ApplyAction_FromManager
+    }//apply_action_from_manager
 
     /**
-     * @param           $courseId
-     * @param           $waitingId
+     * Description
+     * Get all approval requests
+     *
+     * @param           int $courseId   Id course
+     * @param           int $waitingId  Id enrol waiting list
      *
      * @return          null|stdClass
      * @throws          Exception
      *
      * @creationDate    30/12/2015
      * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Get all approval requests
      */
-    public static function ApprovalRequests($courseId,$waitingId) {
+    public static function approval_requests($courseId,$waitingId) {
         /* Variables */
         $approvalRequests   = null;
         $isCompanyDemanded  = null;
         
         try {
-            /* Get basic information for the course instance*/
-            $approvalRequests = self::GetBasicInfo($courseId,$waitingId);
+            // Get basic information for the course instance
+            $approvalRequests = self::get_basic_info($courseId,$waitingId);
 
-            /* Approval Requests */
-            $isCompanyDemanded = self::IsCompanyDemanded($waitingId);
-            $approvalRequests->requests = self::Get_ApprovalRequests($courseId,$waitingId,$isCompanyDemanded);
+            // Approval Requests
+            $isCompanyDemanded = self::is_company_demanded($waitingId);
+            $approvalRequests->requests = self::get_approval_requests($courseId,$waitingId,$isCompanyDemanded);
 
             return $approvalRequests;
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//Get_InfoInstance
+    }//approval_requests
 
     /**
-     * @param           $approvalRequests
+     * Description
+     * Get the requests report
+     *
+     * @param           Object $approvalRequests   Request to approve or approved
      *
      * @return          string
      * @throws          Exception
      *
      * @creationDate    31/12/2015
      * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Get the requests report
      */
-    public static function Display_ApprovalRequests($approvalRequests) {
+    public static function display_approval_requests($approvalRequests) {
         /* Variables */
         global $OUTPUT;
         $content    = '';
@@ -704,23 +705,23 @@ Class Approval {
 
         try {
             $content .= html_writer::start_div('block_approval');
-                /* Name Course  */
-                $content .= self::AddNameCourse($approvalRequests->id,$approvalRequests->name);
+                // Name Course
+                $content .= self::add_name_course($approvalRequests->id,$approvalRequests->name);
 
-                /* Basic Info && Requests */
+                // Basic Info && Requests
                 if (!$approvalRequests->requests) {
                     $content .= html_writer::start_tag('label',array('class' => ' label_approval_course'));
                         $content .= get_string('no_request','enrol_waitinglist');
                     $content .= html_writer::end_tag('label');
                 }else {
-                    /* Basic Info   */
-                    $content .= self::AddBasicInfo($approvalRequests);
+                    // Basic Info
+                    $content .= self::add_basic_info($approvalRequests);
 
-                    /* Requests     */
-                    $content .= self::AddRequestsInfo($approvalRequests);
+                    // Requests
+                    $content .= self::add_requests_info($approvalRequests);
                 }//if_requests
 
-                /* Return to the course */
+                // Return to the course
                 $url        = new moodle_url('/course/view.php',array('id' => $approvalRequests->id));
                 $content .= '</br>';
                 $content .= $OUTPUT->action_link($url,get_string('rpt_back','enrol_waitinglist'));
@@ -730,22 +731,22 @@ Class Approval {
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//Display_ApprovalRequests
+    }//display_approval_requests
 
     /**
-     * @param           $userId
-     * @param           $courseId
+     * Description
+     * Get the information to send when a request has been approved
+     *
+     * @param           int $userId     Id user
+     * @param           int $courseId   It course
      *
      * @return          stdClass
      * @throws          Exception
      *
      * @creationDate    16/02/2016
      * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Get the information to send when a request has been approved
      */
-    public static function Info_NotificationApproved($userId,$courseId,$instanceId = 0) {
+    public static function info_notification_approved($userId,$courseId,$instanceId = 0) {
         /* Variables    */
         global $SITE;
         $infoNotification   = null;
@@ -754,34 +755,34 @@ Class Approval {
         $competenceUser     = null;
 
         try {
-            /* Info Notification    */
-            $infoNotification       = new stdClass();
+            // Info Notification
+            $infoNotification = new stdClass();
             $infoNotification->site = $SITE->shortname;
-            /* Add Info Course      */
-            self::GetInfoCourse_Notification($courseId,$infoNotification);
 
-            /* Add Info User        */
-            self::GetInfoUser_NotificationApproved($userId,$infoNotification,$instanceId);
+            // Add Info Course
+            self::get_infocourse_notification($courseId,$infoNotification);
+            // Add Info User
+            self::get_infouser_notification_approved($userId,$infoNotification,$instanceId);
 
             return $infoNotification;
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//GetInfo_NotificationApproved
+    }//info_notification_approved
 
     /**
-     * @param           $courseId
-     * @param           $infoNotification
+     * Description
+     * Get course information that has been approved
+     *
+     * @param           int     $courseId           Id course
+     * @param           Object  $infoNotification   Notification
      *
      * @throws          Exception
      *
      * @creationDate    15/02/2016
      * @author          efaktor     (fbv)
-     *
-     * Description
-     * Get course information that has been approved
      */
-    public static function GetInfoCourse_Notification($courseId,&$infoNotification) {
+    public static function get_infocourse_notification($courseId,&$infoNotification) {
         /* Variables */
         global $DB;
         $sql        = null;
@@ -791,28 +792,26 @@ Class Approval {
         $urlHome    = null;
 
         try {
-
-
-            /* Search Criteria  */
+            // Search Criteria
             $params = array();
             $params['course']   = $courseId;
             $params['visible']  = 1;
 
-            /* SQL Isntruction  */
-            $sql = " SELECT	c.id,
-                            c.fullname,
-                            c.summary,
-                            c.startdate,
-                            lo.name   as 'location',
-                            ci.value  as 'instructor',
-                            u.firstname,
-                            u.lastname,
-                            u.email,
-                            hp.value as 'homepage',
-                            hv.value as 'homevisible',
-                            e.customtext3 as 'priceinternal',
-                            e.customtext4 as 'priceexternal'
-                     FROM			{course}					c
+            // SQL Isntruction
+            $sql = " SELECT	        c.id,
+                                    c.fullname,
+                                    c.summary,
+                                    c.startdate,
+                                    lo.name   as 'location',
+                                    ci.value  as 'instructor',
+                                    u.firstname,
+                                    u.lastname,
+                                    u.email,
+                                    hp.value as 'homepage',
+                                    hv.value as 'homevisible',
+                                    e.customtext3 as 'priceinternal',
+                                    e.customtext4 as 'priceexternal'
+                      FROM			{course}					c
                         JOIN        {enrol}                     e   ON  e.courseid = c.id
                                                                     AND e.status   = 0
                                                                     AND e.enrol    = 'waitinglist'
@@ -830,28 +829,28 @@ Class Approval {
                         -- HOME PAGE VISIBLE
                         LEFT JOIN	{course_format_options}		hv	ON	hv.courseid = c.id
                                                                     AND hv.name 	= 'homevisible'
-                     WHERE	c.id 		= :course
-                        AND	c.visible 	= :visible ";
+                      WHERE	        c.id 		= :course
+                        AND	        c.visible 	= :visible ";
 
-            /* Execute  */
+            // Execute
             $rdo = $DB->get_record_sql($sql,$params);
             if ($rdo) {
-                /* Course Info  */
+                // Course Info
                 $infoNotification->course       = $rdo->fullname;
                 $infoNotification->internal     = $rdo->priceinternal;
                 $infoNotification->external     = $rdo->priceexternal;
                 $infoNotification->summary      = $rdo->summary;
                 if (($rdo->homepage) && ($rdo->homevisible)) {
-                    /* Course Home Page */
+                    // Course Home Page
                     $urlHome = new moodle_url('/local/course_page/home_page.php',array('id' => $courseId));
                 }else {
-                    /* Course Page  */
+                    // Course Page
                     $urlHome = new moodle_url('/course/view.php',array('id' => $courseId));
                 }
                 $infoNotification->homepage = '<a href="' . $urlHome . '">'. $rdo->fullname . '</a>';
                 $infoNotification->date     = ($rdo->startdate ? userdate($rdo->startdate,'%d.%m.%Y', 99, false) : 'N/A');
                 $infoNotification->location = $rdo->location;
-                /* Add Info instructor  */
+                // Instructor
                 if ($rdo->instructor) {
                     $instructor = $rdo->firstname . " " . $rdo->lastname . " (" . $rdo->email . ")";
                 }//if_instructor
@@ -860,20 +859,20 @@ Class Approval {
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//GetInfoCourse_Notification
+    }//get_infocourse_notification
 
     /**
-     * @param           $infoNotification
+     * Description
+     * Send the notifications for approved request to all managers
+     *
+     * @param           Object $infoNotification    Notification
      *
      * @throws          Exception
      *
      * @creationDate    16/02/2016
      * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Send the notifications for approved request to all managers
      */
-    public static function SendApprovedNotification_Managers($infoNotification) {
+    public static function send_approved_notification_managers($infoNotification) {
         /* Variables    */
         global $SITE;
         $bodyText   = null;
@@ -885,32 +884,31 @@ Class Approval {
         $user       = null;
 
         try {
-            /* Get Managers */
+            // Get Managers
             $managers = $infoNotification->managers;
 
-            /* Subject  */
+            // Subject
             $strSubject = get_string('mng_approved_subject','enrol_waitinglist',$infoNotification);
 
-            /* Send eMail to managers   */
+            // Send eMail to managers
             if ($managers) {
                 foreach ($managers as $manager) {
                     $companies = '';
 
-                    /* Get Info Body eMail  */
-                    /* Info User Courses    */
-                    $strBody = get_string('mng_approved_body_two','enrol_waitinglist',$infoNotification);
+                    // Get Info Body eMail
+                    $strBody = (string)new lang_string('mng_approved_body_two','enrol_waitinglist',$infoNotification,$manager->lang);
 
-                    /* Info Manager */
+                    // Info Manager
                     $companies .= '<ul>';
                     foreach ($manager->companies as $info) {
                         $companies .= '<li>' . $info . '</li>';
                     }
                     $companies .= '</ul>';
-                    $strBody .= get_string('mng_approved_body_one','enrol_waitinglist') . $companies . "</br>";
+                    $strBody .= (string)new lang_string('mng_approved_body_one','enrol_waitinglist',null,$manager->lang) . $companies . "</br>";
 
-                    $strBody .= "</br>" . "</br>" . get_string('mng_approved_body_end','enrol_waitinglist',$infoNotification);
+                    $strBody .= "</br>" . "</br>" . (string)new lang_string('mng_approved_body_end','enrol_waitinglist',$infoNotification,$manager->lang);
 
-                    /* Content Mail */
+                    // Content Mail
                     $bodyText = null;
                     $bodyHtml = null;
                     if (strpos($strBody, '<') === false) {
@@ -923,7 +921,7 @@ Class Approval {
                         $bodyText = html_to_text($bodyHtml);
                     }
 
-                    /* Send eMail   */
+                    // Send eMail
                     $user = get_complete_user_data('id',$manager->id);
                     email_to_user($user, $SITE->shortname, $strSubject, $bodyText,$bodyHtml);
                 }//for_managers
@@ -931,25 +929,26 @@ Class Approval {
         }catch (Exception $ex) {
             throw $ex;
         }//try_Catch
-    }//SendApprovedNotification_Managers
+    }//send_approved_notification_managers
 
     /***********/
     /* PRIVATE */
     /***********/
 
     /**
-     * @param           $userId
+     * Description
+     * Get the competence connected with the user
+     *
+     * @param           int     $userId     Id user
+     * @param           Object  $instance
      *
      * @return          null|stdClass
      * @throws          Exception
      *
      * @creationDate    28/12/2015
      * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Get the competence connected with the user
      */
-    private static function GetCompetence_User($userId,$instance = null) {
+    private static function get_competence_user($userId,$instance = null) {
         /* Variables    */
         global $DB;
         $competence = null;
@@ -958,32 +957,28 @@ Class Approval {
         $params     = null;
 
         try {
-            /* Search Criteria */
+            // Search Criteria
             $params = array();
             $params['user'] = $userId;
 
-            /**
-             * Competence
-             */
+            // Competence
             $competence = new stdClass();
             $competence->levelZero  = 0;
             $competence->levelOne   = 0;
             $competence->levelTwo   = 0;
             $competence->levelThree = 0;
 
-            /* SQL Instruction */
+            // SQL Instruction
             if ($instance) {
-                /* Search criteria */
+                // Search criteria
                 $params['waiting']  = $instance->id;
                 $params['course']   = $instance->courseid;
 
-                /**
-                 * Manager only connected with company from enrolment method
-                 */
-                $sql = " SELECT	uicd.companyid 		as 'levelthree',
-                                cr_two.parentid		as 'leveltwo',
-                                cr_one.parentid 	as 'levelone',
-                                cr_zero.parentid	as 'levelzero'
+                // Manager only connected with company from enrolment method
+                $sql = " SELECT	    uicd.companyid 		as 'levelthree',
+                                    cr_two.parentid		as 'leveltwo',
+                                    cr_one.parentid 	as 'levelone',
+                                    cr_zero.parentid	as 'levelzero'
                          FROM		{user_info_competence_data} 		uicd
                             JOIN	{enrol_waitinglist_queue}			ew		ON ew.userid 			= uicd.userid
                                                                                 AND ew.companyid 		= uicd.companyid
@@ -1003,10 +998,10 @@ Class Approval {
                                                                                 AND co_zero.hierarchylevel 	= 0
                          WHERE		uicd.userid 	= :user ";
             }else {
-                $sql = " SELECT	GROUP_CONCAT(DISTINCT uicd.companyid  	ORDER BY uicd.companyid SEPARATOR ',')		as 'levelthree',
-                                GROUP_CONCAT(DISTINCT cr_two.parentid  	ORDER BY cr_two.parentid SEPARATOR ',') 	as 'leveltwo',
-                                GROUP_CONCAT(DISTINCT cr_one.parentid  	ORDER BY cr_one.parentid SEPARATOR ',') 	as 'levelone',
-                                GROUP_CONCAT(DISTINCT cr_zero.parentid  ORDER BY cr_zero.parentid SEPARATOR ',') 	as 'levelzero'
+                $sql = " SELECT	    GROUP_CONCAT(DISTINCT uicd.companyid  	ORDER BY uicd.companyid SEPARATOR ',')		as 'levelthree',
+                                    GROUP_CONCAT(DISTINCT cr_two.parentid  	ORDER BY cr_two.parentid SEPARATOR ',') 	as 'leveltwo',
+                                    GROUP_CONCAT(DISTINCT cr_one.parentid  	ORDER BY cr_one.parentid SEPARATOR ',') 	as 'levelone',
+                                    GROUP_CONCAT(DISTINCT cr_zero.parentid  ORDER BY cr_zero.parentid SEPARATOR ',') 	as 'levelzero'
                          FROM		{user_info_competence_data} 	uicd
                             -- LEVEL TWO
                             JOIN	{report_gen_company_relation}   	cr_two	ON 	cr_two.companyid 		= uicd.companyid
@@ -1023,8 +1018,7 @@ Class Approval {
                          WHERE		uicd.userid = :user ";
             }//if_else
 
-
-            /* Execute  */
+            // Execute
             $rdo = $DB->get_record_sql($sql,$params);
             if ($rdo) {
                 $competence = new stdClass();
@@ -1038,79 +1032,21 @@ Class Approval {
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//GetCompetence_User
+    }//get_competence_user
 
     /**
-     * @param           $competence
-     *
-     * @return          array
-     * @throws          Exception
-     *
-     * @creationDate    28/12/2015
-     * @author          eFaktor     (fbv)
-     *
      * Description
-     * Get all managers connected with user
-     */
-    private static function GetManager_User($competence) {
-        /* Variables */
-        global $DB;
-        $sql            = null;
-        $rdo            = null;
-        $myManagers     = array();
-        $infoManager    = null;
-
-        try {
-
-            /* Get levels of Managers   */
-            $sql = " SELECT		DISTINCT u.id
-                     FROM		{report_gen_company_manager}  rm
-                        JOIN	{user}						  u 	ON 	u.id 		= rm.managerid
-                                                                    AND	u.deleted 	= 0
-                     WHERE	(rm.levelzero IN ($competence->levelZero) AND rm.levelone IS NULL
-                             AND
-                             rm.leveltwo IS NULL AND rm.levelthree IS NULL)
-                            OR
-                            (rm.levelzero IN ($competence->levelZero) AND rm.levelone IN ($competence->levelOne)
-                             AND
-                             rm.leveltwo IS NULL AND rm.levelthree IS NULL)
-                            OR
-                            (rm.levelzero IN ($competence->levelZero) AND rm.levelone IN ($competence->levelOne)
-                             AND
-                             rm.leveltwo IN ($competence->levelTwo)   AND rm.levelthree IS NULL)
-                            OR
-                            (rm.levelzero IN ($competence->levelZero) AND  rm.levelone IN ($competence->levelOne)
-                             AND
-                             rm.leveltwo IN ($competence->levelTwo)   AND rm.levelthree IN ($competence->levelThree)) ";
-
-            /* Execute  */
-            $rdo = $DB->get_records_sql($sql);
-            if ($rdo) {
-                foreach ($rdo as $instance) {
-                    /* Add Manager  */
-                    $myManagers[$instance->id] = $instance->id;
-                }//for_Rdo
-            }//if_rdo
-
-            return $myManagers;
-        }catch (Exception $ex) {
-            throw $ex;
-        }//try_catch
-    }//GetManager_User
-
-    /**
-     * @param           $competence
+     * Get all managers that have to receive an approved notification
+     *
+     * @param           Object  $competence Competence data
      *
      * @return          array
      * @throws          Exception
      *
      * @creationDate    15/02/2016
      * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Get all managers that have to receive an approved notification
      */
-    private static function GetInfoManagers_NotificationApproved($competence) {
+    private static function get_infoManagers_notification_approved($competence) {
         /* Variables    */
         global $DB;
         $rdo            = null;
@@ -1120,17 +1056,18 @@ Class Approval {
         $data           = false;
 
         try {
-
-            /* First Level Three */
-            $sql = self::GetSQLManagersCompanyByHierarchy($competence->levelZero,$competence->levelOne,$competence->levelTwo,$competence->levelThree,3);
-            /* Execute  */
+            // First Level Three
+            $sql = self::get_sql_managers_company_by_hierarchy($competence->levelZero,$competence->levelOne,
+                                                               $competence->levelTwo,$competence->levelThree,3);
+            // Execute
             $rdo = $DB->get_records_sql($sql);
             if ($rdo) {
                 $data = true;
             }else {
-                /* Second Level */
-                $sql = self::GetSQLManagersCompanyByHierarchy($competence->levelZero,$competence->levelOne,$competence->levelTwo,$competence->levelThree,2);
-                /* Execute  */
+                // Second Level
+                $sql = self::get_sql_managers_company_by_hierarchy($competence->levelZero,$competence->levelOne,
+                                                                   $competence->levelTwo,$competence->levelThree,2);
+                // Execute
                 $rdo = $DB->get_records_sql($sql);
                 if ($rdo) {
                     $data = true;
@@ -1140,17 +1077,18 @@ Class Approval {
             if ($data) {
                 foreach ($rdo as $instance) {
                     if (array_key_exists($instance->managerid,$managers)) {
-                       $infoManager = $managers[$instance->managerid];
+                       $infoManager             = $managers[$instance->managerid];
                     }else {
                         $infoManager = new stdClass();
                         $infoManager->id        = $instance->managerid;
+                        $infoManager->lang      = $instance->lang;
                         $infoManager->companies = array();
                     }//if_manager_exists
 
-                    /* Add Company  */
+                    // Add Company
                     $infoManager->companies[] = $instance->company;
 
-                    /* Add Manager */
+                    // Add Manager
                     $managers[$instance->managerid] = $infoManager;
                 }//of_rdo
             }//if_data
@@ -1159,25 +1097,25 @@ Class Approval {
         }catch (Exception $ex) {
             throw $ex;
         }//try_Catch
-    }//GetInfoManagers_NotificationApproved
+    }//get_infoManagers_notification_approved
 
     /**
-     * @param           $levelZero
-     * @param           $levelOne
-     * @param           $levelTwo
-     * @param           $levelThree
-     * @param           $hierarchy
+     * Description
+     * Managers y level of hierarchy
+     *
+     * @param           int $levelZero      Company level zero
+     * @param           int $levelOne       Company level one
+     * @param           int $levelTwo       Company level two
+     * @param           int $levelThree     Company level three
+     * @param           int $hierarchy      Hierarchy level
      *
      * @return          null|string
      * @throws          Exception
      *
      * @creationDate    01/06/2016
      * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Managers y level of hierachy
      */
-    private static function GetSQLManagersCompanyByHierarchy($levelZero,$levelOne,$levelTwo,$levelThree,$hierarchy) {
+    private static function get_sql_managers_company_by_hierarchy($levelZero,$levelOne,$levelTwo,$levelThree,$hierarchy) {
         /* Variables */
         $sql = null;
         
@@ -1186,21 +1124,31 @@ Class Approval {
                 case 0:
                     $sql = " SELECT		rm.id,
                                         rm.managerid,
-                                        co_zero.name as 'company'
+                                        co_zero.name as 'company',
+                                        u.lang
                              FROM		{report_gen_company_manager}  rm
                                 JOIN	{user}						  u 		ON 	u.id 		            = rm.managerid
                                                                                 AND	u.deleted 	            = 0
                                 -- LEVEL ZERO
                                 JOIN 	{report_gen_companydata}	  co_zero	ON 	co_zero.id 				= rm.levelzero
                                                                                 AND	co_zero.hierarchylevel 	= 0
-                             WHERE	(rm.levelzero IN ($levelZero) AND rm.levelone IS NULL AND rm.leveltwo IS NULL  AND rm.levelthree IS NULL)
-                             ORDER BY rm.managerid ";
+                             WHERE	    (rm.levelzero IN ($levelZero) 
+                                         AND 
+                                         rm.levelone IS NULL 
+                                         AND 
+                                         rm.leveltwo IS NULL  
+                                         AND 
+                                         rm.levelthree IS NULL
+                                        )
+                             ORDER BY   rm.managerid ";
 
                     break;
+
                 case 1:
                     $sql = " SELECT		rm.id,
                                         rm.managerid,
-                                        CONCAT(co_zero.name,'/',co_one.name) as 'company'
+                                        CONCAT(co_zero.name,'/',co_one.name) as 'company',
+                                        u.lang
                              FROM		{report_gen_company_manager}  rm
                                 JOIN	{user}						  u 		ON 	u.id 		            = rm.managerid
                                                                                 AND	u.deleted 	            = 0
@@ -1210,14 +1158,22 @@ Class Approval {
                                 -- LEVEL ONE
                                 JOIN	{report_gen_companydata}	  co_one	ON	co_one.id				= rm.levelone
                                                                                 AND	co_one.hierarchylevel	= 1
-                             WHERE	(rm.levelzero IN ($levelZero) AND rm.levelone IN ($levelOne) AND rm.leveltwo IS NULL  AND rm.levelthree IS NULL)
-                             ORDER BY rm.managerid ";
+                             WHERE	    (rm.levelzero IN ($levelZero) 
+                                         AND 
+                                         rm.levelone IN ($levelOne) 
+                                         AND 
+                                         rm.leveltwo IS NULL  
+                                         AND rm.levelthree IS NULL
+                                        )
+                             ORDER BY   rm.managerid ";
 
                     break;
+
                 case 2:
                     $sql = " SELECT		rm.id,
                                         rm.managerid,
-                                        CONCAT(co_zero.name,'/',co_one.name,'/',co_two.name) as 'company'
+                                        CONCAT(co_zero.name,'/',co_one.name,'/',co_two.name) as 'company',
+                                        u.lang
                              FROM		{report_gen_company_manager}  rm
                                 JOIN	{user}						  u 		ON 	u.id 		            = rm.managerid
                                                                                 AND	u.deleted 	            = 0
@@ -1230,14 +1186,23 @@ Class Approval {
                                 -- LEVEL TWO
                                 JOIN	{report_gen_companydata}      co_two	ON	co_two.id				= rm.leveltwo
                                                                                 AND co_two.hierarchylevel	= 2
-                             WHERE	(rm.levelzero IN ($levelZero) AND rm.levelone IN ($levelOne) AND rm.leveltwo IN ($levelTwo)  AND rm.levelthree IS NULL)
-                             ORDER BY rm.managerid ";
+                             WHERE	    (rm.levelzero IN ($levelZero) 
+                                         AND 
+                                         rm.levelone IN ($levelOne) 
+                                         AND 
+                                         rm.leveltwo IN ($levelTwo)  
+                                         AND 
+                                         rm.levelthree IS NULL
+                                        )
+                             ORDER BY   rm.managerid ";
 
                     break;
+
                 case 3:
                     $sql = " SELECT		rm.id,
                                         rm.managerid,
-                                        CONCAT(co_zero.name,'/',co_one.name,'/',co_two.name,'/',co_tre.name) as 'company'
+                                        CONCAT(co_zero.name,'/',co_one.name,'/',co_two.name,'/',co_tre.name) as 'company',
+                                        u.lang
                              FROM		{report_gen_company_manager}  rm
                                 JOIN	{user}						  u 		ON 	u.id 		            = rm.managerid
                                                                                 AND	u.deleted 	            = 0
@@ -1253,8 +1218,15 @@ Class Approval {
                                 -- LEVEL THREE
                                 JOIN	{report_gen_companydata}	  co_tre    ON 	co_tre.id = rm.levelthree
                                                                                 AND co_tre.hierarchylevel 	= 3
-                             WHERE	(rm.levelzero IN ($levelZero) AND rm.levelone IN ($levelOne) AND rm.leveltwo IN ($levelTwo)  AND rm.levelthree IN ($levelThree))
-                             ORDER BY rm.managerid ";
+                             WHERE	    (rm.levelzero IN ($levelZero) 
+                                         AND 
+                                         rm.levelone IN ($levelOne) 
+                                         AND 
+                                         rm.leveltwo IN ($levelTwo)  
+                                         AND 
+                                         rm.levelthree IN ($levelThree)
+                                        )
+                             ORDER BY   rm.managerid ";
 
                     break;
             }//hierarchy
@@ -1263,21 +1235,21 @@ Class Approval {
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//GetSQLManagersCompanyByHierarchy
+    }//get_sql_managers_company_by_hierarchy
     
     /**
-     * @param           $userId
-     * @param           $infoNotification
+     * Description
+     * Get user information to send
+     *
+     * @param           int     $userId             Id user
+     * @param           Object  $infoNotification   Notification
      *
      * @throws          Exception
      *
      * @creationDate    16/02/2016
      * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Get user information to send
      */
-    private static function GetInfoUser_NotificationApproved($userId,&$infoNotification,$instanceId = 0) {
+    private static function get_infouser_notification_approved($userId,&$infoNotification,$instanceId = 0) {
         /* Variables    */
         global $DB;
         $sql        = null;
@@ -1287,18 +1259,18 @@ Class Approval {
         $companies  = null;
 
         try {
-            /* Search criteria  */
+            // Search criteria
             $params = array();
             $params['user'] = $userId;
 
-            /* SQL Instruction  */
-            $sql = " SELECT	u.id,
-                            CONCAT(u.firstname,' ',u.lastname) 								as 'user',
-                            GROUP_CONCAT(DISTINCT co.name ORDER BY co.name SEPARATOR '#') 	as 'companies'
-                     FROM	{user} u
+            // SQL Instruction
+            $sql = " SELECT	  u.id,
+                              CONCAT(u.firstname,' ',u.lastname) 								as 'user',
+                              GROUP_CONCAT(DISTINCT co.name ORDER BY co.name SEPARATOR '#') 	as 'companies'
+                     FROM	  {user} u
                         -- COMPETENCE
-                        JOIN	{user_info_competence_data}	ucd		ON ucd.userid 	= u.id
-                        JOIN	{report_gen_companydata}	co 		ON co.id 		= ucd.companyid ";
+                        JOIN  {user_info_competence_data}	ucd		ON ucd.userid 	= u.id
+                        JOIN  {report_gen_companydata}	co 		ON co.id 		= ucd.companyid ";
 
             $sqlWhere = " WHERE 	 u.id = :user
                           GROUP BY u.id ";
@@ -1308,15 +1280,18 @@ Class Approval {
                 $sql .= " JOIN	{enrol_waitinglist_queue}	wq	ON 	wq.userid		    = u.id
                                                                 AND wq.companyid 		= co.id
                                                                 AND wq.waitinglistid 	= :waiting ";
-            }
-            /* Execute  */
+            }//if_instanceid
+
+            // Execute
             $sql .= $sqlWhere;
             $rdo = $DB->get_record_sql($sql,$params);
             if ($rdo) {
-                /* Add Info User    */
-                $infoNotification->user = $rdo->user;
+                // Companies
                 $companies = explode('#',$rdo->companies);
-                $infoNotification->companies_user = '<ul>';
+
+                // Add Info User
+                $infoNotification->user             = $rdo->user;
+                $infoNotification->companies_user   = '<ul>';
                 foreach ($companies as $company) {
                     $infoNotification->companies_user .= '<li>' . $company . '</li>';
                 }
@@ -1325,22 +1300,22 @@ Class Approval {
         }catch (Exception $ex) {
             throw $ex;
         }//try_Catch
-    }//GetInfoUser_NotificationApproved
+    }//get_infouser_notification_approved
 
     /**
-     * @param           $infoMail
-     * @param           $toManagers
-     * @param           $reminder
+     * Description
+     * Send  notifications for the managers
+     *
+     * @param           Object  $infoMail       Mail content
+     * @param           array   $toManagers     Who receive the email
+     * @param           bool    $reminder       Remainder or not
      *
      * @throws          Exception
      *
      * @creationDate    28/12/2015
      * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Send  notifications for the managers
      */
-    private static function SendNotification_Managers($infoMail,$toManagers,$reminder=false) {
+    private static function send_notification_managers($infoMail,$toManagers,$reminder=false) {
         /* Variables */
         global $SITE,$DB;
         $strBody    = null;
@@ -1352,41 +1327,40 @@ Class Approval {
         $time       = null;
 
         try {
-            /* Local Time   */
+            // Local Time
             $time = time();
 
-            /* Mails For Managers */
-            if ($reminder) {
-                $strSubject = get_string('subject_reminder','enrol_waitinglist',$infoMail);
-                $strBody = get_string('body_reminder','enrol_waitinglist',$infoMail);
-            }else {
-                $strSubject = get_string('mng_subject','enrol_waitinglist',$infoMail);
-                $strBody    = get_string('mng_body','enrol_waitinglist',$infoMail);
-            }//if_remainder
-
-            /* Content Mail */
-            $bodyText = null;
-            $bodyHtml = null;
-            if (strpos($strBody, '<') === false) {
-                // Plain text only.
-                $bodyText = $strBody;
-                $bodyHtml = text_to_html($bodyText, null, false, true);
-            } else {
-                // This is most probably the tag/newline soup known as FORMAT_MOODLE.
-                $bodyHtml = format_text($strBody, FORMAT_MOODLE);
-                $bodyText = html_to_text($bodyHtml);
-            }
-
-            /* Send Mail    */
+            // Send Mail
             foreach ($toManagers as $managerId => $info) {
-                $manager = get_complete_user_data('id',$managerId);
+                // Mails For Managers
+                if ($reminder) {
+                    $strSubject = (string)new lang_string('subject_reminder','enrol_waitinglist',$infoMail,$manager->lang);
+                    $strBody    = (string)new lang_string('body_reminder','enrol_waitinglist',$infoMail,$manager->lang);
+                }else {
+                    $strSubject = (string)new lang_string('mng_subject','enrol_waitinglist',$infoMail,$manager->lang);
+                    $strBody    = (string)new lang_string('mng_body','enrol_waitinglist',$infoMail,$manager->lang);
+                }//if_remainder
+
+                // Mail content
+                $bodyText = null;
+                $bodyHtml = null;
+                if (strpos($strBody, '<') === false) {
+                    // Plain text only.
+                    $bodyText = $strBody;
+                    $bodyHtml = text_to_html($bodyText, null, false, true);
+                } else {
+                    // This is most probably the tag/newline soup known as FORMAT_MOODLE.
+                    $bodyHtml = format_text($strBody, FORMAT_MOODLE);
+                    $bodyText = html_to_text($bodyHtml);
+                }
+
                 if (email_to_user($manager, $SITE->shortname, $strSubject, $bodyText,$bodyHtml)) {
-                    /* Notification Sent  */
+                    // Notification Sent
                     $sent = true;
                 }//send_mail
             }//for_Each_manager
 
-            /* Update Approval Entry as Sent    */
+            // Update Approval Entry as Sent
             if ($sent) {
                 $infoApproval = new stdClass();
                 $infoApproval->id           = $infoMail->approvalid;
@@ -1402,23 +1376,24 @@ Class Approval {
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//SendNotification_Managers
+    }//send_notification_managers
 
     /**
-     * @param           $infoRequest
+     * Description
+     * Reject action
+     *
+     * @param           Object $infoRequest     Request to reject
      *
      * @return          bool
      * @throws          Exception
      *
      * @creationDate    29/12/2015
      * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Reject action
      */
-    private static function RejectAction($infoRequest) {
+    private static function reject_action($infoRequest) {
         /* Variables */
         global $DB,$SITE;
+        $rdo            = null;
         $instanceReject = null;
         $infoMail       = null;
         $strBody        = null;
@@ -1430,10 +1405,10 @@ Class Approval {
         $time           = null;
 
         try {
-            /* Local Time   */
+            // Local Time
             $time = time();
 
-            /* Instance Reject  */
+            // Instance Reject
             $instanceReject = new stdClass();
             $instanceReject->id             = $infoRequest->id;
             $instanceReject->userid         = $infoRequest->userid;
@@ -1444,29 +1419,32 @@ Class Approval {
             $instanceReject->rejected       = 1;
             $instanceReject->timemodified   = $time;
 
-            /* Execute */
+            // Execute
             $DB->update_record('enrol_approval',$instanceReject);
 
-            /* Send mail to the user */
+            // Send mail to the user
             $user   = get_complete_user_data('id',$infoRequest->userid);
 
-            $instances = $DB->get_records('enrol', array('courseid'=>$infoRequest->courseid, 'enrol'=>'waitinglist'), 'id ASC');
-            foreach ($instances as $instance) {
-                $plugin = enrol_get_plugin('waitinglist');
-                $plugin->unenrol_user($instance,$infoRequest->userid);
-            }
+            $rdo = $DB->get_records('enrol', array('courseid'=>$infoRequest->courseid, 'enrol'=>'waitinglist'), 'id ASC');
+            if ($rdo) {
+                foreach ($rdo as $instance) {
+                    $plugin = enrol_get_plugin('waitinglist');
+                    $plugin->unenrol_user($instance,$infoRequest->userid);
+                }//for_rdo
+            }//if_Rdo
 
+            // content Mail
             $infoMail = new stdClass();
             $infoMail->user     = fullname($user);
             $infoMail->site     = $SITE->shortname;
             $infoMail->sent     = userdate($time,'%d.%m.%Y', 99, false);
-            self::GetInfoCourse_Notification($infoRequest->courseid,$infoMail);
+            self::get_infocourse_notification($infoRequest->courseid,$infoMail);
 
-            /* Mail for Users       */
-            $strSubject = get_string('mng_subject','enrol_waitinglist',$infoMail);
-            $strBody    = get_string('request_rejected','enrol_waitinglist',$infoMail);
+            // Mail for Users
+            $strSubject = (string)new lang_string('mng_subject','enrol_waitinglist',$infoMail,$user->lang);
+            $strBody    = (string)new lang_string('request_rejected','enrol_waitinglist',$infoMail,$user->lang);
 
-            /* Content Mail         */
+            // Content Mail
             $bodyText = null;
             $bodyHtml = null;
             if (strpos($strBody, '<') === false) {
@@ -1479,34 +1457,34 @@ Class Approval {
                 $bodyText = html_to_text($bodyHtml);
             }
 
-            /* Delete entries from user_enrolments and enrol_waitinglist_queue */
+            // Delete entries from user_enrolments and enrol_waitinglist_queue
             $DB->delete_records('user_enrolments',array('userid'    => $infoRequest->userid,
                                                         'enrolid'   => $infoRequest->waitinglistid));
             $DB->delete_records('enrol_waitinglist_queue',array('userid'        => $infoRequest->userid,
                                                                 'courseid'      => $infoRequest->courseid,
                                                                 'waitinglistid' => $infoRequest->waitinglistid));
-            /* Send Mail    */
+            // Send Mail
             email_to_user($user, $SITE->shortname, $strSubject, $bodyText,$bodyHtml);
 
             return true;
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//RejectAction
+    }//reject_action
 
     /**
-     * @param           $infoRequest
+     * Description
+     * Approve Action
+     *
+     * @param           Object $infoRequest     Request to approve
      *
      * @return          bool
      * @throws          Exception
      *
      * @creationDate    29/12/2015
      * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Approve Action
      */
-    private static function ApproveAction($infoRequest) {
+    private static function approve_action($infoRequest) {
         /* Variables */
         global $CFG,$SITE,$DB;
         $instanceWaiting    = null;
@@ -1523,63 +1501,64 @@ Class Approval {
         $time               = null;
 
         try {
-            /* Include library to create queue entry and update waitinglist */
+            // Include library to create queue entry and update waitinglist
             require_once($CFG->dirroot . '/enrol/invoice/invoicelib.php');
 
-            /* Enrol instance   */
-            $instanceWaiting = self::GetInstance_EnrolWaiting($infoRequest->courseid,$infoRequest->waitinglistid);
+            // Enrol instance
+            $instanceWaiting = self::get_instance_enrolwaiting($infoRequest->courseid,$infoRequest->waitinglistid);
 
-            /* Waiting List ENTRY  */
-            $queueEntry = self::Add_EntryWaitingList($instanceWaiting,$infoRequest);
+            // Waiting List ENTRY
+            $queueEntry = self::add_entry_waitinglist($instanceWaiting,$infoRequest);
 
             if ($queueEntry) {
-                /* Activate Invoice Entry */
+                // Activate Invoice Entry
                 if (enrol_get_plugin('invoice')) {
                     if ($instanceWaiting->{WAITINGLIST_FIELD_INVOICE}) {
                         Invoices::activate_enrol_invoice($infoRequest->userid,$infoRequest->courseid,$instanceWaiting->id);
                     }//if_invoice_info
                 }//if
 
-                /* Local Time   */
+                // Local Time
                 $time = time();
 
-                /* Instance Approve  */
+                // Enrol instance
                 $params = array();
                 $params['userid']   = $infoRequest->userid;
                 $params['enrolid']  = $infoRequest->waitinglistid;
                 $rdo = $DB->get_record('user_enrolments',$params,'id');
 
+                // Instance Approve
                 $instanceApprove = new stdClass();
                 $instanceApprove->id             = $infoRequest->id;
                 $instanceApprove->userid         = $infoRequest->userid;
                 $instanceApprove->courseid       = $infoRequest->courseid;
                 if ($rdo) {
                     $instanceApprove->userenrolid    = $rdo->id;
-                }
-
+                }//if_Rdo
                 $instanceApprove->waitinglistid  = $infoRequest->waitinglistid;
                 $instanceApprove->methodtype     = $infoRequest->methodtype;
                 $instanceApprove->approved       = 1;
                 $instanceApprove->rejected       = 0;
                 $instanceApprove->timemodified   = $time;
 
-                /* Execute */
+                // Execute
                 $DB->update_record('enrol_approval',$instanceApprove);
 
-                /* Send mail to the user */
+                //Send mail to the user
                 $user   = get_complete_user_data('id',$infoRequest->userid);
 
+                // Content email
                 $infoMail = new stdClass();
                 $infoMail->user         = fullname($user);
                 $infoMail->site         = $SITE->shortname;
                 $infoMail->sent         = userdate($time,'%d.%m.%Y', 99, false);
-                self::GetInfoCourse_Notification($infoRequest->courseid,$infoMail);
+                self::get_infocourse_notification($infoRequest->courseid,$infoMail);
 
-                /* Mail for Users       */
-                $strSubject = get_string('mng_subject','enrol_waitinglist',$infoMail);
-                $strBody    = get_string('request_approved','enrol_waitinglist',$infoMail);
+                // Mail for Users
+                $strSubject = (string)new lang_string('mng_subject','enrol_waitinglist',$infoMail,$user->lang);
+                $strBody    = (string)new lang_string('request_approved','enrol_waitinglist',$infoMail,$user->lang);
 
-                /* Content Mail         */
+                // Content Mail
                 $bodyText = null;
                 $bodyHtml = null;
                 if (strpos($strBody, '<') === false) {
@@ -1592,7 +1571,7 @@ Class Approval {
                     $bodyText = html_to_text($bodyHtml);
                 }
 
-                /* Send Mail    */
+                // Send Mail
                 email_to_user($user, $SITE->shortname, $strSubject, $bodyText,$bodyHtml);
 
                 return true;
@@ -1603,28 +1582,28 @@ Class Approval {
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//ApproveAction
+    }//approve_action
 
     /**
-     * @param           $instanceWaiting
-     * @param           $infoRequest
+     * Description
+     * Add the waiting list entry.
+     *
+     * @updateDate      13/09/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Add company
+     *
+     * @param           Object $instanceWaiting     Enrol waitinglist instance
+     * @param           Object $infoRequest         Request
      *
      * @return          stdClass
      * @throws          Exception
      *
      * @creationDate    29/12/2015
      * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Add the waiting list entry.
-     * 
-     * @updateDate      13/09/2016
-     * @author          eFaktor     (fbv)
-     * 
-     * Description
-     * Add company
      */
-    private static function Add_EntryWaitingList($instanceWaiting,$infoRequest) {
+    private static function add_entry_waitinglist($instanceWaiting,$infoRequest) {
         /* Variables */
         $queueEntry = null;
         $method     = null;
@@ -1632,7 +1611,7 @@ Class Approval {
         $myClass    = null;
 
         try {
-            /* Queue Entry */
+            // Queue Entry
             $queueEntry = new stdClass();
             $queueEntry->waitinglistid      = $infoRequest->waitinglistid;
             $queueEntry->courseid           = $infoRequest->courseid;
@@ -1648,10 +1627,9 @@ Class Approval {
             $queueEntry->offqueue           = 0;
             $queueEntry->timemodified       = $queueEntry->timecreated;
 
-
-            /* Method               */
+            // Method
             $method = $infoRequest->methodtype;
-            /* Get Class Method     */
+            // Get Class Method
             $class = '\enrol_waitinglist\method\\' . $method . '\enrolmethod'  . $method ;
 
             $methods = array();
@@ -1660,88 +1638,88 @@ Class Approval {
                 if($themethod){$methods[$method]=$themethod;}
 
                 $queueEntry->id = $methods[$method]->add_to_waitinglist_from_approval($instanceWaiting,$queueEntry);
-            }
+            }//if_class_exists
 
             return $queueEntry;
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//Add_EntryQueue
+    }//add_entry_waitinglist
 
     /**
-     * @param           $courseId
-     * @param           $waitingId
+     * Description
+     * Get waitinglist instance connected with the course
+     *
+     * @param           int $courseId   Id course
+     * @param           int $waitingId  Id waitinglist
      *
      * @return          mixed
      * @throws          Exception
      *
      * @creationDate    29/12/2015
      * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Get waitinglist instance connected with the course
      */
-    private static function GetInstance_EnrolWaiting($courseId,$waitingId) {
+    private static function get_instance_enrolwaiting($courseId,$waitingId) {
         /* Variables */
         global $DB;
         $params = null;
         $rdo    = null;
 
         try {
-            /* Search Criteria  */
+            // Search Criteria
             $params = array();
             $params['courseid'] = $courseId;
             $params['id']       = $waitingId;
             $params['enrol']    = 'waitinglist';
             $params['status']   = 0;
 
-            /* Execute  */
+            // Execute
             $rdo = $DB->get_record('enrol',$params);
 
             return $rdo;
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//GetInstance_EnrolWaiting
+    }//get_instance_enrolwaiting
 
     /**
-     * @param           $courseId
-     * @param           $waitingId
+     * Description
+     * Get basic information about the course, name, participants...
+     *
+     * @param           int $courseId   Id course
+     * @param           int $waitingId  Id enrolment waiting list
      *
      * @return          null|stdClass
      * @throws          Exception
      *
      * @creationDate    30/12/2015
      * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Get basic information about the course, name, participants...
      */
-    private static function GetBasicInfo($courseId,$waitingId) {
+    private static function get_basic_info($courseId,$waitingId) {
         /* Variables    */
         global $DB;
-        $approvalRequests = null;
-        $params = null;
-        $rdo    = null;
-        $sql    = null;
+        $approvalRequests   = null;
+        $params             = null;
+        $rdo                = null;
+        $sql                = null;
 
         try {
-            /* Search Criteria  */
+            // Search Criteria
             $params = array();
             $params['course']   = $courseId;
             $params['enrol']    = 'waitinglist';
             $params['status']   = 0;
             $params['waiting']  = $waitingId;
 
-            /* SQL Instruction  */
-            $sql = " SELECT	c.id,
-                            c.fullname,
-                            cc.name			as 'category',
-                            e.customint2 	as 'participants',
-                            e.id 			as 'waiting',
-                            count(ea.id) 	as 'total',
-                            count(eaa.id) 	as 'approved',
-                            count(ear.id) 	as 'rejected'
+            // SQL Instruction
+            $sql = " SELECT	    c.id,
+                                c.fullname,
+                                cc.name			as 'category',
+                                e.customint2 	as 'participants',
+                                e.id 			as 'waiting',
+                                count(ea.id) 	as 'total',
+                                count(eaa.id) 	as 'approved',
+                                count(ear.id) 	as 'rejected'
                      FROM		{course}			c
                         JOIN	{course_categories}	cc	ON	cc.id 				= c.category
                         JOIN	{enrol}			    e	ON 	e.courseid 			= c.id
@@ -1759,12 +1737,12 @@ Class Approval {
                         LEFT JOIN {enrol_approval} ear 	ON 	ear.id 			= ea.id
                                                         AND ear.rejected 	= 1
                                                         AND	ear.unenrol	    = 0
-                     WHERE c.id = :course ";
+                     WHERE        c.id = :course ";
 
-            /* Execute */
+            // Execute
             $rdo = $DB->get_record_sql($sql,$params);
             if ($rdo) {
-                /* Basic info */
+                // Basic info
                 $approvalRequests = new stdClass();
                 $approvalRequests->id           = $courseId;
                 $approvalRequests->name         = $rdo->fullname;
@@ -1782,21 +1760,21 @@ Class Approval {
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//GetBasicInfo
+    }//get_basic_info
 
     /**
-     * @param           $enrolId
+     * Description
+     * Check id the company is demanded or not
+     *
+     * @param           int $enrolId    Id enrolment instance
      *
      * @return          bool|null
      * @throws          Exception
      *
      * @creationDate    26/10/2016
      * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Check id the company is demanded or not
      */
-    private static function IsCompanyDemanded($enrolId) {
+    private static function is_company_demanded($enrolId) {
         /* Variables */
         global $DB;
         $rdo = null;
@@ -1814,21 +1792,21 @@ Class Approval {
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//IsCompanyDemanded
+    }//is_company_demanded
 
     /**
-     * @param           $userId
+     * Description
+     * Get workplace connected with user. Competence profile
+     *
+     * @param           int $userId     Id user
      *
      * @return          mixed|null
      * @throws          Exception
      *
      * @creationDate    01/11/2016
      * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Get workplace connected with user. Competence profile
      */
-    private static function GetWorkplaceConnected($userId) {
+    private static function get_workplace_connected($userId) {
         /* Variables */
         global $DB;
         $rdo        = null;
@@ -1837,20 +1815,21 @@ Class Approval {
         $workplace  = null;
 
         try {
-            /* Search criteria  */
+            // Search criteria
             $params =array();
             $params['user_id']  = $userId;
             $params['level']    = 3;
 
-            /* SQL Instruction */
-            $sql = " SELECT 	uic.userid,
-                                GROUP_CONCAT(DISTINCT CONCAT(co.industrycode, ' - ',co.name) ORDER BY co.industrycode,co.name SEPARATOR '#SE#') 	as 'workplace'
-                     FROM		{user_info_competence_data}	uic
-                        JOIN	{report_gen_companydata}	co	ON co.id = uic.companyid
-                     WHERE	uic.userid = :user_id
+            // SQL Instruction
+            $sql = " SELECT   uic.userid,
+                              GROUP_CONCAT(DISTINCT CONCAT(co.industrycode, ' - ',co.name) 
+                                          ORDER BY co.industrycode,co.name SEPARATOR '#SE#') 	as 'workplace'
+                     FROM	  {user_info_competence_data}	uic
+                        JOIN  {report_gen_companydata}	co	ON co.id = uic.companyid
+                     WHERE	  uic.userid = :user_id
                         AND uic.level  = :level ";
 
-            /* Execute */
+            // Execute
             $rdo = $DB->get_record_sql($sql,$params);
             if ($rdo) {
                 if ($rdo->workplace) {
@@ -1862,29 +1841,29 @@ Class Approval {
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//GetWorkplaceConnected
+    }//get_workplace_connected
 
     /**
-     * @param           $courseId
-     * @param           $waitingId
-     * @param           $isCompanyDemanded
+     * Description
+     * Get all approval requests
+     *
+     * @updateDate      01/11/2016
+     * @author          eFaktor     (fbv)
+     *
+     * Description
+     * Get correct workplace
+     *
+     * @param           int  $courseId              Id course
+     * @param           int  $waitingId             Id enrolment
+     * @param           bool $isCompanyDemanded     Company demanded
      *
      * @return          array
      * @throws          Exception
      *
      * @creationDate    30/12/2015
      * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Get all approval requests
-     * 
-     * @updateDate      01/11/2016
-     * @author          eFaktor     (fbv)
-     * 
-     * Description
-     * Get correct workpalce
      */
-    private static function Get_ApprovalRequests($courseId,$waitingId,$isCompanyDemanded) {
+    private static function get_approval_requests($courseId,$waitingId,$isCompanyDemanded) {
         /* Variables */
         global $DB;
         $params         = null;
@@ -1894,35 +1873,35 @@ Class Approval {
         $requests       = array();
 
         try {
-            /* Search Criteria */
+            // Search Criteria
             $params = array();
             $params['course']   = $courseId;
             $params['waiting']  = $waitingId;
 
-            /* SQL Instruction */
-            $sql = " SELECT	u.id,
-                            CONCAT(u.firstname,' ',u.lastname) as 'name',
-                            u.email,
-                            ea.arguments,
-                            ea.seats,
-                            ea.approved,
-                            ea.rejected,
-                            ea.companyid,
-                            co.industrycode,
-                            co.name         as 'company'
+            // SQL Instruction
+            $sql = " SELECT	      u.id,
+                                  CONCAT(u.firstname,' ',u.lastname) as 'name',
+                                  u.email,
+                                  ea.arguments,
+                                  ea.seats,
+                                  ea.approved,
+                                  ea.rejected,
+                                  ea.companyid,
+                                  co.industrycode,
+                                  co.name         as 'company'
                      FROM		  {enrol_approval}	        ea
                         JOIN 	  {user}			        u	ON u.id 		= ea.userid
                                                                 AND u.deleted 	= 0
                         LEFT JOIN {report_gen_companydata}  co	ON	co.id	= 	ea.companyid
-                     WHERE	ea.courseid 		= :course
-                        AND ea.waitinglistid 	= :waiting
-                     ORDER BY u.firstname,u.lastname ";
+                     WHERE	      ea.courseid 		= :course
+                        AND       ea.waitinglistid 	= :waiting
+                     ORDER BY     u.firstname,u.lastname ";
 
-            /* Execute */
+            // Execute
             $rdo = $DB->get_records_sql($sql,$params);
             if ($rdo) {
                 foreach ($rdo as $instance) {
-                    /* Info Request */
+                    // Info Request
                     $infoRequest = new stdClass();
                     $infoRequest->user      = $instance->id;
                     $infoRequest->name      = $instance->name;
@@ -1937,11 +1916,11 @@ Class Approval {
                         if ($instance->companyid) {
                             $infoRequest->arbeidssted      = $instance->industrycode . ' - ' . $instance->company;
                         }else {
-                            $infoRequest->arbeidssted = self::GetWorkplaceConnected($instance->id);
+                            $infoRequest->arbeidssted = self::get_workplace_connected($instance->id);
                         }
                     }//if_comapnyDemanded
 
-                    /* Add Request */
+                    // Add Request
                     $requests[$instance->id] = $infoRequest;
                 }//foreach_rdo
             }//if_rdo
@@ -1950,75 +1929,75 @@ Class Approval {
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//Get_ApprovalRequests
+    }//get_approval_requests
 
     /**
-     * @param           $userId
-     * @param           $courseId
+     * Description
+     * Generate token
+     *
+     * @param           int $userId     Id user
+     * @param           int $courseId   Id course
      *
      * @return          bool|string
      * @throws          Exception
      *
      * @creationDate    24/12/2015
      * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Generate token
      */
-    private static function GenerateToken($userId,$courseId) {
+    private static function generate_token($userId,$courseId) {
         /* Variables    */
         global $DB;
         $ticket = null;
         $token  = null;
 
         try {
-            /* Ticket - Something long and Unique   */
+            // Ticket - Something long and Unique
             $ticket     = uniqid(mt_rand(),1);
             $ticket     = random_string() . $userId . '_' . time() . '_' . $courseId . '_' . $ticket . random_string();
-            $token      = str_replace('/', '.', self::GenerateHash($ticket));
+            $token      = str_replace('/', '.', self::generate_hash($ticket));
 
-            /* Check if justs exist for other user  */
+            // Check if just exists for other user
             while ($DB->record_exists('enrol_approval',array('userid' => $userId,'token' => $token))) {
-                /* Ticket - Something long and Unique   */
+                // Ticket - Something long and Unique
                 $ticket     = uniqid(mt_rand(),1);
                 $ticket     = random_string() . $userId . '_' . time() . '_' . $courseId . '_' . $ticket . random_string();
-                $token      = str_replace('/', '.', self::GenerateHash($ticket));
+                $token      = str_replace('/', '.', self::generate_hash($ticket));
             }//while
 
             return $token;
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//GenerateToken
+    }//generate_token
 
     /**
-     * @param           $courseId
-     * @param           $action
+     * Description
+     * Generate the token connected with the action
+     *
+     * @param           int $courseId   Id course
+     * @param               $action
      *
      * @return          bool|string
      * @throws          Exception
      *
      * @creationDate    24/12/2015
      * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Generate the token connected with the action
      */
-    private static function GenerateToken_Action($courseId,$action) {
+    private static function generate_token_action($courseId,$action) {
         /* Variables    */
         global $DB;
         $ticket     = null;
         $token      = null;
 
         try {
-            /* Ticket - Something long and Unique   */
+            // Ticket - Something long and Unique
             $ticket     = uniqid(mt_rand(),1);
             $ticket     = random_string() . $action . '_' . time() . '_' . $courseId . '_' . $ticket . random_string();
             $token      = str_replace('/', '.', self::GenerateHash($ticket));
 
-            /* Check if just exists for other user  */
+            // Check if just exists for other user
             while ($DB->record_exists('enrol_approval_action',array('token' => $token))) {
-                /* Ticket - Something long and Unique   */
+                // Ticket - Something long and Unique
                 $ticket     = uniqid(mt_rand(),1);
                 $ticket     = random_string() . $action . '_' . time() . '_' . $courseId . '_' . $ticket . random_string();
                 $token      = str_replace('/', '.', self::GenerateHash($ticket));
@@ -2028,9 +2007,12 @@ Class Approval {
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//GenerateToken_Action
+    }//generate_token_action
 
     /**
+     * Description
+     * Generate a hash for sensitive values
+     *
      * @param           $value
      *
      * @return          bool|string
@@ -2038,11 +2020,8 @@ Class Approval {
      *
      * @creationDate    24/12/2015
      * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Generate a hash for sensitive values
      */
-    private static function GenerateHash($value) {
+    private static function generate_hash($value) {
         /* Variables    */
         $cost               = 10;
         $required_salt_len  = 22;
@@ -2054,7 +2033,7 @@ Class Approval {
         $hash               = null;
 
         try {
-            /* Generate hash    */
+            // Generate hash
             $hash_format        = sprintf("$2y$%02d$", $cost);
             $raw_length         = (int) ($required_salt_len * 3 / 4 + 1);
 
@@ -2114,22 +2093,22 @@ Class Approval {
         }catch (Exception $ex) {
             throw $ex;
         }//try_Catch
-    }//GenerateHash
+    }//generate_hash
 
     /**
-     * @param           $courseId
-     * @param           $courseName
+     * Description
+     * Add the name of the course
+     *
+     * @param           int     $courseId       Id course
+     * @param           string  $courseName     Course name
      *
      * @return          string
      * @throws          Exception
      *
      * @creationDate    30/12/2015
      * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Add the name of the course
      */
-    private static function AddNameCourse($courseId,$courseName) {
+    private static function add_name_course($courseId,$courseName) {
         /* Variables */
         $header = '';
 
@@ -2145,26 +2124,26 @@ Class Approval {
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//AddNameCourse
+    }//add_name_course
 
     /**
-     * @param           $approvalRequests
+     * Description
+     * Add the basic information to the report
+     *
+     * @param           Object  $approvalRequests   Info request
      *
      * @return          string
      * @throws          Exception
      *
      * @creationDate    31/12/2015
      * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Add the basic information to the report
      */
-    private static function AddBasicInfo($approvalRequests) {
+    private static function add_basic_info($approvalRequests) {
         /* Variables */
         $content = '';
 
         try {
-            /* Category */
+            // Category
             $content .= html_writer::start_div('block_basic_info approval_r0');
                 $content .= html_writer::start_tag('label',array('class' => ' label_approval_course'));
                     $content .= get_string('category');
@@ -2177,7 +2156,7 @@ Class Approval {
                 $content .= html_writer::end_tag('p');
             $content .= html_writer::end_div();//block_basic_info
 
-            /* Participants */
+            // Participants
             $content .= html_writer::start_div('block_basic_info approval_r0');
                 $content .= html_writer::start_tag('label',array('class' => ' label_approval_course'));
                     $content .= get_string('rpt_participants','enrol_waitinglist');
@@ -2190,7 +2169,7 @@ Class Approval {
                 $content .= html_writer::end_tag('p');
             $content .= html_writer::end_div();//block_basic_info
 
-            /* Attended */
+            // Attended
             $content .= html_writer::start_div('block_basic_info approval_r0');
                 $content .= html_writer::start_tag('label',array('class' => ' label_approval_course'));
                     $content .= get_string('rpt_attended','enrol_waitinglist');
@@ -2203,7 +2182,7 @@ Class Approval {
                 $content .= html_writer::end_tag('p');
             $content .= html_writer::end_div();//block_basic_info
 
-            /* Approved     */
+            // Approved
             $content .= html_writer::start_div('block_basic_info approval_r2');
                 $content .= html_writer::start_tag('label',array('class' => ' label_approval_course to_right'));
                     $content .= get_string('rpt_approved','enrol_waitinglist');
@@ -2216,7 +2195,7 @@ Class Approval {
                 $content .= html_writer::end_tag('p');
             $content .= html_writer::end_div();//block_basic_info
 
-            /* Rejected     */
+            // Rejected
             $content .= html_writer::start_div('block_basic_info approval_r2');
                 $content .= html_writer::start_tag('label',array('class' => ' label_approval_course to_right'));
                     $content .= get_string('rpt_rejected','enrol_waitinglist');
@@ -2229,7 +2208,7 @@ Class Approval {
                 $content .= html_writer::end_tag('p');
             $content .= html_writer::end_div();//block_basic_info
 
-            /* No Attended */
+            // No Attended
             $content .= html_writer::start_div('block_basic_info approval_r0');
                 $content .= html_writer::start_tag('label',array('class' => ' label_approval_course'));
                     $content .= get_string('rpt_not_attended','enrol_waitinglist');
@@ -2246,59 +2225,53 @@ Class Approval {
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//AddBasicInfo
+    }//add_basic_info
 
     /**
+     * Description
+     * Add header requests table
+     *
      * @return          string
      * @throws          Exception
      *
      * @creationDate    31/12/2015
      * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Add header requests table
      */
-    private static function AddHeader_RequestsTable() {
+    private static function add_header_requests_table() {
         /* Variables */
         $header         = '';
         $strName        = null;
         $strMail        = null;
         $strArguments   = null;
-        $strSeats       = null;
         $strAction      = null;
 
         try {
-            /* Headers */
+            // Headers
             $strName        = get_string('rpt_name','enrol_waitinglist');
             $strMail        = get_string('rpt_mail','enrol_waitinglist');
             $strPlace       = get_string('rpt_workplace','enrol_waitinglist');
             $strArguments   = get_string('rpt_arguments','enrol_waitinglist');
-            $strSeats       = get_string('rpt_seats','enrol_waitinglist');
             $strAction      = get_string('rpt_action','enrol_waitinglist');
 
             $header .=  html_writer::start_tag('thead');
                 $header .=  html_writer::start_tag('tr',array('class' => 'header_approval'));
-                    /* User Name    */
+                    // User Name
                     $header .= html_writer::start_tag('th',array('class' => 'user'));
                         $header .= $strName;
                     $header .= html_writer::end_tag('th');
-                    /* Workplace    */
+                    // Workplace
                     $header .= html_writer::start_tag('th',array('class' => 'user'));
                         $header .= $strPlace;
                     $header .= html_writer::end_tag('th');
-                    /* Mail         */
+                    // Mail
                     $header .= html_writer::start_tag('th',array('class' => 'info'));
                         $header .= $strMail;
                     $header .= html_writer::end_tag('th');
-                    /* Arguments       */
+                    // Arguments
                     $header .= html_writer::start_tag('th',array('class' => 'info'));
                         $header .= $strArguments;
                     $header .= html_writer::end_tag('th');
-                    /* Seats Confirmed  */
-                    //$header .= html_writer::start_tag('th',array('class' => 'seats'));
-                    //    $header .= $strSeats;
-                    //$header .= html_writer::end_tag('th');
-                    /* Action */
+                    // Action
                     $header .= html_writer::start_tag('th',array('class' => 'action'));
                         $header .= $strAction;
                     $header .= html_writer::end_tag('th');
@@ -2309,23 +2282,23 @@ Class Approval {
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//AddHeader_RequestsTable
+    }//add_header_requests_table
 
     /**
-     * @param           $approvalRequests
-     * @param           $waitingId
-     * @param           $courseId
+     * Description
+     * Add content of the requests table
+     *
+     * @param           array  $approvalRequests   List of  request
+     * @param           int    $waitingId          Id enrolment instance
+     * @param           int    $courseId           Id course
      *
      * @return          string
      * @throws          Exception
      *
      * @creationDate    31/12/2015
      * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Add content of the requests table
      */
-    private static function AddContent_RequestTable($approvalRequests,$waitingId,$courseId) {
+    private static function add_content_request_table($approvalRequests,$waitingId,$courseId) {
         /* Variables */
         $content        = '';
         $lnkUser        = null;
@@ -2334,38 +2307,37 @@ Class Approval {
         $params         = null;
 
         try {
-            /* Params Link Action */
+            // Params Link Action
             $params = array();
             $params['co'] = $courseId;
             $params['ea'] = $waitingId;
 
+            // Request
             foreach ($approvalRequests as $request) {
                 $classAction    = null;
                 $params['act']  = null;
                 $content .= html_writer::start_tag('tr');
-                    /* User Name    */
+                    // User Name
                     $content .= html_writer::start_tag('td',array('class' => 'user'));
                         $lnkUser = new moodle_url('/user/profile.php',array('id' => $request->user));
                         $content .= '<a href="' . $lnkUser . '">' . $request->name . '</a>';;
                     $content .= html_writer::end_tag('td');
-                    /* Workplace    */
+                    // Workplace
                     $content .= html_writer::start_tag('td',array('class' => 'user'));
                         $content .= $request->arbeidssted;
                     $content .= html_writer::end_tag('td');
-                    /* Mail         */
+                    // Mail
                     $content .= html_writer::start_tag('td',array('class' => 'info'));
                         $content .= $request->email;
                     $content .= html_writer::end_tag('td');
-                    /* Arguments       */
+                    // Arguments
                     $content .= html_writer::start_tag('td',array('class' => 'info'));
                         $content .= $request->arguments;
                     $content .= html_writer::end_tag('td');
-                    /* Seats Confirmed  */
-                    /* Action */
+                    // Action
                     $content .= html_writer::start_tag('td',array('class' => 'action'));
+                        // Approve Action
                         $params['id'] = $request->user;
-
-                        /* Approve Action */
                         $params['act'] = APPROVED_ACTION;
                         $lnkAction = new moodle_url('/enrol/waitinglist/approval/act_request.php',$params);
                         if ($request->approved) {
@@ -2377,7 +2349,8 @@ Class Approval {
                                                       get_string('act_approve','enrol_waitinglist'),
                                                       array('class'=>$classAction));
                         $content .= '&nbsp;&nbsp;';
-                        /* Reject Action */
+
+                        // Reject Action
                         $params['act'] = REJECTED_ACTION;
                         $lnkAction = new moodle_url('/enrol/waitinglist/approval/act_request.php',$params);
                         if ($request->rejected) {
@@ -2396,21 +2369,21 @@ Class Approval {
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//AddContent_RequestTable
+    }//add_content_request_table
 
     /**
-     * @param           $approvalRequests
+     * Description
+     * Add the request to the report
+     *
+     * @param           Object $approvalRequests     List of request
      *
      * @return          string
      * @throws          Exception
      *
      * @creationDate    31/12/2015
      * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Add the request to the report
      */
-    private static function AddRequestsInfo($approvalRequests) {
+    private static function add_requests_info($approvalRequests) {
         /* Variables */
         $content = null;
 
@@ -2419,10 +2392,10 @@ Class Approval {
                 /* Request Table */
                 $content .= html_writer::start_tag('table',array('class' => 'generaltable'));
                     /* Header Table     */
-                    $content .= self::AddHeader_RequestsTable();
+                    $content .= self::add_header_requests_table();
                     $content .= '</br>';
                     /* Content Table    */
-                    $content .= self::AddContent_RequestTable($approvalRequests->requests,$approvalRequests->waitingId,$approvalRequests->id);
+                    $content .= self::add_content_request_table($approvalRequests->requests,$approvalRequests->waitingId,$approvalRequests->id);
                 $content .= html_writer::end_tag('table');
             $content .= html_writer::end_div();//block_requests
 
@@ -2430,6 +2403,6 @@ Class Approval {
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//AddRequestsInfo
+    }//add_requests_info
 }//Approval
 

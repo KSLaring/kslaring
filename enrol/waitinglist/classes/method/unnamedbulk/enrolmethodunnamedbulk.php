@@ -302,16 +302,6 @@ class enrolmethodunnamedbulk extends \enrol_waitinglist\method\enrolmethodbase {
                 return get_string('no_competence','enrol_waitinglist',$lnkProfile);
             }
         }
-        
-        //if ($waitinglist->{ENROL_WAITINGLIST_FIELD_APPROVAL} == APPROVAL_REQUIRED) {
-            /* Check if it has been rejected    */
-        //    $rejected = new \stdClass();
-        //    $rejected->sent = null;
-        //    if ($rejected->sent = \Approval::IsRejected($USER->id,$waitinglist->courseid,$waitinglist->id)) {
-        //        $rejected->sent = userdate($rejected->sent,'%d.%m.%Y', 99, false);
-        //        return get_string('request_rejected_enrol','enrol_waitinglist',$rejected);
-        //    }
-        //}//Approval_Method
 
 		$entryman =  \enrol_waitinglist\entrymanager::get_by_course($waitinglist->courseid);
 		$entry = $entryman->get_entry_by_userid($USER->id);
@@ -397,17 +387,17 @@ class enrolmethodunnamedbulk extends \enrol_waitinglist\method\enrolmethodbase {
                 //add the user to the waitinglist queue
                 $queueid = $this->add_to_waitinglist($waitinglist, $queue_entry);
             }else {
-                list($infoApproval,$infoMail) = \Approval::Add_ApprovalEntry($data,$USER->id,$waitinglist->courseid,static::METHODTYPE,$data->seats,$waitinglist->id);
+                list($infoApproval,$infoMail) = \Approval::add_approval_entry($data,$USER->id,$waitinglist->courseid,static::METHODTYPE,$data->seats,$waitinglist->id);
                 /* Check Vancancies */
                 $wl         = enrol_get_plugin('waitinglist');
                 $vacancies  = $wl->get_vacancy_count($waitinglist);
                 if ($vacancies) {
                     if (array_key_exists($USER->id,$this->myManagers)) {
                         $infoApproval->action = APPROVED_ACTION;
-                        \Approval::ApplyAction_FromManager($infoApproval);
+                        \Approval::apply_action_from_manager($infoApproval);
                     }else {
                         /* Send Mails   */
-                        \Approval::SendNotifications($USER,$infoMail,$this->myManagers);
+                        \Approval::send_notifications($USER,$infoMail,$this->myManagers);
                     }
                 }//if_vacancies
             }//if_approval
@@ -699,8 +689,8 @@ class enrolmethodunnamedbulk extends \enrol_waitinglist\method\enrolmethodbase {
             $remainder  = null;
 
             if ($waitinglist->{ENROL_WAITINGLIST_FIELD_APPROVAL} == APPROVAL_REQUIRED) {
-                $infoRequest = \Approval::Get_Request($USER->id,$waitinglist->courseid,$waitinglist->id);
-                $remainder = \Approval::GetNotificationSent($USER->id,$waitinglist->courseid);
+                $infoRequest = \Approval::get_request($USER->id,$waitinglist->courseid,$waitinglist->id);
+                $remainder = \Approval::get_notification_sent($USER->id,$waitinglist->courseid);
             }//
 
             if (($confirm) || isset($entry->seats)) {
@@ -723,7 +713,7 @@ class enrolmethodunnamedbulk extends \enrol_waitinglist\method\enrolmethodbase {
                 if ($form->is_cancelled()) {
                     redirect($CFG->wwwroot . '/index.php');
                 }else if ($form->is_submitted()) {
-                    \Approval::SendReminder($USER,$remainder,$this->myManagers);
+                    \Approval::send_reminder($USER,$remainder,$this->myManagers);
 
                     redirect($CFG->wwwroot . '/index.php');
                 }
@@ -773,7 +763,7 @@ class enrolmethodunnamedbulk extends \enrol_waitinglist\method\enrolmethodbase {
                      */
                     if ($data) {
                         if ($waitinglist->{ENROL_WAITINGLIST_FIELD_APPROVAL} == APPROVAL_REQUIRED) {
-                            $this->myManagers = \Approval::ManagersConnected($USER->id,$data->level_3);
+                            $this->myManagers = \Approval::managers_connected($USER->id,$data->level_3);
                             if ($this->myManagers) {
                                 $enrolstatus = true;
                             }else {

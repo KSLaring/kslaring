@@ -49,16 +49,16 @@ $PAGE->verify_https_required();
 echo $OUTPUT->header();
 
 /* Get Request */
-$infoRequest = Approval::Get_Request($userId,$courseId,$waitingId);
+$infoRequest = Approval::get_request($userId,$courseId,$waitingId);
 $infoRequest->action = $action;
 
 $strTitle = null;
 
-if (Approval::ApplyAction_FromManager($infoRequest)) {
+if (Approval::apply_action_from_manager($infoRequest)) {
     $user = get_complete_user_data('id',$userId);
     $infoNotification = new stdClass();
     $infoNotification->user = fullname($user);
-    Approval::GetInfoCourse_Notification($courseId,$infoNotification);
+    Approval::get_infocourse_notification($courseId,$infoNotification);
 
     switch ($infoRequest->action) {
         case APPROVED_ACTION:

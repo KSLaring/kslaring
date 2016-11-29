@@ -79,7 +79,7 @@ class enrolmethodunnamedbulk_enrolform extends \moodleform {
                  */
 
                 if ($waitinglist->{ENROL_WAITINGLIST_FIELD_APPROVAL} == APPROVAL_REQUIRED) {
-                    $infoRequest = \Approval::Get_Request($USER->id,$waitinglist->courseid,$waitinglist->id);
+                    $infoRequest = \Approval::get_request($USER->id,$waitinglist->courseid,$waitinglist->id);
                 }
                 //add caution for number of seats available, and waiting list size etc
                 if($queuestatus->hasentry){
@@ -156,7 +156,7 @@ class enrolmethodunnamedbulk_enrolform extends \moodleform {
                  * Add approval data
                  */
                 if ($waitinglist->{ENROL_WAITINGLIST_FIELD_APPROVAL} == APPROVAL_REQUIRED) {
-                    \Approval::AddElements_ToForm($mform);
+                    \Approval::add_elements_form($mform);
 
                     if ($infoRequest) {
                         $mform->setDefault('seats',$infoRequest->seats);
