@@ -137,7 +137,6 @@ Class Approval {
             // Execute
             $rdo = $DB->get_records_sql($sql,$params);
             if ($rdo) {
-                echo "HOLA " . "</br>";
                 foreach ($rdo as $instance) {
                     if (array_key_exists($instance->managerid,$myManagers)) {
                         $infoManager = $myManagers[$instance->managerid];
@@ -1335,11 +1334,11 @@ Class Approval {
             foreach ($toManagers as $managerId => $info) {
                 // Mails For Managers
                 if ($reminder) {
-                    $strSubject = (string)new lang_string('subject_reminder','enrol_waitinglist',$infoMail,$manager->lang);
-                    $strBody    = (string)new lang_string('body_reminder','enrol_waitinglist',$infoMail,$manager->lang);
+                    $strSubject = (string)new lang_string('subject_reminder','enrol_waitinglist',$infoMail,$info->lang);
+                    $strBody    = (string)new lang_string('body_reminder','enrol_waitinglist',$infoMail,$info->lang);
                 }else {
-                    $strSubject = (string)new lang_string('mng_subject','enrol_waitinglist',$infoMail,$manager->lang);
-                    $strBody    = (string)new lang_string('mng_body','enrol_waitinglist',$infoMail,$manager->lang);
+                    $strSubject = (string)new lang_string('mng_subject','enrol_waitinglist',$infoMail,$info->lang);
+                    $strBody    = (string)new lang_string('mng_body','enrol_waitinglist',$infoMail,$info->lang);
                 }//if_remainder
 
                 // Mail content
