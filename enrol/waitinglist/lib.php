@@ -503,10 +503,10 @@ class enrol_waitinglist_plugin extends enrol_plugin {
             }
 
             /* Subject      */
-            $subject    = get_string('unenrol_subject','enrol_waitinglist',$course->fullname);
+            $subject    = (string)new lang_string('unenrol_subject','enrol_waitinglist',$course->fullname,$user->lang);
 
             /* Body Message */
-            $messagetext = get_string('unenrol_body','enrol_waitinglist',$course->fullname) . "</br></br>";
+            $messagetext = (string)new lang_string('unenrol_body','enrol_waitinglist',$course->fullname,$user->lang) . "</br></br>";
             $messagehtml = text_to_html($messagetext, null, false, true);
 
             /* Sencd confirmation message   */
@@ -1686,12 +1686,13 @@ class enrol_waitinglist_plugin extends enrol_plugin {
                     $messagetext = html_to_text($messagehtml);
                 }
             } else {
-                $messagetext = get_string('welcometocoursetext', 'enrol_waitinglist', $a);
+                $messagetext = (string)new lang_string('welcometocoursetext', 'enrol_waitinglist', $a,$user->lang);
                 $messagetext .= "</br>" . $unenrolStr;
                 $messagehtml = text_to_html($messagetext, null, false, true);
             }
 
-            $subject = get_string('welcometocourse', 'enrol_waitinglist', format_string($course->fullname, true, array('context'=>$context)));
+            $subject = (string)new lang_string('welcometocourse', 'enrol_waitinglist',
+                                               format_string($course->fullname, true, array('context'=>$context)),null,$ser->lang);
 
             $rusers = array();
             if (!empty($CFG->coursecontact)) {
@@ -1729,8 +1730,8 @@ class enrol_waitinglist_plugin extends enrol_plugin {
             if (($course->format == 'classroom') || ($course->format == 'classroom_frikomport')) {
                 $fileCal = $this->iCalendar_StartDate($course);
                 if ($fileCal) {
-                    $messagehtml .= "</br></br>" . get_string('welcome_ical_attach','enrol_waitinglist') . "</br></br>";
-                    $messagetext .= "</br></br>" . get_string('welcome_ical_attach','enrol_waitinglist') . "</br></br>";
+                    $messagehtml .= "</br></br>" . (string)new lang_string('welcome_ical_attach','enrol_waitinglist',null,$user->lang) . "</br></br>";
+                    $messagetext .= "</br></br>" . (string)new lang_string('welcome_ical_attach','enrol_waitinglist',null,$user->lang) . "</br></br>";
                     email_to_user($user, $contact, $subject, $messagetext, $messagehtml,'iCal/'.$fileCal ,$fileCal);
                 }else {
                     email_to_user($user, $contact, $subject, $messagetext, $messagehtml);
