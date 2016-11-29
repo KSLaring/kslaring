@@ -37,7 +37,7 @@ echo $OUTPUT->header();
 
 /* Get sectors */
 $data       = array('items' => array());
-$lstSectors = course_page::get_course_locations_list($location);
+$lstSectors = course_page::get_sectors_locations_list($location);
 
 foreach ($lstSectors as $id => $sector) {
     /* Info Sector */
