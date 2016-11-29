@@ -290,7 +290,7 @@ class format_single_frikomport extends format_base {
                 case 'pagegraphics':
                 case 'pagegraphicstitle':
                 case 'pagevideo':
-                    course_page::addCourseHomePage_Section($mform,$optionname);
+                    course_page::add_course_home_page_section($mform,$optionname);
 
                     break;
                 default:

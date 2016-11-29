@@ -290,7 +290,7 @@ class format_whitepaper extends format_base {
                 case 'pagegraphics':
                 case 'pagegraphicstitle':
                 case 'pagevideo':
-                    course_page::addCourseHomePage_Section($mform,$optionname);
+                    course_page::add_course_home_page_section($mform,$optionname);
 
                     break;
                 default:
@@ -375,7 +375,7 @@ class format_whitepaper extends format_base {
                     break;
                 case 'homesummary':
                     if (isset($data['homesummary_editor']) && ($data['homesummary_editor'])) {
-                        $data[$key] = course_page::getHomeSummaryEditor($data['homesummary_editor']);
+                        $data[$key] = course_page::get_home_summary_editor($data['homesummary_editor']);
                     }//homesummary_editor
 
                     break;
@@ -386,7 +386,7 @@ class format_whitepaper extends format_base {
                         $delete = false;
                     }//if_delete
                     if (isset($data['pagegraphics']) && isset($data['pagegraphics_filemanager'])) {
-                        $graphic_id = course_page::getHomeGraphicsVideo($data['pagegraphics'],'pagegraphics',$data['pagegraphics_filemanager'],$delete);
+                        $graphic_id = course_page::get_home_graphics_video($data['pagegraphics'],'pagegraphics',$data['pagegraphics_filemanager'],$delete);
                         if ($graphic_id) {
                             $data[$key] = $graphic_id;
                         }//if_graphic_id
@@ -400,7 +400,7 @@ class format_whitepaper extends format_base {
                         $delete = false;
                     }//if_delete
                     if (isset($data['pagevideo']) && isset($data['pagevideo_filemanager'])) {
-                        $video_id = course_page::getHomeGraphicsVideo($data['pagevideo'],'pagevideo',$data['pagevideo_filemanager'],$delete);
+                        $video_id = course_page::get_home_graphics_video($data['pagevideo'],'pagevideo',$data['pagevideo_filemanager'],$delete);
                         if ($video_id) {
                             $data[$key] = $video_id;
                         }//if_graphic_id

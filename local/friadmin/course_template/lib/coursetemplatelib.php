@@ -55,7 +55,7 @@ class CourseTemplate {
      * Description
      * Initialize the sector selector
      */
-    public static function Init_LocationsSector() {
+    public static function init_locations_sector() {
         /* Variables    */
         global $PAGE;
         $jsModule   = null;
@@ -84,7 +84,7 @@ class CourseTemplate {
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//Init_LocationsSector
+    }//init_locations_sector
     
     /**
      * @param           $addSearch

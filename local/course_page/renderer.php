@@ -29,7 +29,7 @@ class local_course_page_renderer extends plugin_renderer_base {
         $course->summary = file_rewrite_pluginfile_urls($course->summary, 'pluginfile.php', $context->id, 'course', 'summary',null);
         if (isset($format_options['homesummary'])) {
             $home_summary = $format_options['homesummary']->value;
-            $home_summary = course_page::fileRewritePluginfileUrls_HomePage($home_summary, 'pluginfile.php', $context->id, 'course', 'homesummary',null);
+            $home_summary = course_page::file_rewrite_pluginfile_urls_homepage($home_summary, 'pluginfile.php', $context->id, 'course', 'homesummary',null);
             $format_options['homesummary']->value = $home_summary;
         }else {
             $format_options['homesummary'] = null;
@@ -37,12 +37,12 @@ class local_course_page_renderer extends plugin_renderer_base {
 
         $output .= html_writer::start_tag('div',array('class' => 'home_page'));
             /* Header   */
-            $output .= $this->addHeader_HomePage($course->fullname);
+            $output .= $this->add_header_homepage($course->fullname);
 
             /* Add Block One */
-            $output .= $this->addBlockOne_HomePage($course,$format_options);
+            $output .= $this->add_block_one_homepage($course,$format_options);
             /* Add Block Two */
-            $output .= $this->addBlockTwo_HomePage($course,$format_options);
+            $output .= $this->add_block_two_homepage($course,$format_options);
         $output .= html_writer::end_tag('div');//home_page
 
         return $output;
@@ -58,7 +58,7 @@ class local_course_page_renderer extends plugin_renderer_base {
      * Description
      * Add the header to Course Home Page
      */
-    protected function addHeader_HomePage($course_name) {
+    protected function add_header_homepage($course_name) {
         /* Header   */
         $header = '';
 
@@ -67,7 +67,7 @@ class local_course_page_renderer extends plugin_renderer_base {
         $header .=  html_writer::end_tag('div');//header
 
         return $header;
-    }//addHeader_HomePage
+    }//add_header_homepage
 
     /* ********* */
     /* BLOCK ONE */
@@ -85,7 +85,7 @@ class local_course_page_renderer extends plugin_renderer_base {
      * Add the first block of the Course Home Page
      * - Course Name, Short Description, Button Register, Home page graphics...
      */
-    private function addBlockOne_HomePage($course,$format_options) {
+    private function add_block_one_homepage($course,$format_options) {
         /* Variables    */
         $block_one = '';
         $homeSummary    = null;
@@ -98,7 +98,7 @@ class local_course_page_renderer extends plugin_renderer_base {
             if (isset($format_options['pagegraphics'])) {
                 $pageGraphics = $format_options['pagegraphics'];
             }
-            $block_one .= $this->addSummary_HomePage($course,$pageGraphics,$pagegraphicstitle);
+            $block_one .= $this->add_summary_homepage($course,$pageGraphics,$pagegraphicstitle);
             /* Add Home Description / Video */
             if (isset($format_options['homesummary'])) {
                 $homeSummary = $format_options['homesummary'];
@@ -106,11 +106,11 @@ class local_course_page_renderer extends plugin_renderer_base {
             if (isset($format_options['pagevideo'])) {
                 $pageVideo = $format_options['pagevideo'];
             }
-            $block_one .= $this->addDescription_HomePage($homeSummary,$pageVideo);
+            $block_one .= $this->add_description_homepage($homeSummary,$pageVideo);
         $block_one .= html_writer::end_tag('div');//home_page_block_one
 
         return $block_one;
-    }//addBlockOne_HomePage
+    }//add_block_one_homepage
 
     /**
      * @param           $course
@@ -136,18 +136,18 @@ class local_course_page_renderer extends plugin_renderer_base {
      * Description
      * Remove start course button
      */
-    protected function addSummary_HomePage($course,$home_graphics,$home_graphicstitle) {
+    protected function add_summary_homepage($course,$home_graphics,$home_graphicstitle) {
         /* Variables   */
-        global $USER;
-        $disabled   = '';
         $btnString  = null;
         $out        = '';
 
         /* Graphics */
         if ($home_graphics) {
             if ($home_graphics->value) {
-                $url_img = course_page::getUrlPageGraphicsVideo($home_graphics->value);
-                $img = '<img src="'  . $url_img . '" class="img-responsive"' . ' title="' . $home_graphicstitle . '" alt ="' . $home_graphicstitle . '"></br>';
+                $url_img = course_page::get_url_page_graphics_video($home_graphics->value);
+                $img = '<img src="'  . $url_img . '" 
+                             class="img-responsive"' . ' title="' . $home_graphicstitle . '" 
+                             alt ="' . $home_graphicstitle . '"></br>';
                 $out .= $img;
             }//if_graphics
         }//home_graphics
@@ -155,7 +155,7 @@ class local_course_page_renderer extends plugin_renderer_base {
         $out .=  '<p>' . trim($course->summary) . '</p>';
 
         return $out;
-    }//addSummary_HomePage
+    }//add_summary_homepage
 
     /**
      * @param           $home_summary
@@ -168,7 +168,7 @@ class local_course_page_renderer extends plugin_renderer_base {
      * Description
      * Add Home PAge Description and Video
      */
-    protected function addDescription_HomePage($home_summary,$video) {
+    protected function add_description_homepage($home_summary,$video) {
         /* Variables */
         $out = '';
 
@@ -181,7 +181,7 @@ class local_course_page_renderer extends plugin_renderer_base {
         /* Graphics */
         if ($video) {
             if ($video->value) {
-                $url_video = course_page::getUrlPageGraphicsVideo($video->value);
+                $url_video = course_page::get_url_page_graphics_video($video->value);
                 if ($url_video) {
                     $media_renderer = $this->page->get_renderer('core', 'media');
                     $embed_options = array(
@@ -196,7 +196,7 @@ class local_course_page_renderer extends plugin_renderer_base {
         }//if_video
 
         return $out;
-    }//addDescription_HomePage
+    }//add_description_homepage
 
     /* ********* */
     /* BLOCK TWO */
@@ -235,7 +235,7 @@ class local_course_page_renderer extends plugin_renderer_base {
      * Description
      * Add the course button
      */
-    private function addBlockTwo_homePage($course,$format_options) {
+    private function add_block_two_homepage($course,$format_options) {
         /* Variables    */
         global $DB;
         $block_two      = '';
@@ -243,34 +243,34 @@ class local_course_page_renderer extends plugin_renderer_base {
         $block_two .= html_writer::start_tag('div',array('class' => 'home_page_block_two'));
             $block_two .= html_writer::start_tag('div',array('class' => 'go-left clearfix'));
                 /* Start Course Button */
-                $block_two .= $this->BlockCourseButton($course);
+                $block_two .= $this->block_course_button($course);
                 /* Block Prerequisites  */
-                $block_two .= $this->addExtra_PrerequisitesBlock($course,$format_options);
+                $block_two .= $this->add_extra_prerequisites_block($course,$format_options);
                 /* Block Coordinator    */
-                $block_two .= $this->addCoordinatorBlock($course->id);
+                $block_two .= $this->add_coordinator_block($course->id);
                 /* Block Participant    */
-                $block_two .= $this->addParticipantListBlock($course->id,$course->format,$format_options);
+                $block_two .= $this->add_participant_list_block($course->id,$course->format,$format_options);
                 /* Block Duration       */
-                $block_two .= $this->addExtra_DurationBlock($course->format,$format_options,$course->id);
+                $block_two .= $this->add_extra_duration_block($course->format,$format_options,$course->id);
                 /* Block Course Type    */
-                $block_two .= $this->addExtra_TypeCourseBlock($course->format);
+                $block_two .= $this->add_extra_type_course_block($course->format);
                 /* Block Available seats    */
-                $block_two .= $this->addAvailable_Seats_Block($format_options);
+                $block_two .= $this->add_available_seats_block($format_options);
                 /* Block Deadline       */
-                $block_two .= $this->addDeadlineCourse_Block($course->id);
+                $block_two .= $this->add_deadline_course_block($course->id);
             $block_two .= html_writer::end_tag('div');//go-left
 
             /* Block Ratings        */
             $ratings = $DB->get_record('course_format_options',array('courseid' => $course->id,'format' => $course->format,'name'=>'ratings'),'value');
             if ($ratings->value) {
                 $block_two .= html_writer::start_tag('div',array('class' => 'go-right clearfix'));
-                    $block_two .= $this->addCourseRatings($course->id);
+                    $block_two .= $this->add_course_ratings($course->id);
                 $block_two .= html_writer::end_tag('div');//go-right
             }//if_Ratings
         $block_two .= html_writer::end_tag('div');//home_page_block_two
 
         return $block_two;
-    }//addBlockTwo_homePage
+    }//add_block_two_homepage
 
     /**
      * @param           $course
@@ -284,7 +284,7 @@ class local_course_page_renderer extends plugin_renderer_base {
      * Description
      * Get the course button block
      */
-    private static function BlockCourseButton($course) {
+    private static function block_course_button($course) {
         /* Variables */
         global $USER;
         $out        = '';
@@ -298,10 +298,10 @@ class local_course_page_renderer extends plugin_renderer_base {
 
             /* Check if the user is enrolled    */
             $out .= html_writer::start_tag('div',array('class' => 'buttons'));
-            if (!course_page::IsUserEnrol($course->id,$USER->id)) {
+            if (!course_page::is_user_enrol($course->id,$USER->id)) {
                 $url_start = new moodle_url('/course/view.php',array('id' => $course->id,'start' => 1));
                 /* Check if there are seats available */
-                if (course_page::getAvailSeats($course->id)) {
+                if (course_page::get_available_seats($course->id)) {
                     $btnString = get_string('home_register','local_course_page');
                 }else {
                     $btnString = get_string('on_wait','local_course_page');
@@ -320,7 +320,7 @@ class local_course_page_renderer extends plugin_renderer_base {
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//BlockCourseButton
+    }//block_course_button
 
     /**
      * @param           $course
@@ -339,7 +339,7 @@ class local_course_page_renderer extends plugin_renderer_base {
      * Description
      * Add the frikomport formats
      */
-    protected function addExtra_PrerequisitesBlock($course,$format_options) {
+    protected function add_extra_prerequisites_block($course,$format_options) {
         /* Variables */
         $out = '';
         $str_format     = null;
@@ -386,6 +386,7 @@ class local_course_page_renderer extends plugin_renderer_base {
                     }//for_format_options
 
                     break;
+
                 case 'whitepaper':
                 case 'single_frikomport':
                     foreach ($format_options as $option) {
@@ -405,13 +406,14 @@ class local_course_page_renderer extends plugin_renderer_base {
                     }//for_format_options
 
                     break;
+
                 default:
                     break;
             }//course_format
         $out .=  html_writer::end_tag('div');//extra
 
         return $out;
-    }//addExtra_PrerequisitesBlock
+    }//add_extra_prerequisites_block
 
     /**
      * @param           $course_format
@@ -450,7 +452,7 @@ class local_course_page_renderer extends plugin_renderer_base {
      * Description
      * Add the course price
      */
-    protected function addExtra_DurationBlock($course_format,$format_options,$courseId) {
+    protected function add_extra_duration_block($course_format,$format_options,$courseId) {
         /* Variables */
         $out = '';
         $strLocationName    = null;
@@ -468,7 +470,7 @@ class local_course_page_renderer extends plugin_renderer_base {
         $price              = null;
 
         /* Get course price */
-        $price = course_page::PriceCourse($courseId);
+        $price = course_page::price_course($courseId);
         if ($price) {
             /* Internal Price */
             if ($price->internal) {
@@ -508,18 +510,20 @@ class local_course_page_renderer extends plugin_renderer_base {
                     }//for_format_options
 
                     break;
+
                 case 'classroom':
                 case 'classroom_frikomport':
                     foreach ($format_options as $option) {
                         if ($option->name == 'course_location') {
                             if ($option->value) {
-                                $infoLocation       = course_page::GetLocationDetail($option->value);
+                                $infoLocation       = course_page::get_location_detail($option->value);
                                 $strLocationTitle   = get_string('home_title_location',$str_format);
 
                                 /* Get Lightbox to add*/
-                                $lightBox = self::AddLightBox_Location($infoLocation,$courseId);
+                                $lightBox = self::add_lightbox_location($infoLocation,$courseId);
 
-                                $this->page->requires->yui_module('moodle-local_course_page-location','M.local_course_page.location',array(array('header' => $strLocationTitle,'content' => $lightBox)));
+                                $this->page->requires->yui_module('moodle-local_course_page-location','M.local_course_page.location',
+                                                                   array(array('header' => $strLocationTitle,'content' => $lightBox)));
 
                                 $outLocation  = '<h5 class="title_home chp-title">' . $strLocationTitle . '</h5>';
                                 $outLocation .= '<div class="extra_home chp-content">';
@@ -534,7 +538,7 @@ class local_course_page_renderer extends plugin_renderer_base {
 
                         if ($option->name == 'course_sector') {
                             if ($option->value) {
-                                $sectorsName = course_page::Get_SectorsName($option->value);
+                                $sectorsName = course_page::get_sectors_name($option->value);
                                 $outSector   = '<h5 class="title_home chp-title">' . get_string('home_title_sector',$str_format) . '</h5>';
                                 $outSector  .= '<div class="extra_home chp-content">' . $sectorsName . '</div>';
                             }//if_value
@@ -566,13 +570,14 @@ class local_course_page_renderer extends plugin_renderer_base {
 
                     $out .= $outLocation . $outSector  . $outTime . $outPrice . $outLength . $outEffort;
                     break;
+
                 default:
                     break;
             }//course_format
         $out .=  html_writer::end_tag('div');//extra
 
         return $out;
-    }//addExtra_DurationBlock
+    }//add_extra_duration_block
 
     /**
      * @param           $location
@@ -587,7 +592,7 @@ class local_course_page_renderer extends plugin_renderer_base {
      * Description
      * Add lightbox panel to the location
      */
-    private static function AddLightBox_Location($location,$courseId) {
+    private static function add_lightbox_location($location,$courseId) {
         /* Variables */
         $lightBox       = null;
         $strDetail      = null;
@@ -677,7 +682,7 @@ class local_course_page_renderer extends plugin_renderer_base {
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//AddLightBox_Location
+    }//add_lightbox_location
 
     /**
      * @param           $course_format
@@ -695,7 +700,7 @@ class local_course_page_renderer extends plugin_renderer_base {
      * Description
      * Add the frikomport formats
      */
-    protected function addExtra_TypeCourseBlock($course_format) {
+    protected function add_extra_type_course_block($course_format) {
         /* Variables    */
         global $OUTPUT;
         $out     = '';
@@ -707,30 +712,21 @@ class local_course_page_renderer extends plugin_renderer_base {
             $out .= '<div class="extra_home chp-content">';
             switch ($course_format) {
                 case 'netcourse':
-                    //$url_img = $OUTPUT->pix_url('i/nettkurs');
-                    //$alt        = get_string('net_course','local_course_page');
-
-                    //$out .= html_writer::empty_tag('img', array('src' => $url_img, 'alt' => $alt, 'class' => 'icon'));
                     $out .= get_string('net_course','local_course_page');
 
                     break;
-                case 'elearning_frikomport';
-                    //$url_img = $OUTPUT->pix_url('i/nettkurs');
-                    //$alt        = get_string('elearning','local_course_page');
 
-                    //$out .= html_writer::empty_tag('img', array('src' => $url_img, 'alt' => $alt, 'class' => 'icon'));
+                case 'elearning_frikomport';
                     $out .= get_string('elearning','local_course_page');
 
                     break;
+
                 case 'classroom':
                 case 'classroom_frikomport':
-                    //$url_img = $OUTPUT->pix_url('i/classroom');
-                    //$alt        = get_string('class_course','local_course_page');
-
-                    //$out .= html_writer::empty_tag('img', array('src' => $url_img, 'alt' => $alt, 'class' => 'icon'));
                     $out .= get_string('class_course','local_course_page');
 
                     break;
+
                 case 'whitepaper':
                     $url_img = $OUTPUT->pix_url('i/whitepaper');
                     $alt        = get_string('whitepaper','local_course_page');
@@ -738,6 +734,7 @@ class local_course_page_renderer extends plugin_renderer_base {
                     $out .= html_writer::empty_tag('img', array('src' => $url_img, 'alt' => $alt, 'class' => 'icon'));
 
                     break;
+
                 case 'single_frikomport':
                     $url_img = $OUTPUT->pix_url('i/whitepaper');
                     $alt        = get_string('single','local_course_page');
@@ -745,6 +742,7 @@ class local_course_page_renderer extends plugin_renderer_base {
                     $out .= html_writer::empty_tag('img', array('src' => $url_img, 'alt' => $alt, 'class' => 'icon'));
 
                     break;
+
                 default:
                     break;
             }//format_ico
@@ -752,7 +750,7 @@ class local_course_page_renderer extends plugin_renderer_base {
         $out .=  html_writer::end_tag('div');//extra
 
         return $out;
-    }//addExtra_TypeCourseBlock
+    }//add_extra_type_course_block
 
 
     /**
@@ -765,7 +763,7 @@ class local_course_page_renderer extends plugin_renderer_base {
      * Description
      * Add available seats block
      */
-    protected function addAvailable_Seats_Block($format_options) {
+    protected function add_available_seats_block($format_options) {
         /* Variables    */
         $out = '';
 
@@ -780,7 +778,7 @@ class local_course_page_renderer extends plugin_renderer_base {
         }
 
         return $out;
-    }//addAvailable_Seats_Block
+    }//add_available_seats_block
 
     /**
      * @param           $courseId
@@ -794,14 +792,14 @@ class local_course_page_renderer extends plugin_renderer_base {
      * Description
      * Add deadline course block
      */
-    protected function addDeadlineCourse_Block($courseId) {
+    protected function add_deadline_course_block($courseId) {
         /* Variables */
         $out        = '';
         $deadLine   = null;
 
         try {
             /* Get deadline connected with */
-            $deadLine = course_page::DeadLineCourse($courseId);
+            $deadLine = course_page::deadline_course($courseId);
             if ($deadLine) {
                 $out .= html_writer::start_tag('div',array('class' => 'extra chp-block'));
                     $out .= '<h5 class="title_home chp-title">' . get_string('home_deadline','local_course_page') . '</h5>';
@@ -813,7 +811,7 @@ class local_course_page_renderer extends plugin_renderer_base {
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//addDeadlineCourse_Block
+    }//add_deadline_course_block
 
     /**
      * @param           $course_id
@@ -837,7 +835,7 @@ class local_course_page_renderer extends plugin_renderer_base {
      * Description
      * Replace mail of coordinator by 'Send a message'
      */
-    protected function addCoordinatorBlock($course_id) {
+    protected function add_coordinator_block($course_id) {
         /* Variables    */
         global $OUTPUT,$DB;
         $urlMessage = null;
@@ -847,9 +845,10 @@ class local_course_page_renderer extends plugin_renderer_base {
 
         $out .= html_writer::start_tag('div',array('class' => 'manager chp-block clearfix'));
             /* Main Manager */
-            $user = course_page::getCoursesManager($course_id);
+            $user = course_page::get_courses_manager($course_id);
                 if ($user) {
-                    $user->description = file_rewrite_pluginfile_urls($user->description, 'pluginfile.php', context_user::instance($user->id)->id, 'user', 'profile', null);
+                    $user->description = file_rewrite_pluginfile_urls($user->description, 'pluginfile.php',
+                                                                      context_user::instance($user->id)->id, 'user', 'profile', null);
                 $url_user = new moodle_url('/user/profile.php',array('id' => $user->id));
 
                 $out .= '<h5 class="title_coordinator chp-title">' . get_string('home_coordinater','local_course_page') . '</h5>';
@@ -868,7 +867,7 @@ class local_course_page_renderer extends plugin_renderer_base {
             if ($user) {
                 $notIn = $user->id;
             }
-            $lst_teachers = course_page::getCoursesTeachers($course_id,$notIn);
+            $lst_teachers = course_page::get_courses_teachers($course_id,$notIn);
             if ($lst_teachers) {
                 $out .= '<div class="title_coordinator chp-title">' . get_string('home_teachers','local_course_page') . '</div>';
                 $url_user = new moodle_url('/user/profile.php');
@@ -882,7 +881,7 @@ class local_course_page_renderer extends plugin_renderer_base {
         $out .= html_writer::end_tag('div');//manager
 
         return $out;
-    }//addCoordinatorBlock
+    }//add_coordinator_block
 
     /**
      * @param           $courseId
@@ -898,9 +897,8 @@ class local_course_page_renderer extends plugin_renderer_base {
      * Description
      * Add participant list link
      */
-    protected function addParticipantListBlock($courseId,$courseFormat,$formatOptions) {
+    protected function add_participant_list_block($courseId,$courseFormat,$formatOptions) {
         /* Variables */
-        global $USER;
         $out        = '';
         $urlLink    = null;
         $strTitle   = null;
@@ -942,7 +940,7 @@ class local_course_page_renderer extends plugin_renderer_base {
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//addParticipantListBlock
+    }//add_participant_list_block
 
     /**
      * @param           $course_id
@@ -967,7 +965,7 @@ class local_course_page_renderer extends plugin_renderer_base {
      * Check if there are enough rates to publish the result of the course
      *
      */
-    protected function addCourseRatings($course_id) {
+    protected function add_course_ratings($course_id) {
         /* Variables    */
         global $OUTPUT,$USER;
         $out            = '';
@@ -982,32 +980,32 @@ class local_course_page_renderer extends plugin_renderer_base {
         $out .= html_writer::start_tag('div',array('class' => 'ratings chp-block'));
             /* Add Total Average of course rating   */
             /* Total Rates  */
-            $total_rates = course_page::getTotalRatesCourse($course_id);
+            $total_rates = course_page::get_total_rates_course($course_id);
 
             if ($total_rates >= $ratingsConfig->block_rate_course_minimum) {
-                $out .= course_page::AddRatingsTotal($course_id,$total_rates);
+                $out .= course_page::add_ratings_total($course_id,$total_rates);
 
                 $out .= '<h5 class="title_ratings chp-title">' . get_string('rate_users','local_course_page') . '</h5>';
                 $out.= '<div class="content_rating_bar chp-content">';
                     /* Excellent Rate   */
-                    $excellent_rate = course_page::getCountTypeRateCourse($course_id,EXCELLENT_RATING);
-                    $exc_bar        = course_page::getProgressBarCode($excellent_rate,$total_rates,get_string('rate_exc','local_course_page'));
+                    $excellent_rate = course_page::get_count_type_rate_course($course_id,EXCELLENT_RATING);
+                    $exc_bar        = course_page::get_progress_bar_code($excellent_rate,$total_rates,get_string('rate_exc','local_course_page'));
                     $out .= $exc_bar;
                     /* Good Rate        */
-                    $good_rate      = course_page::getCountTypeRateCourse($course_id,GOOD_RATING);
-                    $good_bar       = course_page::getProgressBarCode($good_rate,$total_rates,get_string('rate_good','local_course_page'));
+                    $good_rate      = course_page::get_count_type_rate_course($course_id,GOOD_RATING);
+                    $good_bar       = course_page::get_progress_bar_code($good_rate,$total_rates,get_string('rate_good','local_course_page'));
                     $out .= $good_bar;
                     /* Average Rate */
-                    $avg_rate       = course_page::getCountTypeRateCourse($course_id,AVG_RATING);
-                    $avg_bar        = course_page::getProgressBarCode($avg_rate,$total_rates,get_string('rate_avg','local_course_page'));
+                    $avg_rate       = course_page::get_count_type_rate_course($course_id,AVG_RATING);
+                    $avg_bar        = course_page::get_progress_bar_code($avg_rate,$total_rates,get_string('rate_avg','local_course_page'));
                     $out .= $avg_bar;
                     /* Poor Rate    */
-                    $poor_rate      = course_page::getCountTypeRateCourse($course_id,POOR_RATING);
-                    $poor_bar       = course_page::getProgressBarCode($poor_rate,$total_rates,get_string('rate_poor','local_course_page'));
+                    $poor_rate      = course_page::get_count_type_rate_course($course_id,POOR_RATING);
+                    $poor_bar       = course_page::get_progress_bar_code($poor_rate,$total_rates,get_string('rate_poor','local_course_page'));
                     $out .= $poor_bar;
                     /* Bad Rate */
-                    $bad_rate       = course_page::getCountTypeRateCourse($course_id,BAD_RATING);
-                    $bad_bar        = course_page::getProgressBarCode($bad_rate,$total_rates,get_string('rate_bad','local_course_page'));
+                    $bad_rate       = course_page::get_count_type_rate_course($course_id,BAD_RATING);
+                    $bad_bar        = course_page::get_progress_bar_code($bad_rate,$total_rates,get_string('rate_bad','local_course_page'));
                     $out .= $bad_bar;
                 $out .= '</div>';//content_rating_bar
 
@@ -1015,7 +1013,7 @@ class local_course_page_renderer extends plugin_renderer_base {
                 $light_box = '';
                 $disabled = '';
                 $out .= '<h5 class="title_ratings chp-title">' . get_string('title_reviews','local_course_page') . '</h5>';
-                $last_rates = course_page::getLastCommentsRateCourse($course_id);
+                $last_rates = course_page::get_last_comments_rate_course($course_id);
                 if ($last_rates) {
                     $url_user = new moodle_url('/blocks/rate_course/pix/rating_user_graphic.php');
                     $i = 1;
@@ -1058,7 +1056,8 @@ class local_course_page_renderer extends plugin_renderer_base {
 
                 /* Lightbox --> see the last five comments  */
                 $header ='<h5 class="ratings_panel_title">' . get_string('title_reviews','local_course_page') . '</h5>';
-                $this->page->requires->yui_module('moodle-local_course_page-ratings','M.local_course_page.ratings',array(array('header' => $header,'content' => $light_box)));
+                $this->page->requires->yui_module('moodle-local_course_page-ratings','M.local_course_page.ratings',
+                                                  array(array('header' => $header,'content' => $light_box)));
                 $out .= html_writer::start_tag('div', array('class' => 'mdl-right commentPanel'));
                 $out .= '<button class="buttons" id="show" ' . $disabled . '>' . get_string('btn_more','local_course_page') . '</button>';
                 $out.= html_writer::end_tag('div');//div_mdl_right
@@ -1076,7 +1075,7 @@ class local_course_page_renderer extends plugin_renderer_base {
                 $out .= $OUTPUT->pix_icon('star', get_string('giverating', 'block_rate_course'),'block_rate_course', array('class'=>'icon'));
                 $url = new moodle_url('/blocks/rate_course/rate.php', array('courseid'=>$course_id));
 
-                if (course_page::User_CanRateCourse($USER->id,$course_id)) {
+                if (course_page::user_can_rate_course($USER->id,$course_id)) {
                     $class = null;
                 }else {
                     $class = array('class' => 'disabled_ratings');
@@ -1087,7 +1086,7 @@ class local_course_page_renderer extends plugin_renderer_base {
         $out .= html_writer::end_tag('div');//ratings
 
         return $out;
-    }//addCourseRating
+    }//add_course_ratings
 
     /**
      * @param           $icon
@@ -1099,7 +1098,7 @@ class local_course_page_renderer extends plugin_renderer_base {
      * Description
      * Get the url for the icon
      */
-    protected function getURLIcon($icon) {
+    protected function get_url_icon($icon) {
         /* Variables    */
         global $CFG;
         $url_img = '#';
@@ -1141,5 +1140,5 @@ class local_course_page_renderer extends plugin_renderer_base {
         }//if_ico
 
         return $url_img;
-    }//getURLIcon
+    }//get_url_icon
 }//local_course_page_renderer

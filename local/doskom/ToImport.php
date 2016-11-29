@@ -10,7 +10,7 @@ require( '../../config.php' );
 require_once('cron/wsssocron.php');
 
 try {
-    WSDOSKOM_Cron::cron();
+    wsdoskom_cron::cron();
 }catch (Exception $ex) {
     throw $ex;
 }

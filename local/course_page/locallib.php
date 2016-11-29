@@ -30,7 +30,9 @@ define('FILED_COURSE_INTERNAL_PRICE','customtext3');
 define('FILED_COURSE_EXTERNAL_PRICE','customtext4');
 
 class course_page  {
-    /* GET FUNCTIONS    */
+    /**********/
+    /* PUBLIC */
+    /**********/
 
     /**
      * @return          mixed
@@ -45,9 +47,6 @@ class course_page  {
         return $this->course;
     }//get_course
 
-    /* PUBLIC FUNCTIONS */
-
-
     /**
      * @throws          Exception
      *
@@ -57,8 +56,8 @@ class course_page  {
      * Description
      * Initialize the sector selector
      */
-    public static function Init_LocationsSector() {
-        /* Variables    */
+    public static function init_locations_sector() {
+        // Variables
         global $PAGE;
         $jsModule   = null;
         $name       = null;
@@ -66,12 +65,12 @@ class course_page  {
         $requires   = null;
 
         try {
-            /* Initialise variables */
+            // Initialise variables
             $name       = 'sectors';
             $path       = '/local/course_page/yui/sectors.js';
             $requires   = array('node', 'event-custom', 'datasource', 'json', 'moodle-core-notification');
 
-            /* Initialise js module */
+            // Initialise js module
             $jsModule = array('name'        => $name,
                               'fullpath'    => $path,
                               'requires'    => $requires,
@@ -86,7 +85,7 @@ class course_page  {
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//Init_LocationsSector
+    }//init_locations_sector
 
     /**
      * @throws          Exception
@@ -97,8 +96,8 @@ class course_page  {
      * Description
      * Connect javascript action to add more one From-To date
      */
-    public static function InitFromTo() {
-        /* Variables    */
+    public static function init_from_to() {
+        // Variables
         global $PAGE;
         $jsModule   = null;
         $name       = null;
@@ -110,14 +109,14 @@ class course_page  {
         $grpThree   = null;
 
         try {
-            /* Initialise variables */
+            // Initialise variables
             $name       = 'from_to';
             $path       = '/local/course_page/yui/fromto.js';
             $requires   = array('node', 'event-custom', 'datasource', 'json', 'moodle-core-notification');
             $grpThree   = array('none', 'moodle');
             $strings    = array($grpThree);
 
-            /* Initialise js module */
+            // Initialise js module
             $jsModule = array('name'        => $name,
                 'fullpath'    => $path,
                 'requires'    => $requires,
@@ -132,7 +131,7 @@ class course_page  {
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//InitFromTo
+    }//init_from_to
 
     /**
      * @param           $itemid
@@ -145,20 +144,20 @@ class course_page  {
      * Description
      * get the correct url to display the Home Graphics
      */
-    public static function getUrlPageGraphicsVideo($itemid) {
-        /* Variables    */
+    public static function get_url_page_graphics_video($itemid) {
+        // Variables
         $fs     = null;
         $file   = null;
         $url    = null;
 
         try {
-            /* Store File   */
+            // Store File
             $fs = get_file_storage();
 
-            /* File Instance        */
+            // File Instance
             $file   = $fs->get_file_by_id($itemid);
 
-            /* Make URL */
+            // Make URL
             if ($file) {
                 $url = new moodle_url('/local/course_page/draftfile.php/' .
                                       $file->get_contextid() .
@@ -179,7 +178,7 @@ class course_page  {
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//getUrlPageGraphicsVideo
+    }//get_url_page_graphics_video
 
     /**
      * @param           $courseId
@@ -193,20 +192,20 @@ class course_page  {
      * Description
      * Gets the present manager connected with the course
      */
-    public static function GetManagerAssigned($courseId) {
-        /* Variables    */
+    public static function get_manager_assigned($courseId) {
+        // Variables
         global $DB;
         $params     = null;
         $rdo        = null;
         $manager    = null;
 
         try {
-            /* Search Criteria  */
+            // Search Criteria
             $params = array();
             $params['name']     = 'manager';
             $params['courseid'] = $courseId;
 
-            /* Execute  */
+            // Execute
             $rdo = $DB->get_record('course_format_options',$params,'value');
             if ($rdo) {
                 $manager = $rdo->value;
@@ -216,7 +215,7 @@ class course_page  {
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//GetManagerAssigned
+    }//get_manager_assigned
 
     /**
      * @static
@@ -232,8 +231,8 @@ class course_page  {
      * Description
      * Get the teachers connected with the course.
      */
-    public static function getCoursesTeachers($course_id,$notIn) {
-        /* Variables    */
+    public static function get_courses_teachers($course_id,$notIn) {
+        // Variables
         global $DB;
         $lst_teachers   = null;
         $context        = null;
@@ -242,17 +241,19 @@ class course_page  {
         $rdo            = null;
 
         try {
-            /* Teachers */
+            // Teachers
             $lst_teachers = array();
 
-            /* Context  */
+            // Context
             $context = context_course::instance($course_id);
-            /* Search Criteria  */
+
+            // Search Criteria
             $params = array();
             $params['context_id'] = $context->id;
 
-            /* SQL Instruction  */
-            $sql = " SELECT		DISTINCT u.id,
+            // SQL Instruction
+            $sql = " SELECT	DISTINCT 
+                                u.id,
                                 CONCAT(u.firstname, ' ' , u.lastname) as 'name'
                      FROM		{user}					u
                         JOIN	{role_assignments}		ra		ON		ra.userid 		= u.id
@@ -264,7 +265,7 @@ class course_page  {
                         AND     u.id NOT IN ($notIn)
                      ORDER BY 	u.firstname, u.lastname ";
 
-            /* Execute  */
+            // Execute
             $rdo = $DB->get_records_sql($sql,$params);
             if ($rdo) {
                 foreach ($rdo as $user) {
@@ -276,7 +277,7 @@ class course_page  {
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//getCoursesTeachers
+    }//get_courses_teachers
 
 
     /**
@@ -291,8 +292,8 @@ class course_page  {
      * Description
      * Get manager connected with the course
      */
-    public static function getCoursesManager($course_id) {
-        /* Variables    */
+    public static function get_courses_manager($course_id) {
+        // Variables
         global $DB;
         $context        = null;
         $params         = null;
@@ -300,13 +301,14 @@ class course_page  {
         $rdo            = null;
 
         try {
-            /* Context  */
+            // Context
             $context = context_course::instance($course_id);
-            /* Search Criteria  */
+
+            // Search Criteria
             $params = array();
             $params['context_id'] = $context->id;
 
-            /* SQL Instruction  */
+            // SQL Instruction
             $sql = " SELECT		u.*
                      FROM		{user}					u
                         JOIN	{role_assignments}		ra		ON		ra.userid 		= u.id
@@ -318,7 +320,7 @@ class course_page  {
                      ORDER BY 	ra.timemodified,u.firstname, u.lastname
                      LIMIT 0,1 ";
 
-            /* Execute  */
+            // Execute
             $rdo = $DB->get_record_sql($sql,$params);
             if ($rdo) {
                 return $rdo;
@@ -328,7 +330,7 @@ class course_page  {
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//getCoursesManager
+    }//get_courses_manager
 
     /**
      * @static
@@ -342,8 +344,8 @@ class course_page  {
      * Description
      * Get the last ratings.
      */
-    public static function getLastRatings($course_id) {
-        /* Variables    */
+    public static function get_last_ratings($course_id) {
+        // Variables
         global $DB;
         $last_rates = null;
         $params     = null;
@@ -351,14 +353,14 @@ class course_page  {
         $rdo        = null;
 
         try {
-            /* Last Ratings */
+            // Last Ratings
             $last_rates = array();
 
-            /* PARAMS   */
+            // Search criteria
             $params = array();
             $params['course_id'] = $course_id;
 
-            /* SQL Instruction  */
+            // SQL Instruction
             $sql = " SELECT	  CONCAT(u.firstname, ', ',u.lastname) as 'user',
                               rc.rating
                      FROM	  {block_rate_course}       rc
@@ -367,7 +369,7 @@ class course_page  {
                      ORDER	BY rc.id DESC
                      LIMIT	5 ";
 
-            /* Execue   */
+            // Execute
             $rdo = $DB->get_records_sql($sql,$params);
             if ($rdo) {
                 foreach($rdo as $rate) {
@@ -379,7 +381,7 @@ class course_page  {
         }catch(Exception $ex) {
             throw $ex;
         }//try_catch
-    }//getLastRatings
+    }//get_last_ratings
 
     /**
      * @static
@@ -393,13 +395,13 @@ class course_page  {
      * Description
      * Check if the course has been rated.
      */
-    public static function IsCourseRating($course_id) {
-        /* Variables    */
+    public static function is_course_rating($course_id) {
+        // Variables
         global $DB;
         $rdo    = null;
 
         try {
-           /* Execute   */
+           // Execute
            $rdo = $DB->get_records('block_rate_course',array('course' => $course_id));
            if ($rdo) {
                return true;
@@ -409,7 +411,7 @@ class course_page  {
         }catch(Exception $ex) {
             throw $ex;
         }//try_catch
-    }//IsCourseRating
+    }//is_course_rating
 
     /**
      * @param           $userId
@@ -423,21 +425,21 @@ class course_page  {
      * Description
      * Check if the user can give a rate
      */
-    public static function User_CanRateCourse($userId,$courseId) {
-        /* Variables    */
+    public static function user_can_rate_course($userId,$courseId) {
+        // Variables
         global $DB;
         $rdo    = null;
         $params = null;
         $sql    = null;
 
         try {
-            /* Search Criteria  */
+            // Search Criteria
             $params = array();
             $params['userid']   = $userId;
             $params['course']   = $courseId;
 
-            /* First */
-            /* Rate course only if the user has completed it    */
+            // Rate course only if the user has completed it
+            // SQL Instruction
             $sql = " SELECT	id
                      FROM	{course_completions}
                      WHERE	userid = :userid
@@ -445,27 +447,27 @@ class course_page  {
                         AND timecompleted IS NOT NULL
                         AND	timecompleted != 0 ";
 
-            /* Execute  */
+            // Execute
             $rdo = $DB->get_record_sql($sql,$params);
             if ($rdo) {
-                /* Check if the user has already rated  */
-                /* Execute   */
+                // Check if the user has already rated
+                // Execute
                 $rdo = $DB->get_records('block_rate_course',$params);
                 if ($rdo) {
-                    /* Already rated    */
+                    // Already rated
                     return false;
                 }else {
-                    /* No rated yet     */
+                    // No rated yet
                     return true;
                 }
             }else {
-                /* Not Completed -- No Rate */
+                // Not Completed -- No Rate
                 return false;
             }//if_else
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//User_CanRateCourse
+    }//user_can_rate_course
 
     /**
      * @static
@@ -480,26 +482,26 @@ class course_page  {
      * Description
      * Get how many records there are for each rating
      */
-    public static function getCountTypeRateCourse($course_id,$type_rate) {
-        /* Variables    */
+    public static function get_count_type_rate_course($course_id,$type_rate) {
+        // Variables
         global $DB;
         $params = null;
         $total  = null;
 
         try {
-            /* Search Criteria  */
+            // Search Criteria
             $params = array();
             $params['course'] = $course_id;
             $params['rating'] = $type_rate;
 
-            /* Execute  */
+            // Execute
             $total = $DB->count_records('block_rate_course',$params);
 
             return $total;
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//getCountTypeRateCourse
+    }//get_count_type_rate_course
 
     /**
      * @static
@@ -514,7 +516,7 @@ class course_page  {
      * Description
      * Get the last comments for specific rating
      */
-    protected static function getComentsTypeRateCourse($course_id,$type_rate) {
+    protected static function get_coments_type_rate_course($course_id,$type_rate) {
         /* Variables    */
         global $DB;
         $coments_rate   = null;
@@ -525,12 +527,12 @@ class course_page  {
         try {
             $coments_rate = array();
 
-            /* Search Criteria  */
+            // Search Criteria
             $params = array();
             $params['course'] = $course_id;
             $params['rating'] = $type_rate;
 
-            /* SQL Instruction  */
+            // SQL Instruction
             $sql = " SELECT	  rc.id,
                               rc.comment
                      FROM	  {block_rate_course}       rc
@@ -540,7 +542,7 @@ class course_page  {
                      ORDER	BY rc.id DESC
                      LIMIT	2 ";
 
-            /* Execute  */
+            // Execute
             $rdo = $DB->get_records_sql($sql,$params);
             if ($rdo) {
                 foreach ($rdo as $rate) {
@@ -552,7 +554,7 @@ class course_page  {
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//getComentsTypeRateCourse
+    }//get_coments_type_rate_course
 
     /**
      * @static
@@ -566,7 +568,7 @@ class course_page  {
      * Description
      * Get the last comments
      */
-    public static function getLastCommentsRateCourse($course_id) {
+    public static function get_last_comments_rate_course($course_id) {
         /* Variables    */
         global $DB;
         $last_comments  = null;
@@ -576,14 +578,14 @@ class course_page  {
         $info           = null;
 
         try {
-            /* Last Ratings */
+            // Last Ratings
             $last_comments = array();
 
-            /* PARAMS   */
+            // Search criteria
             $params = array();
             $params['course_id'] = $course_id;
 
-            /* SQL Instruction  */
+            // SQL Instruction
             $sql = " SELECT	  rc.id,
                               rc.comment,
                               rc.rating,
@@ -594,7 +596,7 @@ class course_page  {
                      ORDER	BY rc.id DESC
                      LIMIT	2 ";
 
-            /* Execue   */
+            // Execute
             $rdo = $DB->get_records_sql($sql,$params);
             if ($rdo) {
                 foreach($rdo as $rate) {
@@ -611,7 +613,7 @@ class course_page  {
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//getLastCommentsRateCourse
+    }//get_last_comments_rate_course
 
     /**
      * @static
@@ -625,19 +627,20 @@ class course_page  {
      * Description
      * Get how many users are enrolled in the course
      */
-    public static function getTotalUsersEnrolledCourse($course_id) {
+    public static function get_total_users_enrolled_course($course_id) {
         /* Variables    */
         global $DB;
         $params = null;
         $sql    = null;
         $rdo    = null;
         try {
-            /* Search Criteria  */
+            // Search Criteria
             $params             = array();
             $params['course']   = $course_id;
 
-            /* SQL Instruction  */
-            $sql = " SELECT		DISTINCT count(u.id) as 'total'
+            // SQL Instruction
+            $sql = " SELECT	DISTINCT 
+                                count(u.id) as 'total'
                      FROM		{user}				u
                         JOIN	{user_enrolments}	ue	ON 	ue.userid 	= u.id
                         JOIN	{enrol}				e	ON	e.id		= ue.enrolid
@@ -645,7 +648,7 @@ class course_page  {
                                                         AND e.courseid 	= :course
                      WHERE		u.deleted = 0 ";
 
-            /* Execute      */
+            // Execute
             $rdo = $DB->get_record_sql($sql,$params);
             if ($rdo) {
                 return $rdo->total;
@@ -655,7 +658,7 @@ class course_page  {
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//getTotalUsersEnrolledCourse
+    }//get_total_users_enrolled_course
 
     /**
      * @static
@@ -669,25 +672,25 @@ class course_page  {
      * Description
      * Count all the rates
      */
-    public static function getTotalRatesCourse($course_id) {
+    public static function get_total_rates_course($course_id) {
         /* Variables */
         global $DB;
         $params = null;
         $total  = null;
 
         try {
-            /* Search Criteria  */
+            // Search Criteria
             $params = array();
             $params['course'] = $course_id;
 
-            /* Execute  */
+            // Execute
             $total = $DB->count_records('block_rate_course',$params);
 
             return $total;
         }catch (Exception $ex) {
             throw $ex;
         }//try_Catch
-    }//getTotalRatesCourse
+    }//get_total_rates_course
 
     /**
      * @static
@@ -702,7 +705,7 @@ class course_page  {
      * Description
      * Add progress bar connected with rating
      */
-    public static function getProgressBarCode($rate,$total,$title) {
+    public static function get_progress_bar_code($rate,$total,$title) {
         /* Variables    */
         $id_bar = 'pbar_'.uniqid();
         $w          = 0;
@@ -726,7 +729,7 @@ class course_page  {
         $bar_out .= '</div>';//rating_bar_block
 
         return $bar_out;
-    }//getProgressBarCode
+    }//get_progress_bar_code
 
     /**
      * @static
@@ -740,7 +743,7 @@ class course_page  {
      * Description
      * Add the Ratings Total
      */
-    public static function AddRatingsTotal($course_id,$total_rates) {
+    public static function add_ratings_total($course_id,$total_rates) {
         /* Variables    */
         $out = '';
 
@@ -753,7 +756,7 @@ class course_page  {
         $out .= '</div>';
 
         return $out;
-    }//AddRatingsTotal
+    }//add_ratings_total
 
     /**
      * @static
@@ -768,7 +771,7 @@ class course_page  {
      * Description
      * It checks if the user is just enrolled.
      */
-    public static function IsUserEnrol($course_id,$user_id) {
+    public static function is_user_enrol($course_id,$user_id) {
         /* Variables    */
         global $DB;
         $params = null;
@@ -776,12 +779,12 @@ class course_page  {
         $rdo    = null;
 
         try {
-            /* Params   */
+            // Search criteria
             $params = array();
             $params['course_id']    = $course_id;
             $params['user_id']      = $user_id;
 
-            /* SQL Instruction  */
+            // SQL Instruction
             $sql = " SELECT		ue.enrolid
                      FROM		{enrol}					e
                         JOIN	{user_enrolments}		ue	ON  ue.enrolid  = e.id
@@ -789,7 +792,7 @@ class course_page  {
                      WHERE		e.courseid = :course_id
                         AND		e.status = 0 ";
 
-            /* Execute  */
+            // Execute
             $rdo = $DB->get_record_sql($sql,$params);
             if ($rdo) {
                 return true;
@@ -799,7 +802,7 @@ class course_page  {
         }catch(Exception $ex) {
             throw $ex;
         }//try_catch
-    }//IsUserEnrol
+    }//is_user_enrol
 
     /**
      * @static
@@ -813,7 +816,7 @@ class course_page  {
      * Description
      * Get the fields/options connected with course format
      */
-    public static function getFormatFields($course_id) {
+    public static function get_format_fields($course_id) {
         /* Variables    */
         global $DB;
         $format_fields  = null;
@@ -823,14 +826,14 @@ class course_page  {
         $field          = null;
 
         try {
-            /* Format Fields    */
+            // Format Fields
             $format_fields = array();
 
-            /* Search Criteria  */
+            // Search Criteria
             $params = array();
             $params['course_id'] = $course_id;
 
-            /* SQL Instruction  */
+            // SQL Instruction
             $sql = " SELECT		id,
                                 name,
                                 value
@@ -838,7 +841,7 @@ class course_page  {
                      WHERE		courseid = :course_id
                      ORDER BY   id ASC ";
 
-            /* Execute          */
+            // Execute
             $rdo = $DB->get_records_sql($sql,$params);
             if ($rdo) {
                 foreach ($rdo as $instance) {
@@ -858,7 +861,7 @@ class course_page  {
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//getFormatFields
+    }//get_format_fields
 
 
     /**
@@ -875,15 +878,15 @@ class course_page  {
      * Description
      * Add the available seats to the fields/options connected with course format.
      */
-    public static function getAvailSeatsFormatOption($course_id, $format_options) {
+    public static function get_available_seats_format_option($course_id, $format_options) {
         global $CFG, $DB;
         $avail = '-';
 
         // Add enrolled users.
-        /* Get Instance Enrolment Waiting List  */
+        // Get Instance Enrolment Waiting List
         $instance = $DB->get_record('enrol', array('courseid' => $course_id,'enrol' => 'waitinglist','status' => '0'));
         if ($instance) {
-            /* Get Seats    */
+            // Get Seats
             require_once($CFG->dirroot . '/enrol/waitinglist/lib.php');
 
             if ($instance->{ENROL_WAITINGLIST_FIELD_MAXENROLMENTS}) {
@@ -904,7 +907,7 @@ class course_page  {
         $format_options['enrolledusers'] = $field;
 
         return $format_options;
-    }//getAvailSeatsFormatOption
+    }//get_available_seats_format_option
 
     /***
      * @param           $courseID
@@ -918,14 +921,14 @@ class course_page  {
      * Description
      * Get how many seats are available
      */
-    public static function getAvailSeats($courseID) {
+    public static function get_available_seats($courseID) {
         /* Variables */
         global $CFG, $DB;
         $instance   = null;
         $seats      = 0;
 
         try {
-            /* Get Instance Enrolment Waiting List  */
+            // Get Instance Enrolment Waiting List
             $instance = $DB->get_record('enrol', array('courseid' => $courseID,'enrol' => 'waitinglist','status' => '0'));
             if ($instance) {
                 /* Get Seats    */
@@ -946,7 +949,7 @@ class course_page  {
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//getAvailSeats
+    }//get_available_seats
 
 
     /**
@@ -966,7 +969,7 @@ class course_page  {
         $edit_options   = null;
 
         try {
-            /* Get the context  */
+            //Get the context
             if ($COURSE->id) {
                 $context        = context_course::instance($COURSE->id);
             }elseif ($courseId) {
@@ -975,7 +978,8 @@ class course_page  {
                 $context        = context_coursecat::instance(0);
             }//if_else_course
 
-            $edit_options   = array('maxfiles' => EDITOR_UNLIMITED_FILES, 'maxbytes'=>$CFG->maxbytes, 'trusttext'=>false, 'noclean'=>true, 'context' => $context);
+            $edit_options   = array('maxfiles' => EDITOR_UNLIMITED_FILES, 'maxbytes'=>$CFG->maxbytes, 'trusttext'=>false,
+                                    'noclean'=>true, 'context' => $context);
 
             return array($edit_options,$context);
         }catch (Exception $ex) {
@@ -1001,7 +1005,7 @@ class course_page  {
         $file_options   = null;
 
         try {
-            /* Get the context  */
+            // Get the context
             if ($COURSE->id) {
                 $context        = context_course::instance($COURSE->id);
             }else if ($courseId) {
@@ -1031,7 +1035,7 @@ class course_page  {
      * Description
      * Prepare the Standard Video
      */
-    public static function prepareStandardHomeSummaryEditor($edit_options,$context,$courseId = null) {
+    public static function prepare_standard_home_summary_editor($edit_options,$context,$courseId = null) {
         /* Variables  */
         global $COURSE;
         $editor         = null;
@@ -1040,10 +1044,10 @@ class course_page  {
         try {
             /* Prepare Standard Editor */
             $editor         = new stdClass();
-            $editor->homesummary       = '';
+            $editor->homesummary        = '';
             $editor->homesummaryformat  = FORMAT_HTML;
 
-            /* Prepare the editor   */
+            // Prepare the editor
             // When changes are made during a new course setup the $COURSE global
             // is set to the site, therefore we need to check if courseid is set
             // and if it is greater than 1.
@@ -1067,7 +1071,7 @@ class course_page  {
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//prepareStandardHomeSummaryEditor
+    }//prepare_standard_home_summary_editor
 
     /**
      * @static
@@ -1083,18 +1087,18 @@ class course_page  {
      * Description
      * Prepare the File Manager
      */
-    public static function prepareFileManagerHomeGraphicsVideo($file_options,$context,$field,$courseId = null) {
+    public static function prepare_file_manager_home_graphics_video($file_options,$context,$field,$courseId = null) {
         /* Variables */
         global $COURSE;
         $file_editor    = null;
         $format_options = null;
 
         try {
-            /* File Editor  */
+            // File Editor
             $file_editor = new stdClass();
             $file_editor->$field  = 0;
 
-            /* Prepare Standard Editor */
+            // Prepare Standard Editor
             if ($courseId) {
                 $COURSE->id = $courseId;
             }
@@ -1113,7 +1117,7 @@ class course_page  {
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//prepareFileManagerHomeGraphics
+    }//prepare_file_manager_home_graphics_video
 
     /**
      * @static
@@ -1127,20 +1131,20 @@ class course_page  {
      * Description
      * Get the content of 'Home Summary Editor'
      */
-    public static function getHomeSummaryEditor($homesummary_editor) {
+    public static function get_home_summary_editor($homesummary_editor) {
         /* Variables    */
         $edit_options   = null;
         $context        = null;
         $editor         = null;
 
         try {
-            /* Get Home Page Description */
+            // Get Home Page Description
             list($edit_options,$context) = self::get_edit_options();
 
-            /* Editor */
+            // Editor
             $editor = new stdClass();
             $editor->homesummary_editor = $homesummary_editor;
-            $editor->homesummary = '';
+            $editor->homesummary        = '';
 
             $editor = file_postupdate_standard_editor($editor, 'homesummary', $edit_options, $context, 'course', 'homesummary', 0);
 
@@ -1148,7 +1152,7 @@ class course_page  {
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//postupdateHomeSummaryEditor
+    }//get_home_summary_editor
 
     /**
      * @static
@@ -1165,7 +1169,7 @@ class course_page  {
      * Description
      * Get the reference (id) of the Video/Graphics File.
      */
-    public static function getHomeGraphicsVideo($file_id,$field,$file_manager,$delete) {
+    public static function get_home_graphics_video($file_id,$field,$file_manager,$delete) {
         /* Variables    */
         global $DB;
         $fs                 = null;
@@ -1174,10 +1178,10 @@ class course_page  {
         $context            = null;
         $file_graphicVideo  = null;
         $Id_GraphicVideo    = 0;
-        $field_manager  = $field . '_filemanager';
+        $field_manager      = $field . '_filemanager';
 
         try {
-            /* First Remove Previous    */
+            // First Remove Previous
             $fs = get_file_storage();
             if ($delete) {
                 $file = $fs->get_file_by_id($file_id);
@@ -1185,18 +1189,18 @@ class course_page  {
                 $DB->delete_records('files',array('itemid' => $file->get_itemid()));
             }///deletepicture
 
-            /* Get Home Graphics    */
+            // Get Home Graphics
             list($file_options,$context) = self::get_file_options();
             $file_options['accepted_types'] = array('image','web_image','video','web_video');
 
-            /* File Graphic Video   */
+            // File Graphic Video
             $file_graphicVideo = new stdClass();
             $file_graphicVideo->$field_manager = $file_manager;
 
             $file_graphicVideo = file_postupdate_standard_filemanager($file_graphicVideo, $field, $file_options, $context, 'course', $field, $file_graphicVideo->$field_manager);
 
             if ($files = $fs->get_area_files($context->id, 'course', $field, $file_graphicVideo->$field_manager, 'id DESC', false)) {
-                /* Remove Previous  */
+                // Remove Previous
                 $file = reset($files);
 
                 $Id_GraphicVideo = $file->get_id();
@@ -1206,7 +1210,7 @@ class course_page  {
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//getHomeGraphics
+    }//get_home_graphics_video
 
     /**
      * @static
@@ -1226,7 +1230,7 @@ class course_page  {
      * Description
      * Course Sector
      */
-    public static function UpdateCourseHomePage($data,$course) {
+    public static function update_course_home_page($data,$course) {
         /* Variables    */
         global $DB;
         $editor_options = null;
@@ -1237,49 +1241,53 @@ class course_page  {
         $video_id       = null;
 
         try {
-            /* Update Course Details    */
-            /* Short Description    */
+            // Update Course Details
+            // Short Description
             list($editor_options,$context) = self::get_edit_options();
             $data = file_postupdate_standard_editor($data, 'summary', $editor_options,$context, 'course', 'summary', 0);
             $DB->set_field('course','summary',$data->summary,array('id' => $course->id));
-            /* ID Number            */
+            // ID Number
             $DB->set_field('course','idnumber',$data->idnumber,array('id' => $course->id));
-            /* Publihed Data        */
+            // Publihed Data
             $DB->set_field('course','startdate',$data->startdate,array('id' => $course->id));
 
-            /* Update Format Options   */
-            $format_fields = self::getFormatFields($course->id);
+            // Update Format Options
+            $format_fields = self::get_format_fields($course->id);
             foreach ($format_fields as $option) {
                 $field = $option->name;
                 switch ($field) {
                     case 'homesummary':
-                        $option->value = self::getHomeSummaryEditor($data->homesummary_editor);
+                        $option->value = self::get_home_summary_editor($data->homesummary_editor);
                         $DB->update_record('course_format_options',$option);
 
                         break;
+
                     case 'pagegraphics':
-                        /* Get Id Graphic file  */
-                        $graphic_id = course_page::getHomeGraphicsVideo($data->$field,$field,$data->pagegraphics_filemanager,false);
+                        // Get Id Graphic file
+                        $graphic_id = course_page::get_home_graphics_video($data->$field,$field,$data->pagegraphics_filemanager,false);
                         if ($graphic_id) {
                             $option->value = $graphic_id;
                             $DB->update_record('course_format_options',$option);
                         }//if_graphic_id
 
                         break;
+
                     case 'pagevideo':
                         if (isset($data->deletevideo) && ($data->deletevideo)) {
                             $delete = true;
                         }else {
                             $delete = false;
                         }//if_delete
-                        /* Get Id Video File */
-                        $video_id = course_page::getHomeGraphicsVideo($data->$field,$field,$data->pagevideo_filemanager,$delete);
+
+                        //Get Id Video File
+                        $video_id = course_page::get_home_graphics_video($data->$field,$field,$data->pagevideo_filemanager,$delete);
                         if ($video_id) {
                             $option->value = $video_id;
                             $DB->update_record('course_format_options',$option);
                         }//if_video_id
 
                         break;
+
                     case 'course_sector':
                         if (isset($data->$field)) {
                             $option->value = implode(',',$data->$field);
@@ -1287,6 +1295,7 @@ class course_page  {
                         }//if_data_field
 
                         break;
+
                     case 'from':
                     case 'to':
                         //if ($data['time'] != '') {
@@ -1295,6 +1304,7 @@ class course_page  {
                         //}
 
                         break;
+
                     default:
                         if (isset($data->$field)) {
                             $option->value = $data->$field;
@@ -1307,7 +1317,7 @@ class course_page  {
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//UpdateCourseHomePage
+    }//update_course_home_page
 
     /**
      * @param           $form
@@ -1334,7 +1344,7 @@ class course_page  {
      * Description
      * Add the manager list with the search filter
      */
-    public static function printFormatOptions(&$form,$option,$value,$format) {
+    public static function print_format_options(&$form,$option,$value,$format) {
         /* Variables*/
         global  $COURSE,$USER;
         $str_format     = null;
@@ -1350,75 +1360,87 @@ class course_page  {
                         $form->setDefault('prerequisities',$value);
 
                         break;
+
                     case 'producedby':
                         $form->addElement('text','producedby',get_string('home_producedby',$str_format),'style="width:95%;"');
                         $form->setDefault('producedby',$value);
                         $form->setType('producedby',PARAM_TEXT);
 
                         break;
+
                     case 'course_location':
-                        $lstLocations = course_page::Get_CourseLocationsList($USER->id);
+                        $lstLocations = course_page::get_course_locations_list($USER->id);
                         $form->addElement('select','course_location',get_string('home_location',$str_format),$lstLocations);
                         $form->setDefault('course_location',$value);
 
                         break;
+
                     case 'course_sector':
-                        $location = self::GetCourseLocation($COURSE->id);
-                        $lstSectors     = course_page::Get_SectorsLocationsList($location);
+                        $location = self::get_course_location($COURSE->id);
+                        $lstSectors     = course_page::get_course_locations_list($location);
                         $form->addElement('select','course_sector',get_string('home_sector',$str_format),$lstSectors,'multiple');
                         $form->setDefault('course_sector',$value);
 
                         break;
+
                     case 'time':
                         $form->addElement('textarea','time',null,'rows="5" style="width:95%;" readonly');
                         $form->setDefault('time',$value);
 
                         break;
+
                     case 'from':
                         $form->addElement('date_selector','from',get_string('home_time_from',$str_format));
                         $form->setDefault('from',$value);
 
                         break;
+
                     case 'to':
                         $form->addElement('date_selector','to',get_string('home_time_to',$str_format));
                         $form->setDefault('to',$value);
 
                         break;
+
                     case 'from_to_btn':
                         $form->addElement('button','from_to_btn',get_string('home_time_from_to_btn',$str_format));
 
                         break;
+
                     case 'length':
                         $form->addElement('text','length',get_string('home_length',$str_format),'style="width:95%;"');
                         $form->setDefault('length',$value);
                         $form->setType('length',PARAM_TEXT);
 
                         break;
+
                     case 'effort':
                         $form->addElement('text','effort',get_string('home_effort',$str_format),'style="width:95%;"');
                         $form->setDefault('effort',$value);
                         $form->setType('effort',PARAM_TEXT);
 
                         break;
+
                     case 'author':
                         $form->addElement('text','author',get_string('home_author',$str_format),'style="width:95%;"');
                         $form->setDefault('author',$value);
                         $form->setType('author',PARAM_TEXT);
 
                         break;
+
                     case 'licence':
                         $form->addElement('text','licence',get_string('home_licence',$str_format),'style="width:95%;"');
                         $form->setDefault('licence',$value);
                         $form->setType('licence',PARAM_TEXT);
 
                         break;
+
                     default:
                         break;
                 }//switch
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//printFormatOptions
+    }//print_format_options
 
     /**
      * @static
@@ -1444,7 +1466,7 @@ class course_page  {
      * Description
      * Add the 'ratings' option format
      */
-    public static function addCourseHomePage_Section(&$form,$field,$from_home = false) {
+    public static function add_course_home_page_section(&$form,$field,$from_home = false) {
         /* Variables    */
         global $COURSE;
         $visible        = array();
@@ -1460,6 +1482,7 @@ class course_page  {
 
                 break;
             case 'ratings':
+
                 $home_ratings = $form->createElement('checkbox','ratings',get_string('home_ratings','local_course_page'));
                 $form->insertElementBefore($home_ratings,'descriptionhdr');
                 $format_options = course_get_format($COURSE->id)->get_format_options();
@@ -1468,6 +1491,7 @@ class course_page  {
                 }//if_exists
 
                 break;
+
             case 'participant':
                 $home_participant = $form->createElement('checkbox','participant',get_string('home_participant','local_course_page'));
                 $form->insertElementBefore($home_participant,'descriptionhdr');
@@ -1477,6 +1501,7 @@ class course_page  {
                 }//if_exists
 
                 break;
+
             case 'homevisible':
                 $visible['0'] = get_string('hide');
                 $visible['1'] = get_string('show');
@@ -1493,7 +1518,7 @@ class course_page  {
 
                 /* Get Editor   */
                 list($edit_options,$context) = self::get_edit_options();
-                $editor = self::prepareStandardHomeSummaryEditor($edit_options,$context);
+                $editor = self::prepare_standard_home_summary_editor($edit_options,$context);
 
                 $home_summay = $form->createElement('editor','homesummary_editor',get_string('home_desc','local_course_page'),null,$edit_options);
                 $form->insertElementBefore($home_summay,'courseformathdr');
@@ -1505,7 +1530,7 @@ class course_page  {
                 /* Get FileManager   */
                 list($file_options,$context) = self::get_file_options();
                 $file_editor['accepted_types'] = array('image','web_image');
-                $file_editor = self::prepareFileManagerHomeGraphicsVideo($file_options,$context,'pagegraphics');
+                $file_editor = self::prepare_file_manager_home_graphics_video($file_options,$context,'pagegraphics');
 
 
                 $page_graphics = $form->createElement('filemanager', 'pagegraphics_filemanager', get_string('home_graphics','local_course_page'), null, $file_options);
@@ -1520,6 +1545,7 @@ class course_page  {
                 }//if_exists
 
                 break;
+
             case 'pagegraphicstitle':
                 $pageTitle = $form->createElement('text','pagegraphicstitle',get_string('home_graphicstitle','local_course_page'),'style="width:95%;"');
                 $form->setType('pagegraphicstitle',PARAM_TEXT);
@@ -1529,7 +1555,9 @@ class course_page  {
                 if (array_key_exists('pagegraphicstitle',$format_options)) {
                     $form->setDefault('pagegraphicstitle',$format_options['pagegraphicstitle']);
                 }//if_exists
+
                 break;
+
             case 'pagevideo':
                 $current_video = $form->createElement('static', 'current_video', get_string('home_current_video','local_course_page'));
                 $form->insertElementBefore($current_video,'courseformathdr');
@@ -1541,7 +1569,7 @@ class course_page  {
                 /* Get FileManager   */
                 list($file_options,$context) = self::get_file_options();
                 $file_editor['accepted_types'] = array('video','web_video');
-                $file_editor = self::prepareFileManagerHomeGraphicsVideo($file_options,$context,'pagevideo');
+                $file_editor = self::prepare_file_manager_home_graphics_video($file_options,$context,'pagevideo');
                 if ($file_editor->pagevideo) {
                     $fs = get_file_storage();
                     $file = $fs->get_file_by_id($file_editor->pagevideo);
@@ -1562,10 +1590,11 @@ class course_page  {
                 }//if_exists
 
                 break;
+
             default:
                 break;
         }//switch_field
-    }//addCourseHomePage_Section
+    }//add_course_home_page_section
 
     /**
      * @static
@@ -1585,7 +1614,7 @@ class course_page  {
      * Description
      * Get the url to show the content of home page summary like images...
      */
-    public static function fileRewritePluginfileUrls_HomePage($text, $file, $contextid, $component, $filearea, $itemid, array $options=null) {
+    public static function file_rewrite_pluginfile_urls_homepage($text, $file, $contextid, $component, $filearea, $itemid, array $options=null) {
         /* Variables */
         global $CFG;
         $baseurl    = null;
@@ -1614,7 +1643,7 @@ class course_page  {
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//fileRewritePluginfileUrls_HomePage
+    }//file_rewrite_pluginfile_urls_homepage
 
     /**
      * @static
@@ -1629,7 +1658,7 @@ class course_page  {
      * Description
      * Show the content of home page summary like images...
      */
-    public static function filePluginfile_HomePage($relativepath,$forcedownload,$preview) {
+    public static function file_pluginfile_homepage($relativepath,$forcedownload,$preview) {
         /* Variables    */
         global $CFG;
         $args       = null;
@@ -1687,7 +1716,7 @@ class course_page  {
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//filePluginfile_HomePage
+    }//file_pluginfile_homepage
 
     /**
      * @param           $courseId
@@ -1701,7 +1730,7 @@ class course_page  {
      * Description
      * Get course location connected with the course
      */
-    public static function GetCourseLocation($courseId) {
+    public static function get_course_location($courseId) {
         /* Variables    */
         global $DB;
         $params     = null;
@@ -1709,12 +1738,12 @@ class course_page  {
         $location   = null;
 
         try {
-            /* Search Criteria  */
+            // Search Criteria
             $params = array();
             $params['name']     = 'course_location';
             $params['courseid'] = $courseId;
 
-            /* Execute */
+            // Execute
             $rdo = $DB->get_record('course_format_options',$params,'value');
             if ($rdo) {
                 if ($rdo->value) {
@@ -1726,7 +1755,7 @@ class course_page  {
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//GetCourseLocation
+    }//get_course_location
 
     /**
      * @param           $userId
@@ -1739,7 +1768,7 @@ class course_page  {
      * Description
      * Get the locations that can be added to the course
      */
-    public static function Get_CourseLocationsList($userId) {
+    public static function get_course_locations_list($userId) {
         /* Variables    */
         global $DB,$CFG;
         $myCompetence       = null;
@@ -1749,27 +1778,27 @@ class course_page  {
         $courseLocations    = array();
 
         try {
-            /* Course Locations List    */
+            // Course Locations List
             $courseLocations[0] = get_string('sel_location','local_friadmin');
-            /* Get Competence connected with user    */
+
+            // Get Competence connected with user
             require_once($CFG->dirroot . '/local/friadmin/course_locations/locationslib.php');
             $myCompetence = CourseLocations::Get_MyCompetence($userId);
 
-            /* SQL Instruction  */
-            /* All Locations    */
+            // SQL Instruction
             $sql = " SELECT			cl.id,
                                     cl.name
                      FROM			{course_locations}	cl ";
             if ($myCompetence) {
                 if ($myCompetence->levelZero) {
-                    /* Locations Connected with level zero  */
+                    // Locations Connected with level zero
                     if (!$sqlWhere) {
                         $sqlWhere  = " WHERE cl.levelzero IN ($myCompetence->levelZero) ";
                     }else {
                         $sqlWhere .= " AND cl.levelzero IN ($myCompetence->levelZero) ";
                     }//if_sqlWhere
 
-                    /* Locations Level One  */
+                    // Locations Level One
                     if ($myCompetence->levelOne) {
                         if (!$sqlWhere) {
                             $sqlWhere  = " WHERE cl.levelone IN ($myCompetence->levelOne) ";
@@ -1779,12 +1808,13 @@ class course_page  {
                     }//if_levelOne
                 }//if_levelZero
 
-                /* Add Criteria */
+                // Add Criteria
                 $sql .= $sqlWhere;
-                /* ADD Order    */
+
+                // ADD Order
                 $sql .= " ORDER BY cl.name ";
 
-                /* Execute  */
+                // Execute
                 $rdo = $DB->get_records_sql($sql);
                 if ($rdo) {
                     foreach ($rdo as $instance) {
@@ -1797,7 +1827,7 @@ class course_page  {
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//Get_MyCourseLocations
+    }//get_course_locations_list
 
     /**
      * @param           $locations
@@ -1810,7 +1840,7 @@ class course_page  {
      * Description
      * Get the sectors that can be added to the course
      */
-    public static function Get_SectorsLocationsList($locations) {
+    public static function get_sectors_locations_list($locations) {
         /* Variables    */
         global $DB;
         $sectors = array();
@@ -1818,21 +1848,22 @@ class course_page  {
         $rdo     = null;
 
         try {
-            /* Sectors List     */
+            // Sectors List
             $sectors[0] = get_string('sel_sector','local_friadmin');
 
             if ($locations) {
                 /* SQL Instruction  */
-                $sql = " SELECT		DISTINCT 	rgc.id,
-                                                rgc.name,
-                                                rgc.industrycode
+                $sql = " SELECT	DISTINCT 	
+                                    rgc.id,
+                                    rgc.name,
+                                    rgc.industrycode
                          FROM		{report_gen_companydata}		rgc
                             JOIN	{report_gen_company_relation}	rg_cr	ON rg_cr.companyid 	= rgc.id
                             JOIN	{course_locations}			    cl		ON cl.levelone 		= rg_cr.parentid
                                                                             AND cl.id IN ($locations)
                          ORDER BY	rgc.industrycode, rgc.name ";
 
-                /* Execute  */
+                // Execute
                 $rdo = $DB->get_records_sql($sql);
                 if ($rdo) {
                     foreach ($rdo as $instance) {
@@ -1841,12 +1872,11 @@ class course_page  {
                 }//if_rdo
             }//if_locations
 
-
             return $sectors;
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//Get_SectorsLocationsList
+    }//get_sectors_locations_list
 
     /**
      * @param           $locationId
@@ -1859,13 +1889,13 @@ class course_page  {
      * Description
      * Get the location name
      */
-    public static function Get_LocationName($locationId) {
+    public static function get_location_name($locationId) {
         /* Variables    */
         global $DB;
         $rdo = null;
 
         try {
-            /* Execute  */
+            // Execute
             $rdo = $DB->get_record('course_locations',array('id' => $locationId),'name');
             if ($rdo) {
                 return $rdo->name;
@@ -1875,7 +1905,7 @@ class course_page  {
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//Get_LocationName
+    }//get_location_name
 
     /**
      * @param           $locationId
@@ -1889,7 +1919,7 @@ class course_page  {
      * Description
      * Get location detail
      */
-    public static function GetLocationDetail($locationId) {
+    public static function get_location_detail($locationId) {
         /* Variables */
         global $DB;
         $rdo            = null;
@@ -1898,61 +1928,60 @@ class course_page  {
         $infoLocation   = null;
 
         try {
-            /* Search Criteria  */
+            // Search Criteria
             $params = array();
             $params['location'] = $locationId;
 
-            /* Search Criteria  */
-            $sql = " SELECT	cl.id,
-                            cl.name,
-                            levelone.name 	as 'muni',
-                            cl.floor,
-                            cl.room,
-                            cl.seats,
-                            cl.street,
-                            cl.postcode,
-                            cl.city,
-                            cl.contact,
-                            cl.phone,
-                            cl.email,
-                            cl.comments,
-                            cl.description,
-                            cl.urlmap,
-                            GROUP_CONCAT(DISTINCT cfo.courseid ORDER BY cfo.courseid) as 'courses'
-                     FROM		    {course_locations}		    cl
-                        JOIN	    {report_gen_companydata}	levelone	ON  levelone.id 	= cl.levelone
-                        LEFT JOIN	{course_format_options}		cfo			ON 	cfo.value 		= cl.id
-                                                                            AND cfo.name like '%location%'
-                     WHERE		cl.id = :location ";
+            // SQL Instruction
+            $sql = " SELECT	      cl.id,
+                                  cl.name,
+                                  levelone.name 	as 'muni',
+                                  cl.floor,
+                                  cl.room,
+                                  cl.seats,
+                                  cl.street,
+                                  cl.postcode,
+                                  cl.city,
+                                  cl.contact,
+                                  cl.phone,
+                                  cl.email,
+                                  cl.comments,
+                                  cl.description,
+                                  cl.urlmap,
+                                  GROUP_CONCAT(DISTINCT cfo.courseid ORDER BY cfo.courseid) as 'courses'
+                     FROM		  {course_locations}		cl
+                        JOIN	  {report_gen_companydata}	levelone  ON  levelone.id 	= cl.levelone
+                        LEFT JOIN {course_format_options}	cfo		  ON  cfo.value 	= cl.id
+                                                                      AND cfo.name like '%location%'
+                     WHERE		  cl.id = :location ";
 
-            /* Execute */
+            // Execute
             $rdo = $DB->get_record_sql($sql,$params);
             if ($rdo) {
-                /* Info Location    */
+                // Info Location
                 $infoLocation = new stdClass();
                 $infoLocation->id   = $rdo->id;
                 $infoLocation->name = $rdo->name;
-                /* Detail */
+                // Detail
                 $infoLocation->detail      = get_string('location_floor','local_friadmin') . ': ' . $rdo->floor;
                 $infoLocation->detail     .= "</br>";
                 $infoLocation->detail     .= get_string('location_room','local_friadmin')  . ': ' . $rdo->room;
                 $infoLocation->detail     .= "</br>";
                 $infoLocation->detail     .= get_string('location_seats','local_friadmin') . ': ' . $rdo->seats;
-                /* Address  */
+                // Address
                 $infoLocation->address     = $rdo->street;
                 $infoLocation->address    .= "</br>";
                 $infoLocation->address    .= $rdo->postcode . ' ' . $rdo->city;
                 $infoLocation->address    .= "</br>";
-                //$infoLocation->address    .= $rdo->muni;
-                /* URL Map */
+                // URL Map
                 $infoLocation->map         = $rdo->urlmap;
-                /* Courses  */
-                $infoLocation->courses     = self::GetCoursesNames($rdo->courses);
-                /* Comments */
+                // Courses
+                $infoLocation->courses     = self::get_courses_names($rdo->courses);
+                // Comments
                 $infoLocation->comments    = $rdo->comments;
-                /* Description  */
+                // Description
                 $infoLocation->description = $rdo->description;
-                /* Contact  */
+                // Contact
                 $infoLocation->contact     = $rdo->contact;
                 if ($infoLocation->contact) {
                     $infoLocation->contact .= "</br>";
@@ -1962,14 +1991,13 @@ class course_page  {
                     $infoLocation->contact    .= "</br>";
                 }
                 $infoLocation->contact    .= $rdo->phone;
-
             }//if_Rdo
 
             return $infoLocation;
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//GetLocation
+    }//get_location_detail
 
     /**
      * @param           $sectorsLst
@@ -1982,19 +2010,20 @@ class course_page  {
      * Description
      * Get the sectors name. List Format
      */
-    public static function Get_SectorsName($sectorsLst) {
+    public static function get_sectors_name($sectorsLst) {
         /* Variables    */
         global $DB;
         $sectorsName = null;
         $sql         = null;
         $rdo         = null;
         try {
-            /* SQL Instruction  */
-            $sql = " SELECT		GROUP_CONCAT(DISTINCT CONCAT(rgc.industrycode,' - ', rgc.name) ORDER BY rgc.industrycode, rgc.name SEPARATOR ', ') as 'sectors'
+            // SQL Instruction
+            $sql = " SELECT		GROUP_CONCAT(DISTINCT CONCAT(rgc.industrycode,' - ', rgc.name) 
+                                             ORDER BY rgc.industrycode, rgc.name SEPARATOR ', ') as 'sectors'
                      FROM		{report_gen_companydata}	rgc
                      WHERE      rgc.id IN ($sectorsLst) ";
 
-            /* Execute*/
+            // Execute
             $rdo = $DB->get_record_sql($sql);
             if ($rdo) {
                 $sectorsName = $rdo->sectors;
@@ -2004,7 +2033,7 @@ class course_page  {
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//Get_SectorsName
+    }//get_sectors_name
 
     /**
      * @param           $courseId
@@ -2018,7 +2047,7 @@ class course_page  {
      * Description
      * Get the deadline course
      */
-    public static function DeadLineCourse($courseId) {
+    public static function deadline_course($courseId) {
         /* Variables */
         global $DB;
         $sql    = null;
@@ -2026,12 +2055,12 @@ class course_page  {
         $rdo    = null;
 
         try {
-            /* Search Criteria  */
+            // Search Criteria
             $params = array();
             $params['course']   = $courseId;
             $params['enrol']    = 'waitinglist';
 
-            /* SQL Instruction */
+            // SQL Instruction
             $sql = " SELECT	e.courseid,
                             IFNULL(e.customint1, 0) AS 'deadline'
                      FROM 	{enrol} e
@@ -2039,7 +2068,7 @@ class course_page  {
                         AND	e.enrol 	= :enrol
                         AND	e.courseid 	= :course  ";
 
-            /* Execute */
+            // Execute
             $rdo = $DB->get_record_sql($sql,$params);
             if ($rdo) {
                 return $rdo->deadline;
@@ -2049,7 +2078,7 @@ class course_page  {
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//DeadLineCourse
+    }//deadline_course
 
     /**
      * @param           $courseId
@@ -2063,7 +2092,7 @@ class course_page  {
      * Description
      * Get price of the course
      */
-    public static function PriceCourse($courseId) {
+    public static function price_course($courseId) {
         /* Variables */
         global $DB;
         $sql        = null;
@@ -2073,18 +2102,18 @@ class course_page  {
         $fields     = null;
 
         try {
-            /* Price */
+            // Price
             $infoPrice = new stdClass();
             $infoPrice->internal = 0;
             $infoPrice->external = 0;
 
-            /* Search Criteria  */
+            // Search Criteria
             $params = array();
             $params['courseid']     = $courseId;
             $params['enrol']        = 'waitinglist';
             $params['status']       = 0;
 
-            /* Execute  */
+            // Execute
             $fields = ' id, ' . FILED_COURSE_INTERNAL_PRICE  . ', ' . FILED_COURSE_EXTERNAL_PRICE;
             $rdo = $DB->get_record('enrol',$params, $fields);
             if ($rdo) {
@@ -2096,7 +2125,7 @@ class course_page  {
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//PriceCourse
+    }//price_course
 
     /***********/
     /* PRIVATE */
@@ -2114,7 +2143,7 @@ class course_page  {
      * Description
      * Get names connected with the courses
      */
-    private static function GetCoursesNames($coursesLst) {
+    private static function get_courses_names($coursesLst) {
         /* Variables */
         global $DB;
         $rdo            = null;
@@ -2122,14 +2151,14 @@ class course_page  {
         $coursesNames   = array();
 
         try {
-            /* SQL Instruction  */
+            // SQL Instruction
             $sql = " SELECT     id,
                                 fullname
                      FROM       {course}
                      WHERE      id IN ($coursesLst)
                      ORDER BY   fullname ";
 
-            /* Execute  */
+            // Execute
             $rdo = $DB->get_records_sql($sql);
             if ($rdo) {
                 foreach ($rdo as $instance) {
@@ -2141,7 +2170,7 @@ class course_page  {
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//GetCourses
+    }//get_courses_names
 }//course_page
 
 class home_page_form extends moodleform {
@@ -2171,8 +2200,7 @@ class home_page_form extends moodleform {
         }else {
             $form->setDefault('startdate', time() + 3600 * 24);
         }//if_startdate
-
-
+        
         // Description.
         $form->addElement('header', 'descriptionhdr', get_string('description'));
         $form->setExpanded('descriptionhdr');
@@ -2188,14 +2216,14 @@ class home_page_form extends moodleform {
         $form->setExpanded('courseformathdr');
 
         /* Course Format Section    */
-        course_page::Init_LocationsSector();
+        course_page::init_locations_sector();
         $format_options = course_get_format($course)->get_format_options();
         if (($course->format == 'classroom') || ($course->format == 'classroom_frikomport')) {
-            course_page::InitFromTo();
+            course_page::init_from_to();
         }
         foreach ($format_options as $name=>$option) {
-            course_page::addCourseHomePage_Section($form,$name,true);
-            course_page::printFormatOptions($form,$name,$option,$course->format);
+            course_page::add_course_home_page_section($form,$name,true);
+            course_page::print_format_options($form,$name,$option,$course->format);
         }
 
         $form->addElement('hidden','id');

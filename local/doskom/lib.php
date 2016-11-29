@@ -34,7 +34,7 @@ function doskom_cron() {
         /* First execution or no */
         $activate = get_config('local_doskom','wsdoskom_cron_active');
         if ($activate) {
-            \WSDOSKOM_Cron::cron();
+            \wsdoskom_cron::cron();
             
             set_config('lastexecution', time(), 'local_doskom');
         }else {

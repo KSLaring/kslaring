@@ -233,7 +233,7 @@ class format_classroom_frikomport extends format_base {
          * Description
          * Get the available locations for the course
          */
-        $lstLocations = course_page::Get_CourseLocationsList($USER->id);
+        $lstLocations = course_page::get_course_locations_list($USER->id);
 
         /**
          * @updateDate  08/05/2015
@@ -248,9 +248,9 @@ class format_classroom_frikomport extends format_base {
          * Description
          * Sectors based on the location. Uses javascript
          */
-        $location = course_page::GetCourseLocation($COURSE->id);
+        $location = course_page::get_course_location($COURSE->id);
         if ($location) {
-            $lstSectors = course_page::Get_SectorsLocationsList($location);
+            $lstSectors = course_page::get_course_locations_list($location);
         }else {
             $lstSectors = array();
             $lstSectors[0] = get_string('sel_sector','local_friadmin');
@@ -517,7 +517,7 @@ class format_classroom_frikomport extends format_base {
 
         /* Initialize Javascrips */
         self::InitFromTo();
-        course_page::Init_LocationsSector();
+        course_page::init_locations_sector();
 
         foreach ($options as $optionname => $option) {
             switch ($optionname) {
@@ -529,7 +529,7 @@ class format_classroom_frikomport extends format_base {
                 case 'pagegraphics':
                 case 'pagegraphicstitle':
                 case 'manager':
-                    course_page::addCourseHomePage_Section($mform, $optionname);
+                    course_page::add_course_home_page_section($mform, $optionname);
 
                     break;
                 default:
@@ -692,7 +692,7 @@ class format_classroom_frikomport extends format_base {
                     break;
                 case 'homesummary':
                     if (isset($data['homesummary_editor']) && ($data['homesummary_editor'])) {
-                        $data[$key] = course_page::getHomeSummaryEditor($data['homesummary_editor']);
+                        $data[$key] = course_page::get_home_summary_editor($data['homesummary_editor']);
                     }
                     //homesummary_editor
 
@@ -705,7 +705,7 @@ class format_classroom_frikomport extends format_base {
                     }
                     //if_delete
                     if (isset($data['pagegraphics']) && isset($data['pagegraphics_filemanager'])) {
-                        $graphic_id = course_page::getHomeGraphicsVideo($data['pagegraphics'], 'pagegraphics', $data['pagegraphics_filemanager'], $delete);
+                        $graphic_id = course_page::get_home_graphics_video($data['pagegraphics'], 'pagegraphics', $data['pagegraphics_filemanager'], $delete);
                         if ($graphic_id) {
                             $data[$key] = $graphic_id;
                         }
@@ -722,7 +722,7 @@ class format_classroom_frikomport extends format_base {
                     }
                     //if_delete
                     if (isset($data['pagevideo']) && isset($data['pagevideo_filemanager'])) {
-                        $video_id = course_page::getHomeGraphicsVideo($data['pagevideo'], 'pagevideo', $data['pagevideo_filemanager'], $delete);
+                        $video_id = course_page::get_home_graphics_video($data['pagevideo'], 'pagevideo', $data['pagevideo_filemanager'], $delete);
                         if ($video_id) {
                             $data[$key] = $video_id;
                         }

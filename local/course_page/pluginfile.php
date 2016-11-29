@@ -15,8 +15,8 @@ require_once('../../config.php');
 require_once('../../lib/filelib.php');
 require_once('locallib.php');
 
-$relativepath = get_file_argument();
-$forcedownload = optional_param('forcedownload', 0, PARAM_BOOL);
-$preview = optional_param('preview', null, PARAM_ALPHANUM);
+$relativepath   = get_file_argument();
+$forcedownload  = optional_param('forcedownload', 0, PARAM_BOOL);
+$preview        = optional_param('preview', null, PARAM_ALPHANUM);
 
-course_page::filePluginfile_HomePage($relativepath, $forcedownload, $preview);
+course_page::file_pluginfile_homepage($relativepath, $forcedownload, $preview);

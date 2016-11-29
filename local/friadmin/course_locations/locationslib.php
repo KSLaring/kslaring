@@ -612,7 +612,7 @@ class CourseLocations {
                     $info->county       = $instance->county;
                     $info->sectors      = null;
                     if ($instance->sectors) {
-                        $info->sectors = self::Get_SectorsName($instance->sectors);;
+                        $info->sectors = self::get_sectors_name($instance->sectors);;
                     }
                     $info->location     = $instance->location;
 

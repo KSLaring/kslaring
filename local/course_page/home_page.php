@@ -18,7 +18,7 @@ $edit               = optional_param('edit', -1, PARAM_BOOL);
 $show               = optional_param('show', 0, PARAM_INT);
 $start              = optional_param('start',1,PARAM_INT);
 $course             = get_course($course_id);
-$context            = CONTEXT_COURSE::instance($course_id);
+$context            = context_course::instance($course_id);
 $url                = new moodle_url('/local/course_page/home_page.php',array('id' => $course_id));
 $str_edit_settings  = get_string("editcoursesettings");
 
@@ -78,7 +78,7 @@ if ($show) {
         redirect($return);
     }else if ($data = $form->get_data()) {
         /* Update Course    */
-        course_page::UpdateCourseHomePage($data,$COURSE);
+        course_page::update_course_home_page($data,$COURSE);
 
         $return = clone($PAGE->url);
         $return->param('sesskey', sesskey());
@@ -92,19 +92,19 @@ if ($show) {
     echo $OUTPUT->footer();
 }else {
     if ($start) {
-        if (course_page::IsUserEnrol($course->id,$USER->id)) {
+        if (course_page::is_user_enrol($course->id,$USER->id)) {
             $url = new moodle_url('/course/view.php',array('id'=>$course->id,'start' =>1));
             redirect($url);
         }else {
-            $format_options = course_page::getFormatFields($course->id);
-            $format_options = course_page::getAvailSeatsFormatOption($course->id, $format_options);
+            $format_options = course_page::get_format_fields($course->id);
+            $format_options = course_page::get_available_seats_format_option($course->id, $format_options);
             $renderer = $PAGE->get_renderer('local_course_page');
             echo $renderer->display_home_page($course,$format_options);
             echo $renderer->footer();
         }
     }else {
-        $format_options = course_page::getFormatFields($course->id);
-        $format_options = course_page::getAvailSeatsFormatOption($course->id, $format_options);
+        $format_options = course_page::get_format_fields($course->id);
+        $format_options = course_page::get_available_seats_format_option($course->id, $format_options);
         $renderer = $PAGE->get_renderer('local_course_page');
         echo $renderer->display_home_page($course,$format_options);
         echo $renderer->footer();

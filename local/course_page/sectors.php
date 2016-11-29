@@ -23,7 +23,7 @@ $data           = array();
 $infoSector     = null;
 $lstSectors     = null;
 
-$context        = CONTEXT_SYSTEM::instance();
+$context        = context_system::instance();
 $url            = new moodle_url('/local/course_page/sectors.php');
 
 $PAGE->set_context($context);
@@ -37,7 +37,7 @@ echo $OUTPUT->header();
 
 /* Get sectors */
 $data       = array('items' => array());
-$lstSectors = course_page::Get_SectorsLocationsList($location);
+$lstSectors = course_page::get_course_locations_list($location);
 
 foreach ($lstSectors as $id => $sector) {
     /* Info Sector */

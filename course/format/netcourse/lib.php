@@ -732,7 +732,7 @@ class format_netcourse extends format_base {
                 case 'pagegraphics':
                 case 'pagegraphicstitle':
                 case 'manager':
-                    course_page::addCourseHomePage_Section($mform, $optionname);
+                    course_page::add_course_home_page_section($mform, $optionname);
 
                     break;
                 default:
@@ -848,7 +848,7 @@ class format_netcourse extends format_base {
                     break;
                 case 'homesummary':
                     if (isset($data['homesummary_editor']) && ($data['homesummary_editor'])) {
-                        $data[$key] = course_page::getHomeSummaryEditor($data['homesummary_editor']);
+                        $data[$key] = course_page::get_home_summary_editor($data['homesummary_editor']);
                     }
                     // Homesummary_editor.
 
@@ -861,7 +861,7 @@ class format_netcourse extends format_base {
                     }
                     // If_delete.
                     if (isset($data['pagegraphics']) && isset($data['pagegraphics_filemanager'])) {
-                        $graphicid = course_page::getHomeGraphicsVideo($data['pagegraphics'], 'pagegraphics',
+                        $graphicid = course_page::get_home_graphics_video($data['pagegraphics'], 'pagegraphics',
                             $data['pagegraphics_filemanager'], $delete);
                         if ($graphicid) {
                             $data[$key] = $graphicid;
@@ -879,7 +879,7 @@ class format_netcourse extends format_base {
                     }
                     // If_delete.
                     if (isset($data['pagevideo']) && isset($data['pagevideo_filemanager'])) {
-                        $videoid = course_page::getHomeGraphicsVideo($data['pagevideo'], 'pagevideo',
+                        $videoid = course_page::get_home_graphics_video($data['pagevideo'], 'pagevideo',
                             $data['pagevideo_filemanager'], $delete);
                         if ($videoid) {
                             $data[$key] = $videoid;

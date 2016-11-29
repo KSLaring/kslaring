@@ -13,7 +13,6 @@
 defined('MOODLE_INTERNAL') || die();
 
 $capabilities = array(
-
     'local/course_page:manage' => array(
         'riskbitmask' => RISK_XSS,
 

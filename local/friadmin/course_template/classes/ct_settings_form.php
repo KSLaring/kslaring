@@ -166,7 +166,7 @@ class ct_settings_form extends moodleform {
 
                 /* Get Editor   */
                 list($edit_options,$context) = course_page::get_edit_options();
-                $editor = course_page::prepareStandardHomeSummaryEditor($edit_options,$context,$courseId);
+                $editor = course_page::prepare_standard_home_summary_editor($edit_options,$context,$courseId);
 
                 /* Editor */
                 $home_summay = $form->createElement('editor','homesummary_editor',get_string('home_desc','local_course_page'),null,$edit_options);
@@ -179,7 +179,7 @@ class ct_settings_form extends moodleform {
                 /* Get FileManager   */
                 list($file_options,$context) = course_page::get_file_options($courseId);
                 $file_editor['accepted_types'] = array('image','web_image');
-                $file_editor = course_page::prepareFileManagerHomeGraphicsVideo($file_options,$context,'pagegraphics');
+                $file_editor = course_page::prepare_file_manager_home_graphics_video($file_options,$context,'pagegraphics');
                 
                 $page_graphics = $form->createElement('filemanager', 'pagegraphics_filemanager', get_string('home_graphics','local_course_page'), null, $file_options);
                 $form->insertElementBefore($page_graphics,'courseformathdr');
@@ -235,13 +235,13 @@ class ct_settings_form extends moodleform {
 
                 break;
             case 'course_location':
-                $lstLocations = course_page::Get_CourseLocationsList($USER->id);
+                $lstLocations = course_page::get_course_locations_list($USER->id);
                 $form->addElement('select','course_location',get_string('home_location',$str_format),$lstLocations);
                 $form->setDefault('course_location',$value);
                 break;
             case 'course_sector':
-                $location = course_page::GetCourseLocation($courseId);
-                $lstSectors     = course_page::Get_SectorsLocationsList($location);
+                $location = course_page::get_course_location($courseId);
+                $lstSectors     = course_page::get_course_locations_list($location);
                 $form->addElement('select','course_sector',get_string('home_sector',$str_format),$lstSectors,'multiple');
                 $form->setDefault('course_sector',$value);
 

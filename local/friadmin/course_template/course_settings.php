@@ -98,7 +98,7 @@ $form->display();
 /**
  * Initialize Locations/Sector - Javascript
  */
-CourseTemplate::Init_LocationsSector();
+CourseTemplate::init_locations_sector();
 
 /* Footer   */
 echo $OUTPUT->footer();
