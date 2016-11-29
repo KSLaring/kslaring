@@ -18,7 +18,7 @@ require_once('../competencelib.php');
 require_once($CFG->libdir . '/adminlib.php');
 
 /* PARAMS */
-$contextSystem      = contenxt_system::instance();
+$contextSystem      = context_system::instance();
 $returnUrl          = $CFG->wwwroot . '/index.php';
 $url                = new moodle_url('/user/profile/field/competence/actions/reject.php');
 $competenceRequest  = null;
