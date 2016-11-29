@@ -1428,17 +1428,17 @@ class FSKS_USERS {
                     break;
                 case DELETE:
                     /* Delete   */
-                    if ($rdoUser) {
-                        $rdoUser->timemodified = $time;
-                        $rdoUser->deleted      = 1;
+                    //if ($rdoUser) {
+                    //    $rdoUser->timemodified = $time;
+                    //    $rdoUser->deleted      = 1;
 
                         /* Execute  */
-                        $DB->update_record('user',$rdoUser);
-                    }else {
+                    //    $DB->update_record('user',$rdoUser);
+                    //}else {
                         /* Execute  */
-                        $infoUser->deleted      = 1;
-                        $userId = $DB->insert_record('user',$infoUser);
-                    }//if_exist
+                    //    $infoUser->deleted      = 1;
+                    //    $userId = $DB->insert_record('user',$infoUser);
+                    //}//if_exist
 
                     /* Synchronized */
                     $sync = true;

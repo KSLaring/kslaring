@@ -821,7 +821,7 @@ class Fellesdata_Install {
             /* Keys     */
             $tblKSFS_JR->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
             $tblKSFS_JR->add_key('ksjobrole',XMLDB_KEY_FOREIGN,array('ksjobrole'), 'ks_jobroles', array('jobroleid'));
-            @$tblKSFS_JR->add_key('fsjobrole',XMLDB_KEY_FOREIGN,array('fsjobrole'), 'fs_jobroles', array('jrcode'));
+            $tblKSFS_JR->add_key('fsjobrole',XMLDB_KEY_FOREIGN,array('fsjobrole'), 'fs_jobroles', array('jrcode'));
             /* index    */
 
             if (!$dbMan->table_exists('ksfs_jobroles')) {
