@@ -1993,14 +1993,14 @@ Class Approval {
             // Ticket - Something long and Unique
             $ticket     = uniqid(mt_rand(),1);
             $ticket     = random_string() . $action . '_' . time() . '_' . $courseId . '_' . $ticket . random_string();
-            $token      = str_replace('/', '.', self::GenerateHash($ticket));
+            $token      = str_replace('/', '.', self::generate_hash($ticket));
 
             // Check if just exists for other user
             while ($DB->record_exists('enrol_approval_action',array('token' => $token))) {
                 // Ticket - Something long and Unique
                 $ticket     = uniqid(mt_rand(),1);
                 $ticket     = random_string() . $action . '_' . time() . '_' . $courseId . '_' . $ticket . random_string();
-                $token      = str_replace('/', '.', self::GenerateHash($ticket));
+                $token      = str_replace('/', '.', self::generate_hash($ticket));
             }//while
 
             return $token;
