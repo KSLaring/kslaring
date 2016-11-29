@@ -29,7 +29,7 @@ $json           = array();
 $data           = array();
 $infoCompany    = null;
 
-$context        = CONTEXT_SYSTEM::instance();
+$context        = context_system::instance();
 $url            = new moodle_url('/user/profile/field/competence/actions/organization.php');
 
 $PAGE->set_context($context);
@@ -69,7 +69,7 @@ switch ($level) {
         break;
     case 3:
         /* Get the companies connected with the user    */
-        $myCompanies = Competence::Get_MyCompanies($userId);
+        $myCompanies = Competence::get_mycompanies($userId);
 
         $toClean[0] = 'job_roles';
 
@@ -79,7 +79,7 @@ $data['clean'] = $toClean;
 
 /* Get Companies List   */
 if ($parent) {
-    $options = Competence::GetCompanies_Level($level,$parent,$myCompanies);
+    $options = Competence::get_companies_level($level,$parent,$myCompanies);
 }else {
     $options[0] = get_string('select_level_list','report_manager');
 }//if_parent
