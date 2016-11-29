@@ -137,6 +137,7 @@ Class Approval {
             // Execute
             $rdo = $DB->get_records_sql($sql,$params);
             if ($rdo) {
+                echo "HOLA " . "</br>";
                 foreach ($rdo as $instance) {
                     if (array_key_exists($instance->managerid,$myManagers)) {
                         $infoManager = $myManagers[$instance->managerid];
