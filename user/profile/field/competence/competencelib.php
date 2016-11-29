@@ -1570,8 +1570,8 @@ class Competence {
 
                     break;
                 case REQUEST_REJECTED:
-                    $strSubject = get_string('msg_subject_rejected','profilefield_competence',$infoMail,$user->lang);
-                    $strBody    = get_string('msg_body_rejected','profilefield_competence',$infoMail,$user->lang);
+                    $strSubject = (string)new lang_string('msg_subject_rejected','profilefield_competence',$infoMail,$user->lang);
+                    $strBody    = (string)new lang_string('msg_body_rejected','profilefield_competence',$infoMail,$user->lang);
 
                     break;
             }//switch
