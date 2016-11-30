@@ -661,18 +661,6 @@ class format_classroom extends format_base {
                 'course_sector' => array(
                     'default' => 0,
                 ),
-                'from'      => array(
-                    'default'           => 0,
-                ),
-                'to'      => array(
-                    'default'           => 0,
-                ),
-                'time'      => array(
-                    'type'      => PARAM_TEXT,
-                ),
-                'from_to_btn'      => array(
-                    'default'      => get_string('home_time_from_to_btn','format_classroom'),
-                ),
                 'length' => array(
                     'type' => PARAM_TEXT,
                 ),
@@ -747,23 +735,6 @@ class format_classroom extends format_base {
                     'element_type' => 'select',
                     'element_attributes' => array($lstSectors,'1' => 'multiple')
                 ),
-                'from'      => array(
-                    'label'           => get_string('home_time_from','format_classroom'),
-                    'element_type'    => 'date_selector',
-                ),
-                'to'      => array(
-                    'label'           => get_string('home_time_to','format_classroom'),
-                    'element_type'    => 'date_selector',
-                ),
-                'time'          => array(
-                    'label'                 => null,
-                    'element_type'          => 'textarea',
-                    'element_attributes'    => array(0 => 'rows="4" style="width:50%;" readonly'),
-                ),
-                'from_to_btn'      => array(
-                    'label'             => get_string('home_time_from_to_btn','format_classroom'),
-                    'element_type'      => 'BUTTON',
-                ),
                 'length' => array(
                     'label' => get_string('home_length', 'format_classroom'),
                     'element_type' => 'text',
@@ -832,7 +803,6 @@ class format_classroom extends format_base {
             $options = $this->course_format_options(true);
         }
 
-        self::InitFromTo();
         course_page::init_locations_sector();
 
         foreach ($options as $optionname => $option) {
@@ -898,53 +868,7 @@ class format_classroom extends format_base {
 
         return $elements;
     }
-
-    /**
-     * @throws          Exception
-     *
-     * @creationDate    10/08/2016
-     * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Connect javascript action to add more one From-To date
-     */
-    protected static function InitFromTo() {
-        /* Variables    */
-        global $PAGE;
-        $jsModule   = null;
-        $name       = null;
-        $path       = null;
-        $requires   = null;
-        $strings    = null;
-        $grpOne     = null;
-        $grpTwo     = null;
-        $grpThree   = null;
-
-        try {
-            /* Initialise variables */
-            $name       = 'from_to';
-            $path       = '/course/format/classroom/yui/fromto.js';
-            $requires   = array('node', 'event-custom', 'datasource', 'json', 'moodle-core-notification');
-            $grpThree   = array('none', 'moodle');
-            $strings    = array($grpThree);
-
-            /* Initialise js module */
-            $jsModule = array('name'        => $name,
-                              'fullpath'    => $path,
-                              'requires'    => $requires,
-                              'strings'     => $strings
-            );
-
-            $PAGE->requires->js_init_call('M.core_classroom.init_from_to',
-                                          array('from_to_btn','from_to_remove_btn'),
-                                          false,
-                                          $jsModule
-            );
-        }catch (Exception $ex) {
-            throw $ex;
-        }//try_catch
-    }//InitFromTo
-
+    
     /**
      * Updates format options for a course
      *
@@ -1001,6 +925,7 @@ class format_classroom extends format_base {
                     //if_homepage
 
                     break;
+                
                 case 'ratings':
                     if (isset($data['ratings']) && $data['ratings']) {
                         $data[$key] = 1;
@@ -1010,6 +935,7 @@ class format_classroom extends format_base {
                     //if_homepage
 
                     break;
+                
                 case 'participant':
                     if (isset($data['participant']) && $data['participant']) {
                         $data[$key] = 1;
@@ -1019,6 +945,7 @@ class format_classroom extends format_base {
                     //if_homepage
 
                     break;
+                
                 case 'homesummary':
                     if (isset($data['homesummary_editor']) && ($data['homesummary_editor'])) {
                         $data[$key] = course_page::get_home_summary_editor($data['homesummary_editor']);
@@ -1026,6 +953,7 @@ class format_classroom extends format_base {
                     // Homesummary_editor.
 
                     break;
+                
                 case 'pagegraphics':
                     if (isset($data['deletepicture']) && ($data['deletepicture'])) {
                         $delete = true;
@@ -1043,6 +971,7 @@ class format_classroom extends format_base {
                     // Pagegraphics_filemanager.
 
                     break;
+                
                 case 'pagevideo':
                     if (isset($data['deletevideo']) && ($data['deletevideo'])) {
                         $delete = true;
@@ -1058,6 +987,7 @@ class format_classroom extends format_base {
                     } // If_page_video_pagevideo_filemanager.
 
                     break;
+                
                 case 'course_sector':
                     if (isset($data['course_sector'])) {
                         if (is_array($data['course_sector'])) {
@@ -1066,22 +996,7 @@ class format_classroom extends format_base {
                     }
 
                     break;
-                case 'from':
-                    //if ($data['time'] != '') {
-                        $data['from'] = null;
-                    //}
 
-                    break;
-                case 'to':
-                    //if ($data['time'] != '') {
-                        $data['to'] = null;
-                    //}
-
-                    break;
-                case 'from_to_btn':
-                    $data['from_to_btn'] = null;
-
-                    break;
                 default:
                     break;
             } // Switch_key.

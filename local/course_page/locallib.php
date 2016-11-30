@@ -89,52 +89,6 @@ class course_page  {
     }//init_locations_sector
 
     /**
-     * @throws          Exception
-     *
-     * @creationDate    10/08/2016
-     * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Connect javascript action to add more one From-To date
-     */
-    public static function init_from_to() {
-        // Variables
-        global $PAGE;
-        $jsModule   = null;
-        $name       = null;
-        $path       = null;
-        $requires   = null;
-        $strings    = null;
-        $grpOne     = null;
-        $grpTwo     = null;
-        $grpThree   = null;
-
-        try {
-            // Initialise variables
-            $name       = 'from_to';
-            $path       = '/local/course_page/yui/fromto.js';
-            $requires   = array('node', 'event-custom', 'datasource', 'json', 'moodle-core-notification');
-            $grpThree   = array('none', 'moodle');
-            $strings    = array($grpThree);
-
-            // Initialise js module
-            $jsModule = array('name'        => $name,
-                'fullpath'    => $path,
-                'requires'    => $requires,
-                'strings'     => $strings
-            );
-
-            $PAGE->requires->js_init_call('M.core_classroom.init_from_to',
-                                          array('from_to_btn'),
-                                          false,
-                                          $jsModule
-            );
-        }catch (Exception $ex) {
-            throw $ex;
-        }//try_catch
-    }//init_from_to
-
-    /**
      * @param           $itemid
      * @return          moodle_url|null
      * @throws          Exception
@@ -1320,15 +1274,6 @@ class course_page  {
 
                         break;
 
-                    case 'from':
-                    case 'to':
-                        //if ($data['time'] != '') {
-                        $option->value = null;
-                        $DB->update_record('course_format_options',$option);
-                        //}
-
-                        break;
-
                     default:
                         if (isset($data->$field)) {
                             $option->value = $data->$field;
@@ -1404,29 +1349,6 @@ class course_page  {
                         $lstSectors     = course_page::get_course_locations_list($location);
                         $form->addElement('select','course_sector',get_string('home_sector',$str_format),$lstSectors,'multiple');
                         $form->setDefault('course_sector',$value);
-
-                        break;
-
-                    case 'time':
-                        $form->addElement('textarea','time',null,'rows="5" style="width:95%;" readonly');
-                        $form->setDefault('time',$value);
-
-                        break;
-
-                    case 'from':
-                        $form->addElement('date_selector','from',get_string('home_time_from',$str_format));
-                        $form->setDefault('from',$value);
-
-                        break;
-
-                    case 'to':
-                        $form->addElement('date_selector','to',get_string('home_time_to',$str_format));
-                        $form->setDefault('to',$value);
-
-                        break;
-
-                    case 'from_to_btn':
-                        $form->addElement('button','from_to_btn',get_string('home_time_from_to_btn',$str_format));
 
                         break;
 
