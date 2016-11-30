@@ -975,6 +975,7 @@ class TrackerManager {
                     $info->name         = $instance->fullname;
                     $info->completed    = $instance->completed;
                     if ($instance->completed) {
+                        echo "Course --> " . $isntance->id . ' - ' . $instance->completed . "</br>";
                         $info->unEnrol = self::check_can_unenrol(explode(',',$instance->enrolments),$user,$instance->id,$instance->unenrolenddate,$instance->methodtype);
                     }else {
                         $info->unEnrol = false;
