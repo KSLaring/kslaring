@@ -863,50 +863,73 @@ class course_page  {
         }//try_catch
     }//get_format_fields
 
-
     /**
-     * @static
-     * @param           $course_id
-     * @param           $format_options
-     * 
-     * @return          $format_options
-     * @throws          Exception
-     *
-     * @creationDate    2015-12-06
-     * @author          eFaktor     (uh)
-     *
      * Description
      * Add the available seats to the fields/options connected with course format.
+     *
+     * @param           int     $course_id          Course id
+     * @param           array   $format_options     Course format options
+     *
+     * @return                  mixed
+     * @throws                  Exception
+     *
+     * @creationDate    06/12/2015
+     * @author          efaktor     (fbv)
      */
-    public static function get_available_seats_format_option($course_id, $format_options) {
-        global $CFG, $DB;
-        $avail = '-';
+    public static function get_available_seats_format_option ($course_id,$format_options) {
+        /* Variables */
+        global $DB;
+        $sql        = null;
+        $params     = null;
+        $avail      = null;
 
-        // Add enrolled users.
-        // Get Instance Enrolment Waiting List
-        $instance = $DB->get_record('enrol', array('courseid' => $course_id,'enrol' => 'waitinglist','status' => '0'));
-        if ($instance) {
-            // Get Seats
-            require_once($CFG->dirroot . '/enrol/waitinglist/lib.php');
+        try {
+            $avail = '-';
 
-            if ($instance->{ENROL_WAITINGLIST_FIELD_MAXENROLMENTS}) {
-                $enrolWaitingList = new enrol_waitinglist_plugin();
-                $avail = $enrolWaitingList->get_vacancy_count($instance) . ' ' . get_string('of','local_course_page') . ' '. $instance->{ENROL_WAITINGLIST_FIELD_MAXENROLMENTS};
+            // Add enrolled users.
+            // Get Instance Enrolment Waiting List
+            $instance = $DB->get_record('enrol', array('courseid' => $course_id,'enrol' => 'waitinglist','status' => '0'));
+            if ($instance) {
+                if ($instance->{ENROL_WAITINGLIST_FIELD_MAXENROLMENTS}) {
+                    // Get total seats confirmed
+                    //Search criteria
+                    $params = array();
+                    $params['course'] = $course_id;
+
+                    // SQL Instruction
+                    $sql = " SELECT sum(allocseats) as 'confirmed'
+                             FROM   {enrol_waitinglist_queue}
+                             WHERE 	courseid = :course
+                                AND allocseats > 0 ";
+
+                    //Execute
+                    $rdo = $DB->get_record_sql($sql,$params);
+                    if ($rdo) {
+                        $avail = $rdo->confirmed;
+                    }else {
+                        $avail = $instance->{ENROL_WAITINGLIST_FIELD_MAXENROLMENTS};
+                    }//if_rdo
+
+                    $avail .= ' ' . get_string('of','local_course_page') . ' '. $instance->{ENROL_WAITINGLIST_FIELD_MAXENROLMENTS};
+                }else {
+                    // Unlimit
+                    $avail = get_string('unlimited_seats','local_course_page');
+                }//if_else_max
             }else {
-                $avail = get_string('unlimited_seats','local_course_page');
-            }
+                $avail = 'hide';
+            }//if_instance
 
-        }else {
-            $avail = 'hide';
-        }//if_instance
+            //Info to display in home page
+            $field = new stdClass();
+            $field->id      = 0;
+            $field->name    = 'enrolledusers';
+            $field->value   = $avail;
+            $format_options['enrolledusers'] = $field;
 
-        $field = new stdClass();
-        $field->id      = 0;
-        $field->name    = 'enrolledusers';
-        $field->value   = $avail;
-        $format_options['enrolledusers'] = $field;
-
-        return $format_options;
+            return $format_options;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
     }//get_available_seats_format_option
 
     /***
