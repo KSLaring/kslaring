@@ -28,6 +28,7 @@ define('BAD_RATING',1);
 
 define('FILED_COURSE_INTERNAL_PRICE','customtext3');
 define('FILED_COURSE_EXTERNAL_PRICE','customtext4');
+define('MAXENROLMENTS','customint2');
 
 class course_page  {
     /**********/
@@ -890,7 +891,7 @@ class course_page  {
             // Get Instance Enrolment Waiting List
             $instance = $DB->get_record('enrol', array('courseid' => $course_id,'enrol' => 'waitinglist','status' => '0'));
             if ($instance) {
-                if ($instance->{ENROL_WAITINGLIST_FIELD_MAXENROLMENTS}) {
+                if ($instance->{MAXENROLMENTS}) {
                     // Get total seats confirmed
                     //Search criteria
                     $params = array();
@@ -907,10 +908,10 @@ class course_page  {
                     if ($rdo) {
                         $avail = $rdo->confirmed;
                     }else {
-                        $avail = $instance->{ENROL_WAITINGLIST_FIELD_MAXENROLMENTS};
+                        $avail = $instance->{MAXENROLMENTS};
                     }//if_rdo
 
-                    $avail .= ' ' . get_string('of','local_course_page') . ' '. $instance->{ENROL_WAITINGLIST_FIELD_MAXENROLMENTS};
+                    $avail .= ' ' . get_string('of','local_course_page') . ' '. $instance->{MAXENROLMENTS};
                 }else {
                     // Unlimit
                     $avail = get_string('unlimited_seats','local_course_page');
