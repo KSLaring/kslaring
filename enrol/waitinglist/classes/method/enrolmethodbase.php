@@ -366,9 +366,9 @@ abstract class enrolmethodbase  {
 		 * If it has been a change of seats
 		 */
 		if ($changed) {
-			$subject = (string)new lang_string('waitlistmessagetitle' . $messagekey . '_' . static::METHODTYPE . '_changed', 'enrol_waitinglist', format_string($course->fullname, true, array('context'=>$context)),$user->lang);
+			$subject = (string)new \lang_string('waitlistmessagetitle' . $messagekey . '_' . static::METHODTYPE . '_changed', 'enrol_waitinglist', format_string($course->fullname, true, array('context'=>$context)),$user->lang);
 		}else {
-			$subject = (string)new lang_string('waitlistmessagetitle' . $messagekey . '_' . static::METHODTYPE, 'enrol_waitinglist', format_string($course->fullname, true, array('context'=>$context)),$user->lang);
+			$subject = (string)new \lang_string('waitlistmessagetitle' . $messagekey . '_' . static::METHODTYPE, 'enrol_waitinglist', format_string($course->fullname, true, array('context'=>$context)),$user->lang);
 		}
         
 
