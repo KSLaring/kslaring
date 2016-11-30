@@ -906,7 +906,7 @@ class course_page  {
                     //Execute
                     $rdo = $DB->get_record_sql($sql,$params);
                     if ($rdo) {
-                        $avail = $rdo->confirmed;
+                        $avail = ($instance->{MAXENROLMENTS} - $rdo->confirmed);
                     }else {
                         $avail = $instance->{MAXENROLMENTS};
                     }//if_rdo
