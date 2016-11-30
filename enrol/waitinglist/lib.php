@@ -1692,7 +1692,7 @@ class enrol_waitinglist_plugin extends enrol_plugin {
             }
 
             $subject = (string)new lang_string('welcometocourse', 'enrol_waitinglist',
-                                               format_string($course->fullname, true, array('context'=>$context)),null,$ser->lang);
+                                               format_string($course->fullname, true, array('context'=>$context)),null,$user->lang);
 
             $rusers = array();
             if (!empty($CFG->coursecontact)) {
