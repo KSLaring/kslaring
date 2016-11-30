@@ -14,11 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-//namespace mod_registerattendance;
-
 defined('MOODLE_INTERNAL') || die;
-
-//use plugin_renderer_base;
 
 /**
  * Renderer class for mod_registerattendance
@@ -40,7 +36,7 @@ class mod_registerattendance_renderer extends plugin_renderer_base {
     public function render_mod_registerattendance_view_page(mod_registerattendance_view_page $page) {
         $out = '';
 
-        /* @var \mod_registerattendance\registerattendance $registerattendance */
+        /* @var \mod_registerattendance\registerattendance $registerattendance The object */
         $registerattendance = $page->registerattendance;
         $out .= $registerattendance->output->heading($page->data->title, 2, array('class' => 'title'));
 
@@ -50,11 +46,8 @@ class mod_registerattendance_renderer extends plugin_renderer_base {
             $out .= $this->render_buldkregister_button($registerattendance);
         }
 
-        // Show the filter values for debugging.
-        //$out .= '<pre>' . var_export($registerattendance->filter->fromform, true) . '</pre>';
-
         if (!$registerattendance->canregister) {
-            $out .= $page->render_user_feedback($registerattendance);
+            $out .= $page->construct_user_feedback($registerattendance);
         } else {
             $out .= $this->render($page->data->filter);
             $out .= $tablehtml;
@@ -100,12 +93,9 @@ class mod_registerattendance_renderer extends plugin_renderer_base {
     public function render_mod_registerattendance_bulkregister_page(mod_registerattendance_bulkregister_page $page) {
         $out = '';
 
-        /* @var \mod_registerattendance\registerattendance $registerattendance */
+        /* @var \mod_registerattendance\registerattendance $registerattendance The object */
         $registerattendance = $page->registerattendance;
         $out .= $registerattendance->output->heading($page->data->title, 2, array('class' => 'title'));
-
-        // Show the filter values for debugging.
-        //$out .= '<pre>' . var_export($registerattendance->filter->fromform, true) . '</pre>';
 
         $out .= $this->render($page->data->selector);
 
@@ -139,7 +129,6 @@ class mod_registerattendance_renderer extends plugin_renderer_base {
 
         // Construct the "Return to course" button.
         $courseurl = new moodle_url("/course/view.php",
-            //array('id' => $registerattendance->course->id, 'start' => 1));
             array('id' => $registerattendance->course->id));
         $out .= html_writer::start_tag('div', array('class' => 'buttons'));
         $out .= $registerattendance->output->single_button($courseurl,
@@ -165,14 +154,10 @@ class mod_registerattendance_renderer extends plugin_renderer_base {
         $a->haveattended = count($registerattendance->table->sql_model->completedusers);
 
         // Construct the "bulkregister" button.
-        //$url = new moodle_url("/mod/registerattendance/bulkregister.php",
-        //    array('id' => $registerattendance->cm->id));
         $out .= html_writer::start_tag('div', array('class' => 'buttons bulkregister clearfix'));
         $out .= html_writer::start_tag('span', array('class' => 'haveatttended'));
         $out .= get_string('haveattended', 'mod_registerattendance', $a);
         $out .= html_writer::end_tag('span');
-        //$out .= $registerattendance->output->single_button($url,
-        //    get_string('bulkregisterbtn', 'mod_registerattendance'), 'get');
         $out .= html_writer::end_tag('div');
 
         return $out;
@@ -190,7 +175,6 @@ class mod_registerattendance_renderer extends plugin_renderer_base {
 
         // Construct the "Return to registerattendance" button.
         $url = new moodle_url("/mod/registerattendance/view.php",
-            //array('id' => $registerattendance->cm->id, 'start' => 1));
             array('id' => $registerattendance->cm->id));
         $out .= html_writer::start_tag('div', array('class' => 'buttons'));
         $out .= $registerattendance->output->single_button($url,

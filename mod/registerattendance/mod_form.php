@@ -30,15 +30,14 @@ defined('MOODLE_INTERNAL') || die;
 require_once($CFG->dirroot . '/course/moodleform_mod.php');
 
 class mod_registerattendance_mod_form extends moodleform_mod {
-
-    function definition() {
+    public function definition() {
         global $CFG;
 
         $mform = $this->_form;
 
         $config = get_config('registerattendance');
 
-        //-------------------------------------------------------
+        // Form.
         $mform->addElement('header', 'general', get_string('general', 'form'));
         $mform->addElement('text', 'name', get_string('name'), array('size' => '48'));
         if (!empty($CFG->formatstringstriptags)) {
@@ -48,23 +47,16 @@ class mod_registerattendance_mod_form extends moodleform_mod {
         }
         $mform->addRule('name', null, 'required', null, 'client');
         $mform->addRule('name', get_string('maximumchars', '', 255), 'maxlength', 255, 'client');
-        /**
-         * @updateDate  10/11/2016
-         * @author      eFaktor     (fbv)
-         *
-         * Description
-         * add_intro_editor --> standard_intro_elements
-         */
+        // Add_intro_editor --> standard_intro_elements.
         $this->standard_intro_elements();
 
         // Set completion tracking default to off
-        // to not include this resource into the completion tracking
+        // to not include this resource into the completion tracking.
         $this->_features->defaultcompletion = 0;
 
         $this->standard_coursemodule_elements();
 
-        //-------------------------------------------------------------------------------
-        // buttons
+        // Buttons.
         $this->add_action_buttons(true, false, null);
     }
 
@@ -80,7 +72,7 @@ class mod_registerattendance_mod_form extends moodleform_mod {
             return $data;
         }
         if (!empty($data->completionunlocked)) {
-            // Turn off completion settings if the checkboxes aren't ticked
+            // Turn off completion settings if the checkboxes aren't ticked.
             $autocompletion = !empty($data->completion) && $data->completion == COMPLETION_TRACKING_AUTOMATIC;
             if (!$autocompletion || empty($data->completionattended)) {
                 $data->completionattended = 0;

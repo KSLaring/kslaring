@@ -14,13 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-//namespace mod_registerattendance;
-
 defined('MOODLE_INTERNAL') || die;
-
-//use renderable;
-//use renderer_base;
-//use stdClass;
 
 /**
  * Class containing data for the mod_registerattendance view page
@@ -38,7 +32,7 @@ class mod_registerattendance_view_page extends mod_registerattendance_widget imp
      * @param object $cm The course module
      */
     public function __construct($cm) {
-        // Create the data object and set the first values
+        // Create the data object and set the first values.
         parent::__construct();
 
         $this->data->url = new moodle_url('/mod/registerattendance/view.php', array('id' => $cm->id));
@@ -56,13 +50,22 @@ class mod_registerattendance_view_page extends mod_registerattendance_widget imp
         $out = '';
 
         // Load criteria to display.
-        /* @var \completion_info $completion */
+        /* @var \completion_info $completion The completion info object */
         $completion = $registerattendance->completion;
-        $completion::wipe_session_cache();
+        $this->wipe_session_cache();
         $completiondata = $completion->get_data($registerattendance->cm);
         $attended = $completiondata->completionstate == COMPLETION_COMPLETE ? 'attended' : 'not attended';
         $out .= get_string('youhaveattended', 'mod_registerattendance', $attended);
 
         return $out;
+    }
+
+    /**
+     * Wipes information cached in user session.
+     */
+    protected function wipe_session_cache() {
+        global $SESSION;
+        unset($SESSION->completioncache);
+        unset($SESSION->completioncacheuserid);
     }
 }
