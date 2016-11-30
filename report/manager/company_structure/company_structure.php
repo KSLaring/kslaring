@@ -67,7 +67,7 @@ if ($form->is_cancelled()) {
     redirect($return_url);
 }else if ($data = $form->get_data()) {
     /* Get Action   */
-    list($action, $level) = company_structure::Get_ActionLevel($data);
+    list($action, $level) = company_structure::get_action_level($data);
 
     $parent = array();
     for ($i = 0; $i <= $level; $i++) {

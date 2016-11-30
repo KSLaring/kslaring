@@ -52,7 +52,7 @@ class manager_add_company_structure_form extends moodleform {
         $parents = $SESSION->parents;
         /* Add Parents */
         for ($i = 0; $i < $level; $i++) {
-            $parent_info = company_structure::Get_CompanyInfo($parents[$i]);
+            $parent_info = company_structure::get_company_info($parents[$i]);
             $m_form->addElement('text','parent_' . $i,get_string('comp_parent','report_manager', $i),'size = 50 readonly');
             $m_form->setDefault('parent_' . $i,$parent_info->name);
             $m_form->setType('parent_' . $i,PARAM_TEXT);
@@ -72,14 +72,7 @@ class manager_add_company_structure_form extends moodleform {
         $m_form->addElement('checkbox', 'public','',get_string('public', 'report_manager'));
 
         /* Public Parent Hide   */
-        if ($parent_info) {
-            $m_form->setDefault('public',$parent_info->public);
-            $m_form->addElement('hidden','public_parent');
-            $m_form->setDefault('public_parent',$parent_info->public);
-            $m_form->setType('public_parent',PARAM_INT);
-        }else {
-            $m_form->setDefault('public',1);
-        }
+        $m_form->setDefault('public',1);
 
         $m_form->addElement('hidden','level');
         $m_form->setDefault('level',$level);
@@ -99,9 +92,9 @@ class manager_add_company_structure_form extends moodleform {
 
         if ($level) {
             $index = $level-1;
-            $bln_exist = company_structure::Exists_Company($level,$data,$parents[$index]);
+            $bln_exist = company_structure::exists_company($level,$data,$parents[$index]);
         }else {
-            $bln_exist = company_structure::Exists_Company($level,$data);
+            $bln_exist = company_structure::exists_company($level,$data);
         }
         if ($bln_exist) {
             $errors['name'] = get_string('exists_name','report_manager');

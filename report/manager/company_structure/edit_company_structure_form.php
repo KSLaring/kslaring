@@ -23,12 +23,12 @@ class manager_edit_company_structure_form extends moodleform {
         $level= $this->_customdata;
         /* Company Info */
         $parents = $SESSION->parents;
-        $company_info = company_structure::Get_CompanyInfo($parents[$level]);
+        $company_info = company_structure::get_company_info($parents[$level]);
 
         $m_form->addElement('header', 'level_' . $level, get_string('company_structure','report_manager') . ' - ' . get_string('company_structure_level','report_manager',$level));
         /* Add Parents */
         for ($i = 0; $i < $level; $i++) {
-            $parent_info = company_structure::Get_CompanyInfo($parents[$i]);
+            $parent_info = company_structure::get_company_info($parents[$i]);
             $m_form->addElement('text','parent_' . $i,get_string('comp_parent','report_manager', $i),'size = 50 readonly');
             $m_form->setDefault('parent_' . $i,$parent_info->name);
             $m_form->setType('parent_' . $i,PARAM_TEXT);
@@ -49,11 +49,6 @@ class manager_edit_company_structure_form extends moodleform {
         /* Public o private */
         $m_form->addElement('checkbox', 'public','',get_string('public', 'report_manager'));
         $m_form->setDefault('public',$company_info->public);
-        if ($parent_info) {
-            $m_form->addElement('hidden','public_parent');
-            $m_form->setDefault('public_parent',$parent_info->public);
-            $m_form->setType('public_parent',PARAM_INT);
-        }
 
         $m_form->addElement('hidden','level');
         $m_form->setDefault('level',$level);
@@ -82,9 +77,9 @@ class manager_edit_company_structure_form extends moodleform {
             $bln_exist = false;
             if ($level) {
                 $index = $level-1;
-                $bln_exist = company_structure::Exists_Company($level,$data,$parents[$index]);
+                $bln_exist = company_structure::exists_company($level,$data,$parents[$index]);
             }else {
-                $bln_exist = company_structure::Exists_Company($level,$data);
+                $bln_exist = company_structure::exists_company($level,$data);
             }
             if ($bln_exist) {
                 $errors['name'] = get_string('exists_name','report_manager');

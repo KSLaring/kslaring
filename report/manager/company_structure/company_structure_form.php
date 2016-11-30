@@ -57,9 +57,9 @@ class manager_company_structure_form extends moodleform {
         $parentThree    = optional_param(COMPANY_STRUCTURE_LEVEL . 3, 0, PARAM_INT);
         $options        = array();
         if ($parentThree) {
-            $options = company_structure::Get_EmployeeLevel($parentThree);
+            $options = company_structure::get_employee_level($parentThree);
         }else if (isset($SESSION->onlyCompany)) {
-            $options = company_structure::Get_EmployeeLevel($SESSION->onlyCompany[3]);
+            $options = company_structure::get_employee_level($SESSION->onlyCompany[3]);
         }//if
         $m_form->addElement('header', 'employees', get_string('company_structure_employees', 'report_manager'));
         $m_form->setExpanded('employees',true);
@@ -328,7 +328,7 @@ class manager_company_structure_form extends moodleform {
             $parent  = optional_param(COMPANY_STRUCTURE_LEVEL . ($level-1), 0, PARAM_INT);
 
             if ($parent) {
-                if (company_structure::Company_CountParents($parent) <= 1) {
+                if (company_structure::company_count_parents($parent) <= 1) {
                     $unlink = 'lnk_disabled ';
                 }
             }else {

@@ -19,45 +19,46 @@ class company_structure {
     /*********************/
 
     /**
-     * @param           $company_id
+     * Description
+     * Get the company name
+     *
+     * @param           int $company_id     Company id
+     *
      * @return          null
      * @throws          Exception
      *
      * @creationDate    11/12/2014
      * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Get the company name
      */
-    public static function Get_CompanyName($company_id) {
+    public static function get_company_name($company_id) {
         /* Variables    */
         global $DB;
 
         try {
-            /* Execute  */
+            // Execute
             $rdo = $DB->get_record('report_gen_companydata',array('id' => $company_id),'name');
             if ($rdo) {
                 return $rdo->name;
             }else {
                 return null;
-            }
+            }//if_rdo
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//Get_CompanyName
+    }//get_company_name
 
     /**
+     * Description
+     * Return the action that the user want to carry out and the level.
+     *
      * @static
      * @param       array   $data.      Form data.
      * @return      array               Action and level.
      *
      * @updateDate  08/10/2014.
      * @author      eFaktor     (fbv)
-     *
-     * Description
-     * Return the action that the user want to carry out and the level.
      */
-    public static function Get_ActionLevel($data = array()) {
+    public static function get_action_level($data = array()) {
         /* Variables    */
         $action = null;
         $level = 0;
@@ -75,33 +76,27 @@ class company_structure {
         }//if_data
 
         return array($action, $level);
-    }//Get_ActionLevel
+    }//get_action_level
 
     /**
+     * Description
+     * Get a list of all employees who work to a specific company.
+     *
+     * Update to the level zero
+     *
      * @static
-     * @param       $parent
+     * @param       string $parent      List of companies
+     *
      * @return      array
      * @throws      Exception
      *
      * @updateDate  08/10/2014
      * @author      eFaktor         (fbv)
      *
-     * Description
-     * Get a list of all employees who work to a specific company.
-     *
      * @updateDate  30/01/2015
      * @author      eFaktor     (fbv)
-     *
-     * Description
-     * Update to the level zero
-     *
-     * @updateDate  23/10/2015
-     * @author      eFaktor     (fbv)
-     *
-     * Description
-     * Clean code.
      */
-    public static function Get_EmployeeLevel($parent) {
+    public static function get_employee_level($parent) {
         /* Variables    */
         global $DB;
         $employee_list  = array();
@@ -109,20 +104,20 @@ class company_structure {
         $info           = null;
 
         try {
-
-            /* SQL Instruction      */
-            $sql = " SELECT	    DISTINCT  	u.id,
-                                            CONCAT(u.firstname,' ',u.lastname) as 'name'
+            // SQL Instruction
+            $sql = " SELECT   DISTINCT  	
+                                u.id,
+                                CONCAT(u.firstname,' ',u.lastname) as 'name'
                      FROM		{user}					    u
                         JOIN	{user_info_competence_data}	uicd		ON 		uicd.userid 	= u.id
-                                                                        AND		uicd.companyid	IN (" .$parent . ")
+                                                                        AND		uicd.companyid	IN ($parent)
                      WHERE		u.deleted = 0
                      ORDER BY 	u.lastname, u.firstname ";
 
-            /* Execute */
+            // Execute
             if ($rdo = $DB->get_records_sql($sql)) {
                 foreach ($rdo as $field) {
-                    /* Add Employee */
+                    // Add Employee
                     $employee_list[$field->id] = $field->name;
                 }//for
             }//if_rdo
@@ -131,38 +126,39 @@ class company_structure {
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//Get_EmployeeLevel
+    }//get_employee_level
 
     /**
+     * Description
+     * Get the parent's company name
+     *
      * @static
-     * @param       $level
-     * @param       $parent
+     * @param       int $level      Hierarchy level
+     * @param       int $parent     Company
+     *
      * @return      null/string
      * @throws      Exception
      *
      * @updateDate  08/10/2014
      * @author      eFaktor     (fbv)
-     *
-     * Description
-     * Get the parent's company name
      */
-    public static function Get_Company_ParentName($level, $parent) {
+    public static function get_company_parent_name($level, $parent) {
         /* Variables    */
         global $DB;
 
         try {
-            /* SQL Instruction   */
+            // SQL Instruction
             $sql = " SELECT     name
                      FROM       {report_gen_companydata}
-                     WHERE      id = :parent
+                     WHERE      id             = :parent
                         AND     hierarchylevel = :level ";
 
-            /* Research Criteria */
+            // Research Criteria
             $params = array();
             $params['level']    = $level;
             $params['parent']   = $parent;
 
-            /* Execute */
+            // Execute
             if ($rdo = $DB->get_record_sql($sql,$params)) {
                 return $rdo->name;
             }else {
@@ -171,59 +167,66 @@ class company_structure {
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//Get_Company_ParentName
+    }//get_company_parent_name
 
     /**
+     * Description
+     * Return if one company already exists to a specific level and parent.
+     *
      * @static
      * @param           $level              Hierarchy level of company.
      * @param           $company_info       Company Identity.
      * @param           int $parent         Company's parent identity.
+     *
      * @return          bool
      * @throws          Exception
      *
      * @creationDate    07/09/2012
      * @updateDate      08/10/2014
      * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Return if one company already exists to a specific level and parent.
      */
-    public static function Exists_Company($level, $company_info,$parent=0) {
+    public static function exists_company($level, $company_info,$parent=0) {
         /* Variables    */
         global $DB;
+        $params = null;
+        $sql    = null;
+        $rdo    = null;
 
         try {
-            /* Search Criteria */
+            //Search Criteria
             $params = array();
             $params['industry_code']    = $company_info['industry_code'];
             $params['level']            = $level;
             $params['parent']           = $parent;
-            /* Company Name     */
+            //Company Name
             if ($company_info['name']) {
                 $params['company_name']  = $company_info['name'];
             }else {
                 $params['company_name']  = $company_info['other_company'];
             }
 
-            /* SQL Instruction */
+            // SQL Instruction
             $sql = " SELECT   rgc.id
                      FROM     {report_gen_companydata}  rgc ";
 
-
+            // Level criteria
             if ($level) {
                 $sql .= " JOIN    {report_gen_company_relation} rgcr  ON  rgc.id        = rgcr.companyid
                                                                       AND rgcr.parentid = :parent ";
             }//if_level_1
 
+
             $sql .= " WHERE      rgc.hierarchylevel = :level
                         AND      rgc.name           = :company_name
                         AND      rgc.industrycode   = :industry_code";
 
+            // Company criteria
             if (isset($company_info['company']) && $company_info['company']) {
                 $params['company'] = $company_info['company'];
                 $sql .= " AND rgc.id <> :company ";
             }
-            /* Execute */
+
+            // Execute
             if ($rdo = $DB->get_records_sql($sql,$params)) {
                 return true;
             }else {
@@ -232,9 +235,12 @@ class company_structure {
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//Exists_Company
+    }//exists_company
 
     /**
+     * Description
+     * Get all details of the company
+     *
      * @static
      * @param           $company_id
      * @return          mixed|null
@@ -242,21 +248,21 @@ class company_structure {
      *
      * @creationDate    02/09/2014
      * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Get all details of the company
      */
-    public static function Get_CompanyInfo($company_id) {
+    public static function get_company_info($company_id) {
         /* Variables    */
         global $DB;
-        $company_info = null;
+        $company_info   = null;
+        $params         = null;
+        $sql            = null;
+        $rdo            = null;
 
         try {
-            /* Search Criteria  */
+            // Search Criteria
             $params = array();
             $params['company'] = $company_id;
 
-            /* SQL Instruction */
+            // SQL Instruction
             $sql = " SELECT    		rc.id,
                                     rc.name,
                                     rc.industrycode,
@@ -264,9 +270,10 @@ class company_structure {
                      FROM			{report_gen_companydata}	rc
                      WHERE          rc.id = :company ";
 
-            /* Execute  */
+            // Execute
             $rdo = $DB->get_record_sql($sql,$params);
             if ($rdo) {
+                // Info company
                 $company_info = new stdClass();
                 $company_info->id           = $rdo->id;
                 $company_info->name         = $rdo->name;
@@ -278,33 +285,36 @@ class company_structure {
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//Get_CompanyInfo
+    }//get_company_info
 
     /**
+     * Description
+     * Check if one company has employees.
+     *
      * @static
-     * @param           $company_id
+     * @param           int $company_id     Company id
+     *
      * @return          int
      * @throws          Exception
      *
      * @creationDate    13/09/2012
      * @updateDate      08/10/2014
      * @author          eFaktor         (fbv)
-     *
-     * Description
-     * Check if one company has employees.
      */
-    public static function Company_HasEmployees($company_id) {
+    public static function company_has_employees($company_id) {
         /* Variables    */
         global $DB;
-        $count = 0;
+        $count  = 0;
+        $params = null;
+        $sql    = null;
+        $rdo    = null;
 
         try {
-            /* Research Criteria */
+            // Research Criteria
             $params = array();
             $params['parent']   = $company_id;
 
-            /* SQL Instruction   */
-
+            // SQL Instruction
             $sql = " SELECT	    count(distinct u.id) as 'count'
                      FROM		{user}					    u
                         JOIN	{user_info_competence_data}	uicd		ON 		uicd.userid = u.id
@@ -312,68 +322,75 @@ class company_structure {
 
                      WHERE		u.deleted = 0";
 
-            /* Execute */
+            // Execute
             if ($rdo = $DB->get_record_sql($sql,$params)) {
                 $count = $rdo->count;
-            }
+            }//if_rdo
+
             return $count;
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//Company_HasEmployees
+    }//company_has_employees
 
     /**
+     * Description
+     * Check if there are another companies under it.
+     *
      * @static
-     * @param           $company_id
+     * @param           int $company_id     Company id
+     *
      * @return          int
      * @throws          Exception
      *
      * @creationDate    11/09/2012
      * @updateDate      08/10/2014
      * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Check if there are another companies under it.
      */
-    public static function Company_HasChildren($company_id){
+    public static function company_has_children($company_id){
         /* Variables    */
         global $DB;
-        $count = 0;
+        $count  = 0;
+        $params = null;
+        $rdo    = null;
+        $sql    = null;
 
         try {
-            /* Search Criteria */
+            // Search Criteria
             $params = array();
             $params['company']  = $company_id;
 
-            /* SQL Instruction */
+            // SQL Instruction
             $sql = " SELECT     count(distinct rgcr.parentid) as 'count'
                      FROM       {report_gen_companydata}      rgc
                         JOIN    {report_gen_company_relation} rgcr  ON rgc.id = rgcr.parentid
                      WHERE      rgc.id = :company ";
 
-            /* Execute */
+            // Execute
             if ($rdo = $DB->get_record_sql($sql,$params)) {
                 $count = $rdo->count;
-            }
+            }//if_rdo
+
             return $count;
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//Company_HasChildren
+    }//company_has_children
 
     /**
+     * Description
+     * Count the parents connected with
+     *
      * @static
-     * @param           $company_id
+     * @param           int $company_id     Company id
+     *
      * @return          int
      * @throws          Exception
      *
      * @creationDate    23/10/2014
      * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Count the parents connected with
      */
-    public static function Company_CountParents($company_id) {
+    public static function company_count_parents($company_id) {
         /* Variables    */
         global $DB;
 
@@ -382,34 +399,38 @@ class company_structure {
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//Company_CountParents
+    }//company_count_parents
 
     /**
+     * Description
+     * Get the parent list connected with
+     *
      * @static
-     * @param           $company_id
+     * @param           int $company_id     Company id
+     *
      * @return          array
      * @throws          Exception
      *
      * @creationDate    23/10/2014
      * @author          eFaktor         (fbv)
-     *
-     * Description
-     * Get the parent list connected with
      */
-    public static function Company_GetParentList($company_id) {
+    public static function company_get_parent_list($company_id) {
         /* Variables    */
         global $DB;
         $parent_lst = array();
+        $params     = null;
+        $sql        = null;
+        $rdo        = null;
 
         try {
-            /* First Element    */
+            // First Element
             $parent_lst[0] = get_string('select_level_list','report_manager');
 
-            /* Search Criteria  */
+            // Search Criteria
             $params = array();
             $params['company_id'] = $company_id;
 
-            /* SQL Instruction  */
+            // SQL Instruction
             $sql = " SELECT		gr.parentid,
                                 c.name,
                                 c.industrycode
@@ -418,7 +439,7 @@ class company_structure {
                     WHERE		gr.companyid = :company_id
                     ORDER BY 	c.industrycode, c.name ";
 
-            /* Execute  */
+            // Execute
             $rdo = $DB->get_records_sql($sql,$params);
             if ($rdo) {
                 foreach ($rdo as $parent) {
@@ -430,72 +451,74 @@ class company_structure {
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//Company_GetParentList
+    }//company_get_parent_list
 
     /**
+     * Description
+     * Add a new Company Level. Insert a new one or link.
+     *
      * @static
      * @param           $data
      * @param           $parents
      * @param           $level
+     *
      * @throws          Exception
      *
      * @creationDate    23/10/2014
      * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Add a new Company Level. Insert a new one or link.
      */
-    public static function Add_CompanyLevel($data,$parents,$level) {
+    public static function add_company_level($data,$parents,$level) {
         /* Variables    */
         $instance = null;
         $index    = null;
 
         try {
-            /* Company Info */
+            // Company Info
             $instance = new stdClass();
             $instance->hierarchylevel   = $level;
             $instance->modified         = time();
             $instance->industrycode     = $data->industry_code;
+            if (isset($data->public)) {
+                $instance->public = $data->public;
+            }else {
+                $instance->public = 0;
+            }//if_public
 
             switch ($level) {
                 case 0:
-                    /* Create a new Company */
+                    // Create a new Company
                     $instance->name     = $data->name;
-                    if (isset($data->public)) {
-                        $instance->public = $data->public;
-                    }else {
-                        $instance->public = 0;
-                    }//if_public
-                    self::Insert_CompanyLevel($instance);
+                    self::insert_company_level($instance);
 
                     break;
+
                 default:
-                    $instance->public = $data->public_parent;
-                    /* New Company  */
+                    // New Company
                     $instance->name     = $data->name;
-                    self::Insert_CompanyLevel($instance,$parents[$level-1]);
+                    self::insert_company_level($instance,$parents[$level-1]);
 
                     break;
             }//switch
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//Add_CompanyLevel
+    }//add_company_level
 
     /**
+     * Description
+     * Update company data.
+     *
      * @static
      * @param           $data
      * @param           $level
+     *
      * @throws          Exception
      *
      * @creationDate    10/09/2012
      * @updateDate      08/10/2014
      * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Update company data.
      */
-    public static function Update_CompanyLevel($data,$level) {
+    public static function update_company_level($data,$level) {
         /* Variables    */
         global $DB;
         $instance   = null;
@@ -503,13 +526,15 @@ class company_structure {
         $levelOne   = null;
         $levelTwo   = null;
         $levelTre   = null;
+        $params     = null;
+        $sqlUpdate  = null;
+        $trans      = null;
 
-
-
-        /* Begin Transaction    */
+        // Begin Transaction
         $trans = $DB->start_delegated_transaction();
+
         try {
-            /* Company Info */
+            // Company Info
             $instance = new stdClass();
             $instance->id               = $data->company;
             $instance->name             = $data->name;
@@ -523,15 +548,16 @@ class company_structure {
                 }//if_public
             }//if_levelZero
 
-            /* First Update Company Data */
+            // First Update Company Data
             $DB->update_record('report_gen_companydata',$instance);
-            /* Second Update the status company for the hierarchy of level Zero */
+
+            // Second Update the status company for the hierarchy of level Zero
             if ($level == 0) {
-                /* Params           */
+                // Criteria
                 $params = array();
                 $params['parent_public'] = $instance->public;
 
-                /* Level One */
+                // Level One
                 $levelOne = CompetenceManager::GetCompanies_LevelList(1,$data->company);
                 unset($levelOne[0]);
                 $levelOne = implode(',',array_keys($levelOne));
@@ -540,10 +566,10 @@ class company_structure {
                                    SET    public = :parent_public
                                    WHERE  id IN ($levelOne) ";
 
-                    /* Execute  */
+                    // Execute
                     $DB->execute($sqlUpdate,$params);
 
-                    /* Level Two */
+                    // Level Two
                     $levelTwo = CompetenceManager::GetCompanies_LevelList(2,$levelOne);
                     unset($levelTwo[0]);
                     $levelTwo = implode(',',array_keys($levelTwo));
@@ -552,10 +578,10 @@ class company_structure {
                                           SET public = :parent_public
                                        WHERE  id IN ($levelTwo) ";
 
-                        /* Execute  */
+                        // Execute
                         $DB->execute($sqlUpdate,$params);
 
-                        /* Level Tre */
+                        // Level Three
                         $levelTre = CompetenceManager::GetCompanies_LevelList(3,$levelTwo);
                         unset($levelTre[0]);
                         $levelTre = implode(',',array_keys($levelTre));
@@ -564,41 +590,42 @@ class company_structure {
                                               SET public = :parent_public
                                            WHERE  id IN ($levelTre) ";
 
-                            /* Execute  */
+                            // Execute
                             $DB->execute($sqlUpdate,$params);
                         }//if_levelTre
                     }//if_levelTwo
                 }//if_levelOne
             }//if_levelZero
 
-            /* Commit   */
+            // Commit
             $trans->allow_commit();
         }catch (Exception $ex) {
-            /* Rollback */
+            // Rollback
             $trans->rollback($ex);
 
             throw $ex;
         }//try_catch
-    }//Update_CompanyLevel
+    }//update_company_level
 
     /**
+     * Description
+     * Remove the company
+     *
      * @static
-     * @param           $company_id
+     * @param           int $company_id     Company id
+     *
      * @return          bool
      * @throws          Exception
      *
      * @updateDate      08/10/2014
      * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Remove the company
      */
-    public static function Delete_Company($company_id) {
+    public static function delete_company($company_id) {
         /* Variables    */
         global $DB;
         $trans = null;
 
-        /* Start Transaction   */
+        // Start Transaction
         $trans = $DB->start_delegated_transaction();
 
         try {
@@ -608,10 +635,10 @@ class company_structure {
                 $DB->delete_records('report_gen_company_relation',array('id'=>$rdo->id));
             }//if
 
-            /* Delete Employees */
+            // Delete Employees
             $DB->delete_records('user_info_competence_data',array('companyid' => $company_id));
 
-            /* Commit */
+            // Commit
             $trans->allow_commit();
 
             return true;
@@ -621,106 +648,109 @@ class company_structure {
 
             throw $ex;
         }//try_catch
-    }//Delete_Company
+    }//delete_company
 
 
     /**
-     * @param           $companyId
-     * @param           $employees
-     * @param           $all
+     * Description
+     * Delete employees connected with
+     *
+     * @param           int     $companyId      Company id
+     * @param           string  $employees      List of employees
+     * @param           bool    $all
      *
      * @throws          Exception
      *
      * @creationDate    10/03/2016
      * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Delete employees connected with
      */
-    public static function DeleteEmployees($companyId,$employees,$all=false) {
+    public static function delete_employees($companyId,$employees,$all=false) {
         /* Variables */
         global $DB;
         $sql    = null;
         $params = null;
         $trans  = null;
 
-        /* Start Transaction   */
+        // Start Transaction
         $trans = $DB->start_delegated_transaction();
 
         try {
-            /* Search Criteria  */
+            // Search Criteria
             $params = array();
             $params['companyid'] = $companyId;
 
-            /* Deleted Employees  */
+            // Deleted Employees
             if ($all) {
                 $DB->delete_records('user_info_competence_data',$params);
             }else {
-                /* SQL Instruction */
+                // SQL Instruction
                 $sql = " DELETE
                          FROM   {user_info_competence_data}
                          WHERE  companyid = :companyid
                             AND userid IN ($employees) ";
 
-                /* Execute */
+                // Execute
                 $DB->execute($sql,$params);
             }//if_all
 
-            /* Commit */
+            // Commit
             $trans->allow_commit();
         }catch (Exception $ex) {
-            /* Rollback */
+            // Rollback
             $trans->rollback($ex);
 
             throw $ex;
         }//try_catch
-    }//DeleteEmployees
+    }//delete_employees
 
     /**
-     * @param           $companyId
-     * @param           $moveFrom
-     * @param           $moveTo
+     * Description
+     * Move one company from one parent to other different parent
+     *
+     * @param           int $companyId      Company id
+     * @param           int $moveFrom       Old Parent
+     * @param           int $moveTo         New Parent
      *
      * @throws          Exception
      *
      * @creationDate    20/04/2016
      * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Move one company from one parent to other different parent
      */
-    public static function MoveFrom_To($companyId,$moveFrom,$moveTo) {
+    public static function move_from_to($companyId,$moveFrom,$moveTo) {
         /* Variables */
         global  $DB;
         $rdo    = null;
         $params = null;
 
         try {
-            /* First Original Record    */
-            /* Criteria */
+            // First original record
+            // Criteria
             $params = array();
             $params['companyid'] = $companyId;
             $params['parentid']  = $moveFrom;
 
-            /* Execute */
+            // Execute
             $rdo = $DB->get_record('report_gen_company_relation',$params);
             if ($rdo) {
-                /* Update to the new parent */
+                // Update to the new parent
                 $rdo->parentid = $moveTo;
 
-                /* Execute */
+                // Execute
                 $DB->update_record('report_gen_company_relation',$rdo);
             }//if_rdo
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//MoveFrom_To
+    }//move_from_to
 
     /************/
     /* PRIVATE  */
     /************/
 
     /**
+     * Description
+     * Insert a new company
+     *
      * @static
      * @param           $instance
      * @param           null $parent
@@ -730,11 +760,8 @@ class company_structure {
      * @creationDate    10/09/2012
      * @updateDate      08/10/2014
      * @author          eFaktor         (fbv)
-     *
-     * Description
-     * Insert a new company
      */
-    private static function Insert_CompanyLevel($instance,$parent = null) {
+    private static function insert_company_level($instance,$parent = null) {
         /* Variables    */
         global $DB;
         $company_relation = null;
@@ -755,6 +782,6 @@ class company_structure {
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//Insert_CompanyLevel
+    }//insert_company_level
 }//class_company_structure
 

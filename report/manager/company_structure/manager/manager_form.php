@@ -31,7 +31,7 @@ class report_manager_managers_form extends moodleform {
 
         /* Add Parents && Current Level */
         for ($i = 0; $i <= $level; $i++) {
-            $parentInfo = company_structure::Get_CompanyInfo($parents[$i]);
+            $parentInfo = company_structure::get_company_info($parents[$i]);
             $mForm->addElement('text','parent_' . $i,get_string('select_company_structure_level','report_manager',$i),'size = 50 readonly');
             $mForm->setDefault('parent_' . $i,$parentInfo->name);
             $mForm->setType('parent_' . $i,PARAM_TEXT);

@@ -31,13 +31,13 @@ class move_company_structure_form extends moodleform {
         $mForm->addElement('header', 'header_from' , get_string('move_from','report_manager'));
         $mForm->setExpanded('header_from',true);
         /* Company  */
-        $companyName = company_structure::Get_CompanyName($company);
+        $companyName = company_structure::get_company_name($company);
         $mForm->addElement('text', 'name', get_string('select_company_structure_level','report_manager',$level), 'size = 50 readonly');
         $mForm->setDefault('name',$companyName);
         $mForm->setType('name',PARAM_TEXT);
 
         for ($i = ($level-1); $i >= 0; $i--) {
-            $moveFrom[$i] = company_structure::Get_CompanyInfo($parents[$i]);
+            $moveFrom[$i] = company_structure::get_company_info($parents[$i]);
             $mForm->addElement('text','from_' . $i,get_string('comp_parent','report_manager', $i),'size = 50 readonly');
             $mForm->setDefault('from_' . $i,$moveFrom[$i]->name);
             $mForm->setType('from_' . $i,PARAM_TEXT);
@@ -47,7 +47,7 @@ class move_company_structure_form extends moodleform {
         $mForm->addElement('header', 'header_to' , get_string('move_to','report_manager'));
         $mForm->setExpanded('header_to',true);
         for ($i = 0; $i < $level-1; $i++) {
-            $parentInfo = company_structure::Get_CompanyInfo($parents[$i]);
+            $parentInfo = company_structure::get_company_info($parents[$i]);
             $mForm->addElement('text','to_' . $i,get_string('comp_parent','report_manager', $i),'size = 50 readonly');
             $mForm->setDefault('to_' . $i,$parentInfo->name);
             $mForm->setType('to_' . $i,PARAM_TEXT);

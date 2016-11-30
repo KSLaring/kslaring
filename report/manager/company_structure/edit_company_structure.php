@@ -85,7 +85,7 @@ if ($form->is_cancelled()) {
     $parents = $SESSION->parents;
 
     /* Update Level */
-    company_structure::Update_CompanyLevel($data,$level);
+    company_structure::update_company_level($data,$level);
 
     $_POST = array();
     redirect($returnUrl);

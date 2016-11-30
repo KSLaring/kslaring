@@ -27,13 +27,13 @@ class unlink_company_structure_form extends moodleform {
         /* Header */
         $m_form->addElement('header', 'unlink' , get_string('unlink_title','report_manager'));
         /* Company Name */
-        $company_name = company_structure::Get_CompanyName($company_id);
+        $company_name = company_structure::get_company_name($company_id);
         $m_form->addElement('text', 'name', get_string('txt_item','report_manager'), 'class="text-input" size=50 disabled');
         $m_form->setDefault('name',$company_name);
         $m_form->setType('name',PARAM_TEXT);
 
         /* Parent List  */
-        $parent_lst = company_structure::Company_GetParentList($company_id);
+        $parent_lst = company_structure::company_get_parent_list($company_id);
         $m_form->addElement('select','parent_sel',get_string('unlink_from','report_manager'),$parent_lst);
         $m_form->addRule('parent_sel', get_string('required','report_manager'), 'required', null, 'client');
         $m_form->addRule('parent_sel', get_string('required','report_manager'), 'nonzero', null, 'client');
