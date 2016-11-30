@@ -34,7 +34,7 @@ $groupName      = null;
 $groupData      = null;
 $parents        = array();
 
-$context        = CONTEXT_SYSTEM::instance();
+$context        = context_system::instance();
 $url            = new moodle_url('/report/manager/company_structure/reporter/search.php');
 
 $PAGE->set_context($context);

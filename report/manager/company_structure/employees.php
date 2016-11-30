@@ -28,7 +28,7 @@ $json           = array();
 $data           = array();
 $infoCompany    = null;
 
-$context        = CONTEXT_SYSTEM::instance();
+$context        = context_system::instance();
 $url            = new moodle_url('/report/manager/company_structure/employees.php');
 
 $PAGE->set_context($context);
@@ -49,11 +49,11 @@ if ($employees) {
     $employees = str_replace('#',',',$employees);
 }
 if ($deleteAll) {
-    company_structure::DeleteEmployees($levelThree,$employees,true);
+    company_structure::delete_employees($levelThree,$employees,true);
 }else if ($delete) {
-    company_structure::DeleteEmployees($levelThree,$employees);
+    company_structure::delete_employees($levelThree,$employees);
 }else {
-    $employees = company_structure::Get_EmployeeLevel($levelThree);
+    $employees = company_structure::get_employee_level($levelThree);
 
     /* GEt Employees Info to Send */
     $employeesInfo = array();

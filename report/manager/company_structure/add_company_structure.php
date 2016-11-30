@@ -82,7 +82,7 @@ if ($form->is_cancelled()) {
     redirect($returnUrl);
 }else if($data = $form->get_data()) {
     /* Add a new Company Level. New One or Link */
-    company_structure::Add_CompanyLevel($data,$parents,$level);
+    company_structure::add_company_level($data,$parents,$level);
 
     $_POST = array();
     redirect($returnUrl);

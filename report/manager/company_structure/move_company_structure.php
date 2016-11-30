@@ -81,7 +81,7 @@ if ($form->is_cancelled()) {
     /* Move Company From to    */
 
     /* Move Company */
-    company_structure::MoveFrom_To($data->id,$parents[($data->le -1)],$data->move_to);
+    company_structure::move_from_to($data->id,$parents[($data->le -1)],$data->move_to);
 
     $_POST = array();
     redirect($returnUrl);
