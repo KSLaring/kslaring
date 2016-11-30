@@ -1,0 +1,480 @@
+@import "inc/variables.less";
+@import "inc/mixins.less";
+
+.block {
+    margin: 5px 0 5px 0;
+    padding: 0;
+    //border: 1px solid @grayLight;
+    //.border-radius(@baseBorderRadius);
+    .header {
+        background: white;
+        border-bottom: 2px solid #d8d8d8;
+
+        padding: 10px 15px;
+
+        .block_action {
+            padding: 4px;
+            float: right;
+        }
+        .title {
+            h2 {
+                color: @kommitGray;
+                font-size: @fontSizeLarge;
+                font-weight: normal;
+                line-height: @baseLineHeight;
+                margin: 0;
+            }
+        }
+        .toggle-display {
+            .iconsmall {
+                width: auto;
+            }
+        }
+    }
+    .block-hider-show,
+    .block-hider-hide {
+        cursor: pointer;
+        padding-bottom: 10px;
+        padding-right: -5px;
+        padding-left: 5px;
+    }
+    .block-hider-show {
+        display: none;
+    }
+    &.hidden {
+        .block-hider-hide {
+            display: none;
+        }
+        .block-hider-show {
+            display: inline;
+        }
+        .content {
+            display: none;
+        }
+    }
+    .content {
+        word-wrap: break-word;
+        padding: 10px 15px;
+        background: @white;
+
+        h3 {
+            &.eventskey {
+                font-size: 1em;
+            }
+        }
+    }
+
+    // Switch long button text and short button text
+    // with media queries
+    // -------------------------------------
+
+    button {
+        margin-top: .5em;
+
+        .btn-text-short {
+            display: none;
+        }
+
+        @media (min-width: 768px) and (max-width: 1120px) {
+            padding-left: .5em;
+            padding-right: .5em;
+
+            .btn-text-long {
+                display: none;
+            }
+
+            .btn-text-short {
+                display: inline;
+            }
+        }
+    }
+}
+
+.toppos {
+    top: .2em;
+}
+
+.block_navigation,
+.block_settings {
+    .block_tree {
+        .tree_item {
+            &.branch {
+                background-position: 0 .1em;
+            }
+            &.active_tree_node {
+                background-position: 0 .2em;
+            }
+        }
+        li {
+            &.item_with_icon {
+                > p {
+                    img {
+                        .toppos;
+                    }
+                }
+            }
+            & > p {
+                &.hasicon {
+                    img {
+                        .toppos;
+                    }
+                }
+            }
+            hr {
+                margin: 0;
+            }
+        }
+        .type_activity {
+            & > p {
+                &.tree_item {
+                    &.active_tree_node {
+                        img {
+                            .toppos;
+                        }
+                    }
+                }
+            }
+        }
+        p {
+            &.hasicon {
+                text-indent: -12px;
+
+                .fa {
+                    margin-left: -0.3em;
+                    padding-right: 0;
+                }
+                .fa-circle {
+                    margin-left: 0;
+                    padding-right: 0.1em;
+                }
+            }
+        }
+    }
+}
+
+.calendar-event-panel {
+    .yui3-overlay-content {
+        h2 {
+            &.eventtitle {
+                font-size: 1em;
+            }
+        }
+    }
+}
+
+// Fixes for block fields popping out of the block edges
+// -----------------------------------------------------
+
+#adminsearchquery,
+#blogsearchquery,
+#searchform_search,
+.block_adminblock select,
+.block_login input#login_username,
+.block_login input#login_password {
+    max-width: 92%;
+}
+
+.block_private_files {
+    input[type="submit"] {
+        width: 92%;
+        white-space: pre-wrap;
+    }
+}
+
+.block .minicalendar,
+.block_login .content {
+    max-width: 280px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.block {
+    .minicalendar {
+        width: 92%;
+        th, td {
+            padding: 2px 1px;
+        }
+    }
+}
+
+.block {
+    button,
+    input.form-submit,
+    input[type="button"],
+    input[type="submit"],
+    input[type="reset"] {
+        font-size: @baseFontSize;
+    }
+}
+
+.calendartable {
+    th, td {
+        max-width: 14%;
+    }
+}
+
+// hide styling on html block on homepage
+// ---------------------------------------------------
+
+#page-site-index {
+    .block_html.block {
+        margin: 0;
+        padding: 0;
+        border: none;
+        background: none;
+        -webkit-border-radius: 0;
+        -moz-border-radius: 0;
+        border-radius: 0;
+
+        .header {
+            background: none;
+        }
+
+        .title h2 {
+            color: @headingsColor;
+            font-size: @fontSizeH2;
+            line-height: @fontSizeH2 * 1.5;
+        }
+    }
+}
+
+// overide padding on my course overview block
+// ---------------------------------------------------
+
+.block_course_overview .content {
+    margin: 0 0;
+}
+
+// Correct icon - text distance in the block_online_users
+// ---------------------------------------------------
+
+.block_online_users {
+    .content {
+        .list {
+            li.listentry {
+                .user {
+                    .userpicture {
+                        padding-right: .5em;
+                    }
+                }
+            }
+        }
+    }
+}
+
+// overide padding on my course overview block
+// ---------------------------------------------------
+
+.block_login {
+    .loginform {
+        .btn {
+            input {
+                margin-left: 0;
+            }
+        }
+    }
+}
+
+// change the quiz navigation block to a top navigation
+// ---------------------------------------------------
+.path-mod-quiz {
+    &.format-netcourse,
+    &.format-classroom {
+        #block-region-content-top {
+            margin-right: 1%;
+        }
+        #mod_quiz_navblock {
+            .ie-scrollbar-white;
+            .header {
+                display: none;
+            }
+            .content {
+                padding: .5em 0;
+                word-wrap: inherit;
+
+                .othernav {
+                    padding-top: .2em;
+                }
+
+                .btn {
+                    float: left;
+                    line-height: 3.35em;
+                    margin: 0;
+                    padding: 0 2%;
+                    width: 6%;
+                }
+
+                #qn-buttons-wrapper {
+                    background-color: @kommitGrayLight;
+                    float: left;
+                    height: 50px;
+                    overflow: auto;
+                    overflow-y: hidden;
+                    padding: 0 0 .2em 0;
+                    position: relative;
+                    width: 85%;
+                    -ms-overflow-style: none;
+
+                    &::-webkit-scrollbar {
+                        display: none;
+                    }
+
+                    .qn_buttons {
+                        overflow-y: hidden;
+                        padding: 0;
+                        position: absolute;
+                        white-space: pre;
+                        width: auto;
+
+                        &::before,
+                        &::after {
+                            font-size: 1px;
+                        }
+                    }
+                }
+
+                @media (max-width: 560px) {
+                    .btn {
+                        width: 15%;
+                    }
+
+                    #qn-buttons-wrapper {
+                        width: 70%;
+                    }
+                }
+
+                @media (max-width: 440px) {
+                    .btn {
+                        width: 15%;
+                    }
+
+                    //#qn-buttons-wrapper {
+                    //    width: 50%;
+                    //}
+                }
+            }
+
+            .qnbutton {
+                background-color: @kommitMenuBg;
+                border-color: @kommitGrayWarm;
+                display: inline-block;
+                float: none;
+                font-weight: bold;
+                height: 50px;
+                line-height: 2em;
+                margin: 0 -1px 0 0;
+                padding: 2px 0 0;
+                width: auto;
+                min-width: 50px;
+                white-space: pre;
+
+                &.notyetanswered,
+                &.requiresgrading,
+                &.invalidanswer {
+                }
+
+                .trafficlight {
+                    margin-top: 30px;
+                }
+
+                .thispageholder {
+                    border-color: @kommitGrayWarm;
+                }
+
+                &.correct {
+                    .trafficlight {
+                        border-top: 0;
+                        border-bottom: 3px solid @green;
+                    }
+                }
+
+                &.partiallycorrect {
+                    .trafficlight {
+                        border-top: 0;
+                        border-bottom: 3px solid @yellow;
+                    }
+                }
+
+                &.incorrect {
+                    .trafficlight {
+                        border-top: 0;
+                        border-bottom: 3px solid @red;
+                    }
+                }
+
+                &.thispage {
+                    background-color: @white;
+                    border-color: @kommitGrayWarm;
+
+                    .thispageholder {
+                        border-color: @kommitGrayWarm;
+                    }
+                }
+
+                &:hover {
+                    background-color: @white;
+                }
+            }
+        }
+    }
+}
+
+// Logged in as user block
+// ---------------------------------------------------
+
+.block_myprofile .myprofileitem.fullname {
+    font-size: @fontSizeH3;
+    padding: 6px 0;
+    line-height: @baseLineHeight;
+    font-weight: normal
+}
+
+// Hidden blocks area
+// -----------------------------------------------------
+
+#hidden-blocks-admin {
+    background: lighten(@kommitRed, 60%);
+    padding: 20px;
+    border: 1px solid @white;
+    border-radius: 0;
+    margin: 0;
+    //    .clearfix;
+
+    h4 {
+        text-align: left;
+        padding-bottom: 8px;
+        margin-bottom: 8px;
+        border-bottom: 1px solid @grayLighter;
+        margin-top: 0;
+        color: lighten(@kommitRed, 30%);
+    }
+    .block {
+        float: right;
+        width: 30%;
+        margin-left: 1%;
+    }
+}
+
+// blocksatbottom bottom block area
+// --------------------------------------------------
+#bottom-area {
+    .block {
+        float: left;
+        margin-left: 1%;
+        margin-right: 1%;
+        width: 22.7%;
+
+        @media all and (max-width: 1023px) {
+            width: 31%;
+        }
+        @media all and (max-width: (@mediumWidth - 1)) {
+            width: 47%;
+        }
+        @media all and (max-width: (@narrowWidth - 1)) {
+            float: none;
+            margin-left: 0;
+            margin-right: 0;
+            width: 100%;
+        }
+    }
+}

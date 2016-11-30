@@ -1,0 +1,190 @@
+@import "inc/variables.less";
+@import "inc/mixins.less";
+
+// colour overides for net course format
+// ---------------------------------------
+.netcourse-header,
+.classroom-header {
+    margin: 1em 0 0 0;
+    .btn-toolbar {
+        //border-bottom: 0px solid white;
+        margin-top: 10.5px;
+        margin-bottom: 0;
+        .btn {
+            color: @kommitGray;
+            margin: 0.2em 0 0 0;
+            padding: 15px 28px;
+            border: 1px solid darken(@kommitGrayLight, 5%);;
+            //outline: 1px solid darken(@kommitGrayLight, 5%);
+            #gradient .vertical(lighten(@kommitGrayLight, 5%), darken(@kommitGrayLight, 1%));
+            box-shadow: inset 0 -4px 6px rgba(0, 0, 0, 0.08);
+        }
+        .btn:hover {
+            color: @kommitBlue;
+            background: white;
+            background-image: none;
+        }
+        .btn-primary:active,
+        .btn-primary.active {
+            color: @kommitBlue;
+            border-bottom: 1px solid white;
+            background-color: white;
+            background-image: none;
+            box-shadow: none;
+        }
+    }
+}
+
+#instcnav .block_tree .tree_item.leaf {
+    a {
+        color: @kommitGray;
+    }
+}
+
+#instcnav li.contains_branch > p.branch {
+    background-color: #f9f9f9;
+    color: @kommitGray;
+}
+
+#instcnav li.contains_branch.collapsed > p.branch {
+    border-top: 1px solid #fff;
+    border-bottom: 1px solid @kommitGrayWarm;
+    color: @kommitGray;
+}
+
+#instcnav .block_tree li.depth_2 ul {
+    //box-shadow: inset 0 0 10px @kommitGrayWarm;
+    //.inner-shadow (@x: 0, @y: 1px, @blur: 2px, @spread: 0, @alpha: 0.25);
+    .inner-shadow (0px, 0px, 8px, 0px, .10);
+    background: #f7f7f7;
+}
+
+// Jon Overide progress bar
+// 14/05/2014
+// -------------------------------------------------------
+
+.format-netcourse.path-mod-lesson .box .progress_bar,
+.format-classroom.path-mod-lesson .box .progress_bar {
+    border: none;
+    height: 20px;
+    margin-top: -22px;
+    background: none;
+}
+
+.format-netcourse.path-mod-lesson .progress_bar,
+.format-classroom.path-mod-lesson .progress_bar {
+    //display: none;
+    background: @kommitGrayLight;
+    border: 1px solid @kommitGrayWarm;
+    height: 20px;
+    margin-top: 40px;
+    margin-right: 20px;
+}
+
+.format-netcourse.path-mod-lesson .progress_bar_completed,
+.format-classroom.path-mod-lesson .progress_bar_completed {
+    background-color: #46a546;
+    #gradient .vertical(#b4d95b, #46a546);
+    padding-right: 20px;
+}
+
+.format-netcourse,
+.format-classroom {
+    #block-region-content-bottom {
+        background-color: @kommitMenuBg;
+        border: 1px solid;
+        border-color: @kommitGrayWarm @white @kommitGrayWarm @kommitGrayWarm;
+        padding: .5em 1% 1em 2%;
+        margin: 0 0 1em 0%;
+
+        .title {
+            h2 {
+                margin-top: 0;
+            }
+        }
+    }
+}
+
+// Jon new styles
+// 13/05/2014
+// -------------------------------------------------------
+
+// set background main content window white
+
+.format-netcourse,
+.format-classroom {
+    #page-content {
+        background: #fff;
+        border: 1px solid @kommitGrayWarm;
+        padding-bottom: 1em;
+    }
+}
+
+//remove padding on block nav
+.format-netcourse .block .list li,
+.format-classroom .block .list li {
+    margin: 0;
+}
+
+// remove gray background on submit button
+.format-netcourse #fitem_id_submitbutton,
+.format-classroom #fitem_id_submitbutton {
+    border-top: none;
+    background-color: #fff;
+    padding: 0;
+}
+
+// submit button colour overide
+.format-netcourse input#id_submitbutton,
+.format-classroom input#id_submitbutton {
+    background-color: #46a546;
+    background-image: none;
+    color: #ffffff;
+    text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+    margin-left: 0;
+
+    &:hover,
+    &:focus {
+        background: #b4d95b;
+    }
+}
+
+// Fix for section 0 elements jumping out of the side of interface
+// 11/06/2014
+// -------------------------------------------------------
+
+.format-netcourse,
+.format-classroom {
+    #criteriastatus {
+        width: 97%;
+    }
+    .forumheaderlist {
+        width: 97%;
+    }
+    .generalbox {
+        p {
+            width: 97%;
+        }
+    }
+}
+
+// Overide for active text link in side bar
+// 13/08/2014
+// -------------------------------------------------------
+
+p.active_tree_node a {
+    color: @kommitBlueLight !important;
+}
+
+// fix margins when editing course home page settings
+// 11/09/2014
+// -------------------------------------------------------
+
+.format-netcourse,
+.format-classroom {
+    #region-main {
+        form {
+            margin: 30px 20px;
+        }
+    }
+}

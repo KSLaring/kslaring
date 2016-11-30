@@ -1,0 +1,298 @@
+#page-local-course_page-home_page label {
+  cursor: auto !important;
+}
+.home_page {
+  width: 100%;
+  display: block;
+  text-justify: inter-word;
+}
+.home_page .header {
+  margin-bottom: 5px;
+  width: 100%;
+}
+.home_page .header h1 {
+  padding-left: 0;
+  text-align: left;
+}
+.home_page_block_one {
+  display: block;
+  float: left;
+  margin-right: 1px;
+  margin-bottom: 15px;
+  text-justify: inter-word;
+  width: 68%;
+}
+@media all and (max-width: 979px) {
+  .home_page_block_one {
+    margin-right: 0;
+    width: 100%;
+  }
+}
+.home_page_block_one .buttons {
+  margin: 20px 0;
+}
+.home_page_block_one .graphic {
+  image-rendering: crisp-edges;
+}
+.home_page_block_one .video {
+  height: 100%;
+  width: 100%;
+}
+.home_page_block_one .resourcecontent {
+  width: 100%;
+}
+.home_page_block_one .mediaplugin_html5audio,
+.home_page_block_one .mediaplugin_html5video,
+.home_page_block_one .mediaplugin_swf,
+.home_page_block_one .mediaplugin_flv,
+.home_page_block_one .mediaplugin_real,
+.home_page_block_one .mediaplugin_youtube,
+.home_page_block_one .mediaplugin_vimeo,
+.home_page_block_one .mediaplugin_wmp,
+.home_page_block_one .mediaplugin_qt {
+  display: block;
+  margin-top: 5px;
+  margin-bottom: 5px;
+  text-align: left;
+}
+.home_page_block_one h3 {
+  margin-top: 0;
+  text-align: left;
+}
+.home_page_block_two {
+  float: right;
+  display: block;
+  margin-bottom: 15px;
+  width: 30%;
+}
+@media all and (max-width: 979px) {
+  .home_page_block_two {
+    width: 100%;
+  }
+}
+.home_page_block_two .go-left,
+.home_page_block_two .go-right {
+  border-left: 3px solid #d8d8d8;
+  padding-left: 8px;
+}
+@media all and (min-width: 581px) and (max-width: 979px) {
+  .home_page_block_two .go-left,
+  .home_page_block_two .go-right {
+    float: left;
+    width: 47.5%;
+  }
+}
+@media all and (max-width: 580px) {
+  .home_page_block_two .go-left,
+  .home_page_block_two .go-right {
+    float: left;
+    width: 100%;
+  }
+}
+@media all and (max-width: 979px) {
+  .home_page_block_two .go-right {
+    float: right;
+  }
+}
+@media all and (max-width: 580px) {
+  .home_page_block_two .go-right {
+    float: left;
+  }
+}
+.home_page_block_two .chp-block {
+  padding-right: 10px;
+}
+.home_page_block_two .chp-block h5 {
+  margin: 0;
+  padding: 0;
+}
+.home_page_block_two .chp-title {
+  border-bottom: 2px solid #d8d8d8;
+  color: #7e7e7e;
+  display: block;
+  font-size: 1.1em;
+  line-height: 1.3;
+  margin: 0;
+  text-align: left;
+  text-transform: uppercase;
+  width: 99%;
+}
+.home_page_block_two .chp-content {
+  display: block;
+  margin: 0.1em 5px 1.2em 0;
+  word-wrap: break-word;
+}
+.home_page_block_two .extra .icon {
+  height: 80px;
+  margin-right: 3px;
+  vertical-align: middle;
+  width: 80px;
+}
+.home_page_block_two .manager .user_picture {
+  float: left;
+  margin: 10px 0;
+}
+.home_page_block_two .manager .userpicture {
+  float: left;
+  height: 60px;
+  image-rendering: crisp-edges;
+  margin: 0 10px 0 0px;
+  width: 60px;
+  border-radius: 40px;
+  -webkit-border-radius: 40px;
+  -moz-border-radius: 40px;
+}
+.home_page_block_two .manager .user {
+  float: none;
+  margin-top: 5%;
+  width: 100%;
+}
+.home_page_block_two .manager .extra_coordinator {
+  display: block;
+  word-wrap: break-word;
+}
+.home_page_block_two .manager .extra_teacher {
+  margin-bottom: 25px;
+}
+.home_page_block_two .ratings .label_ratings {
+  display: block;
+  word-wrap: break-word;
+}
+.home_page_block_two .ratings .rating_bar_block {
+  clear: both;
+  display: block;
+  height: 25px;
+  padding-top: 5px;
+  width: 99%;
+  word-wrap: break-word;
+}
+.home_page_block_two .ratings .rating_bar_block .rating_title {
+  color: #0e7b9e;
+  float: left;
+  text-align: left;
+  width: 35%;
+}
+.home_page_block_two .ratings .rating_bar_block .rating_bar {
+  background: #e8e8e8;
+  float: left;
+  height: 20px;
+  margin-right: 0;
+  width: 40%;
+}
+.home_page_block_two .ratings .rating_bar_block .rating_bar .rating_progress {
+  background: green;
+  height: 20px;
+}
+.home_page_block_two .ratings .rating_bar_block .rating_value {
+  color: #0e7b9e;
+  display: block;
+}
+.home_page_block_two .ratings .rating_bar_block .rating_value .rating_value_num {
+  float: left;
+  font-size: 0.9em;
+  text-align: left;
+  text-indent: 5px;
+}
+.home_page_block_two .ratings .rating_bar_block .rating_value .rating_value_per {
+  /*width: 8%;*/
+  float: left;
+  font-size: 0.7em;
+  text-align: left;
+}
+.home_page_block_two .ratings a .disabled_ratings {
+  cursor: default;
+  color: #7e7e7e;
+  pointer-events: none;
+}
+.home_page_block_two .ratings .content_rating_bar {
+  background: inherit;
+}
+.home_page_block_two .ratings .rating_total_title {
+  color: #0e7b9e;
+  float: left;
+  text-align: left;
+  width: 72%;
+}
+.home_page_block_two .ratings .rating_total_title img {
+  margin-left: -6px;
+}
+.home_page_block_two .ratings .rating_total_value {
+  float: left;
+  margin-top: 2px;
+  text-align: left;
+  text-indent: 10px;
+  width: 25%;
+}
+.home_page_block_two .ratings .ratings_review {
+  display: block;
+  font-style: italic;
+  max-height: 125px;
+}
+.home_page_block_two .ratings .ratings_review .ratings_review_title {
+  color: #0e7b9e;
+  display: block;
+  float: left;
+  width: 32%;
+}
+.home_page_block_two .ratings .ratings_review .ratings_review_value {
+  display: block;
+  float: right;
+  width: 68%;
+}
+.home_page_block_two .ratings .ratings_break {
+  clear: both;
+  display: block;
+  height: 1em;
+}
+.home_page_block_two .ratings .commentPanel button[disabled="disabled"]:hover,
+.home_page_block_two .ratings .commentPanel button[disabled="disabled"]:active {
+  background-color: #e8e8e8;
+  color: #333;
+}
+.ratings_panel {
+  font-style: italic;
+  display: block;
+  height: 120px;
+  margin-right: 5px;
+  word-wrap: break-word;
+}
+.ratings_panel .ratings_panel_title {
+  color: #0e7b9e;
+  font-weight: bold;
+}
+.ratings_panel hr.line_rating {
+  border: 0;
+  border-top: 1px solid #ccc;
+  margin-top: 10px;
+}
+.ratings_panel .ratings_review_value {
+  display: inline-block;
+  float: right;
+  height: 90px;
+  width: 85%;
+}
+.ratings_panel .ratings_review_title {
+  color: #0e7b9e;
+  display: inline-block;
+  float: left;
+  font-size: 21px;
+  height: 90px;
+  width: 15%;
+}
+@media (max-width: 767px) {
+  .home_page {
+    padding: 0 5px;
+  }
+  .home_page .header {
+    word-break: break-all;
+  }
+  .home_page .graphic {
+    width: 96%;
+  }
+  .home_page_block_one {
+    width: 100%;
+  }
+  .home_page_block_two {
+    border-left: none;
+  }
+}

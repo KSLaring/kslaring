@@ -170,6 +170,15 @@ switch ($action) {
         if ($plugin->allow_enrol($instance) && has_capability('enrol/'.$plugin->get_name().':enrol', $context)) {
             if ($user) {
                 $plugin->enrol_user($instance, $user->id, $roleid, $timestart, $timeend, null, $recovergrades);
+
+                /**
+                 * @updateDate  11/03/2016
+                 * @author      eFaktor     (fbv)
+                 *
+                 * Description
+                 * Send a welcome message for manual enrolments
+                 */
+                $plugin->welcomeMessage($instance,$user);
             } else {
                 $plugin->enrol_cohort($instance, $cohort->id, $roleid, $timestart, $timeend, null, $recovergrades);
             }

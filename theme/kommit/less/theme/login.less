@@ -1,0 +1,67 @@
+// Login
+// --------------------------------------------------
+
+.loginpanel {
+    border: 1px solid @grayLight;
+    .border-radius(@baseBorderRadius);
+    background: @grayLighter;
+    padding: 10px 10px;
+    position: relative;
+    min-width: 210px;
+    max-width: 35%;
+    margin: 0 auto;
+}
+
+div.loginpanel h2 {
+    color: @headingsColor;
+    //font-size: @fontSizeH1;
+    font-weight: normal;
+    line-height: @baseLineHeight;
+    margin: 0;
+}
+
+.loginbox {
+    .loginform {
+        .form-input {
+            vertical-align: middle;
+            text-align: center;
+            float: none;
+            clear: both;
+            width: 100%;
+            padding-bottom: 1em;
+
+            #username,
+            #password {
+                position: relative;
+                width: 60%;
+            }
+            #loginbtn {
+                vertical-align: middle;
+                text-align: center;
+                width: 60%;
+                padding: 5px;
+            }
+        }
+        .form-label {
+            clear: both;
+            padding: 0 0 .2em 1.6em;
+            text-align: center;
+        }
+    }
+}
+#page-auth-saml-login {
+    div.loginpanel {
+        h2 {
+            line-height: initial;
+        }
+    }
+    .btn-login {
+        height: auto;
+        min-height: 65px;
+        min-width: 140px;
+        width: 50%;
+    }
+    .login-logo {
+        padding: 20px;
+    }
+}

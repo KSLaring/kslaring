@@ -1,0 +1,174 @@
+
+.btn_actions {
+    display:block;
+    /* Top, Right, Bottom, Left */
+    margin: 20px 25px 10px 0;
+    clear:both;
+}
+
+.btn_actions h6 {
+    display:inline-block;
+    color: #004b93;
+    /* Top, Right, Bottom, Left */
+    padding: 8px 8px 8px 8px;
+    /* Top, Right, Bottom, Left */
+    margin: 0 20px 0 0;
+    line-height: 10px;
+    background-color: #eeeff3;
+    width: 15%;
+    font-weight: bold;
+}
+
+.competence_table{
+    width: 100%;
+    clear: both;
+    display:block;
+}
+
+.competence_table .competence_table_row {
+    width: 100%;
+    height:auto;
+    padding-bottom: 5px;
+    display:inline-block;
+}
+
+.title_competence {
+    text-decoration: none;
+    background-color: #e5e5e5;
+    display: inline-block;
+    height: 10px;
+}
+
+.title_competence h6 {
+    color: #004b93;
+    /* Top, Right, Bottom, Left */
+    padding: 8px 8px 8px 0px;
+    margin: 0;
+    text-transform: uppercase;
+    line-height: 10px;
+    font-weight: bold;
+}
+
+.title_level h6  {
+    text-decoration: none;
+    display: block;
+    color: #004b93;
+    /* Top, Right, Bottom, Left */
+    padding: 8px 8px 8px 0px;
+    margin: 0;
+    font-weight: bold;
+}
+
+.competence_table .competence_table_row .col_zero {
+    width: 2%;
+    float: left;
+    color: #004b93;
+    margin-top: 5px;
+    margin-right: 10px;
+}
+
+.competence_table .competence_table_row .col_one {
+    width: 45%;
+    float: left;
+    font:  13px Arial;
+    text-align: left;
+    text-justify:inter-word;
+    white-space: pre-line;
+    color: #004b93;
+    margin-top: 5px;
+    margin-right: 10px;
+    margin-left: 5px;
+}
+
+.competence_table .competence_table_row .col_two {
+    width:25%;
+    float:left;
+    font:  13px Arial;
+    text-align: left;
+    text-justify:inter-word;
+    white-space: pre-line;
+    word-wrap: break-word;
+    color: #004b93;
+    margin-top: 5px;
+    margin-right: 12px;
+}
+
+.competence_table .competence_table_row .col_mg {
+    width:5%;
+    float:left;
+    font:  13px Arial;
+    text-align: left;
+
+    color: #004b93;
+    margin-top: 5px;
+}
+
+.competence_table .competence_table_row .col_three {
+    width:10%;
+    float:left;
+    font:  13px Arial;
+    text-align: center;
+
+    color: #004b93;
+    margin-top: 5px;
+}
+
+.competence_table .competence_table_row .lnk_col {
+    padding-right: 10px;
+}
+
+.lnk_title {
+    text-decoration: none;
+    display: inline-block;
+    color: #004b93;
+    /* Top, Right, Bottom, Left */
+    padding: 8px 8px 8px 0px;
+    margin: 0;
+    font-weight: bold;
+}
+
+.r0 {
+    background-color:  white;
+}
+
+.r2 {
+    background-color: #f2f2f2;
+}
+
+.competence_toggle {
+    border: 0;
+    background: none;
+    box-shadow: none;
+    -webkit-box-shadow: none;
+    -moz-box-shadow: none;
+    cursor  : pointer;
+    color   : #ccc;
+    margin      : 0px;
+    padding     : 0px;
+}
+
+.btn_actions .lnk_disabled h6  {
+    text-decoration: none;
+    color: #a4a4a4;
+    pointer-events: none;
+    cursor: default;
+    /* Top, Right, Bottom, Left */
+    padding: 8px 8px 8px 0px;
+    margin: 0;
+    font-weight: bold;
+}
+
+a.lnk_disabled {
+    color: #a4a4a4;
+    pointer-events: none;
+    cursor: default;
+}
+
+.no_visible {
+    visibility: hidden;
+    /* Top, Right, Bottom, Left */
+    padding: 8px 8px 8px 0px;
+    margin: 0;
+    font-weight: bold;
+    margin-left: 265px;
+}

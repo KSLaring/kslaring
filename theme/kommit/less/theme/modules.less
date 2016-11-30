@@ -1,0 +1,674 @@
+// Editing on/off button
+.toggle_switch {
+    position: relative;
+    float: left;
+    background: @grayLight;
+    height: 24px;
+    width: 24px;
+    border: 1px solid @grayMid;
+    border-radius: 15px;
+}
+
+.toggle_container {
+    display: inline-block;
+    position: relative;
+    box-shadow: inset 0 0 0px 1px #d5d5d5;
+    background-color: #f3f3f3;
+    height: 25px;
+    width: 55px;
+    border-radius: 15px;
+    border: 1px solid @grayLight;
+}
+
+.edit_text {
+    float: right;
+    color: #999999;
+    font-weight: normal;
+    font-size: @fontSizeSmall;
+    padding-top: 3px;
+    padding-right: 10px;
+}
+
+.toggle_switch_active {
+    float: right;
+    position: relative;
+    background: @grayLight;
+    height: 24px;
+    width: 24px;
+    border: 1px solid @grayMid;
+    border-radius: 15px;
+}
+
+.toggle_container_active {
+    display: inline-block;
+    position: relative;
+    background-color: #dff0d8;
+    box-shadow: inset 0 0 0px 1px #d5d5d5;
+    height: 25px;
+    width: 55px;
+    border-radius: 15px;
+    border: 1px solid @grayLight;
+}
+
+.edit_text_active {
+    float: left;
+    color: @gray;
+    font-weight: normal;
+    font-size: @fontSizeSmall;
+    padding-top: 3px;
+    padding-left: 10px;
+}
+
+.edit-label {
+    float: left;
+    font-weight: normal;
+    font-size: @fontSizeSmall;
+    padding-top: 3px;
+    padding-right: 5px;
+}
+
+// Introduction box on module pages
+// -------------------------------------
+.mod_introbox {
+    padding: 0;
+}
+
+// Certificate Module
+// -------------------------------------
+#page-mod-certificate-view {
+    .reportlink {
+        margin: .2em .5em;
+    }
+}
+
+// Feedback Module
+// -------------------------------------
+#page-mod-feedback-view {
+    &.format-netcourse #page-content #region-main div[role="main"] > h2 a {
+        border-bottom: 0;
+    }
+}
+
+.path-mod-feedback {
+    .boxaligncenter.boxwidthwide {
+        margin-left: 0;
+    }
+    // When the buttons in all activities are left aligned remove the comments
+    //    .continuebutton {
+    //        input[type="submit"] {
+    //            margin-left: 0;
+    //        }
+    //    }
+    .feedback_form {
+        // When the buttons in all activities are left aligned remove the comments
+        //        input[name="gopreviouspage"],
+        //        input[name="gonextpage"] {
+        //            margin-left: 0;
+        //            margin-right: 1em;
+        //        }
+        .mform {
+            .fdescription.required {
+                margin-left: auto;
+                float: right;
+            }
+        }
+        .feedback_item_box_left {
+            margin-bottom: 1em;
+
+            input[type="radio"],
+            input[type="checkbox"] {
+                margin-right: .2em;
+            }
+        }
+        li.feedback_item_check_h_left,
+        li.feedback_item_check_h_right,
+        li.feedback_item_radio_h_left,
+        li.feedback_item_radio_h_right {
+            padding-right: .8em;
+        }
+        .feedback_items {
+            clear: both;
+            padding-top: 1em;
+        }
+    }
+    .feedback_complete_cancel {
+        button[type="submit"] {
+            margin: 10px 10px 0 10px;
+        }
+    }
+}
+
+.path-mod-feedback {
+    div[role=main] {
+        margin: 0 1em 1em 0;
+    }
+
+    .feedback_form {
+        li {
+            &.feedback_item_check_h_left,
+            &.feedback_item_check_h_right,
+            &.feedback_item_radio_h_left,
+            &.feedback_item_radio_h_right {
+                white-space: nowrap;
+            }
+        }
+    }
+    .feedback_items {
+        ul {
+            li {
+                padding-top: .2em;
+                padding-bottom: .3em;
+            }
+        }
+    }
+}
+
+// Feedback Module button override
+// -------------------------------------
+#page-mod-feedback-delete_completed {
+    .mform .fitem .felement {
+        margin-left: 165px;
+    }
+}
+
+#page-mod-feedback-edit {
+    .mform {
+        .fitem {
+            div.fitemtitle {
+                width: 235px;
+            }
+            .felement {
+                margin-left: 245px;
+            }
+        }
+    }
+}
+
+// Glossary Module
+// -------------------------------------
+a.autolink.glossary {
+    color: inherit;
+    background: #d9e3ed;
+}
+
+.path-mod-glossary {
+    div[role=main] {
+        margin: 0 1em 1em 0;
+    }
+    .glossarysearchbox {
+        input[type="submit"] {
+            margin-top: 0;
+        }
+    }
+    .glossarycontrol {
+        margin-top: 10px;
+        padding-top: 5px;
+    }
+    .glossarypost {
+        width: 100%;
+
+        .concept {
+            h4 {
+                margin-top: .5em;
+                margin-bottom: .5em;
+            }
+            a {
+                h4 {
+                    border-bottom: 1px dotted;
+                    float: left;
+                }
+            }
+        }
+        td.picture {
+            padding-right: .5em;
+        }
+        &.faq {
+            .concept {
+                padding-top: 1.5em;
+            }
+            .entry {
+                padding-top: 1em;
+            }
+        }
+    }
+    .glossarycategoryheader {
+        width: 100%;
+
+        h3 {
+            border-bottom: 1px solid @grayLighter;
+            text-align: center;
+            padding-bottom: .3em;
+        }
+    }
+}
+
+// Lesson Module
+// -------------------------------------
+#page-mod-lesson-view {
+    .boxaligncenter.boxwidthwide {
+        margin-left: 0;
+    }
+    .ftoggler {
+        display: none;
+    }
+    div[role=main] {
+        margin: 0 1em 1em 0;
+
+        .singlebutton {
+            margin-top: 1em;
+        }
+
+        & > .box {
+            & > .lessonbutton {
+                display: block;
+                float: left;
+                margin: 1em 1em 0 0;
+            }
+        }
+    }
+    @media (max-width: 767px) {
+        div[role=main] {
+            margin-right: 0;
+        }
+    }
+    .branchbuttoncontainer {
+        margin-top: 1em;
+    }
+    #region-main {
+        .mform {
+            &:not(.unresponsive) {
+                .femptylabel {
+                    .fitemtitle {
+                        display: none;
+                    }
+                }
+            }
+            .fcontainer {
+                .contents {
+                    margin-bottom: 1em;
+                }
+            }
+            .fitem {
+                div.fitemtitle {
+                    text-align: left;
+                    //width: auto;
+                }
+                .felement {
+                    margin-left: 0;
+                }
+            }
+        }
+        .branchbuttoncontainer {
+            .singlebutton {
+                form {
+                    margin-left: 0;
+                }
+            }
+        }
+        .correctanswer {
+            margin-top: 1em;
+        }
+        .feedback {
+            + form {
+                margin-left: 0;
+            }
+        }
+        div[role="main"] {
+            &> .singlebutton {
+                form {
+                    margin-left: 0;
+                }
+            }
+        }
+    }
+}
+
+#page-mod-lesson-continue {
+    .ftoggler {
+        display: none;
+    }
+    div[role=main] {
+        margin: 0 1em 1em 0;
+
+        .singlebutton {
+            margin-top: 1em;
+        }
+        form {
+            & > .singlebutton {
+                input[type=submit] {
+                    margin: 0;
+                }
+            }
+        }
+        .singlebutton {
+            form {
+                input[type=submit] {
+                    margin: 0;
+                }
+            }
+        }
+    }
+    @media (max-width: 767px) {
+        div[role=main] {
+            margin-right: 0;
+        }
+    }
+    .branchbuttoncontainer {
+        margin-top: 1em;
+    }
+}
+
+// Set min-height on lesson pages
+// -------------------------------------
+
+/*
+#page-mod-lesson-view .contents {
+  //min-height: 16em;
+}
+
+#page-mod-lesson-view .contents {
+  //min-height: initial;
+}*/
+
+// Quiz Module
+// -------------------------------------
+#page-mod-quiz-view {
+    #region-main {
+        & > div[role="main"] {
+            margin: 1em 1% 0 0;
+        }
+    }
+}
+
+#page-mod-quiz-attempt,
+#page-mod-quiz-review {
+    #region-main {
+        & > div[role="main"] {
+            margin: 1em 1% 0 0;
+        }
+    }
+    .que {
+        @question-padding: .3em .5em;
+
+        span.qno {
+            font-size: inherit;
+            font-weight: inherit;
+        }
+        .info {
+            .clearfix;
+            background-color: @white;
+            border: 1px solid @kommitGrayWarm;
+            border-width: 1px 0;
+            float: none;
+            margin-bottom: 0;
+            padding: @question-padding;
+            width: auto;
+
+            h3 {
+                font-size: @fontSizeH3;
+                font-weight: bold;
+            }
+
+            & > div {
+                clear: none;
+                float: left;
+                margin-right: 1em;
+            }
+        }
+        .content {
+            margin-left: 0;
+            padding: 0;
+        }
+        .formulation {
+            background-color: @white;
+            border: 0;
+            //            border-top: 1px solid @kommitGrayWarm;
+            padding: @question-padding;
+
+            select {
+                max-width: 13em;
+            }
+
+            .correct {
+                background-color: @white;
+                border-left: 3px solid @green;
+            }
+
+            .partiallycorrect {
+                background-color: @white;
+                border-left: 3px solid @yellow;
+            }
+
+            .incorrect {
+                background-color: @white;
+                border-left: 3px solid @red;
+            }
+
+            div.r0,
+            div.r1 {
+                border-left: 3px solid transparent;
+
+                &.correct {
+                    border-left: 3px solid @green;
+                }
+
+                &.partiallycorrect {
+                    border-left: 3px solid @yellow;
+                }
+
+                &.incorrect {
+                    border-left: 3px solid @red;
+                }
+            }
+        }
+        .outcome {
+            background-color: @white;
+            border: 1px solid @yellow;
+            border-left-width: 3px;
+        }
+        .answer {
+            div.r0,
+            div.r1 {
+                margin-bottom: .3em;
+
+                &:after {
+                    clear: both;
+                    content: "";
+                    display: table;
+                    line-height: 0;
+                }
+
+                //                label {
+                //                }
+            }
+
+            td.control {
+                padding-left: .5em;
+            }
+
+            tr.r0,
+            tr.r1 {
+                td {
+                    padding-bottom: 1em;
+
+                    &.text {
+                        padding-right: .5em;
+                    }
+                }
+            }
+
+            input[type="radio"] + label {
+                .img-responsive-left {
+                    margin-right: 2em;
+                }
+            }
+
+            .specificfeedback {
+                padding: 0 .3em 0 0;
+            }
+
+            input {
+                vertical-align: baseline;
+            }
+        }
+    }
+}
+
+#page-mod-quiz-review {
+    table.quizreviewsummary {
+        th.cell,
+        td.cell {
+            background-color: @white;
+        }
+        td {
+            border-color: @kommitGrayWarm;
+        }
+    }
+}
+
+#page-mod-quiz-edit {
+    .questionbankwindow {
+        &.block {
+            margin-right: 1%;
+            width: 29%;
+
+            div.header {
+                background-color: @grayLighter;
+
+                div.title {
+                    h2 {
+                        color: @textColor;
+                    }
+                }
+            }
+            input[type="submit"],
+            input[type="button"] {
+                max-width: 100%;
+            }
+        }
+        a {
+            &#showbankcmd,
+            &#hidebankcmd {
+                color: @linkColor;
+            }
+        }
+    }
+    .questioncontentcontainer {
+        label {
+            & > img {
+                vertical-align: top;
+                padding-top: .2em;
+            }
+        }
+    }
+    #categoryquestions {
+        & > tbody {
+            & > tr:nth-of-type(even) {
+                background-color: @grayLighter;
+            }
+        }
+    }
+    div.quizpage {
+        .pagecontent {
+            background-color: @grayLighter;
+        }
+    }
+    div.question {
+        div.content {
+            div.qorder {
+                background-color: inherit;
+                margin-top: .3em;
+            }
+            div.questioncontrols {
+                padding: 0;
+            }
+            div.points {
+                input {
+                    &.pointssubmitbutton {
+                        margin-top: 0;
+                        padding: 0 .3em .1em;
+                    }
+                }
+            }
+        }
+    }
+}
+
+// Simple Certificate Module
+// -------------------------------------
+#page-mod-simplecertificate-view {
+    .nav-tabs {
+        margin-top: 2em;
+    }
+    #region-main {
+        .generaltable {
+            + div {
+                margin: 0;
+                width: auto !important;
+            }
+        }
+    }
+}
+
+// SCORM Module
+// -------------------------------------
+#page-mod-scorm-view {
+    #intro {
+        &.boxaligncenter {
+            margin-left: 0;
+        }
+        &.generalbox {
+            padding: 0;
+        }
+    }
+    #scormviewform {
+        input[type="radio"] {
+            margin-right: .1em;
+            margin-left: .5em;
+        }
+    }
+}
+
+.path-mod-scorm {
+    .scorm-center {
+        text-align: left;
+    }
+}
+
+// set up the keyframes
+@-webkit-keyframes nodeInserted {
+    from {
+        opacity: 0.99;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+// force Safari to repaint with a super short duration
+#scorm_content > iframe {
+    -webkit-animation-duration: 0.001s;
+    -webkit-animation-name: nodeInserted;
+}
+
+// force Safari to repaint if the class is added
+.repaint {
+    -webkit-animation-duration: 0.5s;
+    -webkit-animation-name: nodeInserted;
+}
+
+.yui3-skin-sam .yui3-moodle-local_lightbox-lightbox.yui3-panel .yui3-widget-bd {
+    height: 100% !important;
+}
+
+#page-mod-scorm-player {
+    &.format-netcourse {
+        #page-content {
+            border: 0;
+            padding: 0;
+        }
+        #scormtop {
+            display: none;
+        }
+    }
+}

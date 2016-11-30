@@ -50,11 +50,28 @@ course_create_sections_if_missing($course, range(0, $course->numsections));
 
 $renderer = $PAGE->get_renderer('format_topics');
 
-if (!empty($displaysection)) {
+/**
+ * @updateDate  02/03/2016
+ * @author      eFaktor     (fbv)
+ *
+ * Description
+ * Check the option one section by page
+ */
+if ($course->coursedisplay && $course->numsections) {
+    if ($displaysection) {
     $renderer->print_single_section_page($course, null, null, null, null, $displaysection);
 } else {
+        $renderer->print_single_section_page($course, null, null, null, null, 1);
+    }
+}else {
     $renderer->print_multiple_section_page($course, null, null, null, null);
 }
+
+//if (!empty($displaysection)) {
+//    $renderer->print_single_section_page($course, null, null, null, null, $displaysection);
+//} else {
+//    $renderer->print_multiple_section_page($course, null, null, null, null);
+//}
 
 // Include course format js module
 $PAGE->requires->js('/course/format/topics/format.js');

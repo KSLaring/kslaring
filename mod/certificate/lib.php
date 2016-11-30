@@ -53,6 +53,7 @@ function certificate_update_instance($certificate) {
     // Update the certificate.
     $certificate->timemodified = time();
     $certificate->id = $certificate->instance;
+    $certificate->customtext = $certificate->customtext['text'];
 
     return $DB->update_record('certificate', $certificate);
 }

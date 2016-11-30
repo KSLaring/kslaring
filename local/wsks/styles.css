@@ -1,0 +1,111 @@
+.block_slaves {
+    width: 95%;
+    display:block;
+}
+
+.block_slaves .lst_slaves {
+    width: 100%;
+    display:block;
+    margin-bottom: 25px;
+    margin-top: 10px;
+}
+
+.block_slaves .lst_slaves table {
+    width: 100%;
+    border-collapse:collapse;
+    margin-bottom: 0;
+    display: table;
+}
+
+.block_slaves .lst_slaves tr.header_slaves {
+    background-color:  #f2f2f2;
+    color:  #000;
+    padding: 0;
+    margin-bottom: 0;
+    font:bold 12px Verdana,Verdana Pro,sans-serif;
+    border-bottom: 2px solid #d8d8d8;
+    vertical-align: middle;
+    height: 30px;
+}
+
+.block_slaves .lst_slaves  td.info,
+.block_slaves .lst_slaves  th.info {
+    width: 25%;
+    text-align: left;
+    text-justify:inter-word;
+    padding: 0px 10px 0px 0px;
+}
+
+.block_slaves .lst_slaves  th.action,
+.block_slaves .lst_slaves  td.action {
+    width: 5%;
+    text-align: left;
+    text-justify:inter-word;
+    padding: 0px 10px 0px 0px;
+}
+
+
+.block_slaves .lst_slaves .slaves_r0 {
+    background-color:  #efefef;
+}
+
+.block_slaves .lst_slaves .slaves_r2 {
+    background-color: #fafafa;
+}
+
+.div_button_slaves {
+    position: relative;
+    float: left;
+    /* Top, Right, Bottom, Left */
+    margin-top: 5px;
+    display: inline-block;
+}
+
+.lnk_slaves {
+    margin-right: 25px;
+}
+
+.button_slaves {
+    font: bold 14px Arial;
+    text-decoration: none;
+    background-color: #0E7B9E;
+    color: white;
+    padding: 8px 8px 8px 8px;
+    border-top: 1px solid #0E7B9E;
+    border-right: 1px solid #0E7B9E;
+    border-bottom: 1px solid #0E7B9E;
+    border-left: 1px solid #0E7B9E;
+    display: inline-block;
+    margin-right: 25px;
+}
+
+
+@media (max-width: 767px) {
+    .block_slaves,
+    .block_slaves .lst_slaves,
+    .div_button_slaves {
+        float: none;
+        width: 100%;
+        display: block;
+    }
+}
+
+@media (min-width: 850px) and (max-width: 978px) {
+    .block_slaves,
+    .block_slaves .lst_slaves,
+    .div_button_slaves {
+        float: none;
+        width: 100%;
+        display: block;
+    }
+}
+
+@media (min-width: 767px) and (max-width: 849px) {
+    .block_slaves,
+    .block_slaves .lst_slaves,
+    .div_button_slaves {
+        float: none;
+        width: 100%;
+        display: block;
+    }
+}

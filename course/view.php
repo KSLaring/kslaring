@@ -19,6 +19,15 @@
     $switchrole  = optional_param('switchrole',-1, PARAM_INT); // Deprecated, use course/switchrole.php instead.
     $modchooser  = optional_param('modchooser', -1, PARAM_BOOL);
     $return      = optional_param('return', 0, PARAM_LOCALURL);
+    /**
+     * @updateDate  21/05/2104
+     * @author      eFaktor     (fbv)
+     *
+     * Description
+     * New Param from Home Page --> To start the course
+     */
+    $start_from_home = optional_param('start',0,PARAM_INT);
+
 
     $params = array();
     if (!empty($name)) {

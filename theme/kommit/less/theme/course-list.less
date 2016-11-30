@@ -1,0 +1,121 @@
+@import "inc/variables.less";
+
+// course list page
+// --------------------------------
+#page-course-index {
+    .buttons {
+        input[type="submit"] {
+            margin-top: 1.2em;
+        }
+    }
+}
+
+// course category page
+// --------------------------------
+.course_category_tree {
+    .collapseexpand {
+        &.disabled:hover,
+        &.disabled {
+            color: @grayLight;
+        }
+    }
+    .category {
+        > .info,
+        > .content {
+            background: #fff;
+            border: 1px solid #e8e8e8;
+            padding-left: 20px;
+        }
+        > .content {
+            margin-top: -3px;
+        }
+    }
+}
+
+a.disabled:hover,
+a.disabled {
+    text-decoration: none;
+    cursor: default;
+    font-style: italic;
+    color: #808080;
+}
+
+// course list styles for renderer
+.coursebox {
+    background: #fff;
+    border: 1px solid #e8e8e8;
+    padding-left: 20px;
+    position: relative;
+
+    .summary {
+        min-height: 40px;
+    }
+    .panel-heading {
+        font-size: @fontSizeH4;
+        line-height: @fontSizeH4 * 1.5;
+        margin-bottom: .5em;
+    }
+    .panel-body {
+        padding-bottom: 0;
+        margin-bottom: 0;
+
+        .coursebtn {
+            clear: both;
+            float: left;
+        }
+    }
+    .courseimage {
+        img {
+            float: left;
+            height: auto;
+            margin: 0 15px 1em 0;
+            max-width: 150px;
+        }
+    }
+    .teachers {
+        margin-left: 0;
+        li {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+    }
+    .coursebtn {
+        a {
+            margin-bottom: 0;
+        }
+    }
+    .boxfooter {
+        clear: both;
+        margin-bottom: 30px;
+    }
+    .enrolmenticons {
+        float: right;
+    }
+}
+
+#page-course-index-category {
+    .categorypicker {
+        margin: -10px 27px 20px;
+        text-align: right;
+
+        label {
+            display: inline;
+            margin-bottom: 5px;
+        }
+    }
+    .generalbox {
+        &.info {
+            background: none;
+            color: @kommitGray;
+            border: none;
+            border-radius: 0;
+            margin: 0 0 15px 0;
+            padding: 2px;
+
+            img {
+                margin: 0 !important;
+            }
+        }
+    }
+}

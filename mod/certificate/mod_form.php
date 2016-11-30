@@ -123,7 +123,22 @@ class mod_certificate_mod_form extends moodleform_mod {
         $mform->setDefault('printteacher', 0);
         $mform->addHelpButton('printteacher', 'printteacher', 'certificate');
 
-        $mform->addElement('textarea', 'customtext', get_string('customtext', 'certificate'), array('cols'=>'40', 'rows'=>'4', 'wrap'=>'virtual'));
+        // Start change uh 2016-09-28.
+        // Add the editor with a reduced button set.
+        //$mform->addElement('textarea', 'customtext', get_string('customtext', 'certificate'), array('cols'=>'40', 'rows'=>'4', 'wrap'=>'virtual'));
+        $options = array();
+        $options['atto:toolbar'] = '
+            collapse = collapse
+            style1 = title, bold, italic
+            list = unorderedlist, orderedlist
+            style2 = underline, strike, subscript, superscript
+            align = align
+            insert = table, clear
+            undo = undo
+            other = html';
+        $mform->addElement('editor', 'customtext', get_string('customtext', 'certificate'),
+            array('cols' => '40', 'rows' => '4', 'wrap' => 'virtual'), $options);
+        // End change uh.
         $mform->setType('customtext', PARAM_RAW);
         $mform->addHelpButton('customtext', 'customtext', 'certificate');
 

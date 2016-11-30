@@ -1,0 +1,193 @@
+/**
+ * New styles to integrate into the theme
+ *
+ * 2014-05-14
+ *
+ * Please remove the styles which are moved to the theme here.
+ */
+
+/* Style the text for the last lesson page which replaces the button/links */
+.format-classroom.path-mod-lesson .lastlessonpage-info,
+.format-classroom.path-mod-feedback .lastfeedbackpage-info {
+    padding: 1em .5em;
+    margin-top: 1em;
+    margin-bottom: 1em;
+    background-color: #F5F5F5;
+    border-top: 1px solid #E5E5E5;
+}
+
+/* Add padding around the page content for pages without the left course navigation */
+.format-classroom.pagelayout-incourse.empty-region-side-pre #page-content > div > .row-fluid {
+    padding: 0 1em .5em;
+}
+
+/* Add a bit space to the percentage number in the progress bar */
+.format-classroom.path-mod-lesson .progress_bar_completed {
+    padding: 0 20px 0 2px;
+}
+
+/* general layout styles
+/* Jon Jack 23/05/2013 - additional color
+/* styling will be done in the theme
+ */
+
+.course-content ul.classroom {
+    margin: 0;
+}
+.course-content ul.classroom li.section {
+    list-style: none;
+    margin: 0 0 5px 0;
+    padding: 0;
+}
+.course-content ul.classroom li.section .content {
+    margin: 0 40px;
+}
+.course-content ul.classroom li.section .left {
+    float: left;
+}
+.course-content ul.classroom li.section .right {
+    float: right;
+}
+.course-content ul.classroom li.section .left,
+.course-content ul.classroom li.section .right {
+    width: 40px;
+    text-align: center;
+    padding: 6px 0;
+}
+.course-content ul.classroom li.section .right img.icon {
+    padding: 0 0 4px 0;
+}
+.course-content ul.classroom li.section .left .section-handle img.icon {
+    padding: 0;
+    vertical-align: baseline;
+}
+.classroom-header {
+    margin: 1em 0 1em 0;
+}
+.classroom-header .btn {
+    margin: 0.2em 0 .2em 0;
+    background: none;
+    box-shadow: none;
+    color: #7e7e7e;
+    font-size: 18px;
+}
+.classroom-header .btn-primary:active,
+.classroom-header .btn-primary.active {
+    color: #ffffff;
+    background-color: #7e7e7e;
+}
+
+/* !!! The top and bottom margin padding values of the navigation entries
+   influence the height calculation of the left navigation block JavaScript.
+   Safari and Firefox may not return correct height values when margin and/or padding
+   values are changed. Please test the navigation block behaviour carefully after
+   changes !!! */
+/* remove the white gap between the gray page frame and the block start */
+#instcnav {
+    margin-top: 0;
+    padding: 0;
+}
+
+#instcnav .list {
+    margin-top: 0;
+}
+
+/* Make the actual opened activity bold */
+#instcnav .list .active_tree_node a {
+    font-weight: bold;
+}
+#instcnav .block_tree ul {
+    margin-left: 0;
+}
+#instcnav .block_tree .tree_item.branch {
+    background-position: 10px 1em;
+    margin: 0;
+    padding-top: 1em;
+    padding-right: .2em;
+    padding-bottom: 1em;
+}
+#instcnav .block_tree .tree_item:not(.branch) {
+    margin: 0;
+    font-size: 1em;
+    font-weight: normal;
+}
+#instcnav .block_tree .tree_item:not(.branch) a {
+    color: #7e7e7e;
+    display: block;
+    padding: .3em 0;
+}
+#instcnav .block_tree p.hasicon {
+    text-indent: -22px;
+}
+#instcnav .block_tree .tree_item:not(.branch) a .smallicon {
+    top: .4em;
+}
+#instcnav .block_tree [aria-hidden="true"],
+#instcnav .block_tree [aria-hidden="false"] {
+    display: block;
+}
+#instcnav .content {
+    padding: 0;
+}
+#instcnav li.contains_branch > p.branch {
+    background-color: #f9f9f9;
+    color: #7e7e7e;
+    line-height: 1.2em;
+    padding-left: 30px;
+}
+#instcnav li.contains_branch > p.branch {
+    border-top: 1px solid #fff;
+    border-bottom: 1px solid #e8e8e8;
+    color: #7e7e7e;
+}
+.jsenabled #instcnav .block_tree .tree_item.branch span:focus {
+    outline: 0;
+}
+.jsenabled #instcnav .block_tree li.contains_branch .branch span {
+    font-weight: normal;
+}
+.jsenabled #instcnav .block_tree li.contains_branch.collapsed .branch span {
+    font-weight: normal;
+}
+#instcnav .block_tree li.depth_2 ul {
+    padding-left: 22px;
+    padding-top: 0;
+    overflow: hidden;
+}
+#instcnav .completed {
+    background-color: #dff0d8;
+    background-image: -moz-linear-gradient(left, #f7f7f7, #dff0d8); /* FF 3.6+ */
+    background-image: -webkit-gradient(linear, 0 0, 100% 0, from(#f7f7f7), to(#dff0d8)); /* Safari 4+, Chrome 2+ */
+    background-image: -webkit-linear-gradient(left, #f7f7f7, #dff0d8); /* Safari 5.1+, Chrome 10+ */
+    background-image: -o-linear-gradient(left, #f7f7f7, #dff0d8); /* Opera 11.10 */
+    background-image: linear-gradient(to right, #f7f7f7, #dff0d8); /* Standard, IE10 */
+    background-repeat: repeat-x;
+}
+.format-classroom.path-mod-lesson .box .progress_bar {
+    border: none;
+    height: 25px;
+    margin-top: -25px;
+    background: none;
+}
+.format-classroom.path-mod-lesson .progress_bar {
+    background: #f2f2f3;
+    border: 1px solid #e8e8e8;
+    height: 25px;
+    margin-top: 40px;
+    margin-right: 20px;
+}
+.format-classroom.path-mod-lesson .progress_bar_completed {
+    background-color: #88c453;
+    padding-right: 20px;
+}
+.format-classroom #page-content {
+    background: #fff;
+    border: 1px solid #e8e8e8;
+}
+.format-classroom .block .list li {
+    margin: 0;
+}
+.format-classroom #region-main .togglecompletion {
+    margin: 1em 20px 0 0;
+    text-align: right;
+}

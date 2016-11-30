@@ -1,0 +1,67 @@
+// Import the bootstrap variables.
+@import "theme/inc/variables.less";
+
+// Old Moodle stuff from base theme.
+// Massive, needs broken up.
+@import "../../bootstrapbase/less/moodle/core";
+@import "../../bootstrapbase/less/moodle/admin";
+@import "../../bootstrapbase/less/moodle/calendar";
+@import "../../bootstrapbase/less/moodle/course";
+@import "../../bootstrapbase/less/moodle/filemanager";
+@import "../../bootstrapbase/less/moodle/message";
+@import "../../bootstrapbase/less/moodle/question";
+@import "../../bootstrapbase/less/moodle/user";
+
+// Upstream Bootstrap.
+@import "bootstrap";
+
+// Override Bootstrap defaults.
+@import "../../bootstrapbase/less/moodle/bootstrapoverride";
+
+// Set image location.
+@iconSpritePath:          ~"[[pix:theme|glyphicons-halflings]]";
+@iconWhiteSpritePath:     ~"[[pix:theme|glyphicons-halflings-white]]";
+
+// Increase form label width.
+@horizontalComponentOffset: 200px;
+// On Wider screens.
+@horizontalComponentOffset980: 220px;
+@horizontalComponentOffset1200: 265px;
+
+// Roll back nameclashes.
+@import "../../bootstrapbase/less/moodle/undo";
+
+// Extra padding for fixed nav.
+// Needs to be between bootstrap/bootstrap and
+// bootstrap/responsive.
+body {
+    padding-top: 60px;
+}
+
+// New Moodle stuff that builds on Bootstrap.
+@import "theme/blocks.less"; //@import "../../bootstrapbase/less/moodle/blocks";
+@import "../../bootstrapbase/less/moodle/forms";
+@import "../../bootstrapbase/less/moodle/modules";
+@import "../../bootstrapbase/less/moodle/chat";
+@import "../../bootstrapbase/less/moodle/reports";
+@import "../../bootstrapbase/less/moodle/backup-restore";
+@import "../../bootstrapbase/less/moodle/tables";
+@import "theme/buttons.less"; //@import "../../bootstrapbase/less/moodle/buttons";
+
+// Anything below this line is considered expendable,
+// so it doesn't matter if it doesn't show up in ie < 9
+// though at current time (2013-03-13) the whole file is
+// picked up in IE8, and IE9 fails at some point during the
+// responsive section, cutting off the last 400 selectors.
+
+// The following responsive imports are copied in
+// from "../../bootstrapbase/less/bootstrap/responsive".
+@import "../../bootstrapbase/less/bootstrap/responsive-utilities.less";
+@import "../../bootstrapbase/less/bootstrap/responsive-1200px-min.less";
+@import "../../bootstrapbase/less/bootstrap/responsive-768px-979px.less";
+@import "../../bootstrapbase/less/bootstrap/responsive-767px-max.less";
+@import "../../bootstrapbase/less/bootstrap/responsive-navbar.less";
+@import "../../bootstrapbase/less/moodle/responsive";
+
+@import "../../bootstrapbase/less/moodle/debug";
+@import "../../bootstrapbase/less/moodle/expendable";

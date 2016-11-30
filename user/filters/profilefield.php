@@ -140,9 +140,13 @@ class user_filter_profilefield extends user_filter_type {
      * @return array sql string and $params
      */
     public function get_sql_filter($data) {
+        /* Variables */
         global $CFG, $DB;
         static $counter = 0;
         $name = 'ex_profilefield'.$counter++;
+        $competence_level = null;
+        $competence_jr = null;
+        $municipality = null;
 
         $profilefields = $this->get_profile_fields();
         if (empty($profilefields)) {
@@ -165,25 +169,75 @@ class user_filter_profilefield extends user_filter_type {
             return '';
         }
 
+        /**
+         * @updateDate  19/03/2014
+         * @author      eFaktor     (fbv)
+         *
+         * Description
+         * Competence Manager Profile works different. It must take a look in the mdl_report_gen_jobrole and mdl_report_gen_companydata
+         *
+         * @updateDate  20/11/2014
+         * @author      eFaktor     (fbv)
+         *
+         * Description
+         * It works different with municipality
+         *
+         * @updateDate  30/01/2015
+         * @author      eFaktor     (fbv)
+         *
+         * Description
+         * Remove rgcompany/rgjobrole
+         * Add competence
+         */
         switch($operator) {
             case 0: // Contains.
                 $where = $DB->sql_like('data', ":$name", false, false);
+                $competence_level   = $DB->sql_like('co.name', ":competence_level", false, false);
+                $competence_jr      = $DB->sql_like('jr.name', ":competence_jr", false, false);
+                $municipality   = $DB->sql_like('mu.municipality', ":$name", false, false);
+
+                $params['competence_level']     = "%$value%";
+                $params['competence_jr']        = "%$value%";
                 $params[$name] = "%$value%";
                 break;
             case 1: // Does not contain.
                 $where = $DB->sql_like('data', ":$name", false, false, true);
+                $competence_level   = $DB->sql_like('co.name', ":competence_level", false, false, true);
+                $competence_jr      = $DB->sql_like('jr.name', ":competence_jr", false, false, true);
+                $municipality   = $DB->sql_like('mu.municipality', ":$name", false, true);
+
+                $params['competence_level']     = "%$value%";
+                $params['competence_jr']        = "%$value%";
                 $params[$name] = "%$value%";
                 break;
             case 2: // Equal to.
                 $where = $DB->sql_like('data', ":$name", false, false);
+                $competence_level   = $DB->sql_like('co.name', ":competence_level", false, false);
+                $competence_jr      = $DB->sql_like('jr.name', ":competence_jr", false, false);
+                $municipality   = $DB->sql_like('mu.municipality', ":$name", false, false);
+
+                $params['competence_level']     = "%$value%";
+                $params['competence_jr']        = "%$value%";
                 $params[$name] = "$value";
                 break;
             case 3: // Starts with.
                 $where = $DB->sql_like('data', ":$name", false, false);
+                $competence_level   = $DB->sql_like('co.name', ":competence_level", false, false);
+                $competence_jr      = $DB->sql_like('jr.name', ":competence_jr", false, false);
+                $municipality   = $DB->sql_like('mu.municipality', ":$name", false, false);
+
+                $params['competence_level']     = "%$value%";
+                $params['competence_jr']        = "%$value%";
                 $params[$name] = "$value%";
                 break;
             case 4: // Ends with.
                 $where = $DB->sql_like('data', ":$name", false, false);
+                $competence_level   = $DB->sql_like('co.name', ":competence_level", false, false);
+                $competence_jr      = $DB->sql_like('jr.name', ":competence_jr", false, false);
+                $municipality   = $DB->sql_like('mu.municipality', ":$name", false, false);
+
+                $params['competence_level']     = "%$value%";
+                $params['competence_jr']        = "%$value%";
                 $params[$name] = "%$value";
                 break;
             case 5: // Empty.
@@ -192,6 +246,12 @@ class user_filter_profilefield extends user_filter_type {
                 break;
             case 6: // Is not defined.
                 $op = " NOT IN ";
+                $competence_level   = "co.name = :competence_level";
+                $competence_jr      = "jr.name = :competence_jr";
+                $municipality   = "mu.municipality = :$name";
+
+                $params['competence_level']     = "%$value%";
+                $params['competence_jr']        = "%$value%";
                 break;
             case 7: // Is defined.
                 break;
@@ -205,7 +265,127 @@ class user_filter_profilefield extends user_filter_type {
         if ($where !== '') {
             $where = "WHERE $where";
         }
+
+        /**
+         * @updateDate  19/03/2014
+         * @author      eFaktor     (fbv)
+         *
+         * Description
+         * Competence Manager Profile works different. It must take a look in the mdl_report_gen_jobrole and mdl_report_gen_companydata
+         *
+         * @updateDate  20/11/2014
+         * @author      eFaktor     (fbv)
+         *
+         * Description
+         * It works different with municipality
+         *
+         * @updateDate  30/01/2015
+         * @author      eFaktor     (fbv)
+         *
+         * Description
+         * Remove rgcompany/rgjobrole
+         * Add competence
+         */
+        /* Get Datatype */
+        $rdo = $DB->get_record('user_info_field',array('id' => $profile),'datatype');
+        switch ($rdo->datatype) {
+            case 'gender':
+                $optMan     = explode(',',get_string('lst_man','profilefield_gender'));
+                $optWoman   = explode(',',get_string('lst_woman','profilefield_gender'));
+
+                if (in_array($value,$optMan)) {
+                    $params[$name] = 1;
+                }else if (in_array($value,$optWoman)) {
+                    $params[$name] = 2;
+                }
+
+                return array("id $op (SELECT userid FROM {user_info_data} $where)", $params);
+
+                break;
+            case 'competence':
+                /* Get the users connected to the company   */
+                $user_companies = array();
+                /* Get Companies    */
+                $sql = " SELECT		GROUP_CONCAT(DISTINCT co.id ORDER BY co.id SEPARATOR ',') as 'companies'
+                         FROM		{report_gen_companydata}		co
+                         WHERE 	    co.hierarchylevel = 3
+                            AND	    $competence_level ";
+                $rdo_companies = $DB->get_record_sql($sql,$params);
+
+                if ($rdo_companies) {
+                    /* Get Users Info   */
+                    $sql = " SELECT		DISTINCT  uid.userid,
+                                                  GROUP_CONCAT(DISTINCT uicd.companyid ORDER BY uicd.companyid SEPARATOR ',') as 'companies'
+                         FROM 		{user_info_data} 	        uid
+                                JOIN	{user_info_competence_data}	uicd		ON uicd.competenceid = uid.data
+                             WHERE		uid.fieldid = $profile
+                             GROUP BY uid.userid ";
+
+                    $rdo_users = $DB->get_records_sql($sql);
+                    if ($rdo_users) {
+                        $companies = explode(',',$rdo_companies->companies);
+                        foreach ($rdo_users as $user) {
+                            $comp_user      = explode(',',$user->companies);
+                            if (array_intersect($comp_user,$companies)) {
+                                $user_companies[] = $user->userid;
+                            }
+                        }
+                    }//if_users
+                }//if_companies
+
+                $sql_competence = '0';
+                if ($user_companies) {
+                    $sql_competence .= ',' . implode(',',$user_companies);
+                }//if_user_competence
+
+                /* Get Users Connected to the job role  */
+                $users_jr = array();
+                /* Get Job Roles    */
+                $sql = " SELECT		GROUP_CONCAT(DISTINCT jr.id ORDER BY jr.id SEPARATOR ',') as 'jobroles'
+                         FROM		{report_gen_jobrole}		jr
+                         WHERE 	    $competence_jr ";
+                $rdo_roles = $DB->get_record_sql($sql,$params);
+
+                if ($rdo_roles) {
+                    /* Get Users Info   */
+                    $sql = " SELECT		DISTINCT  uid.userid,
+                                                  GROUP_CONCAT(DISTINCT uicd.jobroles ORDER BY uicd.jobroles SEPARATOR ',') as 'jobroles'
+                         FROM 		{user_info_data} 	        uid
+                                JOIN	{user_info_competence_data}	uicd		ON uicd.competenceid = uid.data
+                             WHERE		uid.fieldid = $profile
+                             GROUP BY uid.userid ";
+
+                    $rdo_users = $DB->get_records_sql($sql);
+                    if ($rdo_users) {
+                        $roles = explode(',',$rdo_roles->jobroles);
+                        foreach ($rdo_users as $user) {
+                            $rol_user      = explode(',',$user->jobroles);
+                            if (array_intersect($rol_user,$roles)) {
+                                $users_jr[] = $user->userid;
+                            }
+                        }
+                    }//if_users
+                }//if_roles
+
+                if ($users_jr) {
+                    $sql_competence .= ',' . implode(',',$users_jr);
+                }
+
+                return array("id $op ($sql_competence) ", $params);
+
+                break;
+
+            case 'municipality':
+                $sql = " SELECT		userid
+                             FROM		{user_info_data}  uid
+                                JOIN	{municipality}	  mu  	ON		mu.idmuni       = uid.data
+                                                                AND		$municipality
+                             WHERE     fieldid=" . $profile;
+
+                return array("id $op ($sql)", $params);
+            default:
         return array("id $op (SELECT userid FROM {user_info_data} $where)", $params);
+        }//switch
     }
 
     /**

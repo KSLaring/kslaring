@@ -1,0 +1,146 @@
+@import "inc/variables.less";
+@import "inc/mixins.less";
+
+// Body
+// --------------------------------------------------
+
+body {
+    padding-top: 0;
+    background: @kommitGrayLight;
+
+    //background-image: url("../pix/cream_dust.png");
+}
+
+// Page Header
+// --------------------------------------------------
+
+.top-border {
+    border-top: 2px solid @kommitGreyDark;
+    border-bottom: 4px solid @kommitBlueLight;
+}
+
+.header-background {
+    #gradient > .horizontal-three-colors(#fff, #fff, 60%, @kommitGrayLight);
+    height: 100px;
+    padding: 0;
+    margin: 0;
+}
+
+// logo holder
+// --------------------------------------------------
+
+.logo-area {
+    float: left;
+    width: 224px;
+    height: 52px;
+    margin: 19px 0;
+    padding: 0;
+}
+
+.header-right {
+    float: right;
+    background-image: url(~"[[pix:theme|header_curve]]");
+    width: 540px;
+    height: 100px;
+    min-height: 100px;
+
+    .muni-logo {
+        display: block;
+        float: right;
+        padding: 20px 30px;
+        img {
+            float: right;
+            width: 37%;
+        }
+    }
+}
+
+// Footer
+// --------------------------------------------------
+
+#page-footer {
+    width: 100%;
+    padding-bottom: 2.5em;
+    text-align: left;
+    background: @kommitGreyDark;
+    border-top: 3px solid @kommitBlueLight;
+    h4 {
+        text-align: left;
+        font-size: @baseFontSize;
+        color: white;
+        width: 90%;
+    }
+    #page-footer-inner {
+        margin: 0 auto;
+        //min-height: 8em;
+        max-width: 1200px;
+        padding: 0;
+        text-align: left;
+        position: relative;
+        a {
+            color: @kommitGray;
+        }
+        p {
+            padding: 0 20px;
+            color: white;
+        }
+
+        .footer-left {
+            display: block;
+            vertical-align: top;
+            float: left;
+            padding: 0 5px;
+            .footer-logo {
+                padding: 20px;
+            }
+            p {
+                font-size: @fontSizeSmall;
+                color: white;
+            }
+            .returntorole {
+                color: @kommitGray;
+                padding-left: 20px;
+
+                a {
+                    color: lighten(@kommitGray, 20%);
+                }
+            }
+        }
+        .footer-right {
+            float: right;
+            display: block;
+            .social {
+                padding: 20px;
+                .col1,
+                .col2 {
+                    display: inline-block;
+                    width: 40px;
+                    height: 40px;
+                    margin: 10px;
+                    .fa {
+                        color: white;
+                        margin: 0;
+                        padding: 2px;
+                        border: 2px solid white;
+                    }
+                }
+            }
+        }
+    }
+}
+
+// blocksatbottom bottom block area
+// --------------------------------------------------
+#bottom-area {
+    &.row-fluid {
+        [class*="span"] {
+            display: inline;
+            float: none;
+            margin: 0;
+            width: auto;
+        }
+    }
+    .skip-block-to {
+        display: inline;
+    }
+}

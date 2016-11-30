@@ -1,0 +1,97 @@
+@import "inc/variables.less";
+
+// Modify this for custom colors, font-sizes, etc
+
+.profilepicture {
+    border: 1px solid @grayLight;
+    background: white;
+    padding: 4px;
+    display: inline-block;
+    max-width: 100%;
+    box-shadow: rgba(0, 0, 0, 0.14902) 1px 1px 1px;
+}
+
+.descriptionbox {
+    margin: 20px 0 5px 0;
+    border: 1px solid @grayLight;
+    background: @grayLighter;
+    .border-radius(@baseBorderRadius);
+}
+
+.userprofile {
+    h2 {
+        color: @headingsColor;
+    }
+    .description {
+        background-color: @white;
+        margin-bottom: 0;
+        padding: .5em 10px 0 10px;
+
+        @media (min-width: 1200px) {
+            margin-left: 265px;
+        }
+        @media (min-width: 980px) and (max-width: 1199px) {
+            margin-left: 220px;
+        }
+        @media (min-width: 767px) and (max-width: 997px) {
+            margin-left: 200px;
+        }
+        @media (max-width: 767px) {
+            margin-left: 0;
+        }
+    }
+    dl {
+        background: @grayLighter;
+        margin-bottom: 0;
+        margin-top: 0;
+
+        &.list {
+            dt {
+                padding: 6px 10px 6px 10px;
+                font-weight: normal;
+            }
+            dd {
+                background: white;
+                text-align: left;
+                padding: 6px 10px 6px 10px;
+                font-weight: normal;
+            }
+        }
+    }
+}
+
+.userlist {
+    table.controls {
+        background-color: @white;
+
+        tr {
+            vertical-align: bottom;
+        }
+        td {
+            //width: 25%;
+            padding-bottom: .3em;
+        }
+        .lastcol {
+            text-align: left;
+        }
+        .singleselect {
+            max-width: 100%;
+
+            @media (max-width: 479px) {
+                width: 6em;
+            }
+        }
+    }
+}
+
+.used-region-side-pre.used-region-side-post {
+    .userlist {
+        table.controls {
+            .singleselect {
+                @media (min-width: @mediumWidth) and (max-width: (@largeWidth - 1)) {
+                    width: 6em;
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,80 @@
+@import "inc/variables.less";
+@import "inc/mixins.less";
+
+// Core
+.btn {
+    display: inline-block;
+    .ie7-inline-block();
+    padding: 5px 15px;
+    margin-bottom: 0; // For input.btn
+    line-height: @baseLineHeight;
+    text-align: center;
+    vertical-align: middle;
+    cursor: pointer;
+    background: @kommitBlue;
+    border: none;
+    *border: 0; // Remove the border to prevent IE7's black border on input:focus
+    .border-radius(0);
+    color: white;
+    text-shadow: none;
+    font-size: @baseFontSize;
+
+    // Hover/focus state
+    &:hover,
+    &:focus {
+        color: white;
+        text-decoration: none;
+        background: @kommitBlueLight;
+
+      //    background-position: 0 -15px;
+
+        // transition is only when going to hover/focus, otherwise the background
+        // behind the gradient (there for IE<=9 fallback) gets mismatched
+        //    .transition(background-position .1s linear);
+    }
+
+    // Focus state for keyboard and accessibility
+    &:focus {
+        .tab-focus();
+    }
+
+    // Active state
+    &.active,
+    &:active {
+        //    background-image: none;
+        outline: 0;
+        //    .box-shadow(~"inset 0 2px 4px rgba(0,0,0,.15), 0 1px 2px rgba(0,0,0,.05)");
+    }
+
+    // Disabled state
+    &.disabled,
+    &[disabled] {
+        cursor: default;
+        //    background-image: none;
+        .opacity(65);
+        //    .box-shadow(none);
+    }
+}
+
+.btn-lineup {
+    margin: 10px 10px 10px 10px;
+}
+
+button,
+input.form-submit,
+input[type="button"],
+input[type="submit"],
+input[type="reset"],
+input#id_submitbutton,
+input#id_submitbutton2,
+.path-admin .buttons input[type="submit"],
+td.submit input {
+    .btn;
+    .btn-lineup;
+}
+
+// fix for buttons being split on 2 lines
+#notice .buttons .singlebutton {
+  display: inline-block;
+}
+

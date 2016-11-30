@@ -1,0 +1,242 @@
+@import "inc/variables.less";
+@import "inc/mixins.less";
+
+.navbar-fixed-top, .navbar-fixed-bottom {
+    position: relative;
+}
+
+/* @group Navbar */
+//.navbar .nav {
+//    border-right:1px solid @kommitGray;
+//}
+
+//.navbar .nav > li > a {
+//    border-left:1px solid @kommitGray;
+//}
+
+.navbar .nav > li > a:hover,
+.navbar .nav > li > a:focus {
+    background: @kommitGray !important;
+    color: @white;
+}
+
+.navbar .nav .active > a,
+.navbar .nav .active > a:hover,
+.navbar .nav .active > a:focus,
+.navbar .nav li.dropdown.open > .dropdown-toggle,
+.navbar .nav li.dropdown.active > .dropdown-toggle,
+.navbar .nav li.dropdown.open.active > .dropdown-toggle {
+    background: @kommitGray !important;
+    color: @white;
+}
+
+/* @group Navbar */
+.navbar {
+    margin-bottom: 0;
+    background-image: none !important;
+}
+
+.header {
+    &.loggedin {
+        .navbar {
+            .dropdown:last-of-type {
+                min-width: 10em;
+            }
+        }
+    }
+}
+
+.navbar-inner {
+    background-color: @kommitGreyDark !important;
+    background-image: none;
+    border-top: 1px solid @black !important;
+    border-bottom: 1px solid @black !important;
+    line-height: 0;
+    filter: none;
+    .border-radius(0);
+}
+
+.navbar .brand {
+    color: @white !important;
+    text-shadow: none;
+    line-height: 20px;
+}
+
+.navbar .caret {
+    border-top-color: @white !important;
+    border-bottom-color: @white !important;
+    margin-left: 5px;
+}
+
+.navbar .nav > li > a {
+    color: @white;
+    text-shadow: none;
+}
+
+.navbar .nav > li > a:hover {
+    color: @white;
+}
+
+.navbar .btn-navbar {
+    position: relative;
+    float: right;
+    //margin-right: 15px;
+    padding: 10px 10px;
+    margin-top: 8px;
+    margin-bottom: 8px;
+    background-color: @kommitBlueLight;
+    background-image: none;
+    border: 1px solid transparent;
+    .border-radius(4px);
+}
+
+.navbar .btn-navbar:hover {
+    background: @kommitBlue !important;
+}
+
+.navbar .btn-navbar:active,
+.navbar .btn-navbar.active,
+.navbar .btn-navbar.disabled,
+.navbar .btn-navbar[disabled] {
+    color: @kommitBlueDark;
+    background-color: @white !important;
+    transform: rotate(90deg);
+    -ms-transform: rotate(90deg); /* IE 9 */
+    -webkit-transform: rotate(90deg); /* Opera, Chrome, and Safari */
+
+    .icon-bar {
+        background: @kommitBlueDark;
+        height: 3px;
+        width: 15px;
+        //transform:rotate(90deg);
+        //-ms-transform:rotate(90deg); /* IE 9 */
+        //-webkit-transform:rotate(90deg); /* Opera, Chrome, and Safari */
+    }
+}
+
+.navbar .btn-navbar .icon-bar {
+    background-color: @kommitGrayLight;
+    .border-radius(1px);
+    box-shadow: none;
+}
+
+.btn-navbar .icon-bar + .icon-bar {
+    margin-top: 3px;
+}
+
+// fix text indent on use menu
+.navbar-right {
+    .dropdown-menu > li > a {
+        padding: 3px 35px;
+    }
+}
+
+.navbar-text {
+    text-align: right;
+
+    .logininfo  {
+        color: @white;
+        float: right;
+        margin-right: .5em;
+
+        @media all and (max-width: 979px) {
+            margin: 0;
+            right: 86px;
+            position: absolute;
+            top: 8px;
+        }
+        @media all and (max-width: 767px) {
+            right: 66px;
+        }
+
+        a {
+            color: @kommitBlueLight;
+            text-decoration: none;
+        }
+    }
+}
+
+.dropdown-menu {
+    i {
+        margin-right: 5px;
+    }
+    hr.sep {
+        margin: 0;
+        height: 0;
+        border: none;
+        border-bottom: 1px dotted @kommitGray;
+    }
+}
+
+.navbar-menues {
+    position: relative;
+
+    @media only screen and (min-width: @largeWidth) {
+        float: right;
+        width: 70%;
+    }
+    @media only screen and (min-width: @mediumWidth) and (max-width: (@largeWidth - 1)) {
+        float: right;
+        width: 60%;
+    }
+    @media only screen and (min-width: @narrowWidth) and (max-width: (@mediumWidth - 1)) {
+        float: right;
+        width: 50%;
+    }
+    @media only screen and (max-width: (@narrowWidth - 1)) {
+        float: none;
+    }
+
+    .nav-collapse {
+        &.active,
+        &.in {
+            float: right;
+
+            @media only screen and (max-width: (@narrowWidth - 1)) {
+                    float: none;
+                }
+        }
+    }
+}
+
+#topsearch {
+    @media only screen and (min-width: @mediumWidth) {
+        float: left;
+    }
+    @media only screen and (min-width: @narrowWidth) and (max-width: (@mediumWidth - 1)) {
+        float: left;
+        margin-left: 20px;
+    }
+    @media only screen and (max-width: (@narrowWidth - 1)) {
+        float: none;
+        margin-left: 5px;
+    }
+
+    #shorttopsearchbox {
+        margin-bottom: 0;
+    }
+    .topsearchbox {
+        label {
+            display: block;
+            font-size: 1px;
+            line-height: 1px;
+            height: 1px;
+            overflow: hidden;
+        }
+        button {
+            // For equal height on different devices.
+            font-family: Georgia, "Times New Roman", Times, serif;
+            font-size: @baseFontSize;
+            padding-top: .4em;
+            padding-bottom: .25em;
+            margin: 0;
+        }
+        &.input-append {
+            margin-bottom: 5px;
+
+            input {
+                .border-radius(0);
+            }
+        }
+    }
+}
