@@ -18,19 +18,29 @@
  * Version details
  *
  * @package    theme_adaptable
- * @copyright 2015 Jeremy Hopkins (Coventry University)
- * @copyright 2015 Fernando Acedo (3-bits.com)
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @copyright  2015-2016 Jeremy Hopkins (Coventry University)
+ * @copyright  2015-2016 Fernando Acedo (3-bits.com)
+ * @copyright  2015 David Bezemer <info@davidbezemer.nl>, www.davidbezemer.nl
+ * @copyright  2016 COMETE (Paris Ouest University)
+ * @author     David Bezemer <info@davidbezemer.nl>, Bas Brands <bmbrands@gmail.com>, Gavin Henrick <gavin@lts.ie>, COMETE
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  *
  */
 
 
-// Analytics Section.
+// Analytics section.
 $temp = new admin_settingpage('theme_adaptable_analytics', get_string('analyticssettings', 'theme_adaptable'));
 $temp->add(new admin_setting_heading('theme_adaptable_analytics', get_string('analyticssettingsheading', 'theme_adaptable'),
-format_text(get_string('analyticssettingsdesc', 'theme_adaptable'), FORMAT_MARKDOWN)));
+           format_text(get_string('analyticssettingsdesc', 'theme_adaptable'), FORMAT_MARKDOWN)));
 
-// Enable analytics.
+
+// Google Analytics Section.
+$name = 'theme_adaptable/googleanalyticssettings';
+$heading = get_string('googleanalyticssettings', 'theme_adaptable');
+$setting = new admin_setting_heading($name, $heading, '');
+$temp->add($setting);
+
+// Enable Google analytics.
 $name = 'theme_adaptable/enableanalytics';
 $title = get_string('enableanalytics', 'theme_adaptable');
 $description = get_string('enableanalyticsdesc', 'theme_adaptable');
@@ -55,12 +65,6 @@ if (!$analyticscount) {
 }
 
 for ($analyticsindex = 1; $analyticsindex <= $analyticscount; $analyticsindex ++) {
-    // Alert Box Heading 1.
-    $name = 'theme_adaptable/settingsanalytics' . $analyticsindex;
-    $heading = get_string('analyticssettings', 'theme_adaptable', $analyticsindex);
-    $setting = new admin_setting_heading($name, $heading, '');
-    $temp->add($setting);
-
     // Alert Text 1.
     $name = 'theme_adaptable/analyticstext' . $analyticsindex;
     $title = get_string('analyticstext', 'theme_adaptable');
@@ -75,5 +79,49 @@ for ($analyticsindex = 1; $analyticsindex <= $analyticscount; $analyticsindex ++
     $setting = new admin_setting_configtext($name, $title, $description, '', PARAM_RAW);
     $temp->add($setting);
 }
+
+
+// Piwik Analytics Section.
+$name = 'theme_adaptable/piwiksettings';
+$heading = get_string('piwiksettings', 'theme_adaptable');
+$setting = new admin_setting_heading($name, $heading, '');
+$temp->add($setting);
+
+
+// Enable Piwik analytics.
+$name = 'theme_adaptable/piwikenabled';
+$title = get_string('piwikenabled', 'theme_adaptable');
+$description = get_string('piwikenableddesc', 'theme_adaptable');
+$default = false;
+$temp->add(new admin_setting_configcheckbox($name, $title, $description, $default, true, false));
+
+// Piwik site ID.
+$name = 'theme_adaptable/piwiksiteid';
+$title = get_string('piwiksiteid', 'theme_adaptable');
+$description = get_string('piwiksiteiddesc', 'theme_adaptable');
+$default = '1';
+$temp->add(new admin_setting_configtext($name, $title, $description, $default));
+
+// Piwik image track.
+$name = 'theme_adaptable/piwikimagetrack';
+$title = get_string('piwikimagetrack', 'theme_adaptable');
+$description = get_string('piwikimagetrackdesc', 'theme_adaptable');
+$default = true;
+$temp->add(new admin_setting_configcheckbox($name, $title, $description, $default, true, false));
+
+// Piwik site URL.
+$name = 'theme_adaptable/piwiksiteurl';
+$title = get_string('piwiksiteurl', 'theme_adaptable');
+$description = get_string('piwiksiteurldesc', 'theme_adaptable');
+$default = '';
+$temp->add(new admin_setting_configtext($name, $title, $description, $default));
+
+// Enable Piwik admins tracking.
+$name = 'theme_adaptable/piwiktrackadmin';
+$title = get_string('piwiktrackadmin', 'theme_adaptable');
+$description = get_string('piwiktrackadmindesc', 'theme_adaptable');
+$default = false;
+$temp->add(new admin_setting_configcheckbox($name, $title, $description, $default, true, false));
+
 
 $ADMIN->add('theme_adaptable', $temp);

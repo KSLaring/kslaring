@@ -18,8 +18,8 @@
  * Version details
  *
  * @package    theme_adaptable
- * @copyright 2015 Jeremy Hopkins (Coventry University)
- * @copyright 2015 Fernando Acedo (3-bits.com)
+ * @copyright  2015-2016 Jeremy Hopkins (Coventry University)
+ * @copyright  2015-2016 Fernando Acedo (3-bits.com)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  *
  */
@@ -92,6 +92,8 @@ function theme_adaptable_process_css($css, $theme) {
         '[[setting:blockheaderbackgroundcolor]]' => '#FFFFFF',
         '[[setting:blockbordercolor]]' => '#59585D',
         '[[setting:blockregionbackgroundcolor]]' => 'transparent',
+        '[[setting:selectiontext]]' => '#000000',
+        '[[setting:selectionbackground]]' => '#eeff41',
         '[[setting:marketblockbordercolor]]' => '#e8eaeb',
         '[[setting:marketblocksbackgroundcolor]]' => 'transparent',
         '[[setting:blocklinkcolor]]' => '#009688',
@@ -130,6 +132,7 @@ function theme_adaptable_process_css($css, $theme) {
         '[[setting:topmenufontsize]]' => '14px',
         '[[setting:menubkcolor]]' => '#ffffff',
         '[[setting:menufontcolor]]' => '#444444',
+        '[[setting:menuhovercolor]]' => '#b2dfdb',
         '[[setting:menubordercolor]]' => '#80cbc4',
         '[[setting:mobilemenubkcolor]]' => '#F9F9F9',
         '[[setting:mobilemenufontcolor]]' => '#000000',
@@ -157,6 +160,7 @@ function theme_adaptable_process_css($css, $theme) {
         '[[setting:mobile]]' => '22',
         '[[setting:socialpaddingtop]]' => '1.8%',
         '[[setting:fontname]]' => 'Open Sans',
+        '[[setting:fontsize]]' => '95%',
         '[[setting:fontheadername]]' => 'Roboto Slab',
         '[[setting:fontcolor]]' => '#333333',
         '[[setting:fontheadercolor]]' => '#333333',
@@ -176,6 +180,7 @@ function theme_adaptable_process_css($css, $theme) {
         '[[setting:coursetitlepaddingleft]]' => '0px',
         '[[setting:searchboxpaddingtop]]' => '16px',
         '[[setting:pageheaderheight]]' => '72px',
+        '[[setting:emoticonsize]]' => '16px',
         '[[setting:fullscreenwidth]]' => '98%',
         '[[setting:coursetitlemaxwidth]]' => '50%',
         '[[setting:sitetitlemaxwidth]]' => '50%',
@@ -195,7 +200,6 @@ function theme_adaptable_process_css($css, $theme) {
         '[[setting:enableticker]]' => true,
         '[[setting:enabletickermy]]' => true,
         '[[setting:tickerwidth]]' => '',
-        '[[mysitesmaxlength]]' => '30',
         '[[setting:socialwallbackgroundcolor]]' => '#FFFFFF',
         '[[setting:socialwallsectionradius]]' => '6px',
         '[[setting:socialwallbordertopstyle]]' => 'solid',
@@ -480,7 +484,7 @@ function theme_adaptable_performance_output($param) {
 function theme_adaptable_page_init(moodle_page $page) {
     global $CFG;
     $page->requires->jquery();
-    // REMOVED: Deprecated function    error_log($CFG->version); ???
+    // REMOVED: Deprecated function ->   error_log($CFG->version); ???
     if ($CFG->version < 2015051100) {
         $page->requires->jquery_plugin('bootstrap', 'theme_adaptable');
         $page->requires->jquery_plugin('dropdown', 'theme_adaptable');

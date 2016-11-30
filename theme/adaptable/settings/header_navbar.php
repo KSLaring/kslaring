@@ -31,6 +31,7 @@ $temp->add(new admin_setting_heading('theme_adaptable_navbar', get_string('navba
 format_text(get_string('navbardesc', 'theme_adaptable'), FORMAT_MARKDOWN)));
 
 // Sticky Navbar at the top.
+/****
 $name = 'theme_adaptable/stickynavbar';
 $title = get_string('stickynavbar', 'theme_adaptable');
 $description = get_string('stickynavbardesc', 'theme_adaptable');
@@ -45,6 +46,7 @@ $description = get_string('navbarcachetimedesc', 'theme_adaptable');
 $setting = new admin_setting_configselect($name, $title, $description, '0', $from0to60inc5);
 $setting->set_updatedcallback('theme_reset_all_caches');
 $temp->add($setting);
+******/
 
 $name = 'theme_adaptable/enablehome';
 $title = get_string('home');

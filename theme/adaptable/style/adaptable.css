@@ -3,15 +3,18 @@ html,body {
     padding: 0;
     background: [[setting:backcolor]];
     background-size: 100% auto;
-    font-size: 95%;
+    font-size: [[setting:fontsize]];
     color: [[setting:fontcolor]];
     font-family: [[setting:fontname]], sans-serif !important;
     font-weight: [[setting:fontweight]] !important;
 }
 
-html, body, p, ul, ol, dl, input, textarea, select {
+
+p, ul, ol, dl, input, textarea, select {
     font-family: [[setting:fontname]], sans-serif !important;
     color: [[setting:fontcolor]];
+    font-size: [[setting:fontsize]];
+    font-weight: [[setting:fontweight]] !important;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -57,13 +60,13 @@ img {
 
 /* Selection **************************/
 ::selection  {
-    color: #000000;
-    background-color: #eeff41;
+    color: [[setting:selectiontext]];
+    background-color: [[setting:selectionbackground]];
 }
 
 ::-moz-selection  {
-    color: #000000;
-    background-color: #eeff41;
+    color: [[setting:selectiontext]];
+    background-color: [[setting:selectionbackground]];
 }
 
 /* Forms */
@@ -125,6 +128,7 @@ width: auto;
     font-weight: bold;
     margin-bottom: 20px;
 }
+
 
 .jsenabled .block_settings .block_tree .tree_item.branch,
 .block_navigation .block_tree .tree_item.branch {
@@ -205,41 +209,68 @@ div.signuppanel h2 {
     margin-bottom: 0px;
     background: transparent;
     padding-top: 0px;
-    min-height: 82px;
+    min-height: 125px;
     color: [[setting:headertextcolor2]];
 }
 
+/* Header ***********************/
+
+#titlecontainer {
+    width: [[setting:sitetitlemaxwidth]];
+}
+
 #logo {
-    float: left;
     margin-bottom: 2px;
     margin-left: 0px;
     margin-top: 0px;
     max-width: 250px;
 }
 
-#titlecontainer {
-    padding-top: 10px;
+#logocontainer {
+    float: left;
+    height: 110px;
+    width: 250px;
+    margin: 5px 15px 5px 0 ;
 }
 
 #titlecontainer,
 #titlecontainer a,
 #titlecontainer p {
+    display: inline;
+    position: absolute;
+    font-size: [[setting:fonttitlesize]];
     font-family: [[setting:fonttitlename]], sans-serif !important;
     color: [[setting:fonttitlecolor]] !important;
-    font-size: [[setting:fonttitlesize]] !important;
-    line-height: 100%;
-    font-weight: [[setting:fonttitleweight]];
-    padding-left: 15px;
-    padding-top: [[setting:coursetitlepaddingtop]];
-    max-width: [[setting:coursetitlemaxwidth]];
+    font-weight: [[setting:fonttitleweight]] !important;
+
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    line-height: 120%;
 }
 
-#titlecontainer a:hover {
-    color: [[setting:linkhovercolor]];
-    text-decoration: none;
+#sitetitle {
+    padding-left: [[setting:sitetitlepaddingleft]];
+    margin-top: [[setting:sitetitlepaddingtop]];
+    max-width: [[setting:sitetitlemaxwidth]];
+
+    display: inline;
+    float: left;
+    height: 110px;
+    left: 200px;
+    margin-top: 0;
+    max-width: 75%;
+    min-width: 50%;
+    padding-left: 0;
+    position: relative;
+    width: auto;
+
+    left: 20px;
+    margin-top: 0;
+    min-width: 50%;
+}
+
+
 }
 
 #moodlelogo {
@@ -250,20 +281,6 @@ div.signuppanel h2 {
     display: block;
     margin-bottom: 6px;
     margin-left: 0px;
-}
-
-#coursetitle p {
-    font-family: [[setting:fonttitlename]], sans-serif !important;
-    color: [[setting:fonttitlecolor]] !important;
-    font-size: [[setting:fonttitlesize]] !important;
-    line-height: 100%;
-    font-weight: [[setting:fonttitleweight]];
-    padding-left: 15px;
-    padding-top: [[setting:coursetitlepaddingtop]];
-    max-width: [[setting:coursetitlemaxwidth]];
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
 }
 
 #coursesearchbox2 {
@@ -290,6 +307,8 @@ div.signuppanel h2 {
     padding-top: [[setting:socialpaddingtop]];
     padding-bottom: 5px;
     font-size: [[setting:socialsize]];
+    display: block;
+clear: left;
 }
 
 .socialbox a {
@@ -299,10 +318,17 @@ div.signuppanel h2 {
 
 @media (max-width: 980px) {
     .socialbox {
-        float: none;
         padding-bottom: 10px;
         padding-top: 20px;
         text-align: center;
+        display: block;
+    }
+
+    #logocontainer {
+        float: left;
+        height: 110px;
+        margin: 5px 15px 5px 0 ;
+        clear: both;
     }
 }
 
@@ -405,11 +431,9 @@ a.usermendrop {
     margin-bottom: 20px;
 }
 
-#themessage-internal {
-/*
-    padding: 15px;
-    padding-right: 25px;
-*/
+img.emoticon {
+    height: [[setting:emoticonsize]];
+    width: [[setting:emoticonsize]];
 }
 
 .personpic {
@@ -539,13 +563,14 @@ span.fa-chevron-right.fa {
   padding: 5px;
 }
 
-
 .breadcrumb li span.divider {
     display: none !important;
-
-
 }
 
+.breadcrumb > a {
+    display: inline-block;
+    margin: 5px 0;
+}
 
 #page-footer .logininfo {
     margin: 0px auto 0px;
@@ -670,10 +695,6 @@ langmenu a:hover {
     margin-left: 5px;
 }
 
-.breadcrumb li.lastli a span {
-  display: none !important;
-}
-
 .breadcrumb li.lastli a,
 .breadcrumb li.lastli span {
     color: [[setting:breadcrumbtextcolor]];
@@ -738,6 +759,10 @@ div.redirectmessage {
     padding: 20px 20px 40px;
 }
 
+.singleselect {
+    width: inherit;
+}
+
 #forummenu select {
     margin-top: 10px;
     width: 100%;
@@ -786,6 +811,10 @@ span2.mceEditor iframe, table.mceLayout2 iframe {
     max-width:500px !important;
 }
 
+.editor_atto_menu .open ul.dropdown-menu {
+    min-width: 3.5em;
+}
+
 .form-item .form-label, .mform .fitem div.fitemtitle, .userprofile dl.list dt, .form-horizontal .control-label {
     width: 250px;
 }
@@ -800,8 +829,8 @@ span2.mceEditor iframe, table.mceLayout2 iframe {
 }
 
 #profilepic img, .userpicture {
-    width: 30px;
-    height: 30px;
+    width: 30px !important;
+    height: 30px !important;
     display: inline;
     margin-right: 4px;
 }
@@ -839,8 +868,6 @@ input[type="radio"], input[type="checkbox"] {
 }
 
 #adminsettings h3 {
-/*	border-bottom: 1px solid [[setting:blockbordercolor]];*/
-/*    background-color: #e8eaeb;*/
     font-family: [[setting:fontheadername]], sans-serif !important;
     font-weight: [[setting:fontheaderweight]] !important;
     color: [[setting:fontheadercolor]];
@@ -854,13 +881,13 @@ input[type="radio"], input[type="checkbox"] {
 }
 
 #region-main {
-  margin-top: 0px;
-  background: [[setting:regionmaincolor]];
-  padding: 4px;
+    margin-top: 0px;
+    background: [[setting:regionmaincolor]];
+    padding: 0 10px;
 }
 
 #region-main #coursesearch .btn {
-  margin-top: 10px;
+    margin-top: 10px;
 }
 
 @media (max-width: 990px) {
@@ -901,16 +928,30 @@ input[type="radio"], input[type="checkbox"] {
     }
 
     #page-header {
-        min-height: 0px;
+        min-height: 125px;
+    }
+
+    .row-fluid .span3 {
+        width: 100%;
     }
 
     .socialbox{
+        display: block;
+        clear: both;
         padding-top:[[setting:socialboxpaddingtopmobile]];
         padding-top:[[setting:socialboxpaddingbottommobile]];
     }
 
     #logo {
         margin-bottom: 10px;
+    }
+
+    #sitetitle {
+        font-size: 24px;
+        left: 10px;
+        margin-top: 0;
+        max-width: 100%;
+        width: auto;
     }
 
     .headermenu2 {
@@ -944,7 +985,7 @@ input[type="radio"], input[type="checkbox"] {
     }
 
     .block .header {
-        margin: 0px 10px !important;
+        margin: 0px !important;
     }
 
     #page-footer {

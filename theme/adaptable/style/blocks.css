@@ -1,5 +1,5 @@
 .block-region-front .block {
-border: none;
+    border: none;
 }
 
 .block-region-front .block .header {
@@ -7,7 +7,7 @@ border: none;
 }
 
 .block.hidden .header {
-  border-bottom: 0px;
+    border-bottom: 0px;
 }
 
 /* reset border values */
@@ -19,19 +19,23 @@ border: none;
     border-radius: important !0;
 }
 
-.block .header {
-  border-width: [[setting:blockheaderbordertop]] [[setting:blockheaderborderright]] [[setting:blockheaderborderbottom]] [[setting:blockheaderborderleft]];
-  border-color: [[setting:blockbordercolor]];
-  border-style: [[setting:blockheaderbordertopstyle]];
-  padding: 10px 10px;
-  padding-right: 0px;
-  background: [[setting:blockheaderbackgroundcolor]];
+/* block titles */
+.block .header,
+#dockeditempanel .dockeditempanel_hd {
+    border-width: [[setting:blockheaderbordertop]] [[setting:blockheaderborderright]] [[setting:blockheaderborderbottom]] [[setting:blockheaderborderleft]];
+    border-color: [[setting:blockbordercolor]];
+    border-style: [[setting:blockheaderbordertopstyle]];
+    padding: 10px 10px;
+    background: [[setting:blockheaderbackgroundcolor]];
   -webkit-border-radius: [[setting:blockheadertopradius]] [[setting:blockheadertopradius]] [[setting:blockheaderbottomradius]] [[setting:blockheaderbottomradius]];
   -moz-border-radius: [[setting:blockheadertopradius]] [[setting:blockheadertopradius]] [[setting:blockheaderbottomradius]] [[setting:blockheaderbottomradius]];
   border-radius: [[setting:blockheadertopradius]] [[setting:blockheadertopradius]] [[setting:blockheaderbottomradius]] [[setting:blockheaderbottomradius]];
 }
 
-/* block titles */
+.block .header {
+    padding-right: 0px;
+}
+
 .block .header .title h2 {
   font-weight: normal;
   margin: 0 0;
@@ -44,7 +48,14 @@ border: none;
   text-shadow: none;
 }
 
-.block .content {
+.block .header .block_action {
+  margin: 0 0;
+  margin-top: -5px;
+}
+
+
+/* block content */
+.block > .content , #dockeditempanel .dockeditempanel_bd {
   border-width: [[setting:blockmainbordertop]] [[setting:blockmainborderright]] [[setting:blockmainborderbottom]] [[setting:blockmainborderleft]];
   border-color: [[setting:blockbordercolor]];
   border-style: [[setting:blockmainbordertopstyle]];
@@ -52,7 +63,6 @@ border: none;
   font-weight: normal;
   font-size: 90%;
   background: [[setting:blockbackgroundcolor]];
- /* color: #333;*/
   -webkit-border-radius: [[setting:blockmaintopradius]] [[setting:blockmaintopradius]] [[setting:blockmainbottomradius]] [[setting:blockmainbottomradius]];
   -moz-border-radius: [[setting:blockmaintopradius]] [[setting:blockmaintopradius]] [[setting:blockmainbottomradius]] [[setting:blockmainbottomradius]];
   border-radius: [[setting:blockmaintopradius]] [[setting:blockmaintopradius]] [[setting:blockmainbottomradius]] [[setting:blockmainbottomradius]];
@@ -71,9 +81,17 @@ border: none;
     text-decoration: none !important;
 }
 
-.block .header .block_action {
-  margin: 0 0;
-  margin-top: -5px;
+
+.block .block-hider-show, .block .block-hider-hide {
+  width: 18px;
+}
+
+/** Some specific block styles for calendar block, login block, my profile block, etc. **/
+
+.block_login .content {
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 100%;
 }
 
 .block_login .c1.btn input {
@@ -83,13 +101,12 @@ border: none;
   width: 96%;
 }
 
-.block .block-hider-show, .block .block-hider-hide {
-  width: 18px;
+.block_course_overview .content {
+    margin: 0;
 }
 
-/** some specific block styles for calendar block, login block, my profile block, etc. **/
-
-.block_calendar_month table.minicalendar.calendartable td,.block_calendar_month table.minicalendar.calendartable th {
+.block_calendar_month table.minicalendar.calendartable td,
+.block_calendar_month table.minicalendar.calendartable th {
     border: none !important;
 }
 
@@ -105,6 +122,10 @@ border: none;
 .block_comments div.content li {
     list-style-type: none;
 }
+
+/*****/
+
+
 
 .questionbankwindow.block {
   padding: 0px;

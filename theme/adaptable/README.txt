@@ -31,6 +31,10 @@ settings and play with it afterwards.
 With a little time you should be able to setup an attractive Moodle site with a high degree of
 individuality without without knowing any CSS.
 
+This theme has been developed by:
+Jeremy Hopkins (Coventry University)
+Fernando Acedo (3-bits.com)
+
 
 ==========================================================================================================
 HTML/CSS sample code for block areas
@@ -187,19 +191,32 @@ IMPORTANT! Verify you only enter the <li> tags. For example:
 
 
 
-Acknowledgment
+Acknowledgments
 --------------------------------------
-Big thanks to all the volunteers that are testing Adaptable continously. 
+Big thanks to all the volunteers that are collaborating and testing Adaptable continously. 
 We really appreciate your help and support to develope the most adaptable theme for moodle.
 
 
+Development:
+Leonid Chernyavskiy 
+COMETE (Paris Ouest University)
+Marina Glancy
+
+Testing:
+Andrew Walding
+Alexander Goryntsev
 
 
 
-Adaptable is licensed under the GPL (GNU General Public License). 
+Licensing
+-------------------------------------
+Adaptable is licensed under the GPL v3 (GNU General Public License). 
 You can find a complete licence copy in: http://www.gnu.org/licenses
 
+Google Fonts released under:
+- SIL Open Font License v1.1 - http://scripts.sil.org/OFL
+- Apache 2 license - https://www.apache.org/licenses/LICENSE-2.0
+- The Ubuntu fonts use the Ubuntu Font License v1.0  - http://font.ubuntu.com/ufl/ubuntu-font-licence-1.0.txt
 
-
-
-
+Emojione (http://emojione.com) released under Creative Commons Attribution 4.0 International
+You can find a complete licence copy in: https://creativecommons.org/licenses/by/4.0/

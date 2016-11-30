@@ -18,8 +18,8 @@
  * Version details
  *
  * @package    theme_adaptable
- * @copyright 2015 Jeremy Hopkins (Coventry University)
- * @copyright 2015 Fernando Acedo (3-bits.com)
+ * @copyright  2015-2016 Jeremy Hopkins (Coventry University)
+ * @copyright  2015-2016 Fernando Acedo (3-bits.com)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  *
  */
@@ -56,6 +56,6 @@ if (is_siteadmin()) {
     include(dirname(__FILE__) . '/settings/footer.php');
     include(dirname(__FILE__) . '/settings/mobile_settings.php');
     include(dirname(__FILE__) . '/settings/social_wall.php');
-    include(dirname(__FILE__) . '/settings/custom_css.php');
     include(dirname(__FILE__) . '/settings/analytics.php');
+    include(dirname(__FILE__) . '/settings/custom_css.php');
 }

@@ -18,8 +18,8 @@
  * Version details
  *
  * @package    theme_adaptable
- * @copyright 2015 Jeremy Hopkins (Coventry University)
- * @copyright 2015 Fernando Acedo (3-bits.com)
+ * @copyright  2015-2016 Jeremy Hopkins (Coventry University)
+ * @copyright  2015-2016 Fernando Acedo (3-bits.com)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  *
  */
@@ -32,28 +32,33 @@ $left = theme_adaptable_get_block_side();
     <div id="page-content" class="row-fluid">
         <?php echo $OUTPUT->page_navbar(false); ?>
 <?php
-if ($left == 1) {
-            echo $OUTPUT->blocks('side-post', 'span3 desktop-first-column');
-}
-        ?>
-        <section id="region-main" class="span9
-        <?php if ($left) {
-            echo ' ';
-} else {
-            echo 'desktop-first-column';
-} ?> ">
 
-            <?php
+// Left sidebar.
+if (($left == 1) && $PAGE->blocks->region_has_content('side-post', $OUTPUT)) {
+    echo $OUTPUT->blocks('side-post', 'span3 desktop-first-column');
+}
+
+// Main Region.
+if ($PAGE->blocks->region_has_content('side-post', $OUTPUT)) {
+    if ($left == 1) {
+        echo '<section id="region-main" class="span9" style="margin-left: 30px ;">';
+    } else {
+        echo '<section id="region-main" class="span9" style="margin: 0;">';
+    }
+}
             echo $OUTPUT->course_content_header();
             echo $OUTPUT->main_content();
             echo $OUTPUT->course_content_footer();
             ?>
         </section>
+
 <?php
-if ($left == 0) {
-            echo $OUTPUT->blocks('side-post', 'span3');
+// Right Sidebar.
+if (($left == 0) && $PAGE->blocks->region_has_content('side-post', $OUTPUT)) {
+    echo $OUTPUT->blocks('side-post', 'span3');
 }
 ?>
+
     </div>
     </div>
 
