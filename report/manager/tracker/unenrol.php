@@ -49,14 +49,14 @@ if ($confirmed) {
     if ($unWait) {
         /* Remove from waiting list */
         /* Unenrol */
-        if(TrackerManager::UnWait_FromCourse($courseID,$USER->id)) {
+        if(TrackerManager::unwait_from_course($courseID,$USER->id)) {
             $message = get_string('exit_unwait','report_manager');
         }else {
             $message = get_string('err_unenrol','report_manager');
         }//if_else
     }else {
         /* Unenrol */
-        if(TrackerManager::Unenrol_FromCourse($courseID,$USER->id)) {
+        if(TrackerManager::unenrol_from_course($courseID,$USER->id)) {
             $message = get_string('exit_unenrol','report_manager');
         }else {
             $message = get_string('err_unenrol','report_manager');

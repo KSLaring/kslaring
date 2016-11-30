@@ -55,13 +55,13 @@ class block_tracker_manager extends block_base {
             $this->content->footer = '';
 
             /* Get Tracker User */
-            $trackerUser = TrackerManager::GetUserTracker($USER->id);
+            $trackerUser = TrackerManager::get_user_tracker($USER->id);
 
             /* Outcomes Courses     */
-            $this->content->text .= TrackerManager::Print_OutcomeTracker($trackerUser->competence);
+            $this->content->text .= TrackerManager::print_outcome_tracker($trackerUser->competence);
 
             /* Individual Courses   */
-            $this->content->text .= TrackerManager::Print_IndividualTracker($trackerUser->completed,$trackerUser->not_completed,$trackerUser->inWaitList);
+            $this->content->text .= TrackerManager::print_individual_tracker($trackerUser->completed,$trackerUser->not_completed,$trackerUser->inWaitList);
         }
 
 

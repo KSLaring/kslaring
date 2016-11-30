@@ -26,13 +26,6 @@ class TrackerManager {
     /********************/
 
     /**
-     * @param           $user_id
-     * @return          stdClass
-     * @throws          Exception
-     *
-     * @creationDate    01/04/2015
-     * @author          eFaktor     (fbv)
-     *
      * Description
      * Get the tracker connected with the user
      *
@@ -73,57 +66,65 @@ class TrackerManager {
      *                                      --> name
      *                                      --> completed
      *
-     * @updateDate      03/11/2016
-     * @author          eFaktor     (fbv)
-     *
      * Description
      * Add all courses connected with the user, where the user is in the waiting list
+     *
+     * @param           int   $user_id  User id
+     *
+     * @return          stdClass        Tracker connected with
+     * @throws          Exception
+     *
+     * @creationDate    01/04/2015
+     * @author          eFaktor     (fbv)
+     *
+     * @updateDate      03/11/2016
+     * @author          eFaktor     (fbv)
      */
-    public static function GetUserTracker($user_id) {
+    public static function get_user_tracker($user_id) {
         /* Variables    */
         global $DB;
         $userTracker        = null;
 
         try {
-            /* Get Info User        */
+            //Get info user
             $rdo = $DB->get_record('user',array('id' => $user_id),'firstname,lastname');
 
-            /* Info Tracker User    */
+            // Info user tracker
             $userTracker = new stdClass();
             $userTracker->id            = $user_id;
             $userTracker->name          = $rdo->firstname . ' ' . $rdo->lastname;
-            $userTracker->competence    = self::Get_CompetenceTracker($user_id);
+            $userTracker->competence    = self::get_competence_tracker($user_id);
 
-            /* Get the outcome tracker  */
+            // Get the outcome tracker
             if ($userTracker->competence) {
                 foreach ($userTracker->competence as $competence) {
-                    self::GetInfoOutcomeTracker($user_id,$competence);
+                    self::get_info_outcome_tracker($user_id,$competence);
                 }//for_each_competence_levelThree
             }//if_competence
 
-            /* Get Tracker course not connected */
-            list($userTracker->completed,$userTracker->not_completed,$userTracker->inWaitList) = self::GetTrackerNotConnected($user_id,$userTracker->competence);
+            // Get Tracker course not connected
+            list($userTracker->completed,$userTracker->not_completed,$userTracker->inWaitList) = self::get_tracker_not_connected($user_id,$userTracker->competence);
 
             return $userTracker;
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//GetUserTracker
+    }//get_user_tracker
 
     /**
-     * @param           $courseId
-     * @param           $userId
+     * Description
+     * Unenrol user from the course
+     *
+     * @param           int $courseId   Course id
+     * @param           int $userId     User id
      *
      * @return          bool
      * @throws          Exception
      *
      * @creationDate    20/11/2015
      * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Unenrol user from the course
      */
-    public static function Unenrol_FromCourse($courseId,$userId) {
+    public static function unenrol_from_course($courseId,$userId) {
         /* Variables    */
         global $DB;
         $trans  = null;
@@ -133,28 +134,36 @@ class TrackerManager {
         $plugin = null;
         $exit   = null;
 
-        /* Start Transaction    */
+        // Start Transaction
         $trans = $DB->start_delegated_transaction();
 
         try {
             /* Get Instances    */
-            /* Search Criteria  */
+
+            // Search Criteria
             $params = array();
             $params['course'] = $courseId;
             $params['user']   = $userId;
 
-            /* Sql Instruction  */
-            $sql = " SELECT		DISTINCT 	e.id,
-                                            e.enrol,
-                                            e.courseid
-                     FROM		{enrol}				e
-                        JOIN	{user_enrolments}	ue	ON 	ue.enrolid 	= e.id
-                                                        AND	ue.status	= 0
-                                                        AND	ue.userid	= :user
+            // Sql Instruction
+            $sql = " SELECT	DISTINCT 	
+                                e.id,
+                                e.enrol,
+                                e.courseid
+                     FROM		{enrol}				  e
+                        JOIN	{user_enrolments}	  ue  ON  ue.enrolid 	= e.id
+                                                          AND ue.status	= 0
+                                                          AND ue.userid	= :user
+                        JOIN	{course_completions}  cc  ON  cc.course	= e.courseid
+                                                          AND cc.userid	= ue.userid
+                                                          AND (cc.timecompleted IS NULL
+                                                               OR
+                                                               cc.timecompleted = 0
+                                                              )
                      WHERE		e.courseid = :course
                         AND		e.status   = 0 ";
 
-            /* Execute  */
+            // Execute
             $rdo = $DB->get_records_sql($sql,$params);
             if ($rdo) {
                 foreach($rdo as $instance) {
@@ -167,7 +176,7 @@ class TrackerManager {
                 $exit = false;
             }//if_rdo
 
-            /* Commit   */
+            // Commit
             $trans->allow_commit();
 
             return $exit;
@@ -177,11 +186,14 @@ class TrackerManager {
 
             throw $ex;
         }//try_catch
-    }//Unenrol_FromCourse
+    }//unenrol_from_course
 
     /**
-     * @param           $courseId
-     * @param           $userId
+     * Description
+     * Cancel the enrol request user for a specific course
+     *
+     * @param           int $courseId   Course id
+     * @param           int $userId     User id
      *
      * @return          bool|null
      * @throws          Exception
@@ -189,11 +201,8 @@ class TrackerManager {
      *
      * @creationDate    03/11/2016
      * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Cancel the enrol request user for a specific course
      */
-    public static function UnWait_FromCourse($courseId,$userId) {
+    public static function unwait_from_course($courseId,$userId) {
         /* Variables */
         global $DB;
         $trans  = null;
@@ -203,56 +212,49 @@ class TrackerManager {
         $plugin = null;
         $exit   = null;
 
-        /* Start Transaction    */
+        // Start Transaction
         $trans = $DB->start_delegated_transaction();
 
         try {
-            /* Search Criteria  */
+            // Search Criteria
             $params = array();
             $params['course']   = $courseId;
             $params['user']     = $userId;
             $params['queue']    = '99999';
 
-            /* Instance Connected */
-            /* SQL Instruction  */
+            // SQL Instruction
             $sql = " SELECT	      ewq.id
-                     FROM			{enrol_waitinglist_queue}	ewq
-                        LEFT JOIN	{user_enrolments}			ue 	ON 	ue.enrolid 	= ewq.waitinglistid
-                                                                    AND	ue.userid 	= ewq.userid
+                     FROM		  {enrol_waitinglist_queue}	ewq
+                        LEFT JOIN {user_enrolments}			ue 	ON 	ue.enrolid 	= ewq.waitinglistid
+                                                                AND	ue.userid 	= ewq.userid
                      WHERE	ewq.userid 		 = :user
                         AND	ewq.courseid 	 = :course
                         AND ewq.queueno 	!= :queue
                         AND ue.id IS NULL ";
             
-            /* Execute */
+            // Execute
             $rdo = $DB->get_record_sql($sql,$params);
             if ($rdo) {
-                /* Deleted Instance */
+                // Deleted Instance
                 $DB->delete_records('enrol_waitinglist_queue',array('id' => $rdo->id));
                 $exit = true;
             }else {
                 $exit = false;
-            }
-            /* Commit   */
+            }//if_rdo
+
+            // Commit
             $trans->allow_commit();
 
             return $exit;
         }catch (Exception $ex) {
-            /* Rollback */
+            // Rollback
             $trans->rollback($ex);
 
             throw $ex;
         }//try_catch
-    }//UnWait_FromCourse
+    }//unwait_from_course
 
     /**
-     * @param           $trackerUser
-     * @return          string
-     * @throws          Exception
-     *
-     * @creationDate    01/04/2015
-     * @author          eFaktor     (fbv)
-     *
      * Description
      * Print the tracker - Screen Format
      *
@@ -293,40 +295,42 @@ class TrackerManager {
      *                                      --> name
      *                                      --> completed
      *
-     * @updateDate          03/11/2016
-     * @author              eFaktor     (fbv)
-     *
      * Description
      * Add all courses connected with the user and where user is in the waiting list
+     *
+     * @param           Object $trackerUser     Tracker connected with user
+     *
+     * @return          string
+     * @throws          Exception
+     *
+     * @creationDate    01/04/2015
+     * @author          eFaktor     (fbv)
+     *
+     * @updateDate      03/11/2016
+     * @author          eFaktor     (fbv)
+     *
      */
-    public static function Print_TrackerInfo($trackerUser) {
+    public static function print_tracker_info($trackerUser) {
         /* Variables    */
         $out_tracker = '';
 
         try {
-            /* Buttons - Download Report    */
-            $out_tracker .= self::Get_OutputButtons();
+            // Buttons - Download Report
+            $out_tracker .= self::get_output_buttons();
 
-            /* Print Outcome Tracker        */
+            // Print Outcome Tracker
             $out_tracker .= self::Print_OutcomeTracker($trackerUser->competence);
 
-            /* Print Individual Tracker     */
+            // Print Individual Tracker
             $out_tracker .= self::Print_IndividualTracker($trackerUser->completed,$trackerUser->not_completed,$trackerUser->inWaitList);
 
             return $out_tracker;
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//Print_TrackerInfo
+    }//print_tracker_info
 
     /**
-     * @param           $tracker_competence
-     * @return          string
-     * @throws          Exception
-     *
-     * @creationDate    07/04/2015
-     * @author          eFaktor     (fbv)
-     *
      * Description
      * Print the tracker connected to the outcomes
      *
@@ -352,8 +356,16 @@ class TrackerManager {
      *                                      --> not_enrol.      Array
      *                                                              --> id
      *                                                              --> name
+     *
+     * @param           Object  $tracker_competence Tracker connected with user
+     *
+     * @return          string
+     * @throws          Exception
+     *
+     * @creationDate    07/04/2015
+     * @author          eFaktor     (fbv)
      */
-    public static function Print_OutcomeTracker($tracker_competence) {
+    public static function print_outcome_tracker($tracker_competence) {
         /* Variables    */
         $out_tracker        = '';
         $outcomeToogle      = null;
@@ -362,36 +374,39 @@ class TrackerManager {
         $title              = null;
 
         try {
+            // Print all tracker
             foreach ($tracker_competence as $competence) {
-                /* Header Company   */
+                // Header Company
                 $companyToggle = 'YUI_' . $competence->levelThree;
-                /* Company Name */
+
+                // Company Name
                 $out_tracker .= html_writer::start_tag('div',array('class' => 'header_tracker'));
                     $out_tracker .= '<h5>'. $competence->name . '</h5>';
                 $out_tracker .= html_writer::end_tag('div');
 
-                /* Job Roles    */
+                // Job Roles
                 $out_tracker .= html_writer::start_tag('div',array('class' => 'header_tracker_jr'));
-                    $out_tracker .= '<h6>' . self::Get_JobRolesNames($competence->job_roles) . '</h6>';
+                    $out_tracker .= '<h6>' . self::get_jobroles_names($competence->job_roles) . '</h6>';
                 $out_tracker .= html_writer::end_tag('div');
 
-                /* Tracker Info */
-                /* Add Outcome Tracker Info */
+                // Add Outcome Tracker Info
                 if ($competence->outcomes) {
                     foreach ($competence->outcomes as $id=>$outcome) {
-                        /* Tracker Info */
+                        // Tracker Info
                         $outcomeToogle = $companyToggle . '_' . $id;
                         $out_tracker .= html_writer::start_tag('div',array('class' => 'tracker_list'));
+                            // Header Outcome tracker
                             $out_tracker .= html_writer::start_tag('div',array('class' => 'header_outcome_tracker'));
-                                $out_tracker .= self::PrintHeader_OutcomeTracker($outcome->name,$outcomeToogle,$url_img);
+                                $out_tracker .= self::print_header_outcome_tracker($outcome->name,$outcomeToogle,$url_img);
                             $out_tracker .= html_writer::end_tag('div');//header_outcome_tracker
 
+                            // Courses tracker Competence
                             $out_tracker .= html_writer::start_tag('div',array('class' => 'course_list','id' => $outcomeToogle . '_div'));
-                                /* Header Table     */
+                                // Header Table
                                 $outcomeToogle .= '_table';
-                                $out_tracker .= self::AddHeader_CoursesTable($outcomeToogle,$url_img,false);
-                                /* Content Table    */
-                                $out_tracker .= self::AddContent_CoursesTable($outcome);
+                                $out_tracker .= self::add_header_courses_table();
+                                // Content Table
+                                $out_tracker .= self::add_content_courses_table($outcome);
                             $out_tracker .= html_writer::end_tag('div');//course_list
                         $out_tracker .= html_writer::end_tag('div');//tracker_list
                     }//for_each_outcome
@@ -404,12 +419,18 @@ class TrackerManager {
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//Print_OutcomeTracker
+    }//print_outcome_tracker
 
     /**
-     * @param           $completed
-     * @param           $not_completed
-     * @param           $inWaitList
+     * Description
+     * Print the tracker connected to the individual courses - Screen Format
+     *
+     * Description
+     * Add courses where user is in waiting list
+     *
+     * @param           array $completed        Courses completed
+     * @param           array $not_completed    Courses no completed
+     * @param           array $inWaitList       Course in waiting list
      *
      * @return          string
      * @throws          Exception
@@ -417,16 +438,10 @@ class TrackerManager {
      * @creationDate    07/04/2015
      * @author          eFaktor     (fbv)
      *
-     * Description
-     * Print the tracker connected to the individual courses - Screen Format
-     *
      * @updateDate      03/11/2016
      * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Add courses where user is in waiting list
      */
-    public static function Print_IndividualTracker($completed,$not_completed,$inWaitList) {
+    public static function print_individual_tracker($completed,$not_completed,$inWaitList) {
         /* Variables    */
         $out_tracker = '';
         $individualToogle   = 'YUI_' . '0';
@@ -434,21 +449,21 @@ class TrackerManager {
         $title              = get_string('individual_courses','local_tracker_manager');
 
         try {
-            /* Title    */
+            // Title
             $out_tracker .= html_writer::start_tag('div',array('class' => 'header_tracker'));
                 $out_tracker .= '<h5>'. $title . '</h5>';
             $out_tracker .= html_writer::end_tag('div');
 
-            /* Tracker Info */
+            // Tracker Info
             $out_tracker .= html_writer::start_tag('div',array('class' => 'tracker_list'));
-                /* Individual Courses   */
+                // Individual Courses
                 $individualToogle .= '_table';
                 $out_tracker .= html_writer::start_tag('div',array('class' => 'course_list'));
-                    /* Header Table     */
-                    $out_tracker .= self::AddHeader_IndividualCoursesTable($individualToogle,$url_img);
-                    /* Content Table    */
+                    // Header Table
+                    $out_tracker .= self::add_header_individual_courses_table($individualToogle,$url_img);
+                    // Content Table
                     $out_tracker .= html_writer::start_tag('div',array('class' => 'course_list', 'id' => $individualToogle . '_div'));
-                        $out_tracker .= self::AddContent_IndividualCoursesTable($completed,$not_completed,$inWaitList);
+                        $out_tracker .= self::add_content_individual_courses_table($completed,$not_completed,$inWaitList);
                     $out_tracker .= html_writer::end_tag('div');//course_list
                 $out_tracker .= html_writer::end_tag('div');//course_list
             $out_tracker .= html_writer::end_tag('div');//tracker_list
@@ -457,19 +472,19 @@ class TrackerManager {
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//Print_IndividualTracker
+    }//print_individual_tracker
 
     /**
-     * @param           $trackerUser
+     * Description
+     * Download the Tracker report - Excel Format
+     *
+     * @param           Object $trackerUser     Tracker competence
      * @throws          Exception
      *
      * @creationDate    08/04/2015
      * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Download the Tracker report - Excel Format
      */
-    public static function Download_TrackerReport($trackerUser) {
+    public static function download_tracker_report($trackerUser) {
         /* Variables    */
         global $CFG;
         $row        = null;
@@ -488,18 +503,18 @@ class TrackerManager {
             $export->send($file_name);
 
             /* Outcome Courses      */
-            self::AddSheet_OutcomeCourses($export,$my_xls,$trackerUser->competence);
+            self::add_sheet_outcome_courses($export,$my_xls,$trackerUser->competence);
 
             /* Individual Courses   */
             $row = 0;
-            self::AddSheet_IndividualCourses($export,$my_xls,$row,$trackerUser->completed,$trackerUser->not_completed);
+            self::add_sheet_individual_courses($export,$my_xls,$row,$trackerUser->completed,$trackerUser->not_completed);
 
             $export->close();
             exit;
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//Download_TrackerReport
+    }//download_tracker_report
 
 
     /*********************/
@@ -507,13 +522,6 @@ class TrackerManager {
     /*********************/
 
     /**
-     * @param           $user_id
-     * @return          array
-     * @throws          Exception
-     *
-     * @creationDate    01/04/2015
-     * @author          eFaktor     (fbv)
-     *
      * Description
      * Get the competence data connected to the user
      *
@@ -533,19 +541,27 @@ class TrackerManager {
      *                                  --> completed.
      *                                  --> not_completed
      *                                  --> not_enrol
+     *
+     * @param           int     $user_id    User id
+     *
+     * @return          array
+     * @throws          Exception
+     *
+     * @creationDate    01/04/2015
+     * @author          eFaktor     (fbv)
      */
-    private static function Get_CompetenceTracker($user_id) {
+    private static function get_competence_tracker($user_id) {
         /* Variables    */
         global $DB;
         $myCompetence   = array();
         $competenceInfo = null;
 
         try {
-            /* Search Criteria  */
+            // Search Criteria
             $params = array();
             $params['user'] = $user_id;
 
-            /* SQL Instruction  */
+            // SQL Instruction
             $sql = " SELECT		uicd.companyid,
                                 rgc.industrycode,
                                 rgc.name,
@@ -555,23 +571,22 @@ class TrackerManager {
                      WHERE		uicd.userid = :user
                      ORDER BY	rgc.industrycode, rgc.name ";
 
-            /* Execute  */
+            // Execute
             $rdo = $DB->get_records_sql($sql,$params);
             if ($rdo) {
                 foreach ($rdo as $instance) {
-                    /* Competence Info  */
+                    // Competence Info
                     $info = new stdClass();
                     $info->levelThree   = $instance->companyid;
                     $info->name         = $instance->name;
                     $info->industrycode = $instance->industrycode;
                     $info->job_roles    = $instance->jobroles;
-                    $info->outcomes     = self::GetInfoOutcomes_JobRoles($info->job_roles);
+                    $info->outcomes     = self::get_info_outcomes_jobroles($info->job_roles);
 
-                    /* Add the company */
+                    // Add the company
                     if ($info->outcomes) {
                         $myCompetence[$instance->companyid] = $info;
                     }//if_outcomes
-
                 }//for_instance_competence
             }//if_rdo
 
@@ -579,16 +594,9 @@ class TrackerManager {
         }catch (Exception $ex) {
             throw $ex;
         }//try_Catch
-    }//Get_CompetenceTracker
+    }//get_competence_tracker
 
     /**
-     * @param           $jr_lst
-     * @return          array
-     * @throws          Exception
-     *
-     * @creationDate    01/04/2015
-     * @author          eFaktor     (fbv)
-     *
      * Description
      * Get the outcomes connected to the job roles
      *
@@ -602,15 +610,23 @@ class TrackerManager {
      *              --> completed
      *              --> not_completed
      *              --> not_enrol
+     *
+     * @param           string $jr_lst      List of job roles
+     *
+     * @return          array
+     * @throws          Exception
+     *
+     * @creationDate    01/04/2015
+     * @author          eFaktor     (fbv)
      */
-    private static function GetInfoOutcomes_JobRoles($jr_lst) {
+    private static function get_info_outcomes_jobroles($jr_lst) {
         /* Variables    */
         global $DB;
         $outcomes   = array();
         $info       = null;
 
         try {
-            /* SQL Instruction  */
+            // SQL Instruction
             $sql = " SELECT	    o.id,
                                 o.fullname,
                                 GROUP_CONCAT(DISTINCT oucu.courseid ORDER BY oucu.courseid SEPARATOR ',') as 'courses',
@@ -625,11 +641,11 @@ class TrackerManager {
                      GROUP BY 	o.id
                      ORDER BY   o.fullname ASC ";
 
-            /* Execute  */
+            // Execute
             $rdo = $DB->get_records_sql($sql);
             if ($rdo) {
                 foreach ($rdo as $instance) {
-                    /* Outcome Info */
+                    // Outcome Info
                     $info = new stdClass();
                     $info->id               = $instance->id;
                     $info->name             = $instance->fullname;
@@ -640,7 +656,7 @@ class TrackerManager {
                     $info->not_completed    = null;
                     $info->not_enrol        = null;
 
-                    /* Add outcome  */
+                    // Add outcome
                     if ($info->courses)  {
                         $outcomes[$instance->id] = $info;
                     }//if_courses
@@ -651,16 +667,9 @@ class TrackerManager {
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//GetInfoOutcomes_JobRoles
+    }//get_info_outcomes_jobroles
 
     /**
-     * @param           $user_id
-     * @param           $competence
-     * @throws          Exception
-     *
-     * @creationDate    01/04/2015
-     * @author          eFaktor     (fbv)
-     *
      * Description
      * Get the info tracker for each outcome connected to the level three and user
      *
@@ -686,28 +695,37 @@ class TrackerManager {
      *                                      --> not_enrol.      Array
      *                                                              --> id
      *                                                              --> name
+     *
+     * @param           int     $user_id        User id
+     * @param           Object  $competence     Competence tracker connected with
+     *
+     * @throws          Exception
+     *
+     * @creationDate    01/04/2015
+     * @author          eFaktor     (fbv)
      */
-    private static function GetInfoOutcomeTracker($user_id,&$competence) {
+    private static function get_info_outcome_tracker($user_id,&$competence) {
         /* Variables    */
         $outcomesTracker    = null;
         $coursesEnrol       = null;
 
         try {
-            /* Get the outcome tracker  */
+            // Get the outcome tracker
             $outcomesTracker = $competence->outcomes;
             if ($outcomesTracker) {
                 foreach ($outcomesTracker as $id=>$outcome) {
-                    /* Get Courses Completed and Not Completed       */
-                    list($coursesEnrol,$outcome->completed,$outcome->not_completed) = self::GetTracker_CoursesEnrol($user_id,$outcome->courses);
+                    // Get Courses Completed and Not Completed
+                    list($coursesEnrol,$outcome->completed,$outcome->not_completed) = self::get_tracker_courses_enrol($user_id,$outcome->courses);
 
-                    /* Get Courses Not Enrol        */
+                    // Get Courses Not Enrol
                     if ($coursesEnrol) {
                         $coursesEnrol = implode(',',$coursesEnrol);
                     }else {
                         $coursesEnrol = 0;
                     }
-                    $outcome->not_enrol = self::GetTracker_CoursesNotEnrol($outcome->courses,$coursesEnrol);
+                    $outcome->not_enrol = self::get_tracker_courses_not_enrol($outcome->courses,$coursesEnrol);
 
+                    // Add competence
                     if (!$outcome->completed && !$outcome->not_completed && !$outcome->not_enrol) {
                         unset($competence->outcomes[$id]);
                     }else {
@@ -718,17 +736,9 @@ class TrackerManager {
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//GetInfoOutcomeTracker
+    }//get_info_outcome_tracker
 
     /**
-     * @param           $user_id
-     * @param           $courses
-     * @return          array
-     * @throws          Exception
-     *
-     * @creationDate    01/04/2015
-     * @author          eFaktor     (fbv)
-     *
      * Description
      * Add the courses completed and not completed connected with the user
      *
@@ -737,8 +747,16 @@ class TrackerManager {
      *                              --> id
      *                              --> name
      *                              --> completed
+     *
+     * @param           int     $user_id    User id
+     * @param           string  $courses    List of courses
+     * @return          array
+     * @throws          Exception
+     *
+     * @creationDate    01/04/2015
+     * @author          eFaktor     (fbv)
      */
-    private static function GetTracker_CoursesEnrol($user_id,$courses) {
+    private static function get_tracker_courses_enrol($user_id,$courses) {
         /* Variables    */
         global $DB;
         $completed      = array();
@@ -747,44 +765,44 @@ class TrackerManager {
         $info           = null;
 
         try {
-            /* Search Criteria  */
+            // Search Criteria
             $params = array();
             $params['user'] = $user_id;
 
-            /* SQL Instruction  */
-            $sql = " SELECT	c.id,
-                            c.fullname,
-                            IF (cc.timecompleted,cc.timecompleted,0) as 'completed'
-                     FROM			{course}					c
-                        JOIN		{enrol} 					e	ON 	e.courseid 	= c.id
-                                                                    AND	e.status 	= 0
-                        JOIN		{user_enrolments}			ue	ON 	ue.enrolid 	= e.id
-                                                                    AND	ue.status	= 0
-                                                                    AND ue.userid   = :user
-                        LEFT JOIN	{course_completions}		cc	ON	cc.course 	= e.courseid
-                                                                    AND cc.userid 	= ue.userid
-                     WHERE		c.id IN ($courses)
-                        AND     c.visible = 1
-                     ORDER BY	c.fullname ";
+            // SQL Instruction
+            $sql = " SELECT	      c.id,
+                                  c.fullname,
+                                  IF (cc.timecompleted,cc.timecompleted,0) as 'completed'
+                     FROM		  {course}					c
+                        JOIN	  {enrol} 					e	ON 	e.courseid 	= c.id
+                                                                AND	e.status 	= 0
+                        JOIN	  {user_enrolments}			ue	ON 	ue.enrolid 	= e.id
+                                                                AND	ue.status	= 0
+                                                                AND ue.userid   = :user
+                        LEFT JOIN {course_completions}		cc	ON	cc.course 	= e.courseid
+                                                                AND cc.userid 	= ue.userid
+                     WHERE		  c.id IN ($courses)
+                        AND       c.visible = 1
+                     ORDER BY	  c.fullname ";
 
-            /* Execute  */
+            // Execute
             $rdo = $DB->get_records_sql($sql,$params);
             if ($rdo) {
                 foreach ($rdo as $instance) {
-                    /* Course Info  */
+                    // Course Info
                     $info = new stdClass();
                     $info->id           = $instance->id;
                     $info->name         = $instance->fullname;
                     $info->completed    = $instance->completed;
 
-                    /* Add course   */
+                    // Add course
                     if ($instance->completed) {
                         $completed[$instance->id] = $info;
                     }else {
                         $not_completed[$instance->id] = $info;
                     }//if_time_Completed
 
-                    /* Enrol */
+                    // Enrol
                     $enrol[$instance->id] = $instance->id;
                 }//for_instance_courses
             }//if_rdo
@@ -793,17 +811,9 @@ class TrackerManager {
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//GetTracker_CoursesEnrol
+    }//get_tracker_courses_enrol
 
     /**
-     * @param           $courses
-     * @param           $coursesEnrol
-     * @return          array
-     * @throws          Exception
-     *
-     * @creationDate    01/04/2015
-     * @author          eFaktor     (fbv)
-     *
      * Description
      * Get the courses that the user are not enrolled
      *
@@ -811,39 +821,48 @@ class TrackerManager {
      *      [id]
      *          --> id
      *          --> name
+     *
+     * @param           string  $courses        List of course
+     * @param           string  $coursesEnrol   List of courses enrolled
+     *
+     * @return          array
+     * @throws          Exception
+     *
+     * @creationDate    01/04/2015
+     * @author          eFaktor     (fbv)
      */
-    private static function GetTracker_CoursesNotEnrol($courses,$coursesEnrol) {
+    private static function get_tracker_courses_not_enrol($courses,$coursesEnrol) {
         /* Variables    */
         global $DB;
         $not_enrol  = array();
         $info       = null;
 
         try {
-            /* SQL Instruction  */
-            $sql = " SELECT		c.id,
-                                c.fullname
-                    FROM		{course}		  c
-                    WHERE		c.id IN ($courses)
-                      AND       c.visible = 1 ";
+            // SQL Instruction
+            $sql = " SELECT	c.id,
+                            c.fullname
+                    FROM	{course}		  c
+                    WHERE	c.id IN ($courses)
+                      AND   c.visible = 1 ";
 
-            /* Courses Enrol    */
+            // Courses Enrol
             if ($coursesEnrol) {
                 $sql .= " AND c.id NOT IN ($coursesEnrol) ";
             }//if_coursesEnrol
 
-            /* Order    */
+            // Order
             $sql .= " ORDER BY	c.fullname ";
 
-            /* Execute  */
+            // Execute
             $rdo = $DB->get_records_sql($sql);
             if ($rdo) {
                 foreach ($rdo as $instance) {
-                    /* Course Info  */
+                    // Course Info
                     $info = new stdClass();
                     $info->id           = $instance->id;
                     $info->name         = $instance->fullname;
 
-                    /* Add course   */
+                    // Add course
                     $not_enrol[$instance->id] = $info;
                 }//for_instance
             }//if_rdo
@@ -852,17 +871,9 @@ class TrackerManager {
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//GetTracker_CoursesNotEnrol
+    }//get_tracker_courses_not_enrol
 
     /**
-     * @param           $user_id
-     * @param           $competence
-     * @return          array
-     * @throws          Exception
-     *
-     * @creationDate    01/04/2015
-     * @author          eFaktor     (fbv)
-     *
      * Description
      * Get the info tracker for all the courses not connected with the outcomes
      *
@@ -872,26 +883,33 @@ class TrackerManager {
      *                          --> name
      *                          --> completed
      *
-     * @updateDate      20/11/2015
+     * Check if the user can unenrol from the course
+     *
+     * Add deadline unenrol and ethodtype for waiting list enrolments, to check if the user
+     * can unenrol or not
+     *
+     * Add all courses where user is in the waiting list
+     *
+     * @param           int     $user_id     User id
+     * @param           array   $competence  Competence courses no connected
+     *
+     * @return          array
+     * @throws          Exception
+     *
+     * @creationDate    01/04/2015
      * @author          eFaktor     (fbv)
      *
-     * Description
-     * Check if the user can unenrol from the course
+     * @updateDate      20/11/2015
+     * @author          eFaktor     (fbv)
      *
      * @updateDate      26/10/2016
      * @author          eFaktor     (fbv)
      *
-     * Description
-     * Add deadline unenrol and ethodtype for waiting list enrolments, to check if the user
-     * can unenrol or not
-     *
      * @updateDate      03/11/2016
      * @author          eFaktor     (fbv)
      *
-     * Description
-     * Add all courses where user is in the waiting list
      */
-    private static function GetTrackerNotConnected($user_id,$competence) {
+    private static function get_tracker_not_connected($user_id,$competence) {
         /* Variables    */
         global $DB;
         $connected      = 0;
@@ -905,9 +923,10 @@ class TrackerManager {
         $sql            = null;
 
         try {
+            // Complete user data
             $user = get_complete_user_data('id',$user_id);
 
-            /* Get Courses Not Connected    */
+            // Get Courses Not Connected
             foreach ($competence as $levelThree) {
                 if ($levelThree->outcomes) {
                     foreach ($levelThree->outcomes as $outcome) {
@@ -918,46 +937,50 @@ class TrackerManager {
                 }//if_outcomes
             }//if_levelThree
 
-            /* Search Criteria */
+            // Search Criteria
             $params = array();
             $params['user']     = $user_id;
             $params['ue_user']  = $user_id;
 
-            /* SQL Instruction  */
-            $sql = " SELECT	c.id,
-                            c.fullname,
-                            IF (cc.timecompleted,cc.timecompleted,0)                                        as 'completed',
-                            GROUP_CONCAT(DISTINCT CONCAT(e.enrol,'#',e.id) ORDER BY e.enrol SEPARATOR ',')  as 'enrolments',
-                            ewq.unenrolenddate,
-                            ewq.methodtype
-                     FROM			{course}					c
-                        LEFT JOIN	{course_completions}  	    cc	ON	cc.course           = c.id
-                                                                    AND cc.userid           = :user
-                        JOIN		{enrol} 					e	ON 	e.courseid 	        = c.id
-                                                                    AND	e.status 	        = 0
-                        JOIN		{user_enrolments}			ue	ON 	ue.enrolid 	        = e.id
-                                                                    AND	ue.status	        = 0
-                                                                    AND ue.userid           = :ue_user
-	                    LEFT JOIN	{enrol_waitinglist_method}	ewq	ON  ewq.waitinglistid 	= e.id
-													                AND ewq.methodtype like 'self'
-                                                                    AND ewq.status			= 1
+            // SQL Instruction
+            $sql = " SELECT	      c.id,
+                                  c.fullname,
+                                  IF (cc.timecompleted,cc.timecompleted,0)                                        as 'completed',
+                                  GROUP_CONCAT(DISTINCT CONCAT(e.enrol,'#',e.id) ORDER BY e.enrol SEPARATOR ',')  as 'enrolments',
+                                  ewq.unenrolenddate,
+                                  ewq.methodtype
+                     FROM		  {course}					  c
+                        LEFT JOIN {course_completions}  	  cc  ON	cc.course         = c.id
+                                                                  AND cc.userid           = :user
+                        JOIN	  {enrol} 					  e	  ON 	e.courseid 	      = c.id
+                                                                  AND	e.status 	      = 0
+                        JOIN	  {user_enrolments}			  ue  ON 	ue.enrolid 	      = e.id
+                                                                  AND	ue.status	      = 0
+                                                                  AND ue.userid           = :ue_user
+	                    LEFT JOIN {enrol_waitinglist_method}  ewq ON  ewq.waitinglistid   = e.id
+													              AND ewq.methodtype like 'self'
+                                                                  AND ewq.status		  = 1
                      WHERE		c.id NOT IN ($connected)
                         AND     c.visible = 1
                      GROUP BY	c.id
                      ORDER BY	c.fullname ";
 
-            /* Execute   */
+            // Execute
             $rdo = $DB->get_records_sql($sql,$params);
             if ($rdo) {
                 foreach ($rdo as $instance) {
-                    /* Course Info  */
+                    // Course Info
                     $info = new stdClass();
                     $info->id           = $instance->id;
                     $info->name         = $instance->fullname;
                     $info->completed    = $instance->completed;
-                    $info->unEnrol      = self::Check_CanUnenrol(explode(',',$instance->enrolments),$user,$instance->id,$instance->unenrolenddate,$instance->methodtype);
+                    if ($instance->completed) {
+                        $info->unEnrol = self::check_can_unenrol(explode(',',$instance->enrolments),$user,$instance->id,$instance->unenrolenddate,$instance->methodtype);
+                    }else {
+                        $info->unEnrol = false;
+                    }//if_completed
 
-                    /* Add course   */
+                    // Add course
                     if ($instance->completed) {
                         $completed[$instance->id] = $info;
                     }else {
@@ -970,27 +993,27 @@ class TrackerManager {
              * Get courses connected where user is not enrolled,
              * but the user is in the waiting list
              */
-            $inWaitList = self::GetTrackerWaitingList($user_id);
+            $inWaitList = self::get_tracker_waitinglist($user_id);
 
             return array($completed,$not_completed,$inWaitList);
         }catch (Exception $ex) {
             throw $ex;
         }//try_Catch
-    }//GetTrackerNotConnected
+    }//get_tracker_not_connected
 
     /**
-     * @param           $userId
+     * Description
+     * Get all courses connected with user, where the user is in the waiting list
+     *
+     * @param           int $userId     User id
      *
      * @return          array
      * @throws          Exception
      *
      * @creationDate    03/11/2016
      * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Get all courses connected with user, where the user is in the waiting list
      */
-    private static function GetTrackerWaitingList($userId) {
+    private static function get_tracker_waitinglist($userId) {
         /* Variables */
         global $DB;
         $inWaitList     = array();
@@ -1000,15 +1023,16 @@ class TrackerManager {
         $params         = null;
 
         try {
-            /* Search Criteria  */
+            // Search Criteria
             $params = array();
             $params['user']     = $userId;
             $params['queue']    = '99999';
             $params['visible']  = 1;
 
-            /* SQL Instruction  */
-            $sql = " SELECT	DISTINCT c.id,
-                                     c.fullname
+            // SQL Instruction
+            $sql = " SELECT	DISTINCT 
+                                  c.id,
+                                  c.fullname
                      FROM		  {course}					c
                         JOIN	  {enrol_waitinglist_queue}	ewq	ON  ewq.courseid  = c.id
                                                                 AND	ewq.userid    = :user
@@ -1018,16 +1042,16 @@ class TrackerManager {
                      WHERE	c.visible = :visible 
                         AND ue.id IS NULL ";
 
-            /* Execute */
+            // Execute
             $rdo = $DB->get_records_sql($sql,$params);
             if ($rdo) {
                 foreach ($rdo as $instance) {
-                    /* Course Info  */
+                    // Course Info
                     $info = new stdClass();
                     $info->id           = $instance->id;
                     $info->name         = $instance->fullname;
 
-                    /* Add course   */
+                    // Add course
                     $inWaitList[$instance->id] = $info;
                 }//for_instance
             }//if_Rdo
@@ -1036,14 +1060,20 @@ class TrackerManager {
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//GetTrackerWaitingList
+    }//get_tracker_waitinglist
 
     /**
-     * @param           $enrolMethods
-     * @param           $user
-     * @param           $courseId
-     * @param           $unEnrolDate
-     * @param           $methodType
+     * Description
+     * Check if the user can enrol by himsef/herslef
+     *
+     * add deadline unenrol and sub-method type to check if the user
+     * can unenrol or not
+     *
+     * @param           array   $enrolMethods   List of enrol methods
+     * @param           Object  $user           User data
+     * @param           int     $courseId       Course id
+     * @param           int     $unEnrolDate    deadline to unenrol
+     * @param           string  $methodType     sub enrol method
      *
      * @return          bool
      * @throws          Exception
@@ -1051,17 +1081,10 @@ class TrackerManager {
      * @creationDate    20/11/2015
      * @author          eFaktor     (fbv)
      *
-     * Description
-     * Check if the user can enrol by himsef/herslef
-     *
      * @updateDate      26/10/2016
      * @auhtor          eFaktor     (fbv)
-     *
-     * Description
-     * add deadline unenrol and sub-method type to check if the user
-     * can unenrol or not
      */
-    private static function Check_CanUnenrol($enrolMethods,$user,$courseId,$unEnrolDate,$methodType) {
+    private static function check_can_unenrol($enrolMethods,$user,$courseId,$unEnrolDate,$methodType) {
         /* Variables    */
         global $DB;
         $method         = null;
@@ -1072,12 +1095,13 @@ class TrackerManager {
         $time           = null;
 
         try {
-            /* Local time   */
+            // Local time
             $time = time();
 
             foreach ($enrolMethods as $enrol) {
                 $method = explode('#',$enrol);
 
+                // get enrol info
                 $plugin = enrol_get_plugin($method[0]);
                 $instance = new stdClass();
                 $instance->id       = $method[1];
@@ -1085,8 +1109,6 @@ class TrackerManager {
                 $instance->enrol    = $method[0];
 
                 $capability = 'enrol/' . $method[0] . ':unenrol';
-
-
 
                 if (($method[0] == 'waitinglist') && $methodType == 'self') {
                     if ($unEnrolDate) {
@@ -1111,34 +1133,35 @@ class TrackerManager {
         }catch (Exception $ex) {
             throw $ex;
         }//try_cathc
-    }//Check_CanUnenrol
+    }//check_can_unenrol
 
     /**
-     * @param           $job_roles
+     * Description
+     * Get the job roles names
+     *
+     * @param           string $job_roles   List of jobroles
+     *
      * @return          null|string
      * @throws          Exception
      *
      * @creationDate    21/04/2015
      * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Get the job roles names
      */
-    private static function Get_JobRolesNames($job_roles) {
+    private static function get_jobroles_names($job_roles) {
         /* Variables    */
         global $DB;
         $jr_names = null;
 
         try {
             if ($job_roles) {
-                /* SQL Instruction  */
+                // SQL Instruction
                 $sql = " SELECT		id,
                                     CONCAT(industrycode,' - ',name) as 'name'
                          FROM		{report_gen_jobrole}
                          WHERE		id IN ($job_roles)
                          ORDER BY	industrycode, name ";
 
-                /* Execute  */
+                // Execute
                 $rdo = $DB->get_records_sql($sql);
                 if ($rdo) {
                     foreach ($rdo as $instance) {
@@ -1156,67 +1179,70 @@ class TrackerManager {
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//Get_JobRolesNames
+    }//get_jobroles_names
 
     /**
+     * Description
+     * Add the output buttons to download the report
+     *
      * @return          string
      *
      * @creationDate    07/04/2015
      * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Add the output buttons to download the report
      */
-    private static function Get_OutputButtons() {
+    private static function get_output_buttons() {
         $url_dwn = new moodle_url('/report/manager/tracker/index.php',array('pdf'=>TRACKER_PDF_DOWNLOAD));
         $send_pdf_btn   = html_writer::start_tag('div',array('class' => 'div_button_tracker'));
             $send_pdf_btn .= html_writer::link($url_dwn,get_string('download_pdf_btn','local_tracker_manager'),array('class' =>"button_tracker"));
         $send_pdf_btn  .= html_writer::end_tag('div');
 
         return $send_pdf_btn;
-    }//Get_OutputButtons
+    }//get_output_buttons
 
     /**
+     * Description
+     * Add the outcome header - Screen Format
+     *
      * @param           $outcome
      * @param           $toogle
      * @param           $img
+     *
      * @return          string
      *
      * @creationDate    07/04/2015
      * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Add the outcome header - Screen Format
      */
-    private static function PrintHeader_OutcomeTracker($outcome,$toogle,$img) {
+    private static function print_header_outcome_tracker($outcome,$toogle,$img) {
         /* Variables    */
         $header     = null;
 
         $header .= html_writer::start_div('header_outcome_company_rpt');
-            /* Col One  */
+            // Col One
             $header .= html_writer::start_div('header_col_one');
-                $header .= '<button class="toggle_header_tracker" type="image" id="' . $toogle . '"><img id="' . $toogle . '_img' . '" src="' . $img . '">' . '</button>';
+                $header .= '<button class="toggle_header_tracker" type="image" id="' . $toogle . '">
+                                <img id="' . $toogle . '_img' . '" src="' . $img . '">
+                            </button>';
             $header .= html_writer::end_div('');//header_col_one
-            /* Col Two  */
+            // Col Two
             $header .= html_writer::start_div('header_col_two');
                 $header .= '<h6>' . $outcome . '</h6>';
             $header .= html_writer::end_div('');//header_col_two
         $header .= html_writer::end_div('');//header_outcome_company_rpt
 
         return $header;
-    }//PrintHeader_OutcomeTracker
+    }//print_header_outcome_tracker
 
     /**
+     * Description
+     * Add the header to courses table - Screen Format
+     *
      * @return          string
      * @throws          Exception
      *
      * @creationDate    07/04/2015
      * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Add the header to courses table - Screen Format
      */
-    private static function AddHeader_CoursesTable() {
+    private static function add_header_courses_table() {
         /* Variables    */
         $header = '';
         $strCourse         = get_string('course');
@@ -1225,33 +1251,29 @@ class TrackerManager {
         $strCompletion     = get_string('completion_time','local_tracker_manager');
 
         try {
-            /* Build Header */
+            // Build Header
             $header .= html_writer::start_tag('table');
                 $header .= html_writer::start_tag('tr',array('class' => 'head'));
-                    /* Empty Col   */
+                    // Empty Col
                     $header .= html_writer::start_tag('td',array('class' => 'head_first'));
                     $header .= html_writer::end_tag('td');
-                    /* Course           */
+                    // Course
                     $header .= html_writer::start_tag('td',array('class' => 'head_course'));
                         $header .= $strCourse;
                     $header .= html_writer::end_tag('td');
-                    /* Status        */
+                    // Status
                     $header .= html_writer::start_tag('td',array('class' => 'head_status'));
                         $header .= $strState;
                     $header .= html_writer::end_tag('td');
-                    /* Completion    */
+                    // Completion
                     $header .= html_writer::start_tag('td',array('class' => 'head_status'));
                         $header .= $strCompletion;
                     $header .= html_writer::end_tag('td');
-                    /* Valid        */
+                    // Valid
                     $header .= html_writer::start_tag('td',array('class' => 'head_status'));
                         $header .= $strValid;
                     $header .= html_writer::end_tag('td');
-                    /* Empty Col    */
-                    //$header .= html_writer::start_tag('td',array('class' => 'head_start'));
-                    //    $header .= '&nbsp;';
-                    //$header .= html_writer::end_tag('td');
-                    /* Last Col     */
+                    // Last Col
                     $header .= html_writer::start_tag('td',array('class' => 'head_first'));
                         $header .= '&nbsp;';
                     $header .= html_writer::end_tag('td');
@@ -1262,20 +1284,20 @@ class TrackerManager {
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//AddHeader_CoursesTable
+    }//add_header_courses_table
 
     /**
+     * Description
+     * Add the content table - Screen Format
+     *
      * @param           $outcome
      * @return          string
      * @throws          Exception
      *
      * @creationDate    07/04/2015
      * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Add the content table - Screen Format
      */
-    private static function AddContent_CoursesTable($outcome) {
+    private static function add_content_courses_table($outcome) {
         /* Variables    */
         $content        = '';
         $url            = null;
@@ -1289,18 +1311,18 @@ class TrackerManager {
 
         try {
             $content .= html_writer::start_tag('table');
-            /* Not Completed    */
+            // Not Completed
             if ($outcome->not_completed) {
                 $not_completed = $outcome->not_completed;
                 foreach ($not_completed as $course) {
-                    /* Course Url   */
+                    // Course Url
                     $url     = new moodle_url('/course/view.php',array('id'=>$course->id,'start' =>1));
 
                     $content .= html_writer::start_tag('tr');
-                        /* Empty Col   */
+                        // Empty Col
                         $content .= html_writer::start_tag('td',array('class' => 'first'));
                         $content .= html_writer::end_tag('td');
-                        /* Course           */
+                        // Course
                         $content .= html_writer::start_tag('td',array('class' => 'course'));
                             if (strlen($course->name) <= 100) {
                                 $nameTruncate = $course->name;
@@ -1311,42 +1333,37 @@ class TrackerManager {
                             }
                             $content .= '<a href="'.$url .'">'. $nameTruncate .'</a>';
                         $content .= html_writer::end_tag('td');
-                        /* Status        */
+                        // Status
                         $content .= html_writer::start_tag('td',array('class' => 'status'));
                             $content .= get_string('outcome_course_started','local_tracker_manager');
                         $content .= html_writer::end_tag('td');
-                        /* Completion    */
+                        // Completion
                         $content .= html_writer::start_tag('td',array('class' => 'status'));
                             $content .= '-';
                         $content .= html_writer::end_tag('td');
-                        /* Valid        */
+                        // Valid
                         $content .= html_writer::start_tag('td',array('class' => 'status'));
                             $content .= '&nbsp;';
                         $content .= html_writer::end_tag('td');
-                        /* Empty Col    */
-                        //$strUrl  = '<a href="'.$url .'">'. get_string('start_course','local_tracker_manager') .'</a>';
-                        //$content .= html_writer::start_tag('td',array('class' => 'start'));
-                        //    $content .= $strUrl;
-                        //$content .= html_writer::end_tag('td');
-                        /* Last Col */
+                        // Last Col
                         $content .= html_writer::start_tag('td',array('class' => 'first'));
                         $content .= html_writer::end_tag('td');
                     $content .= html_writer::end_tag('tr');
                 }//for_each_course_not_completed
             }//if_not_completed
 
-            /* Not Enrol        */
+            // Not Enrol
             if ($outcome->not_enrol) {
                 $not_enrol = $outcome->not_enrol;
                 foreach ($not_enrol as $course) {
-                    /* Url Course */
+                    // Url Course
                     $url     = new moodle_url('/course/view.php',array('id'=>$course->id));
 
                     $content .= html_writer::start_tag('tr',array('class' => 'not_enroll'));
-                        /* Empty Col   */
+                        // Empty Col
                         $content .= html_writer::start_tag('td',array('class' => 'first'));
                         $content .= html_writer::end_tag('td');
-                        /* Course           */
+                        // Course
                         $content .= html_writer::start_tag('td',array('class' => 'course'));
                             if (strlen($course->name) <= 100) {
                                 $nameTruncate = $course->name;
@@ -1357,35 +1374,30 @@ class TrackerManager {
                             }
                             $content .= '<a href="'.$url .'">'. $nameTruncate .'</a>';
                         $content .= html_writer::end_tag('td');
-                        /* Status        */
+                        // Status
                         $content .= html_writer::start_tag('td',array('class' => 'status'));
                             $content .= get_string('outcome_course_not_enrolled','local_tracker_manager');
                         $content .= html_writer::end_tag('td');
-                        /* Completion    */
+                        // Completion
                         $content .= html_writer::start_tag('td',array('class' => 'status'));
                             $content .= '-';
                         $content .= html_writer::end_tag('td');
-                        /* Valid        */
+                        // Valid
                         $content .= html_writer::start_tag('td',array('class' => 'status'));
                             $content .= '&nbsp;';
                         $content .= html_writer::end_tag('td');
-                        /* Empty Col    */
-                        //$strUrl  = '<a href="'.$url .'">'. get_string('start_course','local_tracker_manager') .'</a>';
-                        //$content .= html_writer::start_tag('td',array('class' => 'start'));
-                        //    $content .= $strUrl;
-                        //$content .= html_writer::end_tag('td');
-                        /* Last Col */
+                        // Last Col
                         $content .= html_writer::start_tag('td',array('class' => 'first'));
                         $content .= html_writer::end_tag('td');
                     $content .= html_writer::end_tag('tr');
                 }//for_each_course_not_enrol
             }//if_not_enrol
 
-            /* Completed        */
+            // Completed
             if ($outcome->completed) {
                 $completed = $outcome->completed;
                 foreach ($completed as $course) {
-                    /* Url Course */
+                    // Url Course
                     $url     = new moodle_url('/course/view.php',array('id'=>$course->id,'start'=>1));
 
                     $ts = strtotime($outcome->expiration  . ' month', $course->completed);
@@ -1398,10 +1410,10 @@ class TrackerManager {
                     }
 
                     $content .= html_writer::start_tag('tr',array('class' => $class));
-                        /* Empty Col   */
+                        // Empty Col
                         $content .= html_writer::start_tag('td',array('class' => 'first'));
                         $content .= html_writer::end_tag('td');
-                        /* Course           */
+                        // Course
                         $content .= html_writer::start_tag('td',array('class' => 'course'));
                             if (strlen($course->name) <= 100) {
                                 $nameTruncate = $course->name;
@@ -1412,24 +1424,19 @@ class TrackerManager {
                             }
                             $content .= '<a href="'.$url .'">'. $nameTruncate .'</a>';
                         $content .= html_writer::end_tag('td');
-                        /* Status        */
+                        // Status
                         $content .= html_writer::start_tag('td',array('class' => 'status'));
                             $content .= $label;
                         $content .= html_writer::end_tag('td');
-                        /* Completion    */
+                        // Completion
                         $content .= html_writer::start_tag('td',array('class' => 'status'));
                             $content .= userdate($course->completed,'%d.%m.%Y', 99, false);
                         $content .= html_writer::end_tag('td');
-                        /* Valid        */
+                        // Valid
                         $content .= html_writer::start_tag('td',array('class' => 'status'));
                             $content .= userdate($ts,'%d.%m.%Y', 99, false);
                         $content .= html_writer::end_tag('td');
-                        /* Empty Col    */
-                        //$strUrl  = '<a href="'.$url .'">'. get_string('start_course','local_tracker_manager') .'</a>';
-                        //$content .= html_writer::start_tag('td',array('class' => 'start'));
-                        //    $content .= $strUrl;
-                        //$content .= html_writer::end_tag('td');
-                        /* Last Col */
+                        // Last Col
                         $content .= html_writer::start_tag('td',array('class' => 'first'));
                         $content .= html_writer::end_tag('td');
                     $content .= html_writer::end_tag('tr');
@@ -1441,21 +1448,22 @@ class TrackerManager {
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//AddContent_CoursesTable
+    }//add_content_courses_table
 
     /**
+     * Description
+     * Add the header to individual courses table - Screen Format
+     *
      * @param           $toggle
      * @param           $url
+     *
      * @return          string
      * @throws          Exception
      *
      * @creationDate    07/04/2015
      * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Add the header to individual courses table - Screen Format
      */
-    private static function AddHeader_IndividualCoursesTable($toggle,$url) {
+    private static function add_header_individual_courses_table($toggle,$url) {
         /* Variables    */
         $header = '';
         $strCourse         = get_string('course');
@@ -1463,37 +1471,33 @@ class TrackerManager {
         $strCompletion     = get_string('completion_time','local_tracker_manager');
 
         try {
-            /* Build Header */
+            // Build Header
             $header .= html_writer::start_tag('table');
                 $header .= html_writer::start_tag('tr',array('class' => 'head'));
-                    /* Empty Col   */
+                    // Empty Col
                     $header .= html_writer::start_tag('td',array('class' => 'head_first'));
                         $header .= html_writer::start_tag('button',array('id' => $toggle, 'class' => 'toggle', 'type' => 'image'));
                         $header .= html_writer::start_tag('img',array('src' => $url,'id' => $toggle . '_img'));
                         $header .= html_writer::end_tag('img');
                         $header .= html_writer::end_tag('button');
                     $header .= html_writer::end_tag('td');
-                    /* Course           */
+                    // Course
                     $header .= html_writer::start_tag('td',array('class' => 'head_course'));
                         $header .= $strCourse;
                     $header .= html_writer::end_tag('td');
-                    /* Status        */
+                    // Status
                     $header .= html_writer::start_tag('td',array('class' => 'head_status'));
                         $header .= $strState;
                     $header .= html_writer::end_tag('td');
-                    /* Completion    */
+                    // Completion
                     $header .= html_writer::start_tag('td',array('class' => 'head_status'));
                         $header .= $strCompletion;
                     $header .= html_writer::end_tag('td');
-                    /* Valid        */
+                    // Valid
                     $header .= html_writer::start_tag('td',array('class' => 'head_status'));
                         $header .= '&nbsp;';
                     $header .= html_writer::end_tag('td');
-                    /* Empty Col    */
-                    //$header .= html_writer::start_tag('td',array('class' => 'head_start'));
-                    //    $header .= '&nbsp;';
-                    //$header .= html_writer::end_tag('td');
-                    /* Last Col     */
+                    // Last Col
                     $header .= html_writer::start_tag('td',array('class' => 'head_first'));
                         $header .= '&nbsp;';
                     $header .= html_writer::end_tag('td');
@@ -1504,9 +1508,16 @@ class TrackerManager {
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//AddHeader_IndividualCoursesTable
+    }//add_header_individual_courses_table
 
     /**
+     * Description
+     * Add the content to individual courses table - Screen Format
+     *
+     * Add the link to unerol
+     *
+     * Add courses where user is in the waiting list
+     *
      * @param           $completed
      * @param           $not_completed
      * @param           $inWaitList
@@ -1517,22 +1528,13 @@ class TrackerManager {
      * @creationDate    07/04/2015
      * @author          eFaktor     (fbv)
      *
-     * Description
-     * Add the content to individual courses table - Screen Format
-     *
      * @updateDate      20/11/2015
      * @author          eFaktor     (fbv)
      *
-     * Description
-     * Add the link to unerol
-     *
      * @updateDate      03/11/2016
      * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Add courses where user is in the waiting list
      */
-    private static function AddContent_IndividualCoursesTable($completed,$not_completed,$inWaitList) {
+    private static function add_content_individual_courses_table($completed,$not_completed,$inWaitList) {
         /* Variables    */
         $content        = '';
         $url            = null;
@@ -1542,17 +1544,17 @@ class TrackerManager {
 
         try {
             $content .= html_writer::start_tag('table');
-                /* Not Completed    */
+                // Not Completed
                 if ($not_completed) {
                     foreach ($not_completed as $course) {
-                        /* Course Url   */
+                        // Course Url
                         $url     = new moodle_url('/course/view.php',array('id'=>$course->id,'start'=>1));
 
                         $content .= html_writer::start_tag('tr');
-                            /* Empty Col   */
+                            // Empty Col
                             $content .= html_writer::start_tag('td',array('class' => 'first'));
                             $content .= html_writer::end_tag('td');
-                            /* Course           */
+                            // Course
                             $content .= html_writer::start_tag('td',array('class' => 'course'));
                                 if (strlen($course->name) <= 100) {
                                     $nameTruncate = $course->name;
@@ -1563,17 +1565,17 @@ class TrackerManager {
                                 }
                                 $content .= '<a href="'.$url .'">'. $nameTruncate .'</a>';
                             $content .= html_writer::end_tag('td');
-                            /* Status        */
+                            // Status
                             $content .= html_writer::start_tag('td',array('class' => 'status'));
                                 $content .= get_string('outcome_course_started','local_tracker_manager');
                             $content .= html_writer::end_tag('td');
-                            /* Completion    */
+                            // Completion
                             $content .= html_writer::start_tag('td',array('class' => 'status'));
                                 $content .= '-';
                             $content .= html_writer::end_tag('td');
-                            /* Valid        */
+                            // Valid
                             $content .= html_writer::start_tag('td',array('class' => 'status'));
-                                /* Unenrol allowed --> add link to unenrol */
+                                // Unenrol allowed --> add link to unenrol
                                 if ($course->unEnrol) {
                                     $urlUnEnrol->param('id',$course->id);
                                     $strUrl  = '<a href="'.$urlUnEnrol .'">'. get_string('unenrol','report_manager') .'</a>';
@@ -1582,24 +1584,24 @@ class TrackerManager {
                                     $content .= '&nbsp;';
                                 }//if_unenrol
                             $content .= html_writer::end_tag('td');
-                            /* Last Col */
+                            // Last Col
                             $content .= html_writer::start_tag('td',array('class' => 'first'));
                             $content .= html_writer::end_tag('td');
                         $content .= html_writer::end_tag('tr');
                     }//for_each_course_not_completed
                 }//if_not_completed
 
-                /* Completed        */
+                // Completed
                 if ($completed) {
                     foreach ($completed as $course) {
-                        /* Course Url */
+                        // Course Url
                         $url     = new moodle_url('/course/view.php',array('id'=>$course->id,'start'=>1));
 
                         $content .= html_writer::start_tag('tr',array('class' => 'completed'));
-                            /* Empty Col   */
+                            // Empty Col
                             $content .= html_writer::start_tag('td',array('class' => 'first'));
                             $content .= html_writer::end_tag('td');
-                            /* Course           */
+                            // Course
                             $content .= html_writer::start_tag('td',array('class' => 'course'));
                                 if (strlen($course->name) <= 100) {
                                     $nameTruncate = $course->name;
@@ -1610,17 +1612,17 @@ class TrackerManager {
                                 }
                                 $content .= '<a href="'.$url .'">'. $nameTruncate .'</a>';
                             $content .= html_writer::end_tag('td');
-                            /* Status        */
+                            // Status
                             $content .= html_writer::start_tag('td',array('class' => 'status'));
                                 $content .= get_string('outcome_course_finished','local_tracker_manager');
                             $content .= html_writer::end_tag('td');
-                            /* Completion    */
+                            // Completion
                             $content .= html_writer::start_tag('td',array('class' => 'status'));
                                 $content .= userdate($course->completed,'%d.%m.%Y', 99, false);;
                             $content .= html_writer::end_tag('td');
-                            /* Valid        */
+                            // Valid
                             $content .= html_writer::start_tag('td',array('class' => 'status'));
-                                /* Unenrol allowed --> add link to unenrol */
+                                // Unenrol allowed --> add link to unenrol
                                 if ($course->unEnrol) {
                                     $urlUnEnrol->param('id',$course->id);
                                     $strUrl  = '<a href="'.$urlUnEnrol .'">'. get_string('unenrol','report_manager') .'</a>';
@@ -1629,24 +1631,24 @@ class TrackerManager {
                                     $content .= '&nbsp;';
                                 }//if_unenrol
                             $content .= html_writer::end_tag('td');
-                            /* Last Col */
+                            // Last Col
                             $content .= html_writer::start_tag('td',array('class' => 'first'));
                             $content .= html_writer::end_tag('td');
                         $content .= html_writer::end_tag('tr');
                     }//for_each_course_completed
                 }//if_completed
 
-                /* Waiting List */
+                // Waiting List
                 if ($inWaitList) {
                     foreach ($inWaitList as $course) {
-                        /* Course Url */
+                        // Course Url
                         $url     = new moodle_url('/course/view.php',array('id'=>$course->id,'start'=>1));
 
                         $content .= html_writer::start_tag('tr',array('class' => 'not_enroll'));
-                            /* Empty Col   */
+                            // Empty Col
                             $content .= html_writer::start_tag('td',array('class' => 'first'));
                             $content .= html_writer::end_tag('td');
-                                /* Course           */
+                                // Course
                                 $content .= html_writer::start_tag('td',array('class' => 'course'));
                                 if (strlen($course->name) <= 100) {
                                     $nameTruncate = $course->name;
@@ -1657,23 +1659,23 @@ class TrackerManager {
                                 }
                                 $content .= '<a href="'.$url .'">'. $nameTruncate .'</a>';
                             $content .= html_writer::end_tag('td');
-                            /* Status        */
+                            // Status
                             $content .= html_writer::start_tag('td',array('class' => 'status'));
                                 $content .= get_string('tracker_on_wait','report_manager');
                             $content .= html_writer::end_tag('td');
-                            /* Completion    */
+                            // Completion
                             $content .= html_writer::start_tag('td',array('class' => 'status'));
                                 $content .= '-';
                             $content .= html_writer::end_tag('td');
-                            /* Valid        */
+                            // Valid
                             $content .= html_writer::start_tag('td',array('class' => 'status'));
-                                /* Add link to cancel the enrol request */
+                                // Add link to cancel the enrol request
                                 $urlUnEnrol->param('id',$course->id);
                                 $urlUnEnrol->param('w',1);
                                 $strUrl  = '<a href="'.$urlUnEnrol .'">'. get_string('cancel') .'</a>';
                                 $content .= $strUrl;
                             $content .= html_writer::end_tag('td');
-                            /* Last Col */
+                            // Last Col
                             $content .= html_writer::start_tag('td',array('class' => 'first'));
                             $content .= html_writer::end_tag('td');
                         $content .= html_writer::end_tag('tr');//tr
@@ -1685,9 +1687,12 @@ class TrackerManager {
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//AddContent_IndividualCoursesTable
+    }//add_content_individual_courses_table
 
     /**
+     * Description
+     * Create a new sheet for the outcome courses. One sheet by company
+     *
      * @param           $excel
      * @param           $my_xls
      * @param           $competence
@@ -1695,31 +1700,29 @@ class TrackerManager {
      *
      * @creationDate    08/04/2015
      * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Create a new sheet for the outcome courses. One sheet by company
      */
-    private static function AddSheet_OutcomeCourses(&$excel,&$my_xls,$competence) {
+    private static function add_sheet_outcome_courses(&$excel,&$my_xls,$competence) {
         /* Variables    */
         $outcomes   = null;
         $row        = null;
 
         try {
-            /* One Company --> One sheet    */
+            // One Company --> One sheet
             foreach ($competence as $levelThree) {
                 $row = 0;
                 // Adding the worksheet
                 $my_xls = $excel->add_worksheet($levelThree->industrycode . ' - ' . $levelThree->name);
 
-                /* Add Header - Outcome Courses */
-                self::AddHeaderSheet_OutcomeCourses($my_xls,$row);
+                // Add Header - Outcome Courses
+                self::add_header_sheet_outcome_courses($my_xls,$row);
 
                 if ($levelThree->outcomes) {
                     $row ++;
                     $outcomes = $levelThree->outcomes;
                     foreach ($outcomes as $outcome) {
-                        /* Add Content - Outcome course */
-                        self::AddContentSheet_OutcomeCourses($my_xls,$row,$outcome);
+                        // Add Content - Outcome course
+                        self::add_content_sheet_outcome_courses($my_xls,$row,$outcome);
+
                         $my_xls->merge_cells($row,0,$row,17);
                         $row ++;
                     }//for_each_outcome
@@ -1728,20 +1731,20 @@ class TrackerManager {
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//AddSheet_OutcomeCourses
+    }//add_sheet_outcome_courses
 
     /**
+     * Description
+     * Add the header to the company outcome course sheet
+     *
      * @param           $my_xls
      * @param           $row
      * @throws          Exception
      *
      * @creationDate    08/04/2015
      * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Add the header to the company outcome course sheet
      */
-    private static function AddHeaderSheet_OutcomeCourses(&$my_xls,&$row) {
+    private static function add_header_sheet_outcome_courses(&$my_xls,&$row) {
         /* Variables    */
         $strOutcome         = get_string('outcome', 'report_manager');
         $strCourse          = get_string('course');
@@ -1751,30 +1754,30 @@ class TrackerManager {
         $col                = 0;
 
         try {
-            /* Outcome      */
+            // Outcome
             $my_xls->write($row, $col, $strOutcome,array('size'=>12, 'name'=>'Arial','bold'=>'1','color' => '#004b93','bg_color'=>'#efefef','align'=>'left','v_align'=>'center'));
             $my_xls->merge_cells($row,$col,$row,$col+5);
             $my_xls->set_row($row,20);
 
-            /* Course       */
+            // Course
             $col = $col + 6;
             $my_xls->write($row, $col, $strCourse,array('size'=>12, 'name'=>'Arial','bold'=>'1','color' => '#004b93','bg_color'=>'#efefef','align'=>'left','v_align'=>'center'));
             $my_xls->merge_cells($row,$col,$row,$col+5);
             $my_xls->set_row($row,20);
 
-            /* State    */
+            // State
             $col = $col + 6;
             $my_xls->write($row, $col, $strState,array('size'=>12, 'name'=>'Arial','bold'=>'1','color' => '#004b93','bg_color'=>'#efefef','align'=>'center','v_align'=>'center'));
             $my_xls->merge_cells($row,$col,$row,$col+1);
             $my_xls->set_row($row,20);
 
-            /* Completion  */
+            // Completion
             $col = $col + 2;
             $my_xls->write($row, $col, $strCompletion,array('size'=>12, 'name'=>'Arial','bold'=>'1','color' => '#004b93','bg_color'=>'#efefef','align'=>'center','v_align'=>'center'));
             $my_xls->merge_cells($row,$col,$row,$col+1);
             $my_xls->set_row($row,20);
 
-            /* Valid        */
+            // Valid
             $col = $col + 2;
             $my_xls->write($row, $col, $strValid,array('size'=>12, 'name'=>'Arial','bold'=>'1','color' => '#004b93','bg_color'=>'#efefef','align'=>'center','v_align'=>'center'));
             $my_xls->merge_cells($row,$col,$row,$col+1);
@@ -1782,9 +1785,12 @@ class TrackerManager {
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//AddHeaderSheet_OutcomeCourses
+    }//add_header_sheet_outcome_courses
 
     /**
+     * Description
+     * Add the content to the company outcome courses sheet
+     *
      * @param           $my_xls
      * @param           $row
      * @param           $outcome
@@ -1792,11 +1798,8 @@ class TrackerManager {
      *
      * @creationDate    08/04/2015
      * @author          eFaktor         (fbv)
-     *
-     * Description
-     * Add the content to the company outcome courses sheet
      */
-    private static function AddContentSheet_OutcomeCourses(&$my_xls,&$row,$outcome) {
+    private static function add_content_sheet_outcome_courses(&$my_xls,&$row,$outcome) {
         /* Variables    */
         $not_completed  = null;
         $completed      = null;
@@ -1806,37 +1809,37 @@ class TrackerManager {
         $col            = null;
 
         try {
-            /* Not Completed    */
+            // Not Completed
             if ($outcome->not_completed) {
                 $state          = get_string('outcome_course_started','local_tracker_manager');
                 $not_completed  = $outcome->not_completed;
                 foreach ($not_completed as $course) {
                     $col = 0;
 
-                    /* Outcome  */
+                    // Outcome
                     $my_xls->write($row, $col, $outcome->name,array('size'=>12, 'name'=>'Arial','align'=>'left','v_align'=>'center'));
                     $my_xls->merge_cells($row,$col,$row,$col+5);
                     $my_xls->set_row($row,20);
 
-                    /* Course   */
+                    // Course
                     $col = $col + 6;
                     $my_xls->write($row, $col, $course->name,array('size'=>12, 'name'=>'Arial','align'=>'left','v_align'=>'center'));
                     $my_xls->merge_cells($row,$col,$row,$col+5);
                     $my_xls->set_row($row,20);
 
-                    /* State     */
+                    // State
                     $col = $col + 6;
                     $my_xls->write($row, $col, $state,array('size'=>12, 'name'=>'Arial','align'=>'left','v_align'=>'center'));
                     $my_xls->merge_cells($row,$col,$row,$col+1);
                     $my_xls->set_row($row,20);
 
-                    /* Completion        */
+                    // Completion
                     $col = $col + 2;
                     $my_xls->write($row, $col, '-',array('size'=>12, 'name'=>'Arial','align'=>'center','v_align'=>'center'));
                     $my_xls->merge_cells($row,$col,$row,$col+1);
                     $my_xls->set_row($row,20);
 
-                    /* Valid            */
+                    // Valid
                     $col = $col + 2;
                     $my_xls->write($row, $col, '-',array('size'=>12, 'name'=>'Arial','align'=>'center','v_align'=>'center'));
                     $my_xls->merge_cells($row,$col,$row,$col+1);
@@ -1846,7 +1849,7 @@ class TrackerManager {
                 }//for_course
             }//if_not_completed
 
-            /* Not Enrol        */
+            // Not Enrol
             if ($outcome->not_enrol) {
                 $state      = get_string('outcome_course_not_enrolled','local_tracker_manager');
                 $bg_color   = '#fcf8e3';
@@ -1854,30 +1857,30 @@ class TrackerManager {
                 foreach ($not_enrol as $course) {
                     $col = 0;
 
-                    /* Outcome  */
+                    // Outcome
                     $my_xls->write($row, $col, $outcome->name,array('size'=>12, 'name'=>'Arial','bg_color'=>$bg_color,'align'=>'left','v_align'=>'center'));
                     $my_xls->merge_cells($row,$col,$row,$col+5);
                     $my_xls->set_row($row,20);
 
-                    /* Course   */
+                    // Course
                     $col = $col + 6;
                     $my_xls->write($row, $col, $course->name,array('size'=>12, 'name'=>'Arial','bg_color'=>$bg_color,'align'=>'left','v_align'=>'center'));
                     $my_xls->merge_cells($row,$col,$row,$col+5);
                     $my_xls->set_row($row,20);
 
-                    /* State     */
+                    // State
                     $col = $col + 6;
                     $my_xls->write($row, $col, $state,array('size'=>12, 'name'=>'Arial','bg_color'=>$bg_color,'align'=>'left','v_align'=>'center'));
                     $my_xls->merge_cells($row,$col,$row,$col+1);
                     $my_xls->set_row($row,20);
 
-                    /* Completion        */
+                    // Completion
                     $col = $col + 2;
                     $my_xls->write($row, $col, '-',array('size'=>12, 'name'=>'Arial','bg_color'=>$bg_color,'align'=>'center','v_align'=>'center'));
                     $my_xls->merge_cells($row,$col,$row,$col+1);
                     $my_xls->set_row($row,20);
 
-                    /* Valid            */
+                    // Valid
                     $col = $col + 2;
                     $my_xls->write($row, $col, '-',array('size'=>12, 'name'=>'Arial','bg_color'=>$bg_color,'align'=>'center','v_align'=>'center'));
                     $my_xls->merge_cells($row,$col,$row,$col+1);
@@ -1887,7 +1890,7 @@ class TrackerManager {
                 }//for_Each_not_enrol
             }//if_not_enrol
 
-            /* Completed        */
+            // Completed
             if ($outcome->completed) {
                 $completed = $outcome->completed;
                 foreach ($completed as $course) {
@@ -1902,30 +1905,30 @@ class TrackerManager {
                         $state = get_string('outcome_course_finished','local_tracker_manager');
                     }
 
-                    /* Outcome  */
+                    // Outcome
                     $my_xls->write($row, $col, $outcome->name,array('size'=>12, 'name'=>'Arial','bg_color'=>$bg_color,'align'=>'left','v_align'=>'center'));
                     $my_xls->merge_cells($row,$col,$row,$col+5);
                     $my_xls->set_row($row,20);
 
-                    /* Course   */
+                    // Course
                     $col = $col + 6;
                     $my_xls->write($row, $col, $course->name,array('size'=>12, 'name'=>'Arial','bg_color'=>$bg_color,'align'=>'left','v_align'=>'center'));
                     $my_xls->merge_cells($row,$col,$row,$col+5);
                     $my_xls->set_row($row,20);
 
-                    /* State     */
+                    // State
                     $col = $col + 6;
                     $my_xls->write($row, $col, $state,array('size'=>12, 'name'=>'Arial','bg_color'=>$bg_color,'align'=>'left','v_align'=>'center'));
                     $my_xls->merge_cells($row,$col,$row,$col+1);
                     $my_xls->set_row($row,20);
 
-                    /* Completion        */
+                    // Completion
                     $col = $col + 2;
                     $my_xls->write($row, $col, userdate($course->completed,'%d.%m.%Y', 99, false),array('size'=>12, 'name'=>'Arial','bg_color'=>$bg_color,'align'=>'center','v_align'=>'center'));
                     $my_xls->merge_cells($row,$col,$row,$col+1);
                     $my_xls->set_row($row,20);
 
-                    /* Valid            */
+                    // Valid
                     $col = $col + 2;
                     $my_xls->write($row, $col, userdate($ts,'%d.%m.%Y', 99, false),array('size'=>12, 'name'=>'Arial','bg_color'=>$bg_color,'align'=>'center','v_align'=>'center'));
                     $my_xls->merge_cells($row,$col,$row,$col+1);
@@ -1937,9 +1940,12 @@ class TrackerManager {
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//AddContentSheet_OutcomeCourses
+    }//add_content_sheet_outcome_courses
 
     /**
+     * Description
+     * Add a new sheet for the individual courses
+     *
      * @param           $excel
      * @param           $my_xls
      * @param           $row
@@ -1949,40 +1955,37 @@ class TrackerManager {
      *
      * @creationDate    07/04/2015
      * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Add a new sheet for the individual courses
      */
-    private static function AddSheet_IndividualCourses(&$excel,&$my_xls,&$row,$completed,$not_completed) {
+    private static function add_sheet_individual_courses(&$excel,&$my_xls,&$row,$completed,$not_completed) {
         try {
             // Adding the worksheet
             $my_xls = $excel->add_worksheet(get_string('individual_courses','local_tracker_manager'));
 
-            /* Add Header - Individual Courses  */
-            self::AddHeaderSheet_IndividualCourses($my_xls,$row);
+            // Add Header - Individual Courses
+            self::add_header_sheet_individual_courses($my_xls,$row);
 
-            /* Add Content - Individual Courses */
+            // Add Content - Individual Courses
             $row++;
-            self::AddContentSheet_IndividualCourses($completed,$not_completed,$my_xls,$row);
+            self::add_content_sheet_individual_courses($completed,$not_completed,$my_xls,$row);
 
             $my_xls->merge_cells($row,0,$row,9);
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//AddSheet_IndividualCourses
+    }//add_sheet_individual_courses
 
     /**
+     * Description
+     * Add the header to the individual courses sheet
+     *
      * @param           $my_xls
      * @param           $row
      * @throws          Exception
      *
      * @creationDate    07/04/2015
      * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Add the header to the individual courses sheet
      */
-    private static function AddHeaderSheet_IndividualCourses(&$my_xls,$row) {
+    private static function add_header_sheet_individual_courses(&$my_xls,$row) {
         /* Variables    */
         $strCourse         = get_string('course');
         $strState          = get_string('state','local_tracker_manager');
@@ -1990,18 +1993,18 @@ class TrackerManager {
         $col               = 0;
 
         try {
-            /* Course       */
+            // Course
             $my_xls->write($row, $col, $strCourse,array('size'=>12, 'name'=>'Arial','bold'=>'1','color' => '#004b93','bg_color'=>'#efefef','align'=>'left','v_align'=>'center'));
             $my_xls->merge_cells($row,$col,$row,$col+5);
             $my_xls->set_row($row,20);
 
-            /* State    */
+            // State
             $col = $col + 6;
             $my_xls->write($row, $col, $strState,array('size'=>12, 'name'=>'Arial','bold'=>'1','color' => '#004b93','bg_color'=>'#efefef','align'=>'center','v_align'=>'center'));
             $my_xls->merge_cells($row,$col,$row,$col+1);
             $my_xls->set_row($row,20);
 
-            /* Completion  */
+            // Completion
             $col = $col + 2;
             $my_xls->write($row, $col, $strCompletion,array('size'=>12, 'name'=>'Arial','bold'=>'1','color' => '#004b93','bg_color'=>'#efefef','align'=>'center','v_align'=>'center'));
             $my_xls->merge_cells($row,$col,$row,$col+1);
@@ -2009,9 +2012,12 @@ class TrackerManager {
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//AddHeaderSheet_IndividualCourses
+    }//add_header_sheet_individual_courses
 
     /**
+     * Description
+     * Add the content to the individual courses sheet
+     *
      * @param           $completed
      * @param           $not_completed
      * @param           $my_xls
@@ -2020,35 +2026,32 @@ class TrackerManager {
      *
      * @creationDate    07/04/2015
      * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Add the content to the individual courses sheet
      */
-    private static function AddContentSheet_IndividualCourses($completed,$not_completed,&$my_xls,&$row) {
+    private static function add_content_sheet_individual_courses($completed,$not_completed,&$my_xls,&$row) {
         /* Variables    */
         $col        = null;
         $state      = null;
         $bg_color   = '#dff0d8';
 
         try {
-            /* Not Completed    */
+            // Not Completed
             if ($not_completed) {
                 $state = get_string('outcome_course_started','local_tracker_manager');
                 foreach ($not_completed as $course) {
                     $col = 0;
 
-                    /* Course  */
+                    // Course
                     $my_xls->write($row, $col, $course->name,array('size'=>12, 'name'=>'Arial','align'=>'left','v_align'=>'center'));
                     $my_xls->merge_cells($row,$col,$row,$col+5);
                     $my_xls->set_row($row,20);
 
-                    /* State     */
+                    // State
                     $col = $col + 6;
                     $my_xls->write($row, $col, $state,array('size'=>12, 'name'=>'Arial','align'=>'left','v_align'=>'center'));
                     $my_xls->merge_cells($row,$col,$row,$col+1);
                     $my_xls->set_row($row,20);
 
-                    /* Completion        */
+                    // Completion
                     $col = $col + 2;
                     $my_xls->write($row, $col, '-',array('size'=>12, 'name'=>'Arial','align'=>'center','v_align'=>'center'));
                     $my_xls->merge_cells($row,$col,$row,$col+1);
@@ -2058,24 +2061,24 @@ class TrackerManager {
                 }//for_Each_not_completed
             }//if_not_completed
 
-            /* Completed    */
+            // Completed
             if ($completed) {
                 $state = get_string('outcome_course_finished','local_tracker_manager');
                 foreach ($completed as $course) {
                     $col = 0;
 
-                    /* Course  */
+                    // Course
                     $my_xls->write($row, $col, $course->name,array('size'=>12, 'name'=>'Arial','bg_color'=>$bg_color,'align'=>'left','v_align'=>'center'));
                     $my_xls->merge_cells($row,$col,$row,$col+5);
                     $my_xls->set_row($row,20);
 
-                    /* State     */
+                    // State
                     $col = $col + 6;
                     $my_xls->write($row, $col, $state,array('size'=>12, 'name'=>'Arial','bg_color'=>$bg_color,'align'=>'left','v_align'=>'center'));
                     $my_xls->merge_cells($row,$col,$row,$col+1);
                     $my_xls->set_row($row,20);
 
-                    /* Completion        */
+                    // Completion
                     $col = $col + 2;
                     $my_xls->write($row, $col,userdate($course->completed,'%d.%m.%Y', 99, false),array('size'=>12, 'name'=>'Arial','bg_color'=>$bg_color,'align'=>'center','v_align'=>'center'));
                     $my_xls->merge_cells($row,$col,$row,$col+1);
@@ -2087,5 +2090,5 @@ class TrackerManager {
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//AddContentSheet_IndividualCourses
+    }//add_content_sheet_individual_courses
 }//TrackerManager

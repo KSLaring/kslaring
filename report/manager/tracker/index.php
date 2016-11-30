@@ -27,7 +27,7 @@ $pdf            = optional_param('pdf', '', PARAM_ALPHA);
 
 $url = new moodle_url('/report/manager/tracker/index.php');
 
-$site_context = CONTEXT_SYSTEM::instance();
+$site_context = context_system::instance();
 $PAGE->set_context($site_context);
 $PAGE->set_url($url);
 
@@ -37,15 +37,15 @@ $PAGE->set_pagelayout('admin');
 $PAGE->requires->js(new moodle_url('/report/manager/js/tracker.js'));
 
 /* Get Tracker User */
-$trackerUser = TrackerManager::GetUserTracker($USER->id);
+$trackerUser = TrackerManager::get_user_tracker($USER->id);
 
 switch ($pdf) {
     case TRACKER_PDF_DOWNLOAD:
-        TrackerManager::Download_TrackerReport($trackerUser);
+        TrackerManager::download_tracker_report($trackerUser);
         break;
     default:
         /* Print Tracker User   */
-        $out = TrackerManager::Print_TrackerInfo($trackerUser);
+        $out = TrackerManager::print_tracker_info($trackerUser);
         break;
 }//switch_pdf
 
