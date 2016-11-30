@@ -175,6 +175,7 @@ class ct_settings_form extends moodleform {
                 $form->setDefault('homesummary_editor',$editor->homesummary_editor);
 
                 break;
+
             case 'pagegraphics':
                 /* Get FileManager   */
                 list($file_options,$context) = course_page::get_file_options($courseId);
@@ -190,6 +191,7 @@ class ct_settings_form extends moodleform {
                 $form->setDefault('pagegraphics',$value);
 
                 break;
+
             case 'pagegraphicstitle':
                 $pageTitle = $form->createElement('text','pagegraphicstitle',get_string('home_graphicstitle','local_course_page'),'style="width:95%;"');
                 $form->setDefault('pagegraphicstitle',$value);
@@ -197,24 +199,28 @@ class ct_settings_form extends moodleform {
                 $form->insertElementBefore($pageTitle,'courseformathdr');
 
                 break;
+
             case 'homepage':
                 $home_page = $form->createElement('checkbox','homepage',get_string('checkbox_home','local_course_page'));
                 $form->insertElementBefore($home_page,'descriptionhdr');
                 $form->setDefault('homepage',$value);
 
                 break;
+
             case 'ratings':
                 $home_ratings = $form->createElement('checkbox','ratings',get_string('home_ratings','local_course_page'));
                 $form->insertElementBefore($home_ratings,'descriptionhdr');
                 $form->setDefault('ratings',$value);
 
                 break;
+
             case 'participant':
                 $home_participant = $form->createElement('checkbox','participant',get_string('home_participant','local_course_page'));
                 $form->insertElementBefore($home_participant,'descriptionhdr');
                 $form->setDefault('participant',$value);
                 
                 break;
+
             case 'homevisible':
                 $visible['0'] = get_string('hide');
                 $visible['1'] = get_string('show');
@@ -223,32 +229,32 @@ class ct_settings_form extends moodleform {
                 $form->setDefault('homevisible',$value);
 
                 break;
+
             case 'prerequisities':
                 $form->addElement('textarea','prerequisities',get_string('home_prerequisities',$str_format),'rows="5" style="width:95%;"');
                 $form->setDefault('prerequisities',$value);
 
                 break;
+
             case 'producedby':
                 $form->addElement('text','producedby',get_string('home_producedby',$str_format),'style="width:95%;"');
                 $form->setDefault('producedby',$value);
                 $form->setType('producedby',PARAM_TEXT);
 
                 break;
+
             case 'course_location':
                 $lstLocations = course_page::get_course_locations_list($USER->id);
                 $form->addElement('select','course_location',get_string('home_location',$str_format),$lstLocations);
                 $form->setDefault('course_location',$value);
+
                 break;
+
             case 'course_sector':
                 $location = course_page::get_course_location($courseId);
                 $lstSectors     = course_page::get_course_locations_list($location);
                 $form->addElement('select','course_sector',get_string('home_sector',$str_format),$lstSectors,'multiple');
                 $form->setDefault('course_sector',$value);
-
-                break;
-            case 'time':
-                $form->addElement('textarea','time',get_string('home_time_from_to',$str_format),'rows="5" style="width:95%;"');
-                $form->setDefault('time',$value);
 
                 break;
             case 'length':
@@ -257,24 +263,28 @@ class ct_settings_form extends moodleform {
                 $form->setType('length',PARAM_TEXT);
 
                 break;
+
             case 'effort':
                 $form->addElement('text','effort',get_string('home_effort',$str_format),'style="width:95%;"');
                 $form->setDefault('effort',$value);
                 $form->setType('effort',PARAM_TEXT);
 
                 break;
+
             case 'author':
                 $form->addElement('text','author',get_string('home_author',$str_format),'style="width:95%;"');
                 $form->setDefault('author',$value);
                 $form->setType('author',PARAM_TEXT);
 
                 break;
+
             case 'licence':
                 $form->addElement('text','licence',get_string('home_licence',$str_format),'style="width:95%;"');
                 $form->setDefault('licence',$value);
                 $form->setType('licence',PARAM_TEXT);
 
                 break;
+            
             default:
                 break;
         }//switch
