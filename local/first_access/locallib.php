@@ -34,11 +34,17 @@ class FirstAccess {
      */
     public static function HasToUpdate_Profile($user_id) {
         /* Variables    */
+        global $CFG;
         $updateProfile      = false;
+        $userDoskom         = false;
 
         try {
             /* Exclude DOSKOM Users */
-            if (self::IsDoskomUser($user_id)) {
+            if (file_exists($CFG->dirroot.'/local/doskom')) {
+                $userDoskom = self::IsDoskomUser($user_id);
+            }
+
+            if ($userDoskom) {
                 $updateProfile = false;
             }else {
                 /* Check First Access   */
