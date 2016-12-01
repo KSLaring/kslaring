@@ -26,19 +26,19 @@ $url            = new moodle_url('/local/friadmin/course_template/course_templat
 $strTitle       = get_string('coursetemplate_title', 'local_friadmin');
 $strSubTitle    = get_string('course_enrolment', 'local_friadmin');
 
-/* Check Permissions/Capability */
-if (!has_capability('local/friadmin:view',context_system::instance())) {
-    if (!local_friadmin_helper::CheckCapabilityFriAdmin()) {
-        print_error('nopermissions', 'error', '', 'block/frikomport:view');
-    }//if_superuser
-}
-
 $PAGE->set_url($url);
 $PAGE->set_context($contextCourse);
 $PAGE->set_pagelayout('admin');
 $PAGE->set_title($SITE->fullname);
 $PAGE->set_heading($SITE->fullname);
 $PAGE->navbar->add(get_string('pluginname', 'local_friadmin'));
+
+/* Check Permissions/Capability */
+if (!has_capability('local/friadmin:view',context_system::instance())) {
+    if (!local_friadmin_helper::CheckCapabilityFriAdmin()) {
+        print_error('nopermissions', 'error', '', 'block/frikomport:view');
+    }//if_superuser
+}
 
 /* Header   */
 echo $OUTPUT->header();

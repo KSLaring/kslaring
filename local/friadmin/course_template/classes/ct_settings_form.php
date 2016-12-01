@@ -257,6 +257,13 @@ class ct_settings_form extends moodleform {
                 $form->setDefault('course_sector',$value);
 
                 break;
+
+            case 'time':
+                $form->addElement('textarea','time',get_string('home_time_from_to',$str_format),'rows="5" style="width:95%;"');
+                $form->setDefault('time',$value);
+
+                break;
+
             case 'length':
                 $form->addElement('text','length',get_string('home_length',$str_format),'style="width:95%;"');
                 $form->setDefault('length',$value);
