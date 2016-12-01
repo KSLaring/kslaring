@@ -98,7 +98,6 @@ class local_friadmin_coursedetail_linklist extends local_friadmin_widget impleme
             $strcompletion         = get_string('coursedetail_completion', 'local_friadmin');
             $strstatistics         = get_string('coursedetail_statistics', 'local_friadmin');
             $strenrollment         = get_string('coursedetail_enrollment', 'local_friadmin');
-            $strusers              = get_string('coursedetail_users', 'local_friadmin');
             $strconfirmed          = get_string('coursedetail_confirmed', 'local_friadmin');
             $strwaitlist           = get_string('coursedetail_waitlist', 'local_friadmin');
             $strparticipantlist    = get_string('coursedetail_participantlist', 'local_friadmin');
@@ -113,10 +112,9 @@ class local_friadmin_coursedetail_linklist extends local_friadmin_widget impleme
             $urlcompletion         = new moodle_url('/report/completion/index.php', array('course' => $courseid));
             $urlstatistics         = new moodle_url('/report/overviewstats/index.php', array('course' => $courseid));
             $urlenrollment         = new moodle_url('/enrol/instances.php', array('id' => $courseid));
-            $urlusers              = new moodle_url('/local/participants/participants.php', array('id' => $courseid));
+            $urlparticipantlist    = new moodle_url('/local/participants/participants.php', array('id' => $courseid));
             $urlconfirmed          = new moodle_url('/enrol/waitinglist/manageconfirmed.php', array('id' => $courseid));
             $urlwaitlist           = new moodle_url('/enrol/waitinglist/managequeue.php', array('id' => $courseid));
-            $urlparticipantlist    = new moodle_url('/grade/export/xls/index.php?', array('id' => $courseid));
             $urlemail              = '#';
             $urlmanual             = new moodle_url('/enrol/waitinglist/managemanual.php', array('co' => $courseid));
             $urlduplicate          = new moodle_url('/local/friadmin/duplicatecourse.php', array('id' => $courseid));
@@ -154,13 +152,11 @@ class local_friadmin_coursedetail_linklist extends local_friadmin_widget impleme
 
             /* Set up row 3 */
             $list3 = '<ul class="unlist buttons-linklist">
-                        <li><a class="btn" href="' . $urlusers . '">' . $strusers . '</a></li>
+                        <li><a class="btn" href="' . $urlparticipantlist . '">' . $strparticipantlist . '</a></li>
                         <li><a class="btn' . $disabledconfirmed . '" href="' . $urlconfirmed .
                         '">' . $strconfirmed . '</a></li>
                         <li><a class="btn' . $disabledwaitlist . '" href="' . $urlwaitlist . '">' .
                         $strwaitlist . '</a></li>
-                        <li><a class="btn" href="' . $urlparticipantlist . '">' . $strparticipantlist .
-                        '</a></li>
                       </ul>';
 
             /* Set up row 4 */
