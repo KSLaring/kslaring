@@ -1513,20 +1513,13 @@ class enrol_waitinglist_plugin extends enrol_plugin {
      */
     public function restore_instance(restore_enrolments_structure_step $step, stdClass $data, $course, $oldid) {
         /* Variables */
-        global $DB,$CFG;
+        global $DB;
         $instanceId     = null;
         $rdoWaitOld     = null;
         $rdoOldSub      = null;
         $params         = null;
 
-        $dbLog = null;
-        
         try {
-
-            /* Log  */
-            $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' START RESTORE INSTANCE  . ' . "\n";
-            
-            
             /**
              * Get old Waiting List instance
              */
@@ -1560,14 +1553,6 @@ class enrol_waitinglist_plugin extends enrol_plugin {
                 /* Mapping */
                 $step->set_mapping('enrol', $oldid, $instanceId);
             }//if_$rdoWaitOld
-            
-            $dbLog .= " DATA COURSE : " . $data->courseid . "\n";
-            $dbLog .= " RDO OLD COURSE: " . $rdoWaitOld->courseid . "\n";
-            $dbLog .= " OLD ID INSTANCE: " . $oldid . "\n";
-            $dbLog .= " NEW INSTANCE: " . $instanceId . "\n";
-            $dbLog .= " NEW COURSE: " . $course->id . "\n";
-
-            error_log($dbLog, 3, $CFG->dataroot . "/restore_paqui.log");
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch

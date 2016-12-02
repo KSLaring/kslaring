@@ -709,12 +709,6 @@ class local_friadmin_helper {
                 'startdate' => $data->startdate,
             );
 
-
-            /* Log  */
-            $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' START HELPER RESTORE  . ' . "\n";
-            $dbLog .= " COurse: " . $data->id . "\n";
-            error_log($dbLog, 3, $CFG->dataroot . "/restore_paqui.log");
-
             list($newcourseid, $error) = self::restore_course((int)$data->id, $coursedata, $data->includeusers, true);
 
             if (empty($error)) {
