@@ -873,6 +873,12 @@ class local_friadmin_helper {
             }
             $DB->update_record('course', $course);
 
+            // Update waitinglist when users are not included
+            if (!$withusers) {
+                enrol_waitinglist_plugin::update_restored_instance($cid,$courseid);
+            }
+            
+
             return array($courseid, $error);
         } catch (Exception $ex) {
             throw $ex;

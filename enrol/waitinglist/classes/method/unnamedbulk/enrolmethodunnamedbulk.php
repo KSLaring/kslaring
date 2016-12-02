@@ -178,8 +178,29 @@ class enrolmethodunnamedbulk extends \enrol_waitinglist\method\enrolmethodbase {
             $oldInstance = $DB->get_record_sql($sql,$params);
             if ($oldInstance) {
                 /* Create a new one from the old one */
-                $newInstance->status        = $oldInstance->status;
-                $newInstance->emailalert    = $oldInstance->emailalert;
+                $newInstance->status                                                = $oldInstance->status;
+                $newInstance->emailalert                                            = $oldInstance->emailalert;
+                $newInstance->maxseats                                              = $oldInstance->maxseats;
+                $newInstance->cost                                                  = $oldInstance->cost;
+                $newInstance->currency                                              = $oldInstance->currency;
+                $newInstance->roleid                                                = $oldInstance->roleid;
+                $newInstance->password                                              = $oldInstance->password;
+                $newInstance->unenrolenddate                                        = $oldInstance->unenrolenddate;
+                $newInstance->customint1                                            = $oldInstance->customint1;
+                $newInstance->customint2                                            = $oldInstance->customint2;
+                $newInstance->customint3                                            = $oldInstance->customint3;
+                $newInstance->customint4                                            = $oldInstance->customint4;
+                $newInstance->customtext3                                           = $oldInstance->customtext3;
+                $newInstance->customtext4                                           = $oldInstance->customtext4;
+                $newInstance->customint6                                            = $oldInstance->customint6;
+                $newInstance->customint7                                            = $oldInstance->customint7;
+                $newInstance->customint8                                            = $oldInstance->customint8;
+                $newInstance->customchar1                                           = $oldInstance->customchar1;
+                $newInstance->customchar2                                           = $oldInstance->customchar2;
+                $newInstance->customchar3                                           = $oldInstance->customchar3;
+                $newInstance->customdec1                                            = $oldInstance->customdec1;
+                $newInstance->customdec2                                            = $oldInstance->customdec2;
+                $newInstance->customdec3                                            = $oldInstance->customdec3;
                 $newInstance->{enrolmethodunnamedbulk::MFIELD_SENDCONFIRMMESSAGE}   = $oldInstance->{enrolmethodunnamedbulk::MFIELD_SENDCONFIRMMESSAGE};
                 $newInstance->{enrolmethodunnamedbulk::MFIELD_WAITLISTMESSAGE}      = $oldInstance->{enrolmethodunnamedbulk::MFIELD_WAITLISTMESSAGE};
                 $newInstance->{enrolmethodunnamedbulk::MFIELD_CONFIRMEDMESSAGE}     = $oldInstance->{enrolmethodunnamedbulk::MFIELD_CONFIRMEDMESSAGE};
@@ -200,7 +221,82 @@ class enrolmethodunnamedbulk extends \enrol_waitinglist\method\enrolmethodbase {
             throw $ex;
         }//try_catch
     }//restore_instance
-	 
+
+    /**
+     * Description
+     * updated restored instance from the original
+     *
+     * @creationDate    02/12/2016
+     * @author          eFaktor     (fbv)
+     * 
+     * @param       int $oldWaitingId   Original instance
+     * @param       int $oldCourse      Original course
+     * @param       int $newWaitingId   New instance
+     * @param       int $courseId       New course
+     * 
+     * @throws          \Exception
+     */
+    public static function update_restored_instance($oldWaitingId,$oldCourse,$newWaitingId,$courseId) {
+        /* Variables */
+        global $DB;
+        $newInstance    = null;
+        $oldInstance    = null;
+        $params         = null;
+        $newParams      = null;
+        $rdo            = null;
+
+        try {
+            // SQL Instruction
+            $sql = " SELECT * 
+                     FROM   {enrol_waitinglist_method} 
+                     WHERE  waitinglistid = :waitinglistid 
+                        AND courseid      = :courseid 
+                        AND methodtype like '%unnamedbulk%'";
+
+            // Get old instance
+            // Execute
+            $oldInstance = $DB->get_record_sql($sql,array('courseid' => $oldCourse,'waitinglistid' => $oldWaitingId));
+
+            // Get new instance
+            // Execute
+            $newInstance = $DB->get_record_sql($sql,array('courseid' => $courseId,'waitinglistid' => $newWaitingId));
+
+            if ($oldInstance && $newInstance) {
+                $newInstance->maxseats          = $oldInstance->maxseats;
+                $newInstance->emailalert        = $oldInstance->emailalert;
+                $newInstance->cost              = $oldInstance->cost;
+                $newInstance->currency          = $oldInstance->currency;
+                $newInstance->roleid            = $oldInstance->roleid;
+                $newInstance->password          = $oldInstance->password;
+                $newInstance->status            = $oldInstance->status;
+                $newInstance->unenrolenddate    = $oldInstance->unenrolenddate;
+                $newInstance->customint1        = $oldInstance->customint1;
+                $newInstance->customint2        = $oldInstance->customint2;
+                $newInstance->customint3        = $oldInstance->customint3;
+                $newInstance->customint4        = $oldInstance->customint4;
+                $newInstance->customint5        = $oldInstance->customint5;
+                $newInstance->customtext1       = $oldInstance->customtext1;
+                $newInstance->customtext2       = $oldInstance->customtext2;
+                $newInstance->customtext3       = $oldInstance->customtext3;
+                $newInstance->customtext4       = $oldInstance->customtext4;
+                $newInstance->customint6        = $oldInstance->customint6;
+                $newInstance->customint7        = $oldInstance->customint7;
+                $newInstance->customint8        = $oldInstance->customint8;
+                $newInstance->customchar1       = $oldInstance->customchar1;
+                $newInstance->customchar2       = $oldInstance->customchar2;
+                $newInstance->customchar3       = $oldInstance->customchar3;
+                $newInstance->customdec1        = $oldInstance->customdec1;
+                $newInstance->customdec2        = $oldInstance->customdec2;
+                $newInstance->customdec3        = $oldInstance->customdec3;
+
+                // Update
+                $DB->update_record('enrol_waitinglist_method',$newInstance);
+            }
+        }catch (\Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//update_restored_instance
+
 	 //settings related functions
 	 public function has_notifications(){return false;}
 	 public  function show_notifications_settings_link(){return false;}
