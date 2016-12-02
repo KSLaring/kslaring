@@ -89,7 +89,7 @@ var level_structure = {
     Activate_LevelOne : function(e) {
         var parent  = this.levelZero.get('value');
         var level   = 1;
-
+        
         //  Trigger an ajax search after a delay.
         this.cancel_timeout();
         this.timeoutid  = Y.later(this.querydelay * 1000, e, function(obj){obj.send_query(false,parent,level)}, this);

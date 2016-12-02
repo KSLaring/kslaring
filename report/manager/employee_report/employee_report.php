@@ -38,7 +38,7 @@ $out                = '';
 require_login();
 
 /* Start the page */
-$site_context = CONTEXT_SYSTEM::instance();
+$site_context = context_system::instance();
 $PAGE->https_required();
 $PAGE->set_context($site_context);
 

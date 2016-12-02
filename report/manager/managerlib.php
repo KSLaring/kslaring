@@ -1500,9 +1500,9 @@ class CompetenceManager {
 
             /* SQL Instruction */
             $sql = " SELECT re.levelzero as 'levelzero',
-                            GROUP_CONCAT(DISTINCT re.levelone  	ORDER BY re.levelone 	SEPARATOR ',') 	as 'levelone',
-                            GROUP_CONCAT(DISTINCT re.leveltwo  	ORDER BY re.leveltwo 	SEPARATOR ',') 	as 'leveltwo',
-                            GROUP_CONCAT(DISTINCT re.levelthree ORDER BY re.levelthree	SEPARATOR ',') 	as 'levelthree',
+      			            GROUP_CONCAT(DISTINCT IF(re.levelone,re.levelone,0)  	ORDER BY re.levelone 	SEPARATOR ',') 	as 'levelone',
+			                GROUP_CONCAT(DISTINCT IF(re.leveltwo,re.leveltwo,0)  	ORDER BY re.leveltwo 	SEPARATOR ',') 	as 'leveltwo',
+			                GROUP_CONCAT(DISTINCT IF(re.levelthree,re.levelthree,0) ORDER BY re.levelthree	SEPARATOR ',') 	as 'levelthree',
                             re.hierarchylevel
                      FROM	{report_gen_company_manager} re
                      WHERE	re.managerid 		= :user ";
@@ -1529,6 +1529,11 @@ class CompetenceManager {
                     /* Level One */
                     if ($instance->levelone) {
                         $infoHierarchy->levelOne    = explode(',',$instance->levelone);
+                        if (in_array(0,$infoHierarchy->levelOne)) {
+                            $levelOne = self::GetCompanies_LevelList(1,$instance->levelzero);
+                            unset($levelOne[0]);
+                            $infoHierarchy->levelOne = array_keys($levelOne);
+                        }
                     }else {
                         $levelOne = self::GetCompanies_LevelList(1,$instance->levelzero);
                         unset($levelOne[0]);
@@ -1538,6 +1543,11 @@ class CompetenceManager {
                     /* Level Two    */
                     if ($instance->leveltwo) {
                         $infoHierarchy->levelTwo    = explode(',',$instance->leveltwo);
+                        if (in_array(0,$infoHierarchy->levelTwo)) {
+                            $levelTwo = self::GetCompanies_LevelList(2,$instance->levelone);
+                            unset($levelTwo[0]);
+                            $infoHierarchy->levelTwo = array_keys($levelTwo);
+                        }
                     }else {
                         $levelTwo = self::GetCompanies_LevelList(2,$instance->levelone);
                         unset($levelTwo[0]);
@@ -1547,6 +1557,11 @@ class CompetenceManager {
                     /* Level Three  */
                     if ($instance->levelthree) {
                         $infoHierarchy->levelThree  = explode(',',$instance->levelthree);
+                        if (in_array(0,$infoHierarchy->levelThree)) {
+                            $levelThree = self::GetCompanies_LevelList(3,$instance->leveltwo);
+                            unset($levelThree[0]);
+                            $infoHierarchy->levelThree = array_keys($levelThree);
+                        }
                     }else {
                         $levelThree = self::GetCompanies_LevelList(3,$instance->leveltwo);
                         unset($levelThree[0]);

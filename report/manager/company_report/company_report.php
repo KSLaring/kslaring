@@ -46,7 +46,7 @@ if (!isset($SESSION->bulk_users)) {
 require_login();
 
 /* Start the page */
-$site_context = CONTEXT_SYSTEM::instance();
+$site_context = context_system::instance();
 $IsReporter = CompetenceManager::IsReporter($USER->id);
 if (!$IsReporter) {
     require_capability('report/manager:viewlevel4', $site_context,$USER->id);
