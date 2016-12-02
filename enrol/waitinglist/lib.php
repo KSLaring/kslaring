@@ -1513,13 +1513,20 @@ class enrol_waitinglist_plugin extends enrol_plugin {
      */
     public function restore_instance(restore_enrolments_structure_step $step, stdClass $data, $course, $oldid) {
         /* Variables */
-        global $DB;
+        global $DB,$CFG;
         $instanceId     = null;
         $rdoWaitOld     = null;
         $rdoOldSub      = null;
         $params         = null;
 
+        $dbLog = null;
+        
         try {
+
+            /* Log  */
+            $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' START RESTORE INSTANCE  . ' . "\n";
+            
+            
             /**
              * Get old Waiting List instance
              */
@@ -1534,7 +1541,7 @@ class enrol_waitinglist_plugin extends enrol_plugin {
                  * Only one waiting list instance per course.
                  */
                 if ($instances = $DB->get_records('enrol', array('courseid'=>$data->courseid, 'enrol'=>'waitinglist'), 'id')) {
-                    $instance = reset($instances);
+                    $instance   = reset($instances);
                     $instanceId = $instance->id;
                 } else {
                     $instanceId = $this->add_instance($course, (array)$data);
@@ -1553,10 +1560,89 @@ class enrol_waitinglist_plugin extends enrol_plugin {
                 /* Mapping */
                 $step->set_mapping('enrol', $oldid, $instanceId);
             }//if_$rdoWaitOld
+            
+            $dbLog .= " DATA COURSE : " . $data->courseid . "\n";
+            $dbLog .= " RDO OLD COURSE: " . $rdoWaitOld->courseid . "\n";
+            $dbLog .= " OLD ID INSTANCE: " . $oldid . "\n";
+            $dbLog .= " NEW INSTANCE: " . $instanceId . "\n";
+            $dbLog .= " NEW COURSE: " . $course->id . "\n";
+
+            error_log($dbLog, 3, $CFG->dataroot . "/restore_paqui.log");
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
     }//restore_instance
+
+    /**
+     * Description
+     * updated restored instance from the original
+     *
+     * @creationDate    02/12/2016
+     * @author          eFaktor     (fbv)
+     *
+     * @param       int $oldCourse      Original course
+     * @param       int $courseId       New course
+     *
+     * @throws          Exception
+     */
+    public static function update_restored_instance($oldCourse,$courseId) {
+        /* Variables */
+        global $DB;
+        $newInstance    = null;
+        $oldInstance    = null;
+        $params         = null;
+        $rdoOld         = null;
+        $newParams      = null;
+        $rdo            = null;
+
+        try {
+            // Get old instance
+            $params = array();
+            $params['courseid']     = $oldCourse;
+            $params['enrol']        = 'waitinglist';
+            // Execute
+            $rdoOld = $DB->get_record('enrol',$params);
+
+            // Get new instance
+            $newParams = array();
+            $newParams['courseid']     = $courseId;
+            $newParams['enrol']        = 'waitinglist';
+            // Execute
+            $rdo = $DB->get_record('enrol',$newParams);
+
+            if ($rdoOld && $rdo) {
+                // Update new instance
+                $rdo->status                                        = $rdoOld->status;
+                $rdo->roleid                                        = $rdoOld->roleid;
+                $rdo->enrolperiod                                   = $rdoOld->enrolperiod  ;
+                $rdo->expirynotify                                  = $rdoOld->expirynotify;
+                $rdo->notifyall                                     = $rdoOld->notifyall;
+                $rdo->{ENROL_WAITINGLIST_FIELD_SENDWELCOMEMESSAGE}  = $rdoOld->{ENROL_WAITINGLIST_FIELD_SENDWELCOMEMESSAGE};
+                $rdo->{ENROL_WAITINGLIST_FIELD_SENDWAITLISTMESSAGE} = $rdoOld->{ENROL_WAITINGLIST_FIELD_SENDWAITLISTMESSAGE};
+                $rdo->{ENROL_WAITINGLIST_FIELD_MAXENROLMENTS}       = $rdoOld->{ENROL_WAITINGLIST_FIELD_MAXENROLMENTS};
+                $rdo->{ENROL_WAITINGLIST_FIELD_WAITLISTSIZE}        = $rdoOld->{ENROL_WAITINGLIST_FIELD_WAITLISTSIZE};
+                $rdo->expirythreshold                               = $rdoOld->expirythreshold;
+                $rdo->{ENROL_WAITINGLIST_FIELD_INVOICE}             = $rdoOld->{ENROL_WAITINGLIST_FIELD_INVOICE};
+                $rdo->{ENROL_WAITINGLIST_FIELD_APPROVAL}            = $rdoOld->{ENROL_WAITINGLIST_FIELD_APPROVAL};
+                $rdo->{ENROL_WAITINGLIST_FIELD_INTERNAL_PRICE}      = $rdoOld->{ENROL_WAITINGLIST_FIELD_INTERNAL_PRICE};
+                $rdo->{ENROL_WAITINGLIST_FIELD_EXTERNAL_PRICE}      = $rdoOld->{ENROL_WAITINGLIST_FIELD_EXTERNAL_PRICE};
+                
+                // Execute
+                $DB->update_record('enrol',$rdo);
+
+
+                // Update Submethods
+                foreach(self::get_method_names() as $methodtype){
+                    $class = '\enrol_waitinglist\method\\' . $methodtype. '\enrolmethod' .$methodtype ;
+                    if (class_exists($class)){
+                        $class::update_restored_instance($rdoOld->id,$oldCourse,$rdo->id,$courseId);
+                    }
+                }
+            }
+        }catch (\Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//update_restored_instance
 
     /**
      * Restore user enrolment.
@@ -1568,7 +1654,11 @@ class enrol_waitinglist_plugin extends enrol_plugin {
      * @param int $userid
      */
     public function restore_user_enrolment(restore_enrolments_structure_step $step, $data, $instance, $userid, $oldinstancestatus) {
-        global $DB;
+        global $DB,$CFG;
+
+        /* Log  */
+        $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' HOLA CARACOLA  . ' . "\n";
+        error_log($dbLog, 3, $CFG->dataroot . "/restore_paqui.log");
 
         // Note: manual enrolment is a bit tricky because other types may be converted to waitinglist enrolments,
         //       and waitinglist is restricted to one enrolment per user. Waitinglist is based in manual, so 

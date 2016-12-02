@@ -709,6 +709,12 @@ class local_friadmin_helper {
                 'startdate' => $data->startdate,
             );
 
+
+            /* Log  */
+            $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' START HELPER RESTORE  . ' . "\n";
+            $dbLog .= " COurse: " . $data->id . "\n";
+            error_log($dbLog, 3, $CFG->dataroot . "/restore_paqui.log");
+
             list($newcourseid, $error) = self::restore_course((int)$data->id, $coursedata, $data->includeusers, true);
 
             if (empty($error)) {
@@ -872,6 +878,12 @@ class local_friadmin_helper {
                 $course->startdate = $options['startdate'];
             }
             $DB->update_record('course', $course);
+
+            // Update waitinglist when users are not included
+            if (!$withusers) {
+                enrol_waitinglist_plugin::update_restored_instance($cid,$courseid);
+            }
+            
 
             return array($courseid, $error);
         } catch (Exception $ex) {
