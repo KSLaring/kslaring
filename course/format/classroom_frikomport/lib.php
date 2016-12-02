@@ -329,6 +329,9 @@ class format_classroom_frikomport extends format_base {
                 'course_sector' => array(
                     'default' => 0,
                 ),
+                'time'      => array(
+                    'type'      => PARAM_TEXT,
+                ),
                 'length' => array(
                     'type' => PARAM_TEXT,
                 ),
@@ -414,6 +417,13 @@ class format_classroom_frikomport extends format_base {
                     'label' => get_string('home_sector', 'format_classroom_frikomport'),
                     'element_type' => 'select',
                     'element_attributes' => array($lstSectors,'1' => 'multiple')
+                ),
+                'time'          => array(
+                    'label'                 => get_string('home_time_from_to','format_classroom'),
+                    'help'                  => 'home_time_from_to',
+                    'help_component'        => 'format_classroom',
+                    'element_type'          => 'textarea',
+                    'element_attributes'    => array(0 => 'rows="4" style="width:50%;"'),
                 ),
                 'length' => array(
                     'label' => get_string('home_length', 'format_classroom_frikomport'),
@@ -621,25 +631,14 @@ class format_classroom_frikomport extends format_base {
                     if (isset($data['homesummary_editor']) && ($data['homesummary_editor'])) {
                         $data[$key] = course_page::get_home_summary_editor($data['homesummary_editor']);
                     }
-                    //homesummary_editor
 
                     break;
 
                 case 'pagegraphics':
-                    if (isset($data['deletepicture']) && ($data['deletepicture'])) {
-                        $delete = true;
-                    } else {
-                        $delete = false;
-                    }
-                    //if_delete
                     if (isset($data['pagegraphics']) && isset($data['pagegraphics_filemanager'])) {
-                        $graphic_id = course_page::get_home_graphics_video($data['pagegraphics'], 'pagegraphics', $data['pagegraphics_filemanager'], $delete);
-                        if ($graphic_id) {
-                            $data[$key] = $graphic_id;
-                        }
-                        //if_graphic_id
+                        $graphic_id = course_page::postupdate_homegraphics_manager($this->courseid,'pagegraphics','pagegraphics_filemanager',$data['pagegraphics_filemanager']);
+                        $data[$key] = $graphic_id;
                     }
-                    //pagegraphics_filemanager
 
                     break;
 

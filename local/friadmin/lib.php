@@ -29,8 +29,8 @@ defined('MOODLE_INTERNAL') || die;
 define('TEMPLATE_TYPE_EVENT', 0);
 define('TEMPLATE_TYPE_NETCOURSE', 1);
 
-function local_friadmin_extends_settings_navigation($settingsnav, $context) {
-    global $CFG, $PAGE;
+function local_friadmin_extend_settings_navigation($settingsnav, $context) {
+    global $PAGE;
 
     // Only add this settings item on non-site course pages.
     if (!$PAGE->course or $PAGE->course->id == 1) {

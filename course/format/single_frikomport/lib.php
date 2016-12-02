@@ -605,4 +605,92 @@ class format_single_frikomport extends format_base {
         return false;
     }
 
+    public function update_course_format_options($data, $oldcourse = null) {
+        global $DB, $delete;
+
+        $data = (array)$data;
+        $oldcourse = (array)$oldcourse;
+        $options = $this->course_format_options();
+        foreach ($options as $key => $unused) {
+            switch ($key) {
+                case 'homepage':
+                    if (isset($data['homepage']) && $data['homepage']) {
+                        $data[$key] = 1;
+                    } else {
+                        $data[$key] = 0;
+                    }
+                    // If_homepage.
+
+                    break;
+                case 'ratings':
+                    if (isset($data['ratings']) && $data['ratings']) {
+                        $data[$key] = 1;
+                    } else {
+                        $data[$key] = 0;
+                    }
+                    // If_homepage.
+
+                    break;
+                case 'homesummary':
+                    if (isset($data['homesummary_editor']) && ($data['homesummary_editor'])) {
+                        $data[$key] = course_page::get_home_summary_editor($data['homesummary_editor']);
+                    }
+                    // Homesummary_editor.
+
+                    break;
+                case 'pagegraphics':
+                    if (isset($data['pagegraphics']) && isset($data['pagegraphics_filemanager'])) {
+                        $graphic_id = course_page::postupdate_homegraphics_manager($this->courseid,'pagegraphics','pagegraphics_filemanager',$data['pagegraphics_filemanager']);
+                        $data[$key] = $graphic_id;
+                    }
+
+                    break;
+                case 'pagevideo':
+                    if (isset($data['deletevideo']) && ($data['deletevideo'])) {
+                        $delete = true;
+                    } else {
+                        $delete = false;
+                    }
+                    // If_delete.
+                    if (isset($data['pagevideo']) && isset($data['pagevideo_filemanager'])) {
+                        $videoid = course_page::get_home_graphics_video($data['pagevideo'], 'pagevideo',
+                            $data['pagevideo_filemanager'], $delete);
+                        if ($videoid) {
+                            $data[$key] = $videoid;
+                        }
+                        // If_graphic_id.
+                    }
+                    // If_page_video_pagevideo_filemanager.
+
+                    break;
+                default:
+                    break;
+            }
+            // Switch_key.
+
+            if (!array_key_exists($key, $data)) {
+                if (array_key_exists($key, $oldcourse)) {
+                    $data[$key] = $oldcourse[$key];
+                } else if ($key === 'numsections') {
+                    // If previous format does not have the field 'numsections'
+                    // and $data['numsections'] is not set, we fill it with the maximum section number from the DB.
+                    $maxsection = $DB->get_field_sql('SELECT max(section) from
+                            {course_sections} WHERE course = ?', array($this->courseid));
+                    if ($maxsection) {
+                        // If there are no sections, or just default 0-section,
+                        // 'numsections' will be set to default.
+                        $data['numsections'] = $maxsection;
+                    }
+                    // If_maxsection.
+                }
+                // If_array_key.
+            }
+            // If_array_key.
+        }
+
+        // For_options.
+
+        return $this->update_format_options($data);
+    }
+
 }

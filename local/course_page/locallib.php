@@ -984,10 +984,10 @@ class course_page  {
 
         try {
             // Get the context
-            if ($COURSE->id) {
-                $context        = context_course::instance($COURSE->id);
-            }else if ($courseId) {
+            if ($courseId) {
                 $context        = context_course::instance($courseId);
+            }else if ($COURSE->id) {
+                $context        = context_course::instance($COURSE->id);
             }else {
                 $context        = context_coursecat::instance(0);
             }//if_else_course
@@ -1070,6 +1070,7 @@ class course_page  {
         global $COURSE;
         $file_editor    = null;
         $format_options = null;
+        $itemId         = 0;
 
         try {
             // File Editor
@@ -1083,19 +1084,88 @@ class course_page  {
             if ($COURSE->id) {
                 $format_options = course_get_format($COURSE->id)->get_format_options();
                 if (array_key_exists($field,$format_options)) {
-                    $file_editor->$field    = $format_options[$field];
-                }//if_array_Exists
+                    if ($format_options[$field]) {
+                        $file_editor->$field    = $format_options[$field];
 
-                file_prepare_standard_filemanager($file_editor, $field,$file_options,$context, 'course',$field,0);
-            }else {
-                file_prepare_standard_filemanager($file_editor, $field,$file_options,null, 'course',$field,0);
+                        // Store File
+                        $fs = get_file_storage();
+
+                        // File Instance
+                        $file   = $fs->get_file_by_id($format_options[$field]);
+                        $itemId = $file->get_itemid();                        
+                    }
+                }//if_array_Exists
             }//if_course
+
+            file_prepare_standard_filemanager($file_editor, $field,$file_options,$context, 'course',$field,$itemId);
 
             return $file_editor;
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
     }//prepare_file_manager_home_graphics_video
+
+    /**
+     * Description
+     * update the graphic connected with the course and home page.
+     * 
+     * @creationDate        02/12/2016
+     * @author              eFaktor     (fbv)
+     * 
+     * @param       int     $course_id      Course id
+     * @param       string  $field          Course format field
+     * @param       string  $field_manager  Course format filemanager
+     * @param       int     $field_value    filemanager id
+     * 
+     * @return      null
+     * @throws      Exception
+     */
+    public static function postupdate_homegraphics_manager($course_id,$field,$field_manager,$field_value) {
+        /* Variables */
+        global $CFG;
+        $editor     = null;
+        $options    = null;
+        $context    = null;
+        $fs         = null;
+        $file       = null;
+        $itemId     = null;
+
+        try {
+            // Course context
+            $context = context_course::instance($course_id);
+
+            // Get file options
+            $options   = array('maxfiles'       => 1,
+                               'maxbytes'       => $CFG->maxbytes,
+                               'subdirs'        => 0,
+                               'context'        => $context,
+                               'accepted_types' => array('image','web_image','video','web_video'));
+
+            // Editor
+            // File Graphic Video
+            $editor = new stdClass();
+            $editor->$field_manager = $field_value;
+
+            $editor = file_postupdate_standard_filemanager($editor, $field, $options, $context, 'course', $field, 0);
+
+            /* For Home page */
+            $editor = file_postupdate_standard_filemanager($editor, $field, $options, $context, 'course', $field, $field_value);
+
+            // Return Graphic Id for the Home Page
+            $fs = get_file_storage();
+            if ($files = $fs->get_area_files($context->id, 'course', $field, $field_value, 'id DESC', false)) {
+                // Remove Previous
+                $file = reset($files);
+
+                $itemId = $file->get_id();
+            }//if_file
+
+            return $itemId;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//postupdate_homegraphics_manager
+
 
     /**
      * @static
@@ -1351,6 +1421,11 @@ class course_page  {
                         $form->setDefault('course_sector',$value);
 
                         break;
+                    case 'time':
+                        $form->addElement('textarea','time',get_string('home_time_from_to',$str_format),'rows="5" style="width:95%;" readonly');
+                        $form->setDefault('time',$value);
+
+                        break;
 
                     case 'length':
                         $form->addElement('text','length',get_string('home_length',$str_format),'style="width:95%;"');
@@ -1417,11 +1492,13 @@ class course_page  {
         global $COURSE;
         $visible        = array();
 
+        $format_options = course_get_format($COURSE->id)->get_format_options();
+
         switch ($field) {
             case 'homepage':
                 $home_page = $form->createElement('checkbox','homepage',get_string('checkbox_home','local_course_page'));
                 $form->insertElementBefore($home_page,'descriptionhdr');
-                $format_options = course_get_format($COURSE->id)->get_format_options();
+
                 if (!array_key_exists('homepage',$format_options)) {
                     $form->setDefault('homepage',1);
                 }//if_exists
@@ -1431,7 +1508,7 @@ class course_page  {
 
                 $home_ratings = $form->createElement('checkbox','ratings',get_string('home_ratings','local_course_page'));
                 $form->insertElementBefore($home_ratings,'descriptionhdr');
-                $format_options = course_get_format($COURSE->id)->get_format_options();
+
                 if (!array_key_exists('ratings',$format_options)) {
                     $form->setDefault('ratings',1);
                 }//if_exists
@@ -1441,7 +1518,7 @@ class course_page  {
             case 'participant':
                 $home_participant = $form->createElement('checkbox','participant',get_string('home_participant','local_course_page'));
                 $form->insertElementBefore($home_participant,'descriptionhdr');
-                $format_options = course_get_format($COURSE->id)->get_format_options();
+
                 if (!array_key_exists('participant',$format_options)) {
                     $form->setDefault('participant',1);
                 }//if_exists
@@ -1475,17 +1552,15 @@ class course_page  {
             case 'pagegraphics':
                 /* Get FileManager   */
                 list($file_options,$context) = self::get_file_options();
-                $file_editor['accepted_types'] = array('image','web_image');
+                $file_options['accepted_types'] = array('image','web_image');
                 $file_editor = self::prepare_file_manager_home_graphics_video($file_options,$context,'pagegraphics');
-
 
                 $page_graphics = $form->createElement('filemanager', 'pagegraphics_filemanager', get_string('home_graphics','local_course_page'), null, $file_options);
                 $form->insertElementBefore($page_graphics,'courseformathdr');
-                $form->setDefault('pagegraphics_filemanager',$file_editor->pagegraphics);
+                $form->setDefault('pagegraphics_filemanager',$file_editor->pagegraphics_filemanager);
 
                 $form->addElement('hidden','pagegraphics');
                 $form->setType('pagegraphics',PARAM_RAW);
-                $format_options = course_get_format($COURSE->id)->get_format_options();
                 if (array_key_exists('pagegraphics',$format_options)) {
                     $form->setDefault('pagegraphics',$format_options['pagegraphics']);
                 }//if_exists
@@ -1497,7 +1572,6 @@ class course_page  {
                 $form->setType('pagegraphicstitle',PARAM_TEXT);
                 $form->insertElementBefore($pageTitle,'courseformathdr');
 
-                $format_options = course_get_format($COURSE->id)->get_format_options();
                 if (array_key_exists('pagegraphicstitle',$format_options)) {
                     $form->setDefault('pagegraphicstitle',$format_options['pagegraphicstitle']);
                 }//if_exists
@@ -1530,7 +1604,6 @@ class course_page  {
 
                 $form->addElement('hidden','pagevideo');
                 $form->setType('pagevideo',PARAM_RAW);
-                $format_options = course_get_format($COURSE->id)->get_format_options();
                 if (array_key_exists('pagevideo',$format_options)) {
                     $form->setDefault('pagevideo',$format_options['pagevideo']);
                 }//if_exists
@@ -2121,6 +2194,7 @@ class course_page  {
 
 class home_page_form extends moodleform {
     function definition() {
+
         $form    = $this->_form;
 
         $course   = $this->_customdata['course'];
@@ -2150,6 +2224,7 @@ class home_page_form extends moodleform {
         // Description.
         $form->addElement('header', 'descriptionhdr', get_string('description'));
         $form->setExpanded('descriptionhdr');
+
         $course = file_prepare_standard_editor($course, 'summary', $editor_options,$context, 'course', 'summary', 0);
         $form->addElement('editor','summary_editor', get_string('coursesummary'), null, $editor_options);
         $form->addHelpButton('summary_editor', 'coursesummary');
@@ -2164,9 +2239,14 @@ class home_page_form extends moodleform {
         /* Course Format Section    */
         course_page::init_locations_sector();
         $format_options = course_get_format($course)->get_format_options();
-        if (($course->format == 'classroom') || ($course->format == 'classroom_frikomport')) {
-            course_page::init_from_to();
-        }
+
+        list($file_options,$context) = course_page::get_file_options();
+        $file_options['accepted_types'] = array('image','web_image');
+
+        $editor = new stdClass();
+        $editor->pagegraphics = 0;
+
+        file_prepare_standard_filemanager($editor, 'pagegraphics', $file_options, $context, 'course', 'pagegraphics', 0);
         foreach ($format_options as $name=>$option) {
             course_page::add_course_home_page_section($form,$name,true);
             course_page::print_format_options($form,$name,$option,$course->format);

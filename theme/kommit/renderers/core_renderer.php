@@ -14,6 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+defined('MOODLE_INTERNAL') || die;
+
 /**
  * Renderers to align Moodle's HTML with that expected by kommit
  *
@@ -30,7 +32,9 @@ class theme_kommit_core_renderer extends theme_bootstrapbase_core_renderer {
         $displayregion = $this->page->apply_theme_region_manipulations($region);
         if ($this->page->blocks->region_has_content($displayregion, $this) || $editing) {
             $blockshtml = parent::blocks($region, $classes, $tag);
-            if ($region === 'content-top' && strpos($blockshtml, 'mod_quiz_navblock') !== false) {
+            // Change the quiz navblock HTML only for a netcourse.
+            if ($this->page->course->format === 'netcourse' &&
+                $region === 'content-top' && strpos($blockshtml, 'mod_quiz_navblock') !== false) {
                 $this->page->requires->js_call_amd('theme_kommit/quiznav', 'init');
                 $blockshtml = $this->process_quiz_nav_block($blockshtml);
             }

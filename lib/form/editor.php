@@ -78,6 +78,12 @@ class MoodleQuickForm_editor extends HTML_QuickForm_element {
                 $this->_options[$name] = $value;
             }
         }
+        // Start change uh 2016-09-28.
+        // Use the global atto toolbar config if the atto:toolbar option is not set.
+        if (empty($this->_options['atto:toolbar'])) {
+            $this->_options['atto:toolbar'] = get_config('editor_atto', 'toolbar');
+        }
+        // End change uh.
         if (!empty($options['maxbytes'])) {
             $this->_options['maxbytes'] = get_max_upload_file_size($CFG->maxbytes, $options['maxbytes']);
         }

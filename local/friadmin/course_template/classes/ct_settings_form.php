@@ -179,12 +179,12 @@ class ct_settings_form extends moodleform {
             case 'pagegraphics':
                 /* Get FileManager   */
                 list($file_options,$context) = course_page::get_file_options($courseId);
-                $file_editor['accepted_types'] = array('image','web_image');
+                $file_options['accepted_types'] = array('image','web_image');
                 $file_editor = course_page::prepare_file_manager_home_graphics_video($file_options,$context,'pagegraphics');
                 
                 $page_graphics = $form->createElement('filemanager', 'pagegraphics_filemanager', get_string('home_graphics','local_course_page'), null, $file_options);
                 $form->insertElementBefore($page_graphics,'courseformathdr');
-                $form->setDefault('pagegraphics_filemanager',$file_editor->pagegraphics);
+                $form->setDefault('pagegraphics_filemanager',$file_editor->pagegraphics_filemanager);
 
                 $form->addElement('hidden','pagegraphics');
                 $form->setType('pagegraphics',PARAM_RAW);
@@ -257,6 +257,13 @@ class ct_settings_form extends moodleform {
                 $form->setDefault('course_sector',$value);
 
                 break;
+
+            case 'time':
+                $form->addElement('textarea','time',get_string('home_time_from_to',$str_format),'rows="5" style="width:95%;"');
+                $form->setDefault('time',$value);
+
+                break;
+
             case 'length':
                 $form->addElement('text','length',get_string('home_length',$str_format),'style="width:95%;"');
                 $form->setDefault('length',$value);

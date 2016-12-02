@@ -197,4 +197,25 @@ class mod_certificate_mod_form extends moodleform_mod {
 
         return $errors;
     }
+
+    // Start change uh 2016-09-28.
+    /**
+     * Load in existing data as form defaults.
+     *
+     * The editor expects an array for the text with the »format« and the »text«. The certifacte
+     * only stores the text. Change the stored text string into the expected array with the additional format.
+     *
+     * @param mixed $default_values object or array of default values
+     */
+    public function set_data($defaults) {
+        if (!empty($defaults->customtext)) {
+            $defaults->customtext = array(
+                'format' => 1,
+                'text' => $defaults->customtext
+            );
+        }
+
+        parent::set_data($defaults);
+    }
+    // End change uh.
 }
