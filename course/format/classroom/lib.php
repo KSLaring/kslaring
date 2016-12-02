@@ -965,20 +965,10 @@ class format_classroom extends format_base {
                     break;
                 
                 case 'pagegraphics':
-                    if (isset($data['deletepicture']) && ($data['deletepicture'])) {
-                        $delete = true;
-                    } else {
-                        $delete = false;
-                    }
-                    // If_delete.
                     if (isset($data['pagegraphics']) && isset($data['pagegraphics_filemanager'])) {
-                        $graphic_id = course_page::get_home_graphics_video($data['pagegraphics'], 'pagegraphics', $data['pagegraphics_filemanager'], $delete);
-                        if ($graphic_id) {
-                            $data[$key] = $graphic_id;
-                        }
-                        // If_graphic_id.
+                        $graphic_id = course_page::postupdate_homegraphics_manager($this->courseid,'pagegraphics','pagegraphics_filemanager',$data['pagegraphics_filemanager']);
+                        $data[$key] = $graphic_id;
                     }
-                    // Pagegraphics_filemanager.
 
                     break;
                 

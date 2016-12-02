@@ -28,7 +28,6 @@ if (isloggedin()) {
     }//if_permission
 }//if_loggin
 
-
 $PAGE->set_url($url);
 $PAGE->set_context($context);
 $PAGE->set_title($course->shortname . ': ' . get_string('home_page', 'local_course_page'));
