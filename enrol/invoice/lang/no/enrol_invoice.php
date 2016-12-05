@@ -127,12 +127,12 @@ $string['report_invoice']                       = 'Faktura';
 $string['csvdownload']      = 'Last ned påmeldinger fra dette kurset i et regneark (.xls)';
 
 $string['rpt_course_info']      = 'Kursinfo';
-$string['rpt_invoices_info']    = 'Brannvernkurs';
+$string['rpt_invoices_info']    = 'Fakturainformasjon';
 
 $string['rpt_seats'] = 'Forespurte';
-$string['rpt_price'] = 'Price';
+$string['rpt_price'] = 'Pris';
 
 $string['invoice_approval'] = 'Fakturagodkjenner';
-$string['search_approval']  = 'Search approval';
+$string['search_approval']  = 'Søk etter fakturagodkjenner';
 
-$string['rpt_resource']  = 'Resource';
+$string['rpt_resource']  = 'Ressursnummer';
