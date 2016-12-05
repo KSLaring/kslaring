@@ -23,44 +23,39 @@
  */
 
 $string['unnamedbulk_displayname'] = 'Bulkpåmelding';
-$string['unnamedbulk_menutitle'] = 'Reserver kursplasser for deg selv og andre';
+$string['unnamedbulk_menutitle'] = 'Reserver plasser';
 $string['waitlistmessagetitle_unnamedbulk'] = 'Kursplasser er lagt til i ventelisten for: {$a}';
-$string['waitlistmessagetitle_unnamedbulk_changed'] = 'Seats added to Waitlist for: {$a}. Changed seats';
-$string['waitlistmessagetext_unnamedbulk'] = '{$a->queueseats} kursplasser er lagt til i ventelisten for: {$a->coursename}
+$string['waitlistmessagetitle_unnamedbulk_changed'] = 'Plasser lagt til i ventelisten for: {$a}. Endret plasser';
+$string['waitlistmessagetext_unnamedbulk'] = 'Du har reservert {$a->queueseats} kursplasser for: {$a->coursename}. Det var dessverre ikke {$a->queueseats} ledige plasser på dette kurset, og plassene du ikke er tildelt er derfor satt opp på ventelisten.
 
 Dine reserverte kursplasser er i øyeblikket nummer {$a->queueno} på ventelisten.
 
 Du kan når som helst redigere reservasjonen din her: {$a->editenrolurl}
 
 Ta derfor vare på denne eposten!';
-$string['waitlistmessagetitleconfirmation_unnamedbulk'] = 'Bekreftede bulk kursplasser for kurset: {$a}';
-$string['waitlistmessagetitleconfirmation_unnamedbulk_changed'] = 'Seats confirmed for course: {$a}. . Changed seats\'';
+$string['waitlistmessagetitleconfirmation_unnamedbulk'] = 'Du er tildelt plasser i kurset {$a}';
+$string['waitlistmessagetitleconfirmation_unnamedbulk_changed'] = 'Bekreftelse på endring av ønsket antall plasser i kurset {$a}';
 $string['sendconfirmmessage'] ='Send epost når kursplassene er bekreftet';
 $string['sendconfirmmessage_help'] ='Når kursplasser blir ledige i kurset, og de er lagt til i køen for denne påmeldingsmetoden, og de har tilgang til å reservere kursplasser med denne metoden, send en epost til vedkommende som har reservert kursplassene på seg.';
-$string['confirmedmessage_unnamedbulk'] = 'Kursplasser reservert for: {$a->coursename}';
-$string['confirmedmessagetext_unnamedbulk'] = 'Kursplasser reservert for: {$a->coursename}
+$string['confirmedmessage_unnamedbulk'] = 'Plasser tildelt på: {$a->coursename}';
+$string['confirmedmessagetext_unnamedbulk'] = 'Plasser reservert for: {$a->coursename}. {$a->allocatedseats} av dine forespurte {$a->totalseats} plasser på ventelisten for {$a->coursename} er tildelt deg. 
 
-{$a->allocatedseats} av dine {$a->queueseats} reserverte kursplasser på ventelisten for kurset {$a->coursename} er nå blitt bekreftet.
+Du kan se og endre antall plasser ved å følge denne lenken: {$a->editenrolurl}';
+$string['customconfirmedmessage'] = 'Bekreftelse på din reservasjon';
+$string['customconfirmedmessage_help'] = 'Du kan legge til en egendefinert bekreftelsesmelding i ren tekst eller i Moodles auto-format, inkludert html-og flerspråktagger. Meldingen vil bli sendt til den brukeren som har reservert plasser på ventelisten når det blir ledige plasser på kurset.
 
-Vennlist meld brukerne inn i kurset og juster antall kursplasser tilsvarende her: {$a->editenrolurl}';
-$string['customconfirmedmessage'] = 'Melding ved bekreftet kursplass';
-$string['customconfirmedmessage_help'] = 'En egendefinert melding kan legges til som ren tekst eller i Moodles auto-format, inkludert HTML-tagger og flerspråk-tagger.
+Følgende plassholdere kan benyttes i meldingen:
 
-Meldingen vil bli sent brukeren som er ansvarlig for reservasjonen av kursplassene, når det blir ledige plasser på kurset.
-
-Følgende plassholdere kan brukes i meldingen:
-
-* Kursets navn {$a->coursename}
-* Plasseringen på ventelisten {$a->queueno}
-* Antall plasser i ventelisten {$a->queueseats}
-* Bekreftede bulk kursplasser {$a->allocatedseats}
-* Link til kurset {$a->courseurl}
-* Link til påmeldingssiden {$a->editenrolurl}';
+* Kursnavn {$a->coursename} 
+* Plass på ventelisten {$a->queueno} 
+* Totalt antall plasser {$a->totalseats} 
+* Plasser på venteliste {$a->waitingseats} 
+* Tildelte plasser {$a->allocatedseats} 
+* Lenke til kurset {$a->courseurl} 
+* Lenke til reservasjonssiden {$a->editenrolurl}';
 $string['reserveseatcount'] = 'Ønsket antall kursplasser';
 $string['reserveseats'] = 'Lagre endringer';
-$string['unnamedbulk_enrolformintro'] = 'Bruk dette skjemaet til å reservere/endre reserverte kursplasser på dette kurset. Du vil bli varslet straks plassene er bekreftet. Du kan når som helst gå tilbake hit for å endre antall kursplasser.';
-$string['unnamedbulk_enrolformqueuestatus'] = 'Du har søkt om å reservere {$a->seats} kursplasser og er tildelt {$a->assignedseats} kursplasser. 
-
-Din søknad er i øyeblikket nummer {$a->queueposition} på listen. (-0- betyr at du er først)';
+$string['unnamedbulk_enrolformintro'] = 'Bruk dette skjemaet til å reservere plasser på kurset. Du blir varslet via e-post når du er tildelt plasser. Du kan når som helst gå tilbake hit for å endre reservasjonen din.';
+$string['unnamedbulk_enrolformqueuestatus'] = 'Du er tildelt {$a->assignedseats} og du har {$a->waitingseats} plasser på ventelisten.';
 $string['unnamedbulk_enrolformqueuestatus_label'] = 'Din reservasjon';
-$string['unnamedbulk_enrolformqueuestatus_all'] = 'You have been assigned all your seats';
+$string['unnamedbulk_enrolformqueuestatus_all'] = 'Du har blitt tildelt alle dine forespurte plasser';
