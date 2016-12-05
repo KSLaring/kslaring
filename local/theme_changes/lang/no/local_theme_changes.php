@@ -12,7 +12,7 @@
  *
  */
 
-$string['pluginname']   = 'Theme Changes';
+$string['pluginname']   = 'Bytt design';
 
 $string['theme_action'] = 'Designendringer';
 $string['bulk_theme']   = 'Legg til design';
