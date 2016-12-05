@@ -191,7 +191,7 @@ class entrymanager  {
 	 * @param 		int $userId		User id
 	 *
 	 * @return 			mixed|null
-	 * @throws 			Exception
+	 * @throws 			\Exception
 	 * @throws 			\dml_missing_record_exception
 	 * @throws 			\dml_multiple_records_exception
 	 */
@@ -226,7 +226,7 @@ class entrymanager  {
 			}//if_Rdo
 
 			return $workplace;
-		}catch (Exception $ex) {
+		}catch (\Exception $ex) {
 			throw $ex;
 		}//try_catch
 	}//get_workplace_connected

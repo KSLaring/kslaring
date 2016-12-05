@@ -88,6 +88,15 @@ class queuemanager  {
         }//try_catch
 	}
 
+	/**
+	 * Description
+	 * All queue instance connected plus workplace
+	 *
+	 * @param 			int $courseid	Course id
+	 *
+	 * @return 				null|static
+	 * @throws   			\Exception
+	 */
 	public static function get_by_course_workspace($courseid) {
 		/* Variables */
 		global $DB;
@@ -111,12 +120,79 @@ class queuemanager  {
 				$wlm = new static();
 				$wlm->courseid		= $courseid;
 				$wlm->waitinglist	= $rdo;
+				// get entries
+				$wlm->qentries = self::get_entries_no_confirmed($courseid,$rdo->id);
 			}//if_rdo
+			
+			return $wlm;
 		}catch (\Exception $ex) {
 			throw $ex;
 		}//try_catch
 	}//get_by_course_workspace
 
+	/**
+	 * Description
+	 * Get workplaces connected with user
+	 *
+	 * @creationDate	05/12/2016
+	 * @author			eFaktor		(fbv)
+	 *
+	 * @param 		int $userId		User id
+	 *
+	 * @return 			mixed|null
+	 * @throws 			\Exception
+	 * @throws 			\dml_missing_record_exception
+	 * @throws 			\dml_multiple_records_exception
+	 */
+	public static function get_workplace_connected($userId) {
+		/* Variables */
+		global $DB;
+		$rdo        = null;
+		$sql        = null;
+		$params     = null;
+		$workplace  = null;
+
+		try {
+			// Search criteria
+			$params =array();
+			$params['user_id']  = $userId;
+			$params['level']    = 3;
+
+			// SQL Instruction
+			$sql = " SELECT   GROUP_CONCAT(DISTINCT CONCAT(co.industrycode, ' - ',co.name) 
+                                          ORDER BY co.industrycode,co.name SEPARATOR '#SE#') 	as 'workplace'
+                     FROM	  {user_info_competence_data}	uic
+                        JOIN  {report_gen_companydata}	co	ON co.id = uic.companyid
+                     WHERE	  uic.userid = :user_id
+                        AND   uic.level  = :level ";
+
+			// Execute
+			$rdo = $DB->get_record_sql($sql,$params);
+			if ($rdo) {
+				if ($rdo->workplace) {
+					$workplace =     str_replace('#SE#','</br>',$rdo->workplace);
+				}
+			}//if_Rdo
+
+			return $workplace;
+		}catch (\Exception $ex) {
+			throw $ex;
+		}//try_catch
+	}//get_workplace_connected
+
+	/**
+	 * Description
+	 * Get all entries not confirmed yet
+	 *
+	 * @creationDate	05/12/2016
+	 * @author			eFaktor		(fbv)
+	 *
+	 * @param 		int $courseid
+	 * @param 		int $waitingid
+	 *
+	 * @return 			array|null
+	 * @throws 			\Exception
+	 */
 	private static function get_entries_no_confirmed($courseid,$waitingid) {
 		/* Variables */
 		global $DB;
@@ -133,13 +209,18 @@ class queuemanager  {
 			$params['queue']	= 0;
 
 			// SQL Instruction
-			$sql = " SELECT  		eq.*
+			$sql = " SELECT  		eq.*,
 									CONCAT(co.industrycode,' - ',co.name) as 'company'
 					 FROM			{enrol_waitinglist_queue} 	eq
 						LEFT JOIN	{report_gen_companydata}	co	ON co.id = eq.companyid
 					 WHERE 	eq.courseid 		= :course
 						AND	eq.waitinglistid 	= :wait
 						AND eq.offqueue 		= :queue";
+
+			// Execute
+			$entries = $DB->get_records_sql($sql,$params);
+
+			return $entries;
 		}catch (\Exception $ex) {
 			throw $ex;
 		}//try_catch
