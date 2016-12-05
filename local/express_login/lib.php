@@ -10,6 +10,59 @@
  * @author          eFaktor     (fbv)
  */
 
+/**
+ * Description
+ * Add express login block to my profile settings
+ *
+ * @creationDate    05/12/2016
+ * @author          eFaktor     (fbv)
+ *
+ * @param           \core_user\output\myprofile\tree $tree
+ * @param           $user
+ * @param           $iscurrentuser
+ * @param           $course
+ *
+ * @return          bool
+ * @throws          coding_exception
+ */
+function local_express_login_myprofile_navigation(core_user\output\myprofile\tree $tree, $user, $iscurrentuser, $course) {
+    /* Variables */
+
+    if (isguestuser($user)) {
+        // The guest user cannot post, so it is not possible to view any posts.
+        // Also blogs might be disabled.
+        // May as well just bail aggressively here.
+        return false;
+    }
+
+    // Add new category
+    $category = new core_user\output\myprofile\category('express', get_string('pluginname', 'local_express_login'),'contact');
+    $tree->add_category($category);
+
+    // Index - Express login
+    $node = new core_user\output\myprofile\node('express', 'express_index',
+                                                get_string('pluginname', 'local_express_login'),
+                                                null,
+                                                new moodle_url('/local/express_login/index.php'));
+    $tree->add_node($node);
+
+    // Change pin code
+    $node = new core_user\output\myprofile\node('express', 'express_pin_code',
+                                                get_string('btn_change_pin_code','local_express_login'),
+                                                'express_index',
+                                                new moodle_url('/local/express_login/change_express.php'));
+    $tree->add_node($node);
+
+    // Regenerate code
+    $node = new core_user\output\myprofile\node('express', 'express_regenerate_link',
+                                                get_string('btn_regenerate_link','local_express_login'),
+                                                'express_pin_code',
+                                                new moodle_url('/local/express_login/regenerate_express.php'));
+    $tree->add_node($node);
+
+    return true;
+}//local_express_login_myprofile_navigation
+
 function local_express_login_extend_settings_navigation($settingsnav, $context) {
     /* Plugin Info */
     $plugin     = get_config('local_express_login');
