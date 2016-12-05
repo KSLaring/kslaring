@@ -91,20 +91,15 @@ $string['cron_deactivate']          = 'Deaktivert';
 
 $string['express_subject']        = '{$a}: Pin- og hurtiglogin-lenker generert';
 $string['express_body']           = '<p>Hei {$a->name},</p>
-<p>KS Læring (https://kurs.kommit.no) utvikles og forbedres kontinuerlig. Vi har nå forenklet innloggingen til KS Læring, slik at det ikke er nødvendig å bruke MinId hver gang du skal bruke KS Læring.</p>
-<p>Den forenklede innloggingen til KS Læring baserer seg på at du benytter en personlig snarvei (URL) som kan lagres som favoritt i nettleseren din, samt en pinkode som er automatisk generert til deg. Du kan selv bytte pinkoden i din brukerprofil.</p>
+<p>Kursportalen utvikles og forbedres kontinuerlig. Vi har nå forenklet innloggingen, slik at det ikke er nødvendig å bruke MinId eller brukernavn/passord hver gang du skal bruke portalen.</p>
+<p>Den forenklede innloggingen til kursportalen baserer seg på at du benytter en personlig snarvei (URL) som kan lagres som favoritt i nettleseren din, samt en pinkode som er automatisk generert til deg. Du kan selv bytte pinkoden i din brukerprofil.</p>
  
 <p>Din automatisk genererte pinkode er: <strong>{$a->express}</strong></p>
  
-<p>eLæring som viser hvordan du tar i bruk pinkode: https://kurs.kommit.no/mod/page/view.php?id=2478</p>
-<p>Du mottar denne eposten fordi du er registret som bruker på KS Læring. Dette er enten fordi du selv har opprettet en brukertilgang, eller fordi din kommune har inngått avtale om bruk.<br >
-Har du spørsmål om hvordan du bruker KS Læring, ta kontakt med vår brukerstøtte: kslaering@ks.no</p>
-
 <p>Med vennlig hilsen<br />
-Aleksander Øines<br />
-KS KommIT</p>';
+Portaladministrator</p>';
 
 $string['micro_message']          = '<p>Siden du nå har byttet pin-kode (og dermed også hurtigloginlenken) sender vi deg om igjen alle mikrolærings-eposter du har fått tidligere hvor du IKKE har gjort aktivitene ennå.</p>';
 
-$string['bulk_action']      = 'Generated Express Login';
-$string['bulk_succesful']   = 'The Express Login will be generated during the next 30 minutes.';
+$string['bulk_action']      = 'Generer hurtigtilgang';
+$string['bulk_succesful']   = 'Hurtigtilgangen vil genereres i løpet av de neste 30 minuttene.';
