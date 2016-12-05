@@ -47,7 +47,8 @@ $PAGE->set_pagelayout('admin');
 $PAGE->set_title(get_string('managequeue', 'enrol_waitinglist'));
 $PAGE->set_heading($course->fullname);
 
-$queueman= \enrol_waitinglist\queuemanager::get_by_course($course->id);
+//$queueman= \enrol_waitinglist\queuemanager::get_by_course($course->id);
+$queueman = \enrol_waitinglist\queuemanager::get_by_course_workspace($course->id);
 $entryman= \enrol_waitinglist\entrymanager::get_by_course($course->id);
 
 //init our error flag/message
@@ -171,7 +172,17 @@ foreach ($queueman->qentries as $qentry) {
 	//	$edit = array('edit','delete');
 	$user = $DB->get_record('user',array('id'=>$qentry->userid));
 	if($user){
-		$table->data[] = array($qentry->queueno,fullname($user),$user->email,$user->institution, get_string($qentry->methodtype .'_displayname','enrol_waitinglist'), $qentry->seats,$qentry->allocseats, implode('&nbsp;', $updown), implode('&nbsp;', $edit));
+		if (!$qentry->companyid) {
+			$qentry->company = \enrol_waitinglist\queuemanager::get_workplace_connected($user->id);
+		}
+
+		$table->data[] = array($qentry->queueno,
+			                   fullname($user),$user->email,
+							   $qentry->company,
+					           get_string($qentry->methodtype .'_displayname','enrol_waitinglist'),
+							   $qentry->seats,$qentry->allocseats,
+							   implode('&nbsp;', $updown),
+							   implode('&nbsp;', $edit));
 	}
 
 }

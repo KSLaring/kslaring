@@ -124,7 +124,7 @@ class entrymanager  {
 	 * Description
 	 * Confirmed entries --> allocseats
      */
-	public function get_confirmed_entries(){
+	public function get_confirmed_entries_old(){
 		global $DB;
 		$where = "courseid = $this->courseid ";
 		$where .="AND waitinglistid = " . $this->waitinglist->id . " ";
@@ -132,6 +132,104 @@ class entrymanager  {
 		$entries = $DB->get_records_select(self::CTABLE, $where);
 		return $entries;
 	}
+	
+	/**
+	 * Return all queue entries
+	 * 
+	 * @updateDate		05/12/2016
+	 * @author			eFaktor	(fbv)
+	 * 
+	 * Add company name
+	 * 
+	 * @return 			array|null
+	 * @throws 				 \Exception
+	 */
+	public function get_confirmed_entries() {
+		/* Variables */
+		global $DB;
+		$entries 	= null;
+		$sql 		= null;
+		$params 	= null;
+
+		try {
+			// Search criteria
+			$params = array();
+			$params['wait'] 	= $this->waitinglist->id;
+			$params['course']	= $this->courseid;
+
+			// SQL Instruction
+			$sql = " SELECT  		eq.id,
+ 									eq.userid,
+									eq.companyid,
+									CONCAT(co.industrycode,' - ',co.name) as 'company',
+									eq.methodtype,
+									eq.seats,
+									eq.confirmedseats,
+									eq.waitinglistid
+					 FROM			{enrol_waitinglist_queue} 	eq
+						LEFT JOIN	{report_gen_companydata}	co	ON co.id = eq.companyid
+					 WHERE 	eq.courseid 		= :course
+						AND	eq.waitinglistid 	= :wait
+						AND allocseats > 0 ";
+			
+			// Execute
+			$entries = $DB->get_records_sql($sql,$params);
+			
+			return $entries;
+		}catch (\Exception $ex) {
+			throw $ex;
+		}//try_catch
+	}//get_confirmed_entries
+
+	/**
+	 * Description
+	 * Get workplaces connected with user
+	 *
+	 * @creationDate	05/12/2016
+	 * @author			eFaktor		(fbv)
+	 *
+	 * @param 		int $userId		User id
+	 *
+	 * @return 			mixed|null
+	 * @throws 			\Exception
+	 * @throws 			\dml_missing_record_exception
+	 * @throws 			\dml_multiple_records_exception
+	 */
+	public static function get_workplace_connected($userId) {
+		/* Variables */
+		global $DB;
+		$rdo        = null;
+		$sql        = null;
+		$params     = null;
+		$workplace  = null;
+
+		try {
+			// Search criteria
+			$params =array();
+			$params['user_id']  = $userId;
+			$params['level']    = 3;
+
+			// SQL Instruction
+			$sql = " SELECT   GROUP_CONCAT(DISTINCT CONCAT(co.industrycode, ' - ',co.name) 
+                                          ORDER BY co.industrycode,co.name SEPARATOR '#SE#') 	as 'workplace'
+                     FROM	  {user_info_competence_data}	uic
+                        JOIN  {report_gen_companydata}	co	ON co.id = uic.companyid
+                     WHERE	  uic.userid = :user_id
+                        AND   uic.level  = :level ";
+
+			// Execute
+			$rdo = $DB->get_record_sql($sql,$params);
+			if ($rdo) {
+				if ($rdo->workplace) {
+					$workplace =     str_replace('#SE#','</br>',$rdo->workplace);
+				}
+			}//if_Rdo
+
+			return $workplace;
+		}catch (\Exception $ex) {
+			throw $ex;
+		}//try_catch
+	}//get_workplace_connected
 	
 	/**
      * There should only be 1 entry on the waitinglist per course, for a single user.

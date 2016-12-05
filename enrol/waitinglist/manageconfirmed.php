@@ -73,7 +73,6 @@ $url = '/enrol/waitinglist/manageconfirmed.php';
 $totalseats = 0;
 $rows = array();
 foreach ($centries as $centry) {
-
     $actions = array();
 
     if ($canconfig) {
@@ -87,9 +86,14 @@ foreach ($centries as $centry) {
 	// add a row to the table
 	$user = $DB->get_record('user',array('id'=>$centry->userid));
 	if($user){
+		// Get workplaces connected with user
+		if (!$centry->companyid) {
+			$centry->company = $entryman->get_workplace_connected($user->id);
+		}//companydid
+		
 		$newrow= array('user'=>fullname($user),
 			'email'=>$user->email,
-			'institution'=>$user->institution, 
+			'institution'=>$centry->company,
 			'methodtype'=>get_string($centry->methodtype .'_displayname','enrol_waitinglist'),
 			'seats'=>$centry->seats, 
 			'confirmedseats'=>$centry->confirmedseats + 1);
