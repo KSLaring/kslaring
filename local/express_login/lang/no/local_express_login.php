@@ -81,7 +81,7 @@ $string['ERROR_EXPRESS_LINK_USER_NOT_VALID']        = 'Ikke gyldig bruker';
 $string['ERROR_EXPRESS_PIN_NOT_VALID']              = 'Ugyldig PIN-kode. Du har igjen {$a} forsøk';
 
 $string['clipboardDiv'] = 'Hurtigtilgangslenken din har blitt kopiert til utklippstavlen din. Alt du trenger å gjøre er å trykke på ctrl+v for å lime den inn der du ønsker.';
-$string['bookmarkDiv']  = '<p>For å legge til hurtigtilgangen din som et bokmerke kan du nå klikke på lenken under og dra den over på bokmerkeraden i nettleseren din eller ut på skrivebordet. Da lages det en snarvei som du kan klikke på neste gang du skal logge inn kun med PIN-kode.</p><p>Klikk og dra denne lenken til bokmerkeraden --> {$a}</p>';
+$string['bookmarkDiv']  = 'For å legge til hurtigtilgang som et bokmerke, vennligst dra og slipp <strong>{$a}</strong> til bokmerkene.';
 
 $string['err_express_access'] = 'Du har ikke høye nok rettigheter til å generere nye pin-koder.';
 
@@ -101,5 +101,5 @@ Portaladministrator</p>';
 
 $string['micro_message']          = '<p>Siden du nå har byttet pin-kode (og dermed også hurtigloginlenken) sender vi deg om igjen alle mikrolærings-eposter du har fått tidligere hvor du IKKE har gjort aktivitene ennå.</p>';
 
-$string['bulk_action']      = 'Generated Express Login';
-$string['bulk_succesful']   = 'The Express Login will be generated during the next 30 minutes.';
+$string['bulk_action']      = 'Generer hurtigtilgang';
+$string['bulk_succesful']   = 'Hurtigtilgangen vil genereres i løpet av de neste 30 minuttene.';
