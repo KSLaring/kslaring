@@ -86,4 +86,4 @@ $string['course_report']        = 'Kursrapport';
  * Description
  * Add new language strings for 'Super Users' functionality
  */
-$string['spuser'] = 'Super Users';
+$string['spuser'] = 'Org-superbrukere';
