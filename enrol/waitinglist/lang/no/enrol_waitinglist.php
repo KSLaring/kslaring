@@ -39,9 +39,9 @@ $string['confirmedseatsheader'] = 'Bekreftet';
 $string['requestedseatsheader'] = 'Forespurte';
 $string['defaultperiod'] = 'Standard påmeldngsvarighet';
 $string['defaultperiod_desc'] = 'Standard varighet for påmeldingens gyldighet. Dersom -null-, vil påmeldingsvarigheten være ubegrenset.';
-$string['defaultperiod_help'] = 'Standar varighet for hvor lenge en påmelding er gyldig, og starter fra kursdeltakeren er innmeldt. Dersom deaktivert vil innmeldingsvarigheten være ubegrenset.';
-$string['deleteselectedusers'] = 'Slett valge brukerpåmeldinger';
-$string['editselectedusers'] = 'Endre valge brukerpåmeldinger';
+$string['defaultperiod_help'] = 'Standard varighet for hvor lenge en påmelding er gyldig, og starter fra kursdeltakeren er innmeldt. Dersom deaktivert vil innmeldingsvarigheten være ubegrenset.';
+$string['deleteselectedusers'] = 'Slett valgte brukerpåmeldinger';
+$string['editselectedusers'] = 'Endre valgte brukerpåmeldinger';
 $string['enrolledincourserole'] = 'Påmeldt i "{$a->course}" som "{$a->role}"';
 $string['enrolusers'] = 'Meld inn kursdeltakere';
 $string['expiredaction'] = 'Handling når påmeldingen utløper';
@@ -64,8 +64,8 @@ $string['waitinglist:manage'] = 'Administrere brukerpåmeldinger';
 $string['waitinglist:unenrol'] = 'Meld ut brukere fra kurset';
 $string['waitinglist:unenrolself'] = 'Meld meg ut av dette kurset';
 $string['messageprovider:expiry_notification'] = 'Din kurspåmelding er i ferd med å utløpe';
-$string['pluginname'] = 'Ventelistepåmeldinger';
-$string['pluginname_desc'] = 'Ventelistemodulen har en venteliste for påmelding til et kurs.';
+$string['pluginname'] = 'Kurspåmelding';
+$string['pluginname_desc'] = 'Kurspåmeldingsmodulen har en venteliste for påmelding til et kurs.';
 $string['status'] = 'Aktiver påmelding med venteliste';
 $string['status_desc'] = 'Tillat kurstilgang fra internt påmeldte brukere. Dette bør være aktivert i de fleste tilfeller.';
 $string['status_help'] = 'Denne innstillingen bestemmer hvorvidt brukere kan meldt på via påmelding med venteliste, via en link i kursadministrasjonsinnstillingene, og av en bruker med tillatelse til dette, f.eks. en lærer.';
@@ -110,11 +110,9 @@ Følgende plassholdere kan legges inn i meldingen:
 
 * Kursnavn {$a->coursename}
 * Link til brukerens profilside {$a->profileurl}';
-$string['welcometocourse'] = 'Velkommen til {$a}';
-$string['welcometocoursetext'] = 'Velkommen til {$a->coursename}!
-
-Hvis du ikke allerede har gjort det, bør du redigere brukerprofilen din slik at vi kan bli bedre kjent med deg:
-  {$a->profileurl}';
+$string['welcometocourse'] = 'Du er påmeldt {$a} - velkommen!';
+$string['welcometocoursetext'] = '<p>Du er påmeldt {$a->coursename} – velkommen!</p> <p>Vi anbefaler at du legger inn en påminnelse om kurset i din kalender.</p>
+<p>Dette er en automatisk generert e-post. Du kan ikke svare på e-posten.</p>';
 $string['customwaitlistmessage'] = 'Egendefinert melding for påmelding med venteliste';
 $string['customwaitlistmessage_help'] = 'Du kan legge til en egendefinert melding som ren tekst eller i Moodles auto-format, inkludert HTML-tagger og flerspråktagger.
 
@@ -125,12 +123,12 @@ Følgende plassholdere kan legges inn i meldingen:
 * Antall plasser i ventelisten {$a->queueseats}
 * Link ttil kurset {$a->courseurl}
 * Link til påmeldingssiden {$a->editenrolurl}';
-$string['welcome_ical_attach'] = "Attached iCal file with the course start date.";
+$string['welcome_ical_attach'] = "<p>Vedlagt kalenderfil. Trykk på denne for å oppdatere kalenderen din. <strong>OBS! Du må selv sette inn korrekte klokkeslett for arrangementet.</strong></p>";
 $string['sendcoursewaitlistmessage'] = 'Send epost når brukeren blir lagt til i ventelisten';
 $string['sendcoursewaitlistmessage_help'] = 'Du kan sende en epost til brukeren når de legges til på kursets venteliste.';
 
-$string['manageconfirmed'] = 'Bekreftede bulk kursplasser';
-$string['unconfirmfailed'] = 'Fjerning fra bekreftede kursplasser mislykkes!';
+$string['manageconfirmed'] = 'Bekreftede kursplasser';
+$string['unconfirmfailed'] = 'Fjerning fra bekreftede kursplasser mislyktes!';
 $string['waitinglistisempty'] = 'Ventelisten er tom';
 $string['confirmedlistisempty'] = 'Listen er tom';
 $string['unconfirm'] = 'Fjern';
@@ -157,7 +155,7 @@ $string['totalcell']='Totalt: {$a}';
  * Description
  * New strings to add invoice information option
  */
-$string['invoice']      = 'Fakturainformasjon er påkrevd';
+$string['invoice']      = 'Krev fakturainformasjon';
 $string['invoice_help'] = 'Brukeren må fylle inn all nødvendig fakturainformasjon før påmeldingen skjer.';
 
 $string['seats_occupied'] = 'Det er i øyeblikket ingen ledige plasser. Ønsker du å bli plassert på en venteliste for dette kurset?';
@@ -168,13 +166,14 @@ $string['lnk_approval']     = 'Forespørsler om godkjenning av påmelding';
 $string['approval']         = 'Godkjenning fra leder er påkrevd';
 $string['approval_help']    = 'Brukeren må vente på godkjenning fra leder før påmeldingen blir fullført';
 
-$string['none_approval']    = 'Hverken ledergodkjenning eller varsling til leder';
+$string['none_approval']    = 'Verken ledergodkjenning eller varsling til leder';
 $string['approval_message'] = 'Send en epost til lederen når brukeren meldes inn i kurset';
 
 $string['approval_info']    = 'Vennligst fyll inn en begrunnelse for at du vil melde deg på dette kurset';
 $string['arguments']        = 'Begrunnelse';
 
 $string['not_managers'] = 'Beklager, men du kan ikke melde deg på dette kurset siden vi ikke vet hvem som er lederen din. Vennligst kontakt din lokale administrator.';
+$string['not_managers_company'] = 'Beklager, men du kan ikke melde deg på dette kurset fordi det er ikke er lagt til leder for arbeidsstedet ditt: {$a}.';
 
 $string['mng_subject']  = '{$a->site}: Søknad om kursplass for kurset {$a->course}';
 $string['mng_body']     = '<p>Du får denne forespørselsen om godkjenning siden du er oppført som lederen for <b>{$a->user}</b>.<br /><b>{$a->user}</b> nettopp har søkt om plass på kurset  <b>{$a->course}</b>.</p><p>Begrunnelsen for søknaden om plass på kurset er:</p><p>{$a->arguments}</p>
@@ -209,24 +208,24 @@ $string['body_reminder']    = '<p>Vi vil bare minne deg om at du er lederen for 
                                <p>For å avslå denne søknaden kan du klikke her:  {$a->reject}.</p><p>Dette er en automatisk generert e-post fra {$a->site} og du kan ikke svare på e-posten.</p>';
 
 
-$string['std_body']     = 'Søknaden din om plass på kurset er sendt din leder for behandling. Vi sender deg en epost med varsel om resultatet av behandlingen fra din leder. <p>Dette er en automatisk generert e-post fra {$a->site} og du kan ikke svare på e-posten.</p>';
+$string['std_body']     = 'Søknaden din om plass på kurset er sendt din leder for behandling. Vi sender deg en epost med varsel om resultatet av behandlingen fra lederen din. <p>Dette er en automatisk generert e-post fra {$a->site} og du kan ikke svare på e-posten.</p>';
 
 $string['approve_lnk']  = 'Godkjenn søknaden';
 $string['reject_lnk']   = 'Avslå søknaden';
 
-$string['request_sent']         = 'Søknaden din om plass på kurset er sendt din leder for behandling. Vi sender deg en epost når søknaden din er behandlet.';
-$string['request_remainder']    = 'Søknaden din ble innsendt <b>{$a}</b>. Den er ennå ikke behandlet av din leder. Ønsker du å sende en påminnelse til lederen din?';
+$string['request_sent']         = 'Søknaden din om plass på kurset er sendt lederen din for behandling. Vi sender deg en epost når søknaden din er behandlet.';
+$string['request_remainder']    = 'Søknaden din ble innsendt <b>{$a}</b>. Den er ennå ikke behandlet av lederen din. Ønsker du å sende en påminnelse til lederen din?';
 
 $string['err_link'] = 'OOPS - søknaden er allerede behandlet. Lenken du klikket på kan bare benyttes en gang.';
 
 $string['request_approved']       = '<p>Din søknad om kurset {$a->homepage} ble godkjent av lederen din {$a->sent}.<p><p>Dette er en automatisk generert e-post fra {$a->site} og du kan ikke svare på e-posten.</p>';
 $string['request_rejected']       = '<p>Din søknad om kurset {$a->homepage} ble avslått av lederen din {$a->sent}.</p>
                                     <p>Om søknaden ble avslått ved en feil, bør du ta kontakt med lederen din og søke på nytt.</p><p>(Dette er en automatisk generert e-post fra {$a->site} og du kan ikke svare på e-posten.)</p>';
-$string['request_rejected_enrol'] = '<p>Din søknad om kurset ble avslått av lederen din {$a->sent}.</p>
-                                     <p>Om søknaden ble avslått ved en feil, bør du ta kontakt med lederen din og søke på nytt.</p>';
+$string['request_rejected_enrol'] = '<p>Din søknad om plass på kurset {$a->homepage} ble avslått av lederen din {$a->sent}.</p>
+                                <p>(Dette er en automatisk generert e-post fra {$a->site} og du kan ikke svare på e-posten.)</p>';
 
-$string['approved_mnd'] = 'Søknaden om kursplass på kurset: {$a->homepage} for brukeren: <b>{$a->user}</b> er nå godkjent.';
-$string['rejected_mnd'] = 'Søknaden om kursplass på kurset: {$a->homepage} for brukeren: <b>{$a->user}</b> er nå avslått.';
+$string['approved_mnd'] = 'Søknaden om plass på kurset: {$a->homepage} for brukeren: <b>{$a->user}</b> er nå godkjent.';
+$string['rejected_mnd'] = 'Søknaden om plass på kurset: {$a->homepage} for brukeren: <b>{$a->user}</b> er nå avslått.';
 
 $string['err_process']  = 'Beklager, men det har skjedd en feil under behandlingen. Vennligst prøv igjen senere eller kontakt administrator.';
 
@@ -248,7 +247,7 @@ $string['rpt_participants'] = 'Maks antall deltakere';
 $string['rpt_back']         = 'Tilbake';
 
 $string['mng_approved_subject']  = '{$a->site}: Søknad om plass på kurset: {$a->course}';
-$string['mng_approved_body_one'] = '<p>Vi sender deg denne bekreftelsen fordi du er oppgitt som leder for følgende arbeidssted(er): </p>';
+$string['mng_approved_body_one'] = '<p>Vi sender deg denne bekreftelsen fordi du er oppført som leder for følgende arbeidssted(er): </p>';
 $string['mng_approved_body_two'] = '<p>Vi vil gjerne informere deg om at brukeren <b>{$a->user}</b>, som hører til følgende arbeidssted(er): </p>
                                     {$a->companies_user}
                                     <p> nettopp er blitt påmeldt kurset: <b>{$a->course}</b>.</p>
@@ -270,28 +269,26 @@ $string['price'] = 'Pris';
 
 $string['in_price']     = 'Intern pris';
 $string['ext_price']    = 'Ekstern pris';
-$string['ical_path']    = 'iCal path';
+$string['ical_path']    = 'iCal mappe';
 
-$string['company_sel']     = 'Company';
-$string['users_connected'] = 'Users connected';
-$string['no_competence']   = 'Sorry, you cannot enroll because there is no workplace connected with your profile. Please, update your profile before enrolling to the course.
-                              <p>You can update your profile click on <strong>{$a}</strong></p>';
+$string['company_sel']     = 'Arbeidssted';
+$string['users_connected'] = 'Tilkoblede brukere';
+$string['no_competence']   = 'Beklager, men du kan ikke melde deg på dette kurset når du ikke har oppgitt arbeidssted i din egen profil. Vennligst oppdater profilen din før du prøver igjen.  <p>Du kan oppdatere profilen din med et arbeidssted ved å klikke her: <strong>{$a}</strong></p>';
 
-$string['company_demanded']        = 'No demand company';
-$string['company_demanded_manual'] = 'Company not demanded. All users will be available to select';
+$string['company_demanded']        = 'Ikke krev arbeidssted ved påmelding';
+$string['company_demanded_manual'] = 'Arbeidssted ikke påkrevd for påmelding. Brukere uten arbeidssted i egen profil kan dermed melde seg på.';
 
-$string['find_resource_number'] = " Find Resource Number";
-$string['no_users_invoice']     = " No users invoice approval";
-$string['users_matching']       = " Users invoice approval matching";
-$string['please_use_filter']    = " Please use the filter";
+$string['find_resource_number'] = " Finn ressursnummer";
+$string['no_users_invoice']     = " Ingen matchende brukere";
+$string['users_matching']       = " Matchende brukere";
+$string['please_use_filter']    = " Vennligst bruk filteret";
 
-$string['unenrol_link']         = 'If you want to unenrol by yourself, please click on <strong>{$a}</strong>';
-$string['unenrol_me']           = 'Unenrol me';
-$string['user_unenrolled']      = 'You have already been unenrolled';
-$string['user_not_enrolled']    = 'Sorry, you can be unenrolled because you are not a member of this course';
+$string['unenrol_link']         = '<p>Hvis du ønsker å melde deg av kurset, vennligst klikk på følgende lenke <strong>{$a}</strong></p>';
+$string['unenrol_me']           = 'Meld meg ut';
+$string['user_unenrolled']      = 'Du har blitt meldt ut av kurset';
+$string['user_not_enrolled']    = 'Beklager, du kan ikke melde deg ut fordi du ikke er meldt på kurset.';
 
-$string['unenrol_subject'] = 'Course {$a}.Unenrol confirmation.';
-$string['unenrol_body']    = 'We would like to inform you, that you have been unenrolled from the course <strong>{$a}</strong>';
+$string['unenrol_subject'] = 'Avmeldingsbekreftelse for kurset {$a}.';
+$string['unenrol_body']    = 'Dette er en bekreftelse på at du har kansellert kurspåmeldingen din for kurset <strong>{$a}</strong>';
 
 $string['rpt_workplace']   = 'Arbeidssted';
-
