@@ -1,6 +1,6 @@
 <?PHP // $Id$ 
 $string['pluginname']   = 'Min side administrasjon';
-$string['name'] = 'Min side';
+$string['name'] = 'Kompetansestyring';
 
 $string['blocks_editing_on']    = 'Slå på blokkredigering';
 $string['blocks_editing_off']   = 'Slå av blokkredigering';
@@ -10,7 +10,7 @@ $string['course_time']      = 'Varighet';
 $string['activities']       = 'Aktiviteter';
 $string['completion_time']  = 'Fullført';
 $string['hours']            = 'Timer';
-$string['start_course']     = 'Start';
+$string['start_course']     = 'Gå til';
 
 $string['active_courses']   = 'Aktive kurs';
 $string['finished_courses'] = 'Fullførte kurs';
@@ -46,7 +46,7 @@ $string['pdf_email_text']       = '{$a->username},
 PDF-rapporten fra Min side er nå sendt til deg slik du ba om.';
 
 $string['outcome_area_title']           = 'Sertifiseringsmål';
-$string['individual_courses']           = 'Enkeltkurs som ikke inngår i en sertifisering:';
+$string['individual_courses']           = 'Enkeltkurs';
 $string['outcome_valid']                = 'Gyldig';
 $string['outcome_not_valid']            = 'Ikke gyldig';
 $string['outcome_not_valid_until']      = 'Gyldig til';
@@ -70,7 +70,7 @@ $string['report_not_enroled'] = 'Bruker er ikke påmeldt noe kurs.';
 $string['state']    = 'Status';
 $string['finish']   = 'Fullført';
 $string['process']  = 'Pågår';
-$string['return_to_selection'] = 'Gå tilbake til Min side administrasjon';
+$string['return_to_selection'] = 'Gå tilbake til arbeidsstedsrapporter';
 
 $string['company_structure']    = 'Organisasjonstruktur';
 $string['job_roles']            = 'Jobbroller';
@@ -86,4 +86,4 @@ $string['course_report']        = 'Kursrapport';
  * Description
  * Add new language strings for 'Super Users' functionality
  */
-$string['spuser'] = 'Super Users';
+$string['spuser'] = 'Org-superbrukere';

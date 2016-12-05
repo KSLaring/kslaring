@@ -134,9 +134,9 @@ $string['delete_company_structure']     = 'Slett dataene på dette arbeidsstedet
 $string['display_company_structure']    = 'Navn på arbeidssted: ';
 
 $string['delete_company_structure_are_you_sure']    = 'Er du sikker på at du vil slette {$a} Arbeidssteder?';
-$string['delete_company_structure_employees_are_you_sure']      = 'There are employees connected with this company. Are you sure you want to delete the {$a} company data and employees connected with?';
+$string['delete_company_structure_employees_are_you_sure']      = 'Det er medarbeidere som har dette arbeidsstedet i sin profil. Er du helt sikker på at du vil slette arbeidsstedet {$a} og fjerne dette arbeidsstedet fra brukernes profiler?';
 
-$string['delete_job_role_sure']                     = 'Are you sure that you want to delete <strong>{$a}</strong> job role?';
+$string['delete_job_role_sure']                     = 'Er du sikker på at du vil slette jobbrollen: <strong>{$a}</strong>?';
 $string['invalid_company_structure_id']          = 'Beklager, en ugyldig arbeidssteds-ID er valgt.';
 $string['error_deleting_company_structure']         = 'Beklager, dette kunne ikke slettes fordi det har tilhørende nivåer som må slettes først.';
 $string['error_deleting_company_employees']         = 'Beklager, dette kunne ikke slettes fordi noen brukere har dette som arbeidssted.';
@@ -472,19 +472,19 @@ $string['no_reporters']     = 'Ingen med rapporttilgang';
 
 $string['reports_manager']  = 'Kompetansestyringsrapporter';
 
-$string['btn_move']     = 'Move item';
-$string['move_from']    = 'Move from';
-$string['move_to']      = 'Move to';
+$string['btn_move']     = 'Flytt element';
+$string['move_from']    = 'Flytt fra';
+$string['move_to']      = 'Flytt til';
 
-$string['delete_all_employees'] = 'You are going to delete all employees connected with. Do you want to continue?';
-$string['del_title']            = 'Confirmation';
-$string['del_yes']              = 'Yes';
-$string['del_no']               = 'No';
+$string['delete_all_employees'] = 'Du er i ferd med å slette dette arbeidsstedet fra alle disse medarbeidernes profiler. Ønsker du å fortsette?';
+$string['del_title']            = 'Bekreft';
+$string['del_yes']              = 'Ja';
+$string['del_no']               = 'Nei';
 
-$string['return_main_report']   = 'Return to the main report page';
-$string['no_completed']         = 'No one has completed the course during the last {$a}';
-$string['no_out_completed']     = 'No one expires  during the next {$a}';
+$string['return_main_report']   = '<< Tilbake til Arbeidsstedsrapporter';
+$string['no_completed']         = 'Det er ingen som har fullført kurset de siste {$a}';
+$string['no_out_completed']     = 'Det er ingen som utløper neste {$a}';
 
-$string['tracker_on_wait']      = "On standby";
-$string['unwaitconfirm']        = 'Do you really want to cancel the user enrol request "{$a->user}" for the  course "{$a->course}"?';
-$string['exit_unwait']          = 'Your enrol request has been canceled';
+$string['tracker_on_wait']      = "På venteliste";
+$string['unwaitconfirm']        = 'Ønsker du virkelig å fjerne deg fra ventelisten for kurset "{$a->course}"?';
+$string['exit_unwait']          = 'Ventelisteoppføringen dn har blitt slettet';

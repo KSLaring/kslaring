@@ -27,10 +27,10 @@ $string['header_campaign']          = 'Ny kampanje';
 $string['name_campaign']            = 'Kampanje';
 $string['campaign_duplicate']       = 'Kopier';
 $string['campaign_mode']            = 'Vennligst velg en kampanjetype';
-$string['campaign_mode_help']       = 'Kalender- eller aktivitetstype';
+$string['campaign_mode_help']       = 'Kalender- eller aktivitetsmodus';
 
-$string['calendar_mode']            = 'Kalendertype';
-$string['activity_mode']            = 'Aktivitetstype';
+$string['calendar_mode']            = 'Kalendermodus';
+$string['activity_mode']            = 'Aktivitetsmodus';
 
 $string['header_users_selector']    = 'Brukere';
 
@@ -101,9 +101,9 @@ $string['err_generic']          = 'Det har skjedd en feil. Vennligst prøv på n
 $string['cron_activate']    = 'Aktivert';
 $string['cron_deactivate']  = 'Deaktivert';
 
-$string['micro_too_many']   = 'Too many users {$a}';
-$string['micro_use_filter'] = 'Please use the filter';
+$string['micro_too_many']   = 'For mange brukere {$a}';
+$string['micro_use_filter'] = 'Vennligst avgrens søket med et filter';
 
-$string['alert_campaign']   = 'This campaign will remain deactivated while all its send options, for each delivery,will not have been defined.';
+$string['alert_campaign']   = 'Denne kampanjen vil stå som deaktivert siden alle utsendingsepostene med tilhørende aktiviteter ikke er definert ferdig ennå.';
 
-$string['add_users'] = 'Add automatically new users';
+$string['add_users'] = 'Legg til nye brukere automatisk';

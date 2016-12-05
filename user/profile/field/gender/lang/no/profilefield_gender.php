@@ -13,15 +13,15 @@
  *
  */
 
-$string['pluginname']           = 'Gender';
-$string['profile_type']         = 'Gender';
+$string['pluginname']           = 'Kjønn';
+$string['profile_type']         = 'Kjønn';
 
-$string['opt_select']   = 'Select...';
-$string['opt_woman']    = 'Woman';
-$string['opt_man']      = 'Man';
+$string['opt_select']   = 'Velg...';
+$string['opt_woman']    = 'Kvinne';
+$string['opt_man']      = 'Mann';
 
-$string['no_permissions']   = 'Sorry, you do not have permissions to execute this script';
-$string['no_users']         = 'There are none more users to update';
+$string['no_permissions']   = 'Beklager, men du har ikke tillatelse til å kjøre dette scriptet';
+$string['no_users']         = 'Alle brukere er nå oppdatert';
 
-$string['lst_woman'] = 'woman,female,girl';
-$string['lst_man']   = 'man,male,boy';
+$string['lst_woman'] = 'Kvinne, Hunkjønn, Pike';
+$string['lst_man']   = 'Mann, Hankjønn, Gutt';
