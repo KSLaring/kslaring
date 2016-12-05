@@ -38,7 +38,7 @@ $string['msg_force_update'] = 'Du må oppdatere brukerprofilen din';
 $string['county']       = 'Fylke';
 $string['sel_county']   = 'Velg et fylke...';
 
-$string['municipality']     = 'Kommune';
-$string['sel_municipality'] =  'Velg en kommune...';
+$string['municipality']     = 'Kommunelogo';
+$string['sel_municipality'] =  'Velg en kommunelogo...';
 
 $string['filtermunilist'] = 'Velg kommunen din fra menyen eller skriv første bokstav for å korte ned listen.';

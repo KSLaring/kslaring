@@ -12,7 +12,7 @@
  * @author          eFaktor     (fbv)
  *
  */
-$string['pluginname']           = 'Auto Generated Express Login';
-$string['profile_type']         = 'Auto Generated Express Login';
+$string['pluginname']           = 'Autogenerert hurtiglogin';
+$string['profile_type']         = 'Autogenerert hurtiglogin';
 
-$string['auto_pin_code']        = 'Auto Generated Express Login';
+$string['auto_pin_code']        = 'Autogenerert hurtiglogin';

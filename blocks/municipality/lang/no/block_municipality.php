@@ -12,18 +12,18 @@
  * @author          efaktor     (fbv)
  */
 
-$string['pluginname']   = 'Kommune';
-$string['name']         = 'Kommune';
+$string['pluginname']   = 'Kommunelogo';
+$string['name']         = 'Kommunelogo';
 
 $string['edit_muni']    = 'Legg til kommune';
 
 $string['municipality:myaddinstance'] = 'Legg til en ny kommuneblokk på Min startside';
 $string['municipality:addinstance'] = 'Legg til en ny kommuneblokk';
 
-$string['title']        = 'Kommune';
+$string['title']        = 'Kommunelogo';
 $string['required']     = 'Dette feltet er obligatorisk';
 $string['save']         = 'Lagre';
-$string['choose_muni']  = 'Velg kommune ...';
+$string['choose_muni']  = 'Velg kommunelogo ...';
 $string['sel_muni']     = 'Kommuner';
 
-$string['install_municipality'] = 'First, the Municipality Profile Field has to be installed. Please, contact to the administrator.';
+$string['install_municipality'] = 'Du må først legge til "Municipality"-feltet i brukerens profil. Vennligst kontakt administrator.';
