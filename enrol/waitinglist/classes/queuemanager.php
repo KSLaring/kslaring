@@ -87,6 +87,64 @@ class queuemanager  {
             throw $ex;
         }//try_catch
 	}
+
+	public static function get_by_course_workspace($courseid) {
+		/* Variables */
+		global $DB;
+		$params 	= null;
+		$sql 		= null;
+		$rdo 		= null;
+		$wlm		= null;
+		$entries	= null;
+
+		try {
+			/* First find get the instance */
+			// Search criteria
+			$params = array();
+			$params['courseid'] = $courseid;
+			$params['enrol']	= 'waitinglist';
+			// Execute
+			$rdo = $DB->get_record('enrol',$params);
+
+			// Get instances waiting in the queue
+			if ($rdo) {
+				$wlm = new static();
+				$wlm->courseid		= $courseid;
+				$wlm->waitinglist	= $rdo;
+			}//if_rdo
+		}catch (\Exception $ex) {
+			throw $ex;
+		}//try_catch
+	}//get_by_course_workspace
+
+	private static function get_entries_no_confirmed($courseid,$waitingid) {
+		/* Variables */
+		global $DB;
+		$params 	= null;
+		$sql 		= null;
+		$rdo 		= null;
+		$entries	= null;
+
+		try {
+			// Search criteria
+			$params = array();
+			$params['wait'] 	= $waitingid;
+			$params['course']	= $courseid;
+			$params['queue']	= 0;
+
+			// SQL Instruction
+			$sql = " SELECT  		eq.*
+									CONCAT(co.industrycode,' - ',co.name) as 'company'
+					 FROM			{enrol_waitinglist_queue} 	eq
+						LEFT JOIN	{report_gen_companydata}	co	ON co.id = eq.companyid
+					 WHERE 	eq.courseid 		= :course
+						AND	eq.waitinglistid 	= :wait
+						AND eq.offqueue 		= :queue";
+		}catch (\Exception $ex) {
+			throw $ex;
+		}//try_catch
+	}//get_entries_no_confirmed
+
 	
 	public static function get_maxq_no($waitinglistid){
 		global $DB;

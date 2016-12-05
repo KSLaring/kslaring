@@ -169,7 +169,8 @@ class entrymanager  {
 					 FROM			{enrol_waitinglist_queue} 	eq
 						LEFT JOIN	{report_gen_companydata}	co	ON co.id = eq.companyid
 					 WHERE 	eq.courseid 		= :course
-						AND	eq.waitinglistid 	= :wait ";
+						AND	eq.waitinglistid 	= :wait
+						AND allocseats > 0 ";
 			
 			// Execute
 			$entries = $DB->get_records_sql($sql,$params);
