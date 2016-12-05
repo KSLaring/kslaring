@@ -25,7 +25,7 @@
 $string['unnamedbulk_displayname'] = 'Bulkpåmelding';
 $string['unnamedbulk_menutitle'] = 'Reserver plasser';
 $string['waitlistmessagetitle_unnamedbulk'] = 'Kursplasser er lagt til i ventelisten for: {$a}';
-$string['waitlistmessagetitle_unnamedbulk_changed'] = 'Seats added to Waitlist for: {$a}. Changed seats';
+$string['waitlistmessagetitle_unnamedbulk_changed'] = 'Plasser lagt til i ventelisten for: {$a}. Endret plasser';
 $string['waitlistmessagetext_unnamedbulk'] = 'Du har reservert {$a->queueseats} kursplasser for: {$a->coursename}. Det var dessverre ikke {$a->queueseats} ledige plasser på dette kurset, og plassene du ikke er tildelt er derfor satt opp på ventelisten.
 
 Dine reserverte kursplasser er i øyeblikket nummer {$a->queueno} på ventelisten.
