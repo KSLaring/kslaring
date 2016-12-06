@@ -81,7 +81,8 @@ Class Unenrol_Waiting {
             /* SQL Instruction  */
             $sql = " SELECT		ewu.id,
                                 ewu.waitingid,
-                                ewu.courseid
+                                ewu.courseid,
+                                ewu.userid
                      FROM		{enrol_waitinglist_unenrol}	ewu
                         JOIN	{user}						u	ON	u.id		= ewu.userid
                         JOIN	{enrol}						e	ON	e.id		= ewu.waitingid
@@ -179,6 +180,7 @@ Class Unenrol_Waiting {
     }//UnenrolUser
 
     /**
+     * @param           $userId
      * @param           $courseId
      * @param           $waitingId
      *
@@ -191,7 +193,7 @@ Class Unenrol_Waiting {
      * Description
      * Check if the user can unenrol from the course based on deadline
      */
-    public static function Can_Unenrol($courseId,$waitingId) {
+    public static function Can_Unenrol($userId,$courseId,$waitingId) {
         /* Variables */
         global $DB;
         $sql    = null;
@@ -203,14 +205,24 @@ Class Unenrol_Waiting {
             $params = array();
             $params['course']   = $courseId;
             $params['wait']     = $waitingId;
+            $params['user']     = $userId;
 
             /* SQL Instruction */
-            $sql = " SELECT id,
-                            unenrolenddate 
-                     FROM   {enrol_waitinglist_method} 
-                     WHERE  courseid      = :course
-                        AND waitinglistid = :wait
-                        AND methodtype  like '%self%'";
+            $sql = " SELECT   ew.id,
+                              ew.unenrolenddate 
+                     FROM     {enrol_waitinglist_method} ew
+                        JOIN  {user_enrolments}	  ue      ON  ue.enrolid 	= ew.waitinglistid
+                                                          AND ue.status	= 0
+                                                          AND ue.userid	= :user
+                        JOIN  {course_completions}  cc    ON  cc.course	= ew.courseid
+                                                          AND cc.userid	= ue.userid
+                                                          AND (cc.timecompleted IS NULL
+                                                               OR
+                                                               cc.timecompleted = 0
+                                                              )
+                     WHERE  ew.courseid      = :course
+                        AND ew.waitinglistid = :wait
+                        AND ew.methodtype  like '%self%'";
 
             /* Execute */
             $rdo = $DB->get_record_sql($sql,$params);
@@ -221,7 +233,7 @@ Class Unenrol_Waiting {
                     return true;
                 }
             }else {
-                return true;
+                return false;
             }
         }catch (Exception $ex) {
             throw $ex;

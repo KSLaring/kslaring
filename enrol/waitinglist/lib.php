@@ -1740,7 +1740,7 @@ class enrol_waitinglist_plugin extends enrol_plugin {
              * Add unenrol link
              */
             require_once('unenrol/unenrollib.php');
-            if (\Unenrol_Waiting::Can_Unenrol($instance->courseid,$instance->id)) {
+            if (\Unenrol_Waiting::Can_Unenrol($user->id,$instance->courseid,$instance->id)) {
                 $unEnrolURL = \Unenrol_Waiting::UnenrolLink($user->id,$instance->courseid,$instance->id);
                 $unenrolLnk = "<a href='" . $unEnrolURL ."'>" . get_string('unenrol_me','enrol_waitinglist') . "</a>";
                 $unenrolStr = "</br>". get_string('unenrol_link','enrol_waitinglist',$unenrolLnk);
