@@ -29,9 +29,6 @@ define('KS_USER_COMPETENCE','wsUserCompetence');
 define('KS_UNMAP_USER_COMPETENCE','wsUnMapUserCompetence');
 define('KS_UNMAP_COMPANY','wsUnMapCompany');
 
-define('KS_USER_COMPETENCE_CO','wsUserCompetenceCompany'); //DELETE
-define('KS_USER_COMPETENCE_JR','wsUserCompetenceJobRole'); //DELETE
-
 define('KS_USER_MANAGER','wsManagerCompany');
 define('KS_SYNC_USER_ACCOUNT','wsUsersAccounts');
 
@@ -58,16 +55,16 @@ class FSKS_JOBROLES {
     /**********/
 
     /**
+     * Description
+     * Check if there are new job roles that have to be mapped and synchronized
+     *
      * @return          array
      * @throws          Exception
      *
      * @creationDate    03/11/2016
      * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Check if there are new job roles that have to be mapped and synchronized
      */
-    public static function JobRolesFSToSynchronize_Mailing() {
+    public static function jobroles_fs_tosynchronize_mailing() {
         /* Variables */
         global $DB;
         $sql            = null;
@@ -76,23 +73,23 @@ class FSKS_JOBROLES {
         $lstJobRoles    = array();
 
         try {
-            /* Search Criteria  */
+            // Search Criteria
             $params = array();
             $params['imported'] = 0;
             $params['add']      = ADD;
 
-            /* SQL Instruction */
-            $sql = " SELECT fs.id,
-                            fs.stillingskode,
-                            fs.stillingstekst
+            // SQL Instruction
+            $sql = " SELECT         fs.id,
+                                    fs.stillingskode,
+                                    fs.stillingstekst
                      FROM			{fs_imp_jobroles}   fs
                         LEFT JOIN	{ksfs_jobroles}		ksfs	ON 	ksfs.fsjobrole = fs.stillingskode
-                     WHERE  	ksfs.id IS NULL
-                        AND fs.imported = :imported 
-                        AND fs.action   = :add
-                     ORDER BY fs.stillingskode, fs.stillingstekst ";
+                     WHERE  	    ksfs.id IS NULL
+                          AND       fs.imported = :imported 
+                          AND       fs.action   = :add
+                     ORDER BY       fs.stillingskode, fs.stillingstekst ";
 
-            /* Execute */
+            // Execute
             $rdo = $DB->get_records_sql($sql,$params,0,5);
             if ($rdo) {
                 foreach ($rdo as $instance) {
@@ -104,7 +101,7 @@ class FSKS_JOBROLES {
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//JobRolesFSToSynchronize_Mailing
+    }//jobroles_fs_tosynchronize_mailing
 
     /**
      * @param           $toSynchronize
@@ -117,18 +114,18 @@ class FSKS_JOBROLES {
      * Description
      * Synchronize job roles
      */
-    public static function Synchronize_JobRoles($toSynchronize) {
+    public static function synchronize_jobroles($toSynchronize) {
         /* Variables */
 
         try {
             /* Synchronize Job Role */
             foreach ($toSynchronize as $jobRole) {
-                self::SynchronizeJobroleFS($jobRole);
+                self::synchronize_jobrole_fs($jobRole);
             }//for_to_synchronize
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//Synchronize_JobRoles
+    }//synchronize_jobroles
 
     /***********/
     /* PRIVATE */
@@ -195,17 +192,17 @@ class FSKS_JOBROLES {
     }//GetJobRoles_ToSynchronize
 
     /**
+     * Description
+     * Synchronize job role
+     *
      * @param           $jobRole
      *
      * @throws          Exception
      *
      * @creationDate    10/02/2016
      * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Synchronize job role
      */
-    private static function SynchronizeJobRoleFS($jobRole) {
+    private static function synchronize_jobrole_fs($jobRole) {
         /* Variables */
         global $DB;
         $infoImp        = null;
@@ -215,19 +212,19 @@ class FSKS_JOBROLES {
         $sync           = null;
         $trans          = null;
 
-        /* Start transaction    */
+        // Start transaction
         $trans = $DB->start_delegated_transaction();
 
         try {
-            /* Local Time   */
+            // Local Time
             $time = time();
 
-            /* Get Info Job Role FS   */
+            // Get Info Job Role FS
             $params = array();
             $params['jrcode'] = $jobRole->jrcode;
             $rdoFS = $DB->get_record('fs_jobroles',$params);
 
-            /* Apply Action */
+            // Apply action
             switch ($jobRole->action) {
                 case UPDATE:
                     if ($rdoFS) {
@@ -236,52 +233,52 @@ class FSKS_JOBROLES {
                         $rdoFS->synchronized    = 1;
                         $rdoFS->timemodified    = $time;
 
-                        /* Execute  */
+                        // Execute
                         $DB->update_record('fs_jobroles',$rdoFS);
 
-                        /* Synchronized */
+                        // Synchronized
                         $sync = true;
                     }//if_exist
 
                     break;
+
                 case DELETE:
                     if ($rdoFS) {
-                        /* Delete fs_jobroles   */
+                        // Delete fs_jobroles
                         $DB->delete_records('fs_jobroles',array('id' => $rdoFS->id));
 
-                        /* Delete KSFS Job roles    */
+                        // Delete KSFS Job roles
                         $params = array();
                         $params['fsjobrole'] = $jobRole->jrcode;
                         /* Execute  */
                         $DB->delete_records('ksfs_jobroles',$params);
 
-                        /* Synchronized */
+                        // Synchronized
                         $sync = true;
                     }//if_exist
 
                     break;
             }//action
 
-            /* Synchronized */
+            // Synchronized
             if ($sync) {
                 $infoImp = new stdClass();
                 $infoImp->id        = $jobRole->id;
                 $infoImp->imported  = 1;
 
-                /* Execute  */
+                // Execute
                 $DB->update_record('fs_imp_jobroles',$infoImp);
             }//if_sync
 
-            /* Commit */
+            // Commit
             $trans->allow_commit();
         }catch (Exception $ex) {
-            /* Rollback */
+            // Rollback
             $trans->rollback($ex);
 
             throw $ex;
         }//try_catch
-    }//SynchronizeJobRoleFS
-
+    }//synchronize_jobrole_fs
 }//FSKS_JOBROLES
 
 
@@ -295,17 +292,17 @@ class FSKS_COMPANY {
 
     /**/
     /**
+     * Description
+     * Get all companies that have to be synchronized
+     *
      * @return          array
      *
      * @throws          Exception
      *
      * @creationDate    09/02/2016
      * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Get all companies that have to be synchronized
      */
-    public static function CompaniesFSToSynchronize() {
+    public static function companies_fs_to_synchronize() {
         /* Variables    */
         $toSynchronize  = array();
         $synchronizeFS  = null;
@@ -314,26 +311,30 @@ class FSKS_COMPANY {
         $notIn          = 0;
 
         try {
-            /* Companies to Synchronize between FS and KS   */
-            /* New - Create */
-            self::GetNewCompaniesFS_ToSynchronize($toSynchronize);
-            /* New - Update */
-            self::GetUpdateCompaniesFS_ToSynchronize($toSynchronize);
+            // Companies to Synchronize between FS and KS
 
-            /* To synchronize Only in FS    */
+            // New - Create
+            self::get_new_companiesfs_to_synchronize($toSynchronize);
+            // New - Update
+            self::get_update_companiesfs_to_synchronize($toSynchronize);
+
+            // To synchronize Only in FS
             if ($toSynchronize) {
                 $notIn .= ',' . implode(',',array_keys($toSynchronize));
             }//if_toSynchronize
 
-            $toMail = self::GetCompaniesFS_ToMail($notIn);
+            $toMail = self::get_companiesfs_to_mail($notIn);
 
             return array($toSynchronize,$toMail);
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//CompaniesFSToSynchronize
+    }//companies_fs_to_synchronize
 
     /**
+     * Description
+     * Synchronize companies between FS and KS
+     *
      * @param           $companiesFSKS
      * @param           $companiesImported
      *
@@ -341,74 +342,71 @@ class FSKS_COMPANY {
      *
      * @creationDate    10/02/2016
      * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Synchronize companies between FS and KS
      */
-    public static function Synchronize_CompaniesKSFS($companiesFSKS,$companiesImported) {
+    public static function synchronize_companies_ksfs($companiesFSKS,$companiesImported) {
         /* Variables */
         $infoCompany    = null;
         $objCompany     = null;
 
         try {
-            /* Synchronize companies that have been imported    */
+            // Synchronize companies that have been imported
             foreach ($companiesImported as  $company) {
-                /* Convert to object */
+                // Convert to object
                 $objCompany = (Object)$company;
 
                 if ($objCompany->imported) {
-                    /* Get Company  */
+                    // Get Company
                     $infoCompany        = $companiesFSKS[$objCompany->key];
                     $infoCompany->ksId  = $objCompany->ksId;
 
-                    /* Synchronize Company  */
-                    self::SynchronizeCompanyKSFS($infoCompany,$objCompany->key);
+                    // Synchronize Company
+                    self::synchronize_company_ksfs($infoCompany,$objCompany->key);
                 }//if_imported
             }//for_companiesFS
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//Synchronize_CompaniesKSFS
+    }//synchronize_companies_ksfs
 
     /**
+     * Description
+     * Synchronize companies only on FS site.
+     *
      * @throws          Exception
      *
      * @creationDate    10/02/2016
      * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Synchronize companies only on FS site.
      */
-    public static function Synchronize_CompaniesFS() {
+    public static function synchronize_companies_fs() {
         /* Variables    */
         $companiesFS = null;
 
         try {
             /* Get Companies to synchronize only in FS  */
-            $companiesFS = self::GetCompaniesFS_ToSynchronizeFS();
+            $companiesFS = self::get_companiesfs_to_synchronizefs();
 
             /* Synchronize /update  FS Company  */
             if ($companiesFS) {
                 foreach ($companiesFS as $company) {
-                    self::SynchronizeCompanyFs($company);
+                    self::synchronize_company_fs($company);
                 }//for_company
             }
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//Synchronize_CompaniesFS
+    }//synchronize_companies_fs
 
     /**
+     * Description
+     * Get companies to unmap
+     *
      * @return          array
      * @throws          Exception
      *
      * @creationDate    23/11/2016
      * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Get companies to unmap
      */
-    public static function CompaniesToUnMap() {
+    public static function companies_to_unmap() {
         /* Variables */
         global $DB;
         $params     = null;
@@ -416,12 +414,12 @@ class FSKS_COMPANY {
         $toUnMap    = array();
 
         try {
-            /* Search criteria */
+            // Search criteria
             $params = array();
             $params['tosync']   = 1;
             $params['sync']     = 0;
 
-            /* Execute */
+            // Execute
             $rdo = $DB->get_records('ksfs_org_unmap',$params,'id','id,kscompany');
             if ($rdo) {
                 foreach ($rdo as $instance) {
@@ -433,7 +431,7 @@ class FSKS_COMPANY {
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//CompaniesToUnMap
+    }//companies_to_unmap
 
     /**
      * @param           $toUnMap
@@ -447,23 +445,23 @@ class FSKS_COMPANY {
      * Description
      * Unmap companies
      */
-    public static function UnMap_CompaniesKSFS($toUnMap,$unMapped) {
+    public static function unmap_companies_ksfs($toUnMap,$unMapped) {
         /* Variables */
         global $DB;
         $infoCompany    = null;
         $objUnMapped    = null;
 
         try {
-            /* Unmap companies  */
+            // Unmap companies
             foreach ($unMapped as $company) {
-                /* Convert to object */
+                // Convert to object
                 $objCompany = (Object)$company;
 
                 if ($objCompany->unmapped) {
-                    /* Get Company  */
+                    // Get Company
                     $infoCompany        = $toUnMap[$objCompany->key];
 
-                    /* Unmap company */
+                    // Unmap company
                     $infoCompany->sync = 1;
                     $DB->update_record('ksfs_org_unmap',$infoCompany);
                 }//unmapped
@@ -471,7 +469,7 @@ class FSKS_COMPANY {
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//UnMap_CompaniesKSFS
+    }//unmap_companies_ksfs
 
     /***********/
     /* PRIVATE */
@@ -488,7 +486,7 @@ class FSKS_COMPANY {
      * Description
      * Get companies, created with option new during the mapping, that have to be created to KS site.
      */
-    private static function GetNewCompaniesFS_ToSynchronize(&$toSynchronize) {
+    private static function get_new_companiesfs_to_synchronize(&$toSynchronize) {
         /* Variables    */
         global $DB;
         $infoCompany    = null;
@@ -497,80 +495,81 @@ class FSKS_COMPANY {
         $rdo            = null;
 
         try {
-            /* Search Criteria  */
+            // Search Criteria
             $params = array();
             $params['synchronized'] = 0;
             $params['new']          = 1;
 
-            /* SQL Instruction  */
-            $sql = " SELECT	DISTINCT fs.id,
-                            fs.companyid,
-                            IF(ks_fs.id,ks_fs.kscompany,0) as 'ks',
-                            fs.name,
-                            fs.level,
-                            ks.industrycode,
-                            fs.parent,
-                            IF(fs.privat,0,1)               as 'public',
-                            fs.ansvar,
-                            fs.tjeneste,
-                            fs.adresse1,
-                            fs.adresse2,
-                            fs.adresse3,
-                            fs.postnr,
-                            fs.poststed,
-                            fs.epost
+            // SQL Instruction
+            $sql = " SELECT	DISTINCT 
+                                  fs.id,
+                                  fs.companyid,
+                                  IF(ks_fs.id,ks_fs.kscompany,0) as 'ks',
+                                  fs.name,
+                                  fs.level,
+                                  ks.industrycode,
+                                  fs.parent,
+                                  IF(fs.privat,0,1)               as 'public',
+                                  fs.ansvar,
+                                  fs.tjeneste,
+                                  fs.adresse1,
+                                  fs.adresse2,
+                                  fs.adresse3,
+                                  fs.postnr,
+                                  fs.poststed,
+                                  fs.epost
                      FROM		  {fs_company}	  fs
                         JOIN	  {ks_company}	  ks 	ON ks.companyid     = fs.parent
                         LEFT JOIN {ksfs_company}  ks_fs	ON ks_fs.fscompany 	= fs.companyid
-                     WHERE	fs.synchronized = :synchronized
-                        AND	fs.new 			= :new ";
+                     WHERE	      fs.synchronized = :synchronized
+                          AND	  fs.new 		  = :new ";
 
 
-            /* Execute  */
+            // Execute
             $rdo = $DB->get_records_sql($sql,$params);
             if ($rdo) {
                 foreach ($rdo as $instance) {
-                    /* Info Company */
+                    // Info Company
                     $infoCompany = new stdClass();
                     $infoCompany->fsId          = $instance->companyid;
                     $infoCompany->ksId          = $instance->ks;
-                    $infoCompany->name          = $instance->name;
-                    $infoCompany->industry      = $instance->industrycode;
+                    $infoCompany->name          = trim($instance->name);
+                    $infoCompany->industry      = trim($instance->industrycode);
                     $infoCompany->level         = $instance->level;
                     $infoCompany->parent        = $instance->parent;
                     $infoCompany->public        = $instance->public;
-                    $infoCompany->ansvar        = ($instance->ansvar    ? $instance->ansvar     : '');
-                    $infoCompany->tjeneste      = ($instance->tjeneste  ? $instance->tjeneste   : '');
-                    $infoCompany->adresseOne    = ($instance->adresse1  ? $instance->adresse1   : '');
-                    $infoCompany->adresseTwo    = ($instance->adresse2  ? $instance->adresse2   : '');
-                    $infoCompany->adresseThree  = ($instance->adresse3  ? $instance->adresse3   : '');
-                    $infoCompany->postnr        = ($instance->postnr    ? $instance->postnr     : '');
-                    $infoCompany->poststed      = ($instance->poststed  ? $instance->poststed   : '');
-                    $infoCompany->epost         = ($instance->epost     ? $instance->epost      : '');
+                    $infoCompany->ansvar        = trim(($instance->ansvar    ? $instance->ansvar     : ''));
+                    $infoCompany->tjeneste      = trim(($instance->tjeneste  ? $instance->tjeneste   : ''));
+                    $infoCompany->adresseOne    = trim(($instance->adresse1  ? $instance->adresse1   : ''));
+                    $infoCompany->adresseTwo    = trim(($instance->adresse2  ? $instance->adresse2   : ''));
+                    $infoCompany->adresseThree  = trim(($instance->adresse3  ? $instance->adresse3   : ''));
+                    $infoCompany->postnr        = trim(($instance->postnr    ? $instance->postnr     : ''));
+                    $infoCompany->poststed      = trim(($instance->poststed  ? $instance->poststed   : ''));
+                    $infoCompany->epost         = trim(($instance->epost     ? $instance->epost      : ''));
                     $infoCompany->action        = ADD;
 
-                    /* Add Company */
+                    // Add Company
                     $toSynchronize[$instance->id] = $infoCompany;
                 }//for_rdo
             }//if_rdo
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//GetNewCompaniesFS_ToSynchronize
+    }//get_new_Companiesfs_to_synchronize
 
     /**
+     * Description
+     * For all companies created with 'new' option during the mapped,
+     * Get all companies that have to be updates or delete from the KS site.
+     *
      * @param           $toSynchronize
      *
      * @throws          Exception
      *
      * @creationDate    09/02/0216
      * @author          eFaktor     (fbv)
-     *
-     * Description
-     * For all companies created with 'new' option during the mapped,
-     * Get all companies that have to be updates or delete from the KS site.
      */
-    private static function GetUpdateCompaniesFS_ToSynchronize(&$toSynchronize) {
+    private static function get_update_companiesfs_to_synchronize(&$toSynchronize) {
         /* Variables    */
         global $DB;
         $infoCompany    = null;
@@ -579,46 +578,45 @@ class FSKS_COMPANY {
         $rdo            = null;
 
         try {
-            /* Search Criteria   */
+            // Search Criteria
             $params = array();
             $params['new']          = 0;
             $params['imported']     = 1;
             $params['synchronized'] = 0;
 
-
-            /* SQL Instruction  */
-            $sql = " SELECT	fs.id,
-                            fs.companyid,
-                            fk.kscompany,
-                            fs.name,
-                            fs.level,
-                            fs.parent,
-                            ks_pa.industrycode,
-                            IF(fs.privat,0,1) 	as 'public',
-                            fs.ansvar,
-                            fs.tjeneste,
-                            fs.adresse1,
-                            fs.adresse2,
-                            fs.adresse3,
-                            fs.postnr,
-                            fs.poststed,
-                            fs.epost,
-                            fs_imp.action
-                     FROM		{fs_company}		fs
-                        JOIN	{fs_imp_company}	fs_imp 	ON 	fs_imp.org_enhet_id = fs.companyid
+            // SQL Instruction
+            $sql = " SELECT	  fs.id,
+                              fs.companyid,
+                              fk.kscompany,
+                              fs.name,
+                              fs.level,
+                              fs.parent,
+                              ks_pa.industrycode,
+                              IF(fs.privat,0,1) 	as 'public',
+                              fs.ansvar,
+                              fs.tjeneste,
+                              fs.adresse1,
+                              fs.adresse2,
+                              fs.adresse3,
+                              fs.postnr,
+                              fs.poststed,
+                              fs.epost,
+                              fs_imp.action
+                     FROM	  {fs_company}		fs
+                        JOIN  {fs_imp_company}	fs_imp 	ON 	fs_imp.org_enhet_id = fs.companyid
                                                             AND fs_imp.imported = :imported
                         -- INFO KS
-                        JOIN	{ksfs_company}	    fk 		ON 	fk.fscompany 	= fs.companyid
+                        JOIN  {ksfs_company}	    fk 		ON 	fk.fscompany 	= fs.companyid
                         -- INFO PARENT
-                        JOIN	{ks_company}		ks_pa	ON 	ks_pa.companyid = fk.kscompany
-                     WHERE	fs.new 			= :new
-                        AND fs.synchronized = :synchronized ";
+                        JOIN  {ks_company}		ks_pa	ON 	ks_pa.companyid = fk.kscompany
+                     WHERE	  fs.new 			= :new
+                        AND   fs.synchronized = :synchronized ";
 
-            /* Execute  */
+            // Execute
             $rdo = $DB->get_records_sql($sql,$params);
             if ($rdo) {
                 foreach ($rdo as $instance) {
-                    /* Info Company */
+                    // Info Company
                     $infoCompany = new stdClass();
                     $infoCompany->fsId          = $instance->companyid;
                     $infoCompany->ksId          = $instance->kscompany;
@@ -637,27 +635,27 @@ class FSKS_COMPANY {
                     $infoCompany->epost         = ($instance->epost     ? $instance->epost      : '');
                     $infoCompany->action        = $instance->action;
 
-                    /* Add Company */
+                    // Add Company
                     $toSynchronize[$instance->id] = $infoCompany;
                 }//for_rdo
             }//if_rdo
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//GetUpdateCompaniesFS_ToSynchronize
+    }//get_update_companiesfs_to_synchronize
 
     /**
+     * Description
+     * Get all companies that have to be updated or deleted only in the FS site
+     *
      * @return          array
      *
      * @throws          Exception
      *
      * @creationDate    09/02/2016
      * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Get all companies that have to be updated or deleted only in the FS site
      */
-    private static function GetCompaniesFS_ToSynchronizeFS() {
+    private static function get_companiesfs_to_synchronizefs() {
         /* Variables    */
         global $DB;
         $synchronizeFS  = array();
@@ -667,35 +665,35 @@ class FSKS_COMPANY {
         $rdo            = null;
 
         try {
-            /* Search Criteria  */
+            // Search Criteria
             $params = array();
             $params['imported'] = 0;
             $params['add']      = ADD;
 
-            /* SQL Instruction  */
-            $sql = " SELECT   fs.id,
-                              fs.org_enhet_id   as 'companyid',
-                              fs.org_navn       as 'name',
-                              fs.org_enhet_over as 'fs_parent',
-                              fs.privat,
-                              fs.ansvar,
-                              fs.tjeneste,
-                              fs.adresse1,
-                              fs.adresse2,
-                              fs.adresse3,
-                              fs.postnr,
-                              fs.poststed,
-                              fs.epost,
-                              fs.action
-                     FROM	    {fs_imp_company}	fs
+            // SQL Instruction
+            $sql = " SELECT fs.id,
+                            fs.org_enhet_id   as 'companyid',
+                            fs.org_navn       as 'name',
+                            fs.org_enhet_over as 'fs_parent',
+                            fs.privat,
+                            fs.ansvar,
+                            fs.tjeneste,
+                            fs.adresse1,
+                            fs.adresse2,
+                            fs.adresse3,
+                            fs.postnr,
+                            fs.poststed,
+                            fs.epost,
+                            fs.action
+                     FROM   {fs_imp_company}	fs
                      WHERE	fs.action 	 != :add
                         AND	fs.imported  = :imported ";
 
-            /* Execute  */
+            // Execute
             $rdo = $DB->get_records_sql($sql,$params);
             if ($rdo) {
                 foreach ($rdo as $instance) {
-                    /* Info Company */
+                    // Info Company
                     $infoCompany = new stdClass();
                     $infoCompany->id            = $instance->id;
                     $infoCompany->fscompany     = $instance->companyid;
@@ -712,7 +710,7 @@ class FSKS_COMPANY {
                     $infoCompany->epost         = $instance->epost;
                     $infoCompany->action        = $instance->action;
 
-                    /* Add company  */
+                    // Add company
                     $synchronizeFS[$instance->id] = $infoCompany;
                 }//for_rdo
             }//if_rdo
@@ -721,9 +719,12 @@ class FSKS_COMPANY {
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//GetCompaniesFS_ToSynchronizeFS
+    }//get_companiesfs_to_synchronizefs
 
     /**
+     * Description
+     * Get all companies that have to be synchronized manually.
+     *
      * @param           $notIn
      *
      * @return          array
@@ -731,11 +732,8 @@ class FSKS_COMPANY {
      *
      * @creationDate    03/02/2016
      * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Get all companies that have to be synchronized manually.
      */
-    private static function GetCompaniesFS_ToMail($notIn) {
+    private static function get_companiesfs_to_mail($notIn) {
         /* Variables    */
         global $DB;
         $sql            = null;
@@ -744,26 +742,26 @@ class FSKS_COMPANY {
         $params         = null;
 
         try {
-            /* Search Criteria  */
+            // Search Criteria
             $params = array();
             $params['add'] = ADD;
 
-            /* SQL Instruction */
-            $sql = " SELECT fs_imp.id,
-                            fs_imp.org_navn,
-                            fs.companyid,
-                            fs.synchronized
-                     FROM 		{fs_imp_company}	fs_imp
-                        JOIN	{fs_company}		fs		ON fs.companyid = fs_imp.ORG_ENHET_ID
-                     WHERE 	fs_imp.imported 	 = 0
-                        AND fs.synchronized		 = 0
-                        AND fs_imp.org_nivaa 	!= 4
-                        AND fs_imp.action        = :add
-                        AND fs_imp.id NOT IN ($notIn) 
+            // SQL Instruction
+            $sql = " SELECT   fs_imp.id,
+                              fs_imp.org_navn,
+                              fs.companyid,
+                              fs.synchronized
+                     FROM 	  {fs_imp_company}	fs_imp
+                        JOIN  {fs_company}		fs		ON fs.companyid = fs_imp.ORG_ENHET_ID
+                     WHERE 	  fs_imp.imported 	 = 0
+                          AND fs.synchronized    = 0
+                          AND fs_imp.org_nivaa 	!= 4
+                          AND fs_imp.action        = :add
+                          AND fs_imp.id NOT IN ($notIn) 
                      ORDER BY fs_imp.org_navn 
                      LIMIT 0,5 ";
 
-            /* Execute  */
+            // Execute
             $rdo = $DB->get_records_sql($sql,$params);
             if ($rdo) {
                 foreach ($rdo as $instance) {
@@ -775,7 +773,7 @@ class FSKS_COMPANY {
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//GetCompaniesFS_ToMail
+    }//get_companiesfs_to_mail
 
     /**
      * @param           $companyKSFS
@@ -789,7 +787,7 @@ class FSKS_COMPANY {
      * Description
      * Synchronize company between FS and KS sites.
      */
-    private static function SynchronizeCompanyKSFS($companyKSFS,$impKey) {
+    private static function synchronize_company_ksfs($companyKSFS,$impKey) {
         /* Variables    */
         global $DB;
         $rdoCompany     = null;
@@ -803,30 +801,30 @@ class FSKS_COMPANY {
         $sync           = false;
         $trans          = null;
 
-        /* Start transaction    */
+        // Start transaction
         $trans = $DB->start_delegated_transaction();
 
         try {
-            /* Local Time   */
+            // Local Time
             $time = time();
 
-            /* Company Info to check if already exists or no    */
+            // Company Info to check if already exists or no
             $params = array();
             $params['companyid'] = $companyKSFS->fsId;
             $rdoCompany = $DB->get_record('fs_company',$params,'id');
 
-            /* Apply Synchronization    */
+            //  Apply Synchronization
             switch ($companyKSFS->action) {
                 case ADD:
                     if ($rdoCompany) {
                         $rdoCompany->synchronized  = 1;
                         $rdoCompany->timemodified  = $time;
 
-                        /* Execute  */
+                        // Execute
                         $DB->update_record('fs_company',$rdoCompany);
 
-                        /* Insert KS Company        */
-                        /* Check if already exists  */
+                        // Insert KS Company
+                        // Check if already exists
                         $rdo = $DB->get_record('ks_company',array('companyid' => $companyKSFS->ksId));
                         if (!$rdo) {
                             $infoCompany = new stdClass();
@@ -836,26 +834,26 @@ class FSKS_COMPANY {
                             $infoCompany->hierarchylevel    = $companyKSFS->level;
                             $infoCompany->parent            = $companyKSFS->parent;
 
-                            /* Execute  */
+                            // Execute
                             $DB->insert_record('ks_company',$infoCompany);
                         }//if_no_exist
 
-                        /* Relation FS KS Companies */
+                        // Relation FS KS Companies
                         $params = array();
                         $params['kscompany']    = 0;
                         $params['fscompany']    = $companyKSFS->fsId;
                         $rdoRelation = $DB->get_record('ksfs_company',$params);
                         if ($rdoRelation) {
-                            /* Execute  */
+                            // Execute
                             $rdoRelation->kscompany = $companyKSFS->ksId;
                             $DB->update_record('ksfs_company',$rdoRelation);
                         }else {
-                            /* Execute  */
+                            // Execute
                             $params['kscompany']    = $companyKSFS->ksId;
                             $DB->insert_record_raw('ksfs_company',$params,false);
                         }//if_rdo
 
-                        /* Synchronized */
+                        // Synchronized
                         $sync = true;
                     }//if_exists
                     break;
@@ -866,20 +864,20 @@ class FSKS_COMPANY {
                         $rdoCompany->synchronized  = 1;
                         $rdoCompany->timemodified  = $time;
 
-                        /* Execute  */
+                        // Execute
                         $DB->update_record('fs_company',$rdoCompany);
 
-                        /* Relation FS KS Companies */
+                        // Relation FS KS Companies
                         $params = array();
                         $params['kscompany']    = $companyKSFS->ksId;
                         $params['fscompany']    = $companyKSFS->fsId;
                         $rdoRelation = $DB->get_record('ksfs_company',$params);
                         if (!$rdoRelation) {
-                            /* Execute  */
+                            // Execute
                             $DB->insert_record_raw('ksfs_company',$params,false);
                         }//if_rdo
 
-                        /* Update    */
+                        // Update
                         $rdo = $DB->get_record('ks_company',array('companyid' => $companyKSFS->ksId));
                         if ($rdo) {
                             $rdo->companyid         = $companyKSFS->ksId;
@@ -891,17 +889,17 @@ class FSKS_COMPANY {
                             $DB->update_record('ks_company',$rdo);
                         }
 
-                        /* Synchronized */
+                        // Synchronized
                         $sync = true;
                     }//if_exists
 
                     break;
                 case DELETE:
-                    /* Delete from fs_company   */
+                    // Delete from fs_company
                     if ($rdoCompany) {
                         $DB->delete_records('fs_company',array('companyid' => $companyKSFS->fsId));
 
-                        /* Delete Relations     */
+                        // Delete Relations
                         $DB->delete_records('ksfs_company',array('fscompany' => $companyKSFS->fsId));
 
                         $DB->delete_records('ks_company',array('companyid' => $companyKSFS->ksId));
@@ -913,7 +911,7 @@ class FSKS_COMPANY {
                     break;
             }//switch_Action
 
-            /* Synchronized */
+            // Synchronized
             if ($sync) {
                 $instance = new stdClass();
                 $instance->id       = $impKey;
@@ -922,7 +920,7 @@ class FSKS_COMPANY {
                 $DB->update_record('fs_imp_company',$instance);
             }//if_sync
 
-            /* Commit */
+            // Commit
             $trans->allow_commit();
         }catch (Exception $ex) {
             /* Rollback */
@@ -930,20 +928,20 @@ class FSKS_COMPANY {
 
             throw $ex;
         }//try_catch
-    }//SynchronizeCompanyKSFS
+    }//synchronize_company_ksfs
 
     /**
+     * Description
+     * Synchronize company only in FS site.
+     *
      * @param           $companyFS
      *
      * @throws          Exception
      *
      * @creationDate    10/02/2016
      * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Synchronize company only in FS site.
      */
-    private static function SynchronizeCompanyFs($companyFS) {
+    private static function synchronize_company_fs($companyFS) {
         /* Variables    */
         global $DB;
         $infoCompany    = null;
@@ -953,19 +951,19 @@ class FSKS_COMPANY {
         $time           = null;
         $trans          = null;
 
-        /* Start Transaction    */
+        // Start Transaction
         $trans = $DB->start_delegated_transaction();
 
         try {
-            /* Local Time   */
+            // Local Time
             $time = time();
 
-            /* Get Info Company */
+            // Get Info Company
             $params = array();
             $params['companyid'] = $companyFS->fscompany;
             $rdoCompany          = $DB->get_record('fs_company',$params);
 
-            /* Apply Action */
+            // Apply Action
             switch ($companyFS->action) {
                 case UPDATE:
                     if ($rdoCompany) {
@@ -983,35 +981,34 @@ class FSKS_COMPANY {
                         $rdoCompany->synchronized   = 0;
                         $rdoCompany->timemodified   = $time;
 
-                        /* Execute */
+                        // Execute
                         $DB->update_record('fs_company',$rdoCompany);
 
-                        /* Synchronized */
+                        // Synchronized
                         $sync = true;
                     }//if_exists
 
                     break;
                 case DELETE:
-                    /* Delete if exists */
+                    // Delete if exists
                     if ($rdoCompany) {
-                        /* Delete FS Company */
+                        // Delete FS Company
                         $DB->delete_records('fs_company',array('id' => $rdoCompany->id));
 
-                        /* Delete FS KS Relation    */
+                        // Delete FS KS Relation
                         $params = array();
                         $params['fscompany'] = $companyFS->fscompany;
-                        /* Execute  */
+                        // Execute
                         $DB->delete_records('ksfs_company',$params);
 
-
-                        /* Synchronized */
+                        // Synchronized
                         $sync = true;
                     }//if_exists
 
                     break;
             }//action
 
-            /* Synchronized */
+            // Synchronized
             if ($sync) {
                 $instance = new stdClass();
                 $instance->id       = $companyFS->id;
@@ -1028,7 +1025,7 @@ class FSKS_COMPANY {
 
             throw $ex;
         }//try_catch
-    }//SynchronizeCompanyFs
+    }//synchronize_company_fs
 }//FSKS_COMPANY
 
 /********************/
@@ -1040,6 +1037,9 @@ class FSKS_USERS {
     /**********/
 
     /**
+     * Description
+     * Synchronize users accounts
+     *
      * @param           $usersFS
      * @param           $usersImported
      *
@@ -1047,45 +1047,42 @@ class FSKS_USERS {
      *
      * @creationDate    03/02/2016
      * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Synchronize users accounts
      */
-    public static function Synchronize_UsersFS($usersFS,$usersImported) {
+    public static function synchronize_users_fs($usersFS,$usersImported) {
         /* Variables    */
         $infoUser   = null;
         $objUser    = null;
 
         try {
-            /* Synchronize users have been imported  */
+            // Synchronize users have been imported
             foreach ($usersImported as $user) {
-                /* Convert to object */
+                // Convert to object
                 $objUser = (Object)$user;
 
                 if ($objUser->imported) {
-                    /* Get Info User    */
+                    // Get Info User
                     $infoUser = $usersFS[$objUser->key];
 
-                    /* Synchronize User */
-                    self::SynchronizeUserFS($infoUser,$objUser->key);
+                    // Synchronize User
+                    self::synchronize_user_fs($infoUser,$objUser->key);
                 }//if_user_imported
             }//for_userImported
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//UsersFS_To_Synchronize
+    }//synchronize_users_fs
 
     /**
+     * Description
+     * Get total managers to synchronize
+     *
      * @return          null
      * @throws          Exception
      *
      * @creationDate    01/11/2016
      * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Get total managers to synchronize
      */
-    public static function GetTotalManagersReporters_ToSynchronize() {
+    public static function get_total_managers_reporters_to_synchronize() {
         /* Variables    */
         global $DB;
         $params             = null;
@@ -1093,20 +1090,20 @@ class FSKS_USERS {
         $rdo                = null;
 
         try {
-            /* Search criteria */
+            // Search criteria
             $params = array();
             $params['imported'] = 0;
 
-            /* SQL Instruction  */
-            $sql = " SELECT	count(*) as 'total'
+            // SQL Instruction
+            $sql = " SELECT	  count(*) as 'total'
                      FROM	  {fs_imp_managers_reporters}   fs
-                        JOIN  {user}                        u         ON      u.idnumber = fs.fodselsnr
-                                                                      AND     u.deleted  = 0
+                        JOIN  {user}                        u   ON  u.idnumber = fs.fodselsnr
+                                                                AND u.deleted  = 0
                         JOIN  {ksfs_company}		        fsk	ON  fsk.fscompany = fs.org_enhet_id
                         JOIN  {ks_company}			        ks	ON	ks.companyid  = fsk.kscompany
-                     WHERE	fs.imported	= :imported ";
+                     WHERE	  fs.imported	= :imported ";
 
-            /* Execute */
+            // Execute
             $rdo = $DB->get_record_sql($sql,$params);
             if ($rdo) {
                 if ($rdo->total) {
@@ -1120,9 +1117,12 @@ class FSKS_USERS {
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//GetTotalManagersReporters_ToSynchronize
+    }//get_total_managers_reporters_to_synchronize
     
     /**
+     * Description
+     * Get User Managers/Reporters to synchronize
+     *
      * @param           $start
      * @param           $limit
      * 
@@ -1131,11 +1131,8 @@ class FSKS_USERS {
      *
      * @creationDate    14/06/2016
      * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Get User Managers/Reporters to synchronize
      */
-    public static function GetManagersReporters_ToSynchronize($start,$limit) {
+    public static function get_managers_reporters_to_synchronize($start,$limit) {
         /* Variables    */
         global $DB;
         $params             = null;
@@ -1145,39 +1142,39 @@ class FSKS_USERS {
         $info               = null;
 
         try {
-            /* Search criteria */
+            // Search criteria
             $params = array();
             $params['imported'] = 0;
 
-            /* SQL Instruction  */
-            $sql = " SELECT	fs.id,
-                            fs.fodselsnr,
-                            fsk.fscompany,
-                            fsk.kscompany,
-                            ks.hierarchylevel,
-                            fs.prioritet,
-                            fs.action
+            // SQL Instruction
+            $sql = " SELECT	  fs.id,
+                              fs.fodselsnr,
+                              fsk.fscompany,
+                              fsk.kscompany,
+                              ks.hierarchylevel,
+                              fs.prioritet,
+                              fs.action
                      FROM	  {fs_imp_managers_reporters}   fs
                         JOIN  {user}                        u   ON  u.idnumber    = fs.fodselsnr
                                                                 AND u.deleted     = 0
                         JOIN  {ksfs_company}		        fsk	ON  fsk.fscompany = fs.org_enhet_id
                         JOIN  {ks_company}			        ks	ON	ks.companyid  = fsk.kscompany
-                     WHERE	fs.imported	= :imported ";
+                     WHERE	  fs.imported	= :imported ";
 
-            /* Execute  */
+            // Execute
             $rdo = $DB->get_records_sql($sql,$params,$start,$limit);
             if ($rdo) {
                 foreach ($rdo as $instance) {
-                    /* Info Competence  */
+                    // Info Competence
                     $info = new stdClass();
-                    $info->personalNumber   = $instance->fodselsnr;
+                    $info->personalNumber   = trim($instance->fodselsnr);
                     $info->ksId             = $instance->kscompany;
                     $info->fsId             = $instance->fscompany;
                     $info->level            = $instance->hierarchylevel;
                     $info->prioritet        = $instance->prioritet;
                     $info->action           = $instance->action;
 
-                    /* Add Competence   */
+                    // Add Competence
                     $managersReporters[$instance->id] = $info;
                 }//for_Rdo
             }//if_rdo
@@ -1186,34 +1183,32 @@ class FSKS_USERS {
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//GetManagersReporters_ToSynchronize
+    }//get_managers_reporters_to_synchronize
 
     /**
+     * Description
+     * Get the total amount of managers/reporters that
+     * have to be unmapped from company
+     *
      * @return          null
      * @throws          Exception
      *
      * @creationDate    23/11/2016
      * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Get the total amount of managers/reporters that
-     * have to be unmapped from company
      */
-    public static function GetTotalManagersReporters_ToUnMap() {
+    public static function get_total_managers_reporters_to_unmap() {
         /* Variables */
         global $DB;
         $sql    = null;
         $rdo    = null;
 
         try {
-            /**
-             * SQL Instruction
-             */
+            // SQL Instruction
             $sql = " SELECT		count(*) as 'total'
                      FROM		{fs_users_company}	fsu
                         JOIN	{ksfs_org_unmap}	un	ON  un.fscompany = fsu.companyid ";
 
-            /* Execute */
+            // Execute
             $rdo = $DB->get_record_sql($sql);
             if ($rdo) {
                 return $rdo->total;
@@ -1223,9 +1218,12 @@ class FSKS_USERS {
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//GetTotalManagersReporters_ToUnMap
+    }//get_total_managers_reporters_to_unmap
 
     /**
+     * Description
+     * Get Managers/Reporters that have to be unmapped
+     *
      * @param           $start
      * @param           $limit
      *
@@ -1234,11 +1232,8 @@ class FSKS_USERS {
      *
      * @creationDate    23/11/2016
      * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Get Managers/Reporters that have to be unmapped
      */
-    public static function GetManagersReporters_ToUnMap($start,$limit) {
+    public static function get_managers_reporters_to_unmap($start,$limit) {
         /* Variables */
         global $DB;
         $sql        = null;
@@ -1247,32 +1242,31 @@ class FSKS_USERS {
         $info       = null;
 
         try {
-
-            /* SQL Instruction */
-            $sql = " SELECT	fsu.id,
-                            fsu.personalnumber,
-                            fsu.companyid 	as 'fscompany',
-                            un.kscompany 	as 'kscompany',
-                            fsu.level,
-                            fsu.priority
+            // SQL Instruction
+            $sql = " SELECT	    fsu.id,
+                                fsu.personalnumber,
+                                fsu.companyid 	as 'fscompany',
+                                un.kscompany 	as 'kscompany',
+                                fsu.level,
+                                fsu.priority
                      FROM		{fs_users_company}	fsu
                         JOIN	{ksfs_org_unmap}	un	  ON  un.fscompany = fsu.companyid
-                     ORDER BY fsu.personalnumber ";
+                     ORDER BY   fsu.personalnumber ";
 
-            /* Execute */
+            // Execute
             $rdo = $DB->get_records_sql($sql,null,$start,$limit);
             if ($rdo) {
                 foreach ($rdo as $instance) {
-                    /* Info */
+                    // Info
                     $info = new stdClass();
-                    $info->personalNumber   = $instance->personalnumber;
+                    $info->personalNumber   = trim($instance->personalnumber);
                     $info->ksId             = $instance->kscompany;
                     $info->fsId             = $instance->fscompany;
                     $info->level            = $instance->level;
                     $info->prioritet        = $instance->priority;
                     $info->action           = DELETE;
 
-                    /* Add */
+                    // Add
                     $toUnMap[$instance->id] = $info;
                 }//for_rdo
             }//if_rdo
@@ -1281,10 +1275,12 @@ class FSKS_USERS {
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//GetManagersReporters_ToUnMap
-
+    }//get_managers_reporters_to_unmap
 
     /**
+     * Description
+     * User competence to synchronize
+     *
      * @param       bool $toDelete
      * @param            $start
      * @param            $limit
@@ -1294,23 +1290,20 @@ class FSKS_USERS {
      *
      * @creationDate    14/06/2016
      * @author          eFaktor     (fbv)
-     *
-     * Description
-     * User competence to synchronize
      */
-    public static function UserCompetence_ToSynchronize($toDelete = false,$start,$limit) {
+    public static function user_competence_to_synchronize($toDelete = false,$start,$limit) {
         /* Variables    */
         $toSynchronize = null;
 
         try {
-            /* Get Users Competence  to synchronize  */
-            $toSynchronize = self::GetUsersCompetence_ToSynchronize($toDelete,$start,$limit);
+            // Get Users Competence  to synchronize
+            $toSynchronize = self::get_users_competence_to_synchronize($toDelete,$start,$limit);
 
             return $toSynchronize;
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//UserCompetence_ToSynchronize
+    }//user_competence_to_synchronize
 
 
     /**
@@ -1326,23 +1319,24 @@ class FSKS_USERS {
      * Description
      * Unmap user competence (company)
      */
-    public static function UserCompetence_ToUnMap($start,$limit) {
+    public static function user_competence_to_unmap($start,$limit) {
         /* Variables */
         $toUnMap = null;
 
         try {
-            /*
-             * Get users competence to unmap
-             */
-            $toUnMap = self::GetUsersCompetence_ToUnMap($start,$limit);
+            // Get users competence to unmap
+            $toUnMap = self::get_users_competence_to_unmap($start,$limit);
 
             return $toUnMap;
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//UserCompetence_ToUnMap
+    }//user_competence_to_unmap
 
     /**
+     * Description
+     * Synchronize Manager && Reporters
+     *
      * @param           $usersTo
      * @param           $competencesImported
      *
@@ -1350,34 +1344,30 @@ class FSKS_USERS {
      *
      * @creationDate    14/06/2016
      * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Synchronize Manager && Reporters
      */
-    public static function Synchronize_ManagerReporterFS($usersTo,$competencesImported) {
+    public static function synchronize_manager_reporter_fs($usersTo,$competencesImported) {
         /* Variables    */
         $infoUser       = null;
         $objCompetence  = null;
 
         try {
-
-            /* Synchronize Manager&&Reporter */
+            // Synchronize Manager && Reporter
             foreach ($competencesImported as $competence) {
-                /* Convert to object    */
+                // Convert to object
                 $objCompetence = (Object)$competence;
 
                 if ($objCompetence->imported) {
-                    /* Get Info */
+                    // Get Info
                     $infoUser = $usersTo[$objCompetence->key];
 
-                    /* Synchronize Manager&&Reporter */
-                    self::SynchronizeManagerReporterFS($infoUser,$objCompetence->key);
+                    // Synchronize Manager&&Reporter
+                    self::get_synchronize_manager_reporter_fs($infoUser,$objCompetence->key);
                 }//if_imported
             }//for_competencesImported
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//Synchronize_ManagerReporterFS
+    }//synchronize_manager_reporter_fs
 
     /**
      * @param           $toUnMap
@@ -1391,31 +1381,34 @@ class FSKS_USERS {
      * Description
      * Unmap managers/reporters from company
      */
-    public static function UnMap_ManagerReporterFS($toUnMap,$competencesUnMapped) {
+    public static function unmap_manager_reporter_fs($toUnMap,$competencesUnMapped) {
         /* Variables    */
         $infoUser       = null;
         $objUnMapped  = null;
 
         try {
-            /* UnMapp User Competence   */
+            // UnMapp User Competence
             foreach ($competencesUnMapped as $competence) {
-                /* Convert to object    */
+                // Convert to object
                 $objCompetence = (Object)$competence;
 
                 if ($objCompetence->imported) {
-                    /* Get Info */
+                    // Get Info
                     $infoUser = $toUnMap[$objCompetence->key];
 
-                    /* UnMap    */
-                    self::UnMapManagerReporterFS($infoUser,$objCompetence->key);
+                    // UnMap
+                    self::unmap_managerreporter_fs($infoUser,$objCompetence->key);
                 }//unmapped
             }//competenceUnMapped
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//UnMap_ManagerReporterFS
+    }//unmap_manager_reporter_fs
 
     /**
+     * Description
+     * Synchronization User Competence between FS and KS
+     *
      * @param           $usersCompetence
      * @param           $competencesImported
      *
@@ -1423,35 +1416,35 @@ class FSKS_USERS {
      *
      * @creationDate    14/06/2016
      * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Synchronization User Competence between FS and KS
      */
-    public static function Synchronize_UserCompetenceFS($usersCompetence, $competencesImported) {
+    public static function synchronize_user_competence_fs($usersCompetence, $competencesImported) {
         /* Variables    */
         $infoUser       = null;
         $objCompetence  = null;
 
         try {
-            /* Synchronize User Competence */
+            // Synchronize User Competence
             foreach ($competencesImported as $competence) {
-                /* Convert to object    */
+                // Convert to object
                 $objCompetence = (Object)$competence;
 
                 if ($objCompetence->imported) {
-                    /* Get Info */
+                    // Get Info
                     $infoUser = $usersCompetence[$objCompetence->key];
 
-                    /* Synchronize User Competence */
-                    self::SynchronizeCompetenceFS($infoUser);
+                    // Synchronize User Competence
+                    self::synchronize_competence_fs($infoUser);
                 }//if_imported
             }//for_competencesImported
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//Synchronize_UserCompetenceFS
+    }//synchronize_user_competence_fs
 
     /**
+     * Description
+     * Get total users to synchronize
+     *
      * @param           $toDelete
      *
      * @return          int|null
@@ -1459,11 +1452,8 @@ class FSKS_USERS {
      *
      * @creationDate    22/06/2016
      * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Get total users to synchronize
      */
-    public static function GetTotalUsersCompetence_ToSynchronize($toDelete) {
+    public static function get_total_users_competence_to_synchronize($toDelete) {
         /* Variables */
         global $DB;
         $params         = null;
@@ -1471,13 +1461,14 @@ class FSKS_USERS {
         $rdo            = null;
 
         try {
-            /* Search Criteria  */
+            // Search Criteria
             $params = array();
             $params['imported'] = 0;
             $params['action']   = DELETE;
 
-            /* SQL Instruction  */
-            $sql = " SELECT		DISTINCT fs.id
+            // SQL Instruction
+            $sql = " SELECT	DISTINCT 
+                                fs.id
                      FROM	    {fs_imp_users_jr}	  fs
                         JOIN    {user}                u         ON      u.idnumber = fs.fodselsnr
                                                                 AND     u.deleted  = 0
@@ -1488,18 +1479,18 @@ class FSKS_USERS {
                         JOIN	{ksfs_jobroles}		  fsk_jr 	ON 		fsk_jr.fsjobrole 	= fs.stillingskode
                      WHERE		fs.imported = :imported ";
 
-            /* To Delete    */
+            // To Delete
             if ($toDelete) {
                 $sql .= " AND fs.action = :action ";
             }else {
                 $sql .= " AND fs.action != :action ";
             }//if_delte
 
-            /* GROUP / ORDER    */
+            // GROUP / ORDER
             $sql .= " GROUP BY fs.fodselsnr,ksfs.fscompany
                       ORDER BY fs.fodselsnr ";
 
-            /* Execute */
+            // Execute
             $rdo = $DB->get_records_sql($sql,$params);
             if ($rdo) {
                 return count($rdo);
@@ -1509,33 +1500,31 @@ class FSKS_USERS {
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//GetTotalUsersCompetence_ToSynchronize
+    }//get_total_users_competence_to_synchronize
 
     /**
+     * Description
+     * Get total users that have to be unmapped
+     *
      * @return          null
      * @throws          Exception
      *
      * @creationDate    23/11/2016
      * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Get total users that have to be unmapped
      */
-    public static function GetTotal_UsersCompetence_ToUnMap() {
+    public static function get_total_users_competence_to_unmap() {
         /* Variables */
         global $DB;
         $sql    = null;
         $rdo    = null;
 
         try {
-            /**
-             * Sql Instruction
-             */
+            // Sql Instruction
             $sql = " SELECT 	count(*) as 'total'
                      FROM		{fs_users_competence} fsu
                         JOIN	{ksfs_org_unmap}	  un	ON 	un.kscompany = fsu.companyid ";
 
-            /* Execute  */
+            // Execute
             $rdo = $DB->get_record_sql($sql);
             if ($rdo) {
                 return $rdo->total;
@@ -1545,9 +1534,12 @@ class FSKS_USERS {
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//GetTotal_UsersCompetence_ToUnMap
+    }//get_total_users_competence_to_unmap
 
     /**
+     * Description
+     * Un map user competence - companies
+     *
      * @param           $toUnMap
      * @param           $competencesUnMapped
      * 
@@ -1555,39 +1547,42 @@ class FSKS_USERS {
      * 
      * @creationDate    23/11/2016
      * @author          eFaktor     (fbv)
-     * 
-     * Description
-     * Un map user competence - companies
      */
-    public static function UnMap_UserCompetenceFS($toUnMap, $competencesUnMapped) {
+    public static function unmap_user_competence_fs($toUnMap, $competencesUnMapped) {
         /* Variables    */
         $infoUser       = null;
         $objUnMapped  = null;
 
         try {
-            /* UnMapp User Competence   */
+            // UnMapp User Competence
             foreach ($competencesUnMapped as $competence) {
-                /* Convert to object    */
+                // Convert to object
                 $objCompetence = (Object)$competence;
 
                 if ($objCompetence->unmapped) {
-                    /* Get Info */
+                    // Get Info
                     $infoUser = $toUnMap[$objCompetence->key];
 
-                    /* UnMap    */
-                    self::UnMapCompetenceFS($infoUser,$objCompetence->key);
+                    // UnMap
+                    self::unmap_competence_fs($infoUser,$objCompetence->key);
                 }//unmapped
             }//competenceUnMapped
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//UnMap_UserCompetenceFS
+    }//unmap_user_competence_fs
 
     /***********/
     /* PRIVATE */
     /***********/
 
     /**
+     * Description
+     * Synchronize user account ino FS.
+     * Add resource number
+     * ADFS ID.
+     * Merge ADFS and Fellesdata accounts
+     *
      * @param           $userFS
      * @param           $fsKey
      *
@@ -1596,23 +1591,13 @@ class FSKS_USERS {
      * @creationDate    03/02/2016
      * @author          eFaktor     (fbv)
      *
-     * Description
-     * Synchronize user account ino FS.
-     *
      * @updateDate      23/09/2016
      * @author          eFaktor     (fbv)
      *
-     * Description
-     * Add resource number
-     *
      * @updateDate      27/10/2016
      * @author          eFaktor     (fbv)
-     *
-     * Description
-     * ADFS ID.
-     * Merge ADFS and Fellesdata accounts
      */
-    private static function SynchronizeUserFS($userFS,$fsKey) {
+    private static function synchronize_user_fs($userFS,$fsKey) {
         /* Variables    */
         global $DB,$CFG;
         $rdoUser        = null;
@@ -1626,19 +1611,17 @@ class FSKS_USERS {
         $userId         = null;
         $dbLog          = null;
 
-        /* Start Transaction    */
+        // Start Transaction
         $trans = $DB->start_delegated_transaction();
 
         try {
-            /* Local Time   */
+            // Local Time
             $time = time();
 
-            /**
-             * Check if user already exists.
-             * Can be connected with ADFS or not.
-             */
+            // Check if user already exists.
+            // Can be connected with ADFS or not.
             if ($userFS->adfs) {
-                /* Connected with   */
+                // Connected with
                 $params = array();
                 $params['username'] = $userFS->adfs;
                 $rdoUser = $DB->get_record('user',$params,'id');
@@ -1647,25 +1630,25 @@ class FSKS_USERS {
                     $params['username'] = $userFS->personalnumber;
                     $rdoUser = $DB->get_record('user',$params,'id');
                 }else {
-                    /* Fellesdata account to delete */
+                    // Fellesdata account to delete
                     $rdoFellesdata = $DB->get_record('user',array('username' => $userFS->personalnumber),'id,username');
                 }//if_rdoUser
             }else {
-                /* No Connected */
+                // No Connected
                 $params = array();
                 $params['username'] = $userFS->personalnumber;
                 $rdoUser = $DB->get_record('user',$params,'id');
             }//if_adfs
 
-            /* Info Account */
+            // Info Account
             if (!$rdoUser) {
-                /* Create new Account   */
+                // Create new Account
                 $infoUser = new stdClass();
                 if ($userFS->adfs) {
-                    /* Connected    */
+                    // Connected
                     $infoUser->username     = $userFS->adfs;
                 }else {
-                    /* No connected */
+                    // No connected
                     $infoUser->username     = $userFS->personalnumber;
                 }//if_adfs
                 $infoUser->idnumber     = $userFS->personalnumber;
@@ -1682,56 +1665,54 @@ class FSKS_USERS {
                 $infoUser->mnethostid   = $CFG->mnet_localhost_id;
             }else {
                 $userId = $rdoUser->id;
-                /**
-                 * Two merge accounts
-                 */
+                // Two merge accounts
                 if ($userFS->adfs) {
-                    /* Connected    */
+                    // Connected
                     $rdoUser->username  = $userFS->adfs;
                     $rdoUser->idnumber  = $userFS->personalnumber;
                 }//if_adfs
             }//if_no_exist
 
-            /* Apply synchronization    */
+            // Apply synchronization
             switch ($userFS->action) {
                 case ADD:
-                    /* Execute      */
+                    // Execute
                     if (!$rdoUser) {
                         $userId = $DB->insert_record('user',$infoUser);
                     }else {
-                        /* Update   */
+                        // Update
                         $rdoUser->firstname     = $userFS->firstname;
                         $rdoUser->lastname      = $userFS->lastname;
                         $rdoUser->email         = $userFS->email;
                         $rdoUser->deleted       = 0;
                         $rdoUser->timemodified  = $time;
 
-                        /* Execute  */
+                        // Execute
                         $DB->update_record('user',$rdoUser);
                     }//if_no_exists
 
-                    /* Synchronized */
+                    // Synchronized
                     $sync = true;
 
                     break;
                 case UPDATE:
-                    /* Check if exists  */
+                    // Check if exists
                     if ($rdoUser) {
-                        /* Update   */
+                        // Update
                         $rdoUser->firstname    = $userFS->firstname;
                         $rdoUser->lastname     = $userFS->lastname;
                         $rdoUser->email        = $userFS->email;
                         $rdoUser->deleted       = 0;
                         $rdoUser->timemodified = $time;
 
-                        /* Execute  */
+                        // Execute
                         $DB->update_record('user',$rdoUser);
                     }else {
-                        /* Execute  */
+                        // Execute
                         $userId = $DB->insert_record('user',$infoUser);
                     }//if_else
 
-                    /* Synchronized */
+                    // Synchronized
                     $sync = true;
 
                     break;
@@ -1749,13 +1730,13 @@ class FSKS_USERS {
                     //    $userId = $DB->insert_record('user',$infoUser);
                     //}//if_exist
 
-                    /* Synchronized */
+                    // Synchronized
                     $sync = true;
 
                     break;
             }//switch_Action
 
-            /* Synchronized */
+            // Synchronized
             if ($sync) {
                 $instance = new stdClass();
                 $instance->id       = $fsKey;
@@ -1764,61 +1745,58 @@ class FSKS_USERS {
                 $DB->update_record('fs_imp_users',$instance);
             }//if_sync
 
-            /**
-             * Create the connection between user and his/her resource number
-             */
-            /*
-             * First. Check if already exist an entry for this user.
-             */
+            // Create the connection between user and his/her resource number
+            // First. Check if already exist an entry for this user.
             if ($userFS->ressursnr) {
                 $rdo = $DB->get_record('user_resource_number',array('userid' => $userId));
                 if ($rdo) {
-                    /* Update   */
+                    // Update
                     $rdo->ressursnr      = $userFS->ressursnr;
                     $rdo->industrycode   = $userFS->industry;
 
-                    /* Execute */
+                    // Execute
                     $DB->update_record('user_resource_number',$rdo);
                 }else {
-                    /* Insert   */
+                    // Insert
                     $instance = new stdClass();
                     $instance->userid        = $userId;
                     $instance->ressursnr     = $userFS->ressursnr;
                     $instance->industrycode  = $userFS->industry;
 
-                    /* Execute  */
+                    // Execute
                     $DB->insert_record('user_resource_number',$instance);
                 }//if_rdo
             }//if_resource_number
 
-            /**
-             * Fellesdata account has to be deleted
-             * Only one account for user
-             */
+            // Fellesdata account has to be deleted
+            // Only one account for user
             if ($rdoFellesdata) {
-                /* From user */
+                // From user
                 $DB->delete_records('user',array('id' => $rdoFellesdata->id,'username' => $rdoFellesdata->username));
 
-                /* From user resource number    */
+                // From user resource number
                 $DB->delete_records('user_resource_number',array('userid' => $rdoFellesdata->id));
             }//if_fellesdata
 
-            /* Commit   */
+            // Commit
             $trans->allow_commit();
         }catch (Exception $ex) {
-            /* Log  */
+            // Log
             $dbLog .= $ex->getTraceAsString() . "\n" ."\n";
             $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH ERROR SynchronizeUserFS . ' . "\n";
             error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
 
-            /* Rollback */
+            // Rollback
             $trans->rollback($ex);
 
             throw $ex;
         }//try_catch
-    }//SynchronizeUserFS
+    }//synchronize_user_fs
 
     /**
+     * Description
+     * Synchronization Manager&&Reporters from fellesdata
+     *
      * @param           $infoUserFS
      * @param           $fsKey
      *
@@ -1826,11 +1804,8 @@ class FSKS_USERS {
      *
      * @creationDate    14/06/2016
      * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Synchronization Manager&&Reporters from fellesdata
      */
-    private static function SynchronizeManagerReporterFS($infoUserFS,$fsKey) {
+    private static function get_synchronize_manager_reporter_fs($infoUserFS,$fsKey) {
         /* Variables    */
         global $DB;
         $infoFS = null;
@@ -1839,27 +1814,27 @@ class FSKS_USERS {
         $sync           = null;
         $trans          = null;
 
-        /* Start Transaction */
+        // Start Transaction
         $trans = $DB->start_delegated_transaction();
 
         try {
-            /* GEt info fs_user_company     */
+            // GEt info fs_user_company
             $params = array();
             $params['personalnumber']    = $infoUserFS->personalNumber;
             $params['companyid']         = $infoUserFS->fsId;
             $rdo = $DB->get_record('fs_users_company',$params);
 
-            /* Apply action */
+            // Apply action
             switch ($infoUserFS->action) {
                 case ADD:
-                    /* Check if already exists  */
+                    // Check if already exists
                     if ($rdo) {
                         $rdo->synchronized = 1;
 
-                        /* Execute  */
+                        // Execute
                         $DB->update_record('fs_users_company',$rdo);
                     }else {
-                        /* Create Entry */
+                        // Create Entry
                         $infoFS = new stdClass();
                         $infoFS->companyid          = $infoUserFS->fsId;
                         $infoFS->personalnumber     = $infoUserFS->personalNumber;
@@ -1867,16 +1842,16 @@ class FSKS_USERS {
                         $infoFS->priority           = $infoUserFS->prioritet;
                         $infoFS->synchronized       = 1;
 
-                        /* Execute  */
+                        // Execute
                         $DB->insert_record('fs_users_company',$infoFS);
                     }//if_exists
 
-                    /* Synchronized */
+                    // Synchronized
                     $sync = true;
 
                     break;
                 case UPDATE:
-                    /* Update if exists */
+                    // Update if exists
                     if ($rdo) {
                         $rdo->companyid          = $infoUserFS->fsId;
                         $rdo->personalnumber     = $infoUserFS->personalNumber;
@@ -1884,27 +1859,27 @@ class FSKS_USERS {
                         $rdo->priority           = $infoUserFS->prioritet;
                         $rdo->synchronized       = 1;
 
-                        /* Execute  */
+                        // Execute
                         $DB->update_record('fs_users_company',$rdo);
 
-                        /* Synchronized */
+                        // Synchronized
                         $sync = true;
                     }//if_exists
 
                     break;
                 case DELETE:
-                    /* Delete if exists */
+                    // Delete if exists
                     if ($rdo) {
                         $DB->delete_records('fs_users_company',array('id' => $rdo->id));
 
-                        /* Synchronized */
+                        // Synchronized
                         $sync = true;
                     }//if_exists
 
                     break;
             }//action
 
-            /* Synchronized */
+            // Synchronized
             if ($sync) {
                 $instance = new stdClass();
                 $instance->id       = $fsKey;
@@ -1913,17 +1888,20 @@ class FSKS_USERS {
                 $DB->update_record('fs_imp_managers_reporters',$instance);
             }//if_sync
 
-            /* Commit */
+            // Commit
             $trans->allow_commit();
         }catch (Exception $ex) {
-            /* Rollback */
+            // Rollback
             $trans->rollback($ex);
 
             throw $ex;
         }//try_catch
-    }//SynchronizeManagerReporterFS
+    }//get_synchronize_manager_reporter_fs
 
     /**
+     * Description
+     * Unmap manager/reporter from the company
+     *
      * @param           $infoUserFS
      * @param           $fsKey
      * 
@@ -1931,30 +1909,30 @@ class FSKS_USERS {
      * 
      * @creationDate    23/11/2016
      * @author          eFaktor     (fbv)
-     * 
-     * Description
-     * Unmap manager/reporter from the company
      */
-    private static function UnMapManagerReporterFS($infoUserFS,$fsKey) {
+    private static function unmap_managerreporter_fs($infoUserFS,$fsKey) {
         /* Variables */
         global $DB;
         $params = null;
 
         try {
-            /* Search Criteria  */
+            // Search Criteria
             $params = array();
             $params['id']               = $fsKey;
             $params['personalnumber']   = $infoUserFS->personalNumber;
             $params['companyid']        = $infoUserFS->fsId;
 
-            /* Execute */
+            // Execute
             $DB->delete_records('fs_users_company',$params);
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//UnMapManagerReporterFS
+    }//unmap_managerreporter_fs
 
     /**
+     * Description
+     * Get user competence to synchronize
+     *
      * @param           $toDelete
      * @param           $start
      * @param           $limit
@@ -1964,13 +1942,10 @@ class FSKS_USERS {
      *
      * @creationDate    14/06/2016
      * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Get user competence to synchronize
      */
-    private static function GetUsersCompetence_ToSynchronize($toDelete,$start,$limit) {
+    private static function get_users_competence_to_synchronize($toDelete,$start,$limit) {
         /* Variables */
-        global $DB;
+        global $DB,$CFG;
         $params         = null;
         $sql            = null;
         $rdo            = null;
@@ -1979,12 +1954,12 @@ class FSKS_USERS {
         $toDeleteFromKS = false;
 
         try {
-            /* Search Criteria  */
+            // Search Criteria
             $params = array();
             $params['imported'] = 0;
             $params['action']   = DELETE;
 
-            /* SQL Instruction  */
+            // SQL Instruction
             $sql = " SELECT		fs.id,
 			                    fs.fodselsnr,
 			                    ksfs.fscompany,
@@ -2003,29 +1978,29 @@ class FSKS_USERS {
                         JOIN	{ksfs_jobroles}		  fsk_jr 	ON 		fsk_jr.fsjobrole 	= fs.stillingskode
                      WHERE		fs.imported = :imported ";
 
-            /* To Delete    */
+            // To Delete
             if ($toDelete) {
                 $sql .= " AND fs.action = :action ";
             }else {
                 $sql .= " AND fs.action != :action ";
             }//if_delte
 
-            /* GROUP / ORDER    */
+            // GROUP / ORDER
             $sql .= " GROUP BY fs.fodselsnr,ksfs.fscompany
                       ORDER BY fs.fodselsnr
                       LIMIT $start,$limit ";
 
-            /* Execute */
+            // Execute
             $rdo = $DB->get_records_sql($sql,$params);
             if ($rdo) {
                 foreach ($rdo as $instance) {
                     if ($toDelete) {
-                        $toDeleteFromKS = self::DeleteFromCompetenceFS($instance);
+                        $toDeleteFromKS = self::delete_from_competence_fs($instance);
 
                         if ($toDeleteFromKS) {
-                            /* Info Competence JR   */
+                            // Info Competence JR
                             $infoComp = new stdClass();
-                            $infoComp->personalNumber   = $instance->fodselsnr;
+                            $infoComp->personalNumber   = trim($instance->fodselsnr);
                             $infoComp->jobrole          = $instance->ksjobrole;
                             $infoComp->fsjobroles       = $instance->fsjobroles;
                             $infoComp->fsId             = $instance->fscompany;
@@ -2034,13 +2009,13 @@ class FSKS_USERS {
                             $infoComp->impkeys          = $instance->impkeys;
                             $infoComp->action           = DELETE;
 
-                            /* Add competence */
+                            // Add competence
                             $usersComp[] = $infoComp;
                         }
                     }else {
-                        /* Info Competence JR   */
+                        // Info Competence JR
                         $infoComp = new stdClass();
-                        $infoComp->personalNumber   = $instance->fodselsnr;
+                        $infoComp->personalNumber   = trim($instance->fodselsnr);
                         $infoComp->jobrole          = $instance->ksjobrole;
                         $infoComp->fsjobroles       = $instance->fsjobroles;
                         $infoComp->fsId             = $instance->fscompany;
@@ -2049,13 +2024,12 @@ class FSKS_USERS {
                         $infoComp->impkeys          = $instance->impkeys;
                         $infoComp->action           = ADD;
 
-                        /* Add competence */
+                        // Add competence
                         $usersComp[] = $infoComp;
                     }//id_delte
                 }//for_rdo
             }else {
-                /* Log  */
-                global $CFG;
+                // Log
                 $dbLog  = "User Competence - GetUsersCompetence_ToSynchronize NO RDO".  "\n\n";
                 $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH GetUsersCompetence_ToSynchronize . ' . "\n";
                 error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
@@ -2065,9 +2039,12 @@ class FSKS_USERS {
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//GetUsersCompetence_ToSynchronize
+    }//get_users_competence_to_synchronize
 
     /**
+     * Description
+     * User that have to be unmapped from company
+     *
      * @param           $start
      * @param           $limit
      * 
@@ -2076,11 +2053,8 @@ class FSKS_USERS {
      * 
      * @creationDate    23/11/2016
      * @author          eFaktor     (fbv)
-     * 
-     * Description
-     * User that have to be unmapped from company
      */
-    private static function GetUsersCompetence_ToUnMap($start,$limit) {
+    private static function get_users_competence_to_unmap($start,$limit) {
         /* Variables */
         global $DB;
         $sql        = null;
@@ -2090,26 +2064,24 @@ class FSKS_USERS {
         $info       = null;
 
         try {
-            /**
-             * SQL Instruction
-             */
+            // SQL Instruction
             $sql = " SELECT   fsu.id,
                               fsu.personalnumber,
                               fsu.companyid
-                     FROM		{fs_users_competence}	fsu
-                        JOIN	{ksfs_org_unmap}		un	ON 	un.kscompany = fsu.companyid
-                     ORDER BY	fsu.personalnumber ";
+                     FROM	  {fs_users_competence}	fsu
+                        JOIN  {ksfs_org_unmap}		un	ON 	un.kscompany = fsu.companyid
+                     ORDER BY fsu.personalnumber ";
 
-            /* Executed */
+            // Executed
             $rdo = $DB->get_records_sql($sql,null,$start,$limit);
             if ($rdo) {
                 foreach ($rdo as $instance) {
-                    /* Info to unmap    */
+                    // Info to unmap
                     $info = new stdClass();
-                    $info->personalnumber   = $instance->personalnumber;
+                    $info->personalnumber   = trim($instance->personalnumber);
                     $info->companyid        = $instance->companyid;
 
-                    /* Add */
+                    // Add
                     $toUnMap[$instance->id] = $info;
                 }//for_rdo
             }//if_rdo
@@ -2118,9 +2090,12 @@ class FSKS_USERS {
         }catch (Exception $ex) {
             throw $ex;
         }//tryCatch
-    }//GetUsersCompetence_ToUnMap
+    }//get_users_competence_to_unmap
 
     /**
+     * Description
+     * Delete competence from FS
+     *
      * @param           $competence
      *
      * @return          bool
@@ -2128,11 +2103,8 @@ class FSKS_USERS {
      *
      * @creationDate    14/06/2016
      * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Delete competence from FS
      */
-    private static function DeleteFromCompetenceFS($competence) {
+    private static function delete_from_competence_fs($competence) {
         /* Variables */
         global $DB;
         $rdo            = null;
@@ -2143,13 +2115,13 @@ class FSKS_USERS {
         $impKeys        = null;
 
         try {
-            /* Search criteria */
+            // Search criteria
             $params = array();
             $params['personalnumber']   = $competence->fodselsnr;
             $params['companyid']        = $competence->companyid;
             $params['ksjrcode']         = $competence->ksjobrole;
 
-            /* Execute  */
+            // Execute
             $rdo = $DB->get_record('fs_users_competence',$params);
             if ($rdo) {
                 $myFSJobroles   = array_flip(explode(',',$rdo->jrcode));
@@ -2161,10 +2133,10 @@ class FSKS_USERS {
                     }
                 }
 
-                /* Update */
+                // Update
                 $DB->update_record('fs_users_competence',$rdo);
 
-                /* To know it has to be deleted */
+                // To know if it has to be deleted
                 if (!$rdo->jrcode) {
                     $toDeleteFromKS = true;
                 }else {
@@ -2184,19 +2156,19 @@ class FSKS_USERS {
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//DeleteFromCompetenceFS
+    }//delete_from_competence_fs
 
     /**
+     * Description
+     * Synchronize between user competence between FS and KS
+     *
      * @param           $competenceFS
      * @throws          Exception
      *
      * @creationDate    14/06/2016
      * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Synchronize between user competence between FS and KS
      */
-    private static function SynchronizeCompetenceFS($competenceFS) {
+    private static function synchronize_competence_fs($competenceFS) {
         /* Variables */
         global $DB;
         $params         = null;
@@ -2207,35 +2179,33 @@ class FSKS_USERS {
         $fsKey          = null;
         $impKeys        = null;
 
-
-        /* Start transaction    */
+        // Start transaction
         $trans = $DB->start_delegated_transaction();
 
         try {
-            /* Get Info User Job Role (FS) */
+            // Get Info User Job Role (FS)
             $params = array();
             $params['personalnumber']   = $competenceFS->personalNumber;
             $params['companyid']        = $competenceFS->company;
             $params['ksjrcode']         = $competenceFS->jobrole;
             $rdo = $DB->get_record('fs_users_competence',$params);
 
-            /* Apply Action */
+            // Apply Action
             switch ($competenceFS->action) {
-                /* Check if already exists  */
+                // Check if already exists
                 case ADD:
                 case UPDATE:
                     if ($rdo) {
-                        /* Update */
+                        // Update
                         $rdo->synchronized = 1;
                         $rdo->ksjrcode       = $competenceFS->jobrole;
-                        /* Execute */
+                        // Execute
                         $DB->update_record('fs_users_competence',$rdo);
 
-                        /* Synchronized */
+                        // Synchronized
                         $sync = true;
                     }else {
-                        /* Create */
-                        /* New Entry    */
+                        // New Entry
                         $infoCompetence = new stdClass();
                         $infoCompetence->personalnumber = $competenceFS->personalNumber;
                         $infoCompetence->companyid      = $competenceFS->company;
@@ -2243,20 +2213,21 @@ class FSKS_USERS {
                         $infoCompetence->ksjrcode       = $competenceFS->jobrole;
                         $infoCompetence->synchronized   = 1;
 
-                        /* Execute */
+                        // Execute
                         $DB->insert_record('fs_users_competence',$infoCompetence);
 
-                        /* Synchronized */
+                        // Synchronized
                         $sync = true;
                     }
 
                     break;
+
                 case DELETE:
-                    /* Delete if exists  */
+                    // Delete if exists
                     if ($rdo) {
                         $DB->delete_records('fs_users_competence',array('id' => $rdo->id));
 
-                        /* Synchronized */
+                        // Synchronized
                         $sync = true;
                     }//if_exits
 
@@ -2265,7 +2236,7 @@ class FSKS_USERS {
                     break;
             }//action
 
-            /* Synchronized */
+            // Synchronized
             if ($sync) {
                 $impKeys = explode(',',$competenceFS->impkeys);
 
@@ -2278,17 +2249,20 @@ class FSKS_USERS {
                 }
             }//if_sync
 
-            /* Commit */
+            // Commit
             $trans->allow_commit();
         }catch (Exception $ex) {
-            /* Rollback    */
+            // Rollback
             $trans->rollback($ex);
 
             throw $ex;
         }//try_catch
-    }//SynchronizeCompetenceFS
+    }//synchronize_competence_fs
 
     /**
+     * Description
+     * Un map competence from the user
+     *
      * @param           $infoUser
      * @param           $key
      * 
@@ -2296,25 +2270,21 @@ class FSKS_USERS {
      * 
      * @creationDate    23/11/2016
      * @author          eFaktor     (fbv)
-     * 
-     * Description
-     * Un map competence from the user
      */
-    private static function UnMapCompetenceFS($infoUser,$key) {
+    private static function unmap_competence_fs($infoUser,$key) {
         /* Variables */
         global $DB;
         $params = null;
 
         try {
-            /* Delete record */
+            // Delete record
             $params = (Array)$infoUser;
             $params['id'] = $key;
             $DB->delete_records('fs_users_competence',$params);
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//UnMapCompetenceFS
-
+    }//unmap_competence_fs
 }//FSKS_USERS
 
 /************/
@@ -2337,7 +2307,7 @@ class FS {
      * Description
      * Save in temporary tables. Step before synchronization
      */
-    public static function SaveTemporary_Fellesdata($data,$type) {
+    public static function save_temporary_fellesdata($data,$type) {
         /* Variables    */
         $action         = null;
         $newEntry       = null;
@@ -2345,29 +2315,32 @@ class FS {
         $toSave         = array();
 
         try {
-
+            // Each line file
             foreach($data as $key=>$line) {
                 $lineContent    = json_decode($line);
 
-                /* Get New Entry    */
+                // Get New Entry
                 if ($lineContent) {
-                    /* Get Action       */
+                    // Get Action
                     switch (trim($lineContent->changeType)) {
                         case ADD_ACTION:
-                            /* Add */
+                            // Add
                             $newEntry = $lineContent->newRecord;
                             $newEntry->action   = 0;
                             $newEntry->imported = 0;
 
                             break;
+
                         case UPDATE_ACTION:
-                            /* Update */
+                            // Update
                             $newEntry = $lineContent->newRecord;
                             $newEntry->action   = 1;
                             $newEntry->imported = 0;
+
                             break;
+
                         case DELETE_ACTION:
-                            /* Old Entry        */
+                            // Old Entry
                             if (isset($lineContent->oldRecord)) {
                                 $newEntry = $lineContent->oldRecord;
                                 $newEntry->action   = 2;
@@ -2377,7 +2350,7 @@ class FS {
                             break;
                     }//action
 
-                    /* Add Record   */
+                    // Add Record
                     if ($newEntry) {
                         $toSave[$key] = $newEntry;
                     }
@@ -2387,31 +2360,35 @@ class FS {
             if ($toSave) {
                 switch ($type) {
                     case IMP_USERS:
-                        /* FS Users     */
-                        self::ImportTemporary_FSUsers($toSave);
+                        // FS Users
+                        self::import_temporary_fs_users($toSave);
 
-                        /* Fake eMails  */
-                        self::UpdateFakeMails();
+                        // Fake eMails
+                        self::update_fake_mails();
                         
                         break;
+
                     case IMP_COMPANIES:
-                        /* FS Companies */
-                        self::ImportTemporary_FSCompany($toSave);
+                        // FS Companies
+                        self::import_temporary_fs_company($toSave);
 
                         break;
+
                     case IMP_JOBROLES:
-                        /* FS JOB ROLES */
-                        self::ImportTemporary_FSJobRoles($toSave);
+                        // FS JOB ROLES
+                        self::import_temporary_fs_jobroles($toSave);
 
                         break;
+
                     case IMP_MANAGERS_REPORTERS:
-                        /* Managers Reporters */
-                        self::ImportTemporary_ManagersReporters($toSave);
+                        // Managers Reporters
+                        self::import_temporary_managers_reporters($toSave);
 
                         break;
+
                     case IMP_COMPETENCE_JR:
-                        /* Competence Job Role  */
-                        self::ImportTemporary_CompetenceJobRole($toSave);
+                        // Competence Job Role
+                        self::import_temporary_competence_jobrole($toSave);
 
                         break;
                 }//type
@@ -2419,36 +2396,36 @@ class FS {
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//ExtractData_TemporaryFellesdata
+    }//save_temporary_fellesdata
 
     /***********/
     /* PRIVATE */
     /***********/
 
     /**
+     * Description
+     * Save FS users in temporary tables before the synchronization
+     *
      * @param           $data
      *
      * @throws          Exception
      *
      * @creationDate    02/02/2016
      * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Save FS users in temporary tables before the synchronization
      */
-    private static  function ImportTemporary_FSUsers($data) {
+    private static  function import_temporary_fs_users($data) {
         /* Variables    */
         global $DB;
         $infoUser   = null;
         $trans      = null;
 
-        /* Start transaction    */
+        // Start transaction
         $trans = $DB->start_delegated_transaction();
 
         try {
-            /* User Info    */
+            // User Info
             foreach ($data as $key => $infoUser) {
-                /* Execute  */
+                // Execute
                 $rdo = $DB->get_record('fs_imp_users',array('FODSELSNR' => $infoUser->FODSELSNR));
                 if (!$rdo) {
                     $DB->insert_record('fs_imp_users',$infoUser);
@@ -2458,79 +2435,79 @@ class FS {
                 }//if_rdo
             }//ofr_each
 
-            /* Commit   */
+            // Commit
             $trans->allow_commit();
         }catch (Exception $ex) {
-            /* Rollback */
+            // Rollback
             $trans->rollback($ex);
 
             throw $ex;
         }//try_catch
-    }//ImportTemporary_FSUsers
+    }//import_temporary_fs_users
 
     /**
+     * Description
+     * Generate a fake email for users with empty email
+     *
      * @throws          Exception
      * 
      * @creationDate    26/10/2016
      * @author          eFaktor     (fbv)
-     * 
-     * Description
-     * Generate a fake email for users with empty email
      */
-    private static function UpdateFakeMails() {
+    private static function update_fake_mails() {
         /* Variables */
         global $DB;
         $sql        = null;
         $rdo        = null;
 
         try {
-            /* SQL Instruction  */
+            // SQL Instruction
             $sql = " SELECT fs.id,
                             fs.EPOST
                      FROM	{fs_imp_users}	fs
                      WHERE 	fs.EPOST IS NULL
                         OR 	fs.EPOST    = '' ";
 
-            /* Execute */
+            // Execute
             $rdo = $DB->get_records_sql($sql);
             if ($rdo) {
                 foreach ($rdo as $instance) {
-                    /* Fake eMail   */
+                    // Fake eMail
                     $instance->EPOST = random_string() . '@byttmegut.no';
                     
-                    /* Update */
+                    // Update
                     $DB->update_record('fs_imp_users',$instance);
                 }//rdo
             }//if_rdo
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//UpdateFakeMails
+    }//update_fake_mails
 
     /**
+     * Description
+     * Save FS companies in temporary tables before the synchronization
+     *
      * @param           $data
      *
      * @throws          Exception
      *
      * @creationDate    02/02/2016
      * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Save FS companies in temporary tables before the synchronization
      */
-    private static function ImportTemporary_FSCompany($data) {
+    private static function import_temporary_fs_company($data) {
         /* Variables    */
         global $DB;
         $infoFS     = null;
         $trans      = null;
 
-        /* Start transaction    */
+        // Start transaction
         $trans = $DB->start_delegated_transaction();
 
         try {
-            /* FS Company Info  */
+            // FS Company Info
             foreach($data as $key => $infoFS) {
-                /* Execute  */
+                // Execute
                 $rdo = $DB->get_record('fs_imp_company',array('ORG_ENHET_ID' => $infoFS->ORG_ENHET_ID));
                 if (!$rdo) {
                     $DB->insert_record('fs_imp_company',$infoFS);
@@ -2540,40 +2517,40 @@ class FS {
                 }//if_rdo
             }//for_each
 
-            /* Commit   */
+            // Commit
             $trans->allow_commit();
         }catch (Exception $ex) {
-            /* Rollback */
+            // Rollback
             $trans->rollback($ex);
 
             throw $ex;
         }//try_catch
-    }//ImportTemporary_FSCompany
+    }//import_temporary_fs_company
 
     /**
+     * Description
+     * Save FS Jobroles in temporary tables before the synchronization
+     *
      * @param               $data
      *
      * @throws              Exception
      *
      * @creationDate    04/02/2016
      * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Save FS Jobroles in temporary tables before the synchronization
      */
-    private static function ImportTemporary_FSJobRoles($data) {
+    private static function import_temporary_fs_jobroles($data) {
         /* Variables    */
         global $DB;
         $infoFS = null;
         $trans  = null;
 
-        /* Start transaction */
+        // Start transaction
         $trans = $DB->start_delegated_transaction();
 
         try {
-            /* FS Job Role Info */
+            // FS jobrole info
             foreach($data as $key => $infoFS) {
-                /* Execute  */
+                // Execute
                 $rdo = $DB->get_record('fs_imp_jobroles',array('STILLINGSKODE' => $infoFS->STILLINGSKODE));
                 if (!$rdo) {
                     $DB->insert_record('fs_imp_jobroles',$infoFS);
@@ -2583,43 +2560,45 @@ class FS {
                 }//if_rdo
             }//for_each
 
-            /* Commit */
+            // Commit
             $trans->allow_commit();
         }catch (Exception $ex) {
-            /* Rollback */
+            // Rollback
             $trans->rollback($ex);
 
             throw $ex;
         }//try_catch
-    }//ImportTemporary_FSJobRoles
+    }//import_temporary_fs_jobroles
 
     /**
+     * Description
+     * Import Temporary ManagersReporters
+     *
      * @param           $data
      * @throws          Exception
      *
      * @creationDate    13/06/2016
      * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Import Temporary ManagersReporters
      */
-    private static function ImportTemporary_ManagersReporters($data) {
+    private static function import_temporary_managers_reporters($data) {
         /* Variables */
         global $DB;
         $info   = null;
         $trans  = null;
         $params = null;
 
-        /* Start transaction */
+        // Start transaction
         $trans = $DB->start_delegated_transaction();
 
         try {
+            // Search criteria
             $params = array();
 
             foreach ($data as $key => $info) {
+                // Criteria
                 $params['ORG_ENHET_ID'] = $info->ORG_ENHET_ID;
                 $params['ORG_NIVAA']    = $info->ORG_NIVAA;
-                $params['FODSELSNR']     = $info->FODSELSNR;
+                $params['FODSELSNR']    = $info->FODSELSNR;
                 $params['PRIORITET']    = $info->PRIORITET;
 
                 $rdo = $DB->get_record('fs_imp_managers_reporters',$params);
@@ -2631,50 +2610,50 @@ class FS {
                 }//if_rdo
             }
 
-            /* Commit */
+            // Commit
             $trans->allow_commit();
         }catch (Exception $ex) {
-            /* Rollback */
+            // Rollback
             $trans->rollback($ex);
 
             throw $ex;
         }//try_catch
-    }//ImportTemporary_ManagersReporters
+    }//import_temporary_managers_reporters
 
     /**
+     * Description
+     * Save User Job Role (FS)  in temporary tables before the synchronization
+     *
      * @param           $data
      *
      * @throws          Exception
      *
      * @creationDate    02/02/2016
      * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Save User Job Role (FS)  in temporary tables before the synchronization
      */
-    private static function ImportTemporary_CompetenceJobRole($data) {
+    private static function import_temporary_competence_jobrole($data) {
         /* Variables    */
         global $DB;
         $infoCompetenceJR       = null;
         $infoOldCompetenceJR    = null;
         $trans                  = null;
 
-        /* Start transaction    */
+        // Start transaction
         $trans = $DB->start_delegated_transaction();
 
         try {
-            /* Execute */
+            // Execute
             $DB->insert_records('fs_imp_users_jr',$data);
 
-            /* Commit   */
+            // Commit
             $trans->allow_commit();
         }catch (Exception $ex) {
-            /* Rollback */
+            // Rollback
             $trans->rollback($ex);
 
             throw $ex;
         }//try_catch
-    }//ImportTemporary_CompetenceJobRole
+    }//import_temporary_competence_jobrole
 }//class FS
 
 /************/
@@ -2686,16 +2665,16 @@ class KS {
     /**********/
 
     /**
+     * Description
+     * Get existing companies
+     *
      * @return          int|string
      * @throws          Exception
      *
      * @creationDate    04/03/2016
      * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Get existing companies
      */
-    public static function ExistingCompanies() {
+    public static function existing_companies() {
         /* Variables    */
         global $DB;
         $sql            = null;
@@ -2705,7 +2684,7 @@ class KS {
         $params         = null;
 
         try {
-            /* Execute  */
+            // Execute
             $rdo = $DB->get_records('ks_company',null,'companyid','companyid');
             if ($rdo) {
                 foreach ($rdo as $instance) {
@@ -2719,37 +2698,40 @@ class KS {
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//ExistingCompanies
+    }//existing_companies
 
     /**
+     * Description
+     * Import Organization Structure
+     *
      * @param           $orgStructure
      *
      * @throws          Exception
      *
      * @creationDate    02/02/2016
      * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Import Organization Structure
      */
-    public static function ImportKSOrganization($orgStructure) {
+    public static function import_ks_organization($orgStructure) {
         /* Variables */
         $infoCompany    = null;
 
         try {
-            /* Import KS Company    */
+            // Import KS Company
             foreach ($orgStructure as $company) {
-                /* Convert to object    */
+                // Convert to object
                 $infoCompany = (Object)$company;
 
-                self::ImportKSCompany($infoCompany);
+                self::import_ks_company($infoCompany);
             }
         }catch (Exception $ex) {
             throw $ex;
         }//try_Catch
-    }//ImportKSCompany
+    }//import_ks_organization
 
     /**
+     * Description
+     * Import KS Job Roles
+     *
      * @param           $jobRoles
      * @param      bool $generics
      *
@@ -2757,28 +2739,28 @@ class KS {
      *
      * @creationDate    02/02/2016
      * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Import KS Job Roles
      */
-    public static function KSJobRoles($jobRoles,$generics=false) {
+    public static function ks_jobroles($jobRoles,$generics=false) {
         /* Variables */
         $infoJR    = null;
 
         try {
-            /* Import KS Job Role */
+            // Import KS jobrole
             foreach ($jobRoles as $jr) {
-                /* Convert to object    */
+                // Convert to object
                 $infoJR = (Object)$jr;
 
-                self::ImportKSJobRole($infoJR,$generics);
+                self::import_ks_jobrole($infoJR,$generics);
             }//for_jobroles
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//KSJobRoles
+    }//ks_jobroles
 
     /**
+     * Description
+     * Get existing job roles
+     *
      * @param           bool $generics
      * @param           null $top
      *
@@ -2789,11 +2771,8 @@ class KS {
      * @creationDate    04/02/2016
      * @author          eFaktor     (fbv)
      *
-     * Description
-     * Get existing job roles
-     *
      */
-    public static function ExistingJobRoles($generics=false,$top=null) {
+    public static function existing_jobroles($generics=false,$top=null) {
         /* Variables    */
         global $DB;
         $jobRoles   = null;
@@ -2802,13 +2781,12 @@ class KS {
         $rdo        = null;
 
         try {
-            /* SQL Instruction  */
-            $sql = " SELECT jr.id
-                     FROM 		{ks_jobroles}			jr
-                        JOIN 	{ks_jobroles_relation} 	jr_re	ON jr_re.jobroleid = jr.jobroleid
-                   ";
+            // SQL Instruction
+            $sql = " SELECT   jr.id
+                     FROM 	  {ks_jobroles}			  jr
+                        JOIN  {ks_jobroles_relation}  jr_re	ON jr_re.jobroleid = jr.jobroleid ";
 
-            /* Generics */
+            // Generics
             if ($generics) {
                 $sql .= "  AND  jr_re.levelzero IS NULL
                            OR   jr_re.levelzero = 0";
@@ -2816,10 +2794,9 @@ class KS {
                 if ($top) {
                     $sql .= " AND jr_re.levelone IN ($top) ";
                 }
-
             }//if_generics
 
-            /* Execute  */
+            // Execute
             $rdo = $DB->get_records_sql($sql);
             if ($rdo) {
                 foreach ($rdo as $instance) {
@@ -2833,9 +2810,12 @@ class KS {
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//ExistingJobRoles
+    }//existing_jobroles
 
     /**
+     * Description
+     * Get top hierarchy
+     *
      * @param           $name
      *
      * @return          null|string
@@ -2843,11 +2823,8 @@ class KS {
      *
      * @creationDate    04/02/2016
      * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Get top hierarchy
      */
-    public static function GetHierarchy_JR($name) {
+    public static function get_hierarchy_jr($name) {
         /* Variables */
         global $DB;
         $sql        = null;
@@ -2855,13 +2832,13 @@ class KS {
         $hierarchy  = null;
 
         try {
-            /* SQL Instruction  */
+            // SQL Instruction
             $sql = " SELECT ks.companyid
                      FROM	{ks_company} ks
                      WHERE	ks.name like '%". $name . "%'
                         AND	ks.hierarchylevel = 1 ";
 
-            /* Execute  */
+            // Execute
             $rdo = $DB->get_records_sql($sql);
             if ($rdo) {
                 $hierarchy = array();
@@ -2877,24 +2854,24 @@ class KS {
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//GetHierarchy_JR
+    }//get_hierarchy_jr
 
     /***********/
     /* PRIVATE */
     /***********/
 
     /**
+     * Description
+     * Import KS Company
+     *
      * @param           $company
      *
      * @throws          Exception
      *
      * @creationDate    02/02/2016
      * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Import KS Company
      */
-    private static function ImportKSCompany($company) {
+    private static function import_ks_company($company) {
         /* Variables */
         global $DB;
         $infoCompany    = null;
@@ -2903,14 +2880,14 @@ class KS {
         $rdoRelation    = null;
         $trans          = null;
 
-        /* Start Transaction */
+        // Start Transaction
         $trans = $DB->start_delegated_transaction();
 
         try {
-            /* Get Company to check if already exists   */
+            // Get Company to check if already exists
             $rdoCompany = $DB->get_record('ks_company',array('companyid' => $company->id));
             if (!$rdoCompany) {
-                /* KS Company       */
+                // KS Company
                 $infoCompany = new stdClass();
                 $infoCompany->companyid         = $company->id;
                 $infoCompany->name              = $company->name;
@@ -2918,21 +2895,24 @@ class KS {
                 $infoCompany->hierarchylevel    = $company->level;
                 $infoCompany->parent            = $company->parent;
 
-                /* Execute */
+                // Execute
                 $DB->insert_record('ks_company',$infoCompany);
             }//if_rdoCompany
 
-            /* Commit */
+            // Commit
             $trans->allow_commit();
         }catch (Exception $ex) {
-            /* Rollback */
+            // Rollback
             $trans->rollback($ex);
 
             throw $ex;
         }//try_catch
-    }//ImportKSCompany
+    }//import_ks_company
 
     /**
+     * Description
+     * Import Job Role
+     *
      * @param           $jobRole
      * @param      bool $generic
      *
@@ -2940,11 +2920,8 @@ class KS {
      *
      * @creationDate    02/02/2016
      * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Import Job Role
      */
-    private static function ImportKSJobRole($jobRole,$generic=false) {
+    private static function import_ks_jobrole($jobRole,$generic=false) {
         /* Variables */
         global $DB;
         $infoJR         = null;
@@ -2954,23 +2931,23 @@ class KS {
         $params         = null;
         $trans          = null;
 
-        /* Start transaction */
+        // Start transaction
         $trans = $DB->start_delegated_transaction();
 
         try {
-            /* Check if already exists  */
+            // Check if already exists
             $rdoJR = $DB->get_record('ks_jobroles',array('jobroleid' => $jobRole->id));
             if (!$rdoJR) {
-                /* Job Role */
+                // Jobrole
                 $infoJR = new stdClass();
                 $infoJR->jobroleid      = $jobRole->id;
                 $infoJR->name           = $jobRole->name;
                 $infoJR->industrycode   = $jobRole->industryCode;
 
-                /* Execute */
+                // Execute
                 $DB->insert_record('ks_jobroles',$infoJR);
 
-                /* Job Role Relation */
+                // Jobrole Relation
                 $infoJRRelation = new stdClass();
                 $infoJRRelation->jobroleid  = $jobRole->id;
                 if ($generic) {
@@ -2979,21 +2956,21 @@ class KS {
                     $infoJRRelation->leveltwo   = null;
                     $infoJRRelation->levelthree = null;
 
-                    /* Execute */
+                    // Execute
                     $DB->insert_record('ks_jobroles_relation',$infoJRRelation);
                 }else {
-                    /* Search criteria  */
+                    // Search criteria
                     $params = array();
                     $params['jobroleid'] = $jobRole->id;
 
                     foreach ($jobRole->relation as $relation) {
-                        /* Check if already exist   */
+                        // Check if already exist
                         $params['levelzero']    = $relation['levelZero'];
                         $params['levelone']     = $relation['levelOne'];
                         $params['leveltwo']     = $relation['levelTwo'];
                         $params['levelthree']   = $relation['levelThree'];
 
-                        /* Execute */
+                        // Execute
                         $rdoRelation = $DB->get_record('ks_jobroles_relation',$params);
                         if (!$rdoRelation) {
                             $infoJRRelation->levelzero  = $relation['levelZero'];
@@ -3001,20 +2978,20 @@ class KS {
                             $infoJRRelation->leveltwo   = $relation['levelTwo'];
                             $infoJRRelation->levelthree = $relation['levelThree'];
 
-                            /* Execute */
+                            // Execute
                             $DB->insert_record('ks_jobroles_relation',$infoJRRelation);
                         }//if_not_Exist
                     }//relations
                 }//if_generic
             }//if_no_exit
 
-            /* Commit */
+            // Commit
             $trans->allow_commit();
         }catch (Exception $ex) {
-            /* Rollback */
+            // Rollback
             $trans->rollback($ex);
 
             throw $ex;
         }//try_catch
-    }//ImportKSJobRoles
+    }//import_ks_jobrole
 }//class_KS
