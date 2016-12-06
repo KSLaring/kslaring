@@ -1113,6 +1113,9 @@ body {
   float: right;
   width: 37%;
 }
+.page-context-header {
+  margin-top: 1em;
+}
 #page-footer {
   width: 100%;
   padding-bottom: 2.5em;
@@ -1213,26 +1216,6 @@ body {
   background-color: #fff;
   margin-bottom: 0;
   padding: .5em 10px 0 10px;
-}
-@media (min-width: 1200px) {
-  .userprofile .description {
-    margin-left: 265px;
-  }
-}
-@media (min-width: 980px) and (max-width: 1199px) {
-  .userprofile .description {
-    margin-left: 220px;
-  }
-}
-@media (min-width: 767px) and (max-width: 997px) {
-  .userprofile .description {
-    margin-left: 200px;
-  }
-}
-@media (max-width: 767px) {
-  .userprofile .description {
-    margin-left: 0;
-  }
 }
 .userprofile dl {
   background: #eee;
