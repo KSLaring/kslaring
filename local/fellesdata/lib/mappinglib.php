@@ -662,8 +662,7 @@ class FS_MAPPING {
                               fs.jrname
                      FROM	      {fs_jobroles}		fs
                         JOIN      {ksfs_jobroles}	ksfs	ON 	ksfs.fsjobrole  = fs.jrcode
-                                                            AND	ksfs.ksjobrole  = :job_role
-				     WHERE 	  un.id IS NULL ";
+                                                            AND	ksfs.ksjobrole  = :job_role ";
 
             /* Search   */
             if ($search) {
@@ -677,7 +676,7 @@ class FS_MAPPING {
                                  LOCATE('" . $str . "',fs.jrcode) > 0 ";
                 }//if_search_opt
 
-                $sql .= " AND ($locate) ";
+                $sql .= " WHERE ($locate) ";
             }//if_search
 
             /* Execute */
