@@ -111,6 +111,12 @@ $THEME->layouts = array(
         'defaultregion' => 'side-pre',
         'options' => array('langmenu' => true),
     ),
+    // My public page.
+    'mypublic' => array(
+        'file' => 'columns2contextheader.php',
+        'regions' => array('side-pre'),
+        'defaultregion' => 'side-pre',
+    ),
     // Blocks at the bottom.
     'blocksatbottom' => array(
         'file' => 'columns3blocksbottom.php',
