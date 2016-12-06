@@ -319,10 +319,10 @@ class TrackerManager {
             $out_tracker .= self::get_output_buttons();
 
             // Print Outcome Tracker
-            $out_tracker .= self::Print_OutcomeTracker($trackerUser->competence);
+            $out_tracker .= self::print_outcome_tracker($trackerUser->competence);
 
             // Print Individual Tracker
-            $out_tracker .= self::Print_IndividualTracker($trackerUser->completed,$trackerUser->not_completed,$trackerUser->inWaitList);
+            $out_tracker .= self::print_individual_tracker($trackerUser->completed,$trackerUser->not_completed,$trackerUser->inWaitList);
 
             return $out_tracker;
         }catch (Exception $ex) {
@@ -1623,13 +1623,7 @@ class TrackerManager {
                             // Valid
                             $content .= html_writer::start_tag('td',array('class' => 'status'));
                                 // Unenrol allowed --> add link to unenrol
-                                if ($course->unEnrol) {
-                                    $urlUnEnrol->param('id',$course->id);
-                                    $strUrl  = '<a href="'.$urlUnEnrol .'">'. get_string('unenrol','report_manager') .'</a>';
-                                    $content .= $strUrl;
-                                }else {
                                     $content .= '&nbsp;';
-                                }//if_unenrol
                             $content .= html_writer::end_tag('td');
                             // Last Col
                             $content .= html_writer::start_tag('td',array('class' => 'first'));
