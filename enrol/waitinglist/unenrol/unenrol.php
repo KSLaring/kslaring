@@ -48,7 +48,7 @@ if (count($args) != 4) {
         $unenrol = Unenrol_Waiting::Check_UnenrolLink($args);
         if ($unenrol) {
             /* Check Deadline for unenrol   */
-            if (Unenrol_Waiting::Can_Unenrol($unenrol->courseid,$unenrol->waitingid)) {
+            if (Unenrol_Waiting::Can_Unenrol($unenrol->userid,$unenrol->courseid,$unenrol->waitingid)) {
                 /* Right --> Unenrol user       */
                 if (Unenrol_Waiting::UnenrolUser($args)) {
                     echo html_writer::start_tag('div',array('class' => 'loginerrors'));
