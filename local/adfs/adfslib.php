@@ -19,6 +19,9 @@ class KS_ADFS {
     /**********/
 
     /**
+     * Description
+     * Check if it's a valid user
+     *
      * @param           $user
      *
      * @return          bool
@@ -26,11 +29,8 @@ class KS_ADFS {
      *
      * @creationDate    12/06/2016
      * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Check if it's a valid user
      */
-    public static function IsValidUser($user) {
+    public static function is_valid_user($user) {
         /* Variables */
         $valid = true;
 
@@ -52,25 +52,25 @@ class KS_ADFS {
     }//IsValidUser
 
     /**
+     * Description
+     * Get the url where redirect the user
+     *
      * @return          moodle_url
      * @throws          Exception
      *
      * @creationDate    12/06/2016
      * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Get the url where redirect the user
      */
-    public static function GetErrorURL() {
+    public static function get_error_url() {
         /* Variables */
         $pluginInfo = null;
         $redirect   = null;
 
         try {
-            /* Plugin Info      */
+            // Plugin info
             $pluginInfo     = get_config('local_adfs');
 
-            /* URL */
+            // url
             if ($pluginInfo->idporten) {
                 $redirect = $pluginInfo->idporten;
             }else {
@@ -82,9 +82,13 @@ class KS_ADFS {
         }catch (Exception $ex) {
             throw $ex;
         }
-    }//GetErrorURL
+    }//get_error_url
 
     /**
+     * Description
+     * Get Log in url for the user
+     * Add course/activity link information
+     *
      * @param           $userId
      *
      * @return          mixed
@@ -94,30 +98,25 @@ class KS_ADFS {
      * @creationDate    02/11/2015
      * @author          eFaktor     (fbv)
      *
-     * Description
-     * Get Log in url for the user
-     *
      * @updateDate      15/08/2016
      * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Add course/activity link information
      */
-    public static function LogIn_UserADFS($userId,$modLnk = null,$modId = null) {
+    public static function login_user_adfs($userId,$modLnk = null,$modId = null) {
         /* Variables    */
         $urlRedirect = null;
 
-        /* Plugin Info      */
+        // Plugin info
         $pluginInfo     = get_config('local_adfs');
 
         try {
-            $urlRedirect = self::ProcessUserADFSService($userId,$pluginInfo,$modLnk,$modId);
+            // Log in url
+            $urlRedirect = self::process_user_adfs_service($userId,$pluginInfo,$modLnk,$modId);
 
             return $urlRedirect;
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//LogIn_UserADFS
+    }//login_user_adfs
 
 
     /***********/
@@ -125,6 +124,12 @@ class KS_ADFS {
     /***********/
 
     /**
+     * Description
+     * Process the ADFS USER.
+     * - Create/Update the user in KS Læring
+     * - Get Log in url
+     * Add course/activity link information
+     *
      * @param           $userId
      * @param           $pluginInfo
      *
@@ -134,18 +139,10 @@ class KS_ADFS {
      * @creationDate    31/10/2015
      * @author          eFaktor     (fbv)
      *
-     * Description
-     * Process the ADFS USER.
-     * - Create/Update the user in KS Læring
-     * - Get Log in url
-     *
      * @updateDate      15/08/2016
      * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Add course/activity link information
      */
-    private static function ProcessUserADFSService($userId,$pluginInfo,$modLnk = '',$modId = '') {
+    private static function process_user_adfs_service($userId,$pluginInfo,$modLnk = '',$modId = '') {
         /* Variables    */
         $userRequest    = null;
         $urlRedirect    = null;
@@ -160,46 +157,48 @@ class KS_ADFS {
 
 
         try {
-            /* User to Validate */
-            $userRequest = self::GetUserADFS($userId);
+            // Validate user
+            $userRequest = self::get_user_adfs($userId);
 
-            /* Course/Activity Link */
+            // Course/activity link
             $userRequest['modlnk']  = $modLnk;
             $userRequest['modid']   = $modId;
 
-            /* Data to call Service */
+            // Prepare data for web service
             $domain     = $pluginInfo->ks_point;
             $token      = $pluginInfo->adfs_token;
 
             $service    = $pluginInfo->adfs_service;
 
-            /* Build end Point Service  */
+            // Build end point
             $server     = $domain . '/webservice/soap/server.php?wsdl=1&wstoken=' . $token;
 
-            /* Call service */
+            // Call web service
             $client     = new SoapClient($server);
             $response   = $client->$service($userRequest);
 
-            if (is_array($response)) {
-                if ($response['error'] == '200') {
-                    $urlRedirect =   $response['url'];
-                }else {
-                    $urlRedirect = $response['url'];
-                }//if_no_error
-            }else {
-                /* DEV Site */
-                $aux = (array)$response;
-                $urlRedirect =   $aux['url'];
+            // Convert to an array
+            if (!is_array($response)) {
+                $response = (Array)$response;
             }
+
+            if ($response['error'] == '200') {
+                $urlRedirect =   $response['url'];
+            }else {
+                $urlRedirect = $response['url'];
+            }//if_no_error
 
 
             return $urlRedirect;
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//ProcessUserADFSService
+    }//process_user_adfs_service
 
     /**
+     * Description
+     * Get user data to send
+     * 
      * @param           $userId
      *
      * @return          array
@@ -207,11 +206,8 @@ class KS_ADFS {
      *
      * @creationDate    31/10/2015
      * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Get user data to send
      */
-    private static function GetUserADFS($userId) {
+    private static function get_user_adfs($userId) {
         /* Variables    */
         global $DB;
         $rdo        = null;
@@ -219,14 +215,14 @@ class KS_ADFS {
         $userADFS   = array();
 
         try {
-            /* Search Criteria  */
+            // Search criteria
             $params = array();
             $params['id'] = $userId;
 
-            /* Execute  */
+            // Execute
             $rdo = $DB->get_record('user',$params,'idnumber,firstname,lastname,email,city,country,lang');
             if ($rdo) {
-                /* User ADFS    */
+                // User adfs
                 $userADFS['username']   = $rdo->idnumber;
                 $userADFS['firstname']  = $rdo->firstname;
                 $userADFS['lastname']   = $rdo->lastname;
@@ -240,6 +236,5 @@ class KS_ADFS {
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//GetUserADFS
-
+    }//get_user_adfs
 }//KS_ADFS
