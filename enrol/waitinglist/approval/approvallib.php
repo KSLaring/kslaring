@@ -294,10 +294,10 @@ Class Approval {
             $infoMail->approvalid   = $infoApproval->id;
             // Approve Link
             $lnkApprove = $CFG->wwwroot . '/enrol/waitinglist/approval/action.php/' . $infoApproval->token . '/' . $infoApproveAct->token;
-            $infoMail->approve = '<a href="' . $lnkApprove . '">' . get_string('approve_lnk','enrol_waitinglist') . '</br>';
+            $infoMail->approve = $lnkApprove;
             // Reject Link
             $lnkReject  = $CFG->wwwroot . '/enrol/waitinglist/approval/action.php/' . $infoApproval->token . '/' . $infoRejectAct->token;
-            $infoMail->reject = '<a href="' . $lnkReject . '">' . get_string('reject_lnk','enrol_waitinglist') . '</br>';
+            $infoMail->reject = $lnkReject;
 
             // Commit
             $trans->allow_commit();
@@ -1332,6 +1332,12 @@ Class Approval {
 
             // Send Mail
             foreach ($toManagers as $managerId => $info) {
+                // Approve and Reject links 
+                $infoMail->approve = '<a href="' . $infoMail->approve . '">' .
+                                     (string)new lang_string('approve_lnk','enrol_waitinglist',null,$info->lang) . '</br>';
+                $infoMail->reject = '<a href="' . $infoMail->reject . '">' .
+                                     (string)new lang_string('reject_lnk','enrol_waitinglist',null,$info->lang) . '</br>';
+
                 // Mails For Managers
                 if ($reminder) {
                     $strSubject = (string)new lang_string('subject_reminder','enrol_waitinglist',$infoMail,$info->lang);
