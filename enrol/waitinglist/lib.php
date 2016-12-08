@@ -1084,10 +1084,10 @@ class enrol_waitinglist_plugin extends enrol_plugin {
                                         $infoMail->arguments    = $instance->arguments;
                                         /* Approve Link */
                                         $lnkApprove = $CFG->wwwroot . '/enrol/waitinglist/approval/action.php/' . $instance->token . '/' . $instance->approve;
-                                        $infoMail->approve = '<a href="' . $lnkApprove . '">' . get_string('approve_lnk','enrol_waitinglist') . '</br>';
+                                        $infoMail->approve = $lnkApprove;
                                         /* Reject Link  */
                                         $lnkReject  = $CFG->wwwroot . '/enrol/waitinglist/approval/action.php/' . $instance->token . '/' . $instance->reject;
-                                        $infoMail->reject = '<a href="' . $lnkReject . '">' . get_string('reject_lnk','enrol_waitinglist') . '</br>';
+                                        $infoMail->reject = $lnkReject; 
 
                                         /* Send Mails   */
                                         $user = get_complete_user_data('id',$instance->userid);
