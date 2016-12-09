@@ -191,17 +191,17 @@ M.core_user.init_structure = function (Y,name,reload,invoice) {
                 company     = data.results[index];
                 infoInvoice = company.invoice;
 
-                /* Tjeneste */
-                Y.one('#id_resp_number').set('value',infoInvoice.tjeneste);
-                if (infoInvoice.tjeneste) {
+                // Ansvar
+                Y.one('#id_resp_number').set('value',infoInvoice.ansvar);
+                if (infoInvoice.ansvar) {
                     Y.one('#id_resp_number').setAttribute('readonly');
                 }else {
                     Y.one('#id_resp_number').removeAttribute('readonly');
                 }
 
-                /* Ansvar  */
-                Y.one('#id_service_number').set('value',infoInvoice.ansvar);
-                if (infoInvoice.ansvar) {
+                // Tjeneste
+                Y.one('#id_service_number').set('value',infoInvoice.tjeneste);
+                if (infoInvoice.tjeneste) {
                     Y.one('#id_service_number').setAttribute('readonly');
                 }else {
                     Y.one('#id_service_number').removeAttribute('readonly');
