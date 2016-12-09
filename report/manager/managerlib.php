@@ -611,17 +611,6 @@ class CompetenceManager {
             $params = array();
             $params['zero'] = $levelZero;
 
-            /* Criteria Level One   */
-            if ($levelOne) {
-                $params['one'] = $levelOne;
-                $sqlOne = ' AND co_one.id = :one ';
-            }//if_levelOne
-
-            /* Criteria Level Two   */
-            if ($levelTwo) {
-                $params['two'] = $levelTwo;
-                $sqlTwo = ' AND co_two.id = :two ';
-            }
             /* SQL Instruction  */
             $sql = " SELECT		GROUP_CONCAT(DISTINCT uicd.companyid  	ORDER BY uicd.companyid SEPARATOR ',') 		as 'levelthree',
                                 GROUP_CONCAT(DISTINCT cr_two.parentid  	ORDER BY cr_two.parentid SEPARATOR ',') 	as 'leveltwo',
@@ -632,12 +621,12 @@ class CompetenceManager {
                         JOIN	{report_gen_company_relation}   	cr_two	ON 	cr_two.companyid 		= uicd.companyid
                         JOIN	{report_gen_companydata}			co_two	ON 	co_two.id 				= cr_two.parentid
                                                                             AND co_two.hierarchylevel 	= 2
-                                                                            $sqlTwo
+                                                                            AND co_two.id IN ($levelTwo)
                         -- LEVEL ONE
                         JOIN	{report_gen_company_relation}   	cr_one	ON 	cr_one.companyid 		= cr_two.parentid
                         JOIN	{report_gen_companydata}			co_one	ON 	co_one.id 				= cr_one.parentid
                                                                             AND co_one.hierarchylevel 	= 1
-                                                                            $sqlOne
+                                                                            AND co_one.id IN ($levelOne)
                         -- LEVEL ZERO
                         JOIN	{report_gen_company_relation} 	    cr_zero	ON 	cr_zero.companyid 		= cr_one.parentid
                         JOIN	{report_gen_companydata}			co_zero	ON 	co_zero.id 				= cr_zero.parentid
@@ -680,8 +669,8 @@ class CompetenceManager {
         global $DB;
         $sql = null;
         $rdo = null;
-        $infoCompany = null;
-        $companies = null;
+        $infoCompany    = null;
+        $companies      = null;
 
         try {
             /* SQL Instruction  */
@@ -1374,9 +1363,9 @@ class CompetenceManager {
             $params['user']  = $userId;
 
             $sql = " SELECT re.levelzero as 'levelzero',
-                            GROUP_CONCAT(DISTINCT re.levelone  	ORDER BY re.levelone 	SEPARATOR ',') 	as 'levelone',
-                            GROUP_CONCAT(DISTINCT re.leveltwo  	ORDER BY re.leveltwo 	SEPARATOR ',') 	as 'leveltwo',
-                            GROUP_CONCAT(DISTINCT re.levelthree ORDER BY re.levelthree	SEPARATOR ',') 	as 'levelthree',
+                            GROUP_CONCAT(DISTINCT IF(re.levelone,re.levelone,0)  	ORDER BY re.levelone 	SEPARATOR ',') 	as 'levelone',
+                            GROUP_CONCAT(DISTINCT IF(re.leveltwo,re.leveltwo,0)  	ORDER BY re.leveltwo 	SEPARATOR ',') 	as 'leveltwo',
+                            GROUP_CONCAT(DISTINCT IF(re.levelthree,re.levelthree,0) ORDER BY re.levelthree	SEPARATOR ',') 	as 'levelthree',
                             re.hierarchylevel
                      FROM	{report_gen_company_reporter} re
                      WHERE	re.reporterid 		= :user

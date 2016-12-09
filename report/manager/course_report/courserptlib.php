@@ -192,19 +192,24 @@ class course_report {
                             $levelOne->levelTwo     = null;
 
                             /* Get info connected with Level One */
-                            $levelTwo   = CompetenceManager::GetCompaniesInfo($companiesEmployees->levelTwo);
-                            if ($levelTwo) {
-                                $levelOne->levelTwo      = self::Get_CompanyReportInfo_LevelTwo($course_report,$levelTwo,$companiesEmployees->levelThree);
-                                if ($levelOne->levelTwo) {
-                                    $course_report->levelOne[$levelOne->id]  = $levelOne;
+                            if ($companiesEmployees->levelTwo) {
+                                $levelTwo   = CompetenceManager::GetCompaniesInfo($companiesEmployees->levelTwo);
+                                if ($levelTwo) {
+                                    $levelOne->levelTwo      = self::Get_CompanyReportInfo_LevelTwo($course_report,$levelTwo,$companiesEmployees->levelThree);
+                                    if ($levelOne->levelTwo) {
+                                        $course_report->levelOne[$levelOne->id]  = $levelOne;
+                                    }else {
+                                        $levelOne->levelTwo = null;
+                                        $course_report->levelOne[$levelOne->id] = $levelOne;
+                                    }
                                 }else {
                                     $levelOne->levelTwo = null;
                                     $course_report->levelOne[$levelOne->id] = $levelOne;
-                                }
+                                }//if_level_two_companies
                             }else {
                                 $levelOne->levelTwo = null;
                                 $course_report->levelOne[$levelOne->id] = $levelOne;
-                            }//if_level_two_companies
+                            }//if_companies_employees_leveltwo
 
                             break;
                         case 2:
@@ -222,19 +227,25 @@ class course_report {
                             $levelTwo->levelThree   = null;
 
                             /* Get info connected with Level Two */
-                            $levelThree   = CompetenceManager::GetCompaniesInfo($companiesEmployees->levelThree);
-                            if ($levelThree) {
-                                $levelTwo->levelThree      = self::Get_CompanyReportInfo_LevelThree($course_report,$levelThree);
-                                if ($levelTwo->levelThree) {
-                                    $course_report->levelTwo[$levelTwo->id] = $levelTwo;
+                            if ($companiesEmployees->levelThree) {
+                                $levelThree   = CompetenceManager::GetCompaniesInfo($companiesEmployees->levelThree);
+                                if ($levelThree) {
+                                    $levelTwo->levelThree      = self::Get_CompanyReportInfo_LevelThree($course_report,$levelThree);
+                                    if ($levelTwo->levelThree) {
+                                        $course_report->levelTwo[$levelTwo->id] = $levelTwo;
+                                    }else {
+                                        $levelTwo->levelThree = null;
+                                        $course_report->levelTwo[$levelTwo->id] = $levelTwo;
+                                    }
                                 }else {
                                     $levelTwo->levelThree = null;
                                     $course_report->levelTwo[$levelTwo->id] = $levelTwo;
-                                }
+                                }//if_level_two_companies
                             }else {
                                 $levelTwo->levelThree = null;
                                 $course_report->levelTwo[$levelTwo->id] = $levelTwo;
-                            }//if_level_two_companies
+                            }//if_companies_employees_levelthree
+
 
                             break;
                         case 3:
@@ -253,26 +264,30 @@ class course_report {
                             $course_report->levelTwo[$levelTwo->id]     = $levelTwo;
 
                             /* Get Info connected with the level three  */
-                            $levelThree   = CompetenceManager::GetCompaniesInfo($companiesEmployees->levelThree);
-                            /* Get Company-ies selected */
-                            $selectorThree = $data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'3'];
-                            $output         = array_slice($selectorThree, 0, 1);
-                            $selectorThree   = array_diff($selectorThree,$output);
+                            if ($companiesEmployees->levelThree) {
+                                $levelThree   = CompetenceManager::GetCompaniesInfo($companiesEmployees->levelThree);
+                                /* Get Company-ies selected */
+                                $selectorThree = $data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'3'];
+                                $output         = array_slice($selectorThree, 0, 1);
+                                $selectorThree   = array_diff($selectorThree,$output);
 
-                            if ($selectorThree) {
-                                $company_keys   = array_keys($levelThree);
-                                $companies      = array_intersect_key($data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'3'],$company_keys);
-                                $companies      = array_fill_keys($companies,null);
-                                $levelThree     = array_intersect_key($levelThree,$companies);
-                            }
+                                if ($selectorThree) {
+                                    $company_keys   = array_keys($levelThree);
+                                    $companies      = array_intersect_key($data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'3'],$company_keys);
+                                    $companies      = array_fill_keys($companies,null);
+                                    $levelThree     = array_intersect_key($levelThree,$companies);
+                                }
 
-                            /* Level Three  */
-                            if ($levelThree) {
-                                $course_report->levelThree   = self::Get_CompanyReportInfo_LevelThree($course_report,$levelThree);
+                                /* Level Three  */
+                                if ($levelThree) {
+                                    $course_report->levelThree   = self::Get_CompanyReportInfo_LevelThree($course_report,$levelThree);
+                                }else {
+                                    $course_report->levelThree = null;
+                                }//if_levelThree
                             }else {
                                 $course_report->levelThree = null;
-                            }//if_levelThree
-
+                            }//if_employees_levelthree
+                            
                             break;
                         default:
                             $course_report = null;
@@ -336,35 +351,47 @@ class course_report {
                     break;
             }//switch_rpt
 
+            // Level one
             if ($levelOne) {
                 if ($inOne) {
                     $inOne = array_intersect($inOne,$levelOne);
                 }else {
                     $inOne = $levelOne;
                 }
-                $inOne = implode(',',$inOne);
             }//if_levelOne
+            if ($inOne) {
+                $inOne = implode(',',$inOne);
+            }else {
+                $inOne = 0;
+            }
 
+            // Level two
             if ($levelTwo) {
                 if ($inTwo) {
                     $inTwo = array_intersect($inTwo,$levelTwo);
                 }else {
                     $inTwo = $levelTwo;
                 }
-                $inTwo = implode(',',$inTwo);
             }//if_levelTwo
+            if ($inTwo) {
+                $inTwo = implode(',',$inTwo);
+            }else {
+                $inTwo = 0;
+            }
 
-            /* Level Three  */
+            // Level three
             if ($levelThree) {
                 if ($inThree) {
                     $inThree = array_intersect($inThree,$levelThree);
                 }else {
                     $inThree = $levelThree;
                 }
+            }//if_levelThree
+            if ($inThree) {
                 $inThree = implode(',',$inThree);
             }else {
-                $inThree = implode(',',$inThree);
-            }//if_levelThree
+                $inThree = 0;
+            }
 
             /* Get Companies with Employees */
             $companies = CompetenceManager::GetCompanies_WithEmployees($levelZero,$inOne,$inTwo,$inThree);
