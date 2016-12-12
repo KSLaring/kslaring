@@ -63,7 +63,7 @@ function local_express_login_myprofile_navigation(core_user\output\myprofile\tre
     return true;
 }//local_express_login_myprofile_navigation
 
-function local_express_login_extend_settings_navigation($settingsnav, $context) {
+function local_express_login_extend_settings_navigation_old($settingsnav, $context) {
     /* Plugin Info */
     $plugin     = get_config('local_express_login');
     if (($plugin) && (isset($plugin->activate_express))) {
