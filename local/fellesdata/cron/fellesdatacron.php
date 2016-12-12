@@ -58,33 +58,33 @@ class FELLESDATA_CRON {
 
             /* Import Fellesdata        */
             $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' START Import Fellesdata. ' . "\n";
-            self::import_fellesdata($pluginInfo);
+            //self::import_fellesdata($pluginInfo);
 
             /* SYNCHRONIZATION  */
             /* Synchronization Users Accounts   */
             $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' START Users FS Synchronization. ' . "\n";
-            self::users_fs_synchronization($pluginInfo);
+            //self::users_fs_synchronization($pluginInfo);
 
             /* Synchronization Companies    */
             $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' START Companies FS Synchronization. ' . "\n";
-            self::companies_fs_synchronization($pluginInfo,$fstExecution);
+            //self::companies_fs_synchronization($pluginInfo,$fstExecution);
 
             /* Job roles to Map/Synchronize */
-            self::jobroles_fs_to_map($pluginInfo);
+            //self::jobroles_fs_to_map($pluginInfo);
 
             /* Synchronization Comeptence   */
             if (!$fstExecution) {
                 /* Synchronization Managers && Reporters    */
                 $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' START  Managers/Reporters FS Synchronization. ' . "\n";
-                self::manager_reporter_synchronization($pluginInfo,KS_MANAGER_REPORTER);
+                //self::manager_reporter_synchronization($pluginInfo,KS_MANAGER_REPORTER);
 
                 /* Synchronization User Competence JobRole  -- Add/Update */
                 $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' START Users competence FS Synchronization. ' . "\n";
-                self::user_competence_synchronization($pluginInfo,KS_USER_COMPETENCE);
+                //self::user_competence_synchronization($pluginInfo,KS_USER_COMPETENCE);
 
                 /* Synchronization User Competence JobRole  -- Delete */
                 $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' START Users Competence to delete FS Synchronization. ' . "\n";
-                self::user_competence_synchronization($pluginInfo,KS_USER_COMPETENCE,true);
+                //self::user_competence_synchronization($pluginInfo,KS_USER_COMPETENCE,true);
            }
 
             /*
@@ -96,15 +96,15 @@ class FELLESDATA_CRON {
             if (!$fstExecution) {
                 /* Unmap user competence    */
                 $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' START  UNMAP User competence. ' . "\n";
-                self::unmap_user_competence($pluginInfo,KS_UNMAP_USER_COMPETENCE);
+                //self::unmap_user_competence($pluginInfo,KS_UNMAP_USER_COMPETENCE);
 
                 /* Unmap Managers           */
                 $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' START  UNMAP Manager/Reporter. ' . "\n";
-                self::unmap_managers_reporters($pluginInfo,KS_MANAGER_REPORTER);
+                //self::unmap_managers_reporters($pluginInfo,KS_MANAGER_REPORTER);
 
                 /* Unmap organizations      */
                 $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' START  UNMAP Organizations. ' . "\n";
-                self::unmap_organizations($pluginInfo,KS_UNMAP_COMPANY);
+                //self::unmap_organizations($pluginInfo,KS_UNMAP_COMPANY);
             }//fstExecution_tounmap
 
             /* Log  */
@@ -249,7 +249,7 @@ class FELLESDATA_CRON {
             self::organization_structure($pluginInfo);
 
             // Import jobroles
-            self::import_ks_jobroles($pluginInfo);
+            //self::import_ks_jobroles($pluginInfo);
         }catch (Exception $ex) {
             // Log
             $dbLog  = $ex->getMessage() . "\n\n";
@@ -275,19 +275,21 @@ class FELLESDATA_CRON {
         /* Variables */
         global $CFG;
         $infoLevel      = null;
+        $params         = null;
         $response       = null;
         $dbLog          = null;
 
         try {
             // Request web service
-            $infoLevel = array();
-            $infoLevel['company']   = $pluginInfo->ks_muni;
-            $infoLevel['level']     = 1;
+            $infoLevel = new stdClass();
+            $infoLevel->company   = $pluginInfo->ks_muni;
+            $infoLevel->level     = 1;
             // Don't import all companies over and over
-            $infoLevel['notIn']     = KS::existing_companies();
+            $infoLevel->notIn     = KS::existing_companies();
 
             // Call web service
-            $response = self::process_ks_service($pluginInfo,KS_ORG_STRUCTURE,$infoLevel);
+            $params = array('toCompany' => $infoLevel);
+            $response = self::process_ks_service($pluginInfo,KS_ORG_STRUCTURE,$params);
 
             if ($response['error'] == '200') {
                 // Import organization structure
@@ -394,6 +396,7 @@ class FELLESDATA_CRON {
         $domain         = null;
         $token          = null;
         $server         = null;
+        $error          = false;
 
         try {
             // Data to call Service
@@ -401,17 +404,35 @@ class FELLESDATA_CRON {
             $token      = $pluginInfo->kss_token;
 
             // Build end Point Service
-            $server     = $domain . '/webservice/soap/server.php?wsdl=1&wstoken=' . $token;
+            $server = $domain . '/webservice/rest/server.php?wstoken=' . $token . '&wsfunction=' . $service .'&moodlewsrestformat=json';
+
+            // Paramters web service
+            $fields = http_build_query( $params );
+            $fields = str_replace( '&amp;', '&', $fields );
 
             // Call service
-            $client     = new SoapClient($server);
-            $response   = $client->$service($params);
+            $ch = curl_init($server);
+            curl_setopt( $ch, CURLOPT_SSL_VERIFYPEER, false );
+            curl_setopt( $ch, CURLOPT_SSL_VERIFYHOST,2 );
+            curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
+            curl_setopt( $ch, CURLOPT_POST, true );
+            curl_setopt( $ch, CURLOPT_HTTPHEADER, array( 'Content-Length: ' . strlen( $fields ) ) );
+            curl_setopt( $ch, CURLOPT_POSTFIELDS, $fields );
 
-            if (!is_array($response)) {
-                $response = (Array)$response;
+            $response = curl_exec( $ch );
+
+            if( $response === false ) {
+                $error = curl_error( $ch );
+                print_r($error);
             }
 
-            return $response;
+
+            curl_close( $ch );
+
+            print_r($response);
+            $result = json_decode($response);
+
+            return $result;
         }catch (Exception $ex) {
             // Log
             $dbLog = "ERROR: " . $ex->getMessage() .  "\n\n";
