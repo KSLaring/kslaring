@@ -581,18 +581,19 @@ class enrolmethodmanual extends \enrol_waitinglist\method\enrolmethodbase{
             $params['instance'] = $instanceId;
             
             /* SQL Instruction  */
-            $sql = " SELECT	u.id,
-                            u.firstname,
-                            u.lastname,
-                            u.email
-                     FROM		{user}				          u
-                        JOIN	{enrol_waitinglist_queue}	  ewq	ON  ewq.userid 			= u.id
-                                                                    AND ewq.methodtype LIKE 'manual'
-                                                                    AND ewq.waitinglistid 	= :instance
-                        JOIN	{enrol}				          e	    ON 	e.id            	= ewq.waitinglistid
-                                                                    AND e.courseid     		= :course
-                     WHERE   u.deleted 	= 0
-                        AND u.username != 'guest' ";
+            $sql = " SELECT	 	u.id,
+                                u.firstname,
+                                u.lastname, 
+                                u.email
+                     FROM		{user}				      	u
+                        JOIN	{user_enrolments}			ue	ON  ue.userid 			= u.id
+                                                                AND	ue.enrolid 			= :instance
+                        JOIN	{enrol_waitinglist_queue}	ewq	ON  ewq.userid 			= ue.userid 
+                                                                AND ewq.methodtype LIKE 'manual'
+                                                                AND ewq.waitinglistid 	= ue.enrolid
+                                                                AND	ewq.courseid		= :course
+                     WHERE      u.deleted 	= 0
+                          AND   u.username != 'guest'  ";
 
             /* Search Option */
             if ($search) {
