@@ -403,16 +403,13 @@ class Invoices {
         $isCompanyDemanded  = null;
 
         try {
-            /**
-             * Check if Company is Demanded
-             */
+            // If company is demanded
             $isCompanyDemanded = self::IsCompanyDemanded($enrolId);
 
-            /**
-             * Get Invoices List
-             */
+            // Get invoices list
             $lstInvoices = self::GetInvoices($courseId,$enrolId,$isCompanyDemanded);
-
+            // Manaul invoices
+            self::get_manual_invoices($courseId,$enrolId,$isCompanyDemanded,$lstInvoices);
             return $lstInvoices;
         }catch (Exception $ex) {
             throw $ex;
@@ -718,7 +715,10 @@ class Invoices {
                 $body .= html_writer::start_tag('td',array('class' => 'type'));
                     switch ($invoice->type) {
                         case 'ACCOUNT':
-                            $body .= $invoice->respo . "/" . $invoice->service;
+                            if ($invoice->respo && $invoice->service) {
+                                $body .= $invoice->respo . "/" . $invoice->service;
+                            }
+
                             /* Project Field    */
                             if ($invoice->project) {
                                 $body .= "/" . $invoice->project;
@@ -837,6 +837,7 @@ class Invoices {
         $rdo            = null;
         $sql            = null;
         $params         = null;
+        $info           = null;
         $lstInvoices    = array();
 
         try {
@@ -918,6 +919,97 @@ class Invoices {
             throw $ex;
         }//try_catch
     }//GetInvoices
+
+    /**
+     * Description
+     * Get users invoices when the user has been enrolled manually
+     *
+     * @creationDate    12/12/2016
+     * @author          eFaktor     (fbv)
+     * 
+     * @param       int     $courseId               Course id
+     * @param       int     $instanceId             Enrol instance id
+     * @param       bool    $isCompanyDemanded      Company demanded or not
+     * @param       array   $lstInvoices            list of invoices users
+     *
+     * @throws      Exception
+     */
+    private static function get_manual_invoices($courseId,$instanceId,$isCompanyDemanded,&$lstInvoices) {
+        /* Variables */
+        global $DB;
+        $sql    = null;
+        $rdo    = null;
+        $params = null;
+        $info   = null;
+
+        try {
+            // Search criteria
+            $params = array();
+            $params['course']   = $courseId;
+            $params['instance'] = $instanceId;
+
+            // SQL Isntruction
+            $sql = " SELECT	  DISTINCT	
+                                  u.id,
+                                  u.firstname,
+                                  u.lastname,
+                                  u.email,
+                                  ewq.companyid,
+                                  co.industrycode,
+                                  co.name,
+                                  co.tjeneste,
+                                  co.ansvar
+                     FROM		  {user}					u
+                        JOIN	  {enrol_waitinglist_queue}	ewq	  ON  ewq.userid 		= u.id
+                                                                  AND ewq.courseid 		= :course
+                                                                  AND ewq.waitinglistid	= :instance
+                                                                  AND ewq.methodtype like 'manual'
+                        JOIN	  {user_enrolments}			ue	  ON  ue.userid 		= ewq.userid
+                                                                  AND ue.enrolid 		= ewq.waitinglistid
+                        LEFT JOIN {report_gen_companydata}  co	  ON  co.id			    = ewq.companyid
+                     WHERE		u.deleted = 0
+                     ORDER BY 	u.firstname, u.lastname ";
+
+            // Execute
+            $rdo = $DB->get_records_sql($sql,$params);
+            if ($rdo) {
+                foreach ($rdo as $invoice) {
+                    /* Invoice Info */
+                    $info = new stdClass();
+                    $info->name             = $invoice->firstname . ', ' . $invoice->lastname;
+                    $info->email            = $invoice->email;
+                    $info->type             = 'ACCOUNT';
+                    $info->respo            = $invoice->ansvar;
+                    $info->service          = $invoice->tjeneste;
+                    $info->project          = null;
+                    $info->act              = null;
+                    $info->resource_number  = null;
+                    $info->street           = null;
+                    $info->post_code        = null;
+                    $info->city             = null;
+                    $info->bil_to           = null;
+                    $info->arbeidssted      = null;
+                    if ($isCompanyDemanded) {
+                        $info->arbeidssted      = $invoice->industrycode . ' - ' . $invoice->name;
+                    }else {
+                        if ($invoice->companyid) {
+                            $info->arbeidssted      = $invoice->industrycode . ' - ' . $invoice->name;
+                        }else {
+                            $info->arbeidssted = self::GetWorkplaceConnected($invoice->id);
+                        }
+                    }//if_comapnyDemanded
+
+                    // Seats -> Manual invoice --> 1
+                    $info->seats        = 1;
+
+                    /* Add Invoice */
+                    $lstInvoices[$invoice->id] = $info;
+                }//for_rdo
+            }//if_rdo
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//add_manual_invoice_users
 
     /**
      * @param           $userId
@@ -1300,7 +1392,7 @@ class Invoices {
                      WHERE	userid 			= :userid
                         AND	courseid 		= :courseid
                         AND waitinglistid 	= :waitinglistid
-                        AND methodtype 		= 'unnamedbulk' ";
+                        -- AND methodtype 		= 'unnamedbulk' ";
 
             /* Execute  */
             $rdo = $DB->get_record_sql($sql,$params);
