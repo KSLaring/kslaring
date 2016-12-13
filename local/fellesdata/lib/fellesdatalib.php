@@ -610,7 +610,7 @@ class FSKS_COMPANY {
                         -- INFO PARENT
                         JOIN  {ks_company}		ks_pa	ON 	ks_pa.companyid = fk.kscompany
                      WHERE	  fs.new 			= :new
-                        AND   fs.synchronized = :synchronized ";
+                        AND   fs.synchronized   = :synchronized ";
 
             // Execute
             $rdo = $DB->get_records_sql($sql,$params);

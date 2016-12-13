@@ -995,8 +995,8 @@ class FELLESDATA_CRON {
                 // Synchronize FS-KS companies
                 // Call webs service
                 if ($toSynchronize) {
-                    $params = array('companiesFS' => $toSynchronize);
-                    $response = self::process_ks_service($pluginInfo,KS_SYNC_FS_COMPANY,$toSynchronize);
+                    $params     = array('companiesFS' => $toSynchronize);
+                    $response   = self::process_ks_service($pluginInfo,KS_SYNC_FS_COMPANY,$params);
                     if ($response['error'] == '200') {
                         FSKS_COMPANY::synchronize_companies_ksfs($toSynchronize,$response['companies']);
                     }else {
