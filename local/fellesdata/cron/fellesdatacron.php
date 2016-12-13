@@ -285,7 +285,7 @@ class FELLESDATA_CRON {
             $infoLevel->company   = $pluginInfo->ks_muni;
             $infoLevel->level     = 1;
             // Don't import all companies over and over
-            $infoLevel->notIn     = 0;//KS::existing_companies();
+            $infoLevel->notIn     = KS::existing_companies();
 
             // Call web service
             $params = array('topCompany' => $infoLevel);
@@ -294,13 +294,8 @@ class FELLESDATA_CRON {
             echo implode(',',array_keys($response)) . "</br>";
 
             if ($response['error'] == '200') {
-                $axu = $response['structure'];
-                foreach ($axu as $org) {
-                    $org = (Array)$org;
-                    echo $org['id'] . ' --> ' . $org['industrycode'] . ' - ' . $org['name'] . "</br>";
-                }
                 // Import organization structure
-                //KS::import_ks_organization($response['structure']);
+                KS::import_ks_organization($response['structure']);
             }else {
                 // Log
                 $dbLog = "ERROR SERVICE: " . $response['message'] . "\n" . "\n";
