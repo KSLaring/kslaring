@@ -288,11 +288,11 @@ class FELLESDATA_CRON {
             $infoLevel->notIn     = 0;//KS::existing_companies();
 
             // Call web service
-            $params = array('toCompany' => $infoLevel);
+            $params = array('topCompany' => $infoLevel);
             $response = self::process_ks_service($pluginInfo,KS_ORG_STRUCTURE,$params);
 
             echo implode(',',array_keys($response)) . "</br>";
-            
+
             if ($response['error'] == '200') {
                 $axu = $response['structure'];
                 foreach ($axu as $org) {
