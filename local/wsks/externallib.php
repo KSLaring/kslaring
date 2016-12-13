@@ -687,6 +687,7 @@ class local_wsks_external extends external_api {
         $companyID      = new external_value(PARAM_INT,'Company Id KS');
         $level          = new external_value(PARAM_INT,'Level');
         $priority       = new external_value(PARAM_INT,'prioritet');
+        $key            = new external_value(PARAM_INT,'key');
         $action         = new external_value(PARAM_INT,'Action. Add/Update/Delete');
 
         /* Manager Reporter */
@@ -694,7 +695,8 @@ class local_wsks_external extends external_api {
                                                                    'fsId'            => $fsId,
                                                                    'ksId'            => $companyID,
                                                                    'level'           => $level,
-                                                                   'prioritet'         => $priority,
+                                                                   'key'             => $key,
+                                                                   'prioritet'       => $priority,
                                                                    'action'          => $action));
 
         return new external_function_parameters(array('managerReporter'=> new external_multiple_structure($userManagerReporter)));
@@ -991,9 +993,11 @@ class local_wsks_external extends external_api {
         /* Info to unmap */
         $personalNumber = new external_value(PARAM_TEXT,'Personal number');
         $companyId      = new external_value(PARAM_INT,'Company Id ');
+        $key            = new external_value(PARAM_INT,'key');
 
         $toUnMap = new external_single_structure(array('personalnumber' => $personalNumber,
-                                                       'companyid'      => $companyId));
+                                                       'companyid'      => $companyId,
+                                                       'key'            => $key));
 
         return new external_function_parameters(array('usersUnMapCompetence'=> new external_multiple_structure($toUnMap)));
     }//wsUnMapUserCompetence_parameters
