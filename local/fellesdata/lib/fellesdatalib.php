@@ -459,7 +459,7 @@ class FSKS_COMPANY {
 
                 if ($objCompany->unmapped) {
                     // Get Company
-                    $infoCompany        = $toUnMap[$objCompany->key];
+                    $infoCompany        = $toUnMap[$objCompany->id];
 
                     // Unmap company
                     $infoCompany->sync = 1;
@@ -1167,17 +1167,16 @@ class FSKS_USERS {
                 foreach ($rdo as $instance) {
                     // Info Competence
                     $info = new stdClass();
+                    $info->key              = $instance->id;
                     $info->personalNumber   = trim($instance->fodselsnr);
                     $info->ksId             = $instance->kscompany;
                     $info->fsId             = $instance->fscompany;
                     $info->level            = $instance->hierarchylevel;
-                    // $info->key              = $instance->id;
                     $info->prioritet        = $instance->prioritet;
                     $info->action           = $instance->action;
 
                     // Add Competence
-                    $key = $info->personalNumber . '_' . $instance->id;
-                    $managersReporters[$key] = $info;
+                    $managersReporters[$instance->id] = $info;
                 }//for_Rdo
             }//if_rdo
 
@@ -1261,6 +1260,7 @@ class FSKS_USERS {
                 foreach ($rdo as $instance) {
                     // Info
                     $info = new stdClass();
+                    $info->key              = $instance->id;
                     $info->personalNumber   = trim($instance->personalnumber);
                     $info->ksId             = $instance->kscompany;
                     $info->fsId             = $instance->fscompany;
@@ -1357,15 +1357,13 @@ class FSKS_USERS {
             foreach ($competencesImported as $competence) {
                 // Convert to object
                 $objCompetence = (Object)$competence;
-
-                echo "KEY: " . $objCompetence->key . "</br>";
                 
                 if ($objCompetence->imported) {
                     // Get Info
                     $infoUser = $usersTo[$objCompetence->key];
 
                     // Synchronize Manager&&Reporter
-                    //self::get_synchronize_manager_reporter_fs($infoUser,$objCompetence->key);
+                    self::get_synchronize_manager_reporter_fs($infoUser,$objCompetence->key);
                 }//if_imported
             }//for_competencesImported
         }catch (Exception $ex) {
@@ -2004,6 +2002,7 @@ class FSKS_USERS {
                         if ($toDeleteFromKS) {
                             // Info Competence JR
                             $infoComp = new stdClass();
+                            $infoComp->key              = $instance->id;
                             $infoComp->personalNumber   = trim($instance->fodselsnr);
                             $infoComp->jobrole          = $instance->ksjobrole;
                             $infoComp->fsjobroles       = $instance->fsjobroles;
@@ -2014,11 +2013,12 @@ class FSKS_USERS {
                             $infoComp->action           = DELETE;
 
                             // Add competence
-                            $usersComp[] = $infoComp;
+                            $usersComp[$instance->id] = $infoComp;
                         }
                     }else {
                         // Info Competence JR
                         $infoComp = new stdClass();
+                        $infoComp->key              = $instance->id;
                         $infoComp->personalNumber   = trim($instance->fodselsnr);
                         $infoComp->jobrole          = $instance->ksjobrole;
                         $infoComp->fsjobroles       = $instance->fsjobroles;
@@ -2029,7 +2029,7 @@ class FSKS_USERS {
                         $infoComp->action           = ADD;
 
                         // Add competence
-                        $usersComp[] = $infoComp;
+                        $usersComp[$instance->id] = $infoComp;
                     }//id_delte
                 }//for_rdo
             }else {
@@ -2082,12 +2082,12 @@ class FSKS_USERS {
                 foreach ($rdo as $instance) {
                     // Info to unmap
                     $info = new stdClass();
+                    $info->key              = $instance->id;
                     $info->personalnumber   = trim($instance->personalnumber);
                     $info->companyid        = $instance->companyid;
 
                     // Add
-                    $key = $info->personalnumber . '_' . $instance->id;
-                    $toUnMap[$key] = $info;
+                    $toUnMap[$instance->id] = $info;
                 }//for_rdo
             }//if_rdo
 
