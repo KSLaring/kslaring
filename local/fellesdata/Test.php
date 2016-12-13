@@ -33,6 +33,8 @@ try {
         $SESSION->manual = true;
     }
 
+    echo $option . "</br>";
+    
     if ($option) {
         FELLESDATA_CRON::cron_manual(true,$option);
     }else {
