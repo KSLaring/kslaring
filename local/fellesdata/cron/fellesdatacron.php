@@ -292,6 +292,10 @@ class FELLESDATA_CRON {
             $response = self::process_ks_service($pluginInfo,KS_ORG_STRUCTURE,$params);
 
             if ($response['error'] == '200') {
+                $axu = $response['structure'];
+                foreach ($axu as $org) {
+                    echo $org['id'] . ' --> ' . $org['industrycode'] . ' - ' . $org['name'] . "</br>";
+                }
                 // Import organization structure
                 //KS::import_ks_organization($response['structure']);
             }else {
@@ -413,7 +417,7 @@ class FELLESDATA_CRON {
 
             $dbLog = " CALLING WEB SERVICE " . "\n\n";
             error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
-            
+
             // Paramters web service
             $fields = http_build_query( $params );
             $fields = str_replace( '&amp;', '&', $fields );
@@ -440,6 +444,11 @@ class FELLESDATA_CRON {
             curl_close( $ch );
 
             $result = json_decode($response);
+
+            // Conver to array
+            if (!is_array($result)) {
+                $result = (Array)$result;
+            }
 
             return $result;
         }catch (Exception $ex) {
