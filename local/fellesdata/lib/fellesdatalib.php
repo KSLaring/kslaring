@@ -1175,7 +1175,7 @@ class FSKS_USERS {
                     $info->action           = $instance->action;
 
                     // Add Competence
-                    $managersReporters[$instance->id] = $info;
+                    $managersReporters[] = $info;
                 }//for_Rdo
             }//if_rdo
 

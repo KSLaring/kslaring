@@ -1284,7 +1284,7 @@ class FELLESDATA_CRON {
 
                     // Call webs ervice
                     if ($toSynchronize) {
-                        $response = self::process_ks_service($pluginInfo,$service,$toSynchronize);
+                        $response = self::process_ks_service($pluginInfo,$service,array('managerReporter' => $toSynchronize));
                         if ($response['error'] == '200') {
                             // Syncrhonize managers and reporters
                             FSKS_USERS::synchronize_manager_reporter_fs($toSynchronize,$response['managerReporter']);
