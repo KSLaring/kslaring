@@ -2082,10 +2082,19 @@ class FSKS_USERS {
                     $info->companyid        = $instance->companyid;
 
                     // Add
-                    $toUnMap[$instance->id] = $info;
+                    $toUnMap[] = $info;
                 }//for_rdo
             }//if_rdo
 
+            $info = new stdClass();
+            $info->personalnumber = 06046542272;
+            $info->companyid        = 3061;
+            $toUnMap[] = $info;
+
+            $info = new stdClass();
+            $info->personalnumber = 06046542272;
+            $info->companyid        = 3062;
+            
             return $toUnMap;
         }catch (Exception $ex) {
             throw $ex;
