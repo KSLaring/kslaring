@@ -39,7 +39,7 @@ class FELLESDATA_CRON {
     /* PUBLIC */
     /**********/
 
-    public static function cron($fstExecution) {
+    public static function cron_old($fstExecution) {
         /* Variables    */
         global $CFG;
         $pluginInfo = null;
@@ -285,7 +285,7 @@ class FELLESDATA_CRON {
             $infoLevel->company   = $pluginInfo->ks_muni;
             $infoLevel->level     = 1;
             // Don't import all companies over and over
-            $infoLevel->notIn     = KS::existing_companies();
+            $infoLevel->notIn     = 0;//KS::existing_companies();
 
             // Call web service
             $params = array('toCompany' => $infoLevel);
@@ -293,7 +293,7 @@ class FELLESDATA_CRON {
 
             if ($response['error'] == '200') {
                 // Import organization structure
-                KS::import_ks_organization($response['structure']);
+                //KS::import_ks_organization($response['structure']);
             }else {
                 // Log
                 $dbLog = "ERROR SERVICE: " . $response['message'] . "\n" . "\n";
@@ -324,6 +324,7 @@ class FELLESDATA_CRON {
     private static function import_ks_jobroles($pluginInfo) {
         /* Variables    */
         global $CFG;
+        $params     = null;
         $response   = null;
         $infoLevel  = null;
         $notIn      = null;
@@ -336,7 +337,7 @@ class FELLESDATA_CRON {
             $notIn = KS::existing_jobroles(true);
 
             // Call web service
-            $response = self::process_ks_service($pluginInfo,KS_JOBROLES_GENERICS,$notIn);
+            $response = self::process_ks_service($pluginInfo,KS_JOBROLES_GENERICS,array('notIn' => $notIn));
 
             // Import jobroles generics
             if ($response['error'] == '200') {
@@ -352,10 +353,14 @@ class FELLESDATA_CRON {
             $hierarchy  = KS::get_hierarchy_jr($pluginInfo->ks_muni);
             $notIn      = KS::existing_jobroles(false,$hierarchy);
 
-            $infoLevel = array('notIn'  => $notIn,
-                               'top'    => $hierarchy);
+            // Params web service
+            $infoLevel = new stdClass();
+            $infoLevel->notIn   = $notIn;
+            $infoLevel->top     = $hierarchy;
+
             // Call web service
-            $response = self::process_ks_service($pluginInfo,KS_JOBROLES,$infoLevel);
+            $params = array('hierarchy' => $infoLevel);
+            $response = self::process_ks_service($pluginInfo,KS_JOBROLES,$params);
 
             // Import jobroles no generics
             if ($response['error'] == '200') {
@@ -406,6 +411,9 @@ class FELLESDATA_CRON {
             // Build end Point Service
             $server = $domain . '/webservice/rest/server.php?wstoken=' . $token . '&wsfunction=' . $service .'&moodlewsrestformat=json';
 
+            $dbLog = " CALLING WEB SERVICE " . "\n\n";
+            error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
+            
             // Paramters web service
             $fields = http_build_query( $params );
             $fields = str_replace( '&amp;', '&', $fields );
@@ -423,13 +431,14 @@ class FELLESDATA_CRON {
 
             if( $response === false ) {
                 $error = curl_error( $ch );
-                print_r($error);
+                // Error
+                $dbLog = "ERROR: " . $error .  "\n\n";
+                $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' Error calling web service . ' . "\n";
+                error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
             }
-
 
             curl_close( $ch );
 
-            print_r($response);
             $result = json_decode($response);
 
             return $result;
@@ -439,6 +448,7 @@ class FELLESDATA_CRON {
             $dbLog .= $ex->getTraceAsString() . "\n\n";
             $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' Error calling web service . ' . "\n";
             error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
+
             throw $ex;
         }//try_catch
     }//process_ks_service
@@ -896,7 +906,7 @@ class FELLESDATA_CRON {
                         }//for_rdo
 
                         // Call web service
-                        $response = self::process_ks_service($pluginInfo,KS_SYNC_USER_ACCOUNT,$lstUsersFS);
+                        $response = self::process_ks_service($pluginInfo,KS_SYNC_USER_ACCOUNT,array('usersAccounts' => $lstUsersFS));
 
                         if ($response['error'] == '200') {
                             // Synchornize users accounts FS
@@ -980,6 +990,7 @@ class FELLESDATA_CRON {
                 // Synchronize FS-KS companies
                 // Call webs service
                 if ($toSynchronize) {
+                    $params = array('companiesFS' => $toSynchronize);
                     $response = self::process_ks_service($pluginInfo,KS_SYNC_FS_COMPANY,$toSynchronize);
                     if ($response['error'] == '200') {
                         FSKS_COMPANY::synchronize_companies_ksfs($toSynchronize,$response['companies']);
