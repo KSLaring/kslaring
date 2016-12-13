@@ -352,7 +352,7 @@ class WS_FELLESDATA {
 
         try {
             /* Synchronize user manager reporter between FS and KS */
-            foreach ($userManagerReporter as $key => $managerReporter) {
+            foreach ($userManagerReporter as $managerReporter) {
                 /* Convert to object    */
                 $objManagerReporter = (Object)$managerReporter;
 
@@ -364,9 +364,9 @@ class WS_FELLESDATA {
                     $infoImported = new stdClass();
                     $infoImported->personalNumber   = $objManagerReporter->personalNumber;
                     $infoImported->imported         = 1;
-                    $infoImported->key              = $key;
+                    $infoImported->key              = $objManagerReporter->key;
 
-                    $imported[$key] = $infoImported;
+                    $imported[$objManagerReporter->key] = $infoImported;
                 }//if_competenceData
             }//for_competences
 
@@ -574,15 +574,15 @@ class WS_FELLESDATA {
              * Unmap competence --> delete competence
              */
             if ($toUnMap) {
-                foreach ($toUnMap as $key => $infoCompetence) {
+                foreach ($toUnMap as $infoCompetence) {
                     /* Convert to object */
                     $objCompetence = (Object)$infoCompetence;
 
                     /* Unmap */
-                    $info = self::Process_UnMap_CompetenceUser($objCompetence,$key);
+                    $info = self::Process_UnMap_CompetenceUser($objCompetence);
                     if ($info) {
                         /* Add */
-                        $usersUnMapped[$key] = $info;
+                        $usersUnMapped[$objCompetence->key] = $info;
                     }//if_info
                 }//for_toUnMap 
             }//if_toUnmape
@@ -612,7 +612,6 @@ class WS_FELLESDATA {
 
     /**
      * @param           $infoCompetence
-     * @param           $key
      *
      * @return          null|stdClass
      * @throws          Exception
@@ -624,7 +623,7 @@ class WS_FELLESDATA {
      * Description
      * unmap competence for a specific user
      */
-    private static function Process_UnMap_CompetenceUser($infoCompetence,$key) {
+    private static function Process_UnMap_CompetenceUser($infoCompetence) {
         /* Variables */
         global $DB;
         $trans          = null;
@@ -656,7 +655,7 @@ class WS_FELLESDATA {
                 if ($unmapped) {
                     $infoUnMap = new stdClass();
                     $infoUnMap->unmapped    = true;
-                    $infoUnMap->key         = $key;
+                    $infoUnMap->key         = $infoCompetence->key;
 
                     /**
                      * Check if there are more records connected with the user
