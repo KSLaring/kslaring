@@ -549,7 +549,7 @@ class FSKS_COMPANY {
                     $infoCompany->action        = ADD;
 
                     // Add Company
-                    $toSynchronize[$instance->id] = $infoCompany;
+                    $toSynchronize[$instance->companyid] = $infoCompany;
                 }//for_rdo
             }//if_rdo
         }catch (Exception $ex) {
@@ -636,7 +636,7 @@ class FSKS_COMPANY {
                     $infoCompany->action        = $instance->action;
 
                     // Add Company
-                    $toSynchronize[$instance->id] = $infoCompany;
+                    $toSynchronize[$instance->companyid] = $infoCompany;
                 }//for_rdo
             }//if_rdo
         }catch (Exception $ex) {

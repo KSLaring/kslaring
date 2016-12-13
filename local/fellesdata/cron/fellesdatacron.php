@@ -995,20 +995,10 @@ class FELLESDATA_CRON {
                 // Synchronize FS-KS companies
                 // Call webs service
                 if ($toSynchronize) {
-                    foreach ($toSynchronize as $key => $sync) {
-                        echo "KEY : " . $key . " --> " . $sync->name . "</br>";
-                    }
-                    
                     $params     = array('companiesFS' => $toSynchronize);
                     $response   = self::process_ks_service($pluginInfo,KS_SYNC_FS_COMPANY,$params);
                     if ($response['error'] == '200') {
-                        if ($response['companies']) {
-                            echo "HOLA " . "</br>";
-                            foreach ($response['companies'] as $comp) {
-                                echo $comp->fsId . " - " . $comp->ksId . " - " . $comp->imported . " - " . $comp->key . "</br>";
-                            }
-                        }
-                        //FSKS_COMPANY::synchronize_companies_ksfs($toSynchronize,$response['companies']);
+                        FSKS_COMPANY::synchronize_companies_ksfs($toSynchronize,$response['companies']);
                     }else {
                         /* Log  */
                         $dbLog  .= "ERROR WS: " . $response['error'] . "\n\n";
