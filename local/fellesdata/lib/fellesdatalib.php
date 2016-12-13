@@ -2094,6 +2094,7 @@ class FSKS_USERS {
             $info = new stdClass();
             $info->personalnumber = 06046542272;
             $info->companyid        = 3062;
+            $toUnMap[] = $info;
             
             return $toUnMap;
         }catch (Exception $ex) {
