@@ -410,6 +410,7 @@ class Invoices {
             $lstInvoices = self::GetInvoices($courseId,$enrolId,$isCompanyDemanded);
             // Manaul invoices
             self::get_manual_invoices($courseId,$enrolId,$isCompanyDemanded,$lstInvoices);
+            
             return $lstInvoices;
         }catch (Exception $ex) {
             throw $ex;

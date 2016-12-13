@@ -783,7 +783,10 @@ class Competence {
                 // Get ID of User Info Data
                 $field      = $DB->get_record('user_info_field',array('datatype' => 'competence'),'id');
                 $infoData   = $DB->get_record('user_info_data',array('fieldid' => $field->id,'userid' => $userId));
-                $DB->delete_records('user_info_data',array('id' => $infoData->id,'fieldid' => $field->id,'userid' => $userId));
+                if ($infoData) {
+                    $DB->delete_records('user_info_data',array('id' => $infoData->id,'fieldid' => $field->id,'userid' => $userId));
+                }
+
             }//if_!rdo
 
             // Commit

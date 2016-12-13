@@ -1862,6 +1862,11 @@ class WS_FELLESDATA {
                             /* Execute  */
                             $DB->insert_record('report_gen_company_relation',$instanceParent);
                         }//if_parent
+                    }else {
+                        /* Execute  */
+                        $companyId           = $rdo->id;
+                        $instanceCompany->id = $rdo->id;
+                        $DB->update_record('report_gen_companydata',$instanceCompany);
                     }//if_no_exists
 
                     break;
@@ -1871,7 +1876,8 @@ class WS_FELLESDATA {
                         $companyId = $DB->insert_record('report_gen_companydata',$instanceCompany);
                     }else {
                         /* Execute  */
-                        $companyId = $instanceCompany->id = $companyInfo->ksId;
+                        $companyId           = $rdo->id;
+                        $instanceCompany->id = $rdo->id;
                         $DB->update_record('report_gen_companydata',$instanceCompany);
                     }
 
