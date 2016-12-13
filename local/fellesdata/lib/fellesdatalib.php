@@ -1356,12 +1356,13 @@ class FSKS_USERS {
                 // Convert to object
                 $objCompetence = (Object)$competence;
 
+                echo "KEY: " . $objCompetence->key . "</br>";
                 if ($objCompetence->imported) {
                     // Get Info
                     $infoUser = $usersTo[$objCompetence->key];
 
                     // Synchronize Manager&&Reporter
-                    self::get_synchronize_manager_reporter_fs($infoUser,$objCompetence->key);
+                    // --> self::get_synchronize_manager_reporter_fs($infoUser,$objCompetence->key);
                 }//if_imported
             }//for_competencesImported
         }catch (Exception $ex) {
@@ -2082,7 +2083,8 @@ class FSKS_USERS {
                     $info->companyid        = $instance->companyid;
 
                     // Add
-                    $toUnMap[] = $info;
+                    $key = $info->personalnumber . '_' . $instance->id;
+                    $toUnMap[$key] = $info;
                 }//for_rdo
             }//if_rdo
 
