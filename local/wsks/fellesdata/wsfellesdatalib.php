@@ -147,9 +147,9 @@ class WS_FELLESDATA {
                     $infoImported->fsId     = $objCompany->fsId;
                     $infoImported->ksId     = $companyId;
                     $infoImported->imported = 1;
-                    $infoImported->key      = $key;
+                    $infoImported->key      = $objCompany->fsId;
 
-                    $imported[$key] = $infoImported;
+                    $imported[$objCompany->fsId] = $infoImported;
                 }//if_companyId
             }//for_FS_companies
 
