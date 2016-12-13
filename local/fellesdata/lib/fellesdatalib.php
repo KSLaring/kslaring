@@ -2964,19 +2964,20 @@ class KS {
                     $params['jobroleid'] = $jobRole->id;
 
                     foreach ($jobRole->relation as $relation) {
+
                         // Check if already exist
-                        $params['levelzero']    = $relation['levelZero'];
-                        $params['levelone']     = $relation['levelOne'];
-                        $params['leveltwo']     = $relation['levelTwo'];
-                        $params['levelthree']   = $relation['levelThree'];
+                        $params['levelzero']    = $relation->levelZero;
+                        $params['levelone']     = $relation->levelOne;
+                        $params['leveltwo']     = $relation->levelTwo;
+                        $params['levelthree']   = $relation->levelThree;
 
                         // Execute
                         $rdoRelation = $DB->get_record('ks_jobroles_relation',$params);
                         if (!$rdoRelation) {
-                            $infoJRRelation->levelzero  = $relation['levelZero'];
-                            $infoJRRelation->levelone   = $relation['levelOne'];
-                            $infoJRRelation->leveltwo   = $relation['levelTwo'];
-                            $infoJRRelation->levelthree = $relation['levelThree'];
+                            $infoJRRelation->levelzero  = $relation->levelZero;
+                            $infoJRRelation->levelone   = $relation->levelOne;
+                            $infoJRRelation->leveltwo   = $relation->levelTwo;
+                            $infoJRRelation->levelthree = $relation->levelThree;
 
                             // Execute
                             $DB->insert_record('ks_jobroles_relation',$infoJRRelation);
