@@ -296,6 +296,7 @@ class FELLESDATA_CRON {
             if ($response['error'] == '200') {
                 $axu = $response['structure'];
                 foreach ($axu as $org) {
+                    $org = (Array)$org;
                     echo $org['id'] . ' --> ' . $org['industrycode'] . ' - ' . $org['name'] . "</br>";
                 }
                 // Import organization structure
