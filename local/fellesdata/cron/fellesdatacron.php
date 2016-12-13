@@ -58,33 +58,33 @@ class FELLESDATA_CRON {
 
             /* Import Fellesdata        */
             $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' START Import Fellesdata. ' . "\n";
-            //self::import_fellesdata($pluginInfo);
+            self::import_fellesdata($pluginInfo);
 
             /* SYNCHRONIZATION  */
             /* Synchronization Users Accounts   */
             $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' START Users FS Synchronization. ' . "\n";
-            //self::users_fs_synchronization($pluginInfo);
+            self::users_fs_synchronization($pluginInfo);
 
             /* Synchronization Companies    */
             $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' START Companies FS Synchronization. ' . "\n";
-            //self::companies_fs_synchronization($pluginInfo,$fstExecution);
+            self::companies_fs_synchronization($pluginInfo,$fstExecution);
 
             /* Job roles to Map/Synchronize */
-            //self::jobroles_fs_to_map($pluginInfo);
+            self::jobroles_fs_to_map($pluginInfo);
 
             /* Synchronization Comeptence   */
             if (!$fstExecution) {
                 /* Synchronization Managers && Reporters    */
                 $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' START  Managers/Reporters FS Synchronization. ' . "\n";
-                //self::manager_reporter_synchronization($pluginInfo,KS_MANAGER_REPORTER);
+                self::manager_reporter_synchronization($pluginInfo,KS_MANAGER_REPORTER);
 
                 /* Synchronization User Competence JobRole  -- Add/Update */
                 $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' START Users competence FS Synchronization. ' . "\n";
-                //self::user_competence_synchronization($pluginInfo,KS_USER_COMPETENCE);
+                self::user_competence_synchronization($pluginInfo,KS_USER_COMPETENCE);
 
                 /* Synchronization User Competence JobRole  -- Delete */
                 $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' START Users Competence to delete FS Synchronization. ' . "\n";
-                //self::user_competence_synchronization($pluginInfo,KS_USER_COMPETENCE,true);
+                self::user_competence_synchronization($pluginInfo,KS_USER_COMPETENCE,true);
            }
 
             /*
@@ -96,15 +96,15 @@ class FELLESDATA_CRON {
             if (!$fstExecution) {
                 /* Unmap user competence    */
                 $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' START  UNMAP User competence. ' . "\n";
-                //self::unmap_user_competence($pluginInfo,KS_UNMAP_USER_COMPETENCE);
+                self::unmap_user_competence($pluginInfo,KS_UNMAP_USER_COMPETENCE);
 
                 /* Unmap Managers           */
                 $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' START  UNMAP Manager/Reporter. ' . "\n";
-                //self::unmap_managers_reporters($pluginInfo,KS_MANAGER_REPORTER);
+                self::unmap_managers_reporters($pluginInfo,KS_MANAGER_REPORTER);
 
                 /* Unmap organizations      */
                 $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' START  UNMAP Organizations. ' . "\n";
-                //self::unmap_organizations($pluginInfo,KS_UNMAP_COMPANY);
+                self::unmap_organizations($pluginInfo,KS_UNMAP_COMPANY);
             }//fstExecution_tounmap
 
             /* Log  */
@@ -290,8 +290,6 @@ class FELLESDATA_CRON {
             // Call web service
             $params = array('topCompany' => $infoLevel);
             $response = self::process_ks_service($pluginInfo,KS_ORG_STRUCTURE,$params);
-
-            echo implode(',',array_keys($response)) . "</br>";
 
             if ($response['error'] == '200') {
                 // Import organization structure
