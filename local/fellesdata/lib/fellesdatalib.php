@@ -1171,11 +1171,13 @@ class FSKS_USERS {
                     $info->ksId             = $instance->kscompany;
                     $info->fsId             = $instance->fscompany;
                     $info->level            = $instance->hierarchylevel;
+                    // $info->key              = $instance->id;
                     $info->prioritet        = $instance->prioritet;
                     $info->action           = $instance->action;
 
                     // Add Competence
-                    $managersReporters[] = $info;
+                    $key = $info->personalNumber . '_' . $instance->id;
+                    $managersReporters[$key] = $info;
                 }//for_Rdo
             }//if_rdo
 
@@ -1357,12 +1359,13 @@ class FSKS_USERS {
                 $objCompetence = (Object)$competence;
 
                 echo "KEY: " . $objCompetence->key . "</br>";
+                
                 if ($objCompetence->imported) {
                     // Get Info
                     $infoUser = $usersTo[$objCompetence->key];
 
                     // Synchronize Manager&&Reporter
-                    // --> self::get_synchronize_manager_reporter_fs($infoUser,$objCompetence->key);
+                    //self::get_synchronize_manager_reporter_fs($infoUser,$objCompetence->key);
                 }//if_imported
             }//for_competencesImported
         }catch (Exception $ex) {
