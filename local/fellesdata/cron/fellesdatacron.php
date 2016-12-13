@@ -1052,7 +1052,7 @@ class FELLESDATA_CRON {
             if ($toUnMap) {
                 // Call web service
                 if ($toUnMap) {
-                    $response = self::process_ks_service($pluginInfo,$service,$toUnMap);
+                    $response = self::process_ks_service($pluginInfo,$service,array('toUnMap' => $toUnMap));
                     if ($response['error'] == '200') {
                         FSKS_COMPANY::unmap_companies_ksfs($toUnMap,$response['orgUnMapped']);
                     }else {
@@ -1161,7 +1161,10 @@ class FELLESDATA_CRON {
 
                     // Call web service
                     if ($toSynchronize) {
-                        $response = self::process_ks_service($pluginInfo,$service,$toSynchronize);
+                        // Params web service
+                        $params = array();
+                        $params['usersCompetence'] = $toSynchronize;
+                        $response = self::process_ks_service($pluginInfo,$service,$params);
                         if ($response['error'] == '200') {
                             // Synchronize user competence
                             FSKS_USERS::synchronize_user_competence_fs($toSynchronize,$response['usersCompetence']);
