@@ -1223,10 +1223,15 @@ class FELLESDATA_CRON {
                     
                     // Call web service
                     if ($toUnMap) {
+                        if ($toUnMap) {
+                            foreach ($toUnMap as $info) {
+                                echo $info->personalnumber . ' - ' . $info->companyid . "</br>";
+                            }
+                        }
                         $response = self::process_ks_service($pluginInfo,$service,array('usersUnMapCompetence' => $toUnMap));
                         if ($response['error'] == '200') {
                             // Unmap user competence
-                            FSKS_USERS::unmap_user_competence_fs($toUnMap,$response['usersUnMapped']);
+                            //FSKS_USERS::unmap_user_competence_fs($toUnMap,$response['usersUnMapped']);
                         }else {
                             // Log
                             $dbLog  = "ERROR WS: " . $response['message'] . "\n" . "\n";
