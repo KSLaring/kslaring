@@ -2086,16 +2086,6 @@ class FSKS_USERS {
                 }//for_rdo
             }//if_rdo
 
-            $info = new stdClass();
-            $info->personalnumber = '06046542272';
-            $info->companyid        = '3061';
-            $toUnMap[] = $info;
-
-            $info = new stdClass();
-            $info->personalnumber = '06046542272';
-            $info->companyid        = '3062';
-            $toUnMap[] = $info;
-
             return $toUnMap;
         }catch (Exception $ex) {
             throw $ex;

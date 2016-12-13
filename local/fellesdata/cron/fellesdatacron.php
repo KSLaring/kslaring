@@ -1215,7 +1215,7 @@ class FELLESDATA_CRON {
             $dbLog = userdate(time(),'%d.%m.%Y', 99, false) . " Start UNAMP User Competence Synchronization. " . "\n\n";
             
             // Competence to unmap
-            $total = '1';//FSKS_USERS::get_total_users_competence_to_unmap();
+            $total = FSKS_USERS::get_total_users_competence_to_unmap();
             if ($total) {
                 // Get users competence that have to be unmapped
                 for ($i=0;$i<=$total;$i=$i+100) {
@@ -1223,11 +1223,6 @@ class FELLESDATA_CRON {
                     
                     // Call web service
                     if ($toUnMap) {
-                        if ($toUnMap) {
-                            foreach ($toUnMap as $info) {
-                                echo $info->personalnumber . ' - ' . $info->companyid . "</br>";
-                            }
-                        }
                         $response = self::process_ks_service($pluginInfo,$service,array('usersUnMapCompetence' => $toUnMap));
                         if ($response['error'] == '200') {
                             // Unmap user competence
