@@ -57,7 +57,9 @@ $string['expirymessageenrolledbody'] = 'Kjære {$a->user},
 
 Dette er en melding om at kurspåmeldingen din i kurset \'{$a->course}\'  vil utløpe den {$a->timeend}.
 
-Dersom du trenger hjelp, vennligst kontakt: {$a->enroller}.';
+Dersom du trenger hjelp, vennligst kontakt: {$a->enroller}.
+
+(Dette er en automatisk generert e-post fra {$a->site} og du kan ikke svare på e-posten.)';
 $string['waitinglist:config'] = 'Administrere instanser av ventelister';
 $string['waitinglist:enrol'] = 'Innmelding av kursdeltakere';
 $string['waitinglist:manage'] = 'Administrere brukerpåmeldinger';
@@ -289,6 +291,8 @@ $string['user_unenrolled']      = 'Du har blitt meldt ut av kurset';
 $string['user_not_enrolled']    = 'Beklager, du kan ikke melde deg ut fordi du ikke er meldt på kurset.';
 
 $string['unenrol_subject'] = 'Avmeldingsbekreftelse for kurset {$a}.';
-$string['unenrol_body']    = 'Dette er en bekreftelse på at du har kansellert kurspåmeldingen din for kurset <strong>{$a}</strong>';
+$string['unenrol_body']    = 'Dette er en bekreftelse på at du er blitt utmeldt fra kurset <strong>{$a}</strong>. 
+	
+	Dette er en automatisk generert e-post fra {$a->site} og du kan ikke svare på e-posten.';
 
 $string['rpt_workplace']   = 'Arbeidssted';
