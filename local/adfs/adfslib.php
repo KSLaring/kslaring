@@ -142,7 +142,7 @@ class KS_ADFS {
      * @updateDate      15/08/2016
      * @author          eFaktor     (fbv)
      */
-    private static function process_user_adfs_service($userId,$pluginInfo,$modLnk = " ",$modId = " ") {
+    private static function process_user_adfs_service($userId,$pluginInfo,$modLnk = '0',$modId = '0') {
         /* Variables    */
         $userRequest    = null;
         $urlRedirect    = null;
@@ -205,7 +205,6 @@ class KS_ADFS {
                 if ($result['error'] == '200') {
                     $urlRedirect =   $result['url'];
                 }else {
-                    echo implode('</br>',$result);
                     $urlRedirect = $result['url'];
                 }//if_no_error
             }
