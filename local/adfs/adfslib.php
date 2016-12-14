@@ -142,7 +142,7 @@ class KS_ADFS {
      * @updateDate      15/08/2016
      * @author          eFaktor     (fbv)
      */
-    private static function process_user_adfs_service($userId,$pluginInfo,$modLnk = '0',$modId = '0') {
+    private static function process_user_adfs_service($userId,$pluginInfo,$modLnk = null,$modId = null) {
         /* Variables    */
         $userRequest    = null;
         $urlRedirect    = null;
@@ -161,11 +161,20 @@ class KS_ADFS {
 
             if ($userRequest) {
                 // Course/activity link
-                $userRequest->modlnk  = $modLnk;
-                $userRequest->modid   = $modId;
+                if ($modLnk) {
+                    $userRequest->modlnk  = $modLnk;
+                }else {
+                    $userRequest->modlnk  = 0;
+                }
+                if ($modId) {
+                    $userRequest->modid   = $modId;
+                }else {
+                    $userRequest->modid   = 0;
+                }
+
 
                 echo $userRequest->modlnk . " - " . $userRequest->modid;
-                
+
                 // Prepare data for web service
                 $domain     = $pluginInfo->ks_point;
                 $token      = $pluginInfo->adfs_token;
