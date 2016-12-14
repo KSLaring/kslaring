@@ -163,8 +163,8 @@ class KS_ADFS {
                 echo "1" . "</br>";
 
                 // Course/activity link
-                $userRequest->modlnk  = $modLnk;
-                $userRequest->modid   = $modId;
+                $userRequest->modlnk  = 'a';$modLnk;
+                $userRequest->modid   = 'b';$modId;
 
                 echo "2" . "</br>";
                 // Prepare data for web service
