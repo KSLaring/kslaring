@@ -142,7 +142,7 @@ class KS_ADFS {
      * @updateDate      15/08/2016
      * @author          eFaktor     (fbv)
      */
-    private static function process_user_adfs_service($userId,$pluginInfo,$modLnk = '',$modId = '') {
+    private static function process_user_adfs_service($userId,$pluginInfo,$modLnk = ' ',$modId = ' ') {
         /* Variables    */
         $userRequest    = null;
         $urlRedirect    = null;
@@ -204,14 +204,12 @@ class KS_ADFS {
 
                 // Conver to array
                 if (!is_array($result)) {
-                    echo "3" . "</br>";
                     $result = (Array)$result;
                 }
 
                 if ($result['error'] == '200') {
                     $urlRedirect =   $result['url'];
                 }else {
-                    echo "4" . "</br>";
                     echo implode('</br>',$result);
                     $urlRedirect = $result['url'];
                 }//if_no_error
