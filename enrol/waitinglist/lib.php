@@ -1750,9 +1750,10 @@ class enrol_waitinglist_plugin extends enrol_plugin {
                 $message = $instance->customtext1;
                 $message = str_replace('{$a->coursename}', $a->coursename, $message);
                 $message = str_replace('{$a->profileurl}', $a->profileurl, $message);
-                $message . "</br>" . $unenrolStr;
+
                 if (strpos($message, '<') === false) {
                     // Plain text only.
+                    $message .= "</br>" . $unenrolStr;
                     $messagetext = $message;
                     $messagehtml = text_to_html($messagetext, null, false, true);
                 } else {
