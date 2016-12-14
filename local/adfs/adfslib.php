@@ -159,53 +159,55 @@ class KS_ADFS {
             // Validate user
             $userRequest = self::get_user_adfs($userId);
 
-            // Course/activity link
-            $userRequest->modlnk  = $modLnk;
-            $userRequest->modid   = $modId;
+            if ($userRequest) {
+                // Course/activity link
+                $userRequest->modlnk  = $modLnk;
+                $userRequest->modid   = $modId;
 
-            // Prepare data for web service
-            $domain     = $pluginInfo->ks_point;
-            $token      = $pluginInfo->adfs_token;
+                // Prepare data for web service
+                $domain     = $pluginInfo->ks_point;
+                $token      = $pluginInfo->adfs_token;
 
-            $service    = $pluginInfo->adfs_service;
+                $service    = $pluginInfo->adfs_service;
 
-            // Build end Point Service
-            $params = array('user' => $userRequest);
-            $server = $domain . '/webservice/rest/server.php?wstoken=' . $token . '&wsfunction=' . $service .'&moodlewsrestformat=json';
+                // Build end Point Service
+                $params = array('user' => $userRequest);
+                $server = $domain . '/webservice/rest/server.php?wstoken=' . $token . '&wsfunction=' . $service .'&moodlewsrestformat=json';
 
-            // Paramters web service
-            $fields = http_build_query( $params );
-            $fields = str_replace( '&amp;', '&', $fields );
+                // Paramters web service
+                $fields = http_build_query( $params );
+                $fields = str_replace( '&amp;', '&', $fields );
 
-            // Call service
-            $ch = curl_init($server);
-            curl_setopt( $ch, CURLOPT_SSL_VERIFYPEER, false );
-            curl_setopt( $ch, CURLOPT_SSL_VERIFYHOST,2 );
-            curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
-            curl_setopt( $ch, CURLOPT_POST, true );
-            curl_setopt( $ch, CURLOPT_HTTPHEADER, array( 'Content-Length: ' . strlen( $fields ) ) );
-            curl_setopt( $ch, CURLOPT_POSTFIELDS, $fields );
+                // Call service
+                $ch = curl_init($server);
+                curl_setopt( $ch, CURLOPT_SSL_VERIFYPEER, false );
+                curl_setopt( $ch, CURLOPT_SSL_VERIFYHOST,2 );
+                curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
+                curl_setopt( $ch, CURLOPT_POST, true );
+                curl_setopt( $ch, CURLOPT_HTTPHEADER, array( 'Content-Length: ' . strlen( $fields ) ) );
+                curl_setopt( $ch, CURLOPT_POSTFIELDS, $fields );
 
-            $response = curl_exec( $ch );
+                $response = curl_exec( $ch );
 
-            if( $response === false ) {
-                $error = curl_error( $ch );
+                if( $response === false ) {
+                    $error = curl_error( $ch );
+                }
+
+                curl_close( $ch );
+
+                $result = json_decode($response);
+
+                // Conver to array
+                if (!is_array($result)) {
+                    $result = (Array)$result;
+                }
+
+                if ($result['error'] == '200') {
+                    $urlRedirect =   $result['url'];
+                }else {
+                    $urlRedirect = $result['url'];
+                }//if_no_error
             }
-
-            curl_close( $ch );
-
-            $result = json_decode($response);
-
-            // Conver to array
-            if (!is_array($result)) {
-                $result = (Array)$result;
-            }
-
-            if ($result['error'] == '200') {
-                $urlRedirect =   $result['url'];
-            }else {
-                $urlRedirect = $result['url'];
-            }//if_no_error
 
             return $urlRedirect;
         }catch (Exception $ex) {
@@ -230,9 +232,11 @@ class KS_ADFS {
         global $DB;
         $rdo        = null;
         $params     = null;
-        $userADFS   = array();
+        $userADFS   = null;
 
         try {
+
+
             // Search criteria
             $params = array();
             $params['id'] = $userId;
@@ -241,6 +245,7 @@ class KS_ADFS {
             $rdo = $DB->get_record('user',$params,'idnumber,firstname,lastname,email,city,country,lang');
             if ($rdo) {
                 // User adfs
+                $userADFS = new stdClass();
                 $userADFS->username   = $rdo->idnumber;
                 $userADFS->firstname  = $rdo->firstname;
                 $userADFS->lastname   = $rdo->lastname;
