@@ -11,5 +11,5 @@
  *
  */
 
-$plugin->version    =   '2016091400';         /* The plugin current version (DATE: YYYYMMDDXX) */
+$plugin->version    =   '2016121400';         /* The plugin current version (DATE: YYYYMMDDXX) */
 $plugin->component  =   'local_adfs';

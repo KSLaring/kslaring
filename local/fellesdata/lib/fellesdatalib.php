@@ -459,7 +459,7 @@ class FSKS_COMPANY {
 
                 if ($objCompany->unmapped) {
                     // Get Company
-                    $infoCompany        = $toUnMap[$objCompany->key];
+                    $infoCompany        = $toUnMap[$objCompany->id];
 
                     // Unmap company
                     $infoCompany->sync = 1;
@@ -549,7 +549,7 @@ class FSKS_COMPANY {
                     $infoCompany->action        = ADD;
 
                     // Add Company
-                    $toSynchronize[$instance->id] = $infoCompany;
+                    $toSynchronize[$instance->companyid] = $infoCompany;
                 }//for_rdo
             }//if_rdo
         }catch (Exception $ex) {
@@ -610,7 +610,7 @@ class FSKS_COMPANY {
                         -- INFO PARENT
                         JOIN  {ks_company}		ks_pa	ON 	ks_pa.companyid = fk.kscompany
                      WHERE	  fs.new 			= :new
-                        AND   fs.synchronized = :synchronized ";
+                        AND   fs.synchronized   = :synchronized ";
 
             // Execute
             $rdo = $DB->get_records_sql($sql,$params);
@@ -636,7 +636,7 @@ class FSKS_COMPANY {
                     $infoCompany->action        = $instance->action;
 
                     // Add Company
-                    $toSynchronize[$instance->id] = $infoCompany;
+                    $toSynchronize[$instance->companyid] = $infoCompany;
                 }//for_rdo
             }//if_rdo
         }catch (Exception $ex) {
@@ -1167,6 +1167,7 @@ class FSKS_USERS {
                 foreach ($rdo as $instance) {
                     // Info Competence
                     $info = new stdClass();
+                    $info->key              = $instance->id;
                     $info->personalNumber   = trim($instance->fodselsnr);
                     $info->ksId             = $instance->kscompany;
                     $info->fsId             = $instance->fscompany;
@@ -1259,6 +1260,7 @@ class FSKS_USERS {
                 foreach ($rdo as $instance) {
                     // Info
                     $info = new stdClass();
+                    $info->key              = $instance->id;
                     $info->personalNumber   = trim($instance->personalnumber);
                     $info->ksId             = $instance->kscompany;
                     $info->fsId             = $instance->fscompany;
@@ -1355,7 +1357,7 @@ class FSKS_USERS {
             foreach ($competencesImported as $competence) {
                 // Convert to object
                 $objCompetence = (Object)$competence;
-
+                
                 if ($objCompetence->imported) {
                     // Get Info
                     $infoUser = $usersTo[$objCompetence->key];
@@ -2000,6 +2002,7 @@ class FSKS_USERS {
                         if ($toDeleteFromKS) {
                             // Info Competence JR
                             $infoComp = new stdClass();
+                            $infoComp->key              = $instance->id;
                             $infoComp->personalNumber   = trim($instance->fodselsnr);
                             $infoComp->jobrole          = $instance->ksjobrole;
                             $infoComp->fsjobroles       = $instance->fsjobroles;
@@ -2010,11 +2013,12 @@ class FSKS_USERS {
                             $infoComp->action           = DELETE;
 
                             // Add competence
-                            $usersComp[] = $infoComp;
+                            $usersComp[$instance->id] = $infoComp;
                         }
                     }else {
                         // Info Competence JR
                         $infoComp = new stdClass();
+                        $infoComp->key              = $instance->id;
                         $infoComp->personalNumber   = trim($instance->fodselsnr);
                         $infoComp->jobrole          = $instance->ksjobrole;
                         $infoComp->fsjobroles       = $instance->fsjobroles;
@@ -2025,7 +2029,7 @@ class FSKS_USERS {
                         $infoComp->action           = ADD;
 
                         // Add competence
-                        $usersComp[] = $infoComp;
+                        $usersComp[$instance->id] = $infoComp;
                     }//id_delte
                 }//for_rdo
             }else {
@@ -2078,6 +2082,7 @@ class FSKS_USERS {
                 foreach ($rdo as $instance) {
                     // Info to unmap
                     $info = new stdClass();
+                    $info->key              = $instance->id;
                     $info->personalnumber   = trim($instance->personalnumber);
                     $info->companyid        = $instance->companyid;
 
@@ -2964,19 +2969,20 @@ class KS {
                     $params['jobroleid'] = $jobRole->id;
 
                     foreach ($jobRole->relation as $relation) {
+
                         // Check if already exist
-                        $params['levelzero']    = $relation['levelZero'];
-                        $params['levelone']     = $relation['levelOne'];
-                        $params['leveltwo']     = $relation['levelTwo'];
-                        $params['levelthree']   = $relation['levelThree'];
+                        $params['levelzero']    = $relation->levelZero;
+                        $params['levelone']     = $relation->levelOne;
+                        $params['leveltwo']     = $relation->levelTwo;
+                        $params['levelthree']   = $relation->levelThree;
 
                         // Execute
                         $rdoRelation = $DB->get_record('ks_jobroles_relation',$params);
                         if (!$rdoRelation) {
-                            $infoJRRelation->levelzero  = $relation['levelZero'];
-                            $infoJRRelation->levelone   = $relation['levelOne'];
-                            $infoJRRelation->leveltwo   = $relation['levelTwo'];
-                            $infoJRRelation->levelthree = $relation['levelThree'];
+                            $infoJRRelation->levelzero  = $relation->levelZero;
+                            $infoJRRelation->levelone   = $relation->levelOne;
+                            $infoJRRelation->leveltwo   = $relation->levelTwo;
+                            $infoJRRelation->levelthree = $relation->levelThree;
 
                             // Execute
                             $DB->insert_record('ks_jobroles_relation',$infoJRRelation);

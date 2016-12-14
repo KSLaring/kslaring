@@ -275,19 +275,21 @@ class FELLESDATA_CRON {
         /* Variables */
         global $CFG;
         $infoLevel      = null;
+        $params         = null;
         $response       = null;
         $dbLog          = null;
 
         try {
             // Request web service
-            $infoLevel = array();
-            $infoLevel['company']   = $pluginInfo->ks_muni;
-            $infoLevel['level']     = 1;
+            $infoLevel = new stdClass();
+            $infoLevel->company   = $pluginInfo->ks_muni;
+            $infoLevel->level     = 1;
             // Don't import all companies over and over
-            $infoLevel['notIn']     = KS::existing_companies();
+            $infoLevel->notIn     = KS::existing_companies();
 
             // Call web service
-            $response = self::process_ks_service($pluginInfo,KS_ORG_STRUCTURE,$infoLevel);
+            $params = array('topCompany' => $infoLevel);
+            $response = self::process_ks_service($pluginInfo,KS_ORG_STRUCTURE,$params);
 
             if ($response['error'] == '200') {
                 // Import organization structure
@@ -322,6 +324,7 @@ class FELLESDATA_CRON {
     private static function import_ks_jobroles($pluginInfo) {
         /* Variables    */
         global $CFG;
+        $params     = null;
         $response   = null;
         $infoLevel  = null;
         $notIn      = null;
@@ -334,7 +337,7 @@ class FELLESDATA_CRON {
             $notIn = KS::existing_jobroles(true);
 
             // Call web service
-            $response = self::process_ks_service($pluginInfo,KS_JOBROLES_GENERICS,$notIn);
+            $response = self::process_ks_service($pluginInfo,KS_JOBROLES_GENERICS,array('notIn' => $notIn));
 
             // Import jobroles generics
             if ($response['error'] == '200') {
@@ -350,10 +353,14 @@ class FELLESDATA_CRON {
             $hierarchy  = KS::get_hierarchy_jr($pluginInfo->ks_muni);
             $notIn      = KS::existing_jobroles(false,$hierarchy);
 
-            $infoLevel = array('notIn'  => $notIn,
-                               'top'    => $hierarchy);
+            // Params web service
+            $infoLevel = new stdClass();
+            $infoLevel->notIn   = $notIn;
+            $infoLevel->top     = $hierarchy;
+
             // Call web service
-            $response = self::process_ks_service($pluginInfo,KS_JOBROLES,$infoLevel);
+            $params = array('hierarchy' => $infoLevel);
+            $response = self::process_ks_service($pluginInfo,KS_JOBROLES,$params);
 
             // Import jobroles no generics
             if ($response['error'] == '200') {
@@ -394,6 +401,7 @@ class FELLESDATA_CRON {
         $domain         = null;
         $token          = null;
         $server         = null;
+        $error          = false;
 
         try {
             // Data to call Service
@@ -401,23 +409,44 @@ class FELLESDATA_CRON {
             $token      = $pluginInfo->kss_token;
 
             // Build end Point Service
-            $server     = $domain . '/webservice/soap/server.php?wsdl=1&wstoken=' . $token;
+            $server = $domain . '/webservice/rest/server.php?wstoken=' . $token . '&wsfunction=' . $service .'&moodlewsrestformat=json';
+
+            // Paramters web service
+            $fields = http_build_query( $params );
+            $fields = str_replace( '&amp;', '&', $fields );
 
             // Call service
-            $client     = new SoapClient($server);
-            $response   = $client->$service($params);
+            $ch = curl_init($server);
+            curl_setopt( $ch, CURLOPT_SSL_VERIFYPEER, false );
+            curl_setopt( $ch, CURLOPT_SSL_VERIFYHOST,2 );
+            curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
+            curl_setopt( $ch, CURLOPT_POST, true );
+            curl_setopt( $ch, CURLOPT_HTTPHEADER, array( 'Content-Length: ' . strlen( $fields ) ) );
+            curl_setopt( $ch, CURLOPT_POSTFIELDS, $fields );
 
-            if (!is_array($response)) {
-                $response = (Array)$response;
+            $response = curl_exec( $ch );
+
+            if( $response === false ) {
+                $error = curl_error( $ch );
             }
 
-            return $response;
+            curl_close( $ch );
+
+            $result = json_decode($response);
+
+            // Conver to array
+            if (!is_array($result)) {
+                $result = (Array)$result;
+            }
+
+            return $result;
         }catch (Exception $ex) {
             // Log
             $dbLog = "ERROR: " . $ex->getMessage() .  "\n\n";
             $dbLog .= $ex->getTraceAsString() . "\n\n";
             $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' Error calling web service . ' . "\n";
             error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
+
             throw $ex;
         }//try_catch
     }//process_ks_service
@@ -838,7 +867,6 @@ class FELLESDATA_CRON {
 
                 if ($rdoIC) {
                     $industryCode = trim($rdoIC->industrycode);
-
                 }
             }else {
                 $industryCode = 0;
@@ -875,7 +903,7 @@ class FELLESDATA_CRON {
                         }//for_rdo
 
                         // Call web service
-                        $response = self::process_ks_service($pluginInfo,KS_SYNC_USER_ACCOUNT,$lstUsersFS);
+                        $response = self::process_ks_service($pluginInfo,KS_SYNC_USER_ACCOUNT,array('usersAccounts' => $lstUsersFS));
 
                         if ($response['error'] == '200') {
                             // Synchornize users accounts FS
@@ -959,7 +987,8 @@ class FELLESDATA_CRON {
                 // Synchronize FS-KS companies
                 // Call webs service
                 if ($toSynchronize) {
-                    $response = self::process_ks_service($pluginInfo,KS_SYNC_FS_COMPANY,$toSynchronize);
+                    $params     = array('companiesFS' => $toSynchronize);
+                    $response   = self::process_ks_service($pluginInfo,KS_SYNC_FS_COMPANY,$params);
                     if ($response['error'] == '200') {
                         FSKS_COMPANY::synchronize_companies_ksfs($toSynchronize,$response['companies']);
                     }else {
@@ -1015,7 +1044,7 @@ class FELLESDATA_CRON {
             if ($toUnMap) {
                 // Call web service
                 if ($toUnMap) {
-                    $response = self::process_ks_service($pluginInfo,$service,$toUnMap);
+                    $response = self::process_ks_service($pluginInfo,$service,array('toUnMap' => $toUnMap));
                     if ($response['error'] == '200') {
                         FSKS_COMPANY::unmap_companies_ksfs($toUnMap,$response['orgUnMapped']);
                     }else {
@@ -1124,7 +1153,10 @@ class FELLESDATA_CRON {
 
                     // Call web service
                     if ($toSynchronize) {
-                        $response = self::process_ks_service($pluginInfo,$service,$toSynchronize);
+                        // Params web service
+                        $params = array();
+                        $params['usersCompetence'] = $toSynchronize;
+                        $response = self::process_ks_service($pluginInfo,$service,$params);
                         if ($response['error'] == '200') {
                             // Synchronize user competence
                             FSKS_USERS::synchronize_user_competence_fs($toSynchronize,$response['usersCompetence']);
@@ -1183,7 +1215,7 @@ class FELLESDATA_CRON {
                     
                     // Call web service
                     if ($toUnMap) {
-                        $response = self::process_ks_service($pluginInfo,$service,$toUnMap);
+                        $response = self::process_ks_service($pluginInfo,$service,array('usersUnMapCompetence' => $toUnMap));
                         if ($response['error'] == '200') {
                             // Unmap user competence
                             FSKS_USERS::unmap_user_competence_fs($toUnMap,$response['usersUnMapped']);
@@ -1244,7 +1276,7 @@ class FELLESDATA_CRON {
 
                     // Call webs ervice
                     if ($toSynchronize) {
-                        $response = self::process_ks_service($pluginInfo,$service,$toSynchronize);
+                        $response = self::process_ks_service($pluginInfo,$service,array('managerReporter' => $toSynchronize));
                         if ($response['error'] == '200') {
                             // Syncrhonize managers and reporters
                             FSKS_USERS::synchronize_manager_reporter_fs($toSynchronize,$response['managerReporter']);
@@ -1307,7 +1339,7 @@ class FELLESDATA_CRON {
 
                     // Call web service
                     if ($toUnMap) {
-                        $response = self::process_ks_service($pluginInfo,$service,$toUnMap);
+                        $response = self::process_ks_service($pluginInfo,$service,array('managerReporter' => $toUnMap));
                         if ($response['error'] == '200') {
                             // Synchronize managers and reporters
                             FSKS_USERS::unmap_manager_reporter_fs($toUnMap,$response['managerReporter']);

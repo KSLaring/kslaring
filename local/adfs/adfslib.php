@@ -142,7 +142,7 @@ class KS_ADFS {
      * @updateDate      15/08/2016
      * @author          eFaktor     (fbv)
      */
-    private static function process_user_adfs_service($userId,$pluginInfo,$modLnk = '',$modId = '') {
+    private static function process_user_adfs_service($userId,$pluginInfo,$modLnk = null,$modId = null) {
         /* Variables    */
         $userRequest    = null;
         $urlRedirect    = null;
@@ -155,39 +155,67 @@ class KS_ADFS {
         $userInfo       = null;
         $errCode        = null;
 
-
         try {
             // Validate user
             $userRequest = self::get_user_adfs($userId);
 
-            // Course/activity link
-            $userRequest['modlnk']  = $modLnk;
-            $userRequest['modid']   = $modId;
+            if ($userRequest) {
+                // Course/activity link
+                if ($modLnk) {
+                    $userRequest->modlnk  = $modLnk;
+                }else {
+                    $userRequest->modlnk  = 0;
+                }
+                if ($modId) {
+                    $userRequest->modid   = $modId;
+                }else {
+                    $userRequest->modid   = 0;
+                }
 
-            // Prepare data for web service
-            $domain     = $pluginInfo->ks_point;
-            $token      = $pluginInfo->adfs_token;
+                // Prepare data for web service
+                $domain     = $pluginInfo->ks_point;
+                $token      = $pluginInfo->adfs_token;
 
-            $service    = $pluginInfo->adfs_service;
+                $service    = $pluginInfo->adfs_service;
 
-            // Build end point
-            $server     = $domain . '/webservice/soap/server.php?wsdl=1&wstoken=' . $token;
+                // Build end Point Service
+                $params = array('user' => $userRequest);
+                $server = $domain . '/webservice/rest/server.php?wstoken=' . $token . '&wsfunction=' . $service .'&moodlewsrestformat=json';
 
-            // Call web service
-            $client     = new SoapClient($server);
-            $response   = $client->$service($userRequest);
+                // Paramters web service
+                $fields = http_build_query( $params );
+                $fields = str_replace( '&amp;', '&', $fields );
 
-            // Convert to an array
-            if (!is_array($response)) {
-                $response = (Array)$response;
+                // Call service
+                $ch = curl_init($server);
+                curl_setopt( $ch, CURLOPT_SSL_VERIFYPEER, false );
+                curl_setopt( $ch, CURLOPT_SSL_VERIFYHOST,2 );
+                curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
+                curl_setopt( $ch, CURLOPT_POST, true );
+                curl_setopt( $ch, CURLOPT_HTTPHEADER, array( 'Content-Length: ' . strlen( $fields ) ) );
+                curl_setopt( $ch, CURLOPT_POSTFIELDS, $fields );
+
+                $response = curl_exec( $ch );
+
+                if( $response === false ) {
+                    $error = curl_error( $ch );
+                }
+
+                curl_close( $ch );
+
+                $result = json_decode($response);
+
+                // Conver to array
+                if (!is_array($result)) {
+                    $result = (Array)$result;
+                }
+
+                if ($result['error'] == '200') {
+                    $urlRedirect =   $result['url'];
+                }else {
+                    $urlRedirect = $result['url'];
+                }//if_no_error
             }
-
-            if ($response['error'] == '200') {
-                $urlRedirect =   $response['url'];
-            }else {
-                $urlRedirect = $response['url'];
-            }//if_no_error
-
 
             return $urlRedirect;
         }catch (Exception $ex) {
@@ -212,9 +240,11 @@ class KS_ADFS {
         global $DB;
         $rdo        = null;
         $params     = null;
-        $userADFS   = array();
+        $userADFS   = null;
 
         try {
+
+
             // Search criteria
             $params = array();
             $params['id'] = $userId;
@@ -223,13 +253,16 @@ class KS_ADFS {
             $rdo = $DB->get_record('user',$params,'idnumber,firstname,lastname,email,city,country,lang');
             if ($rdo) {
                 // User adfs
-                $userADFS['username']   = $rdo->idnumber;
-                $userADFS['firstname']  = $rdo->firstname;
-                $userADFS['lastname']   = $rdo->lastname;
-                $userADFS['email']      = $rdo->email;
-                $userADFS['city']       = $rdo->city;
-                $userADFS['country']    = $rdo->country;
-                $userADFS['lang']       = $rdo->lang;
+                $userADFS = new stdClass();
+                $userADFS->username   = $rdo->idnumber;
+                $userADFS->firstname  = $rdo->firstname;
+                $userADFS->lastname   = $rdo->lastname;
+                $userADFS->email      = $rdo->email;
+                $userADFS->city       = $rdo->city;
+                $userADFS->country    = $rdo->country;
+                $userADFS->lang       = $rdo->lang;
+                $userADFS->modlnk     = null;
+                $userADFS->modid      = null;
             }//if_rdo
 
             return $userADFS;
