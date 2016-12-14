@@ -212,6 +212,7 @@ class KS_ADFS {
                     $urlRedirect =   $result['url'];
                 }else {
                     echo "4" . "</br>";
+                    echo implode('</br>',$result);
                     $urlRedirect = $result['url'];
                 }//if_no_error
             }
