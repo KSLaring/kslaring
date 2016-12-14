@@ -32,7 +32,9 @@ Dine reserverte kursplasser er i øyeblikket nummer {$a->queueno} på venteliste
 
 Du kan når som helst redigere reservasjonen din her: {$a->editenrolurl}
 
-Ta derfor vare på denne eposten!';
+Ta derfor vare på denne eposten!
+
+Dette er en automatisk generert e-post fra {$a->site} og du kan ikke svare på e-posten.';
 $string['waitlistmessagetitleconfirmation_unnamedbulk'] = 'Du er tildelt plasser i kurset {$a}';
 $string['waitlistmessagetitleconfirmation_unnamedbulk_changed'] = 'Bekreftelse på endring av ønsket antall plasser i kurset {$a}';
 $string['sendconfirmmessage'] ='Send epost når kursplassene er bekreftet';
