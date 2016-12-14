@@ -142,7 +142,7 @@ class KS_ADFS {
      * @updateDate      15/08/2016
      * @author          eFaktor     (fbv)
      */
-    private static function process_user_adfs_service($userId,$pluginInfo,$modLnk = ' ',$modId = ' ') {
+    private static function process_user_adfs_service($userId,$pluginInfo,$modLnk = " ",$modId = " ") {
         /* Variables    */
         $userRequest    = null;
         $urlRedirect    = null;
@@ -160,13 +160,10 @@ class KS_ADFS {
             $userRequest = self::get_user_adfs($userId);
 
             if ($userRequest) {
-                echo "1" . "</br>";
-
                 // Course/activity link
-                $userRequest->modlnk  = 'a';$modLnk;
-                $userRequest->modid   = 'b';$modId;
+                $userRequest->modlnk  = $modLnk;
+                $userRequest->modid   = $modId;
 
-                echo "2" . "</br>";
                 // Prepare data for web service
                 $domain     = $pluginInfo->ks_point;
                 $token      = $pluginInfo->adfs_token;
@@ -176,8 +173,6 @@ class KS_ADFS {
                 // Build end Point Service
                 $params = array('user' => $userRequest);
                 $server = $domain . '/webservice/rest/server.php?wstoken=' . $token . '&wsfunction=' . $service .'&moodlewsrestformat=json';
-
-                echo $server . "</br>";
 
                 // Paramters web service
                 $fields = http_build_query( $params );
