@@ -31,6 +31,9 @@
 /* styling will be done in the theme
  */
 
+.course-content {
+    margin-right: 10px;
+}
 .course-content ul.netcourse {
     margin: 0;
 }
@@ -45,14 +48,15 @@
 .course-content ul.netcourse li.section .left {
     float: left;
 }
-.course-content ul.netcourse li.section .right {
-    float: right;
-}
 .course-content ul.netcourse li.section .left,
 .course-content ul.netcourse li.section .right {
     width: 40px;
     text-align: center;
     padding: 6px 0;
+}
+.course-content ul.netcourse li.section .right {
+    float: right;
+    width: 60px;
 }
 .course-content ul.netcourse li.section .right img.icon {
     padding: 0 0 4px 0;
