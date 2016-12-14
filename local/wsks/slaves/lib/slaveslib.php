@@ -569,24 +569,46 @@ class Slaves {
         $response   = null;
 
         try {
-            /**
-             * Get Parameters for Web Service
-             */
-            $params = array();
-            $params['name']     = $domain->service;
-            $params['main']     = $CFG->wwwroot;
-            $params['token']    = $domain->token;
+            // Params for the web service
+            $info = new stdClass();
+            $info->name     = $domain->service;
+            $info->main     = $CFG->wwwroot;
+            $info->token    = $domain->token;
 
-            /* Call service */
-            $server     = $domain->server . '/webservice/soap/server.php?wsdl=1&wstoken=' . $domain->server_token;
-            $client     = new SoapClient($server);
-            $response   = $client->$wsService($params);
+            $params = array('service' => $info);
 
-            if (!is_array($response)) {
-                $response = (Array)$response;
+            // Build end Point Service
+            $server =  $domain->server . '/webservice/rest/server.php?wstoken=' .  $domain->server_token . '&wsfunction=' . $wsService .'&moodlewsrestformat=json';
+
+            // Paramters web service
+            $fields = http_build_query( $params );
+            $fields = str_replace( '&amp;', '&', $fields );
+
+            // Call service
+            $ch = curl_init($server);
+            curl_setopt( $ch, CURLOPT_SSL_VERIFYPEER, false );
+            curl_setopt( $ch, CURLOPT_SSL_VERIFYHOST,2 );
+            curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
+            curl_setopt( $ch, CURLOPT_POST, true );
+            curl_setopt( $ch, CURLOPT_HTTPHEADER, array( 'Content-Length: ' . strlen( $fields ) ) );
+            curl_setopt( $ch, CURLOPT_POSTFIELDS, $fields );
+
+            $response = curl_exec( $ch );
+
+            if( $response === false ) {
+                $error = curl_error( $ch );
             }
 
-            return $response;
+            curl_close( $ch );
+
+            $result = json_decode($response);
+
+            // Conver to array
+            if (!is_array($result)) {
+                $result = (Array)$result;
+            }
+
+            return $result;
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
