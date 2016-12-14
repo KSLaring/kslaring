@@ -229,6 +229,11 @@ class enrol_waitinglist_plugin extends enrol_plugin {
         }//Approval_Requests_Link
     }//end of function
 
+    public function can_delete_instance($instance) {
+        $context = context_course::instance($instance->courseid);
+        return has_capability('enrol/waitinglist:config', $context);
+    }
+    
     /**
      * Returns edit icons for the page with list of instances.
      * @param stdClass $instance
