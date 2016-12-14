@@ -501,11 +501,11 @@ class enrol_waitinglist_plugin extends enrol_plugin {
                     $i++;
                 } while (empty($rusers) && !empty($croles[$i]));
             }
-            if ($rusers) {
-                $contact = reset($rusers);
-            } else {
+            //if ($rusers) {
+            //    $contact = reset($rusers);
+            //} else {
                 $contact = core_user::get_support_user();
-            }
+            //}
 
             /* Subject      */
             $subject    = (string)new lang_string('unenrol_subject','enrol_waitinglist',$course->fullname,$user->lang);
