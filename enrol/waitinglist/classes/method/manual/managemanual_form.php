@@ -91,7 +91,7 @@ class managemanual_form extends moodleform {
 
                 /* Remove Users     */
                 $removeBtn = html_to_text(get_string('remove') . '&nbsp;' . $OUTPUT->rarrow());
-                $mForm->addElement('submit','remove_sel',$removeBtn,$disabled);
+                $mForm->addElement('submit','remove_sel',$removeBtn);
             $mForm->addElement('html','</div>');//sel_users_buttons
         $mForm->addElement('html','</div>');//userselector_managers
 
