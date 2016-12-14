@@ -39,7 +39,7 @@ class FELLESDATA_CRON {
     /* PUBLIC */
     /**********/
 
-    public static function cron($fstExecution) {
+    public static function cron_old($fstExecution) {
         /* Variables    */
         global $CFG;
         $pluginInfo = null;
@@ -411,9 +411,6 @@ class FELLESDATA_CRON {
             // Build end Point Service
             $server = $domain . '/webservice/rest/server.php?wstoken=' . $token . '&wsfunction=' . $service .'&moodlewsrestformat=json';
 
-            $dbLog = " CALLING WEB SERVICE " . "\n\n";
-            error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
-
             // Paramters web service
             $fields = http_build_query( $params );
             $fields = str_replace( '&amp;', '&', $fields );
@@ -431,10 +428,6 @@ class FELLESDATA_CRON {
 
             if( $response === false ) {
                 $error = curl_error( $ch );
-                // Error
-                $dbLog = "ERROR: " . $error .  "\n\n";
-                $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' Error calling web service . ' . "\n";
-                error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
             }
 
             curl_close( $ch );

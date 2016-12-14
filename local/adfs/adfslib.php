@@ -170,24 +170,43 @@ class KS_ADFS {
 
             $service    = $pluginInfo->adfs_service;
 
-            // Build end point
-            $server     = $domain . '/webservice/soap/server.php?wsdl=1&wstoken=' . $token;
+            // Build end Point Service
+            $params = array('user' => $userRequest);
+            $server = $domain . '/webservice/rest/server.php?wstoken=' . $token . '&wsfunction=' . $service .'&moodlewsrestformat=json';
 
-            // Call web service
-            $client     = new SoapClient($server);
-            $response   = $client->$service($userRequest);
+            // Paramters web service
+            $fields = http_build_query( $params );
+            $fields = str_replace( '&amp;', '&', $fields );
 
-            // Convert to an array
-            if (!is_array($response)) {
-                $response = (Array)$response;
+            // Call service
+            $ch = curl_init($server);
+            curl_setopt( $ch, CURLOPT_SSL_VERIFYPEER, false );
+            curl_setopt( $ch, CURLOPT_SSL_VERIFYHOST,2 );
+            curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
+            curl_setopt( $ch, CURLOPT_POST, true );
+            curl_setopt( $ch, CURLOPT_HTTPHEADER, array( 'Content-Length: ' . strlen( $fields ) ) );
+            curl_setopt( $ch, CURLOPT_POSTFIELDS, $fields );
+
+            $response = curl_exec( $ch );
+
+            if( $response === false ) {
+                $error = curl_error( $ch );
             }
 
-            if ($response['error'] == '200') {
-                $urlRedirect =   $response['url'];
-            }else {
-                $urlRedirect = $response['url'];
-            }//if_no_error
+            curl_close( $ch );
 
+            $result = json_decode($response);
+
+            // Conver to array
+            if (!is_array($result)) {
+                $result = (Array)$result;
+            }
+
+            if ($result['error'] == '200') {
+                $urlRedirect =   $result['url'];
+            }else {
+                $urlRedirect = $result['url'];
+            }//if_no_error
 
             return $urlRedirect;
         }catch (Exception $ex) {
