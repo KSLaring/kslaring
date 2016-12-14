@@ -384,11 +384,11 @@ abstract class enrolmethodbase  {
 				$i++;
 			} while (empty($rusers) && !empty($croles[$i]));
         }
-        if ($rusers) {
-            $contact = reset($rusers);
-        } else {
+        //if ($rusers) {
+        //    $contact = reset($rusers);
+        //} else {
             $contact =  \core_user::get_support_user();
-        }
+        //}
 
         // Directly emailing welcome message rather than using messaging.
         email_to_user($user, $contact, $subject, $messagetext, $messagehtml);
