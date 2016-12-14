@@ -36,6 +36,10 @@ class WS_ADFS {
         $response   = null;
 
         try {
+            if (!is_array($userADFS)) {
+                $userADFS = (Array)$userADFS;
+            }
+            
             /* Check if user exists */
             $userId = self::ExistsUser($userADFS['username']);
             if ($userId) {
