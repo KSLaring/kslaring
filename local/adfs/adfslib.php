@@ -190,6 +190,7 @@ class KS_ADFS {
             $response = curl_exec( $ch );
 
             if( $response === false ) {
+                echo "Error " . "</br>";
                 $error = curl_error( $ch );
             }
 

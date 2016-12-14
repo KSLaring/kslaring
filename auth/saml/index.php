@@ -266,7 +266,6 @@ define('SAML_INTERNAL', 1);
 
                 /* Validate User */
                 if (KS_ADFS::is_valid_user($USER)) {
-                    echo "2" . "</br>";
                     error_log($dbLog, 3, $CFG->dataroot . "/SSO_LNK.log");
 
                     $urlKS = KS_ADFS::login_user_adfs($USER->id,$modlnk,$modid);
@@ -275,7 +274,6 @@ define('SAML_INTERNAL', 1);
                     require_logout();
                     die;
                 }else {
-                    echo "1";
                     $urltogo = KS_ADFS::get_error_url();
                     require_logout();
                     redirect($urltogo);
