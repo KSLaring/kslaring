@@ -155,14 +155,13 @@ class KS_ADFS {
         $userInfo       = null;
         $errCode        = null;
 
-
         try {
             // Validate user
             $userRequest = self::get_user_adfs($userId);
 
             // Course/activity link
-            $userRequest['modlnk']  = $modLnk;
-            $userRequest['modid']   = $modId;
+            $userRequest->modlnk  = $modLnk;
+            $userRequest->modid   = $modId;
 
             // Prepare data for web service
             $domain     = $pluginInfo->ks_point;
@@ -190,7 +189,6 @@ class KS_ADFS {
             $response = curl_exec( $ch );
 
             if( $response === false ) {
-                echo "Error " . "</br>";
                 $error = curl_error( $ch );
             }
 
@@ -243,13 +241,13 @@ class KS_ADFS {
             $rdo = $DB->get_record('user',$params,'idnumber,firstname,lastname,email,city,country,lang');
             if ($rdo) {
                 // User adfs
-                $userADFS['username']   = $rdo->idnumber;
-                $userADFS['firstname']  = $rdo->firstname;
-                $userADFS['lastname']   = $rdo->lastname;
-                $userADFS['email']      = $rdo->email;
-                $userADFS['city']       = $rdo->city;
-                $userADFS['country']    = $rdo->country;
-                $userADFS['lang']       = $rdo->lang;
+                $userADFS->username   = $rdo->idnumber;
+                $userADFS->firstname  = $rdo->firstname;
+                $userADFS->lastname   = $rdo->lastname;
+                $userADFS->email      = $rdo->email;
+                $userADFS->city       = $rdo->city;
+                $userADFS->country    = $rdo->country;
+                $userADFS->lang       = $rdo->lang;
             }//if_rdo
 
             return $userADFS;
