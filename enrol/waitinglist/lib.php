@@ -1747,12 +1747,13 @@ class enrol_waitinglist_plugin extends enrol_plugin {
             }//if_can_unenrol
 
             if (trim($instance->{ENROL_WAITINGLIST_FIELD_WELCOMEMESSAGE}) !== '') {
-                $message = $instance->customtext1;
-                $message = str_replace('{$a->coursename}', $a->coursename, $message);
-                $message = str_replace('{$a->profileurl}', $a->profileurl, $message);
-                $message . "</br>" . $unenrolStr;
+                $message  = $instance->customtext1;
+                $message  = str_replace('{$a->coursename}', $a->coursename, $message);
+                $message  = str_replace('{$a->profileurl}', $a->profileurl, $message);
+
                 if (strpos($message, '<') === false) {
                     // Plain text only.
+                    $message .= "</br>" . $unenrolStr;
                     $messagetext = $message;
                     $messagehtml = text_to_html($messagetext, null, false, true);
                 } else {

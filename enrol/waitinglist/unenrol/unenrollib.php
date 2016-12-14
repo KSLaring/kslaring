@@ -208,21 +208,21 @@ Class Unenrol_Waiting {
             $params['user']     = $userId;
 
             /* SQL Instruction */
-            $sql = " SELECT   ew.id,
-                              ew.unenrolenddate 
-                     FROM     {enrol_waitinglist_method} ew
-                        JOIN  {user_enrolments}	  ue      ON  ue.enrolid 	= ew.waitinglistid
-                                                          AND ue.status	= 0
-                                                          AND ue.userid	= :user
-                        JOIN  {course_completions}  cc    ON  cc.course	= ew.courseid
-                                                          AND cc.userid	= ue.userid
-                                                          AND (cc.timecompleted IS NULL
-                                                               OR
-                                                               cc.timecompleted = 0
-                                                              )
-                     WHERE  ew.courseid      = :course
-                        AND ew.waitinglistid = :wait
-                        AND ew.methodtype  like '%self%'";
+            $sql = " SELECT       ew.id,
+                                  ew.unenrolenddate 
+                     FROM         {enrol_waitinglist_method} ew
+                        JOIN      {user_enrolments}	         ue ON  ue.enrolid 	= ew.waitinglistid
+                                                                AND ue.status	= 0
+                                                                AND ue.userid	= :user
+                        LEFT JOIN {course_completions}      cc  ON  cc.course	= ew.courseid
+                                                                AND cc.userid	= ue.userid
+                                                                AND (cc.timecompleted IS NULL
+                                                                     OR
+                                                                     cc.timecompleted = 0
+                                                                    )
+                     WHERE        ew.courseid      = :course
+                          AND     ew.waitinglistid = :wait
+                          AND     ew.methodtype  like '%self%'";
 
             /* Execute */
             $rdo = $DB->get_record_sql($sql,$params);

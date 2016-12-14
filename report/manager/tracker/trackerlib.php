@@ -150,18 +150,18 @@ class TrackerManager {
                                 e.id,
                                 e.enrol,
                                 e.courseid
-                     FROM		{enrol}				  e
-                        JOIN	{user_enrolments}	  ue  ON  ue.enrolid 	= e.id
-                                                          AND ue.status	= 0
-                                                          AND ue.userid	= :user
-                        JOIN	{course_completions}  cc  ON  cc.course	= e.courseid
-                                                          AND cc.userid	= ue.userid
-                                                          AND (cc.timecompleted IS NULL
-                                                               OR
-                                                               cc.timecompleted = 0
-                                                              )
-                     WHERE		e.courseid = :course
-                        AND		e.status   = 0 ";
+                     FROM		  {enrol}				  e
+                        JOIN	  {user_enrolments}	      ue  ON  ue.enrolid 	= e.id
+                                                              AND ue.status	= 0
+                                                              AND ue.userid	= :user
+                        LEFT JOIN {course_completions}    cc  ON  cc.course	= e.courseid
+                                                              AND cc.userid	= ue.userid
+                                                              AND (cc.timecompleted IS NULL
+                                                                   OR
+                                                                   cc.timecompleted = 0
+                                                                  )
+                     WHERE		  e.courseid = :course
+                        AND		  e.status   = 0 ";
 
             // Execute
             $rdo = $DB->get_records_sql($sql,$params);
@@ -950,16 +950,16 @@ class TrackerManager {
                                   ewq.unenrolenddate,
                                   ewq.methodtype
                      FROM		  {course}					  c
-                        LEFT JOIN {course_completions}  	  cc  ON	cc.course         = c.id
-                                                                  AND cc.userid           = :user
-                        JOIN	  {enrol} 					  e	  ON 	e.courseid 	      = c.id
-                                                                  AND	e.status 	      = 0
-                        JOIN	  {user_enrolments}			  ue  ON 	ue.enrolid 	      = e.id
-                                                                  AND	ue.status	      = 0
-                                                                  AND ue.userid           = :ue_user
-	                    LEFT JOIN {enrol_waitinglist_method}  ewq ON  ewq.waitinglistid   = e.id
-													              AND ewq.methodtype like 'self'
-                                                                  AND ewq.status		  = 1
+                        LEFT JOIN {course_completions}  	  cc  ON	cc.course           = c.id
+                                                                  AND   cc.userid           = :user
+                        JOIN	  {enrol} 					  e	  ON 	e.courseid 	        = c.id
+                                                                  AND	e.status 	        = 0
+                        JOIN	  {user_enrolments}			  ue  ON 	ue.enrolid 	        = e.id
+                                                                  AND	ue.status	        = 0
+                                                                  AND   ue.userid           = :ue_user
+	                    LEFT JOIN {enrol_waitinglist_method}  ewq ON    ewq.waitinglistid   = e.id
+													              AND   ewq.methodtype like 'self'
+                                                                  AND   ewq.status		    =  1
                      WHERE		c.id NOT IN ($connected)
                         AND     c.visible = 1
                      GROUP BY	c.id
