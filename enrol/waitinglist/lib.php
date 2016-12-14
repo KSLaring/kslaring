@@ -1784,11 +1784,11 @@ class enrol_waitinglist_plugin extends enrol_plugin {
                 } while (empty($rusers) && !empty($croles[$i]));
             }
 
-            if ($rusers) {
-                $contact = reset($rusers);
-            } else {
+            //if ($rusers) {
+            //    $contact = reset($rusers);
+            //} else {
                 $contact = core_user::get_support_user();
-            }
+            //}
 
             // Directly emailing welcome message rather than using messaging.
             /**
