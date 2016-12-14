@@ -172,9 +172,6 @@ class KS_ADFS {
                     $userRequest->modid   = 0;
                 }
 
-
-                echo $userRequest->modlnk . " - " . $userRequest->modid;
-
                 // Prepare data for web service
                 $domain     = $pluginInfo->ks_point;
                 $token      = $pluginInfo->adfs_token;
