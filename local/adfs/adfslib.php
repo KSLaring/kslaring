@@ -261,6 +261,8 @@ class KS_ADFS {
                 $userADFS->city       = $rdo->city;
                 $userADFS->country    = $rdo->country;
                 $userADFS->lang       = $rdo->lang;
+                $userADFS->modlnk     = null;
+                $userADFS->modid      = null;
             }//if_rdo
 
             return $userADFS;
