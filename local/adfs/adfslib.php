@@ -160,6 +160,8 @@ class KS_ADFS {
             $userRequest = self::get_user_adfs($userId);
 
             if ($userRequest) {
+                echo "1" . "</br>";
+                
                 // Course/activity link
                 $userRequest->modlnk  = $modLnk;
                 $userRequest->modid   = $modId;
