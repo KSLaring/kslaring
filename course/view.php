@@ -184,6 +184,7 @@
     if (!isset($USER->editing)) {
         $USER->editing = 0;
     }
+
     if ($PAGE->user_allowed_editing()) {
         if (($edit == 1) and confirm_sesskey()) {
             $USER->editing = 1;
