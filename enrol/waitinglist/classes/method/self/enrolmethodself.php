@@ -763,6 +763,8 @@ class enrolmethodself extends \enrol_waitinglist\method\enrolmethodbase{
                 $form = new enrolmethodself_enrolform(NULL, array($waitinglist,$this,$listtotal,false,$remainder));
 
                 if ($form->is_cancelled()) {
+                    setcookie('ansvar_selected',0);
+                    
                     redirect($CFG->wwwroot . '/index.php');
                 }else if ($form->is_submitted()) {
                     $this->myManagers   = \Approval::managers_connected($USER->id,$infoRequest->companyid);
@@ -782,6 +784,8 @@ class enrolmethodself extends \enrol_waitinglist\method\enrolmethodbase{
                     $form = new enrolmethodself_enrolform(NULL, array($waitinglist,$this,$listtotal,true,null));
 
                     if ($form->is_cancelled()) {
+                        setcookie('ansvar_selected',0);
+
                         redirect($CFG->wwwroot . '/index.php');
                     }else if ($form->is_submitted()) {
                         $form = new enrolmethodself_enrolform(NULL, array($waitinglist,$this,$listtotal,false,null));
@@ -797,6 +801,8 @@ class enrolmethodself extends \enrol_waitinglist\method\enrolmethodbase{
                     $form = new enrolmethodself_enrolform(NULL, array($waitinglist,$this,$listtotal,false,null));
 
                     if ($form->is_cancelled()) {
+                        setcookie('ansvar_selected',0);
+
                         redirect($CFG->wwwroot . '/index.php');
                     }else if ($data = $form->get_data()) {
                         /**

@@ -49,6 +49,9 @@ M.core_user.init_structure = function (Y,name,reload,invoice) {
         isManual : reload,
         isInvoice: invoice,
 
+        ansvar: Y.one('#id_resp_number'),
+        tjeneste: Y.one('#id_service_number'),
+        
         /**
          * Initialises the user selector object
          * @constructor
@@ -69,6 +72,9 @@ M.core_user.init_structure = function (Y,name,reload,invoice) {
             }
 
             if (this.isInvoice) {
+                this.ansvar.on('change', this.save_ansvar, this);
+                this.tjeneste.on('change', this.save_tjeneste, this);
+                
                 this.levelThree.on('change', this.InvoiceDataCompany, this);
                 if (this.levelTwo.get('value') != 0) {
                     Y.one('#id_lnk_search').removeClass('link_search_disabled');
@@ -79,6 +85,16 @@ M.core_user.init_structure = function (Y,name,reload,invoice) {
                     Y.one('#id_lnk_search').addClass('link_search_disabled');
                 }
             }
+
+
+        },
+
+        save_ansvar: function(e) {
+            document.cookie = "ansvar_selected"         + "=" + this.ansvar.get('value');    
+        },
+
+        save_tjeneste: function(e) {
+            document.cookie = "tjeneste_selected"         + "=" + this.tjeneste.get('value');
         },
 
         Activate_LevelOne : function(e) {
@@ -98,6 +114,9 @@ M.core_user.init_structure = function (Y,name,reload,invoice) {
             var parent      = this.levelOne.get('value');
             var level       = 2;
 
+            document.cookie = "ansvar_selected"   + "=0";
+            document.cookie = "tjeneste_selected" + "=0";
+            
             //  Trigger an ajax search after a delay.
             this.cleanCookies();
             if (this.isInvoice && !this.isManual) {
@@ -135,8 +154,8 @@ M.core_user.init_structure = function (Y,name,reload,invoice) {
 
         send_invoice_query: function(forceresearch) {
             /* Variables */
-            var levelTwo    = this.levelTwo.get('value');
-            var levelThree  = this.levelThree.get('value');
+            var levelTwo        = this.levelTwo.get('value');
+            var levelThree      = this.levelThree.get('value');
 
             // Cancel any pending timeout.
             this.cancel_timeout();
@@ -193,7 +212,7 @@ M.core_user.init_structure = function (Y,name,reload,invoice) {
 
                 // Ansvar
                 Y.one('#id_resp_number').set('value',infoInvoice.ansvar);
-                if (infoInvoice.ansvar) {
+                if (infoInvoice.ansvar_active == 0) {
                     Y.one('#id_resp_number').setAttribute('readonly');
                 }else {
                     Y.one('#id_resp_number').removeAttribute('readonly');
@@ -201,7 +220,7 @@ M.core_user.init_structure = function (Y,name,reload,invoice) {
 
                 // Tjeneste
                 Y.one('#id_service_number').set('value',infoInvoice.tjeneste);
-                if (infoInvoice.tjeneste) {
+                if (infoInvoice.tjeneste_active == 0) {
                     Y.one('#id_service_number').setAttribute('readonly');
                 }else {
                     Y.one('#id_service_number').removeAttribute('readonly');

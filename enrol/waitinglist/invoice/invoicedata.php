@@ -43,9 +43,22 @@ $infoInvoice = Invoices::GetInvoiceData($two,$three);
 
 if (!$infoInvoice) {
     $infoInvoice = new stdClass();
-    $infoInvoice->tjeneste          = null;
-    $infoInvoice->ansvar            = null;
     $infoInvoice->resource_number   = null;
+    // ansvar
+    $infoInvoice->ansvar            = null;
+    if (isset($_COOKIE['ansvar_selected']) && $_COOKIE['ansvar_selected']) {
+        $infoInvoice->ansvar = $_COOKIE['ansvar_selected'];
+        $infoInvoice->ansvar_active = 1;
+    }
+    // tjeneste
+    $infoInvoice->tjeneste          = null;
+    if (isset($_COOKIE['tjeneste_selected']) && $_COOKIE['tjeneste_selected']) {
+        $infoInvoice->tjeneste = $_COOKIE['tjeneste_selected'];
+        $infoInvoice->tjeneste_active = 1;
+    }
+}else {
+    $infoInvoice->ansvar_active     = 0;
+    $infoInvoice->tjeneste_active   = 0;
 }
 
 if (isset($SESSION->resource_number) && $SESSION->resource_number) {

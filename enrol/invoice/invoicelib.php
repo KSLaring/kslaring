@@ -81,25 +81,23 @@ class Invoices {
      */
     public static function AddElements_ToForm(&$form) {
         /* Variables    */
-        global $COURSE,$SESSION;
+        global $COURSE;
         $invoice    = null;
         $grp        = null;
-        $resource_number = '';
 
         try {
             /* Invoice Type */
-
             $form->addElement('html','<label class="invoice_info">' . get_string('invoice_info','enrol_invoice') . '</label>');
 
             /* Account  */
             $invoice = array();
             $invoice[0] = $form->createElement('radio', 'invoice_type','',get_string('account_invoice','enrol_invoice'),ACCOUNT_INVOICE);
             $invoice[0]->setValue(ACCOUNT_INVOICE);
-            //$invoice[1] = $mform->createElement('text','account',null,'class="account" disabled');
-            //$mform->setType('account',PARAM_INT);
+            
             /* Responsibility Number */
             $invoice[1] = $form->createElement('text','resp_number',get_string('invoice_resp','enrol_invoice'),'class="address" disabled');
             $form->setType('resp_number',PARAM_TEXT);
+
             /* Service Number   */
             $invoice[2] = $form->createElement('text','service_number',get_string('invoice_service','enrol_invoice'),'class="address" disabled');
             $form->setType('service_number',PARAM_TEXT);
@@ -135,7 +133,7 @@ class Invoices {
             /* Bil To /Marked With         */
             $invoice[4] = $form->createElement('text','bil_to',get_string('invoice_bil','enrol_invoice'),'class="address" disabled');
             $form->setType('bil_to',PARAM_TEXT);
-
+            
             $grp = $form->addElement('group', 'grp_InvoiceType', null, $invoice,'</br>' , false);
             $form->addRule('grp_InvoiceType',get_string('required'),'required', null, 'server');
         }catch (Exception $ex) {

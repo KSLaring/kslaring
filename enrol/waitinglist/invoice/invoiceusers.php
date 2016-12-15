@@ -62,7 +62,7 @@ $form = new invoice_users_form(null,array($courseId,$lstUsers));
 if ($form->is_cancelled()) {
     unset($SESSION->bulk_users);
     unset($SESSION->resource_number);
-    
+
     $_POST = array();
     redirect($returnUrl);
 }else if ($data = $form->get_data()) {

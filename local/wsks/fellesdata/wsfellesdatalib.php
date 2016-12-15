@@ -300,7 +300,7 @@ class WS_FELLESDATA {
                             $infoImported->imported         = 1;
                             $infoImported->key              = $infoAccount->id;
 
-                            $imported[$key] = $infoImported;
+                            $imported[$infoAccount->id]     = $infoImported;
                         }//if_userid
                         
                         $result['usersAccounts'] = $imported;
