@@ -2019,7 +2019,6 @@ class FSKS_USERS {
                             $infoComp->action           = DELETE;
 
                             // Add competence
-                            echo "KEY: " . $instance->id . "</br>";
                             $usersComp[$instance->id] = $infoComp;
                         }
                     }else {
