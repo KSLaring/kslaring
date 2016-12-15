@@ -79,10 +79,6 @@ class WS_SLAVE {
             $params =array();
             $params['plugin'] = 'local_' . $service['name'];
 
-            global $CFG;
-            $dbLog = " MAIN: " . $service['main'] . "\n";
-            error_log($dbLog, 3, $CFG->dataroot . "/SLAVE.log");
-
             /* SQL instruction  */
             $sql = " SELECT	cs.id
                      FROM	{config_plugins}	cs

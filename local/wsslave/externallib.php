@@ -105,21 +105,12 @@ class local_wsslave_external extends external_api {
         $result['msg_error']    = '';
         $result['updated']      = 1;
 
-        global $CFG;
-        
         try {
             /* Updated Service */
-
-            $dbLog = " SLAVES" . "\n";
-            error_log($dbLog, 3, $CFG->dataroot . "/SLAVE.log");
-
             WS_SLAVE::Process_UpdateMainService($service,$result);
 
             return $result;
         }catch (Exception $ex) {
-            $dbLog = " SLAVES" . $ex->getMessage() . "\n";
-            error_log($dbLog, 3, $CFG->dataroot . "/SLAVE.log");
-
             throw $ex;
         }//try_catch
     }//wsUpdateMainService
