@@ -36,8 +36,8 @@ $pdf->setPrintFooter(false);
 $pdf->SetAutoPageBreak(false, 0);
 $pdf->AddPage();
 
-// Define variables
-// Landscape
+// Define variables.
+// Landscape.
 if ($certificate->orientation == 'L') {
     $x = 10;
     $y = 0;
@@ -56,7 +56,7 @@ if ($certificate->orientation == 'L') {
     $brdrw = 297;
     $brdrh = 210;
     $codey = 175;
-} else { // Portrait
+} else { // Portrait.
     $x = 10;
     $y = 0;
     $sealx = 150;
@@ -83,29 +83,16 @@ $fontsans = get_config('certificate', 'fontsans');
 // Moodle TCPDF reads the fonts from the moodledata fonts directory if present. Then copy
 // the font file to be used into the »moodledata/fonts« directory.
 //$fontserif = $pdf->addTTFfont($CFG->dataroot . '/fonts/segoeprb.ttf', 'TrueTypeUnicode',
-//    '', 32, $CFG->dataroot . '/fonts/');
+//    '', 32, $CFG->dataroot . '/fonts/'); // end of code.
 
 $fontserif = get_config('certificate', 'fontserif');
 
-// Add images and lines
+// Add images and lines.
 certificate_print_image($pdf, $certificate, CERT_IMAGE_BORDER, $brdrx, $brdry, $brdrw, $brdrh);
-//certificate_draw_frame($pdf, $certificate);
-// Set alpha to semi-transparency
-//$pdf->SetAlpha(0.2);
-//certificate_print_image($pdf, $certificate, CERT_IMAGE_WATERMARK, $wmarkx, $wmarky,
-// $wmarkw, $wmarkh);
-//$pdf->SetAlpha(1);
-//certificate_print_image($pdf, $certificate, CERT_IMAGE_SEAL, $sealx, $sealy, '', '');
-//certificate_print_image($pdf, $certificate, CERT_IMAGE_SIGNATURE, $sigx, $sigy, '', '');
 
-// Add text
-//$pdf->SetTextColor(0, 0, 120);
-//certificate_print_text($pdf, $x, $y, 'C', $fontsans, '', 30,
-// get_string('title', 'certificate'));
+// Add the text.
 $pdf->SetTextColor(0, 0, 0);
 certificate_print_text($pdf, $x, $y + 95, 'C', $fontserif, '', 30, fullname($USER));
-//certificate_print_text($pdf, $x, $y + 93, 'C', $fontserif, '', 20,
-// get_string('certify', 'certificate'));
 
 $pdf->SetTextColor(157, 157, 157);
 certificate_print_text($pdf, $x, $y + 121, 'C', $fontsans, '', 18,
@@ -122,27 +109,5 @@ certificate_print_text($pdf, 46, $y + 164, 'L', $fontsans, '', 16,
 
 certificate_print_text($pdf, $x, $y + 227, 'C', $fontsans, '', 16,
     'Bergen, ' . certificate_get_date($certificate, $certrecord, $course));
-//certificate_print_text($pdf, $x, $y + 102, 'C', $fontserif, '', 10,
-// certificate_get_grade($certificate, $course));
-//certificate_print_text($pdf, $x, $y + 112, 'C', $fontserif, '', 10,
-// certificate_get_outcome($certificate, $course));
-//if ($certificate->printhours) {
-//    certificate_print_text($pdf, $x, $y + 122, 'C', $fontserif, '', 10,
-// get_string('credithours', 'certificate') . ': ' . $certificate->printhours);
-//}
-//certificate_print_text($pdf, $x, $codey, 'C', $fontserif, '', 10,
-// certificate_get_code($certificate, $certrecord));
-//$i = 0;
-//if ($certificate->printteacher) {
-//    $context = context_module::instance($cm->id);
-//    if ($teachers = get_users_by_capability($context, 'mod/certificate:printteacher', '',
-// $sort = 'u.lastname ASC', '', '', '', '', false)) {
-//        foreach ($teachers as $teacher) {
-//            $i++;
-//            certificate_print_text($pdf, $sigx, $sigy + ($i * 4), 'L', $fontserif, '',
-// 12, fullname($teacher));
-//        }
-//    }
-//}
 
-//include_once(__DIR__ . '/pagescales_mm.php');
+// include_once(__DIR__ . '/pagescales_mm.php');

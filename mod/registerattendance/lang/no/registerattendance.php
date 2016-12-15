@@ -66,6 +66,8 @@ $string['addfilter'] = 'Legg til filter';
 $string['searchnameshort'] = 'Søk ...';
 $string['searchnamelabel'] = 'Søk i brukerens fulle navn';
 $string['showperpage'] = 'Vis brukere pr. side';
+$string['attended'] = 'møtt';
+$string['notattended'] = 'ikke møtt';
 
 $string['bulkregister_title'] = 'Masseregistrering av frammøte';
 $string['bulkregisterbtn'] = 'Masseregistrering';
