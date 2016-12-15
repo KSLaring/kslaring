@@ -48,13 +48,16 @@ class mod_registerattendance_view_page extends mod_registerattendance_widget imp
      */
     public function construct_user_feedback($registerattendance) {
         $out = '';
+        $strattended = get_string('attended', 'mod_registerattendance');
+        $strnotattended = get_string('notattended', 'mod_registerattendance');
 
         // Load criteria to display.
         /* @var \completion_info $completion The completion info object */
         $completion = $registerattendance->completion;
         $this->wipe_session_cache();
         $completiondata = $completion->get_data($registerattendance->cm);
-        $attended = $completiondata->completionstate == COMPLETION_COMPLETE ? 'attended' : 'not attended';
+
+        $attended = $completiondata->completionstate == COMPLETION_COMPLETE ? $strattended : $strnotattended;
         $out .= get_string('youhaveattended', 'mod_registerattendance', $attended);
 
         return $out;
