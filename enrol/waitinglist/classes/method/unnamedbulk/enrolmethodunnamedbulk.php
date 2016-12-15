@@ -808,6 +808,8 @@ class enrolmethodunnamedbulk extends \enrol_waitinglist\method\enrolmethodbase {
                 $form = new enrolmethodunnamedbulk_enrolform(NULL, array($waitinglist,$this,$qstatus,false,$remainder));
 
                 if ($form->is_cancelled()) {
+                    setcookie('ansvar_selected',0);
+                    
                     redirect($CFG->wwwroot . '/index.php');
                 }else if ($form->is_submitted()) {
                     $this->myManagers   = \Approval::managers_connected($USER->id,$infoRequest->companyid);
@@ -844,6 +846,8 @@ class enrolmethodunnamedbulk extends \enrol_waitinglist\method\enrolmethodbase {
                     $data = false;
 
                     if ($form->is_cancelled()) {
+                        setcookie('ansvar_selected',0);
+                        
                         redirect($CFG->wwwroot . '/index.php');
                     }else if ($form->is_submitted()) {
 
