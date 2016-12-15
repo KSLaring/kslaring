@@ -1683,6 +1683,7 @@ class FSKS_USERS {
                         $userId = $DB->insert_record('user',$infoUser);
                     }else {
                         // Update
+                        $userId = $rdoUser->id;
                         $rdoUser->firstname     = $userFS->firstname;
                         $rdoUser->lastname      = $userFS->lastname;
                         $rdoUser->email         = $userFS->email;
@@ -1701,6 +1702,7 @@ class FSKS_USERS {
                     // Check if exists
                     if ($rdoUser) {
                         // Update
+                        $userId = $rdoUser->id;
                         $rdoUser->firstname    = $userFS->firstname;
                         $rdoUser->lastname     = $userFS->lastname;
                         $rdoUser->email        = $userFS->email;
