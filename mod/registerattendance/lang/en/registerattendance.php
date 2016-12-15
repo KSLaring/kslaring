@@ -69,6 +69,8 @@ $string['searchnamelabel'] = 'Search user full name';
 $string['showperpage'] = 'Show users per page';
 $string['filterhdr'] = 'Filter';
 $string['tablehdr'] = 'Table';
+$string['attended'] = 'attended';
+$string['notattended'] = 'not attended';
 
 $string['bulkregister_title'] = 'Bulk register attendance';
 $string['bulkregisterbtn'] = 'Bulk register';
