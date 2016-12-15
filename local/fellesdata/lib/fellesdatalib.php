@@ -1644,6 +1644,7 @@ class FSKS_USERS {
 
             // Info Account
             if (!$rdoUser) {
+                echo "2";
                 // Create new Account
                 $infoUser = new stdClass();
                 if ($userFS->adfs) {
@@ -1666,6 +1667,7 @@ class FSKS_USERS {
                 $infoUser->calendartype = $CFG->calendartype;
                 $infoUser->mnethostid   = $CFG->mnet_localhost_id;
             }else {
+                echo "1";
                 $userId = $rdoUser->id;
                 // Two merge accounts
                 if ($userFS->adfs) {
@@ -1722,17 +1724,19 @@ class FSKS_USERS {
                     break;
                 case DELETE:
                     /* Delete   */
-                    //if ($rdoUser) {
-                    //    $rdoUser->timemodified = $time;
-                    //    $rdoUser->deleted      = 1;
+                    if ($rdoUser) {
+                        $rdoUser->timemodified = $time;
+                        $rdoUser->deleted      = 0;
+                        $rdoUser->email        = '';
 
                         /* Execute  */
-                    //    $DB->update_record('user',$rdoUser);
-                    //}else {
+                        $DB->update_record('user',$rdoUser);
+                    }else {
                         /* Execute  */
-                    //    $infoUser->deleted      = 1;
-                    //    $userId = $DB->insert_record('user',$infoUser);
-                    //}//if_exist
+                        $infoUser->deleted      = 0;
+                        $infoUser->email        = '';
+                        $userId = $DB->insert_record('user',$infoUser);
+                    }//if_exist
 
                     // Synchronized
                     $sync = true;
