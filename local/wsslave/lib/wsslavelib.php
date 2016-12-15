@@ -138,6 +138,8 @@ class WS_SLAVE {
                 /* Execute */
                 $DB->update_record('config_plugins',$rdo);
                 $result['updated']      = 1;
+
+                set_config($rdo->name, $service['token'], $params['plugin']);
             }else {
                 /* No token to update */
                 $result['error']        = 500;
