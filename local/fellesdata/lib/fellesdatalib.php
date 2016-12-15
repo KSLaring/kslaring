@@ -1152,11 +1152,11 @@ class FSKS_USERS {
                               fsk.fscompany,
                               fsk.kscompany,
                               ks.hierarchylevel,
-                              fs.prioritet,
+                                        fs.prioritet,
                               fs.action
                      FROM	  {fs_imp_managers_reporters}   fs
                         JOIN  {user}                        u   ON  u.idnumber    = fs.fodselsnr
-                                                                AND u.deleted     = 0
+            AND u.deleted     = 0
                         JOIN  {ksfs_company}		        fsk	ON  fsk.fscompany = fs.org_enhet_id
                         JOIN  {ks_company}			        ks	ON	ks.companyid  = fsk.kscompany
                      WHERE	  fs.imported	= :imported ";
@@ -2019,6 +2019,7 @@ class FSKS_USERS {
                             $infoComp->action           = DELETE;
 
                             // Add competence
+                            echo "KEY: " . $instance->id . "</br>";
                             $usersComp[$instance->id] = $infoComp;
                         }
                     }else {
