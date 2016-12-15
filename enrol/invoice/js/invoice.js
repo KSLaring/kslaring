@@ -74,6 +74,7 @@ YUI().use('node', function(Y) {
 
         window.onbeforeunload = null;
     }//address_checked
+    
     Y.one('#id_invoice_type_ADDRESS').on('click', function (e) {
         /* Activate Address Invoice     */
         Y.one('#id_street').removeAttribute('disabled');

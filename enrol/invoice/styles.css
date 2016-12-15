@@ -183,3 +183,7 @@ label.invoice_info {
     margin-left: 245px;
 }
 
+.fld_hidden {
+    visibility: hidden;
+}
+
