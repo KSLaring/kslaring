@@ -82,7 +82,7 @@ class WS_SLAVE {
             global $CFG;
             $dbLog = " MAIN: " . $service['main'] . "\n";
             error_log($dbLog, 3, $CFG->dataroot . "/SLAVE.log");
-            
+
             /* SQL instruction  */
             $sql = " SELECT	cs.id
                      FROM	{config_plugins}	cs
