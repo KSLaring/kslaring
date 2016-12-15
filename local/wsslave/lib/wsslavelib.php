@@ -77,13 +77,13 @@ class WS_SLAVE {
         try {
             /* Search Criteria  */
             $params =array();
-            $params['plugin'] = 'local_' . $service['name'];
+            $params['plugin'] = 'local_' . trim($service['name']);
 
             /* SQL instruction  */
             $sql = " SELECT	cs.id
                      FROM	{config_plugins}	cs
                      WHERE	cs.plugin = :plugin
-                        AND	cs.value like '%" . $service['main'] . "%' ";
+                        AND	cs.value like '%" . trim($service['main']) . "%' ";
 
             /* Execute */
             $rdo = $DB->get_record_sql($sql,$params);
