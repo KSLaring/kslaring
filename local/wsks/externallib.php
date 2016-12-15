@@ -786,6 +786,7 @@ class local_wsks_external extends external_api {
     public static function wsUserCompetence_parameters() {
         /* User Competence Info */
         $personalNumber = new external_value(PARAM_TEXT,'Personal Number');
+        $key            = new external_value(PARAM_TEXT,'Key');
         $jobRole        = new external_value(PARAM_TEXT,'Job Roles Id');
         $fsjobRoles     = new external_value(PARAM_TEXT,'FS job roles');
         $companyID      = new external_value(PARAM_INT,'Company Id');
@@ -795,6 +796,7 @@ class local_wsks_external extends external_api {
         $action         = new external_value(PARAM_INT,'Action. Add/Update/Delete');
 
         $userCompetence = new external_single_structure(array('personalNumber'  => $personalNumber,
+                                                              'key'             => $key,
                                                               'jobrole'         => $jobRole,
                                                               'fsjobroles'      => $fsjobRoles,
                                                               'company'         => $companyID,
