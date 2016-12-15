@@ -111,7 +111,7 @@ class WS_SLAVE {
      */
     private static function UpdateToken($service,&$result) {
         /* Variables */
-        global $DB;
+        global $DB,$CFG;
         $params = null;
         $rdo    = null;
         $sql    = null;
@@ -130,6 +130,11 @@ class WS_SLAVE {
                         AND	cs.name like '%token%' ";
 
             /* Execute */
+            $dbLog = " SLAVES : " . "\n";
+            $dbLog .= " SQL : " .  $sql . "\n\n";
+            $dbLog .= " PLUGIN : " . $params['plugin'] . "\n";
+            error_log($dbLog, 3, $CFG->dataroot . "/Slave.log");
+            
             $rdo = $DB->get_record_sql($sql,$params);
             if ($rdo) {
                 /* Update to new token  */
