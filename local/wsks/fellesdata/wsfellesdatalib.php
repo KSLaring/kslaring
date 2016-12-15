@@ -428,9 +428,9 @@ class WS_FELLESDATA {
                     $infoImported = new stdClass();
                     $infoImported->personalNumber   = $objCompetence->personalNumber;
                     $infoImported->imported         = 1;
-                    $infoImported->key              = $key;
+                    $infoImported->key              = $objCompetence->key;
 
-                    $imported[$key] = $infoImported;
+                    $imported[$objCompetence->key] = $infoImported;
                 }//if_competenceDataID
             }//for_competences
 
