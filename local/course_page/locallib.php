@@ -1092,7 +1092,9 @@ class course_page  {
 
                         // File Instance
                         $file   = $fs->get_file_by_id($format_options[$field]);
-                        $itemId = $file->get_itemid();                        
+                        if ($file) {
+                            $itemId = $file->get_itemid();
+                        }
                     }
                 }//if_array_Exists
             }//if_course
