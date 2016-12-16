@@ -1154,10 +1154,14 @@ class course_page  {
             // Return Graphic Id for the Home Page
             $fs = get_file_storage();
             if ($files = $fs->get_area_files($context->id, 'course', $field, $field_value, 'id DESC', false)) {
-                // Remove Previous
-                $file = reset($files);
+                if ($files) {
+                    // Remove Previous
+                    $file = reset($files);
 
-                $itemId = $file->get_id();
+                    if ($file) {
+                        $itemId = $file->get_id();
+                    }
+                }
             }//if_file
 
             return $itemId;
