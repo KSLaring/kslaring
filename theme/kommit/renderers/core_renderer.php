@@ -227,7 +227,7 @@ EOT;
      * always shown, even if no menu items are configured in the global
      * theme settings page.
      */
-    public function user_menu($user = NULL, $withlinks = NULL) {
+    public function _user_menu($user = NULL, $withlinks = NULL) {
         global $CFG;
         $usermenu = new custom_menu('', current_language());
 
