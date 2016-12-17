@@ -147,42 +147,25 @@ M.mod_scorm.init = function(Y, nav_display, navposition_left, navposition_top, h
             }
 
             scorm_tree_node.closeAll();
-            // remove any reference to the old API
-            if (window.API) {
-                window.API = null;
-            }
-            if (window.API_1484_11) {
-                window.API_1484_11 = null;
-            }
             var url_prefix = M.cfg.wwwroot + '/mod/scorm/loadSCO.php?';
             var el_old_api = document.getElementById('scormapi123');
             if (el_old_api) {
                 el_old_api.parentNode.removeChild(el_old_api);
             }
 
-            if (node.title) {
-                var el_scorm_api = document.getElementById("external-scormapi");
-                el_scorm_api.parentNode.removeChild(el_scorm_api);
-                el_scorm_api = document.createElement('script');
-                el_scorm_api.setAttribute('id','external-scormapi');
-                el_scorm_api.setAttribute('type','text/javascript');
-                var pel_scorm_api = document.getElementById('scormapi-parent');
-                pel_scorm_api.appendChild(el_scorm_api);
-                var api_url = M.cfg.wwwroot + '/mod/scorm/loaddatamodel.php?' + node.title;
-                document.getElementById('external-scormapi').src = api_url;
-            }
-
-            var content = Y.one('#scorm_content');
             var obj = document.createElement('iframe');
             obj.setAttribute('id', 'scorm_object');
             obj.setAttribute('type', 'text/html');
+            obj.setAttribute('allowfullscreen', 'allowfullscreen');
+            obj.setAttribute('webkitallowfullscreen', 'webkitallowfullscreen');
+            obj.setAttribute('mozallowfullscreen', 'mozallowfullscreen');
             if (!window_name && node.title != null) {
                 obj.setAttribute('src', url_prefix + node.title);
             }
             if (window_name) {
                 var mine = window.open('','','width=1,height=1,left=0,top=0,scrollbars=no');
                 if(! mine) {
-                    alert(M.str.scorm.popupsblocked);
+                    alert(M.util.get_string('popupsblocked', 'scorm'));
                 }
                 mine.close();
             }
@@ -194,8 +177,6 @@ M.mod_scorm.init = function(Y, nav_display, navposition_left, navposition_top, h
                     var poptions = scormplayerdata.popupoptions;
                     poptions = poptions + ',resizable=yes'; // Added for IE (MDL-32506).
                     scorm_openpopup(M.cfg.wwwroot + "/mod/scorm/loadSCO.php?" + node.title, window_name, poptions, cwidth, cheight);
-                } else {
-                    content.replaceChild(obj, old);
                 }
             } else {
                 content.prepend(obj);
