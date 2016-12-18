@@ -23,6 +23,7 @@ $string['header_help'] =
 $string['usermergingheader'] = '&laquo;{$a->username}&raquo; (user ID = {$a->id})';
 $string['errorsameuser'] = 'Trying to merge the same user';
 $string['mergeusers'] = 'Merge user accounts';
+$string['mergeusers:mergeusers'] = 'Merge user accounts';
 $string['merging'] = 'Merged';
 $string['into'] = 'into';
 $string['newuserid'] = 'User ID to be kept';
@@ -63,6 +64,8 @@ $string['deleted'] = 'User with ID {$a} was deleted';
 $string['errortransactionsonly'] = 'Error: transactions are required, but your database type {$a}
     does not support them. If needed, you can allow merging users without transactions.
     Please, review plugin settings to set up them accordingly.';
+$string['eventusermergedsuccess'] = 'Merging success';
+$string['eventusermergedfailure'] = 'Merge failed';
 
 // Settings page
 $string['transactions_setting'] = 'Only transactions allowed';
@@ -177,3 +180,10 @@ $string['qa_action_remain_log'] = 'User data from table <strong>{$a}</strong> ar
 $string['qa_chosen_action'] = 'Active option for quiz attempts: {$a}.';
 
 $string['qa_grades'] = 'Grades recalculated for quizzes: {$a}.';
+
+$string['uniquekeynewidtomaintain'] = 'Keep new user\'s data';
+$string['uniquekeynewidtomaintain_desc'] = 'In case of conflict, '
+    . 'like when the user.id related column is a unique key, this plugin will keep '
+    . 'data from new user (by default). This also means that data from old user is '
+    . 'deleted to keep the consistence. Otherwise, if you uncheck this option, '
+    . 'data from old user will be kept.';
