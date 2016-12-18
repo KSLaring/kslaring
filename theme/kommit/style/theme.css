@@ -452,6 +452,13 @@ h6 {
 .navbar-menues .usermenu .moodle-actionmenu .toggle-display .userbutton .usertext {
   color: #fff;
 }
+.navbar-menues .usermenu .login {
+  color: #fff;
+}
+.navbar-menues .usermenu .login a {
+  color: #00aef0;
+  text-decoration: none;
+}
 @media only screen and (min-width: 768px) {
   #topsearch {
     float: left;

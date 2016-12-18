@@ -227,71 +227,12 @@ EOT;
      * always shown, even if no menu items are configured in the global
      * theme settings page.
      */
-    public function _user_menu($user = NULL, $withlinks = NULL) {
+    public function user_menu($user = null, $withlinks = null) {
         global $CFG;
-        $usermenu = new custom_menu('', current_language());
 
-        return $this->render_user_menu($usermenu);
-    }
-
-    /*
-     * This renders the bootstrap top menu.
-     *
-     * This renderer is needed to enable the Bootstrap style navigation.
-     */
-    protected function render_user_menu(custom_menu $menu) {
-        global $CFG, $USER, $DB;
-
-        $addusermenu = true;
-        $addlangmenu = true;
-
-        $langs = get_string_manager()->get_list_of_translations();
-        if (count($langs) < 1
-            or empty($CFG->langmenu)
-            or ($this->page->course != SITEID and !empty($this->page->course->lang))
-        ) {
-            $addlangmenu = false;
+        if (isloggedin()) {
+            return parent::user_menu($user, $withlinks);
         }
-
-        if ($addlangmenu) {
-            $language = $menu->add(get_string('language'), new moodle_url('#'), get_string('language'), 10000);
-            foreach ($langs as $langtype => $langname) {
-                $language->add($langname, new moodle_url($this->page->url, array('lang' => $langtype)), $langname);
-            }
-        }
-
-        if (!$menu->has_children() && $addlangmenu === false) {
-            return '';
-        }
-
-        if ($addusermenu) {
-            if (isloggedin()) {
-                $usermenu = $menu->add(fullname($USER), new moodle_url(''), fullname($USER), 10001);
-
-                $usermenu->add('<i class="fa fa-file"></i>' . get_string('myhome'), new moodle_url('/my/'));
-
-                $usermenu->add('<i class="fa fa-user"></i>' . get_string('viewprofile'), new moodle_url('/user/profile.php',
-                    array('id' => $USER->id)),
-                    get_string('viewprofile'));
-
-                $usermenu->add('<i class="fa fa-cog"></i>' . get_string('editmyprofile'),
-                    new moodle_url('/user/edit.php',
-                        array('id' => $USER->id)),
-                    get_string('editmyprofile'));
-
-                $usermenu->add('<i class="fa fa-lock"></i>' . get_string('logout'), new moodle_url('/login/logout.php',
-                    array('sesskey' => sesskey(), 'alt' => 'logout')),
-                    get_string('logout'));
-
-            }
-        }
-
-        $content = '<ul class="nav navbar-nav navbar-right">';
-        foreach ($menu->get_children() as $item) {
-            $content .= $this->render_custom_menu_item($item, 1);
-        }
-
-        return $content . '</ul>';
     }
 
     /*
