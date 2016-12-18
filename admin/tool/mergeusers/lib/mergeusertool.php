@@ -213,17 +213,24 @@ class MergeUserTool
      */
     public function merge($toid, $fromid)
     {
-        $result = $this->_merge($toid, $fromid);
+        list($success, $log) = $this->_merge($toid, $fromid);
 
-        $event = new stdClass();
-        $event->newid = $toid;
-        $event->oldid = $fromid;
-        $event->log = $result[1];
-        $event->timemodified = time();
-        events_trigger(($result[0]) ? 'merging_success' : 'merging_failed', $event);
+        $eventpath = "\\tool_mergeusers\\event\\";
+        $eventpath .= ($success) ? "user_merged_success" : "user_merged_failure";
 
-        $result[] = $this->logger->log($toid, $fromid, $result[0], $result[1]);
-        return $result;
+        $event = $eventpath::create(array(
+            'context' => \context_system::instance(),
+            'other' => array(
+                'usersinvolved' => array(
+                    'toid' => $toid,
+                    'fromid' => $fromid,
+                ),
+                'log' => $log,
+            ),
+        ));
+        $event->trigger();
+        $logid = $this->logger->log($toid, $fromid, $success, $log);
+        return array($success, $log, $logid);
     }
 
     /**
@@ -280,6 +287,8 @@ class MergeUserTool
                 // process the given $tableName.
                 $tableMerger->merge($data, $actionLog, $errorMessages);
             }
+
+            $this->updateGrades($toid, $fromid);
         } catch (Exception $e) {
             $errorMessages[] = nl2br("Exception thrown when merging: '" . $e->getMessage() . '".' .
                     html_writer::empty_tag('br') . $DB->get_last_error() . html_writer::empty_tag('br') .
@@ -358,6 +367,35 @@ class MergeUserTool
         }
 
         $this->userFieldsPerTable = $userFieldsPerTable;
+
+        $existingCompoundIndexes = $this->tablesWithCompoundIndex;
+        foreach ($this->tablesWithCompoundIndex as $tableName => $columns) {
+            $chosenColumns = array_merge($columns['userfield'], $columns['otherfields']);
+
+            $columnNames = array();
+            foreach ($chosenColumns as $columnName) {
+                $columnNames[$columnName] = 0;
+            }
+
+            $tableColumns = $DB->get_columns($tableName, false);
+
+            foreach ($tableColumns as $column) {
+                if (isset($columnNames[$column->name])) {
+                    $columnNames[$column->name] = 1;
+                }
+            }
+
+            // If we find some compound index with missing columns,
+            // it is that loaded configuration does not corresponds to current database scheme
+            // and this index does not apply.
+            $found = array_sum($columnNames);
+            if (sizeof($columnNames) !== $found) {
+                unset($existingCompoundIndexes[$tableName]);
+            }
+        }
+
+        // update the attribute with the current existing compound indexes per table.
+        $this->tablesWithCompoundIndex = $existingCompoundIndexes;
     }
 
     /**
@@ -426,5 +464,35 @@ class MergeUserTool
                 (TABLE_SCHEMA = ? OR TABLE_CATALOG=?) AND
                 COLUMN_NAME IN (" . $userFields . ")",
             array($tableName, $CFG->dbname, $CFG->dbname));
+    }
+
+    /**
+     * Update all of the target user's grades.
+     * @param int $toid User id
+     */
+    private function updateGrades($toid, $fromid) {
+        global $DB, $CFG;
+        require_once($CFG->libdir.'/gradelib.php');
+
+        $sql = "SELECT iteminstance, itemmodule, courseid
+                FROM {grade_grades} gg
+                INNER JOIN {grade_items} gi on gg.itemid = gi.id
+                WHERE itemtype = 'mod' AND (gg.userid = :toid OR gg.userid = :fromid)";
+
+        $iteminstances = $DB->get_records_sql($sql, array('toid' => $toid, 'fromid' => $fromid));
+
+        foreach ($iteminstances as $iteminstance) {
+            if (!$activity = $DB->get_record($iteminstance->itemmodule, array('id' => $iteminstance->iteminstance))) {
+                throw new \Exception("Can not find $iteminstance->itemmodule activity with id $iteminstance->iteminstance");
+            }
+            if (!$cm = get_coursemodule_from_instance($iteminstance->itemmodule, $activity->id, $iteminstance->courseid)) {
+                throw new \Exception('Can not find course module');
+            }
+
+            $activity->modname    = $iteminstance->itemmodule;
+            $activity->cmidnumber = $cm->idnumber;
+
+            grade_update_mod_grades($activity, $toid);
+        }
     }
 }

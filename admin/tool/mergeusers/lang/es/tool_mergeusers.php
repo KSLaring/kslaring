@@ -59,6 +59,8 @@ $string['deleted'] = 'Usuario {$a} eliminado';
 $string['errortransactionsonly'] = 'Error: se requiren transacciones, y su base de datos {$a} no las soporta.
     Si lo necesita, puede configurar que las fusiones se hagan sin transacciones.
     Revise la configuración para que se ajuste a sus necesidades.';
+$string['eventusermergedsuccess'] = 'Fusion correcta';
+$string['eventusermergedfailure'] = 'Fusion fallida';
 
 //New strings
 
@@ -166,3 +168,10 @@ $string['qa_action_remain_log'] = 'Se mantienen intactos los datos de los usuari
 $string['qa_chosen_action'] = 'Opción activa para intentos de cuestionario: {$a}.';
 
 $string['qa_grades'] = 'Calificaciones recalculadas para los cuestionarios: {$a}.';
+
+$string['uniquekeynewidtomaintain'] = 'Mantener datos usuario nuevo';
+$string['uniquekeynewidtomaintain_desc'] = 'En caso de conflicto, com por ejemplo si la '
+    . 'columna relativa al usuario sea índice único, se mantendran los datos '
+    . 'relacionados con el usuario nuevo (por defecto). Esto también significa que los '
+    . 'datos del usuario viejo se eliminaran. Si se desmarca, se matendran los '
+    . 'datos relacionados con el usuario viejo.';
