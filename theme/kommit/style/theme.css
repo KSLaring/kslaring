@@ -449,6 +449,9 @@ h6 {
     float: none;
   }
 }
+.navbar-menues .usermenu .moodle-actionmenu .toggle-display .userbutton .usertext {
+  color: #fff;
+}
 @media only screen and (min-width: 768px) {
   #topsearch {
     float: left;
