@@ -491,25 +491,17 @@ class report extends \mod_scorm\report {
                                     $row[] = $score;
                                 }
                                 // Iterate over tracks and match objective id against values.
-                                $scorm2004 = false;
-                                if (scorm_version_check($scorm->version, SCORM_13)) {
-                                    $scorm2004 = true;
-                                    $objectiveprefix = "cmi.objectives.";
-                                } else {
-                                    $objectiveprefix = "cmi.objectives_";
-                                }
-
-                                $keywords = array(".id", $objectiveprefix);
+                                $keywords = array("cmi.objectives_", ".id");
                                 $objectivestatus = array();
                                 $objectivescore = array();
                                 foreach ($trackdata as $name => $value) {
-                                    if (strpos($name, $objectiveprefix) === 0 && strrpos($name, '.id') !== false) {
+                                    if (strpos($name, 'cmi.objectives_') === 0 && strrpos($name, '.id') !== false) {
                                         $num = trim(str_ireplace($keywords, '', $name));
                                         if (is_numeric($num)) {
-                                            if ($scorm2004) {
-                                                $element = $objectiveprefix.$num.'.completion_status';
+                                            if (scorm_version_check($scorm->version, SCORM_13)) {
+                                                $element = 'cmi.objectives_'.$num.'.completion_status';
                                             } else {
-                                                $element = $objectiveprefix.$num.'.status';
+                                                $element = 'cmi.objectives_'.$num.'.status';
                                             }
                                             if (isset($trackdata->$element)) {
                                                 $objectivestatus[$value] = $trackdata->$element;
@@ -517,7 +509,7 @@ class report extends \mod_scorm\report {
                                                 $objectivestatus[$value] = '';
                                             }
                                             if ($displayoptions['objectivescore']) {
-                                                $element = $objectiveprefix.$num.'.score.raw';
+                                                $element = 'cmi.objectives_'.$num.'.score.raw';
                                                 if (isset($trackdata->$element)) {
                                                     $objectivescore[$value] = $trackdata->$element;
                                                 } else {
@@ -656,9 +648,8 @@ function get_scorm_objectives($scormid) {
     $select = "scormid = ? AND ";
     $select .= $DB->sql_like("element", "?", false);
     $params[] = $scormid;
-    $params[] = "cmi.objectives%.id";
-    $value = $DB->sql_compare_text('value');
-    $rs = $DB->get_recordset_select("scorm_scoes_track", $select, $params, 'value', "DISTINCT $value AS value, scoid");
+    $params[] = "cmi.objectives_%.id";
+    $rs = $DB->get_recordset_select("scorm_scoes_track", $select, $params, 'value', 'DISTINCT value, scoid');
     if ($rs->valid()) {
         foreach ($rs as $record) {
             $objectives[$record->scoid][] = $record->value;

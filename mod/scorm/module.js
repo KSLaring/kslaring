@@ -298,12 +298,26 @@ M.mod_scorm.init = function(Y, nav_display, navposition_left, navposition_top, h
             }
 
             // Calculate the rough new height from the viewport height.
-            var newheight = Y.one('body').get('winHeight') - 5
-                - Y.one('#scorm_layout').getY()
-                - window.pageYOffset;
-            if (newheight < 680 || isNaN(newheight)) {
-                newheight = 680;
+            // start change uh 2016-05-24
+            newheight = Y.one('body').get('winHeight') - 5;
+            if (newheight < 600) {
+                newheight = 600;
             }
+            // Subtract header, navbutton and footer height.
+            // newheight = Y.one('body').get('winHeight') - 570;
+            // if (newheight < 710) {
+            //    newheight = 710;
+            // }
+            // end change uh
+            // ** Kode lagt til av Difi, kmo 26.08.2016
+            // width = parseInt(Y.one('#scorm_layout').getComputedStyle('width'), 10)
+            // if (width < 500) // mobile phones
+            //   newheight = 300;
+            // else if (width < 900) // ipad
+            //   newheight = 500;
+            // else // pc
+            //   newheight = 710;
+            // ** Slutt på kode lagt til av Difi, kmo 26.08.2016
             Y.one('#scorm_layout').setStyle('height', newheight);
 
         };
