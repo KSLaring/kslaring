@@ -31,12 +31,12 @@
 
 defined('MOODLE_INTERNAL') || die;
 
-$plugin->version = 2016120600;
+$plugin->version = 2016121900;
 $plugin->release = '3.1.0';
 $plugin->maturity = MATURITY_STABLE;
 $plugin->requires = 2015111602;
 $plugin->component = 'theme_stavanger';
 $plugin->dependencies = array(
     'theme_bootstrapbase' => 2015111600,
-    'theme_kommit' => 2016120600,
+    'theme_kommit' => 2016121900,
 );

@@ -459,6 +459,9 @@ h6 {
   color: #00aef0;
   text-decoration: none;
 }
+.jsenabled .usermenu .moodle-actionmenu.show {
+  background-color: #7e7e7e;
+}
 @media only screen and (min-width: 768px) {
   #topsearch {
     float: left;
