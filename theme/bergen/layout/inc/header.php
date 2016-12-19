@@ -32,7 +32,7 @@ if ($loggedin) {
                 <a class="logo" href="<?php echo $CFG->wwwroot; ?>">
                     <h1>BK Læring <span class="smaller">Kursadministrasjonssystem for Bergen kommune</span></h1></a>
             </div>
-    
+
             <div class="header-right">
                 <?php if ($municipality) {
                     echo '<div class="muni-logo"><img class="logo" alt="' .
@@ -49,22 +49,19 @@ if ($loggedin) {
         <nav role="navigation" class="navbar-inner">
             <div class="container-fluid">
 
-                <a class="btn btn-navbar" data-toggle="workaround-collapse"
-                   data-target=".nav-collapse">
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </a>
-
                 <?php echo $OUTPUT->search_form(); ?>
 
-                <?php if (!$loggedin || isguestuser()) : ?>
-                    <div class="navbar-text"><?php echo $OUTPUT->login_info() ?></div>
-                <?php endif ?>
+                <div class="navbar-menues">
+                    <?php echo $OUTPUT->navbar_button(); ?>
 
-                <div id="moodle-navbar" class="nav-collapse collapse">
-                    <?php echo $OUTPUT->custom_menu(); ?>
-                    <?php echo $OUTPUT->user_menu(); ?>
+                    <?php if (!$loggedin || isguestuser()) : ?>
+                        <div class="navbar-text"><?php echo $OUTPUT->login_info() ?></div>
+                    <?php endif ?>
+
+                    <div id="moodle-navbar" class="nav-collapse collapse">
+                        <?php echo $OUTPUT->custom_menu(); ?>
+                        <?php echo $OUTPUT->user_menu(); ?>
+                    </div>
                 </div>
             </div>
         </nav>

@@ -106,6 +106,9 @@ a.btn.active {
 .navbar .nav-collapse.active {
   border-top: 0;
 }
+.jsenabled .usermenu .moodle-actionmenu.show {
+  background-color: #00315b;
+}
 #page-footer {
   display: none;
 }
