@@ -180,8 +180,10 @@ class job_role {
                         $sqlExtra .= '(' . $sqlLevel . ')';
                     }//levelOne
                 }//for
-
-                $sql .= " AND (" . $sqlExtra . ")";
+                
+                if ($sqlExtra) {
+                    $sql .= " AND (" . $sqlExtra . ")";    
+                }
             }//if_superUser
 
 
