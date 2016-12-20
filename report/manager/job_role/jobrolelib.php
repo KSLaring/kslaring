@@ -142,8 +142,8 @@ class job_role {
                                             ojrel.jobroleid
                                    FROM     	{report_gen_outcome_jobrole}  ojrel
                                         JOIN  	{grade_outcomes}              go    ON  ojrel.outcomeid = go.id
-                                   GROUP BY ojrel.jobroleid ) 	oc
-                                                                ON jr.id = oc.jobroleid
+                                   GROUP BY ojrel.jobroleid 
+                                   ) oc ON jr.id = oc.jobroleid
                          ";
 
             /* Only Job Roles Connected with super user */
@@ -181,7 +181,9 @@ class job_role {
                     }//levelOne
                 }//for
 
-                $sql .= " AND (" . $sqlExtra . ")";
+                if ($sqlExtra) {
+                    $sql .= " AND (" . $sqlExtra . ")";
+                }
             }//if_superUser
 
 
