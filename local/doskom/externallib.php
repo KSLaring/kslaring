@@ -150,7 +150,6 @@ class local_doskom_external extends external_api {
         $result['url']          = '';
 
         try {
-            mysql_set_charset('utf8');
             /* Library  */
             require_once('../../user/profile/field/gender/lib/genderlib.php');
             
@@ -246,8 +245,6 @@ class local_doskom_external extends external_api {
         $result['url']          = '';
 
         try {
-            mysql_set_charset('utf8');
-
             WS_DOSKOM::deactivateUsers($user_lst,$result);
 
             return $result;
@@ -369,8 +366,6 @@ class local_doskom_external extends external_api {
         $result['catalog']      = array();
 
         try {
-            mysql_set_charset('utf8');
-
             /* Get the course catalog   */
             $result['catalog'] = WS_DOSKOM::getCourseCatalog($company['company'],$result);
 
@@ -492,8 +487,6 @@ class local_doskom_external extends external_api {
         $result['courses']      = array();
 
         try {
-            mysql_set_charset('utf8');
-
             $result['courses'] = WS_DOSKOM::getHistoricalCoursesCompletion($criteria,$result);
 
             return $result;
