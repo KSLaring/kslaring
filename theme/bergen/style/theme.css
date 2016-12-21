@@ -137,6 +137,7 @@ a.btn.active {
   padding: 1em 0 .5em;
 }
 #sub-footer .returntorole {
+  clear: both;
   margin-bottom: 1em;
 }
 #sub-footer .help-link {

@@ -121,7 +121,12 @@ a.btn.active {
   padding: 1em 0 .5em;
 }
 #sub-footer .returntorole {
+  clear: both;
+  color: #fff;
   margin-bottom: 1em;
+}
+#sub-footer .returntorole a {
+  color: white;
 }
 #sub-footer .help-link {
   padding: .7em 0 0;
