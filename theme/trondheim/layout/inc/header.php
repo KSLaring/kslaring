@@ -11,15 +11,11 @@ require_once($CFG->dirroot . '/blocks/municipality/municipalitylib.php');
 
 $loggedin = isloggedin();
 $loggedinclass = ' not-loggedin';
-if ($loggedin) {
-    /* Get the municipality connected with the user */
-    $municipality = Municipality::municipality_ExitsMuni_User($USER->id);
-    $loggedinclass = ' loggedin';
-    // For the Trondheim theme always show the Trondheim logo.
-    $municipality = new stdClass();
-    $municipality->name = 'Tronfdheim kommune';
-    $municipality->logo = $OUTPUT->pix_url('trondheim_logo_s', 'theme_trondheim');
-}
+
+// For the Trondheim theme always show the Trondheim logo.
+$municipality = new stdClass();
+$municipality->name = 'Tronfdheim kommune';
+$municipality->logo = $OUTPUT->pix_url('trondheim_logo_s', 'theme_trondheim');
 
 ?>
 
