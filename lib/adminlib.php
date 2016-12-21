@@ -3184,8 +3184,9 @@ class admin_setting_configmultiselect extends admin_setting_configselect {
         /**
          * Description
          * Convert to array if it is not null
-         * 
+         *
          * @updateDate  21/12/2016
+         * @author      eFaktor (fbv)
          */
         if (is_null($default)) {
             $default = array();
