@@ -15,17 +15,35 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package    mod
- * @subpackage hvp
- * @copyright  2016 Joubel AS <contact@joubel.com>
+ * A form inside a namespace to be used by unit tests.
+ *
+ * See issue MDL-56233
+ *
+ * @package    core
+ * @author     Daniel Thee Roperto <daniel.roperto@catalyst-au.net>
+ * @copyright  2016 Catalyst IT
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+namespace local_unittests\namespaced_form;
+
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2016113000;
-$plugin->requires  = 2013051403;
-$plugin->cron      = 0;
-$plugin->component = 'mod_hvp';
-$plugin->maturity  = MATURITY_RC;
-$plugin->release   = '1.0-rc.5';
+/**
+ * exampleform class.
+ *
+ * @package    core
+ * @author     Daniel Thee Roperto <daniel.roperto@catalyst-au.net>
+ * @copyright  2016 Catalyst IT
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+class exampleform extends \moodleform {
+    /**
+     * Create a simple form definition.
+     */
+    public function definition() {
+        $mform = $this->_form;
+        $mform->addElement('text', 'title', 'title_value');
+        $mform->setType('title', PARAM_TEXT);
+    }
+}

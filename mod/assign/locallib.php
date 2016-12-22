@@ -4513,7 +4513,7 @@ class assign {
 
         $cangrade = has_capability('mod/assign:grade', $this->get_context());
         // If there is a visible grade, show the summary.
-        if ((!is_null($gradebookgrade->grade) || !$emptyplugins)
+        if (!is_null($gradebookgrade) && (!is_null($gradebookgrade->grade) || !$emptyplugins)
                 && ($cangrade || !$gradebookgrade->hidden)) {
 
             $gradefordisplay = null;
@@ -6862,7 +6862,9 @@ class assign {
             $mform->freeze('sendstudentnotifications');
         } else if ($this->get_instance()->markingworkflow) {
             $mform->setDefault('sendstudentnotifications', 0);
-            $mform->disabledIf('sendstudentnotifications', 'workflowstate', 'neq', ASSIGN_MARKING_WORKFLOW_STATE_RELEASED);
+            if (!$gradingpanel) {
+                $mform->disabledIf('sendstudentnotifications', 'workflowstate', 'neq', ASSIGN_MARKING_WORKFLOW_STATE_RELEASED);
+            }
         } else {
             $mform->setDefault('sendstudentnotifications', $this->get_instance()->sendstudentnotifications);
         }
