@@ -877,7 +877,7 @@ class local_friadmin_helper {
             if (!$withusers) {
                 enrol_waitinglist_plugin::update_restored_instance($cid,$courseid);
             }
-            
+
 
             return array($courseid, $error);
         } catch (Exception $ex) {
@@ -934,6 +934,9 @@ class local_friadmin_helper {
             $fs             = get_file_storage();
 
             if ($forcebackup || $fs->is_area_empty($coursecontext->id, $component, $filearea)) {
+                // Always delete existing backup files.
+                $fs->delete_area_files($coursecontext->id, $component, $filearea);
+
                 $course = $DB->get_record('course', array('id' => $cid), '*', MUST_EXIST);
                 if ($course) {
                     $admin = get_admin();
