@@ -116,26 +116,30 @@ class enrolmethodmanual extends \enrol_waitinglist\method\enrolmethodbase{
         $params         = null;
 
         try {
-            /* New Instance */
+            // New instance
             $newInstance                = new \stdClass();
             $newInstance->courseid      = $courseId;
             $newInstance->waitinglistid = $newWaitId;
             $newInstance->methodtype    = static::METHODTYPE;
 
-            /* Get Old Instance */
+            // Old instance
             $params = array();
             $params['waitinglistid'] = $oldWaitId;
             $params['courseid']      = $oldCourse;
-            
-            $sql = " SELECT * 
-                     FROM   {enrol_waitinglist_method} 
-                     WHERE  waitinglistid = :waitinglistid 
-                        AND courseid      = :courseid 
-                        AND methodtype like '%manual%'";
-            /* Execute */
+
+            // SQL Instruction
+            $sql = " SELECT	  ew.*
+                     FROM	  {enrol_waitinglist_method}	ew
+                        JOIN  {enrol}						e 	ON 	e.id 	= ew.waitinglistid
+                                                                AND e.enrol = 'waitinglist'
+                     WHERE	  ew.methodtype like '%manual%'
+                        AND   ew.waitinglistid = :waitinglistid
+                        AND   ew.courseid      = :courseid ";
+
+            // Excute - get old instance
             $oldInstance = $DB->get_record_sql($sql,$params);
             if ($oldInstance) {
-                /* Create a new one from the old one */
+                // Create a new one from the old one
                 $newInstance->status           = $oldInstance->status;
                 $newInstance->emailalert       = $oldInstance->emailalert;
                 $newInstance->maxseats          = $oldInstance->maxseats;
@@ -163,13 +167,13 @@ class enrolmethodmanual extends \enrol_waitinglist\method\enrolmethodbase{
                 $newInstance->customdec2        = $oldInstance->customdec2;
                 $newInstance->customdec3        = $oldInstance->customdec3;
 
-                /* Execute */
+                // Execute
                 $newInstance->id = $DB->insert_record('enrol_waitinglist_method',$newInstance);
             }else {
-                /* Create a new One */
+                // Create a new one
                 $newInstance->status        = true;
                 $newInstance->emailalert    = false;
-                /* Execute */
+                // Execute
                 $newInstance->id = $DB->insert_record('enrol_waitinglist_method',$newInstance);
             }//if_oldInstance
         }catch (\Exception $ex) {
@@ -202,11 +206,13 @@ class enrolmethodmanual extends \enrol_waitinglist\method\enrolmethodbase{
 
         try {
             // SQL Instruction
-            $sql = " SELECT * 
-                     FROM   {enrol_waitinglist_method} 
-                     WHERE  waitinglistid = :waitinglistid 
-                        AND courseid      = :courseid 
-                        AND methodtype like '%manual%'";
+            $sql = " SELECT	  ew.*
+                     FROM	  {enrol_waitinglist_method}	ew
+                        JOIN  {enrol}						e 	ON 	e.id 	= ew.waitinglistid
+                                                                AND e.enrol = 'waitinglist'
+                     WHERE	  ew.methodtype like '%manual%'
+                        AND   ew.waitinglistid = :waitinglistid
+                        AND   ew.courseid      = :courseid ";
 
             // Get old instance
             // Execute
