@@ -176,7 +176,8 @@ $string['not_managers'] = 'Beklager, men du kan ikke melde deg på dette kurset 
 $string['not_managers_company'] = 'Beklager, men du kan ikke melde deg på dette kurset fordi det er ikke er lagt til leder for arbeidsstedet ditt: {$a}.';
 
 $string['mng_subject']  = '{$a->site}: Søknad om kursplass for kurset {$a->course}';
-$string['mng_body']     = '<p>Du får denne forespørselsen om godkjenning siden du er oppført som lederen for <b>{$a->user}</b>.<br /><b>{$a->user}</b> nettopp har søkt om plass på kurset  <b>{$a->course}</b>.</p><p>Begrunnelsen for søknaden om plass på kurset er:</p><p>{$a->arguments}</p>
+$string['mng_body']     = '<p>Du får denne forespørselsen om godkjenning siden du er oppført som lederen for <b>{$a->user}</b> som hører til følgende arbeidssted: </p>
+                              {$a->companies_user}, nettopp har søkt om plass på kurset  <b>{$a->course}</b>.</p><p>Begrunnelsen for søknaden om plass på kurset er:</p><p>{$a->arguments}</p>
                            </br>
                            <p>Kursinformasjon:</p>
                            <ul>
@@ -192,7 +193,8 @@ $string['mng_body']     = '<p>Du får denne forespørselsen om godkjenning siden
 
 
 $string['subject_reminder'] = '{$a->site}: Søknad om påmelding til kurset: {$a->course}. PÅMINNELSE';
-$string['body_reminder']    = '<p>Vi vil bare minne deg om at du er lederen for <b>{$a->user}</b>, og at <b>{$a->user}</b> nylig har søkt om plass på kurset: <b>{$a->course}</b>.</p><p>Brukerens begrunnelse for søknaden er:</p><p>{$a->arguments}</p>
+$string['body_reminder']    = '<p>Vi vil bare minne deg om at du er lederen for <b>{$a->user}</b>, som hører til følgende arbeidssted: </p>
+                              {$a->companies_user}, nylig har søkt om plass på kurset: <b>{$a->course}</b>.</p><p>Brukerens begrunnelse for søknaden er:</p><p>{$a->arguments}</p>
                                </br>
                                <p>Kursinformasjon:</p>
                                <ul>
