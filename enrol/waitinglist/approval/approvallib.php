@@ -289,7 +289,7 @@ Class Approval {
             $DB->insert_record('enrol_approval_action',$infoRejectAct);
 
             // Info To Send
-            $infoMail = self::info_notification_approved($userId,$courseId,$waitingId);
+            $infoMail = self::info_notification_approved($userId,$courseId,$waitingId,$data->level_3);
             $infoMail->arguments    = $infoApproval->arguments;
             $infoMail->approvalid   = $infoApproval->id;
             // Approve Link
@@ -746,7 +746,7 @@ Class Approval {
      * @creationDate    16/02/2016
      * @author          eFaktor     (fbv)
      */
-    public static function info_notification_approved($userId,$courseId,$instanceId = 0) {
+    public static function info_notification_approved($userId,$courseId,$instanceId = 0,$company = 0) {
         /* Variables    */
         global $SITE;
         $infoNotification   = null;
@@ -762,7 +762,7 @@ Class Approval {
             // Add Info Course
             self::get_infocourse_notification($courseId,$infoNotification);
             // Add Info User
-            self::get_infouser_notification_approved($userId,$infoNotification,$instanceId);
+            self::get_infouser_notification_approved($userId,$infoNotification,$instanceId,$company);
 
             return $infoNotification;
         }catch (Exception $ex) {
@@ -1249,7 +1249,7 @@ Class Approval {
      * @creationDate    16/02/2016
      * @author          eFaktor     (fbv)
      */
-    private static function get_infouser_notification_approved($userId,&$infoNotification,$instanceId = 0) {
+    private static function get_infouser_notification_approved($userId,&$infoNotification,$instanceId = 0, $company = 0) {
         /* Variables    */
         global $DB;
         $sql        = null;
@@ -1270,16 +1270,20 @@ Class Approval {
                      FROM	  {user} u
                         -- COMPETENCE
                         JOIN  {user_info_competence_data}	ucd		ON ucd.userid 	= u.id
-                        JOIN  {report_gen_companydata}	co 		ON co.id 		= ucd.companyid ";
+                        JOIN  {report_gen_companydata}	    co 		ON co.id 		= ucd.companyid ";
 
+            if ($company) {
+                $params['company'] = $company;
+                $sql .= " AND co.id = :company ";
+            }
             $sqlWhere = " WHERE 	 u.id = :user
                           GROUP BY u.id ";
             if ($instanceId) {
                 $params['waiting'] = $instanceId;
 
-                $sql .= " JOIN	{enrol_waitinglist_queue}	wq	ON 	wq.userid		    = u.id
-                                                                AND wq.companyid 		= co.id
-                                                                AND wq.waitinglistid 	= :waiting ";
+                $sql .= " LEFT JOIN	{enrol_waitinglist_queue}	wq	ON 	wq.userid		    = u.id
+                                                                    AND wq.companyid 		= co.id
+                                                                    AND wq.waitinglistid 	= :waiting ";
             }//if_instanceid
 
             // Execute
@@ -1346,7 +1350,7 @@ Class Approval {
                     $strSubject = (string)new lang_string('mng_subject','enrol_waitinglist',$infoMail,$info->lang);
                     $strBody    = (string)new lang_string('mng_body','enrol_waitinglist',$infoMail,$info->lang);
                 }//if_remainder
-
+                
                 // Mail content
                 $bodyText = null;
                 $bodyHtml = null;

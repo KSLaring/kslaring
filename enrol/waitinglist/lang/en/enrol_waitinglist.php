@@ -182,7 +182,8 @@ $string['not_managers'] = 'Sorry, you cannot apply for the course because of the
 $string['not_managers_company'] = 'Sorry, you cannot apply for the course because of there is no manager connected with you for the company <strong>{$a}</strong>.';
 
 $string['mng_subject']  = '{$a->site}: Application for enrolment in course {$a->course}';
-$string['mng_body']     = '<p>We would like to inform you that you are manager for <b>{$a->user}</b>, and the <b>{$a->user}</b> has just applied for the course <b>{$a->course}</b>.</p><p>The arguments of the user are:</p><p>{$a->arguments}</p>
+$string['mng_body']     = '<p>We would like to inform you that you are manager for <b>{$a->user}</b>, which belongs to the next companies: </p>
+                              {$a->companies_user}, has just applied for the course <b>{$a->course}</b>.</p><p>The arguments of the user are:</p><p>{$a->arguments}</p>
                            </br>
                            <p>Course information:</p>
                            <ul>
@@ -199,7 +200,8 @@ $string['mng_body']     = '<p>We would like to inform you that you are manager f
 
 
 $string['subject_reminder'] = '{$a->site}: Application for enrolment in course {$a->course}. REMINDER';
-$string['body_reminder']    = '<p>We would like to <b><u>reminder</u></b> you that you are manager for <b>{$a->user}</b>, and the <b>{$a->user}</b> has just applied for the course <b>{$a->course}</b>.</p><p>The arguments of the user are:</p><p>{$a->arguments}</p>
+$string['body_reminder']    = '<p>We would like to <b><u>reminder</u></b> you that you are manager for <b>{$a->user}</b>, which belongs to the next companies: </p>
+                              {$a->companies_user},has just applied for the course <b>{$a->course}</b>.</p><p>The arguments of the user are:</p><p>{$a->arguments}</p>
                                </br>
                                <p>Course information:</p>
                                <ul>
