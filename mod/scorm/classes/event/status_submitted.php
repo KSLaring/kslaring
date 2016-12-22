@@ -73,4 +73,8 @@ class status_submitted extends cmielement_submitted {
                 "The 'cmivalue' must represents a valid CMI status value ({$this->other['cmivalue']}).");
         }
     }
+
+    public static function get_objectid_mapping() {
+        return array('db' => 'scorm', 'restore' => 'scorm');
+    }
 }
