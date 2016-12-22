@@ -158,26 +158,30 @@ class enrolmethodunnamedbulk extends \enrol_waitinglist\method\enrolmethodbase {
         $dbLog          = null;
 	 
         try {
-            /* New Instance */
+            // New Instance
             $newInstance                = new \stdClass();
             $newInstance->courseid      = $courseId;
             $newInstance->waitinglistid = $newWaitId;
             $newInstance->methodtype    = static::METHODTYPE;
 
-            /* Get Old Instance */
+            // Old instance
             $params = array();
             $params['waitinglistid'] = $oldWaitId;
             $params['courseid']      = $oldCourse;
+
+            // SQL Instance
+            $sql = " SELECT	  ew.*
+                     FROM	  {enrol_waitinglist_method}	ew
+                        JOIN  {enrol}						e 	ON 	e.id 	= ew.waitinglistid
+                                                                AND e.enrol = 'waitinglist'
+                     WHERE	  ew.methodtype like '%unnamedbulk%'
+                        AND   ew.waitinglistid = :waitinglistid
+                        AND   ew.courseid      = :courseid ";
             
-            $sql = " SELECT * 
-                     FROM   {enrol_waitinglist_method} 
-                     WHERE  waitinglistid = :waitinglistid 
-                        AND courseid      = :courseid 
-                        AND methodtype like '%unnamedbulk%'";
-            /* Execute */
+            // Execute  - get old instance
             $oldInstance = $DB->get_record_sql($sql,$params);
             if ($oldInstance) {
-                /* Create a new one from the old one */
+                // Create a new one from the old one
                 $newInstance->status                                                = $oldInstance->status;
                 $newInstance->emailalert                                            = $oldInstance->emailalert;
                 $newInstance->maxseats                                              = $oldInstance->maxseats;
@@ -205,16 +209,16 @@ class enrolmethodunnamedbulk extends \enrol_waitinglist\method\enrolmethodbase {
                 $newInstance->{enrolmethodunnamedbulk::MFIELD_WAITLISTMESSAGE}      = $oldInstance->{enrolmethodunnamedbulk::MFIELD_WAITLISTMESSAGE};
                 $newInstance->{enrolmethodunnamedbulk::MFIELD_CONFIRMEDMESSAGE}     = $oldInstance->{enrolmethodunnamedbulk::MFIELD_CONFIRMEDMESSAGE};
 
-                /* Execute */
+                // Execute 
                 $newInstance->id = $DB->insert_record('enrol_waitinglist_method',$newInstance);
             }else {
-                /* Create a new One */
+                // New one
                 $newInstance->status        = true;
                 $newInstance->emailalert    = true;
                 $newInstance->{enrolmethodunnamedbulk::MFIELD_SENDCONFIRMMESSAGE}   = true;
                 $newInstance->{enrolmethodunnamedbulk::MFIELD_WAITLISTMESSAGE}      = get_string('waitlistmessagetext_unnamedbulk','enrol_waitinglist');
                 $newInstance->{enrolmethodunnamedbulk::MFIELD_CONFIRMEDMESSAGE}     = get_string('confirmedmessagetext_unnamedbulk','enrol_waitinglist');
-                /* Execute */
+                // Execute
                 $newInstance->id = $DB->insert_record('enrol_waitinglist_method',$newInstance);
             }//if_oldInstance
         }catch (\Exception $ex) {
@@ -247,11 +251,13 @@ class enrolmethodunnamedbulk extends \enrol_waitinglist\method\enrolmethodbase {
 
         try {
             // SQL Instruction
-            $sql = " SELECT * 
-                     FROM   {enrol_waitinglist_method} 
-                     WHERE  waitinglistid = :waitinglistid 
-                        AND courseid      = :courseid 
-                        AND methodtype like '%unnamedbulk%'";
+            $sql = " SELECT	  ew.*
+                     FROM	  {enrol_waitinglist_method}	ew
+                        JOIN  {enrol}						e 	ON 	e.id 	= ew.waitinglistid
+                                                                AND e.enrol = 'waitinglist'
+                     WHERE	  ew.methodtype like '%unnamedbulk%'
+                        AND   ew.waitinglistid = :waitinglistid
+                        AND   ew.courseid      = :courseid ";
 
             // Get old instance
             // Execute
