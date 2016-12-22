@@ -1768,6 +1768,9 @@ a.disabled {
 #page-course-index-category .generalbox.info img {
   margin: 0 !important;
 }
+.path-grade-report-grader .gradeparent .floater {
+  display: none;
+}
 #page-enrol-index #region-main.span8 {
   width: 99%;
 }
