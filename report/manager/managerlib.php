@@ -1358,7 +1358,7 @@ class CompetenceManager {
         $inThree        = 0;
 
         try {
-            /* Search Criteria */
+            // Search criteria
             $params = array();
             $params['user']  = $userId;
 
@@ -1371,50 +1371,67 @@ class CompetenceManager {
                      WHERE	re.reporterid 		= :user
                      GROUP BY re.levelzero ";
 
-            /* Execute  */
+            // Execute
             $rdo = $DB->get_records_sql($sql,$params);
             if ($rdo) {
                 foreach ($rdo as $instance) {
                     $infoHierarchy = new stdClass();
                     $infoHierarchy->levelZero   = $instance->levelzero;
-                    /* Level One */
+
+                    // Level one
                     if ($instance->levelone) {
                         $infoHierarchy->levelOne    = explode(',',$instance->levelone);
+                        if (in_array(0,$infoHierarchy->levelOne)) {
+                            $levelOne = self::GetCompanies_LevelList(1,$instance->levelzero);
+                            unset($levelOne[0]);
+                            $infoHierarchy->levelOne = array_keys($levelOne);
+                        }
                     }else {
                         $levelOne = self::GetCompanies_LevelList(1,$instance->levelzero);
                         unset($levelOne[0]);
                         $infoHierarchy->levelOne = array_keys($levelOne);
                     }//if_levelone
 
-                    /* Level Two    */
+                    // Level two
                     if ($instance->leveltwo) {
                         $infoHierarchy->levelTwo    = explode(',',$instance->leveltwo);
+                        if (in_array(0,$infoHierarchy->levelTwo)) {
+                            $levelTwo = self::GetCompanies_LevelList(2,$instance->levelone);
+                            unset($levelTwo[0]);
+                            $infoHierarchy->levelTwo = array_keys($levelTwo);
+                        }
                     }else {
                         $levelTwo = self::GetCompanies_LevelList(2,$instance->levelone);
                         unset($levelTwo[0]);
                         $infoHierarchy->levelTwo = array_keys($levelTwo);
                     }//if_leveltwo
 
-                    /* Level Three  */
+                    // Level three
                     if ($instance->levelthree) {
                         $infoHierarchy->levelThree  = explode(',',$instance->levelthree);
+                        if (in_array(0,$infoHierarchy->levelThree)) {
+                            $levelThree = self::GetCompanies_LevelList(3,$instance->leveltwo);
+                            unset($levelThree[0]);
+                            $infoHierarchy->levelThree = array_keys($levelThree);
+                        }
                     }else {
                         $levelThree = self::GetCompanies_LevelList(3,$instance->leveltwo);
                         unset($levelThree[0]);
                         $infoHierarchy->levelThree = array_keys($levelThree);
                     }//if_levelThree
 
-                    /* Hierarchy level */
+                    // Hierarchy level/
                     $infoHierarchy->level      = $instance->hierarchylevel;
 
-                    /* Add Competence */
+                    // Add competence
                     $myCompetence[$instance->levelzero] = $infoHierarchy;
 
-                    /* Level Zero */
+                    // In level zero
                     if ($instance->levelzero) {
                         $inZero[] = $instance->levelzero;
                     }
-                    /* Level One    */
+
+                    // In level one
                     if ($infoHierarchy->levelOne) {
                         if ($inOne) {
                             $inOne .= ',' . $instance->levelone;
@@ -1422,7 +1439,8 @@ class CompetenceManager {
                             $inOne = $instance->levelone;
                         }
                     }
-                    /* Level Two    */
+
+                    // In level two
                     if ($infoHierarchy->levelTwo) {
                         if ($inTwo) {
                             $inTwo .= ',' . $instance->leveltwo;
@@ -1430,7 +1448,8 @@ class CompetenceManager {
                             $inTwo = $instance->leveltwo;
                         }
                     }
-                    /* Level Three  */
+
+                    // In level three
                     if ($infoHierarchy->levelThree) {
                         if ($inThree) {
                             $inThree .= ',' . $instance->levelthree;
@@ -1477,7 +1496,7 @@ class CompetenceManager {
         $levelThree     = null;
 
         try {
-            /* Search Criteria */
+            // Search criteria
             $params = array();
             $params['user']  = $userId;
 
@@ -1487,7 +1506,7 @@ class CompetenceManager {
                 $inZero =  0;
             }
 
-            /* SQL Instruction */
+            // SQl instruction
             $sql = " SELECT re.levelzero as 'levelzero',
       			            GROUP_CONCAT(DISTINCT IF(re.levelone,re.levelone,0)  	ORDER BY re.levelone 	SEPARATOR ',') 	as 'levelone',
 			                GROUP_CONCAT(DISTINCT IF(re.leveltwo,re.leveltwo,0)  	ORDER BY re.leveltwo 	SEPARATOR ',') 	as 'leveltwo',
@@ -1496,26 +1515,35 @@ class CompetenceManager {
                      FROM	{report_gen_company_manager} re
                      WHERE	re.managerid 		= :user ";
 
+            // No in level zero
             if ($inZero) {
                 $sql .= " AND re.levelzero  NOT IN ($inZero) ";
             }
+
+            // No in level one
             if ($inOne) {
                $sql .= " AND re.levelone   NOT IN ($inOne) " ;
             }
+
+            // Not in level two
             if ($inTwo) {
                 $sql .= " AND re.leveltwo   NOT IN ($inTwo) ";
             }
+
+            // Not in level three
             if ($inThree) {
                 $sql .= " AND re.levelthree NOT IN ($inThree) ";
             }
-            /* Execute */
+
+            // Execute
             $sql .= " GROUP BY re.levelzero  ";
             $rdo = $DB->get_records_sql($sql,$params);
             if ($rdo) {
                 foreach ($rdo as $instance) {
                     $infoHierarchy = new stdClass();
                     $infoHierarchy->levelZero   = $instance->levelzero;
-                    /* Level One */
+
+                    // Level one
                     if ($instance->levelone) {
                         $infoHierarchy->levelOne    = explode(',',$instance->levelone);
                         if (in_array(0,$infoHierarchy->levelOne)) {
@@ -1529,7 +1557,7 @@ class CompetenceManager {
                         $infoHierarchy->levelOne = array_keys($levelOne);
                     }//if_levelone
 
-                    /* Level Two    */
+                    // Level two
                     if ($instance->leveltwo) {
                         $infoHierarchy->levelTwo    = explode(',',$instance->leveltwo);
                         if (in_array(0,$infoHierarchy->levelTwo)) {
@@ -1543,7 +1571,7 @@ class CompetenceManager {
                         $infoHierarchy->levelTwo = array_keys($levelTwo);
                     }//if_leveltwo
 
-                    /* Level Three  */
+                    // Level three
                     if ($instance->levelthree) {
                         $infoHierarchy->levelThree  = explode(',',$instance->levelthree);
                         if (in_array(0,$infoHierarchy->levelThree)) {
@@ -1557,10 +1585,10 @@ class CompetenceManager {
                         $infoHierarchy->levelThree = array_keys($levelThree);
                     }//if_levelThree
 
-                    /* Hierarchy level */
+                    // Hierarchy level
                     $infoHierarchy->level      = $instance->hierarchylevel;
 
-                    /* Add Competence */
+                    // Add competence
                     $myCompetence[$instance->levelzero] = $infoHierarchy;
                 }
             }//if_rdo
