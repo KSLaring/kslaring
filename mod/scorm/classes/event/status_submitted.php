@@ -77,4 +77,11 @@ class status_submitted extends cmielement_submitted {
     public static function get_objectid_mapping() {
         return array('db' => 'scorm', 'restore' => 'scorm');
     }
+
+    public static function get_other_mapping() {
+        $othermapped = array();
+        $othermapped['scormid'] = array('db' => 'scorm', 'restore' => 'scorm');
+
+        return $othermapped;
+    }
 }
