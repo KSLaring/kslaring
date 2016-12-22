@@ -3191,7 +3191,7 @@ class admin_setting_configmultiselect extends admin_setting_configselect {
         if (is_null($default)) {
             $default = array();
         }else if (!is_array($default)) {
-            $default = (Array)$default;
+            $default = explode(',',$default);
         }
         if (is_null($data)) {
             $data = array();
