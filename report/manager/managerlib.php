@@ -1515,26 +1515,6 @@ class CompetenceManager {
                      FROM	{report_gen_company_manager} re
                      WHERE	re.managerid 		= :user ";
 
-            // No in level zero
-            if ($inZero) {
-                $sql .= " AND re.levelzero  NOT IN ($inZero) ";
-            }
-
-            // No in level one
-            if ($inOne) {
-               $sql .= " AND re.levelone   NOT IN ($inOne) " ;
-            }
-
-            // Not in level two
-            if ($inTwo) {
-                $sql .= " AND re.leveltwo   NOT IN ($inTwo) ";
-            }
-
-            // Not in level three
-            if ($inThree) {
-                $sql .= " AND re.levelthree NOT IN ($inThree) ";
-            }
-
             // Execute
             $sql .= " GROUP BY re.levelzero  ";
             $rdo = $DB->get_records_sql($sql,$params);
