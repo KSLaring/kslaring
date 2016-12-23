@@ -50,7 +50,7 @@ if ($loggedin) {
                 <div class="navbar-menues">
                     <?php echo $OUTPUT->navbar_button(); ?>
 
-                    <?php if (!$loggedin || isguestuser()) : ?>
+                    <?php if (!$loggedin) : ?>
                         <div class="navbar-text"><?php echo $OUTPUT->login_info() ?></div>
                     <?php endif ?>
 

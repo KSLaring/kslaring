@@ -45,7 +45,7 @@ $municipality->logo = $OUTPUT->pix_url('trondheim_logo_s', 'theme_trondheim');
                 <div class="navbar-menues">
                     <?php echo $OUTPUT->navbar_button(); ?>
 
-                    <?php if (!$loggedin || isguestuser()) : ?>
+                    <?php if (!$loggedin) : ?>
                         <div class="navbar-text"><?php echo $OUTPUT->login_info() ?></div>
                     <?php endif ?>
 
