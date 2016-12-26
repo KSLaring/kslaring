@@ -489,33 +489,32 @@ class enrol_waitinglist_plugin extends enrol_plugin {
             /* Extra information */
             $user       = get_complete_user_data('id',$userid);
             $course     = get_course($instance->courseid);
-            $context    = context_course::instance($instance->courseid);
-            $rusers = array();
-            if (!empty($CFG->coursecontact)) {
-                $croles = explode(',', $CFG->coursecontact);
-                list($sort, $sortparams) = users_order_by_sql('u');
-                $i = 0;
-                do {
-                    $rusers = get_role_users($croles[$i], $context, true, '',
-                        'r.sortorder ASC, ' . $sort, null, '', '', '', '', $sortparams);
-                    $i++;
-                } while (empty($rusers) && !empty($croles[$i]));
-            }
-            //if ($rusers) {
-            //    $contact = reset($rusers);
-            //} else {
+            if ($course) {
+                $context    = context_course::instance($instance->courseid);
+                $rusers = array();
+                if (!empty($CFG->coursecontact)) {
+                    $croles = explode(',', $CFG->coursecontact);
+                    list($sort, $sortparams) = users_order_by_sql('u');
+                    $i = 0;
+                    do {
+                        $rusers = get_role_users($croles[$i], $context, true, '',
+                            'r.sortorder ASC, ' . $sort, null, '', '', '', '', $sortparams);
+                        $i++;
+                    } while (empty($rusers) && !empty($croles[$i]));
+                }
+
                 $contact = core_user::get_support_user();
-            //}
 
-            /* Subject      */
-            $subject    = (string)new lang_string('unenrol_subject','enrol_waitinglist',$course->fullname,$user->lang);
+                /* Subject      */
+                $subject    = (string)new lang_string('unenrol_subject','enrol_waitinglist',$course->fullname,$user->lang);
 
-            /* Body Message */
-            $messagetext = (string)new lang_string('unenrol_body','enrol_waitinglist',$course->fullname,$user->lang) . "</br></br>";
-            $messagehtml = text_to_html($messagetext, null, false, true);
+                /* Body Message */
+                $messagetext = (string)new lang_string('unenrol_body','enrol_waitinglist',$course->fullname,$user->lang) . "</br></br>";
+                $messagehtml = text_to_html($messagetext, null, false, true);
 
-            /* Sencd confirmation message   */
-            email_to_user($user, $contact, $subject, $messagetext, $messagehtml);
+                /* Sencd confirmation message   */
+                email_to_user($user, $contact, $subject, $messagetext, $messagehtml);
+            }//id_Course
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
