@@ -17,15 +17,17 @@ function local_fellesdata_extend_navigation(global_navigation $navigation) {
     global $USER;
 
     if (isloggedin()) {
-        if (is_siteadmin($USER->id) || has_capability('local/fellesdata:manage', CONTEXT_SYSTEM::instance())) {
+        if (is_siteadmin($USER->id) || has_capability('local/fellesdata:manage', context_system::instance())) {
             $nodeTracker = $navigation->add(get_string('menu_title','local_fellesdata'));
 
-            /* Organization Mapping */
+            // Organization Mapping
             $nodBar = $nodeTracker->add(get_string('nav_map_org','local_fellesdata'),new moodle_url('/local/fellesdata/mapping/mapping_org.php'));
-            /* Organization Unmap   */
+            // Organization Unmap
             $nodBar = $nodeTracker->add(get_string('nav_unmap_org','local_fellesdata'),new moodle_url('/local/fellesdata/unmap/unmap.php'));
-            /* Job Roles Mapping */
+            // Job roles mapping
             $nodBar = $nodeTracker->add(get_string('nav_map_jr','local_fellesdata'),new moodle_url('/local/fellesdata/mapping/jobroles.php'));
+            // Suspicious data
+            $nodBar = $nodeTracker->add(get_string('suspicious_header','local_fellesdata'),new moodle_url('/local/fellesdata/suspicious/index.php'));
         }//if_else
     }
 }
@@ -40,6 +42,7 @@ function fellesdata_cron() {
         /* Library */
         require_once('cron/fellesdatacron.php');
         require_once('lib/fellesdatalib.php');
+        require_once('lib/suspiciouslib.php');
 
         /* First execution or no */
         $activate = get_config('local_fellesdata','cron_active');

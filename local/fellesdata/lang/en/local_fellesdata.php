@@ -102,3 +102,51 @@ $string['mapped_with']  = 'Mapped with';
 $string['fs_company']   = 'FS Company';
 $string['none_unmapped']    = 'There is no company connected with the search';
 $string['no_selection'] = 'There is no company selected';
+
+$string['suspicious_header']        = 'Suspicious Data';
+$string['suspicious_folder']        = 'Suspicious data in';
+$string['suspicious_notification']  = 'Suspicious data notify by email to';
+$string['suspicious_remainder']     = 'Send remainder each';
+
+$string['subj_suspicious']              = '{$a}: Integration TARDIS - KS. Suspicious Data ';
+$string['subj_suspicious_remainder']    = '{$a}: Integration TARDIS - KS. Suspicious Data. REMAINDER ';
+$string['body_suspicious']              =   '<p>We would like that the next files contain suspicious data: </p>
+                                             </br>
+                                             <ul>';
+$string['body_suspicious_end']          = '</ul>';
+$string['body_suspicious_middle']       = '<li><u><strong>{$a->file}</strong></u> marked as suspicious on <strong>{$a->marked}</strong>. To process: {$a->approve} To reject: {$a->reject} </li>';
+
+$string['approve']  = 'Approve';
+$string['reject']   = 'Reject';
+
+$string['approved'] = 'The file {$a} has been approved';
+$string['rejected'] = 'The file {$a} has been rejected';
+
+$string['err_params']   = 'Sorry, link no valid. Please, contact to administrator';
+$string['err_file']     = 'Sorry, file corrupt or no found it. Please, contact to administrator';
+$string['err_process']  = 'Sorry, there has been an error during the process. Please, try it later or contact to administrator';
+
+$string['from'] = 'From';
+$string['to']   = 'To';
+
+$string['sync_users']           = 'Users accounts synchronization';
+$string['sync_competence']      = 'Users competence synchronization';
+$string['sync_company']         = 'Companies synchronization';
+$string['sync_jobroles']        = 'Job roles synchronization';
+$string['sync_managers']        = 'Managers synchronization';
+
+$string['status_app']   = 'Approved';
+$string['status_rej']   = 'Rejected';
+$string['status_wait']  = 'Waiting';
+
+$string['big_date'] = 'It cannot be bigger than the present date';
+$string['from_to']  = 'From date cannot be bigger than To date';
+
+$string['no_data'] = 'None suspicious data found';
+
+$string['rpt_file']         = 'File';
+$string['rpt_since']        = 'Waiting since';
+$string['rpt_connected']    = 'Connected with';
+$string['rpt_status']       = 'Status';
+$string['rpt_act']          = 'Action';
+

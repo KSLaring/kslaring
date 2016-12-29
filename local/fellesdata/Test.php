@@ -10,13 +10,14 @@
 require( '../../config.php' );
 require_once('cron/fellesdatacron.php');
 require_once('lib/fellesdatalib.php');
+require_once('lib/suspiciouslib.php');
 
 require_login();
 
 /* PARAMS */
 $option = optional_param('op',0,PARAM_INT);
 
-$PAGE->set_context(CONTEXT_SYSTEM::instance());
+$PAGE->set_context(context_system::instance());
 $PAGE->set_heading($SITE->fullname);
 $PAGE->set_pagelayout('admin');
 $PAGE->set_url('/local/fellesdata/Test.php');
@@ -33,10 +34,11 @@ try {
         $SESSION->manual = true;
     }
 
+    $pluginInfo     = get_config('local_fellesdata');
+
     if ($option) {
         FELLESDATA_CRON::cron_manual(true,$option);
     }else {
-        $pluginInfo     = get_config('local_fellesdata');
         echo $pluginInfo->fs_days;
     }
 }catch (Exception $ex) {

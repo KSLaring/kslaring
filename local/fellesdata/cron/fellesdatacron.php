@@ -141,7 +141,7 @@ class FELLESDATA_CRON {
                     echo "Import FS Users" . "</br>";
                     /* Import FS Users              */
                     self::import_fs_users($pluginInfo);
-
+                    
                     break;
                 case TEST_FS_ORG:
                     echo "Import FS ORG" . "</br>";
@@ -486,6 +486,9 @@ class FELLESDATA_CRON {
 
             // Import FS User Competence JR
             self::import_fs_user_competence_jr($pluginInfo);
+
+            // Send suspicious notifications
+            suspicious::send_suspicious_notifications($pluginInfo);
         }catch (Exception $ex) {
             // Log
             $dbLog  = "Error: " . $ex->getMessage() . "\n" . "\n";
@@ -510,10 +513,11 @@ class FELLESDATA_CRON {
     private static function import_fs_users($pluginInfo) {
         /* Variables    */
         global $CFG;
-        $pathFile   = null;
-        $content    = null;
-        $fsUsers    = null;
-        $dbLog      = null;
+        $pathFile       = null;
+        $suspiciousPath = null;
+        $content        = null;
+        $fsUsers        = null;
+        $dbLog          = null;
         
         try {
             // Call web service
@@ -524,12 +528,22 @@ class FELLESDATA_CRON {
                 // Open file
                 $pathFile = $CFG->dataroot . '/fellesdata/' . TRADIS_FS_USERS . '.txt';
                 if (file_exists($pathFile)) {
-                    // Get content
-                    $content = file($pathFile);
+                    // First check if is a suspicious file
+                    if (!suspicious::check_for_suspicious_data(TRADIS_FS_USERS,$pathFile)) {
+                        // Get content
+                        $content = file($pathFile);
 
-                    FS::save_temporary_fellesdata($content,IMP_USERS);
+                        FS::save_temporary_fellesdata($content,IMP_USERS);
+                    }else {
+                        // Mark file as suspicious
+                        $suspiciousPath = suspicious::mark_suspicious_file(TRADIS_FS_USERS,$pluginInfo);
+
+                        // Move file to the right folder
+                        copy($pathFile,$suspiciousPath);
+                        unlink($pathFile);
+                    }//if_suspicious
                 }//if_exists
-            }
+            }//if_fsResponse
         }catch (Exception $ex) {
             // Log
             $dbLog  = "Error: " . $ex->getMessage() . "\n" . "\n";
@@ -572,12 +586,22 @@ class FELLESDATA_CRON {
                 // Open file
                 $pathFile = $CFG->dataroot . '/fellesdata/' . TRADIS_FS_COMPANIES . '.txt';
                 if (file_exists($pathFile)) {
-                    // Get content
-                    $content = file($pathFile);
+                    // First check if is a suspicious file
+                    if (!suspicious::check_for_suspicious_data(TRADIS_FS_COMPANIES,$pathFile)) {
+                        // Get content
+                        $content = file($pathFile);
 
-                    FS::save_temporary_fellesdata($content,IMP_COMPANIES);
+                        FS::save_temporary_fellesdata($content,IMP_COMPANIES);
+                    }else {
+                        // Mark file as suspicious
+                        $suspiciousPath = suspicious::mark_suspicious_file(TRADIS_FS_COMPANIES,$pluginInfo);
+
+                        // Move file to the right folder
+                        copy($pathFile,$suspiciousPath);
+                        unlink($pathFile);
+                    }//if_suspicious
                 }//if_exists
-            }
+            }//if_fsResponse
 
             // Log
             $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH Import FS ORG Structure . ' . "\n";
@@ -620,12 +644,22 @@ class FELLESDATA_CRON {
                 // Open file
                 $pathFile = $CFG->dataroot . '/fellesdata/' . TRADIS_FS_JOBROLES . '.txt';
                 if (file_exists($pathFile)) {
-                    // Get content
-                    $content = file($pathFile);
+                    // First check if is a suspicious file
+                    if (!suspicious::check_for_suspicious_data(TRADIS_FS_JOBROLES,$pathFile)) {
+                        // Get content
+                        $content = file($pathFile);
 
-                    FS::save_temporary_fellesdata($content,IMP_JOBROLES);
+                        FS::save_temporary_fellesdata($content,IMP_JOBROLES);
+                    }else {
+                        // Mark file as suspicious
+                        $suspiciousPath = suspicious::mark_suspicious_file(TRADIS_FS_JOBROLES,$pluginInfo);
+
+                        // Move file to the right folder
+                        copy($pathFile,$suspiciousPath);
+                        unlink($pathFile);
+                    }//if_suspicious
                 }//if_exists
-            }
+            }//if_fsResponse
         }catch (Exception $ex) {
             /* Log  */
             $dbLog  = "Error: " . $ex->getMessage() . "\n" . "\n";
@@ -663,12 +697,22 @@ class FELLESDATA_CRON {
                 // Open file
                 $pathFile = $CFG->dataroot . '/fellesdata/' . TRADIS_FS_MANAGERS_REPORTERS . '.txt';
                 if (file_exists($pathFile)) {
-                    // Get content
-                    $content = file($pathFile);
+                    // First check if is a suspicious file
+                    if (!suspicious::check_for_suspicious_data(TRADIS_FS_MANAGERS_REPORTERS,$pathFile)) {
+                        // Get content
+                        $content = file($pathFile);
 
-                    FS::save_temporary_fellesdata($content,IMP_MANAGERS_REPORTERS);
+                        FS::save_temporary_fellesdata($content,IMP_MANAGERS_REPORTERS);
+                    }else {
+                        // Mark file as suspicious
+                        $suspiciousPath = suspicious::mark_suspicious_file(TRADIS_FS_MANAGERS_REPORTERS,$pluginInfo);
+
+                        // Move file to the right folder
+                        copy($pathFile,$suspiciousPath);
+                        unlink($pathFile);
+                    }//if_suspicious
                 }//if_exists
-            }
+            }//if_fsResponse
         }catch (Exception $ex) {
             // log
             $dbLog  = "Error: " . $ex->getMessage() . "\n" . "\n";
@@ -708,10 +752,20 @@ class FELLESDATA_CRON {
                 // Open file
                 $pathFile = $CFG->dataroot . '/fellesdata/' . TRADIS_FS_USERS_JOBROLES . '.txt';
                 if (file_exists($pathFile)) {
-                    // Get content
-                    $content = file($pathFile);
+                    // First check if is a suspicious file
+                    if (!suspicious::check_for_suspicious_data(TRADIS_FS_USERS_JOBROLES,$pathFile)) {
+                        // Get content
+                        $content = file($pathFile);
 
-                    FS::save_temporary_fellesdata($content,IMP_COMPETENCE_JR);
+                        FS::save_temporary_fellesdata($content,IMP_COMPETENCE_JR);
+                    }else {
+                        // Mark file as suspicious
+                        $suspiciousPath = suspicious::mark_suspicious_file(TRADIS_FS_USERS_JOBROLES,$pluginInfo);
+
+                        // Move file to the right folder
+                        copy($pathFile,$suspiciousPath);
+                        unlink($pathFile);
+                    }//if_suspicious
                 }//if_exists
             }//if_data
         }catch (Exception $ex) {
@@ -857,68 +911,77 @@ class FELLESDATA_CRON {
         try {
             // Log
             $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' START Synchronization Users Accoutns . ' . "\n";
-            
-            // Industry code
-            if ($pluginInfo->ks_muni) {
-                $params = array();
-                $params['name']             = $pluginInfo->ks_muni;
-                $params['hierarchylevel']   = 1;
-                $rdoIC = $DB->get_record('ks_company',$params,'industrycode');
 
-                if ($rdoIC) {
-                    $industryCode = trim($rdoIC->industrycode);
-                }
+            // check if the synchronization can be run
+            if (suspicious::run_synchronization(IMP_SUSP_USERS)) {
+                // Industry code
+                if ($pluginInfo->ks_muni) {
+                    $params = array();
+                    $params['name']             = $pluginInfo->ks_muni;
+                    $params['hierarchylevel']   = 1;
+                    $rdoIC = $DB->get_record('ks_company',$params,'industrycode');
+
+                    if ($rdoIC) {
+                        $industryCode = trim($rdoIC->industrycode);
+                    }
+                }else {
+                    $industryCode = 0;
+                }//if_muni
+
+                // Users to synchronize
+                $total = $DB->count_records('fs_imp_users',array('imported' => '0'));
+                if ($total) {
+                    for ($i=0;$i<=$total;$i=$i+100) {
+                        $rdo = $DB->get_records('fs_imp_users',array('imported' => '0'),'','*',$start,$limit);
+
+                        // Prepare data
+                        if ($rdo) {
+                            $usersFS    = array();
+                            $lstUsersFS = null;
+
+                            foreach ($rdo as $instance) {
+                                // User account info
+                                $infoUser = new stdClass();
+                                $infoUser->id               = $instance->id;
+                                $infoUser->personalnumber   = trim($instance->fodselsnr);
+                                $infoUser->adfs             = trim(($instance->brukernavn ? $instance->brukernavn : 0));
+                                $infoUser->ressursnr        = trim(($instance->ressursnr ? $instance->ressursnr : 0));
+                                $infoUser->industry         = $industryCode;
+                                $infoUser->firstname        = trim($instance->fornavn) . ' ' . trim($instance->mellomnavn);
+                                $infoUser->lastname         = trim($instance->etternavn);
+                                $infoUser->email            = trim($instance->epost);
+                                $infoUser->action           = trim($instance->action);
+
+                                // add user
+                                $usersFS[$instance->id] = $infoUser;
+
+                                $lstUsersFS .= json_encode($infoUser) . "\n";
+                            }//for_rdo
+
+                            // Call web service
+                            $response = self::process_ks_service($pluginInfo,KS_SYNC_USER_ACCOUNT,array('usersAccounts' => $lstUsersFS));
+
+                            if ($response['error'] == '200') {
+                                // Synchornize users accounts FS
+                                FSKS_USERS::synchronize_users_fs($usersFS,$response['usersAccounts']);
+
+                                /* Clean Table*/
+                                //$DB->delete_records('fs_imp_users',array('imported' => '1'));
+                            }else {
+                                // Log
+                                $dbLog .= "Error WS: " . $response['message'] . "\n" ."\n";
+                                $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH ERROR Synchronization Users Accoutns . ' . "\n";
+                            }//if_no_error
+                        }//if_Rdo
+                    }
+                }//if_total
             }else {
-                $industryCode = 0;
-            }//if_muni
-
-            // Users to synchronize
-            $total = $DB->count_records('fs_imp_users',array('imported' => '0'));
-            if ($total) {
-                for ($i=0;$i<=$total;$i=$i+100) {
-                    $rdo = $DB->get_records('fs_imp_users',array('imported' => '0'),'','*',$start,$limit);
-
-                    // Prepare data
-                    if ($rdo) {
-                        $usersFS    = array();
-                        $lstUsersFS = null;
-
-                        foreach ($rdo as $instance) {
-                            // User account info
-                            $infoUser = new stdClass();
-                            $infoUser->id               = $instance->id;
-                            $infoUser->personalnumber   = trim($instance->fodselsnr);
-                            $infoUser->adfs             = trim(($instance->brukernavn ? $instance->brukernavn : 0));
-                            $infoUser->ressursnr        = trim(($instance->ressursnr ? $instance->ressursnr : 0));
-                            $infoUser->industry         = $industryCode;
-                            $infoUser->firstname        = trim($instance->fornavn) . ' ' . trim($instance->mellomnavn);
-                            $infoUser->lastname         = trim($instance->etternavn);
-                            $infoUser->email            = trim($instance->epost);
-                            $infoUser->action           = trim($instance->action);
-
-                            // add user
-                            $usersFS[$instance->id] = $infoUser;
-
-                            $lstUsersFS .= json_encode($infoUser) . "\n";
-                        }//for_rdo
-
-                        // Call web service
-                        $response = self::process_ks_service($pluginInfo,KS_SYNC_USER_ACCOUNT,array('usersAccounts' => $lstUsersFS));
-
-                        if ($response['error'] == '200') {
-                            // Synchornize users accounts FS
-                            FSKS_USERS::synchronize_users_fs($usersFS,$response['usersAccounts']);
-
-                            /* Clean Table*/
-                            //$DB->delete_records('fs_imp_users',array('imported' => '1'));
-                        }else {
-                            // Log
-                            $dbLog .= "Error WS: " . $response['message'] . "\n" ."\n";
-                            $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH ERROR Synchronization Users Accoutns . ' . "\n";
-                        }//if_no_error
-                    }//if_Rdo
-                }
-            }//if_total
+                // Send remainder
+                suspicious::send_suspicious_notifications($pluginInfo,true);
+                
+                // Log
+                $dbLog .= ' Waiting approve or rejection of suspicious data' . "\n";
+            }//if_synchronization
 
             // Log
             $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH Synchronization Users Accoutns . ' . "\n";
@@ -959,48 +1022,57 @@ class FELLESDATA_CRON {
             // Log
             $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' START Companies FS/KS Synchronization . ' . "\n";
 
-            // Notifications
-            if ($pluginInfo->mail_notification) {
-                $notifyTo   = explode(',',$pluginInfo->mail_notification);
-            }//if_mail_notifications
+            // check if the synchronization can be run
+            if (suspicious::run_synchronization(IMP_SUSP_COMPANIES)) {
+                // Notifications
+                if ($pluginInfo->mail_notification) {
+                    $notifyTo   = explode(',',$pluginInfo->mail_notification);
+                }//if_mail_notifications
 
-            // First execution
-            if ($fstExecution) {
-                // Mail --> manual synchronization
-                if ($notifyTo) {
-                    self::send_notifications(SYNC_COMP,null,$notifyTo,$pluginInfo->fs_source);
-                }//if_notify
+                // First execution
+                if ($fstExecution) {
+                    // Mail --> manual synchronization
+                    if ($notifyTo) {
+                        self::send_notifications(SYNC_COMP,null,$notifyTo,$pluginInfo->fs_source);
+                    }//if_notify
+                }else {
+                    // Synchronize only companies FS
+                    FSKS_COMPANY::synchronize_companies_fs();
+
+                    // Companies to synchornize and emails
+                    list($toSynchronize,$toMail) = FSKS_COMPANY::companies_fs_to_synchronize();
+
+                    // Notification manual synchronization
+                    if ($notifyTo) {
+                        if ($toMail) {
+                            self::send_notifications(SYNC_COMP,$toMail,$notifyTo,$pluginInfo->fs_source);
+                        }//if_toMail
+                    }//if_notify
+
+                    // Synchronize FS-KS companies
+                    // Call webs service
+                    if ($toSynchronize) {
+                        $params     = array('companiesFS' => $toSynchronize);
+                        $response   = self::process_ks_service($pluginInfo,KS_SYNC_FS_COMPANY,$params);
+                        if ($response['error'] == '200') {
+                            FSKS_COMPANY::synchronize_companies_ksfs($toSynchronize,$response['companies']);
+                        }else {
+                            /* Log  */
+                            $dbLog  .= "ERROR WS: " . $response['error'] . "\n\n";
+                            $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' Finish ERROR Companies FS/KS Synchronization . ' . "\n";
+                        }//if_no_error
+                    }//if_toSynchronize
+
+                    /* Clean Table*/
+                    //$DB->delete_records('fs_imp_company',array('imported' => '1'));
+                }//if_else
             }else {
-                // Synchronize only companies FS
-                FSKS_COMPANY::synchronize_companies_fs();
-
-                // Companies to synchornize and emails
-                list($toSynchronize,$toMail) = FSKS_COMPANY::companies_fs_to_synchronize();
-
-                // Notification manual synchronization
-                if ($notifyTo) {
-                    if ($toMail) {
-                        self::send_notifications(SYNC_COMP,$toMail,$notifyTo,$pluginInfo->fs_source);
-                    }//if_toMail
-                }//if_notify
-
-                // Synchronize FS-KS companies
-                // Call webs service
-                if ($toSynchronize) {
-                    $params     = array('companiesFS' => $toSynchronize);
-                    $response   = self::process_ks_service($pluginInfo,KS_SYNC_FS_COMPANY,$params);
-                    if ($response['error'] == '200') {
-                        FSKS_COMPANY::synchronize_companies_ksfs($toSynchronize,$response['companies']);
-                    }else {
-                        /* Log  */
-                        $dbLog  .= "ERROR WS: " . $response['error'] . "\n\n";
-                        $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' Finish ERROR Companies FS/KS Synchronization . ' . "\n";
-                    }//if_no_error
-                }//if_toSynchronize
-
-                /* Clean Table*/
-                //$DB->delete_records('fs_imp_company',array('imported' => '1'));
-            }//if_else
+                // Send reminder
+                suspicious::send_suspicious_notifications($pluginInfo,true);
+                
+                // Log
+                $dbLog .= ' Waiting approve or rejection of suspicious data' . "\n";
+            }//if_synchronization
 
             // Log
             $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH Companies FS/KS Synchronization . ' . "\n";
@@ -1090,24 +1162,33 @@ class FELLESDATA_CRON {
             // Log
             $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' START Jobroles FS to Map - Mailing . ' . "\n";
 
-            // Notifications
-            if ($pluginInfo->mail_notification) {
-                $notifyTo   = explode(',',$pluginInfo->mail_notification);
-            }//if_mail_notifications
+            // check if the synchronization can be run
+            if (suspicious::run_synchronization(IMP_SUSP_JOBROLES)) {
+                // Notifications
+                if ($pluginInfo->mail_notification) {
+                    $notifyTo   = explode(',',$pluginInfo->mail_notification);
+                }//if_mail_notifications
 
-            // Send notifications
-            if ($notifyTo) {
-                // Jobroles to map
-                $toMail = FSKS_JOBROLES::jobroles_fs_tosynchronize_mailing();
-                if ($toMail) {
-                    self::send_notifications(SYNC_JR,$toMail,$notifyTo,$pluginInfo->fs_source);
+                // Send notifications
+                if ($notifyTo) {
+                    // Jobroles to map
+                    $toMail = FSKS_JOBROLES::jobroles_fs_tosynchronize_mailing();
+                    if ($toMail) {
+                        self::send_notifications(SYNC_JR,$toMail,$notifyTo,$pluginInfo->fs_source);
+                    }else {
+                        $dbLog .= "None JR to map " . "\n";
+                    }//If_toMail
                 }else {
-                    $dbLog .= "None JR to map " . "\n";
-                }//If_toMail
+                    // No jobroles to map
+                    $dbLog .= " JR - No One to notify " . "\n";
+                }//if_notigyTo
             }else {
-               // No jobroles to map
-                $dbLog .= " JR - No One to notify " . "\n";
-            }//if_notigyTo
+                // Send remainder
+                suspicious::send_suspicious_notifications($pluginInfo,true);
+                
+                // Log
+                $dbLog .= ' Waiting approve or rejection of suspicious data' . "\n";
+            }//if_synchronization
             
             // Log
             $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH Jobroles FS to Map - Mailing . ' . "\n";
@@ -1145,32 +1226,44 @@ class FELLESDATA_CRON {
         $limit          = 100;
 
         try {
-            // User competence to synchronize
-            $total = FSKS_USERS::get_total_users_competence_to_synchronize($toDelete);
-            if ($total) {
-                for ($i=0;$i<=$total;$i=$i+100) {
-                    $toSynchronize = FSKS_USERS::user_competence_to_synchronize($toDelete,$start,$limit);
+            // check if the synchronization can be run
+            if (suspicious::run_synchronization(IMP_SUSP_COMPETENCE_JR)) {
+                // User competence to synchronize
+                $total = FSKS_USERS::get_total_users_competence_to_synchronize($toDelete);
+                if ($total) {
+                    for ($i=0;$i<=$total;$i=$i+100) {
+                        $toSynchronize = FSKS_USERS::user_competence_to_synchronize($toDelete,$start,$limit);
 
-                    // Call web service
-                    if ($toSynchronize) {
-                        // Params web service
-                        $params = array();
-                        $params['usersCompetence'] = $toSynchronize;
-                        $response = self::process_ks_service($pluginInfo,$service,$params);
-                        if ($response['error'] == '200') {
-                            // Synchronize user competence
-                            FSKS_USERS::synchronize_user_competence_fs($toSynchronize,$response['usersCompetence']);
+                        // Call web service
+                        if ($toSynchronize) {
+                            // Params web service
+                            $params = array();
+                            $params['usersCompetence'] = $toSynchronize;
+                            $response = self::process_ks_service($pluginInfo,$service,$params);
+                            if ($response['error'] == '200') {
+                                // Synchronize user competence
+                                FSKS_USERS::synchronize_user_competence_fs($toSynchronize,$response['usersCompetence']);
 
-                            //$DB->delete_records('fs_users_competence',array('imported' => '1'));
-                        }else {
-                            // Log
-                            $dbLog  = "ERROR WS: " . $response['message'] . "\n" . "\n";
-                            $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' Finish ERROR User Competence Synchronization . ' . "\n";
-                            error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
-                        }//if_no_error
-                    }//if_toSynchronize
-                }//for_rdo
-            }//if_totla
+                                //$DB->delete_records('fs_users_competence',array('imported' => '1'));
+                            }else {
+                                // Log
+                                $dbLog  = "ERROR WS: " . $response['message'] . "\n" . "\n";
+                                $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' Finish ERROR User Competence Synchronization . ' . "\n";
+                                error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
+                            }//if_no_error
+                        }//if_toSynchronize
+                    }//for_rdo
+                }//if_totla
+            }else {
+                // send synchronization
+                suspicious::send_suspicious_notifications($pluginInfo,true);
+                
+                // Log
+                $dbLog .= ' Waiting approve or rejection of suspicious data' . "\n";
+            }
+
+            $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' Finish User Competence Synchronization . ' . "\n";
+            error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
         }catch (Exception $ex) {
             // Log
             $dbLog  = $ex->getMessage() . "\n" . "\n";
@@ -1267,29 +1360,38 @@ class FELLESDATA_CRON {
             // Log
             $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' START Manager Reporter Synchronization . ' . "\n";
 
-            // Managers and reporters to synchronize
-            $total = FSKS_USERS::get_total_managers_reporters_to_synchronize();
-            if ($total) {
-                for ($i=0;$i<=$total;$i=$i+100) {
-                    // To synchronize
-                    $toSynchronize = FSKS_USERS::get_managers_reporters_to_synchronize($start,$limit);
+            // check if the synchronization can be run
+            if (suspicious::run_synchronization(IMP_SUSP_MANAGERS_REPORTERS)) {
+                // Managers and reporters to synchronize
+                $total = FSKS_USERS::get_total_managers_reporters_to_synchronize();
+                if ($total) {
+                    for ($i=0;$i<=$total;$i=$i+100) {
+                        // To synchronize
+                        $toSynchronize = FSKS_USERS::get_managers_reporters_to_synchronize($start,$limit);
 
-                    // Call webs ervice
-                    if ($toSynchronize) {
-                        $response = self::process_ks_service($pluginInfo,$service,array('managerReporter' => $toSynchronize));
-                        if ($response['error'] == '200') {
-                            // Syncrhonize managers and reporters
-                            FSKS_USERS::synchronize_manager_reporter_fs($toSynchronize,$response['managerReporter']);
+                        // Call webs ervice
+                        if ($toSynchronize) {
+                            $response = self::process_ks_service($pluginInfo,$service,array('managerReporter' => $toSynchronize));
+                            if ($response['error'] == '200') {
+                                // Syncrhonize managers and reporters
+                                FSKS_USERS::synchronize_manager_reporter_fs($toSynchronize,$response['managerReporter']);
 
-                            //$DB->delete_records('fs_imp_managers_reporters',array('imported' => '1'));
-                        }else {
-                            // Log
-                            $dbLog  .= "ERROR WS: " . $response['message'] . "\n" . "\n";
-                            $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' Finish ERROR Manaer Reporter Synchronization . ' . "\n";
-                        }//if_no_error
-                    }//if_toSynchronize
-                }//for
-            }//if_total
+                                //$DB->delete_records('fs_imp_managers_reporters',array('imported' => '1'));
+                            }else {
+                                // Log
+                                $dbLog  .= "ERROR WS: " . $response['message'] . "\n" . "\n";
+                                $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' Finish ERROR Manaer Reporter Synchronization . ' . "\n";
+                            }//if_no_error
+                        }//if_toSynchronize
+                    }//for
+                }//if_total
+            }else {
+                // send remainder
+                suspicious::send_suspicious_notifications($pluginInfo,true);
+                
+                // Log
+                $dbLog .= ' Waiting approve or rejection of suspicious data' . "\n";
+            }//if_synchronization
 
             // Log
             $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH Manager Reporter Synchronization . ' . "\n";

@@ -139,6 +139,12 @@ function xmldb_local_fellesdata_upgrade($oldVersion) {
             Fellesdata_Update::UnMapTables($dbMan);    
         }//if_oldVersion
         
+        // Suspicious tables
+        if ($oldVersion < 2016122600) {
+            Fellesdata_Update::add_suspicious($dbMan);
+            Fellesdata_Update::add_suspicious_action($dbMan);
+        }//if_old_versin
+        
         return true;
     }catch (Exception $ex) {
         throw $ex;
@@ -506,6 +512,100 @@ class Fellesdata_Update {
             throw $ex;
         }//try_Catch
     }//UnMapTables
+
+    /**
+     * Description
+     * Create mdl_fs_suspicious table
+     *
+     * @creationDate    26/12/2016
+     * @author          eFaktor     (fbv)
+     *
+     * @param           $dbMan
+     *
+     * @throws          Exception
+     */
+    public static function add_suspicious($dbMan) {
+        /* Variables */
+        $tblSuspicious = null;
+
+        try {
+            // table
+            $tblSuspicious = new xmldb_table('fs_suspicious');
+
+            // Fields
+            // id               - Primary key
+            $tblSuspicious->add_field('id',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, XMLDB_SEQUENCE,null);
+            // file             - Name of the file
+            $tblSuspicious->add_field('file',XMLDB_TYPE_CHAR,'255',null, XMLDB_NOTNULL, null,null);
+            // path             - Location
+            $tblSuspicious->add_field('path',XMLDB_TYPE_CHAR,'255',null, XMLDB_NOTNULL, null,null);
+            // impfs            - Type of imformation to import
+            $tblSuspicious->add_field('impfs',XMLDB_TYPE_CHAR,'50',null, XMLDB_NOTNULL, null,null);
+            // detected         - When the file was marked as suspicious
+            $tblSuspicious->add_field('detected',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, null,null);
+            // approved         - Approved or not
+            $tblSuspicious->add_field('approved',XMLDB_TYPE_INTEGER,'1',null, XMLDB_NOTNULL, null,null);
+            // rejected         - Rejected or not
+            $tblSuspicious->add_field('rejected',XMLDB_TYPE_INTEGER,'1',null, XMLDB_NOTNULL, null,null);
+            // notificationsent - Notification has been sent
+            $tblSuspicious->add_field('notificationsent',XMLDB_TYPE_INTEGER,'10',null, null, null,null);
+            // remaindersent    - Remainder has been sent
+            $tblSuspicious->add_field('remaindersent',XMLDB_TYPE_INTEGER,'10',null, null, null,null);
+            // remainder        - Remainder has to be sent
+            $tblSuspicious->add_field('remainder',XMLDB_TYPE_INTEGER,'10',null, null, null,null);
+
+            // Keys
+            $tblSuspicious->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+
+            // Create table
+            if (!$dbMan->table_exists('fs_suspicious')) {
+                $dbMan->create_table($tblSuspicious);
+            }//if_exists
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//add_suspicious
+
+    /**
+     * Description
+     * Create mdl_fs_suspucious_action table
+     *
+     * @creationDate    26/12/2016
+     * @author          eFaktor     (fbv)
+     *
+     * @param           $dbMan
+     *
+     * @throws          Exception
+     */
+    public static function add_suspicious_action($dbMan) {
+        /* Variables */
+        $tblAction = null;
+
+        try {
+            // table
+            $tblAction = new xmldb_table('fs_suspicious_action');
+
+            // Fields
+            // id           - Primary key
+            $tblAction->add_field('id',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, XMLDB_SEQUENCE,null);
+            // suspiciousid - Fireign key to mdl_fs_suspicious
+            $tblAction->add_field('suspiciousid',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, null,null);
+            // action       - (1) Approve (2) Reject
+            $tblAction->add_field('action',XMLDB_TYPE_INTEGER,'1',null, XMLDB_NOTNULL, null,null);
+            // token        - Token connected with the action
+            $tblAction->add_field('token',XMLDB_TYPE_CHAR,'255',null, XMLDB_NOTNULL, null,null);
+
+            // Keys
+            $tblAction->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+
+            // Create table
+            if (!$dbMan->table_exists('fs_suspicious_action')) {
+                $dbMan->create_table($tblAction);
+            }//if_exists
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//add_suspicious_action
     
     /***********/
     /* PRIVATE */

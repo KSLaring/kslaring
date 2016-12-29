@@ -63,4 +63,16 @@ if ($hassiteconfig) {
 
     ///* Hierarchy Municipality   */
     //$settings->add(new admin_setting_configtext('local_fellesdata/ks_muni_level',get_string('ks_hierarchy','local_fellesdata'),'','',PARAM_TEXT,50));
+
+    // Suspicious Data
+    $settings->add(new admin_setting_heading('local_fellesdata_suspicious', '', get_string('suspicious_header', 'local_fellesdata')));
+    // Notification
+    $settings->add(new admin_setting_configtext('local_fellesdata/suspicious_notify',get_string('suspicious_notification', 'local_fellesdata'), '', '',PARAM_TEXT,15));
+    // Path
+    $settings->add(new admin_setting_configtext('local_fellesdata/suspicious_path',get_string('suspicious_folder', 'local_fellesdata'), '', '',PARAM_TEXT,15));
+    // Remainder
+    $options = array('12','24','36','48');
+    $settings->add(new admin_setting_configselect('local_fellesdata/send_remainder',
+                                                  get_string('suspicious_remainder', 'local_fellesdata'),
+                                                  get_string('suspicious_remainder', 'local_fellesdata'),0, $options));
 }//if_config
