@@ -42,8 +42,9 @@ class FELLESDATA_CRON {
     public static function cron($fstExecution) {
         /* Variables    */
         global $CFG;
-        $pluginInfo = null;
-        $dbLog      = null;
+        $pluginInfo         = null;
+        $dbLog              = null;
+        $suspicious_path    = null;
 
         try {
             /* Log  */
@@ -52,6 +53,11 @@ class FELLESDATA_CRON {
             /* Plugin Info      */
             $pluginInfo     = get_config('local_fellesdata');
 
+            $suspicious_path = $CFG->dataroot . '/' . $pluginInfo->suspicious_path;
+            if (!file_exists($suspicious_path)) {
+                mkdir($suspicious_path);
+            }
+            
             /* Import KS */
             $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' START Import KS. ' . "\n";
             self::import_ks($pluginInfo);
