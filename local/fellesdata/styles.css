@@ -1,3 +1,69 @@
+.block_suspicious {
+    width:100%;
+    display:block;
+}
+
+.block_suspicious .block_suspicious_content {
+    width: 100%;
+    display:block;
+    margin-bottom: 25px;
+    margin-top: 10px;
+}
+
+.block_suspicious .block_suspicious_content table {
+    width: 100%;
+    border-collapse:collapse;
+    margin-bottom: 0;
+    display: table;
+}
+
+.block_suspicious .block_suspicious_content tr.header_suspicious {
+    background-color:  #f2f2f2;
+    color:  #000;
+    padding: 0;
+    margin-bottom: 0;
+    font:bold 12px Verdana,Verdana Pro,sans-serif;
+    border-bottom: 2px solid #d8d8d8;
+    vertical-align: middle;
+    height: 30px;
+}
+
+.block_suspicious .block_suspicious_content td.info,
+.block_suspicious .block_suspicious_content th.info {
+    width: 25%;
+    text-align: left;
+    text-justify:inter-word;
+    padding: 0px 10px 0px 0px;
+}
+
+.block_suspicious .block_suspicious_content td.date,
+.block_suspicious .block_suspicious_content th.date {
+    width: 15%;
+    text-align: left;
+    text-justify:inter-word;
+    padding: 0px 10px 0px 0px;
+}
+
+.block_suspicious .block_suspicious_content td.action,
+.block_suspicious .block_suspicious_content th.action {
+    width: 15%;
+    text-align: left;
+    text-justify:inter-word;
+    padding: 0px 10px 0px 0px;
+}
+
+.link_suspicious_disabled {
+    pointer-events: none;
+    cursor: default;
+    margin-right: 25px;
+    color: #d8d8d8;
+}
+
+.link_suspicious {
+    cursor: default;
+    margin-right: 25px;
+}
+
 .matching_process {
     width: 100%;
     margin-bottom: 0px;
