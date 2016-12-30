@@ -310,7 +310,7 @@ class suspicious {
                 }//for_notify
 
                 // Update notifications as sent
-                self::update_as_sent($notifications);
+                self::update_as_sent($notifications,$remainder);
             }//if_notifications
         }catch (Exception $ex) {
             throw $ex;
@@ -1021,10 +1021,11 @@ class suspicious {
      * @author          eFaktor     (fbv)
      *
      * @param       array $suspicious   Suspicious notifications
+     * @param             $remainder
      *
      * @throws            Exception
      */
-    private static function update_as_sent($suspicious) {
+    private static function update_as_sent($suspicious,$remainder = null) {
         /* Variables */
         global $DB;
         $instance = null;
@@ -1035,7 +1036,11 @@ class suspicious {
                     // Instance to update
                     $instance = new stdClass();
                     $instance->id               = $key;
-                    $instance->notificationsent = time();
+                    if ($remainder) {
+                        $instance->remaindersent = time();
+                    }else {
+                        $instance->notificationsent = time();
+                    }
 
                     // Execute
                     $DB->update_record('fs_suspicious',$instance);
