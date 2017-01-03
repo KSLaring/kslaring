@@ -492,11 +492,17 @@ class wsdoskom_cron {
             $params['idnumber']     = $idNumber;
 
             // SQL Instruction
-            $sql = " SELECT		u.id
-                     FROM		{user} 				u
-                     WHERE		(u.username  = :username
-                                 OR 
-                                 u.idnumber = :idnumber) ";
+            $sql = " SELECT	u.id
+                     FROM	{user} 	u
+                     WHERE	(u.username = :username
+                            OR 
+                            (u.idnumber = :idnumber
+                             AND
+                             u.idnumber IS NOT NULL
+                             AND
+                             u.idnumber != ''
+                            ))
+                            AND u.username NOT IN ('guest','admin') ";
 
             //Execute
             $rdo = $DB->get_record_sql($sql,$params);
