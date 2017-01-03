@@ -61,7 +61,7 @@ class wsdoskom_cron {
             self::import_users();
 
             // Clean Temporary Table
-            //self::clean_temporary();
+            self::clean_temporary();
 
             mtrace('Finish WSDOSKOM Import Users '. time());
 
