@@ -75,4 +75,19 @@ if ($hassiteconfig) {
     $settings->add(new admin_setting_configselect('local_fellesdata/send_remainder',
                                                   get_string('suspicious_remainder', 'local_fellesdata'),
                                                   get_string('suspicious_remainder', 'local_fellesdata'),0, $options));
+    // Maximum suspicious data for users
+    $options = array('10','25','50','100');
+    $settings->add(new admin_setting_configselect('local_fellesdata/max_users',
+                                                  get_string('max_suspicious_users', 'local_fellesdata'),
+                                                  get_string('max_suspicious_users', 'local_fellesdata'), 3,$options));
+
+    // Maximum suspicious data for competence user
+    $settings->add(new admin_setting_configselect('local_fellesdata/max_comp',
+                                                  get_string('max_suspicious_competence', 'local_fellesdata'),
+                                                  get_string('max_suspicious_competence', 'local_fellesdata'), 2,$options));
+
+    // Maximum suspicious data for the rest
+    $settings->add(new admin_setting_configselect('local_fellesdata/max_rest',
+                                                  get_string('max_suspicious_rest', 'local_fellesdata'),
+                                                  get_string('max_suspicious_rest', 'local_fellesdata'), 0,$options));
 }//if_config

@@ -149,3 +149,7 @@ $string['rpt_connected']    = 'Connected with';
 $string['rpt_status']       = 'Status';
 $string['rpt_act']          = 'Action';
 
+$string['max_suspicious_users']         = 'Maximum suspicious data connected with users';
+$string['max_suspicious_competence']    = 'Maximum suspicious data connected with competence';
+$string['max_suspicious_rest']          = 'Maximum suspicious connected with the rest';
+

@@ -10,10 +10,6 @@
  * @author          eFaktor     (fbv)
  *
  */
-define('SUSPICIOUS_USERS',100);
-define('SUSPICIOUS_USERS_JR',50);
-define('SUSPICIOUS_REST',20);
-
 define('ERR_PROCESS',1);
 define('ERR_FILE',2);
 define('ERR_PARAMS',3);
@@ -102,8 +98,12 @@ class suspicious {
         /* Variables */
         $content    = null;
         $suspicious = false;
+        $plugin     = null;
 
         try {
+            // Get plugin info
+            $plugin = get_config('local_fellesdata');
+
             // Get content
             $content = file_get_contents($file);
 
@@ -112,19 +112,19 @@ class suspicious {
             if ($delete) {
                 switch ($type) {
                     case TRADIS_FS_USERS:
-                        if ($delete >= SUSPICIOUS_USERS) {
+                        if ($delete >= $plugin->max_users) {
                             $suspicious = true;
                         }//if_suspicious
 
                         break;
                     case TRADIS_FS_USERS_JOBROLES:
-                        if ($delete >= SUSPICIOUS_USERS_JR) {
+                        if ($delete >= $plugin->max_comp) {
                             $suspicious = true;
                         }//if_suspicious
 
                         break;
                     default:
-                        if ($delete >= SUSPICIOUS_REST) {
+                        if ($delete >= $plugin->max_rest) {
                             $suspicious = true;
                         }//if_suspicious
 
