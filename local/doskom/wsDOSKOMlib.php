@@ -226,10 +226,10 @@ class WS_DOSKOM {
 
         try {
             /* First the List courses   */
-            $rdo_courses = self::getCoursesCompanyToComplete($criteria['companyId']);
+            $rdo_courses = self::get_courses_company_to_complete($criteria['companyId']);
             if ($rdo_courses) {
                 /* SQL Instruction */
-                $sql = self::getSQLUsersCompletedCourse_InPeriod($criteria['dateFrom'],$criteria['dateTo']);
+                $sql = self::get_sql_users_completions_in_period($criteria['dateFrom'],$criteria['dateTo'],$criteria['companyId']);
                 foreach ($rdo_courses as $course) {
                     $courses = array();
                     $courses['courseId']    = $course->id;
@@ -246,12 +246,14 @@ class WS_DOSKOM {
                             $user->userId           = $instance->secret;
                             $user->completionDate   = $instance->completiondate;
 
-                            $users[] = $user;
+                            $users[$instance->id] = $user;
                         }//for_users
 
-                        $courses['users'] = $users;
+                        if ($users) {
+                            $courses['users'] = $users;
+                            $historical[] = $courses;
+                        }
                     }//if_rdo_users
-                    $historical[] = $courses;
                 }//for_each_courses
             }//if_rdo_courses
 
@@ -1161,90 +1163,98 @@ class WS_DOSKOM {
     }//getCoursesCategoryCompany
 
     /**
-     * @param           $company_id
-     * @return          array|null
-     * @throws          Exception
-     *
-     * @creationDate    20/02/2015
-     * @author          eFaktor     (fbv)
-     *
      * Description
      * Get all the courses, which have to be completed, for a specific company.
+     * 
+     * @creationDate    04/01/2017
+     * @author          eFaktor     (fbv)
+     * 
+     * @param       String $company
+     *
+     * @return             array|null
+     * @throws             Exception
      */
-    private static function getCoursesCompanyToComplete($company_id) {
-        /* Variables    */
+    private static function get_courses_company_to_complete($company) {
+        /* Variables */
         global $DB;
+        $rdo    = null;
+        $sql    = null;
+        $params = null;
 
         try {
-            /* Search Criteria  */
+            // Search criteria
             $params = array();
-            $params['company']      = $company_id;
+            $params['company'] = $company;
 
-            /* SQL Instruction  */
-            $sql = " SELECT		DISTINCT  c.id,
-                                          c.fullname
-                     FROM		{course}	c
-                        JOIN	{enrol}		e	ON 		e.courseid  = c.id
-                                                AND		(
-                                                          e.company   = :company
-                                                          OR
-                                                          e.company	LIKE '%,"    . $company_id . ",%'
-                                                          OR
-                                                          e.company  LIKE '"     . $company_id . ",%'
-                                                          OR
-                                                          e.company  LIKE '%,"   . $company_id . "'
-                                                        )
+            // SQL Instruction
+            $sql = " SELECT  DISTINCT 
+                                c.id,
+                                c.fullname
+                     FROM		{course_completions}	cc
+                        JOIN	{user_company}		    uc	ON	uc.userid		= cc.userid
+                                                            AND	uc.companyid 	= :company
+                        JOIN 	{course}				c 	ON c.id             = cc.course
+                     ORDER BY c.fullname ";
 
-                     WHERE		c.visible           = 1
-                        AND		c.enablecompletion  = 1
-                     ORDER BY 	c.fullname ASC ";
-
-            /* Execute  */
+            // Execute
             $rdo = $DB->get_records_sql($sql,$params);
             if ($rdo) {
                 return $rdo;
             }else {
                 return null;
-            }//if_else_rdo
+            }//if_rdo
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//getCoursesCompanyToComplete
-
+    }//get_courses_company_to_complete
 
     /**
-     * @param           $date_From
-     * @param           $date_To
-     * @return          string
-     * @throws          Exception
-     *
-     * @creationDate    20/02/2015
-     * @author          eFaktor     (fbv)
-     *
      * Description
      * It builds the SQL Instruction to get the users have been completed a course given.
+     *
+     * @creationDate        04/01/2017
+     * @author              eFaktor     (fbv)
+     *
+     * @param       String $date_from
+     * @param       String $date_to
+     * @param       String $company
+     *
+     * @return      null|string
+     * @throws      Exception
      */
-    private static function getSQLUsersCompletedCourse_InPeriod($date_From,$date_To) {
-        try {
-            /* Formatting Dates */
-            $dateFrom = DateTime::createFromFormat('Y.m.d H:i:s',$date_From . ' 00:00:00');
-            $dateTo   = DateTime::createFromFormat('Y.m.d H:i:s',$date_To . ' 23:59:59');
+    private static function get_sql_users_completions_in_period($date_from,$date_to,$company) {
+        /* Variables */
+        $sql    = null;
+        $from   = null;
+        $to     = null;
+        $secret = null;
 
-            /* SQL Instruction  */
-            $sql = "SELECT      cc.id,
-                                u.secret,
-                                FROM_UNIXTIME(cc.timecompleted,'%Y.%m.%d')as 'completiondate'
-                    FROM		{course_completions}	cc
-                        JOIN	{user}					u	ON	u.id 		= cc.userid
-                                                            AND u.deleted	= 0
-                                                            AND	u.auth		= 'saml'
-                                                            AND u.source    = '" . DOSKOM  . "'
-                    WHERE		cc.course = :course
-                        AND     cc.timecompleted BETWEEN " . $dateFrom->getTimestamp() . " AND " . $dateTo->getTimestamp();
+        try {
+            // Secret criteria
+            $secret = $company . '##SEP##';
+
+            // Date range - Formatting dates
+            $from = DateTime::createFromFormat('Y.m.d H:i:s',$date_from . ' 00:00:00');
+            $to   = DateTime::createFromFormat('Y.m.d H:i:s',$date_to . ' 23:59:59');
+
+            // SQL Instruction
+            $sql = " SELECT   cc.id,
+                              u.id,
+                              u.secret,
+                              FROM_UNIXTIME(cc.timecompleted,'%Y.%m.%d')as 'completiondate'
+                     FROM	  mdl_course_completions	cc
+                        -- USERS DOSSSIER
+                        JOIN  mdl_user				u		ON	u.id 			= cc.userid
+                                                                AND u.deleted	= 0
+                                                                AND	u.auth		= 'saml'
+                                                                AND u.source    IN ('DOSKOM','KOMMIT')
+                                                                AND u.secret	LIKE '"   . $secret . "%'
+                     WHERE	  cc.course = :course
+                        AND	  cc.timecompleted BETWEEN " . $from->getTimestamp() . " AND " . $to->getTimestamp();
 
             return $sql;
-        }catch (Exception $ex){
+        }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//getSQLUsersCompletedCourse_InPeriod
+    }//get_sql_users_completions_in_period
 }//WS_DOSKOM
