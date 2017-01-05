@@ -15,6 +15,7 @@
 define('REQUEST_APPROVED',0);
 define('REQUEST_REJECTED',1);
 
+
 class Competence {
     /*************/
     /*  PUBLIC   */
@@ -369,8 +370,12 @@ class Competence {
         $params     = null;
         $sql        = null;
         $rdo        = null;
+        $private    = null;
 
         try {
+            // Get private companies from Bergen
+            $private = self::get_private_bergen();
+
             // Research Criteria
             $params = array();
             $params['level']    = $level;
@@ -394,6 +399,12 @@ class Competence {
             if ($not_in) {
                 $sql .= " AND rcd.id NOT IN ($not_in) ";
             }
+
+            // Don't display companies that are private from Bergen
+            if ($private) {
+                $private = implode(',',$private);
+                $sql .= " AND rcd.id NOT IN ($private) ";
+            }//if_private
 
             /* Add Order    */
             $sql .= " ORDER BY rcd.industrycode, rcd.name ASC ";
@@ -1106,6 +1117,34 @@ class Competence {
     /*************/
     /*  PRIVATE  */
     /*************/
+
+    private static function get_private_bergen() {
+        /* Variables */
+        global $DB;
+        $sql     = null;
+        $rdo     = null;
+        $private = array();
+
+        try {
+            // SQL Instruction
+            $sql = " SELECT  id 
+                     FROM 	 {report_gen_companydata}
+                     WHERE	 industrycode = 1201
+                        AND	 public       = 0 ";
+
+            // Execute
+            $rdo = $DB->get_records_sql($sql);
+            if ($rdo) {
+                foreach ($rdo as $instance) {
+                    $private[$instance->id] = $instance->id;
+                }//for_rdo
+            }//if_rdo
+
+            return $private;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//get_private_bergen
 
     /**
      * Description
