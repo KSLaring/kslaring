@@ -2554,7 +2554,7 @@ function navmenulist($course, $sections, $modinfo, $strsection, $strjumpto, $wid
         }
 
         $url = $mod->modname .'/view.php?id='. $mod->id;
-        $mod->name = strip_tags(format_string($mod->name ,true));
+        $mod->name = strip_tags(format_string($mod->modname ,true));
         if (core_text::strlen($mod->name) > ($width+5)) {
             $mod->name = core_text::substr($mod->name, 0, $width).'...';
         }

@@ -74,10 +74,10 @@ class competence_add_competence_form extends moodleform {
         /* Add Level X      */
         /* Add Company List */
         $options = $this->getCompanyList($level,$my_companies);
-        $select= &$form->addElement('select',
-                                    'level_' . $level,
-                                    get_string('select_company_structure_level','report_manager',$level),
-                                    $options);
+        $select  = &$form->addElement('select',
+                                      'level_' . $level,
+                                      get_string('select_company_structure_level','report_manager',$level),
+                                      $options);
         if ($level == 3) {
             $form->addRule('level_' . $level,'','required', null, 'client');
         }//if_level_three
