@@ -146,32 +146,6 @@ function xmldb_local_fellesdata_upgrade($oldVersion) {
             Fellesdata_Update::add_suspicious_action($dbMan);
         }//if_old_versin
 
-        // Change type
-        if ($oldVersion < 2017010904) {
-            // companyid --> char (50)
-            $field      = new xmldb_field('companyid',XMLDB_TYPE_CHAR,'50',null, XMLDB_NOTNULL, null,null);
-
-            // fs_company
-            $table      = new xmldb_table('fs_company');
-            $dbMan->change_field_type($table,$field);
-            // fs_users_company
-            $table      = new xmldb_table('fs_users_company');
-            $dbMan->change_field_type($table,$field);
-            // fs_users_competence
-            $table      = new xmldb_table('fs_users_competence');
-            $dbMan->change_field_type($table,$field);
-
-            // fscompany --> char (50)
-            $field      = new xmldb_field('fscompany',XMLDB_TYPE_CHAR,'50',null, XMLDB_NOTNULL, null,null);
-
-            // ksfs_company
-            $table      = new xmldb_table('ksfs_company');
-            $dbMan->change_field_type($table,$field);
-            // ksfs_org_unmap
-            $table      = new xmldb_table('ksfs_org_unmap');
-            $dbMan->change_field_type($table,$field);
-        }//if_oldversion
-
         return true;
     }catch (Exception $ex) {
         throw $ex;
