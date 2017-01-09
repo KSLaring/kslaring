@@ -826,7 +826,7 @@ class FELLESDATA_CRON {
             }
 
             // Build url end point
-            $urlTradis = $pluginInfo->fs_point . '/tardis/fellesdata/' . $service . '?fromDate=' . $fromDate . '&toDate=' . $toDate;
+            $urlTradis = $pluginInfo->fs_point . '/' . $service . '?fromDate=' . $fromDate . '&toDate=' . $toDate;
 
             // Call web service
             $ch = curl_init($urlTradis);
