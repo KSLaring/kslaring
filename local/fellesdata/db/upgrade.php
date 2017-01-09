@@ -148,19 +148,6 @@ function xmldb_local_fellesdata_upgrade($oldVersion) {
 
         // Change type
         if ($oldVersion < 2017010904) {
-            // org_enhet_id --> char (50)
-            $field      = new xmldb_field('ORG_ENHET_ID',XMLDB_TYPE_CHAR,'50',null, XMLDB_NOTNULL, null,null);
-
-            // fs_imp_company
-            $table      = new xmldb_table('fs_imp_company');
-            $dbMan->change_field_type($table,$field);
-            // fs_imp_users_jr
-            $table      = new xmldb_table('fs_imp_users_jr');
-            $dbMan->change_field_type($table,$field);
-            // fs_imp_managers_reporters
-            $table      = new xmldb_table('fs_imp_managers_reporters');
-            $dbMan->change_field_type($table,$field);
-
             // companyid --> char (50)
             $field      = new xmldb_field('companyid',XMLDB_TYPE_CHAR,'50',null, XMLDB_NOTNULL, null,null);
 
