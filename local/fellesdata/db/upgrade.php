@@ -147,7 +147,7 @@ function xmldb_local_fellesdata_upgrade($oldVersion) {
         }//if_old_versin
 
         // Change type
-        if ($oldVersion < 2017010900) {
+        if ($oldVersion < 2017010902) {
             // org_enhet_id --> char (50)
             $field      = new xmldb_field('org_enhet_id',XMLDB_TYPE_CHAR,'50',null, XMLDB_NOTNULL, null,null);
 
