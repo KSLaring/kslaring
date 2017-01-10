@@ -1084,15 +1084,8 @@ class FELLESDATA_CRON {
                     // Synchronize only companies FS
                     FSKS_COMPANY::synchronize_companies_fs();
 
-                    // Companies to synchornize and emails
-                    list($toSynchronize,$toMail) = FSKS_COMPANY::companies_fs_to_synchronize();
-
-                    // Notification manual synchronization
-                    if ($notifyTo) {
-                        if ($toMail) {
-                            self::send_notifications(SYNC_COMP,$toMail,$notifyTo,$pluginInfo->fs_source);
-                        }//if_toMail
-                    }//if_notify
+                    // Companies to synchronize and emails
+                    $toSynchronize = FSKS_COMPANY::companies_fs_to_synchronize();
 
                     // Synchronize FS-KS companies
                     // Call webs service
@@ -1101,6 +1094,16 @@ class FELLESDATA_CRON {
                         $response   = self::process_ks_service($pluginInfo,KS_SYNC_FS_COMPANY,$params);
                         if ($response['error'] == '200') {
                             FSKS_COMPANY::synchronize_companies_ksfs($toSynchronize,$response['companies']);
+
+                            // Notification manual synchronization
+                            if ($notifyTo) {
+                                // Get companies to send notifications
+                                $toMail = FSKS_COMPANY::get_companiesfs_to_mail();
+                                
+                                if ($toMail) {
+                                    self::send_notifications(SYNC_COMP,$toMail,$notifyTo,$pluginInfo->fs_source);
+                                }//if_toMail
+                            }//if_notify
                         }else {
                             /* Log  */
                             $dbLog  .= "ERROR WS: " . $response['error'] . "\n\n";

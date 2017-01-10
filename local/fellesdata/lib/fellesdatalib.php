@@ -308,7 +308,6 @@ class FSKS_COMPANY {
         $synchronizeFS  = null;
         $toUpdate       = null;
         $toMail         = null;
-        $notIn          = 0;
 
         try {
             // Companies to Synchronize between FS and KS
@@ -318,14 +317,7 @@ class FSKS_COMPANY {
             // New - Update
             self::get_update_companiesfs_to_synchronize($toSynchronize);
 
-            // To synchronize Only in FS
-            if ($toSynchronize) {
-                $notIn .= ',' . implode(',',array_keys($toSynchronize));
-            }//if_toSynchronize
-
-            $toMail = self::get_companiesfs_to_mail($notIn);
-
-            return array($toSynchronize,$toMail);
+            return $toSynchronize;
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
@@ -347,7 +339,7 @@ class FSKS_COMPANY {
         /* Variables */
         $infoCompany    = null;
         $objCompany     = null;
-
+        
         try {
             // Synchronize companies that have been imported
             foreach ($companiesImported as  $company) {
@@ -396,6 +388,60 @@ class FSKS_COMPANY {
         }//try_catch
     }//synchronize_companies_fs
 
+    /**
+     * Description
+     * Get all companies that have to be synchronized manually.
+     *
+     * @param           $notIn
+     *
+     * @return          array
+     * @throws          Exception
+     *
+     * @creationDate    03/02/2016
+     * @author          eFaktor     (fbv)
+     */
+    public static function get_companiesfs_to_mail($notIn = 0) {
+        /* Variables    */
+        global $DB;
+        $sql            = null;
+        $rdo            = null;
+        $companiesFS    = array();
+        $params         = null;
+
+        try {
+            // Search Criteria
+            $params = array();
+            $params['add'] = ADD;
+
+            // SQL Instruction
+            $sql = " SELECT   fs_imp.id,
+                              fs_imp.org_navn,
+                              fs.companyid,
+                              fs.synchronized
+                     FROM 	  {fs_imp_company}	fs_imp
+                        JOIN  {fs_company}		fs		ON fs.companyid = fs_imp.ORG_ENHET_ID
+                     WHERE 	  fs_imp.imported 	 = 0
+                          AND fs.synchronized    = 0
+                          AND fs_imp.org_nivaa 	!= 4
+                          AND fs_imp.action        = :add
+                          AND fs_imp.id NOT IN ($notIn) 
+                     ORDER BY fs_imp.org_navn 
+                     LIMIT 0,5 ";
+
+            // Execute
+            $rdo = $DB->get_records_sql($sql,$params);
+            if ($rdo) {
+                foreach ($rdo as $instance) {
+                    $companiesFS[$instance->id] = $instance->org_navn;
+                }//for_rdo
+            }//if_rdo
+
+            return $companiesFS;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//get_companiesfs_to_mail
+    
     /**
      * Description
      * Get companies to unmap
@@ -722,60 +768,6 @@ class FSKS_COMPANY {
     }//get_companiesfs_to_synchronizefs
 
     /**
-     * Description
-     * Get all companies that have to be synchronized manually.
-     *
-     * @param           $notIn
-     *
-     * @return          array
-     * @throws          Exception
-     *
-     * @creationDate    03/02/2016
-     * @author          eFaktor     (fbv)
-     */
-    private static function get_companiesfs_to_mail($notIn) {
-        /* Variables    */
-        global $DB;
-        $sql            = null;
-        $rdo            = null;
-        $companiesFS    = array();
-        $params         = null;
-
-        try {
-            // Search Criteria
-            $params = array();
-            $params['add'] = ADD;
-
-            // SQL Instruction
-            $sql = " SELECT   fs_imp.id,
-                              fs_imp.org_navn,
-                              fs.companyid,
-                              fs.synchronized
-                     FROM 	  {fs_imp_company}	fs_imp
-                        JOIN  {fs_company}		fs		ON fs.companyid = fs_imp.ORG_ENHET_ID
-                     WHERE 	  fs_imp.imported 	 = 0
-                          AND fs.synchronized    = 0
-                          AND fs_imp.org_nivaa 	!= 4
-                          AND fs_imp.action        = :add
-                          AND fs_imp.id NOT IN ($notIn) 
-                     ORDER BY fs_imp.org_navn 
-                     LIMIT 0,5 ";
-
-            // Execute
-            $rdo = $DB->get_records_sql($sql,$params);
-            if ($rdo) {
-                foreach ($rdo as $instance) {
-                    $companiesFS[$instance->id] = $instance->org_navn;
-                }//for_rdo
-            }//if_rdo
-
-            return $companiesFS;
-        }catch (Exception $ex) {
-            throw $ex;
-        }//try_catch
-    }//get_companiesfs_to_mail
-
-    /**
      * @param           $companyKSFS
      * @param           $impKey
      *
@@ -914,8 +906,8 @@ class FSKS_COMPANY {
             // Synchronized
             if ($sync) {
                 $instance = new stdClass();
-                $instance->id       = $impKey;
-                $instance->imported = 1;
+                $instance->ORG_ENHET_ID     = $impKey;
+                $instance->imported         = 1;
 
                 $DB->update_record('fs_imp_company',$instance);
             }//if_sync
